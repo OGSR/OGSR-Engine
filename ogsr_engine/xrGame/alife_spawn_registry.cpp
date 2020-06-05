@@ -13,11 +13,6 @@
 #include "ai_space.h"
 #include "game_graph.h"
 
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include <malloc.h>
-#pragma warning(pop)
-
 CALifeSpawnRegistry::CALifeSpawnRegistry	(LPCSTR section)
 {
 	m_spawn_name				= "";
@@ -220,19 +215,26 @@ void CALifeSpawnRegistry::build_root_spawns	()
 
 void CALifeSpawnRegistry::build_story_spawns()
 {
-	SPAWN_GRAPH::const_vertex_iterator	I = m_spawns.vertices().begin();
-	SPAWN_GRAPH::const_vertex_iterator	E = m_spawns.vertices().end();
-	for ( ; I != E; ++I) {
-		CSE_ALifeObject					*object = smart_cast<CSE_ALifeObject*>(&(*I).second->data()->object());
-		VERIFY							(object);
-		if (object->m_spawn_story_id == INVALID_SPAWN_STORY_ID)
-			continue;
+	for (const auto& [id, obj] : m_spawns.vertices())
+	{
+		const auto* object = smart_cast<const CSE_ALifeObject*>(&obj->data()->object());
 
-		auto spawn_story_id = object->m_spawn_story_id;
-		auto object_id = (*I).first;
-#ifdef DEBUG
-		Msg("~~[CALifeSpawnRegistry::build_story_spawns] Object [%s] spawn_story_id [%u] object_id [%u]", object->name(), spawn_story_id, object_id);
+		if (object->m_spawn_story_id != INVALID_SPAWN_STORY_ID) {
+#ifdef USE_STORY_ID_AS_SPAWN_ID
+			//Особо умные могут назначить одинаковые спавн айди куче разных объектов.
+			ASSERT_FMT(m_spawn_story_ids.find(object->m_spawn_story_id) == m_spawn_story_ids.end(), "!!Twoy allspawn - xyina, davai po novoy!");
 #endif
-		m_spawn_story_ids.insert({ spawn_story_id, object_id });
+			//Msg("--[%s] Adding spawn_id to object: [%s] spawn_story_id: [%u] story_id: [%u] object_id: [%u]", __FUNCTION__, object->name_replace(), object->m_spawn_story_id, object->m_story_id, id);
+			m_spawn_story_ids.insert({ object->m_spawn_story_id, id });
+		}
+#ifdef USE_STORY_ID_AS_SPAWN_ID
+		else if (object->m_story_id != INVALID_STORY_ID) {
+			//Особо умные могут назначить одинаковые спавн/стори айди куче разных объектов либо разные одному и тому же.
+			ASSERT_FMT(m_spawn_story_ids.find(object->m_story_id) == m_spawn_story_ids.end(), "!!Twoy allspawn - xyina, davai po novoy!");
+
+			//Msg("~~[%s] Adding spawn_id (story_id) to object: [%s] spawn_story_id: [%u] story_id: [%u] object_id: [%u]", __FUNCTION__, object->name_replace(), object->m_spawn_story_id, object->m_story_id, id);
+			m_spawn_story_ids.insert({ object->m_story_id, id });
+		}
+#endif
 	}
 }

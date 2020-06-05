@@ -105,7 +105,7 @@ bool CLevel::net_start1				()
 		{
 			string64			l_name = "";
 			const char* SOpts = *m_caServerOptions;
-			strncpy(l_name, *m_caServerOptions, strchr(SOpts, '/') - SOpts);
+			strncpy_s(l_name, *m_caServerOptions, strchr(SOpts, '/') - SOpts);
 			// Activate level
 			if (strchr(l_name,'/'))
 				*strchr(l_name,'/')	= 0;
@@ -165,7 +165,7 @@ bool CLevel::net_start3				()
 			string64	PasswordStr = "";
 			const char* PSW = strstr(m_caServerOptions.c_str(), "psw=") + 4;
 			if (strchr(PSW, '/')) 
-				strncpy(PasswordStr, PSW, strchr(PSW, '/') - PSW);
+				strncpy_s(PasswordStr, PSW, strchr(PSW, '/') - PSW);
 			else
 				strcpy_s(PasswordStr, PSW);
 
@@ -266,5 +266,6 @@ void CLevel::InitializeClientGame	(NET_Packet& P)
 	game->set_type_name(game_type_name);
 	game->Init();
 	m_bGameConfigStarted	= TRUE;
-}
 
+	R_ASSERT(Load_GameSpecific_After());
+}

@@ -128,6 +128,20 @@ void CInput::SetKBDAcquire( BOOL bAcquire )
 {
 	if (pKeyboard)	bAcquire ? pKeyboard->Acquire()	: pKeyboard->Unacquire();
 }
+
+void CInput::exclusive_mode(const bool exclusive)
+{
+	is_exclusive_mode = exclusive;
+
+	pKeyboard->Unacquire();
+	pMouse->Unacquire();
+
+	pKeyboard->SetCooperativeLevel(RDEVICE.m_hWnd, (exclusive ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND);
+	pKeyboard->Acquire();
+	pMouse->SetCooperativeLevel(RDEVICE.m_hWnd, (exclusive ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND | DISCL_NOWINKEY);
+	pMouse->Acquire();
+}
+
 //-----------------------------------------------------------------------
 BOOL b_altF4 = FALSE;
 void CInput::KeyUpdate	( )
@@ -470,7 +484,7 @@ void CInput::clip_cursor(bool clip)
 {
 	if (clip) {
 		ShowCursor(FALSE);
-		if (Device.m_hWnd) {
+		if (Device.m_hWnd && !psDeviceFlags.is(rsFullscreen)) {
 			RECT rect;
 			GetClientRect(Device.m_hWnd, &rect);
 

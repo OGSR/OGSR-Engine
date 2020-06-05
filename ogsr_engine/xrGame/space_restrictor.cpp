@@ -314,7 +314,7 @@ float CSpaceRestrictor::distance_to( Fvector& P ) {
 
 void CSpaceRestrictor::OnRender()
 {
-	RCache.OnFrameEnd();
+	DRender->OnFrameEnd();
 	Fvector l_half; l_half.set(.5f, .5f, .5f);
 	Fmatrix l_ball, l_box;
 	xr_vector<CCF_Shape::shape_def> &l_shapes = ((CCF_Shape*)CFORM())->Shapes();
@@ -386,11 +386,11 @@ void CSpaceRestrictor::OnRender()
 		if(z){
 			string64 str;
 			switch (z->ZoneState()){
-				case CCustomZone::eZoneStateIdle:		strcpy(str,"IDLE"); break;
-				case CCustomZone::eZoneStateAwaking:	strcpy(str,"AWAKING"); break;
-				case CCustomZone::eZoneStateBlowout:	strcpy(str,"BLOWOUT"); break;
-				case CCustomZone::eZoneStateAccumulate: strcpy(str,"ACCUMULATE"); break;
-				case CCustomZone::eZoneStateDisabled:	strcpy(str,"DISABLED"); break;
+				case CCustomZone::eZoneStateIdle:		strcpy_s(str,"IDLE"); break;
+				case CCustomZone::eZoneStateAwaking:	strcpy_s(str,"AWAKING"); break;
+				case CCustomZone::eZoneStateBlowout:	strcpy_s(str,"BLOWOUT"); break;
+				case CCustomZone::eZoneStateAccumulate: strcpy_s(str,"ACCUMULATE"); break;
+				case CCustomZone::eZoneStateDisabled:	strcpy_s(str,"DISABLED"); break;
 			};
 			HUD().Font().pFontMedium->OutNext	( str );
 		}

@@ -7,7 +7,7 @@
 #include "ShootingObject.h"
 #include "hud_item_object.h"
 #include "Actor_Flags.h"
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 #include "game_cl_single.h"
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Items.h"
@@ -21,7 +21,6 @@ class CWeaponMagazined;
 class CParticlesObject;
 class CUIStaticItem;
 
-ENGINE_API extern float psHUD_FOV;
 ENGINE_API extern float psHUD_FOV_def;
 
 constexpr float def_min_zoom_k = 0.3f;
@@ -76,10 +75,10 @@ public:
 	virtual void			setup_physic_shell	();
 
 	virtual void			SwitchState			(u32 S);
-	virtual bool			Activate			();
+	virtual bool			Activate( bool = false );
 
-	virtual void			Hide				();
-	virtual void			Show				();
+	virtual void			Hide( bool = false );
+	virtual void			Show( bool = false );
 
 	//инициализация если вещь в активном слоте или спрятана на OnH_B_Chield
 	virtual void			OnActiveItem		();
@@ -211,6 +210,7 @@ public:
 
                                                                                //названия секций подключаемых аддонов
     shared_str		m_sScopeName;
+    std::vector<shared_str> m_allScopeNames;
     shared_str		m_sSilencerName;
     shared_str		m_sGrenadeLauncherName;
 
@@ -266,6 +266,8 @@ protected:
 	bool			m_bHideCrosshairInZoom;
 	//разрешить инерцию оружия в режиме прицеливания
 	bool			m_bZoomInertionAllow;
+	// или в режиме прицеливания через оптику
+	bool			m_bScopeZoomInertionAllow;
 	//Целевой HUD FOV при зуме
 	float			m_fZoomHudFov;
 	//Целевой HUD FOV для линзы
@@ -273,6 +275,10 @@ protected:
 
 	bool m_bUseScopeZoom			= false;
 	bool m_bUseScopeGrenadeZoom		= false;
+	bool m_bUseScopeDOF = true;
+	bool m_bForceScopeDOF = false;
+	bool m_bScopeShowIndicators = true;
+	bool m_bIgnoreScopeTexture = false;
 
 	float m_fMinZoomK			= def_min_zoom_k;
 	float m_fZoomStepCount		= def_zoom_step_count;
@@ -350,7 +356,12 @@ protected:
 	virtual void			UpdateFireDependencies_internal	();
 	virtual void			UpdatePosition			(const Fmatrix& transform);	//.
 	virtual void			UpdateXForm				();
+
+	float m_fLR_MovingFactor; // !!!!
+	Fvector m_strafe_offset[3][2]; //pos,rot,data/ normal,aim-GL --#SM+#--
+	u8 GetCurrentHudOffsetIdx() const;
 	virtual void			UpdateHudAdditonal		(Fmatrix&);
+
 	IC		void			UpdateFireDependencies	()			{ if (dwFP_Frame==Device.dwFrame) return; UpdateFireDependencies_internal(); };
 
 	virtual void			LoadFireParams		(LPCSTR section, LPCSTR prefix);
@@ -422,6 +433,7 @@ protected:
 	float					misfireConditionK;
 	//увеличение изношености при выстреле
 	float					conditionDecreasePerShot;
+	float					conditionDecreasePerShotOnHit;
 
 	//  [8/2/2005]
 	float					m_fPDM_disp_base			;
@@ -559,4 +571,6 @@ public:
 	float GetHudFov();
 
 	void SwitchScope();
+
+	virtual void OnBulletHit();
 };

@@ -9,6 +9,7 @@
 #include "Actor.h"
 #include "gamepersistent.h"
 #include "game_cl_base_weapon_usage_statistic.h"
+#include "Weapon.h"
 
 #ifdef DEBUG
 #	include "debug_renderer.h"
@@ -20,7 +21,8 @@
 float CBulletManager::m_fMinBulletSpeed = 2.f;
 
 
-SBullet::SBullet()
+SBullet::SBullet() :
+  m_on_bullet_hit( false )
 {
 }
 
@@ -85,7 +87,7 @@ CBulletManager::CBulletManager()
 {
 	m_Bullets.reserve( 1000 );
 	m_dwTimeRemainder = 0;
-	m_thread.initialize( 1 );
+	m_thread.initialize( 1, "CBulletManager thread" );
 }
 
 CBulletManager::~CBulletManager()
@@ -152,7 +154,7 @@ void CBulletManager::Clear() //Вызывается при загрузке и �
 	m_Events.clear();
 }
 
-void CBulletManager::AddBullet(const Fvector& position,
+SBullet& CBulletManager::AddBullet(const Fvector& position,
 							   const Fvector& direction,
 							   float starting_speed,
 							   float power,
@@ -175,6 +177,7 @@ void CBulletManager::AddBullet(const Fvector& position,
 	bullet.Init			(position, direction, starting_speed, power, impulse, sender_id, sendersweapon_id, e_hit_type, maximum_distance, cartridge, SendHit);
 	bullet.frame_num	= Device.dwFrame;
 	bullet.flags.aim_bullet	=	AimBullet;
+	return bullet;
 }
 
 void CBulletManager::UpdateWorkload()
@@ -345,13 +348,9 @@ void CBulletManager::Render	()
 
 	if(m_BulletsRendered.empty()) return;
 
-	u32	vOffset			=	0	;
 	u32 bullet_num		=	m_BulletsRendered.size();
 
-	FVF::LIT	*verts		=	(FVF::LIT	*) RCache.Vertex.Lock((u32)bullet_num*8,
-										tracers.sh_Geom->vb_stride,
-										vOffset);
-	FVF::LIT	*start		=	verts;
+	UIRender->StartPrimitive((u32)bullet_num * 12, IUIRender::ptTriList, IUIRender::pttLIT);
 
 	for(auto& bullet : m_BulletsRendered)
 	{
@@ -398,22 +397,15 @@ void CBulletManager::Render	()
 
 
 		Fvector center;
-		center.mad				(bullet.pos, bullet.dir,  -length*.5f);
-		tracers.Render			(verts, bullet.pos, center, bullet.dir, length, width, bullet.m_u8ColorID);
+		center.mad(bullet.pos, bullet.dir,  -length*.5f);
+		tracers.Render(bullet.pos, center, bullet.dir, length, width, bullet.m_u8ColorID);
 	}
 
-	u32 vCount					= (u32)(verts-start);
-	RCache.Vertex.Unlock		(vCount,tracers.sh_Geom->vb_stride);
-
-	if (vCount)
-	{
-		RCache.set_CullMode			(CULL_NONE);
-		RCache.set_xform_world		(Fidentity);
-		RCache.set_Shader			(tracers.sh_Tracer);
-		RCache.set_Geometry			(tracers.sh_Geom);
-		RCache.Render				(D3DPT_TRIANGLELIST,vOffset,0,vCount,0,vCount/2);
-		RCache.set_CullMode			(CULL_CCW);
-	}
+	UIRender->CacheSetCullMode(IUIRender::cmNONE);
+	UIRender->CacheSetXformWorld(Fidentity);
+	UIRender->SetShader(*tracers.sh_Tracer);
+	UIRender->FlushPrimitive();
+	UIRender->CacheSetCullMode(IUIRender::cmCCW);
 }
 
 void CBulletManager::CommitRenderSet		()	// @ the end of frame
@@ -436,6 +428,13 @@ void CBulletManager::CommitEvents			()	// @ the start of frame
 			{
 				if (E.dynamic)	DynamicObjectHit	(E);
 				else			StaticObjectHit		(E);
+                                if ( E.bullet.isOnBulletHit() ) {
+                                  CObject* O = Level().Objects.net_Find( E.bullet.weapon_id );
+                                  if ( O ) {
+                                    CWeapon* W = smart_cast<CWeapon*>( O );
+                                    if ( W ) W->OnBulletHit();
+                                  }
+                                }
 			}break;
 		case EVENT_REMOVE:
 			{

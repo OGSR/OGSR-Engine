@@ -178,18 +178,15 @@ CInventoryOwner* CPda::GetOriginalOwner()
 
 
 
-void CPda::ActivePDAContacts(xr_vector<CPda*>& res)
+xr_map<u16, CPda*> CPda::ActivePDAContacts()
 {
-	res.clear_not_free						();
-	xr_vector<CObject*>::iterator it		= m_active_contacts.begin();
-	xr_vector<CObject*>::iterator it_e		= m_active_contacts.end();
+	xr_map<u16, CPda*> res;
 
-	for(;it!=it_e;++it)
-	{
-		CPda* p = GetPdaFromOwner(*it);
-		if(p)
-			res.push_back(p);
-	}
+	for (auto* Obj : m_active_contacts)
+		if (CPda* p = GetPdaFromOwner(Obj))
+			res.emplace( Obj->ID(), p );
+
+	return res;
 }
 
 void CPda::save(NET_Packet &output_packet)

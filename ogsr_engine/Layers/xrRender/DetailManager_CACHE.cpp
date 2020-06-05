@@ -28,8 +28,8 @@ void CDetailManager::cache_Initialize	()
 
 CDetailManager::Slot*	CDetailManager::cache_Query	(int r_x, int r_z)
 {
-	int			gx		= w2cg_X(r_x + cache_cx);	VERIFY	(gx>=0 && gx<int(dm_cache_line));
-	int			gz		= w2cg_Z(r_z + cache_cz);	VERIFY	(gz>=0 && gz<int(dm_cache_line));
+	int			gx		= w2cg_X(r_x + cache_cx);	VERIFY	(gx>=0 && gx<dm_cache_line);
+	int			gz		= w2cg_Z(r_z + cache_cz);	VERIFY	(gz>=0 && gz<dm_cache_line);
 	return		cache	[gz][gx];
 }
 
@@ -110,7 +110,7 @@ void	CDetailManager::cache_Update	(int v_x, int v_z, Fvector& view, int limit)
 			for (u32 z=0; z<dm_cache_line; z++)
 			{
 				Slot*	S	= cache[z][dm_cache_line-1];
-				for			(u32 x=dm_cache_line-1; x>0; x--)	cache[z][x] = cache[z][x-1];
+				for			(int x=dm_cache_line-1; x>0; x--)	cache[z][x] = cache[z][x-1];
 				cache		[z][0]	= S;
 				cache_Task	(0,z,S);
 			}
@@ -125,7 +125,7 @@ void	CDetailManager::cache_Update	(int v_x, int v_z, Fvector& view, int limit)
 			for (u32 x=0; x<dm_cache_line; x++)
 			{
 				Slot*	S	= cache[dm_cache_line-1][x];
-				for			(u32 z=dm_cache_line-1; z>0; z--)	cache[z][x] = cache[z-1][x];
+				for			(int z=dm_cache_line-1; z>0; z--)	cache[z][x] = cache[z-1][x];
 				cache		[0][x]	= S;
 				cache_Task	(x,0,S);
 			}

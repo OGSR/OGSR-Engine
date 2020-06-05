@@ -5,10 +5,6 @@
 using namespace luabind;
 
 LPCSTR get_file_age_str(CLocatorAPI* fs, LPCSTR nm);
-CLocatorAPI* getFS()
-{
-	return &FS;
-}
 
 
 LPCSTR update_path_script(CLocatorAPI* fs, LPCSTR initial, LPCSTR src)
@@ -44,7 +40,7 @@ struct FS_item
 		struct tm*	newtime;	
 		time_t t	= modif; 
 		newtime		= localtime( &t ); 
-		strcpy		(buff, asctime( newtime ) );
+		strcpy_s(buff, asctime( newtime ) );
 		return		buff;
 	}
 
@@ -111,7 +107,7 @@ FS_file_list_ex::FS_file_list_ex(LPCSTR path, u32 flags, LPCSTR mask)
 		m_file_items.push_back	(FS_item());
 		FS_item& itm			= m_file_items.back();
 		ZeroMemory				(itm.name,sizeof(itm.name));
-		strcat					(itm.name,it->name.c_str());
+		strcat_s(itm.name,it->name.c_str());
 		itm.modif				= (u32)it->time_write;
 		itm.size				= it->size;
 	}
@@ -156,94 +152,96 @@ LPCSTR get_file_age_str(CLocatorAPI* fs, LPCSTR nm)
 ////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////// SCRIPT C++17 FILESYSTEM - START ///////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////
-/*
-KRodin: Дело в том, что движковая FS не может обрабатывать папки с большим кол-вом файлов.
-Например, папку с сейвами, когда в ней находится слишком много файлов (в этом случае происходит вылет).
-Хоть и в этом движке эта проблема вроде как исправлена (я не тестил исправление),
-но я ради эксперимента решил экспортировать в скрипты С++17 Filesystem, в которой таких проблем нет.
-Конечно, эту проблему можно было решить и с помошью костылей типа LFS, но KRodin не ищет лёгких путей!
-//
-TODO: при необходимости, доэкспортировать остальные функции файловой системы, вынести код в отдельный .cpp
-*/
 #include <iomanip>
 #include <sstream>
 #include <filesystem>
-namespace stdfs = std::experimental::filesystem;
+namespace stdfs = std::filesystem;
 
 //Путь до папки с движком
-decltype(auto) get_engine_dir()
+static std::string get_engine_dir()
 {
 	return stdfs::current_path().string();
 }
 
 //Перебор файлов в папке, подкаталоги не учитываются.
-void directory_iterator(const char* dir, const luabind::functor<void> &iterator_func)
+static void directory_iterator(const char* dir, const luabind::functor<void> &iterator_func)
 {
-	for (const stdfs::path& file : stdfs::directory_iterator(dir))
+	if (!stdfs::exists(dir)) return;
+
+	for (const auto& file : stdfs::directory_iterator(dir))
 		if (stdfs::is_regular_file(file)) //Папки не учитываем
 			iterator_func(file);
 }
 
 //Перебор файлов в папке включая подкаталоги.
-void recursive_directory_iterator(const char* dir, const luabind::functor<void> &iterator_func)
+static void recursive_directory_iterator(const char* dir, const luabind::functor<void> &iterator_func)
 {
-	for (const stdfs::path& file : stdfs::recursive_directory_iterator(dir))
+	if (!stdfs::exists(dir)) return;
+
+	for (const auto& file : stdfs::recursive_directory_iterator(dir))
 		if (stdfs::is_regular_file(file)) //Папки не учитываем
 			iterator_func(file);
 }
 
 //полный путь до файла с расширением.
-inline decltype(auto) get_full_path(const stdfs::path& file)
+static std::string get_full_path(const stdfs::directory_entry& file)
 {
-	return file.string();
+	return file.path().string();
 }
 
 //имя файла без пути, но с расширением.
-inline decltype(auto) get_full_filename(const stdfs::path& file)
+static std::string get_full_filename(const stdfs::directory_entry& file)
 {
-	return file.filename().string();
+	return file.path().filename().string();
 }
 
 //имя файла без пути, и без расширения.
-inline decltype(auto) get_short_filename(const stdfs::path& file)
+static std::string get_short_filename(const stdfs::directory_entry& file)
 {
-	return file.stem().string();
+	return file.path().stem().string();
 }
 
 //расширение файла.
-inline decltype(auto) get_extension(const stdfs::path& file)
+static std::string get_extension(const stdfs::directory_entry& file)
 {
-	return file.extension().string();
+	return file.path().extension().string();
 }
 
-//Время последнего изменения файла ( наверное в секундах, но я не уверен )
-inline decltype(auto) get_last_write_time(const stdfs::path& file)
+extern "C" int64_t __cdecl _Last_write_time(const wchar_t *); //так не надо делать нигде и никогда
+
+//Время последнего изменения файла
+static decltype(auto) get_last_write_time(const stdfs::directory_entry& file)
 {
-	const auto ftime = stdfs::last_write_time(file);
+	// Это ужасный костыль на самом деле, надо переписать нормально под новый стандарт, но мне щас лень возиться.
+	const auto ftime = std::chrono::system_clock::time_point{ std::chrono::system_clock::duration{ _Last_write_time(file.path().c_str()) } };
 	const auto cftime = decltype(ftime)::clock::to_time_t(ftime);
 	return cftime;
 }
 
-//Время последнего изменения файла в формате [вторник 02 янв 2018 14:03:32]
-inline decltype(auto) get_last_write_time_string(const stdfs::path& file)
-{
-	const auto ftime = stdfs::last_write_time(file);
-	const auto cftime = decltype(ftime)::clock::to_time_t(ftime);
-	std::stringstream ss;
-	ss.imbue(std::locale("")); //Устанавливаем системную локаль потоку, чтоб месяц/день недели были на системном языке.
-	ss << std::put_time(std::localtime(&cftime), "[%A %d %b %Y %T]");
+static auto format_last_write_time = [](const stdfs::directory_entry& file, const char* fmt) {
+	static std::ostringstream ss;
+	static const std::locale loc{ "" };
+	if (loc != ss.getloc())
+		ss.imbue(loc); //Устанавливаем системную локаль потоку, чтоб месяц/день недели были на системном языке.
+
+	ss.str("");
+
+	const auto write_time_c = get_last_write_time(file);
+
+	ss << std::put_time(std::localtime(&write_time_c), fmt);
 	return ss.str();
+};
+
+//Время последнего изменения файла в формате [вторник 02 янв 2018 14:03:32]
+static std::string get_last_write_time_string(const stdfs::directory_entry& file)
+{	
+	return format_last_write_time(file, "[%A %d %b %Y %T]");
 }
 
 //Время последнего изменения файла в формате [02:01:2018 14:03:32]
-inline decltype(auto) get_last_write_time_string_short(const stdfs::path& file)
+static std::string get_last_write_time_string_short(const stdfs::directory_entry& file)
 {
-	const auto ftime = stdfs::last_write_time(file);
-	const auto cftime = decltype(ftime)::clock::to_time_t(ftime);
-	std::stringstream ss;
-	ss.imbue(std::locale("")); //Устанавливаем системную локаль потоку, чтоб месяц/день недели были на системном языке.
-	ss << std::put_time(std::localtime(&cftime), "[%d:%m:%Y %T]");
-	return ss.str();
+	return format_last_write_time(file, "[%d:%m:%Y %T]");
 }
 
 
@@ -252,9 +250,10 @@ void script_register_stdfs(lua_State *L)
 {
 	module(L, "stdfs")
 	[
+		def("VerifyPath", [](const char* path) { VerifyPath(path); }),
 		def("directory_iterator", &directory_iterator),
 		def("recursive_directory_iterator", &recursive_directory_iterator),
-		class_<stdfs::path>("path")
+		class_<stdfs::directory_entry>("path")
 			//.def(constructor<>()) //Работает и без этого.
 			//TODO: при необходимости можно будет добавить возможность изменения некоторых свойств.
 			.property("full_path_name", &get_full_path)
@@ -363,6 +362,6 @@ void fs_registrator::script_register(lua_State *L)
 			.def("file_list_open",						&file_list_open_script_2)
 			.def("file_list_open_ex",					&file_list_open_ex),
 
-		def("getFS",									getFS)
+		def("getFS", [] { return &FS; })
 	];
 }

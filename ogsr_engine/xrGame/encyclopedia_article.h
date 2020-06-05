@@ -31,6 +31,8 @@ struct SArticleData : CSharedResource
 	// Тип статьи
 	ARTICLE_DATA::EArticleType	articleType;
 	shared_str					ui_template_name;
+
+	bool sort;
 };
 
 class CEncyclopediaArticle;
@@ -56,4 +58,5 @@ protected:
 public:
 	const shared_str	Id							()						{return m_ArticleId;}
 	SArticleData*		data						()						{ VERIFY(inherited_shared::get_sd()); return inherited_shared::get_sd();}
+	bool readed;
 };

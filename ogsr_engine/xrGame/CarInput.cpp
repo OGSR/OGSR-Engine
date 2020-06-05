@@ -14,9 +14,11 @@
 #include "camerafirsteye.h"
 #include "script_entity_action.h"
 #include "xr_level_controller.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "level.h"
 #include "CarWeapon.h"
+#include "Torch.h"
+#include "inventory.h"
 
 void	CCar::OnMouseMove(int dx, int dy)
 {
@@ -65,7 +67,7 @@ bool CCar::bfAssignObject(CScriptEntityAction *tpEntityAction)
 		return false;
 	}
 
-	s16	l_sBoneID = smart_cast<CKinematics*>(Visual())->LL_BoneID(l_tObjectAction.m_caBoneName);
+	s16	l_sBoneID = smart_cast<IKinematics*>(Visual())->LL_BoneID(l_tObjectAction.m_caBoneName);
 	if (is_Door(l_sBoneID)) {
 		switch(l_tObjectAction.m_tGoalType) {
 			case MonsterSpace::eObjectActionActivate : {
@@ -149,6 +151,15 @@ void CCar::OnKeyboardPress(int cmd)
 	case kJUMP:		PressBreaks();				break;
 	case kENGINE:	SwitchEngine();				break;
 	case kTORCH:	m_lights.SwitchHeadLights();break;
+	case kNIGHT_VISION: {
+		auto* Act = OwnerActor();
+		if (Act) {
+			auto* pTorch = smart_cast<CTorch*>(Act->inventory().ItemFromSlot(TORCH_SLOT));
+			if (pTorch) {
+				pTorch->SwitchNightVision();
+			}
+		}
+	} break;
 	case kUSE:									break;
 	};
 

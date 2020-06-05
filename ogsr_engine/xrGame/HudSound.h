@@ -18,7 +18,8 @@ struct HUD_SOUND
 		ref_sound& hud_snd,
 		int type = sg_SourceType,
 		float* volume = NULL,
-		float* delay = NULL);
+		float* delay = NULL,
+		float* freq = NULL);
 
 	static void		LoadSound		(	LPCSTR section, LPCSTR line,
 		HUD_SOUND& hud_snd,  int type = sg_SourceType);
@@ -29,7 +30,8 @@ struct HUD_SOUND
 									const Fvector& position,
 									const CObject* parent,
 									bool hud_mode,
-									bool looped = false);
+									bool looped = false,
+									bool overlap = false);
 
 	static void		StopSound		(	HUD_SOUND& snd);
 
@@ -52,6 +54,7 @@ struct HUD_SOUND
 		ref_sound	snd;
 		float		delay;		//задержка перед проигрыванием
 		float		volume;		//громкость
+		float		freq;		//коэффициент частоты
 	};
 	SSnd*			m_activeSnd;
 	xr_vector<SSnd> sounds;

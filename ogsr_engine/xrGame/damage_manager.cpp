@@ -10,7 +10,8 @@
 #include "stdafx.h"
 #include "damage_manager.h"
 #include "..\xr_3da\xr_object.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
+#include "../xr_3da/bone.h"
 
 CDamageManager::CDamageManager			()
 {
@@ -63,7 +64,7 @@ void CDamageManager::reload(LPCSTR section,LPCSTR line,CInifile* ini)
 
 void CDamageManager::init_bones(LPCSTR section,CInifile* ini)
 {
-	CKinematics				*kinematics = smart_cast<CKinematics*>(m_object->Visual());
+	IKinematics				*kinematics = smart_cast<IKinematics*>(m_object->Visual());
 	VERIFY					(kinematics);
 	for(u16 i = 0; i<kinematics->LL_BoneCount(); i++)
 	{
@@ -76,7 +77,7 @@ void CDamageManager::init_bones(LPCSTR section,CInifile* ini)
 void CDamageManager::load_section(LPCSTR section,CInifile* ini)
 {
 	string32				buffer;
-	CKinematics				*kinematics = smart_cast<CKinematics*>(m_object->Visual());
+	IKinematics				*kinematics = smart_cast<IKinematics*>(m_object->Visual());
 	CInifile::Sect			&damages = ini->r_section(section);
 	for ( const auto &i : damages.Data ) {
 		if (xr_strcmp(i.first.c_str(),"default")) { // read all except default line
@@ -115,7 +116,7 @@ void  CDamageManager::HitScale			(const int element, float& hit_scale, float& wo
 		return;
 	}
 
-	CKinematics* V		= smart_cast<CKinematics*>(m_object->Visual());			VERIFY(V);
+	IKinematics* V		= smart_cast<IKinematics*>(m_object->Visual());			VERIFY(V);
 	// get hit scale
 	float scale;			
 	if (aim_bullet)

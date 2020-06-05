@@ -80,7 +80,9 @@ namespace MonsterSpace {
 		eMA_Run,
 		eMA_Drag,
 		eMA_Jump,
-		eMA_Steal
+		eMA_Steal,
+		eMA_WalkWithLeader,
+		eMA_RunWithLeader
 	};
 	
 	enum EScriptMonsterSpeedParam {
@@ -91,6 +93,7 @@ namespace MonsterSpace {
 
 	enum EScriptMonsterAnimAction {
 		eAA_StandIdle, 
+		eAA_CapturePrepare,
 		eAA_SitIdle,			
 		eAA_LieIdle,			
 		eAA_Eat,				

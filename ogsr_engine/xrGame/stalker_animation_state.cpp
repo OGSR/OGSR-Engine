@@ -9,7 +9,7 @@
 #include "stdafx.h"
 #include "stalker_animation_state.h"
 #include "object_broker.h"
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 
 CStalkerAnimationState::CStalkerAnimationState	()
 {
@@ -26,7 +26,7 @@ CStalkerAnimationState::~CStalkerAnimationState	()
 	xr_delete			(m_in_place);
 }
 
-void CStalkerAnimationState::Load				(CKinematicsAnimated *kinematics, LPCSTR base_name)
+void CStalkerAnimationState::Load				(IKinematicsAnimated *kinematics, LPCSTR base_name)
 {
 	string256			S;
 	m_global.Load		(kinematics,base_name);

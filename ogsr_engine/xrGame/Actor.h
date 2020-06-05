@@ -3,7 +3,7 @@
 #include "..\xr_3da\feel_touch.h"
 #include "..\xr_3da\feel_sound.h"
 #include "..\xr_3da\iinputreceiver.h"
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 #include "actor_flags.h"
 #include "actor_defs.h"
 #include "entity_alive.h"
@@ -59,6 +59,8 @@ class CActorMemory;
 class CActorStatisticMgr;
 
 class CLocationManager;
+
+class CActorCameraManager;
 
 struct ActorRestoreParams
 {
@@ -151,9 +153,12 @@ struct SDefNewsMsg{
 	};
 	xr_vector<SDefNewsMsg> m_defferedMessages;
 	void UpdateDefferedMessages();	
+	u32 m_news_to_show;
 public:	
 	void			AddGameNews_deffered	 (GAME_NEWS_DATA& news_data, u32 delay);
 	virtual void	AddGameNews				 (GAME_NEWS_DATA& news_data);
+	void PushNewsData( GAME_NEWS_DATA& news_data );
+	u32  NewsToShow() { return m_news_to_show; };
 protected:
 	CGameTaskManager*				m_game_task_manager;
 	CActorStatisticMgr*				m_statistic_manager;
@@ -358,7 +363,7 @@ public:
 	// Cameras and effectors
 	//////////////////////////////////////////////////////////////////////////
 public:
-	CCameraManager&			Cameras				() 	{VERIFY(m_pActorEffector); return *m_pActorEffector;}
+	CActorCameraManager&	Cameras				() 	{VERIFY(m_pActorEffector); return *m_pActorEffector;}
 	IC CCameraBase*			cam_Active			()	{return cameras[cam_active];}
 	IC CCameraBase*			cam_ByIndex(u16 index)  { return (index < eacMaxCam ? cameras[index] : NULL); }
 	IC CCameraBase*			cam_FirstEye		()	{return cameras[eacFirstEye];}
@@ -389,7 +394,7 @@ protected:
 	CSleepEffectorPP*		m_pSleepEffectorPP;
 
 	//менеджер эффекторов, есть у каждого актрера
-	CCameraManager*			m_pActorEffector;
+	CActorCameraManager*	m_pActorEffector;
 	static float			f_Ladder_cam_limit;
 	////////////////////////////////////////////
 	// для взаимодействия с другими персонажами 
@@ -461,6 +466,7 @@ public:
 
 	bool					is_jump					();		
 	bool					is_crouch				();
+	u32 MovingState() const { return mstate_real; }
 
 	IC float				GetJumpSpeed			()	const			{return m_fJumpSpeed;}
 	IC float				GetWalkAccel			()	const			{ return m_fWalkAccel; }
@@ -635,13 +641,12 @@ virtual	bool				can_validate_position_on_spawn	(){return false;}
 	//---------------------------------------------
 #endif
 
-	ref_geom 				hFriendlyIndicator;
 	//////////////////////////////////////////////////////////////////////////
 	// Actor physics
 	//////////////////////////////////////////////////////////////////////////
 public:
 			void			g_Physics		(Fvector& accel, float jump, float dt);
-	virtual void			ForceTransform	(const Fmatrix &m);
+			void			ForceTransform	(const Fmatrix &m, const bool from_demo_record = false) override;
 			void			SetPhPosition	(const Fmatrix& pos);
 	virtual void			PH_B_CrPr		(); // actions & operations before physic correction-prediction steps
 	virtual void			PH_I_CrPr		(); // actions & operations after correction before prediction steps
@@ -664,7 +669,6 @@ public:
 	virtual void			ChangeVisual			( shared_str NewVisual );
 	virtual void			OnChangeVisual			();
 
-	virtual void			RenderIndicator			(Fvector dpos, float r1, float r2, ref_shader IndShader);
 	virtual void			RenderText				(LPCSTR Text, Fvector dpos, float* pdup, u32 color);
 
 	//////////////////////////////////////////////////////////////////////////
@@ -697,7 +701,7 @@ protected:
 		Fvector							m_AutoPickUp_AABB;
 		Fvector							m_AutoPickUp_AABB_Offset;
 public:
-		void							SetWeaponHideState				(u32 State, bool bSet);
+		void SetWeaponHideState( u32 State, bool bSet, bool now = false );
 		virtual CCustomOutfit*			GetOutfit() const;
 private:
 	CActorCondition				*m_entity_condition;

@@ -59,7 +59,7 @@ BOOL CLevelChanger::net_Spawn	(CSE_Abstract* DC)
 	m_position					= l_tpALifeLevelChanger->m_tNextPosition;
 	m_angles					= l_tpALifeLevelChanger->m_tAngles;
 
-	m_bSilentMode				= !!l_tpALifeLevelChanger->m_bSilentMode;
+	m_SilentMode				= l_tpALifeLevelChanger->m_SilentMode;
 	if (ai().get_level_graph()) {
 		//. this information should be computed in xrAI
 		ai_location().level_vertex	(ai().level_graph().vertex(u32(-1),Position()));
@@ -113,7 +113,17 @@ void CLevelChanger::feel_touch_new	(CObject *tpObject)
 	if (!l_tpActor->g_Alive())
 		return;
 
-	if (m_bSilentMode) {
+	if (m_SilentMode) {
+		if ( m_SilentMode == 2 ) {
+		  Fvector p, r;
+		  if ( get_reject_pos( p, r ) ) {
+		    Actor()->MoveActor( p, r );
+		    return;
+		  }
+		  else {
+		    Msg( "! [%s]: [%s] pt_move_if_reject not found: m_SilentMode[%u]", __FUNCTION__, cName().c_str(), m_SilentMode );
+		  }
+		}
 		NET_Packet	p;
 		p.w_begin	(M_CHANGE_LEVEL);
 		p.w			(&m_game_vertex_id,sizeof(m_game_vertex_id));
@@ -162,7 +172,7 @@ BOOL CLevelChanger::feel_touch_contact	(CObject *object)
 
 void CLevelChanger::update_actor_invitation()
 {
-	if(m_bSilentMode)						return;
+	if(m_SilentMode)						return;
 	xr_vector<CObject*>::iterator it		= feel_touch.begin();
 	xr_vector<CObject*>::iterator it_e		= feel_touch.end();
 
@@ -197,7 +207,7 @@ void CLevelChanger::ChangeLevel() {
 
 void CLevelChanger::OnRender()
 {
-	RCache.OnFrameEnd();
+	DRender->OnFrameEnd();
 	Fvector l_half; l_half.set(.5f, .5f, .5f);
 	Fmatrix l_ball, l_box;
 	xr_vector<CCF_Shape::shape_def> &l_shapes = ((CCF_Shape*)CFORM())->Shapes();

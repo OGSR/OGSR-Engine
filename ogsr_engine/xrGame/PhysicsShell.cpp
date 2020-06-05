@@ -10,7 +10,7 @@
 #include "PHSplitedShell.h"
 #include "gameobject.h"
 #include "physicsshellholder.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 
 extern CPHWorld			*ph_world;
 CPhysicsShell::~CPhysicsShell()
@@ -45,7 +45,7 @@ CPhysicsJoint*				P_create_Joint			(CPhysicsJoint::enumType type ,CPhysicsElemen
 
 CPhysicsShell*				P_build_Shell			(CGameObject* obj,bool not_active_state,BONE_P_MAP* bone_map)
 {
-	CKinematics* pKinematics=smart_cast<CKinematics*>(obj->Visual());
+	IKinematics* pKinematics=smart_cast<IKinematics*>(obj->Visual());
 
 	CPhysicsShell* pPhysicsShell		= P_create_Shell();
 #ifdef DEBUG
@@ -66,7 +66,7 @@ void	fix_bones(LPCSTR	fixed_bones,CPhysicsShell* shell )
 {
 		VERIFY(fixed_bones);
 		VERIFY(shell);
-		CKinematics	*pKinematics = shell->PKinematics();
+		IKinematics	*pKinematics = shell->PKinematics();
 		VERIFY(pKinematics);
 		int count =					_GetItemCount(fixed_bones);
 		for (int i=0 ;i<count; ++i) 
@@ -83,7 +83,7 @@ void	fix_bones(LPCSTR	fixed_bones,CPhysicsShell* shell )
 CPhysicsShell*				P_build_Shell			(CGameObject* obj,bool not_active_state,BONE_P_MAP* p_bone_map,LPCSTR	fixed_bones)
 {
 	CPhysicsShell* pPhysicsShell;
-	CKinematics* pKinematics=smart_cast<CKinematics*>(obj->Visual());
+	IKinematics* pKinematics=smart_cast<IKinematics*>(obj->Visual());
 	if(fixed_bones)
 	{
 
@@ -122,7 +122,7 @@ CPhysicsShell*				P_build_Shell			(CGameObject* obj,bool not_active_state,LPCSTR
 {
 	U16Vec f_bones;
 	if(fixed_bones){
-		CKinematics* K		= smart_cast<CKinematics*>(obj->Visual());
+		IKinematics* K		= smart_cast<IKinematics*>(obj->Visual());
 		int count =			_GetItemCount(fixed_bones);
 		for (int i=0 ;i<count; ++i){
 			string64		fixed_bone;
@@ -162,7 +162,7 @@ CPhysicsShell*	P_build_SimpleShell(CGameObject* obj,float mass,bool not_active_s
 #ifdef DEBUG
 	pPhysicsShell->dbg_obj=smart_cast<CPhysicsShellHolder*>(obj);
 #endif
-	Fobb obb; obj->Visual()->vis.box.get_CD(obb.m_translate,obb.m_halfsize); obb.m_rotate.identity();
+	Fobb obb; obj->Visual()->getVisData().box.get_CD(obb.m_translate,obb.m_halfsize); obb.m_rotate.identity();
 	CPhysicsElement* E = P_create_Element(); R_ASSERT(E); E->add_Box(obb);
 	pPhysicsShell->add_Element(E);
 	pPhysicsShell->setMass(mass);

@@ -37,14 +37,19 @@ private:
 
 	enum{	
 		flGroupSimilar		= (1 << 0),
-		flAutoGrow			= (1 << 1),
+		flAutoGrow		= (1 << 1),
 		flCustomPlacement	= (1 << 2),
-		flVerticalPlacement = (1 << 3),
-		flDrawGrid			= (1 << 4)
+		flVerticalPlacement	= (1 << 3),
+		flAlwaysShowScroll	= (1 << 4),
+		flVirtualCells		= (1 << 5),
+		flDrawGrid		= (1 << 6),
+		flHighlightCellSp	= (1 << 7),
+		flHighlightAllCells	= (1 << 8),
 	};
-	Flags8					m_flags;
+	Flags16					m_flags;
 	CUICellItem*			m_selected_item;
 	Ivector2				m_orig_cell_capacity;
+	Ivector2				m_virtual_cells_alignment;
 	bool					m_bConditionProgBarVisible;
 
 public:
@@ -74,6 +79,8 @@ public:
 	DRAG_DROP_EVENT			m_f_item_selected;
 	DRAG_DROP_EVENT			m_f_item_rbutton_click;
 
+	u32						back_color;
+
 	const	Ivector2&		CellsCapacity		();
 			void			SetCellsCapacity	(const Ivector2 c);
 			void			SetStartCellsCapacity(const Ivector2 c){m_orig_cell_capacity=c;SetCellsCapacity(c);};
@@ -82,6 +89,11 @@ public:
 			void			SetCellSize			(const Ivector2 new_sz);
 	const	Ivector2&		CellsSpacing		();
 			void			SetCellsSpacing		(const Ivector2& new_sz);
+			void			SetCellsVertAlignment(xr_string alignment);
+			void			SetCellsHorizAlignment(xr_string alignment);
+
+	const	Ivector2		GetVirtualCellsAlignment() {return m_virtual_cells_alignment;};
+
 			int				ScrollPos			();
 			void			SetScrollPos		(int _pos);
 			void			ReinitScroll		();
@@ -98,6 +110,13 @@ public:
 			bool			GetVerticalPlacement();
 			void			SetDrawGrid			(bool b)	{ m_flags.set(flDrawGrid, b); }
 			bool			GetDrawGrid			()			{ return !!m_flags.test(flDrawGrid); }
+			void			SetAlwaysShowScroll	(bool b);
+			bool			GetVirtualCells		();
+			void			SetVirtualCells		(bool b);
+			bool			GetHighlightCellSp();
+			void			SetHighlightCellSp( bool b );
+			bool			GetHighlightAllCells();
+			void			SetHighlightAllCells( bool b );
 
 			bool			GetConditionProgBarVisibility() {return m_bConditionProgBarVisible;};
 			void			SetConditionProgBarVisibility(bool b) {m_bConditionProgBarVisible = b;};
@@ -118,6 +137,9 @@ public:
 			void			Compact				();
 			bool			IsOwner				(CUICellItem* itm);
 			void			clear_select_armament();
+			Ivector2		PickCell			(const Fvector2& abs_pos);
+			CUICell&		GetCellAt			(const Ivector2& pos);
+
 public:
 	//UIWindow overriding
 	virtual		void		Draw				();
@@ -134,8 +156,7 @@ class CUICellContainer :public CUIWindow
 
 private:
 	typedef CUIWindow inherited;
-	ref_shader					hShader;  //ownerDraw
-	ref_geom					hGeom;	
+	ui_shader					hShader;  //ownerDraw
 	UI_CELLS_VEC				m_cells_to_draw;
 protected:
 	CUIDragDropListEx*			m_pParentDragDropList;
@@ -184,4 +205,5 @@ protected:
 				void			Shrink				();
 				void			ClearAll			(bool bDestroy);
 				void			clear_select_armament();
+				u8			get_select_mode( int, int );
 };

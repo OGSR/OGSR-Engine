@@ -83,7 +83,6 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 
 	Frect		ourAbsR;
 	GetAbsoluteRect(ourAbsR);
-	CTexture	*T;
 	Fvector2	ts;
 	int			tile_x, tile_y;
 	float		rem_x, rem_y;
@@ -124,9 +123,8 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 	m_UIWndFrame.frame[CUIFrameRect::fmRT].SetTile(1, 1, 0, 0);
 
 	// fmR
-	RCache.set_Shader(m_UIWndFrame.frame[CUIFrameRect::fmR].GetShader());
-	T			= RCache.get_ActiveTexture(0);
-	ts.set		((int)T->get_Width(),(int)T->get_Height());
+	UIRender->SetShader(*m_UIWndFrame.frame[CUIFrameRect::fmR].GetShader());
+	UIRender->GetActiveTextureResolution(ts);
 	size_y		= min(m_UIWndFrame.frame[CUIFrameRect::fmRB].GetPosY(), parentAbsR.bottom) -
 				  max(m_UIWndFrame.frame[CUIFrameRect::fmR].GetPosY(), parentAbsR.top);
 	size_x		= min(ourAbsR.right, parentAbsR.right) -
@@ -159,9 +157,8 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 	m_UIWndFrame.frame[CUIFrameRect::fmRB].SetTile(1, 1, 0, 0);
 
 	// fmB
-	RCache.set_Shader(m_UIWndFrame.frame[CUIFrameRect::fmB].GetShader());
-	T			= RCache.get_ActiveTexture(0);
-	ts.set		((int)T->get_Width(),(int)T->get_Height());
+	UIRender->SetShader(*m_UIWndFrame.frame[CUIFrameRect::fmB].GetShader());
+	UIRender->GetActiveTextureResolution(ts);
 	size_x		= min(m_UIWndFrame.frame[CUIFrameRect::fmRB].GetPosX(), parentAbsR.right) -
 				  max(m_UIWndFrame.frame[CUIFrameRect::fmB].GetPosX(), parentAbsR.left);
 	size_y		= min(ourAbsR.bottom, parentAbsR.bottom) -
@@ -195,9 +192,8 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 	m_UIWndFrame.frame[CUIFrameRect::fmLB].SetTile(1, 1, 0, 0);
 
 	// fmL
-	RCache.set_Shader(m_UIWndFrame.frame[CUIFrameRect::fmL].GetShader());
-	T			= RCache.get_ActiveTexture(0);
-	ts.set		((int)T->get_Width(),(int)T->get_Height());
+	UIRender->SetShader(*m_UIWndFrame.frame[CUIFrameRect::fmL].GetShader());
+	UIRender->GetActiveTextureResolution(ts);
 	size_y		= min(m_UIWndFrame.frame[CUIFrameRect::fmLB].GetPosY(), parentAbsR.bottom) -
 				  max(m_UIWndFrame.frame[CUIFrameRect::fmL].GetPosY(), parentAbsR.top);
 	size_x		= min(m_UIWndFrame.frame[CUIFrameRect::fmB].GetPosX(), parentAbsR.right) -
@@ -230,9 +226,8 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 	m_UIWndFrame.frame[CUIFrameRect::fmLT].SetTile(1, 1, 0, 0);
 
 	// fmT
-	RCache.set_Shader(m_UIWndFrame.frame[CUIFrameRect::fmT].GetShader());
-	T			= RCache.get_ActiveTexture(0);
-	ts.set		((int)T->get_Width(),(int)T->get_Height());
+	UIRender->SetShader(*m_UIWndFrame.frame[CUIFrameRect::fmT].GetShader());
+	UIRender->GetActiveTextureResolution(ts);
 	size_x		= min(m_UIWndFrame.frame[CUIFrameRect::fmRT].GetPosX(), parentAbsR.right) -
 				  max(m_UIWndFrame.frame[CUIFrameRect::fmT].GetPosX(), parentAbsR.left);
 	size_y		= min(m_UIWndFrame.frame[CUIFrameRect::fmBK].GetPosY(), parentAbsR.bottom) -
@@ -254,9 +249,8 @@ void CUIFrameWindow::FrameClip(const Frect parentAbsR)
 		max(m_UIWndFrame.frame[CUIFrameRect::fmT].GetPosY(), parentAbsR.top));
 
 	// back
-	RCache.set_Shader(m_UIWndFrame.frame[CUIFrameRect::fmBK].GetShader());
-	T			= RCache.get_ActiveTexture(0);
-	ts.set		((int)T->get_Width(),(int)T->get_Height());
+	UIRender->SetShader(*m_UIWndFrame.frame[CUIFrameRect::fmBK].GetShader());
+	UIRender->GetActiveTextureResolution(ts);
 	size_x		= min(m_UIWndFrame.frame[CUIFrameRect::fmR].GetPosX(), parentAbsR.right) -
 				  max(m_UIWndFrame.frame[CUIFrameRect::fmBK].GetPosX(), parentAbsR.left);
 	size_y		= min(m_UIWndFrame.frame[CUIFrameRect::fmB].GetPosY(), parentAbsR.bottom) -

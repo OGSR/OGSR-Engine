@@ -15,7 +15,7 @@
 #include "../../stalker_decision_space.h"
 #include "../../script_game_object.h"
 #include "../../customzone.h"
-#include "../../../xr_3da/SkeletonAnimated.h"
+#include "../../../Include\xrRender\Kinematics.h"
 #include "../../agent_manager.h"
 #include "../../stalker_animation_manager.h"
 #include "../../stalker_planner.h"
@@ -50,6 +50,8 @@
 #include "../../stalker_decision_space.h"
 #include "../../script_game_object.h"
 #include "../../inventory.h"
+#include "../../game_object_space.h"
+#include "../../holder_custom.h"
 
 using namespace StalkerSpace;
 
@@ -60,6 +62,8 @@ const float PRECISE_DISTANCE			= 2.5f;
 const float FLOOR_DISTANCE				= 2.f;
 const float NEAR_DISTANCE				= 2.5f;
 const u32	FIRE_MAKE_SENSE_INTERVAL	= 10000;
+
+constexpr float start_fire_angle_difference	= PI_DIV_8;
 
 float CAI_Stalker::GetWeaponAccuracy	() const
 {
@@ -190,8 +194,11 @@ void			CAI_Stalker::Hit					(SHit* pHDS)
 
 //	pHDS->power						*= .1f;
 
-	//хит может меняться в зависимости от ранга (новички получают больше хита, чем ветераны)
 	SHit							HDS = *pHDS;
+	callback( GameObject::entity_alive_before_hit )( &HDS );
+	if ( HDS.ignore_flag )
+	  return;
+	//хит может меняться в зависимости от ранга (новички получают больше хита, чем ветераны)
 	HDS.power						*= m_fRankImmunity;
 	if (m_boneHitProtection && HDS.hit_type == ALife::eHitTypeFireWound){
 #ifdef APPLY_ARMOR_PIERCING_TO_NPC
@@ -230,6 +237,7 @@ void			CAI_Stalker::Hit					(SHit* pHDS)
 			weapon_type				= best_weapon()->object().ef_weapon_type();
 
 		if	(
+				( HDS.hit_type == ALife::eHitTypeFireWound || HDS.hit_type == ALife::eHitTypeExplosion ) &&
 				!wounded() &&
 				!already_critically_wounded)
 		{
@@ -249,7 +257,7 @@ void			CAI_Stalker::Hit					(SHit* pHDS)
 				clamp					(power_factor,0.f,1.f);
 
 	#ifdef DEBUG
-				CKinematicsAnimated		*tpKinematics = smart_cast<CKinematicsAnimated*>(Visual());
+				IKinematicsAnimated		*tpKinematics = smart_cast<IKinematicsAnimated*>(Visual());
 				tpKinematics->LL_GetBoneInstance	(pHDS->bone());
 				if (pHDS->bone() >= tpKinematics->LL_BoneCount()) {
 					Msg					("tpKinematics has no bone_id %d",pHDS->bone());
@@ -524,20 +532,35 @@ IC BOOL ray_query_callback	(collide::rq_result& result, LPVOID params)
 //	}
 
 	if (!result.O) {
+		// статический объект
+		// получить треугольник и узнать его материал
+		CDB::TRI* T   = Level().ObjectSpace.GetStaticTris() + result.element;
+		SGameMtl* mtl = GMLib.GetMaterialByIdx( T->material );
+		// Если материал полностью простреливаемый, продолжаем
+		// трассировку.
+		if ( fsimilar( mtl->fShootFactor, 1.0f, EPS ) )
+		  return TRUE;
+
 		if (param->m_power > param->m_power_threshold)
-			return						(true);
+			return TRUE;
 
 		param->m_pick_distance			= result.range;
-		return							(false);
+		return FALSE;
 	}
 
 	CEntityAlive						*entity_alive = smart_cast<CEntityAlive*>(result.O);
+	if ( !entity_alive ) {
+	  CHolderCustom* holder = smart_cast<CHolderCustom*>( result.O );
+	  if ( holder && holder->Owner() )
+	    entity_alive = smart_cast<CEntityAlive*>( holder->Owner() );
+	}
+
 	if (!entity_alive) {
 		if (param->m_power > param->m_power_threshold)
-			return						(true);
+			return TRUE;
 
 		param->m_pick_distance			= result.range;
-		return							(false);
+		return FALSE;
 	}
 
 	if (param->m_holder->is_relation_enemy(entity_alive))
@@ -546,7 +569,7 @@ IC BOOL ray_query_callback	(collide::rq_result& result, LPVOID params)
 		param->m_can_kill_member		= true;
 
 	param->m_pick_distance				= result.range;
-	return								(false);
+	return FALSE;
 }
 
 void CAI_Stalker::can_kill_entity		(const Fvector &position, const Fvector &direction, float distance, collide::rq_results& rq_storage)
@@ -569,6 +592,7 @@ void CAI_Stalker::can_kill_entity_from	(const Fvector &position, Fvector directi
 	m_pick_distance			= 0.f;
 	rq_storage.r_clear		();
 	can_kill_entity			(position,direction,distance,rq_storage);
+	if ( m_fast_can_kill_entity ) return;
 	if (m_can_kill_member && m_can_kill_enemy)
 		return;
 
@@ -1242,4 +1266,18 @@ bool CAI_Stalker::can_kill_enemy							()
 	VERIFY					(inventory().ActiveItem());
 	update_can_kill_info	();
 	return					(m_can_kill_enemy);
+}
+
+
+bool CAI_Stalker::can_fire_to_enemy( const CEntityAlive *enemy ) {
+  Fvector enemy_position  = enemy->Position();
+  Fvector object_position = Position();
+  Fvector direction       = Fvector().sub( enemy_position, object_position );
+  float yaw, pitch;
+  direction.getHP( yaw, pitch );
+  const MonsterSpace::SBoneRotation &current_angles = movement().head_orientation();
+  if ( angle_difference( -yaw, current_angles.current.yaw ) > start_fire_angle_difference ) {
+    return false;
+  }
+  return true;
 }

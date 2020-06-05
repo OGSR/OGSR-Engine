@@ -60,11 +60,11 @@ void CUIZoneMap::Init()
 	m_center.SetWndPos				(m_clipFrame.GetWidth()/2,m_clipFrame.GetHeight()/2);
 }
 
-void CUIZoneMap::Render			()
+void CUIZoneMap::Render()
 {
-	m_clipFrame.Draw	();
-	m_background.Draw	();
-	m_compass.Draw		();
+	m_clipFrame.Draw();
+	m_background.Draw();
+	m_compass.Draw();
 }
 
 void CUIZoneMap::SetHeading		(float angle)

@@ -9,11 +9,11 @@
 #pragma once
 
 class CStalkerAnimationData;
-class CKinematicsAnimated;
+class IKinematicsAnimated;
 
 class CStalkerAnimationDataStorage {
 public:
-	typedef std::pair<CKinematicsAnimated*,CStalkerAnimationData*>		OBJECT;
+	typedef std::pair<IKinematicsAnimated*,CStalkerAnimationData*>		OBJECT;
 	typedef xr_vector<OBJECT>											OBJECTS;
 
 private:
@@ -21,7 +21,7 @@ private:
 
 public:
 	virtual								~CStalkerAnimationDataStorage	();
-			const CStalkerAnimationData	*object							(CKinematicsAnimated *skeleton_animated);
+			const CStalkerAnimationData	*object							(IKinematicsAnimated *skeleton_animated);
 			void						clear							();
 };
 

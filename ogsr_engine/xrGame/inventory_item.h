@@ -82,6 +82,7 @@ public:
 //.	virtual LPCSTR				NameComplex			();
 	shared_str					ItemDescription		() { return m_Description; }
 	virtual void				GetBriefInfo		(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count) {};
+	virtual bool				NeedBriefInfo() { return m_need_brief_info; };
 	
 	virtual void				OnEvent				(NET_Packet& P, u16 type);
 	
@@ -95,8 +96,8 @@ public:
 
 	virtual EHandDependence		HandDependence		()	const	{return hd1Hand;};
 	virtual bool				IsSingleHanded		()	const	{return true;};	
-	virtual bool				Activate			();									// !!! Переопределить. (см. в Inventory.cpp)
-	virtual void				Deactivate			();								// !!! Переопределить. (см. в Inventory.cpp)
+	virtual bool				Activate( bool = false );									// !!! Переопределить. (см. в Inventory.cpp)
+	virtual void				Deactivate( bool = false );								// !!! Переопределить. (см. в Inventory.cpp)
 	virtual bool				Action				(s32 cmd, u32 flags) {return false;}	// true если известная команда, иначе false
 
 	virtual bool				IsHidden			()	const	{return true;}
@@ -201,6 +202,7 @@ protected:
 
 	float						m_fControlInertionFactor;
 	shared_str					m_icon_name;
+	bool m_need_brief_info;
 
 	////////// network //////////////////////////////////////////////////
 public:

@@ -126,20 +126,20 @@ void CUI3tButton::InitTexture(LPCSTR tex_name)
 	string_path 		tex_highlighted;
 
 	// enabled state texture
-	strcpy				(tex_enabled,    tex_name);
-	strcat				(tex_enabled,   "_e");
+	strcpy_s(tex_enabled,    tex_name);
+	strcat_s(tex_enabled,   "_e");
 
 	// pressed state texture
-	strcpy				(tex_disabled,   tex_name);
-	strcat				(tex_disabled,   "_d");
+	strcpy_s(tex_disabled,   tex_name);
+	strcat_s(tex_disabled,   "_d");
 
 	// touched state texture
-	strcpy				(tex_touched, tex_name);
-	strcat				(tex_touched, "_t");
+	strcpy_s(tex_touched, tex_name);
+	strcat_s(tex_touched, "_t");
 
 	// touched state texture
-	strcpy				(tex_highlighted, tex_name);
-	strcat				(tex_highlighted, "_h");
+	strcpy_s(tex_highlighted, tex_name);
+	strcat_s(tex_highlighted, "_h");
 
 	this->InitTexture	(tex_enabled, tex_disabled, tex_touched, tex_highlighted);		
 }

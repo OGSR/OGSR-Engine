@@ -185,7 +185,7 @@
 #define LJ_TARGET_UNALIGNED	1
 #define LJ_ARCH_NUMMODE		LJ_NUMMODE_SINGLE_DUAL
 #ifdef LUAJIT_ENABLE_GC64
-#pragma message("--[LuaJIT] GC64 MODE ENABLED!")
+//#pragma message("--[LuaJIT] GC64 MODE ENABLED!")
 #define LJ_TARGET_GC64		1
 #endif
 

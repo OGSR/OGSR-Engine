@@ -5,7 +5,7 @@
 #include <new.h> // for _set_new_mode
 #include <signal.h> // for signals
 
-#include <dxerr.h>
+#include <d3dx/dxerr.h>
 #pragma comment( lib, "dxerr.lib" )
 int( WINAPIV* __vsnprintf )( char*, size_t, const char*, va_list ) = _vsnprintf;
 
@@ -15,10 +15,6 @@ XRCORE_API bool ExitFromWinMain = false;
 
 static bool error_after_dialog = false;
 
-#ifdef USE_OWN_MINI_DUMP
-void save_mini_dump( _EXCEPTION_POINTERS* );
-#endif
-
 #include "stacktrace_collector.h"
 #include <sstream>
 
@@ -27,7 +23,7 @@ void LogStackTrace(const char* header)
 	__try
 	{
 		if (auto pCrashHandler = Debug.get_crashhandler())
-			pCrashHandler();
+			pCrashHandler(true);
 		Log("********************************************************************************");
 		Log(BuildStackTrace(header));
 		Log("********************************************************************************");
@@ -35,12 +31,12 @@ void LogStackTrace(const char* header)
 	__finally{}
 }
 
-void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo)
+void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo, bool dump_lua_locals)
 {
 	__try
 	{
 		if (auto pCrashHandler = Debug.get_crashhandler())
-			pCrashHandler();
+			pCrashHandler(dump_lua_locals);
 		Log("********************************************************************************");
 		Msg("!![" __FUNCTION__ "] ExceptionCode is [%x]", pExceptionInfo->ExceptionRecord->ExceptionCode);
 		auto save = *pExceptionInfo->ContextRecord;
@@ -54,10 +50,7 @@ void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo)
 LONG DbgLogExceptionFilter(const char* header, _EXCEPTION_POINTERS *pExceptionInfo)
 {
 	LogStackTrace(header, pExceptionInfo);
-#ifdef USE_OWN_MINI_DUMP
-	if ( !IsDebuggerPresent() )
-		save_mini_dump( pExceptionInfo ); //Пусть и тут будет, может пригодится когда-нибудь.
-#endif
+
 	return EXCEPTION_EXECUTE_HANDLER;
 }
 
@@ -257,12 +250,12 @@ void save_mini_dump(_EXCEPTION_POINTERS *pExceptionInfo)
 	string64	t_stemp;
 
 	timestamp(t_stemp);
-	strcpy(szDumpPath, Core.ApplicationName);
-	strcat(szDumpPath, "_");
-	strcat(szDumpPath, Core.UserName);
-	strcat(szDumpPath, "_");
-	strcat(szDumpPath, t_stemp);
-	strcat(szDumpPath, ".mdmp");
+	strcpy_s(szDumpPath, Core.ApplicationName);
+	strcat_s(szDumpPath, "_");
+	strcat_s(szDumpPath, Core.UserName);
+	strcat_s(szDumpPath, "_");
+	strcat_s(szDumpPath, t_stemp);
+	strcat_s(szDumpPath, ".mdmp");
 
 	__try {
 		if (FS.path_exist("$logs$"))
@@ -270,9 +263,9 @@ void save_mini_dump(_EXCEPTION_POINTERS *pExceptionInfo)
 	}
 	__except (EXCEPTION_EXECUTE_HANDLER) {
 		string_path	temp;
-		strcpy(temp, szDumpPath);
-		strcpy(szDumpPath, "logs/");
-		strcat(szDumpPath, temp);
+		strcpy_s(temp, szDumpPath);
+		strcpy_s(szDumpPath, "logs/");
+		strcat_s(szDumpPath, temp);
 	}
 
 	// create the file
@@ -353,7 +346,7 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 		if (*error_message)
 			Msg("\n%s", error_message);
 
-		LogStackTrace("!!Unhandled exception stack trace:\n", pExceptionInfo);
+		LogStackTrace("!!Unhandled exception stack trace:\n", pExceptionInfo, true);
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 		ShowWindow(gGameWindow, SW_HIDE);
@@ -487,6 +480,32 @@ static void termination_handler(int signal)
   handler_base( "Segment violation error" );
 }*/
 
+// http://qaru.site/questions/441696/what-actions-do-i-need-to-take-to-get-a-crash-dump-in-all-error-scenarios
+static BOOL PreventSetUnhandledExceptionFilter()
+{
+	HMODULE hKernel32 = LoadLibrary("kernel32.dll");
+	if (hKernel32 == NULL) return FALSE;
+	void *pOrgEntry = GetProcAddress(hKernel32, "SetUnhandledExceptionFilter");
+	if (pOrgEntry == NULL) return FALSE;
+
+#ifdef _M_IX86
+	// Code for x86:
+	// 33 C0                xor         eax,eax  
+	// C2 04 00             ret         4 
+	unsigned char szExecute[] = { 0x33, 0xC0, 0xC2, 0x04, 0x00 };
+#elif _M_X64
+	// 33 C0                xor         eax,eax 
+	// C3                   ret  
+	unsigned char szExecute[] = { 0x33, 0xC0, 0xC3 };
+#else
+#error "The following code only works for x86 and x64!"
+#endif
+
+	SIZE_T bytesWritten = 0;
+	BOOL bRet = WriteProcessMemory(GetCurrentProcess(), pOrgEntry, szExecute, sizeof(szExecute), &bytesWritten);
+	return bRet;
+}
+
 void xrDebug::_initialize()
 {
 	std::atexit([] { R_ASSERT(ExitFromWinMain, "Unexpected application exit!"); });
@@ -511,6 +530,8 @@ void xrDebug::_initialize()
 	_set_purecall_handler(&pure_call_handler);
 
 	::SetUnhandledExceptionFilter(UnhandledFilter);
+
+	PreventSetUnhandledExceptionFilter();
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 	// Выключаем окно "Прекращена работа программы...". У нас своё окно для сообщений об ошибках есть.

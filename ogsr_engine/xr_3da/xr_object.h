@@ -1,14 +1,13 @@
 #ifndef __XR_OBJECT_H__
 #define __XR_OBJECT_H__
 
-#include "ispatial.h"
+#include "../xrCDB/ISpatial.h"
 #include "isheduled.h"
 //#include "iinputreceiver.h"
 #include "irenderable.h"
 #include "icollidable.h"
 
 // refs
-class	ENGINE_API	IRender_Visual;
 class	ENGINE_API	IRender_Sector;
 class	ENGINE_API	IRender_ObjectSpecific;
 class	ENGINE_API	CCustomHUD;
@@ -121,7 +120,7 @@ public:
 	virtual BOOL						renderable_ShadowReceive	()			{ return TRUE;						}
 
 	// Accessors and converters
-	ICF IRender_Visual*					Visual				() const			{ return renderable.visual;			}
+	ICF IRenderVisual*					Visual				() const			{ return renderable.visual;			}
 	ICF ICollisionForm*					CFORM				() const			{ return collidable.model;			}
 	virtual		CObject*				dcast_CObject		()					{ return this;						}
 	virtual		IRenderable*			dcast_Renderable	()					{ return this;						}
@@ -179,7 +178,7 @@ public:
 	// Position stack
 	IC u32								ps_Size				()			const	{ return PositionStack.size(); }
 	virtual	SavedPosition				ps_Element			(u32 ID)	const;
-	virtual void						ForceTransform		(const Fmatrix& m)	{};
+	virtual void						ForceTransform(const Fmatrix& m, const bool from_demo_record = false) {}
 
 	// HUD
 	virtual void						OnHUDDraw			(CCustomHUD* hud)	{};

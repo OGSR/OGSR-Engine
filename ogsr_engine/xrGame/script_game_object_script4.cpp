@@ -111,7 +111,7 @@ CWeaponHUD*  CScriptGameObject::GetWeaponHUD() const
 	return wpn->GetHUD();
 }
 
-IRender_Visual* CScriptGameObject::GetWeaponHUD_Visual() const
+IRenderVisual* CScriptGameObject::GetWeaponHUD_Visual() const
 {
 	CWeaponHUD *hud = GetWeaponHUD();
 	if (!hud) return NULL;
@@ -361,6 +361,11 @@ class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>
 		.def( "throw_target", ( bool ( CScriptGameObject::* )( const Fvector&, u32 const, CScriptGameObject* ) )( &CScriptGameObject::throw_target ) )
 
 		.def( "g_fireParams", &CScriptGameObject::g_fireParams )
+		.def( "can_kill_enemy", &CScriptGameObject::can_kill_enemy )
+		.def( "can_fire_to_enemy", &CScriptGameObject::can_fire_to_enemy )
+
+		.def("register_in_combat", &CScriptGameObject::register_in_combat)
+		.def("unregister_in_combat", &CScriptGameObject::unregister_in_combat)
 
 		.def( "stalker_disp_base", ( float ( CScriptGameObject::* )() )( &CScriptGameObject::stalker_disp_base ) )
 		.def( "stalker_disp_base", ( void  ( CScriptGameObject::* )( float ) )( &CScriptGameObject::stalker_disp_base ) )

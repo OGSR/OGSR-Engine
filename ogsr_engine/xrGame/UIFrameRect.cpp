@@ -24,7 +24,7 @@ void CUIFrameRect::Init(LPCSTR texture, float x, float y, float w, float h)//, D
 
 void CUIFrameRect::InitTexture(const char* texture){
 	string_path		fn,buf;
-	strcpy			(buf,texture); if (strext(buf)) *strext(buf)=0;
+	strcpy_s(buf,texture); if (strext(buf)) *strext(buf)=0;
 
 	if (FS.exist(fn,"$game_textures$",buf,".ini")){
 		Fvector4	v;

@@ -956,8 +956,14 @@ void CSE_ALifeCreatureAbstract::STATE_Write	(NET_Packet &tNetPacket)
 	tNetPacket.w_u8				(s_squad);
 	tNetPacket.w_u8				(s_group);
 	tNetPacket.w_float			(fHealth);
+#ifdef DSH_MOD
+	xr_vector<ALife::_OBJECT_ID> tmp;
+	save_data( tmp, tNetPacket );
+	save_data( tmp, tNetPacket );
+#else
 	save_data					(m_dynamic_out_restrictions,tNetPacket);
 	save_data					(m_dynamic_in_restrictions,tNetPacket);
+#endif
 	tNetPacket.w				(&m_killer_id,sizeof(m_killer_id));
 	tNetPacket.w				(&m_game_death_time,sizeof(m_game_death_time));
 }
@@ -979,8 +985,14 @@ void CSE_ALifeCreatureAbstract::STATE_Read	(NET_Packet &tNetPacket, u16 size)
 	o_model						= o_torso.yaw;
 
 	if (m_wVersion > 87) {
+#ifdef DSH_MOD
+		xr_vector<ALife::_OBJECT_ID> tmp1, tmp2;
+		load_data( tmp1, tNetPacket );
+		load_data( tmp2, tNetPacket );
+#else
 		load_data				(m_dynamic_out_restrictions,tNetPacket);
 		load_data				(m_dynamic_in_restrictions,tNetPacket);
+#endif
 	}
 	if (m_wVersion > 94)
 		tNetPacket.r			(&m_killer_id,sizeof(m_killer_id));

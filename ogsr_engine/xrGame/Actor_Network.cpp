@@ -16,7 +16,8 @@
 #include "game_cl_base.h"
 #include "infoportion.h"
 #include "alife_registry_wrappers.h"
-#include "..\xr_3da\skeletonanimated.h"
+#include "..\Include/xrRender/Kinematics.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 #include "client_spawn_manager.h"
 #include "hit.h"
 #include "PHDestroyable.h"
@@ -43,6 +44,10 @@
 #include "clsid_game.h"
 #include "alife_simulator_header.h"
 #include "actorcondition.h"
+#include "UIGameSP.h"
+#include "ui/UIPDAWnd.h"
+#include "ui/UIEncyclopediaWnd.h"
+#include "ui/UIDiaryWnd.h"
 
 #ifdef DEBUG
 #	include "debug_renderer.h"
@@ -66,20 +71,20 @@ CActor* Actor()
 //--------------------------------------------------------------------
 void	CActor::ConvState(u32 mstate_rl, string128 *buf)
 {
-	strcpy(*buf,"");
-	if (isActorAccelerated(mstate_rl, IsZoomAimingMode()))		strcat(*buf,"Accel ");
-	if (mstate_rl&mcCrouch)		strcat(*buf,"Crouch ");
-	if (mstate_rl&mcFwd)		strcat(*buf,"Fwd ");
-	if (mstate_rl&mcBack)		strcat(*buf,"Back ");
-	if (mstate_rl&mcLStrafe)	strcat(*buf,"LStrafe ");
-	if (mstate_rl&mcRStrafe)	strcat(*buf,"RStrafe ");
-	if (mstate_rl&mcJump)		strcat(*buf,"Jump ");
-	if (mstate_rl&mcFall)		strcat(*buf,"Fall ");
-	if (mstate_rl&mcTurn)		strcat(*buf,"Turn ");
-	if (mstate_rl&mcLanding)	strcat(*buf,"Landing ");
-	if (mstate_rl&mcLLookout)	strcat(*buf,"LLookout ");
-	if (mstate_rl&mcRLookout)	strcat(*buf,"RLookout ");
-	if (m_bJumpKeyPressed)		strcat(*buf,"+Jumping ");
+	strcpy_s(*buf,"");
+	if (isActorAccelerated(mstate_rl, IsZoomAimingMode())) strcat_s(*buf,"Accel ");
+	if (mstate_rl&mcCrouch)		strcat_s(*buf,"Crouch ");
+	if (mstate_rl&mcFwd)		strcat_s(*buf,"Fwd ");
+	if (mstate_rl&mcBack)		strcat_s(*buf,"Back ");
+	if (mstate_rl&mcLStrafe)	strcat_s(*buf,"LStrafe ");
+	if (mstate_rl&mcRStrafe)	strcat_s(*buf,"RStrafe ");
+	if (mstate_rl&mcJump)		strcat_s(*buf,"Jump ");
+	if (mstate_rl&mcFall)		strcat_s(*buf,"Fall ");
+	if (mstate_rl&mcTurn)		strcat_s(*buf,"Turn ");
+	if (mstate_rl&mcLanding)	strcat_s(*buf,"Landing ");
+	if (mstate_rl&mcLLookout)	strcat_s(*buf,"LLookout ");
+	if (mstate_rl&mcRLookout)	strcat_s(*buf,"RLookout ");
+	if (m_bJumpKeyPressed)		strcat_s(*buf,"+Jumping ");
 };
 //--------------------------------------------------------------------
 void CActor::net_Export	(NET_Packet& P)					// export to server
@@ -359,7 +364,7 @@ void		CActor::net_Import_Base				( NET_Packet& P)
 	if (OnClient())
 	//------------------------------------------------
 	{
-		if (ActiveSlot == 0xff) inventory().SetActiveSlot(NO_ACTIVE_SLOT);
+		if (ActiveSlot == NO_ACTIVE_SLOT) inventory().SetActiveSlot(NO_ACTIVE_SLOT);
 		else 
 		{
 			if (inventory().GetActiveSlot() != u32(ActiveSlot))
@@ -513,7 +518,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 		g_actor = this;
 
 	VERIFY(m_pActorEffector == NULL);
-	m_pActorEffector = xr_new<CCameraManager>(false);
+	m_pActorEffector = xr_new<CActorCameraManager>();
 
 	// motions
 	m_bAnimTorsoPlayed			= false;
@@ -528,12 +533,22 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	game_news_registry->registry().init(ID());
 
 	{
-	  auto news = game_news_registry->registry().objects();
-	  if ( news.size() > NEWS_TO_SHOW )
+	  auto& news = game_news_registry->registry().objects();
+	  if ( news.size() > NewsToShow() ) {
+	    u32 s = news.size();
 	    news.erase(
 	      news.begin(),
-	      news.begin() + ( news.size() - NEWS_TO_SHOW )
+	      news.begin() + ( news.size() - NewsToShow() )
             );
+	    Msg( "[%s]: purge %u news items, %u left", __FUNCTION__, s - news.size(), news.size() );
+	  }
+	}
+
+	if ( HUD().GetUI() ) {
+	  CUIGameSP* pGameSP = smart_cast<CUIGameSP*>( HUD().GetUI()->UIGame() );
+	  if ( pGameSP )
+	    pGameSP->PdaMenu->UIEncyclopediaWnd->FillEncyclopedia();
+	    pGameSP->PdaMenu->UIDiaryWnd->FillNews();
 	}
 
 	if (!CInventoryOwner::net_Spawn(DC)) return FALSE;
@@ -628,7 +643,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 */	
 	SetDefaultVisualOutfit(cNameVisual());
 
-	smart_cast<CKinematics*>(Visual())->CalculateBones();
+	smart_cast<IKinematics*>(Visual())->CalculateBones();
 
 	//--------------------------------------------------------------
 	inventory().SetPrevActiveSlot(NO_ACTIVE_SLOT);
@@ -641,7 +656,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	{
 		mstate_wishful	&=		~mcAnyMove;
 		mstate_real		&=		~mcAnyMove;
-		CKinematicsAnimated* K= smart_cast<CKinematicsAnimated*>(Visual());
+		IKinematicsAnimated* K= smart_cast<IKinematicsAnimated*>(Visual());
 		K->PlayCycle("death_init");
 
 		
@@ -764,7 +779,7 @@ BOOL	CActor::net_Relevant		()				// relevant for export to server
 
 void	CActor::SetCallbacks()
 {
-	CKinematics* V		= smart_cast<CKinematics*>(Visual());
+	IKinematics* V		= smart_cast<IKinematics*>(Visual());
 	VERIFY				(V);
 	u16 spine0_bone		= V->LL_BoneID("bip01_spine");
 	u16 spine1_bone		= V->LL_BoneID("bip01_spine1");
@@ -777,7 +792,7 @@ void	CActor::SetCallbacks()
 }
 void	CActor::ResetCallbacks()
 {
-	CKinematics* V		= smart_cast<CKinematics*>(Visual());
+	IKinematics* V		= smart_cast<IKinematics*>(Visual());
 	VERIFY				(V);
 	u16 spine0_bone		= V->LL_BoneID("bip01_spine");
 	u16 spine1_bone		= V->LL_BoneID("bip01_spine1");
@@ -800,24 +815,24 @@ void	CActor::OnChangeVisual()
 		tmp_shell=NULL;
 	}
 
-	CKinematicsAnimated* V	= smart_cast<CKinematicsAnimated*>(Visual());
+	IKinematicsAnimated* V	= smart_cast<IKinematicsAnimated*>(Visual());
 	if (V){
 		SetCallbacks		();
 		m_anims->Create		(V);
 		m_vehicle_anims->Create			(V);
 		CDamageManager::reload(*cNameSect(),"damage",pSettings);
 		//-------------------------------------------------------------------------------
-		m_head				= smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_head");
-		m_r_hand			= smart_cast<CKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(),"weapon_bone0"));
-		m_l_finger1			= smart_cast<CKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(),"weapon_bone1"));
-		m_r_finger2			= smart_cast<CKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(),"weapon_bone2"));
+		m_head				= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head");
+		m_r_hand			= smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(),"weapon_bone0"));
+		m_l_finger1			= smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(),"weapon_bone1"));
+		m_r_finger2			= smart_cast<IKinematics*>(Visual())->LL_BoneID(pSettings->r_string(*cNameSect(),"weapon_bone2"));
 		//-------------------------------------------------------------------------------
-		m_neck				= smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_neck");
-		m_l_clavicle		= smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_l_clavicle");
-		m_r_clavicle		= smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_r_clavicle");
-		m_spine2			= smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_spine2");
-		m_spine1			= smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_spine1");
-		m_spine				= smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_spine");
+		m_neck				= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_neck");
+		m_l_clavicle		= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_l_clavicle");
+		m_r_clavicle		= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_r_clavicle");
+		m_spine2			= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine2");
+		m_spine1			= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine1");
+		m_spine				= smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_spine");
 		//-------------------------------------------------------------------------------
 		reattach_items();
 		//-------------------------------------------------------------------------------
@@ -1403,7 +1418,7 @@ void	CActor::OnRender_Network()
 			Level().debug_renderer().draw_aabb			(bc, bd.x, bd.y, bd.z, color_rgba(0, 255, 0, 255));
 		};
 		
-		CKinematics* V		= smart_cast<CKinematics*>(Visual());
+		IKinematics* V		= smart_cast<IKinematics*>(Visual());
 		if (dbg_net_Draw_Flags.test(1<<0) && V)
 		{
 			if (this != Level().CurrentViewEntity() || cam_active != eacFirstEye)
@@ -1552,7 +1567,7 @@ void	CActor::OnRender_Network()
 	{
 		if (!(dbg_net_Draw_Flags.is_any((1<<1)))) return;
 
-		CKinematics* V		= smart_cast<CKinematics*>(Visual());
+		IKinematics* V		= smart_cast<IKinematics*>(Visual());
 		if (dbg_net_Draw_Flags.test(1<<0) && V)
 		{
 			u16 BoneCount = V->LL_BoneCount();

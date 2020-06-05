@@ -1,9 +1,5 @@
 #pragma once
 
-#ifdef DEBUG
-#	define BREAK_AT_STRCMP
-#endif
-
 #ifdef abs
 #undef abs
 #endif
@@ -127,82 +123,11 @@ IC s64		_abs	(s64 x)			{ return (x>=0)? x : s64(-x); }
 IC s64		_min	(s64 x, s64 y)	{ return y + ((x - y) & ((x - y) >> (sizeof(s64) * 8 - 1))); };
 IC s64		_max	(s64 x, s64 y)	{ return x - ((x - y) & ((x - y) >> (sizeof(s64) * 8 - 1))); };
 
-IC u32							xr_strlen				( const char* S );
 
+XRCORE_API	char*				timestamp				(string64& dest);
 
-// dest = S1+S2
-IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2 ) {
-  size_t L1 = strlen( S1 ), L2 = strlen( S2 );
-  ASSERT_FMT( L1 + L2 + 1 <= dest_sz, "strconcat buffer overflow. Size: [%u], str: [%s], [%s]", dest_sz, S1, S2 );
+extern XRCORE_API u32			crc32					(const void* P, u32 len);
 
-  memcpy( dest, S1, L1 );
-  memcpy( dest + L1, S2, L2 + 1 );
-
-  return dest;
-}
-
-// dest = S1+S2+S3
-IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2, const char* S3 ) {
-  size_t L1 = strlen( S1 ), L2 = strlen( S2 ), L3 = strlen( S3 );
-  ASSERT_FMT( L1 + L2 + L3 + 1 <= dest_sz, "strconcat buffer overflow. Size: [%u], str: [%s], [%s], [%s]", dest_sz, S1, S2, S3 );
-
-  memcpy( dest, S1, L1 );
-  memcpy( dest + L1, S2, L2 );
-  memcpy( dest + L1 + L2, S3, L3 + 1 );
-
-  return dest;
-}
-
-// dest = S1+S2+S3+S4
-IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2, const char* S3, const char* S4 ) {
-  size_t L1 = strlen( S1 ), L2 = strlen( S2 ), L3 = strlen( S3 ), L4 = strlen( S4 );
-  ASSERT_FMT( L1 + L2 + L3 + L4 + 1 <= dest_sz, "strconcat buffer overflow. Size: [%u], str: [%s], [%s], [%s], [%s]", dest_sz, S1, S2, S3, S4 );
-
-  memcpy( dest, S1, L1 );
-  memcpy( dest + L1, S2, L2 );
-  memcpy( dest + L1 + L2, S3, L3 );
-  memcpy( dest + L1 + L2 + L3, S4, L4 + 1 );
-
-  return dest;
-}
-
-// dest = S1+S2+S3+S4+S5
-IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2, const char* S3, const char* S4, const char* S5 ) {
-  size_t L1 = strlen( S1 ), L2 = strlen( S2 ), L3 = strlen( S3 ), L4 = strlen( S4 ), L5 = strlen( S5 );
-  ASSERT_FMT( L1 + L2 + L3 + L4 + L5 + 1 <= dest_sz, "strconcat buffer overflow. Size: [%u], str: [%s], [%s], [%s], [%s], [%s]", dest_sz, S1, S2, S3, S4, S5 );
-
-  memcpy( dest, S1, L1 );
-  memcpy( dest + L1, S2, L2 );
-  memcpy( dest + L1 + L2, S3, L3 );
-  memcpy( dest + L1 + L2 + L3, S4, L4 );
-  memcpy( dest + L1 + L2 + L3 + L4, S5, L5 + 1 );
-
-  return dest;
-}
-
-// dest = S1+S2+S3+S4+S5+S6
-IC char* strconcat( size_t dest_sz, char* dest, const char* S1, const char* S2, const char* S3, const char* S4, const char* S5, const char* S6 ) {
-  size_t L1 = strlen( S1 ), L2 = strlen( S2 ), L3 = strlen( S3 ), L4 = strlen( S4 ), L5 = strlen( S5 ), L6 = strlen( S6 );
-  ASSERT_FMT( L1 + L2 + L3 + L4 + L5 + L6 + 1 <= dest_sz, "strconcat buffer overflow. Size: [%u], str: [%s], [%s], [%s], [%s], [%s], [%s]", dest_sz, S1, S2, S3, S4, S5, S6 );
-
-  memcpy( dest, S1, L1 );
-  memcpy( dest + L1, S2, L2 );
-  memcpy( dest + L1 + L2, S3, L3 );
-  memcpy( dest + L1 + L2 + L3, S4, L4 );
-  memcpy( dest + L1 + L2 + L3 + L4, S5, L5 );
-  memcpy( dest + L1 + L2 + L3 + L4 + L5, S6, L6 + 1 );
-
-  return dest;
-}
-
-template<typename StrType, typename... Args>
-inline char* xr_strconcat(StrType& dest, Args... args) {
-    static_assert(std::is_array_v<StrType>);
-    static_assert(std::is_same_v<std::remove_extent_t<StrType>, char>);
-    dest[0] = 0;
-    (strcat_s(dest, args), ...);
-    return &dest[0];
-}
 
 // return pointer to ".ext"
 IC char*						strext					( const char* S )
@@ -214,42 +139,24 @@ IC u32							xr_strlen				( const char* S )
 IC char*						xr_strlwr				(char* S)
 {	return strlwr(S);				}
 
-#ifdef BREAK_AT_STRCMP
-XRCORE_API	int					xr_strcmp				( const char* S1, const char* S2 );
-#else
 IC int							xr_strcmp				( const char* S1, const char* S2 )
 {	return strcmp(S1,S2);  }
-#endif
 
 XRCORE_API char* xr_strdup( const char* string );
 
-XRCORE_API	char*				timestamp				(string64& dest);
+template<typename StrType, typename StrType2, typename... Args>
+inline char* xr_strconcat(StrType& dest, const StrType2& arg1, const Args&... args) {
+	static_assert(std::is_array_v<StrType>);
+	static_assert(std::is_same_v<std::remove_extent_t<StrType>, char>);
 
-extern XRCORE_API u32			crc32					(const void* P, u32 len);
+	strcpy_s(dest, arg1);
 
+	(strcat_s(dest, args), ...);
 
-//KRodin: Всё что ниже - взято из ЗП.
-IC int xr_strcpy(LPSTR destination, size_t const destination_size, LPCSTR source)
-{
-	return strncpy_s(destination, destination_size, source, destination_size);
+	return &dest[0];
 }
 
-inline int xr_sprintf	( char* destination, size_t const buffer_size, const char* format_string, ... )
-{
-	va_list args;
-	va_start					( args, format_string);
-	return						vsprintf_s( destination, buffer_size, format_string, args );
-}
-template <int count>
-IC int xr_strcpy(char(&destination)[count], LPCSTR source)
-{
-	return xr_strcpy(destination, count, source);
-}
-
-template <int count>
-inline int __cdecl xr_sprintf(char(&destination)[count], const char* format_string, ...)
-{
-	va_list args;
-	va_start(args, format_string);
-	return vsprintf_s(destination, count, format_string, args);
-}
+#define strconcat(unused_arg, ...) xr_strconcat(__VA_ARGS__)
+#define xr_strcpy strcpy_s
+#define xr_sprintf sprintf_s
+#define xr_strcat strcat_s

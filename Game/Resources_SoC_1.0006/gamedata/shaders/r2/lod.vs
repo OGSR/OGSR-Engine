@@ -15,10 +15,10 @@ struct vv
 struct vf
 {
 	float4 	hpos	: POSITION	;
-	float3	Pe	: TEXCOORD0	;
+	half3	Pe	: TEXCOORD0	;
  	float2 	tc0	: TEXCOORD1	;	// base0
  	float2 	tc1	: TEXCOORD2	;	// base1
-	float4 	af	: COLOR1	;	// alpha&factor
+	half4 	af	: COLOR1	;	// alpha&factor
 };
 
 #define L_SCALE (2.0h*1.55h)

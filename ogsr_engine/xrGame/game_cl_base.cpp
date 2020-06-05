@@ -61,10 +61,11 @@ void	game_cl_GameState::net_import_GameTime		(NET_Packet& P)
 	float			EnvironmentTimeFactor;
 	P.r_float		(EnvironmentTimeFactor);
 
-	u64 OldTime = Level().GetEnvironmentGameTime();
+	//u64 OldTime = Level().GetEnvironmentGameTime();
 	Level().SetEnvironmentGameTimeFactor	(GameEnvironmentTime,EnvironmentTimeFactor);
-	if (OldTime > GameEnvironmentTime)
-		GamePersistent().Environment().Invalidate(false);
+// KRodin: закомментировано из-за бага с резкой сменой погоды при кручении таймфактора.
+	//if (OldTime > GameEnvironmentTime)
+	//	GamePersistent().Environment().Invalidate(/*false*/);
 }
 
 void	game_cl_GameState::net_import_state	(NET_Packet& P)
@@ -350,10 +351,10 @@ void game_cl_GameState::set_type_name(LPCSTR s)
 { 
 	m_game_type_name		=s; 
 	if(OnClient()){
-		strcpy					(g_pGamePersistent->m_game_params.m_game_type, *m_game_type_name);
+		strcpy_s(g_pGamePersistent->m_game_params.m_game_type, *m_game_type_name);
 		g_pGamePersistent->OnGameStart();
 	}
-};
+}
 
 void game_cl_GameState::reset_ui() { //KRodin: Функция правильно работает именно в таком варианте! НЕ ИЗМЕНЯТЬ!
   auto h = smart_cast<CHUDManager*>( Level().pHUD );

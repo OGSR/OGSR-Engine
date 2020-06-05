@@ -62,8 +62,8 @@ void CActor::g_fireParams	(const CHudItem* pHudItem, Fvector &fire_pos, Fvector 
 {
 //	VERIFY			(inventory().ActiveItem());
 
-	fire_pos		= Cameras().Pos();
-	fire_dir		= Cameras().Dir();
+	fire_pos		= Cameras().Position();
+	fire_dir		= Cameras().Direction();
 
 	const CMissile	*pMissile = smart_cast <const CMissile*> (pHudItem);
 	if (pMissile)
@@ -92,17 +92,12 @@ BOOL CActor::g_State (SEntityState& state) const
 	return TRUE;
 }
 
-void CActor::SetWeaponHideState (u32 State, bool bSet)
+void CActor::SetWeaponHideState( u32 State, bool bSet, bool now )
 {
 	if (g_Alive() && this == Level().CurrentControlEntity())
-	{
-		NET_Packet	P;
-		u_EventGen	(P, GEG_PLAYER_WEAPON_HIDE_STATE, ID());
-		P.w_u32		(State);
-		P.w_u8		(u8(bSet));
-		u_EventSend	(P);
-	};
+		this->inventory().SetSlotsBlocked( State, bSet, now );
 }
+
 static	u16 BestWeaponSlots [] = {
 	SECOND_WEAPON_SLOT		,		// 2
 	FIRST_WEAPON_SLOT		,		// 1

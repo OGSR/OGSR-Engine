@@ -341,16 +341,39 @@ namespace luabind
 		};
 	}
 
-	template<typename F, typename... Policies>
-	scope def(const char* name, F f, const detail::policy_cons<Policies...> policies)
+
+	template <typename C, typename R, typename... A>
+	constexpr decltype(auto) cdecl_cast(const C& c, R(C::*f)(A...) const)
 	{
-		return scope(luabind_new<detail::function_commiter<F, Policies...>>(name, f, policies));
+		return static_cast<R(__cdecl*)(A...)>(c);
 	}
 
-	template<typename F>
-	scope def(const char* name, F f)
+	template<typename Function, typename... Policies>
+	scope def(const char* name, const Function f, const detail::policy_cons<Policies...> policies)
 	{
-		return scope(luabind_new<detail::function_commiter<F>>(name, f, detail::policy_cons<>()));
+		if constexpr (!std::is_function_v<std::remove_pointer_t<Function>>)
+		{
+			constexpr auto lambda_cast = cdecl_cast(f, &Function::operator());
+			return scope(luabind_new<detail::function_commiter<decltype(lambda_cast), Policies...>>(name, std::move(lambda_cast), policies));
+		}
+		else
+		{
+			return scope(luabind_new<detail::function_commiter<Function, Policies...>>(name, f, policies));
+		}
+	}
+
+	template <typename Function>
+	scope def(const char* name, const Function f)
+	{
+		if constexpr (!std::is_function_v<std::remove_pointer_t<Function>>)
+		{
+			constexpr auto lambda_cast = cdecl_cast(f, &Function::operator());
+			return scope(luabind_new<detail::function_commiter<decltype(lambda_cast)>>(name, std::move(lambda_cast), detail::policy_cons<>()));
+		}
+		else
+		{
+			return scope(luabind_new<detail::function_commiter<Function>>(name, f, detail::policy_cons<>()));
+		}
 	}
 
 } // namespace luabind

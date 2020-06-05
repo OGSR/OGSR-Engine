@@ -164,6 +164,8 @@ protected:
 	//только разных типов патронов
 	bool m_bLockType;
 
+	const char* m_str_count_tmpl;
+
 	// режим выделения рамкой противников
 protected:
 	bool					m_bVision;
@@ -204,6 +206,7 @@ protected:
 	virtual void	OnDrawUI();
 	virtual void	net_Relcase(CObject *object);
 
+  bool ScopeRespawn( PIItem );
 };
 
 #endif //__XR_WEAPON_MAG_H__

@@ -114,7 +114,7 @@ struct string_hash {
 	[[nodiscard]] decltype(auto) operator()(std::string_view txt)   const noexcept { return hash_type{}(txt); }
 	[[nodiscard]] decltype(auto) operator()(const std::string& txt) const noexcept { return hash_type{}(txt); }
 	[[nodiscard]] decltype(auto) operator()(const char* txt)        const noexcept { return hash_type{}(txt); }
-	[[nodiscard]] decltype(auto) operator()(const shared_str& txt)  const noexcept { return hash_type{}(txt.c_str()); }
+	[[nodiscard]] decltype(auto) operator()(const shared_str& txt)  const noexcept { return hash_type{}(txt.c_str() ? txt.c_str() : ""); }
 };
 
 template<typename Key, typename Value>

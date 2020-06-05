@@ -91,14 +91,14 @@ void CHudItemObject::net_Destroy		()
 	CInventoryItemObject::net_Destroy	();
 }
 
-bool CHudItemObject::Activate			()
+bool CHudItemObject::Activate( bool now )
 {
-	return						(CHudItem::Activate());
+  return CHudItem::Activate( now );
 }
 
-void CHudItemObject::Deactivate			()
+void CHudItemObject::Deactivate( bool now )
 {
-	CHudItem::Deactivate		();
+  CHudItem::Deactivate( now );
 }
 
 void CHudItemObject::UpdateCL			()

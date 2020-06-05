@@ -13,7 +13,7 @@
 #include "..\xr_3da\IGame_Persistent.h"
 #include "artifact.h"
 #include "ai_object_location.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "zone_effector.h"
 #include "breakableobject.h"
 #include "script_callback_ex.h"
@@ -88,6 +88,7 @@ void CCustomZone::Load(LPCSTR section)
 	m_fEffectiveRadius		= pSettings->r_float(section,			"effective_radius");
 	m_eHitTypeBlowout		= ALife::g_tfString2HitType(pSettings->r_string(section, "hit_type"));
 
+	m_zone_flags.set(eIgnoreAny,		READ_IF_EXISTS( pSettings, r_bool, section, "ignore_any", false ) );
 	m_zone_flags.set(eIgnoreNonAlive,	pSettings->r_bool(section,	"ignore_nonalive"));
 	m_zone_flags.set(eIgnoreSmall,		pSettings->r_bool(section,	"ignore_small"));
 	m_zone_flags.set(eIgnoreArtefact,	pSettings->r_bool(section,	"ignore_artefacts"));
@@ -248,6 +249,7 @@ void CCustomZone::Load(LPCSTR section)
 
 	//загрузить параметры световой вспышки от взрыва
 	m_zone_flags.set(eBlowoutLight, pSettings->r_bool (section, "blowout_light"));
+	m_zone_flags.set( eBlowoutLightShadow, READ_IF_EXISTS( pSettings, r_bool, section, "blowout_light_shadow", true ) );
 
 	if(m_zone_flags.test(eBlowoutLight) ){
 		sscanf(pSettings->r_string(section,"light_color"), "%f,%f,%f", &m_LightColor.r, &m_LightColor.g, &m_LightColor.b);
@@ -267,10 +269,10 @@ void CCustomZone::Load(LPCSTR section)
 		LPCSTR light_anim = pSettings->r_string(section,"idle_light_anim");
 		m_pIdleLAnim	 = LALib.FindItem(light_anim);
 		m_fIdleLightHeight = pSettings->r_float(section,"idle_light_height");
-		bIdleLightShadow = READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_shadow", true);
-		bIdleLightVolumetric = READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_volumetric", true);
+		m_zone_flags.set(eIdleLightVolumetric, READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_volumetric", false));
+		m_zone_flags.set(eIdleLightShadow,     READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_shadow", true));
+		m_zone_flags.set(eIdleLightR1,         READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_r1", false));
 	}
-
 
 	//загрузить параметры для разбрасывания артефактов
 	m_zone_flags.set(eSpawnBlowoutArtefacts,	pSettings->r_bool(section,"spawn_blowout_artefacts"));
@@ -348,11 +350,18 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
 	m_zone_flags.set			(eUseOnOffTime,	(m_TimeToDisable!=0)&&(m_TimeToEnable!=0) );
 
 	//добавить источники света
-	if ( m_zone_flags.test(eIdleLight) )
+	bool br1 = (0 == psDeviceFlags.test(rsR2 | rsR3 | rsR4));
+	bool render_ver_allowed = !br1 || (br1&&m_zone_flags.test(eIdleLightR1));
+	if (m_zone_flags.test(eIdleLight) && render_ver_allowed)
 	{
 		m_pIdleLight = ::Render->light_create();
-		m_pIdleLight->set_shadow(bIdleLightShadow);
-		m_pIdleLight->set_volumetric(bIdleLightVolumetric);
+		m_pIdleLight->set_shadow(!!m_zone_flags.test(eIdleLightShadow));
+
+		if (m_zone_flags.test(eIdleLightVolumetric))
+		{
+			//m_pIdleLight->set_type				(IRender_Light::SPOT);
+			m_pIdleLight->set_volumetric(true);
+		}
 	}
 	else
 		m_pIdleLight = NULL;
@@ -360,7 +369,7 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
 	if ( m_zone_flags.test(eBlowoutLight) ) 
 	{
 		m_pLight = ::Render->light_create();
-		m_pLight->set_shadow(true);
+		m_pLight->set_shadow( !!m_zone_flags.test( eBlowoutLightShadow ) );
 	}else
 		m_pLight = NULL;
 
@@ -561,8 +570,9 @@ void CCustomZone::shedule_Update(u32 dt)
 			}
 			if(m_iDisableIdleTime != -1 && (int)info.time_in_zone > m_iDisableIdleTime)
 			{
-				if(!pEntityAlive || !pEntityAlive->g_Alive())
-					StopObjectIdleParticles(smart_cast<CPhysicsShellHolder*>(pObject));
+				CPhysicsShellHolder* holder = smart_cast<CPhysicsShellHolder*>( pObject );
+				if ( ( !pEntityAlive || !pEntityAlive->g_Alive() ) && holder )
+					StopObjectIdleParticles( holder );
 			}
 
 			//если есть хотя бы один не дисабленый объект, то
@@ -626,7 +636,7 @@ void CCustomZone::feel_touch_new	(CObject* O)
 	else
 		object_info.small_object = false;
 
-	if((object_info.small_object && m_zone_flags.test(eIgnoreSmall)) ||
+	if ( m_zone_flags.test( eIgnoreAny ) || ( object_info.small_object && m_zone_flags.test( eIgnoreSmall ) ) ||
 		(object_info.nonalive_object && m_zone_flags.test(eIgnoreNonAlive)) || 
 		(pArtefact && m_zone_flags.test(eIgnoreArtefact)))
 		object_info.zone_ignore = true;
@@ -667,7 +677,7 @@ BOOL CCustomZone::feel_touch_contact(CObject* O)
 {
 	if (smart_cast<CCustomZone*>(O))				return FALSE;
 	if (smart_cast<CBreakableObject*>(O))			return FALSE;
-	if (0==smart_cast<CKinematics*>(O->Visual()))	return FALSE;
+	if (0==smart_cast<IKinematics*>(O->Visual()))	return FALSE;
 
 	if (O->ID() == ID())
 		return		(FALSE);

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "cat.h"
 #include "cat_state_manager.h"
-#include "../../../../xr_3da/skeletonanimated.h"
+#include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../monster_velocity_space.h"
 #include "../control_animation_base.h"
 #include "../control_movement_base.h"
@@ -92,7 +92,7 @@ void CCat::reinit()
 	inherited::reinit();
 
 	MotionID			def1, def2, def3;
-	CKinematicsAnimated	*pSkel = smart_cast<CKinematicsAnimated*>(Visual());
+	IKinematicsAnimated	*pSkel = smart_cast<IKinematicsAnimated*>(Visual());
 
 	def1 = pSkel->ID_Cycle_Safe("jump_attack_0");	VERIFY(def1);
 	def2 = pSkel->ID_Cycle_Safe("jump_attack_1");	VERIFY(def2);

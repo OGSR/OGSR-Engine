@@ -114,6 +114,7 @@ private:
 	float							m_disp_stand_crouch;
 	float							m_disp_stand_stand_zoom;
 	float							m_disp_stand_crouch_zoom;
+	bool m_fast_can_kill_entity;
 
 private:
 	float							m_power_fx_factor;
@@ -265,7 +266,8 @@ public:
 	virtual float						GetWeaponAccuracy		() const;
 	virtual bool						unlimited_ammo			();
 	virtual	void						spawn_supplies			();
-	IC		CAgentManager				&agent_manager			() const;
+	CAgentManager& agent_manager() const;
+	CAgentManager* get_agent_manager() const;
 	
 	virtual bool						human_being				() const
 	{
@@ -293,6 +295,7 @@ public:
 			float						pick_distance			();
 	IC		float						start_pick_distance		() const;
 			bool						fire_make_sense			();
+			bool can_fire_to_enemy( const CEntityAlive *enemy );
 			
 	virtual LPCSTR						Name					() const;
 	virtual BOOL						feel_touch_contact		(CObject* O);

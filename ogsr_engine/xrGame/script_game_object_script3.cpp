@@ -53,6 +53,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("path_completed",				&CScriptGameObject::path_completed)
 		.def("patrol_path_make_inactual",	&CScriptGameObject::patrol_path_make_inactual)
 		.def("enable_memory_object",		&CScriptGameObject::enable_memory_object)
+		.def( "remove_memory_object", &CScriptGameObject::remove_memory_object )
 		.def("active_sound_count",			(int (CScriptGameObject::*)())(&CScriptGameObject::active_sound_count))
 		.def("active_sound_count",			(int (CScriptGameObject::*)(bool))(&CScriptGameObject::active_sound_count))
 		.def( "best_cover",   ( const CCoverPoint* ( CScriptGameObject::* ) ( const Fvector&, const Fvector&, float, float, float ) ) ( &CScriptGameObject::best_cover ) )
@@ -165,6 +166,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("transfer_money",				&CScriptGameObject::TransferMoney)
 		.def("give_money",					&CScriptGameObject::GiveMoney)
 		.def("money",						&CScriptGameObject::Money)
+		.def("set_money",					&CScriptGameObject::SetMoney)
 
 		.def("switch_to_trade",				&CScriptGameObject::SwitchToTrade)
 		.def("switch_to_talk",				&CScriptGameObject::SwitchToTalk)

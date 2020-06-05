@@ -29,10 +29,10 @@
 #include "map_manager.h"
 #include "map_location.h"
 #include "phworld.h"
-#include "../xr_3da/r2_shader_exports.h"
-#include "../xr_3da/xr_collide_defs.h"
+#include "../xrcdb/xr_collide_defs.h"
 #include "script_rq_result.h"
 #include "monster_community.h"
+#include "GamePersistent.h"
 
 using namespace luabind;
 
@@ -95,10 +95,27 @@ LPCSTR get_weather	()
 	return			(*g_pGamePersistent->Environment().GetWeather());
 }
 
-void set_weather	(LPCSTR weather_name, bool /*forced*/)
+LPCSTR get_weather_prev	()
 {
-	//KRodin: погоду теперь всегда надо обновлять форсировано, иначе она почему-то не обновляется.
-	return			(g_pGamePersistent->Environment().SetWeather(weather_name, true /*forced*/));
+	return			(*g_pGamePersistent->Environment().GetPrevWeather());
+}
+
+u32 get_weather_last_shift	()
+{
+	return			g_pGamePersistent->Environment().GetWeatherLastShift();
+}
+
+void set_weather	(LPCSTR weather_name, bool forced)
+{
+	//KRodin: ТЧ погоду всегда надо обновлять форсировано, иначе она почему-то не всегда корректно обновляется. А для ЗП погоды так делать нельзя - будут очень резкие переходы!
+#ifndef USE_COP_WEATHER_CONFIGS
+	forced = true;
+#endif
+	g_pGamePersistent->Environment().SetWeather(weather_name, forced);
+}
+
+void set_weather_next( LPCSTR weather_name ) {
+  g_pGamePersistent->Environment().SetWeatherNext( weather_name );
 }
 
 bool set_weather_fx	(LPCSTR weather_name)
@@ -106,9 +123,24 @@ bool set_weather_fx	(LPCSTR weather_name)
 	return			(g_pGamePersistent->Environment().SetWeatherFX(weather_name));
 }
 
+bool start_weather_fx_from_time(LPCSTR weather_name, float time)
+{
+	return			(g_pGamePersistent->Environment().StartWeatherFXFromTime(weather_name, time));
+}
+
 bool is_wfx_playing	()
 {
 	return			(g_pGamePersistent->Environment().IsWFXPlaying());
+}
+
+float get_wfx_time()
+{
+	return			(g_pGamePersistent->Environment().wfx_time);
+}
+
+void stop_weather_fx()
+{
+	g_pGamePersistent->Environment().StopWFX();
 }
 
 void set_time_factor(float time_factor)
@@ -117,6 +149,7 @@ void set_time_factor(float time_factor)
 		return;
 
 	Level().Server->game->SetGameTimeFactor(time_factor);
+	GamePersistent().Environment().SetGameTime( Level().GetEnvironmentGameDayTimeSec(), Level().game->GetEnvironmentGameTimeFactor() );
 }
 
 float get_time_factor()
@@ -138,21 +171,21 @@ ESingleGameDifficulty get_game_difficulty()
 u32 get_time_days()
 {
 	u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
-	split_time(Level().GetGameTime(), year, month, day, hours, mins, secs, milisecs);
+	split_time((g_pGameLevel && Level().game) ? Level().GetGameTime() : ai().alife().time_manager().game_time(), year, month, day, hours, mins, secs, milisecs);
 	return			day;
 }
 
 u32 get_time_hours()
 {
 	u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
-	split_time(Level().GetGameTime(), year, month, day, hours, mins, secs, milisecs);
+	split_time((g_pGameLevel && Level().game) ? Level().GetGameTime() : ai().alife().time_manager().game_time(), year, month, day, hours, mins, secs, milisecs);
 	return			hours;
 }
 
 u32 get_time_minutes()
 {
 	u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
-	split_time(Level().GetGameTime(), year, month, day, hours, mins, secs, milisecs);
+	split_time((g_pGameLevel && Level().game) ? Level().GetGameTime() : ai().alife().time_manager().game_time(), year, month, day, hours, mins, secs, milisecs);
 	return			mins;
 }
 
@@ -165,7 +198,7 @@ float cover_in_direction(u32 level_vertex_id, const Fvector &direction)
 
 float rain_factor()
 {
-	return			(g_pGamePersistent->Environment().CurrentEnv.rain_density);
+	return g_pGamePersistent->Environment().CurrentEnv->rain_density;
 }
 
 u32	vertex_in_direction(u32 level_vertex_id, Fvector direction, float max_distance)
@@ -465,15 +498,17 @@ CPHWorld* physics_world()
 {
 	return	ph_world;
 }
-CEnvironment *environment()
+CEnvironment* environment()
 {
-	return		(g_pGamePersistent->pEnvironment);
+	return g_pGamePersistent->pEnvironment;
 }
 
-CEnvDescriptor *current_environment(CEnvironment *self)
+CEnvDescriptor* current_environment(CEnvironment* self)
 {
-	return		(&self->CurrentEnv);
+	return self->CurrentEnv;
 }
+
+
 extern bool g_bDisableAllInput;
 void disable_input()
 {
@@ -677,22 +712,6 @@ void set_ignore_game_state_update()
 	Game().m_need_to_update = false;
 }
 
-void SetEnvDescData(LPCSTR section_1, LPCSTR section_2, float exec_time_1, float exec_time_2)
-{
-	// в общем, какой тут смысл. Скрипт берет на себя все, кроме установки текущей погоды.
-	// устанавливается погода двумя дескрипторами, соответственно, чтоб не тащить за собой кучу всего, 
-	// единомоментно загружен минимум погодных дескрипторов. Остальные подгружаются по необходимости.
-	CEnvironment &env = g_pGamePersistent->Environment(); 
-														  
-	env.SetWeather("ogse_script_weather", true);
-
-	CEnvDescriptor *env_desc0 = (*env.CurrentWeather)[0];
-	env_desc0->load(exec_time_1, section_1, &env);
-	CEnvDescriptor *env_desc1 = (*env.CurrentWeather)[1];
-	env_desc1->load(exec_time_2, section_2, &env);
-
-	env.ForceReselectEnvs();
-}
 
 void g_set_artefact_position(const u32 i, const float x, const float y, const float z)
 {
@@ -702,16 +721,17 @@ void g_set_artefact_position(const u32 i, const float x, const float y, const fl
 	if (fis_zero(pos.x) && fis_zero(pos.y) && fis_zero(pos.z))
 	{
 		Fvector2 res;
-		shader_exports->set_artefact_position(i, res.set(0.f, 0.f));
+		shader_exports.set_artefact_position(i, res.set(0.f, 0.f));
 	}
 	else
 	{
 		Device.mView.transform_tiny(pos);
 		Fvector2 res;
-		shader_exports->set_artefact_position(i, res.set(pos.x, pos.z));
+		shader_exports.set_artefact_position(i, res.set(pos.x, pos.z));
 	}
 
 }
+
 void g_set_anomaly_position(const u32 i, const float x, const float y, const float z)
 {
 	Fvector pos;
@@ -720,28 +740,30 @@ void g_set_anomaly_position(const u32 i, const float x, const float y, const flo
 	if (fis_zero(pos.x) && fis_zero(pos.y) && fis_zero(pos.z))
 	{
 		Fvector2 res;
-		shader_exports->set_anomaly_position(i, res.set(0.f, 0.f));
+		shader_exports.set_anomaly_position(i, res.set(0.f, 0.f));
 	}
 	else
 	{
 		Device.mView.transform_tiny(pos);
 		Fvector2 res;
-		shader_exports->set_anomaly_position(i, res.set(pos.x, pos.z));
+		shader_exports.set_anomaly_position(i, res.set(pos.x, pos.z));
 	}
 }
+
 void g_set_detector_params(int _one, int _two)
 {
-	shader_exports->set_detector_params(Ivector2().set(_one, _two));
+	shader_exports.set_detector_params(Ivector2().set(_one, _two));
 }
+
 
 #include "game_sv_single.h"
 void AdvanceGameTime(u32 _ms)
 {
-	game_sv_Single			*game = smart_cast<game_sv_Single*>(Level().Server->game);
-	R_ASSERT(game);
+	auto game = smart_cast<game_sv_Single*>(Level().Server->game);
 	game->alife().time_manager().advance_game_time(_ms);
 
 	Level().game->SetGameTimeFactor(ai().get_alife() ? ai().alife().time().game_time() : Level().GetGameTime(), Level().game->GetGameTimeFactor());
+	GamePersistent().Environment().SetGameTime( Level().GetEnvironmentGameDayTimeSec(), Level().game->GetEnvironmentGameTimeFactor() );
 }
 
 //
@@ -771,6 +793,10 @@ u32 vertex_id(const Fvector &vec)
 
 u32 vertex_id( u32 node, const Fvector &vec ) {
  return ai().level_graph().vertex( node, vec );
+}
+
+u32 nearest_vertex_id( const Fvector &vec ) {
+ return ai().level_graph().vertex( vec );
 }
 
 void update_inventory_window() {
@@ -932,6 +958,12 @@ void iterate_vertices_border( Fvector P, float R, const luabind::functor<void>& 
   );
 }
 
+int get_character_community_team( LPCSTR comm ) {
+  CHARACTER_COMMUNITY community;
+  community.set( comm );
+  return community.team();
+}
+
 
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
@@ -943,13 +975,17 @@ void CLevel::script_register(lua_State *L)
           .def_readwrite( "fog_distance", &CEnvDescriptor::fog_distance )
           .def_readwrite( "far_plane",   &CEnvDescriptor::far_plane)
           .def_readwrite( "sun_dir",     &CEnvDescriptor::sun_dir )
-          .def( "load",	           ( void( CEnvDescriptor::* ) ( float, LPCSTR, CEnvironment* ) ) &CEnvDescriptor::load )
+#ifndef USE_COP_WEATHER_CONFIGS
+          .def("load", (void(CEnvDescriptor::*) (float, LPCSTR, CEnvironment&)) &CEnvDescriptor::load)
+#endif
           .def( "set_env_ambient", &CEnvDescriptor::setEnvAmbient ),
-
 	class_<CEnvironment>( "CEnvironment" )
           .def( "current",           current_environment )
+#ifndef USE_COP_WEATHER_CONFIGS
           .def( "ForceReselectEnvs", &CEnvironment::ForceReselectEnvs )
-          .def( "getCurrentWeather", &CEnvironment::getCurrentWeather ),
+          .def( "getCurrentWeather", &CEnvironment::getCurrentWeather )
+#endif
+	,
 
 	class_<CPHCall>( "CPHCall" )
           .def( "set_pause", &CPHCall::setPause )
@@ -958,68 +994,73 @@ void CLevel::script_register(lua_State *L)
 	module(L,"level")
 	[
 		// obsolete\deprecated
-		def("object_by_id",						get_object_by_id),
-		def("is_removing_objects",				is_removing_objects_script),
+		def("object_by_id",						&get_object_by_id),
+		def("is_removing_objects",				&is_removing_objects_script),
 #ifdef DEBUG
-		def("debug_object",						get_object_by_name),
-		def("debug_actor",						tpfGetActor),
-		def("check_object",						check_object),
+		def("debug_object",						&get_object_by_name),
+		def("debug_actor",						&tpfGetActor),
+		def("check_object",						&check_object),
 #endif
 		
-		def("get_weather",						get_weather),
-		def("set_weather",						set_weather),
-		def("set_weather_fx",					set_weather_fx),
-		def("is_wfx_playing",					is_wfx_playing),
-
-		def("environment",						environment),
+		def("get_weather",						&get_weather),
+		def("get_weather_prev",						&get_weather_prev),
+		def("get_weather_last_shift",					&get_weather_last_shift),
+		def("set_weather",						&set_weather),
+		def("set_weather_next",						&set_weather_next),
+		def("set_weather_fx",					&set_weather_fx),
+		def("start_weather_fx_from_time", &start_weather_fx_from_time),
+		def("is_wfx_playing", &is_wfx_playing),
+		def("get_wfx_time", &get_wfx_time),
+		def("stop_weather_fx", &stop_weather_fx),
+		def("environment",						&environment),
 		
-		def("set_time_factor",					set_time_factor),
-		def("get_time_factor",					get_time_factor),
+		def("set_time_factor",					&set_time_factor),
+		def("get_time_factor",					&get_time_factor),
 
-		def("set_game_difficulty",				set_game_difficulty),
-		def("get_game_difficulty",				get_game_difficulty),
+		def("set_game_difficulty",				&set_game_difficulty),
+		def("get_game_difficulty",				&get_game_difficulty),
 		
-		def("get_time_days",					get_time_days),
-		def("get_time_hours",					get_time_hours),
-		def("get_time_minutes",					get_time_minutes),
+		def("get_time_days",					&get_time_days),
+		def("get_time_hours",					&get_time_hours),
+		def("get_time_minutes",					&get_time_minutes),
 
-		def("cover_in_direction",				cover_in_direction),
-		def("vertex_in_direction",				vertex_in_direction),
-		def("rain_factor",						rain_factor),
-		def("patrol_path_exists",				patrol_path_exists),
-		def("vertex_position",					vertex_position),
-		def("name",								get_name),
-		def("prefetch_sound",					prefetch_sound),
+		def("cover_in_direction",				&cover_in_direction),
+		def("vertex_in_direction",				&vertex_in_direction),
+		def("rain_factor",						&rain_factor),
+		def("patrol_path_exists",				&patrol_path_exists),
+		def("vertex_position",					&vertex_position),
+		def("name",								&get_name),
+		def("prefetch_sound",					&prefetch_sound),
 
-		def("client_spawn_manager",				get_client_spawn_manager),
+		def("client_spawn_manager",				&get_client_spawn_manager),
 
-		def("map_add_object_spot_ser",			map_add_object_spot_ser),
-		def("map_add_object_spot",				map_add_object_spot),
-		def("map_remove_object_spot",			map_remove_object_spot),
-		def("map_has_object_spot",				map_has_object_spot),
-		def("map_change_spot_hint",				map_change_spot_hint),
+		def("map_add_object_spot_ser",			&map_add_object_spot_ser),
+		def("map_add_object_spot",				&map_add_object_spot),
+		def("map_remove_object_spot",			&map_remove_object_spot),
+		def("map_has_object_spot",				&map_has_object_spot),
+		def("map_change_spot_hint",				&map_change_spot_hint),
 
-		def("start_stop_menu",					start_stop_menu),
-		def("add_dialog_to_render",				add_dialog_to_render),
-		def("remove_dialog_to_render",			remove_dialog_to_render),
-		def("main_input_receiver",				main_input_receiver),
-		def("hide_indicators",					hide_indicators),
-		def("show_indicators",					show_indicators),
-		def("game_indicators_shown",			game_indicators_shown),
-		def("get_hud_flags",					get_hud_flags),
+		def("start_stop_menu",					&start_stop_menu),
+		def("add_dialog_to_render",				&add_dialog_to_render),
+		def("remove_dialog_to_render",			&remove_dialog_to_render),
+		def("main_input_receiver",				&main_input_receiver),
+		def("hide_indicators",					&hide_indicators),
+		def("show_indicators",					&show_indicators),
+		def("game_indicators_shown",			&game_indicators_shown),
+		def("get_hud_flags",					&get_hud_flags),
 		def("add_call",							((CPHCall* (*) (const luabind::functor<bool> &,const luabind::functor<void> &)) &add_call)),
 		def("add_call",							((CPHCall* (*) (const luabind::object &,const luabind::functor<bool> &,const luabind::functor<void> &)) &add_call)),
 		def("add_call",							((CPHCall* (*) (const luabind::object &, LPCSTR, LPCSTR)) &add_call)),
 		def("remove_call",						((void (*) (const luabind::functor<bool> &,const luabind::functor<void> &)) &remove_call)),
 		def("remove_call",						((void (*) (const luabind::object &,const luabind::functor<bool> &,const luabind::functor<void> &)) &remove_call)),
 		def("remove_call",						((void (*) (const luabind::object &, LPCSTR, LPCSTR)) &remove_call)),
-		def("remove_calls_for_object",			remove_calls_for_object),
-		def("present",							is_level_present),
-		def("disable_input",					disable_input),
-		def("enable_input",						enable_input),
-		def("spawn_phantom",					spawn_phantom),
+		def("remove_calls_for_object",			&remove_calls_for_object),
+		def("present",							&is_level_present),
+		def("disable_input",					&disable_input),
+		def("enable_input",						&enable_input),
+		def("spawn_phantom",					&spawn_phantom),
 
-		def("get_bounding_volume",				get_bounding_volume),
+		def("get_bounding_volume",				&get_bounding_volume),
 
 		def("iterate_sounds",					&iterate_sounds1),
 		def("iterate_sounds",					&iterate_sounds2),
@@ -1054,6 +1095,7 @@ void CLevel::script_register(lua_State *L)
 		// Real Wolf 07.07.2014
 		def( "vertex_id", ( ( u32(*) ( const Fvector& ) ) &vertex_id ) ),
 		def( "vertex_id", ( ( u32(*) ( u32, const Fvector& ) ) &vertex_id ) ),
+		def( "nearest_vertex_id", &nearest_vertex_id ),
 
 		def("advance_game_time",				&AdvanceGameTime),
 		
@@ -1071,13 +1113,14 @@ void CLevel::script_register(lua_State *L)
 		def( "set_monster_relation", &set_monster_relation ),
 		def( "patrol_path_add", &patrol_path_add ),
 		def( "patrol_path_remove", &patrol_path_remove ),
-		def( "valid_vertex_id",	valid_vertex_id ),
-		def( "vertex_count",	vertex_count ),
-		def( "disable_vertex",	disable_vertex ),
-		def( "enable_vertex",	enable_vertex ),
+		def( "valid_vertex_id",	&valid_vertex_id ),
+		def( "vertex_count",	&vertex_count ),
+		def( "disable_vertex",	&disable_vertex ),
+		def( "enable_vertex",	&enable_vertex ),
 		def( "is_accessible_vertex_id", &is_accessible_vertex_id ),
 		def( "iterate_vertices_inside", &iterate_vertices_inside ),
 		def( "iterate_vertices_border", &iterate_vertices_border ),
+		def( "get_character_community_team", &get_character_community_team ),
 		//--#SM+# Begin --
 		def("set_blender_mode_main", &set_blender_mode_main),
 		def("get_blender_mode_main", &get_blender_mode_main),
@@ -1118,7 +1161,6 @@ void CLevel::script_register(lua_State *L)
 			def("set_artefact_slot", &g_set_artefact_position),
 			def("set_anomaly_slot", &g_set_anomaly_position),
 			def("set_detector_mode", &g_set_detector_params),
-			def("SetEnvDescData", &SetEnvDescData),
 			def("update_inventory_window", &update_inventory_window),
 			def("update_inventory_weight", &update_inventory_weight),
 

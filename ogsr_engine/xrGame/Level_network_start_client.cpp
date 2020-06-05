@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "..\xr_3da\resourcemanager.h"
 #include "HUDmanager.h"
 #include "PHdynamicdata.h"
 #include "Physics.h"
@@ -8,6 +7,7 @@
 #include "..\xr_3da\igame_persistent.h"
 #include "PhysicsGamePars.h"
 #include "ai_space.h"
+#include "Actor_Flags.h"
 
 extern	pureFrame*				g_pNetProcessor;
 
@@ -21,9 +21,9 @@ bool	CLevel::net_start_client1				()
 	pApp->LoadBegin	();
 	// name_of_server
 	string64					name_of_server = "";
-//	strcpy						(name_of_server,*m_caClientOptions);
+//	strcpy_s(name_of_server,*m_caClientOptions);
 	if (strchr(*m_caClientOptions, '/'))
-		strncpy(name_of_server,*m_caClientOptions, strchr(*m_caClientOptions, '/')-*m_caClientOptions);
+		strncpy_s(name_of_server,*m_caClientOptions, strchr(*m_caClientOptions, '/')-*m_caClientOptions);
 
 	if (strchr(name_of_server,'/'))	*strchr(name_of_server,'/') = 0;
 
@@ -108,8 +108,8 @@ bool	CLevel::net_start_client5				()
 		// Textures
 			pHUD->Load							();
 			g_pGamePersistent->LoadTitle				("st_loading_textures");
-			Device.Resources->DeferredLoad		(FALSE);
-			Device.Resources->DeferredUpload	();
+			Device.m_pRender->DeferredLoad(FALSE);
+			Device.m_pRender->ResourcesDeferredUpload();
 			LL_CheckTextures					();
 	}
 	return true;
@@ -122,9 +122,10 @@ bool	CLevel::net_start_client6				()
 		if(g_hud)
 			g_hud->OnConnected				();
 
-
+		if (!psActorFlags.test(AF_KEYPRESS_ON_START))
+			pApp->LoadForceFinish();
 		g_pGamePersistent->LoadTitle		("st_client_synchronising");
-		Device.PreCache						(30);
+		Device.PreCache(60, true, true);
 		net_start_result_total				= TRUE;
 	}else{
 		net_start_result_total				= FALSE;

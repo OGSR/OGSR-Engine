@@ -19,7 +19,7 @@
 #include "level.h"
 #include "level_bullet_manager.h"
 #include "xrmessages.h"
-#include "gamemtllib.h"
+#include "../xr_3da/gamemtllib.h"
 #include "clsid_game.h"
 #ifdef DEBUG
 #include "../xr_3da/StatGraph.h"
@@ -31,6 +31,8 @@
 #include "PHActivationShape.h"
 #include "game_base_space.h"
 #include "profiler.h"
+#include "..\Include/xrRender/Kinematics.h"
+
 #define EFFECTOR_RADIUS 30.f
 const u16	TEST_RAYS_PER_OBJECT=5;
 const u16	BLASTED_OBJ_PROCESSED_PER_FRAME=3;
@@ -95,6 +97,10 @@ void CExplosive::Load(CInifile *ini,LPCSTR section)
 	m_fBlastHitImpulse	= ini->r_float(section,"blast_impulse");
 
 	m_iFragsNum			= ini->r_s32(section,"frags");
+	// KRodin: в оригинале осколки летели только в верхнюю полусверу после взрыва объекта.
+	// Здесь это поправлено, поэтому число осколков удвоено. Раньше допустим 50 летело только вверх, а теперь будет 50 вверх и 50 вниз, иначе многие гранаты из-за этого могли бы потерять в убойности.
+	m_iFragsNum *= 2;
+
 	m_fFragsRadius		= ini->r_float(section,"frags_r");
 	m_fFragHit			= ini->r_float(section,"frag_hit");
 	m_fFragHitImpulse	= ini->r_float(section,"frag_hit_impulse");
@@ -180,8 +186,8 @@ ICF static BOOL grenade_hit_callback(collide::rq_result& result, LPVOID params)
 	SExpQParams& ep	= *(SExpQParams*)params;
 	u16 mtl_idx			= GAMEMTL_NONE_IDX;
 	if(result.O){
-		CKinematics* V  = 0;
-		if (0!=(V=smart_cast<CKinematics*>(result.O->Visual()))){
+		IKinematics* V  = 0;
+		if (0!=(V=smart_cast<IKinematics*>(result.O->Visual()))){
 			CBoneData& B= V->LL_GetData((u16)result.element);
 			mtl_idx		= B.game_mtl_idx;
 		}
@@ -363,10 +369,8 @@ void CExplosive::Explode()
 	else SendHits = false;
 
 
-	Fvector frag_coneaxis;
-	frag_coneaxis.set( 0, 1.f, 0 );
 	for(int i = 0; i < m_iFragsNum; ++i){
-		frag_dir.random_dir( frag_coneaxis, PI_DIV_2 );
+		frag_dir.random_dir();
 		frag_dir.normalize	();
 		
 		CCartridge cartridge;

@@ -12,8 +12,6 @@
 #include "UIPdaMsgListItem.h"
 #include "UILines.h"
 
-#pragma optimize("", off) //KRodin: добавлено специально, не убирать!
-
 const char * const	CHAT_LOG_ITEMS_ANIMATION	= "ui_main_msgs_short";
 
 CUIGameLog::CUIGameLog()
@@ -94,6 +92,9 @@ void CUIGameLog::Update()
 		RecalcSize			();
 
 	toDelList.clear();
+/* dsh: не могу понять, для чего это нужно. Но из-за этого, в
+   некоторых случаях, не показываются некоторые сообщения.
+
 	Frect visible_rect;
 	GetAbsoluteRect(visible_rect);
 	for(	WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); 
@@ -118,4 +119,5 @@ void CUIGameLog::Update()
 
 	if(m_flags.test	(eNeedRecalc) )
 		RecalcSize			();
+*/
 }

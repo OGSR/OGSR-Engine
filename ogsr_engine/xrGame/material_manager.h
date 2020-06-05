@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "gamemtllib.h"
+#include "../xr_3da/gamemtllib.h"
 
 class CPHMovementControl;
 

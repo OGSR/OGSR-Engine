@@ -438,16 +438,43 @@ bool CUIXmlInit::InitDragDropListEx(CUIXml& xml_doc, const char* path, int index
 
 	int tmp					= xml_doc.ReadAttribInt(path, index, "unlimited", 0);
 	pWnd->SetAutoGrow		(tmp!=0);
+
 	tmp						= xml_doc.ReadAttribInt(path, index, "group_similar", 0);
 	pWnd->SetGrouping		(tmp!=0);
+
 	tmp						= xml_doc.ReadAttribInt(path, index, "custom_placement", 1);
 	pWnd->SetCustomPlacement(tmp!=0);
+
 	tmp						= xml_doc.ReadAttribInt(path, index, "vertical_placement", 0);
 	pWnd->SetVerticalPlacement(tmp != 0);
+
 	tmp						= xml_doc.ReadAttribInt(path, index, "show_grid", 1);
 	pWnd->SetDrawGrid		(tmp != 0);
+
+	tmp						= xml_doc.ReadAttribInt(path, index, "always_show_scroll", 0);
+	pWnd->SetAlwaysShowScroll(tmp!=0);
+
 	tmp 					= xml_doc.ReadAttribInt(path, index, "condition_progress_bar", 0);
 	pWnd->SetConditionProgBarVisibility(tmp!=0);	
+
+	tmp						= xml_doc.ReadAttribInt(path, index, "virtual_cells", 0);
+	pWnd->SetVirtualCells(tmp!=0);
+
+	if(tmp!=0)
+	{
+		xr_string vc_vert_align = xml_doc.ReadAttrib(path, index, "vc_vert_align", "");
+		pWnd->SetCellsVertAlignment(vc_vert_align);
+		xr_string vc_horiz_align = xml_doc.ReadAttrib(path, index, "vc_horiz_align", "");
+		pWnd->SetCellsHorizAlignment(vc_horiz_align);
+	}
+
+	tmp = xml_doc.ReadAttribInt( path, index, "highlight_cell_sp", 1 );
+	pWnd->SetHighlightCellSp( tmp != 0 );
+
+	tmp = xml_doc.ReadAttribInt( path, index, "highlight_all_cells", 0 );
+	pWnd->SetHighlightAllCells( tmp != 0 );
+
+	pWnd->back_color		= GetColor( xml_doc, path, index, 0xFFFFFFFF );
 
 	if (xr_strlen(path))
 		pWnd->SetWindowName (path, TRUE);
@@ -518,56 +545,95 @@ bool CUIXmlInit::InitProgressBar(CUIXml& xml_doc, LPCSTR path,
 	R_ASSERT3(xml_doc.NavigateToNode(path,index), "XML node not found", path);
 
 	string256 buf;
-	
-	float x = xml_doc.ReadAttribFlt(path, index, "x");
-	float y = xml_doc.ReadAttribFlt(path, index, "y");
+	Fvector2 pos, size;
+	pos.x = xml_doc.ReadAttribFlt(path, index, "x");
+	pos.y = xml_doc.ReadAttribFlt(path, index, "y");
 
-	InitAlignment(xml_doc, path, index, x, y, pWnd);
+	InitAlignment(xml_doc, path, index, pos.x, pos.y, pWnd);
 
-	float width = xml_doc.ReadAttribFlt(path, index, "width");
-	float height = xml_doc.ReadAttribFlt(path, index, "height");
-	bool is_horizontal = (xml_doc.ReadAttribInt(path, index, "horz")==1);
+	size.x = xml_doc.ReadAttribFlt(path, index, "width");
+	size.y = xml_doc.ReadAttribFlt(path, index, "height");
 
-	pWnd->Init(x, y, width, height, is_horizontal);
+	CUIProgressBar::EOrientMode mode = CUIProgressBar::om_vert;
+	int mode_horz = xml_doc.ReadAttribInt(path, index, "horz", 0);
+	LPCSTR mode_str = xml_doc.ReadAttrib(path, index, "mode");
+	if (mode_horz == 1) // om_horz
+	{
+		mode = CUIProgressBar::om_horz;
+	}
+	else if (stricmp(mode_str, "horz") == 0)
+	{
+		mode = CUIProgressBar::om_horz;
+	}
+	else if (stricmp(mode_str, "vert") == 0)
+	{
+		mode = CUIProgressBar::om_vert;
+	}
+	else if (stricmp(mode_str, "back") == 0)
+	{
+		mode = CUIProgressBar::om_back;
+	}
+	else if (stricmp(mode_str, "down") == 0)
+	{
+		mode = CUIProgressBar::om_down;
+	}
+	else if (stricmp(mode_str, "from_center") == 0)
+	{
+		mode = CUIProgressBar::om_fromcenter;
+	}
+	else if (stricmp(mode_str, "vert_from_center") == 0)
+	{
+		mode = CUIProgressBar::om_vfromcenter;
+	}
+
+	pWnd->InitProgressBar(pos, size, mode);
 
 	float min = xml_doc.ReadAttribFlt(path, index, "min");
 	float max = xml_doc.ReadAttribFlt(path, index, "max");
-	float pos = xml_doc.ReadAttribFlt(path, index, "pos");
-	
-	pWnd->SetRange			(min, max);
-	pWnd->SetProgressPos	(pos);
-	pWnd->m_inertion		= xml_doc.ReadAttribFlt(path, index, "inertion", 0.0f);
+	float ppos = xml_doc.ReadAttribFlt(path, index, "pos");
+
+	pWnd->SetRange(min, max);
+	pWnd->SetProgressPos(ppos);
+	pWnd->m_inertion = xml_doc.ReadAttribFlt(path, index, "inertion", 0.0f);
+	pWnd->m_animated = !!xml_doc.ReadAttribInt( path, index, "animated", pWnd->m_animated ? 1 : 0 );
+
 	// progress
-	strconcat(sizeof(buf),buf,path,":progress");
+	strconcat(sizeof(buf), buf, path, ":progress");
 
 	if (!xml_doc.NavigateToNode(buf, index))
 		return false;
 
-	InitStatic								(xml_doc, buf, index, &pWnd->m_UIProgressItem);
-	
-	pWnd->m_UIProgressItem.SetWndSize		(pWnd->GetWndSize());
-	
+	InitStatic(xml_doc, buf, index, &pWnd->m_UIProgressItem);
+
+	pWnd->m_UIProgressItem.SetWndSize(pWnd->GetWndSize());
+
 	// background
-	strconcat								(sizeof(buf),buf,path,":background");
-	
+	strconcat(sizeof(buf), buf, path, ":background");
+
 	if (xml_doc.NavigateToNode(buf, index))
 	{
-        InitStatic							(xml_doc, buf, index, &pWnd->m_UIBackgroundItem);
-		pWnd->m_bBackgroundPresent			= true;
+		InitStatic(xml_doc, buf, index, &pWnd->m_UIBackgroundItem);
+		pWnd->m_bBackgroundPresent = true;
 		pWnd->m_UIBackgroundItem.SetWndSize(pWnd->GetWndSize());
 	}
 
-	strconcat(sizeof(buf),buf,path,":min_color");
-	
-	if( xml_doc.NavigateToNode(buf,index) ){
-		pWnd->m_bUseColor			= true;
-	
-		u32 color = GetColor	(xml_doc, buf, index, 0xff);
+	strconcat(sizeof(buf), buf, path, ":min_color");
+
+	if (xml_doc.NavigateToNode(buf, index))
+	{
+		pWnd->m_bUseColor = true;
+
+		u32 color = GetColor(xml_doc, buf, index, 0xff);
 		pWnd->m_minColor.set(color);
 
-		strconcat(sizeof(buf),buf,path,":max_color");
-	
-		color = GetColor	(xml_doc, buf, index, 0xff);
+		strconcat(sizeof(buf), buf, path, ":middle_color");
+
+		color = GetColor(xml_doc, buf, index, 0xff);
+		pWnd->m_middleColor.set(color);
+
+		strconcat(sizeof(buf), buf, path, ":max_color");
+
+		color = GetColor(xml_doc, buf, index, 0xff);
 		pWnd->m_maxColor.set(color);
 	}
 
@@ -1023,7 +1089,7 @@ bool CUIXmlInit::InitTexture(CUIXml& xml_doc, const char* path, int index, IUISi
 bool CUIXmlInit::InitTextureOffset(CUIXml &xml_doc, LPCSTR path, int index, CUIStatic* pWnd){
     string256 textureOffset;
 	if (0 == xr_strcmp(path, ""))
-		strcpy(textureOffset, "texture_offset");
+		strcpy_s(textureOffset, "texture_offset");
 	else
 		strconcat(sizeof(textureOffset),textureOffset, path, ":texture_offset");
 

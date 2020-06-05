@@ -6,7 +6,7 @@
 #include "PHCapture.h"
 #include "Entity.h"
 #include "inventory_item.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "Actor.h"
 #include "Inventory.h"
 #include "ai/stalker/ai_stalker.h"
@@ -58,7 +58,7 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 		return;
 	}
 
-	CKinematics* p_kinematics=smart_cast<CKinematics*>(capturer_object->Visual());
+	IKinematics* p_kinematics=smart_cast<IKinematics*>(capturer_object->Visual());
 
 	if(!p_kinematics)
 	{
@@ -151,7 +151,7 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 		return;
 	}
 
-	CKinematics* p_kinematics=smart_cast<CKinematics*>(capturer_object->Visual());
+	IKinematics* p_kinematics=smart_cast<IKinematics*>(capturer_object->Visual());
 
 	if(!p_kinematics)
 	{
@@ -201,7 +201,7 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 		
 
 
-	IRender_Visual* V=m_taget_object->Visual();
+	IRenderVisual* V=m_taget_object->Visual();
 
 	if(!V)
 	{
@@ -210,7 +210,7 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 		return;
 	}
 
-	CKinematics* K=	smart_cast<CKinematics*>(V);
+	IKinematics* K=	smart_cast<IKinematics*>(V);
 
 	if(!K)
 	{
@@ -221,14 +221,14 @@ CPHCapture::CPHCapture( CPHCharacter* a_character, CPhysicsShellHolder* a_taget_
 
 	CBoneInstance& tag_bone=K->LL_GetBoneInstance(a_taget_element);
 
-	if(!tag_bone.Callback_Param)
+	if(!tag_bone.callback_param())
 	{
 		m_taget_object=NULL;
 		b_failed=true;
 		return;
 	}
 
-	m_taget_element					=(CPhysicsElement*)tag_bone.Callback_Param;
+	m_taget_element					=(CPhysicsElement*)tag_bone.callback_param();
 
 	if(!m_taget_element)
 	{
@@ -280,7 +280,7 @@ void CPHCapture::Init(CInifile* ini)
 	CActor* A=smart_cast<CActor*>(m_character->PhysicsRefObject());
 	if(A)
 	{
-		A->SetWeaponHideState(INV_STATE_BLOCK_ALL,true);
+		A->SetWeaponHideState( INV_STATE_BLOCK_ALL, true, true );
 		m_hard_mode = true;
 	}
 	else if ( !m_hard_mode )
@@ -320,14 +320,18 @@ void CPHCapture::Release()
 	}
 
 	b_failed = false;
-	e_state=cstReleased;
 	b_collide=true;
 	CActor* A=smart_cast<CActor*>(m_character->PhysicsRefObject());
 	if(A)
 	{
+		if ( e_state == cstCaptured && !m_taget_object->getDestroy() && m_taget_object->PPhysicsShell() && m_taget_object->PPhysicsShell()->isActive() ) {
+		  Fvector dir = { 0, -1, 0 };
+		  m_taget_object->PPhysicsShell()->applyImpulse( dir, 0.5f * m_taget_object->PPhysicsShell()->getMass() );
+		}
 		A->SetWeaponHideState(INV_STATE_BLOCK_ALL,false);
 //.		A->inventory().setSlotsBlocked(false);
 	}
+	e_state=cstReleased;
 }
 
 void CPHCapture::Deactivate()

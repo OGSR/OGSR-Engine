@@ -37,7 +37,7 @@ void CUITaskItem::SendMessage				(CUIWindow* pWnd, s16 msg, void* pData)
 
 SGameTaskObjective*	CUITaskItem::Objective	()	
 {
-	return &m_GameTask->m_Objectives[m_TaskObjectiveIdx];
+	return &m_GameTask->m_Objectives.at(m_TaskObjectiveIdx);
 }
 
 
@@ -96,11 +96,11 @@ void CUITaskRootItem::SetGameTask(CGameTask* gt, u16 obj_idx)
 	inherited::SetGameTask(gt, obj_idx);
 
 	CStringTable		stbl;
-	SGameTaskObjective	*obj = &m_GameTask->m_Objectives[m_TaskObjectiveIdx];
+	auto& obj = m_GameTask->m_Objectives.at(m_TaskObjectiveIdx);
 
-	m_taskImage->InitTexture		(*obj->icon_texture_name);
+	m_taskImage->InitTexture		(*obj.icon_texture_name);
 
-	Frect r							= obj->icon_rect;
+	Frect r							= obj.icon_rect;
 	m_taskImage->SetOriginalRect	(r.x1, r.y1, r.x2, r.y2);
 	m_taskImage->ClipperOn			();
 	m_taskImage->SetStretchTexture	(true);
@@ -229,14 +229,14 @@ void CUITaskSubItem::SetGameTask	(CGameTask* gt, u16 obj_idx)
 	inherited::SetGameTask			(gt, obj_idx);
 
 	CStringTable		stbl;
-	SGameTaskObjective	*obj = &m_GameTask->m_Objectives[m_TaskObjectiveIdx];
+	auto& obj = m_GameTask->m_Objectives.at(m_TaskObjectiveIdx);
 
-	m_descriptionStatic->SetText				(*stbl.translate(obj->description));
+	m_descriptionStatic->SetText				(*stbl.translate(obj.description));
 	m_descriptionStatic->AdjustHeightToText		();
 	float h = _max(	m_ActiveObjectiveStatic->GetWndPos().y+m_ActiveObjectiveStatic->GetHeight(),
 					m_descriptionStatic->GetWndPos().y+ m_descriptionStatic->GetHeight());
 	SetHeight									(h);
-	switch (obj->TaskState())
+	switch (obj.TaskState())
 	{
 //.		case eTaskUserDefined:
 		case eTaskStateInProgress:
@@ -259,7 +259,7 @@ void CUITaskSubItem::SetGameTask	(CGameTask* gt, u16 obj_idx)
 void CUITaskSubItem::Update					()
 {
 	inherited::Update						();
-	SGameTaskObjective	*obj				= &m_GameTask->m_Objectives[m_TaskObjectiveIdx];
+	SGameTaskObjective	*obj				= &m_GameTask->m_Objectives.at(m_TaskObjectiveIdx);
 	bool bIsActive							= (Actor()->GameTaskManager().ActiveObjective() == obj); 
 	m_ActiveObjectiveStatic->Show			(bIsActive);
 	m_showDescriptionBtn->Show				(m_EventsWnd->ItemHasDescription(this));
@@ -268,7 +268,7 @@ void CUITaskSubItem::Update					()
 
 bool CUITaskSubItem::OnDbClick()
 {
-	SGameTaskObjective	*obj					= &m_GameTask->m_Objectives[m_TaskObjectiveIdx];
+	SGameTaskObjective *obj = &m_GameTask->m_Objectives.at(m_TaskObjectiveIdx);
 	if(obj->TaskState()!=eTaskStateInProgress)	return true;
 
 	bool bIsActive								= (Actor()->GameTaskManager().ActiveObjective() == obj); 

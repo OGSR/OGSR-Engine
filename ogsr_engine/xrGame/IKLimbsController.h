@@ -3,7 +3,7 @@
 
 #include "IK/IKLimb.h"
 
-class CKinematicsAnimated;
+class IKinematicsAnimated;
 class CGameObject	;
 class CBlend		;
 struct SIKCrlCalcData;
@@ -23,7 +23,7 @@ private:
 			void	LimbSetup					( const u16 bones[4] );
 			//void	UpdateTracks				();
 private:
-	static	void __stdcall 	IKVisualCallback	( CKinematics* K );
+	static	void __stdcall 	IKVisualCallback	( IKinematics* K );
 
 private:
 	CBlend				*m_legs_blend;

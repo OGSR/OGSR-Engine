@@ -1,4 +1,5 @@
 local t_numbers = "ogse\\effects\\detector_upgrade"
+local t_wave = "ogse\\detector_wave"
 
 -- common rendering --
 function normal		(shader, t_base, t_second, t_detail)
@@ -25,10 +26,10 @@ end
 
 -- emissive rendering --
 function l_special	(shader, t_base, t_second, t_detail)
-	shader:begin	("deffer_model_flat",	"accum_detector_3")
+	shader:begin	("deffer_model_flat",	"models_detector_3")
 			: zb 		(true,false)
 			: fog		(false)
 			: emissive 	(true)
-	shader:sampler	("s_wave")      :texture	("ogse\\detector_wave") :wrap()
+	shader:sampler	("s_wave")      :texture	(t_wave) :wrap()
 	shader:sampler	("s_numbers")   :texture	(t_numbers)
 end

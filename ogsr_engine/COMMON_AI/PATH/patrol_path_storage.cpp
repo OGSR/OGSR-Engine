@@ -68,6 +68,7 @@ void CPatrolPathStorage::append_from_ini(CInifile &way_inifile)
 		{
 			r++;
 		}
+		if ( it.second->line_count() == 0 ) continue;
 
 		m_registry.insert(
 			std::make_pair(

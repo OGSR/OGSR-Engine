@@ -223,7 +223,7 @@ void CLocatorAPI::Register		(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_re
 	while (temp[0]) 
 	{
 		_splitpath		(temp, path, folder, 0, 0 );
-        strcat			(path,folder);
+        strcat_s(path,folder);
 		if (!exist(path))	
 		{
 			desc.name			= xr_strdup(path);
@@ -312,7 +312,7 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
 	{
 		strcpy_s			(base,sizeof(base),base_path);
 	}
-	strcat				(base,"\\");
+	strcat_s(base,"\\");
 
 	// Read headers
 	IReader* hdr		= open_chunk(A.hSrcFile,1); R_ASSERT(hdr);
@@ -369,7 +369,7 @@ void CLocatorAPI::ProcessOne	(const char* path, const _finddata_t& F)
 		if (bNoRecurse)				return;
 		if (0==xr_strcmp(F.name,"."))	return;
 		if (0==xr_strcmp(F.name,"..")) return;
-		strcat		(N,"\\");
+		strcat_s(N,"\\");
 		Register	(N,0xffffffff,0,0,F.size,F.size,(u32)F.time_write);
 		Recurse		(N);
 	} else {
@@ -412,14 +412,14 @@ bool ignore_path(const char* _path){
 		return true;
 }
 
-bool CLocatorAPI::Recurse		(const char* path)
+bool CLocatorAPI::Recurse( const char* path, const bool log_if_found )
 {
     _finddata_t		sFile;
     intptr_t		hFile;
 
 	string_path		N;
 	strcpy_s		(N,sizeof(N),path);
-	strcat			(N,"*.*");
+	strcat_s(N,"*.*");
 
 	using FFVec = xr_vector<_finddata_t>;
 	FFVec rec_files;
@@ -432,6 +432,9 @@ bool CLocatorAPI::Recurse		(const char* path)
     	return		false;
     }
 
+	if ( log_if_found )
+	  Msg( "--Found FS dir: [%s]", path );
+
 	string1024 full_path;
 #ifdef LOAD_SCRIPTS_SUBDIRS
 	if (0)
@@ -440,7 +443,7 @@ bool CLocatorAPI::Recurse		(const char* path)
 #endif
 	{
 		strcpy_s(full_path,sizeof(full_path), path);
-		strcat(full_path, sFile.name);
+		strcat_s(full_path, sFile.name);
 
 		// загоняем в вектор для того *.db* приходили в сортированном порядке
 		if(!ignore_name(sFile.name) && !ignore_path(full_path))
@@ -449,7 +452,7 @@ bool CLocatorAPI::Recurse		(const char* path)
 		while ( _findnext( hFile, &sFile ) == 0 )
 		{
 			strcpy_s(full_path,sizeof(full_path), path);
-			strcat(full_path, sFile.name);
+			strcat_s(full_path, sFile.name);
 			if(!ignore_name(sFile.name) && !ignore_path(full_path)) 
 				rec_files.push_back(sFile);
 		}
@@ -469,6 +472,8 @@ bool CLocatorAPI::Recurse		(const char* path)
 	}
 
 	_findclose		( hFile );
+	if ( log_if_found )
+	  Msg( "  files: [%u]", rec_files.size() );
 
 	std::sort(rec_files.begin(), rec_files.end(), pred_str_ff);
 	for (const auto& el : rec_files)
@@ -627,12 +632,12 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 			if ( ( xr_strcmp( id, "$game_config$" ) == 0 || xr_strcmp( id, "$game_scripts$" ) == 0 ) )
 				restricted = !Core.ParamFlags.test( xrCore::ParamFlag::dbg );
 			if ( !restricted )
-				Recurse(P->m_Path);
+				Recurse( P->m_Path, true );
 #elif __has_include("..\build_config_overrides\trivial_encryptor_ovr.h")
 			if (!strcmp(id, "$app_data_root$") || !strcmp(id, "$game_saves$") || !strcmp(id, "$logs$") || !strcmp(id, "$screenshots$"))
 				Recurse(P->m_Path);
 #else
-			Recurse(P->m_Path);
+			Recurse(P->m_Path, true);
 #endif
 			I					= pathes.insert(mk_pair(xr_strdup(id),P));
 #ifndef DEBUG
@@ -678,8 +683,6 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 
 void CLocatorAPI::_destroy		()
 {
-	CloseLog		();
-
 	for				(files_it I=files.begin(); I!=files.end(); I++)
 	{
 		char* str	= LPSTR(I->name);
@@ -1061,11 +1064,11 @@ void CLocatorAPI::copy_file_to_build	(T *&r, LPCSTR source_name)
         update_path	(e_cpy_name,"$textures$",source_name+xr_strlen(P->m_Path));
         // tga
         *strext		(e_cpy_name) = 0;
-        strcat		(e_cpy_name,".tga");
+        strcat_s(e_cpy_name,".tga");
         r_close		(R=r_open(e_cpy_name));
         // thm
         *strext		(e_cpy_name) = 0;
-        strcat		(e_cpy_name,".thm");
+        strcat_s(e_cpy_name,".thm");
         r_close		(R=r_open(e_cpy_name));
 		return;
     }
@@ -1075,11 +1078,11 @@ void CLocatorAPI::copy_file_to_build	(T *&r, LPCSTR source_name)
         update_path	(e_cpy_name,"$sounds$",source_name+xr_strlen(P->m_Path));
         // wav
         *strext		(e_cpy_name) = 0;
-        strcat		(e_cpy_name,".wav");
+        strcat_s(e_cpy_name,".wav");
         r_close		(R=r_open(e_cpy_name));
         // thm
         *strext		(e_cpy_name) = 0;
-        strcat		(e_cpy_name,".thm");
+        strcat_s(e_cpy_name,".thm");
         r_close		(R=r_open(e_cpy_name));
 		return;
     }
@@ -1088,7 +1091,7 @@ void CLocatorAPI::copy_file_to_build	(T *&r, LPCSTR source_name)
         strcpy_s		(e_cpy_name,sizeof(e_cpy_name),source_name);
         // object thm
         *strext		(e_cpy_name) = 0;
-        strcat		(e_cpy_name,".thm");
+        strcat_s(e_cpy_name,".thm");
         R			= r_open(e_cpy_name);
         if (R)		r_close	(R);
     }

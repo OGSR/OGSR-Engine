@@ -206,6 +206,13 @@
 		<text>Удалить метку</text>
 	</string>
 
+	<string id="st_move">
+		<text>перенести</text>
+	</string>
+	<string id="st_move_all">
+		<text>перенести все</text>
+	</string>
+
 	<string id="st_move_to_slot_1">
 		<text>переместить в первый слот</text>
 	</string>
@@ -234,6 +241,10 @@
 	</string>
 	<string id="game_object_drag">
 		<text>Перетащить предмет (SHIFT+$$ACTION_USE$$)</text>
+	</string>
+
+	<string id="st_press_any_key">
+		<text>Нажмите любую клавишу для перехода к игре</text>
 	</string>
 
 </string_table>

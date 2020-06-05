@@ -44,6 +44,8 @@ CInventoryOwner::CInventoryOwner			()
 	m_known_info_registry		= xr_new<CInfoPortionWrapper>();
 	m_tmp_active_slot_num		= NO_ACTIVE_SLOT;
 	m_need_osoznanie_mode		= FALSE;
+
+        m_tmp_next_item_slot = NO_ACTIVE_SLOT;
 }
 
 DLL_Pure *CInventoryOwner::_construct		()
@@ -167,12 +169,15 @@ void	CInventoryOwner::save	(NET_Packet &output_packet)
 void	CInventoryOwner::load	(IReader &input_packet)
 {
 	u8 active_slot = input_packet.r_u8();
-	if(active_slot == u8(-1))
+	if ( active_slot == NO_ACTIVE_SLOT) {
 		inventory().SetActiveSlot(NO_ACTIVE_SLOT);
-	else
+		m_tmp_active_slot_num = NO_ACTIVE_SLOT;
+	}
+	else {
+		inventory().SetActiveSlot( active_slot );
 		inventory().Activate_deffered(active_slot, Device.dwFrame);
-
-	m_tmp_active_slot_num		 = active_slot;
+		m_tmp_active_slot_num = active_slot;
+	}
 
 	CharacterInfo().load(input_packet);
 	load_data		(m_game_name, input_packet);
@@ -288,11 +293,16 @@ void CInventoryOwner::OnItemTake			(CInventoryItem *inventory_item)
 
 	attach		(inventory_item);
 
-	if(m_tmp_active_slot_num!=NO_ACTIVE_SLOT && inventory_item->GetSlot()==m_tmp_active_slot_num)
+	if ( m_tmp_active_slot_num != NO_ACTIVE_SLOT && inventory_item->GetSlot() == m_tmp_active_slot_num )
 	{
 		inventory().Activate(m_tmp_active_slot_num);
 		m_tmp_active_slot_num	= NO_ACTIVE_SLOT;
 	}
+
+        if ( m_tmp_next_item_slot != NO_ACTIVE_SLOT ) {
+          inventory().Slot( inventory_item, true );
+          m_tmp_next_item_slot = NO_ACTIVE_SLOT;
+        }
 }
 
 //возвращает текуший разброс стрельбы с учетом движения (в радианах)
@@ -571,4 +581,9 @@ float CInventoryOwner::ArtefactsAddWeight( bool first ) const {
       add_weight += first ? artefact->m_additional_weight : artefact->m_additional_weight2;
   }
   return add_weight;
+}
+
+
+void CInventoryOwner::SetNextItemSlot( u32 slot ) {
+  m_tmp_next_item_slot = slot;
 }

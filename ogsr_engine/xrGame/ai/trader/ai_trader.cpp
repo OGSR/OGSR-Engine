@@ -23,6 +23,7 @@
 #include "../../game_object_space.h"
 #include "clsid_game.h"
 #include "trader_animation.h"
+#include "../../game_object_space.h"
 
 CAI_Trader::CAI_Trader()
 {
@@ -86,7 +87,7 @@ bool CAI_Trader::bfAssignSound(CScriptEntityAction *tpEntityAction)
 //////////////////////////////////////////////////////////////////////////
 void CAI_Trader::BoneCallback(CBoneInstance *B)
 {
-	CAI_Trader*	this_class = static_cast<CAI_Trader*>(B->Callback_Param);
+	CAI_Trader*	this_class = static_cast<CAI_Trader*>(B->callback_param());
 
 	this_class->LookAtActor(B);
 }
@@ -132,7 +133,7 @@ BOOL CAI_Trader::net_Spawn			(CSE_Abstract* DC)
 	set_money				( l_tpTrader->m_dwMoney, false );
 
 	// Установка callback на кости
-	//CBoneInstance			*bone_head =	&smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<CKinematics*>(Visual())->LL_BoneID("bip01_head"));
+	//CBoneInstance			*bone_head =	&smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(smart_cast<IKinematics*>(Visual())->LL_BoneID("bip01_head"));
 	//bone_head->set_callback	(bctCustom,BoneCallback,this);
 
 	shedule.t_min			= 100;
@@ -244,7 +245,7 @@ void CAI_Trader::shedule_Update	(u32 dt)
 
 void CAI_Trader::g_WeaponBones	(int &L, int &R1, int &R2)
 {
-	CKinematics *V	= smart_cast<CKinematics*>(Visual());
+	IKinematics *V	= smart_cast<IKinematics*>(Visual());
 	R1				= V->LL_BoneID("bip01_r_hand");
 	R2				= V->LL_BoneID("bip01_r_finger2");
 	L				= V->LL_BoneID("bip01_l_finger1");
@@ -267,6 +268,14 @@ void CAI_Trader::Think()
 void CAI_Trader::Die (CObject* who)
 {
 	inherited::Die (who);
+}
+
+void CAI_Trader::Hit( SHit* pHDS )
+{
+	SHit HDS = *pHDS;
+	callback( GameObject::entity_alive_before_hit )( &HDS );
+	if ( !HDS.ignore_flag )
+	  inherited::Hit( &HDS );
 }
 
 void CAI_Trader::net_Destroy()

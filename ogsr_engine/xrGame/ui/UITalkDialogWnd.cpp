@@ -8,6 +8,10 @@
 #include "UI3tButton.h"
 #include "../UI.h"
 #include "../actor.h"
+#include "../HUDManager.h"
+#include "../UIGameSP.h"
+#include "UIPdaWnd.h"
+#include "UIDiaryWnd.h"
 
 
 #define				TALK_XML				"talk.xml"
@@ -188,9 +192,12 @@ void CUITalkDialogWnd::AddAnswer(LPCSTR SpeakerName, LPCSTR str, bool bActor)
 	news_data.tex_rect				= ci.UIIcon().GetUIStaticItem().GetOriginalRect();
 	news_data.tex_rect.x2			= news_data.tex_rect.width();
 	news_data.tex_rect.y2			= news_data.tex_rect.height();
-	news_data.receive_time			= Level().GetGameTime();
+	//news_data.receive_time			= Level().GetGameTime();
 
-	Actor()->game_news_registry->registry().objects().push_back(news_data);
+	Actor()->PushNewsData( news_data );
+	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>( HUD().GetUI()->UIGame() );
+	if ( pGameSP )
+	  pGameSP->PdaMenu->UIDiaryWnd->AddNews();
 }
 
 void CUITalkDialogWnd::AddIconedAnswer(LPCSTR text, LPCSTR texture_name, Frect texture_rect, LPCSTR templ_name)
@@ -226,7 +233,7 @@ CUIQuestionItem::CUIQuestionItem			(CUIXml* xml_doc, LPCSTR path)
 	string512						str;
 	CUIXmlInit						xml_init;
 
-	strcpy							(str,path);
+	strcpy_s(str,path);
 	xml_init.InitWindow				(*xml_doc, str, 0, this);
 
 	m_min_height					= xml_doc->ReadAttribFlt(path,0,"min_height",15.0f);
@@ -274,7 +281,7 @@ CUIAnswerItem::CUIAnswerItem			(CUIXml* xml_doc, LPCSTR path)
 	string512						str;
 	CUIXmlInit						xml_init;
 
-	strcpy							(str,path);
+	strcpy_s(str,path);
 	xml_init.InitWindow				(*xml_doc, str, 0, this);
 
 	m_min_height					= xml_doc->ReadAttribFlt(path,0,"min_height",15.0f);

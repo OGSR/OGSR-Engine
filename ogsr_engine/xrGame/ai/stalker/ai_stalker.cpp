@@ -25,7 +25,7 @@
 #include "../../xr_level_controller.h"
 #include "../../hudmanager.h"
 #include "clsid_game.h"
-#include "../../../xr_3da/skeletoncustom.h"
+#include "../../../Include/xrRender/Kinematics.h"
 #include "character_info.h"
 #include "../../actor.h"
 #include "../../relation_registry.h"
@@ -59,6 +59,10 @@
 #include "../../stalker_decision_space.h"
 #include "../../agent_member_manager.h"
 #include "../../location_manager.h"
+#include "../../seniority_hierarchy_holder.h"
+#include "../../team_hierarchy_holder.h"
+#include "../../squad_hierarchy_holder.h"
+#include "../../group_hierarchy_holder.h"
 
 #ifdef DEBUG
 #	include "../../alife_simulator.h"
@@ -257,6 +261,7 @@ void CAI_Stalker::reload			(LPCSTR section)
 	m_max_queue_interval_close		= pSettings->r_u32(*cNameSect(),"weapon_max_queue_interval_close");	// 500;
 
 	m_power_fx_factor				= pSettings->r_float(section,"power_fx_factor");
+	m_fast_can_kill_entity = READ_IF_EXISTS( pSettings, r_bool, section, "fast_can_kill_entity", false );
 }
 
 void CAI_Stalker::Die				(CObject* who)
@@ -359,7 +364,7 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 		sound().set_sound_mask(u32(eStalkerSoundMaskDie));
 
 	//загрузить иммунитеты из модельки сталкера
-	CKinematics* pKinematics = smart_cast<CKinematics*>(Visual()); VERIFY(pKinematics);
+	IKinematics* pKinematics = smart_cast<IKinematics*>(Visual()); VERIFY(pKinematics);
 	CInifile* ini = pKinematics->LL_UserData();
 	if(ini)
 	{
@@ -657,15 +662,15 @@ void CAI_Stalker::UpdateCL()
 	if (g_Alive()) {
 		START_PROFILE("stalker/client_update/sight_manager")
 		VERIFY						(!m_pPhysicsShell);
-		try {
+		__try {
 			sight().update			();
 		}
-		catch (...) {
-			try {
+		__except (ExceptStackTrace("[" __FUNCTION__ "] stack trace:\n")) {
+			__try {
 				sight().setup(CSightAction(SightManager::eSightTypeCurrentDirection));
 				sight().update();
 			}
-			catch (...) {
+			__except (ExceptStackTrace("[" __FUNCTION__ "] - 2 stack trace:\n")) {
 				Msg("!![%s] error in sight().update() of NPC [%s]", __FUNCTION__, this->Name());
 			}
 		}
@@ -986,7 +991,7 @@ void CAI_Stalker::UpdateCamera			()
 			temp						= weapon_shot_effector_direction(temp);
 	}
 
-	g_pGameLevel->Cameras().Update		(eye_matrix.c,temp,eye_matrix.j,new_fov,.75f,new_range);
+	g_pGameLevel->Cameras().Update		(eye_matrix.c,temp,eye_matrix.j,new_fov,.75f,new_range, 0);
 }
 
 bool CAI_Stalker::can_attach			(const CInventoryItem *inventory_item) const
@@ -1029,7 +1034,7 @@ void CAI_Stalker::fill_bones_body_parts	(LPCSTR bone_id, const ECriticalWoundTyp
 	LPCSTR					body_part_section_id = pSettings->r_string(body_parts_section_id,bone_id);
 	VERIFY					(body_part_section_id);
 
-	CKinematics				*kinematics	= smart_cast<CKinematics*>(Visual());
+	IKinematics				*kinematics	= smart_cast<IKinematics*>(Visual());
 	VERIFY					(kinematics);
 
 	CInifile::Sect			&body_part_section = pSettings->r_section(body_part_section_id);
@@ -1058,4 +1063,14 @@ void CAI_Stalker::on_after_change_team			()
 bool CAI_Stalker::unlimited_ammo()
 {
 	return infinite_ammo() && CObjectHandler::planner().object().g_Alive();
+}
+
+CAgentManager& CAI_Stalker::agent_manager() const
+{
+	return Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).agent_manager();
+}
+
+CAgentManager* CAI_Stalker::get_agent_manager() const
+{
+	return Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).get_agent_manager();
 }

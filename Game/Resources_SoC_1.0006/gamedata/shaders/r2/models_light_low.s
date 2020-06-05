@@ -6,7 +6,7 @@ function normal		(shader, t_base, t_second, t_detail)
 end
 
 function l_special	(shader, t_base, t_second, t_detail)
-	shader:begin	("shadow_direct_model",	"accum_emissive_low")
+	shader:begin	("shadow_direct_model",	"models_light_low")
 			: zb 		(true,false)
 			: fog		(false)
 			: emissive 	(true)

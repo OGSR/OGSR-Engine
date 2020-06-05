@@ -15,22 +15,14 @@
 #include "../game_base_space.h"
 #include "../actor.h"
 
-#define BUY_MENU_TEXTURE "ui\\ui_mp_buy_menu"
-#define EQUIPMENT_ICONS  "ui\\ui_icon_equipment"
-#define EQUIPMENT_MAX_ICONS		16
-#define CHAR_ICONS		 "ui\\ui_icons_npc"
-#define MAP_ICONS		 "ui\\ui_icons_map"
-#define MP_CHAR_ICONS	 "ui\\ui_models_multiplayer"
+#define EQUIPMENT_ICONS "ui\\ui_icon_equipment"
 
 constexpr LPCSTR relationsLtxSection	= "game_relations";
 constexpr LPCSTR ratingField			= "rating_names";
 constexpr LPCSTR reputationgField		= "reputation_names";
 constexpr LPCSTR goodwillField			= "goodwill_names";
 
-ref_shader	g_BuyMenuShader			= NULL;
-ref_shader	g_EquipmentIconsShader[EQUIPMENT_MAX_ICONS] = { NULL, NULL, NULL, NULL };
-ref_shader	g_MPCharIconsShader		= NULL;
-ref_shader	g_tmpWMShader			= NULL;
+std::map<size_t, std::unique_ptr<ui_shader>> g_EquipmentIconsShaders;
 
 typedef				std::pair<CHARACTER_RANK_VALUE, shared_str>	CharInfoStringID;
 DEF_MAP				(CharInfoStrings, CHARACTER_RANK_VALUE, shared_str);
@@ -41,19 +33,11 @@ CharInfoStrings		*charInfoGoodwillStrings	= NULL;
 
 void InventoryUtilities::CreateShaders()
 {
-	g_tmpWMShader.create("effects\\wallmark",  "wm\\wm_grenade");
-	for (int i = 0; i < EQUIPMENT_MAX_ICONS; i++)
-		g_EquipmentIconsShader[i] = NULL;
 }
 
 void InventoryUtilities::DestroyShaders()
 {
-	for (int i = 0; i < EQUIPMENT_MAX_ICONS; i++)
-	 	 g_EquipmentIconsShader[i].destroy	();
-
-	g_BuyMenuShader.destroy			();
-	g_MPCharIconsShader.destroy		();
-	g_tmpWMShader.destroy			();
+	g_EquipmentIconsShaders.clear();
 }
 
 bool InventoryUtilities::GreaterRoomInRuck(PIItem item1, PIItem item2)
@@ -175,42 +159,24 @@ bool InventoryUtilities::FreeRoom_inBelt	(TIItemContainer& item_list, PIItem _it
 	return true;
 }
 
-ref_shader& InventoryUtilities::GetBuyMenuShader()
+ui_shader& InventoryUtilities::GetEquipmentIconsShader(size_t icon_group)
 {	
-	if(!g_BuyMenuShader)
-	{
-		g_BuyMenuShader.create("hud\\default", BUY_MENU_TEXTURE);
-	}
-
-	return g_BuyMenuShader;
-}
-
-ref_shader& InventoryUtilities::GetEquipmentIconsShader(int icon_group)
-{	
-	if(!g_EquipmentIconsShader[icon_group])
+	if (auto it = g_EquipmentIconsShaders.find(icon_group); it == g_EquipmentIconsShaders.end())
 	{
 		string_path file;
 		strcpy_s(file, sizeof(file), EQUIPMENT_ICONS);
 		if (icon_group > 0)
 		{
 			strcat_s(file, sizeof(file), "_");
-			itoa(icon_group, file + xr_strlen(file), 10);
+			itoa(icon_group, file + strlen(file), 10);
 		}
 
-		g_EquipmentIconsShader[icon_group].create("hud\\default", file);
+		auto Shader = std::make_unique<ui_shader>();
+		(*Shader)->create("hud\\default", file);
+		g_EquipmentIconsShaders[icon_group] = std::move(Shader);
 	}
 
-	return g_EquipmentIconsShader[icon_group];
-}
-
-ref_shader&	InventoryUtilities::GetMPCharIconsShader()
-{
-	if(!g_MPCharIconsShader)
-	{
-		g_MPCharIconsShader.create("hud\\default",  MP_CHAR_ICONS);
-	}
-
-	return g_MPCharIconsShader;
+	return *g_EquipmentIconsShaders[icon_group];
 }
 
 
@@ -232,9 +198,7 @@ const shared_str InventoryUtilities::GetGameTimeAsString(ETimePrecision timePrec
 
 const shared_str InventoryUtilities::GetTimeAsString(ALife::_TIME_ID time, ETimePrecision timePrec, char timeSeparator)
 {
-	string64 bufTime;
-
-	ZeroMemory(bufTime, sizeof(bufTime));
+	string64 bufTime{};
 
 	u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
 
@@ -270,9 +234,7 @@ const shared_str InventoryUtilities::GetTimeAsString(ALife::_TIME_ID time, ETime
 
 const shared_str InventoryUtilities::GetDateAsString(ALife::_TIME_ID date, EDatePrecision datePrec, char dateSeparator)
 {
-	string32 bufDate;
-
-	ZeroMemory(bufDate, sizeof(bufDate));
+	string32 bufDate{};
 
 	u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
 
@@ -332,26 +294,23 @@ void InventoryUtilities::UpdateWeight(CUIStatic &wnd, bool withPrefix)
 {
 	CInventoryOwner *pInvOwner = smart_cast<CInventoryOwner*>(Level().CurrentEntity());
 	R_ASSERT(pInvOwner);
-	string128 buf;
-	ZeroMemory(buf, sizeof(buf));
+	string128 buf{};
 
 	float total = pInvOwner->inventory().CalcTotalWeight();
 	float max	= pInvOwner->MaxCarryWeight();
 
-	string16 cl;
-	ZeroMemory(cl, sizeof(cl));
+	string16 cl{};
 
 	if (total > max)
 	{
-		strcpy(cl, "%c[red]");
+		strcpy_s(cl, "%c[red]");
 	}
 	else
 	{
-		strcpy(cl, "%c[UI_orange]");
+		strcpy_s(cl, "%c[UI_orange]");
 	}
 
-	string32 prefix;
-	ZeroMemory(prefix, sizeof(prefix));
+	string32 prefix{};
 
 	if (withPrefix)
 	{
@@ -359,7 +318,7 @@ void InventoryUtilities::UpdateWeight(CUIStatic &wnd, bool withPrefix)
 	}
 	else
 	{
-		strcpy(prefix, "");
+		strcpy_s(prefix, "");
 	}
 
 	sprintf_s(buf, "%s%s%3.1f %s/%5.1f", prefix, cl, total, "%c[UI_orange]", max);
@@ -376,8 +335,7 @@ void LoadStrings(CharInfoStrings *container, LPCSTR section, LPCSTR field)
 	LPCSTR				cfgRecord	= pSettings->r_string(section, field);
 	u32					count		= _GetItemCount(cfgRecord);
 	R_ASSERT3			(count%2, "there're must be an odd number of elements", field);
-	string64			singleThreshold;
-	ZeroMemory			(singleThreshold, sizeof(singleThreshold));
+	string64			singleThreshold{};
 	int					upBoundThreshold	= 0;
 	CharInfoStringID	id;
 

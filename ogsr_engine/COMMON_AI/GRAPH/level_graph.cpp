@@ -15,7 +15,7 @@ LPCSTR LEVEL_GRAPH_NAME = "level.ai";
 CLevelGraph::CLevelGraph		()
 {
 
-	sh_debug.create				("debug\\ai_nodes","$null");
+	sh_debug->create("debug\\ai_nodes", "$null");
 
 	string_path					file_name;
 	FS.update_path				(file_name,"$level$",LEVEL_GRAPH_NAME);

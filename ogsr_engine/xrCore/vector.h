@@ -143,9 +143,26 @@ ICF float		angle_difference(float a, float b)
 	return _abs	(angle_difference_signed(a,b));
 }
 
+IC bool			are_ordered		( float const value0, float const value1, float const value2 )
+{
+	if ( (value1 >= value0) && (value1 <= value2) )
+		return	true;
+
+	if ( (value1 <= value0) && (value1 >= value2) )
+		return	true;
+
+	return		false;
+}
+
+IC bool			is_between		( float const value, float const left, float const right )
+{
+	return		are_ordered( left, value, right );
+}
+
 // c=current, t=target, s=speed, dt=dt
 IC bool			angle_lerp		(float& c, float t, float s, float dt)
 {
+	float const before = c;
 	float diff	= t - c;
 	if (diff>0) {
 		if (diff>PI)	
@@ -162,6 +179,9 @@ IC bool			angle_lerp		(float& c, float t, float s, float dt)
 	float mot		= s*dt;
 	if (mot>diff_a) mot=diff_a;
 	c				+= (diff/diff_a)*mot;
+
+	if ( is_between(c,before,t) )
+		return		false;
 
 	if (c<0)				
 		c+=PI_MUL_2;
@@ -233,7 +253,6 @@ IC _matrix<T>& _matrix<T>::mk_xform	(const _quaternion<T> &Q, const Tvector &V)
 	return *this;
 }
 
-#define TRACE_QZERO_TOLERANCE	0.1f
 template <class T>
 IC _quaternion<T>& _quaternion<T>::set(const _matrix<T>& M)
 {

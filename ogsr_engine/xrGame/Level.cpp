@@ -130,8 +130,6 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	m_bDemoSaveMode = FALSE;
 	m_dwStoredDemoDataSize = 0;
 	m_pStoredDemoData = NULL;
-	m_pOldCrashHandler = NULL;
-	m_we_used_old_crach_handler	= false;
 
 //	if ( !strstr( Core.Params, "-tdemo " ) && !strstr(Core.Params,"-tdemof "))
 //	{
@@ -249,10 +247,6 @@ CLevel::~CLevel()
 	// because they should be new for each saved/loaded game
 	// and I didn't find better place to put this code in
 	CTradeParameters::clean		();
-
-	if (m_we_used_old_crach_handler)
-		Debug.set_crashhandler	(m_pOldCrashHandler);
-
 }
 
 shared_str	CLevel::name		() const
@@ -418,8 +412,7 @@ void CLevel::OnFrame	()
 	// Inherited update
 	inherited::OnFrame		();
 	
-//	g_pGamePersistent->Environment().SetGameTime	(GetGameDayTimeSec(),GetGameTimeFactor());
-	g_pGamePersistent->Environment().SetGameTime	(GetEnvironmentGameDayTimeSec(),GetGameTimeFactor());
+	g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
 
 	m_ph_commander->update				();
 	m_ph_commander_scripts->update		();
@@ -608,7 +601,7 @@ void CLevel::OnEvent(EVENT E, u64 P1, u64 /**P2/**/)
 		char* name = (char*)P1;
 		string_path RealName;
 		strcpy_s		(RealName,name);
-		strcat			(RealName,".xrdemo");
+		strcat_s(RealName,".xrdemo");
 		Cameras().AddCamEffector(xr_new<CDemoPlay> (RealName,1.3f,0));
 	} else if (E==eChangeTrack && P1) {
 		// int id = atoi((char*)P1);
@@ -844,11 +837,16 @@ void CLevel::SetGameTimeFactor(ALife::_TIME_ID GameTime, const float fTimeFactor
 	game->SetGameTimeFactor(GameTime, fTimeFactor);
 //	Server->game->SetGameTimeFactor(fTimeFactor);
 }
-void CLevel::SetEnvironmentGameTimeFactor(ALife::_TIME_ID GameTime, const float fTimeFactor)
+
+void CLevel::SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTimeFactor)
 {
+	if (!game)
+		return;
+
 	game->SetEnvironmentGameTimeFactor(GameTime, fTimeFactor);
-//	Server->game->SetGameTimeFactor(fTimeFactor);
-}/*
+}
+
+/*
 void CLevel::SetGameTime(ALife::_TIME_ID GameTime)
 {
 	game->SetGameTime(GameTime);

@@ -6,7 +6,7 @@
 #include "../UICursor.h"
 #include "../MainMenu.h"
 
-#pragma optimize("", off) //KRodin: добавлено специально, не убирать!
+#include "../Include/xrRender/DebugRender.h"
 
 //#define LOG_ALL_WNDS
 #ifdef LOG_ALL_WNDS
@@ -27,17 +27,14 @@
 	void dump_list_wnd(){}
 #endif
 
+
 xr_vector<Frect> g_wnds_rects;
-ref_shader  dbg_draw_sh =0;
-ref_geom	dbg_draw_gm =0;
 
 BOOL g_show_wnd_rect = FALSE;
 BOOL g_show_wnd_rect2 = FALSE;
-
 void clean_wnd_rects()
 {
-	dbg_draw_sh.destroy();
-	dbg_draw_gm.destroy();
+	DRender->DestroyDebugShader(IDebugRender::dbgShaderWindow);
 }
 
 void add_rect_to_draw(Frect r)
@@ -46,26 +43,21 @@ void add_rect_to_draw(Frect r)
 }
 void draw_rect(Frect& r, u32 color)
 {
+	DRender->SetDebugShader(IDebugRender::dbgShaderWindow);
 
-	if(!dbg_draw_sh){
-		dbg_draw_sh.create("hud\\default","ui\\ui_pop_up_active_back");
-		dbg_draw_gm.create(FVF::F_TL, RCache.Vertex.Buffer(), 0);
-	}
-	RCache.set_Shader			(dbg_draw_sh);
-	u32							vOffset;
-	FVF::TL* pv					= (FVF::TL*)RCache.Vertex.Lock	(5,dbg_draw_gm.stride(),vOffset);
+	//.	UIRender->StartLineStrip	(5);
+	UIRender->StartPrimitive(5, IUIRender::ptLineStrip, UI()->m_currentPointType);
 
-	pv->set(r.lt.x, r.lt.y, color, 0,0); ++pv;
-	pv->set(r.rb.x, r.lt.y, color, 0,0); ++pv;
-	pv->set(r.rb.x, r.rb.y, color, 0,0); ++pv;
-	pv->set(r.lt.x, r.rb.y, color, 0,0); ++pv;
-	pv->set(r.lt.x, r.lt.y, color, 0,0); ++pv;
+	UIRender->PushPoint(r.lt.x, r.lt.y, 0, color, 0, 0);
+	UIRender->PushPoint(r.rb.x, r.lt.y, 0, color, 0, 0);
+	UIRender->PushPoint(r.rb.x, r.rb.y, 0, color, 0, 0);
+	UIRender->PushPoint(r.lt.x, r.rb.y, 0, color, 0, 0);
+	UIRender->PushPoint(r.lt.x, r.lt.y, 0, color, 0, 0);
 
-	RCache.Vertex.Unlock		(5,dbg_draw_gm.stride());
-	RCache.set_Geometry			(dbg_draw_gm);
-	RCache.Render				(D3DPT_LINESTRIP,vOffset,4);
-
+	//.	UIRender->FlushLineStrip();
+	UIRender->FlushPrimitive();
 }
+
 void draw_wnds_rects()
 {
 	if(0==g_wnds_rects.size())	return;
@@ -83,6 +75,7 @@ void draw_wnds_rects()
 
 	g_wnds_rects.clear();
 }
+
 
 void CUIWindow::SetPPMode()
 {
@@ -214,8 +207,11 @@ void CUIWindow::UpdateFocus( bool focus_lost ) {
   if ( GetMouseCapturer() && GetMouseCapturer()->CapturesFocusToo() )
     GetMouseCapturer()->UpdateFocus( focus_lost );
   else
-    for ( auto& it : m_ChildWndList )
-      if ( it->IsShown() ) it->UpdateFocus( focus_lost );
+  {
+	  for (auto it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
+		  if ((*it)->IsShown())
+			  (*it)->UpdateFocus(focus_lost);
+  }
 }
 
 
@@ -228,26 +224,29 @@ void CUIWindow::CommitFocus( bool focus_lost ) {
     m_bCursorOverWindowChanged = false;
   }
 
-  for ( auto& it : m_ChildWndList )
-    if ( it->IsShown() )
-      it->CommitFocus( focus_lost );
+  for (auto it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
+    if ( (*it)->IsShown() )
+      (*it)->CommitFocus( focus_lost );
 }
 
 
 void CUIWindow::Update() {
-  for ( auto& it : m_ChildWndList )
-    if ( it->IsShown() )
-      it->Update();
+  for (auto it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
+    if ( (*it)->IsShown() )
+      (*it)->Update();
 }
 
 
-void CUIWindow::AttachChild(CUIWindow* pChild)
+void CUIWindow::AttachChild( CUIWindow* pChild, bool bottom )
 {
 	if(!pChild) return;
 	
 	R_ASSERT( !IsChild(pChild) );
 	pChild->SetParent(this);
-	m_ChildWndList.push_back(pChild);
+	if ( bottom )
+	  m_ChildWndList.push_front( pChild );
+	else
+	  m_ChildWndList.push_back( pChild );
 }
 
 void CUIWindow::DoDetachChild(CUIWindow* pChild, bool from_destructor)
@@ -457,9 +456,9 @@ void CUIWindow::SetMouseCapture( CUIWindow *pChildWindow, bool capture_status ) 
     m_pMouseCapturer = pChildWindow;
   }
   else {
-    ASSERT_FMT(
+    ASSERT_FMT_DBG(
       ( m_pMouseCapturer && m_pMouseCapturer == pChildWindow ),
-      "[%s]: %s trying to reset m_pMouseCapturer[%s]",
+      "[%s]: [%s] trying to reset m_pMouseCapturer[%s]",
       __FUNCTION__, pChildWindow->WindowName().c_str(),
       m_pMouseCapturer ? m_pMouseCapturer->WindowName().c_str() : ""
     );
@@ -476,28 +475,41 @@ CUIWindow* CUIWindow::GetMouseCapturer() {
 //реакция на клавиатуру
 bool CUIWindow::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
-	bool result;
-
-	//если есть дочернее окно,захватившее клавиатуру, то
-	//сообщение направляем ему сразу
-	if(NULL!=m_pKeyboardCapturer)
+	//если есть дочернее окно,захватившее клавиатуру, то сообщение направляем ему сразу
+	if (m_pKeyboardCapturer)
 	{
-		result = m_pKeyboardCapturer->OnKeyboard(dik, keyboard_action);
-		
-		if(result) return true;
-	}
-
-	WINDOW_LIST::reverse_iterator it = m_ChildWndList.rbegin();
-
-	for(; it!=m_ChildWndList.rend(); ++it)
-	{
-		if((*it)->IsEnabled())
+		if (m_pKeyboardCapturer->OnKeyboard(dik, keyboard_action))
 		{
-			result = (*it)->OnKeyboard(dik, keyboard_action);
-			
-			if(result)	return true;
+			return true;
 		}
 	}
+
+	size_t processed = 0;
+	auto iter = m_ChildWndList.rbegin();
+	while (iter != m_ChildWndList.rend()) {
+		const auto size = m_ChildWndList.size();
+
+		auto* Wnd = *(iter++);
+
+		ASSERT_FMT_DBG(Wnd, "!![%s][%s] Child wnd is nullptr! Something strange!", __FUNCTION__, this->WindowName_script());
+
+		if (Wnd && Wnd->IsEnabled())
+		{
+			if (Wnd->OnKeyboard(dik, keyboard_action))
+			{
+				return true;
+			}
+		}
+
+		if (size != m_ChildWndList.size()) {
+			iter = m_ChildWndList.rbegin();
+			std::advance(iter, processed);
+		}
+		else {
+			processed++;
+		}
+	}
+
 	return false;
 }
 
@@ -507,10 +519,31 @@ bool CUIWindow::OnKeyboardHold(int dik)
 		if (m_pKeyboardCapturer->OnKeyboardHold(dik))
 			return true;
 
-	for (auto it = m_ChildWndList.rbegin(); it != m_ChildWndList.rend(); ++it)
-		if ((*it)->IsEnabled())
-			if ((*it)->OnKeyboardHold(dik))
+	size_t processed = 0;
+	auto iter = m_ChildWndList.rbegin();
+	while (iter != m_ChildWndList.rend()) {
+		const auto size = m_ChildWndList.size();
+
+		auto* Wnd = *(iter++);
+
+		ASSERT_FMT_DBG(Wnd, "!![%s][%s] Child wnd is nullptr! Something strange!", __FUNCTION__, this->WindowName_script());
+
+		if (Wnd && Wnd->IsEnabled())
+		{
+			if (Wnd->OnKeyboardHold(dik))
+			{
 				return true;
+			}
+		}
+
+		if (size != m_ChildWndList.size()) {
+			iter = m_ChildWndList.rbegin();
+			std::advance(iter, processed);
+		}
+		else {
+			processed++;
+		}
+	}
 
 	return false;
 }
@@ -587,6 +620,13 @@ bool CUIWindow::BringToTop(CUIWindow* pChild)
 	m_ChildWndList.push_back(pChild);
 
 	return true;
+}
+
+bool CUIWindow::BringToBottom( CUIWindow* pChild ) {
+  if( !IsChild( pChild ) ) return false;
+  m_ChildWndList.remove( pChild );
+  m_ChildWndList.push_front( pChild );
+  return true;
 }
 
 //поднять на вершину списка всех родителей окна и его самого

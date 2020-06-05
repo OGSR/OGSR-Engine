@@ -11,17 +11,13 @@ CUINewsItemWnd::CUINewsItemWnd()
 CUINewsItemWnd::~CUINewsItemWnd()
 {}
 
-void CUINewsItemWnd::Init				(LPCSTR xml_name, LPCSTR start_from)
+void CUINewsItemWnd::Init( CUIXml& uiXml, LPCSTR start_from )
 {
-	CUIXml uiXml;
-	bool xml_result = uiXml.Init(CONFIG_PATH, UI_PATH, xml_name);
-	R_ASSERT3(xml_result, "xml file not found", xml_name);
-
 	CUIXmlInit xml_init;
 
 	string512 str;
 
-	strcpy(str,start_from);
+	strcpy_s(str,start_from);
 	xml_init.InitWindow			(uiXml,str,0,this);
 
 	strconcat(sizeof(str),str,start_from,":image");

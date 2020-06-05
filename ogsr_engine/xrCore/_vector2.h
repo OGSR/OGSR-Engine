@@ -1,5 +1,4 @@
-#ifndef __V2D__
-#define __V2D__
+#pragma once
 
 template <class T>
 struct _vector2 
@@ -21,19 +20,20 @@ public:
 	IC SelfRef min(T _x, T _y)						{ x=_min(x,_x);  y=_min(y,_y);	return *this;	}
 	IC SelfRef max(const Self &p)					{ x=_max(x,p.x); y=_max(y,p.y);	return *this;	}
 	IC SelfRef max(T _x, T _y)						{ x=_max(x,_x);  y=_max(y,_y);	return *this;	}
-	IC SelfRef sub(T p)								{ x-=p; y-=p;					return *this;	}
+	IC SelfRef sub(const T p)						{ x-=p; y-=p;					return *this;	}
 	IC SelfRef sub(const Self &p)					{ x-=p.x; y-=p.y;				return *this;	}
 	IC SelfRef sub(const Self &p1, const Self &p2)	{ x=p1.x-p2.x; y=p1.y-p2.y;		return *this;	}
 	IC SelfRef sub(const Self &p, float d)			{ x=p.x-d; y=p.y-d;				return *this;	}
-	IC SelfRef add(T p)								{ x+=p; y+=p;					return *this;	}
+	IC SelfRef add(const T p)						{ x+=p; y+=p;					return *this;	}
 	IC SelfRef add(const Self &p)					{ x+=p.x; y+=p.y;				return *this;	}
 	IC SelfRef add(const Self &p1, const Self &p2)	{ x=p1.x+p2.x; y=p1.y+p2.y;		return *this;	}
 	IC SelfRef add(const Self &p, float d)			{ x=p.x+d; y=p.y+d;				return *this;	}
 	IC SelfRef mul(const T s)						{ x*=s; y*=s;					return *this;	}
-	IC SelfRef mul(Self &p)							{ x*=p.x; y*=p.y;				return *this;	}
+	IC SelfRef mul(const Self &p)					{ x*=p.x; y*=p.y;				return *this;	}
 	IC SelfRef div(const T s)						{ x/=s; y/=s;					return *this;	}
+	IC SelfRef div(const Self &p)					{ x/=p.x; y/=p.y;				return *this;	}
 	IC SelfRef rot90(void)							{ float t=-x; x=y; y=t;			return *this;	}
-    IC SelfRef cross(Self &D)						{ x = D.y; y = -D.x;            return *this;	}
+    IC SelfRef cross(const Self &D)						{ x = D.y; y = -D.x;            return *this;	}
 	IC T dot(Self &p)								{ return x*p.x + y*p.y;			}
 	IC T dot(const Self &p) const					{ return x*p.x + y*p.y;			}
 	IC SelfRef norm(void)							{ float m=_sqrt(x*x+y*y); x/=m; y/=m;			return *this;	}
@@ -115,5 +115,3 @@ typedef _vector2<int>		Ivector2;
 
 template <class T>
 BOOL	_valid			(const _vector2<T>& v)	{ return _valid((T)v.x) && _valid((T)v.y);	}
-
-#endif

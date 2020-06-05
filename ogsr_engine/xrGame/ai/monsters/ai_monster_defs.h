@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../../../xr_3da/SkeletonAnimated.h"
+#include "../../../Include/xrRender/KinematicsAnimated.h"
+#include "../../../xr_3da/bone.h"
 #include "../../../xr_3da/cameramanager.h"
 
 typedef u32 TTime;
@@ -237,6 +238,7 @@ enum EAction {
 	ACT_WALK_FWD,
 	ACT_WALK_BKWD,
 	ACT_RUN,
+	ACT_CAPTURE_PREPARE,
 	ACT_EAT,
 	ACT_SLEEP,
 	ACT_REST,

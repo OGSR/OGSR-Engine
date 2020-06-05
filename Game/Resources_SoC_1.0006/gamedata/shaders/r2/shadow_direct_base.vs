@@ -13,7 +13,7 @@ v_shadow_direct 	main	( a2v  	I )
 	v_shadow_direct	O;
 
 	O.hpos 	= mul		(m_WVP,	I.P	);
-#if defined(USE_PCSS) || !defined(USE_HWSMAP)
+#ifndef USE_HWSMAP
 	O.depth = O.hpos.z;
 #endif
  	return	O;

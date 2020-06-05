@@ -27,6 +27,7 @@ using namespace StalkerDecisionSpace;
 
 CStalkerPlanner::CStalkerPlanner	()
 {
+	m_active			= true;
 	m_affect_cover			= false;
 }
 
@@ -67,10 +68,14 @@ void CStalkerPlanner::setup			(CAI_Stalker *object)
 	m_dead_goal.add_condition	(CWorldProperty(eWorldPropertyAlreadyDead,true));
 
 	m_affect_cover				= false;
+	m_active				= true;
 }
 
 void CStalkerPlanner::update			(u32 time_delta)
 {
+	if ( !active() )
+	  return;
+
 	if ((psAI_Flags.test(aiGOAP) && !m_use_log) || (!psAI_Flags.test(aiGOAP) && m_use_log))
 		set_use_log			(!!psAI_Flags.test(aiGOAP));
 	

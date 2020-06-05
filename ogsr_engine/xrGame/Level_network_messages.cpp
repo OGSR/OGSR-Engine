@@ -260,7 +260,7 @@ void CLevel::ClientReceive()
 					string4096 NewServerOptions = "";
 					sprintf_s(NewServerOptions, "%s/%s", LevelName, GameType);
 
-					if (m_SO) strcat(NewServerOptions, m_SO);
+					if (m_SO) strcat_s(NewServerOptions, m_SO);
 					m_caServerOptions = NewServerOptions;
 
 					Engine.Event.Defer	("KERNEL:disconnect");
@@ -297,8 +297,6 @@ void				CLevel::OnMessage				(void* data, u32 size)
 		{
 //			NET_Packet *P = &(m_aDemoData.front());
 			DemoDataStruct *P = &(m_aDemoData.front());
-			u32 CurTime = timeServer_Async();
-			timeServer_UserDelta(P->m_dwTimeReceive - CurTime);
 			m_bDemoStarted = TRUE;
 			Msg("! ------------- Demo Started ------------");
 			m_dwCurDemoFrame = P->m_dwFrame;

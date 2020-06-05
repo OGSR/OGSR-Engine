@@ -1197,7 +1197,7 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 void CUIMainIngameWnd::UpdateActiveItemInfo()
 {
 	PIItem item		=  m_pActor->inventory().ActiveItem();
-	if(item) 
+	if ( item && item->NeedBriefInfo() )
 	{
 		xr_string					str_name;
 		xr_string					icon_sect_name;
@@ -1216,7 +1216,7 @@ void CUIMainIngameWnd::UpdateActiveItemInfo()
 		UIWeaponIcon.Show			(false);
 		UIWeaponSignAmmo.Show		(false);
 		UIWeaponBack.SetText		("");
-		m_pWeapon					= NULL;
+		m_pWeapon = item ? smart_cast<CWeapon*>( item ) : nullptr;
 	}
 }
 
@@ -1305,7 +1305,7 @@ void CUIMainIngameWnd::draw_adjust_mode()
 
 			Fvector FP,SP,FP2;
 
-			CKinematics* V			= smart_cast<CKinematics*>(pWpnHud->Visual());
+			IKinematics* V			= smart_cast<IKinematics*>(pWpnHud->Visual());
 			VERIFY					(V);
 			V->CalculateBones		();
 

@@ -28,7 +28,7 @@ private:
     // Loop through all remaining jobs
     void queueLoop() {
 		//
-		CoInitializeEx(NULL, COINIT_MULTITHREADED);
+		CoInitializeEx(nullptr, COINIT_MULTITHREADED);
 		//
         while (true) {
             std::function<void()> job;
@@ -52,7 +52,11 @@ private:
     }
 
 public:
-    Thread() { worker = std::thread(&Thread::queueLoop, this); }
+    Thread(std::string thread_name = "") {
+		worker = std::thread(&Thread::queueLoop, this);
+		if (!thread_name.empty())
+			set_thread_name(thread_name.c_str(), worker);
+	}
 
     ~Thread() {
         if (worker.joinable()) {
@@ -83,9 +87,9 @@ class ThreadPool {
 public:
     std::vector<std::unique_ptr<Thread>> threads;
 
-    void initialize(std::uint32_t threads_count = std::thread::hardware_concurrency()) {
+    void initialize(std::uint32_t threads_count = std::thread::hardware_concurrency(), std::string thread_name = "") {
 		do {
-			threads.push_back(std::make_unique<Thread>());
+			threads.emplace_back(std::make_unique<Thread>(thread_name.empty() ? thread_name : thread_name + std::to_string(threads_count)));
 		} while (--threads_count);
     }
 

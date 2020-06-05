@@ -5,9 +5,10 @@
 #include "stdafx.h"
 #include "EffectorZoomInertion.h"
 
-#define EFFECTOR_ZOOM_SECTION "zoom_inertion_effector"
-
 #include "Actor.h"
+#include "ActorEffector.h"
+
+constexpr const char* EFFECTOR_ZOOM_SECTION = "zoom_inertion_effector";
 
  bool external_zoom_osc = false; // alpet: флажок внешнего рассчета колебаний прицела (из скриптов).
 
@@ -111,13 +112,12 @@ void			CEffectorZoomInertion::CalcNextPoint		()
 	m_vTargetVel.sub(m_vTargetPoint, m_vLastPoint);
 };
 
-BOOL CEffectorZoomInertion::Process		(Fvector &p, Fvector &d, Fvector &n, 
-										 float& fFov, float& fFar, float& fAspect)
+BOOL CEffectorZoomInertion::ProcessCam(SCamEffectorInfo& info)
 {
 	bool camera_moved = false;
 
 	//определяем двигал ли прицелом актер
-	if(!d.similar(m_vOldCameraDir, m_fCameraMoveEpsilon))
+	if(!info.d.similar(m_vOldCameraDir, m_fCameraMoveEpsilon))
 		camera_moved = true;
 
 	/*
@@ -145,10 +145,10 @@ BOOL CEffectorZoomInertion::Process		(Fvector &p, Fvector &d, Fvector &n,
 
 	m_vCurrentPoint.lerp(m_vLastPoint, m_vTargetPoint, float(m_dwTimePassed)/m_dwDeltaTime);
 
-	m_vOldCameraDir = d;	
+	m_vOldCameraDir = info.d;
 
 	if(!camera_moved)
-		d.add(m_vCurrentPoint);
+		info.d.add(m_vCurrentPoint);
 
 	m_dwTimePassed += Device.dwTimeDelta;
 

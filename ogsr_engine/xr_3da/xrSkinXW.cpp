@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
-#include "SkeletonX.h"
+#include "../Layers/xrRender/SkeletonXVertRender.h"
+#include "bone.h"
 #include "xrSkinXW.hpp"
 
 #ifndef _M_X64

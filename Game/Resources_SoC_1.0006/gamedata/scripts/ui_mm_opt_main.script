@@ -71,6 +71,9 @@ function options_dialog:InitControls()
 
 	self.tab = xml:InitTab("main_dialog:tab", self.dialog)
 	self:Register(self.tab, "tab")
+
+	self.message_box = CUIMessageBoxEx()
+	self.message_box:Init("message_box_restart_game")
 end
 
 function options_dialog:UpdateOptValues(flag) --true - применить настройки, false - отменить настройки, nil - просто обновить дефолтные значения
@@ -129,6 +132,8 @@ function options_dialog:OnPresetChanged()
 	local opt = COptionsManager()
 	opt:SetCurrentValues("mm_opt_video")
 	opt:SetCurrentValues("mm_opt_video_adv")
+
+	self:show_need_restart_wnd()
 end
 
 function options_dialog:OnBtnAccept()
@@ -209,4 +214,8 @@ function options_dialog:OnKeyboard(dik, keyboard_action)
 	end
 
 	return false
+end
+
+function options_dialog:show_need_restart_wnd()
+	self:GetHolder():start_stop_menu(self.message_box, true)
 end

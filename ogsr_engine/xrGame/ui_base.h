@@ -6,6 +6,7 @@
 struct CFontManager;
 class CUICursor;
 
+#include "ui_defs.h"
 
 class CDeviceResetNotifier :public pureDeviceReset
 {
@@ -69,6 +70,7 @@ public:
 	void			ClientToScreenScaled			(Fvector2& src_and_dest);
 	void			ClientToScreenScaledWidth		(float& src_and_dest);
 	void			ClientToScreenScaledHeight		(float& src_and_dest);
+	void			AlignPixel(float& src_and_dest);
 
 	Frect			ScreenRect						();
 	const C2DFrustum& ScreenFrustum					(){return (m_bPostprocess)?m_2DFrustumPP:m_2DFrustum;}
@@ -83,6 +85,10 @@ public:
 	static	bool	is_16_9_mode					();
 	shared_str		get_xml_name					(LPCSTR fn);
 	float			get_current_kx					();
+
+	IUIRender::ePointType m_currentPointType;
+
+	static bool is_widescreen();
 };
 
 extern CUICursor*	GetUICursor						();

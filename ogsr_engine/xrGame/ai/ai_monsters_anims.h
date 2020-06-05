@@ -8,31 +8,34 @@
 
 #pragma once
 
-#include "../../xr_3da/SkeletonAnimated.h"
+#include "../../Include\xrRender\Kinematics.h"
+#include "../../Include\xrRender\KinematicsAnimated.h"
+#include "../../Include\xrRender\animation_motion.h"
 #include "../ai_debug.h"
 
-DEFINE_VECTOR	(MotionID,ANIM_VECTOR, ANIM_IT);
+using ANIM_VECTOR = xr_vector<MotionID>;
 
 class CAniVector {
 public:
 	ANIM_VECTOR		A;
 
-			void	Load	(CKinematicsAnimated *tpKinematics, LPCSTR caBaseName);
+			void	Load	(IKinematicsAnimated *tpKinematics, LPCSTR caBaseName);
 };
 
 template <LPCSTR caBaseNames[]> class CAniFVector {
 public:
 	ANIM_VECTOR		A;
 
-	IC	void		Load(CKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
+	IC	void		Load(IKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
 	{
 		A.clear			();
 		string256		S;
-		for (int j=0; caBaseNames[j]; ++j);
+        int j = 0;
+		for (; caBaseNames[j]; ++j);
 		A.resize		(j);
 		for (int i=0; i<j; ++i) 
 		{
-			strconcat	(sizeof(S),S,caBaseName,caBaseNames[i]);
+			xr_strconcat(S,caBaseName,caBaseNames[i]);
 			A[i]		= tpKinematics->ID_Cycle_Safe(S);
 #ifdef DEBUG
 			if (A[i] && psAI_Flags.test(aiAnimation))
@@ -46,13 +49,14 @@ template <class TYPE_NAME, LPCSTR caBaseNames[]> class CAniCollection {
 public:
 	xr_vector<TYPE_NAME>	A;
 
-	IC	void		Load(CKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
+	IC	void		Load(IKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
 	{
 		A.clear		();
 		string256	S;
-		for (int j=0; caBaseNames[j]; ++j);
+        int j = 0;
+		for (; caBaseNames[j]; ++j);
 		A.resize	(j);
 		for (int i=0; i<j; ++i)
-			A[i].Load	(tpKinematics,strconcat(sizeof(S),S,caBaseName,caBaseNames[i]));
+			A[i].Load	(tpKinematics, xr_strconcat(S,caBaseName,caBaseNames[i]));
 	}
 };

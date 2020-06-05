@@ -49,6 +49,9 @@
     <Filter Include="XML_Parser">
       <UniqueIdentifier>{c21187ca-a254-4508-b106-203dce0324bb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Threading">
+      <UniqueIdentifier>{1359157e-93cd-4161-8071-b7f71df34faf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FTimer.cpp">
@@ -146,6 +149,10 @@
     </ClCompile>
     <ClCompile Include="XML_Parser\xrXMLParser.cpp">
       <Filter>XML_Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Layers\xrAPI\xrAPI.cpp" />
+    <ClCompile Include="Event.cpp">
+      <Filter>Threading</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -329,6 +336,10 @@
     </ClInclude>
     <ClInclude Include="_vector3d_ext.h">
       <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Include\xrAPI\xrAPI.h" />
+    <ClInclude Include="Event.hpp">
+      <Filter>Threading</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

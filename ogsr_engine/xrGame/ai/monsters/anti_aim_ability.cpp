@@ -79,6 +79,9 @@ bool   anti_aim_ability::check_start_condition ()
 		return							false;
 	}
 
+	if ( !check_update_condition() )
+	  return false;
+
 	if ( m_object->GetScriptControl() && !m_object->get_force_anti_aim() )
 	{
 		return							false;
@@ -175,12 +178,10 @@ void   anti_aim_ability::start_camera_effector ()
 	cam_eff->SetType					((ECamEffectorType)m_effector_id);
 	cam_eff->SetCyclic					(false);
 
-/*
 	if ( pSettings->line_exist(effector_name, "cam_eff_hud_affect") )
 	{
 		cam_eff->SetHudAffect			( !!pSettings->r_bool(effector_name, "cam_eff_hud_affect") );
 	}
-*/
 
 	LPCSTR fn = pSettings->r_string		(effector_name,"cam_eff_name");
 	cam_eff->Start						(fn);

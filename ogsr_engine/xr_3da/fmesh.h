@@ -1,10 +1,5 @@
-#ifndef fmeshH
-#define fmeshH
 #pragma once
 
-BOOL ValidateIndices		(u32 vCount, u32 iCount, u16* pIndices);
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////
 // MESH as it is represented in file
 enum MT {
 	MT_NORMAL				=0,
@@ -19,6 +14,8 @@ enum MT {
 	MT_PARTICLE_GROUP		=9,
 	MT_SKELETON_RIGID		=10,
 	MT_TREE_PM				=11,
+
+	MT_3DFLUIDVOLUME = 12,
 };
 
 enum OGF_Chuncks {
@@ -57,21 +54,7 @@ enum OGF_SkeletonVertType	{
 	OGF_VERTEXFORMAT_FVF_NL = 3 * 0x12071980,
 };
 
-const u16	xrOGF_SMParamsVersion	= 4;
-
-// OGF_DESC
-struct ECORE_API ogf_desc	{
-	shared_str	source_file;
-    shared_str	build_name;
-    time_t		build_time;
-    shared_str	create_name;
-    time_t		create_time;
-    shared_str	modif_name;
-    time_t		modif_time;
-    		ogf_desc():build_time(0),create_time(0),modif_time(0){}
-    void 	Load	(IReader& F);
-    void 	Save	(IWriter& F);
-};
+constexpr u16 xrOGF_SMParamsVersion = 4;
 
 // OGF_BBOX
 struct ogf_bbox		{
@@ -86,7 +69,7 @@ struct ogf_bsphere	{
 };
 
 // OGF_HEADER
-const u8	xrOGF_FormatVersion		= 4;
+constexpr u8 xrOGF_FormatVersion = 4;
 struct ogf_header {
 	u8			format_version;			// = xrOGF_FormatVersion
 	u8			type;					// MT
@@ -145,5 +128,3 @@ struct ENGINE_API	FSlideWindowItem	{
 // xform : matrix4x4
 // scale : vec4
 // bias  : vec4
-
-#endif // fmeshH

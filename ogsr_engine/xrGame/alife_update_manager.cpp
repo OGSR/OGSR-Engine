@@ -264,7 +264,7 @@ void CALifeUpdateManager::load			(LPCSTR game_name, bool no_assert, bool new_onl
 	u32									memory_usage = Memory.mem_usage();
 #endif
 
-	strcpy								(g_last_saved_game,game_name);
+	strcpy_s(g_last_saved_game,game_name);
 
 	if (new_only || !CALifeStorageManager::load(game_name)) {
 		R_ASSERT3						(new_only || no_assert && xr_strlen(game_name),"Cannot find the specified saved game ",game_name);
@@ -296,7 +296,7 @@ bool CALifeUpdateManager::load_game		(LPCSTR game_name, bool no_assert)
 		}
 	}
 	string512					S,S1;
-	strcpy						(S,**m_server_command_line);
+	strcpy_s(S,**m_server_command_line);
 	LPSTR						temp = strchr(S,'/');
 	R_ASSERT2					(temp,"Invalid server options!");
 	strconcat					(sizeof(S1),S1,game_name,temp);
@@ -329,6 +329,21 @@ void CALifeUpdateManager::jump_to_level			(LPCSTR level_name) const
 {
 	const CGameGraph::SLevel			&level = ai().game_graph().header().level(level_name);
 	GameGraph::_GRAPH_ID				dest = GameGraph::_GRAPH_ID(-1);
+
+#ifdef CRASH_ON_INVALID_VERTEX_ID
+	GameGraph::_GRAPH_ID n = ai().game_graph().header().vertex_count();
+	for ( GameGraph::_GRAPH_ID i = 0; i < n; ++i ) {
+	  if ( ai().game_graph().vertex( i )->level_id() == level.id() ) {
+	    dest = i;
+	    break;
+	  }
+	}
+	if ( !ai().game_graph().valid_vertex_id( dest ) ) {
+	  Msg( "! There is no game vertices on the level %s, cannot jump to the specified level", level_name );
+	  return;
+	}
+
+#else
 	GraphEngineSpace::CGameLevelParams	evaluator(level.id());
 	bool								failed = !ai().graph_engine().search(ai().game_graph(),graph().actor()->m_tGraphID,GameGraph::_GRAPH_ID(-1),0,evaluator);
 	if (failed) {
@@ -351,6 +366,8 @@ void CALifeUpdateManager::jump_to_level			(LPCSTR level_name) const
 	}
 	else
 		dest							= (GameGraph::_GRAPH_ID)evaluator.selected_vertex_id();
+#endif //CRASH_ON_INVALID_VERTEX_ID
+
 	NET_Packet							net_packet;
 	net_packet.w_begin					(M_CHANGE_LEVEL);
 	net_packet.w						(&dest,sizeof(dest));

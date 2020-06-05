@@ -2,9 +2,9 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
-float4 	main	( v_shadow_direct I )	: COLOR
+half4 	main	( v_shadow_direct I )	: COLOR
 {
-#if !defined(USE_PCSS) && defined(USE_HWSMAP)
+#ifdef	USE_HWSMAP
 	return 0;
 #else
 	return I.depth;

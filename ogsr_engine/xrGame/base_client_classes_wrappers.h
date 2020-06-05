@@ -11,7 +11,7 @@
 #include "script_export_space.h"
 #include "base_client_classes.h"
 #include "../xr_3da/engineapi.h"
-#include "..\xr_3da\ispatial.h"
+#include "../xrcdb/ispatial.h"
 #include "../xr_3da/isheduled.h"
 #include "../xr_3da/irenderable.h"
 #include "../xr_3da/icollidable.h"

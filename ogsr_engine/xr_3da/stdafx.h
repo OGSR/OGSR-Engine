@@ -1,12 +1,14 @@
 #pragma once
 
 #include "../xrCore/xrCore.h"
+#include "../Include/xrAPI/xrAPI.h"
 
 #ifdef DEBUG
 	#define D3D_DEBUG_INFO
 #endif
 
 #pragma warning(disable:4995)
+//KRodin: убрать?
 #include <d3d9.h>
 #pragma warning(default:4995)
 
@@ -16,7 +18,7 @@
 #include "device.h"
 #include "fs.h"
 
-#include "xrXRC.h"
+#include "../xrcdb/xrxrc.h"
 
 #include "../xrSound/sound.h"
 

@@ -44,7 +44,7 @@ bool CItemManager::useful			(const CGameObject *object) const
 		return				(false);
 
 	const CInventoryItem	*inventory_item = smart_cast<const CInventoryItem*>(object);
-	if (inventory_item && !inventory_item->useful_for_NPC())
+	if ( !inventory_item || !inventory_item->useful_for_NPC() )
 		return				(false);
 
 	if (!ai().get_level_graph() || !ai().level_graph().valid_vertex_id(object->ai_location().level_vertex_id()))

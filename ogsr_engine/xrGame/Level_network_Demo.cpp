@@ -92,13 +92,6 @@ void						CLevel::Demo_DumpData()
 	m_dwStoredDemoDataSize = 0;
 }
 
-void						CLevel_DemoCrash_Handler	()
-{
-	if (!g_pGameLevel) return;
-	Level().WriteStoredDemo();
-	Level().CallOldCrashHandler();
-}
-
 //#define STORE_TDEMO
 
 void						CLevel::Demo_PrepareToStore			()
@@ -107,10 +100,6 @@ void						CLevel::Demo_PrepareToStore			()
 
 	if (!m_bDemoSaveMode) return;
 
-	VERIFY						(!m_we_used_old_crach_handler);
-	m_we_used_old_crach_handler	= true;
-	m_pOldCrashHandler			= Debug.get_crashhandler();
-	Debug.set_crashhandler		(CLevel_DemoCrash_Handler);
 	//---------------------------------------------------------------
 	string1024 CName = "";
 	u32 CNameSize = 1024;
@@ -129,12 +118,6 @@ void						CLevel::Demo_PrepareToStore			()
 //	ZeroMemory(&m_sDemoHeader, sizeof(m_sDemoHeader));
 	m_sDemoHeader.Head[0] = 0;
 	m_sDemoHeader.ServerOptions = "";
-};
-
-void						CLevel::CallOldCrashHandler			()
-{
-	if (!m_pOldCrashHandler) return;
-	m_pOldCrashHandler();
 };
 
 void						CLevel::WriteStoredDemo			()
@@ -370,8 +353,6 @@ void						CLevel::Demo_Update				()
 				{
 					Device.dwTimeDelta		= P->FrameTime.dwTimeDelta;
 					Device.dwTimeGlobal		= P->FrameTime.dwTimeGlobal;
-					//					CurFrameTime.dwTimeServer		= Level().timeServer();
-					//					CurFrameTime.dwTimeServer_Delta = Level().timeServer_Delta();
 					Device.fTimeDelta		= P->FrameTime.fTimeDelta;
 					Device.fTimeGlobal		= P->FrameTime.fTimeGlobal;
 
@@ -413,7 +394,7 @@ void						CLevel::Demo_StartFrame			()
 	CurFrameTime.dwTimeDelta = Device.dwTimeDelta;
 	CurFrameTime.dwTimeGlobal = Device.dwTimeGlobal;
 	CurFrameTime.dwTimeServer = Level().timeServer();
-	CurFrameTime.dwTimeServer_Delta = Level().timeServer_Delta();
+	CurFrameTime.dwTimeServer_Delta = 0;
 	CurFrameTime.fTimeDelta = Device.fTimeDelta;
 	CurFrameTime.fTimeGlobal= Device.fTimeGlobal;
 

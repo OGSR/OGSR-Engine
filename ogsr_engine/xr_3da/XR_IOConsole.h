@@ -2,11 +2,12 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XR_IOCONSOLE_H__ADEEFD61_7731_11D3_83D8_00C02610C34E__INCLUDED_)
-#define AFX_XR_IOCONSOLE_H__ADEEFD61_7731_11D3_83D8_00C02610C34E__INCLUDED_
 #pragma once
 
 #include "iinputreceiver.h"
+
+#include "../Include/xrRender/FactoryPtr.h"
+#include "../Include/xrRender/ConsoleRender.h"
 
 //refs
 class ENGINE_API CGameFont;
@@ -17,6 +18,9 @@ class ENGINE_API CConsole  :
 	public pureRender,
 	public pureFrame
 {
+private:
+	FactoryPtr<IConsoleRender>* m_pRender = nullptr;
+
 public:
 	//t-defs
 	struct str_pred {	
@@ -40,6 +44,8 @@ private:
 	
 	BOOL			bRepeat;
 	BOOL			RecordCommands;
+
+	void out_font(const char* text, float& pos_y);
 protected:
 	int				scroll_delta;
 	char			editor[MAX_LEN];
@@ -47,7 +53,8 @@ protected:
 
 	CGameFont		*pFont;
 public:
-	virtual ~CConsole(){};
+	virtual ~CConsole() { if (m_pRender) xr_delete(m_pRender); }
+
 	string64		ConfigFile;
 	BOOL			bVisible;
 	vecCMD			Commands;
@@ -70,7 +77,10 @@ public:
 	char *			GetString			(LPCSTR cmd);
 	int				GetInteger			(LPCSTR cmd, int& val, int& min, int& max);
 	char *			GetToken			(LPCSTR cmd);
-	xr_token*		GetXRToken			(LPCSTR cmd);
+	const xr_token*		GetXRToken			(LPCSTR cmd);
+	Fvector			GetFVector			( LPCSTR cmd );
+	Fvector*		GetFVectorPtr		( LPCSTR cmd );
+	IConsole_Command* GetCommand		( LPCSTR cmd );
 //	char *			GetNextValue		(LPCSTR cmd);
 //	char *			GetPrevValue		(LPCSTR cmd);
 
@@ -91,5 +101,3 @@ public:
 };
 
 ENGINE_API extern CConsole* Console;
-
-#endif // !defined(AFX_XR_IOCONSOLE_H__ADEEFD61_7731_11D3_83D8_00C02610C34E__INCLUDED_)

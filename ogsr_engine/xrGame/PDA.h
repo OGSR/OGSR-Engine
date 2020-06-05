@@ -51,7 +51,7 @@ public:
 			bool 							IsOff					() {return m_bTurnedOff;}
 
 
-			void							ActivePDAContacts		(xr_vector<CPda*>& res);
+			xr_map<u16, CPda*>				ActivePDAContacts		();
 			CPda*							GetPdaFromOwner			(CObject* owner);
 			u32								ActiveContactsNum		()							{return m_active_contacts.size();}
 

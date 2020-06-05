@@ -1,1 +1,8 @@
-*.h       text=crlf linguist-language=HLSL
+*.s      text=crlf linguist-language=Lua
+*.h      text=crlf linguist-language=HLSL diff=HLSL
+*.ps     text=crlf linguist-language=HLSL diff=HLSL
+*.vs     text=crlf linguist-language=HLSL diff=HLSL
+*.ds     text=crlf linguist-language=HLSL diff=HLSL
+*.hs     text=crlf linguist-language=HLSL diff=HLSL
+*.cs     text=crlf linguist-language=HLSL diff=HLSL
+*.gs     text=crlf linguist-language=HLSL diff=HLSL

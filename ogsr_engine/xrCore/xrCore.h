@@ -32,6 +32,10 @@
 #undef DEBUG
 #endif
 
+#ifndef DEBUG
+#	define MASTER_GOLD
+#endif
+
 #include "xrCore_platform.h"
 
 #include <stdio.h>
@@ -212,7 +216,7 @@ public:
 	  af_psy_health              = 1ull << 20,
 	  outfit_af                  = 1ull << 21,
 	  gd_master_only             = 1ull << 22,
-	  use_legacy_load_screens    = 1ull << 23,
+	  scope_textures_autoresize  = 1ull << 23,
 	  ogse_new_slots             = 1ull << 24,
 	  ogse_wpn_zoom_system       = 1ull << 25,
 	  wpn_cost_include_addons    = 1ull << 26,
@@ -230,8 +234,9 @@ public:
 	  use_trade_deficit_factor   = 1ull << 38,
 	  show_objectives_ondemand   = 1ull << 39,
 	  pickup_check_overlaped     = 1ull << 40,
-	  wallmarks_on_static_only   = 1ull << 41,
-	  actor_thirst               = 1ull << 42;
+	  // !Место свободно!        = 1ull << 41,
+	  actor_thirst               = 1ull << 42,
+	  no_progress_bar_animation  = 1ull << 43;
 	};
 
 	void		_initialize	(LPCSTR ApplicationName, LogCallback cb=0, BOOL init_fs=TRUE, LPCSTR fs_fname=0);
@@ -253,3 +258,14 @@ extern XRCORE_API xrCore Core;
 extern XRCORE_API ThreadPool* TTAPI;
 
 extern XRCORE_API bool gModulesLoaded;
+
+// Трэш
+#	define	BENCH_SEC_CALLCONV
+#	define	BENCH_SEC_SCRAMBLEVTBL1
+#	define	BENCH_SEC_SCRAMBLEVTBL2
+#	define	BENCH_SEC_SCRAMBLEVTBL3
+#	define	BENCH_SEC_SIGN
+#	define	BENCH_SEC_SCRAMBLEMEMBER1
+#	define	BENCH_SEC_SCRAMBLEMEMBER2
+
+#define g_dedicated_server false

@@ -361,6 +361,12 @@ void CScriptGameObject::GiveMoney(int money)
 
 	pOurOwner->set_money		(pOurOwner->get_money() + money, true );
 }
+
+void CScriptGameObject::SetMoney(u32 money) {
+	CInventoryOwner* pOurOwner = smart_cast<CInventoryOwner*>(&object());
+	ASSERT_FMT(pOurOwner, "[%s]: %s not an CInventoryOwner", __FUNCTION__, object().Name());
+	pOurOwner->set_money(money, true);
+}
 //////////////////////////////////////////////////////////////////////////
 
 int	CScriptGameObject::GetGoodwill(CScriptGameObject* pToWho)

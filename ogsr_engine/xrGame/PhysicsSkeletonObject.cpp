@@ -3,7 +3,7 @@
 #include "PhysicsShell.h"
 #include "phsynchronize.h"
 #include "xrserver_objects_alife.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "../xr_3da/xr_collide_form.h"
 
 CPhysicsSkeletonObject::CPhysicsSkeletonObject()
@@ -35,7 +35,7 @@ BOOL CPhysicsSkeletonObject::net_Spawn(CSE_Abstract* DC)
 void	CPhysicsSkeletonObject::SpawnInitPhysics	(CSE_Abstract	*D)
 {
 	CreatePhysicsShell(D);
-	CKinematics* K=smart_cast<CKinematics*>	(Visual());
+	IKinematics* K=smart_cast<IKinematics*>	(Visual());
 	if(K)	
 	{	
 		K->CalculateBones_Invalidate();

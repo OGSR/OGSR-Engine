@@ -82,9 +82,9 @@ char* CUIOptionsItem::GetOptTokenValue()
 	return Console->GetToken(m_entry.c_str());
 }
 
-xr_token* CUIOptionsItem::GetOptToken()
+const xr_token* CUIOptionsItem::GetOptToken()
 {
-	auto* token = Console->GetXRToken(m_entry.c_str());
+	const auto* token = Console->GetXRToken(m_entry.c_str());
 	ASSERT_FMT(token, "Can't find token [%s]", m_entry.c_str());
 	return token;
 }
@@ -93,35 +93,26 @@ void CUIOptionsItem::SaveOptTokenValue(const char* val){
 	SaveOptStringValue(val);
 }
 
-void CUIOptionsItem::SaveValue(){
+#pragma todo("KRodin: желательно убрать этот хардкод, как в ЗП, конечно, но пока меня устраивает. Перетаскивать полностью движковые классы опций оттуда я точно не буду.")
+void CUIOptionsItem::SaveValue() {
 	if (
-		m_entry == "vid_mode" || 
-		m_entry == "_preset" || 
-		m_entry == "rs_fullscreen" ||	
-		m_entry == "r__supersample" || 
-		m_entry == "rs_v_sync" ||
-		m_entry == "rs_refresh_60hz" ||
-		m_entry == "texture_lod" ||
-		// KD: additional options
-		m_entry == "r2_mblur" ||
-		m_entry == "r2_aa" ||
-		m_entry == "r2_dof_quality" ||
-		m_entry == "r2_sunshafts" ||
-		m_entry == "r2_sunshafts_mode" ||
-		m_entry == "r2_ssao" ||
-		m_entry == "r2_dof" ||
-		m_entry == "r2_dof_zoom" ||
-		m_entry == "r2_dof_reload" ||
-		m_entry == "r__detail_radius" ||
-		m_entry == "r__detail_density" ||
-		m_entry == "r2_lens_flare" ||
-		m_entry == "r2_lens_dirt" ||
-		m_entry == "r2_volumetric_lights" ||
-		m_entry == "r2_lights_shadow_fade" ||
-		m_entry == "r2_ao" ||
-		m_entry == "r2_ao_intensity"
+		m_entry == "vid_mode"
+		|| m_entry == "rs_fullscreen"
+		|| m_entry == "rs_v_sync"
+		|| m_entry == "rs_refresh_60hz"
+		|| m_entry == "r2_soft_water"
+		|| m_entry == "r2_soft_particles"
+		|| m_entry == "r2_dof_enable"
+		|| m_entry == "r2_volumetric_lights"
+		|| m_entry == "r3_msaa_opt"
+		|| m_entry == "r3_dynamic_wet_surfaces"
+		|| m_entry == "r__detail_radius"
+		|| m_entry == "r__detail_density"
+		|| m_entry == "r__detail_scale"
+		|| m_entry == "r__no_scale_on_fade"
+		|| m_entry == "r2_sun_quality"
 	) m_optionsManager.DoVidRestart();
 	
-	if (/*m_entry == "snd_freq" ||*/ m_entry == "snd_efx")
+	if (m_entry == "snd_efx")
 		m_optionsManager.DoSndRestart();
 }

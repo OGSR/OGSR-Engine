@@ -253,18 +253,20 @@ void CSoundMemoryManager::add			(const CObject *object, int sound_type, const Fv
 		return;
 #endif
 
-#ifndef SAVE_VISIBLE_OBJECT_SOUNDS
-#	ifdef SAVE_FRIEND_SOUNDS
-		const CEntityAlive	*entity_alive	= smart_cast<const CEntityAlive*>(object);
-#	endif
-	// we do not save sounds from the objects we see (?!)
-	if (m_object->memory().visual().visible_now(entity_alive))
-		return;
-#endif
-
 	const CGameObject		*game_object = smart_cast<const CGameObject*>(object);
 	if (!game_object && object)
 		return;
+
+#ifndef SAVE_VISIBLE_OBJECT_SOUNDS
+/*
+#	ifdef SAVE_FRIEND_SOUNDS
+		const CEntityAlive	*entity_alive	= smart_cast<const CEntityAlive*>(object);
+#	endif
+*/
+	// we do not save sounds from the objects we see (?!)
+	if ( game_object && m_object->memory().visual().visible_now( game_object ) )
+		return;
+#endif
 
 	const CGameObject		*self = m_object;
 

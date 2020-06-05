@@ -91,7 +91,7 @@ end
 
 
 function main_menu:OnButton_last_save()
-	if not alife() or not ( db.actor_proxy.online and db.actor:alive() ) then
+	if not level.present() or not ( db.actor_proxy.online and db.actor:alive() ) then
 		self:LoadLastSave()
 		return
 	end
@@ -164,7 +164,7 @@ function main_menu:OnKeyboard(dik, keyboard_action)
 
 	if keyboard_action == ui_events.WINDOW_KEY_PRESSED then
 		if dik_to_bind(dik) == key_bindings.kQUIT then
-			if level.present() and db.actor and db.actor:alive() then
+			if level.present() and db.actor_proxy.online and db.actor:alive() then
 				self:close_and_delete_menu()
 			end
 		elseif dik == DIK_keys.DIK_N then --personal_test

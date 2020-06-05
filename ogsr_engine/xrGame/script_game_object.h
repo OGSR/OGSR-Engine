@@ -321,7 +321,8 @@ public:
 			void				TransferMoney		(int money, CScriptGameObject* pForWho);
 			void				GiveMoney			(int money);
 			u32					Money				();
-			
+			void				SetMoney(u32 money);
+
 			void				SetRelation			(ALife::ERelationType relation, CScriptGameObject* pWhoToSet);
 	
 			int					GetAttitude			(CScriptGameObject* pToWho);
@@ -415,6 +416,7 @@ public:
 			CScriptGameObject		*best_weapon	();
 			void					explode			(u32 level_time);
 			void explode_initiator( u16 );
+			bool is_exploded();
 			CScriptGameObject		*GetEnemy		() const;
 			CScriptGameObject		*GetCorpse		() const;
 			CScriptSoundInfo		GetSoundInfo	();
@@ -489,6 +491,7 @@ public:
 			void				extrapolate_length		(float extrapolate_length);
 			float				extrapolate_length		() const;
 			void				enable_memory_object	(CScriptGameObject *object, bool enable);
+			void remove_memory_object( CScriptGameObject* );
 			int					active_sound_count		();
 			int					active_sound_count		(bool only_playing);
 			const CCoverPoint	*best_cover				(const Fvector &position, const Fvector &enemy_position, float radius, float min_enemy_distance, float max_enemy_distance);
@@ -771,7 +774,7 @@ public:
 
 			// alpet: visual functions for CWeapon descedants 
 			_DECLARE_FUNCTION10 (alife_object			,			CSE_ALifeDynamicObject*);
-			_DECLARE_FUNCTION10 (GetWeaponHUD_Visual	,			IRender_Visual*);
+			_DECLARE_FUNCTION10 (GetWeaponHUD_Visual	,			IRenderVisual*);
 			_DECLARE_FUNCTION10 (GetWeaponHUD			,			CWeaponHUD*);
 			void				LoadWeaponHUD_Visual	(LPCSTR wpn_hud_section);
 
@@ -794,12 +797,18 @@ public:
 	bool throw_target( const Fvector&, u32 const, CScriptGameObject* = nullptr );
 
 	void g_fireParams( const CScriptGameObject*, Fvector&, Fvector& );
+	bool can_fire_to_enemy( const CScriptGameObject* );
+
+	void register_in_combat();
+	void unregister_in_combat();
 
 	float stalker_disp_base();
 	void  stalker_disp_base( float );
 	void  stalker_disp_base( float, float );
 
 	bool controller_psy_hit_active();
+
+	bool can_kill_enemy();
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

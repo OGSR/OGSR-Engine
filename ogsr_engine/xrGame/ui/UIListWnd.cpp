@@ -3,8 +3,6 @@
 //.#include "uiscrollbar.h"
 #include "UIFrameLineWnd.h"
 
-#pragma optimize("", off) //KRodin: добавлено специально, не убирать!
-
 //. #define				ACTIVE_BACKGROUND			"ui\\ui_pop_up_active_back"
 //. #define				ACTIVE_BACKGROUND_WIDTH		16
 //. #define				ACTIVE_BACKGROUND_HEIGHT	16
@@ -151,7 +149,7 @@ void CUIListWnd::RemoveItem(int index)
 	m_ScrollBar->Refresh();
 
 	//перенумеровать индексы заново
-	i=0;
+	int i=0;
 	for(LIST_ITEM_LIST_it it=m_ItemList.begin();  m_ItemList.end() != it; ++it,i++)
 	{
 		(*it)->SetIndex(i);
@@ -227,7 +225,7 @@ void CUIListWnd::UpdateList()
 	   
 
 	//показать текущий список
-	for(i=m_iFirstShownIndex; 
+	for(int i=m_iFirstShownIndex; 
 			i<_min(m_ItemList.size(),m_iFirstShownIndex + m_iRowNum+1);
 			++i, ++it)
 	{
@@ -474,7 +472,7 @@ int CUIListWnd::FindItemWithValue(int iValue)
 
 bool CUIListWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 {
-	bool with_shift = (Level().IR_GetKeyState(DIK_LSHIFT));
+	bool with_shift = Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT);
 
 	switch (mouse_action) 
 	{

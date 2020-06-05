@@ -10,12 +10,12 @@
 #include "visual_memory_manager.h"
 #include "ai/stalker/ai_stalker.h"
 #include "memory_space_impl.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "clsid_game.h"
 #include "ai_object_location.h"
 #include "level_graph.h"
 #include "stalker_movement_manager.h"
-#include "gamemtllib.h"
+#include "../xr_3da/gamemtllib.h"
 #include "agent_manager.h"
 #include "agent_member_manager.h"
 #include "ai_space.h"
@@ -29,6 +29,7 @@
 #include "memory_manager.h"
 #include "alife_registry_wrappers.h"
 #include "alife_simulator_header.h"
+#include "holder_custom.h"
 
 #ifndef MASTER_GOLD
 #	include "clsid_game.h"
@@ -149,17 +150,32 @@ void CVisualMemoryManager::reload				(LPCSTR section)
 		m_free.Load		(pSettings->r_string(section,"vision_free_section"),true);
 		m_danger.Load	(pSettings->r_string(section,"vision_danger_section"),true);
 	}
+	else if (m_object) {
+		m_free.Load( READ_IF_EXISTS( pSettings, r_string, section, "vision_free_section", section ), !!m_client );
+		m_danger.Load( READ_IF_EXISTS( pSettings, r_string, section, "vision_danger_section", section ), !!m_client );
+	}
 	else
 		m_free.Load		(section,!!m_client);
 }
 
 /*IC*/	const CVisionParameters &CVisualMemoryManager::current_state() const
 {
-	return				(!m_stalker || (m_stalker->movement().mental_state() != eMentalStateDanger) ? m_free : m_danger);
+	if ( m_stalker ) {
+		return			(m_stalker->movement().mental_state() == eMentalStateDanger) ? m_danger : m_free;
+	}
+	else if ( m_object ) { 
+		return			m_object->is_base_monster_with_enemy() ? m_danger : m_free;
+	}
+	else {
+		return			m_free;
+	}
 }
 
 u32	CVisualMemoryManager::visible_object_time_last_seen	(const CObject *object) const
 {
+	if ( Actor()->Holder() && smart_cast<const CActor*>( object ) )
+	  object = smart_cast<const CObject*>( Actor()->Holder() );
+
 	VISIBLES::iterator	I = std::find(m_objects->begin(),m_objects->end(),object_id(object));
 	if (I != m_objects->end()) 
 		return (I->m_level_time);	
@@ -169,6 +185,9 @@ u32	CVisualMemoryManager::visible_object_time_last_seen	(const CObject *object) 
 
 bool CVisualMemoryManager::visible_right_now	(const CGameObject *game_object) const
 {
+	if ( Actor()->Holder() && smart_cast<const CActor*>( game_object ) )
+	  game_object = smart_cast<const CGameObject*>( Actor()->Holder() );
+
 	VISIBLES::const_iterator		I = std::find(objects().begin(),objects().end(),object_id(game_object));
 	if ((objects().end() == I))
 		return						(false);
@@ -184,6 +203,9 @@ bool CVisualMemoryManager::visible_right_now	(const CGameObject *game_object) co
 
 bool CVisualMemoryManager::visible_now	(const CGameObject *game_object) const
 {
+	if ( Actor()->Holder() && smart_cast<const CActor*>( game_object ) )
+	  game_object = smart_cast<const CGameObject*>( Actor()->Holder() );
+
 	VISIBLES::const_iterator		I = std::find(objects().begin(),objects().end(),object_id(game_object));
 	return							((objects().end() != I) && (*I).visible(mask()));
 }
@@ -204,7 +226,7 @@ float CVisualMemoryManager::object_visible_distance(const CGameObject *game_obje
 
 	if (m_object) {
 		eye_matrix						= 
-			smart_cast<CKinematics*>(
+			smart_cast<IKinematics*>(
 				m_object->Visual()
 			)
 			->LL_GetTransform		(
@@ -484,7 +506,7 @@ float CVisualMemoryManager::feel_vision_mtl_transp(CObject* O, u32 element)
 {
 	float vis				= 1.f;
 	if (O){
-		CKinematics* V		= smart_cast<CKinematics*>(O->Visual());
+		IKinematics* V		= smart_cast<IKinematics*>(O->Visual());
 		if (0!=V){
 			CBoneData& B	= V->LL_GetData((u16)element);
 			vis				= GMLib.GetMaterialByIdx(B.game_mtl_idx)->fVisTransparencyFactor;
@@ -546,7 +568,7 @@ CVisibleObject *CVisualMemoryManager::visible_object	(const CGameObject *game_ob
 	return						(&*I);
 }
 
-IC	squad_mask_type CVisualMemoryManager::mask			() const
+squad_mask_type CVisualMemoryManager::mask			() const
 {
 	if (!m_stalker)
 		return					(squad_mask_type(-1));

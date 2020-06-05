@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../../../../xr_3da/SkeletonCustom.h"
+#include "../../../../Include/xrRender/Kinematics.h"
 #include "../../../Actor.h"
+#include "../../../inventory.h"
 #include "../../../../xr_3da/CameraBase.h"
 
 #include "../../../HUDManager.h"
@@ -34,11 +35,7 @@ void CStateBloodsuckerVampireExecuteAbstract::initialize()
 
 	HUD().GetUI()->HideGameIndicators();
 
-	NET_Packet			P;
-	Actor()->u_EventGen	(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
-	P.w_u32				(INV_STATE_BLOCK_ALL);
-	P.w_u8				(u8(true));
-	Actor()->u_EventSend(P);
+	Actor()->inventory().SetSlotsBlocked(INV_STATE_BLOCK_ALL, true);
 
 	//Actor()->set_inventory_disabled	(true);
 
@@ -112,12 +109,8 @@ TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireExecuteAbstract::show_hud()
 {
 	HUD().GetUI()->ShowGameIndicators();
-	NET_Packet			P;
 
-	Actor()->u_EventGen	(P, GEG_PLAYER_WEAPON_HIDE_STATE, Actor()->ID());
-	P.w_u32				(INV_STATE_BLOCK_ALL);
-	P.w_u8				(u8(false));
-	Actor()->u_EventSend(P);
+	Actor()->inventory().SetSlotsBlocked(INV_STATE_BLOCK_ALL, false);
 }
 
 TEMPLATE_SPECIALIZATION
@@ -231,7 +224,7 @@ void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_continue()
 	
 	object->sound().play(CAI_Bloodsucker::eVampireSucking);
 
-	if (!m_health_loss_activated) {
+	if ( !m_health_loss_activated && !fis_zero( object->m_vampire_loss_health_speed ) ) {
 		enemy->conditions().GetChangeValues().m_fV_HealthRestore -= object->m_vampire_loss_health_speed;
 		m_health_loss_activated = true;
 	}
@@ -257,7 +250,7 @@ void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_hit()
 
 	if (smart_cast<CActor const*>(enemy) && !fis_zero(object->m_vampire_wound))
 	{
-		CKinematics *pK = smart_cast<CKinematics*>(const_cast<CEntityAlive*>(enemy)->Visual());
+		IKinematics *pK = smart_cast<IKinematics*>(const_cast<CEntityAlive*>(enemy)->Visual());
 		enemy->conditions().AddWound(object->m_vampire_wound, ALife::eHitTypeWound, pK->LL_BoneID("bip01_head"));
 	}
 }
@@ -267,7 +260,7 @@ void CStateBloodsuckerVampireExecuteAbstract::execute_vampire_hit()
 TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerVampireExecuteAbstract::look_head()
 {
-	CKinematics *pK = smart_cast<CKinematics*>(object->Visual());
+	IKinematics *pK = smart_cast<IKinematics*>(object->Visual());
 	Fmatrix bone_transform;
 	bone_transform = pK->LL_GetTransform(pK->LL_BoneID("bip01_head"));	
 

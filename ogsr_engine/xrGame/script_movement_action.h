@@ -40,6 +40,8 @@ public:
 		eGoalTypeNoPathPosition,
 		eGoalTypePathNodePosition,
 		eGoalTypeInput,
+		eGoalTypeJumpToPosition,
+		eGoalTypeFollowLeader,
 		eGoalTypeDummy = u32(-1),
 	};
 

@@ -1,10 +1,14 @@
+#ifndef GameFontH
+#define GameFontH
 #pragma once
 
 #include "MbHelpers.h"
 
+#include "../Include/xrRender/FontRender.h"
+
 class ENGINE_API CGameFont
-	: public pureRender
 {
+	friend class dxFontRender;
 public:
 	enum EAligment{
 		alLeft				= 0,
@@ -14,7 +18,7 @@ public:
 private:
 	struct String
 	{
-		string512	string;
+		string1024	string;
 		float		x,y;
 		float		height;
 		u32			c;
@@ -37,8 +41,7 @@ protected:
 	float					fTCHeight;
 	xr_vector<String>		strings;
 
-	ref_shader				pShader;
-	ref_geom				pGeom;
+	IFontRender				*pFontRender;
 
 	u32						nNumChars;
 
@@ -79,7 +82,7 @@ public:
 	float					SizeOf_			( LPCSTR s );
 	float					SizeOf_			( const wide_char *wsStr );
 
-	float					SizeOf_			( const char cChar );
+	float					SizeOf_			( const char cChar );  // only ANSII 
 
 	float					CurrentHeight_	();
 
@@ -97,11 +100,10 @@ public:
 	void  					OutI			( float _x , float _y , LPCSTR fmt , ... );
 	void  					Out				( float _x , float _y , LPCSTR fmt , ... );
 	void             		OutNext			( LPCSTR fmt , ... );
-	void             		OutPrev			( LPCSTR fmt , ... );
 
 	void					OutSkip			(float val=1.f);
 
-	virtual void			OnRender		();
+	void					OnRender		();
 
 	IC	void				Clear			()  { strings.clear(); };
 
@@ -109,3 +111,5 @@ public:
 	shared_str				m_font_name;
 #endif
 };
+
+#endif // _XR_GAMEFONT_H_

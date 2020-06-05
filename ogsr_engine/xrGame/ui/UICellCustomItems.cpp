@@ -11,8 +11,6 @@
 #include "UIInventoryWnd.h"
 #include "UICursor.h"
 
-#pragma optimize("", off) //KRodin: добавлено специально, не убирать!
-
 #define INV_GRID_WIDTHF			50.0f
 #define INV_GRID_HEIGHTF		50.0f
 
@@ -438,7 +436,7 @@ void CUIWeaponCellItem::InitAddon(CUIStatic* s, CIconParams &params, Fvector2 ad
 		s->SetWindowName("wpn_addon");
 }
 
-CUIStatic *MakeAddonStatic(CUIDragItem* i, ref_shader &shader)
+CUIStatic *MakeAddonStatic(CUIDragItem* i, ui_shader& shader)
 {
 	CUIStatic* s = xr_new<CUIStatic>();
 	s->SetShader(shader);
@@ -478,7 +476,7 @@ CBuyItemCustomDrawCell::CBuyItemCustomDrawCell	(LPCSTR str, CGameFont* pFont)
 {
 	m_pFont		= pFont;
 	VERIFY		(xr_strlen(str)<16);
-	strcpy		(m_string,str);
+	strcpy_s(m_string,str);
 }
 
 void CBuyItemCustomDrawCell::OnDraw(CUICellItem* cell)

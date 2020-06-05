@@ -506,6 +506,7 @@ public:
 	virtual	void					switch_online			();
 	virtual	void					switch_offline			();
 	virtual	bool					redundant				() const;
+			ALife::_OBJECT_ID		commander_id			();	
 #else
 	virtual void					update					() {};
 #endif

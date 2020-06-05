@@ -18,7 +18,7 @@
 #include "game_cl_base.h"
 #include "Actor.h"
 #include "string_table.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
 #include "object_broker.h"
 #include "..\xr_3da\IGame_Persistent.h"
@@ -197,6 +197,8 @@ void CInventoryItem::Load(LPCSTR section)
 	m_fPsyHealthRestoreSpeed = READ_IF_EXISTS( pSettings, r_float, section,	"psy_health_restore_speed", 0.f );
 	m_fRadiationRestoreSpeed = READ_IF_EXISTS( pSettings, r_float, section,	"radiation_restore_speed", 0.f );
 	m_always_ungroupable = READ_IF_EXISTS( pSettings, r_bool, section, "always_ungroupable", false );
+
+	m_need_brief_info = READ_IF_EXISTS( pSettings, r_bool, section, "show_brief_info", true );
 }
 
 
@@ -277,12 +279,12 @@ bool CInventoryItem::Useful() const
 	return CanTake();
 }
 
-bool CInventoryItem::Activate() 
+bool CInventoryItem::Activate( bool now )
 {
 	return false;
 }
 
-void CInventoryItem::Deactivate() 
+void CInventoryItem::Deactivate( bool now )
 {
 }
 
@@ -948,7 +950,7 @@ void CInventoryItem::UpdateXForm	()
 		return;
 
 	R_ASSERT		(E);
-	CKinematics*	V		= smart_cast<CKinematics*>	(E->Visual());
+	IKinematics*	V		= smart_cast<IKinematics*>	(E->Visual());
 	VERIFY			(V);
 
 	// Get matrices
@@ -997,7 +999,7 @@ void CInventoryItem::OnRender()
 		if (!(dbg_net_Draw_Flags.is_any((1<<4)))) return;
 
 		Fvector bc,bd; 
-		object().Visual()->vis.box.get_CD	(bc,bd);
+		object().Visual()->getVisData().box.get_CD	(bc,bd);
 		Fmatrix	M = object().XFORM();
 		M.c.add (bc);
 		Level().debug_renderer().draw_obb			(M,bd,color_rgba(0,0,255,255));
@@ -1177,7 +1179,7 @@ void CInventoryItem::SetLoadedBeltIndex( u8 pos ) {
 
 
 void CInventoryItem::OnMoveToSlot() {
-  if ( smart_cast<CActor*>( object().H_Parent() ) && !smart_cast<CGrenade*>( this )) {
+  if ( smart_cast<CActor*>( object().H_Parent() )/* && !smart_cast<CGrenade*>( this )*/) {
     if ( Core.Features.test( xrCore::Feature::equipped_untradable ) ) {
       m_flags.set( FIAlwaysUntradable, TRUE );
       m_flags.set( FIUngroupable,      TRUE );

@@ -58,6 +58,8 @@ struct SBullet
 	//---------------------------------
 	u16				targetID			;
 	bool			operator	==		(u32 ID){return	ID == m_dwID;}
+
+  bool m_on_bullet_hit;
 public:
 					SBullet				();
 					~SBullet			();
@@ -73,6 +75,9 @@ public:
 										float	maximum_distance,
 										const	CCartridge& cartridge,
 										bool	SendHit);
+
+  bool isOnBulletHit() { return m_on_bullet_hit; }
+  void setOnBulletHit( bool flag ) { m_on_bullet_hit = flag; }
 };
 
 class CLevel;
@@ -178,7 +183,7 @@ public:
 
 	void 					Load				();
 	void 					Clear				();
-	void 					AddBullet			(const Fvector& position, const Fvector& direction, 
+	SBullet&				AddBullet			(const Fvector& position, const Fvector& direction, 
 												float starting_speed, float power, float impulse, 
 												u16	sender_id, u16 sendersweapon_id,
 												ALife::EHitType e_hit_type, float maximum_distance, 

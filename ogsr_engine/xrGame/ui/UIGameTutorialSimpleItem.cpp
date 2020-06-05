@@ -14,8 +14,6 @@
 #include "UITalkWnd.h"
 #include "UICarBodyWnd.h"
 
-#pragma optimize("", off) //KRodin: добавлено специально, не убирать!
-
 extern ENGINE_API BOOL bShowPauseString;
 
 //-----------------------------------------------------------------------------
@@ -38,9 +36,9 @@ bool CUISequenceSimpleItem::IsPlaying()
 
 CUIWindow* find_child_window(CUIWindow* parent, const shared_str& _name)
 {
-	CUIWindow::WINDOW_LIST& wl		= parent->GetChildWndList();
-	CUIWindow::WINDOW_LIST_it _I	= wl.begin();
-	CUIWindow::WINDOW_LIST_it _E	= wl.end();
+	auto& wl = parent->GetChildWndList();
+	auto _I	= wl.begin();
+	auto _E	= wl.end();
 	for(;_I!=_E;++_I) if((*_I)->WindowName()==_name) return (*_I);
 	return NULL;
 }
@@ -60,7 +58,7 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
 	m_time_length			= xml->ReadFlt			("length_sec",0,0		);
 	m_desired_cursor_pos.x	= xml->ReadAttribFlt	("cursor_pos",0,"x",1024);
 	m_desired_cursor_pos.y	= xml->ReadAttribFlt	("cursor_pos",0,"y",768	);
-	strcpy					(m_pda_section, xml->Read("pda_section",0,"")	);
+	strcpy_s(m_pda_section, xml->Read("pda_section",0,"")	);
 
 	LPCSTR str				= xml->Read				("pause_state",0,"ignore");
 	m_flags.set										(etiNeedPauseOn, 0==_stricmp(str, "on"));

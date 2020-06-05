@@ -54,7 +54,8 @@ void CPS_Instance::PSI_destroy		()
 	g_pGamePersistent->ps_destroy.push_back	(this);
 }
 //----------------------------------------------------
-void CPS_Instance::PSI_internal_delete		()
+void CPS_Instance::PSI_internal_delete()
 {
-	delete			(this);
+	CPS_Instance* self = this;
+	xr_delete(self);
 }

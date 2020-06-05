@@ -8,7 +8,6 @@
 #include "UITradeWnd.h"
 #include "UICarBodyWnd.h"
 
-#pragma optimize("", off) //KRodin: добавлено специально, не убирать!
 
 CUIDragItem* CUIDragDropListEx::m_drag_item = NULL;
 
@@ -43,6 +42,8 @@ CUIDragDropListEx::CUIDragDropListEx()
 	AddCallback					("cell_item",	DRAG_DROP_ITEM_SELECTED,		CUIWndCallback::void_function		(this, &CUIDragDropListEx::OnItemSelected)			);
 	AddCallback					("cell_item",	DRAG_DROP_ITEM_RBUTTON_CLICK,	CUIWndCallback::void_function	(this, &CUIDragDropListEx::OnItemRButtonClick)			);
 	AddCallback					("cell_item",	DRAG_DROP_ITEM_DB_CLICK,		CUIWndCallback::void_function		(this, &CUIDragDropListEx::OnItemDBClick)			);
+
+	back_color = 0xFFFFFFFF;
 
 	SetDrawGrid(true);
 
@@ -81,13 +82,46 @@ bool CUIDragDropListEx::GetCustomPlacement()
 {
 	return !!m_flags.test(flCustomPlacement);
 }
+
 bool CUIDragDropListEx::GetVerticalPlacement()
 {
 	return !!m_flags.test(flVerticalPlacement);
 }
+
+void CUIDragDropListEx::SetAlwaysShowScroll(bool b)
+{
+	m_flags.set(flAlwaysShowScroll,b);
+}
+
 void CUIDragDropListEx::SetVerticalPlacement(bool b)
 {
 	m_flags.set(flVerticalPlacement, b);
+}
+
+void CUIDragDropListEx::SetVirtualCells(bool b)
+{
+	m_flags.set(flVirtualCells,b);
+}
+
+bool CUIDragDropListEx::GetVirtualCells()
+{
+	return !!m_flags.test(flVirtualCells);
+}
+
+void CUIDragDropListEx::SetHighlightCellSp( bool b ) {
+  m_flags.set( flHighlightCellSp, b );
+}
+
+bool CUIDragDropListEx::GetHighlightCellSp() {
+  return !!m_flags.test( flHighlightCellSp );
+}
+
+void CUIDragDropListEx::SetHighlightAllCells( bool b ) {
+  m_flags.set( flHighlightAllCells, b );
+}
+
+bool CUIDragDropListEx::GetHighlightAllCells() {
+  return !!m_flags.test( flHighlightAllCells );
 }
 
 void CUIDragDropListEx::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
@@ -235,7 +269,7 @@ void CUIDragDropListEx::OnItemRButtonClick(CUIWindow* w, void* pData)
 void CUIDragDropListEx::GetClientArea(Frect& r)
 {
 	GetAbsoluteRect				(r);
-	if(m_vScrollBar->GetVisible())
+	if(m_vScrollBar->GetVisible() || m_flags.test(flAlwaysShowScroll))
 		r.x2 -= m_vScrollBar->GetWidth	();
 }
 
@@ -250,7 +284,7 @@ void CUIDragDropListEx::ClearAll(bool bDestroy)
 
 void CUIDragDropListEx::Compact()
 {
-	CUIWindow::WINDOW_LIST	wl		= m_container->GetChildWndList();
+	auto& wl = m_container->GetChildWndList();
 	ClearAll						(false);
 
 	CUIWindow::WINDOW_LIST_it it	= wl.begin();
@@ -303,10 +337,19 @@ void CUIDragDropListEx::ReinitScroll()
 		float h2 = GetWndSize().y;
 		VERIFY						(_valid(h1));
 		VERIFY						(_valid(h2));
-		m_vScrollBar->Show			( h1 > h2 );
-		m_vScrollBar->Enable		( h1 > h2 );
+		float dh = h1-h2;
+		m_vScrollBar->Show			( (dh > 0) || m_flags.test(flAlwaysShowScroll) );
+		m_vScrollBar->Enable		( (dh > 0) || m_flags.test(flAlwaysShowScroll) );
 
-		m_vScrollBar->SetRange		(0, _max(0, iFloor(h1 - h2)));
+		if ( dh < 0 )
+		{
+//			dh = 0;
+			m_vScrollBar->SetRange	(0, 0);
+		}
+		else
+		{
+			m_vScrollBar->SetRange	(0, iFloor(dh));
+		}
 		m_vScrollBar->SetStepSize	(CellSize().y / 3);
 		m_vScrollBar->SetPageSize	(1);
 		
@@ -324,7 +367,7 @@ bool CUIDragDropListEx::OnMouse(float x, float y, EUIMessages mouse_action)
 
 	if(m_vScrollBar->IsShown())
 	{
-		bool with_shift = (Level().IR_GetKeyState(DIK_LSHIFT));
+		bool with_shift = Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT);
 
 		switch(mouse_action){
 		case WINDOW_MOUSE_WHEEL_DOWN:
@@ -467,11 +510,50 @@ void CUIDragDropListEx::clear_select_armament()
 	m_container->clear_select_armament();
 }
 
+void CUIDragDropListEx::SetCellsVertAlignment(xr_string alignment)
+{
+	if(strchr(alignment.c_str(), 't'))
+	{
+		m_virtual_cells_alignment.y = 0;
+		return;
+	}
+	if(strchr(alignment.c_str(), 'b'))
+	{
+		m_virtual_cells_alignment.y = 2;
+		return;
+	}
+	m_virtual_cells_alignment.y = 1;
+}
+void CUIDragDropListEx::SetCellsHorizAlignment(xr_string alignment)
+{
+	if(strchr(alignment.c_str(), 'l'))
+	{
+		m_virtual_cells_alignment.x = 0;
+		return;
+	}
+	if(strchr(alignment.c_str(), 'r'))
+	{
+		m_virtual_cells_alignment.x = 2;
+		return;
+	}
+	m_virtual_cells_alignment.x = 1;
+}
+
+Ivector2 CUIDragDropListEx::PickCell(const Fvector2& abs_pos) 
+{
+	return m_container->PickCell(abs_pos);
+};
+
+CUICell& CUIDragDropListEx::GetCellAt(const Ivector2& pos) 
+{
+	return m_container->GetCellAt(pos);
+};
+
 CUICellContainer::CUICellContainer(CUIDragDropListEx* parent)
 {
 	m_pParentDragDropList		= parent;
-	hShader.create				("hud\\fog_of_war","ui\\ui_grid");
-	hGeom.create				(FVF::F_TL, RCache.Vertex.Buffer(), 0);
+	hShader->create("hud\\fog_of_war", "ui\\ui_grid");
+	m_cellSpacing.set			( 0, 0 );
 }
 
 CUICellContainer::~CUICellContainer()
@@ -525,8 +607,24 @@ void CUICellContainer::PlaceItemAtPos(CUICellItem* itm, Ivector2& cell_pos)
 			C.SetItem		(itm,(x==0&&y==0));
 		}
 
-	itm->SetWndPos			( Fvector2().set( ((m_cellSize.x + CellsSpacing().x)*cp.x),		((m_cellSize.y + CellsSpacing().y)*cp.y))	);
 	itm->SetWndSize			( Fvector2().set( (m_cellSize.x*cs.x),		(m_cellSize.y*cs.y)		 )	);
+	if(!m_pParentDragDropList->GetVirtualCells())
+		itm->SetWndPos			( Fvector2().set( ((CellsSpacing().x+m_cellSize.x)*cp.x), ((CellsSpacing().y+m_cellSize.y)*cp.y))	);
+	else
+	{
+		Ivector2 alignment_vec	= m_pParentDragDropList->GetVirtualCellsAlignment();
+		Fvector2 pos = Fvector2().set(0,0);
+		if(alignment_vec.x == 1)
+			pos.x = (GetWndSize().x-cs.x*(CellsSpacing().x+m_cellSize.x))/2;
+		else if(alignment_vec.x == 2)
+			pos.x = GetWndSize().x-cs.x*(CellsSpacing().x+m_cellSize.x);
+		
+		if(alignment_vec.y == 1)
+			pos.y = (GetWndSize().y-cs.y*(CellsSpacing().y+m_cellSize.y))/2;
+		else if(alignment_vec.y == 2)
+			pos.y = GetWndSize().y-cs.y*(CellsSpacing().y+m_cellSize.y);
+		itm->SetWndPos(pos);
+	}
 
 	AttachChild				(itm);
 	itm->OnAfterChild		(m_pParentDragDropList);
@@ -669,7 +767,7 @@ void CUICellContainer::SetCellsSpacing(const Ivector2& c)
 
 Ivector2 CUICellContainer::TopVisibleCell()
 {
-	return Ivector2().set	(0, iFloor(m_pParentDragDropList->ScrollPos()/float(CellSize().y)));
+	return Ivector2().set	(0, iFloor(m_pParentDragDropList->ScrollPos()/float(CellSize().y+CellsSpacing().y)));
 }
 
 CUICell& CUICellContainer::GetCellAt(const Ivector2& pos)
@@ -709,9 +807,11 @@ u32 CUICellContainer::GetCellsInRange(const Irect& rect, UI_CELLS_VEC& res)
 
 void CUICellContainer::ReinitSize()
 {
-	Fvector2							sz;
-	sz.set								(CellSize().x*m_cellsCapacity.x, CellSize().y*m_cellsCapacity.y);
-	SetWndSize							(sz);
+	Ivector2							sz;
+	sz.add								(CellsSpacing(), CellSize());
+	sz.mul								(CellsCapacity());
+	//sz.sub								(CellsSpacing());
+	SetWndSize							(Fvector2().set(sz.x,sz.y));
 	m_pParentDragDropList->ReinitScroll	();
 }
 
@@ -767,10 +867,42 @@ Ivector2 CUICellContainer::PickCell(const Fvector2& abs_pos)
 	GetAbsolutePos							(ap);
 	ap.sub									(abs_pos);
 	ap.mul									(-1);
-	res.x									= iFloor(ap.x/(m_cellSize.x + CellsSpacing().x));
-	res.y									= iFloor(ap.y/(m_cellSize.y + CellsSpacing().y));
+	res.x			= iFloor(ap.x/(m_cellSize.x+CellsSpacing().x*(m_cellsCapacity.x-1)/m_cellsCapacity.x));
+	res.y			= iFloor(ap.y/(m_cellSize.y+CellsSpacing().y*(m_cellsCapacity.y-1)/m_cellsCapacity.y));
 	if(!ValidCell(res))						res.set(-1, -1);
 	return res;
+}
+
+
+u8 CUICellContainer::get_select_mode( int x, int y ) {
+  Ivector2 cpos;
+  cpos.set( x, y );
+  cpos.add( TopVisibleCell() );
+  CUICell& ui_cell = GetCellAt( cpos );
+  u8 select_mode = 0;
+  if ( !ui_cell.Empty() ) {
+    if ( Core.Features.test( xrCore::Feature::select_mode_1342 ) ) {
+      if ( ui_cell.m_item->m_selected )
+        select_mode = 1;
+      else if ( ui_cell.m_item->m_select_armament )
+        select_mode = 3;
+      else if ( ui_cell.m_item->m_select_untradable )
+        select_mode = 4;
+      else if ( ui_cell.m_item->m_select_equipped )
+        select_mode = 2;
+    }
+    else {
+      if ( ui_cell.m_item->m_select_armament )
+        select_mode = 3;
+      else if ( ui_cell.m_item->m_select_untradable )
+        select_mode = 4;
+      else if ( ui_cell.m_item->m_select_equipped )
+        select_mode = 2;
+      else if ( ui_cell.m_item->m_selected )
+        select_mode = 1;
+     }
+  }
+  return select_mode;
 }
 
 
@@ -783,6 +915,7 @@ void CUICellContainer::Draw()
 	if					(cell_cnt.x==0 || cell_cnt.y==0)	return;
 
 	Ivector2			cell_sz = CellSize();
+	cell_sz.add			(CellsSpacing());
 
 	Irect				tgt_cells;
 	tgt_cells.lt		= TopVisibleCell();
@@ -796,7 +929,7 @@ void CUICellContainer::Draw()
 	GetAbsolutePos		(lt_abs_pos);
 
 	Fvector2					drawLT;
-	drawLT.set					(lt_abs_pos.x+tgt_cells.lt.x*cell_sz.x, lt_abs_pos.y+tgt_cells.lt.y*cell_sz.y);
+	drawLT.set( lt_abs_pos.x + tgt_cells.lt.x * cell_sz.x, lt_abs_pos.y + tgt_cells.lt.y * cell_sz.y );
 	UI()->ClientToScreenScaled	(drawLT, drawLT.x, drawLT.y);
 
 	const Fvector2 pts[6] =		{{0.0f,0.0f},{1.0f,0.0f},{1.0f,1.0f},
@@ -807,71 +940,61 @@ void CUICellContainer::Draw()
 								 {0.0f,0.0f},{tx,ty},{0.0f,ty}};
 
 	// calculate cell size in screen pixels
-	Fvector2 f_len;
-	UI()->ClientToScreenScaled(f_len, float(cell_sz.x), float(cell_sz.y) );
+	Fvector2 f_len, sp_len;
+	UI()->ClientToScreenScaled(f_len, float(CellSize().x), float(CellSize().y) );
+	UI()->ClientToScreenScaled(sp_len, float(CellsSpacing().x), float(CellsSpacing().y) );
 
 	// fill cell buffer
-	u32 vOffset					= 0;
-	FVF::TL* start_pv			= (FVF::TL*)RCache.Vertex.Lock	((tgt_cells.width()+1)*(tgt_cells.height()+1)*6,hGeom.stride(),vOffset);
-	FVF::TL* pv					= start_pv;
+	u32 max_prim_cnt = ((tgt_cells.width() + 1)*(tgt_cells.height() + 1) * 6);
+	UIRender->StartPrimitive(max_prim_cnt, IUIRender::ptTriList, UI()->m_currentPointType);
+
+	Fvector2 hl_len = f_len;
+	if ( m_pParentDragDropList->GetHighlightCellSp() )
+	  hl_len.add( sp_len );
+
+	u8 parent_select_mode = 0;
+	if ( Core.Features.test( xrCore::Feature::highlight_cop ) ) {
+	  if ( m_pParentDragDropList->is_highlighted ) {
+	    parent_select_mode = 5;
+	  }
+	  else if ( m_pParentDragDropList->GetHighlightAllCells() && m_pParentDragDropList->ItemsCount() ) {
+	    for ( int x = 0; x <= tgt_cells.width(); ++x ) {
+	      for ( int y = 0; y <= tgt_cells.height(); ++y ) {
+	        parent_select_mode = get_select_mode( x, y );
+	        if ( parent_select_mode > 0 ) break;
+	      }
+	      if ( parent_select_mode > 0 ) break;
+	    }
+	  }
+	}
+
 	for (int x=0; x<=tgt_cells.width(); ++x){
 		for (int y=0; y<=tgt_cells.height(); ++y){
+			Fvector2			rect_offset;
+			rect_offset.set		( (drawLT.x + f_len.x*x + sp_len.x*x), (drawLT.y + f_len.y*y + sp_len.y*y) );
 
-			Ivector2 cpos;
-			cpos.set( x, y );
-			cpos.add( TopVisibleCell() );
-			CUICell& ui_cell = GetCellAt( cpos );
-			u8 select_mode = 0;
-			if (Core.Features.test(xrCore::Feature::highlight_cop)) {
-				if (this->m_pParentDragDropList->is_highlighted) {
-					select_mode = 5;
-				}
-				else if (!ui_cell.Empty()) {
-					if (Core.Features.test(xrCore::Feature::select_mode_1342)) {
-						if (ui_cell.m_item->m_selected)
-							select_mode = 1;
-						else if (ui_cell.m_item->m_select_armament)
-							select_mode = 3;
-						else if (ui_cell.m_item->m_select_untradable)
-							select_mode = 4;
-						else if (ui_cell.m_item->m_select_equipped)
-							select_mode = 2;
-					}
-					else {
-						if (ui_cell.m_item->m_select_armament)
-							select_mode = 3;
-						else if (ui_cell.m_item->m_select_untradable)
-							select_mode = 4;
-						else if (ui_cell.m_item->m_select_equipped)
-							select_mode = 2;
-						else if (ui_cell.m_item->m_selected)
-							select_mode = 1;
-					}
-				}
-			}
+			u8 select_mode = parent_select_mode;
+			if ( Core.Features.test( xrCore::Feature::highlight_cop ) && select_mode == 0 )
+			  select_mode = get_select_mode( x, y );
 
 			Fvector2			tp;
 			GetTexUVLT( tp, tgt_cells.x1 + x, tgt_cells.y1 + y, select_mode );
-			for (u32 k=0; k<6; ++k,++pv){
+			for (u32 k=0; k<6; ++k){
 				const Fvector2& p	= pts[k];
 				const Fvector2& uv	= uvs[k];
-				pv->set			(iFloor(drawLT.x + p.x*(f_len.x) + f_len.x*x)-0.5f, 
-								 iFloor(drawLT.y + p.y*(f_len.y) + f_len.y*y)-0.5f, 
-								 0xFFFFFFFF,tp.x+uv.x,tp.y+uv.y);
+				UIRender->PushPoint(iFloor( rect_offset.x + p.x*hl_len.x )-0.5f, 
+					iFloor( rect_offset.y + p.y*hl_len.y )-0.5f,
+					0,
+					m_pParentDragDropList->back_color,
+					tp.x+uv.x, tp.y+uv.y);
 			}
 		}
 	}
-	std::ptrdiff_t p_cnt		= (pv-start_pv)/3;
-	RCache.Vertex.Unlock		(u32(pv-start_pv),hGeom.stride());
 
-	UI()->PushScissor					(clientArea);
+	UI()->PushScissor(clientArea);
 
-	if (p_cnt!=0 && m_pParentDragDropList->GetDrawGrid()){
-		// draw grid
-		RCache.set_Shader		(hShader);
-		RCache.set_Geometry		(hGeom);
-		RCache.Render			(D3DPT_TRIANGLELIST,vOffset,u32(p_cnt));
-	}
+	UIRender->SetShader(*hShader);
+	UIRender->FlushPrimitive();
 
 	//draw shown items in range
 	if( GetCellsInRange(tgt_cells,m_cells_to_draw) ){

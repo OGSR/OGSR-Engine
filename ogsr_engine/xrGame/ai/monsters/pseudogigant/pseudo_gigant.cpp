@@ -145,6 +145,7 @@ void CPseudoGigant::Load(LPCSTR section)
 	read_delay				(section,"HugeKick_MinMaxDelay",	m_threaten_delay_min,	m_threaten_delay_max);
 
 	m_time_kick_actor_slow_down	= pSettings->r_u32(section,"HugeKick_Time_SlowDown");
+        m_kick_hit_jumping_actor = READ_IF_EXISTS( pSettings, r_bool, section, "HugeKick_Hit_Jumping_Actor", false );
 
 	PostLoad				(section);
 }
@@ -235,6 +236,7 @@ void CPseudoGigant::on_threaten_execute()
                     !obj->PPhysicsShell() ||
                     ( obj->spawn_ini() && obj->spawn_ini()->section_exist( "ph_heavy" ) ) || 
                     ( pSettings->line_exist( obj->cNameSect().c_str(), "ph_heavy" ) && pSettings->r_bool( obj->cNameSect().c_str(), "ph_heavy" ) ) ||
+                    ( pSettings->line_exist( obj->cNameSect().c_str(), "quest_item" ) && pSettings->r_bool( obj->cNameSect().c_str(), "quest_item" ) ) ||
                     obj->hasFixedBones()
 		) continue;
 
@@ -259,12 +261,13 @@ void CPseudoGigant::on_threaten_execute()
 	CActor *pA = const_cast<CActor *>(smart_cast<const CActor *>(EnemyMan.get_enemy()));
 	if (!pA) return;
 
-	if (pA->is_jump()) return;
+	if ( pA->is_jump() && !m_kick_hit_jumping_actor ) return;
 
 	float dist_to_enemy = pA->Position().distance_to(Position());
 	float			hit_value;
 	hit_value		= m_kick_damage - m_kick_damage * dist_to_enemy / m_threaten_dist_max;
 	clamp			(hit_value,0.f,1.f);
+	if ( fis_zero( hit_value ) ) return;
 
 	// запустить эффектор
 	Actor()->Cameras().AddCamEffector(xr_new<CMonsterEffectorHit>(m_threaten_effector.ce_time,m_threaten_effector.ce_amplitude * hit_value,m_threaten_effector.ce_period_number,m_threaten_effector.ce_power * hit_value));
@@ -287,7 +290,7 @@ void CPseudoGigant::on_threaten_execute()
 	HS.weaponID			= (ID());														//	l_P.w_u16	(ID());
 	HS.dir				= (Fvector().set(0.f,1.f,0.f));									//	l_P.w_dir	(Fvector().set(0.f,1.f,0.f));
 	HS.power			= (hit_value);													//	l_P.w_float	(m_kick_damage);
-	HS.boneID			= (smart_cast<CKinematics*>(pA->Visual())->LL_GetBoneRoot());	//	l_P.w_s16	(smart_cast<CKinematics*>(pA->Visual())->LL_GetBoneRoot());
+	HS.boneID			= (smart_cast<IKinematics*>(pA->Visual())->LL_GetBoneRoot());	//	l_P.w_s16	(smart_cast<IKinematics*>(pA->Visual())->LL_GetBoneRoot());
 	HS.p_in_bone_space	= (Fvector().set(0.f,0.f,0.f));									//	l_P.w_vec3	(Fvector().set(0.f,0.f,0.f));
 	HS.impulse			= (80 * pA->character_physics_support()->movement()->GetMass());						//	l_P.w_float	(20 * pA->movement_control()->GetMass());
 	HS.hit_type			= ( ALife::eHitTypeStrike);										//	l_P.w_u16	( u16(ALife::eHitTypeWound) );

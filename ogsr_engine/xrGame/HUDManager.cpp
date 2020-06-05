@@ -66,12 +66,10 @@ LPCSTR CFontManager::GetFontTexName (LPCSTR section)
 
 	u32 h = Device.dwHeight;
 
-  if (h <= 600)		
-    idx = 0;
-  else if (h <= 900)	
-    idx = 1;
-  else 			
-    idx = 2;
+	if(h<=600)		idx = 0;
+	else if(h<1024)	idx = 1;
+	else 			idx = 2;
+	if ( psHUD_Flags.test( HUD_SMALL_FONT ) && idx > 0 ) idx--;
 
   while (idx >= 0) {
     if (pSettings->line_exist(section, tex_names[idx]))
@@ -86,10 +84,11 @@ void CFontManager::InitializeFont(CGameFont*& F, LPCSTR section, u32 flags)
 	LPCSTR font_tex_name = GetFontTexName(section);
 	R_ASSERT(font_tex_name);
 
+	const char* sh_name = READ_IF_EXISTS(pSettings, r_string, section, "shader", "font");
 	if(!F)
-		F = xr_new<CGameFont> ("font", font_tex_name, flags);
+		F = xr_new<CGameFont> (sh_name, font_tex_name, flags);
 	else
-		F->Initialize("font",font_tex_name);
+		F->Initialize(sh_name, font_tex_name);
 
 #ifdef DEBUG
 	F->m_font_name = section;
@@ -167,7 +166,6 @@ void CHUDManager::OnFrame()
 }
 //--------------------------------------------------------------------
 
-ENGINE_API extern float psHUD_FOV;
 
 void CHUDManager::Render_First()
 {
@@ -318,4 +316,31 @@ void CHUDManager::net_Relcase	(CObject *object)
 {
 	VERIFY						(m_pHUDTarget);
 	m_pHUDTarget->net_Relcase	(object);
+}
+
+#pragma todo("KRodin: Доделать эти два метода, если они нужны! Мне кажется, или в ТЧ они не нужны. По крайней мере я проблем не вижу с рендером UI, худа и тп.")
+//#include "player_hud.h"
+bool   CHUDManager::RenderActiveItemUIQuery()
+{
+	/*
+	if (!psHUD_Flags.is(HUD_DRAW_RT2))
+		return false;
+
+	if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT | HUD_WEAPON_RT2))return false;
+
+	if (!need_render_hud())			return false;
+
+	return (g_player_hud && g_player_hud->render_item_ui_query());
+	*/
+	return false;
+}
+
+void   CHUDManager::RenderActiveItemUI()
+{
+	/*
+	if (!psHUD_Flags.is(HUD_DRAW_RT2))
+		return;
+
+	g_player_hud->render_item_ui();
+	*/
 }

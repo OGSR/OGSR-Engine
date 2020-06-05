@@ -5,7 +5,9 @@
 #define CMD2(cls,p1,p2)				{ static cls x##cls(p1,p2);			Console->AddCommand(&x##cls);}
 #define CMD3(cls,p1,p2,p3)			{ static cls x##cls(p1,p2,p3);		Console->AddCommand(&x##cls);}
 #define CMD4(cls,p1,p2,p3,p4)		{ static cls x##cls(p1,p2,p3,p4);	Console->AddCommand(&x##cls);}
-#define CMD5(cls,p1,p2,p3,p4,p5)	{ static cls x##cls(p1,p2,p3,p4,p5);	Console->AddCommand(&x##cls);}
+
+//KRodin: закомментировано.
+//#include "xrSASH.h"
 
 class ENGINE_API	IConsole_Command
 {
@@ -13,41 +15,69 @@ public		:
 	friend class	CConsole;
 	typedef char	TInfo	[256];
 	typedef char	TStatus	[256];
+	typedef xr_vector<shared_str>	vecTips;
+	typedef xr_vector<shared_str>	vecLRU;
+
 protected	:
 	LPCSTR			cName;
 	bool			bEnabled;
 	bool			bLowerCaseArgs;
 	bool			bEmptyArgsHandled;
+	
+	vecLRU			m_LRU;
+
+	enum			{ LRU_MAX_COUNT = 10 };
 
 	IC	bool		EQ(LPCSTR S1, LPCSTR S2) { return xr_strcmp(S1,S2)==0; }
 public		:
-	IConsole_Command		(LPCSTR N) : 
+	IConsole_Command		(LPCSTR N	BENCH_SEC_SIGN) : 
 	  cName				(N),
 	  bEnabled			(TRUE),
 	  bLowerCaseArgs	(TRUE),
 	  bEmptyArgsHandled	(FALSE)
-	{};
+	  {
+		  m_LRU.reserve(LRU_MAX_COUNT + 1);
+		  m_LRU.clear_not_free();
+	  }
 	virtual ~IConsole_Command()
 	{
 		if(Console)
 			Console->RemoveCommand(this);
 	};
 
+	BENCH_SEC_SCRAMBLEVTBL3
+
 	LPCSTR			Name()			{ return cName;	}
 	void			InvalidSyntax() {
 		TInfo I; Info(I);
 		Msg("~ Invalid syntax in call to '%s'",cName);
 		Msg("~ Valid arguments: %s", I);
+
+		/*
+		g_SASH.OnConsoleInvalidSyntax("~ Invalid syntax in call to '%s'",cName, false);
+		g_SASH.OnConsoleInvalidSyntax("~ Valid arguments: %s", I, true);
+		*/
 	}
 	virtual void	Execute	(LPCSTR args)	= 0;
 	void		    SetEnabled(bool v) { bEnabled = v; }
 	virtual void	Status	(TStatus& S)	{ S[0]=0; }
-	virtual void	Info	(TInfo& I)		{ strcpy_s(I,"no arguments"); }
+	virtual void	Info	(TInfo& I)		{ xr_strcpy(I,"(no arguments)"); }
 	virtual void	Save	(IWriter *F)	{
 		TStatus		S;	Status(S);
 		if (S[0])	F->w_printf("%s %s\r\n",cName,S); 
 	}
-};
+
+	BENCH_SEC_SCRAMBLEVTBL2
+
+	virtual void	fill_tips		(vecTips& tips, u32 mode)
+	{
+		add_LRU_to_tips( tips );
+	}
+//			vecLRU&	LRU				() { return m_LRU; }
+	virtual void	add_to_LRU		(shared_str const& arg);
+			void	add_LRU_to_tips	(vecTips& tips);
+
+}; // class IConsole_Command
 
 class ENGINE_API	CCC_Mask : public IConsole_Command
 {
@@ -70,9 +100,17 @@ public		:
 		else InvalidSyntax();
 	}
 	virtual void	Status	(TStatus& S)
-	{	strcpy_s(S,value->test(mask)?"on":"off"); }
+	{	xr_strcpy(S,value->test(mask)?"on":"off"); }
 	virtual void	Info	(TInfo& I)
-	{	strcpy_s(I,"'on/off' or '1/0'"); }
+	{	xr_strcpy(I,"'on/off' or '1/0'"); }
+
+	virtual void	fill_tips(vecTips& tips, u32 mode)
+	{
+		TStatus  str;
+		xr_sprintf( str, sizeof(str), "%s  (current)  [on/off]", value->test(mask)?"on":"off" );
+		tips.push_back( str );
+	}
+
 };
 
 class ENGINE_API	CCC_ToggleMask : public IConsole_Command
@@ -95,18 +133,26 @@ public		:
 		Log(S);
 	}
 	virtual void	Status	(TStatus& S)
-	{	strcpy_s(S,value->test(mask)?"on":"off"); }
+	{	xr_strcpy(S,value->test(mask)?"on":"off"); }
 	virtual void	Info	(TInfo& I)
-	{	strcpy_s(I,"'on/off' or '1/0'"); }
+	{	xr_strcpy(I,"'on/off' or '1/0'"); }
+
+	virtual void	fill_tips(vecTips& tips, u32 mode)
+	{
+		TStatus  str;
+		xr_sprintf( str, sizeof(str), "%s  (current)  [on/off]", value->test(mask)?"on":"off" );
+		tips.push_back( str );
+	}
+
 };
 
 class ENGINE_API	CCC_Token : public IConsole_Command
 {
 protected	:
 	u32*			value;
-	xr_token*		tokens;
+	const xr_token* tokens;
 public		:
-	CCC_Token(LPCSTR N, u32* V, xr_token* T) :
+	CCC_Token(LPCSTR N, u32* V, const xr_token* T) :
 	  IConsole_Command(N),
 	  value(V),
 	  tokens(T)
@@ -114,7 +160,7 @@ public		:
 
 	virtual void	Execute	(LPCSTR args)
 	{
-		xr_token* tok = tokens;
+		const xr_token* tok = tokens;
 		while (tok->name) {
 			if (stricmp(tok->name,args)==0) {
 				*value=tok->id;
@@ -126,28 +172,56 @@ public		:
 	}
 	virtual void	Status	(TStatus& S)
 	{
-		xr_token *tok = tokens;
+		const xr_token *tok = tokens;
 		while (tok->name) {
 			if (tok->id==(int)(*value)) {
-				strcpy_s(S,tok->name);
+				xr_strcpy(S,tok->name);
 				return;
 			}
 			tok++;
 		}
-		strcpy_s(S,"?");
+		xr_strcpy(S,"?");
 		return;
 	}
 	virtual void	Info	(TInfo& I)
 	{	
 		I[0]=0;
-		xr_token *tok = tokens;
+		const xr_token *tok = tokens;
 		while (tok->name) {
-			if (I[0]) strcat(I,"/");
-			strcat(I,tok->name);
+			if (I[0]) xr_strcat(I,"/");
+			xr_strcat(I,tok->name);
 			tok++;
 		}
 	}
-	virtual xr_token* GetToken(){return tokens;}
+	virtual const xr_token* GetToken() { return tokens; }
+	
+	virtual void	fill_tips(vecTips& tips, u32 mode)
+	{
+		TStatus  str;
+		bool res = false;
+		const xr_token* tok = GetToken();
+		while ( tok->name && !res )
+		{
+			if ( tok->id == (int)(*value) )
+			{
+				xr_sprintf( str, sizeof(str), "%s  (current)", tok->name );
+				tips.push_back( str );
+				res = true;
+			}
+			tok++;
+		}
+		if ( !res )
+		{
+			tips.push_back( "---  (current)" );
+		}
+		tok = GetToken();
+		while ( tok->name )
+		{
+			tips.push_back( tok->name );
+			tok++;
+		}
+	}
+
 };
 
 class ENGINE_API	CCC_Float : public IConsole_Command
@@ -163,8 +237,7 @@ public		:
 	  max(_max)
 	{};
 	  const float	GetValue	() const {return *value;};
-	  const float	GetMin		() const {return min;};
-	  const float	GetMax		() const {return max;};
+			void	GetBounds	(float& fmin, float& fmax) const {fmin=min; fmax=max;}
 
 	virtual void	Execute	(LPCSTR args)
 	{
@@ -174,13 +247,21 @@ public		:
 	}
 	virtual void	Status	(TStatus& S)
 	{	
-		sprintf_s	(S,sizeof(S),"%3.5f",*value);
+		xr_sprintf	(S,sizeof(S),"%3.5f",*value);
 		while	(xr_strlen(S) && ('0'==S[xr_strlen(S)-1]))	S[xr_strlen(S)-1] = 0;
 	}
 	virtual void	Info	(TInfo& I)
 	{	
-		sprintf_s(I,sizeof(I),"float value in range [%3.3f,%3.3f]",min,max);
+		xr_sprintf(I,sizeof(I),"float value in range [%3.3f,%3.3f]",min,max);
 	}
+	virtual void	fill_tips(vecTips& tips, u32 mode)
+	{
+		TStatus  str;
+		xr_sprintf( str, sizeof(str), "%3.5f  (current)  [%3.3f,%3.3f]", *value, min, max );
+		tips.push_back( str );
+		IConsole_Command::fill_tips( tips, mode );
+	}
+
 };
 
 class ENGINE_API	CCC_Vector3 : public IConsole_Command
@@ -188,14 +269,17 @@ class ENGINE_API	CCC_Vector3 : public IConsole_Command
 protected	:
 	Fvector*		value;
 	Fvector			min,max;
-public		:
-	CCC_Vector3(LPCSTR N, Fvector* V, const Fvector& _min, const Fvector& _max) :
+public		
+:
+	CCC_Vector3(LPCSTR N, Fvector* V, const Fvector _min, const Fvector _max) :
 	  IConsole_Command(N),
 	  value(V)
 	{
 		min.set(_min);
 		max.set(_max);
-	}
+	};
+	const Fvector	GetValue	() const {return *value;};
+	Fvector*		GetValuePtr	() const {return value;};
 
 	virtual void	Execute	(LPCSTR args)
 	{
@@ -212,44 +296,20 @@ public		:
 	}
 	virtual void	Status	(TStatus& S)
 	{	
-		sprintf_s	(S,sizeof(S),"%f,%f,%f",value->x,value->y,value->z);
+		xr_sprintf	(S,sizeof(S),"(%f, %f, %f)",value->x,value->y,value->z);
 	}
 	virtual void	Info	(TInfo& I)
 	{	
-		sprintf_s(I,sizeof(I),"vector3 in range [%f,%f,%f]-[%f,%f,%f]",min.x,min.y,min.z,max.x,max.y,max.z);
+		xr_sprintf(I,sizeof(I),"vector3 in range [%e,%e,%e]-[%e,%e,%e]",min.x,min.y,min.z,max.x,max.y,max.z);
 	}
-};
-
-class ENGINE_API	CCC_Vector4 : public IConsole_Command
-{
-protected:
-	Fvector4*		value;
-	Fvector4			min, max;
-public:
-	CCC_Vector4(LPCSTR N, Fvector4* V, const Fvector4& _min, const Fvector4& _max) :
-		IConsole_Command(N),
-		value(V)
+	virtual void	fill_tips(vecTips& tips, u32 mode)
 	{
-		min.set(_min);
-		max.set(_max);
+		TStatus  str;
+		xr_sprintf( str, sizeof(str), "(%e, %e, %e)  (current)  [(%e,%e,%e)-(%e,%e,%e)]", value->x, value->y, value->z, min.x, min.y, min.z, max.x, max.y, max.z );
+		tips.push_back( str );
+		IConsole_Command::fill_tips( tips, mode );
 	}
 
-	virtual void	Execute(LPCSTR args)
-	{
-		Fvector4 v;
-		if (4 != sscanf(args, "%f,%f,%f,%f", &v.x, &v.y, &v.z, &v.w)) { InvalidSyntax(); return; }
-		if (v.x<min.x || v.y<min.y || v.z<min.z || v.w<min.w) { InvalidSyntax(); return; }
-		if (v.x>max.x || v.y>max.y || v.z>max.z || v.w>max.w) { InvalidSyntax(); return; }
-		value->set(v);
-	}
-	virtual void	Status(TStatus& S)
-	{
-		sprintf_s(S, sizeof(S), "%f,%f,%f,%f", value->x, value->y, value->z, value->w);
-	}
-	virtual void	Info(TInfo& I)
-	{
-		sprintf_s(I, sizeof(I), "vector4 in range [%f,%f,%f,%f]-[%f,%f,%f,%f]", min.x, min.y, min.z, min.w, max.x, max.y, max.z, max.w);
-	}
 };
 
 class ENGINE_API	CCC_Integer : public IConsole_Command
@@ -259,8 +319,7 @@ protected	:
 	int				min,max;
 public		:
 	  const int GetValue	() const {return *value;};
-	  const int GetMin		() const {return min;};
-	  const int GetMax		() const {return max;};
+	  void		GetBounds	(int& imin, int& imax) const {imin = min; imax = max;}
 
 	CCC_Integer(LPCSTR N, int* V, int _min=0, int _max=999) :
 	  IConsole_Command(N),
@@ -281,7 +340,14 @@ public		:
 	}
 	virtual void	Info	(TInfo& I)
 	{	
-		sprintf_s(I,sizeof(I),"integer value in range [%d,%d]",min,max);
+		xr_sprintf(I,sizeof(I),"integer value in range [%d,%d]",min,max);
+	}
+	virtual void	fill_tips(vecTips& tips, u32 mode)
+	{
+		TStatus  str;
+		xr_sprintf( str, sizeof(str), "%d  (current)  [%d,%d]", *value, min, max );
+		tips.push_back( str );
+ 		IConsole_Command::fill_tips( tips, mode );
 	}
 };
 
@@ -303,16 +369,22 @@ public:
 
 	virtual void	Execute	(LPCSTR args)
 	{
-		strncpy	(value,args,size-1);
+		strncpy_s	(value, size, args, size-1);
 	}
 	virtual void	Status	(TStatus& S)
 	{	
-		strcpy_s	(S,value);
+		xr_strcpy	(S,value);
 	}
 	virtual void	Info	(TInfo& I)
 	{	
-		sprintf_s(I,sizeof(I),"string with up to %d characters",size);
+		xr_sprintf(I,sizeof(I),"string with up to %d characters",size);
 	}
+	virtual void	fill_tips(vecTips& tips, u32 mode)
+	{
+		tips.push_back( (LPCSTR)value );
+		IConsole_Command::fill_tips( tips, mode );
+	}
+
 };
 
 class ENGINE_API CCC_LoadCFG : public IConsole_Command
@@ -330,5 +402,3 @@ public:
 					CCC_LoadCFG_custom(LPCSTR cmd);
 	virtual bool	allow			(LPCSTR cmd);
 };
-
-extern Fvector		ps_r2_rain_params;

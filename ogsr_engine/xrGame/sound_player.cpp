@@ -12,7 +12,8 @@
 #include "ai/stalker/ai_stalker_space.h"
 #include "ai_space.h"
 #include "..\xr_3da\xr_object.h"
-#include "..\xr_3da\skeletoncustom.h"
+#include "..\Include/xrRender/Kinematics.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
 #include "profiler.h"
 #include "sound_collection_storage.h"
 #include "object_broker.h"
@@ -180,7 +181,7 @@ void CSoundPlayer::play				(u32 internal_type, u32 max_start_time, u32 min_start
 
 	CSoundSingle				sound_single;
 	(CSoundParams&)sound_single	= (CSoundParams&)sound;
-	sound_single.m_bone_id		= smart_cast<CKinematics*>(m_object->Visual())->LL_BoneID(sound.m_bone_name);
+	sound_single.m_bone_id		= smart_cast<IKinematics*>(m_object->Visual())->LL_BoneID(sound.m_bone_name);
 
 	sound_single.m_sound		= xr_new<ref_sound>();
 	/**
@@ -231,7 +232,7 @@ void CSoundPlayer::play				(u32 internal_type, u32 max_start_time, u32 min_start
 IC	Fvector CSoundPlayer::compute_sound_point(const CSoundSingle &sound)
 {
 	Fmatrix						l_tMatrix;
-	l_tMatrix.mul_43			(m_object->XFORM(),smart_cast<CKinematics*>(m_object->Visual())->LL_GetBoneInstance(sound.m_bone_id).mTransform);
+	l_tMatrix.mul_43			(m_object->XFORM(),smart_cast<IKinematics*>(m_object->Visual())->LL_GetBoneInstance(sound.m_bone_id).mTransform);
 	return						(l_tMatrix.c);
 }
 

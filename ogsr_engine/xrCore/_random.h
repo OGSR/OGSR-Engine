@@ -12,7 +12,7 @@ public:
 	IC 	s32		maxI	()							{ return 32767;	}
 
     ICN	s32		randI	()							{ return(((holdrand = holdrand * 214013L + 2531011L) >> 16) & 0x7fff); }
-	IC 	s32		randI	(s32 max)					{ VERIFY(max);  return randI()%max; }
+	IC 	s32		randI	(s32 max)					{ return !max ? max : ( randI() % max ); }
 	IC 	s32		randI	(s32 min, s32 max)			{ return min+randI(max-min); }
 	IC 	s32		randIs	(s32 range)					{ return randI(-range,range); }
 	IC 	s32		randIs	(s32 range, s32 offs)		{ return offs+randIs(range); }

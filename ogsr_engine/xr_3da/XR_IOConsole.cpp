@@ -88,36 +88,43 @@ void CConsole::OnFrame	()
 */
 }
 
-void out_font(CGameFont* pFont, LPCSTR text, float& pos_y)
+void CConsole::out_font(const char* text, float& pos_y)
 {
-	float screen_width = float(Device.dwWidth);
 	float str_length = pFont->SizeOf_(text);
-	if(str_length> screen_width)
+	float scr_width = 1.98f * Device.fWidth_2;
+	if (str_length > scr_width) // 1024.0f
 	{
-		float _l			= 0.0f;
-		int _sz				= 0;
-		int _ln				= 0;
-		string1024			_one_line;
-		
-		while( text[_sz] )
-		{
-			_one_line[_ln+_sz]			= text[_sz];
-			_one_line[_ln+_sz+1]		= 0;
-			float _t					= pFont->SizeOf_(_one_line+_ln);
-			if(_t > screen_width)
-			{
-				out_font				(pFont, text+_sz, pos_y);
-				pos_y					-= LDIST;
-				pFont->OutI				(-1.0f, pos_y, "%s", _one_line+_ln);
-				_l						= 0.0f;
-				_ln						= _sz;
-			}else
-				_l	= _t;
+		float f = 0.0f;
+		int sz = 0;
+		int ln = 0;
+		char* one_line = (char*)_alloca((MAX_LEN + 1) * sizeof(char));
 
-			++_sz;
-		};
-	}else
-		pFont->OutI  (-1.0f, pos_y, "%s", text);
+		while (text[sz] && (ln + sz < MAX_LEN - 5)) // перенос строк
+		{
+			one_line[ln + sz] = text[sz];
+			one_line[ln + sz + 1] = 0;
+
+			float t = pFont->SizeOf_(one_line + ln);
+			if (t > scr_width)
+			{
+				out_font(text + sz + 1, pos_y);
+				pos_y -= LDIST;
+				pFont->OutI(-1.0f, pos_y, "%s", one_line + ln);
+				ln = sz + 1;
+				f = 0.0f;
+			}
+			else
+			{
+				f = t;
+			}
+
+			++sz;
+		}
+	}
+	else
+	{
+		pFont->OutI(-1.0f, pos_y, "%s", text);
+	}
 }
 
 void CConsole::OnRender	()
@@ -134,70 +141,60 @@ void CConsole::OnRender	()
 		 ( g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive() ) )	
 		 bGame = true;
 
-	VERIFY	(HW.pDevice);
+	if (!m_pRender)
+		m_pRender = xr_new<FactoryPtr<IConsoleRender>>();
 
-	//*** Shadow
-	D3DRECT R = { 0, 0, LONG( Device.dwWidth ), LONG( Device.dwHeight ) };
-	if		(bGame) R.y2 /= 2;
-
-	CHK_DX	(HW.pDevice->Clear(1,&R,D3DCLEAR_TARGET,D3DCOLOR_XRGB(32,32,32),1,0));
+	(*m_pRender)->OnRender(bGame);
 
 	// float dwMaxX=float(Device.dwWidth/2);
 	if (bGame) { fMaxY=0.f; } else fMaxY=1.f;
 
 	char		buf	[MAX_LEN+5];
 	strcpy_s		(buf,ioc_prompt);
-	strcat		(buf,editor);
-	if (bCursor) strcat(buf,"|");
+	strcat_s(buf,editor);
+	if (bCursor) strcat_s(buf,"|");
 
 	pFont->SetColor( color_rgba(128  ,128  ,255, 255) );
 	pFont->SetHeightI(0.025f);
 	pFont->OutI	( -1.f, fMaxY-LDIST, "%s", buf );
 
 	float ypos=fMaxY-LDIST-LDIST;
-	for (int i=LogFile->size()-1-scroll_delta; i>=0; i--) 
+	for (int i=LogFile.size()-1-scroll_delta; i>=0; i--) 
 	{
 		ypos-=LDIST;
 		if (ypos<-1.f) break;
 
-		auto& ls = (*LogFile)[i];
+		auto& ls = LogFile[i];
 		if (!ls.c_str())
 			continue;
 		switch (ls.front()) {
 		case '~':
 			pFont->SetColor(color_rgba(255,255,0, 255));
-			out_font		(pFont,&ls[2],ypos);
-//.			pFont->OutI  (-1.f,ypos,"%s",&ls[2]);
+			out_font(&ls[2], ypos);
 			break;
 		case '!':
 			pFont->SetColor(color_rgba(255,0  ,0  , 255));
-			out_font		(pFont,&ls[2],ypos);
-//.			pFont->OutI  (-1.f,ypos,"%s",&ls[2]);
+			out_font(&ls[2], ypos);
 			break;
 		case '*':
 			pFont->SetColor(color_rgba(128,128,128, 255));
-			out_font		(pFont,&ls[2],ypos);
-//.			pFont->OutI  (-1.f,ypos,"%s",&ls[2]);
+			out_font(&ls[2], ypos);
 			break;
 		case '-':
 			pFont->SetColor(color_rgba(0  ,255,0  , 255));
-			out_font		(pFont,&ls[2],ypos);
-//.			pFont->OutI  (-1.f,ypos,"%s",&ls[2]);
+			out_font(&ls[2], ypos);
 			break;
 		case '#':
 			pFont->SetColor(color_rgba(0  ,222, 205  ,145));
-			out_font		(pFont,&ls[2],ypos);
-//.			pFont->OutI  (-1.f,ypos,"%s",&ls[2]);
+			out_font(&ls[2], ypos);
 			break;
 		case '>':
 			pFont->SetColor(color_rgba(128, 128, 255, 255));
-			out_font(pFont, &ls[2], ypos);
-			//.			pFont->OutI  (-1.f,ypos,"%s",&ls[2]);
+			out_font(&ls[2], ypos);
 			break;
 		default:
 			pFont->SetColor(color_rgba(255,255,255, 255));
-			out_font		(pFont,ls.c_str(),ypos);
-//.			pFont->OutI  (-1.f,ypos,"%s",ls);
+			out_font(ls.c_str(), ypos);
 		}
 	}
 	pFont->OnRender();
@@ -220,7 +217,7 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 		break;
 	case DIK_PRIOR:
 		scroll_delta++;
-		if (scroll_delta>int(LogFile->size())-1) scroll_delta=LogFile->size()-1;
+		if (scroll_delta>int(LogFile.size())-1) scroll_delta=LogFile.size()-1;
 		break;
 	case DIK_NEXT:
 		scroll_delta--;
@@ -264,7 +261,7 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 			HGLOBAL hmem = GetClipboardData(CF_TEXT);
 			if( hmem ){
 				LPCSTR	clipdata = (LPCSTR)GlobalLock(hmem);
-				strncpy (editor,clipdata,MAX_LEN-1); editor[MAX_LEN-1]=0;
+				strncpy_s(editor,clipdata,MAX_LEN-1); editor[MAX_LEN-1]=0;
 //				std::locale loc ("English");
 				for (u32 i=0; i<xr_strlen(editor); i++)
 					if (isprint(editor[i]))	{
@@ -424,8 +421,8 @@ void CConsole::SelectCommand()
 {
 	int		p,k;
 	BOOL	found=false;
-	for (p=LogFile->size()-1, k=0; p>=0; p--) {
-		auto& str = (*LogFile)[p];
+	for (p=LogFile.size()-1, k=0; p>=0; p--) {
+		auto& str = LogFile[p];
 		if (!str.c_str())
 			continue;
 
@@ -453,7 +450,7 @@ void CConsole::SelectCommand()
 
 void CConsole::Execute		(LPCSTR cmd)
 {
-	strncpy			(editor,cmd,MAX_LEN-1); editor[MAX_LEN-1]=0;
+	strncpy_s(editor,cmd,MAX_LEN-1); editor[MAX_LEN-1]=0;
 	RecordCommands	= false;
 	ExecuteCommand	();
 	RecordCommands	= true;
@@ -489,8 +486,10 @@ float CConsole::GetFloat(LPCSTR cmd, float& val, float& min, float& max)
 		IConsole_Command* C = I->second;
 		CCC_Float* cf = dynamic_cast<CCC_Float*>(C);
 		val = cf->GetValue();
-		min = cf->GetMin();
-		max = cf->GetMax();
+
+		//min = cf->GetMin();
+		//max = cf->GetMax();
+		cf->GetBounds(min, max);
 		return val;
 	}
 	return val;
@@ -505,8 +504,10 @@ int CConsole::GetInteger(LPCSTR cmd, int& val, int& min, int& max)
 		if(cf)
 		{
 			val = cf->GetValue();
-			min = cf->GetMin();
-			max = cf->GetMax();
+
+			//min = cf->GetMin();
+			//max = cf->GetMax();
+			cf->GetBounds(min, max);
 		}else{
 			CCC_Mask* cm	= dynamic_cast<CCC_Mask*>(C);
 			R_ASSERT		(cm);
@@ -550,7 +551,7 @@ char * CConsole::GetToken(LPCSTR cmd)
 	return GetString(cmd);
 }
 
-xr_token* CConsole::GetXRToken(LPCSTR cmd)
+const xr_token* CConsole::GetXRToken(LPCSTR cmd)
 {
 	vecCMD_IT I = Commands.find(cmd);
 	if (I!=Commands.end()) {
@@ -561,6 +562,35 @@ xr_token* CConsole::GetXRToken(LPCSTR cmd)
 	return NULL;
 }
 
+IConsole_Command* CConsole::GetCommand( LPCSTR cmd )
+{
+	vecCMD_IT it = Commands.find( cmd );
+	if ( it == Commands.end() )
+		return NULL;
+	else
+		return it->second;
+}
+
+Fvector* CConsole::GetFVectorPtr( LPCSTR cmd )
+{
+	IConsole_Command* cc	= GetCommand(cmd);
+	CCC_Vector3* cf			= dynamic_cast<CCC_Vector3*>(cc);
+	if ( cf )
+	{
+		return cf->GetValuePtr();
+	}
+	return					NULL;
+}
+
+Fvector CConsole::GetFVector( LPCSTR cmd )
+{
+	Fvector* pV = GetFVectorPtr( cmd );
+	if ( pV )
+	{
+		return *pV;
+	}
+	return Fvector().set( 0.0f, 0.0f, 0.0f );
+}
 /*
 char * CConsole::GetNextValue(LPCSTR cmd)
 {

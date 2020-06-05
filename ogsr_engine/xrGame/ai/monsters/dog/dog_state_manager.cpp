@@ -10,6 +10,7 @@
 #include "../states/monster_state_hitted.h"
 #include "../states/monster_state_controlled.h"
 #include "../states/monster_state_help_sound.h"
+#include "../states/monster_state_rest.h"
 #include "../group_states/group_state_attack.h"
 #include "../group_states/group_state_rest.h"
 #include "../group_states/group_state_eat.h"
@@ -26,7 +27,8 @@ namespace detail
 
 CStateManagerDog::CStateManagerDog(CAI_Dog *monster) : inherited(monster)
 {
-	add_state(eStateRest,					xr_new<CStateGroupRest<CAI_Dog> >					(monster));
+	//add_state(eStateRest, xr_new<CStateGroupRest<CAI_Dog>>(monster)); //KRodin: ЗП-шный вариант кривой, из-за него собаки часто занимаются ходьбой на одном месте и всё, другие состояния "отдыха" не работают.
+	add_state(eStateRest, xr_new<CStateMonsterRest<CAI_Dog>>(monster)); //А вот ТЧ-шный работает правильно.
 	add_state(eStatePanic,					xr_new<CStateGroupPanic<CAI_Dog> >					(monster));
 	add_state(eStateAttack,					xr_new<CStateGroupAttack<CAI_Dog> >					(monster));
 	add_state(eStateEat,					xr_new<CStateGroupEat<CAI_Dog> >					(monster));

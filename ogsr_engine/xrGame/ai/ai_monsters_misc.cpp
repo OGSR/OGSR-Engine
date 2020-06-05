@@ -15,7 +15,7 @@
 #include "../team_hierarchy_holder.h"
 #include "../squad_hierarchy_holder.h"
 #include "../group_hierarchy_holder.h"
-#include "../../xr_3da/skeletonanimated.h"
+#include "../../Include/xrRender/KinematicsAnimated.h"
 #include "ai_monsters_anims.h"
 #include "../ef_pattern.h"
 #include "../memory_manager.h"
@@ -84,7 +84,9 @@ bool bfGetActionSuccessProbability(GroupHierarchyHolder::MEMBER_REGISTRY &Member
 
 u32 dwfChooseAction(u32 dwActionRefreshRate, float fMinProbability0, float fMinProbability1, float fMinProbability2, float fMinProbability3, u32 dwTeam, u32 dwSquad, u32 dwGroup, u32 a0, u32 a1, u32 a2, u32 a3, u32 a4, CEntity *tpEntity, float fGroupDistance)
 {
-//	return(a0);
+	if ( fis_zero(fMinProbability0) )
+		return								( 0 );
+
 	CGroupHierarchyHolder					&Group = Level().seniority_holder().team(dwTeam).squad(dwSquad).group(dwGroup);
 	
 	if (Device.dwTimeGlobal - Group.m_dwLastActionTime < dwActionRefreshRate) {
@@ -172,13 +174,13 @@ u32 dwfChooseAction(u32 dwActionRefreshRate, float fMinProbability0, float fMinP
 				}
 }
 
-void CAniVector::Load(CKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
+void CAniVector::Load(IKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
 {
 	A.clear		();
 	string256	S1, S2;
 	MotionID	tpMotionDef;
 	for (int i=0; ; ++i)
-		if (!!(tpMotionDef = tpKinematics->ID_Cycle_Safe(strconcat(sizeof(S1),S1,caBaseName,itoa(i,S2,10))))) {
+		if (!!(tpMotionDef = tpKinematics->ID_Cycle_Safe(xr_strconcat(S1,caBaseName,itoa(i,S2,10))))) {
 			A.push_back(tpMotionDef);
 #ifdef DEBUG
 			if (psAI_Flags.test(aiAnimation))
@@ -186,7 +188,7 @@ void CAniVector::Load(CKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
 #endif
 		}
 		else
-			if (!!(tpMotionDef = tpKinematics->ID_FX_Safe(strconcat(sizeof(S1),S1,caBaseName,itoa(i,S2,10))))) {
+			if (!!(tpMotionDef = tpKinematics->ID_FX_Safe(xr_strconcat(S1,caBaseName,itoa(i,S2,10))))) {
 				A.push_back(tpMotionDef);
 #ifdef DEBUG
 			if (psAI_Flags.test(aiAnimation))

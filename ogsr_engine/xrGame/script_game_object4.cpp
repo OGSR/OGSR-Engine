@@ -26,6 +26,9 @@
 #include "CharacterPhysicsSupport.h"
 #include "ai/monsters/controller/controller.h"
 #include "ai/monsters/controller/controller_psy_hit.h"
+#include "visual_memory_manager.h"
+#include "agent_manager.h"
+#include "agent_member_manager.h"
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -385,17 +388,18 @@ void CScriptGameObject::OpenInvBox(CScriptGameObject *obj)
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
 	if (pGameSP) pGameSP->StartCarBody(e, trunk);
 }
+
 #include "script_ini_file.h"
 CScriptIniFile *CScriptGameObject::GetVisIni()
 {
-	CKinematics						*k = smart_cast<CKinematics*>(object().Visual());
+	IKinematics						*k = smart_cast<IKinematics*>(object().Visual());
 	if (!k) {
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CKinematics : cannot access class member GetVisIni!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "IKinematics : cannot access class member GetVisIni!");
 		return nullptr;
 	}
-	return (CScriptIniFile*)(k->GetIniFile());
-
+	return reinterpret_cast<CScriptIniFile*>(k->LL_UserData());
 }
+
 CScriptGameObject *CScriptGameObject::ObjectFromInvBox(int _i)
 {
 	IInventoryBox						*e = smart_cast<IInventoryBox*>(&object());
@@ -408,9 +412,9 @@ CScriptGameObject *CScriptGameObject::ObjectFromInvBox(int _i)
 
 void CScriptGameObject::SetBoneVisible(LPCSTR _bone_name, BOOL _visible)
 {
-	CKinematics						*k = smart_cast<CKinematics*>(object().Visual());
+	IKinematics						*k = smart_cast<IKinematics*>(object().Visual());
 	if (!k) {
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CKinematics : cannot access class member SetBoneVisible!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "IKinematics : cannot access class member SetBoneVisible!");
 		return;
 	}
 	k->LL_SetBoneVisible(k->LL_BoneID(_bone_name), _visible, TRUE);
@@ -420,9 +424,9 @@ void CScriptGameObject::SetBoneVisible(LPCSTR _bone_name, BOOL _visible)
 
 BOOL CScriptGameObject::GetBoneVisible(LPCSTR _bone_name)
 {
-    CKinematics						*k = smart_cast<CKinematics*>(object().Visual());
+    IKinematics						*k = smart_cast<IKinematics*>(object().Visual());
     if (!k) {
-        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CKinematics : cannot access class member GetBoneVisible!");
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "IKinematics : cannot access class member GetBoneVisible!");
         return FALSE;
     }
     return k->LL_GetBoneVisible(k->LL_BoneID(_bone_name));
@@ -435,7 +439,7 @@ void CScriptGameObject::SetHudBoneVisible(LPCSTR _bone_name, BOOL _visible)
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CHudItem : cannot access class member SetHudBoneVisible!");
 		return;
 	}
-	CKinematics *kin = smart_cast<CKinematics *>(k->GetHUD()->Visual());
+	IKinematics *kin = smart_cast<IKinematics *>(k->GetHUD()->Visual());
 	kin->LL_SetBoneVisible(kin->LL_BoneID(_bone_name), _visible, TRUE);
 	kin->CalculateBones_Invalidate();
 }
@@ -447,15 +451,15 @@ BOOL CScriptGameObject::GetHudBoneVisible(LPCSTR _bone_name)
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CHudItem : cannot access class member GetHudBoneVisible!");
         return FALSE;
     }
-    CKinematics *kin = smart_cast<CKinematics *>(k->GetHUD()->Visual());
+    IKinematics *kin = smart_cast<IKinematics *>(k->GetHUD()->Visual());
     return kin->LL_GetBoneVisible(kin->LL_BoneID(_bone_name));
 }
 
 u16 CScriptGameObject::GetBoneID(LPCSTR _bone_name)
 {
-	CKinematics						*k = smart_cast<CKinematics*>(object().Visual());
+	IKinematics						*k = smart_cast<IKinematics*>(object().Visual());
 	if (!k) {
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CKinematics : cannot access class member GetBoneID!");
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "IKinematics : cannot access class member GetBoneID!");
 		return 0;
 	}
 	return k->LL_BoneID(_bone_name);
@@ -713,7 +717,7 @@ void CScriptGameObject::play_hud_animation( LPCSTR anim, bool mix_in ) {
 		ai().script_engine().script_log( ScriptStorage::eLuaMessageTypeError, "CHudItem : cannot access class member play_hud_animation!" );
 		return;
 	}
-	CKinematicsAnimated* sa = smart_cast<CKinematicsAnimated*>( k->GetHUD()->Visual() );
+	IKinematicsAnimated* sa = smart_cast<IKinematicsAnimated*>( k->GetHUD()->Visual() );
 	if( sa ) {
 		MotionID m = sa->ID_Cycle( anim );
 		if ( m )
@@ -870,4 +874,47 @@ bool CScriptGameObject::controller_psy_hit_active() {
   auto controller = smart_cast<CController*>( &object() );
   ASSERT_FMT( controller, "[%s]: %s not a CController", __FUNCTION__, object().cName().c_str() );
   return controller->m_psy_hit->is_active();
+}
+
+
+bool CScriptGameObject::can_kill_enemy() {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  return stalker->can_kill_enemy();
+}
+
+
+bool CScriptGameObject::can_fire_to_enemy( const CScriptGameObject* obj ) {
+  CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
+  ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
+  auto enemy = smart_cast<CEntityAlive*>( &(obj->object()) );
+  ASSERT_FMT( enemy, "[%s]: %s not a CEntityAlive", __FUNCTION__, obj->cName().c_str() );
+
+  bool can_kill = stalker->can_kill_enemy();
+  bool vis = stalker->memory().visual().visible_right_now( enemy );
+  if ( ( vis || can_kill ) && stalker->can_fire_to_enemy( enemy ) ) {
+    if ( can_kill ) return true; // на линии огня
+    float pick_dist = stalker->pick_distance();
+    if ( pick_dist < 2.5f ) return false;
+    float enemy_dist = stalker->Position().distance_to( enemy->Position() );
+    if ( pick_dist < enemy_dist - pick_dist ) return false;
+    return true;
+  }
+
+  return false;
+}
+
+
+void CScriptGameObject::register_in_combat() {
+	CAI_Stalker *stalker = smart_cast<CAI_Stalker*>(&object());
+	ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
+	stalker->agent_manager().member().register_in_combat(stalker);
+}
+
+
+void CScriptGameObject::unregister_in_combat() {
+	CAI_Stalker *stalker = smart_cast<CAI_Stalker*>(&object());
+	ASSERT_FMT(stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str());
+	if (stalker->g_Alive() && stalker->agent_manager().member().registered_in_combat(stalker))
+		stalker->agent_manager().member().unregister_in_combat(stalker);
 }

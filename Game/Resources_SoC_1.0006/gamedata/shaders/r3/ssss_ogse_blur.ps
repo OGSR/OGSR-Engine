@@ -1,0 +1,62 @@
+#include "common_iostructs.h"
+#include "ogse_functions.h"
+#include "shared\common.h"
+#include "shared\wmark.h"
+
+#define SS_LENGTH float(1.0) // длина лучей. Чем больше длина, тем меньше производительность
+
+uniform float4 screen_res; // Screen resolution (x-Width,y-Height, zw - 1/resolution)
+
+uniform float4 ssss_params; // x - exposure, y - density, z - sample size, w - radius
+Texture2D s_sun_shafts; // current sunshafts texture
+
+/*#if !defined(SUN_SHAFTS_QUALITY) || (SUN_SHAFTS_QUALITY <= 1) || (SUN_SHAFTS_QUALITY > 4)
+	#define num_iter int(25) // Low
+#elif SUN_SHAFTS_QUALITY==2
+	#define num_iter int(35) // Medium
+#elif SUN_SHAFTS_QUALITY==3
+	#define num_iter int(45) // High
+#else*/
+	#define num_iter int(55) // Extreme
+//#endif
+
+float4 main(p_screen I): SV_Target
+{
+	// Prepare some constants
+	float	len 				= SS_LENGTH*0.2f;
+	float	NUM 				= num_iter * len;
+
+	float2	tc 					= I.tc0.xy;
+	// Distance to the sun
+	float	sun_dist 			= FARPLANE / (sqrt(1.0f - L_sun_dir_w.y * L_sun_dir_w.y));
+	// Sun pos
+	float3	sun_pos_world 		= sun_dist * L_sun_dir_w + eye_position;
+	float4	sun_pos_projected 	= mul(m_VP, float4(sun_pos_world, 1.0f));
+	float4	sun_pos_screen 		= proj_to_screen(sun_pos_projected)/sun_pos_projected.w;
+	// Sun-pixel vector
+	float2	sun_vec_screen 		= sun_pos_screen.xy - tc;
+	// Calculate filtering effect. Sunshafts must appear only when looking in the sun dir
+	float	angle_cos 			= dot(-eye_direction, normalize(L_sun_dir_w));
+	float	fAspectRatio 		= 1.333f * screen_res.y / screen_res.x;
+	float	ray_fade 			= saturate(saturate(angle_cos)*saturate(1.0f - saturate(length(sun_vec_screen * float2(1, fAspectRatio)) / (SS_LENGTH * ssss_params.w))));
+		
+	float4	depth 				= s_sun_shafts.Load(int3(tc * screen_res.xy, 0), 0);
+	// Adjust sampling
+	sun_vec_screen *= angle_cos * ssss_params.z * ssss_params.y * len;
+	// Sampling image along ray
+	float4 accum = depth;
+    
+	[unroll]
+	for (int i = 1; i < NUM; i++)
+	{ 
+		tc += sun_vec_screen;
+		depth = s_sun_shafts.Load(int3(tc * screen_res.xy, 0), 0);
+		accum.xyz += depth.xyz * (1 - i / NUM);
+	}
+	accum /= NUM;
+
+	float4	Color 		= accum * 2.0f * float4(ray_fade.xxx, 1.0f);
+			Color.w    += (saturate(angle_cos*0.1f + 0.9f) - 0.99999f);
+	
+	return Color;
+}

@@ -38,15 +38,20 @@ function opt_video:InitControls(x, y, xml, handler)
 	xml:InitStatic("tab_video:cap_resolution", self)
 	xml:InitComboBox("tab_video:list_resolution", self)
 
+	xml:InitStatic("tab_video:cap_always_active", self) --Вот это надо инитить раньше list_fps_lock, чтобы этот статик не перекрывал выпадающий список.
+	xml:InitCheck("tab_video:check_always_active", self)
+
 	xml:InitStatic("tab_video:cap_fps_lock", self)
 	xml:InitComboBox("tab_video:list_fps_lock", self)
 
-	xml:InitStatic("tab_video:cap_always_active", self)
-	xml:InitCheck("tab_video:check_always_active", self)
-
 	xml:InitStatic("tab_video:cap_preset", self)
-	handler.combo_preset = xml:InitComboBox("tab_video:list_presets", self)
-	handler:Register(handler.combo_preset, "combo_preset")
+	local btn = xml:InitComboBox("tab_video:list_presets", self)
+	handler:Register(btn, "combo_preset")
+
+	xml:InitStatic("tab_video:cap_renderer", self)
+	local btn = xml:InitComboBox("tab_video:list_renderer", self)
+	handler:Register(btn, "tab_video:list_renderer")
+	handler:AddCallback( "tab_video:list_renderer", ui_events.LIST_ITEM_SELECT, handler.show_need_restart_wnd, handler )
 
 	local btn = xml:Init3tButton("tab_video:btn_advanced", self)	
 	handler:Register(btn, "btn_advanced_graphic")	

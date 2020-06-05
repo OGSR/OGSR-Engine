@@ -6,7 +6,7 @@
 #include "../../../CharacterPhysicsSupport.h"
 #include "../../../phmovementcontrol.h"
 #include "../ai_monster_squad_manager.h"
-#include "../../../../xr_3da/skeletonanimated.h"
+#include "../../../../Include/xrRender/KinematicsAnimated.h"
 #include "../../../detail_path_manager.h"
 #include "level_graph.h"
 #include "../corpse_cover.h"
@@ -284,6 +284,10 @@ void CBaseMonster::reinit()
 	m_show_debug_info				= 0;
 #endif 
 	
+	m_offset_from_leader_chosen_tick	= 0;
+	m_offset_from_leader				= Fvector().set(0.f, 0.f, 0.f);	
+
+	m_action_target_node			= u32(-1);
 
 	m_first_tick_enemy_inaccessible		= 0;
 	m_last_tick_enemy_inaccessible		= 0;
@@ -310,6 +314,14 @@ BOOL CBaseMonster::net_Spawn (CSE_Abstract* DC)
 	monster_squad().register_member			((u8)g_Team(),(u8)g_Squad(),(u8)g_Group(), this);
 
 	settings_overrides						();
+
+	if (GetScriptControl()) {
+		m_control_manager->animation().reset_data	();
+		ProcessScripts						();
+	}
+
+	control().update_frame();
+	control().update_schedule();
 
 	// spawn inventory item
 //	if (ai().get_alife()) {
@@ -498,7 +510,7 @@ void CBaseMonster::fill_bones_body_parts	(LPCSTR body_part, CriticalWoundType wo
 {
 	LPCSTR					body_parts_section = pSettings->r_string(cNameSect(),body_part);
 
-	CKinematics				*kinematics	= smart_cast<CKinematics*>(Visual());
+	IKinematics				*kinematics	= smart_cast<IKinematics*>(Visual());
 	VERIFY					(kinematics);
 
 	CInifile::Sect			&body_part_section = pSettings->r_section(body_parts_section);

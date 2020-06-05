@@ -28,7 +28,7 @@ void CControlThreaten::activate()
 	ctrl_dir->heading.target_angle	= m_man->direction().angle_to_target(m_object->EnemyMan.get_enemy()->Position());
 
 	//////////////////////////////////////////////////////////////////////////
-	CKinematicsAnimated	*skel	= smart_cast<CKinematicsAnimated*>(m_object->Visual());
+	IKinematicsAnimated	*skel	= smart_cast<IKinematicsAnimated*>(m_object->Visual());
 	
 	SControlAnimationData		*ctrl_anim = (SControlAnimationData*)m_man->data(this, ControlCom::eControlAnimation); 
 	VERIFY						(ctrl_anim);

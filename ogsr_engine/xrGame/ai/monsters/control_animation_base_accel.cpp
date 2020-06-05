@@ -131,6 +131,10 @@ bool CControlAnimationBase::accel_check_braking(float before_interval, float nom
 	if (!m_man->path_builder().is_moving_on_path())						return (braking_mode = false);
 	if (!accel_active(eAV_Braking))										return (braking_mode = false);
 
+	u32 curr_travel_point_index = m_man->path_builder().detail().curr_travel_point_index();
+	if ( m_man->path_builder().detail().path()[ curr_travel_point_index ].velocity == MonsterMovement::eVelocityParameterStand )
+	  return ( braking_mode = false );
+
 	float acceleration = accel_get(eAV_Braking);
 	float braking_dist	= (nominal_speed * ((braking_mode) ? nominal_speed : m_man->movement().velocity_current())) / (2 * acceleration);
 
@@ -138,10 +142,9 @@ bool CControlAnimationBase::accel_check_braking(float before_interval, float nom
 	if (m_man->path_builder().is_path_end(braking_dist))				return (braking_mode = true);
 
 	// проверить точки пути, где необходимо остановиться
-	float dist = 0.f;	// дистанция до найденной точки	
-	for (u32 i=m_man->path_builder().detail().curr_travel_point_index()+1; i < m_man->path_builder().detail().path().size(); i++) {
-		dist += m_man->path_builder().detail().path()[i].position.distance_to(m_man->path_builder().detail().path()[i-1].position);
-
+	float dist = m_man->path_builder().object().Position().distance_to( m_man->path_builder().detail().path()[ curr_travel_point_index + 1 ].position ); // дистанция до найденной точки
+	for ( u32 i = curr_travel_point_index + 1; i < m_man->path_builder().detail().path().size() - 1; i++ ) {
+		dist += m_man->path_builder().detail().path()[ i ].position.distance_to( m_man->path_builder().detail().path()[ i + 1 ].position );
 		if (m_man->path_builder().detail().path()[i].velocity == MonsterMovement::eVelocityParameterStand) {
 			if (dist < braking_dist) return (braking_mode = true);
 			else break;

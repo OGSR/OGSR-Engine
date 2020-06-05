@@ -20,7 +20,7 @@ void HUD_SOUND::LoadSound(	LPCSTR section, LPCSTR line,
 		hud_snd.sounds.push_back( SSnd() );
 		SSnd& s = hud_snd.sounds.back();
 
-		LoadSound	(section, sound_line, s.snd, type, &s.volume, &s.delay);
+		LoadSound	(section, sound_line, s.snd, type, &s.volume, &s.delay, &s.freq);
 		sprintf_s		(sound_line,"%s%d",line,++k);
 	}//while
 
@@ -31,7 +31,8 @@ void  HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line,
 						   ref_sound& snd, 
 						   int type,
 						   float* volume, 
-						   float* delay)
+						   float* delay,
+						   float* freq)
 {
 
 	LPCSTR str = pSettings->r_string(section, line);
@@ -65,6 +66,17 @@ void  HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line,
 				*delay = (float)atof(buf_str);
 		}
 	}
+
+	if(freq != NULL)
+	{
+		*freq = 1.f;
+		if(count>3)
+		{
+			_GetItem (str, 3, buf_str);
+			if(xr_strlen(buf_str)>0)
+				*freq = (float)atof(buf_str);
+		}
+	}
 }
 
 void HUD_SOUND::DestroySound	(HUD_SOUND& hud_snd)
@@ -81,25 +93,35 @@ void HUD_SOUND::PlaySound	(	HUD_SOUND&		hud_snd,
 								const Fvector&	position,
 								const CObject*	parent,
 								bool			b_hud_mode,
-								bool			looped)
+								bool			looped,
+								bool overlap )
 {
 	if (hud_snd.sounds.empty())	return;
 
-	hud_snd.m_activeSnd			= NULL;
-	StopSound					(hud_snd);
+	//hud_snd.m_activeSnd			= NULL;
+	if ( !overlap )
+	  StopSound( hud_snd );
 
 	u32 flags = b_hud_mode?sm_2D:0;
 	if(looped)
 		flags |= sm_Looped;
 
-	
 	hud_snd.m_activeSnd = &hud_snd.sounds[ Random.randI(hud_snd.sounds.size()) ];
+	float   freq = hud_snd.m_activeSnd->freq;
+	Fvector pos  = ( flags & sm_2D ) ? Fvector().set( 0, 0, 0 ) : position;
+	float   vol  = hud_snd.m_activeSnd->volume;
 
-	hud_snd.m_activeSnd->snd.play_at_pos	(const_cast<CObject*>(parent),
-									flags&sm_2D?Fvector().set(0,0,0):position,
+        if ( overlap ) {
+	  hud_snd.m_activeSnd->snd.play_no_feedback( const_cast<CObject*>(parent), flags, hud_snd.m_activeSnd->delay, &pos, &vol, &freq );
+        }
+        else {
+	  hud_snd.m_activeSnd->snd.play_at_pos	(const_cast<CObject*>(parent),
+									pos,
 									flags,
 									/*0.f*/hud_snd.m_activeSnd->delay);
-	hud_snd.m_activeSnd->snd.set_volume		(hud_snd.m_activeSnd->volume);
+	  hud_snd.m_activeSnd->snd.set_volume( vol );
+	  hud_snd.m_activeSnd->snd.set_frequency( freq );
+        }
 }
 
 void HUD_SOUND::StopSound	(HUD_SOUND& hud_snd)

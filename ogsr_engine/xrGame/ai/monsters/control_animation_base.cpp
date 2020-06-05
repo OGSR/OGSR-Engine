@@ -5,12 +5,14 @@
 #include "BaseMonster/base_monster.h"
 #include "../../PHMovementControl.h"
 #include "anim_triple.h"
-#include "../../../xr_3da/SkeletonAnimated.h"
+#include "../../../Include\xrRender\Kinematics.h"
 #include "../../detail_path_manager.h"
 #include "monster_velocity_space.h"
 #include "monster_event_manager.h"
 #include "control_jump.h"
 #include "../../sound_player.h"
+#include "../../../xr_3da/gamemtllib.h"
+#include "../../actor.h"
 
 // DEBUG purpose only
 char *dbg_action_name_table[] = {
@@ -147,7 +149,7 @@ bool CControlAnimationBase::get_animation_info (EMotionAnim anim, u32 index, Mot
 	string256 animation_name_buffer;
 	xr_strconcat(animation_name_buffer, anim_it->target_name.c_str(), itoa(index, index_string_buffer, 10));
 
-	CKinematicsAnimated*	animated	=	smart_cast<CKinematicsAnimated*>(m_object->Visual());
+	IKinematicsAnimated*	animated	=	smart_cast<IKinematicsAnimated*>(m_object->Visual());
 	if ( !animated )
 	{
 		return								false;
@@ -234,7 +236,7 @@ void CControlAnimationBase::select_animation(bool anim_end)
 
 	// установить анимацию	
 	string128	s1,s2;
-	MotionID	cur_anim		= smart_cast<CKinematicsAnimated*>(m_object->Visual())->ID_Cycle_Safe(xr_strconcat(s2,*anim_it->target_name,itoa(index,s1,10)));
+	MotionID	cur_anim		= smart_cast<IKinematicsAnimated*>(m_object->Visual())->ID_Cycle_Safe(xr_strconcat(s2,*anim_it->target_name,itoa(index,s1,10)));
 	if ( !cur_anim.valid() )
 		FATAL							(s2);
 
@@ -316,7 +318,7 @@ void CControlAnimationBase::CheckReplacedAnim()
 SAAParam &CControlAnimationBase::AA_GetParams(LPCSTR anim_name)
 {
 	// искать текущую анимацию в AA_VECTOR
-	MotionID motion = smart_cast<CKinematicsAnimated*>(m_object->Visual())->LL_MotionID(anim_name);
+	MotionID motion = smart_cast<IKinematicsAnimated*>(m_object->Visual())->LL_MotionID(anim_name);
 
 	for (SAAParam& attack_anim : m_attack_anims) 
 	{
@@ -368,7 +370,7 @@ void CControlAnimationBase::FX_Play(EHitSide side, float amount)
 		case eSideRight:	p_str = &anim_it->fxs.right;	break;
 	}
 
-	if (p_str && p_str->size()) smart_cast<CKinematicsAnimated*>(m_object->Visual())->PlayFX(*(*p_str), amount);
+	if (p_str && p_str->size()) smart_cast<IKinematicsAnimated*>(m_object->Visual())->PlayFX(*(*p_str), amount);
 
 	fx_time_last_play = m_object->m_dwCurrentTime;
 }
@@ -496,7 +498,7 @@ void CControlAnimationBase::ValidateAnimation()
 ///////////////////////////////////////////////////////////////////////////////////////
 void CControlAnimationBase::UpdateAnimCount()
 {
-	CKinematicsAnimated *skel = smart_cast<CKinematicsAnimated*>(m_object->Visual());
+	IKinematicsAnimated *skel = smart_cast<IKinematicsAnimated*>(m_object->Visual());
 
 	for (auto it = m_anim_storage.begin(); it != m_anim_storage.end(); it++)	{
 		if (!(*it)) continue;
@@ -536,7 +538,7 @@ void   CControlAnimationBase::SetCurAnim (EMotionAnim a)
 CMotionDef *CControlAnimationBase::get_motion_def(SAnimItem *it, u32 index)
 {
 	string128			s1,s2;
-	CKinematicsAnimated	*skeleton_animated = smart_cast<CKinematicsAnimated*>(m_object->Visual());
+	IKinematicsAnimated	*skeleton_animated = smart_cast<IKinematicsAnimated*>(m_object->Visual());
 	const MotionID		&motion_id = skeleton_animated->ID_Cycle_Safe(xr_strconcat(s2,*it->target_name,itoa(index,s1,10)));
 	return				(skeleton_animated->LL_GetMotionDef(motion_id));
 }
@@ -571,7 +573,7 @@ MotionID CControlAnimationBase::get_motion_id(EMotionAnim a, u32 index)
 	}
 
 	string128			s1,s2;
-	return				(smart_cast<CKinematicsAnimated*>(m_object->Visual())->ID_Cycle_Safe(xr_strconcat(s2,*anim_it->target_name,itoa(index,s1,10))));
+	return				(smart_cast<IKinematicsAnimated*>(m_object->Visual())->ID_Cycle_Safe(xr_strconcat(s2,*anim_it->target_name,itoa(index,s1,10))));
 }
 
 void CControlAnimationBase::stop_now()
@@ -586,6 +588,39 @@ void CControlAnimationBase::set_animation_speed()
 	SControlAnimationData		*ctrl_data = (SControlAnimationData*)m_man->data(this, ControlCom::eControlAnimation); 
 	if (!ctrl_data) return;
 	ctrl_data->set_speed		(m_cur_anim.speed._get_target() );
+}
+
+
+class ray_query_param {
+public:
+  const CBaseMonster* m_holder;
+  const CEntityAlive* m_enemy;
+  bool m_can_hit_enemy;
+
+  IC ray_query_param( const CBaseMonster* holder, const CEntityAlive* enemy ) {
+    m_holder = holder;
+    m_enemy  = enemy;
+    m_can_hit_enemy = false;
+  }
+};
+
+ICF static BOOL check_hit_trace_callback( collide::rq_result& result, LPVOID params ) {
+  ray_query_param* param = (ray_query_param*)params;
+  if ( result.O ) {
+    const CBaseMonster* monster      = smart_cast<const CBaseMonster*>( result.O );
+    const CEntityAlive* entity_alive = smart_cast<const CEntityAlive*>( result.O );
+    if ( monster == param->m_holder )
+      return TRUE;
+    else if ( entity_alive == param->m_enemy )
+      param->m_can_hit_enemy = true;
+  }
+  else {
+    // получить треугольник и узнать его материал
+    CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
+    if ( GMLib.GetMaterialByIdx( T->material) ->Flags.is( SGameMtl::flPassable ) )
+      return TRUE;
+  }
+  return FALSE;
 }
 
 void CControlAnimationBase::check_hit(MotionID motion, float time_perc)
@@ -622,6 +657,21 @@ void CControlAnimationBase::check_hit(MotionID motion, float time_perc)
 
 	if (!is_angle_between(p, from, to)) 
 		should_hit = false;
+
+	const CActor *pA = smart_cast<const CActor*>( enemy );
+	if ( should_hit && pA ) {
+          Fvector C, enemy_center;
+	  m_object->Center( C );
+	  enemy->Center( enemy_center );
+	  Fvector dir;
+	  dir.sub( enemy_center, C );
+	  dir.normalize();
+	  collide::rq_results RQR;
+	  collide::ray_defs RD( C, dir, params.dist, CDB::OPT_CULL, collide::rqtBoth );
+	  ray_query_param params( m_object, enemy );
+	  Level().ObjectSpace.RayQuery( RQR, RD, check_hit_trace_callback, &params, NULL, m_object );
+          should_hit = params.m_can_hit_enemy;
+	}
 
 	if (should_hit) 
 		m_object->HitEntity(enemy, params.hit_power, params.impulse, params.impulse_dir);
@@ -664,7 +714,7 @@ void CControlAnimationBase::AA_reload(LPCSTR section)
 	SAAParam			anim;
 	LPCSTR				anim_name,val;
 
-	CKinematicsAnimated	*skel_animated = smart_cast<CKinematicsAnimated*>(m_object->Visual());
+	IKinematicsAnimated	*skel_animated = smart_cast<IKinematicsAnimated*>(m_object->Visual());
 
 	for (u32 i=0; pSettings->r_line(section,i,&anim_name,&val); ++i) {
 		

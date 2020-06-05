@@ -5,7 +5,7 @@
 #include "physicsshell.h"
 #include "PhysicsShellHolder.h"
 #include "MathUtils.h"
-
+#include "../Include/xrRender/Kinematics.h"
 
 interactive_motion::interactive_motion()
 {
@@ -20,7 +20,7 @@ void interactive_motion::init()
 void interactive_motion::setup(LPCSTR m,CPhysicsShell *s)
 {
 	VERIFY(s);
-	motion = smart_cast<CKinematicsAnimated*>(s->PKinematics())->LL_MotionID(m);
+	motion = smart_cast<IKinematicsAnimated*>(s->PKinematics())->LL_MotionID(m);
 	if(motion.valid())
 		flags.set(fl_use_death_motion,TRUE);
 }
@@ -43,7 +43,7 @@ void interactive_motion::anim_callback(CBlend *B)
 void interactive_motion::play(CPhysicsShell *s)
 {
 	VERIFY( s );
-	smart_cast<CKinematicsAnimated*>( s->PKinematics( ) )->PlayCycle( motion, TRUE, anim_callback, this );
+	smart_cast<IKinematicsAnimated*>( s->PKinematics( ) )->PlayCycle( motion, TRUE, anim_callback, this );
 	state_start( s );
 }
 
@@ -77,7 +77,7 @@ void	interactive_motion::state_end(CPhysicsShell *s)
 
 void interactive_motion::update(CPhysicsShell *s)
 {
-	CKinematics *K  = s->PKinematics();
+	IKinematics *K  = s->PKinematics();
 	VERIFY(K);
 	K -> CalculateBones();
 	collide(s);
@@ -96,7 +96,7 @@ void	interactive_motion::switch_to_free(CPhysicsShell *s)
 	CPhysicsShellHolder *obj = s->get_ElementByStoreOrder(0)->PhysicsRefObject();
 	VERIFY(obj);
 	s->InterpolateGlobalTransform(&obj->XFORM());
-	CKinematics *K  = s->PKinematics();
+	IKinematics *K  = s->PKinematics();
 	VERIFY(K);
 	K->CalculateBones_Invalidate();
 	K->CalculateBones(TRUE);

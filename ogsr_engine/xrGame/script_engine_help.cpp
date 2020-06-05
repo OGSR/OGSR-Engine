@@ -1,4 +1,4 @@
-﻿////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 //	Module 		: script_engine_help.cpp
 //	Created 	: 01.04.2004
 //  Modified 	: 01.04.2004
@@ -42,7 +42,7 @@ void FastMsg(LPCSTR format, ...)
 	static u32 saldo = 0;
 	va_list mark;
 	va_start(mark, format);
-	int sz = _vsnprintf(line_buf, sizeof(line_buf) - 1, format, mark);
+	_vsnprintf(line_buf, sizeof(line_buf) - 1, format, mark);
 
 	line_buf[sizeof(line_buf) - 1] = 0;
 	va_end(mark);

@@ -208,6 +208,7 @@ void CStateBurerAttackTele<Object>::FindFreeObjects(xr_vector<CObject*> &tpObjec
 			(obj == object) || 
 			object->CTelekinesis::is_active_object(obj) || 
 			( pSettings->line_exist( obj->cNameSect().c_str(), "ph_heavy" ) && pSettings->r_bool( obj->cNameSect().c_str(), "ph_heavy" ) ) ||
+			( pSettings->line_exist( obj->cNameSect().c_str(), "quest_item" ) && pSettings->r_bool( obj->cNameSect().c_str(), "quest_item" ) ) ||
 			obj->hasFixedBones() ||
 			!obj->m_pPhysicsShell->get_ApplyByGravity()) continue;
 
@@ -343,7 +344,11 @@ bool CStateBurerAttackTele<Object>::CheckTeleStart()
 {
 	if (IsActiveObjects()) return false;
 
-	float dist = object->Position().distance_to(object->EnemyMan.get_enemy()->Position());
+	CEntityAlive const* enemy = object->EnemyMan.get_enemy();
+	if ( !enemy || enemy != Actor() )
+	  return false;
+
+	float dist = object->Position().distance_to( enemy->Position() );
 	if ( dist < object->m_tele_min_distance ) return false;
 	if ( dist > object->m_tele_max_distance ) return false;
 

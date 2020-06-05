@@ -15,7 +15,7 @@
 #include "ActorEffector.h"
 #include "level.h"
 #include "../xr_3da/cl_intersect.h"
-#include "gamemtllib.h"
+#include "../xr_3da/gamemtllib.h"
 #include "elevatorstate.h"
 #include "CharacterPhysicsSupport.h"
 #include "EffectorShot.h"
@@ -140,8 +140,10 @@ float cam_HeightInterpolationSpeed = 8.f;
 #include "debug_renderer.h"
 void CActor::cam_Update(float dt, float fFOV)
 {
+/* перенесено ниже
 	if(m_holder)
 		return;
+*/
 
 	// HUD FOV Update --#SM+#--
 	if (this == Level().CurrentControlEntity())
@@ -221,7 +223,8 @@ void CActor::cam_Update(float dt, float fFOV)
 					da			= PI/1000.f;
 					if (!fis_zero(r_torso.roll))
 						da		*= r_torso.roll/_abs(r_torso.roll);
-					for (float angle=0.f; _abs(angle)<_abs(alpha); angle+=da)
+					float angle = 0.f;
+					for (; _abs(angle)<_abs(alpha); angle+=da)
 						if (test_point(xrc,xform,mat,ext,radius,angle)) { bIntersect=TRUE; break; } 
 						valid_angle	= bIntersect?angle:alpha;
 				} 
@@ -253,80 +256,20 @@ void CActor::cam_Update(float dt, float fFOV)
 		if (flCurrentPlayerY-fPrevCamPos>0.2f)
 			fPrevCamPos		= flCurrentPlayerY-0.2f;
 		point.y				+= fPrevCamPos-flCurrentPlayerY;
-	}else{
+	} else if ( !m_holder ) {
 		fPrevCamPos			= flCurrentPlayerY;
 	}
-	float _viewport_near			= VIEWPORT_NEAR;
+
 	// calc point
 	xform.transform_tiny			(point);
 
 	CCameraBase* C					= cam_Active();
-
-	if(eacFirstEye == cam_active)
-	{
-//		CCameraBase* C				= cameras[eacFirstEye];
-	
-		xrXRC						xrc			;
-		xrc.box_options				(0)			;
-		xrc.box_query				(Level().ObjectSpace.GetStaticModel(), point, Fvector().set(VIEWPORT_NEAR,VIEWPORT_NEAR,VIEWPORT_NEAR) );
-		u32 tri_count				= xrc.r_count();
-		if (tri_count)
-		{
-			_viewport_near			= 0.01f;
-		}
-		else
-		{
-			xr_vector<ISpatial*> ISpatialResult;
-			g_SpatialSpacePhysic->q_box(ISpatialResult, 0, STYPE_PHYSIC, point, Fvector().set(VIEWPORT_NEAR,VIEWPORT_NEAR,VIEWPORT_NEAR));
-			for (u32 o_it=0; o_it<ISpatialResult.size(); o_it++)
-			{
-				CPHShell*		pCPHS= smart_cast<CPHShell*>(ISpatialResult[o_it]);
-				if (pCPHS)
-				{
-					_viewport_near			= 0.01f;
-					break;
-				}
-			}
-		}
-	}
-/*
-	{
-		CCameraBase* C				= cameras[eacFirstEye];
-		float oobox_size			= 2*VIEWPORT_NEAR;
-
-
-		Fmatrix						_rot;
-		_rot.k						= C->vDirection;
-		_rot.c						= C->vPosition;
-		_rot.i.crossproduct			(C->vNormal,	_rot.k);
-		_rot.j.crossproduct			(_rot.k,		_rot.i);
-
-		
-		Fvector						vbox; 
-		vbox.set					(oobox_size, oobox_size, oobox_size);
-
-
-		Level().debug_renderer().draw_aabb  (C->vPosition, 0.05f, 0.051f, 0.05f, D3DCOLOR_XRGB(0,255,0));
-		Level().debug_renderer().draw_obb  (_rot, Fvector().div(vbox,2.0f), D3DCOLOR_XRGB(255,0,0));
-
-		dMatrix3					d_rot;
-		PHDynamicData::FMXtoDMX		(_rot, d_rot);
-
-		CPHActivationShape			activation_shape;
-		activation_shape.Create		(point, vbox, this);
-
-		dBodySetRotation			(activation_shape.ODEBody(), d_rot);
-
-		CPHCollideValidator::SetDynamicNotCollide(activation_shape);
-		activation_shape.Activate	(vbox,1,1.f,0.0F);
-
-		point.set					(activation_shape.Position());
-		
-		activation_shape.Destroy	();
-	}
-*/
 	C->Update						(point,dangle);
 	C->f_fov						= fFOV;
+
+	if ( m_holder )
+	  return;
+
 	if(eacFirstEye != cam_active)
 	{
 		cameras[eacFirstEye]->Update	(point,dangle);
@@ -335,10 +278,10 @@ void CActor::cam_Update(float dt, float fFOV)
 	
 	if( psActorFlags.test(AF_PSP) )
 	{
-		Cameras().Update			(C);
+		Cameras().UpdateFromCamera(C);
 	}else
 	{
-		Cameras().Update			(cameras[eacFirstEye]);
+		Cameras().UpdateFromCamera(cameras[eacFirstEye]);
 	}
 
 	fCurAVelocity			= vPrevCamDir.sub(cameras[eacFirstEye]->vDirection).magnitude()/Device.fTimeDelta;
@@ -346,9 +289,9 @@ void CActor::cam_Update(float dt, float fFOV)
 
 	if (Level().CurrentEntity() == this)
 	{
-		Level().Cameras().Update	(C);
+		Level().Cameras().UpdateFromCamera(C);
 		if(eacFirstEye == cam_active && !Level().Cameras().GetCamEffector(cefDemo)){
-			Cameras().ApplyDevice	(_viewport_near);
+			Cameras().ApplyDevice();
 		}
 	}
 }
@@ -393,32 +336,6 @@ void CActor::OnRender	()
 	inherited::OnRender();
 }
 #endif
-/*
-void CActor::LoadShootingEffector (LPCSTR section)
-{
-
-	if(!m_pShootingEffector) 
-		m_pShootingEffector = xr_new<SShootingEffector>();
-
-
-	m_pShootingEffector->ppi.duality.h		= pSettings->r_float(section,"duality_h");
-	m_pShootingEffector->ppi.duality.v		= pSettings->r_float(section,"duality_v");
-	m_pShootingEffector->ppi.gray				= pSettings->r_float(section,"gray");
-	m_pShootingEffector->ppi.blur				= pSettings->r_float(section,"blur");
-	m_pShootingEffector->ppi.noise.intensity	= pSettings->r_float(section,"noise_intensity");
-	m_pShootingEffector->ppi.noise.grain		= pSettings->r_float(section,"noise_grain");
-	m_pShootingEffector->ppi.noise.fps		= pSettings->r_float(section,"noise_fps");
-	VERIFY(!fis_zero(m_pShootingEffector->ppi.noise.fps));
-
-	sscanf(pSettings->r_string(section,"color_base"),	"%f,%f,%f", &m_pShootingEffector->ppi.color_base.r, &m_pShootingEffector->ppi.color_base.g, &m_pShootingEffector->ppi.color_base.b);
-	sscanf(pSettings->r_string(section,"color_gray"),	"%f,%f,%f", &m_pShootingEffector->ppi.color_gray.r, &m_pShootingEffector->ppi.color_gray.g, &m_pShootingEffector->ppi.color_gray.b);
-	sscanf(pSettings->r_string(section,"color_add"),	"%f,%f,%f", &m_pShootingEffector->ppi.color_add.r,  &m_pShootingEffector->ppi.color_add.g,	&m_pShootingEffector->ppi.color_add.b);
-
-	m_pShootingEffector->time				= pSettings->r_float(section,"time");
-	m_pShootingEffector->time_attack		= pSettings->r_float(section,"time_attack");
-	m_pShootingEffector->time_release		= pSettings->r_float(section,"time_release");
-
-}*/
 
 void CActor::LoadSleepEffector	(LPCSTR section)
 {

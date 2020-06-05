@@ -6,7 +6,7 @@
 #include "hit.h"
 #include "phdestroyable.h"
 #include "xrmessages.h"
-#include "../xr_3da/skeletoncustom.h"
+#include "../Include/xrRender/Kinematics.h"
 #include "PHWorld.h"
 CTeleWhirlwind ::CTeleWhirlwind () 
 {
@@ -178,7 +178,7 @@ bool	CTeleWhirlwindObject::destroy_object		(const Fvector dir,float val)
 		CParticlesPlayer* PP = smart_cast<CParticlesPlayer*>(object);
 		if(PP)
 		{
-			u16 root=(smart_cast<CKinematics*>(object->Visual()))->LL_GetBoneRoot();
+			u16 root=(smart_cast<IKinematics*>(object->Visual()))->LL_GetBoneRoot();
 			PP->StartParticles(m_telekinesis->destroing_particles(),root, Fvector().set(0,1,0),m_telekinesis->OwnerObject()->ID());
 		}
 		return true;

@@ -179,8 +179,8 @@ void CUILines::ParseText(){
 				char *pszTemp = NULL;
 				const u32 tcolor = line->m_subLines[i].m_color;
 				char szTempLine[ MAX_MB_CHARS ] , *pszSearch = NULL;
-				VERIFY( xr_strlen( line->m_subLines[i].m_text.c_str() ) < MAX_MB_CHARS );
-				strcpy( szTempLine , line->m_subLines[i].m_text.c_str() );
+				VERIFY( strlen( line->m_subLines[i].m_text.c_str() ) < MAX_MB_CHARS );
+				strcpy_s( szTempLine , line->m_subLines[i].m_text.c_str() );
 				pszSearch = szTempLine;
 				while ( ( pszTemp = strstr( pszSearch , "\\n" ) ) != NULL ) {
 					bNewLines = TRUE;
@@ -227,17 +227,14 @@ void CUILines::ParseText(){
 				for ( u16 j = 0 ; j < nMarkers ; j ++ ) {
 					uPartLen = aMarkers[ j ] - uFrom;
 					VERIFY( ( uPartLen > 0 ) && ( uPartLen < MAX_MB_CHARS ) );
-					strncpy( szTempLine , pszText + uFrom , uPartLen );
+					strncpy_s( szTempLine , pszText + uFrom , uPartLen );
 					szTempLine[ uPartLen ] = '\0';
 					tmp_line.AddSubLine( szTempLine , tcolor );
 					m_lines.push_back( tmp_line );
 					tmp_line.Clear();
-					// Compiler bug :)
-					#pragma warning( disable : 4244 )
 					uFrom += uPartLen;
-					#pragma warning( default : 4244 )
 				}
-				strncpy( szTempLine , pszText + uFrom , MAX_MB_CHARS );
+				strncpy_s( szTempLine , pszText + uFrom , MAX_MB_CHARS );
 				tmp_line.AddSubLine( szTempLine , tcolor );
 				m_lines.push_back( tmp_line );
 				tmp_line.Clear();
@@ -279,7 +276,7 @@ void CUILines::ParseText(){
 						last_space_idx = 0;
 					}
 
-					strncpy_s			(buff, sizeof(buff), sbl.m_text.c_str()+curr_w_pos, idx-curr_w_pos+1);
+					strncpy_s(buff, sbl.m_text.c_str() + curr_w_pos, idx - curr_w_pos + 1);
 //.					Msg					("-%s",buff);
 					tmp_line.AddSubLine	(buff , sbl.m_color);
 					curr_w_pos			= idx+1;
@@ -428,11 +425,11 @@ void CUILines::DrawCursor(float x, float y) {
 		string4096 buff;
 		if (!uFlags.is(flComplexMode))
 		{
-			strncpy(buff, m_text.c_str(), m_cursor_pos.x);
+			strncpy_s(buff, m_text.c_str(), m_cursor_pos.x);
 		}
 		else
 		{
-			strcpy(buff, "");
+			strcpy_s(buff, "");
 
 			CUILine line = m_lines[m_cursor_pos.y];
 
@@ -445,12 +442,12 @@ void CUILines::DrawCursor(float x, float y) {
 
 				if (sz + line_size < m_cursor_pos.x)
 				{
-					strcat(buff, line_text);
+					strcat_s(buff, line_text);
 					sz += line_size;
 				}
 				else
 				{
-					strncat(buff, line_text, m_cursor_pos.x - sz);
+					strncat_s(buff, line_text, m_cursor_pos.x - sz);
 					break;
 				}
 			}

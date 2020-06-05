@@ -14,7 +14,7 @@
 #include "level.h"
 #include "inventory.h"
 #include "../xr_3da/camerabase.h"
-
+#include "../Include/xrRender/Kinematics.h"
 
 CHudItem::CHudItem(void)
 {
@@ -52,7 +52,7 @@ static const float ORIGIN_OFFSET = -0.05f;
 static const float TENDTO_SPEED = 5.f;
 
 static const float ZOOM_ORIGIN_OFFSET = -0.01f;
-static const float ZOOM_TENDTO_SPEED = 5.f;
+static const float ZOOM_TENDTO_SPEED = 10.f;
 
 void CHudItem::Load(LPCSTR section)
 {
@@ -91,9 +91,9 @@ void CHudItem::net_Destroy()
 	m_dwStateTime		= 0;
 }
 
-void CHudItem::PlaySound	(HUD_SOUND& hud_snd, const Fvector& position)
+void CHudItem::PlaySound( HUD_SOUND& hud_snd, const Fvector& position, bool overlap  )
 {
-	HUD_SOUND::PlaySound	(hud_snd, position, object().H_Root(), !!GetHUDmode());
+  HUD_SOUND::PlaySound( hud_snd, position, object().H_Root(), !!GetHUDmode(), false, overlap );
 }
 
 BOOL  CHudItem::net_Spawn	(CSE_Abstract* DC) 
@@ -168,19 +168,19 @@ void CHudItem::OnStateSwitch	(u32 S)
 }
 
 
-bool CHudItem::Activate() 
+bool CHudItem::Activate( bool now )
 {
 	if(m_pHUD) 
 		m_pHUD->Init();
 
-	Show();
+	Show( now );
 	OnActiveItem ();
 	return true;
 }
 
-void CHudItem::Deactivate() 
+void CHudItem::Deactivate( bool now )
 {
-	Hide();
+	Hide( now );
 	OnHiddenItem ();
 }
 
@@ -192,11 +192,15 @@ void CHudItem::UpdateHudPosition	()
 		if(item().IsHidden()) 
 			SetHUDmode(FALSE);
 
-		Fmatrix							trans;
-
 		CActor* pActor = smart_cast<CActor*>(object().H_Parent());
-		if(pActor){
-			pActor->Cameras().camera_Matrix				(trans);
+		if(pActor) {
+			Fmatrix trans;
+
+			if (pActor->cam_Active() == pActor->cam_FirstEye())
+				pActor->Cameras().hud_camera_Matrix(trans);
+			else
+				pActor->Cameras().camera_Matrix(trans);
+
 			UpdateHudInertion							(trans);
 			UpdateHudAdditonal							(trans);
 			m_pHUD->UpdatePosition						(trans);
@@ -335,11 +339,12 @@ void CHudItem::animGetEx( MotionSVec& lst, LPCSTR prefix, LPCSTR suffix ) {
   speed_k += "_speed_k";
   if ( pSettings->line_exist( hud_sect.c_str(), speed_k.c_str() ) ) {
     float k = pSettings->r_float( hud_sect.c_str(), speed_k.c_str() );
-    if ( !fsimilar( k, 1.f ) )
+    if ( !fsimilar( k, 1.f ) ) {
       for ( const auto& M : lst ) {
-        auto *animated   = smart_cast<CKinematicsAnimated*>( m_pHUD->Visual() );
+        auto *animated   = m_pHUD->Visual()->dcast_PKinematicsAnimated();
         auto *motion_def = animated->LL_GetMotionDef( M );
-        motion_def->SpeedKoeff( k );
+        motion_def->SetSpeedKoeff( k );
       }
+    }
   }
 }

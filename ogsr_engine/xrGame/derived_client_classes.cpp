@@ -219,8 +219,6 @@ void get_slots(luabind::object O)
 
 }
 
-void fake_set_slots(CInventoryItem *I, luabind::object T) { } // модифицировать слоты можно, если GetSlots не будет возвращать константу
-
 void CInventoryScript::script_register(lua_State *L)
 {
 	module(L)
@@ -241,7 +239,7 @@ void CInventoryScript::script_register(lua_State *L)
 			.property("inv_name_short"					,			&get_item_name_short, &set_item_name_short)
 			.property("cost"							,			&CInventoryItem::Cost,  &CInventoryItem::SetCost)
 			.property("slot"							,			&CInventoryItem::GetSlot, &CInventoryItem::SetSlot)
-			.property("slots"							,			&get_slots, &fake_set_slots, raw<2>())	
+			.property("slots"							,			&get_slots, raw<2>())	
 			.property("description"						,			&get_item_description, &set_item_description)
 			,
 			class_<CInventoryItemObject, bases<CInventoryItem, CGameObject>>("CInventoryItemObject"),
@@ -341,7 +339,7 @@ void COutfitScript::script_register(lua_State *L)
 int			get_fire_bone(CWeaponHUD *hud)  { return hud->FireBone();  }
 const Fvector&	get_fire_point1 (CWeaponHUD *hud) { return hud->FirePoint(); }
 const Fvector&	get_fire_point2 (CWeaponHUD *hud) { return hud->FirePoint2(); }
-IRender_Visual* get_hud_visual(CWeaponHUD *hud)   { return hud->Visual(); }
+IRenderVisual* get_hud_visual(CWeaponHUD *hud)   { return hud->Visual(); }
 
 #ifdef NLC_EXTENSIONS
 extern void attach_upgrades(lua_State *L);

@@ -110,7 +110,7 @@ void CUIStatic::CreateShader(const char* tex, const char* sh){
 	m_UIStaticItem.CreateShader(tex,sh);	
 }
 
-ref_shader& CUIStatic::GetShader(){
+ui_shader& CUIStatic::GetShader(){
 	return m_UIStaticItem.GetShader();
 }
 
@@ -128,19 +128,12 @@ void CUIStatic::InitTextureEx(LPCSTR tex_name, LPCSTR sh_name)
 	m_texture = tex_name;
 	m_shader = sh_name;
 
-	string_path buff;
-	u32		v_dev	= CAP_VERSION(HW.Caps.raster_major, HW.Caps.raster_minor);
-	u32		v_need	= CAP_VERSION(2,0);
-	if (/*strstr(Core.Params,"-ps_movie") &&*/ (v_dev >= v_need) && FS.exist(buff,"$game_textures$", tex_name, ".ogm") )
-		CUITextureMaster::InitTexture	(tex_name, "hud\\movie", &m_UIStaticItem);
-	else
-		CUITextureMaster::InitTexture	(tex_name, sh_name, &m_UIStaticItem);
-
-	CUIStaticItem(m_UIStaticItem);
+	LPCSTR res_shname = UIRender->UpdateShaderName(tex_name, sh_name);
+	CUITextureMaster::InitTexture(tex_name, res_shname, &m_UIStaticItem);
 
 	Fvector2 p						= GetWndPos();
 	m_UIStaticItem.SetPos			(p.x, p.y);
-	m_bAvailableTexture				= true;
+	m_bAvailableTexture = true;
 }
 
 void  CUIStatic::Draw()
@@ -186,7 +179,8 @@ void CUIStatic::DrawText(){
 
 void CUIStatic::DrawTexture(){
 
-	if(m_bAvailableTexture && m_bTextureEnable){
+	if (m_bTextureEnable && GetShader() && GetShader()->inited())
+	{
 		Frect			rect;
 		GetAbsoluteRect	(rect);
 		m_UIStaticItem.SetPos	(rect.left + m_TextureOffset.x, rect.top + m_TextureOffset.y);
@@ -466,7 +460,7 @@ void CUIStatic::ClipperOff()
 	ClipperOff(m_UIStaticItem);
 }
 
-void  CUIStatic::SetShader(const ref_shader& sh)
+void  CUIStatic::SetShader(const ui_shader& sh)
 {
 	m_UIStaticItem.SetShader(sh);
 	m_bAvailableTexture = true;
