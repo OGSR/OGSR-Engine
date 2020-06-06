@@ -17,6 +17,35 @@ static bool error_after_dialog = false;
 
 #include "stacktrace_collector.h"
 #include <sstream>
+#include <VersionHelpers.h>
+
+
+static const char* GetThreadName()
+{
+	if (IsWindows10OrGreater())
+	{
+		static HMODULE KernelLib = GetModuleHandle("kernel32.dll");
+		using FuncGetThreadDescription = HRESULT(*)(HANDLE, PWSTR*);
+		static auto pGetThreadDescription = (FuncGetThreadDescription)GetProcAddress(KernelLib, "GetThreadDescription");
+
+		if (pGetThreadDescription)
+		{
+			PWSTR wThreadName = nullptr;
+			if (SUCCEEDED(pGetThreadDescription(GetCurrentThread(), &wThreadName)))
+			{
+				if (wThreadName)
+				{
+					string64 ResThreadName{};
+					WideCharToMultiByte(CP_OEMCP, 0, wThreadName, wcslen(wThreadName), ResThreadName, sizeof(ResThreadName), nullptr, nullptr);
+					LocalFree(wThreadName);
+					if (ResThreadName && strlen(ResThreadName))
+						return ResThreadName;
+				}
+			}
+		}
+	}
+	return "UNKNOWN";
+}
 
 void LogStackTrace(const char* header)
 {
@@ -25,6 +54,7 @@ void LogStackTrace(const char* header)
 		if (auto pCrashHandler = Debug.get_crashhandler())
 			pCrashHandler(true);
 		Log("********************************************************************************");
+		Msg("!![" __FUNCTION__ "] Thread: [%s]", GetThreadName());
 		Log(BuildStackTrace(header));
 		Log("********************************************************************************");
 	}
@@ -38,7 +68,7 @@ void LogStackTrace(const char* header, _EXCEPTION_POINTERS *pExceptionInfo, bool
 		if (auto pCrashHandler = Debug.get_crashhandler())
 			pCrashHandler(dump_lua_locals);
 		Log("********************************************************************************");
-		Msg("!![" __FUNCTION__ "] ExceptionCode is [%x]", pExceptionInfo->ExceptionRecord->ExceptionCode);
+		Msg("!![" __FUNCTION__ "] Thread: [%s], ExceptionCode: [%x]", GetThreadName(), pExceptionInfo->ExceptionRecord->ExceptionCode);
 		auto save = *pExceptionInfo->ContextRecord;
 		Log(BuildStackTrace(header, pExceptionInfo->ContextRecord));
 		*pExceptionInfo->ContextRecord = save;
