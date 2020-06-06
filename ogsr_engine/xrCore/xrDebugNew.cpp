@@ -35,8 +35,8 @@ static const char* GetThreadName()
 			{
 				if (wThreadName)
 				{
-					string64 ResThreadName{};
-					WideCharToMultiByte(CP_OEMCP, 0, wThreadName, wcslen(wThreadName), ResThreadName, sizeof(ResThreadName), nullptr, nullptr);
+					static string64 ResThreadName{};
+					WideCharToMultiByte(CP_OEMCP, 0, wThreadName, int(wcslen(wThreadName)), ResThreadName, sizeof(ResThreadName), nullptr, nullptr);
 					LocalFree(wThreadName);
 					if (ResThreadName && strlen(ResThreadName))
 						return ResThreadName;
@@ -251,7 +251,7 @@ void __cdecl xrDebug::fatal(const char *file, int line, const char *function, co
 	backend("FATAL ERROR", strBuf, nullptr, nullptr, file, line, function);
 }
 
-int out_of_memory_handler	(size_t size)
+static int out_of_memory_handler(size_t size)
 {
 	Memory.mem_compact		();
 	size_t					process_heap	= mem_usage_impl(nullptr, nullptr);
@@ -272,7 +272,7 @@ int out_of_memory_handler	(size_t size)
 #pragma comment(lib, "Version.lib")
 #pragma comment(lib, "dbghelp.lib")
 
-void save_mini_dump(_EXCEPTION_POINTERS *pExceptionInfo)
+static void save_mini_dump(_EXCEPTION_POINTERS *pExceptionInfo)
 {
 	__try {
 
@@ -336,7 +336,7 @@ void save_mini_dump(_EXCEPTION_POINTERS *pExceptionInfo)
 }
 #endif
 
-void format_message(char* buffer, const size_t& buffer_size)
+static void format_message(char* buffer, const size_t& buffer_size)
 {
 	__try {
 
@@ -367,7 +367,7 @@ void format_message(char* buffer, const size_t& buffer_size)
 }
 
 
-LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
+static LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 {
 	if (!error_after_dialog)
 	{
@@ -395,7 +395,7 @@ LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 }
 
 
-void _terminate() //Вызывается при std::terminate()
+static void _terminate() //Вызывается при std::terminate()
 {
   Debug.backend(
       "<no expression>",
@@ -513,20 +513,20 @@ static void termination_handler(int signal)
 // http://qaru.site/questions/441696/what-actions-do-i-need-to-take-to-get-a-crash-dump-in-all-error-scenarios
 static BOOL PreventSetUnhandledExceptionFilter()
 {
-	HMODULE hKernel32 = LoadLibrary("kernel32.dll");
-	if (hKernel32 == NULL) return FALSE;
-	void *pOrgEntry = GetProcAddress(hKernel32, "SetUnhandledExceptionFilter");
-	if (pOrgEntry == NULL) return FALSE;
+	HMODULE hKernel32 = GetModuleHandle("kernel32.dll");
+	if (!hKernel32) return FALSE;
+	void* pOrgEntry = GetProcAddress(hKernel32, "SetUnhandledExceptionFilter");
+	if (!pOrgEntry) return FALSE;
 
 #ifdef _M_IX86
 	// Code for x86:
 	// 33 C0                xor         eax,eax  
 	// C2 04 00             ret         4 
-	unsigned char szExecute[] = { 0x33, 0xC0, 0xC2, 0x04, 0x00 };
+	constexpr unsigned char szExecute[] = { 0x33, 0xC0, 0xC2, 0x04, 0x00 };
 #elif _M_X64
 	// 33 C0                xor         eax,eax 
 	// C3                   ret  
-	unsigned char szExecute[] = { 0x33, 0xC0, 0xC3 };
+	constexpr unsigned char szExecute[] = { 0x33, 0xC0, 0xC3 };
 #else
 #error "The following code only works for x86 and x64!"
 #endif
