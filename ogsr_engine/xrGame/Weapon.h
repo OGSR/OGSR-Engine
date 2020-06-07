@@ -11,6 +11,7 @@
 #include "game_cl_single.h"
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Items.h"
+#include "actor.h"
 
 // refs
 class CEntity;
@@ -293,7 +294,14 @@ public:
 	virtual void			OnZoomOut			();
 			bool			IsZoomed			()	const	{return m_bZoomMode;};
 	CUIStaticItem*			ZoomTexture			();	
-			bool			ZoomHideCrosshair	()			{return (m_bHideCrosshairInZoom || ZoomTexture()) && !psActorFlags.test(AF_CROSSHAIR_DBG);}
+	bool ZoomHideCrosshair()
+	{
+		auto* pA = smart_cast<CActor*>(H_Parent());
+		if (pA && pA->active_cam() == eacLookAt)
+			return false;
+
+		return (m_bHideCrosshairInZoom || ZoomTexture()) && !psActorFlags.test(AF_CROSSHAIR_DBG);
+	}
 
 	virtual void			OnZoomChanged		() {}
 
