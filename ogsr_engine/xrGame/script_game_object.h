@@ -417,6 +417,7 @@ public:
 			void					explode			(u32 level_time);
 			void explode_initiator( u16 );
 			bool is_exploded();
+			bool is_ready_to_explode();
 			CScriptGameObject		*GetEnemy		() const;
 			CScriptGameObject		*GetCorpse		() const;
 			CScriptSoundInfo		GetSoundInfo	();

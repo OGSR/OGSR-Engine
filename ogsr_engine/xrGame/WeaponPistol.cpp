@@ -67,6 +67,7 @@ void CWeaponPistol::Load	(LPCSTR section)
 		animGetEx( wm_mhud_r.mhud_idle_aim, "anim_idle_aim", "_r" );
 	}
 
+	animGetEx( wm_mhud_r.mhud_reload_partly, "anim_reload_partly", "_r", "anim_reload" );
 }
 
 void CWeaponPistol::OnH_B_Chield		()
@@ -108,18 +109,21 @@ void CWeaponPistol::PlayAnimIdle( u8 state = eIdle ) {
 	}
 }
 
-void CWeaponPistol::PlayAnimReload	()
-{	
-	VERIFY(GetState()==eReload);
-	if(m_opened){ 
-		CWeaponPistol::WWPMotions& m = wwpm_current();
-		m_pHUD->animPlay(random_anim(m.mhud_reload_empty), TRUE, this, GetState());
-	}else{
-		CWeaponMagazined::SWMmotions& m = swm_current();
-		m_pHUD->animPlay(random_anim(m.mhud_reload), TRUE, this, GetState());
-	}
-	
-	m_opened = false;		
+void CWeaponPistol::PlayAnimReload() {
+  VERIFY( GetState() == eReload );
+  if ( m_opened ) {
+    CWeaponPistol::WWPMotions& m = wwpm_current();
+    m_pHUD->animPlay( random_anim( m.mhud_reload_empty ), TRUE, this, GetState() );
+  }
+  else {
+    CWeaponMagazined::SWMmotions& m = swm_current();
+    if ( IsPartlyReloading() )
+      m_pHUD->animPlay( random_anim( m.mhud_reload_partly ), TRUE, this, GetState() );
+    else
+      m_pHUD->animPlay( random_anim( m.mhud_reload ), TRUE, this, GetState() );
+  }
+
+  m_opened = false;
 }
 
 

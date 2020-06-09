@@ -22,7 +22,6 @@
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 #include "script_game_object.h"
-#include "actor.h"
 #include "alife_registry_wrappers.h"
 #include "alife_simulator_header.h"
 
@@ -92,6 +91,8 @@ void CWeaponMagazinedWGrenade::Load	(LPCSTR section)
 		animGetEx( mhud_idle_w_gl_aim, "anim_idle_gl_aim" );
 	}
 
+	animGetEx( mhud_reload_w_gl_partly, "anim_reload_gl_partly", nullptr, "anim_reload_gl" );
+
 
 	if(m_eGrenadeLauncherStatus == ALife::eAddonPermanent)
 	{
@@ -159,7 +160,7 @@ BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 
 		UpdateZoomOffset();
 
-		Actor()->callback(GameObject::eOnActorWeaponSwitchGL)(lua_game_object());
+		StateSwitchCallback( GameObject::eOnActorWeaponSwitchGL, GameObject::eOnNPCWeaponSwitchGL );
 
 		// reloading
 		m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));
@@ -248,6 +249,7 @@ bool CWeaponMagazinedWGrenade::SwitchMode()
 	m_bPending				= true;
 
 	PerformSwitchGL			();
+	StateSwitchCallback( GameObject::eOnActorWeaponSwitchGL, GameObject::eOnNPCWeaponSwitchGL );
 	
 	PlaySound				(sndSwitch,get_LastFP());
 
@@ -278,8 +280,6 @@ void  CWeaponMagazinedWGrenade::PerformSwitchGL()
 	iAmmoElapsed2 = (int)m_magazine2.size();
 
 	UpdateZoomOffset();
-
-	Actor()->callback( GameObject::eOnActorWeaponSwitchGL )( lua_game_object() );
 }
 
 bool CWeaponMagazinedWGrenade::Action(s32 cmd, u32 flags) 
@@ -674,14 +674,17 @@ void CWeaponMagazinedWGrenade::PlayAnimHide()
 		m_pHUD->animPlay (random_anim(mhud.mhud_hide),TRUE,this, GetState());
 }
 
-void CWeaponMagazinedWGrenade::PlayAnimReload()
-{
-	VERIFY(GetState()==eReload);
+void CWeaponMagazinedWGrenade::PlayAnimReload() {
+  VERIFY( GetState() == eReload );
 
-	if(IsGrenadeLauncherAttached())
-		m_pHUD->animPlay(random_anim(mhud_reload_w_gl),TRUE,this, GetState());
-	else
-		inherited::PlayAnimReload();
+  if ( IsGrenadeLauncherAttached() ) {
+    if ( IsPartlyReloading() )
+      m_pHUD->animPlay( random_anim( mhud_reload_w_gl_partly ),TRUE, this, GetState() );
+    else
+      m_pHUD->animPlay( random_anim( mhud_reload_w_gl ),TRUE, this, GetState() );
+  }
+  else
+    inherited::PlayAnimReload();
 }
 
 

@@ -17,6 +17,7 @@ public:
 	virtual void	net_Import			(NET_Packet& P);
 
 	virtual void	Reload				();
+	void TryReload();
 	virtual void	Fire2Start			();
 	virtual void	Fire2End			();
 	virtual void	OnShot				();
@@ -26,6 +27,7 @@ public:
 	void			switch2_StartReload ();
 	void			switch2_AddCartgidge();
 	void			switch2_EndReload	();
+	virtual void StopHUDSounds();
 
 	virtual void	UpdateSounds		();
 	virtual void	PlayAnimOpenWeapon	();
@@ -48,6 +50,7 @@ protected:
 
 	bool			HaveCartridgeInInventory(u8 cnt);
 	virtual u8		AddCartridge		(u8 cnt);
+	virtual void	ReloadMagazine	();
 
 	HUD_SOUND		sndShotBoth;
 	ESoundTypes		m_eSoundShotBoth;

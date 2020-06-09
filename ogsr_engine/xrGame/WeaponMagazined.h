@@ -52,6 +52,7 @@ protected:
 		MotionSVec		mhud_shots;		//
 		MotionSVec		mhud_idle_sprint;
 		MotionSVec		mhud_idle_moving;
+		MotionSVec		mhud_reload_partly;
 	};
 	SWMmotions			mhud;	
 	
@@ -135,6 +136,10 @@ public:
 	IC		int		GetQueueSize			() const	{return m_iQueueSize;};
 	virtual bool	StopedAfterQueueFired	()			{return m_bStopedAfterQueueFired; }
 	virtual void	StopedAfterQueueFired	(bool value){m_bStopedAfterQueueFired = value; }
+
+	int  ShootEffectorStart() { return m_iShootEffectorStart; }
+	bool canApplyShootEffectorStart();
+	bool canApplyShootEffector();
 
 protected:
 	//максимальный размер очереди, которой можно стрельнуть

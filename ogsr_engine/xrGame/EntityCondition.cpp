@@ -51,7 +51,6 @@ CEntityCondition::CEntityCondition(CEntityAlive *object)
 	m_fMinWoundSize			= 0.00001f;
 
 	
-	m_fHealthHitPart		= 1.0f;
 	m_fPowerHitPart			= 0.5f;
 
 	m_fDeltaHealth			= 0;
@@ -95,8 +94,13 @@ void CEntityCondition::LoadCondition(LPCSTR entity_section)
 	m_change_v.load		(section,"");
 
 	m_fMinWoundSize			= pSettings->r_float(section,"min_wound_size");
-	m_fHealthHitPart		= pSettings->r_float(section,"health_hit_part");
 	m_fPowerHitPart			= pSettings->r_float(section,"power_hit_part");
+	float fHealthHitPart = READ_IF_EXISTS( pSettings, r_float, section, "health_hit_part", 1.f );
+	for ( int hit_type = 0; hit_type < (int)ALife::eHitTypeMax; ++hit_type ) {
+	  LPCSTR hit_name = ALife::g_cafHitType2String( (ALife::EHitType)hit_type );
+	  std::string s( std::string( "health_" ) + std::string( hit_name ) + std::string( "_hit_part" ) );
+	  m_fHealthHitPart[ hit_type ] = READ_IF_EXISTS( pSettings, r_float, section, s.c_str(), fHealthHitPart );
+	}
 
 	m_use_limping_state		= !!(READ_IF_EXISTS(pSettings,r_bool,section,"use_limping_state",FALSE));
 	m_limping_threshold		= READ_IF_EXISTS(pSettings,r_float,section,"limping_threshold",.5f);
@@ -391,7 +395,7 @@ dsh: обработка перенесена ниже, вместе с eHitTypeF
 		break;
 	case ALife::eHitTypeShock:
 		hit_power		*= m_HitTypeK[pHDS->hit_type];
-		m_fHealthLost	=  hit_power*m_fHealthHitPart;
+		m_fHealthLost	=  hit_power * m_fHealthHitPart[ pHDS->hit_type ];
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower	-= hit_power*m_fPowerHitPart;
 		bAddWound		=  false;
@@ -404,7 +408,7 @@ dsh: обработка перенесена ниже, вместе с eHitTypeF
 	case ALife::eHitTypeStrike:
 	case ALife::eHitTypePhysicStrike:
 		hit_power *= m_HitTypeK[pHDS->hit_type];
-		m_fHealthLost = hit_power*m_fHealthHitPart;
+		m_fHealthLost = hit_power * m_fHealthHitPart[ pHDS->hit_type ];
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower -= hit_power*m_fPowerHitPart;
 		break;
@@ -412,7 +416,7 @@ dsh: обработка перенесена ниже, вместе с eHitTypeF
 	case ALife::eHitTypeFireWound:
 	case ALife::eHitTypeWound:
 		hit_power *= m_HitTypeK[pHDS->hit_type];
-		m_fHealthLost = hit_power*m_fHealthHitPart*m_fHitBoneScale;
+		m_fHealthLost = hit_power * m_fHealthHitPart[ pHDS->hit_type ] * m_fHitBoneScale;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower -= hit_power*m_fPowerHitPart;
 		break;
