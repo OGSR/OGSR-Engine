@@ -139,6 +139,11 @@ extern ECORE_API int			ps_r3_dyn_wet_surf_enable_streaks;
 extern ECORE_API float ps_r2_rain_drops_intensity;
 extern ECORE_API float ps_r2_rain_drops_speed;
 
+#if RENDER==R_R4
+extern ECORE_API float ps_ext_SSLR_L;
+extern ECORE_API float ps_ext_SSLR_blur;
+#endif
+
 enum
 {
 	R2FLAG_SUN					= (1<<0),
@@ -203,6 +208,7 @@ enum
 	R2FLAGEXT_RAIN_DROPS = 1 << 12,
 	R2FLAGEXT_RAIN_DROPS_CONTROL = 1 << 13,
 	R2FLAGEXT_ACTOR_SHADOW = 1 << 14,
+	R2FLAGEXT_SSLR = 1 << 15,
 };
 
 extern void						xrRender_initconsole	();

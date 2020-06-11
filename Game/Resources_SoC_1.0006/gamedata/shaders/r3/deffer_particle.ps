@@ -66,13 +66,15 @@ f_deffer 	main	( p_particle II )
   O				= pack_gbuffer( 
 								Ne,
 								float4 	(I.position.xyz + Ne.xyz*def_virtualh/2.h	, xmaterial		),
-								float4	(D.xyz,			def_gloss) );		// OUT: rgb.gloss
+								float4	(D.xyz,			def_gloss),
+						float4(0.f, 0.f, 0.f, 0.f) );
 #else
   O				= pack_gbuffer( 
 								Ne,
 								float4 	(I.position.xyz + Ne.xyz*def_virtualh/2.h	, xmaterial		),
 								float4	(D.xyz,			def_gloss),
-								mask );		// OUT: rgb.gloss
+						float4(0.f, 0.f, 0.f, 0.f),
+								mask );
 #endif								
 								
   return O;

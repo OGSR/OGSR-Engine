@@ -365,6 +365,9 @@ void	CRenderTarget::phase_combine	()
    if (ps_r_pp_aa_mode)
 	   PhaseAA();
 
+   if (ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR))
+	   phase_SSLR();
+
    // Rain droplets on screen
    if (ps_r2_ls_flags_ext.test(R2FLAGEXT_RAIN_DROPS))
 	   PhaseRainDrops();

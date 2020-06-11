@@ -1,6 +1,10 @@
 #include "common.h"
 #include "sload.h"
 
+#ifdef SSLR_ENABLED
+Texture2D s_puddles;
+#endif
+
 #define	USE_4_DETAIL
 
 #if defined(USE_TDETAIL) && defined(USE_4_DETAIL)
@@ -22,12 +26,21 @@ f_deffer 	main	( p_flat I 		)
 
 	float	G	= def_gloss	;
 
+
+	float4 mask = s_mask.Sample(smp_base, I.tcdh);
+	float mag = dot(mask, 1);
+	mask = mask / mag;
+
+#ifdef SSLR_ENABLED
+	//Если убрать умножение на mask.g - лужи будут в т.ч. и на земле.
+	float puddles = s_puddles.Sample(smp_linear, I.tcdh * dt_params).r * mask.g;
+#else
+	float puddles = 0.0f;
+#endif
+
+
 # ifdef	USE_TDETAIL
  # ifdef USE_4_DETAIL
-//	float4	mask= tex2D		(s_mask, I.tcdh);
-	float4	mask= s_mask.Sample ( smp_base, I.tcdh);
-	float 	mag	= dot 		(mask,1);
-			mask= mask/mag	;
 
 //	float3	d_R	= tex2D		(s_dt_r, I.tcdbump)*mask.r;
 //	float3	d_G	= tex2D		(s_dt_g, I.tcdbump)*mask.g;
@@ -86,7 +99,9 @@ f_deffer 	main	( p_flat I 		)
   O				= pack_gbuffer( 
 								Ne,	// hemi
 								float4 	(I.position.xyz + Ne.xyz*def_virtualh/2.h, 	ms			),	//
-								float4	(D.x,	D.y,	D.z,						G			) );	// OUT: rgb.gloss
+								float4	(D.x,	D.y,	D.z,						G			),
+						float4(puddles, 0.f, 0.f, 0.f)
+						 );
 
   return O;
 }

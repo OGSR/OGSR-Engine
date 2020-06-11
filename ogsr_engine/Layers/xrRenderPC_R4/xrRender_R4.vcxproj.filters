@@ -1337,5 +1337,8 @@
     <ClCompile Include="..\xrRender\RenderTargetPhaseSSSS.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
+    <ClCompile Include="..\xrRender\RenderTargetPhaseSSLR.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,0 +1,92 @@
+////////////////////////////////////
+// Screen Space Local Reflections //
+// Автор: Baryshev194 ( https://github.com/Baryshev194 )
+// Доработка: KRodin
+// Использовал некоторый код из https://github.com/aosyang/FSGraphicsProject/blob/d979ac22dca53a4cf3e3e1a47bddf5dab6a6401f/DemoDeferredShading/ScreenSpaceRayTracing.hlsl
+////////////////////////////////////
+#include "common.h"
+#include "reflections.h"
+
+uniform float4 SSLR_params; // x - L
+
+uniform float4x4 m_inv_v : register(ps, c3); 
+
+
+float3 getWpos(float2 tc)
+{
+//#ifndef USE_MSAA
+	float3 pos = s_position.Sample( smp_nofilter, tc ).xyz;
+//#else
+//	float3 pos = s_position.Load( int3( tc * pos_decompression_params2.xy, 0 ), 0 ).xyz;
+//#endif
+	float3 Wpos = mul(m_inv_v, float4(pos,1.f)).xyz;
+	return Wpos;
+}
+
+float3 getWnorm(float2 tc)
+{
+//#ifndef USE_MSAA
+	float3 posZ = s_position.Sample( smp_nofilter, tc ).z;
+//#else
+//	float3 posZ = s_position.Load( int3( tc * pos_decompression_params2.xy, 0 ), 0 ).z;
+//#endif
+
+//#ifndef USE_MSAA
+	float3 norm = s_normal.Sample( smp_nofilter, tc ).xyz;
+//#else
+//	float3 norm = s_normal.Load( int3( tc * pos_decompression_params2.xy, 0 ), 0 ).xyz;
+//#endif
+
+	float3 Wnorm = mul(m_inv_v,float4(norm,0.f)).xyz;
+	Wnorm.y *= clamp(posZ,1.f,10.f);
+	Wnorm = normalize(Wnorm);
+	return Wnorm;
+}
+
+///////////////////////////////////////////////////////////////////
+// pixel
+float4 main(p_screen IST) : SV_Target
+{
+	float3 pos = getWpos(IST.tc0);
+	float3 norm = getWnorm(IST.tc0);
+
+	float3 eye = normalize(pos - eye_position);
+
+	float3 refl = normalize(reflect(eye,norm));
+
+	// output rDotV to the alpha channel for use in determining how much to fade the ray
+	float rDotV = saturate(dot(refl, eye));
+	float nDotV = 1.0 - saturate(dot(norm, -eye) * 2.0);
+
+	float2 refl_tc = float2(0.f,0.f);
+	float L = SSLR_params.x;
+	for (int i = 0; i < 8; i++)
+	{
+		float3 Npos = pos.xyz + refl*L;
+
+		float4 Npos_proj = mul(m_VP,float4(Npos,1.f));
+		Npos_proj.xyz /= Npos_proj.w;
+		float2 sample_tc = float2(0.f,0.f);
+		sample_tc.x = (Npos_proj.x + 1.f) * .5f;
+		sample_tc.y = 1.f - ((Npos_proj.y + 1.f) * .5f);
+
+		float3 Hpos = getWpos(sample_tc);
+		L = length(Hpos-pos);
+		refl_tc = sample_tc;
+	}
+
+
+	bool intersection = true;
+	// move hit pixel from pixel position to UVs
+	if (refl_tc.x > 1.0f || refl_tc.x < 0.0f || refl_tc.y > 1.0f || refl_tc.y < 0.0f)
+	{
+		intersection = false;
+	}
+
+	float4 Final = s_image.Sample(smp_rtlinear, IST.tc0);
+	float4 cubeReflection = float4(calc_envmap(refl), 1.0f);
+	float4 ssReflection = s_image.Sample(smp_rtlinear, refl_tc) * rDotV;
+	float ssr_amount = rDotV * (intersection ? 1.0f : 0.0f);
+
+	return Final + lerp(cubeReflection, ssReflection, ssr_amount) * nDotV;
+}
