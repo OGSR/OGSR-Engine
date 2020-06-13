@@ -61,7 +61,7 @@ void CRenderTarget::phase_SSLR()
 
 	RCache.set_Element(s_SSLR->E[1]);
 
-	RCache.set_c("blur_params", ps_ext_SSLR_blur, 0.f, w, h);
+	RCache.set_c("blur_params", ps_ext_SSLR_blur, 0.f, float(w), float(h));
 
 	RCache.set_Geometry(g_combine);
 	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
@@ -82,7 +82,7 @@ void CRenderTarget::phase_SSLR()
 
 	RCache.set_Element(s_SSLR->E[2]);
 
-	RCache.set_c("blur_params", 0.f, ps_ext_SSLR_blur, w, h);
+	RCache.set_c("blur_params", 0.f, ps_ext_SSLR_blur, float(w), float(h));
 
 	RCache.set_Geometry(g_combine);
 	RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);

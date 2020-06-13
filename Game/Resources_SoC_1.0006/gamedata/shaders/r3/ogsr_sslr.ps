@@ -12,43 +12,37 @@ uniform float4 SSLR_params; // x - L
 uniform float4x4 m_inv_v : register(ps, c3); 
 
 
-float3 getWpos(float2 tc)
+float3 getWpos(float2 tc0, float2 tc, float2 hpos)
 {
-//#ifndef USE_MSAA
-	float3 pos = s_position.Sample( smp_nofilter, tc ).xyz;
-//#else
-//	float3 pos = s_position.Load( int3( tc * pos_decompression_params2.xy, 0 ), 0 ).xyz;
-//#endif
+	gbuffer_data gbd = gbuffer_load_data_offset( GLDO_P(tc0, tc, hpos, 0) );
+	float3 pos = gbd.P;
+
 	float3 Wpos = mul(m_inv_v, float4(pos,1.f)).xyz;
 	return Wpos;
 }
 
-float3 getWnorm(float2 tc)
+
+void getWposWnorm(float2 tc, float2 hpos, out float3 Wpos, out float3 Wnorm)
 {
-//#ifndef USE_MSAA
-	float3 posZ = s_position.Sample( smp_nofilter, tc ).z;
-//#else
-//	float3 posZ = s_position.Load( int3( tc * pos_decompression_params2.xy, 0 ), 0 ).z;
-//#endif
+	gbuffer_data gbd = gbuffer_load_data( GLD_P(tc, hpos, 0) );
 
-//#ifndef USE_MSAA
-	float3 norm = s_normal.Sample( smp_nofilter, tc ).xyz;
-//#else
-//	float3 norm = s_normal.Load( int3( tc * pos_decompression_params2.xy, 0 ), 0 ).xyz;
-//#endif
+	float3 pos = gbd.P;
+	Wpos = mul(m_inv_v, float4(pos,1.f)).xyz;
+	float3 posZ = gbd.P.z;
 
-	float3 Wnorm = mul(m_inv_v,float4(norm,0.f)).xyz;
+	float3 norm = gbd.N;
+	Wnorm = mul(m_inv_v,float4(norm,0.f)).xyz;
 	Wnorm.y *= clamp(posZ,1.f,10.f);
 	Wnorm = normalize(Wnorm);
-	return Wnorm;
 }
 
 ///////////////////////////////////////////////////////////////////
 // pixel
 float4 main(p_screen IST) : SV_Target
 {
-	float3 pos = getWpos(IST.tc0);
-	float3 norm = getWnorm(IST.tc0);
+	float3 pos = {0.f,0.f,0.f};
+	float3 norm = {0.f,0.f,0.f};
+	getWposWnorm(IST.tc0, IST.hpos, pos, norm);
 
 	float3 eye = normalize(pos - eye_position);
 
@@ -70,7 +64,7 @@ float4 main(p_screen IST) : SV_Target
 		sample_tc.x = (Npos_proj.x + 1.f) * .5f;
 		sample_tc.y = 1.f - ((Npos_proj.y + 1.f) * .5f);
 
-		float3 Hpos = getWpos(sample_tc);
+		float3 Hpos = getWpos(IST.tc0, sample_tc, IST.hpos);
 		L = length(Hpos-pos);
 		refl_tc = sample_tc;
 	}

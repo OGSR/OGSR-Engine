@@ -40,13 +40,17 @@ void	CRenderTarget::phase_scene_begin	()
 	// Targets, use accumulator for temporary storage
    if( !RImplementation.o.dx10_gbuffer_opt )
    {
-	   if (RImplementation.o.albedo_wo)	u_setrt(rt_Position, rt_Normal, rt_Accumulator, pZB, !!ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR));
-	   else								u_setrt(rt_Position, rt_Normal, rt_Color, pZB, !!ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR));
+	   if (RImplementation.o.albedo_wo)
+		   u_setrt_wetness(rt_Position, rt_Normal, rt_Accumulator, ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR) ? rt_Wetness : nullptr, pZB);
+	   else
+		   u_setrt_wetness(rt_Position, rt_Normal, rt_Color, ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR) ? rt_Wetness : nullptr, pZB);
    }
    else
    {
-   	if (RImplementation.o.albedo_wo)	u_setrt		(rt_Position, rt_Accumulator,	pZB);
-	   else								u_setrt		(rt_Position,	rt_Color,		pZB);
+	   if (RImplementation.o.albedo_wo)
+		   u_setrt_wetness(rt_Position, rt_Accumulator, nullptr, ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR) ? rt_Wetness : nullptr, pZB);
+	   else
+		   u_setrt_wetness(rt_Position, rt_Color, nullptr, ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR) ? rt_Wetness : nullptr, pZB);
    }
 
 	// Stencil - write 0x1 at pixel pos
