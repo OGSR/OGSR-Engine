@@ -18,7 +18,7 @@
 
 #define effCustomEffectorStartID 10000
 
-float	psCamInert		= 0.7f;
+float	psCamInert	= 0.f; //0.7f;
 float	psCamSlideInert	= 0.25f;
 
 SPPInfo		pp_identity;
