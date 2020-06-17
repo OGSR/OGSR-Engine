@@ -33,7 +33,7 @@ void CSpaceRestrictor::Center		(Fvector& C) const
 
 float CSpaceRestrictor::Radius() const {
   auto cf = CFORM();
-  ASSERT_FMT( cf, "[%]: %s has no CFORM()", __FUNCTION__, cName().c_str() );
+  ASSERT_FMT( cf, "!![%s]: [%s] has no CFORM()", __FUNCTION__, cName().c_str() );
   return cf->getRadius();
 }
 
@@ -104,10 +104,20 @@ void CSpaceRestrictor::net_Destroy	()
 	Level().space_restriction_manager().unregister_restrictor(this);
 }
 
-bool CSpaceRestrictor::inside	(const Fsphere &sphere) const
+bool CSpaceRestrictor::inside(const Fsphere &sphere)
 {
 	if (!actual())
-		prepare	();
+	{
+		try
+		{
+			prepare();
+		}
+		catch (...)
+		{
+			Msg("!![%s] FATAL ERROR IN RESTRICTOR [%s]!", __FUNCTION__, cName().c_str());
+			return false;
+		}
+	}
 
 	if (!m_selfbounds.intersect(sphere))
 		return	(false);
@@ -126,7 +136,7 @@ void CSpaceRestrictor::spatial_move		()
 	actual								(false);
 }
 
-void CSpaceRestrictor::prepare			() const
+void CSpaceRestrictor::prepare()
 {
 	Center							(m_selfbounds.P);
 	m_selfbounds.R					= Radius();
