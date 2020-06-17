@@ -953,18 +953,17 @@ void CWeapon::UpdateWeaponParams()
 
 
 u8 CWeapon::idle_state() {
-  CActor *actor = smart_cast<CActor*>( H_Parent() );
+	auto* actor = smart_cast<CActor*>(H_Parent());
 
-  if ( actor )
-    if ( actor->get_state() & mcSprint ) {
-     return eSubstateIdleSprint;
-    }
-	else {
-		if (actor->is_actor_running() || actor->is_actor_walking() || actor->is_actor_creeping() || actor->is_actor_crouching())
+	if (actor) {
+		u32 st = actor->get_state();
+		if (st & mcSprint)
+			return eSubstateIdleSprint;
+		else if (st & mcAnyAction && !(st & mcJump) && !(st & mcFall))
 			return eSubstateIdleMoving;
 	}
 
-  return eIdle;
+	return eIdle;
 }
 
 
