@@ -33,7 +33,7 @@ public:
 
 	CGameTask*				ActiveTask						();
 	SGameTaskObjective*		ActiveObjective					();
-	void					SetActiveTask					(const TASK_ID& id, u16 idx);
+	void					SetActiveTask					(const TASK_ID& id, u16 idx, const bool safe = false);
 
         void cleanup();
 };
