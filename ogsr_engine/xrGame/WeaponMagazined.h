@@ -137,10 +137,6 @@ public:
 	virtual bool	StopedAfterQueueFired	()			{return m_bStopedAfterQueueFired; }
 	virtual void	StopedAfterQueueFired	(bool value){m_bStopedAfterQueueFired = value; }
 
-	int  ShootEffectorStart() { return m_iShootEffectorStart; }
-	bool canApplyShootEffectorStart();
-	bool canApplyShootEffector();
-
 protected:
 	//максимальный размер очереди, которой можно стрельнуть
 	int				m_iQueueSize;

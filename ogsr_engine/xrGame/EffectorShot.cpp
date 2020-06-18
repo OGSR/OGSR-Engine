@@ -29,7 +29,7 @@ CWeaponShotEffector::CWeaponShotEffector()
 void CWeaponShotEffector::Initialize(float max_angle, float relax_speed, float max_angle_horz, float step_angle_horz, float angle_frac)
 {
 	fRelaxSpeed				= _abs(relax_speed);
-	//VERIFY(!fis_zero(fRelaxSpeed));
+	VERIFY(!fis_zero(fRelaxSpeed));
 	fAngleVertMax			= _abs(max_angle);
 	VERIFY(!fis_zero(fAngleVertMax));
 	fAngleVertFrac			= _abs(angle_frac);
@@ -63,7 +63,7 @@ void CWeaponShotEffector::Shot	(float angle)
 
 void CWeaponShotEffector::Update()
 {
-	if ( bActive && !fis_zero( fRelaxSpeed ) ) {
+	if (bActive){
 		float time_to_relax	= _abs(fAngleVert)/fRelaxSpeed;
 //		VERIFY(_valid(time_to_relax));
 		float relax_speed	= (fis_zero(time_to_relax))?0.0f:_abs(fAngleHorz)/time_to_relax;

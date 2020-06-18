@@ -616,7 +616,7 @@ void CWeaponMagazined::state_Fire	(float dt)
 		OnShot			();
 		// Do Weapon Callback.  (Cribbledirge)
 		StateSwitchCallback(GameObject::eOnActorWeaponFire, GameObject::eOnNPCWeaponFire);
-		if ( canApplyShootEffector() || ( !ParentIsActor() && ShotsFired() > ShootEffectorStart() ) )
+		if ( m_iShotNum>m_iShootEffectorStart )
 			FireTrace		(p1,d);
 		else
 			FireTrace		(m_vStartPos, m_vStartDir);
@@ -654,12 +654,11 @@ void CWeaponMagazined::OnShot		()
 	// Sound
 	PlaySound( *m_pSndShotCurrent, get_LastFP(), true );
 
-	if ( canApplyShootEffector() || !ParentIsActor() ) {
-	  // Camera
-	  AddShotEffector();
-	  // Animation
-	  PlayAnimShoot();
-	}
+	// Camera	
+	AddShotEffector		();
+
+	// Animation
+	PlayAnimShoot		();
 	
 	// Shell Drop
 	Fvector vel; 
@@ -1493,15 +1492,4 @@ bool CWeaponMagazined::ScopeRespawn( PIItem pIItem ) {
     }
   }
   return false;
-}
-
-
-bool CWeaponMagazined::canApplyShootEffectorStart() {
-  return ( HasFireModes() && ShootEffectorStart() > 0 && ( GetCurrentFireMode() == -1 || ShootEffectorStart() < GetCurrentFireMode() ) );
-}
-
-bool CWeaponMagazined::canApplyShootEffector() {
-  if ( canApplyShootEffectorStart() )
-    return ShotsFired() > ShootEffectorStart();
-  return true;
 }
