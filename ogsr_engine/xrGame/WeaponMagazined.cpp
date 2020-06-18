@@ -616,7 +616,8 @@ void CWeaponMagazined::state_Fire	(float dt)
 		OnShot			();
 		// Do Weapon Callback.  (Cribbledirge)
 		StateSwitchCallback(GameObject::eOnActorWeaponFire, GameObject::eOnNPCWeaponFire);
-		if ( m_iShotNum>m_iShootEffectorStart )
+		static int i = 0;
+		if (i||m_iShotNum>m_iShootEffectorStart)
 			FireTrace		(p1,d);
 		else
 			FireTrace		(m_vStartPos, m_vStartDir);
