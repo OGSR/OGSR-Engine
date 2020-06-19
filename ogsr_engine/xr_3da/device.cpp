@@ -206,7 +206,7 @@ void CRenderDevice::PreCache	(u32 amount, bool b_draw_loadscreen, bool b_wait_us
 }
 
 
-ENGINE_API xr_list<LOADING_EVENT>			g_loading_events;
+ENGINE_API xr_list<fastdelegate::FastDelegate<bool()>> g_loading_events;
 
 void CRenderDevice::on_idle		()
 {

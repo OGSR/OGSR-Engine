@@ -184,9 +184,9 @@ virtual	BOOL		Process							(float dt, SPPInfo &PPInfo);
 class CPostprocessAnimatorLerp :public CPostprocessAnimator
 {
 protected:
-		fastdelegate::FastDelegate0<float>	m_get_factor_func;
+		fastdelegate::FastDelegate<float()>	m_get_factor_func;
 public:
-	void			SetFactorFunc				(fastdelegate::FastDelegate0<float> f)	{m_get_factor_func=f;}
+	void			SetFactorFunc				(fastdelegate::FastDelegate<float()> f)	{m_get_factor_func=f;}
 virtual	BOOL		Process						(SPPInfo &PPInfo);
 };
 

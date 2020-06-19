@@ -23,11 +23,11 @@ public:
 	};
 
 public:
-	void	__stdcall					apply_load		(u32	stage);
-	void	__stdcall					apply_theora	(u32	stage);
-	void	__stdcall					apply_avi		(u32	stage);
-	void	__stdcall					apply_seq		(u32	stage);
-	void	__stdcall					apply_normal	(u32	stage);
+	void apply_load(u32 stage);
+	void apply_theora(u32 stage);
+	void apply_avi(u32 stage);
+	void apply_seq(u32 stage);
+	void apply_normal(u32 stage);
 
 	const char* GetName() const override { return cName.c_str(); }
 
@@ -82,7 +82,7 @@ public:	//	Public class members (must be encapsulated furthur)
 		u32					bLoadedAsStaging: 1;
 #endif	//	USE_DX10
 	}									flags;
-	fastdelegate::FastDelegate1<u32>	bind;
+	fastdelegate::FastDelegate<void(u32)> bind;
 
 
 	CAviPlayerCustom*					pAVI;

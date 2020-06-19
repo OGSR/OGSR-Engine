@@ -2,9 +2,8 @@
 
 struct ENGINE_API SBaseEffector
 {
-	typedef fastdelegate::FastDelegate0<> CB_ON_B_REMOVE;
-	CB_ON_B_REMOVE m_on_b_remove_callback;
-	virtual ~SBaseEffector() {}
+	fastdelegate::FastDelegate<void()> m_on_b_remove_callback;
+	virtual ~SBaseEffector() = default;
 };
 
 struct ENGINE_API SCamEffectorInfo

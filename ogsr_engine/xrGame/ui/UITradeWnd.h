@@ -93,11 +93,11 @@ protected:
 	CUICellItem*		CurrentItem					();
 	PIItem				CurrentIItem				();
 
-	bool		xr_stdcall		OnItemDrop			(CUICellItem* itm);
-	bool		xr_stdcall		OnItemStartDrag		(CUICellItem* itm);
-	bool		xr_stdcall		OnItemDbClick		(CUICellItem* itm);	
-	bool		xr_stdcall		OnItemSelected		(CUICellItem* itm);
-	bool		xr_stdcall		OnItemRButtonClick	(CUICellItem* itm);
+	bool				OnItemDrop			(CUICellItem* itm);
+	bool				OnItemStartDrag		(CUICellItem* itm);
+	bool				OnItemDbClick		(CUICellItem* itm);	
+	bool				OnItemSelected		(CUICellItem* itm);
+	bool				OnItemRButtonClick	(CUICellItem* itm);
 
 	void				BindDragDropListEvents		(CUIDragDropListEx* lst);
 

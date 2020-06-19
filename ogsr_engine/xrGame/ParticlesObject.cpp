@@ -141,8 +141,7 @@ void CParticlesObject::shedule_Update	(u32 _dt)
 	if (dt)							{
 		if constexpr(false) { //. AlexMX comment this line// NO UNCOMMENT - DON'T WORK PROPERLY
 			mt_dt					= dt;
-			fastdelegate::FastDelegate0<>		delegate	(this,&CParticlesObject::PerformAllTheWork_mt);
-			Device.seqParallel.push_back		(delegate);
+			Device.seqParallel.push_back(fastdelegate::MakeDelegate(this, &CParticlesObject::PerformAllTheWork_mt));
 		} else {
 			mt_dt					= 0;
 			IParticleCustom* V		= smart_cast<IParticleCustom*>(renderable.visual); VERIFY(V);

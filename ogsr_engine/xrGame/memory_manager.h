@@ -82,7 +82,7 @@ public:
 public:
 			void				save						(NET_Packet &packet) const;
 			void				load						(IReader &packet);
-			void xr_stdcall		on_requested_spawn			(CObject *object);
+			void 		on_requested_spawn			(CObject *object);
 };
 
 #include "memory_manager_inline.h"

@@ -41,7 +41,7 @@ CTexture::CTexture		()
 	flags.seqCycles		= FALSE;
 	flags.bLoadedAsStaging = FALSE;
 	m_material			= 1.0f;
-	bind				= fastdelegate::FastDelegate1<u32>(this,&CTexture::apply_load);
+	bind = fastdelegate::MakeDelegate(this, &CTexture::apply_load);
 }
 
 CTexture::~CTexture()
@@ -127,10 +127,10 @@ ID3DBaseTexture*	CTexture::surface_get	()
 
 void CTexture::PostLoad	()
 {
-	if (pTheora)				bind		= fastdelegate::FastDelegate1<u32>(this,&CTexture::apply_theora);
-	else if (pAVI)				bind		= fastdelegate::FastDelegate1<u32>(this,&CTexture::apply_avi);
-	else if (!seqDATA.empty())	bind		= fastdelegate::FastDelegate1<u32>(this,&CTexture::apply_seq);
-	else						bind		= fastdelegate::FastDelegate1<u32>(this,&CTexture::apply_normal);
+	if (pTheora)				bind = fastdelegate::MakeDelegate(this, &CTexture::apply_theora);
+	else if (pAVI)				bind = fastdelegate::MakeDelegate(this, &CTexture::apply_avi);
+	else if (!seqDATA.empty())	bind = fastdelegate::MakeDelegate(this, &CTexture::apply_seq);
+	else						bind = fastdelegate::MakeDelegate(this, &CTexture::apply_normal);
 }
 
 void CTexture::apply_load	(u32 dwStage)	{
@@ -586,7 +586,7 @@ void CTexture::Unload	()
 	xr_delete		(pAVI);
 	xr_delete		(pTheora);
 
-	bind			= fastdelegate::FastDelegate1<u32>(this,&CTexture::apply_load);
+	bind = fastdelegate::MakeDelegate(this, &CTexture::apply_load);
 }
 
 void CTexture::desc_update	()

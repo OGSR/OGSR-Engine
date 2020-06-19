@@ -20,7 +20,7 @@ public:
 	void	SetRadius			(float r);
 	void	Update				(float dist);
 	void	Stop				();
-	float xr_stdcall GetFactor	();
+	float GetFactor();
 
 private:
 	void	Activate			();

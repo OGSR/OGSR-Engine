@@ -184,7 +184,7 @@ void CActorCondition::UpdateCondition()
 	CEffectorCam* ce = Actor()->Cameras().GetCamEffector((ECamEffectorType)effAlcohol);
 	if	((m_fAlcohol>0.0001f) ){
 		if(!ce){
-			AddEffector(m_object,effAlcohol, "effector_alcohol", GET_KOEFF_FUNC(this, &CActorCondition::GetAlcohol));
+			AddEffector(m_object,effAlcohol, "effector_alcohol", fastdelegate::MakeDelegate(this, &CActorCondition::GetAlcohol));
 		}
 	}else{
 		if(ce)
@@ -203,7 +203,7 @@ void CActorCondition::UpdateCondition()
 	{
 		if(!ppe)
 		{
-			AddEffector(m_object,effPsyHealth, pp_sect_name, GET_KOEFF_FUNC(this, &CActorCondition::GetPsy));
+			AddEffector(m_object,effPsyHealth, pp_sect_name, fastdelegate::MakeDelegate(this, &CActorCondition::GetPsy));
 		}
 	}else
 	{

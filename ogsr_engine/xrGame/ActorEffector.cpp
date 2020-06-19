@@ -244,13 +244,13 @@ BOOL CAnimatorCamLerpEffector::ProcessCam(SCamEffectorInfo& info)
 
 CAnimatorCamLerpEffectorConst::CAnimatorCamLerpEffectorConst() : m_factor(0.0f)
 {
-	SetFactorFunc(GET_KOEFF_FUNC(this, &CAnimatorCamLerpEffectorConst::GetFactor));
+	SetFactorFunc(fastdelegate::MakeDelegate(this, &CAnimatorCamLerpEffectorConst::GetFactor));
 }
 
 CCameraEffectorControlled::CCameraEffectorControlled(CEffectorController* c) : m_controller(c)
 {
 	m_controller->SetCam(this);
-	SetFactorFunc(GET_KOEFF_FUNC(m_controller, &CEffectorController::GetFactor));
+	SetFactorFunc(fastdelegate::MakeDelegate(m_controller, &CEffectorController::GetFactor));
 }
 
 CCameraEffectorControlled::~CCameraEffectorControlled() { m_controller->SetCam(NULL); }

@@ -52,6 +52,12 @@
     <Filter Include="Threading">
       <UniqueIdentifier>{1359157e-93cd-4161-8071-b7f71df34faf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{c4866ff7-f5fd-4722-9e1a-73ef37fde25e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\imdexlib">
+      <UniqueIdentifier>{58baf96e-ab86-4e39-8fab-60b26515b38c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FTimer.cpp">
@@ -255,9 +261,6 @@
     <ClInclude Include="clsid.h">
       <Filter>Math\Extensions</Filter>
     </ClInclude>
-    <ClInclude Include="fastdelegate.h">
-      <Filter>Math\Extensions</Filter>
-    </ClInclude>
     <ClInclude Include="xr_trims.h">
       <Filter>Math\Extensions</Filter>
     </ClInclude>
@@ -321,7 +324,6 @@
     <ClInclude Include="lzhuf.h">
       <Filter>Compression\lz</Filter>
     </ClInclude>
-    <ClInclude Include="xrSyncronize.h" />
     <ClInclude Include="stacktrace_collector.h">
       <Filter>Debug core</Filter>
     </ClInclude>
@@ -340,6 +342,39 @@
     <ClInclude Include="..\Include\xrAPI\xrAPI.h" />
     <ClInclude Include="Event.hpp">
       <Filter>Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="xrSyncronize.h">
+      <Filter>Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\FastDelegate.hpp">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\thread_pool.hpp">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\imdexlib\fast_dynamic_cast.hpp">
+      <Filter>Utils\imdexlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\imdexlib\identity.hpp">
+      <Filter>Utils\imdexlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\imdexlib\is_reference_wrapper.hpp">
+      <Filter>Utils\imdexlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\imdexlib\mpl.hpp">
+      <Filter>Utils\imdexlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\imdexlib\option.hpp">
+      <Filter>Utils\imdexlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\imdexlib\traits.hpp">
+      <Filter>Utils\imdexlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\imdexlib\typelist.hpp">
+      <Filter>Utils\imdexlib</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\imdexlib\utility.hpp">
+      <Filter>Utils\imdexlib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

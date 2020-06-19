@@ -26,7 +26,7 @@ enum {eVertFlip=(1<<0),eNeedRecalc=(1<<1),eFixedScrollBar=(1<<2),eItemsSelectabe
 
 virtual void		RecalcSize			();
 		void		UpdateScroll		();	
-		void __stdcall	OnScrollV		(CUIWindow*, void*);
+		void OnScrollV(CUIWindow*, void*);
 		void		SetRightIndention	(float val);
 		void		SetLeftIndention	(float val);
 		void		SetUpIndention		(float val);
