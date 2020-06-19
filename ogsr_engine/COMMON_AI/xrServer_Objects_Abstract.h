@@ -24,8 +24,6 @@ class CDUInterface;
 #	include "Sound.h"
 #endif
 
-#include "..\..\editors\xrEProps\xrEProps.h"
-
 #include "..\..\Include\xrRender\DrawUtils.h"
 
 #pragma warning(push)
@@ -38,8 +36,6 @@ public:
 };
 
 SERVER_ENTITY_DECLARE_BEGIN0(CSE_Visual)
-    void __stdcall					OnChangeVisual	(PropValue* sender);  
-    void __stdcall					OnChangeAnim	(PropValue* sender);  
 public:
 	shared_str						visual_name;
 	shared_str						startup_animation;
@@ -56,7 +52,6 @@ public:
 
     void							set_visual		(LPCSTR name, bool load=true);
 	LPCSTR							get_visual		() const {return *visual_name;};
-	virtual void					FillProps		(LPCSTR pref, PropItemVec &items);
 
 	virtual CSE_Visual* __stdcall	visual			() = 0;
 };
@@ -64,7 +59,6 @@ add_to_type_list(CSE_Visual)
 #define script_type_list save_type_list(CSE_Visual)
 
 SERVER_ENTITY_DECLARE_BEGIN0(CSE_Motion)
-	void __stdcall	OnChangeMotion	(PropValue* sender);  
 public:
 	shared_str						motion_name;
 public:
@@ -76,8 +70,6 @@ public:
 
     void							set_motion		(LPCSTR name);
 	LPCSTR							get_motion		() const {return *motion_name;};
-
-	virtual void					FillProps		(LPCSTR pref, PropItemVec &items);
 
 	virtual CSE_Motion* __stdcall	motion			() = 0;
 };
@@ -102,7 +94,6 @@ struct ISE_Abstract {
 public:
 	virtual void		__stdcall	Spawn_Write		(NET_Packet &tNetPacket, BOOL bLocal) = 0;
 	virtual BOOL		__stdcall	Spawn_Read		(NET_Packet &tNetPacket) = 0;
-	virtual void		__stdcall	FillProp		(LPCSTR pref, PropItemVec &items) = 0;
 	virtual LPCSTR		__stdcall	name			() const = 0;
 	virtual void		__stdcall	set_name		(LPCSTR) = 0;
 	virtual LPCSTR		__stdcall	name_replace	() const = 0;

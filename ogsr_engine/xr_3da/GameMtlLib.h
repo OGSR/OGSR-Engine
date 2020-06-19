@@ -145,9 +145,6 @@ public:
     void 				Load			(IReader& fs);
     void 				Save			(IWriter& fs);
     IC int				GetID			(){return ID;}
-#ifdef _EDITOR
-    void 				FillProp		(PropItemVec& values, ListItem* owner);
-#endif
 };
 DEFINE_VECTOR(SGameMtl*,GameMtlVec,GameMtlIt);
 
@@ -219,10 +216,6 @@ public:
     void				Load			(IReader& fs);
     IC int 				GetParent		(){return ID_parent;}
     BOOL				SetParent		(int parent);
-#ifdef _EDITOR
-	void 				FillProp		(PropItemVec& values);
-    void				TransferFromParent(SGameMtlPair* parent);
-#endif
 #ifdef DEBUG
 	LPCSTR				dbg_Name		();
 #endif

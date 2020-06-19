@@ -14,17 +14,7 @@
 #include "clsid_game.h"
 
 #include "object_factory.h"
-
-#include "..\..\editors\xrEProps\xrEProps.h"
 	
-IPropHelper &PHelper()
-{
-	NODEFAULT;
-#	ifdef DEBUG
-	return(*(IPropHelper*)0);
-#	endif
-}
-
 LPCSTR script_section = "script";
 LPCSTR current_version = "current_server_entity_version";
 
@@ -363,15 +353,6 @@ xr_token game_types[]={
 	//{ "artefacthunt",	GAME_ARTEFACTHUNT },
 	{ 0,				0				}
 };
-
-void CSE_Abstract::FillProps				(LPCSTR pref, PropItemVec& items)
-{
-}
-
-void CSE_Abstract::FillProp					(LPCSTR pref, PropItemVec &items)
-{
-	FillProps					(pref,items);
-}
 
 bool CSE_Abstract::validate					()
 {

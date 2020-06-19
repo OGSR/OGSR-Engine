@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="AI">
@@ -1764,9 +1764,6 @@
     </Filter>
     <Filter Include="Core\Server">
       <UniqueIdentifier>{ad1bb745-c675-45ce-a066-802c90192709}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Server\Editor">
-      <UniqueIdentifier>{b8e0967a-6a6a-4cf3-91bd-d531e317a551}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\Server\Games">
       <UniqueIdentifier>{1c67f3fa-f4ed-4cf1-87f1-8ef0f9d35dd8}</UniqueIdentifier>
@@ -4971,12 +4968,6 @@
     <ClInclude Include="..\COMMON_AI\xrServer_Space.h">
       <Filter>Core\Server</Filter>
     </ClInclude>
-    <ClInclude Include="..\xr_3da\DrawUtils.h">
-      <Filter>Core\Server\Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\ItemListTypes.h">
-      <Filter>Core\Server\Editor</Filter>
-    </ClInclude>
     <ClInclude Include="game_base.h">
       <Filter>Core\Server\Games</Filter>
     </ClInclude>
@@ -5012,9 +5003,6 @@
     </ClInclude>
     <ClInclude Include="id_generator.h">
       <Filter>Core\Server\ID_Generator</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\PropertiesListTypes.h">
-      <Filter>Core\Server\ServerEntities</Filter>
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\xrServer_Objects_Abstract.h">
       <Filter>Core\Server\ServerEntities</Filter>
@@ -5709,9 +5697,6 @@
     <ClInclude Include="script_rq_result.h">
       <Filter>AI\AScript\ScriptClasses\ScriptRQ</Filter>
     </ClInclude>
-    <ClInclude Include="..\COMMON_AI\PropertiesListHelper.h">
-      <Filter>Core\Server\Editor</Filter>
-    </ClInclude>
     <ClInclude Include="..\COMMON_AI\random32.h">
       <Filter>Core\Common\Random32</Filter>
     </ClInclude>
@@ -5943,7 +5928,6 @@
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper_inline.h">
       <Filter>AI\ALife\simulator_base\registries\spawn_registry\server_entity_wrapper</Filter>
     </ClInclude>
-    <ClInclude Include="..\xrCore\FastDelegate.h" />
     <ClInclude Include="derived_client_classes.h">
       <Filter>AI\AScript\ScriptClasses\DerivedClientClasses</Filter>
     </ClInclude>
