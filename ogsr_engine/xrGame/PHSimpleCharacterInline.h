@@ -128,6 +128,9 @@ void CPHSimpleCharacter::UpdateDynamicDamage(dContact* c,u16 obj_material_idx,dB
 			m_collision_damage_info.m_hit_callback=obj->get_collision_hit_callback();
 			m_collision_damage_info.m_obj_id=obj->ID();
 		}
+		else {
+			m_collision_damage_info.Reinit();
+		}
 	}
 }
 
