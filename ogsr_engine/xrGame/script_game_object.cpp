@@ -344,7 +344,7 @@ Fvector	CScriptGameObject::bone_position	(LPCSTR bone_name) const
 	else
 		bone_id			= k->LL_GetBoneRoot();
 
-	ASSERT_FMT( bone_id != BI_NONE, "model doesn't have bone %s for section %s", bone_name, object().cNameSect().c_str());
+	ASSERT_FMT_DBG( bone_id != BI_NONE, "model doesn't have bone [%s] for section [%s]", bone_name, object().cNameSect().c_str());
 
 	Fmatrix				matrix;
 	matrix.mul_43		(object().XFORM(),k->LL_GetBoneInstance(bone_id).mTransform);
