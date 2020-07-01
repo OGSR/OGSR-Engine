@@ -7,11 +7,6 @@
 	#define D3D_DEBUG_INFO
 #endif
 
-#pragma warning(disable:4995)
-//KRodin: убрать?
-#include <d3d9.h>
-#pragma warning(default:4995)
-
 // Our headers
 #include "engine.h"
 #include "defines.h"

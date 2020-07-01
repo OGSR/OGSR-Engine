@@ -153,10 +153,12 @@ void CPHMovementControl::Calculate(Fvector& vAccel,const Fvector& camDir,float /
 		}
 	}
 
-	ICollisionDamageInfo	*cdi = CollisionDamageInfo();
-	if (cdi->HitCallback())
-		cdi->HitCallback()->call((m_character->PhysicsRefObject()), fMinCrashSpeed, fMaxCrashSpeed, fContactSpeed, gcontact_HealthLost, CollisionDamageInfo());
-	////////
+	auto* cdi = CollisionDamageInfo();
+
+	if (auto* hcb = cdi->HitCallback())
+	{
+		hcb->call(nullptr, fMinCrashSpeed, fMaxCrashSpeed, fContactSpeed, gcontact_HealthLost, cdi);
+	}
 
 	TraceBorder(previous_position);
 	CheckEnvironment(vPosition);

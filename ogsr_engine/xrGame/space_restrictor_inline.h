@@ -19,11 +19,6 @@ IC	bool CSpaceRestrictor::actual			() const
 	return							(m_actuality);
 }
 
-IC	void CSpaceRestrictor::actual			(bool value) const
-{
-	m_actuality						= value;
-}
-
 IC RestrictionSpace::ERestrictorTypes CSpaceRestrictor::restrictor_type	() const
 {
 	return RestrictionSpace::ERestrictorTypes(m_space_restrictor_type);

@@ -132,7 +132,8 @@ void CWeaponMagazined::Load	(LPCSTR section)
 
 	if(IsZoomEnabled())
 		animGetEx( mhud.mhud_idle_aim, "anim_idle_aim" );
-	
+
+	animGetEx( mhud.mhud_reload_partly, "anim_reload_partly", nullptr, "anim_reload" );
 
 	//звуки и партиклы глушителя, еслит такой есть
 	if(m_eSilencerStatus == ALife::eAddonAttachable)
@@ -193,7 +194,14 @@ void CWeaponMagazined::FireStart		()
 			else
 				SwitchState(eFire);
 		}
-	} 
+	}
+	else if ( IsMisfire() ) {
+	  if ( smart_cast<CActor*>( this->H_Parent() ) && Level().CurrentViewEntity() == H_Parent() )
+	    HUD().GetUI()->AddInfoMessage( "gun_jammed" );
+	  OnEmptyClick();
+	  // Callbacks added by Cribbledirge.
+	  StateSwitchCallback( GameObject::eOnActorWeaponJammed, GameObject::eOnNPCWeaponJammed );
+	}
 	else 
 		if(eReload!=GetState() && eMisfire!=GetState()) 
             OnMagazineEmpty();
@@ -584,6 +592,12 @@ void CWeaponMagazined::state_Fire	(float dt)
 //	Msg("%d && %d && (%d || %d) && (%d || %d)", !m_magazine.empty(), fTime<=0, IsWorking(), m_bFireSingleShot, m_iQueueSize < 0, m_iShotNum < m_iQueueSize);
 	while (!m_magazine.empty() && fTime<=0 && (IsWorking() || m_bFireSingleShot) && (m_iQueueSize < 0 || m_iShotNum < m_iQueueSize))
 	{
+		if ( CheckForMisfire() ) {
+			OnEmptyClick();
+			StopShooting();
+			return;
+		}
+
 		m_bFireSingleShot = false;
 
 		VERIFY(fTimeToFire>0.f);
@@ -670,7 +684,11 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 {
 	switch(state) 
 	{
-		case eReload:	ReloadMagazine();	SwitchState(eIdle);	break;	// End of reload animation
+		case eReload:
+		  ReloadMagazine();
+		  HUD_SOUND::StopSound( sndReload );
+		  SwitchState( eIdle );
+		  break;	// End of reload animation
 		case eHiding:	SwitchState(eHidden);   break;	// End of Hide
 		case eShowing:	SwitchState(eIdle);		break;	// End of Show
 		case eIdle:		switch2_Idle();			break;  // Keep showing idle
@@ -771,7 +789,7 @@ void CWeaponMagazined::switch2_Hiding()
 {
 	CWeapon::FireEnd();
 
-	HUD_SOUND::StopSound( sndReload );
+	StopHUDSounds();
 	PlaySound	(sndHide,get_LastFP());
 
 	PlayAnimHide();
@@ -1173,10 +1191,12 @@ void CWeaponMagazined::PlayAnimHide()
 }
 
 
-void CWeaponMagazined::PlayAnimReload()
-{
-	VERIFY(GetState()==eReload);
-	m_pHUD->animPlay(random_anim(mhud.mhud_reload),TRUE,this,GetState());
+void CWeaponMagazined::PlayAnimReload() {
+  VERIFY( GetState() == eReload );
+  if ( IsPartlyReloading() )
+    m_pHUD->animPlay( random_anim( mhud.mhud_reload_partly ), TRUE, this, GetState() );
+  else
+    m_pHUD->animPlay( random_anim( mhud.mhud_reload ), TRUE, this, GetState() );
 }
 
 

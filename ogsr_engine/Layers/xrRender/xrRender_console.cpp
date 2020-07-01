@@ -263,6 +263,11 @@ int ps_r3_dyn_wet_surf_enable_streaks = 0;
 float ps_r2_rain_drops_intensity = 0.00025f;
 float ps_r2_rain_drops_speed = 1.25f;
 
+#if RENDER==R_R4
+float ps_ext_SSLR_L = 1.f;
+float ps_ext_SSLR_blur = 0.f;
+#endif
+
 int			ps_r__detail_radius = 49;
 u32			dm_size = 24;
 u32 		dm_cache1_line = 12;	//dm_size*2/dm_cache1_count
@@ -862,6 +867,12 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask,  "r2_rain_drops_control", &ps_r2_ls_flags_ext, R2FLAGEXT_RAIN_DROPS_CONTROL);
 	CMD4(CCC_Float, "r2_rain_drops_intensity", &ps_r2_rain_drops_intensity, 0.f, 1.f);
 	CMD4(CCC_Float, "r2_rain_drops_speed", &ps_r2_rain_drops_speed, 0.8f, 5.f);
+
+#if RENDER==R_R4
+	CMD3(CCC_Mask, "r_sslr_enable", &ps_r2_ls_flags_ext, R2FLAGEXT_SSLR);
+	CMD4(CCC_Float, "r_sslr_l", &ps_ext_SSLR_L, .1f, 10.f);
+	CMD4(CCC_Float, "r_sslr_blur", &ps_ext_SSLR_blur, 0.0f, 5.f);
+#endif
 
 	CMD3(CCC_Mask,		"r2_sun",				&ps_r2_ls_flags,			R2FLAG_SUN		);
 	CMD3(CCC_Mask,		"r2_sun_details",		&ps_r2_ls_flags,			R2FLAG_SUN_DETAILS);

@@ -114,7 +114,7 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 	CGameTask* _at = ActiveTask();
 	if	( (NULL==_at) || (_at->m_priority > t->m_priority) )
 	{
-		SetActiveTask(t->m_ID, 1);
+		SetActiveTask(t->m_ID, 1, true);
 	}
 
 
@@ -301,13 +301,37 @@ CGameTask* CGameTaskManager::ActiveTask()
 	return						HasGameTask( t_id );
 }
 
-void CGameTaskManager::SetActiveTask(const TASK_ID& id, u16 idx)
+void CGameTaskManager::SetActiveTask(const TASK_ID& id, u16 idx, const bool safe)
 {
-	if(idx==0)
-		Msg("! g_active_task_objective_idx==0");
+	g_active_task_id = id;
 
-	g_active_task_id			= id;
-	g_active_task_objective_id	= idx;
+	if (safe)
+	{
+		auto* t = ActiveTask();
+		if (t && t->m_Objectives.size() < (idx + 1))
+		{
+			ASSERT_FMT(!t->m_Objectives.empty(), "!![%s] m_Objectives is empty! Something strange!", __FUNCTION__);
+			g_active_task_objective_id = t->m_Objectives.size() - 1; //Некторые таски могут содержать всего один objective
+
+			if (g_active_task_objective_id == 0)
+				Msg("!![%s - 1] g_active_task_objective_idx == 0", __FUNCTION__);
+		}
+		else
+		{
+			g_active_task_objective_id = idx;
+
+			if (g_active_task_objective_id == 0)
+				Msg("!![%s - 2] g_active_task_objective_idx == 0", __FUNCTION__);
+		}
+
+	}
+	else
+	{
+		g_active_task_objective_id = idx;
+
+		if (g_active_task_objective_id == 0)
+			Msg("!![%s - 3] g_active_task_objective_idx == 0", __FUNCTION__);
+	}
 
 	Level().MapManager().DisableAllPointers();
 	SGameTaskObjective* o		= ActiveObjective();

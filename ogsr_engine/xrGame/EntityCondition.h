@@ -154,7 +154,7 @@ const	static int		PARAMS_COUNT = 7;
 	bool				m_bIsBleeding;
 
 	//части хита, затрачиваемые на уменьшение здоровья и силы
-	float				m_fHealthHitPart;
+	float m_fHealthHitPart[ ALife::eHitTypeMax ];
 	float				m_fPowerHitPart;
 
 

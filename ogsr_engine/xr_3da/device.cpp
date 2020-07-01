@@ -215,21 +215,10 @@ void CRenderDevice::on_idle		()
 		return;
 	}
 
-	// FPS Lock
-	constexpr u32 menuFPSlimit = 60, pauseFPSlimit = 60;
-	u32 curFPSLimit = IsMainMenuActive() ? menuFPSlimit : Device.Paused() ? pauseFPSlimit : g_dwFPSlimit;
-	if (curFPSLimit > 0)
-	{
-		static DWORD dwLastFrameTime = 0;
-		DWORD dwCurrentTime = timeGetTime();
-		if (dwCurrentTime - dwLastFrameTime < 1000 / (curFPSLimit + 1))
-			return;
-		dwLastFrameTime = dwCurrentTime;
-	}
 
-#ifdef DEDICATED_SERVER
-	u32 FrameStartTime = TimerGlobal.GetElapsed_ms();
-#endif
+	const auto FrameStartTime = std::chrono::high_resolution_clock::now();
+
+
 	if (psDeviceFlags.test(rsStatistic))	g_bEnableStatGather	= TRUE;
 	else									g_bEnableStatGather	= FALSE;
 	if(g_loading_events.size())
@@ -240,11 +229,6 @@ void CRenderDevice::on_idle		()
 		return;
 	}else 
 	{
-		//KRodin: бенчмарк не нужен
-		/*if ( (!Device.dwPrecacheFrame) && (!g_SASH.IsBenchmarkRunning())
-			&& g_bLoaded)
-			g_SASH.StartBenchmark();*/
-
 		FrameMove						( );
 	}
 
@@ -272,7 +256,6 @@ void CRenderDevice::on_idle		()
 
 	syncProcessFrame.Set(); // allow secondary thread to do its job
 
-#ifndef DEDICATED_SERVER
 	Statistic->RenderTOTAL_Real.FrameStart	();
 	Statistic->RenderTOTAL_Real.Begin		();
 	if (b_is_Active)							{
@@ -293,7 +276,25 @@ void CRenderDevice::on_idle		()
 	Statistic->RenderTOTAL_Real.End			();
 	Statistic->RenderTOTAL_Real.FrameEnd	();
 	Statistic->RenderTOTAL.accum	= Statistic->RenderTOTAL_Real.accum;
-#endif // #ifndef DEDICATED_SERVER
+
+
+	const auto FrameEndTime = std::chrono::high_resolution_clock::now();
+	const std::chrono::duration<double, std::milli> FrameElapsedTime = FrameEndTime - FrameStartTime;
+
+	constexpr u32 menuFPSlimit{ 60 }, pauseFPSlimit{ 60 };
+	const u32 curFPSLimit = IsMainMenuActive() ? menuFPSlimit : Device.Paused() ? pauseFPSlimit : g_dwFPSlimit;
+	if (curFPSLimit > 0)
+	{
+		const std::chrono::duration<double, std::milli> FpsLimitMs{ std::floor(1000.f / (curFPSLimit + 1)) };
+		if (FrameElapsedTime < FpsLimitMs)
+		{
+			const auto TimeToSleep = FpsLimitMs - FrameElapsedTime;
+			//std::this_thread::sleep_until(FrameEndTime + TimeToSleep); // часто спит больше, чем надо. Скорее всего из-за округлений в большую сторону.
+			Sleep(iFloor(TimeToSleep.count()));
+			//Msg("~~[%s] waited [%f] ms", __FUNCTION__, TimeToSleep.count());
+		}
+	}
+
 
 	syncFrameDone.WaitEx(66); // wait until secondary thread finish its job
 

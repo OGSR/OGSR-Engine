@@ -66,6 +66,7 @@ public:
 			void				SetExplosionSize		(const Fvector &new_size);
 	virtual bool				Useful					() const;
 			bool				IsExploded				(){return !!m_explosion_flags.test(flExploded);}
+	bool IsReadyToExplode() { return !!m_explosion_flags.test( flReadyToExplode ); };
 protected:
 			bool				IsSoundPlaying			(){return !!sndExplode._feedback();}
 private:

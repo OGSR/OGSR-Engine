@@ -36,14 +36,14 @@ private:
 private:
 	mutable SPHERES				m_spheres;
 	mutable BOXES				m_boxes;
-	mutable Fsphere				m_selfbounds;
-	mutable bool				m_actuality;
+	Fsphere m_selfbounds{};
+	bool m_actuality{ false };
 
 private:
-			u8					m_space_restrictor_type;
+	u8					m_space_restrictor_type;
 private:
-	IC		void				actual				(bool value) const;
-			void				prepare				() const;
+	IC void actual(bool value) { m_actuality = value; }
+	void prepare();
 			bool				prepared_inside		(const Fsphere &sphere) const;
 
 public:
@@ -51,7 +51,7 @@ public:
 	virtual						~CSpaceRestrictor	();
 	virtual	BOOL				net_Spawn			(CSE_Abstract* data);
 	virtual	void				net_Destroy			();
-			bool				inside				(const Fsphere &sphere) const;
+	bool inside(const Fsphere &sphere);
 	virtual void				Center				(Fvector &C) const;
 	virtual float				Radius				() const;
 	virtual BOOL				UsedAI_Locations	();

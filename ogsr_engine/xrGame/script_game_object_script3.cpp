@@ -279,16 +279,6 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("critically_wounded",			&CScriptGameObject::critically_wounded)
 		
 		/************************************************** added by Ray Twitty (aka Shadows) START **************************************************/
-		// фонарь
-		/* alpet: с разрешение автора утащено в torch_script.cpp. Исходный вариант остался в ревизии 110 на xp-dev.com
-		.def("enable_torch",				&CScriptGameObject::EnableTorch)
-		.def("switch_torch",				&CScriptGameObject::SwitchTorch)
-		.def("torch_enabled",				&CScriptGameObject::TorchEnabled)
-		// ПНВ
-		.def("enable_night_vision",			&CScriptGameObject::EnableNightVision)
-		.def("switch_night_vision",			&CScriptGameObject::SwitchNightVision)
-		.def("night_vision_enabled",		&CScriptGameObject::NightVisionEnabled)
-		//*/
 		// инвентарь
 		.def("get_actor_max_weight",			&CScriptGameObject::GetActorMaxWeight)
 		.def("set_actor_max_weight",			&CScriptGameObject::SetActorMaxWeight)

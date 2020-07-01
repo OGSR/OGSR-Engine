@@ -214,6 +214,9 @@ void	CBlender_BmmD::Compile	(CBlender_Compile& C)
 		C.r_dx10Texture		("s_dn_b",	strconcat(sizeof(mask),mask,oB_Name,"_bump") );
 		C.r_dx10Texture		("s_dn_a",	strconcat(sizeof(mask),mask,oA_Name,"_bump") );
 
+#if RENDER==R_R4
+		C.r_dx10Texture("s_puddles", "shaders\\puddles");
+#endif
 		C.r_dx10Sampler		("smp_base");
 		C.r_dx10Sampler		("smp_linear");
 
