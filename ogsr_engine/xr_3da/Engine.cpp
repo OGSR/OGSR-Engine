@@ -12,6 +12,9 @@ extern	void msCreate		(LPCSTR name);
 
 void CEngine::Initialize()
 {
+/*
+// TTAPI больше нигде не используется. См. ParticleEffect.cpp и
+// particle_actions_collection.cpp
 	//
 	u32 th_count = CPU::ID.threadCount;
 	// Check for override from command line
@@ -25,6 +28,7 @@ void CEngine::Initialize()
 	TTAPI->initialize(th_count, "TTAPI thread");
 	R_ASSERT(TTAPI->threads.size());
 	Msg("TTAPI number of threads: [%zi]", TTAPI->threads.size());
+*/
 	//
 	Engine.Sheduler.Initialize			( );
 

@@ -501,7 +501,7 @@ void CParticleEffect::Render(float )
 			FVF::LIT* pv_start	= (FVF::LIT*)RCache.Vertex.Lock(p_cnt*4*4,geom->vb_stride,dwOffset);
 			FVF::LIT* pv		= pv_start;
 
-			size_t nWorkers = 1; //TTAPI->threads.size();
+			size_t nWorkers = TTAPI->threads.size();
 			size_t nSlice   = 128;
 			size_t nStep    = p_cnt / nSlice;
 			if (nStep > nWorkers) nStep = nWorkers;

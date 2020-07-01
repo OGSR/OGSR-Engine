@@ -1753,7 +1753,7 @@ void PATurbulence::Execute(ParticleEffect *effect, float dt)
 	if ( ! p_cnt )
 		return;
 
-	size_t nWorkers = 1; //TTAPI->threads.size();
+	size_t nWorkers = TTAPI->threads.size();
 	size_t nSlice   = 128;
 	size_t nStep    = p_cnt / nSlice;
 	if ( nStep > nWorkers ) nStep = nWorkers;
