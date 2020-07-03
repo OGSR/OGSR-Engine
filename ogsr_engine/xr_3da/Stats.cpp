@@ -107,7 +107,7 @@ void CStats::Show()
 		RenderDUMP_RT.FrameEnd		();
 		RenderDUMP_SKIN.FrameEnd	();	
 		RenderDUMP_Wait.FrameEnd	();	
-		RenderDUMP_Wait_S.FrameEnd	();	
+		//RenderDUMP_Wait_S.FrameEnd	();	
 		RenderDUMP_HUD.FrameEnd		();	
 		RenderDUMP_Glows.FrameEnd	();	
 		RenderDUMP_Lights.FrameEnd	();	
@@ -244,7 +244,7 @@ void CStats::Show()
 		F.OutNext	("  Skeletons: %2.2fms, %d",Animation.result,		Animation.count);
 		F.OutNext	("R_DUMP:      %2.2fms, %2.1f%%",RenderDUMP.result,	PPP(RenderDUMP.result));	
 		F.OutNext	("  Wait-L:    %2.2fms",RenderDUMP_Wait.result);	
-		F.OutNext	("  Wait-S:    %2.2fms",RenderDUMP_Wait_S.result);	
+		//F.OutNext	("  Wait-S:    %2.2fms",RenderDUMP_Wait_S.result);	
 		F.OutNext	("  Skinning:  %2.2fms",RenderDUMP_SKIN.result);	
 		F.OutNext	("  DT_Vis/Cnt:%2.2fms/%d",RenderDUMP_DT_VIS.result,RenderDUMP_DT_Count);	
 		F.OutNext	("  DT_Render: %2.2fms",RenderDUMP_DT_Render.result);	
@@ -397,7 +397,7 @@ void CStats::Show()
 		RenderDUMP_RT.FrameStart	();
 		RenderDUMP_SKIN.FrameStart	();	
 		RenderDUMP_Wait.FrameStart	();	
-		RenderDUMP_Wait_S.FrameStart();	
+		//RenderDUMP_Wait_S.FrameStart();	
 		RenderDUMP_HUD.FrameStart	();	
 		RenderDUMP_Glows.FrameStart	();	
 		RenderDUMP_Lights.FrameStart();	

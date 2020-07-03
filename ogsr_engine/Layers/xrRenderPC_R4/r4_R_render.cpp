@@ -271,7 +271,7 @@ void CRender::Render		()
 
 	//*******
 	// Sync point
-	Device.Statistic->RenderDUMP_Wait_S.Begin	();
+	//Device.Statistic->RenderDUMP_Wait_S.Begin	();
 	/*if (1)
 	{
 		CTimer	T;							T.Start	();
@@ -287,10 +287,9 @@ void CRender::Render		()
 			}
 		}
 	}*/
-	Device.Statistic->RenderDUMP_Wait_S.End		();
-	q_sync_count								= (q_sync_count+1)%HW.Caps.iGPUNum;
-	//CHK_DX										(q_sync_point[q_sync_count]->Issue(D3DISSUE_END));
-	CHK_DX										(EndQuery(q_sync_point[q_sync_count]));
+	//Device.Statistic->RenderDUMP_Wait_S.End		();
+	//q_sync_count								= (q_sync_count+1)%HW.Caps.iGPUNum;
+	//CHK_DX										(EndQuery(q_sync_point[q_sync_count]));
 
 	//******* Main calc - DEFERRER RENDERER
 	// Main calc
