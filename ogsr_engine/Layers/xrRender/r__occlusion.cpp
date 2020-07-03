@@ -14,10 +14,6 @@ R_occlusion::~R_occlusion( void ) {
 }
 
 
-void R_occlusion::occq_create( u32 limit ) {
-}
-
-
 void R_occlusion::occq_destroy() {
   Msg( "* [%s]: fids[%u] used[%u] pool[%u]", __FUNCTION__, fids.size(), used.size(), pool.size() );
   u32 p_cnt = 0;

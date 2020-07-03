@@ -1,7 +1,5 @@
 #pragma once
 
-const		u32					occq_size			= 16384; //2*768; //256	;	// queue for occlusion queries
-
 // must conform to following order of allocation/free
 // a(A), a(B), a(C), a(D), ....
 // f(A), f(B), f(C), f(D), ....
@@ -41,7 +39,6 @@ public:
 	R_occlusion		();
 	~R_occlusion	();
 
-	void			occq_create		(u32	limit	);
 	void			occq_destroy	(				);
 	u32				occq_begin		(u32&	ID		);	// returns 'order'
 	void			occq_end		(u32&	ID		);

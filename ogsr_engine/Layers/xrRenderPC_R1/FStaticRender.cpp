@@ -92,7 +92,6 @@ void					CRender::create					()
 	Models						= xr_new<CModelPool>		();
 	L_Dynamic					= xr_new<CLightR_Manager>	();
 	PSLibrary.OnCreate			();
-//.	HWOCC.occq_create			(occq_size);
 
 	::PortalTraverser.initialize();
 }
@@ -139,7 +138,6 @@ void					CRender::reset_end				()
 	}
 	//-AVO
 
-//.	HWOCC.occq_create			(occq_size);
 	Target						=	xr_new<CRenderTarget>	();
 	if (L_Projector)			L_Projector->invalidate		();
 
