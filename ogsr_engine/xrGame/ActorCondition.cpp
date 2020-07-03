@@ -490,7 +490,7 @@ bool CActorCondition::IsCantSprint()
 
 bool CActorCondition::IsCantJump(float weight)
 {
-	if (!m_bJumpRequirePower)
+	if (!m_bJumpRequirePower || GodMode())
 	{
 		return false;
 	}
