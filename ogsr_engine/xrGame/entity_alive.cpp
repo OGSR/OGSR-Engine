@@ -305,7 +305,7 @@ void CEntityAlive::Die	(CObject* who)
 	if (!getDestroy()) {
 		NET_Packet		P;
 		u_EventGen		(P,GE_ASSIGN_KILLER,ID());
-		P.w_u16			(u16(who->ID()));
+		P.w_u16(who ? who->ID() : u16(-1));
 		u_EventSend		(P);
 	}
 
