@@ -715,9 +715,9 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle( u8 state )
 		if(m_bGrenadeMode)
 		{
 			if(IsZoomed())
-				m_pHUD->animPlay(random_anim(mhud_idle_g_aim), FALSE, NULL, GetState());
+				m_pHUD->animPlay(random_anim(mhud_idle_g_aim), TRUE, NULL, GetState());
 			else
-				m_pHUD->animPlay(random_anim(mhud_idle_g), FALSE, NULL, GetState());
+				m_pHUD->animPlay(random_anim(mhud_idle_g), TRUE, NULL, GetState());
 		}
 		else
 		{
