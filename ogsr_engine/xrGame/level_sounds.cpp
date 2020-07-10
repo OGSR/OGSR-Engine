@@ -110,6 +110,20 @@ void SMusicTrack::Load(LPCSTR fn, LPCSTR params)
 	m_PauseTime.mul		(1000);			// convert sec to ms
 }
 
+bool SMusicTrack::in(u32 game_time)
+{
+	// game_time -ms
+	if (m_ActiveTime.x == 0 && m_ActiveTime.y)
+		return true;
+
+	bool b_cross_midnight = (m_ActiveTime.y < m_ActiveTime.x);
+
+	if (!b_cross_midnight)
+		return ((int(game_time) >= m_ActiveTime.x) && (int(game_time) < m_ActiveTime.y));
+	else
+		return ((int(game_time) >= m_ActiveTime.x) || (int(game_time) <= m_ActiveTime.y));
+}
+
 void	SMusicTrack::Play()
 {
 	m_SourceLeft.play_at_pos	(0,Fvector().set(-0.5f,0.f,0.3f),sm_2D);
@@ -145,21 +159,19 @@ void CLevelSoundManager::Load()
 
 
 	if (FS.exist(fn, "$level$", "level.snd_static.ltx")) {
-		CInifile ltXfile = CInifile(fn);
+		CInifile ltXfile{ fn };
 
 		for (const auto &it : ltXfile.sections())
-		{
-			m_StaticSounds.push_back(SStaticSound());
-			m_StaticSounds.back().LoadIni(*it.second);
-		}
+			m_StaticSounds.emplace_back().LoadIni(*it.second);
+
 	}
 	else if (FS.exist(fn, "$level$", "level.snd_static")) {
 		IReader *F = FS.r_open(fn);
 		u32				chunk = 0;
-		for (IReader *OBJ = F->open_chunk_iterator(chunk); OBJ; OBJ = F->open_chunk_iterator(chunk, OBJ)) {
-			m_StaticSounds.push_back(SStaticSound());
-			m_StaticSounds.back().Load(*OBJ);
-		}
+
+		for (IReader *OBJ = F->open_chunk_iterator(chunk); OBJ; OBJ = F->open_chunk_iterator(chunk, OBJ))
+			m_StaticSounds.emplace_back().Load(*OBJ);
+		
 		FS.r_close(F);
 	}
 
@@ -170,15 +182,13 @@ void CLevelSoundManager::Load()
 
 	if (gameLtx.section_exist(Level().name()) && psActorFlags.test(AF_MUSIC_TRACKS)){
 		if (gameLtx.line_exist(Level().name(),"music_tracks")){
-			LPCSTR music_sect		= gameLtx.r_string(Level().name(),"music_tracks");
+			const char* music_sect = gameLtx.r_string(Level().name(), "music_tracks");
 			if (music_sect && music_sect[0]){
 				Msg("- Loading music tracks from '%s'...",music_sect);
-				CInifile::Sect&	S	= gameLtx.r_section	(music_sect);
-				m_MusicTracks.reserve	(S.Data.size());
-				for ( const auto &it : S.Data ) {
-					m_MusicTracks.push_back	(SMusicTrack());
-					m_MusicTracks.back().Load(it.first.c_str(),it.second.c_str());
-				}
+				const auto& S = gameLtx.r_section(music_sect);
+				m_MusicTracks.reserve(S.Data.size());
+				for (const auto& [k, v] : S.Data)
+					m_MusicTracks.emplace_back().Load(k.c_str(), v.c_str());
 			}
 		}
 	}
@@ -212,9 +222,8 @@ void CLevelSoundManager::Update()
 			for (u32 k=0; k<m_MusicTracks.size(); ++k){
 				SMusicTrack& T	= m_MusicTracks[k];
 				if (T.IsPlaying()) T.Stop();
-				if ((0==T.m_ActiveTime.x)&&(0==T.m_ActiveTime.y)||
-					((int(game_time)>=T.m_ActiveTime.x)&&(int(game_time)<T.m_ActiveTime.y)))
-					indices.push_back(k);
+				if (T.in(game_time))
+					indices.push_back(std::move(k));
 			}
 			if (!indices.empty()){
 				u32 idx			= Random.randI(indices.size());
