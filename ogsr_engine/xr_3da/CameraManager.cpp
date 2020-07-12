@@ -369,7 +369,7 @@ bool CCameraManager::ProcessCameraEffector(CEffectorCam* eff)
 
 void CCameraManager::UpdateCamEffectors()
 {
-	if (m_EffectorsCam.empty())
+	if (m_EffectorsCam.empty() || Device.m_SecondViewport.IsSVPFrame())
 		return;
 
 	auto r_it = m_EffectorsCam.rbegin();
@@ -398,9 +398,9 @@ void CCameraManager::UpdatePPEffectors()
 {
 	pp_affected.validate("before applying pp");
 
-	int _count = 0;
-	if (m_EffectorsPP.size())
+	if (!m_EffectorsPP.empty() && !Device.m_SecondViewport.IsSVPFrame())
 	{
+		int _count = 0;
 		bool b = false;
 		pp_affected = pp_identity;
 		for (int i = m_EffectorsPP.size() - 1; i >= 0; --i)
