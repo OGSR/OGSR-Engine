@@ -1551,19 +1551,14 @@ void CWeapon::InitAddons()
 
 float CWeapon::CurrentZoomFactor()
 {
-	if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
-		if (is_second_zoom_offset_enabled)
-			return m_fSecondScopeZoomFactor;
-		else if (SecondVPEnabled())
-			return 1; // no change to main fov zoom when use second vp
-		else if (IsScopeAttached())
-			return m_fScopeZoomFactor;
-		else
-			return m_fIronSightZoomFactor;
-	}
-	else {
-		return IsScopeAttached() ? m_fScopeZoomFactor : m_fIronSightZoomFactor;
-	}
+	if (is_second_zoom_offset_enabled)
+		return m_fSecondScopeZoomFactor;
+	else if (SecondVPEnabled())
+		return Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.0f : m_fIronSightZoomFactor; // no change to main fov zoom when use second vp
+	else if (IsScopeAttached())
+		return m_fScopeZoomFactor;
+	else
+		return m_fIronSightZoomFactor;
 }
 
 void CWeapon::OnZoomIn()
