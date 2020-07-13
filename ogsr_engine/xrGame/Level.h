@@ -289,7 +289,8 @@ public:
 	void				SetGameTimeFactor		(const float fTimeFactor);
 	void				SetGameTimeFactor		(ALife::_TIME_ID GameTime, const float fTimeFactor);
 	virtual void		SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTimeFactor);
-	//	void				SetGameTime				(ALife::_TIME_ID GameTime);
+
+	void GetGameTimeForShaders(u32& hours, u32& minutes, u32& seconds, u32& milliseconds) override;
 
 	// gets current daytime [0..23]
 	u8					GetDayTime				();

@@ -846,13 +846,12 @@ void CLevel::SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTim
 	game->SetEnvironmentGameTimeFactor(GameTime, fTimeFactor);
 }
 
-/*
-void CLevel::SetGameTime(ALife::_TIME_ID GameTime)
+void CLevel::GetGameTimeForShaders(u32& hours, u32& minutes, u32& seconds, u32& milliseconds)
 {
-	game->SetGameTime(GameTime);
-//	Server->game->SetGameTime(GameTime);
+	u32 unused;
+	split_time(GetGameTime(), unused, unused, unused, hours, minutes, seconds, milliseconds);
 }
-*/
+
 bool CLevel::IsServer ()
 {
 //	return (!!Server);

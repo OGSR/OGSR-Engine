@@ -404,6 +404,18 @@ static class cl_blend_mode : public R_constant_setup //--#SM+#--
 } binder_blend_mode;
 
 
+static class cl_ogsr_game_time : public R_constant_setup
+{
+	void setup(R_constant* C) override
+	{
+		u32 hours{ 0 }, mins{ 0 }, secs{ 0 }, milisecs{ 0 };
+		if (g_pGameLevel)
+			g_pGameLevel->GetGameTimeForShaders(hours, mins, secs, milisecs);
+		RCache.set_c(C, float(hours), float(mins), float(secs), float(milisecs));
+	}
+} binder_ogsr_game_time;
+
+
 // Standart constant-binding
 void	CBlender_Compile::SetMapping	()
 {
@@ -478,10 +490,9 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant("m_script_params", &binder_script_params); //--#SM+#--
 	r_Constant("m_blender_mode", &binder_blend_mode); //--#SM+#--
 
+	r_Constant("ogsr_game_time", &binder_ogsr_game_time);
+
 	// other common
-	for (u32 it=0; it<DEV->v_constant_setup.size(); it++)
-	{
-		std::pair<shared_str,R_constant_setup*>	cs	= DEV->v_constant_setup[it];
-		r_Constant			(*cs.first,cs.second);
-	}
+	for (const auto& [name, s] : DEV->v_constant_setup)
+		r_Constant(name.c_str(), s);
 }
