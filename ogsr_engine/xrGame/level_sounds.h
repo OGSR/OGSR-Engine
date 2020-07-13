@@ -1,3 +1,6 @@
+//---------------------------------------------------------------------------
+#ifndef LevelSoundsH
+#define LevelSoundsH
 #pragma once
 
 struct SStaticSound
@@ -30,7 +33,6 @@ struct	SMusicTrack
 	float			m_Volume;
 public:
 	void			Load			(LPCSTR fn, LPCSTR params);
-	bool in(u32 game_time);
 	BOOL			IsPlaying		(){return m_SourceLeft._feedback() || m_SourceRight._feedback();}
 	void			Play			();
 	void			Stop			();
@@ -39,8 +41,10 @@ public:
 
 class CLevelSoundManager
 {
-	std::vector<SStaticSound> m_StaticSounds;
-	std::vector<SMusicTrack> m_MusicTracks;
+	DEFINE_VECTOR(SStaticSound,StaticSoundsVec,StaticSoundsVecIt);
+	StaticSoundsVec	m_StaticSounds;
+	DEFINE_VECTOR(SMusicTrack,MusicTrackVec,MusicTrackVecIt);
+	MusicTrackVec	m_MusicTracks;
 	u32				m_NextTrackTime;
 	int				m_CurrentTrack;
 public:
@@ -49,3 +53,5 @@ public:
 	void			Unload			();
 	void Update();
 };
+
+#endif
