@@ -1164,8 +1164,14 @@ void CWeapon::ZoomChange(bool inc)
 
 		const float currentZoomFactor = m_fRTZoomFactor;
 
-		m_fRTZoomFactor += delta * (inc ? 1 : -1);
-		clamp(m_fRTZoomFactor, min_zoom_factor, m_fSecondVPZoomFactor);
+		if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
+			m_fRTZoomFactor += delta * (inc ? 1 : -1);
+			clamp(m_fRTZoomFactor, min_zoom_factor, m_fSecondVPZoomFactor);
+		}
+		else {
+			m_fRTZoomFactor += delta * (inc ? 1 : -1);
+			clamp(m_fRTZoomFactor, m_fSecondVPZoomFactor, min_zoom_factor);
+		}
 
 		wasChanged = !fsimilar(currentZoomFactor, m_fRTZoomFactor);
 	}
