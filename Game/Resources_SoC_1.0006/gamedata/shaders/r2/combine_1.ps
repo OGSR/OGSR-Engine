@@ -88,7 +88,7 @@ _out         main                ( _input I )
         half4         light       = half4         (L.rgb + hdiffuse, L.w)        ;
         half4         C           = D*light       ;                             // rgb.gloss * light(diffuse.specular)
 //        half3         spec        = (C.rgb*.5h + .5h)*C.w + hspecular + hspecular + hspecular;			// replicated specular
-	half3         spec        = C.www         + hspecular;      // replicated specular
+	half3 spec = C.www * L.rgb + hspecular; // replicated specular
 
 #ifdef         USE_SUPER_SPECULAR
                       spec      = (C.rgb*.5h + .5h)*C.w + hspecular        ;
