@@ -2356,7 +2356,6 @@
     <ClCompile Include="..\COMMON_AI\xrserver_objects_alife_monsters_script3.cpp" />
     <ClCompile Include="..\COMMON_AI\xrServer_Objects_ALife_Monsters_script4.cpp" />
     <ClCompile Include="xrServer_perform_GameExport.cpp" />
-    <ClCompile Include="xrServer_perform_migration.cpp" />
     <ClCompile Include="xrServer_perform_RPgen.cpp" />
     <ClCompile Include="xrServer_perform_sls_default.cpp" />
     <ClCompile Include="xrServer_perform_sls_load.cpp" />

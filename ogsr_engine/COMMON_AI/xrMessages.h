@@ -14,11 +14,6 @@ enum {
 	M_SV_CONFIG_GAME,
 	M_SV_CONFIG_FINISHED,
 
-	M_MIGRATE_DEACTIVATE,		// TO:   Changing server, just deactivate
-	M_MIGRATE_ACTIVATE,			// TO:   Changing server, full state
-
-	M_CHAT,						// DUAL:
-
 	M_EVENT,					// Game Event
 	M_CL_INPUT,					// Client Input Data
 	//----------- for E3 -----------------------------

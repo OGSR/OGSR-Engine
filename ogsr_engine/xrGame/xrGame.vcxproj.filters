@@ -8134,9 +8134,6 @@
     <ClCompile Include="xrServer_perform_GameExport.cpp">
       <Filter>Core\Server\ServerPerform</Filter>
     </ClCompile>
-    <ClCompile Include="xrServer_perform_migration.cpp">
-      <Filter>Core\Server\ServerPerform</Filter>
-    </ClCompile>
     <ClCompile Include="xrServer_perform_RPgen.cpp">
       <Filter>Core\Server\ServerPerform</Filter>
     </ClCompile>
