@@ -233,7 +233,7 @@ bool CWeaponMagazined::TryReload()
 
 		m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[m_ammoType], forActor));
 
-		if(m_pAmmo || unlimited_ammo() || (IsMisfire() && iAmmoElapsed))
+		if((m_pAmmo || m_set_next_ammoType_on_reload != u32(-1)) || unlimited_ammo() || (IsMisfire() && iAmmoElapsed))
 		{
 			m_bPending = true;
 			SwitchState(eReload); 
