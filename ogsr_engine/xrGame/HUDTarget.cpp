@@ -39,6 +39,7 @@ CHUDTarget::CHUDTarget()
 {
     fuzzyShowInfo = 0.f;
     RQ.range = 0.f;
+    m_real_dist = 0.f;
 
     hShader->create("hud\\cursor", "ui\\cursor");
 
@@ -101,12 +102,16 @@ void CHUDTarget::CursorOnFrame()
     RQ.O = nullptr;
     RQ.range = g_pGamePersistent->Environment().CurrentEnv->far_plane * 0.99f;
     RQ.element = -1;
+    m_real_dist = -1.f;
 
     collide::ray_defs RD(p1, dir, RQ.range, CDB::OPT_CULL, collide::rqtBoth);
     RQR.r_clear();
     VERIFY(!fis_zero(RD.dir.square_magnitude()));
     if (Level().ObjectSpace.RayQuery(RQR, RD, pick_trace_callback, &RQ, nullptr, Level().CurrentEntity()))
+    {
+        m_real_dist = RQ.range;
         clamp(RQ.range, NEAR_LIM, RQ.range);
+    }
 }
 
 extern ENGINE_API BOOL g_bRendering;
@@ -260,3 +265,5 @@ void CHUDTarget::Render()
         HUDCrosshair.OnRender(Fvector2{cx, cy}, scr_size);
     }
 }
+
+float CHUDTarget::GetRealDist() { return m_real_dist; }

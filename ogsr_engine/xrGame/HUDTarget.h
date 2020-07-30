@@ -22,6 +22,7 @@ private:
     float fuzzyShowInfo;
     rq_result RQ;
     rq_results RQR;
+    float m_real_dist;
 
 private:
     bool m_bShowCrosshair;
@@ -36,5 +37,6 @@ public:
     void Render();
     void Load();
     float GetDist();
+    float GetRealDist();
     CObject* GetObj();
 };

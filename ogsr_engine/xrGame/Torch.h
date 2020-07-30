@@ -28,6 +28,10 @@ protected:
     ref_glow glow_render;
     Fvector m_focus;
     Fcolor m_color;
+    bool m_bind_to_camera;
+    Fvector m_camera_torch_offset;
+    Fvector m_camera_omni_offset;
+    float m_min_target_dist;
 
 private:
     bool useVolumetric{}, useVolumetricForActor{};

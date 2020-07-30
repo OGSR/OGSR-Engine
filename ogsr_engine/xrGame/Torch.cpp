@@ -17,6 +17,7 @@
 #include "UIGameCustom.h"
 #include "actorEffector.h"
 #include "CustomOutfit.h"
+#include "HUDTarget.h"
 
 static const float TIME_2_HIDE = 5.f;
 static const float TORCH_INERTION_CLAMP = PI_DIV_6;
@@ -62,6 +63,11 @@ CTorch::CTorch(void)
         TORCH_OFFSET.x = 0;
         TORCH_OFFSET.z = 0;
     }
+
+    m_bind_to_camera = false;
+    m_camera_torch_offset = TORCH_OFFSET;
+    m_camera_omni_offset = OMNI_OFFSET;
+    m_min_target_dist = 0.5f;
 }
 
 CTorch::~CTorch(void)
@@ -95,6 +101,11 @@ void CTorch::Load(LPCSTR section)
         HUD_SOUND::LoadSound(section, "snd_night_vision_idle", m_NightVisionIdleSnd, SOUND_TYPE_ITEM_USING);
         HUD_SOUND::LoadSound(section, "snd_night_vision_broken", m_NightVisionBrokenSnd, SOUND_TYPE_ITEM_USING);
     }
+
+    m_bind_to_camera = READ_IF_EXISTS(pSettings, r_bool, section, "bind_to_camera", false);
+    m_camera_torch_offset = READ_IF_EXISTS(pSettings, r_fvector3, section, "camera_torch_offset", TORCH_OFFSET);
+    m_camera_omni_offset = READ_IF_EXISTS(pSettings, r_fvector3, section, "camera_omni_offset", OMNI_OFFSET);
+    m_min_target_dist = READ_IF_EXISTS(pSettings, r_float, section, "camera_min_target_dist", m_min_target_dist);
 }
 
 void CTorch::SwitchNightVision()
@@ -392,45 +403,56 @@ void CTorch::UpdateCL()
                     angle_inertion_var(m_prev_hp.y, -actor->cam_FirstEye()->pitch, TORCH_INERTION_SPEED_MIN, TORCH_INERTION_SPEED_MAX, TORCH_INERTION_CLAMP, Device.fTimeDelta);
             }
 
-            Fvector dir, right, up;
-            dir.setHP(m_prev_hp.x + m_delta_h, m_prev_hp.y);
-            Fvector::generate_orthonormal_basis_normalized(dir, up, right);
-
-            if (true)
+            Fvector dir, pos, right, up;
+            if (m_bind_to_camera && actor->active_cam() == eacFirstEye)
             {
-                Fvector offset = M.c;
+                float target_dist = HUD().GetTarget()->GetRealDist();
+                if (m_min_target_dist > 0.f && target_dist >= 0.f && target_dist < m_min_target_dist)
+                    target_dist = m_min_target_dist - target_dist;
+                else
+                    target_dist = 0.f;
+
+                dir = actor->Cameras().Direction();
+                Fvector::generate_orthonormal_basis_normalized(dir, up, right);
+                pos = actor->Cameras().Position();
+                Fvector offset = pos;
+                offset.mad(right, m_camera_torch_offset.x);
+                offset.mad(up, m_camera_torch_offset.y);
+                offset.mad(dir, m_camera_torch_offset.z - target_dist);
+                light_render->set_position(offset);
+                offset = pos;
+                offset.mad(right, m_camera_omni_offset.x);
+                offset.mad(up, m_camera_omni_offset.y);
+                offset.mad(dir, m_camera_omni_offset.z - target_dist);
+                light_omni->set_position(offset);
+            }
+            else
+            {
+                dir.setHP(m_prev_hp.x + m_delta_h, m_prev_hp.y);
+                Fvector::generate_orthonormal_basis_normalized(dir, up, right);
+                pos = M.c;
+                Fvector offset = pos;
                 offset.mad(M.i, TORCH_OFFSET.x);
                 offset.mad(M.j, TORCH_OFFSET.y);
                 offset.mad(M.k, TORCH_OFFSET.z);
                 light_render->set_position(offset);
+                offset = pos;
+                offset.mad(M.i, OMNI_OFFSET.x);
+                offset.mad(M.j, OMNI_OFFSET.y);
+                offset.mad(M.k, OMNI_OFFSET.z);
+                light_omni->set_position(offset);
+            }
 
-                if (true /*false*/)
-                {
-                    offset = M.c;
-                    offset.mad(M.i, OMNI_OFFSET.x);
-                    offset.mad(M.j, OMNI_OFFSET.y);
-                    offset.mad(M.k, OMNI_OFFSET.z);
-                    light_omni->set_position(offset);
-                }
-            } // if (true)
-            glow_render->set_position(M.c);
+			glow_render->set_position( pos );
 
-            if (true)
-            {
-                light_render->set_rotation(dir, right);
-
-                if (true /*false*/)
-                {
-                    light_omni->set_rotation(dir, right);
-                }
-            } // if (true)
-            glow_render->set_direction(dir);
-
-        } // if(actor)
-        else
-        {
-            light_render->set_position(M.c);
-            light_render->set_rotation(M.k, M.i);
+			light_render->set_rotation( dir, right );
+			light_omni->set_rotation( dir, right );
+			glow_render->set_direction( dir );
+		}// if(actor)
+		else 
+		{
+			light_render->set_position	(M.c);
+			light_render->set_rotation	(M.k,M.i);
 
             Fvector offset = M.c;
             offset.mad(M.i, OMNI_OFFSET.x);
