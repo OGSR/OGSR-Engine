@@ -283,7 +283,7 @@ void CRenderDevice::on_idle		()
 
 	constexpr u32 menuFPSlimit{ 60 }, pauseFPSlimit{ 60 };
 	const u32 curFPSLimit = IsMainMenuActive() ? menuFPSlimit : Device.Paused() ? pauseFPSlimit : g_dwFPSlimit;
-	if (curFPSLimit > 0)
+	if (curFPSLimit > 0 && !m_SecondViewport.IsSVPFrame())
 	{
 		const std::chrono::duration<double, std::milli> FpsLimitMs{ std::floor(1000.f / (curFPSLimit + 1)) };
 		if (FrameElapsedTime < FpsLimitMs)
