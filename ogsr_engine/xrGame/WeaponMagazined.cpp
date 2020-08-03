@@ -844,7 +844,7 @@ bool CWeaponMagazined::CanAttach(PIItem pIItem)
 	if(			pScope &&
 				 m_eScopeStatus == ALife::eAddonAttachable &&
 				(m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonScope) == 0 &&
-				std::find( m_allScopeNames.begin(), m_allScopeNames.end(), pIItem->object().cNameSect() ) != m_allScopeNames.end() )
+				(m_sScopeName == pIItem->object().cNameSect() || std::find( m_allScopeNames.begin(), m_allScopeNames.end(), pIItem->object().cNameSect() ) != m_allScopeNames.end()))
        return true;
 	else if(	pSilencer &&
 				m_eSilencerStatus == ALife::eAddonAttachable &&
@@ -889,7 +889,7 @@ bool CWeaponMagazined::Attach(PIItem pIItem, bool b_send_event)
 	if(pScope &&
 	   m_eScopeStatus == CSE_ALifeItemWeapon::eAddonAttachable &&
 	   (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonScope) == 0 &&
-	   std::find( m_allScopeNames.begin(), m_allScopeNames.end(), pIItem->object().cNameSect() ) != m_allScopeNames.end() )
+	   (m_sScopeName == pIItem->object().cNameSect() || std::find( m_allScopeNames.begin(), m_allScopeNames.end(), pIItem->object().cNameSect() ) != m_allScopeNames.end()))
 	{
 		m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponAddonScope;
 		result = true;
