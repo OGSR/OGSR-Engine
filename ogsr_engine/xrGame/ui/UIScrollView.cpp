@@ -47,7 +47,7 @@ void CUIScrollView::Init				()
 		m_VScrollBar				= xr_new<CUIScrollBar>();m_VScrollBar->SetAutoDelete(true);
 		AttachChild					(m_VScrollBar);
 		Register					(m_VScrollBar);
-		AddCallback					("scroll_v",	SCROLLBAR_VSCROLL, CUIWndCallback::void_function (this, &CUIScrollView::OnScrollV) );
+		AddCallback("scroll_v", SCROLLBAR_VSCROLL, fastdelegate::MakeDelegate(this, &CUIScrollView::OnScrollV));
 	}
 	if (!!m_scrollbar_profile)
         m_VScrollBar->Init			(GetWndSize().x, 0.0f, GetWndSize().y, false, *m_scrollbar_profile);

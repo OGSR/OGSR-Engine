@@ -206,7 +206,7 @@ void CRenderDevice::PreCache	(u32 amount, bool b_draw_loadscreen, bool b_wait_us
 }
 
 
-ENGINE_API xr_list<LOADING_EVENT>			g_loading_events;
+ENGINE_API xr_list<fastdelegate::FastDelegate<bool()>> g_loading_events;
 
 void CRenderDevice::on_idle		()
 {
@@ -283,7 +283,7 @@ void CRenderDevice::on_idle		()
 
 	constexpr u32 menuFPSlimit{ 60 }, pauseFPSlimit{ 60 };
 	const u32 curFPSLimit = IsMainMenuActive() ? menuFPSlimit : Device.Paused() ? pauseFPSlimit : g_dwFPSlimit;
-	if (curFPSLimit > 0)
+	if (curFPSLimit > 0 && !m_SecondViewport.IsSVPFrame())
 	{
 		const std::chrono::duration<double, std::milli> FpsLimitMs{ std::floor(1000.f / (curFPSLimit + 1)) };
 		if (FrameElapsedTime < FpsLimitMs)

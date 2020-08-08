@@ -389,24 +389,18 @@ void					CRender::create					()
 
 	Models						= xr_new<CModelPool>		();
 	PSLibrary.OnCreate			();
-	HWOCC.occq_create			(occq_size);
 
 	rmNormal					();
 	marker						= 0;
+	/*
 	D3D_QUERY_DESC			qdesc;
 	qdesc.MiscFlags				= 0;
 	qdesc.Query					= D3D_QUERY_EVENT;
 	ZeroMemory(q_sync_point, sizeof(q_sync_point));
-	//R_CHK						(HW.pDevice->CreateQuery(&qdesc,&q_sync_point[0]));
-	//R_CHK						(HW.pDevice->CreateQuery(&qdesc,&q_sync_point[1]));
-	//	Prevent error on first get data
-	//q_sync_point[0]->End();
-	//q_sync_point[1]->End();
-	//R_CHK						(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[0]));
-	//R_CHK						(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[1]));
 	for (u32 i=0; i<HW.Caps.iGPUNum; ++i)
 		R_CHK(HW.pDevice->CreateQuery(&qdesc,&q_sync_point[i]));
 	HW.pContext->End(q_sync_point[0]);
+	*/
 
 	::PortalTraverser.initialize();
 #ifdef DX10_FLUID_ENABLE
@@ -423,10 +417,10 @@ void					CRender::destroy				()
 	FluidManager.Destroy();
 #endif
 	::PortalTraverser.destroy	();
-	//_RELEASE					(q_sync_point[1]);
-	//_RELEASE					(q_sync_point[0]);
+	/*
 	for (u32 i=0; i<HW.Caps.iGPUNum; ++i)
 		_RELEASE				(q_sync_point[i]);
+	*/
 	
 	HWOCC.occq_destroy			();
 	xr_delete					(Models);
@@ -466,27 +460,23 @@ void CRender::reset_begin()
 
 	xr_delete					(Target);
 	HWOCC.occq_destroy			();
-	//_RELEASE					(q_sync_point[1]);
-	//_RELEASE					(q_sync_point[0]);
+	/*
 	for (u32 i=0; i<HW.Caps.iGPUNum; ++i)
 		_RELEASE				(q_sync_point[i]);
+	*/
 }
 
 void CRender::reset_end()
 {
+	/*
 	D3D_QUERY_DESC			qdesc;
 	qdesc.MiscFlags				= 0;
 	qdesc.Query					= D3D_QUERY_EVENT;
-	//R_CHK						(HW.pDevice->CreateQuery(&qdesc,&q_sync_point[0]));
-	//R_CHK						(HW.pDevice->CreateQuery(&qdesc,&q_sync_point[1]));
 	for (u32 i=0; i<HW.Caps.iGPUNum; ++i)
 		R_CHK(HW.pDevice->CreateQuery(&qdesc,&q_sync_point[i]));
 	//	Prevent error on first get data
 	HW.pContext->End(q_sync_point[0]);
-	//q_sync_point[1]->End();
-	//R_CHK						(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[0]));
-	//R_CHK						(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[1]));
-	HWOCC.occq_create			(occq_size);
+	*/
 
 	Target						=	xr_new<CRenderTarget>	();
 
@@ -511,8 +501,7 @@ void CRender::OnFrame()
 {
 	Models->DeleteQueue			();
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))	{
-		Device.seqParallel.insert	(Device.seqParallel.begin(),
-			fastdelegate::FastDelegate0<>(&HOM,&CHOM::MT_RENDER));
+		Device.seqParallel.insert	(Device.seqParallel.begin(),fastdelegate::MakeDelegate(&HOM,&CHOM::MT_RENDER));
 	}
 }*/
 void CRender::OnFrame()
@@ -520,12 +509,10 @@ void CRender::OnFrame()
 	Models->DeleteQueue			();
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))	{
 		// MT-details (@front)
-		Device.seqParallel.insert	(Device.seqParallel.begin(),
-			fastdelegate::FastDelegate0<>(Details,&CDetailManager::MT_CALC));
+		Device.seqParallel.insert(Device.seqParallel.begin(), fastdelegate::MakeDelegate(Details, &CDetailManager::MT_CALC));
 
 		// MT-HOM (@front)
-		Device.seqParallel.insert	(Device.seqParallel.begin(),
-			fastdelegate::FastDelegate0<>(&HOM,&CHOM::MT_RENDER));
+		Device.seqParallel.insert(Device.seqParallel.begin(), fastdelegate::MakeDelegate(&HOM, &CHOM::MT_RENDER));
 	}
 }
 

@@ -52,12 +52,12 @@ private:
 	CUIMapHint*					m_hint;
 	CUIStatic*					m_text_hint;
 
-	void __stdcall				OnScrollV				(CUIWindow*, void*);
-	void __stdcall				OnScrollH				(CUIWindow*, void*);
-	void __stdcall				OnToolGlobalMapClicked	(CUIWindow*, void*);
-	void __stdcall				OnToolActorClicked		(CUIWindow*, void*);
-	void __stdcall				OnToolZoomInClicked		(CUIWindow*, void*);
-	void __stdcall				OnToolZoomOutClicked	(CUIWindow*, void*);
+	void OnScrollV				(CUIWindow*, void*);
+	void OnScrollH				(CUIWindow*, void*);
+	void OnToolGlobalMapClicked	(CUIWindow*, void*);
+	void OnToolActorClicked		(CUIWindow*, void*);
+	void OnToolZoomInClicked	(CUIWindow*, void*);
+	void OnToolZoomOutClicked	(CUIWindow*, void*);
 	void						ValidateToolBar			();
 	void						ResetActionPlanner		();
 

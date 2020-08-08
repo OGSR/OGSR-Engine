@@ -1,6 +1,6 @@
 #pragma once
 
-const		u32					occq_size			= 16384; //2*768; //256	;	// queue for occlusion queries
+#include <wrl.h>
 
 // must conform to following order of allocation/free
 // a(A), a(B), a(C), a(D), ....
@@ -16,16 +16,21 @@ class R_occlusion
 {
 private:
 	struct	_Q	{
-		u32					order;
-		ID3DQuery*	Q;
+	  u32        order;
+	  Microsoft::WRL::ComPtr<ID3DQuery> Q;
+	  u32        ttl;
 	};
 
-	static const u32		iInvalidHandle = 0xFFFFFFFF;
+	static constexpr u32 iInvalidHandle = 0xFFFFFFFF;
 
-	BOOL					enabled;	// 
-	xr_vector<_Q>			pool;		// sorted (max ... min), insertions are usually at the end
-	xr_vector<_Q>			used;		// id's are generated from this and it is cleared from back only
-	xr_vector<u32>			fids;		// free id's
+	bool enabled;
+	std::vector<_Q>			pool;		// sorted (max ... min), insertions are usually at the end
+	std::vector<_Q>			used;		// id's are generated from this and it is cleared from back only
+	std::vector<u32>		fids;		// free id's
+	u32 last_frame;
+
+	void cleanup_lost();
+
 public:
 #if defined(USE_DX10) || defined(USE_DX11)
 	typedef	u64		occq_result;
@@ -36,9 +41,9 @@ public:
 	R_occlusion		();
 	~R_occlusion	();
 
-	void			occq_create		(u32	limit	);
 	void			occq_destroy	(				);
 	u32				occq_begin		(u32&	ID		);	// returns 'order'
 	void			occq_end		(u32&	ID		);
 	occq_result		occq_get		(u32&	ID		);
+	void occq_free( u32 ID );
 };

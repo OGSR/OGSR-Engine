@@ -173,7 +173,7 @@ _out main ( _input I, uint iSample : SV_SAMPLEINDEX )
         float4         light       = float4         (L.rgb + hdiffuse, L.w)        ;
         float4         C           = D*light       ;                             // rgb.gloss * light(diffuse.specular)
 //        float3         spec        = (C.rgb*.5h + .5h)*C.w + hspecular + hspecular + hspecular;			// replicated specular
-	float3         spec        = C.www         + hspecular;      // replicated specular
+	float3 spec = C.www * L.rgb + hspecular; // replicated specular
 
 #ifdef         USE_SUPER_SPECULAR
                       spec      = (C.rgb*.5h + .5h)*C.w + hspecular        ;

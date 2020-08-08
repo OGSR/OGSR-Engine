@@ -50,8 +50,8 @@ protected:
 
 	std::vector<CEncyclopediaArticle> m_ArticlesDB;
 
-			void __stdcall	OnFilterChanged			(CUIWindow*,void*);
-			void __stdcall	OnSrcListItemClicked	(CUIWindow*,void*);
+			void OnFilterChanged		(CUIWindow*,void*);
+			void OnSrcListItemClicked	(CUIWindow*,void*);
 			void		UnloadJournalTab		();
 			void		LoadJournalTab();
 			void		UnloadNewsTab			();

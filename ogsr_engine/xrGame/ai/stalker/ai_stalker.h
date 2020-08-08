@@ -390,7 +390,7 @@ private:
 public:
 	IC		bool						group_behaviour					() const;
 	virtual	void						update_range_fov				(float &new_range, float &new_fov, float start_range, float start_fov);
-			void __stdcall				update_object_handler			();
+	void update_object_handler();
 			bool						zoom_state						() const;
 			void						react_on_grenades				();
 			void						react_on_member_death			();
@@ -444,7 +444,7 @@ public:
 	IC		u32							max_queue_interval_close		() const;
 
 public:
-	typedef fastdelegate::FastDelegate<void (const CCoverPoint *, const CCoverPoint *)>	on_best_cover_changed_delegate;
+	using on_best_cover_changed_delegate = fastdelegate::FastDelegate<void(const CCoverPoint*, const CCoverPoint*)>;
 
 private:
 	typedef xr_vector<on_best_cover_changed_delegate>	cover_delegates;
@@ -571,7 +571,7 @@ private:
 			void						on_enemy_wounded_or_killed					(const CAI_Stalker *wounded_or_killed);
 			void						notify_on_wounded_or_killed					(CObject *object);
 			void						notify_on_wounded_or_killed					();
-			void	xr_stdcall			remove_critical_hit							();
+			void				remove_critical_hit							();
 //////////////////////////////////////////////////////////////////////////
 private:
 	bool	m_registered_in_combat_on_migration;

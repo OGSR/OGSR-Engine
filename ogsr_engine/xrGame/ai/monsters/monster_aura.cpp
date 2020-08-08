@@ -197,7 +197,7 @@ void   monster_aura::update_schedule ()
 		{
 			m_pp_index				=	Actor()->Cameras().RequestPPEffectorId();
 			AddEffector					(Actor(), m_pp_index, m_pp_effector_name, 
-										GET_KOEFF_FUNC(this, &monster_aura::get_post_process_factor));
+				fastdelegate::MakeDelegate(this, &monster_aura::get_post_process_factor));
 		}
 	}
 	else if ( m_pp_index != 0 )

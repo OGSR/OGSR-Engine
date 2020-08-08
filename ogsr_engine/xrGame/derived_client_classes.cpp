@@ -147,17 +147,11 @@ LPCSTR get_item_name_short			(CInventoryItem *I) { return I->NameShort(); }
 #include "string_table.h"
 void set_item_name(CInventoryItem *item, LPCSTR name)
 {
-	if (!name || name[0] == '\0')
-		name = "";
-
 	item->m_name = CStringTable().translate(name);
 }
 
 void set_item_name_short(CInventoryItem *item, LPCSTR name)
 {
-	if (!name || name[0] == '\0')
-		name = "";
-
 	item->m_nameShort = CStringTable().translate(name);
 }
 
@@ -165,9 +159,6 @@ LPCSTR get_item_description				(CInventoryItem *I) { return I->m_Description.c_s
 
 void set_item_description(CInventoryItem *item, LPCSTR text)
 {
-	if (!text || text[0] == '\0')
-		text = "";
-
 	item->m_Description = CStringTable().translate(text);
 }
 
@@ -401,32 +392,25 @@ void CWeaponScript::set_hit_power(CWeapon *wpn, luabind::object const& t)
 
 LPCSTR get_scope_name(CWeapon *I) { return I->m_sScopeName.c_str(); }
 
-void set_scope_name(CWeapon *item, LPCSTR text)
+void set_scope_name(CWeapon* item, LPCSTR text)
 {
-    if (!text || text[0] == '\0')
-        text = "";
-
-    item->m_sScopeName = CStringTable().translate(text);
+	item->m_allScopeNames.erase(std::remove(item->m_allScopeNames.begin(), item->m_allScopeNames.end(), item->m_sScopeName), item->m_allScopeNames.end());
+	item->m_sScopeName = text;
+	item->m_allScopeNames.push_back(item->m_sScopeName);
 }
 
 LPCSTR get_silencer_name(CWeapon *I) { return I->m_sSilencerName.c_str(); }
 
 void set_silencer_name(CWeapon *item, LPCSTR text)
 {
-    if (!text || text[0] == '\0')
-        text = "";
-
-    item->m_sSilencerName = CStringTable().translate(text);
+    item->m_sSilencerName = text;
 }
 
 LPCSTR get_grenade_launcher_name(CWeapon *I) { return I->m_sGrenadeLauncherName.c_str(); }
 
 void set_grenade_launcher_name(CWeapon *item, LPCSTR text)
 {
-    if (!text || text[0] == '\0')
-        text = "";
-
-    item->m_sGrenadeLauncherName = CStringTable().translate(text);
+    item->m_sGrenadeLauncherName = text;
 }
 
 void CWeaponScript::script_register(lua_State *L)

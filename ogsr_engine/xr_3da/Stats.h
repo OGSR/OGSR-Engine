@@ -61,7 +61,7 @@ public:
 	CStatTimer	Animation;			// skeleton calculation
 	CStatTimer	RenderDUMP;			// actual primitive rendering
 	CStatTimer	RenderDUMP_Wait;	// ...waiting something back (queries results, etc.)
-	CStatTimer	RenderDUMP_Wait_S;	// ...frame-limit sync
+	//CStatTimer	RenderDUMP_Wait_S;	// ...frame-limit sync
 	CStatTimer	RenderDUMP_RT;		// ...render-targets
 	CStatTimer	RenderDUMP_SKIN;	// ...skinning
 	CStatTimer	RenderDUMP_HUD;		// ...hud rendering

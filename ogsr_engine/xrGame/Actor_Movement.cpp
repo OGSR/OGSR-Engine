@@ -361,7 +361,7 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 		}
 	}
 
-	if (cam_eff_factor > EPS)
+	if (cam_eff_factor > EPS && !Device.m_SecondViewport.IsSVPActive())
 	{
 		LPCSTR state_anm = nullptr;
 

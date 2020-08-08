@@ -1080,24 +1080,25 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 				if(flags&CMD_START) 
 				{
 					u32 l_newType = m_ammoType;
-					bool b1,b2;
-					do 
+
+					for (;;)
 					{
-						l_newType = (l_newType+1)%m_ammoTypes.size();
-						b1 = l_newType != m_ammoType;
-						b2 = unlimited_ammo() ? false : (!m_pCurrentInventory->GetAmmo(*m_ammoTypes[l_newType], ParentIsActor()));
-					} while( b1 && b2);
+						if (++l_newType >= m_ammoTypes.size())
+						{
+							for (l_newType = 0; l_newType < m_ammoTypes.size(); ++l_newType)
+								if (unlimited_ammo() || m_pCurrentInventory->GetAmmo(m_ammoTypes[l_newType].c_str(), ParentIsActor()))
+									break;
+							break;
+						}
+
+						if (unlimited_ammo() || m_pCurrentInventory->GetAmmo(m_ammoTypes[l_newType].c_str(), ParentIsActor()))
+							break;
+					}
 
 					if(l_newType != m_ammoType) 
 					{
 						m_set_next_ammoType_on_reload = l_newType;						
-/*						m_ammoType = l_newType;
-						m_pAmmo = NULL;
-						if (unlimited_ammo())
-						{
-							m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));
-						};							
-*/
+
 						if(OnServer()) Reload();
 					}
 				}
@@ -1164,8 +1165,14 @@ void CWeapon::ZoomChange(bool inc)
 
 		const float currentZoomFactor = m_fRTZoomFactor;
 
-		m_fRTZoomFactor += delta * (inc ? 1 : -1);
-		clamp(m_fRTZoomFactor, min_zoom_factor, m_fSecondVPZoomFactor);
+		if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
+			m_fRTZoomFactor += delta * (inc ? 1 : -1);
+			clamp(m_fRTZoomFactor, min_zoom_factor, m_fSecondVPZoomFactor);
+		}
+		else {
+			m_fRTZoomFactor += delta * (inc ? 1 : -1);
+			clamp(m_fRTZoomFactor, m_fSecondVPZoomFactor, min_zoom_factor);
+		}
 
 		wasChanged = !fsimilar(currentZoomFactor, m_fRTZoomFactor);
 	}
@@ -1203,14 +1210,8 @@ void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID)
 	if (OnClient())					return;
 	m_bAmmoWasSpawned				= true;
 	
-	int l_type						= 0;
-	l_type							%= m_ammoTypes.size();
-
-	if(!ammoSect) ammoSect			= *m_ammoTypes[l_type]; 
+	if (!ammoSect) ammoSect = m_ammoTypes.front().c_str();
 	
-	++l_type; 
-	l_type							%= m_ammoTypes.size();
-
 	CSE_Abstract *D					= F_entity_Create(ammoSect);
 
 	if (D->m_tClassID==CLSID_OBJECT_AMMO	||
@@ -1551,19 +1552,14 @@ void CWeapon::InitAddons()
 
 float CWeapon::CurrentZoomFactor()
 {
-	if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)) {
-		if (is_second_zoom_offset_enabled)
-			return m_fSecondScopeZoomFactor;
-		else if (SecondVPEnabled())
-			return 1; // no change to main fov zoom when use second vp
-		else if (IsScopeAttached())
-			return m_fScopeZoomFactor;
-		else
-			return m_fIronSightZoomFactor;
-	}
-	else {
-		return IsScopeAttached() ? m_fScopeZoomFactor : m_fIronSightZoomFactor;
-	}
+	if (is_second_zoom_offset_enabled)
+		return m_fSecondScopeZoomFactor;
+	else if (SecondVPEnabled())
+		return Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.0f : m_fIronSightZoomFactor; // no change to main fov zoom when use second vp
+	else if (IsScopeAttached())
+		return m_fScopeZoomFactor;
+	else
+		return m_fIronSightZoomFactor;
 }
 
 void CWeapon::OnZoomIn()

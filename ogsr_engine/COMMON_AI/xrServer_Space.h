@@ -10,7 +10,6 @@
 
 #include "script_export_space.h"
 
-#define SERVER_ENTITY_EDITOR_METHODS					virtual void FillProps(LPCSTR pref, PropItemVec& values);
 #define SERVER_ENTITY_DECLARE_BEGIN0(__A)				class __A	{ public: DECLARE_SCRIPT_REGISTER_FUNCTION
 #define SERVER_ENTITY_DECLARE_BEGIN(__A,__B)			class __A : public __B	{ typedef __B inherited; public: DECLARE_SCRIPT_REGISTER_FUNCTION
 #define SERVER_ENTITY_DECLARE_BEGIN2(__A,__B,__C)		class __A : public __B, public __C	{ typedef __B inherited1; typedef __C inherited2; public: DECLARE_SCRIPT_REGISTER_FUNCTION
@@ -22,7 +21,6 @@ public:\
 	virtual void 			UPDATE_Write	(NET_Packet& P); \
 	virtual void 			STATE_Read		(NET_Packet& P, u16 size); \
 	virtual void 			STATE_Write		(NET_Packet& P); \
-	SERVER_ENTITY_EDITOR_METHODS \
 };
 
 struct	SRotation

@@ -78,7 +78,8 @@ float4 main(p_screen IST) : SV_Target
 	}
 
 	float4 Final = s_image.Sample(smp_rtlinear, IST.tc0);
-	float4 cubeReflection = float4(calc_envmap(refl), 1.0f);
+	//float4 cubeReflection = float4(calc_envmap(refl), 1.0f);
+	float4 cubeReflection = float4((calc_envmap(refl))*0.4, 1.0f);
 	float4 ssReflection = s_image.Sample(smp_rtlinear, refl_tc) * rDotV;
 	float ssr_amount = rDotV * (intersection ? 1.0f : 0.0f);
 

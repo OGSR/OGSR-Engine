@@ -2,10 +2,7 @@
 
 #include "../xrCore/xrCore.h"
 #include "../Include/xrAPI/xrAPI.h"
-
-#ifdef DEBUG
-	#define D3D_DEBUG_INFO
-#endif
+#include "Utils/FastDelegate.hpp"
 
 // Our headers
 #include "engine.h"
@@ -16,6 +13,7 @@
 #include "../xrcdb/xrxrc.h"
 
 #include "../xrSound/sound.h"
+
 
 extern ENGINE_API CInifile *pGameIni;
 

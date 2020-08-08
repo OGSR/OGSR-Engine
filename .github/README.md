@@ -3,7 +3,7 @@
   <a href="https://github.com/OGSR/OGSR-Engine/releases/latest"><img src="https://img.shields.io/github/downloads/OGSR/OGSR-Engine/total.svg?style=flat-square" alt="Total downloads"></a>
   <a href="https://github.com/OGSR/OGSR-Engine/actions?query=branch%3Adev+event%3Apush+workflow%3A%22Main+Workflow%22"><img src="https://img.shields.io/github/workflow/status/OGSR/OGSR-Engine/Main%20Workflow?label=build&logo=github&style=flat-square" alt="Build Status"></a>
 
-![Logo](https://cdn1.radikalno.ru/uploads/2019/6/13/b1b4c50115286e39d7c118897816d78d-full.png)
+![Logo](https://camo.githubusercontent.com/abf193ef26e3b22a66cc0cf2a4bcb63a345d7620/68747470733a2f2f63646e2e646973636f72646170702e636f6d2f6174746163686d656e74732f3534353632383830383438313334313434302f3733303737383730323636393135323239362f6c6f676f2e706e67)
 
 ### Цели проекта: ### 
 * Исправление ошибок оригинального движка

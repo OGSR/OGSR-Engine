@@ -184,7 +184,7 @@ public:
 	//CRegistrator	<pureFrame			>			seqFrame;
 	CRegistrator	<pureFrame			>			seqFrameMT;
 	CRegistrator	<pureDeviceReset	>			seqDeviceReset;
-	xr_vector		<fastdelegate::FastDelegate0<> >	seqParallel;
+	xr_vector<fastdelegate::FastDelegate<void()>> seqParallel;
 
 	CSecondVPParams m_SecondViewport; //--#SM+#-- +SecondVP+
 
@@ -293,23 +293,14 @@ private:
 	static void SecondaryThreadProc(void* context);
 
 public:
-	ICF		void			remove_from_seq_parallel	(const fastdelegate::FastDelegate0<> &delegate)
+	ICF void remove_from_seq_parallel(const fastdelegate::FastDelegate<void()> &delegate)
 	{
-/*
-		xr_vector<fastdelegate::FastDelegate0<> >::iterator I = std::find(
-			seqParallel.begin(),
-			seqParallel.end(),
-			delegate
-		);
-		if (I != seqParallel.end())
-			seqParallel.erase	(I);
-*/
 		seqParallel.erase( std::remove( seqParallel.begin(), seqParallel.end(), delegate ), seqParallel.end() );
 	}
 
 public:
-			void xr_stdcall		on_idle				();
-			bool xr_stdcall		on_message			(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT &result);
+			void on_idle				();
+			bool on_message			(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT &result);
 
 private:
 			void					message_loop		();
@@ -348,8 +339,7 @@ extern		ENGINE_API		CRenderDevice		Device;
 
 extern		ENGINE_API		bool				g_bBenchmark;
 
-typedef fastdelegate::FastDelegate0<bool>		LOADING_EVENT;
-extern	ENGINE_API xr_list<LOADING_EVENT>		g_loading_events;
+extern ENGINE_API xr_list<fastdelegate::FastDelegate<bool()>> g_loading_events;
 
 class ENGINE_API CLoadScreenRenderer :public pureRender
 {

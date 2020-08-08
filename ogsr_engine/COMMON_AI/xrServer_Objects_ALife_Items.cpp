@@ -174,15 +174,6 @@ void CSE_ALifeInventoryItem::UPDATE_Read	(NET_Packet &tNetPacket)
 		State.linear_vel.set		(0.f,0.f,0.f);
 };
 
-void CSE_ALifeInventoryItem::FillProps		(LPCSTR pref, PropItemVec& values)
-{
-	PHelper().CreateFloat			(values, PrepareKey(pref, *base()->s_name, "Item condition"), 		&m_fCondition, 			0.f, 1.f);
-	CSE_ALifeObject					*alife_object = smart_cast<CSE_ALifeObject*>(base());
-	R_ASSERT						(alife_object);
-	PHelper().CreateFlag32			(values, PrepareKey(pref, *base()->s_name,"ALife\\Useful for AI"),	&alife_object->m_flags,	CSE_ALifeObject::flUsefulForAI);
-	PHelper().CreateFlag32			(values, PrepareKey(pref, *base()->s_name,"ALife\\Visible for AI"),	&alife_object->m_flags,	CSE_ALifeObject::flVisibleForAI);
-}
-
 bool CSE_ALifeInventoryItem::bfUseful		()
 {
 	return						(true);
@@ -256,12 +247,6 @@ void CSE_ALifeItem::UPDATE_Read				(NET_Packet &tNetPacket)
 
 	m_physics_disabled			= false;
 };
-
-void CSE_ALifeItem::FillProps				(LPCSTR pref, PropItemVec& values)
-{
-	inherited1::FillProps		(pref,	 values);
-	inherited2::FillProps		(pref,	 values);
-}
 
 BOOL CSE_ALifeItem::Net_Relevant			()
 {
@@ -342,11 +327,6 @@ void CSE_ALifeItemTorch::UPDATE_Write		(NET_Packet	&tNetPacket)
 	F |= (m_nightvision_active ? eNightVisionActive : 0);
 	F |= (m_attached ? eAttached : 0);
 	tNetPacket.w_u8(F);
-}
-
-void CSE_ALifeItemTorch::FillProps			(LPCSTR pref, PropItemVec& values)
-{
-	inherited::FillProps			(pref,	 values);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -491,22 +471,6 @@ BOOL CSE_ALifeItemWeapon::Net_Relevant()
 	return (wpn_flags==1);
 }
 
-void CSE_ALifeItemWeapon::FillProps			(LPCSTR pref, PropItemVec& items)
-{
-	inherited::FillProps			(pref, items);
-	PHelper().CreateU8			(items,PrepareKey(pref,*s_name,"Ammo type:"), &ammo_type,0,255,1);
-	PHelper().CreateU16			(items,PrepareKey(pref,*s_name,"Ammo: in magazine"),	&a_elapsed,0,30,1);
-	
-
-	if (m_scope_status == eAddonAttachable)
-	       PHelper().CreateFlag8(items,PrepareKey(pref,*s_name,"Addons\\Scope"), 	&m_addon_flags, eWeaponAddonScope);
-
-	if (m_silencer_status == eAddonAttachable)
-        PHelper().CreateFlag8	(items,PrepareKey(pref,*s_name,"Addons\\Silencer"), 	&m_addon_flags, eWeaponAddonSilencer);
-
-	if (m_grenade_launcher_status == eAddonAttachable)
-        PHelper().CreateFlag8	(items,PrepareKey(pref,*s_name,"Addons\\Podstvolnik"),&m_addon_flags,eWeaponAddonGrenadeLauncher);
-}
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemWeaponShotGun
 ////////////////////////////////////////////////////////////////////////////
@@ -548,11 +512,6 @@ void CSE_ALifeItemWeaponShotGun::STATE_Write		(NET_Packet& P)
 {
 	inherited::STATE_Write(P);
 }
-
-void CSE_ALifeItemWeaponShotGun::FillProps			(LPCSTR pref, PropItemVec& items)
-{
-	inherited::FillProps			(pref, items);
-};
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemWeaponMagazined
@@ -599,11 +558,6 @@ void CSE_ALifeItemWeaponMagazined::STATE_Write		(NET_Packet& P)
 
 	P.w_u8(m_u8CurFireMode);
 }
-
-void CSE_ALifeItemWeaponMagazined::FillProps			(LPCSTR pref, PropItemVec& items)
-{
-	inherited::FillProps			(pref, items);
-};
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemWeaponMagazinedWGL
@@ -669,11 +623,6 @@ void CSE_ALifeItemWeaponMagazinedWGL::STATE_Write		(NET_Packet& P)
 	//Msg( "~~[%s][%s] update_write: m_bGrenadeMode: [%u], iAmmoElapsed2: [%u], m_ammoType2: [%u]", __FUNCTION__, this->name(), m_bGrenadeMode, a_elapsed2, ammo_type2 );
 }
 
-void CSE_ALifeItemWeaponMagazinedWGL::FillProps			(LPCSTR pref, PropItemVec& items)
-{
-	inherited::FillProps			(pref, items);
-};
-
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemAmmo
 ////////////////////////////////////////////////////////////////////////////
@@ -712,11 +661,6 @@ void CSE_ALifeItemAmmo::UPDATE_Write		(NET_Packet	&tNetPacket)
 	inherited::UPDATE_Write		(tNetPacket);
 
 	tNetPacket.w_u16			(a_elapsed);
-}
-
-void CSE_ALifeItemAmmo::FillProps			(LPCSTR pref, PropItemVec& values) {
-  	inherited::FillProps			(pref,values);
-	PHelper().CreateU16			(values, PrepareKey(pref, *s_name, "Ammo: left"), &a_elapsed, 0, m_boxSize, m_boxSize);
 }
 
 bool CSE_ALifeItemAmmo::can_switch_online	() const
@@ -767,11 +711,6 @@ void CSE_ALifeItemDetector::UPDATE_Write	(NET_Packet	&tNetPacket)
 	inherited::UPDATE_Write		(tNetPacket);
 }
 
-void CSE_ALifeItemDetector::FillProps		(LPCSTR pref, PropItemVec& items)
-{
-  	inherited::FillProps			(pref,items);
-}
-
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemDetector
 ////////////////////////////////////////////////////////////////////////////
@@ -802,12 +741,6 @@ void CSE_ALifeItemArtefact::UPDATE_Read		(NET_Packet	&tNetPacket)
 void CSE_ALifeItemArtefact::UPDATE_Write	(NET_Packet	&tNetPacket)
 {
 	inherited::UPDATE_Write		(tNetPacket);
-}
-
-void CSE_ALifeItemArtefact::FillProps		(LPCSTR pref, PropItemVec& items)
-{
-	inherited::FillProps			(pref,items);
-	PHelper().CreateFloat			(items, PrepareKey(pref, *s_name, "Anomaly value:"), &m_fAnomalyValue, 0.f, 200.f);
 }
 
 BOOL CSE_ALifeItemArtefact::Net_Relevant	()
@@ -879,11 +812,6 @@ void CSE_ALifeItemPDA::UPDATE_Write	(NET_Packet	&tNetPacket)
 	inherited::UPDATE_Write		(tNetPacket);
 }
 
-void CSE_ALifeItemPDA::FillProps		(LPCSTR pref, PropItemVec& items)
-{
-	inherited::FillProps			(pref,items);
-}
-
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemDocument
 ////////////////////////////////////////////////////////////////////////////
@@ -924,13 +852,6 @@ void CSE_ALifeItemDocument::UPDATE_Write	(NET_Packet	&tNetPacket)
 	inherited::UPDATE_Write		(tNetPacket);
 }
 
-void CSE_ALifeItemDocument::FillProps		(LPCSTR pref, PropItemVec& items)
-{
-	inherited::FillProps			(pref,items);
-//	PHelper().CreateU16			(items, PrepareKey(pref, *s_name, "Document index :"), &m_wDocIndex, 0, 65535);
-	PHelper().CreateRText		(items, PrepareKey(pref, *s_name, "Info portion :"), &m_wDoc);
-}
-
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemGrenade
 ////////////////////////////////////////////////////////////////////////////
@@ -969,11 +890,6 @@ void CSE_ALifeItemGrenade::UPDATE_Write		(NET_Packet	&tNetPacket)
 	inherited::UPDATE_Write		(tNetPacket);
 }
 
-void CSE_ALifeItemGrenade::FillProps			(LPCSTR pref, PropItemVec& items)
-{
-	inherited::FillProps			(pref,items);
-}
-
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemExplosive
 ////////////////////////////////////////////////////////////////////////////
@@ -1003,11 +919,6 @@ void CSE_ALifeItemExplosive::UPDATE_Read		(NET_Packet	&tNetPacket)
 void CSE_ALifeItemExplosive::UPDATE_Write		(NET_Packet	&tNetPacket)
 {
 	inherited::UPDATE_Write		(tNetPacket);
-}
-
-void CSE_ALifeItemExplosive::FillProps			(LPCSTR pref, PropItemVec& items)
-{
-	inherited::FillProps			(pref,items);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -1058,10 +969,6 @@ bool CSE_ALifeItemBolt::used_ai_locations		() const
 {
 	return false;
 }
-void CSE_ALifeItemBolt::FillProps			(LPCSTR pref, PropItemVec& values)
-{
-	inherited::FillProps			(pref,	 values);
-}
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemCustomOutfit
@@ -1100,11 +1007,6 @@ void CSE_ALifeItemCustomOutfit::UPDATE_Write		(NET_Packet	&tNetPacket)
 {
 	inherited::UPDATE_Write			(tNetPacket);
 	tNetPacket.w_float_q8			(m_fCondition,0.0f,1.0f);
-}
-
-void CSE_ALifeItemCustomOutfit::FillProps			(LPCSTR pref, PropItemVec& items)
-{
-	inherited::FillProps			(pref,items);
 }
 
 BOOL CSE_ALifeItemCustomOutfit::Net_Relevant		()
