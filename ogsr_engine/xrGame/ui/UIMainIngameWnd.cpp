@@ -65,22 +65,11 @@ using namespace InventoryUtilities;
 int			g_bHudAdjustMode			= 0;
 float		g_fHudAdjustValue			= 0.0f;
 
-const u32	g_clWhite					= 0xffffffff;
-
-#define		DEFAULT_MAP_SCALE			1.f
-
-#define		C_SIZE						0.025f
-#define		NEAR_LIM					0.5f
-
-#define		SHOW_INFO_SPEED				0.5f
-#define		HIDE_INFO_SPEED				10.f
-#define		C_ON_ENEMY					D3DCOLOR_XRGB(0xff,0,0)
-#define		C_DEFAULT					D3DCOLOR_XRGB(0xff,0xff,0xff)
-
-#define				MAININGAME_XML				"maingame.xml"
+#define DEFAULT_MAP_SCALE 1.f
+#define MAININGAME_XML "maingame.xml"
 
 
-DLL_API CUIMainIngameWnd* GetMainIngameWindow()
+static CUIMainIngameWnd* GetMainIngameWindow()
 {
 	if (g_hud)
 	{
@@ -88,41 +77,39 @@ DLL_API CUIMainIngameWnd* GetMainIngameWindow()
 		if (pUI)
 			return pUI->UIMainIngameWnd;
 	}
-	return NULL;
+	return nullptr;
 }
 
-CUIStatic * warn_icon_list[8] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+static CUIStatic* warn_icon_list[8]{};
 
 // alpet: для возможности внешнего контроля иконок (используется в NLC6 вместо типичных индикаторов). Никак не влияет на игру для остальных модов.
-bool external_icon_ctrl = false;
+static bool external_icon_ctrl = false;
 
 // позволяет расцветить иконку или изменить её размер
-bool SetupGameIcon(u32 icon, u32 cl, float width, float height)
+static bool SetupGameIcon(CUIMainIngameWnd::EWarningIcons icon, u32 cl, float width, float height)
 {
-	CUIMainIngameWnd *window = GetMainIngameWindow();
+	auto window = GetMainIngameWindow();
 	if (!window)
 	{
-		Msg("SetupGameIcon failed due GetMainIngameWindow() returned NULL");
+		Msg("!![SetupGameIcon] failed due GetMainIngameWindow() returned NULL");
 		return false;
 	}
 
-	CUIStatic *sIcon = warn_icon_list[icon & 7];
-	
-	if (sIcon)
-	{			
-		if (width > 0 && height > 0)
-		{
-			sIcon->SetWidth (width);
-			sIcon->SetHeight (height);
-			sIcon->SetStretchTexture(cl > 0);
-		}
-		else 
-			window->SetWarningIconColor((CUIMainIngameWnd::EWarningIcons)icon, cl);
+	R_ASSERT(icon > 0 && icon < std::size(warn_icon_list), "!!Invalid first arg for setup_game_icon!");
 
-		external_icon_ctrl = true;
-		return true;
+	CUIStatic* sIcon = warn_icon_list[icon];
+
+	if (width > 0 && height > 0)
+	{
+		sIcon->SetWidth(width);
+		sIcon->SetHeight(height);
+		sIcon->SetStretchTexture(cl > 0);
 	}
-	return false;
+	else
+		window->SetWarningIconColor(icon, cl);
+
+	external_icon_ctrl = true;
+	return true;
 }
 
 CUIMainIngameWnd::CUIMainIngameWnd()
@@ -255,7 +242,7 @@ void CUIMainIngameWnd::Init()
 		UIThirstIcon.Show(false);
 	}
 
-	shared_str warningStrings[7] =
+	constexpr char* warningStrings[] =
 	{
 		"jammed",
 		"radiation",
@@ -271,14 +258,14 @@ void CUIMainIngameWnd::Init()
 	while (i <= (Core.Features.test(xrCore::Feature::actor_thirst) ? ewiThirst: ewiInvincible))
 	{
 		// Читаем данные порогов для каждого индикатора
-		shared_str cfgRecord = pSettings->r_string("main_ingame_indicators_thresholds", *warningStrings[static_cast<int>(i) - 1]);
-		u32 count = _GetItemCount(*cfgRecord);
+		const char* cfgRecord = pSettings->r_string("main_ingame_indicators_thresholds", warningStrings[static_cast<int>(i) - 1]);
+		u32 count = _GetItemCount(cfgRecord);
 
 		char	singleThreshold[8];
 		float	f = 0;
 		for (u32 k = 0; k < count; ++k)
 		{
-			_GetItem(*cfgRecord, k, singleThreshold);
+			_GetItem(cfgRecord, k, singleThreshold);
 			sscanf(singleThreshold, "%f", &f);
 
 			m_Thresholds[i].push_back(f);
