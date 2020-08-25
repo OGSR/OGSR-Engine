@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<string_table>
+	<string id="id_mp_money">
+		<text>Money</text>
+	</string>
+	<string id="mm_mp_pda_hunt">
+		<text>PDA bonus</text>
+	</string>
+	<string id="st_drink">
+		<text>drink</text>
+	</string>
+	<string id="st_mp_direct_ip">
+		<text>Direct IP</text>
+	</string>
+	<string id="ui_mm_render_2">
+		<text>Renderer 2</text>
+	</string>
+	<string id="ui_pda_details">
+		<text># /details</text>
+	</string>
+	<string id="ui_st_btn_cancel">
+		<text>Cancel</text>
+	</string>
+	<string id="ui_st_btn_no">
+		<text>No</text>
+	</string>
+	<string id="ui_st_btn_ok">
+		<text>OK</text>
+	</string>
+	<string id="ui_st_btn_yes">
+		<text>Yes</text>
+	</string>
+	<string id="ui_st_cant_run_r2">
+		<text>You can't run Renderer 2 on your PC</text>
+	</string>
+	<string id="ui_st_conn_invalid_host">
+		<text>Connection error: Invalid host</text>
+	</string>
+	<string id="ui_st_conn_invalid_pass">
+		<text>Connection error: Invalid password</text>
+	</string>
+	<string id="ui_st_conn_rejected_server">
+		<text>Connection error: connection rejected by server</text>
+	</string>
+	<string id="ui_st_conn_sess_full">
+		<text>Connection error: session is full</text>
+	</string>
+	<string id="ui_st_days">
+		<text>Days</text>
+	</string>
+	<string id="ui_st_error">
+		<text>Error</text>
+	</string>
+	<string id="ui_st_hours">
+		<text>hr.</text>
+	</string>
+	<string id="ui_st_leave">
+		<text>Leave</text>
+	</string>
+	<string id="ui_st_mins">
+		<text>mins</text>
+	</string>
+	<string id="ui_st_months">
+		<text>months</text>
+	</string>
+	<string id="ui_st_params">
+		<text>Parameters</text>
+	</string>
+	<string id="ui_st_secs">
+		<text>sec.</text>
+	</string>
+	<string id="ui_st_select_one_map">
+		<text>Please select at least one map</text>
+	</string>
+	<string id="ui_st_take_all">
+		<text>Take all</text>
+	</string>
+	<string id="ui_st_time_remains">
+		<text>Remaining</text>
+	</string>
+	<string id="ui_st_trade">
+		<text>Trade</text>
+	</string>
+	<string id="ui_st_voting_disabled">
+		<text>Voting is disabled</text>
+	</string>
+	<string id="ui_st_your_items">
+		<text>Your items</text>
+	</string>
+	<string id="st_level">
+		<text>Level</text>
+	</string>
+	<string id="st_opening_stream">
+		<text>Opening stream</text>
+	</string>
+	<string id="st_loading_cform">
+		<text>Loading CFORM</text>
+	</string>
+	<string id="st_prefetching_objects">
+		<text>Prefetching objects</text>
+	</string>
+	<string id="st_creating_new_game">
+		<text>Creating new game</text>
+	</string>
+	<string id="st_loading_alife_simulator">
+		<text>SERVER: Loading alife simulator</text>
+	</string>
+	<string id="st_server_connecting">
+		<text>SERVER: Connecting</text>
+	</string>
+	<string id="st_loading_saved_game">
+		<text>Loading saved game</text>
+	</string>
+	<string id="st_validating_cdkey">
+		<text>Validating CD Key</text>
+	</string>
+	<string id="st_loading_ai_objects">
+		<text>Loading AI objects</text>
+	</string>
+	<string id="st_client_connecting_to">
+		<text>CLIENT: Connecting to</text>
+	</string>
+	<string id="st_client_spawning">
+		<text>CLIENT: Spawning</text>
+	</string>
+	<string id="st_loading_textures">
+		<text>Loading textures</text>
+	</string>
+	<string id="st_client_synchronising">
+		<text>CLIENT: Synchronizing</text>
+	</string>
+	<string id="st_server_starting">
+		<text>SERVER: Starting</text>
+	</string>
+	<string id="st_loading_shaders">
+		<text>Loading shaders</text>
+	</string>
+	<string id="st_loading_geometry">
+		<text>Loading geometry</text>
+	</string>
+	<string id="st_loading_spatial_db">
+		<text>Loading spatial-DB</text>
+	</string>
+	<string id="st_loading_details">
+		<text>Loading details</text>
+	</string>
+	<string id="st_loading_sectors_portals">
+		<text>Loading sectors & portals</text>
+	</string>
+	<string id="ui_st_conn_version_differs">
+		<text>Connection error: Different version.</text>
+	</string>
+	<string id="ui_st_conn_cdkey_invalid">
+		<text>Connection error: Invalid CD-Key.</text>
+	</string>
+	<string id="ui_st_conn_cdkey_in_use">
+		<text>Connection error: CD-Key already in use.</text>
+	</string>
+	<string id="ui_st_conn_cdkey_disabled">
+		<text>Connection error: Your CD-Key is disabled. Contact customer's service.</text>
+	</string>
+	<string id="ui_st_conn_new_patch">
+		<text>New patch is available.\n Version: %s\n Location: %s\nDo you want to download it now?</text>
+	</string>
+	<string id="ui_st_conn_no_new_patch">
+		<text>No new patches available now</text>
+	</string>
+	<string id="st_game_paused">
+		<text>Pause</text>
+	</string>
+	<string id="st_bolt">
+		<text>Bolt</text>
+	</string>
+	<string id="st_items">
+		<text>Items</text>
+	</string>
+	<string id="st_video">
+		<text>Video</text>
+	</string>
+	<string id="st_audio">
+		<text>Sound</text>
+	</string>
+	<string id="st_game">
+		<text>Game</text>
+	</string>
+	<string id="st_controll">
+		<text>Controls</text>
+	</string>
+	<string id="ui_st_connecting_to_masterserver">
+		<text>Trying to connect to master server</text>
+	</string>
+	<string id="mp_only_one_voting">
+		<text>Only one active voting allowed</text>
+	</string>
+	<string id="ui_st_patch_download_success">
+		<text>Patch was successfully downloaded. Do you want to install it?</text>
+	</string>
+	<string id="ui_st_patch_download_error">
+		<text>Unable to download the patch.</text>
+	</string>
+
+	<string id="st_pda_change_spot_hint">
+		<text>Edit marker text</text>
+	</string>
+	<string id="st_pda_delete_spot">
+		<text>Delete marker</text>
+	</string>
+
+	<string id="st_move">
+		<text>move</text>
+	</string>
+	<string id="st_move_all">
+		<text>move all</text>
+	</string>
+
+	<string id="st_move_to_slot_1">
+		<text>move to slot 1</text>
+	</string>
+	<string id="st_move_to_slot_2">
+		<text>move to slot 2</text>
+	</string>
+	<string id="st_attach_addon_to_wpn_in_slot_1">
+		<text>attach %s to %k in slot 1</text>
+	</string>
+	<string id="st_attach_addon_to_wpn_in_slot_2">
+		<text>attach %s to %k in slot 2</text>
+	</string>
+	
+	<string id="kb_cam_1">
+		<text>First person view</text>
+	</string>
+	<string id="kb_cam_2">
+		<text>Third person view</text>
+	</string>
+	<string id="kb_cam_3">
+		<text>Third person view (freelook)</text>
+	</string>
+
+	<string id="inventory_item_use_or_drag">
+		<text>Pick up item ($$ACTION_USE$$)\nDrag item (SHIFT+$$ACTION_USE$$)</text>
+	</string>
+	<string id="game_object_drag">
+		<text>Drag item (SHIFT+$$ACTION_USE$$)</text>
+	</string>
+
+	<string id="st_press_any_key">
+		<text>Press any key to play</text>
+	</string>
+
+</string_table>
