@@ -1080,26 +1080,18 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 				if(flags&CMD_START) 
 				{
 					u32 l_newType = m_ammoType;
-
-					for (;;)
+					bool b1, b2;
+					do
 					{
-						if (++l_newType >= m_ammoTypes.size())
-						{
-							for (l_newType = 0; l_newType < m_ammoTypes.size(); ++l_newType)
-								if (unlimited_ammo() || m_pCurrentInventory->GetAmmo(m_ammoTypes[l_newType].c_str(), ParentIsActor()))
-									break;
-							break;
-						}
+						l_newType = (l_newType + 1) % m_ammoTypes.size();
+						b1 = l_newType != m_ammoType;
+						b2 = unlimited_ammo() ? false : (!m_pCurrentInventory->GetAmmo(*m_ammoTypes[l_newType], ParentIsActor()));
+					} while (b1 && b2);
 
-						if (unlimited_ammo() || m_pCurrentInventory->GetAmmo(m_ammoTypes[l_newType].c_str(), ParentIsActor()))
-							break;
-					}
-
-					if(l_newType != m_ammoType) 
+					if (l_newType != m_ammoType)
 					{
-						m_set_next_ammoType_on_reload = l_newType;						
-
-						if(OnServer()) Reload();
+						m_set_next_ammoType_on_reload = l_newType;
+						if (OnServer()) Reload();
 					}
 				}
 			} 
