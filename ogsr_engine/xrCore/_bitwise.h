@@ -1,18 +1,9 @@
 #pragma once
 
-// integer math on floats
-#ifdef _M_X64
-IC bool negative(const float f) { return f < 0; }
-IC bool positive(const float f) { return f >= 0; }
-IC void set_negative(float& f) { f = -fabsf(f); }
-IC void set_positive(float& f) { f = fabsf(f); }
-#else
-static constexpr auto fdSGN = 0x080000000; // mask for sign bit
-IC bool negative(const float& f) { return (*((unsigned*)(&f))&fdSGN) != 0; }
-IC bool positive(const float& f) { return (*((unsigned*)(&f))&fdSGN) == 0; }
-IC void set_negative(float& f) { (*(unsigned*)(&f)) |= fdSGN; }
-IC void set_positive(float& f) { (*(unsigned*)(&f)) &= ~fdSGN; }
-#endif
+inline bool negative(const float f) { return std::signbit(f); }
+inline bool positive(const float f) { return !std::signbit(f); }
+inline void set_negative(float& f) { f = -fabsf(f); }
+inline void set_positive(float& f) { f = fabsf(f); }
 
 /*
  * Here are a few nice tricks for 2's complement based machines
