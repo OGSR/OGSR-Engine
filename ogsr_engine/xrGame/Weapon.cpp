@@ -1101,15 +1101,25 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 		{
 			if (IsZoomEnabled())
 			{
-				if (flags&CMD_START && !IsPending())
-					OnZoomIn();
-				else if (IsZoomed())
+				if (flags & CMD_START && !IsPending())
+				{
+					if (psActorFlags.is(AF_WPN_AIM_TOGGLE) && IsZoomed())
+					{
+						OnZoomOut();
+					}
+					else
+						OnZoomIn();
+				}
+				else if (IsZoomed() && !psActorFlags.is(AF_WPN_AIM_TOGGLE))
+				{
 					OnZoomOut();
+				}
 				return true;
 			}
 			else
 				return false;
 		}
+
 		case kWPN_ZOOM_INC:
 		case kWPN_ZOOM_DEC:
 		{
