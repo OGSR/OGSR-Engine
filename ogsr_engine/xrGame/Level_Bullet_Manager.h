@@ -175,8 +175,6 @@ protected:
 	bool					CalcBullet			(collide::rq_results & rq_storage, xr_vector<ISpatial*>& rq_spatial, SBullet* bullet, u32 delta_time);
 	void UpdateWorkload();
 
-	ThreadPool m_thread;
-	std::recursive_mutex bullets, working;
 public:
 							CBulletManager		();
 	virtual					~CBulletManager		();
