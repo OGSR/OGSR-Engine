@@ -10,6 +10,7 @@
 #include "gamepersistent.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "Weapon.h"
+#include "mt_config.h"
 
 #ifdef DEBUG
 #	include "debug_renderer.h"
@@ -87,7 +88,6 @@ CBulletManager::CBulletManager()
 {
 	m_Bullets.reserve( 1000 );
 	m_dwTimeRemainder = 0;
-	m_thread.initialize( 1, "CBulletManager thread" );
 }
 
 CBulletManager::~CBulletManager()
@@ -170,10 +170,8 @@ SBullet& CBulletManager::AddBullet(const Fvector& position,
 	VERIFY		(u16(-1)!=cartridge.bullet_material_idx);
 //	u32 CurID = Level().CurrentControlEntity()->ID();
 //	u32 OwnerID = sender_id;
-	bullets.lock();
 	m_Bullets.emplace_back();
 	SBullet& bullet		= m_Bullets.back();
-	bullets.unlock();
 	bullet.Init			(position, direction, starting_speed, power, impulse, sender_id, sendersweapon_id, e_hit_type, maximum_distance, cartridge, SendHit);
 	bullet.frame_num	= Device.dwFrame;
 	bullet.flags.aim_bullet	=	AimBullet;
@@ -182,8 +180,6 @@ SBullet& CBulletManager::AddBullet(const Fvector& position,
 
 void CBulletManager::UpdateWorkload()
 {
-	std::scoped_lock<decltype(working)> lock(working);
-
 	u32 delta_time		=	Device.dwTimeDelta + m_dwTimeRemainder;
 	u32 step_num		=	delta_time/m_dwStepTime;
 	m_dwTimeRemainder	=	delta_time%m_dwStepTime;
@@ -191,14 +187,10 @@ void CBulletManager::UpdateWorkload()
 	rq_storage.r_clear			();
 	rq_spatial.clear_not_free	();
 
-	bullets.lock();
 	int k = m_Bullets.size() - 1;
-	bullets.unlock();
 
 	for ( ; k >= 0; k-- ) {
-		bullets.lock();
 		SBullet& bullet = m_Bullets[k];
-		bullets.unlock();
 		//для пули пущенной на этом же кадре считаем только 1 шаг
 		//(хотя по теории вообще ничего считать на надо)
 		//который пропустим на следующем кадре, 
@@ -412,14 +404,13 @@ void CBulletManager::CommitRenderSet		()	// @ the end of frame
 {
 	m_BulletsRendered = m_Bullets;
 	//Msg("!![%s] size of m_BulletsRendered: [%u], m_Bullets: [%u], m_events: [%u]", __FUNCTION__, m_BulletsRendered.size(), m_Bullets.size(), m_Events.size());
-	if ( !m_Bullets.empty() && m_Events.empty() && working.try_lock() ) {
-          m_thread.threads[ 0 ]->addJob( [=] { UpdateWorkload(); } );
-          working.unlock();
-	}
+	if (g_mt_config.test(mtBullets))
+		Device.seqParallel.push_back(fastdelegate::MakeDelegate(this, &CBulletManager::UpdateWorkload));
+	else
+		CBulletManager::UpdateWorkload();
 }
 void CBulletManager::CommitEvents			()	// @ the start of frame
 {
-	if ( !working.try_lock() ) return;
 	for ( auto& E : m_Events )
 	{
 		switch (E.Type)
@@ -438,10 +429,8 @@ void CBulletManager::CommitEvents			()	// @ the start of frame
 			}break;
 		case EVENT_REMOVE:
 			{
-				bullets.lock();
 				m_Bullets[E.tgt_material] = m_Bullets.back();
 				m_Bullets.pop_back();
-				bullets.unlock();
 			}break;
 		}		
 	}
@@ -449,7 +438,6 @@ void CBulletManager::CommitEvents			()	// @ the start of frame
 
 	if ( m_Bullets.empty() )
 	  m_dwTimeRemainder = 0;
-	working.unlock();
 }
 
 void CBulletManager::RegisterEvent			(EventType Type, BOOL _dynamic, SBullet* bullet, const Fvector& end_point, collide::rq_result& R, u16 tgt_material)
