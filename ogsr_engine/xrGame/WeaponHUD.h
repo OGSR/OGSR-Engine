@@ -170,12 +170,12 @@ public:
 	static void			CreateSharedContainer	();
 	static void			DestroySharedContainer	();
 	static void			CleanSharedContainer	();
-#ifdef DEBUG
+
 public:
 	void				dbg_SetFirePoint	(const Fvector &fp)			{((weapon_hud_value*)m_shared_data.get_value())->m_fp_offset.set(fp);}
 	void				dbg_SetFirePoint2	(const Fvector &fp)			{((weapon_hud_value*)m_shared_data.get_value())->m_fp2_offset.set(fp);}
 	void				dbg_SetShellPoint	(const Fvector &sp)			{((weapon_hud_value*)m_shared_data.get_value())->m_sp_offset.set(sp);}
-#endif
+
 
 private:
 	CWeaponBobbing *m_bobbing;
