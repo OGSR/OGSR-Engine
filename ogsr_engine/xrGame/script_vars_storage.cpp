@@ -230,7 +230,11 @@ void CScriptVarsTable::release()
 int CScriptVarsStorage::load(IReader  &memory_stream)
 {
 	if (!memory_stream.find_chunk(SCRIPT_VARS_CHUNK_DATA))
-		 return 0; 
+	{
+		clear();
+		return 0;
+	}
+
 	int loaded = inherited::load(memory_stream);
 	Msg	("* %d script vars are successfully loaded", loaded);
 	return loaded;

@@ -100,11 +100,6 @@ void CSE_Spectator::UPDATE_Write			(NET_Packet	&tNetPacket)
 {
 }
 
-void CSE_Spectator::FillProps				(LPCSTR pref, PropItemVec& items)
-{
-  	inherited::FillProps			(pref,items);
-}
-
 ////////////////////////////////////////////////////////////////////////////
 // CSE_Temporary
 ////////////////////////////////////////////////////////////////////////////
@@ -135,62 +130,6 @@ void CSE_Temporary::UPDATE_Write			(NET_Packet	&tNetPacket)
 {
 };
 
-void CSE_Temporary::FillProps				(LPCSTR pref, PropItemVec& values)
-{
-};
-
-/**
-////////////////////////////////////////////////////////////////////////////
-// CSE_SpawnGroup
-////////////////////////////////////////////////////////////////////////////
-
-CSE_SpawnGroup::CSE_SpawnGroup				(LPCSTR caSection) : CSE_Abstract(caSection)
-{
-}
-
-CSE_SpawnGroup::~CSE_SpawnGroup				()
-{
-}
-
-void CSE_SpawnGroup::STATE_Read				(NET_Packet	&tNetPacket, u16 size)
-{
-	if (m_wVersion < 84)
-		tNetPacket.r_float		(m_spawn_probability);
-
-	if (m_wVersion > 80) {
-		if (m_wVersion < 84) {
-			tNetPacket.r_float	();
-			tNetPacket.r_float	();
-			m_spawn_flags.assign(tNetPacket.r_u32());
-			tNetPacket.r_stringZ(m_spawn_control);
-		}
-		else {
-			if (m_wVersion < 85) {
-				tNetPacket.r_u64		(m_min_spawn_interval);
-				tNetPacket.r_u64		(m_max_spawn_interval);
-			}
-		}
-	}
-}
-
-void CSE_SpawnGroup::STATE_Write			(NET_Packet	&tNetPacket)
-{
-}
-
-void CSE_SpawnGroup::UPDATE_Read			(NET_Packet	&tNetPacket)
-{
-}
-
-void CSE_SpawnGroup::UPDATE_Write			(NET_Packet	&tNetPacket)
-{
-}
-
-void CSE_SpawnGroup::FillProps				(LPCSTR pref, PropItemVec& values)
-{
-	inherited::FillProps		(pref,values);
-	PHelper().CreateFlag32		(values,PrepareKey(pref,*s_name,"Spawn\\spawn single item only"),	&m_spawn_flags,	flSpawnSingleItemOnly);
-}
-/**/
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_PHSkeleton
@@ -268,11 +207,6 @@ void CSE_PHSkeleton::UPDATE_Read(NET_Packet &tNetPacket)
 
 }
 
-void CSE_PHSkeleton::FillProps				(LPCSTR pref, PropItemVec& values)
-{
-
-}
-
 CSE_AbstractVisual::CSE_AbstractVisual(LPCSTR section):inherited1(section),inherited2(section)
 {
 }
@@ -291,12 +225,6 @@ void CSE_AbstractVisual::STATE_Write	(NET_Packet	&tNetPacket)
 {
 	visual_write				(tNetPacket);
 	tNetPacket.w_stringZ		(startup_animation);
-}
-
-void CSE_AbstractVisual::FillProps		(LPCSTR pref, PropItemVec& values)
-{
-	inherited1::FillProps			(pref,values);
-	inherited2::FillProps			(pref,values);
 }
 
 void CSE_AbstractVisual::UPDATE_Read	(NET_Packet	&tNetPacket)

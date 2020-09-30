@@ -9,7 +9,6 @@
 #pragma once
 
 #include "script_export_macroses.h"
-#include "..\editors\xrEProps\xrEProps.h"
 #include "../xr_3da/NET_Server_Trash\NET_utils.h"
 #include "ai_space.h"
 #include "script_engine.h"
@@ -22,7 +21,6 @@ class CALifeSmartTerrainTask;
 #define INHERIT_ABSTRACT \
 	DEFINE_LUA_WRAPPER_METHOD_R2P1_V1	(STATE_Write,	NET_Packet)\
 	DEFINE_LUA_WRAPPER_METHOD_R2P1_V2	(STATE_Read,	NET_Packet,	u16)\
-	DEFINE_LUA_WRAPPER_METHOD_R2P2_V2	(FillProps,		LPCSTR,	PropItemVec)\
 	DEFINE_LUA_WRAPPER_METHOD_0			(init,			CSE_Abstract*)
 
 #define INHERIT_ALIFE \
@@ -156,7 +154,6 @@ struct CWrapperAbstractItem : public T, public luabind::wrap_base {
 	.def(	constructor<LPCSTR>())
 
 #define luabind_virtual_abstract(a,b) \
-	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,FillProps	) \
 	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,STATE_Write	) \
 	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,STATE_Read	) \
 	DEFINE_LUABIND_VIRTUAL_FUNCTION(a,b,init		)

@@ -33,6 +33,7 @@
 #include "script_rq_result.h"
 #include "monster_community.h"
 #include "GamePersistent.h"
+#include "EffectorBobbing.h"
 
 using namespace luabind;
 
@@ -965,6 +966,11 @@ int get_character_community_team( LPCSTR comm ) {
 }
 
 
+CEffectorBobbing* get_effector_bobbing() {
+  return Actor()->GetEffectorBobbing();
+}
+
+
 #pragma optimize("s",on)
 void CLevel::script_register(lua_State *L)
 {
@@ -988,7 +994,15 @@ void CLevel::script_register(lua_State *L)
 	,
 
 	class_<CPHCall>( "CPHCall" )
-          .def( "set_pause", &CPHCall::setPause )
+          .def( "set_pause", &CPHCall::setPause ),
+
+	class_<CEffectorBobbing>( "CEffectorBobbing" )
+          .def_readwrite( "run_amplitude",  &CEffectorBobbing::m_fAmplitudeRun  )
+          .def_readwrite( "walk_amplitude", &CEffectorBobbing::m_fAmplitudeWalk )
+          .def_readwrite( "limp_amplitude", &CEffectorBobbing::m_fAmplitudeLimp )
+          .def_readwrite( "run_speed",      &CEffectorBobbing::m_fSpeedRun      )
+          .def_readwrite( "walk_speed",     &CEffectorBobbing::m_fSpeedWalk     )
+          .def_readwrite( "limp_speed",     &CEffectorBobbing::m_fSpeedLimp     )
 	],
 
 	module(L,"level")
@@ -1121,6 +1135,9 @@ void CLevel::script_register(lua_State *L)
 		def( "iterate_vertices_inside", &iterate_vertices_inside ),
 		def( "iterate_vertices_border", &iterate_vertices_border ),
 		def( "get_character_community_team", &get_character_community_team ),
+
+		def( "get_effector_bobbing", &get_effector_bobbing ),
+
 		//--#SM+# Begin --
 		def("set_blender_mode_main", &set_blender_mode_main),
 		def("get_blender_mode_main", &get_blender_mode_main),

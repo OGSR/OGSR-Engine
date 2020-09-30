@@ -299,12 +299,13 @@ void					CRender::create					()
 
 	//	MSAA option dependencies
 
-	o.dx10_msaa			= !!ps_r3_msaa;
+#pragma todo("MSAA на R4 как известно, не работает правильно, поэтому выключен. Если вдруг когда-то пофиксится, сделать чтоб он не конфликтовал с SSLR.")
+	o.dx10_msaa = 0; //!!ps_r3_msaa;
 	o.dx10_msaa_samples = (1 << ps_r3_msaa);
 
 	o.dx10_msaa_opt		= ps_r2_ls_flags.test(R3FLAG_MSAA_OPT);
-	o.dx10_msaa_opt		= o.dx10_msaa_opt && o.dx10_msaa && ( HW.FeatureLevel >= D3D_FEATURE_LEVEL_10_1 )
-			|| o.dx10_msaa && (HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0);
+	o.dx10_msaa_opt		= o.dx10_msaa_opt && o.dx10_msaa && ( HW.FeatureLevel >= D3D_FEATURE_LEVEL_10_1 );
+	//		|| o.dx10_msaa && (HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0);
 
 	//o.dx10_msaa_hybrid	= ps_r2_ls_flags.test(R3FLAG_MSAA_HYBRID);
 	o.dx10_msaa_hybrid	= ps_r2_ls_flags.test((u32)R3FLAG_USE_DX10_1);
@@ -334,7 +335,7 @@ void					CRender::create					()
 		}
 	}
 
-	o.dx10_gbuffer_opt	= ps_r2_ls_flags.test(R3FLAG_GBUFFER_OPT);
+	o.dx10_gbuffer_opt = ps_r2_ls_flags.test(R3FLAG_GBUFFER_OPT);
 
 	o.dx10_minmax_sm = ps_r3_minmax_sm;
 	o.dx10_minmax_sm_screenarea_threshold = 1600*1200;
@@ -388,24 +389,18 @@ void					CRender::create					()
 
 	Models						= xr_new<CModelPool>		();
 	PSLibrary.OnCreate			();
-	HWOCC.occq_create			(occq_size);
 
 	rmNormal					();
 	marker						= 0;
+	/*
 	D3D_QUERY_DESC			qdesc;
 	qdesc.MiscFlags				= 0;
 	qdesc.Query					= D3D_QUERY_EVENT;
 	ZeroMemory(q_sync_point, sizeof(q_sync_point));
-	//R_CHK						(HW.pDevice->CreateQuery(&qdesc,&q_sync_point[0]));
-	//R_CHK						(HW.pDevice->CreateQuery(&qdesc,&q_sync_point[1]));
-	//	Prevent error on first get data
-	//q_sync_point[0]->End();
-	//q_sync_point[1]->End();
-	//R_CHK						(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[0]));
-	//R_CHK						(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[1]));
 	for (u32 i=0; i<HW.Caps.iGPUNum; ++i)
 		R_CHK(HW.pDevice->CreateQuery(&qdesc,&q_sync_point[i]));
 	HW.pContext->End(q_sync_point[0]);
+	*/
 
 	::PortalTraverser.initialize();
 #ifdef DX10_FLUID_ENABLE
@@ -422,10 +417,10 @@ void					CRender::destroy				()
 	FluidManager.Destroy();
 #endif
 	::PortalTraverser.destroy	();
-	//_RELEASE					(q_sync_point[1]);
-	//_RELEASE					(q_sync_point[0]);
+	/*
 	for (u32 i=0; i<HW.Caps.iGPUNum; ++i)
 		_RELEASE				(q_sync_point[i]);
+	*/
 	
 	HWOCC.occq_destroy			();
 	xr_delete					(Models);
@@ -465,27 +460,23 @@ void CRender::reset_begin()
 
 	xr_delete					(Target);
 	HWOCC.occq_destroy			();
-	//_RELEASE					(q_sync_point[1]);
-	//_RELEASE					(q_sync_point[0]);
+	/*
 	for (u32 i=0; i<HW.Caps.iGPUNum; ++i)
 		_RELEASE				(q_sync_point[i]);
+	*/
 }
 
 void CRender::reset_end()
 {
+	/*
 	D3D_QUERY_DESC			qdesc;
 	qdesc.MiscFlags				= 0;
 	qdesc.Query					= D3D_QUERY_EVENT;
-	//R_CHK						(HW.pDevice->CreateQuery(&qdesc,&q_sync_point[0]));
-	//R_CHK						(HW.pDevice->CreateQuery(&qdesc,&q_sync_point[1]));
 	for (u32 i=0; i<HW.Caps.iGPUNum; ++i)
 		R_CHK(HW.pDevice->CreateQuery(&qdesc,&q_sync_point[i]));
 	//	Prevent error on first get data
 	HW.pContext->End(q_sync_point[0]);
-	//q_sync_point[1]->End();
-	//R_CHK						(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[0]));
-	//R_CHK						(HW.pDevice->CreateQuery(D3DQUERYTYPE_EVENT,&q_sync_point[1]));
-	HWOCC.occq_create			(occq_size);
+	*/
 
 	Target						=	xr_new<CRenderTarget>	();
 
@@ -510,8 +501,7 @@ void CRender::OnFrame()
 {
 	Models->DeleteQueue			();
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))	{
-		Device.seqParallel.insert	(Device.seqParallel.begin(),
-			fastdelegate::FastDelegate0<>(&HOM,&CHOM::MT_RENDER));
+		Device.seqParallel.insert	(Device.seqParallel.begin(),fastdelegate::MakeDelegate(&HOM,&CHOM::MT_RENDER));
 	}
 }*/
 void CRender::OnFrame()
@@ -519,12 +509,10 @@ void CRender::OnFrame()
 	Models->DeleteQueue			();
 	if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))	{
 		// MT-details (@front)
-		Device.seqParallel.insert	(Device.seqParallel.begin(),
-			fastdelegate::FastDelegate0<>(Details,&CDetailManager::MT_CALC));
+		Device.seqParallel.insert(Device.seqParallel.begin(), fastdelegate::MakeDelegate(Details, &CDetailManager::MT_CALC));
 
 		// MT-HOM (@front)
-		Device.seqParallel.insert	(Device.seqParallel.begin(),
-			fastdelegate::FastDelegate0<>(&HOM,&CHOM::MT_RENDER));
+		Device.seqParallel.insert(Device.seqParallel.begin(), fastdelegate::MakeDelegate(&HOM, &CHOM::MT_RENDER));
 	}
 }
 
@@ -1176,30 +1164,6 @@ HRESULT	CRender::shader_compile			(
 		}
 	}
 
-    if( o.dx10_msaa )
-	{
-		static char def[ 256 ];
-		//if( m_MSAASample < 0 )
-		//{
-			def[0]= '0';
-		//	sh_name[len]='0'; ++len;
-		//}
-		//else
-		//{
-		//	def[0]= '0' + char(m_MSAASample);
-		//	sh_name[len]='0' + char(m_MSAASample); ++len;
-		//}
-		def[1] = 0;
-		defines[def_it].Name		=	"ISAMPLE";
-		defines[def_it].Definition	=	def;
-		def_it						++	;
-		sh_name[len]='0'; ++len;
-	}
-	else
-	{
-		sh_name[len]='0'; ++len;
-	}
-
 	// skinning
 	if (m_skinning<0)		{
 		defines[def_it].Name		=	"SKIN_NONE";
@@ -1377,6 +1341,15 @@ HRESULT	CRender::shader_compile			(
 	sh_name[len] = '0'; ++len;
 #endif
 
+	if (ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR))
+	{
+		defines[def_it].Name = "SSLR_ENABLED";
+		defines[def_it].Definition = "1";
+		def_it++;
+	}
+	sh_name[len] = '0' + char(ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR)); ++len;
+
+
 	//Be carefull!!!!! this should be at the end to correctly generate
 	//compiled shader name;
 	// add a #define for DX10_1 MSAA support
@@ -1395,6 +1368,17 @@ HRESULT	CRender::shader_compile			(
 	   defines[def_it].Definition	= samples;	
 	   def_it						++;
 	   sh_name[len]='0'+char(o.dx10_msaa_samples); ++len;
+
+	   static char def[256];
+	   if (m_MSAASample < 0 || o.dx10_msaa_opt)
+		   def[0] = '0';
+	   else
+		   def[0] = '0' + char(m_MSAASample);
+
+	   def[1] = 0;
+	   defines[def_it].Name = "ISAMPLE";
+	   defines[def_it].Definition = def;
+	   def_it++;
 
 	   if( o.dx10_msaa_opt )
 	   {

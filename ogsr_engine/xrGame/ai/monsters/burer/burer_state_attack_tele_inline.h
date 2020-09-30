@@ -438,7 +438,7 @@ void CStateBurerAttackTele<Object>::SelectObjects()
 }
 
 template <typename Object>
-void xr_stdcall CStateBurerAttackTele<Object>::OnGrenadeDestroyed (CGrenade* const grenade)
+void  CStateBurerAttackTele<Object>::OnGrenadeDestroyed (CGrenade* const grenade)
 {
 	object->CTelekinesis::remove_links	(grenade);
 }
@@ -467,8 +467,7 @@ void CStateBurerAttackTele<Object>::HandleGrenades ()
 			continue;
 		}
 
-		grenade->set_destroy_callback	( CGrenade::destroy_callback(this, 
-										  &CStateBurerAttackTele<Object>::OnGrenadeDestroyed) );
+		grenade->set_destroy_callback(fastdelegate::MakeDelegate(this, &CStateBurerAttackTele<Object>::OnGrenadeDestroyed));
 
 		float const height			=	2.5f;
 		bool  const rotate			=	false;

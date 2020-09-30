@@ -40,7 +40,7 @@ void CCar::DbgCreatePlots()
 	e_state_drive=drive;
 //////////////////////////////
 	int y_pos=0,y_w=100;
-	m_dbg_power_rpm.Init(CFunctionGraph::type_function(this,&CCar::Parabola),m_min_rpm,m_max_rpm,0,y_pos,500,y_w,1000,D3DCOLOR_XRGB(0,0,255));
+	m_dbg_power_rpm.Init(fastdelegate::MakeDelegate(this, &CCar::Parabola), m_min_rpm, m_max_rpm, 0, y_pos, 500, y_w, 1000, D3DCOLOR_XRGB(0, 0, 255));
 	m_dbg_power_rpm.AddMarker(CStatGraph::stVert, 0, D3DCOLOR_XRGB(255, 0, 0));
 	m_dbg_power_rpm.AddMarker(CStatGraph::stHor, 0, D3DCOLOR_XRGB(0, 0, 255));
 	m_dbg_power_rpm.AddMarker(CStatGraph::stVert,0,D3DCOLOR_XRGB(0, 0, 0));
@@ -50,7 +50,7 @@ void CCar::DbgCreatePlots()
 	
 	y_pos+=y_w+10;
 
-	m_dbg_torque_rpm.Init(CFunctionGraph::type_function(this,&CCar::TorqueRpmFun),m_min_rpm,m_max_rpm,0,y_pos,500,y_w,1000);
+	m_dbg_torque_rpm.Init(fastdelegate::MakeDelegate(this, &CCar::TorqueRpmFun), m_min_rpm, m_max_rpm, 0, y_pos, 500, y_w, 1000);
 	m_dbg_torque_rpm.AddMarker(CStatGraph::stVert, 0, D3DCOLOR_XRGB(255, 0, 0));
 	m_dbg_torque_rpm.AddMarker(CStatGraph::stHor, 0, D3DCOLOR_XRGB(0, 255,0));
 	m_dbg_torque_rpm.AddMarker(CStatGraph::stVert,0,D3DCOLOR_XRGB(0, 0, 0));

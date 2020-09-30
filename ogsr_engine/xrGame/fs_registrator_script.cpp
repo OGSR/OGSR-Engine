@@ -254,7 +254,7 @@ void script_register_stdfs(lua_State *L)
 		def("directory_iterator", &directory_iterator),
 		def("recursive_directory_iterator", &recursive_directory_iterator),
 		class_<stdfs::directory_entry>("path")
-			//.def(constructor<>()) //Работает и без этого.
+			.def(constructor<const char*>())
 			//TODO: при необходимости можно будет добавить возможность изменения некоторых свойств.
 			.property("full_path_name", &get_full_path)
 			.property("full_filename", &get_full_filename)

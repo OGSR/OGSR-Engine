@@ -11,7 +11,7 @@
  
 float	psOSSR		= .001f;
 
-void __stdcall	CHOM::MT_RENDER()
+void CHOM::MT_RENDER()
 {
 	MT.Enter					();
 	bool b_main_menu_is_active = (g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive() );

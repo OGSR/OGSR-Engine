@@ -664,9 +664,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 		m_HeavyBreathSnd.stop();
 	}
 	
-	typedef CClientSpawnManager::CALLBACK_TYPE	CALLBACK_TYPE;
-	CALLBACK_TYPE	callback;
-	callback.bind	(this,&CActor::on_requested_spawn);
+	auto callback = fastdelegate::MakeDelegate(this, &CActor::on_requested_spawn);
 	m_holder_id				= E->m_holderID;
 	if (E->m_holderID != ALife::_OBJECT_ID(-1))
 		Level().client_spawn_manager().add(E->m_holderID,ID(),callback);

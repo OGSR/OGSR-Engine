@@ -171,8 +171,6 @@ public:
 	virtual void						net_Import			(NET_Packet& P) {};					// import from server
 	virtual	void						net_ImportInput		(NET_Packet& P)	{};
 	virtual BOOL						net_Relevant		()				{ return FALSE; };	// relevant for export to server
-	virtual void						net_MigrateInactive	(NET_Packet& P)	{ Props.net_Local = FALSE;		};
-	virtual void						net_MigrateActive	(NET_Packet& P)	{ Props.net_Local = TRUE;		};
 	virtual void						net_Relcase			(CObject*	 O) { };				// destroy all links to another objects
 
 	// Position stack

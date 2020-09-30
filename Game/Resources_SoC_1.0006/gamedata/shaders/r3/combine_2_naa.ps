@@ -15,12 +15,18 @@ struct 	v2p
 */
 
 //////////////////////////////////////////////////////////////////////////////////////////
+#define EPSDEPTH 0.001
+
+#ifdef SSLR_ENABLED
+Texture2D s_SSLR;
+Texture2D s_wetness;
+uniform float4 rain_params; //x = raindensity
+#endif
+
 #ifndef USE_MSAA
-Texture2D 			s_distort;
-#define	EPSDEPTH	0.001
+Texture2D s_distort;
 #else
 Texture2DMS<float4, MSAA_SAMPLES> s_distort;
-#define	EPSDEPTH	0.001
 #endif
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
@@ -93,14 +99,12 @@ c2_out main( v2p_aa_AA I )
 			img		= lerp	(img,blurred,distort.z);
 #endif
 
-/*
-#ifdef USE_MSAA
- 	res += combine_bloom( img, bloom ) / MSAA_SAMPLES;
-	}
-#else
- 	res += combine_bloom( img, bloom );
+#ifdef SSLR_ENABLED
+	float3 SSLR  = s_SSLR.Sample(smp_rtlinear, center);
+	float wet = s_wetness.Sample(smp_rtlinear, center).r;
+	img = lerp(img, SSLR, wet * rain_params.x);
 #endif
-*/
+
  	res.Color += combine_bloom( img, bloom );
 #ifdef USE_MSAA
 	float4 ptp = mul(m_P, float4(gbd.P, 1));

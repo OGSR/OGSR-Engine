@@ -182,21 +182,21 @@ protected:
 	BOOL						net_start_result_total;
 	BOOL						connected_to_server;
 
-	bool	xr_stdcall			net_start1				();
-	bool	xr_stdcall			net_start2				();
-	bool	xr_stdcall			net_start3				();
-	bool	xr_stdcall			net_start4				();
-	bool	xr_stdcall			net_start5				();
-	bool	xr_stdcall			net_start6				();
+	bool				net_start1				();
+	bool				net_start2				();
+	bool				net_start3				();
+	bool				net_start4				();
+	bool				net_start5				();
+	bool				net_start6				();
 
-	bool	xr_stdcall			net_start_client1				();
-	bool	xr_stdcall			net_start_client2				();
-	bool	xr_stdcall			net_start_client3				();
-	bool	xr_stdcall			net_start_client4				();
-	bool	xr_stdcall			net_start_client5				();
-	bool	xr_stdcall			net_start_client6				();
+	bool				net_start_client1				();
+	bool				net_start_client2				();
+	bool				net_start_client3				();
+	bool				net_start_client4				();
+	bool				net_start_client5				();
+	bool				net_start_client6				();
 
-	bool	xr_stdcall			net_start_finalizer				();
+	bool				net_start_finalizer				();
 
 	void						net_OnChangeSelfName			(NET_Packet* P);
 
@@ -289,7 +289,8 @@ public:
 	void				SetGameTimeFactor		(const float fTimeFactor);
 	void				SetGameTimeFactor		(ALife::_TIME_ID GameTime, const float fTimeFactor);
 	virtual void		SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTimeFactor);
-	//	void				SetGameTime				(ALife::_TIME_ID GameTime);
+
+	void GetGameTimeForShaders(u32& hours, u32& minutes, u32& seconds, u32& milliseconds) override;
 
 	// gets current daytime [0..23]
 	u8					GetDayTime				();

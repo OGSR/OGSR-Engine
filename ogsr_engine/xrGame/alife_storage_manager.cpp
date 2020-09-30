@@ -110,8 +110,7 @@ void CALifeStorageManager::load	(void *buffer, const u32 &buffer_size, LPCSTR fi
 
 	registry().load				(source);
 
-	if ( !source.eof() )
-	  g_ScriptVars.load( source );
+	g_ScriptVars.load(source);
 
 	can_register_objects		(true);
 

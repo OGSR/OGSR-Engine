@@ -46,7 +46,7 @@ public:
 	IC float				GetRadiation			() const			{return m_fRadiation;}
 	IC float				GetPsyHealth			() const			{return m_fPsyHealth;}
 	IC float 				GetEntityMorale			() const			{return m_fEntityMorale;}
-	virtual float xr_stdcall	GetAlcohol			() { return 0.f; }
+	virtual float 	GetAlcohol			() { return 0.f; }
 	virtual float			GetSatiety				() { return 0.f; }
 	virtual float			GetThirst				() { return 0.f; }
 
@@ -154,7 +154,7 @@ const	static int		PARAMS_COUNT = 7;
 	bool				m_bIsBleeding;
 
 	//части хита, затрачиваемые на уменьшение здоровья и силы
-	float				m_fHealthHitPart;
+	float m_fHealthHitPart[ ALife::eHitTypeMax ];
 	float				m_fPowerHitPart;
 
 

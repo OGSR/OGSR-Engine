@@ -300,9 +300,7 @@ void CHitMemoryManager::load	(IReader &packet)
 	if (!m_object->g_Alive())
 		return;
 
-	typedef CClientSpawnManager::CALLBACK_TYPE	CALLBACK_TYPE;
-	CALLBACK_TYPE					callback;
-	callback.bind					(&m_object->memory(),&CMemoryManager::on_requested_spawn);
+	auto callback = fastdelegate::MakeDelegate(&m_object->memory(), &CMemoryManager::on_requested_spawn);
 
 	int								count = packet.r_u8();
 	for (int i=0; i<count; ++i) {

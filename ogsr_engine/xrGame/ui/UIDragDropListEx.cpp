@@ -36,12 +36,12 @@ CUIDragDropListEx::CUIDragDropListEx()
 
 	m_vScrollBar->SetWindowName	("scroll_v");
 	Register					(m_vScrollBar);
-	AddCallback					("scroll_v",	SCROLLBAR_VSCROLL,				CUIWndCallback::void_function				(this, &CUIDragDropListEx::OnScrollV)		);
-	AddCallback					("cell_item",	DRAG_DROP_ITEM_DRAG,			CUIWndCallback::void_function			(this, &CUIDragDropListEx::OnItemStartDragging)	);
-	AddCallback					("cell_item",	DRAG_DROP_ITEM_DROP,			CUIWndCallback::void_function			(this, &CUIDragDropListEx::OnItemDrop)			);
-	AddCallback					("cell_item",	DRAG_DROP_ITEM_SELECTED,		CUIWndCallback::void_function		(this, &CUIDragDropListEx::OnItemSelected)			);
-	AddCallback					("cell_item",	DRAG_DROP_ITEM_RBUTTON_CLICK,	CUIWndCallback::void_function	(this, &CUIDragDropListEx::OnItemRButtonClick)			);
-	AddCallback					("cell_item",	DRAG_DROP_ITEM_DB_CLICK,		CUIWndCallback::void_function		(this, &CUIDragDropListEx::OnItemDBClick)			);
+	AddCallback("scroll_v", SCROLLBAR_VSCROLL, fastdelegate::MakeDelegate(this, &CUIDragDropListEx::OnScrollV));
+	AddCallback("cell_item", DRAG_DROP_ITEM_DRAG, fastdelegate::MakeDelegate(this, &CUIDragDropListEx::OnItemStartDragging));
+	AddCallback("cell_item", DRAG_DROP_ITEM_DROP, fastdelegate::MakeDelegate(this, &CUIDragDropListEx::OnItemDrop));
+	AddCallback("cell_item", DRAG_DROP_ITEM_SELECTED, fastdelegate::MakeDelegate(this, &CUIDragDropListEx::OnItemSelected));
+	AddCallback("cell_item", DRAG_DROP_ITEM_RBUTTON_CLICK, fastdelegate::MakeDelegate(this, &CUIDragDropListEx::OnItemRButtonClick));
+	AddCallback("cell_item", DRAG_DROP_ITEM_DB_CLICK, fastdelegate::MakeDelegate(this, &CUIDragDropListEx::OnItemDBClick));
 
 	back_color = 0xFFFFFFFF;
 

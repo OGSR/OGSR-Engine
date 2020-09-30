@@ -335,6 +335,16 @@
     <ClInclude Include="stacktrace_collector.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Event.hpp" />
+    <ClInclude Include="Utils\FastDelegate.hpp" />
+    <ClInclude Include="Utils\imdexlib\fast_dynamic_cast.hpp" />
+    <ClInclude Include="Utils\imdexlib\identity.hpp" />
+    <ClInclude Include="Utils\imdexlib\is_reference_wrapper.hpp" />
+    <ClInclude Include="Utils\imdexlib\mpl.hpp" />
+    <ClInclude Include="Utils\imdexlib\option.hpp" />
+    <ClInclude Include="Utils\imdexlib\traits.hpp" />
+    <ClInclude Include="Utils\imdexlib\typelist.hpp" />
+    <ClInclude Include="Utils\imdexlib\utility.hpp" />
+    <ClInclude Include="Utils\thread_pool.hpp" />
     <ClInclude Include="XML_Parser\tinyxml.h" />
     <ClInclude Include="XML_Parser\xrXMLParser.h" />
     <ClInclude Include="xrCore.h" />
@@ -370,7 +380,6 @@
     <ClInclude Include="_std_extensions.h" />
     <ClInclude Include="_stl_extensions.h" />
     <ClInclude Include="clsid.h" />
-    <ClInclude Include="fastdelegate.h" />
     <ClInclude Include="xr_trims.h" />
     <CustomBuildStep Include="FileSystem.h" />
     <ClInclude Include="FS.h" />

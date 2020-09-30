@@ -11,6 +11,7 @@
 #include "game_cl_single.h"
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Items.h"
+#include "actor.h"
 
 // refs
 class CEntity;
@@ -293,7 +294,14 @@ public:
 	virtual void			OnZoomOut			();
 			bool			IsZoomed			()	const	{return m_bZoomMode;};
 	CUIStaticItem*			ZoomTexture			();	
-			bool			ZoomHideCrosshair	()			{return (m_bHideCrosshairInZoom || ZoomTexture()) && !psActorFlags.test(AF_CROSSHAIR_DBG);}
+	bool ZoomHideCrosshair()
+	{
+		auto* pA = smart_cast<CActor*>(H_Parent());
+		if (pA && pA->active_cam() == eacLookAt)
+			return false;
+
+		return (m_bHideCrosshairInZoom || ZoomTexture()) && !psActorFlags.test(AF_CROSSHAIR_DBG);
+	}
 
 	virtual void			OnZoomChanged		() {}
 
@@ -469,6 +477,10 @@ protected:
 //////////////////////////////////////////////////////////////////////////
 // Weapon and ammo
 //////////////////////////////////////////////////////////////////////////
+protected:
+	int GetAmmoCount_forType( shared_str const& ammo_type, u32 = 0 ) const;
+	int GetAmmoCount( u8 ammo_type, u32 = 0 ) const;
+
 public:
 	IC int					GetAmmoElapsed		()	const		{	return /*int(m_magazine.size())*/iAmmoElapsed;}
 	IC int					GetAmmoMagSize		()	const		{	return iMagazineSize;						}
@@ -573,4 +585,5 @@ public:
 	void SwitchScope();
 
 	virtual void OnBulletHit();
+	bool IsPartlyReloading();
 };

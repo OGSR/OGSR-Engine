@@ -8,6 +8,10 @@
 #include "x_ray.h"
 #include "GameFont.h"
 
+#ifdef DEBUG
+#include <d3d9.h>
+#endif
+
 using namespace	collide;
 
 //--------------------------------------------------------------------------------
@@ -122,10 +126,14 @@ BOOL CObjectSpace::_RayPick	( const Fvector &start, const Fvector &dir, float ra
 			if			(collidable==ignore_object)	continue;
 			ECollisionFormType tp		= collidable->collidable.model->Type();
 			if (((tgt&(rqtObject|rqtObstacle))&&(tp==cftObject))||((tgt&rqtShape)&&(tp==cftShape))){
+#ifdef DEBUG
 				u32		C	= D3DCOLOR_XRGB	(64,64,64);
+#endif
 				Q.range		= R.range;
 				if (collidable->collidable.model->_RayQuery(Q,r_temp)){
+#ifdef DEBUG
 					C				= D3DCOLOR_XRGB(128,128,196);
+#endif
 					R.set_if_less	(r_temp.r_begin());
 				}
 #ifdef DEBUG

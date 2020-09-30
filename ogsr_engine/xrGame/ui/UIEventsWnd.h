@@ -37,7 +37,7 @@ class CUIEventsWnd	:public CUIWindow, public CUIWndCallback{
 	CUITabControl*				m_TaskFilter;
 
 	bool						Filter					(CGameTask* t);
-	void __stdcall				OnFilterChanged			(CUIWindow*,void*);
+	void OnFilterChanged(CUIWindow*, void*);
 	void						ReloadList				(bool bClearOnly);
 
 public:

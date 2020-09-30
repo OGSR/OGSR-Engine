@@ -45,7 +45,7 @@ void CUITaskItem::Init				()
 {
 	SetWindowName					("job_item");
 	Register						(this);
-	AddCallback						("job_item",BUTTON_CLICKED,CUIWndCallback::void_function(this,&CUITaskItem::OnItemClicked));
+	AddCallback("job_item", BUTTON_CLICKED, fastdelegate::MakeDelegate(this, &CUITaskItem::OnItemClicked));
 }
 
 void CUITaskItem::OnItemClicked(CUIWindow*, void*)
@@ -76,7 +76,7 @@ void CUITaskRootItem::Init			()
 	
 	m_switchDescriptionBtn->SetWindowName("m_switchDescriptionBtn");
 	Register					(m_switchDescriptionBtn);
-	AddCallback					("m_switchDescriptionBtn",BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUITaskRootItem::OnSwitchDescriptionClicked));
+	AddCallback("m_switchDescriptionBtn", BUTTON_CLICKED, fastdelegate::MakeDelegate(this, &CUITaskRootItem::OnSwitchDescriptionClicked));
 
 	CUIXmlInit xml_init;
 	CUIXml&						uiXml = m_EventsWnd->m_ui_task_item_xml;
@@ -208,7 +208,7 @@ void CUITaskSubItem::Init			()
 	m_showDescriptionBtn->SetWindowName	("m_showDescriptionBtn");
 	Register						(m_showDescriptionBtn);
 
-	AddCallback						("m_showDescriptionBtn",BUTTON_CLICKED,CUIWndCallback::void_function(this, &CUITaskSubItem::OnShowDescriptionClicked));
+	AddCallback("m_showDescriptionBtn", BUTTON_CLICKED, fastdelegate::MakeDelegate(this, &CUITaskSubItem::OnShowDescriptionClicked));
 
 
 	CUIXmlInit xml_init;

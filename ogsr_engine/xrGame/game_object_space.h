@@ -83,6 +83,7 @@ namespace GameObject {
 		eOnNPCWeaponJammed,
 		eOnNPCWeaponEmpty,
 		eOnNPCWeaponReload,
+		eOnNPCWeaponSwitchGL,
 
 		// Called when the player zooms their weapon in or out.
 		eOnActorWeaponZoomIn,

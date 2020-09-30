@@ -368,6 +368,7 @@ public:
 	IC CCameraBase*			cam_ByIndex(u16 index)  { return (index < eacMaxCam ? cameras[index] : NULL); }
 	IC CCameraBase*			cam_FirstEye		()	{return cameras[eacFirstEye];}
 	IC EActorCameras		active_cam			()	{return cam_active;}			// KD: need to know which cam active outside actor methods
+	CEffectorBobbing* GetEffectorBobbing() { return pCamBobbing; }
 
 protected:
 	void					cam_Set					(EActorCameras style);
@@ -568,7 +569,7 @@ public:
 	virtual void						net_Destroy			();
 	virtual BOOL						net_Relevant		();//	{ return getSVU() | getLocal(); };		// relevant for export to server
 	virtual	void						net_Relcase			( CObject* O );					//
-	virtual void xr_stdcall				on_requested_spawn  (CObject *object);
+	virtual void 				on_requested_spawn  (CObject *object);
 	//object serialization
 	virtual void						save				(NET_Packet &output_packet);
 	virtual void						load				(IReader &input_packet);

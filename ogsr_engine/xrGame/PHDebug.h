@@ -2,7 +2,6 @@
 #define PH_DEBUG_H
 #ifdef DEBUG
 struct dContact;
-//#include "FastDelegate.h"
 #include "../xr_3da/StatGraph.h"
 #define DRAW_CONTACTS
 
@@ -129,7 +128,7 @@ void PH_DBG_SetTrackObject( LPCSTR obj );
 struct CFunctionGraph
 {
 public:
-	typedef fastdelegate::FastDelegate1<float,float> type_function;
+	using type_function = fastdelegate::FastDelegate<float(float)>;
 private:
 	CStatGraph						*m_stat_graph																																					;
 	type_function					m_function																																						;

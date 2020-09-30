@@ -36,7 +36,9 @@ f_deffer main( p_flat I )
   O				= pack_gbuffer(
 								Ne,
 								float4( I.position.xyz + Ne.xyz*def_virtualh/2.h, ms ),
-								float4( D.rgb, def_gloss ) );	// OUT: rgb.gloss
+								float4( D.rgb, def_gloss ),
+						float4(0.f, 0.f, 0.f, 0.f)
+						 );
 
   return O;
 }

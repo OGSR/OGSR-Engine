@@ -173,7 +173,6 @@ float		ps_r2_ssaLOD_B				= 48.f	;
 Flags32		ps_r2_ls_flags				= { R2FLAG_SUN 
 	//| R2FLAG_SUN_IGNORE_PORTALS
 	| R2FLAG_EXP_DONT_TEST_UNSHADOWED 
-	| R2FLAG_EXP_DONT_TEST_SHADOWED
 	| R2FLAG_USE_NVSTENCIL | R2FLAG_EXP_SPLIT_SCENE 
 	| R2FLAG_EXP_MT_CALC | R3FLAG_DYN_WET_SURF
 	| R3FLAG_VOLUMETRIC_SMOKE
@@ -193,6 +192,9 @@ Flags32		ps_r2_ls_flags				= { R2FLAG_SUN
 
 Flags32 ps_r2_ls_flags_ext = {
 	/*R2FLAGEXT_SSAO_OPT_DATA |*/ R2FLAGEXT_SSAO_HALF_DATA | R2FLAGEXT_ENABLE_TESSELLATION | R2FLAGEXT_RAIN_DROPS | R2FLAGEXT_RAIN_DROPS_CONTROL
+#if RENDER==R_R4
+	| R2FLAGEXT_SSLR
+#endif
 };
 
 BOOL		ps_no_scale_on_fade			= 0; //Alundaio
@@ -262,6 +264,11 @@ int ps_r3_dyn_wet_surf_enable_streaks = 0;
 
 float ps_r2_rain_drops_intensity = 0.00025f;
 float ps_r2_rain_drops_speed = 1.25f;
+
+#if RENDER==R_R4
+float ps_ext_SSLR_L = 1.f;
+float ps_ext_SSLR_blur = 0.f;
+#endif
 
 int			ps_r__detail_radius = 49;
 u32			dm_size = 24;
@@ -862,6 +869,12 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask,  "r2_rain_drops_control", &ps_r2_ls_flags_ext, R2FLAGEXT_RAIN_DROPS_CONTROL);
 	CMD4(CCC_Float, "r2_rain_drops_intensity", &ps_r2_rain_drops_intensity, 0.f, 1.f);
 	CMD4(CCC_Float, "r2_rain_drops_speed", &ps_r2_rain_drops_speed, 0.8f, 5.f);
+
+#if RENDER==R_R4
+	CMD3(CCC_Mask, "r_sslr_enable", &ps_r2_ls_flags_ext, R2FLAGEXT_SSLR);
+	CMD4(CCC_Float, "r_sslr_l", &ps_ext_SSLR_L, .1f, 10.f);
+	CMD4(CCC_Float, "r_sslr_blur", &ps_ext_SSLR_blur, 0.0f, 5.f);
+#endif
 
 	CMD3(CCC_Mask,		"r2_sun",				&ps_r2_ls_flags,			R2FLAG_SUN		);
 	CMD3(CCC_Mask,		"r2_sun_details",		&ps_r2_ls_flags,			R2FLAG_SUN_DETAILS);

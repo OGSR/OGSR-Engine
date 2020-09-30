@@ -98,6 +98,7 @@ public:
 	MotionSVec			mhud_shots_w_gl;
 	MotionSVec			mhud_show_w_gl;
 	MotionSVec			mhud_hide_w_gl;
+	MotionSVec			mhud_reload_w_gl_partly;
 
 
 	//дополнительные параметры патронов 

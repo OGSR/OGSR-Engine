@@ -1,7 +1,6 @@
 #pragma once
 
 #include "inventory_item_object.h"
-//#include "night_vision_effector.h"
 #include "hudsound.h"
 #include "script_export_space.h"
 
@@ -27,6 +26,7 @@ protected:
 	ref_light		light_omni;
 	ref_glow		glow_render;
 	Fvector			m_focus;
+	Fcolor			m_color;
 private:
 	inline	bool	can_use_dynamic_lights	();
 
@@ -49,12 +49,12 @@ public:
 			void	Switch				(bool light_on);
 
 	virtual bool	can_be_attached		() const;
+	void calc_m_delta_h( float );
  
 public:
 			void	SwitchNightVision		  ();
 			void	SwitchNightVision		  (bool light_on);
 			void	UpdateSwitchNightVision   ();
-			float	NightVisionBattery		  ();
 protected:
 	bool					m_bNightVisionEnabled;
 	bool					m_bNightVisionOn;
@@ -63,11 +63,6 @@ protected:
 	HUD_SOUND				m_NightVisionOffSnd;
 	HUD_SOUND				m_NightVisionIdleSnd;
 	HUD_SOUND				m_NightVisionBrokenSnd;
-
-	/*float					m_NightVisionRechargeTime;
-	float					m_NightVisionRechargeTimeMin;
-	float					m_NightVisionDischargeTime;
-	float					m_NightVisionChargeTime;*/
 
 	enum EStats{
 		eTorchActive				= (1<<0),

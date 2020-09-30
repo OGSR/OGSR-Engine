@@ -1,19 +1,38 @@
 #ifndef REFLECTIONS_H
 #define REFLECTIONS_H
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   //Anomaly shaders 1.5																 				 			  //
-  //Credits to KD, Anonim, Crossire, daemonjax, Zhora Cementow, Meltac, X-Ray Oxygen, FozeSt, Zagolski, SonicEthers, //
- //David Hoskins, BigWIngs																							//
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 //*******************************************************************************************************************
-#ifdef USE_OGSE_REFLECTIONS
+/*
+	\\\\\\Screen Space Reflections//////
 
-#define REFL_RANGE 100
-#define SKY_DEPTH float(10000.f)
-#define SKY_EPS float(0.001)
-uniform float3 eye_direction;
-uniform float4 screen_res;
+Credits goes to Xerxes1138, Danil Baryshev, and ForHaxed.
+
+References:
+https://habr.com/ru/post/244367/
+https://github.com/Xerxes1138/UnitySSR/
+https://www.amk-team.ru/forum/topic/14078-sslr
+
+If you want to use this code in your project
+just keep this header ;) Make modding better.
+
+By LVutner for X-Ray Oxygen project (2020)
+*/
+
+//#define SSR_JITTER //Enables jittering
+
+#define SSR_EDGE_ATTENUATION float(0.09) //Edge attenuation intensity
+#define SSR_JITTER_INTENSITY float(0.05) //Jittering intensity
+
+#define SSR_SAMPLES int(20) // Extreme
+#define SSR_DISTANCE float(400.0)
+
+uniform float4 screen_res; // Screen resolution (x-Width,y-Height, zw - 1/resolution)
+
+/*Helper functions*/
+float RayAttenBorder(float2 pos, float value)
+{
+	float borderDist = min(1.0 - max(pos.x, pos.y), min(pos.x, pos.y));
+	return saturate(borderDist > value ? 1.0 : borderDist / value);
+}
 
 float4 proj_to_screen(float4 proj)
 {
@@ -24,82 +43,82 @@ float4 proj_to_screen(float4 proj)
 	return screen;
 }
 
-float get_depth_fast(float2 tc)
+half is_sky(float depth)
 {
-#ifndef USE_MSAA
-	return s_position.Sample( smp_nofilter, tc).z;
-#else
-	return s_position.Load( int3( tc * pos_decompression_params2.xy ,0),0 ).z;
-#endif
+	return step(abs(depth - 10000.f), 0.001);
 }
 
-float is_sky(float depth) { return step(abs(depth - SKY_DEPTH), SKY_EPS); }
-
-float4 get_reflection(float3 screen_pixel_pos, float3 next_screen_pixel_pos, float3 reflect)
+#ifdef SSR_JITTER
+float3 hash(float3 a)
 {
-	float4 final_color = {1.0,1.0,1.0,1.0};
-	float2 factors = {1.f,1.f};
-	
-	float3 main_vec = next_screen_pixel_pos - screen_pixel_pos;
-	float3 grad_vec = main_vec / (max(abs(main_vec.x), abs(main_vec.y)) * 256);
-	
-	// handle case when reflect vector faces the camera
-	factors.x = dot(eye_direction, reflect);
+	a *= timers.x;
+    a = frac(a * 0.8f);
+    a += dot(a, a.yxz + 19.19);
+    return frac((a.xxy + a.yxx)*a.zyx);
+}
+#endif
 
-	if ((factors.x < -0.5) || (screen_pixel_pos.z > REFL_RANGE)) return final_color;
-	else
+float4 compute_ssr(float3 position, float3 normal)
+{
+	/*Initialize step size and error*/
+	float step = 1.0f/float(SSR_SAMPLES);
+	int reflection = 1;
+
+	/*Initialize reflected TC*/
+	float2 refl_tc = (0,0);	
+
+	/*Prepare ray direction and reflection vector*/
+	float3 v2point = normalize(position - eye_position);
+	float3 vreflect = normalize(reflect(v2point,normalize(normal)));
+
+	/*Main loop*/
+	[unroll (SSR_SAMPLES)] for(int i = 0; i < SSR_SAMPLES; i++)
 	{
-		float3 curr_pixel = screen_pixel_pos;
-		curr_pixel.xy += float2(0.5,0.5)*screen_res.zw;
-		float max_it = 64;
-		float i = 0;
-		bool br = false;
-		
-		while ((i < max_it) && (br == false))
-		{
-			curr_pixel.xyz += grad_vec.xyz;
-			float depth = get_depth_fast(curr_pixel.xy);
-			depth = lerp(depth, 0.f, is_sky(depth));
-			float delta = step(depth, curr_pixel.z)*step(screen_pixel_pos.z, depth);
-			if (delta > 0.5)
-			{
-				final_color.xyz = s_image.Sample( smp_rtlinear, curr_pixel.xy).xyz;
-				float2 tmp = curr_pixel.xy;
-				tmp.y = lerp(tmp.y, 0.5, step(0.5, tmp.y));
-				float screendedgefact = saturate(distance(tmp , float2(0.5, 0.5)) * 2.0);
-				final_color.w = pow(screendedgefact,6);
-				br = true;
-			}
-			i += 1.0;
-		}
-		return lerp(final_color,float4(1.0,1.0,1.0,1.0),screen_pixel_pos.z/REFL_RANGE);
-	}
-}
+		/*Prepare new position*/
+		float3 new_position = position + vreflect * step;
 
-float4 calc_reflections(float4 pos, float3 vreflect)
-{
-	float4 refl = {1.0,1.0,1.0,1.0};
-	float3 v_pixel_pos = mul((float3x4)m_V, pos);
-	float4 p_pixel_pos = mul(m_VP, pos);
-	float4 s_pixel_pos = proj_to_screen(p_pixel_pos);
-	s_pixel_pos.xy /= s_pixel_pos.w;
-	s_pixel_pos.z = v_pixel_pos.z;
-		
-	float3 reflect_vec = normalize(vreflect);
-	float3 W_m_point = pos.xyz + reflect_vec;
-
-	float3 V_m_point = mul((float3x4)m_V, float4(W_m_point, 1.0));
-	float4 P_m_point = mul(m_VP, float4(W_m_point, 1.0));
-	float4 S_m_point = proj_to_screen(P_m_point);
-	S_m_point.xy /= S_m_point.w;
-	S_m_point.z = V_m_point.z;
-		
-	refl = get_reflection(s_pixel_pos.xyz, S_m_point.xyz, reflect_vec);
-	
-	return refl;
-}
+		/*Add hash to new position*/		
+#ifdef SSR_JITTER
+		new_position += hash(position.xyz) * SSR_JITTER_INTENSITY;
 #endif
+
+		/*Convert new position to texcoord*/
+		float4 proj_position = mul(m_VP, float4(new_position, 1.f));
+		float4 p2ss = proj_to_screen(proj_position);
+		refl_tc.xy = p2ss.xy /= p2ss.w;
+
+		/*Sample hit depth*/
+		float hit_depth = s_position.Load(int3(refl_tc.xy * screen_res.xy,0),0).z;
+
+		/*Intersect sky from hit depth*/
+		hit_depth = lerp(hit_depth, 0.f, is_sky(hit_depth));
+
+		/*Sample depth*/
+		float depth = mul(m_V, float4(position, 1.f)).z;	
+
+		/*Fixing incorrect refls*/
+		if((depth - hit_depth) > 0.0f || (hit_depth > SSR_DISTANCE))
+			reflection = 0;
+
+		/*Depth difference*/
+		step = length(hit_depth - depth);		
+	}
+
+	/*Edge attenuation*/
+	float edge = RayAttenBorder(refl_tc.xy, SSR_EDGE_ATTENUATION);
+
+	/*Sample image with reflected TC*/	
+	float3 img = s_diffuse.Load(int3(refl_tc.xy * screen_res.xy,0),0);
+
+	/*Image.rgb, Reflcontrol.a*/
+	return float4(img.xyz, reflection*edge);
+}
 //*******************************************************************************************************************
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   //Anomaly shaders 1.5																 				 			  //
+  //Credits to KD, Anonim, Crossire, daemonjax, Zhora Cementow, Meltac, X-Ray Oxygen, FozeSt, Zagolski, SonicEthers, //
+ //David Hoskins, BigWIngs																							//
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //*******************************************************************************************************************
 TextureCube	s_env0;
 TextureCube	s_env1;

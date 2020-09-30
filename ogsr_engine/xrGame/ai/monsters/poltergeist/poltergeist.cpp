@@ -216,7 +216,7 @@ void   CPoltergeist::update_detection ()
 					++m_detection_pp_type_index ) { ; }
 	
 			AddEffector						(Actor(), m_detection_pp_type_index, m_detection_pp_effector_name, 
-											GET_KOEFF_FUNC(this, &CPoltergeist::get_post_process_factor));
+				fastdelegate::MakeDelegate(this, &CPoltergeist::get_post_process_factor));
 		}
 	}
 	else if ( m_detection_pp_type_index != 0 )

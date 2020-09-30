@@ -252,7 +252,7 @@ void CRender::Render		()
 
 	//*******
 	// Sync point
-	Device.Statistic->RenderDUMP_Wait_S.Begin	();
+	//Device.Statistic->RenderDUMP_Wait_S.Begin	();
 	/*if (1)
 	{
 		CTimer	T;							T.Start	();
@@ -266,9 +266,9 @@ void CRender::Render		()
 			}
 		}
 	}*/
-	Device.Statistic->RenderDUMP_Wait_S.End		();
-	q_sync_count								= (q_sync_count+1)%HW.Caps.iGPUNum;
-	CHK_DX										(q_sync_point[q_sync_count]->Issue(D3DISSUE_END));
+	//Device.Statistic->RenderDUMP_Wait_S.End		();
+	//q_sync_count								= (q_sync_count+1)%HW.Caps.iGPUNum;
+	//CHK_DX										(q_sync_point[q_sync_count]->Issue(D3DISSUE_END));
 
 	//******* Main calc - DEFERRER RENDERER
 	// Main calc
@@ -305,10 +305,8 @@ void CRender::Render		()
 	//******* Occlusion testing of volume-limited light-sources
 	Target->phase_occq							();
 	LP_normal.clear								();
-	LP_pending.clear							();
 	{
 		// perform tests
-		u32	count			= 0;
 		light_Package&	LP	= Lights.package;
 
 		// stats
@@ -317,32 +315,11 @@ void CRender::Render		()
 		stats.l_total		= stats.l_shadowed + stats.l_unshadowed;
 
 		// perform tests
-		count				= _max	(count,LP.v_point.size());
-		count				= _max	(count,LP.v_spot.size());
-		count				= _max	(count,LP.v_shadowed.size());
-		for (u32 it=0; it<count; it++)	{
-			if (it<LP.v_point.size())		{
-				light*	L			= LP.v_point	[it];
-				L->vis_prepare		();
-				if (L->vis.pending)	LP_pending.v_point.push_back	(L);
-				else				LP_normal.v_point.push_back		(L);
-			}
-			if (it<LP.v_spot.size())		{
-				light*	L			= LP.v_spot		[it];
-				L->vis_prepare		();
-				if (L->vis.pending)	LP_pending.v_spot.push_back		(L);
-				else				LP_normal.v_spot.push_back		(L);
-			}
-			if (it<LP.v_shadowed.size())	{
-				light*	L			= LP.v_shadowed	[it];
-				L->vis_prepare		();
-				if (L->vis.pending)	LP_pending.v_shadowed.push_back	(L);
-				else				LP_normal.v_shadowed.push_back	(L);
-			}
-		}
+		LP_normal.v_point    = LP.v_point;
+		LP_normal.v_shadowed = LP.v_shadowed;
+		LP_normal.v_spot     = LP.v_spot;
+		LP_normal.vis_prepare();
 	}
-	LP_normal.sort							();
-	LP_pending.sort							();
 
 	//******* Main render :: PART-1 (second)
 	if (split_the_scene_to_minimize_wait)	{
@@ -432,10 +409,12 @@ void CRender::Render		()
 	// Lighting, non dependant on OCCQ
 	Target->phase_accumulator				();
 	HOM.Disable								();
+	LP_normal.vis_update();
+	LP_normal.sort();
 	render_lights							(LP_normal);
-	
+
 	// Lighting, dependant on OCCQ
-	render_lights							(LP_pending);
+	// render_lights( LP_pending );
 
 	// Postprocess
 	Target->phase_combine					();

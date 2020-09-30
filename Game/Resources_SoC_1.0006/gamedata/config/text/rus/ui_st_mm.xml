@@ -494,8 +494,8 @@
 		<text>Разрешение карт теней</text>
 	</string>
 
-	<string id="ui_mm_rs_mt_texload">
-		<text>Многопоточная загрузка тестур</text>
+	<string id="r_sslr_enable">
+		<text>Отражения в лужах</text>
 	</string>
 
 	<string id="ui_mm_fov">

@@ -30,9 +30,9 @@ public:
 	void Init(u16 spot_id, LPCSTR level_name, Fvector pos, bool main_wnd);
 	void InitControls();
 
-	void xr_stdcall OnAdd(CUIWindow* w, void* d);
-	void xr_stdcall OnApply(CUIWindow* w, void* d);
-	void xr_stdcall OnExit(CUIWindow* w, void* d);
+	void  OnAdd(CUIWindow* w, void* d);
+	void  OnApply(CUIWindow* w, void* d);
+	void  OnExit(CUIWindow* w, void* d);
 	void Exit();
 	virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
 	virtual void SendMessage(CUIWindow* pWnd, s16 msg, void* pData = NULL);

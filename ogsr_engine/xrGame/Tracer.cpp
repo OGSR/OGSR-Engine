@@ -7,8 +7,8 @@
 #include "Tracer.h"
 #include "..\xr_3da\render.h"
 
-const u32	MAX_TRACERS	= (1024*5);
-const float TRACER_SIZE = 0.13f;
+constexpr u32	MAX_TRACERS	= (1024*5);
+constexpr float TRACER_SIZE = 0.13f;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -16,7 +16,9 @@ const float TRACER_SIZE = 0.13f;
 #define TRACERS_COLOR_TABLE "tracers_color_table"
 CTracer::CTracer()
 {
-	sh_Tracer->create("effects\\bullet_tracer","fx\\fx_tracer");
+	const char* sh_name = READ_IF_EXISTS(pSettings, r_string, "bullet_manager", "tracer_shader", "effects\\bullet_tracer");
+	const char* tx_name = READ_IF_EXISTS(pSettings, r_string, "bullet_manager", "tracer_texture", "fx\\fx_tracer");
+	sh_Tracer->create(sh_name, tx_name);
 
 	m_aColors.clear();
 	for (u8 i=0; i<255; i++)

@@ -3,6 +3,7 @@
 #include "cpuid.h"
 #include <powerbase.h>
 #pragma comment(lib, "PowrProf.lib")
+#include <VersionHelpers.h>
 
 typedef struct _PROCESSOR_POWER_INFORMATION {
 	ULONG Number;
@@ -169,14 +170,30 @@ typedef struct tagTHREADNAME_INFO {
 } THREADNAME_INFO;
 #pragma pack(pop)
 
-static void set_thread_name(DWORD dwThreadID, const char* threadName) {
-	if (!IsDebuggerPresent())
-		return;
+static void set_thread_name(HANDLE ThreadHandle, const char* threadName) {
+	if (IsWindows10OrGreater())
+	{
+		static HMODULE KernelLib = GetModuleHandle("kernel32.dll");
+		using FuncSetThreadDescription = HRESULT(WINAPI*)(HANDLE, PCWSTR);
+		static auto pSetThreadDescription = (FuncSetThreadDescription)GetProcAddress(KernelLib, "SetThreadDescription");
+
+		if (pSetThreadDescription)
+		{
+			wchar_t buf[64]{};
+			mbstowcs(buf, threadName, std::size(buf));
+
+			pSetThreadDescription(ThreadHandle, buf);
+
+			return;
+		}
+		else if (!IsDebuggerPresent()) return;
+	}
+	else if (!IsDebuggerPresent()) return;
 
 	THREADNAME_INFO info;
 	info.dwType = 0x1000;
 	info.szName = threadName;
-	info.dwThreadID = dwThreadID;
+	info.dwThreadID = GetThreadId(ThreadHandle);
 	info.dwFlags = 0;
 
 	__try {
@@ -188,9 +205,9 @@ static void set_thread_name(DWORD dwThreadID, const char* threadName) {
 }
 
 void set_current_thread_name(const char* threadName) {
-	set_thread_name(GetCurrentThreadId(), threadName);
+	set_thread_name(GetCurrentThread(), threadName);
 }
 
 void set_thread_name(const char* threadName, std::thread& thread) {
-	set_thread_name(GetThreadId(static_cast<HANDLE>(thread.native_handle())), threadName);
+	set_thread_name(static_cast<HANDLE>(thread.native_handle()), threadName);
 }

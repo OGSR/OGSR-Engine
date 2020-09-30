@@ -78,12 +78,16 @@ f_deffer 	main	( p_bumped I )
 	O = pack_gbuffer(
 						float4	(Ne,										h),
   						float4 	(I.position.xyz + Ne*S.height*def_virtualh, ms),
-  						float4	(S.base.x,S.base.y,S.base.z,				S.gloss) );
+  						float4	(S.base.x,S.base.y,S.base.z,				S.gloss),
+						float4(0.f, 0.f, 0.f, 0.f)
+						 );
 #else
 	O = pack_gbuffer(
 						float4	(Ne,										h),
   						float4 	(I.position.xyz + Ne*S.height*def_virtualh, ms),
   						float4	( float3(S.base.x,S.base.y,S.base.z),		S.gloss),
+						float4(0.f, 0.f, 0.f, 0.f)
+						,
   						mask );
 #endif
 

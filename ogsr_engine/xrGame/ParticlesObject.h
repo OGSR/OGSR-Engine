@@ -29,7 +29,7 @@ public:
 	virtual void		shedule_Update		(u32 dt);
 	virtual void		renderable_Render	();
 	void				PerformAllTheWork	(u32 dt);
-	void	__stdcall	PerformAllTheWork_mt();
+	void PerformAllTheWork_mt();
 
 	Fvector&			Position			();
 	void				SetXFORM			(const Fmatrix& m);

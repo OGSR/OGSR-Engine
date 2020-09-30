@@ -279,7 +279,7 @@ struct SCollisionHitCallback:
 	{
 		VERIFY( object );
 	}
-	void call( CPhysicsShellHolder* obj, float min_cs, float max_cs, float &cs, float &hl, ICollisionDamageInfo* di )
+	void call( CPhysicsShellHolder* obj, float min_cs, float max_cs, float &cs, float &hl, ICollisionDamageInfo* di ) override
 	{
 		
 		if( cs > min_cs*0.5f )

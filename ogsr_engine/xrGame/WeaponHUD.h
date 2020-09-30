@@ -63,6 +63,17 @@ public:
 typedef shared_container<weapon_hud_value>		weapon_hud_container;
 extern weapon_hud_container*					g_pWeaponHUDContainer;
 
+
+class MotionIDEx {
+public:
+  MotionID m_MotionID;
+  float    stop_k;
+
+  MotionIDEx();
+  MotionIDEx( MotionID );
+};
+
+
 class shared_weapon_hud: public shared_item<weapon_hud_value>
 {
 protected:
@@ -77,7 +88,7 @@ public:
 		shared_item<weapon_hud_value>::create	(key,g_pWeaponHUDContainer,on_new_pred(owner));	
 	}
 	IKinematicsAnimated*	animations				(){return p_->m_animations;}
-	u32					motion_length			(MotionID M);
+	u32 motion_length ( MotionIDEx& M );
 	MotionID			motion_id				(LPCSTR name);
 };
 //---------------------------------------------------------------------------
@@ -137,8 +148,9 @@ public:
 	
 
 	// Animations
-	void				animPlay		(MotionID M, BOOL bMixIn/*=TRUE*/, CHudItem*  W /*=0*/, u32 state);
+	void				animPlay( MotionIDEx& M, BOOL bMixIn/*=TRUE*/, CHudItem*  W /*=0*/, u32 state );
 	void				animDisplay		(MotionID M, BOOL bMixIn);
+	void				animDisplay( MotionIDEx M, BOOL bMixIn );
 	MotionID			animGet			(LPCSTR name);
 	
 	void				UpdatePosition	(const Fmatrix& transform);
@@ -158,17 +170,18 @@ public:
 	static void			CreateSharedContainer	();
 	static void			DestroySharedContainer	();
 	static void			CleanSharedContainer	();
-#ifdef DEBUG
+
 public:
 	void				dbg_SetFirePoint	(const Fvector &fp)			{((weapon_hud_value*)m_shared_data.get_value())->m_fp_offset.set(fp);}
 	void				dbg_SetFirePoint2	(const Fvector &fp)			{((weapon_hud_value*)m_shared_data.get_value())->m_fp2_offset.set(fp);}
 	void				dbg_SetShellPoint	(const Fvector &sp)			{((weapon_hud_value*)m_shared_data.get_value())->m_sp_offset.set(sp);}
-#endif
+
 
 private:
 	CWeaponBobbing *m_bobbing;
 };
 
+
 #define		MAX_ANIM_COUNT							8
-typedef		svector<MotionID,MAX_ANIM_COUNT>		MotionSVec;
-MotionID	random_anim								(MotionSVec& v); 
+typedef		svector<MotionIDEx,MAX_ANIM_COUNT>		MotionSVec;
+MotionIDEx& random_anim( MotionSVec& v ); 

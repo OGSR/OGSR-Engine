@@ -106,12 +106,10 @@ public:
 									CSE_Abstract	(LPCSTR caSection);
 	virtual							~CSE_Abstract	();
 	virtual void					OnEvent			(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender ){};
-	virtual void					FillProps		(LPCSTR pref, PropItemVec &items);
 	virtual BOOL					Net_Relevant	(){return TRUE;};
 	//
 	virtual void		__stdcall	Spawn_Write		(NET_Packet &tNetPacket, BOOL bLocal);
 	virtual BOOL		__stdcall	Spawn_Read		(NET_Packet &tNetPacket);
-	virtual void		__stdcall	FillProp		(LPCSTR pref, PropItemVec &items);
 	virtual LPCSTR		__stdcall	name			() const;
 	virtual LPCSTR		__stdcall	name_replace	() const;
 	virtual void		__stdcall	set_name		(LPCSTR s)

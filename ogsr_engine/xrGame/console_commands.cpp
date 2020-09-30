@@ -1108,6 +1108,37 @@ public:
 };
 
 
+// Change weather immediately
+class CCC_SetWeather : public IConsole_Command
+{
+public:
+	CCC_SetWeather(LPCSTR N) : IConsole_Command(N) {}
+
+	void Execute(LPCSTR args) override
+	{
+		if (!strlen(args))
+			return;
+		if (!g_pGameLevel)
+			return;
+		if (!g_pGamePersistent)
+			return;
+
+		g_pGamePersistent->Environment().SetWeather(args, true);
+	}
+
+	void fill_tips(vecTips& tips, u32 mode) override
+	{
+		if (!g_pGameLevel)
+			return;
+		if (!g_pGamePersistent)
+			return;
+
+		for (auto& [name, cycle] : g_pGamePersistent->Environment().WeatherCycles)
+			tips.push_back(name);
+	}
+};
+
+
 void CCC_RegisterCommands()
 {
 	CMD1(CCC_MemStats,			"stat_memory"			);
@@ -1120,6 +1151,8 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,				"g_dof_zoom",			&psActorFlags,	AF_DOF_ZOOM);
 	CMD4( CCC_Integer, "g_dof_zoom_far",  &g_dof_zoom_far,  10, 100 );
 	CMD4( CCC_Integer, "g_dof_zoom_near", &g_dof_zoom_near, 10, 100 );
+
+	CMD3(CCC_Mask, "wpn_aim_toggle", &psActorFlags, AF_WPN_AIM_TOGGLE);
 
 	// alife
 #ifdef DEBUG
@@ -1254,6 +1287,7 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,			"g_3d_scopes",			&psActorFlags,	AF_3D_SCOPES);
 	CMD3(CCC_Mask,			"g_crosshair_dbg",		&psActorFlags,	AF_CROSSHAIR_DBG);
 	CMD1(CCC_TimeFactor,	"time_factor")	
+	CMD1(CCC_SetWeather, "set_weather");
 //#endif // MASTER_GOLD
 
 	CMD3(CCC_Mask,		"g_music_tracks",		&psActorFlags,	AF_MUSIC_TRACKS);

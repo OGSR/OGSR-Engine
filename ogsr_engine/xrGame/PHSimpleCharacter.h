@@ -41,7 +41,7 @@ protected:
 		bool is_initiated;
 		mutable	float					m_contact_velocity;
 	};							
-	SCollisionDamageInfo		m_collision_damage_info;
+	SCollisionDamageInfo m_collision_damage_info{};
 	/////////////////////////// callback
 	ObjectContactCallbackFun*	m_object_contact_callback;
 	////////////////////////// geometry

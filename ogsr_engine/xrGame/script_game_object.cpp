@@ -344,7 +344,7 @@ Fvector	CScriptGameObject::bone_position	(LPCSTR bone_name) const
 	else
 		bone_id			= k->LL_GetBoneRoot();
 
-	ASSERT_FMT( bone_id != BI_NONE, "model doesn't have bone %s for section %s", bone_name, object().cNameSect().c_str());
+	ASSERT_FMT_DBG( bone_id != BI_NONE, "model doesn't have bone [%s] for section [%s]", bone_name, object().cNameSect().c_str());
 
 	Fmatrix				matrix;
 	matrix.mul_43		(object().XFORM(),k->LL_GetBoneInstance(bone_id).mTransform);
@@ -599,7 +599,7 @@ bool CScriptGameObject::IsActorOutdoors() const
 
 	// Now do the real check! This is a copy out of another section of code that is also hard coded.
 	// I don't know what the proper limit for this is supposed to be, but this seems good enough.
-	return e->renderable_ROS()->get_luminocity_hemi() > 0.05f;
+	return e->renderable_ROS()->get_luminocity_hemi() > 0.04f; //--#SM+#-- [0.05f слишком завышен был]
 }
 
 float CScriptGameObject::GetActorJumpSpeed() const

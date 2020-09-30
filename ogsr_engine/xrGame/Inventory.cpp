@@ -1216,21 +1216,29 @@ void CInventory::Iterate( bool bSearchRuck, std::function<bool( const PIItem )> 
 }
 
 
+void CInventory::IterateAmmo( bool bSearchRuck, std::function<bool( const PIItem )> callback ) const {
+  const auto& list = bSearchRuck ? m_ruck : m_belt;
+  for ( const auto& it : list ) {
+    const auto *ammo = smart_cast<CWeaponAmmo*>( it );
+    if ( ammo && it->Useful() && callback( it ) )
+      break;
+  }
+}
+
+
 PIItem CInventory::GetAmmoMaxCurr( const char *name, bool forActor ) const {
   PIItem box = nullptr;
   u32    max = 0;
   auto callback = [&]( const auto pIItem ) -> bool {
-    if ( !xr_strcmp( pIItem->object().cNameSect(), name ) && pIItem->Useful() ) {
+    if ( !xr_strcmp( pIItem->object().cNameSect(), name ) ) {
       const auto *ammo = smart_cast<CWeaponAmmo*>( pIItem );
-      if ( ammo ) {
-        if ( ammo->m_boxCurr == ammo->m_boxSize ) {
-          box = pIItem;
-          return true;
-        }
-        if ( ammo->m_boxCurr > max ) {
-          box = pIItem;
-          max = ammo->m_boxCurr;
-        }
+      if ( ammo->m_boxCurr == ammo->m_boxSize ) {
+        box = pIItem;
+        return true;
+      }
+      if ( ammo->m_boxCurr > max ) {
+        box = pIItem;
+        max = ammo->m_boxCurr;
       }
     }
     return false;
@@ -1238,14 +1246,14 @@ PIItem CInventory::GetAmmoMaxCurr( const char *name, bool forActor ) const {
 
   bool include_ruck = !forActor || !psActorFlags.test( AF_AMMO_ON_BELT );
 
-  Iterate( false, callback );
+  IterateAmmo( false, callback );
   if ( include_ruck ) {
     if ( box ) {
       const auto *ammo = smart_cast<CWeaponAmmo*>( box );
       if ( ammo->m_boxCurr == ammo->m_boxSize )
         return box;
     }
-    Iterate( true, callback );
+    IterateAmmo( true, callback );
   }
 
   return box;
@@ -1267,4 +1275,38 @@ void CInventory::RestoreBeltOrder() {
 
   if ( auto pActor = smart_cast<CActor*>( m_pOwner ) )
     pActor->UpdateArtefactPanel();
+}
+
+
+PIItem CInventory::GetAmmoMinCurr( const char *name, bool forActor ) const {
+  PIItem box = nullptr;
+  u32    min = 0;
+  auto callback = [&]( const auto pIItem ) -> bool {
+    if ( !xr_strcmp( pIItem->object().cNameSect(), name ) ) {
+      const auto *ammo = smart_cast<CWeaponAmmo*>( pIItem );
+      if ( ammo->m_boxCurr == 1 ) {
+        box = pIItem;
+        return true;
+      }
+      if ( min == 0 || ammo->m_boxCurr < min ) {
+        box = pIItem;
+        min = ammo->m_boxCurr;
+      }
+    }
+    return false;
+  };
+
+  bool include_ruck = !forActor || !psActorFlags.test( AF_AMMO_ON_BELT );
+
+  IterateAmmo( false, callback );
+  if ( include_ruck ) {
+    if ( box ) {
+      const auto *ammo = smart_cast<CWeaponAmmo*>( box );
+      if ( ammo->m_boxCurr == 1 )
+        return box;
+    }
+    IterateAmmo( true, callback );
+  }
+
+  return box;
 }

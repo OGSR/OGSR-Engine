@@ -102,12 +102,14 @@ f_deffer 	main	( vf I )
   O				= pack_gbuffer(
 								float4	(N					, H.w		),
 								float4 	(I.position + N*def_virtualh/2.h	, 0		),
-								float4	(D.x,	D.y,	D.z			, def_gloss	) );		// OUT: rgb.gloss
+								float4	(D.x,	D.y,	D.z			, def_gloss	),
+						float4(0.f, 0.f, 0.f, 0.f));		// OUT: rgb.gloss
 #else
   O				= pack_gbuffer(
 								float4	(N					, H.w		),
 								float4 	(I.position + N*def_virtualh/2.h	, 0		),
 								float4	(D.x,	D.y,	D.z			, def_gloss	),
+						float4(0.f, 0.f, 0.f, 0.f),
 								mask );		// OUT: rgb.gloss
 #endif
 

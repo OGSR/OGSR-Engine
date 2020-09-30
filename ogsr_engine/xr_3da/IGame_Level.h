@@ -110,26 +110,27 @@ public:
 	void						LL_CheckTextures		();
 	virtual void				SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTimeFactor) = 0;
 
+	virtual void GetGameTimeForShaders(u32& hours, u32& minutes, u32& seconds, u32& milliseconds) = 0;
 };
 
 //-----------------------------------------------------------------------------------------------------------
 extern ENGINE_API	IGame_Level*	g_pGameLevel;
 
 template <typename _class_type>
-	void relcase_register	(_class_type *self, void (xr_stdcall _class_type::* function_to_bind)(CObject*))
+	void relcase_register	(_class_type *self, void ( _class_type::* function_to_bind)(CObject*))
 	{
 		g_pGameLevel->Objects.relcase_register	(
-			CObjectList::RELCASE_CALLBACK (
+			fastdelegate::MakeDelegate(
 				self,
 				function_to_bind)
 		);
 	}
 
 template <typename _class_type>
-	void relcase_unregister	(_class_type *self, void (xr_stdcall _class_type::* function_to_bind)(CObject*))
+	void relcase_unregister	(_class_type *self, void ( _class_type::* function_to_bind)(CObject*))
 	{
 		g_pGameLevel->Objects.relcase_unregister	(
-			CObjectList::RELCASE_CALLBACK (
+			fastdelegate::MakeDelegate(
 				self,
 				function_to_bind)
 		);

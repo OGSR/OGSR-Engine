@@ -309,12 +309,12 @@ void CWeaponShotgun::OnAnimationEnd(u32 state)
 
 void CWeaponShotgun::Reload() 
 {
+	OnZoomOut();
 	if(m_bTriStateReload){
 		m_stop_triStateReload = false;
-		OnZoomOut();
 		TriStateReload();
 	}else
-		inherited::Reload();
+		TryReload();
 }
 
 void CWeaponShotgun::TriStateReload()
@@ -390,6 +390,37 @@ void CWeaponShotgun::PlayAnimCloseWeapon()
 	m_pHUD->animPlay(random_anim(mhud_close),TRUE,this,GetState());
 }
 
+
+bool CWeaponShotgun::HaveCartridgeInInventory( u8 cnt ) {
+  if ( unlimited_ammo() ) return true;
+  if ( !m_pCurrentInventory ) return false;
+
+  if ( m_set_next_ammoType_on_reload != u32(-1) ) {
+    m_ammoType = m_set_next_ammoType_on_reload;
+    m_set_next_ammoType_on_reload = u32(-1);
+    if ( !m_magazine.empty() )
+      UnloadMagazine();
+  }
+
+  u32 ac = GetAmmoCount( m_ammoType, cnt );
+  if ( ac == 0 && ( m_magazine.empty() || !m_bLockType ) ) {
+    u8 skip_ammo_type = m_ammoType;
+    for ( u8 i = 0; i < u8( m_ammoTypes.size() ); ++i ) {
+      if ( i == skip_ammo_type ) continue;
+      ac = GetAmmoCount( i, cnt );
+      if ( ac >= cnt ) {
+        m_ammoType = i;
+        break;
+      }
+      else if ( ac > 0 && !m_ammoType )
+        m_ammoType = i;
+    }
+  }
+  m_pAmmo = smart_cast<CWeaponAmmo*>( m_pCurrentInventory->GetAmmoMinCurr( *m_ammoTypes[ m_ammoType ], ParentIsActor() ) );
+
+  return ( m_pAmmo && ac >= cnt );
+}
+/*
 bool CWeaponShotgun::HaveCartridgeInInventory		(u8 cnt)
 {
 	if (unlimited_ammo()) return true;
@@ -426,6 +457,8 @@ bool CWeaponShotgun::HaveCartridgeInInventory		(u8 cnt)
 	}
 	return (m_pAmmo!=NULL)&&(m_pAmmo->m_boxCurr>=cnt) ;
 }
+*/
+
 
 u8 CWeaponShotgun::AddCartridge		(u8 cnt)
 {
@@ -493,4 +526,36 @@ void	CWeaponShotgun::net_Import	(NET_Packet& P)
 		l_cartridge.Load(*(m_ammoTypes[LocalAmmoType]), LocalAmmoType); 
 //		m_fCurrentCartirdgeDisp = m_DefaultCartridge.m_kDisp;		
 	}
+}
+
+
+void CWeaponShotgun::TryReload() {
+  if ( m_pCurrentInventory ) {
+    if ( HaveCartridgeInInventory( 1 ) || unlimited_ammo() || ( IsMisfire() && iAmmoElapsed ) ) {
+      m_bPending = true;
+      SwitchState( eReload ); 
+      return;
+    }
+  }
+  SwitchState( eIdle );
+}
+
+
+void CWeaponShotgun::ReloadMagazine() {
+  m_dwAmmoCurrentCalcFrame = 0;	
+  if ( IsMisfire() ) bMisfire = false;
+  if ( !m_pCurrentInventory ) return;
+
+  u8 cnt = AddCartridge( 1 );
+  while ( cnt == 0 ) {
+    cnt = AddCartridge( 1 );
+  }
+}
+
+
+void CWeaponShotgun::StopHUDSounds() {
+  HUD_SOUND::StopSound( m_sndOpen );
+  HUD_SOUND::StopSound( m_sndAddCartridge );
+  HUD_SOUND::StopSound( m_sndClose );
+  inherited::StopHUDSounds();
 }

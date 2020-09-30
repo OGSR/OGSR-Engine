@@ -153,10 +153,15 @@ void CPHMovementControl::Calculate(Fvector& vAccel,const Fvector& camDir,float /
 		}
 	}
 
-	ICollisionDamageInfo	*cdi = CollisionDamageInfo();
-	if (cdi->HitCallback())
-		cdi->HitCallback()->call((m_character->PhysicsRefObject()), fMinCrashSpeed, fMaxCrashSpeed, fContactSpeed, gcontact_HealthLost, CollisionDamageInfo());
-	////////
+#pragma todo("KRodin: починить этот чертов код, вылетает в Х-18 из за кидающихся полтергейстов. Редко, но не настолько, чтобы это было незаметно.")
+	/*
+	auto* cdi = CollisionDamageInfo();
+
+	if (auto* hcb = cdi->HitCallback())
+	{
+		hcb->call(nullptr, fMinCrashSpeed, fMaxCrashSpeed, fContactSpeed, gcontact_HealthLost, cdi);
+	}
+	*/
 
 	TraceBorder(previous_position);
 	CheckEnvironment(vPosition);
