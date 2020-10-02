@@ -171,7 +171,7 @@ void CUITalkWnd::UpdateQuestions()
 
 void CUITalkWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if(pWnd == UITalkDialogWnd && msg == TALK_DIALOG_TRADE_BUTTON_CLICKED)
+	if ( pWnd == UITalkDialogWnd && msg == TALK_DIALOG_TRADE_BUTTON_CLICKED && !m_pCurrentDialog )
 	{
 		SwitchToTrade();
 	}
@@ -380,7 +380,7 @@ bool CUITalkWnd::IR_OnKeyboardPress(int dik)
 	EGameActions cmd = get_binded_action(dik);
 	if(cmd==kUSE)
 	{
-		if (m_pOthersInvOwner&&m_pOthersInvOwner->NeedOsoznanieMode())
+		if ( m_pCurrentDialog || ( m_pOthersInvOwner && m_pOthersInvOwner->NeedOsoznanieMode() ) )
 		{
 			return true;
 		}
@@ -395,6 +395,11 @@ bool CUITalkWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 	if (m_pOthersInvOwner&&m_pOthersInvOwner->NeedOsoznanieMode())
 	{
 		return true;
+	}
+	else if ( m_pCurrentDialog && keyboard_action == WINDOW_KEY_PRESSED ) {
+	  EGameActions cmd = get_binded_action( dik );
+	  if ( cmd == kUSE || cmd == kQUIT )
+	    return true;
 	}
 	return inherited::OnKeyboard(dik,keyboard_action);
 }
