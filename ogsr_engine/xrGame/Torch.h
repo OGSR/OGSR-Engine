@@ -50,7 +50,8 @@ public:
 
 	virtual bool	can_be_attached		() const;
 	void calc_m_delta_h( float );
- 
+	float get_range() const;
+
 public:
 			void	SwitchNightVision		  ();
 			void	SwitchNightVision		  (bool light_on);

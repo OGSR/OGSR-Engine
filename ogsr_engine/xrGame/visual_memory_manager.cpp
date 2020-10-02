@@ -284,8 +284,11 @@ float CVisualMemoryManager::object_luminocity	(const CGameObject *game_object) c
 		return	(1.f);
 
 	const auto* pTorch = smart_cast<const CTorch*>( pActor->GetCurrentTorch() );
-	if ( pTorch && pTorch->torch_active() )
-	  return 1.f;
+	if ( pTorch && pTorch->torch_active() ) {
+	  float dist = m_object->Position().distance_to( game_object->Position() );
+	  if ( dist < pTorch->get_range() )
+	    return 1.f;
+	}
 
 	float		luminocity = const_cast<CGameObject*>(game_object)->ROS()->get_luminocity();
 	float		power = log(luminocity > .001f ? luminocity : .001f)*current_state().m_luminocity_factor;
