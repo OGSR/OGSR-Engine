@@ -257,7 +257,7 @@ void CActor::RunTalkDialog(CInventoryOwner* talk_partner)
 	}
 }
 
-void CActor::StartTalk (CInventoryOwner* talk_partner)
+void CActor::StartTalk (CInventoryOwner* talk_partner, bool)
 {
 	//обновить информацию о контакте
 	VERIFY(smart_cast<CGameObject*>(talk_partner));

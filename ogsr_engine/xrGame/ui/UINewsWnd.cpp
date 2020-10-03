@@ -106,12 +106,15 @@ void CUINewsWnd::AddNewsItem( GAME_NEWS_DATA& news_data, bool top )
 
 void CUINewsWnd::Show(bool status)
 {
-	if (status)
-	  if ( m_flags.test( eNeedAdd ) ) LoadNews();
-	else
+	if (status) {
+		if (m_flags.test(eNeedAdd))
+			LoadNews();
+	}
+	else {
 		InventoryUtilities::SendInfoToActor("ui_pda_news_hide");
-	inherited::Show(status);
+	}
 
+	inherited::Show(status);
 }
 
 

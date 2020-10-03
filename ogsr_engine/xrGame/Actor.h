@@ -163,7 +163,7 @@ protected:
 	CGameTaskManager*				m_game_task_manager;
 	CActorStatisticMgr*				m_statistic_manager;
 public:
-	virtual void StartTalk			(CInventoryOwner* talk_partner); //-V762
+	void StartTalk(CInventoryOwner* talk_partner, bool = true) override;
 	virtual	void RunTalkDialog		(CInventoryOwner* talk_partner);
 	CGameTaskManager&				GameTaskManager() const {return *m_game_task_manager;}
 	CActorStatisticMgr&				StatisticMgr()	{return *m_statistic_manager;}

@@ -254,12 +254,12 @@ using PS::CPGDef;
 
 CPGDef const* const* CPSLibrary::particles_group_begin	() const
 {
-	return	(m_PGDs.size() ? &*m_PGDs.begin() : 0);
+	return m_PGDs.size() ? &m_PGDs.front() : nullptr;
 }
 
 CPGDef const* const* CPSLibrary::particles_group_end	() const
 {
-	return	(m_PGDs.size() ? &*m_PGDs.end() : 0);
+	return m_PGDs.size() ? &m_PGDs.back() : nullptr;
 }
 
 void CPSLibrary::particles_group_next			(PS::CPGDef const* const*& iterator) const
