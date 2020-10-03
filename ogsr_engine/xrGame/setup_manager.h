@@ -40,7 +40,7 @@ protected:
 	setup_actions					m_actions;
 	_action_id_type					m_current_action_id;
 	_action_id_type					m_previous_action_id;
-	bool							m_actuality;
+	bool							m_actuality{};
 
 public:
 	IC								CSetupManager		(_object_type *object);

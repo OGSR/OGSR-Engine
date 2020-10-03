@@ -13,7 +13,7 @@ class motion_marks;
 struct SIKCollideData
 {
 	//CDB::TRI		*m_tri		;
-	Fplane			m_plane		;
+	Fplane			m_plane{};
 	Fvector			m_collide	;
 	Fvector			m_anime		;
 	Fvector			m_pick_dir	;

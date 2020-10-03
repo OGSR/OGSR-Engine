@@ -47,11 +47,11 @@ int son[T];				/* pointers to child nodes (son[], son[] + 1)			*/
 //typedef xr_vector<BYTE>	vecB;
 class LZfs {
 private:
-	unsigned	getbuf;
-	unsigned	getlen;
+	unsigned	getbuf{};
+	unsigned	getlen{};
 	
-	unsigned	putbuf;
-	unsigned	putlen;
+	unsigned	putbuf{};
+	unsigned	putlen{};
 	
 	u8*			in_start;
 	u8*			in_end;

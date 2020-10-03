@@ -54,7 +54,7 @@ protected:
     FVF::L*		m_DD_pv;
     FVF::L*		m_DD_pv_start;
     u32 		m_DD_base;
-    BOOL		m_DD_wire;
+    BOOL		m_DD_wire{};
 	void 		DD_DrawFace_flush		(BOOL try_again);
 public:
 	void 		DD_DrawFace_begin		(BOOL bWire);

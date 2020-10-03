@@ -108,10 +108,10 @@ class CWeaponHUD
 	shared_weapon_hud	m_shared_data;
 
 	//таймеры для проигрывания анимаций
-	u32					m_dwAnimTime;
-	u32					m_dwAnimEndTime;
+	u32					m_dwAnimTime{};
+	u32					m_dwAnimEndTime{};
 	bool				m_bStopAtEndAnimIsRunning;
-	u32					m_startedAnimState;
+	u32					m_startedAnimState{};
 //	CInventoryItem*		m_pCallbackItem;
 	CHudItem*			m_pCallbackItem;
 
@@ -119,8 +119,8 @@ class CWeaponHUD
 	void				StopCurrentAnim	();
 
 	//поворот и смещение для режима приближения
-	float				m_fZoomRotateX;
-	float				m_fZoomRotateY;
+	float				m_fZoomRotateX{};
+	float				m_fZoomRotateY{};
 	Fvector				m_fZoomOffset;
 public: 
 						CWeaponHUD		(CHudItem* pHudItem);

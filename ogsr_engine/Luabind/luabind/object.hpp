@@ -1108,7 +1108,7 @@ private:
 					objs[i] = *x.refs[i];
 			}
 
-			std::size_t n;
+			std::size_t n{};
 			object objs[10];
 		};
 

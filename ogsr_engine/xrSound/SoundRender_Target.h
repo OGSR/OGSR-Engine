@@ -8,10 +8,10 @@ protected:
 	CSoundRender_Emitter*		m_pEmitter;
 	BOOL						rendering;
 public:
-	float						priority;
+	float						priority{};
 	bool alsoft_flag = false;
 protected:
-	OggVorbis_File				ovf;
+	OggVorbis_File				ovf{};
 	IReader*					wave;
 	void						attach();
 	void						dettach();

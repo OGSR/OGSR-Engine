@@ -67,8 +67,8 @@ public:
 #ifdef DEBUG
 	u32									dbg_update_cl;
 #endif
-	u32									dwFrame_UpdateCL;
-	u32									dwFrame_AsCrow;
+	u32									dwFrame_UpdateCL{};
+	u32									dwFrame_AsCrow{};
 
 	// Crow-MODE
 	// if (object_is_visible)

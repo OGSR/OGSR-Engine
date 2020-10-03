@@ -29,7 +29,7 @@ struct SPhraseDialogData : CSharedResource
 	//в окне выбора у актера диалоги будут сортироваться по этому значению от меньшего (снизу) к большему (сверху)
 	int	m_iPriority;
 
-	bool b_bForceReload;
+	bool b_bForceReload{};
 
 	shared_str m_sInitFunction;
 };
@@ -121,7 +121,7 @@ protected:
 	//указатели на собеседников в диалоге
 	CPhraseDialogManager*	m_pSpeakerFirst;
 	CPhraseDialogManager*	m_pSpeakerSecond;
-	bool					m_bFirstIsSpeaking;
+	bool					m_bFirstIsSpeaking{};
 
 	const SPhraseDialogData* data		() const	{ VERIFY(inherited_shared::get_sd()); return inherited_shared::get_sd();}
 	SPhraseDialogData*		data		()			{ VERIFY(inherited_shared::get_sd()); return inherited_shared::get_sd();}

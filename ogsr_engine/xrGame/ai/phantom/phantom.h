@@ -39,10 +39,10 @@ private:
 	};
 	SStateData			m_state_data[stCount];
 private:
-	CParticlesObject*	m_fly_particles;
+	CParticlesObject* m_fly_particles{};
 	static void			animation_end_callback	(CBlend* B);
 private:
-	CObject*			m_enemy;
+	CObject* m_enemy{};
 
 	float				fSpeed;	
 	float				fASpeed;

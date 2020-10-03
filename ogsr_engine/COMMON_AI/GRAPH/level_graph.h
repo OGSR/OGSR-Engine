@@ -48,7 +48,7 @@ private:
 	CHeader					*m_header;		// level graph header
 	CVertex					*m_nodes;		// nodes array
 	xr_vector<bool>			m_access_mask;
-	GameGraph::_LEVEL_ID	m_level_id;		// unique level identifier
+	GameGraph::_LEVEL_ID	m_level_id{};		// unique level identifier
 	u32						m_row_length;
 	u32						m_column_length;
 	u32						m_max_x;

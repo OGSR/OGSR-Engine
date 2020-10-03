@@ -10,7 +10,7 @@ class CStateMonsterHittedMoveOut : public CState<_Object> {
 	struct {
 		Fvector position;
 		u32		node;
-	} target;
+	} target{};
 
 public:
 

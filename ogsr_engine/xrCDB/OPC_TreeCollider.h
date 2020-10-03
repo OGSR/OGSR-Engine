@@ -205,7 +205,7 @@
 							Point			mExtentsCoeff1;
 		// Leaf description
 							Point			mLeafVerts[3];		//!< Triangle vertices
-							udword			mLeafIndex;			//!< Triangle index
+							udword			mLeafIndex{};			//!< Triangle index
 		// Settings
 							bool			mFullBoxBoxTest;	//!< Perform full BV-BV tests (true) or SAT-lite tests (false)
 							bool			mFullPrimBoxTest;	//!< Perform full Primitive-BV tests (true) or SAT-lite tests (false)

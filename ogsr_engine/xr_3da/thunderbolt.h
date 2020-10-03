@@ -38,7 +38,7 @@ struct SThunderboltDesc
     SFlare*						m_GradientTop;
     SFlare*						m_GradientCenter;
     shared_str					name;
-	CLAItem*					color_anim;
+	CLAItem* color_anim{};
 public:
 								SThunderboltDesc		();
 	INGAME_EDITOR_VIRTUAL	    ~SThunderboltDesc		();
@@ -97,11 +97,11 @@ private:
 	//ref_geom			  		hGeom_gradient;
 
     Fvector						lightning_center;
-    float						lightning_size;
-    float						lightning_phase;
+	float						lightning_size{};
+	float						lightning_phase{};
 
     float						life_time;
-    float						current_time;
+	float						current_time{};
     float						next_lightning_time;
 	BOOL						bEnabled;
 

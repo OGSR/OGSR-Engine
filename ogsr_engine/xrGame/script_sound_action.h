@@ -31,9 +31,9 @@ public:
 	bool								m_bStartedToPlay;
 	Fvector								m_tSoundPosition;
 	Fvector								m_tSoundAngles;
-	ESoundTypes							m_sound_type;
+	ESoundTypes							m_sound_type{};
 	MonsterSound::EType					m_monster_sound;
-	int									m_monster_sound_delay;
+	int									m_monster_sound_delay{};
 	MonsterSpace::EMonsterHeadAnimType	m_tHeadAnimType;
 
 public:

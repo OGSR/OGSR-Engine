@@ -57,7 +57,7 @@ protected:
 
 	MotionSVec		mhud_shot_boths;
 
-	ESoundTypes		m_eSoundOpen;
+	ESoundTypes		m_eSoundOpen{};
 	ESoundTypes		m_eSoundAddCartridge;
 	ESoundTypes		m_eSoundClose;
 	HUD_SOUND		m_sndOpen;

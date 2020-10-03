@@ -88,18 +88,18 @@ struct Player_Statistic
 	u32				m_dwTotalShots;
 	u32				m_dwTotalShots_d;
 	//-----------------------------------------------
-	u32				m_dwTotalAliveTime[3];
-	s32				m_dwTotalMoneyRound[3];
-	u32				m_dwNumRespawned[3];
-	u8				m_dwArtefacts[3];
+	u32				m_dwTotalAliveTime[3]{};
+	s32				m_dwTotalMoneyRound[3]{};
+	u32				m_dwNumRespawned[3]{};
+	u8				m_dwArtefacts[3]{};
 	
-	u32				m_dwSpecialKills	[3];//headshot, backstab, knifekill
+	u32				m_dwSpecialKills[3]{};//headshot, backstab, knifekill
 
 	u8				m_dwCurrentTeam;
 
 	WEAPON_STATS	aWeaponStats;	
 	//-----------------------------------------------
-	u32				m_dwCurMoneyRoundDelta;
+	u32				m_dwCurMoneyRoundDelta{};
 
 	Player_Statistic(LPCSTR Name);
 	~Player_Statistic();
@@ -120,9 +120,9 @@ DEF_VECTOR	(PLAYERS_STATS, Player_Statistic);
 struct Bullet_Check_Request
 {
 	u32	BulletID;
-	s16 BoneID;
+	s16 BoneID{};
 	bool Result;
-	bool Processed;
+	bool Processed{};
 	Bullet_Check_Request() : BulletID(0), Result(false) {};
 	Bullet_Check_Request(u32 ID, s16 BID) : BulletID(ID), BoneID(BID), Result(false), Processed(false) {};
 };

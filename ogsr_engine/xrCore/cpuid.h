@@ -46,7 +46,7 @@ private:
 	std::bitset<32> m_f81_EDX;
 
 	DWORD m_dwCount = 0;
-	FILETIME prevSysIdle, prevSysKernel, prevSysUser;
+	FILETIME prevSysIdle{}, prevSysKernel{}, prevSysUser{};
 	std::unique_ptr<LARGE_INTEGER[]> m_idleTime;
 	std::unique_ptr<SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[]> perfomanceInfo;
 };

@@ -56,13 +56,13 @@ public:
 	void							NewPlayerName_Generate	(void* pClient, LPSTR NewPlayerName);
 	void							NewPlayerName_Replace	(void* pClient, LPCSTR NewPlayerName);
 
-	BOOL							sv_force_sync;
+	BOOL							sv_force_sync{};
 	float							rpoints_MinDist [TEAM_COUNT];
 	xr_vector<RPoint>				rpoints	[TEAM_COUNT];
 	DEF_VECTOR(RPRef, RPoint*);
 	RPRef							rpointsBlocked;
 
-	ERoundEnd_Result				round_end_reason;
+	ERoundEnd_Result				round_end_reason{};
 	
 	virtual		void				SaveMapList				();
 	virtual		bool				HasMapRotation			() {return m_bMapRotation; };

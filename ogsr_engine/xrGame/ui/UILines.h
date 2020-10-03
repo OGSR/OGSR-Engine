@@ -106,7 +106,7 @@ protected:
 	};	
 private:
 	Flags8					uFlags;
-	float					m_oldWidth;
+	float					m_oldWidth{};
 };
 
 class CUILinesOwner : public IUITextControl {

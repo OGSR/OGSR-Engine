@@ -94,14 +94,14 @@ struct					net_input
 struct				net_update 		
 {
 	u32					dwTimeStamp;			// server(game) timestamp
-	float				o_model;				// model yaw
+	float				o_model{};				// model yaw
 	SRotation			o_torso;				// torso in world coords
 	Fvector				p_pos;					// in world coords
 	Fvector				p_accel;				// in world coords
 	Fvector				p_velocity;				// in world coords
-	u32					mstate;
-	int					weapon;
-	float				fHealth;
+	u32					mstate{};
+	int					weapon{};
+	float				fHealth{};
 //	float				fArmor;
 
 	net_update()	{

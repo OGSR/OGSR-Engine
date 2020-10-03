@@ -71,7 +71,7 @@ protected:
 	//список живых существ в зоне досягаемости артефакта
 	ALIVE_LIST m_AliveList;
 	//то, что мы ударили
-	CEntityAlive* m_pHitedEntity; 
+	CEntityAlive* m_pHitedEntity{};
 	//то что атакуем
 	CEntityAlive* m_AttakingEntity;
 

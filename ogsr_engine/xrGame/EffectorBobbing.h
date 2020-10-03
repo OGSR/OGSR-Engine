@@ -7,13 +7,13 @@ class CEffectorBobbing : public CEffectorCam
 {
 	float	fTime;
 	Fvector	vAngleAmplitude;
-	float	fYAmplitude;
-	float	fSpeed;
+	float	fYAmplitude{};
+	float	fSpeed{};
 
-	u32		dwMState;
+	u32		dwMState{};
 	float	fReminderFactor;
 	bool	is_limping;
-	bool	m_bZoomMode;
+	bool	m_bZoomMode{};
 
 public:
 	float	m_fAmplitudeRun;

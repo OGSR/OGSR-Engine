@@ -18,7 +18,7 @@ class CScriptObjectAction : public CScriptAbstractAction {
 public:
 	CObject								*m_tpObject;
 	MonsterSpace::EObjectAction			m_tGoalType;
-	u32									m_dwQueueSize;
+	u32									m_dwQueueSize{};
 	shared_str							m_caBoneName;
 
 public:

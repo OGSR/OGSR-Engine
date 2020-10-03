@@ -20,7 +20,7 @@ struct SDrawStaticStruct :public IPureDestroyableObject{
 	virtual	void	destroy			();
 	CUIStatic*		m_static;
 	float			m_endTime;
-	int				m_priority;
+	int				m_priority{};
 	shared_str		m_name;
 	void			Draw();
 	void			Update();

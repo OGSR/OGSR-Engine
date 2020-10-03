@@ -7,7 +7,7 @@ protected:
 	typedef CStateMove<_Object>		inherited;
 	typedef CStateMove<_Object>*	state_ptr;
 
-	u32					m_target_node;
+	u32					m_target_node{};
 
 public:
 						CStateMonsterRestMoveToHomePoint(_Object *obj) : inherited(obj){}

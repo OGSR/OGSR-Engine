@@ -156,7 +156,7 @@ public:
 				void			MoveWndDelta		(const Fvector2& d)					{ MoveWndDelta(d.x, d.y);	};
 
 protected:
-	bool					m_bShowMe;
+	bool					m_bShowMe{};
 	Fvector2				m_wndPos;
 	Fvector2				m_wndSize;
 	EWindowAlignment		m_alignment;

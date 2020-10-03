@@ -23,7 +23,7 @@ private:
 	TTime				m_last_shield_started;
 	TTime				m_next_particle_allowed;
 	float				m_shield_start_anim_length_sec;
-	bool				m_started;
+	bool				m_started{};
 };
 
 #include "burer_state_attack_shield_inline.h"

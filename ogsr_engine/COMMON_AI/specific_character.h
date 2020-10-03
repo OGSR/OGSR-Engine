@@ -86,7 +86,7 @@ struct SSpecificCharacterData : CSharedResource
 		u32				max_money;
 		bool			inf_money;
 	};
-	SMoneyDef			money_def;
+	SMoneyDef			money_def{};
 #endif
 };
 

@@ -16,8 +16,8 @@ public:
 	virtual void		Draw					();
 
 protected:
-	bool				m_bClockwise;
-	u32					m_sectorCount;
+	bool				m_bClockwise{};
+	u32					m_sectorCount{};
 	float				m_stage;
 	CUIStatic*			m_pTexture;
 	CUIStatic*			m_pBackground;

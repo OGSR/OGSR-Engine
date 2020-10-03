@@ -6,7 +6,7 @@ struct SPPInfo;
 // постпроцесс
 class ENGINE_API CEffectorPP : public SBaseEffector
 {
-	EEffectorPPType eType;
+	EEffectorPPType eType{};
 	bool bFreeOnRemove;
 
 protected:

@@ -109,13 +109,7 @@ Player_Statistic::Player_Statistic(LPCSTR Name)
 	m_dwTotalShots			= 0;
 	m_dwTotalShots_d		= 0;
 	m_dwCurrentTeam			= 0;
-
-	ZeroMemory				(m_dwTotalAliveTime, sizeof(m_dwTotalAliveTime));
-	ZeroMemory				(m_dwTotalMoneyRound, sizeof(m_dwTotalMoneyRound));
-	ZeroMemory				(m_dwNumRespawned, sizeof(m_dwNumRespawned));
-	ZeroMemory				(m_dwArtefacts, sizeof(m_dwArtefacts));
-	ZeroMemory				(m_dwSpecialKills, sizeof(m_dwSpecialKills));
-};
+}
 
 Player_Statistic::~Player_Statistic()
 {

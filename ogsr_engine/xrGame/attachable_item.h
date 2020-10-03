@@ -16,7 +16,7 @@ private:
 	CInventoryItem				*m_item;
 	shared_str					m_bone_name;
 	Fmatrix						m_offset;
-	u16							m_bone_id;
+	u16							m_bone_id{};
 	bool						m_enabled;
 //	bool						m_auto_attach;
 #ifdef DEBUG

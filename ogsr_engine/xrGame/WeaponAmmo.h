@@ -18,10 +18,10 @@ public:
 	float	m_kDist, m_kDisp, m_kHit, m_kImpulse, m_kPierce, m_kAP, m_kAirRes, m_kSpeed;
 	int		m_buckShot;
 	float	m_impair;
-	float	fWallmarkSize;
+	float	fWallmarkSize{};
 	
-	u8		m_u8ColorID;
-	u8		m_LocalAmmoType;
+	u8		m_u8ColorID{};
+	u8		m_LocalAmmoType{};
 
 	
 	u16		bullet_material_idx;

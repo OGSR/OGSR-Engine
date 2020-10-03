@@ -94,7 +94,7 @@ public:
 class CPostProcessColor : public CPostProcessParam
 {
 protected:
-    float           m_fBase;
+    float           m_fBase{};
     CEnvelope       m_Red;
     CEnvelope       m_Green;
     CEnvelope       m_Blue;

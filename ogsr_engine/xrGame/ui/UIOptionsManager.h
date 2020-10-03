@@ -37,5 +37,5 @@ protected:
 	groups	m_groups;
 
 	bool	m_b_vid_restart;
-	bool	m_b_snd_restart;
+	bool	m_b_snd_restart{};
 };

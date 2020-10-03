@@ -25,7 +25,7 @@ protected:
 	_index_type				goal_node_index;
 	_dist_type				max_range;
 	_iteration_type			max_iteration_count;
-	u32						max_visited_node_count;
+	u32						max_visited_node_count{};
 	const _index_type		*best_node_index;
 
 public:

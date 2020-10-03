@@ -28,7 +28,7 @@ public:
 	typedef associative_vector<ALife::_SPAWN_STORY_ID,ALife::_OBJECT_ID>			SPAWN_STORY_IDS;
 
 private:
-	CALifeSpawnHeader						m_header;
+	CALifeSpawnHeader						m_header{};
 	SPAWN_GRAPH								m_spawns;
 	//ARTEFACT_SPAWNS							m_artefact_spawn_positions;
 	shared_str								m_spawn_name;

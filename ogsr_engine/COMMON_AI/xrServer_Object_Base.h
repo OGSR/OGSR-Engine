@@ -63,7 +63,7 @@ private:
 
 public:
 	BOOL							net_Ready;
-	BOOL							net_Processed;	// Internal flag for connectivity-graph
+	BOOL							net_Processed{};	// Internal flag for connectivity-graph
 	
 	u16								m_wVersion;
 	u16								m_script_version;
@@ -91,7 +91,7 @@ public:
 
 	// for ALife control
 	bool							m_bALifeControl;
-	ALife::_SPAWN_ID				m_tSpawnID;
+	ALife::_SPAWN_ID				m_tSpawnID{};
 
 	// ALife spawn params
 	// obsolete, just because we hope to uncomment all this stuff

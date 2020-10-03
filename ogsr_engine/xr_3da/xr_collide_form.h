@@ -86,7 +86,7 @@ class ENGINE_API	ICollisionForm
 	friend class	CObjectSpace;
 protected:
 	CObject*		owner;			// владелец
-	u32				dwQueryID;
+	u32				dwQueryID{};
 protected:
 	Fbox			bv_box;			// (Local) BBox объекта
 	Fsphere			bv_sphere;		// (Local) Sphere 
@@ -135,8 +135,8 @@ private:
 	VisMask				vis_mask;
 	ElementVec			elements;
 
-	u32					dwFrame;		// The model itself
-	u32					dwFrameTL;		// Top level
+	u32					dwFrame{};		// The model itself
+	u32					dwFrameTL{};		// Top level
 
 	void				BuildState		();
 	void				BuildTopLevel	();
