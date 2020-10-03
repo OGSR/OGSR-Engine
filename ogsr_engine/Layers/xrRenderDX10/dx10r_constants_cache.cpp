@@ -65,7 +65,7 @@ dx10ConstantBuffer& R_constants::GetCBuffer(R_constant* C, BufferType BType)
 	FATAL("Unreachable code");
 	//Just hack to avoid warning;
 	dx10ConstantBuffer* ptr = 0;
-	return *ptr;
+	return *ptr; //-V522
 }
 
 void R_constants::flush_cache()

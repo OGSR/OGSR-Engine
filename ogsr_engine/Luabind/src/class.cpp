@@ -329,7 +329,7 @@ namespace luabind { namespace detail {
             , method_name(name));
         if (m == m_registration->m_methods.end())
         {
-            m_registration->m_methods.push_back(method_rep());
+            m_registration->m_methods.emplace_back();
             m = m_registration->m_methods.end();
             std::advance(m, -1);
             m->name = name;

@@ -118,7 +118,7 @@ void CScriptEngine::setup_auto_load()
 		FS.update_path(fn1, "$game_scripts$", fn1);
 		strconcat(sizeof(fn1), fn1, fn1, fn2, ".script");
 
-		xray_scripts.insert({ fn2, fn1 });
+		xray_scripts.emplace(fn2, fn1);
 	}
 #endif
 }
@@ -230,7 +230,7 @@ void CollectScriptFiles(script_list_type &map, const char* path)
 	{
 		std::for_each(folders->begin(), folders->end(), [&](const char* folder)
 		{
-			if (strstr(folder, "."))
+			if (strchr(folder, '.'))
 			{
 				strconcat(sizeof(fname), fname, path, folder);
 				CollectScriptFiles(map, fname);
@@ -249,10 +249,10 @@ void CollectScriptFiles(script_list_type &map, const char* path)
 		if ((strstr(fname, ".script") /*|| strstr(fname, ".lua")*/) && FS.exist(fname))
 		{
 			const char* fstart = ExtractFileName(fname);
-			strcpy_s(buff, sizeof(buff), fstart);
-			_strlwr_s(buff, sizeof(buff));
+			strcpy_s(buff, fstart);
+			_strlwr_s(buff);
 			const char* nspace = strtok(buff, ".");
-			map.insert({ nspace, fname });
+			map.emplace(nspace, fname);
 		}
 	});
 	FS.file_list_close(files);
@@ -266,12 +266,12 @@ bool LookupScript(string_path &fname, const char* base)
 		FS.update_path(lc_base, "$game_scripts$", "");
 		CollectScriptFiles(xray_scripts, lc_base);
 	}
-	strcpy_s(lc_base, sizeof(lc_base), base);
-	_strlwr_s(lc_base, sizeof(lc_base));
+	strcpy_s(lc_base, base);
+	_strlwr_s(lc_base);
 	auto it = xray_scripts.find(lc_base);
 	if (it != xray_scripts.end())
 	{
-		strcpy_s(fname, sizeof(fname), it->second.c_str());
+		strcpy_s(fname, it->second.c_str());
 		return true;
 	}
 	return false;

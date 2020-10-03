@@ -104,8 +104,7 @@ FS_file_list_ex::FS_file_list_ex(LPCSTR path, u32 flags, LPCSTR mask)
 	FS.file_list(files,path,flags,mask);
 
 	for(FS_FileSetIt it=files.begin();it!=files.end();++it){
-		m_file_items.push_back	(FS_item());
-		FS_item& itm			= m_file_items.back();
+		auto& itm = m_file_items.emplace_back();
 		ZeroMemory				(itm.name,sizeof(itm.name));
 		strcat_s(itm.name,it->name.c_str());
 		itm.modif				= (u32)it->time_write;

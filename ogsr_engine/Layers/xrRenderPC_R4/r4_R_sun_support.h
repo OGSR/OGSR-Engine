@@ -435,8 +435,8 @@ public:
 			Fvector3	point;
 			points.push_back	(point.sub(points[E.p0],direction));
 			points.push_back	(point.sub(points[E.p1],direction));
-			polys.push_back		(_poly());
-			_poly&		P		= polys.back();	
+
+			auto& P = polys.emplace_back();
 			int			pend	= int(points.size());
 			P.points.push_back	(E.p0);
 			P.points.push_back	(E.p1);

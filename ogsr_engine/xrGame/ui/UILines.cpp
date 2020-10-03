@@ -547,9 +547,9 @@ u32 CUILines::GetColorFromText(const xr_string& str)const{
 	}
 
 	// try parse values separated by commas
-	comma1_pos = str.find(",", begin);
-	comma2_pos = str.find(",", comma1_pos + 1);
-	comma3_pos = str.find(",", comma2_pos + 1);
+	comma1_pos = str.find(',', begin);
+	comma2_pos = str.find(',', comma1_pos + 1);
+	comma3_pos = str.find(',', comma2_pos + 1);
 
     R_ASSERT2(npos != comma1_pos, "CUISubLine::GetColorFromText -- can't find first comma");        
 	R_ASSERT2(npos != comma2_pos, "CUISubLine::GetColorFromText -- can't find second comma");

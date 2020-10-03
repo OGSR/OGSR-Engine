@@ -23,8 +23,7 @@ CParticlesPlayer::SParticlesInfo* CParticlesPlayer::SBoneInfo::AppendParticles(C
 {
 	SParticlesInfo* pi	= FindParticles(ps_name);
 	if (pi)				return pi;
-	particles.push_back	(SParticlesInfo());
-	pi					= &particles.back();
+	pi					= &particles.emplace_back();
 	pi->ps				= CParticlesObject::Create(*ps_name,FALSE);
 	return pi;
 }

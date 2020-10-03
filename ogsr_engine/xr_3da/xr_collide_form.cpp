@@ -371,15 +371,13 @@ void CCF_Shape::_BoxQuery(const Fbox& B, const Fmatrix& M, u32 flags)
 */
 void CCF_Shape::add_sphere	(Fsphere& S )
 {
-	shapes.push_back(shape_def());
-	shapes.back().type	= 0;
+	shapes.emplace_back().type = 0;
 	shapes.back().data.sphere.set(S);
 }
 
 void CCF_Shape::add_box		(Fmatrix& B )
 {
-	shapes.push_back(shape_def());
-	shapes.back().type	= 1;
+	shapes.emplace_back().type = 1;
 	shapes.back().data.box.set(B);
 	shapes.back().data.ibox.invert(B);
 }

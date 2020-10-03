@@ -131,7 +131,7 @@ void	CEventAPI::Defer(EVENT E, u64 P1, u64 P2)
 {
 	CS.Enter	();
 	E->dwRefCount++;
-	Events_Deferred.push_back	(Deferred());
+	Events_Deferred.emplace_back();
 	Events_Deferred.back().E	= E;
 	Events_Deferred.back().P1	= P1;
 	Events_Deferred.back().P2	= P2;

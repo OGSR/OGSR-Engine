@@ -101,8 +101,7 @@ BOOL CLevel::Load_GameSpecific_After()
 		Sounds_Random.reserve	(S.Data.size());
 		for ( const auto &I : S.Data ) 
 		{
-			Sounds_Random.push_back	(ref_sound());
-			Sound->create			(Sounds_Random.back(),I.first.c_str(),st_Effect,sg_SourceType);
+			Sound->create(Sounds_Random.emplace_back(), I.first.c_str(), st_Effect, sg_SourceType);
 		}
 		Sounds_Random_dwNextTime= Device.TimerAsync	()	+ 50000;
 		Sounds_Random_Enabled	= FALSE;

@@ -158,7 +158,7 @@ void CBackend::dbg_DrawEllipse(Fmatrix& T, u32 C)
 	};
 #endif // #if defined(USE_DX10) || defined(USE_DX11)
 
-	const int vcnt = sizeof(gVertices)/(sizeof(float)*3);
+	const int vcnt = sizeof(gVertices)/(sizeof(float)*3); //-V706
 	FVF::L  verts[vcnt];
 	for (int i=0; i<vcnt; i++) {
 		int k=i*3;

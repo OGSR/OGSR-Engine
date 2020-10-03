@@ -80,8 +80,6 @@ public:
 	u32							dwOpenCounter;
 
 private:
-			void				check_cached_files	(LPSTR fname, const file &desc, LPCSTR &source_name);
-
 			void				file_from_cache_impl(IReader *&R, LPSTR fname, const file &desc);
 			void				file_from_cache_impl(CStreamReader *&R, LPSTR fname, const file &desc);
 	template <typename T>

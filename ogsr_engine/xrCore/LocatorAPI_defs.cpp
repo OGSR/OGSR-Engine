@@ -33,7 +33,7 @@ FS_Path::FS_Path	(LPCSTR _Root, LPCSTR _Add, LPCSTR _DefExt, LPCSTR _FilterCapti
 {
 //	VERIFY			(_Root&&_Root[0]);
 	string_path		temp;
-    strcpy_s		(temp,sizeof(temp),_Root);  //-V595
+	strcpy_s(temp, _Root);
     if (_Add) 		strcat_s(temp,_Add);
 	if (temp[0] && temp[xr_strlen(temp)-1]!='\\') strcat_s(temp,"\\");
 	m_Path			= xr_strlwr(xr_strdup(temp));

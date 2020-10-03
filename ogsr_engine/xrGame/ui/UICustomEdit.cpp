@@ -182,7 +182,7 @@ bool CUICustomEdit::KeyPressed(int dik)
 
 	if (out_me)
 	{
-		if (!m_bNumbersOnly || (out_me >= '0' && out_me <= '9') || (m_bFloatNumbers && out_me == '.' && !strstr(m_lines.GetText(), ".")))
+		if (!m_bNumbersOnly || (out_me >= '0' && out_me <= '9') || (m_bFloatNumbers && out_me == '.' && !strchr(m_lines.GetText(), '.')))
 		{
 			AddChar(out_me);
 			bChanged = true;
