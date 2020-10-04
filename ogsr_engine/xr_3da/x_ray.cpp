@@ -118,6 +118,7 @@ void InitConsole	()
 	CORE_FEATURE_SET( actor_thirst,               "features" );
 	CORE_FEATURE_SET( autoreload_wpn,             "features" );
 	CORE_FEATURE_SET( no_progress_bar_animation,  "features" );
+	CORE_FEATURE_SET( disable_dialog_break,       "features" );
 }
 
 void InitInput()
