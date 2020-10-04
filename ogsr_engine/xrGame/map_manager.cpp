@@ -119,8 +119,7 @@ CMapLocation* CMapManager::AddMapLocation(const shared_str& spot_type, u16 id)
 	Locations_it it = std::find_if(Locations().begin(),Locations().end(),key);
 	if( it == Locations().end() ){
 		CMapLocation* l = xr_new<CMapLocation>(*key.spot_id, key.object_id);
-		Locations().push_back( SLocationKey(key.spot_id, key.object_id) );
-		Locations().back().location = l;
+		Locations().emplace_back(key.spot_id, key.object_id).location = l;
 		if (g_actor)
 			Actor()->callback(GameObject::eMapLocationAdded)(*spot_type, id);
 		return l;
@@ -147,8 +146,7 @@ CMapLocation* CMapManager::AddRelationLocation(CInventoryOwner* pInvOwner)
 	Locations_it it = std::find_if(Locations().begin(),Locations().end(),key);
 	if( it == Locations().end() ){
 		CMapLocation* l = xr_new<CRelationMapLocation>(*key.spot_id, key.object_id, pActor->object_id(), pInvOwner->object_id());
-		Locations().push_back( SLocationKey(key.spot_id, key.object_id) );
-		Locations().back().location = l;
+		Locations().emplace_back(key.spot_id, key.object_id).location = l;
 		return l;
 	}else
 		(*it).location->AddRef();

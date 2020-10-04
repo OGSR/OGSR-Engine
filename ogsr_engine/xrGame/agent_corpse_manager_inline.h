@@ -23,7 +23,7 @@ IC	CAgentManager &CAgentCorpseManager::object	() const
 IC	void CAgentCorpseManager::register_corpse	(CAI_Stalker *corpse)
 {
 	VERIFY2(std::find(m_corpses.begin(),m_corpses.end(),corpse) == m_corpses.end(),"Cannot register corpse more than a time!");
-	m_corpses.push_back			(CMemberCorpse(corpse,0,Device.dwTimeGlobal));
+	m_corpses.emplace_back(corpse, nullptr, Device.dwTimeGlobal);
 }
 
 IC	CAgentCorpseManager::MEMBER_CORPSES &CAgentCorpseManager::corpses	()

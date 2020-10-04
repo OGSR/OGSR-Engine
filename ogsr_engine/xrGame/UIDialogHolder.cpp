@@ -198,7 +198,7 @@ void CDialogHolder::SetMainInputReceiver	(CUIDialogWnd* ir, bool _find_remove)
 		}
 
 	}else{
-		m_input_receivers.push_back(recvItem(ir));
+		m_input_receivers.emplace_back(ir);
 	}
 };
 //. #include "ai_space.h"

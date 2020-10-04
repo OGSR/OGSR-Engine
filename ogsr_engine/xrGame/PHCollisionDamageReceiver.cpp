@@ -14,7 +14,7 @@
 void CPHCollisionDamageReceiver::BoneInsert(u16 id,float k)
 {
 	R_ASSERT2(FindBone(id)==m_controled_bones.end(),"duplicate bone!");
-	m_controled_bones.push_back(SControledBone(id,k));
+	m_controled_bones.emplace_back(id, k);
 }
 void CPHCollisionDamageReceiver::Init()
 {

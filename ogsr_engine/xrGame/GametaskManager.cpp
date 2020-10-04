@@ -80,8 +80,7 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 
 	m_flags.set					(eChanged, TRUE);
 
-	GameTasks().push_back				(SGameTaskKey(t->m_ID) );
-	GameTasks().back().game_task			= t;
+	GameTasks().emplace_back(t->m_ID).game_task = t;
 	t->m_ReceiveTime				= Level().GetGameTime();
 	t->m_TimeToComplete				= t->m_ReceiveTime + timeToComplete;
 
@@ -99,7 +98,7 @@ CGameTask*	CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
 		if( std::find_if(article_vector.begin(), article_vector.end(), pred) == article_vector.end() ){
 			CEncyclopediaArticle article;
 			article.Load(obj->article_id);
-			article_vector.push_back(ARTICLE_DATA(obj->article_id, Level().GetGameTime(), article.data()->articleType));
+			article_vector.emplace_back(obj->article_id, Level().GetGameTime(), article.data()->articleType);
 			}
 		}
 

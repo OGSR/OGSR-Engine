@@ -67,7 +67,7 @@ u32 CAI_Stalker::fill_items						(CInventory &inventory, CGameObject *old_owner,
 		if (!tradable_item(*I,old_owner->ID()))
 			continue;
 		
-		m_temp_items.push_back	(CTradeItem(*I,old_owner->ID(),new_owner_id));
+		m_temp_items.emplace_back(*I, old_owner->ID(), new_owner_id);
 		result					+= (*I)->Cost();
 	}
 
@@ -259,8 +259,8 @@ void CAI_Stalker::update_sell_info					()
 	TIItemContainer::iterator	I = inventory().m_all.begin();
 	TIItemContainer::iterator	E = inventory().m_all.end();
 	for ( ; I != E; ++I) {
-		if (!tradable_item(*I,ID()))
-			m_temp_items.push_back	(CTradeItem(*I,ID(),ID()));
+		if (!tradable_item(*I, ID()))
+			m_temp_items.emplace_back(*I, ID(), ID());
 	}
 }
 

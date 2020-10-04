@@ -184,7 +184,7 @@ PLAYERS_STATS_it WeaponUsageStatistic::FindPlayer(LPCSTR PlayerName)
 	PLAYERS_STATS_it pPlayerI;
 	if (!GetPlayer(PlayerName, pPlayerI))
 	{
-		aPlayersStatistic.push_back	(Player_Statistic(PlayerName));
+		aPlayersStatistic.emplace_back(PlayerName);
 		pPlayerI					= aPlayersStatistic.end()-1;
 	};
 	return pPlayerI;
@@ -202,7 +202,7 @@ WEAPON_STATS_it	Player_Statistic::FindPlayersWeapon	(LPCSTR WeaponName)
 	WEAPON_STATS_it pWeaponI = std::find(aWeaponStats.begin(), aWeaponStats.end(), WeaponName);
 	if (pWeaponI == aWeaponStats.end() || !((*pWeaponI) == WeaponName))
 	{
-		aWeaponStats.push_back(Weapon_Statistic(WeaponName));		
+		aWeaponStats.emplace_back(WeaponName);		
 		pWeaponI = aWeaponStats.end()-1;
 		pWeaponI->InvName = pSettings->r_string_wb(WeaponName, "inv_name");
 	}
@@ -275,7 +275,7 @@ void WeaponUsageStatistic::OnBullet_Fire(SBullet* pBullet, const CCartridge& car
 	WeaponIt->m_dwRoundsFired = (++WeaponIt->m_dwBulletsFired)/cartridge.m_buckShot;
 	WeaponIt->m_dwBulletsFired_d++;
 	//-----------------------------------------------------------------------------------
-	ActiveBullets.push_back(BulletData(object_parent->cName(), object_weapon->cNameSect(), pBullet));
+	ActiveBullets.emplace_back(object_parent->cName(), object_weapon->cNameSect(), pBullet);
 	
 //	Msg("! OnBullet Fire ID[%d]", pBullet->m_dwID);
 }
@@ -337,7 +337,7 @@ void WeaponUsageStatistic::OnBullet_Check_Request(SHit* pHDS)
 	BChA_it pSenderI	= std::find(m_Requests.begin(), m_Requests.end(), SenderID);
 	if (pSenderI == m_Requests.end() || (*pSenderI) != SenderID)
 	{
-		m_Requests.push_back(Bullet_Check_Array(SenderID));
+		m_Requests.emplace_back(SenderID);
 		pSenderI = m_Requests.end()-1;
 	};
 	
