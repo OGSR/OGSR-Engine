@@ -1112,8 +1112,10 @@ const char* TiXmlElement::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 			// elements -- read the end tag, and return.
 			++p;
 			p = ReadValue( p, data, encoding );		// Note this is an Element method, and will set the error if one happens.
-			if ( !p || !*p )
-				return 0;
+            if (!p || !*p) {
+                if (document) document->SetError(TIXML_ERROR_READING_END_TAG, p, data, encoding);
+                return 0;
+            }
 
 			// We should find the end tag now
 			if ( StringEqual( p, endTag.c_str(), false, encoding ) )
@@ -1347,7 +1349,21 @@ const char* TiXmlComment::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 		return 0;
 	}
 	p += xr_strlen( startTag );
-	p = ReadText( p, &value, false, endTag, false, encoding );
+
+    // [ 1475201 ] TinyXML parses entities in comments
+    // Oops - ReadText doesn't work, because we don't want to parse the entities.
+    // p = ReadText( p, &value, false, endTag, false, encoding );
+    //
+    // we does not need actual content of xml comment, just need to read till the end of it
+
+    // Keep all the white space.
+    while (p && *p && !StringEqual(p, endTag, false, encoding))
+    {
+        ++p;
+    }
+    if (p && *p)
+        p += xr_strlen(endTag);
+
 	return p;
 }
 
