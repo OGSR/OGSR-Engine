@@ -160,51 +160,59 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 	{
 	case eItemPlaceBelt:
 		result							= Belt(pIItem); 
-#ifdef DEBUG
-		if(!result) 
-			Msg("cant put in belt item %s", *pIItem->object().cName());
-#endif
+
+        if (!result) {
+            Msg("cant put in belt item %s", *pIItem->object().cName());
+            pIItem->m_eItemPlace = eItemPlaceRuck;
+        }
 
 		break;
 	case eItemPlaceRuck:
 		result							= Ruck(pIItem);
-#ifdef DEBUG
-		if(!result) 
-			Msg("cant put in ruck item %s", *pIItem->object().cName());
-#endif
+
+        if (!result) {
+            Msg("cant put in ruck item %s", *pIItem->object().cName());
+        }
 
 		break;
 	case eItemPlaceSlot:
 		if ( smart_cast<CActor*>( m_pOwner ) && Device.dwPrecacheFrame && m_iActiveSlot == NO_ACTIVE_SLOT && m_iNextActiveSlot == NO_ACTIVE_SLOT )
 			bNotActivate = true;
+
 		result							= Slot(pIItem, bNotActivate); 
-#ifdef DEBUG
-		if(!result) 
-			Msg("cant slot in ruck item %s", *pIItem->object().cName());
-#endif
+
+        if (!result) {
+            Msg("cant slot in ruck item %s", *pIItem->object().cName());
+            pIItem->m_eItemPlace = eItemPlaceRuck;
+        }
 
 		break;
 	default:
-		bool def_to_slot = true;
-		auto pActor      = smart_cast<CActor*>( m_pOwner );
-		if (Core.Features.test(xrCore::Feature::ruck_flag_preferred))
-			def_to_slot = pActor ? !pIItem->RuckDefault() : true;
-
-		if(def_to_slot && CanPutInSlot(pIItem))
-		{
-			if ( pActor && Device.dwPrecacheFrame )
-				bNotActivate = true;
-			result						= Slot(pIItem, bNotActivate); VERIFY(result);
-		} 
-		else if (!pIItem->RuckDefault() && CanPutInBelt(pIItem))
-		{
-			result						= Belt(pIItem); VERIFY(result);
-		}
-		else
-		{
-			result						= Ruck(pIItem); VERIFY(result);
-		}
+        break;
 	}
+
+    if (!result)
+    {
+        bool def_to_slot = true;
+        auto pActor = smart_cast<CActor*>(m_pOwner);
+        if (Core.Features.test(xrCore::Feature::ruck_flag_preferred))
+            def_to_slot = pActor ? !pIItem->RuckDefault() : true;
+
+        if (def_to_slot && CanPutInSlot(pIItem))
+        {
+            if (pActor && Device.dwPrecacheFrame)
+                bNotActivate = true;
+            result = Slot(pIItem, bNotActivate); VERIFY(result);
+        }
+        else if (!pIItem->RuckDefault() && CanPutInBelt(pIItem))
+        {
+            result = Belt(pIItem); VERIFY(result);
+        }
+        else
+        {
+            result = Ruck(pIItem); VERIFY(result);
+        }
+    }
 	
 	m_pOwner->OnItemTake				(pIItem);
 
