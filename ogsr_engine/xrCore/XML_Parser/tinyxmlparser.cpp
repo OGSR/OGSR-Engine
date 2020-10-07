@@ -1081,7 +1081,6 @@ const char* TiXmlElement::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 
     TIXML_STRING endTag ("</");
 	endTag += value;
-	endTag += ">";
 
 	// Check for and read attributes. Also look for an empty
 	// tag or an end tag.
@@ -1121,7 +1120,13 @@ const char* TiXmlElement::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 			if ( StringEqual( p, endTag.c_str(), false, encoding ) )
 			{
 				p += endTag.length();
-				return p;
+				p = SkipWhiteSpace( p, encoding );
+				if ( p && *p && *p == '>' ) {
+					++p;
+					return p;
+				}
+				if ( document ) document->SetError( TIXML_ERROR_READING_END_TAG, p, data, encoding );
+				return 0;
 			}
 			else
 			{
@@ -1158,7 +1163,7 @@ const char* TiXmlElement::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 			#endif
 			if ( node )
 			{
-				node->SetValue( attrib->Value() );
+				if ( document ) document->SetError( TIXML_ERROR_PARSING_ELEMENT, pErr, data, encoding );
 				xr_delete(attrib);
 				return 0;
 			}
@@ -1345,7 +1350,8 @@ const char* TiXmlComment::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 
 	if ( !StringEqual( p, startTag, false, encoding ) )
 	{
-		document->SetError( TIXML_ERROR_PARSING_COMMENT, p, data, encoding );
+		if ( document )
+		    document->SetError( TIXML_ERROR_PARSING_COMMENT, p, data, encoding );
 		return 0;
 	}
 	p += xr_strlen( startTag );
@@ -1372,10 +1378,6 @@ const char* TiXmlAttribute::Parse( const char* p, TiXmlParsingData* data, TiXmlE
 {
 	p = SkipWhiteSpace( p, encoding );
 	if ( !p || !*p ) return 0;
-
-//	int tabsize = 4;
-//	if ( document )
-//		tabsize = document->TabSize();
 
 	if ( data )
 	{
@@ -1497,7 +1499,8 @@ const char* TiXmlText::Parse( const char* p, TiXmlParsingData* data, TiXmlEncodi
 
 		if ( !StringEqual( p, startTag, false, encoding ) )
 		{
-			document->SetError( TIXML_ERROR_PARSING_CDATA, p, data, encoding );
+			if ( document )
+			    document->SetError( TIXML_ERROR_PARSING_CDATA, p, data, encoding );
 			return 0;
 		}
 		p += xr_strlen( startTag );
