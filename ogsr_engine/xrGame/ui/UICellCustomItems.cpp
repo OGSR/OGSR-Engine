@@ -436,10 +436,10 @@ void CUIWeaponCellItem::InitAddon(CUIStatic* s, CIconParams &params, Fvector2 ad
 		s->SetWindowName("wpn_addon");
 }
 
-CUIStatic *MakeAddonStatic(CUIDragItem* i, ui_shader& shader)
+CUIStatic *MakeAddonStatic(CUIDragItem* i, CIconParams &params)
 {
 	CUIStatic* s = xr_new<CUIStatic>();
-	s->SetShader(shader);
+    params.set_shader(s);
 	s->SetAutoDelete(true);
 	s->SetColor(i->wnd()->GetColor());
 	i->wnd()->AttachChild(s);
@@ -449,9 +449,37 @@ CUIStatic *MakeAddonStatic(CUIDragItem* i, ui_shader& shader)
 CUIDragItem* CUIWeaponCellItem::CreateDragItem()
 {
 	CUIDragItem* i = inherited::CreateDragItem();
-	CUIStatic* s_silencer	= GetIcon(eSilencer) ? MakeAddonStatic(i, GetShader()) : NULL;
-	CUIStatic* s_scope	= GetIcon(eScope)    ? MakeAddonStatic(i, GetShader()) : NULL;
-	CUIStatic* s_launcher	= GetIcon(eLauncher) ? MakeAddonStatic(i, GetShader()) : NULL;		
+
+    CIconParams params;
+
+	CUIStatic* s_silencer	= nullptr;
+	CUIStatic* s_scope	= nullptr;
+	CUIStatic* s_launcher	= nullptr;
+
+    if (GetIcon(eSilencer))
+    {
+        params.Load(object()->GetSilencerName());
+        s_silencer = MakeAddonStatic(i, params);
+    }
+
+    if (GetIcon(eScope))
+    {
+        params.Load(object()->GetScopeName());
+        s_scope = MakeAddonStatic(i, params);
+    }
+
+    if (GetIcon(eLauncher))
+    {
+        params.Load(object()->GetGrenadeLauncherName());
+        s_launcher = MakeAddonStatic(i, params);
+    }
+
+    /*
+    CUIStatic* s_silencer = GetIcon(eSilencer) ? MakeAddonStatic(i, params) : NULL;
+    CUIStatic* s_scope = GetIcon(eScope) ? MakeAddonStatic(i, params) : NULL;
+    CUIStatic* s_launcher = GetIcon(eLauncher) ? MakeAddonStatic(i, params) : NULL;
+    */
+
 	if (Heading()) m_cell_size.set(m_cell_size.y, m_cell_size.x);   // swap before	
 	InitAllAddons(s_silencer, s_scope, s_launcher, false);
 	if (Heading()) m_cell_size.set(m_cell_size.y, m_cell_size.x);  // swap after
