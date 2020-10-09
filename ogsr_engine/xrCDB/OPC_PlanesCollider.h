@@ -96,7 +96,7 @@
 							udword			mNbPlanes;
 							Plane*			mPlanes;
 		// Leaf description
-							VertexPointers	mVP;
+							VertexPointers	mVP{};
 		// Internal methods
 							void			_Collide(const AABBCollisionNode* node, udword clipmask);
 							void			_Collide(const AABBNoLeafNode* node, udword clipmask);

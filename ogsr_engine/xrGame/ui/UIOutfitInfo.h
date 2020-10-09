@@ -20,7 +20,7 @@ protected:
 
 	float			GetArtefactParam		(ActorRestoreParams params, u32 i);
 
-	CUIScrollView*	m_listWnd;
+	CUIScrollView* m_listWnd{};
 
 	enum{
 		_item_start = 0,
@@ -46,5 +46,5 @@ protected:
 
 		_max_item_index,
 	};
-	CUIStatic*		m_items[_max_item_index];
+	CUIStatic* m_items[_max_item_index]{};
 };

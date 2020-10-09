@@ -22,11 +22,11 @@ public:
 
 public:
 	shared_str								m_caAnimationToPlay;
-	MonsterSpace::EMentalState				m_tMentalState;
-	EGoalType								m_tGoalType;
+	MonsterSpace::EMentalState				m_tMentalState{};
+	EGoalType								m_tGoalType{};
 	bool									m_use_animation_movement_controller;
 	MonsterSpace::EScriptMonsterAnimAction	m_tAnimAction;
-	int										anim_index;
+	int										anim_index{};
 
 public:
 	IC				CScriptAnimationAction	();

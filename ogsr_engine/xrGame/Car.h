@@ -150,7 +150,7 @@ public:
 		typedef		CDamagableHealthItem inherited;
 		u16									bone_id				;
 		bool								inited				;
-		float								radius				;
+		float								radius{};
 		CPhysicsJoint						*joint				;
 		CCar								*car				;
 		struct			SWheelCollisionParams
@@ -262,14 +262,14 @@ virtual void ApplyDamage			(u16 level);
 		typedef CDamagableHealthItem inherited;
 		u16 bone_id;
 		CCar* pcar;
-		bool  update;
+		bool  update{};
 		CPhysicsJoint*  joint;
 		float			torque;
 		float			a_vel;
-		float			pos_open;
-		float			opened_angle;
-		float			closed_angle;
-		u32				open_time;
+		float			pos_open{};
+		float			opened_angle{};
+		float			closed_angle{};
+		u32				open_time{};
 		struct SDoorway
 		{
 		Fvector2		door_plane_ext;
@@ -346,7 +346,7 @@ virtual void ApplyDamage(u16 level);
 			sndStoping,
 			sndStarting,
 			sndDrive
-		} eCarSound;
+		} eCarSound{};
 		void	Update				()							;
 		void	UpdateStarting		()							;
 		void	UpdateStoping		()							;
@@ -368,8 +368,8 @@ virtual void ApplyDamage(u16 level);
 				~SCarSound			()							;
 		Fvector	relative_pos									;
 		float	volume											;
-		u32		engine_start_delay								;//snd_engine starts after engine_start_delay ms by snd_engine_start
-		u32		time_state_start								;
+		u32		engine_start_delay{};//snd_engine starts after engine_start_delay ms by snd_engine_start
+		u32		time_state_start{};
 		CCar*	pcar											;
 	} *m_car_sound;
 

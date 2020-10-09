@@ -20,8 +20,8 @@ class CUIMultiTextStatic: public CUIStatic
 public:
 	typedef struct SPh
 	{
-		float						outX;
-		float						outY;
+		float						outX{};
+		float						outY{};
 		float						maxWidth;
 		CUIStatic::EElipsisPosition elipsisPos;
 		CUITextBanner				effect;

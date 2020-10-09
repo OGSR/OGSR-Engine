@@ -216,7 +216,7 @@ public:
 	void			DestroyNecessaryTextures();
 	void			Dump					(bool bBrief);
 
-	std::vector<ITexture*> FindTexture(const char* Name) override;
+	std::vector<ITexture*> FindTexture(const char* Name) const override;
 
 private:
 #ifdef USE_DX11

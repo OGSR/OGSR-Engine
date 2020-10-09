@@ -157,8 +157,7 @@ COLLIDER::~COLLIDER()
 
 RESULT& COLLIDER::r_add	()
 {
-	rd.push_back		(RESULT());
-	return rd.back		();
+	return rd.emplace_back();
 }
 
 void COLLIDER::r_free	()

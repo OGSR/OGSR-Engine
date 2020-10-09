@@ -648,13 +648,11 @@ void CScriptEntity::sound_callback	(const CObject *object, int sound_type, const
 	if (!this->object().callback(GameObject::eSound))
 		return;
 
-	m_saved_sounds.push_back		(
-		CSavedSound(
+	m_saved_sounds.emplace_back(
 			smart_cast<const CGameObject*>(object)->lua_game_object(),
 			sound_type,
 			position,
 			sound_power
-		)
 	);
 }
 

@@ -79,7 +79,7 @@ struct CVertexManagerHashFixed {
 		_path_id_type			m_current_path_id;
 		CGraphIndexVertex		*m_vertices;
 		CGraphIndexVertex		**m_hash;
-		u32						m_vertex_count;
+		u32						m_vertex_count{};
 
 	public:
 		IC						CDataStorage	(const u32 vertex_count);

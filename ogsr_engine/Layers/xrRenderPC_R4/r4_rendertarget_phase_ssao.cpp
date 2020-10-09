@@ -22,7 +22,7 @@ void CRenderTarget::phase_ssao	()
 		u_setrt				( rt_ssao_temp,0,0,0/*HW.pBaseZB*/ );
 	}
 	else
-	{
+	{ //-V523
 		u_setrt				( rt_ssao_temp, 0, 0, 0/*RImplementation.Target->rt_MSAADepth->pZRT*/ );
 	}
 

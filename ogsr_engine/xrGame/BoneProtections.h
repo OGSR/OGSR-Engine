@@ -6,7 +6,7 @@ struct SBoneProtections{
 		float		armour;
 		BOOL		BonePassBullet;
 	};
-	float				m_fHitFrac;
+	float				m_fHitFrac{};
 	typedef xr_map<s16,BoneProtection>		storage_type;
 	typedef storage_type::iterator	storage_it;
 						SBoneProtections	()								{m_default.koeff = 1.0f; m_default.armour = 0;}

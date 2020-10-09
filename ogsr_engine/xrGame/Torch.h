@@ -16,7 +16,7 @@ protected:
 	CLAItem*		lanim;
 	float			time2hide;
 
-	u16				guid_bone;
+	u16				guid_bone{};
 	shared_str		light_trace_bone;
 
 	float			m_delta_h;
@@ -56,8 +56,8 @@ public:
 			void	SwitchNightVision		  (bool light_on);
 			void	UpdateSwitchNightVision   ();
 protected:
-	bool					m_bNightVisionEnabled;
-	bool					m_bNightVisionOn;
+	bool					m_bNightVisionEnabled{};
+	bool					m_bNightVisionOn{};
 
 	HUD_SOUND				m_NightVisionOnSnd;
 	HUD_SOUND				m_NightVisionOffSnd;

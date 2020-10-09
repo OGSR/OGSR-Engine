@@ -52,8 +52,8 @@ protected:
    
 	// Static sounds
 	xr_vector<ref_sound>		Sounds_Random;
-	u32							Sounds_Random_dwNextTime;
-	BOOL						Sounds_Random_Enabled;
+	u32							Sounds_Random_dwNextTime{};
+	BOOL						Sounds_Random_Enabled{};
 	CCameraManager*				m_pCameras;
 
 	// temporary

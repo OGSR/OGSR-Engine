@@ -119,6 +119,18 @@ s32 SStatSectionData::GetTotalCounts() const {
   return res;
 }
 
+void SStatSectionData::RemoveData( const shared_str& key ) {
+  data.erase(
+    std::remove_if(
+      data.begin(), data.end(),
+      [&]( const auto& it ) {
+        return it.key == key;
+      }
+    ),
+    data.end()
+  );
+}
+
 CActorStatisticMgr::CActorStatisticMgr		()
 {
 	m_actor_stats_wrapper = xr_new<CActorStatisticsWrapper>();
@@ -208,4 +220,9 @@ s32 CActorStatisticMgr::GetSectionCounts( const shared_str& key ) {
     }
     return _total;
   }
+}
+
+void CActorStatisticMgr::RemovePoints( const shared_str& key, const shared_str& detail_key ) {
+  SStatSectionData& sect = GetSection( key );
+  sect.RemoveData( detail_key );
 }

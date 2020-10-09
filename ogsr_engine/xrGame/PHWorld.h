@@ -28,7 +28,7 @@ class CPHWorld	: public pureFrame
 , public pureRender
 #endif
 {
-	double						m_start_time												;
+	double						m_start_time{};
 	u32							m_delay														;
 	u32							m_previous_delay											;
 	u32							m_reduce_delay												;
@@ -39,14 +39,14 @@ class CPHWorld	: public pureFrame
 	static const u32			update_delay=1												;
 ///	dSpaceID					Space														;
 
-	CPHMesh						Mesh														;
+	CPHMesh						Mesh{};
 	PH_OBJECT_STORAGE			m_objects													;
 	PH_OBJECT_STORAGE			m_freezed_objects											;
 	PH_OBJECT_STORAGE			m_recently_disabled_objects									;
 	PH_UPDATE_OBJECT_STORAGE	m_update_objects											;
 	PH_UPDATE_OBJECT_STORAGE	m_freezed_update_objects									;
-	dGeomID						m_motion_ray;
-	CPHCommander				*m_commander;
+	dGeomID						m_motion_ray{};
+	CPHCommander* m_commander{};
 public:
 	xr_vector<ISpatial*>		r_spatial;
 public:
@@ -55,7 +55,7 @@ public:
 	dReal						m_previous_frame_time										;
 	bool						b_frame_mark												;
 	dReal						m_frame_time												;
-	float						m_update_time												;
+	float						m_update_time{};
 	u16							disable_count												;
 	float						m_gravity													;
 								CPHWorld						()							;

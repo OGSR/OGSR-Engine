@@ -34,7 +34,7 @@ public:
 	u32						dwHeight;
 	D3DFORMAT				fmt;
 
-	u64						_order;
+	u64						_order{};
 };
 struct 		resptrcode_crt	: public resptr_base<CRT>
 {

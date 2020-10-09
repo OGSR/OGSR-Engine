@@ -9,18 +9,18 @@ class CMonsterEnemyManager {
 	const CEntityAlive	*enemy;
 	
 	Fvector				position;
-	u32					vertex;
-	u32					time_last_seen;
+	u32					vertex{};
+	u32					time_last_seen{};
 
 	Flags32				flags;
 	bool				forced;
 
-	bool				expediency;
+	bool				expediency{};
 
 	const CEntityAlive *prev_enemy;
 	Fvector				prev_enemy_position;
 
-	bool				enemy_see_me;
+	bool				enemy_see_me{};
 
 	EDangerType			danger_type;
 
@@ -74,7 +74,7 @@ public:
 	u32					see_enemy_duration			();
 
 private:
-	const CEntityAlive	*m_script_enemy;
+	const CEntityAlive* m_script_enemy{};
 
 public:
 	const CEntityAlive *get_script_enemy			() {return m_script_enemy;}

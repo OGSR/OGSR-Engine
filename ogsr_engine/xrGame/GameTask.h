@@ -118,8 +118,8 @@ public:
 	OBJECTIVE_VECTOR		m_Objectives;
 	ALife::_TIME_ID			m_ReceiveTime;
 	ALife::_TIME_ID			m_FinishTime;
-	ALife::_TIME_ID			m_TimeToComplete;
-	u32						m_priority;
+	ALife::_TIME_ID			m_TimeToComplete{};
+	u32						m_priority{};
         u32 m_version;
         u32 m_objectives_version;
 	bool m_show_all_objectives;

@@ -45,7 +45,7 @@ void CTeleWhirlwind::add_impact(const Fvector& dir,float val)
 	force.set(dir);
 	force.mul(val);
 	point.set(0.f,0.f,0.f);
-	m_saved_impacts.push_back(SPHImpact(force,point,0));
+	m_saved_impacts.emplace_back(force, point, 0);
 }
 void CTeleWhirlwind::set_throw_power(float throw_pow)
 {

@@ -7,7 +7,7 @@ class ENGINE_API CTheoraSurface{
 	CTheoraStream*		m_rgb;
 	CTheoraStream*		m_alpha;
 
-	u32					tm_start;
+	u32					tm_start{};
 	u32					tm_play;
 	u32					tm_total;
 	BOOL				ready;

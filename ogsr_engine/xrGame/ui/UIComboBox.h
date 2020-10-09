@@ -65,9 +65,9 @@ protected:
 protected:
 	bool				m_bInited;
 	int					m_iListHeight;
-	int					m_itoken_id;
+	int					m_itoken_id{};
 	E_COMBO_STATE		m_eState;
-	int					m_backup_itoken_id;
+	int					m_backup_itoken_id{};
 
 	CUI_IB_FrameLineWnd	m_frameLine;
 	CUILabel			m_text;

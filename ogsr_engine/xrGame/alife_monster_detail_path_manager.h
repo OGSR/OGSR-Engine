@@ -32,7 +32,7 @@ private:
 	ALife::_TIME_ID						m_last_update_time;
 	parameters							m_destination;
 	float								m_walked_distance;
-	float								m_speed;
+	float								m_speed{};
 
 private:
 	PATH								m_path;						

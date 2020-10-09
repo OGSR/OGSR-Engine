@@ -1935,8 +1935,7 @@ IC void CCar::fill_exhaust_vector(LPCSTR S,xr_vector<SExhaust>& exhausts)
 
 		u16 bone_id	=				pKinematics->LL_BoneID(S1);
 
-		exhausts.push_back		(SExhaust(this));
-		SExhaust& exhaust				= exhausts.back();
+		auto& exhaust = exhausts.emplace_back(this);
 		exhaust.bone_id						= bone_id;
 
 		BONE_P_PAIR_IT J		= bone_map.find(bone_id);

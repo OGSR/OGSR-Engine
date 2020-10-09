@@ -131,7 +131,7 @@ protected:
 	float m_fDeltaPower;
 	float m_fDeltaRadiation;
 	float m_fDeltaPsyHealth;
-	float m_fDeltaEntityMorale;
+	float m_fDeltaEntityMorale{};
 
 	struct SConditionChangeV
 	{
@@ -148,13 +148,13 @@ const	static int		PARAMS_COUNT = 7;
 		void			load(LPCSTR sect, LPCSTR prefix);
 	};
 	
-	SConditionChangeV m_change_v;
+	SConditionChangeV m_change_v{};
 
 	float				m_fMinWoundSize;
 	bool				m_bIsBleeding;
 
 	//части хита, затрачиваемые на уменьшение здоровья и силы
-	float m_fHealthHitPart[ ALife::eHitTypeMax ];
+	float m_fHealthHitPart[ALife::eHitTypeMax]{};
 	float				m_fPowerHitPart;
 
 
@@ -165,7 +165,7 @@ const	static int		PARAMS_COUNT = 7;
 
 	//для отслеживания времени 
 	u64					m_iLastTimeCalled;
-	float				m_fDeltaTime;
+	float				m_fDeltaTime{};
 	//кто нанес последний хит
 	CObject*			m_pWho;
 	u16					m_iWhoID;
@@ -174,7 +174,7 @@ const	static int		PARAMS_COUNT = 7;
 	float				m_fHitBoneScale;
 	float				m_fWoundBoneScale;
 
-	float				m_limping_threshold;
+	float				m_limping_threshold{};
 
 	bool				m_bTimeValid;
 	bool				m_bCanBeHarmed;

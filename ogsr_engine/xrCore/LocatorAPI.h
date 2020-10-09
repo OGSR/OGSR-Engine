@@ -51,10 +51,10 @@ private:
 
 	files_set					files			;
     archives_vec				archives		;
-	BOOL						bNoRecurse		;
+	BOOL						bNoRecurse{};
 
 	xrCriticalSection			m_auth_lock		;
-	u64							m_auth_code		;
+	u64							m_auth_code{};
 
 	void						Register		(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, u32 modif);
 	void						ProcessArchive	(LPCSTR path, LPCSTR base_path=NULL);
@@ -80,8 +80,6 @@ public:
 	u32							dwOpenCounter;
 
 private:
-			void				check_cached_files	(LPSTR fname, const file &desc, LPCSTR &source_name);
-
 			void				file_from_cache_impl(IReader *&R, LPSTR fname, const file &desc);
 			void				file_from_cache_impl(CStreamReader *&R, LPSTR fname, const file &desc);
 	template <typename T>

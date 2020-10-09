@@ -321,7 +321,7 @@ void CCameraManager::Update(const Fvector& P, const Fvector& D, const Fvector& N
 
 	if (Device.m_SecondViewport.IsSVPActive())
 	{
-		float fov = g_pGamePersistent->m_pGShaderConstants.hud_params.y;  //-V595
+		float fov = g_pGamePersistent->m_pGShaderConstants.hud_params.y;
 
 		// что бы изначально прицел включался быстро, а при изменении приближения был эффект наезда камеры
 		if (fis_zero(fFovSecond))

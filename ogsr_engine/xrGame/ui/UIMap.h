@@ -56,7 +56,7 @@ private:
 	shared_str		m_prev_active_map;
 	CUIMapWnd*		m_mapWnd;
 	float			m_minZoom;
-	float			m_max_zoom;
+	float			m_max_zoom{};
 public:
 
 	virtual Fvector2 ConvertRealToLocal		(const Fvector2& src, bool for_drawing);// pixels->pixels (relatively own left-top pos)

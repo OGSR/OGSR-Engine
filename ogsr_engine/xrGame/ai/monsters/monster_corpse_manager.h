@@ -8,8 +8,8 @@ class CMonsterCorpseManager {
 	
 	const CEntityAlive	*corpse;
 	Fvector				position;
-	u32					vertex;
-	TTime				time_last_seen;
+	u32					vertex{};
+	TTime				time_last_seen{};
 
 	bool				forced;
 

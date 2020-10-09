@@ -31,7 +31,7 @@ static SEnertionState m_etable[CElevatorState::clbNoState][CElevatorState::clbNo
 CClimableObject	*m_ladder;	
 CPHCharacter	*m_character;
 Fvector			m_start_position;//for depart state
-u32				m_start_time;
+u32				m_start_time{};
 public: 
 						CElevatorState					();
 			void		PhTune							(float step)																			;

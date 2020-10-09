@@ -23,7 +23,7 @@ public:
 	mask_type			m_distribute_mask;
 	float				m_probability;
 	Fvector				m_enemy_position;
-	u32					m_level_time;
+	u32					m_level_time{};
 
 public:
 	IC					CMemberEnemy		(const CEntityAlive *object, squad_mask_type mask);

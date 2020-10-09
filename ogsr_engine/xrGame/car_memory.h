@@ -19,8 +19,8 @@ private:
 
 private:
 	CCar			*m_object;
-	float			m_fov_deg;
-	float			m_aspect;
+	float			m_fov_deg{};
+	float			m_aspect{};
 	float			m_far_plane;
 	Fvector			m_view_position;
 	Fvector			m_view_direction;

@@ -34,17 +34,17 @@ public:
 
 protected:
 	HitImmunity::HitTypeSVec		m_HitTypeProtection;
-	float							m_fPowerLoss;
+	float							m_fPowerLoss{};
 
 	shared_str						m_ActorVisual;
 	shared_str						m_full_icon_name;
 	SBoneProtections*				m_boneProtection;	
 protected:
-	u32								m_ef_equipment_type;
+	u32								m_ef_equipment_type{};
 
 public:
-	float							m_additional_weight;
-	float							m_additional_weight2;
+	float							m_additional_weight{};
+	float							m_additional_weight2{};
 	shared_str						m_NightVisionSect;
 	virtual u32						ef_equipment_type		() const;
 	virtual	BOOL					BonePassBullet			(int boneID);

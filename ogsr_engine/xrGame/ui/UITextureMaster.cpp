@@ -52,7 +52,7 @@ void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file){
 }
 
 bool CUITextureMaster::IsSh(const char* texture_name){
-	return strstr(texture_name,"\\") ? false : true;
+	return !strchr(texture_name, '\\');
 }
 
 void CUITextureMaster::InitTexture(const char* texture_name, IUISimpleTextureControl* tc){

@@ -332,7 +332,7 @@ public:
 };
 class CCC_VidMode : public CCC_Token
 {
-	u32		_dummy;
+	u32		_dummy{};
 public :
 					CCC_VidMode(LPCSTR N) : CCC_Token(N, &_dummy, NULL) { bEmptyArgsHandled = FALSE; };
 	virtual void	Execute(LPCSTR args){

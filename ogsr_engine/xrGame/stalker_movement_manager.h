@@ -32,14 +32,14 @@ private:
 	const CStalkerVelocityCollection	*m_velocities;
 
 protected:
-	CStalkerMovementParams				m_current;
-	CStalkerMovementParams				m_target;
+	CStalkerMovementParams				m_current{};
+	CStalkerMovementParams				m_target{};
 	CAI_Stalker							*m_object;
 
 public:
-	MonsterSpace::SBoneRotation			m_head;
-	u32									m_last_turn_index;
-	float								m_danger_head_speed;
+	MonsterSpace::SBoneRotation			m_head{};
+	u32									m_last_turn_index{};
+	float								m_danger_head_speed{};
 
 private:
 	IC		void	setup_head_speed				();

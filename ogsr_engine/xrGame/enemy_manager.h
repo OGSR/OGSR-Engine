@@ -27,7 +27,7 @@ private:
 	float						m_ignore_monster_threshold;
 	float						m_max_ignore_distance;
 	u32							m_last_enemy_time;
-	const CEntityAlive			*m_last_enemy;
+	const CEntityAlive* m_last_enemy{};
 	USEFULE_CALLBACK			m_useful_callback;
 	bool						m_enable_enemy_change;
 

@@ -55,8 +55,8 @@ namespace PS
 
 	class ECORE_API CParticleGroup: public dxParticleCustom
 	{
-		const CPGDef*		m_Def;
-		float				m_CurrentTime;
+		const CPGDef* m_Def{};
+		float				m_CurrentTime{};
 		Fvector				m_InitialPosition;
 	public:
     	DEFINE_VECTOR(dxRender_Visual*,VisualVec,VisualVecIt);

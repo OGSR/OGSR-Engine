@@ -90,7 +90,7 @@ public:
 	
 private:
 	CStalkerAnimationManager		*m_animation_manager;
-	CStalkerPlanner					*m_brain;
+	CStalkerPlanner* m_brain{};
 	CSightManager					*m_sight_manager;
 	CStalkerMovementManager			*m_movement_manager;
 

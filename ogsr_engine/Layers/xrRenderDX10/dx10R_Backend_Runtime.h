@@ -496,8 +496,7 @@ IC void CBackend::ApplyVertexLayout()
 			&pLayout
 			));
 
-		it = decl->vs_to_layout.insert(
-			std::pair<ID3DBlob*, ID3DInputLayout*>(m_pInputSignature, pLayout)).first;
+		it = decl->vs_to_layout.emplace(m_pInputSignature, pLayout).first;
 	}
 
 	if ( m_pInputLayout != it->second)

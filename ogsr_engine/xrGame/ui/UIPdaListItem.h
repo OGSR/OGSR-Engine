@@ -20,7 +20,7 @@ public:
 	virtual void	Init				(float x, float y, float width, float height);
 	virtual void	InitCharacter		(CInventoryOwner* pInvOwner);
 	
-	void*					m_data;
+	void* m_data{};
 protected:
 	//информация о персонаже
 	CUIFrameWindow*			UIMask;

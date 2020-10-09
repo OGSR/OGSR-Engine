@@ -24,8 +24,8 @@ public:
 private:
 	bool			m_enabled;
 	bool			m_turning_in_place;
-	float			m_max_left_angle;
-	float			m_max_right_angle;
+	float			m_max_left_angle{};
+	float			m_max_right_angle{};
 
 public:
 					CSightManager						(CAI_Stalker *object);

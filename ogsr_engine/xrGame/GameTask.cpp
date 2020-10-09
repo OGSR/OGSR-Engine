@@ -105,7 +105,7 @@ void CGameTask::Load(const TASK_ID& id)
 		l_root							= g_gameTaskXml->NavigateToNode("objective",i); 
 		g_gameTaskXml->SetLocalRoot		(l_root);
 
-		m_Objectives.push_back			(SGameTaskObjective(this,i));
+		m_Objectives.emplace_back(this, i);
 		SGameTaskObjective&				objective = m_Objectives.back();
 
 //.

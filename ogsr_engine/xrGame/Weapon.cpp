@@ -141,7 +141,10 @@ void CWeapon::UpdateXForm	()
 		if ((HandDependence() == hd1Hand) || (GetState() == eReload) || (!E->g_Alive()))
 			boneL = boneR2;
 #pragma todo("TO ALL: serious performance problem")
-		V->CalculateBones	();
+		// от mortan:
+		// https://www.gameru.net/forum/index.php?s=&showtopic=23443&view=findpost&p=1677678
+		V->CalculateBones_Invalidate();
+		V->CalculateBones( true ); //V->CalculateBones	();
 		Fmatrix& mL			= V->LL_GetTransform(u16(boneL));
 		Fmatrix& mR			= V->LL_GetTransform(u16(boneR));
 		// Calculate
@@ -490,7 +493,7 @@ void CWeapon::Load		(LPCSTR section)
 			for (int it = 0; it < count; ++it) {
 				_GetItem(S, it, _addonItem);
 				ASSERT_FMT(pSettings->section_exist(_addonItem), "Section [%s] not found!", _addonItem);
-				m_highlightAddons.emplace_back(std::move(_addonItem));
+				m_highlightAddons.emplace_back(_addonItem);
 #ifdef OGSR_MOD
 				if (pSettings->line_exist(_addonItem, "real_item_section")) //KRodin: Костыль для огсе-шной системы аддонов, т.к. мне лень по конфигам лазить.
 					m_highlightAddons.emplace_back(pSettings->r_string(_addonItem, "real_item_section"));
@@ -2205,7 +2208,7 @@ float CWeapon::GetSecondVPFov() const
 	{
 		fov_factor = m_fRTZoomFactor;
 	}
-	return atanf(tanf(g_fov * (0.5f * PI / 180)) / fov_factor) / (0.5f * PI / 180); //-V595
+	return atanf(tanf(g_fov * (0.5f * PI / 180)) / fov_factor) / (0.5f * PI / 180);
 }
 
 bool CWeapon::IsGrenadeMode() const

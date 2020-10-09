@@ -31,7 +31,7 @@ private:
 	CAgentLocationManager			*m_location;
 	CAgentMemberManager				*m_member;
 	CAgentMemoryManager				*m_memory;
-	CAgentManagerPlanner			*m_brain;
+	CAgentManagerPlanner* m_brain{};
 
 #ifndef USE_SCHEDULER_IN_AGENT_MANAGER
 private:

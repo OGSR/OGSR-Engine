@@ -59,7 +59,7 @@ void CUITreeViewItem::OnRootChanged()
 		// Вставляем после последнего пробела перед текстом знак + или -
 		str = GetText();
 
-		xr_string::size_type pos = str.find_first_not_of(" ");
+		xr_string::size_type pos = str.find_first_not_of(' ');
 		if (xr_string::npos == pos) pos = 0;
 
 		if (pos == 0)

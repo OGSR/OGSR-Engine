@@ -27,15 +27,15 @@ class CControlManagerCustom : public CControl_ComBase {
 	CControlRunAttack		*m_run_attack;
 	CControlThreaten		*m_threaten;
 	CControlMeleeJump		*m_melee_jump;
-	CControlCriticalWound	*m_critical_wound;
+	CControlCriticalWound* m_critical_wound{};
 
 	using ROT_JUMP_DATA_VEC = xr_vector<SControlRotationJumpData>;
 	ROT_JUMP_DATA_VEC		m_rot_jump_data;
 	
 	SControlMeleeJumpData	m_melee_jump_data;
 
-	LPCSTR					m_threaten_anim;
-	float					m_threaten_time;
+	LPCSTR					m_threaten_anim{};
+	float					m_threaten_time{};
 
 public:
 					CControlManagerCustom	();

@@ -121,7 +121,7 @@ public:
 
 public:
 #endif //__cplusplus
-    FLOAT x, y;
+    FLOAT x{}, y{};
 } D3DXVECTOR2, *LPD3DXVECTOR2;
 
 

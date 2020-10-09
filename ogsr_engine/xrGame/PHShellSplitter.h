@@ -15,6 +15,7 @@ private:
 	EType						m_type													;
 	u16							m_element												;
 	u16							m_joint													;
+public:
 	CPHShellSplitter			(CPHShellSplitter::EType type,u16 element,u16 joint)	;
 	CPHShellSplitter			()														;
 };

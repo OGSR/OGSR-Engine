@@ -28,7 +28,7 @@ protected:
 	RESTRICTIONS			m_restrictions;
 	shared_str				m_space_restrictors;
 	CSpaceRestrictionHolder	*m_space_restriction_holder;
-	Fsphere					m_sphere;
+	Fsphere					m_sphere{};
 
 #ifdef DEBUG
 private:

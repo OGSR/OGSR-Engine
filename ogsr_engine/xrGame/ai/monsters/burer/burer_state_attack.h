@@ -22,8 +22,8 @@ private:
 	bool				m_wait_state_end;
 	bool				m_lost_delta_health;
 	bool				m_allow_anti_aim;
-	float				m_last_health;
-	TTime				m_next_runaway_allowed_tick;
+	float				m_last_health{};
+	TTime				m_next_runaway_allowed_tick{};
 };
 
 #include "burer_state_attack_inline.h"

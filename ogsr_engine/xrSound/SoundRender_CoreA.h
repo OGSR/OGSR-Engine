@@ -25,7 +25,7 @@ class CSoundRender_CoreA : public CSoundRender_Core
 		Fvector				position;
 		Fvector				orientation[2];
 	};
-	SListener				Listener;
+	SListener				Listener{};
 
 	BOOL 					EAXQuerySupport(BOOL bDeferred, const GUID* guid, u32 prop, void* val, u32 sz);
 	BOOL 					EAXTestSupport(BOOL bDeferred);

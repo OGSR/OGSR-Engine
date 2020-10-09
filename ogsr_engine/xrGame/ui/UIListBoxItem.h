@@ -32,7 +32,7 @@ protected:
 		u32				txt_color;
 		u32				txt_color_s;
 		u32				tag;
-		void*			pData;
+		void* pData{};
 //.static	u32	uid_counter;
 };
 

@@ -7,7 +7,7 @@ class CStateMonsterFindEnemyRun : public CState<_Object> {
 	typedef CState<_Object> inherited;
 
 	Fvector				target_point;
-	u32					target_vertex;
+	u32					target_vertex{};
 
 public:
 						CStateMonsterFindEnemyRun	(_Object *obj);

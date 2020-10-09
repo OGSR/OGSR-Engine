@@ -84,7 +84,7 @@ protected:
 //	CUIStatic			UISleepIcon;
 //	CUIStatic			UIArtefactIcon;
 
-	CUIScrollView*		m_UIIcons;
+	CUIScrollView* m_UIIcons{};
 public:	
 	CUIArtefactPanel*    m_artefactPanel;
 	
@@ -159,10 +159,10 @@ protected:
 	CInventoryItem*		m_pPickUpItem;
 	CUIStatic			UIPickUpItemIcon;
 
-	float				m_iPickUpItemIconX;
-	float				m_iPickUpItemIconY;
-	float				m_iPickUpItemIconWidth;
-	float				m_iPickUpItemIconHeight;
+	float				m_iPickUpItemIconX{};
+	float				m_iPickUpItemIconY{};
+	float				m_iPickUpItemIconWidth{};
+	float				m_iPickUpItemIconHeight{};
 
 	void				UpdatePickUpItem();
 public:

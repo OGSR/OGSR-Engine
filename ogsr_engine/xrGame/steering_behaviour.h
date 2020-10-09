@@ -115,11 +115,11 @@ public:
 	{
 		vec   pos;        
 		vec   dest;
-		float min_range2dest;
+		float min_range2dest{};
 		float change_vel_range;
 		float arrive_vel;
 		float arrive_range;
-		float vel;
+		float vel{};
 		
 		params (vec_arg factor,
 			    float   arrive_range,

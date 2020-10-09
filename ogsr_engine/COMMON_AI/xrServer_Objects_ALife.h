@@ -513,7 +513,7 @@ add_to_type_list(CSE_ALifeMountedWeapon)
 #define script_type_list save_type_list(CSE_ALifeMountedWeapon)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeStationaryMgun,CSE_ALifeDynamicObjectVisual)
-	bool							m_bWorking;
+	bool							m_bWorking{};
 	Fvector							m_destEnemyDir;
 
 									CSE_ALifeStationaryMgun	(LPCSTR caSection);

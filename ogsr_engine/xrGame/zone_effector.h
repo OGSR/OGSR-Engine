@@ -4,8 +4,8 @@ class CActor;
 class CPostprocessAnimatorLerp;
 
 class CZoneEffector {
-	float						r_min_perc;
-	float						r_max_perc;
+	float						r_min_perc{};
+	float						r_max_perc{};
 	float						radius;
 	float						m_factor;
 	CPostprocessAnimatorLerp*	m_pp_effector;

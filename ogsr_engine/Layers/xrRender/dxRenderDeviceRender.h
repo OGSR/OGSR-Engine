@@ -60,7 +60,7 @@ public:
 	virtual void	SetCacheXform(Fmatrix &mView, Fmatrix &mProject);
 	virtual void	OnAssetsChanged();
 
-	IResourceManager* GetResourceManager() override;
+	IResourceManager* GetResourceManager() const override;
 
 public:
 	CResourceManager*	Resources;

@@ -149,16 +149,14 @@ void CLevelSoundManager::Load()
 
 		for (const auto &it : ltXfile.sections())
 		{
-			m_StaticSounds.push_back(SStaticSound());
-			m_StaticSounds.back().LoadIni(*it.second);
+			m_StaticSounds.emplace_back().LoadIni(*it.second);
 		}
 	}
 	else if (FS.exist(fn, "$level$", "level.snd_static")) {
 		IReader *F = FS.r_open(fn);
 		u32				chunk = 0;
 		for (IReader *OBJ = F->open_chunk_iterator(chunk); OBJ; OBJ = F->open_chunk_iterator(chunk, OBJ)) {
-			m_StaticSounds.push_back(SStaticSound());
-			m_StaticSounds.back().Load(*OBJ);
+			m_StaticSounds.emplace_back().Load(*OBJ);
 		}
 		FS.r_close(F);
 	}
@@ -176,8 +174,7 @@ void CLevelSoundManager::Load()
 				CInifile::Sect&	S	= gameLtx.r_section	(music_sect);
 				m_MusicTracks.reserve	(S.Data.size());
 				for ( const auto &it : S.Data ) {
-					m_MusicTracks.push_back	(SMusicTrack());
-					m_MusicTracks.back().Load(it.first.c_str(),it.second.c_str());
+					m_MusicTracks.emplace_back().Load(it.first.c_str(),it.second.c_str());
 				}
 			}
 		}

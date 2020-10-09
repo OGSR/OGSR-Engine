@@ -27,7 +27,7 @@ class CCoverEvaluator : public CCoverEvaluatorBase {
 	float				m_deviation;
 	float				m_best_distance;
 
-	CBaseMonster		*m_object;
+	CBaseMonster* m_object{};
 
 public:
 				CCoverEvaluator	(CRestrictedObject *object);

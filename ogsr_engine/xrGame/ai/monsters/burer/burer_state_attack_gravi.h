@@ -32,7 +32,7 @@ private:
 
 	}						m_action;
 
-	u32						m_time_gravi_started;
+	u32						m_time_gravi_started{};
 	TTime					m_next_gravi_allowed_tick;
 	TTime					m_anim_end_tick;
 };
