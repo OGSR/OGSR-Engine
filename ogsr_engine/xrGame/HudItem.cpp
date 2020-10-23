@@ -91,9 +91,9 @@ void CHudItem::net_Destroy()
 	m_dwStateTime		= 0;
 }
 
-void CHudItem::PlaySound( HUD_SOUND& hud_snd, const Fvector& position, bool overlap  )
-{
-  HUD_SOUND::PlaySound( hud_snd, position, object().H_Root(), !!GetHUDmode(), false, overlap );
+void CHudItem::PlaySound( HUD_SOUND& hud_snd, const Fvector& position, bool overlap  ) {
+  Fvector pos = GetHUDmode() ? Fvector().sub( position, ::Sound->listener_position() ) : position;
+  HUD_SOUND::PlaySound( hud_snd, pos, object().H_Root(), !!GetHUDmode(), false, overlap );
 }
 
 BOOL  CHudItem::net_Spawn	(CSE_Abstract* DC) 
