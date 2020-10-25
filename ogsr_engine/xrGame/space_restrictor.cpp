@@ -108,13 +108,15 @@ bool CSpaceRestrictor::inside(const Fsphere &sphere)
 {
 	if (!actual())
 	{
+		std::string copy_cName{ this->cName().c_str() };
+
 		try
 		{
 			prepare();
 		}
 		catch (...)
 		{
-			Msg("!![%s] FATAL ERROR IN RESTRICTOR [%s]!", __FUNCTION__, cName().c_str());
+			Msg("!![%s] FATAL ERROR IN RESTRICTOR [%s]!", __FUNCTION__, copy_cName.c_str());
 			return false;
 		}
 	}
