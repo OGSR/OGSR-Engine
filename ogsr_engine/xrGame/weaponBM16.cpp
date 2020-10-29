@@ -42,7 +42,7 @@ void CWeaponBM16::Load	(LPCSTR section)
 	animGetEx(mhud_hide2, pSettings->line_exist(hud_sect.c_str(), "anim_holster_2") ? "anim_holster_2"
 		: "anim_holster");
 
-	HUD_SOUND::LoadSound(section, "snd_reload_1", m_sndReload1, m_eSoundShot);
+	HUD_SOUND::LoadSound(section, "snd_reload_1", m_sndReload1, m_eSoundReload);
 }
 
 void CWeaponBM16::PlayReloadSound()
@@ -51,6 +51,13 @@ void CWeaponBM16::PlayReloadSound()
 		PlaySound	(m_sndReload1,get_LastFP());
 	else
 		PlaySound	(sndReload,get_LastFP());
+}
+
+void CWeaponBM16::UpdateSounds()
+{
+	inherited::UpdateSounds();
+
+	if (m_sndReload1.playing())	m_sndReload1.set_position(get_LastFP());
 }
 
 void CWeaponBM16::PlayAnimShoot()

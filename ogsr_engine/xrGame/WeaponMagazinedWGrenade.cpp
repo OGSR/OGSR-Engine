@@ -761,8 +761,8 @@ void CWeaponMagazinedWGrenade::UpdateSounds	()
 {
 	inherited::UpdateSounds			();
 
-	if (sndShotG.playing			())	sndShotG.set_position		(get_LastFP());
-	if (sndReloadG.playing			())	sndReloadG.set_position		(get_LastFP());
+	if (sndShotG.playing			())	sndShotG.set_position		(get_LastFP2());
+	if (sndReloadG.playing			())	sndReloadG.set_position		(get_LastFP2());
 	if (sndSwitch.playing			())	sndSwitch.set_position		(get_LastFP());
 }
 

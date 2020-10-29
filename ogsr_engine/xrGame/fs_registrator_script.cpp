@@ -247,12 +247,14 @@ static std::string get_last_write_time_string_short(const stdfs::directory_entry
 #pragma optimize("s",on)
 void script_register_stdfs(lua_State *L)
 {
+	using self = stdfs::directory_entry;
+
 	module(L, "stdfs")
 	[
 		def("VerifyPath", [](const char* path) { VerifyPath(path); }),
 		def("directory_iterator", &directory_iterator),
 		def("recursive_directory_iterator", &recursive_directory_iterator),
-		class_<stdfs::directory_entry>("path")
+		class_<self>("path")
 			.def(constructor<const char*>())
 			//TODO: при необходимости можно будет добавить возможность изменения некоторых свойств.
 			.property("full_path_name", &get_full_path)
@@ -262,6 +264,10 @@ void script_register_stdfs(lua_State *L)
 			.property("last_write_time", &get_last_write_time)
 			.property("last_write_time_string", &get_last_write_time_string)
 			.property("last_write_time_string_short", &get_last_write_time_string_short)
+			.def("exists",          (bool(self::*)() const) (&self::exists))
+			.def("is_regular_file", (bool(self::*)() const) (&self::is_regular_file))
+			.def("is_directory",    (bool(self::*)() const) (&self::is_directory))
+			.def("file_size",  (uintmax_t(self::*)() const) (&self::file_size))
 	];
 }
 ////////////////////////////////////////////////////////////////////////////////////////////

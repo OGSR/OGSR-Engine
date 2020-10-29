@@ -51,6 +51,7 @@ CWeaponMagazined::~CWeaponMagazined()
 	HUD_SOUND::DestroySound(sndShow);
 	HUD_SOUND::DestroySound(sndHide);
 	HUD_SOUND::DestroySound(sndShot);
+	HUD_SOUND::DestroySound(sndSilencerShot);
 	HUD_SOUND::DestroySound(sndEmptyClick);
 	HUD_SOUND::DestroySound(sndReload);
 	HUD_SOUND::DestroySound(sndFireModes);
@@ -71,8 +72,7 @@ void CWeaponMagazined::StopHUDSounds		()
 	HUD_SOUND::StopSound(sndZoomChange);
 
 	HUD_SOUND::StopSound(sndShot);
-//.	if(sndShot.enable && sndShot.snd.feedback)
-//.		sndShot.snd.feedback->switch_to_3D();
+	HUD_SOUND::StopSound(sndSilencerShot);
 
 	inherited::StopHUDSounds();
 }
@@ -553,6 +553,7 @@ void CWeaponMagazined::UpdateSounds	()
 	if (sndShow.playing			())	sndShow.set_position		(get_LastFP());
 	if (sndHide.playing			())	sndHide.set_position		(get_LastFP());
 	if (sndShot.playing			()) sndShot.set_position		(get_LastFP());
+	if (sndSilencerShot.playing ()) sndSilencerShot.set_position(get_LastFP());
 	if (sndReload.playing		()) sndReload.set_position		(get_LastFP());
 	if (sndEmptyClick.playing	())	sndEmptyClick.set_position	(get_LastFP());
 	if (sndFireModes.playing	())	sndFireModes.set_position	(get_LastFP());
