@@ -223,6 +223,7 @@ void CLocatorAPI::Register		(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_re
 	while (temp[0]) 
 	{
 		_splitpath		(temp, path, folder, 0, 0 );
+		if ( !folder[0] ) break;
         strcat_s(path,folder);
 		if (!exist(path))	
 		{
@@ -236,7 +237,7 @@ void CLocatorAPI::Register		(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_re
 
             R_ASSERT(I.second);
 		}
-		strcpy_s					(temp, folder);
+		strcpy_s( temp, path ); //strcpy_s(temp, folder);
 		if (xr_strlen(temp))		temp[xr_strlen(temp)-1]=0;
 	}
 }
