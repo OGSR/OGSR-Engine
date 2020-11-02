@@ -285,7 +285,7 @@ void CUIWindow::DetachChild(CUIWindow* pChild, bool from_destructor)
 
 void CUIWindow::DetachAll()
 {
-  auto tmp_m_ChildWndList = m_ChildWndList;
+  auto tmp_m_ChildWndList = m_ChildWndList; //-V826
   m_ChildWndList.clear();
   for ( CUIWindow* pChild : tmp_m_ChildWndList )
     DoDetachChild( pChild );

@@ -23,9 +23,9 @@ IC	ALife::EHitType		type					()		const	{VERIFY(is_valide());return hit_type;}
 	void				GenHeader				(u16 PacketType, u16 ID);
 //private:
 	//GE_HIT
-	u32					Time;
+	u32					Time{};
 	u16					PACKET_TYPE;
-	u16					DestID;
+	u16					DestID{};
 	
 	float				power;
 	Fvector				dir;
@@ -33,7 +33,7 @@ IC	ALife::EHitType		type					()		const	{VERIFY(is_valide());return hit_type;}
 	void set_hit_initiator(CScriptGameObject* script_obj);
 	CScriptGameObject* get_hit_initiator() const;
 	u16					whoID;
-	u16					weaponID;
+	u16					weaponID{};
 	u16					boneID;
 	Fvector				p_in_bone_space;
 	float				impulse;

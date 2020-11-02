@@ -11,8 +11,8 @@
 CWeaponShotgun::CWeaponShotgun(void) : CWeaponCustomPistol("TOZ34")
 {
     m_eSoundShotBoth		= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
-	m_eSoundClose			= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
-	m_eSoundAddCartridge	= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
+	m_eSoundClose			= ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING);
+	m_eSoundAddCartridge	= ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING);
 	m_bLockType = true; // Запрещает заряжать в дробовики патроны разного типа
 	m_stop_triStateReload = false;
 }
@@ -216,7 +216,10 @@ void CWeaponShotgun::switch2_Fire2	()
 void CWeaponShotgun::UpdateSounds	()
 {
 	inherited::UpdateSounds();
-	if (sndShotBoth.playing())		sndShotBoth.set_position		(get_LastFP());
+	if (sndShotBoth.playing())       sndShotBoth.set_position       (get_LastFP());
+	if (m_sndOpen.playing())         m_sndOpen.set_position         (get_LastFP());
+	if (m_sndAddCartridge.playing()) m_sndAddCartridge.set_position (get_LastFP());
+	if (m_sndClose.playing())        m_sndClose.set_position        (get_LastFP());
 }
 
 #ifdef DUPLET_STATE_SWITCH

@@ -58,7 +58,7 @@ protected:
     float				m_origin;
 	float				m_destination;
 	float				m_mag_pos;
-	float				m_offset;
+	float				m_offset{};
 
 	xr_vector<CUIStatic*>	m_buttons;
 	xr_vector<CUIStatic*>	m_buttons_new;
@@ -66,7 +66,7 @@ protected:
 	int						m_page;
     CUIWindow*				m_selected;
 	CMMSound*				m_sound;
-	Fvector2				m_wheel_size[2];
+	Fvector2				m_wheel_size[2]{};
 	enum {fl_SoundFinalized	= 1, fl_MovingStoped = 2	};
 
 	Flags32				m_flags;	

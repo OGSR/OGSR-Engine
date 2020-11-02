@@ -6,7 +6,7 @@ class	CStateBurerAttackRunAround : public CState<_Object> {
 	typedef CState<_Object>	inherited;
 
 	Fvector				selected_point;
-	u32					time_started;
+	u32					time_started{};
 
 	Fvector				dest_direction;
 

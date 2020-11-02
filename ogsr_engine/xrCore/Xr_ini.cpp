@@ -159,7 +159,7 @@ static void insert_item( CInifile::Sect *tgt, const CInifile::Item& I ) {
     }
   }
   else {
-    tgt->Data.insert({ I.first, I.second });
+    tgt->Data.emplace( I.first, I.second );
     tgt->Unordered.push_back( I );
   }
 }
@@ -203,7 +203,7 @@ void CInifile::Load ( IReader* F, LPCSTR path ) {
         auto I = DATA.find( Current->Name );
         if ( I != DATA.end() )
           FATAL( "Duplicate section '%s' found.", Current->Name.c_str() );
-        DATA.insert({ Current->Name, Current });
+        DATA.emplace( Current->Name, Current );
       }
       Current = xr_new<Sect>();
       Current->Name = 0;
@@ -262,7 +262,7 @@ void CInifile::Load ( IReader* F, LPCSTR path ) {
     auto I = DATA.find( Current->Name );
     if ( I != DATA.end() )
       FATAL( "Duplicate section '%s' found.", Current->Name.c_str() );
-    DATA.insert({ Current->Name, Current });
+    DATA.emplace( Current->Name, Current );
   }
 }
 
@@ -278,7 +278,7 @@ bool CInifile::save_as( LPCSTR new_fname ) {
   if ( F ) {
     string512 temp, val;
     for ( const auto &r_it : DATA ) {
-      sprintf_s( temp, sizeof( temp ), "[%s]", r_it.first.c_str() );
+      sprintf_s( temp, "[%s]", r_it.first.c_str() );
       F->w_string( temp );
       for ( const auto &I : r_it.second->Unordered ) {
         if ( *I.first ) {
@@ -286,13 +286,13 @@ bool CInifile::save_as( LPCSTR new_fname ) {
             _decorate( val, *I.second );
             {
               // only name and value
-              sprintf_s( temp, sizeof( temp ), "%8s%-32s = %-32s", " ", *I.first, val );
+              sprintf_s( temp, "%8s%-32s = %-32s", " ", *I.first, val );
             }
           }
           else {
             {
               // only name
-              sprintf_s( temp, sizeof( temp ), "%8s%-32s = ", " ", *I.first );
+              sprintf_s( temp, "%8s%-32s = ", " ", *I.first );
             }
           }
         }
@@ -357,7 +357,7 @@ CInifile::Sect& CInifile::r_section( LPCSTR S ) {
   R_ASSERT( S && strlen( S ), "Empty section (null\\'') passed into CInifile::r_section(). See info above ^, check your configs and 'call stack'." ); //--#SM+#--
 
   char section[ 256 ];
-  strcpy_s( section, sizeof( section ), S );
+  strcpy_s( section, S );
   shared_str k = strlwr( section );
   const auto I = DATA.find( k );
   if ( I == DATA.end() )
@@ -550,7 +550,7 @@ void CInifile::w_string ( LPCSTR S, LPCSTR L, LPCSTR V ) {
     // create _new_ section
     Sect *NEW = xr_new<Sect>();
     NEW->Name = sect;
-    DATA.insert({ NEW->Name, NEW });
+    DATA.emplace( NEW->Name, NEW );
   }
 
   // parse line/value
@@ -571,63 +571,63 @@ void CInifile::w_string ( LPCSTR S, LPCSTR L, LPCSTR V ) {
 
 void CInifile::w_u8 ( LPCSTR S, LPCSTR L, u8 V ) {
   string128 temp;
-  sprintf_s( temp, sizeof( temp ), "%d", V );
+  sprintf_s( temp, "%d", V );
   w_string( S, L, temp );
 }
 
 
 void CInifile::w_u16 ( LPCSTR S, LPCSTR L, u16 V ) {
   string128 temp;
-  sprintf_s( temp, sizeof( temp ), "%d", V );
+  sprintf_s( temp, "%d", V );
   w_string( S, L, temp );
 }
 
 
 void CInifile::w_u32( LPCSTR S, LPCSTR L, u32 V ) {
   string128 temp;
-  sprintf_s( temp, sizeof( temp ), "%d", V );
+  sprintf_s( temp, "%d", V );
   w_string( S, L, temp );
 }
 
 
 void CInifile::w_s8 ( LPCSTR S, LPCSTR L, s8 V ) {
   string128 temp;
-  sprintf_s( temp, sizeof( temp ), "%d", V );
+  sprintf_s( temp, "%d", V );
   w_string( S, L, temp );
 }
 
 
 void CInifile::w_s16 ( LPCSTR S, LPCSTR L, s16 V ) {
   string128 temp;
-  sprintf_s( temp, sizeof( temp ), "%d", V );
+  sprintf_s( temp, "%d", V );
   w_string( S, L, temp );
 }
 
 
 void CInifile::w_s32 ( LPCSTR S, LPCSTR L, s32 V ) {
   string128 temp;
-  sprintf_s( temp, sizeof( temp ), "%d", V );
+  sprintf_s( temp, "%d", V );
   w_string( S, L, temp);
 }
 
 
 void CInifile::w_float ( LPCSTR S, LPCSTR L, float V ) {
   string128 temp;
-  sprintf_s( temp, sizeof( temp ), "%f", V );
+  sprintf_s( temp, "%f", V );
   w_string( S, L, temp );
 }
 
 
 void CInifile::w_fcolor ( LPCSTR S, LPCSTR L, const Fcolor& V ) {
   string128 temp;
-  sprintf_s( temp, sizeof( temp ), "%f,%f,%f,%f", V.r, V.g, V.b, V.a );
+  sprintf_s( temp, "%f,%f,%f,%f", V.r, V.g, V.b, V.a );
   w_string( S, L, temp );
 }
 
 
 void CInifile::w_color ( LPCSTR S, LPCSTR L, u32 V ) {
   string128 temp;
-  sprintf_s( temp, sizeof( temp ), "%d,%d,%d,%d", color_get_R( V ), color_get_G( V ), color_get_B( V ), color_get_A( V ) );
+  sprintf_s( temp, "%d,%d,%d,%d", color_get_R( V ), color_get_G( V ), color_get_B( V ), color_get_A( V ) );
   w_string( S, L, temp );
 }
 
@@ -635,42 +635,42 @@ void CInifile::w_color ( LPCSTR S, LPCSTR L, u32 V ) {
 
 void CInifile::w_ivector2 ( LPCSTR S, LPCSTR L, const Ivector2& V ) {
   string128 temp;
-  sprintf_s( temp, sizeof( temp ), "%d,%d", V.x, V.y );
+  sprintf_s( temp, "%d,%d", V.x, V.y );
   w_string( S, L, temp );
 }
 
 
 void CInifile::w_ivector3 ( LPCSTR S, LPCSTR L, const Ivector3& V ) {
   string128 temp;
-  sprintf_s( temp, sizeof( temp ), "%d,%d,%d", V.x, V.y, V.z );
+  sprintf_s( temp, "%d,%d,%d", V.x, V.y, V.z );
   w_string( S, L, temp );
 }
 
 
 void CInifile::w_ivector4 ( LPCSTR S, LPCSTR L, const Ivector4& V ) {
   string128 temp;
-  sprintf_s( temp, sizeof( temp ), "%d,%d,%d,%d", V.x, V.y, V.z, V.w );
+  sprintf_s( temp, "%d,%d,%d,%d", V.x, V.y, V.z, V.w );
   w_string( S, L, temp );
 }
 
 
 void CInifile::w_fvector2 ( LPCSTR S, LPCSTR L, const Fvector2& V ) {
   string128 temp;
-  sprintf_s( temp, sizeof( temp ), "%f,%f", V.x, V.y );
+  sprintf_s( temp, "%f,%f", V.x, V.y );
   w_string( S, L, temp );
 }
 
 
 void CInifile::w_fvector3 ( LPCSTR S, LPCSTR L, const Fvector3& V ) {
   string128 temp;
-  sprintf_s( temp, sizeof( temp ), "%f,%f,%f", V.x, V.y, V.z );
+  sprintf_s( temp, "%f,%f,%f", V.x, V.y, V.z );
   w_string( S, L, temp );
 }
 
 
 void CInifile::w_fvector4 ( LPCSTR S, LPCSTR L, const Fvector4& V ) {
   string128 temp;
-  sprintf_s( temp, sizeof( temp ), "%f,%f,%f,%f", V.x, V.y, V.z, V.w );
+  sprintf_s( temp, "%f,%f,%f,%f", V.x, V.y, V.z, V.w );
   w_string( S, L, temp );
 }
 

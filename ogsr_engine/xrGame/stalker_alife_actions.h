@@ -34,7 +34,7 @@ protected:
 	typedef CStalkerActionBase inherited;
 
 protected:
-	u32					m_stop_weapon_handling_time;
+	u32					m_stop_weapon_handling_time{};
 
 public:
 						CStalkerActionNoALife		(CAI_Stalker *object, LPCSTR action_name = "");

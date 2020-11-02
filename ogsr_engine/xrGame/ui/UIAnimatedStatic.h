@@ -14,7 +14,7 @@ class CUIAnimatedStatic: public CUIStatic
 	// Текущий фрейм
 	u32		m_uCurFrame;
 	// Размеры текстуры с анимацией в кадрах
-	u32		m_uAnimRows, m_uAnimCols;
+	u32		m_uAnimRows{}, m_uAnimCols{};
 	// Размеры кадра на тектуре
 	u32		m_uFrameWidth, m_uFrameHeight;
 	// Время показа всей анимации в ms.

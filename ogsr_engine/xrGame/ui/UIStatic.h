@@ -27,8 +27,8 @@ private:
 	typedef CUIWindow inherited;
 	lanim_cont				m_lanim_clr;
 	lanim_cont				m_lanim_xform;
-	bool	m_lanim_clr_completed;
-	bool	m_lanim_xform_completed;
+	bool	m_lanim_clr_completed{};
+	bool	m_lanim_xform_completed{};
 
 	void					EnableHeading_int		(bool b)				{m_bHeading = b;}
 
@@ -177,12 +177,12 @@ public:
 protected:
 	bool			m_bEnableTextHighlighting;
 		// Цвет подсветки
-	u32				m_HighlightColor;
+	u32				m_HighlightColor{};
 
 	// this array of color will be useful in CUI3tButton class
 	// but we really need to declare it directly there because it must be initialized in CUIXmlInit::InitStatic
-	u32  m_dwTextColor[4];
-	bool m_bUseTextColor[4]; // note: 0 index will be ignored
+	u32  m_dwTextColor[4]{};
+	bool m_bUseTextColor[4]{}; // note: 0 index will be ignored
 
 	bool m_bClipper;
 	bool m_bStretchTexture;

@@ -44,7 +44,7 @@ public:
 
 private:
 	CHARACTER_REPUTATION_VALUE	m_current_value;
-	int							m_current_index;
+	int							m_current_index{};
 
 	static	void				InitIdToIndex	();
 public:

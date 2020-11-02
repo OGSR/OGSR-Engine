@@ -430,7 +430,7 @@ IC u8 TransferenceAndThrowVelToThrowDir(const Fvector &transference,float throw_
 
 struct SInertVal
 {
-		float val;
+	float val{};
 const	float inertion;
 		SInertVal(float inert): inertion	(inert){R_ASSERT(inert>0.f&&inert<1.f);}
 IC		void	new_val						(float new_val)

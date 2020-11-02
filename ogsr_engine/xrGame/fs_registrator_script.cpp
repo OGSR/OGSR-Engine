@@ -104,8 +104,7 @@ FS_file_list_ex::FS_file_list_ex(LPCSTR path, u32 flags, LPCSTR mask)
 	FS.file_list(files,path,flags,mask);
 
 	for(FS_FileSetIt it=files.begin();it!=files.end();++it){
-		m_file_items.push_back	(FS_item());
-		FS_item& itm			= m_file_items.back();
+		auto& itm = m_file_items.emplace_back();
 		ZeroMemory				(itm.name,sizeof(itm.name));
 		strcat_s(itm.name,it->name.c_str());
 		itm.modif				= (u32)it->time_write;
@@ -248,13 +247,15 @@ static std::string get_last_write_time_string_short(const stdfs::directory_entry
 #pragma optimize("s",on)
 void script_register_stdfs(lua_State *L)
 {
+	using self = stdfs::directory_entry;
+
 	module(L, "stdfs")
 	[
 		def("VerifyPath", [](const char* path) { VerifyPath(path); }),
 		def("directory_iterator", &directory_iterator),
 		def("recursive_directory_iterator", &recursive_directory_iterator),
-		class_<stdfs::directory_entry>("path")
-			//.def(constructor<>()) //Работает и без этого.
+		class_<self>("path")
+			.def(constructor<const char*>())
 			//TODO: при необходимости можно будет добавить возможность изменения некоторых свойств.
 			.property("full_path_name", &get_full_path)
 			.property("full_filename", &get_full_filename)
@@ -263,6 +264,10 @@ void script_register_stdfs(lua_State *L)
 			.property("last_write_time", &get_last_write_time)
 			.property("last_write_time_string", &get_last_write_time_string)
 			.property("last_write_time_string_short", &get_last_write_time_string_short)
+			.def("exists",          (bool(self::*)() const) (&self::exists))
+			.def("is_regular_file", (bool(self::*)() const) (&self::is_regular_file))
+			.def("is_directory",    (bool(self::*)() const) (&self::is_directory))
+			.def("file_size",  (uintmax_t(self::*)() const) (&self::file_size))
 	];
 }
 ////////////////////////////////////////////////////////////////////////////////////////////

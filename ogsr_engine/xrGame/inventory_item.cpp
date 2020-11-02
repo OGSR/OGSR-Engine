@@ -551,8 +551,15 @@ void CInventoryItem::net_Export(NET_Packet& P)
 void CInventoryItem::load(IReader &packet)
 {
 	m_eItemPlace			= (EItemPlace)packet.r_u8();
-	if ( m_eItemPlace == eItemPlaceBeltActor )
-          SetLoadedBeltIndex( packet.r_u8() );
+	if ( m_eItemPlace == eItemPlaceBeltActor ) {
+	  if ( Belt() )
+	    SetLoadedBeltIndex( packet.r_u8() );
+	  else {
+	    packet.r_u8();
+	    Msg( "! [%s]: move %s from belt, because belt = false", __FUNCTION__, object().cName().c_str() );
+	    m_eItemPlace = eItemPlaceRuck;
+	  }
+	}
 	m_fCondition			= packet.r_float();
         if ( m_eItemPlace == eItemPlaceSlot )
           if ( ai().get_alife()->header().version() < 4 ) {

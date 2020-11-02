@@ -731,7 +731,7 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
 	      }
 	    }
 	    // Check compatibility
-	    m_Motions.push_back( SMotionsSlot() );
+	    m_Motions.emplace_back();
 	    bool create_res = true;
 	    if ( !g_pMotionsContainer->has( nm ) ) { //optimize fs operations
 	      IReader* MS = FS.r_open( fn );
@@ -749,8 +749,7 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
 	{
 		string_path	nm;
 		strconcat			(sizeof(nm),nm,N,".ogf");
-		m_Motions.push_back(SMotionsSlot());
-		m_Motions.back().motions.create(nm,data,bones);
+		m_Motions.emplace_back().motions.create(nm,data,bones);
     }
 
     R_ASSERT				(m_Motions.size());

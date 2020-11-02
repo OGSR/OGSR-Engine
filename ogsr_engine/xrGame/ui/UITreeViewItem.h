@@ -108,7 +108,7 @@ private:
 	// Цвет текста когда артикл не прочитан
 	u32		m_uReadedColor;
 	// Флажек состояния прочитки
-	bool	m_bArticleRead;
+	bool	m_bArticleRead{};
 	// Если true, то MarkArticleAsRead не будет вызывать
 	// SetItemColor()
 	bool	m_bManualSetColor;

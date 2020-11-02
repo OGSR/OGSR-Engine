@@ -32,6 +32,6 @@ public:
 	void SetDependControl(CUIWindow* pWnd);
 
 private:
-	bool			b_backup_val;
+	bool b_backup_val{};
 	CUIWindow* m_pDependControl;
 };

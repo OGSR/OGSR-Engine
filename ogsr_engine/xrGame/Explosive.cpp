@@ -333,8 +333,12 @@ void CExplosive::Explode()
 //	Msg("---------CExplosive Explode [%d] frame[%d]",cast_game_object()->ID(), Device.dwFrame);
 	OnBeforeExplosion();
 	//играем звук взрыва
-	Sound->play_at_pos(sndExplode, 0, pos, false);
-	
+	CObject* who = nullptr;
+	if ( Initiator() != ALife::_OBJECT_ID(-1) ) {
+	  who = Level().Objects.net_Find( Initiator() );
+	}
+	Sound->play_at_pos( sndExplode, who, pos, false );
+
 	//показываем эффекты
 
 	m_wallmark_manager.PlaceWallmarks		(pos);

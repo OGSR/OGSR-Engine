@@ -9,11 +9,11 @@ class CSoundRender_TargetA : public CSoundRender_Target
 
 	// OpenAL
 	ALuint						pSource;
-	ALuint						pBuffers[sdef_target_count];
+	ALuint						pBuffers[sdef_target_count]{};
 	float						cache_gain;
 	float						cache_pitch;
 
-	ALuint						buf_block;
+	ALuint						buf_block{};
 private:
 	void						fill_block(ALuint BufferID);
 public:

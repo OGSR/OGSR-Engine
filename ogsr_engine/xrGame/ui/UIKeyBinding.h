@@ -22,5 +22,5 @@ protected:
 
 	CUILabel		m_header[3];
 	CUIFrameWindow	m_frame;
-	CUIScrollView*	m_scroll_wnd;
+	CUIScrollView* m_scroll_wnd{};
 };

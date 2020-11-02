@@ -50,7 +50,7 @@ protected:
 		mtSkeleton,
 		ForceDWORD	= u32(-1)
 	};
-	EMotionType		mtype;
+	EMotionType		mtype{};
 	int				iFrameStart, iFrameEnd;
 	float			fFPS;
 public:

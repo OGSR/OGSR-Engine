@@ -16,9 +16,9 @@ class CEF_Storage;
 
 class CBaseFunction {
 protected:
-	float					m_fMinResultValue;
-	float					m_fMaxResultValue;
-	char					m_caName[260];
+	float					m_fMinResultValue{};
+	float					m_fMaxResultValue{};
+	char					m_caName[260]{};
 	CEF_Storage				*m_storage;
 
 public:
@@ -27,7 +27,6 @@ public:
 	{
 		m_storage	= storage;
 		VERIFY		(m_storage);
-		m_caName[0] = 0;
 	};
 
 	virtual			~CBaseFunction()

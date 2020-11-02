@@ -40,7 +40,7 @@ private:
 public:
 	Factory_Create*		pCreate;
 	Factory_Destroy*	pDestroy;
-	BOOL				tune_enabled;
+	BOOL				tune_enabled{};
 	VTPause*			tune_pause	;
 	VTResume*			tune_resume	;
 	void				Initialize	();

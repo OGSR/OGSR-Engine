@@ -17,7 +17,7 @@
 
 xr_token* vid_quality_token = nullptr;
 
-xr_token FpsLockToken[] = {
+constexpr xr_token FpsLockToken[] = {
   { "nofpslock",  0 },
   { "fpslock60",  60 },
   { "fpslock120", 120 },
@@ -27,7 +27,7 @@ xr_token FpsLockToken[] = {
 };
 
 #ifdef DEBUG
-xr_token							vid_bpp_token							[ ]={
+constexpr xr_token							vid_bpp_token							[ ]={
 	{ "16",							16											},
 	{ "32",							32											},
 	{ 0,							0											}
@@ -332,7 +332,7 @@ public:
 };
 class CCC_VidMode : public CCC_Token
 {
-	u32		_dummy;
+	u32		_dummy{};
 public :
 					CCC_VidMode(LPCSTR N) : CCC_Token(N, &_dummy, NULL) { bEmptyArgsHandled = FALSE; };
 	virtual void	Execute(LPCSTR args){

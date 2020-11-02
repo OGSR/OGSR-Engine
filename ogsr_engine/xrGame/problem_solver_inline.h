@@ -102,7 +102,7 @@ IC	void CProblemSolverAbstract::add_operator			(const _edge_type &operator_id, _
 	validate_properties			(_operator->effects());
 #endif
 	m_actuality					= false;
-	m_operators.insert			(I,SOperator(operator_id,_operator));
+	m_operators.emplace(I, operator_id, _operator);
 }
 
 #ifdef DEBUG

@@ -127,9 +127,9 @@ add_to_type_list(CSE_ALifeCustomZone)
 #define script_type_list save_type_list(CSE_ALifeCustomZone)
 
 SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeAnomalousZone,CSE_ALifeCustomZone)
-	CSE_ALifeItemWeapon				*m_tpCurrentBestWeapon;
+	CSE_ALifeItemWeapon				*m_tpCurrentBestWeapon{};
 	float							m_offline_interactive_radius;
-	u32								m_artefact_position_offset;
+	u32								m_artefact_position_offset{};
 	u16								m_artefact_spawn_count;
 
 									CSE_ALifeAnomalousZone	(LPCSTR caSection);
@@ -183,7 +183,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeCreatureAbstract,CSE_ALifeDynamicObjectVisu
 	float							m_fAccuracy;
 	float							m_fIntelligence;
 
-	u32								timestamp;				// server(game) timestamp
+	u32								timestamp{};				// server(game) timestamp
 	u8								flags;
 	float							o_model;				// model yaw
 	SRotation						o_torso;				// torso in world coords
@@ -304,22 +304,22 @@ add_to_type_list(CSE_ALifeMonsterAbstract)
 
 SERVER_ENTITY_DECLARE_BEGIN3(CSE_ALifeCreatureActor,CSE_ALifeCreatureAbstract,CSE_ALifeTraderAbstract,CSE_PHSkeleton)
 	
-	u16								mstate;
+	u16								mstate{};
 	Fvector							accel;
 	Fvector							velocity;
 //	float							fArmor;
 	float							fRadiation;
-	u8								weapon;
+	u8								weapon{};
 	///////////////////////////////////////////
 	u16								m_u16NumItems;
 	u16								m_holderID;
 //	DEF_DEQUE		(PH_STATES, SPHNetState); 
-	SPHNetState						m_AliveState;
+	SPHNetState						m_AliveState{};
 //	PH_STATES						m_DeadStates;
 
 	// статический массив - 6 float(вектора пределов квантизации) + m_u16NumItems*(7 u8) (позиция и поворот кости)
-	u8								m_BoneDataSize;
-	char							m_DeadBodyData[1024];
+	u8								m_BoneDataSize{};
+	char							m_DeadBodyData[1024]{};
 	///////////////////////////////////////////
 									CSE_ALifeCreatureActor	(LPCSTR caSection);
 	virtual							~CSE_ALifeCreatureActor	();
@@ -444,7 +444,7 @@ public:
 #endif
 
 private:
-	CALifeHumanBrain				*m_brain;
+	CALifeHumanBrain* m_brain{};
 
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeHumanAbstract)
@@ -482,7 +482,7 @@ private:
 #ifdef XRGAME_EXPORTS
 
 private:
-	CALifeOnlineOfflineGroupBrain	*m_brain;
+	CALifeOnlineOfflineGroupBrain* m_brain{};
 
 public:
 	IC		CALifeOnlineOfflineGroupBrain	&brain	() const;

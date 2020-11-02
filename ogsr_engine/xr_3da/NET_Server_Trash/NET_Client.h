@@ -31,7 +31,7 @@ class ENGINE_API IPureClient
 protected:
 	CTimer*					device_timer;
 protected:
-	ConnectionState			net_Connected;
+	ConnectionState			net_Connected{};
 
 	INetQueue				net_Queue;
 

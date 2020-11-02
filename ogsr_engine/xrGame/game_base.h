@@ -15,8 +15,8 @@ struct		RPoint
 	Fvector A;
 	u32		TimeToUnfreeze;
 	bool	Blocked;
-	u32		BlockedByID;
-	u32		BlockTime;
+	u32		BlockedByID{};
+	u32		BlockTime{};
 	RPoint(){P.set(.0f,0.f,.0f);A.set(.0f,0.f,.0f); TimeToUnfreeze = 0; Blocked = false;}
 	bool	operator ==		(const u32& ID)	const			{ return (Blocked && BlockedByID == ID);		}
 };
@@ -118,9 +118,9 @@ protected:
 	s32								m_type;
 	u16								m_phase;
 	s32								m_round;
-	u32								m_start_time;
+	u32								m_start_time{};
 
-	u32								m_round_start_time;
+	u32								m_round_start_time{};
 	string64						m_round_start_time_str;
 //	u32								buy_time;
 //	s32								fraglimit; //dm,tdm,ah

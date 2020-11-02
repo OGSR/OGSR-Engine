@@ -29,15 +29,15 @@ public:
 
 public:
 	CObject						*m_tpObjectToWatch;
-	SightManager::ESightType	m_tWatchType;
-	EGoalType					m_tGoalType;
+	SightManager::ESightType	m_tWatchType{};
+	EGoalType					m_tGoalType{};
 	Fvector						m_tWatchVector;
 	shared_str						m_bone_to_watch;
 
 	// Searchlight 
 	Fvector						m_tTargetPoint;
-	float						vel_bone_x;
-	float						vel_bone_y;
+	float						vel_bone_x{};
+	float						vel_bone_y{};
 
 public:
 					CScriptWatchAction	();

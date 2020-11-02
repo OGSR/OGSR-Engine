@@ -12,10 +12,10 @@ public:
 	shared_str				fname;
 	cache_cat				CAT;
 
-	float					fTimeTotal;
-	u32						dwBytesTotal;
+	float					fTimeTotal{};
+	u32						dwBytesTotal{};
 
-	WAVEFORMATEX			m_wformat; //= SoundRender->wfm;
+	WAVEFORMATEX			m_wformat{}; //= SoundRender->wfm;
 
 
 	float					m_fBaseVolume;

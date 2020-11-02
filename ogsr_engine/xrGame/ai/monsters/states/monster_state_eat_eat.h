@@ -7,7 +7,7 @@ protected:
 	typedef CState<_Object>		inherited;
 
 	CEntityAlive	*corpse;
-	u32				time_last_eat;
+	u32				time_last_eat{};
 
 public:
 						CStateMonsterEating		(_Object *obj);

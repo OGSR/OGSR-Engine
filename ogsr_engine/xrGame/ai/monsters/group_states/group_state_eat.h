@@ -10,7 +10,7 @@ protected:
 
 	const CEntityAlive			*corpse;
 
-	u32							m_time_last_eat;
+	u32							m_time_last_eat{};
 
 public:
 	CStateGroupEat		(_Object *obj);

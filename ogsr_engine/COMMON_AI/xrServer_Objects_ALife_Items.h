@@ -44,7 +44,7 @@ public:
 	s32								m_iHealthValue;
 	s32								m_iFoodValue;
 	float							m_fDeteriorationValue;
-	CSE_ALifeObject					*m_self;
+	CSE_ALifeObject* m_self{};
 	u32								m_last_update_time;
 
 									CSE_ALifeInventoryItem	(LPCSTR caSection);
@@ -65,7 +65,7 @@ public:
 	virtual bool					bfUseful();
 
 	/////////// network ///////////////
-	u8								m_u8NumItems;
+	u8								m_u8NumItems{};
 	SPHNetState						State;
 	///////////////////////////////////
 SERVER_ENTITY_DECLARE_END
@@ -146,7 +146,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon,CSE_ALifeItem)
 	EWeaponAddonStatus				m_silencer_status;				
 	EWeaponAddonStatus				m_grenade_launcher_status;
 
-	u32								timestamp;
+	u32								timestamp{};
 	u8								wpn_flags;
 	u8								wpn_state;
 	u8								ammo_type;
@@ -155,9 +155,9 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon,CSE_ALifeItem)
 	float							m_fHitPower;
 	ALife::EHitType					m_tHitType;
 	LPCSTR							m_caAmmoSections;
-	u32								m_dwAmmoAvailable;
+	u32								m_dwAmmoAvailable{};
 	Flags8							m_addon_flags;
-	u8								m_bZoom;
+	u8								m_bZoom{};
 	u32								m_ef_main_weapon_type;
 	u32								m_ef_weapon_type;
 

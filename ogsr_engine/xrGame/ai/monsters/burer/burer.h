@@ -32,7 +32,7 @@ public:
 		Fvector		target_pos;
 		Fvector		from_pos;
 
-		u32			time_last_update;
+		u32			time_last_update{};
 
 		const CEntityAlive *enemy;
 		

@@ -436,7 +436,7 @@ BOOL	CResourceManager::_GetDetailTexture(LPCSTR Name,LPCSTR& T, R_constant_setup
 	}
 }*/
 
-std::vector<ITexture*> CResourceManager::FindTexture(const char* Name)
+std::vector<ITexture*> CResourceManager::FindTexture(const char* Name) const
 {
 	R_ASSERT(Name && strlen(Name));
 
@@ -444,7 +444,7 @@ std::vector<ITexture*> CResourceManager::FindTexture(const char* Name)
 	strcpy_s(filename, Name);
 	fix_texture_name(filename);
 
-	char* ch = strstr(filename, "*");
+	char* ch = strchr(filename, '*');
 
 	std::vector<ITexture*> res;
 

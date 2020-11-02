@@ -11,7 +11,7 @@ class CStateBurerAttackTele : public CState<Object> {
 	CPhysicsShellHolder					*selected_object;
 	xr_vector<CObject*>					m_nearest;
 	
-	u32									time_started;
+	u32									time_started{};
 
 	enum {
 		ACTION_TELE_STARTED,
@@ -57,8 +57,8 @@ private:
 private:
 	TTime				m_last_grenade_scan;
 	TTime				m_anim_end_tick;
-	TTime				m_end_tick;
-	float				m_initial_health;
+	TTime				m_end_tick{};
+	float				m_initial_health{};
 };
 
 #include "burer_state_attack_tele_inline.h"

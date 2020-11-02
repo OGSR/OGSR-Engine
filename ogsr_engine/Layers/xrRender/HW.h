@@ -95,15 +95,15 @@ public:
 	IDirect3DSurface9*		pBaseRT;
 	IDirect3DSurface9*		pBaseZB;
 
-	CHWCaps					Caps;
+	CHWCaps					Caps{};
 
-	UINT					DevAdapter;
-	D3DDEVTYPE				DevT;
-	D3DPRESENT_PARAMETERS	DevPP;
+	UINT					DevAdapter{};
+	D3DDEVTYPE				DevT{};
+	D3DPRESENT_PARAMETERS	DevPP{};
 #endif	//	USE_DX10
 
 #ifndef _MAYA_EXPORT
-	stats_manager			stats_manager;
+	stats_manager			stats_manager{};
 #endif
 #if defined(USE_DX10) || defined(USE_DX11)
 	void			UpdateViews();

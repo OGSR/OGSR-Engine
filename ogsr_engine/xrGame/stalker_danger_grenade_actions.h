@@ -49,7 +49,7 @@ protected:
 	typedef CStalkerActionCombatBase inherited;
 
 private:
-	bool				m_direction_sight;
+	bool				m_direction_sight{};
 
 public:
 						CStalkerActionDangerGrenadeTakeCoverAfterExplosion	(CAI_Stalker *object, LPCSTR action_name = "");

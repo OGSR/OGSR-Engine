@@ -6,7 +6,7 @@ enum{
 		AF_ALWAYSRUN		=(1<<2),
 		AF_UNLIMITEDAMMO	=(1<<3),
 		AF_DOF_ZOOM		=(1<<4),
-		//		=(1<<5),
+		AF_WPN_AIM_TOGGLE =(1<<5),
 		AF_PSP				=(1<<6),
 		AF_MUSIC_TRACKS		=(1<<7),
 		AF_DOF_SCOPE		=(1<<8),

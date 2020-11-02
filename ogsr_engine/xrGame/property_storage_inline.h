@@ -14,7 +14,7 @@ IC	void CPropertyStorage::set_property	(const _condition_type &condition_id, con
 	if (m_storage.end() != I)
 		(*I).m_value					= value;
 	else
-		m_storage.push_back				(CConditionValue(condition_id,value));
+		m_storage.emplace_back(condition_id, value);
 }
 
 IC	const CPropertyStorage::_value_type	&CPropertyStorage::property	(const _condition_type &condition_id) const

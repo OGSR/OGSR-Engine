@@ -192,6 +192,9 @@ Flags32		ps_r2_ls_flags				= { R2FLAG_SUN
 
 Flags32 ps_r2_ls_flags_ext = {
 	/*R2FLAGEXT_SSAO_OPT_DATA |*/ R2FLAGEXT_SSAO_HALF_DATA | R2FLAGEXT_ENABLE_TESSELLATION | R2FLAGEXT_RAIN_DROPS | R2FLAGEXT_RAIN_DROPS_CONTROL
+#if RENDER==R_R4
+	| R2FLAGEXT_SSLR
+#endif
 };
 
 BOOL		ps_no_scale_on_fade			= 0; //Alundaio

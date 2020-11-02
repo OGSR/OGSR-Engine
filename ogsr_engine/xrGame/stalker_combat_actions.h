@@ -174,7 +174,7 @@ public:
 
 class CStalkerActionDetourEnemy : public CStalkerActionCombatBase {
 private:
-	const CCoverPoint	*m_enemy_cover;
+	const CCoverPoint* m_enemy_cover{};
 
 protected:
 	typedef CStalkerActionCombatBase inherited;
@@ -192,7 +192,7 @@ public:
 
 class CStalkerActionSearchEnemy : public CStalkerActionCombatBase {
 private:
-	const CCoverPoint	*m_enemy_cover;
+	const CCoverPoint* m_enemy_cover{};
 
 protected:
 	typedef CStalkerActionCombatBase inherited;

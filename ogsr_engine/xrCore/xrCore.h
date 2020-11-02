@@ -213,7 +213,7 @@ public:
 	  use_trade_deficit_factor   = 1ull << 38,
 	  show_objectives_ondemand   = 1ull << 39,
 	  pickup_check_overlaped     = 1ull << 40,
-	  // !Место свободно!        = 1ull << 41,
+	  disable_dialog_break       = 1ull << 41,
 	  actor_thirst               = 1ull << 42,
 	  no_progress_bar_animation  = 1ull << 43;
 	};

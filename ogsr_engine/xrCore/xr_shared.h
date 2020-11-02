@@ -28,7 +28,7 @@ public:
 		if (0==result)			{
 			result				= xr_new<T>();
 			result->m_ref_cnt	= 0;
-			if (p(key,result))	container.insert(mk_pair(key,result));
+			if (p(key, result))	container.emplace(key, result);
 			else				xr_delete		(result);
 		}
 		return				result;

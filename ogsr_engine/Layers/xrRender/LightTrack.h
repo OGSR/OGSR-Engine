@@ -40,13 +40,13 @@ public:
 	// general
 	u32						MODE				;
 	u32						dwFrame				;
-	u32						dwFrameSmooth		;
+	u32						dwFrameSmooth{};
 
 	// 
 	xr_vector<Item>			track				;	// everything what touches
 	xr_vector<Light>		lights				;	// 
 
-	bool					result				[lt_hemisamples];
+	bool					result[lt_hemisamples]{};
 	collide::ray_cache		cache				[lt_hemisamples];
 	collide::ray_cache		cache_sun			;
 	s32						result_count		;
@@ -54,7 +54,7 @@ public:
 	u32						result_frame		;
 	s32						result_sun			;
 public:
-	u32						shadow_gen_frame	;
+	u32						shadow_gen_frame{};
 	u32						shadow_recv_frame	;
 	int						shadow_recv_slot	;
 private:

@@ -636,8 +636,9 @@ void CAI_Bloodsucker::move_actor_cam (float angle)
 	}
 }
 
-void CAI_Bloodsucker::HitEntity(const CEntity *pEntity, float fDamage, float impulse, Fvector &dir)
+void CAI_Bloodsucker::HitEntity(const CEntity *pEntity, float fDamage, float impulse, Fvector &dir, ALife::EHitType hit_type, bool draw_hit_marks)
 {
+#pragma todo("KRodin: тут недоперенесено из ЗП, очевидно.")
 	//bool is_critical = rand()/(float)RAND_MAX <= m_critical_hit_chance;
 
 	//if ( is_critical )

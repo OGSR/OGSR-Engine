@@ -23,8 +23,7 @@ CParticlesPlayer::SParticlesInfo* CParticlesPlayer::SBoneInfo::AppendParticles(C
 {
 	SParticlesInfo* pi	= FindParticles(ps_name);
 	if (pi)				return pi;
-	particles.push_back	(SParticlesInfo());
-	pi					= &particles.back();
+	pi					= &particles.emplace_back();
 	pi->ps				= CParticlesObject::Create(*ps_name,FALSE);
 	return pi;
 }
@@ -57,7 +56,7 @@ CParticlesPlayer::CParticlesPlayer ()
 	
 	m_bActiveBones		= false;
 
-	m_Bones.push_back	(SBoneInfo(0,Fvector().set(0,0,0)));
+	m_Bones.emplace_back(0, Fvector().set(0, 0, 0));
 
 	SetParentVel		(zero_vel);
 	m_self_object		= 0;
@@ -85,14 +84,14 @@ void CParticlesPlayer::LoadParticles(IKinematics* K)
 			ASSERT_FMT(index != BI_NONE, "Particles bone [%s] not found in model [%s], section: [%s]", key.c_str(), m_self_object->cNameVisual().c_str(), m_self_object->cNameSect().c_str());
 			Fvector					offs;
 			sscanf					(value.c_str(),"%f,%f,%f",&offs.x,&offs.y,&offs.z);
-			m_Bones.push_back		(SBoneInfo(index,offs));
+			m_Bones.emplace_back(index, offs);
 			bone_mask				|= u64(1)<<u64(index);
 		}
 	}
 	if(m_Bones.empty())
 	{
 		bone_mask			= u64(1)<<u64(0);
-		m_Bones.push_back	(SBoneInfo(K->LL_GetBoneRoot(),Fvector().set(0,0,0)));
+		m_Bones.emplace_back(K->LL_GetBoneRoot(), Fvector().set(0, 0, 0));
 	}
 }
 //уничтожение партиклов на net_Destroy

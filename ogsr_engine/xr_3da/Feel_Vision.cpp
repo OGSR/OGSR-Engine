@@ -38,8 +38,7 @@ namespace Feel {
 	}
 	void	Vision::o_new		(CObject* O)
 	{
-		feel_visible.push_back	(feel_visible_Item());
-		feel_visible_Item&	I	= feel_visible.back();
+		auto& I = feel_visible.emplace_back();
 		I.O						= O;
 		I.Cache_vis				= 1.f;
 		I.Cache.verts[0].set	(0,0,0);

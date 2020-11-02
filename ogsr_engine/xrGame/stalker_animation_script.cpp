@@ -55,7 +55,7 @@ void CStalkerAnimationManager::add_script_animation	(LPCSTR animation, bool hand
 		return;
 	}
 
-	m_script_animations.push_back	(CStalkerAnimationScript(motion,hand_usage,use_movement_controller));
+	m_script_animations.emplace_back(motion, hand_usage, use_movement_controller);
 }
 
 const CStalkerAnimationScript &CStalkerAnimationManager::assign_script_animation	() const

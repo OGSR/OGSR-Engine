@@ -9,13 +9,13 @@ private:
 	CBaseMonster*		m_object;
 
 	char				m_name[64];
-	float				m_linear_factor;
-	float				m_quadratic_factor;
-	float				m_max_power;
-	float				m_max_distance;
+	float				m_linear_factor{};
+	float				m_quadratic_factor{};
+	float				m_max_power{};
+	float				m_max_distance{};
 	bool				m_enable_for_dead;
 	
-	float				m_pp_highest_at;
+	float				m_pp_highest_at{};
 	pcstr				m_pp_effector_name;
 	u32					m_pp_index;
 

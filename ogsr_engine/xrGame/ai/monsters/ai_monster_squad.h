@@ -25,7 +25,7 @@ struct SMemberGoal
 	EMemberGoalType		type;
 	CEntity				*entity;
 	Fvector				position;
-	u32					node;
+	u32					node{};
 
 	SMemberGoal			() {
 		type			= MG_None;

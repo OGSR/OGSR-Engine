@@ -176,7 +176,7 @@ TEMPLATE_SPECIALIZATION
 void CStateBloodsuckerPredatorAbstract::check_force_state()
 {
 	if ((current_substate == eStatePredator_Camp) && (m_time_start_camp + TIME_TO_RESELECT_CAMP < time())) {
-		if (current_substate != u32(-1)) //Условие всегда истинно
+		//if (current_substate != u32(-1)) //KRodin: Условие всегда истинно из-за проверки выше.
 			get_state_current()->critical_finalize();
 
 		prev_substate		= u32(-1);

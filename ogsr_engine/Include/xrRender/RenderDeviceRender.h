@@ -57,5 +57,5 @@ public:
 	virtual void	ClearTarget() = 0;
 	virtual void	SetCacheXform(Fmatrix &mView, Fmatrix &mProject) = 0;
 	virtual void	OnAssetsChanged() = 0;
-	virtual IResourceManager* GetResourceManager() = 0;
+	virtual IResourceManager* GetResourceManager() const = 0;
 };

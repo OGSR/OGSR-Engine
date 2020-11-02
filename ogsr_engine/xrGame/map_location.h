@@ -113,7 +113,7 @@ class CRelationMapLocation :public CMapLocation
 	shared_str				m_curr_spot_name;
 	u16						m_pInvOwnerEntityID;
 	u16						m_pInvOwnerActorID;
-	ALife::ERelationType	m_last_relation;
+	ALife::ERelationType	m_last_relation{};
 	bool					m_b_was_visible_last_frame;
 protected:
 	bool					IsVisible							();

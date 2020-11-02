@@ -486,11 +486,11 @@ void CPHShellSplitterHolder::Deactivate()
 }
 void CPHShellSplitterHolder::AddSplitter(CPHShellSplitter::EType type,u16 element,u16 joint)
 {
-	m_splitters.push_back(CPHShellSplitter(type,element,joint));
+	m_splitters.emplace_back(type, element, joint);
 }
 void CPHShellSplitterHolder::AddSplitter(CPHShellSplitter::EType type,u16 element,u16 joint,u16 position)
 {
-	m_splitters.insert(m_splitters.begin()+position,CPHShellSplitter(type,element,joint));
+	m_splitters.emplace(m_splitters.begin() + position, type, element, joint);
 }
 CPHShellSplitter::CPHShellSplitter(CPHShellSplitter::EType type,u16 element,u16 joint)
 {

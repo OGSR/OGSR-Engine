@@ -27,9 +27,9 @@ protected:
 
 	int				m_iPageSize;
 
-	int				m_ScrollWorkArea;
+	int				m_ScrollWorkArea{};
 	bool			m_b_enabled;
-	bool			m_bIsHorizontal;
+	bool			m_bIsHorizontal{};
 
 	bool			ScrollInc			();
 	bool			ScrollDec			();

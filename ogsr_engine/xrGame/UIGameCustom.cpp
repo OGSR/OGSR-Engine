@@ -159,8 +159,7 @@ SDrawStaticStruct* CUIGameCustom::AddCustomStatic			(LPCSTR id, bool bSingleInst
 	}
 	
 	CUIXmlInit xml_init;
-	m_custom_statics.push_back		(SDrawStaticStruct());
-	SDrawStaticStruct& sss			= m_custom_statics.back();
+	auto& sss = m_custom_statics.emplace_back();
 
 	sss.m_static					= xr_new<CUIStatic>();
 	sss.m_name						= id;

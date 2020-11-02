@@ -1429,7 +1429,7 @@ void luabind::detail::class_rep::add_method(luabind::detail::method_rep&& fun)
 		, method_name(fun.name));
 	if (m == m_methods.end())
 	{
-		m_methods.push_back(method_rep());
+		m_methods.emplace_back();
 		m = m_methods.end();
 		std::advance(m, -1);
 		m->name = fun.name;

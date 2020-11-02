@@ -10,7 +10,7 @@ class CTeleWhirlwindObject : public CTelekineticObject
 {
 	typedef			CTelekineticObject	inherited;
 	CTeleWhirlwind		*m_telekinesis;
-	bool				b_destroyable;
+	bool				b_destroyable{};
 	float				throw_power;
 	
 public:

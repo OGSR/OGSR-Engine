@@ -38,6 +38,7 @@ protected:
 	virtual void	PlayAnimShow();
 	virtual void	PlayAnimHide();
 	virtual void	PlayReloadSound					();
+	virtual void UpdateSounds() override;
 	virtual void	PlayAnimIdle					( u8 );
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION

@@ -94,12 +94,11 @@ void get_toe(IKinematics *skeleton, Fvector & toe, const u16 bones[4])
 
 void	CIKLimbsController::LimbSetup(  const u16 bones[4] )
 {
-	_bone_chains.push_back( CIKLimb( ) );
 	IKinematics* skeleton_animated = m_object->Visual( )->dcast_PKinematics();
 	VERIFY( skeleton_animated );
 	Fvector toe;
 	get_toe( skeleton_animated, toe, bones );
-	_bone_chains.back( ).Create( ( u16 ) _bone_chains.size( )-1, skeleton_animated, bones, toe, true );//Fvector( ).set( 0.13143f, 0, 0.20f )
+	_bone_chains.emplace_back().Create( ( u16 ) _bone_chains.size( )-1, skeleton_animated, bones, toe, true );//Fvector( ).set( 0.13143f, 0, 0.20f )
 }
 
 

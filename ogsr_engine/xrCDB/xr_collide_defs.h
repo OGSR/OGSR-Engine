@@ -114,8 +114,8 @@ namespace collide
 				}
 				return				FALSE;
 			}
-			results.push_back		(rq_result());
-			rq_result& rq			= results.back();
+
+			auto& rq = results.emplace_back();
 			rq.range	=_range;
 			rq.element	=_element;
 			rq.O		=_who;

@@ -391,7 +391,7 @@ BOOL	R_constant_table::parse	(void* _desc, u32 destination)
 
 				parseConstants(pTable,updatedDest);
 				ref_cbuffer	tempBuffer = dxRenderDeviceRender::Instance().Resources->_CreateConstantBuffer(pTable);
-				m_CBTable.push_back(cb_table_record(uiBufferIndex, tempBuffer));
+				m_CBTable.emplace_back(uiBufferIndex, tempBuffer);
 			}
 		}
 	}

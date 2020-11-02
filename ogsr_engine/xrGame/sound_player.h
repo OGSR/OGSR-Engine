@@ -123,7 +123,7 @@ public:
 private:
 	SOUND_COLLECTIONS							m_sounds;
 	xr_vector<CSoundSingle>						m_playing_sounds;
-	u32											m_sound_mask;
+	u32											m_sound_mask{};
 	CObject										*m_object;
 	shared_str									m_sound_prefix;
 

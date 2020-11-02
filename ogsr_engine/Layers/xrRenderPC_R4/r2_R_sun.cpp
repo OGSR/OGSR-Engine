@@ -649,7 +649,7 @@ void CRender::render_sun				()
 		for		(int p=0; p<view_clipper.frustum.p_count; p++)
 		{
 			Fplane&		P	= view_clipper.frustum.planes	[p];
-			view_clipper.planes.push_back(D3DXPLANE(P.n.x,P.n.y,P.n.z,P.d));
+			view_clipper.planes.emplace_back(P.n.x, P.n.y, P.n.z, P.d);
 		}
 
 		// 
@@ -1132,7 +1132,7 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 					edge_vec.sub(near_p);
 					edge_vec.normalize();
 
-					light_cuboid.view_frustum_rays.push_back	( sun::ray(near_p,edge_vec) );
+					light_cuboid.view_frustum_rays.emplace_back(near_p, edge_vec);
 				}
 			}
 			else

@@ -8,13 +8,13 @@ class CUIXml;
 class CUISequencer :public pureFrame, public pureRender,	public IInputReceiver
 {
 protected:
-	CUIWindow*				m_UIWindow;
+	CUIWindow* m_UIWindow{};
 	xr_deque<CUISequenceItem*>m_items;
 	bool					m_bActive;
 	bool					m_bPlayEachItem;
 	bool					GrabInput			();
 public:
-	IInputReceiver*			m_pStoredInputReceiver;
+	IInputReceiver* m_pStoredInputReceiver{};
 							CUISequencer		();
 	void					Start				(LPCSTR tutor_name);
 	void					Stop				();

@@ -521,8 +521,8 @@ void CStats::Show_HW_Stats()
 
 void	_LogCallback				(LPCSTR string)
 {
-	if (string && '!'==string[0] && ' '==string[1])
-		Device.Statistic->errors.push_back	(shared_str(string));
+	if (string && '!' == string[0] && ' ' == string[1])
+		Device.Statistic->errors.emplace_back(string);
 }
 
 void CStats::OnDeviceCreate			()

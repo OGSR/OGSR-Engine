@@ -108,10 +108,10 @@ class CWeaponHUD
 	shared_weapon_hud	m_shared_data;
 
 	//таймеры для проигрывания анимаций
-	u32					m_dwAnimTime;
-	u32					m_dwAnimEndTime;
+	u32					m_dwAnimTime{};
+	u32					m_dwAnimEndTime{};
 	bool				m_bStopAtEndAnimIsRunning;
-	u32					m_startedAnimState;
+	u32					m_startedAnimState{};
 //	CInventoryItem*		m_pCallbackItem;
 	CHudItem*			m_pCallbackItem;
 
@@ -119,8 +119,8 @@ class CWeaponHUD
 	void				StopCurrentAnim	();
 
 	//поворот и смещение для режима приближения
-	float				m_fZoomRotateX;
-	float				m_fZoomRotateY;
+	float				m_fZoomRotateX{};
+	float				m_fZoomRotateY{};
 	Fvector				m_fZoomOffset;
 public: 
 						CWeaponHUD		(CHudItem* pHudItem);
@@ -170,12 +170,12 @@ public:
 	static void			CreateSharedContainer	();
 	static void			DestroySharedContainer	();
 	static void			CleanSharedContainer	();
-#ifdef DEBUG
+
 public:
 	void				dbg_SetFirePoint	(const Fvector &fp)			{((weapon_hud_value*)m_shared_data.get_value())->m_fp_offset.set(fp);}
 	void				dbg_SetFirePoint2	(const Fvector &fp)			{((weapon_hud_value*)m_shared_data.get_value())->m_fp2_offset.set(fp);}
 	void				dbg_SetShellPoint	(const Fvector &sp)			{((weapon_hud_value*)m_shared_data.get_value())->m_sp_offset.set(sp);}
-#endif
+
 
 private:
 	CWeaponBobbing *m_bobbing;

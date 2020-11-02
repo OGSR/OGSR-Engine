@@ -35,15 +35,15 @@ protected:
 	float					m_fPowerInfluence;
 	float					m_fSatietyInfluence;
 	float					m_fRadiationInfluence;
-	float					m_fMaxPowerUpInfluence;
+	float					m_fMaxPowerUpInfluence{};
 	float					m_fPsyHealthInfluence;
-	float					m_fThirstInfluence;
+	float					m_fThirstInfluence{};
 	//заживление ран на кол-во процентов
-	float					m_fWoundsHealPerc;
+	float					m_fWoundsHealPerc{};
 
 	//количество порций еды, 
 	//-1 - порция одна и больше не бывает (чтоб не выводить надпись в меню)
 	int						m_iPortionsNum;
-	int						m_iStartPortionsNum;
+	int						m_iStartPortionsNum{};
 };
 

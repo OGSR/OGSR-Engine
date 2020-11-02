@@ -42,7 +42,7 @@ class
 	> inherited;
 private:
 	ESelectionType			m_selection_type;
-	GameGraph::_GRAPH_ID	m_previous_vertex_id;
+	GameGraph::_GRAPH_ID	m_previous_vertex_id{};
 	CLocationManager		*m_location_manager;
 
 protected:

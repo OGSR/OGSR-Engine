@@ -325,7 +325,7 @@ void SHeliMovementState::CreateRoundPoints(Fvector center, float radius, float s
 		dir.setHP(dir_h,0.0f);
 		new_pt.mad(center,dir,radius);
 		new_pt.y = height;
-		round_points.push_back( STmpPt(new_pt,dir_h) );
+		round_points.emplace_back(new_pt, dir_h);
 		dir_h	+= td;
 	}
 

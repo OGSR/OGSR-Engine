@@ -214,7 +214,7 @@ bool CPHFracturesHolder::PhDataUpdate(CPHElement* element)
 
 void CPHFracturesHolder::AddImpact(const Fvector& force,const Fvector& point,u16 id)
 {
-	m_impacts.push_back(SPHImpact(force,point,id));
+	m_impacts.emplace_back(force, point, id);
 }
 u16 CPHFracturesHolder::AddFracture(const CPHFracture& fracture)
 {

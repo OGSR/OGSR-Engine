@@ -14,7 +14,7 @@ protected:
 		eStateSteal
 	};
 
-	u32					m_last_time_threaten;
+	u32					m_last_time_threaten{};
 
 public:
 						CStateChimeraThreaten	(_Object *obj);

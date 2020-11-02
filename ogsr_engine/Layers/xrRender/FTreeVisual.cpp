@@ -88,7 +88,7 @@ void FTreeVisual::Load		(const char* N, IReader *data, u32 dwFlags)
 struct	FTreeVisual_setup
 {
 	u32			dwFrame;
-	float		scale;
+	float		scale{};
 	Fvector4	wave;
 	Fvector4	wind;
 

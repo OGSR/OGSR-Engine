@@ -617,6 +617,10 @@ int get_actor_points(LPCSTR sect)
 {
 	return Actor()->StatisticMgr().GetSectionPoints(sect);
 }
+
+void remove_actor_points( LPCSTR sect, LPCSTR detail_key) {
+  Actor()->StatisticMgr().RemovePoints( sect, detail_key );
+}
 extern int get_actor_ranking();
 extern void add_human_to_top_list		(u16 id);
 extern void remove_human_from_top_list	(u16 id);
@@ -1151,6 +1155,7 @@ void CLevel::script_register(lua_State *L)
 		def("add_points",						&add_actor_points),
 		def("add_points_str",					&add_actor_points_str),
 		def("get_points",						&get_actor_points),
+		def( "remove_points", &remove_actor_points),
 		def("add_to_ranking",					&add_human_to_top_list),
 		def("remove_from_ranking",				&remove_human_from_top_list),
 		def("get_actor_ranking",				&get_actor_ranking)

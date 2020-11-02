@@ -35,7 +35,7 @@ BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )
 			strcpy_s(tmpstr, op_client);
 			*(strstr(tmpstr, "name=")+5) = 0;
 			strcat_s(tmpstr, xr_strlen(Core.UserName) ? Core.UserName : Core.CompName);
-			const char* ptmp = strstr(strstr(op_client, "name="), "/");
+			const char* ptmp = strchr(strstr(op_client, "name="), '/');
 			if (ptmp)
 				strcat_s(tmpstr, ptmp);
 			m_caClientOptions = tmpstr;

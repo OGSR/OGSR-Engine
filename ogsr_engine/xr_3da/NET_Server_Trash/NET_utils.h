@@ -4,7 +4,7 @@
 
 #pragma pack(push,1)
 
-static constexpr u32 NET_PacketSizeLimit = 8192;
+constexpr u32 NET_PacketSizeLimit = 8192;
 
 struct	NET_Buffer
 {
@@ -15,17 +15,15 @@ struct	NET_Buffer
 class NET_Packet final
 {
 public:
-	NET_Packet() : r_pos(0), timeReceive(0) { ZeroMemory(&B, sizeof(B)); }
-
     void            construct( const void* data, unsigned size )
                     {
                         memcpy( B.data, data, size );
                         B.count = size;
                     }
                     
-	NET_Buffer		B;
-	u32				r_pos;
-	u32				timeReceive;
+	NET_Buffer		B{};
+	u32				r_pos{};
+	u32				timeReceive{};
 
 	// writing - main
 	IC void write_start(){

@@ -89,7 +89,7 @@ class CPHActorCharacter :
 	typedef CPHSimpleCharacter	inherited;
 
 	RESRICTORS_V		m_restrictors;
-	float				m_speed_goal;
+	float				m_speed_goal{};
 public:
 	typedef TPHCharacterRestrictor<CPHCharacter::rtStalker>			stalker_restrictor;
 	typedef TPHCharacterRestrictor<CPHCharacter::rtStalkerSmall>	stalker_small_restrictor;

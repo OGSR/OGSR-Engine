@@ -51,7 +51,7 @@ protected:
 public:
 	// Cache
 	CSoundRender_Cache					cache;
-	u32									cache_bytes_per_line;
+	u32									cache_bytes_per_line{};
 protected:
 	virtual void						i_eax_set(const GUID* guid, u32 prop, void* val, u32 sz) = 0;
 	virtual void						i_eax_get(const GUID* guid, u32 prop, void* val, u32 sz) = 0;

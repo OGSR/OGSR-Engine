@@ -28,8 +28,8 @@ struct SStateDataMoveToPoint {
 	Fvector             target_direction;
 	
 	bool				accelerated;
-	bool				braking;
-	u8					accel_type;
+	bool				braking{};
+	u8					accel_type{};
 	
 	float				completion_dist;
 	
@@ -63,8 +63,8 @@ struct SStateHideFromPoint {
 	Fvector				point;
 	
 	bool				accelerated;
-	bool				braking;
-	u8					accel_type;
+	bool				braking{};
+	u8					accel_type{};
 	
 	float				distance;
 	
@@ -111,8 +111,8 @@ struct SStateDataMoveAroundPoint {
 	float				radius;
 
 	bool				accelerated;
-	bool				braking;
-	u8					accel_type;
+	bool				braking{};
+	u8					accel_type{};
 	
 	SStateDataAction	action;
 

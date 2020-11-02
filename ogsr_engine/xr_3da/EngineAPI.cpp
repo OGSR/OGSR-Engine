@@ -51,7 +51,7 @@ ENGINE_API bool is_enough_address_space_available()
 	SYSTEM_INFO system_info;
 	GetSystemInfo(&system_info);
 
-	return (*(u32*)&system_info.lpMaximumApplicationAddress) > 0x90000000;
+	return (*(size_t*)&system_info.lpMaximumApplicationAddress) > 0x90000000ull;
 }
 
 
@@ -230,7 +230,7 @@ void CEngineAPI::CreateRendererList()
 			break;
 		}
 
-		if (i == 1) {
+		if (i == 1) { //-V547
 			RendererTokens.emplace_back("renderer_r1");
 		}
 		else if (i == 2) {

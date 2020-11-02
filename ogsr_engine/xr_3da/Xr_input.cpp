@@ -189,7 +189,7 @@ void CInput::KeyUpdate	( )
 
 bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 {
-	DIPROPSTRING keyname;
+	DIPROPSTRING keyname{};
 	keyname.diph.dwSize			= sizeof(DIPROPSTRING);
 	keyname.diph.dwHeaderSize	= sizeof(DIPROPHEADER);
 	keyname.diph.dwObj			= static_cast<DWORD>(dik);

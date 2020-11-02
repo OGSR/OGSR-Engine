@@ -21,8 +21,7 @@ private:
 		CGameFont*			pDescFont;
 		u32					uDescClr;
 		bool				bShowDescrText;
-	};
-	_desc_info				m_desc_info;
+	} m_desc_info{};
 	CInventoryItem* m_pInvItem;
 public:
 						CUIItemInfo			();

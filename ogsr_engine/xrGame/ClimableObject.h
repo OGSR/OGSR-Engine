@@ -13,7 +13,7 @@ class CClimableObject: public CPhysicsShellHolder
 	Fvector				m_axis;
 	Fvector				m_side;
 	Fvector				m_norm;
-	float				m_radius;
+	float				m_radius{};
 public:
 					CClimableObject		();
 					~CClimableObject	();

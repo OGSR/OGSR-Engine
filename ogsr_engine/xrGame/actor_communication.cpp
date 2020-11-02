@@ -257,7 +257,7 @@ void CActor::RunTalkDialog(CInventoryOwner* talk_partner)
 	}
 }
 
-void CActor::StartTalk (CInventoryOwner* talk_partner)
+void CActor::StartTalk (CInventoryOwner* talk_partner, bool)
 {
 	//обновить информацию о контакте
 	VERIFY(smart_cast<CGameObject*>(talk_partner));
@@ -326,8 +326,7 @@ void CActor::AddGameNews_deffered	 (GAME_NEWS_DATA& news_data, u32 delay)
 {
 	GAME_NEWS_DATA * d = xr_new<GAME_NEWS_DATA>(news_data);
 	//*d = news_data;
-	m_defferedMessages.push_back( SDefNewsMsg() );
-	m_defferedMessages.back().news_data = d;
+	m_defferedMessages.emplace_back().news_data = d;
 	m_defferedMessages.back().time = Device.dwTimeGlobal+delay;
 	std::sort(m_defferedMessages.begin(), m_defferedMessages.end() );
 }

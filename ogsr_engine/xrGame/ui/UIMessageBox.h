@@ -56,7 +56,7 @@ protected:
 	CUIEditBox* m_UIEditPass;
 	CUIEditBox* m_UIEditUserPass;
 	 
-	E_MESSAGEBOX_STYLE m_eMessageBoxStyle;
+	E_MESSAGEBOX_STYLE m_eMessageBoxStyle{};
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 

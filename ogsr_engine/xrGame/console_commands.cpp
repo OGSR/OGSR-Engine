@@ -1152,6 +1152,8 @@ void CCC_RegisterCommands()
 	CMD4( CCC_Integer, "g_dof_zoom_far",  &g_dof_zoom_far,  10, 100 );
 	CMD4( CCC_Integer, "g_dof_zoom_near", &g_dof_zoom_near, 10, 100 );
 
+	CMD3(CCC_Mask, "wpn_aim_toggle", &psActorFlags, AF_WPN_AIM_TOGGLE);
+
 	// alife
 #ifdef DEBUG
 	CMD1(CCC_ALifePath,			"al_path"				);		// build path

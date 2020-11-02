@@ -18,7 +18,7 @@ struct CVertexAllocatorFixed {
 		typedef xr_vector<CGraphVertex>				VERTICES;
 
 	protected:
-		u32							m_vertex_count;
+		u32							m_vertex_count{};
 		VERTICES					m_vertices;
 
 	public:
