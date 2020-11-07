@@ -488,7 +488,7 @@ public:
 	IC void					SetAmmoMagSize		(int _size) { iMagazineSize = _size; }
 
 	void					SetAmmoElapsed		(int ammo_count);
-
+	void					SetAmmoType			(u32 ammo_type);
 	virtual void			OnMagazineEmpty		();
 			void			SpawnAmmo			(u32 boxCurr = 0xffffffff, 
 													LPCSTR ammoSect = NULL, 

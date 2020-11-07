@@ -370,6 +370,13 @@ void CScriptGameObject::SetAmmoElapsed(int ammo_elapsed)
 	weapon->SetAmmoElapsed(ammo_elapsed);
 }
 
+void CScriptGameObject::SetAmmoType(u32 ammo_type)
+{
+	CWeapon* weapon = smart_cast<CWeapon*>(&object());
+	if (!weapon) return;
+	weapon->SetAmmoType(ammo_type);
+}
+
 u32 CScriptGameObject::GetAmmoCurrent() const
 {
 	const CWeapon	*weapon = smart_cast<const CWeapon*>(&object());

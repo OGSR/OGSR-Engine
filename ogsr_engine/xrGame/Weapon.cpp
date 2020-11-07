@@ -1966,6 +1966,16 @@ void	CWeapon::SetAmmoElapsed	(int ammo_count)
 	};
 }
 
+
+void	CWeapon::SetAmmoType(u32 ammo_type)
+{
+
+	if (ammo_type >= m_ammoTypes.size())
+		Msg("!! Ammo type [%s] is out of range.", ammo_type);
+	else
+		m_ammoType = ammo_type;
+}
+
 u32	CWeapon::ef_main_weapon_type	() const
 {
 	VERIFY	(m_ef_main_weapon_type != u32(-1));
