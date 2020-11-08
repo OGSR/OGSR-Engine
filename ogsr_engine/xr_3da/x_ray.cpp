@@ -422,37 +422,16 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
 	return 0;
 }
 
-int stack_overflow_exception_filter	(int exception_code)
-{
-   if (exception_code == EXCEPTION_STACK_OVERFLOW)
-   {
-       // Do not call _resetstkoflw here, because
-       // at this point, the stack is not yet unwound.
-       // Instead, signal that the handler (the __except block)
-       // is to be executed.
-       return EXCEPTION_EXECUTE_HANDLER;
-   }
-   else
-       return EXCEPTION_CONTINUE_SEARCH;
-}
-
 int APIENTRY WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      char *    lpCmdLine,
                      int       nCmdShow)
 {
     gModulesLoaded = true;
-	__try 
-	{
-		Debug._initialize();
 
-		WinMain_impl		(hInstance,hPrevInstance,lpCmdLine,nCmdShow);
-	}
-	__except(stack_overflow_exception_filter(GetExceptionCode()))
-	{
-		_resetstkoflw		();
-		FATAL				("stack overflow");
-	}
+	Debug._initialize();
+
+	WinMain_impl(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
 	ExitFromWinMain = true;
 
