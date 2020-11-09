@@ -171,7 +171,7 @@ void CUITalkWnd::UpdateQuestions()
 
 void CUITalkWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if ( pWnd == UITalkDialogWnd && msg == TALK_DIALOG_TRADE_BUTTON_CLICKED && ( !Core.Features.test( xrCore::Feature::disable_dialog_break ) || !m_pCurrentDialog ) )
+	if ( pWnd == UITalkDialogWnd && msg == TALK_DIALOG_TRADE_BUTTON_CLICKED /*&& ( !Core.Features.test( xrCore::Feature::disable_dialog_break ) || !m_pCurrentDialog )*/ )
 	{
 		SwitchToTrade();
 	}
