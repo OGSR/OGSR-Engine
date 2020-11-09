@@ -449,6 +449,7 @@ void CWeaponScript::script_register(lua_State *L)
 			.def_readwrite("misfire_probability"		,			&CWeapon::misfireProbability)
 			.def_readwrite("misfire_condition_k"		,			&CWeapon::misfireConditionK)	
 			.def_readwrite("condition_shot_dec"			,			&CWeapon::conditionDecreasePerShot)
+			.def_readwrite("condition_shot_dec_silencer", &CWeapon::conditionDecreasePerShotSilencer )
 
 
 			.def_readwrite("PDM_disp_base"				,			&CWeapon::m_fPDM_disp_base)

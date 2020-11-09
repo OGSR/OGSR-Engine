@@ -1349,12 +1349,17 @@ void	CWeaponMagazined::SetQueueSize			(int size)
 		sprintf_s(m_sCurFireMode, " (%d)", m_iQueueSize);
 };
 
-float	CWeaponMagazined::GetWeaponDeterioration	()
-{
-	if (!m_bHasDifferentFireModes || m_iPrefferedFireMode == -1 || u32(GetCurrentFireMode()) <= u32(m_iPrefferedFireMode)) 
-		return inherited::GetWeaponDeterioration();
-	return m_iShotNum*conditionDecreasePerShot;
-};
+float CWeaponMagazined::GetWeaponDeterioration() {
+  if ( !m_bHasDifferentFireModes || m_iPrefferedFireMode == -1 || u32(GetCurrentFireMode()) <= u32(m_iPrefferedFireMode) ) {
+    if ( IsSilencerAttached() && SilencerAttachable() )
+      return conditionDecreasePerShotSilencer;
+    else
+      return inherited::GetWeaponDeterioration();
+  }
+  if ( IsSilencerAttached() && SilencerAttachable() )
+    return m_iShotNum * conditionDecreasePerShotSilencer;
+  return m_iShotNum * conditionDecreasePerShot;
+}
 
 void CWeaponMagazined::save(NET_Packet &output_packet)
 {
