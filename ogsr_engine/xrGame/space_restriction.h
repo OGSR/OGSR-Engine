@@ -51,8 +51,8 @@ protected:
 	shared_str						m_in_restrictions;
 	xr_vector<u32>					m_temp;
 	CSpaceRestrictionManager		*m_space_restriction_manager;
-	CBaseRestrictionPtr				m_out_space_restriction;
-	CBaseRestrictionPtr				m_in_space_restriction;
+	CBaseRestrictionPtr				m_out_space_restriction{};
+	CBaseRestrictionPtr				m_in_space_restriction{};
 #ifdef USE_FREE_IN_RESTRICTIONS
 	FREE_IN_RESTRICTIONS			m_free_in_restrictions;
 #endif
