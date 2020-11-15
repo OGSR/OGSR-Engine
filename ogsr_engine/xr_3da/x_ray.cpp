@@ -18,6 +18,7 @@
 #include "LightAnimLibrary.h"
 #include "../xrcdb/ispatial.h"
 #include "ILoadingScreen.h"
+#include "DiscordRPC.hpp"
 
 #define CORE_FEATURE_SET( feature, section )\
   Core.Features.set( xrCore::Feature::feature, READ_IF_EXISTS( pSettings, r_bool, section, #feature, false ) )
@@ -206,6 +207,8 @@ void Startup					( )
 	// Destroy LOGO
 	DestroyWindow				(logoWindow);
 	logoWindow					= NULL;
+
+	Discord.Init();
 
 	// Main cycle
 	Memory.mem_usage();
@@ -535,7 +538,6 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 		for (u32 i=0; i<Levels.size(); i++)
 		{
 			xr_free(Levels[i].folder	);
-			xr_free(Levels[i].name	);
 		}
 	}
 	else if(E==eStart) 
@@ -694,10 +696,7 @@ void CApplication::Level_Append		(LPCSTR folder)
 		FS.exist("$game_levels$",N4)	
 		)
 	{
-		sLevelInfo			LI;
-		LI.folder			= xr_strdup(folder);
-		LI.name				= 0;
-		Levels.push_back	(LI);
+		Levels.emplace_back(sLevelInfo{ xr_strdup(folder) });
 	}
 }
 
