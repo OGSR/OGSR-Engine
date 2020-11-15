@@ -340,6 +340,11 @@ void CUILines::SetFont(CGameFont* pFont){
 void CUILines::Draw(float x, float y){
 	static string256 passText;
 
+/* движок вроде нормально справляется с отображением пустой
+   строки. Отдельная обработка для этого случая не нужна. А вот
+   проблема с этой обработкой замечена. При некоторых положениях
+   строки ввода, курсор не отображается в пустой строке.
+
 	if (m_text.empty())
 	{
 		if (m_bDrawCursor)
@@ -351,6 +356,7 @@ void CUILines::Draw(float x, float y){
 
 		return;
 	}
+*/
 
 	R_ASSERT(m_pFont);
 	m_pFont->SetColor(m_dwTextColor);
