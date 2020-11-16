@@ -30,6 +30,8 @@ void DiscordRPC::Init()
 
 	DiscordEventHandlers nullHandlers{};
 	Discord_Initialize("777186147456778272", &nullHandlers, TRUE, nullptr);
+
+	start_time = time(nullptr);
 }
 
 DiscordRPC::~DiscordRPC()
@@ -49,12 +51,13 @@ void DiscordRPC::Update(const char* level_name)
 
 	DiscordRichPresence presenseInfo{};
 
-	presenseInfo.startTimestamp = time(nullptr); //время
+	presenseInfo.startTimestamp = start_time; //время с момента запуска
 	presenseInfo.largeImageKey = "main_image"; //большая картинка
 	presenseInfo.smallImageKey = "main_image_small"; //маленькая картинка
 	presenseInfo.smallImageText = Core.GetEngineVersion(); //версия движка на маленькой картинке
 
-	std::string task_txt;
+	std::string task_txt, lname, lname_and_task;
+
 	if (active_task_text) {
 		task_txt = StringToUTF8(active_task_text);
 		presenseInfo.state = task_txt.c_str(); //Активное задание
@@ -63,12 +66,24 @@ void DiscordRPC::Update(const char* level_name)
 	if (level_name) 
 		current_level_name = level_name;
 
-	std::string lname;
 	if (current_level_name) {
 		lname = StringToUTF8(current_level_name);
-		presenseInfo.largeImageText = lname.c_str(); //название уровня на большой картинке
 		presenseInfo.details = lname.c_str(); //название уровня
 	}
+
+	if (!lname.empty()) {
+		lname_and_task = lname;
+		if (!task_txt.empty()) {
+			lname_and_task += " | ";
+			lname_and_task += task_txt;
+		}
+	}
+	else if (!task_txt.empty()) {
+		lname_and_task = task_txt;
+	}
+
+	if (!lname_and_task.empty())
+		presenseInfo.largeImageText = lname_and_task.c_str(); //название уровня + активное задание на большой картинке
 
 	Discord_UpdatePresence(&presenseInfo);
 }

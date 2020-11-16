@@ -51,6 +51,7 @@ class ENGINE_API DiscordRPC final
 
 	const char* current_level_name{};
 	const char* active_task_text{};
+	int64_t start_time{};
 
 public:
 	DiscordRPC() = default;
