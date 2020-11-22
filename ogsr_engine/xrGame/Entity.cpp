@@ -155,10 +155,6 @@ void CEntity::Load		(LPCSTR section)
 #pragma todo("Jim to Dima: no specific figures or comments needed")	
 	m_fMorale			= 66.f;
 
-	//время убирания тела с уровня
-	m_dwBodyRemoveTime	= READ_IF_EXISTS(pSettings,r_u32,section,"body_remove_time",BODY_REMOVE_TIME);
-	//////////////////////////////////////
-
 	m_forget_killer_time = READ_IF_EXISTS( pSettings, r_u32, section, "forget_killer_time", FORGET_KILLER_TIME ) * 1000;
 }
 

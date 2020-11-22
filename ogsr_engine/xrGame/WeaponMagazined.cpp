@@ -257,19 +257,6 @@ bool CWeaponMagazined::TryReload()
 	return false;
 }
 
-bool CWeaponMagazined::IsAmmoAvailable()
-{
-	bool forActor = ParentIsActor();
-
-	if (smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[m_ammoType], forActor)))
-		return	(true);
-	else
-		for(u32 i = 0; i < m_ammoTypes.size(); ++i)
-			if (smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[i], forActor)))
-				return	(true);
-	return		(false);
-}
-
 void CWeaponMagazined::OnMagazineEmpty() 
 {
 	//попытка стрелять когда нет патронов

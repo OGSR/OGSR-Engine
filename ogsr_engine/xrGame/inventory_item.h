@@ -197,9 +197,6 @@ protected:
 	LPCSTR        m_slots_sect;
 	float						m_fCondition;
 
-	ALife::_TIME_ID				m_dwItemRemoveTime;
-	ALife::_TIME_ID				m_dwItemIndependencyTime;
-
 	float						m_fControlInertionFactor;
 	shared_str					m_icon_name;
 	bool m_need_brief_info;
@@ -220,9 +217,6 @@ public:
 public:
 	virtual void				activate_physic_shell		();
 	virtual u16					bone_count_to_synchronize	() const;
-
-	virtual bool				NeedToDestroyObject			() const;
-	virtual ALife::_TIME_ID		TimePassedAfterIndependant	() const;
 
 	virtual	bool				IsSprintAllowed				() const		{return !!m_flags.test(FAllowSprint);} ;
 

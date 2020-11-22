@@ -15,7 +15,6 @@
 #include "script_callback_ex.h"
 #include "script_game_object.h"
 
-#define GRENADE_REMOVE_TIME		30000
 const float default_grenade_detonation_threshold_hit=100;
 CGrenade::CGrenade(void) 
 {
@@ -36,12 +35,6 @@ void CGrenade::Load(LPCSTR section)
 
 	HUD_SOUND::LoadSound(section,"snd_checkout",sndCheckout,m_eSoundCheckout);
 
-	//////////////////////////////////////
-	//время убирания оружия с уровня
-	if(pSettings->line_exist(section,"grenade_remove_time"))
-		m_dwGrenadeRemoveTime = pSettings->r_u32(section,"grenade_remove_time");
-	else
-		m_dwGrenadeRemoveTime = GRENADE_REMOVE_TIME;
 	m_grenade_detonation_threshold_hit=READ_IF_EXISTS(pSettings,r_float,section,"detonation_threshold_hit",default_grenade_detonation_threshold_hit);
 }
 
@@ -57,7 +50,6 @@ void CGrenade::Hit					(SHit* pHDS)
 
 BOOL CGrenade::net_Spawn(CSE_Abstract* DC) 
 {
-	m_dwGrenadeIndependencyTime			= 0;
 	BOOL ret= inherited::net_Spawn		(DC);
 	Fvector box;BoundingBox().getsize	(box);
 	float max_size						= _max(_max(box.x,box.y),box.z);
@@ -87,13 +79,11 @@ void CGrenade::OnH_B_Independent(bool just_before_destroy)
 
 void CGrenade::OnH_A_Independent() 
 {
-	m_dwGrenadeIndependencyTime			= Level().timeServer();
 	inherited::OnH_A_Independent		();	
 }
 
 void CGrenade::OnH_A_Chield()
 {
-	m_dwGrenadeIndependencyTime			= 0;
 	m_dwDestroyTime						= 0xffffffff;
 	inherited::OnH_A_Chield				();
 }
@@ -308,20 +298,6 @@ bool CGrenade::Action(s32 cmd, u32 flags)
 		};
 	}
 	return false;
-}
-
-
-bool CGrenade::NeedToDestroyObject()	const
-{
-	return ( TimePassedAfterIndependant() > m_dwGrenadeRemoveTime);
-}
-
-ALife::_TIME_ID	 CGrenade::TimePassedAfterIndependant()	const
-{
-	if(!H_Parent() && m_dwGrenadeIndependencyTime != 0)
-		return Level().timeServer() - m_dwGrenadeIndependencyTime;
-	else
-		return 0;
 }
 
 BOOL CGrenade::UsedAI_Locations		()

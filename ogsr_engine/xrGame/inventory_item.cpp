@@ -30,7 +30,6 @@
 #	include "debug_renderer.h"
 #endif
 
-#define ITEM_REMOVE_TIME		30000
 struct net_update_IItem {	u32					dwTimeStamp;
 SPHNetState			State;};
 struct net_updateData{
@@ -185,11 +184,6 @@ void CInventoryItem::Load(LPCSTR section)
 	m_flags.set(FCanTrade,		READ_IF_EXISTS(pSettings, r_bool, section, "can_trade",			TRUE));
 	m_flags.set(FIsQuestItem,	READ_IF_EXISTS(pSettings, r_bool, section, "quest_item",		FALSE));
 
-
-
-	//время убирания объекта с уровня
-	m_dwItemRemoveTime			= READ_IF_EXISTS(pSettings, r_u32, section,"item_remove_time",			ITEM_REMOVE_TIME);
-
 	m_flags.set					(FAllowSprint,READ_IF_EXISTS	(pSettings, r_bool, section,"sprint_allowed",			TRUE));
 	m_fControlInertionFactor	= READ_IF_EXISTS(pSettings, r_float,section,"control_inertion_factor",	1.0f);
 	m_icon_name					= READ_IF_EXISTS(pSettings, r_string,section,"icon_name",				NULL);
@@ -296,7 +290,6 @@ void CInventoryItem::OnH_B_Independent(bool just_before_destroy)
 
 void CInventoryItem::OnH_A_Independent()
 {
-	m_dwItemIndependencyTime	= Level().timeServer();
 	m_eItemPlace				= eItemPlaceUndefined;	
 	inherited::OnH_A_Independent();
 }
@@ -441,11 +434,6 @@ BOOL CInventoryItem::net_Spawn			(CSE_Abstract* DC)
 
 	CSE_ALifeInventoryItem			*pSE_InventoryItem = smart_cast<CSE_ALifeInventoryItem*>(e);
 	if (!pSE_InventoryItem)			return TRUE;
-
-	//!!!
-	//m_fCondition = pSE_InventoryItem->m_fCondition;
-
-	m_dwItemIndependencyTime		= 0;
 
 	return							TRUE;
 }
@@ -1089,19 +1077,6 @@ void CInventoryItem::modify_holder_params	(float &range, float &fov) const
 {
 	range		*= m_holder_range_modifier;
 	fov			*= m_holder_fov_modifier;
-}
-
-bool CInventoryItem::NeedToDestroyObject()	const
-{
-	return (TimePassedAfterIndependant() > m_dwItemRemoveTime);
-}
-
-ALife::_TIME_ID	 CInventoryItem::TimePassedAfterIndependant()	const
-{
-	if(!object().H_Parent() && m_dwItemIndependencyTime != 0)
-		return Level().timeServer() - m_dwItemIndependencyTime;
-	else
-		return 0;
 }
 
 bool	CInventoryItem::CanTrade() const 
