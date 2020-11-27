@@ -19,4 +19,8 @@
 #endif
 //////////////////////////////////////////////////////////////////////////////////////////
 
+#define USE_GRASS_WAVE								// enable grass wave
+#define GRASS_WAVE_FREQ 	float(0.7)				// frequency of waves
+#define GRASS_WAVE_POWER 	float(3.0)				// brightness of waves
+
 #endif	//	common_defines_h_included
