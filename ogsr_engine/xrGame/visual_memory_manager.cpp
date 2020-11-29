@@ -303,10 +303,19 @@ float CVisualMemoryManager::get_object_velocity	(const CGameObject *game_object,
 
 float CVisualMemoryManager::get_visible_value	(float distance, float object_distance, float time_delta, float object_velocity, float luminocity) const
 {
-	float								always_visible_distance = current_state().m_always_visible_distance;
+	float always_visible_distance = current_state().m_always_visible_distance;
+	if ( object_distance <= always_visible_distance )
+	  return current_state().m_visibility_threshold;
+	if ( distance <= always_visible_distance )
+	  distance = always_visible_distance + EPS_L;
 
-	if (distance <= always_visible_distance + EPS_L)
-		return							(current_state().m_visibility_threshold);
+	float fog_near = GamePersistent().Environment().CurrentEnv->fog_near;
+	float fog_far  = GamePersistent().Environment().CurrentEnv->fog_far;
+	float fog_w    = 1 / ( fog_far - fog_near );
+	float fog_x    = -fog_near * fog_w;
+	float fog      = ( object_distance * fog_w + fog_x ) * current_state().m_fog_factor;
+	clamp( fog, 0.f, 1.f );
+	float fog_factor = 1.f - pow( fog, current_state().m_fog_pow );
 
 	return								(
 		time_delta / 
@@ -315,6 +324,7 @@ float CVisualMemoryManager::get_visible_value	(float distance, float object_dist
 		(1.f + current_state().m_velocity_factor*object_velocity) *
 		(distance - object_distance) /
 		(distance - always_visible_distance)
+		* fog_factor
 	);
 }
 
