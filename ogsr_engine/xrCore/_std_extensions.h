@@ -160,3 +160,5 @@ inline char* xr_strconcat(StrType& dest, const StrType2& arg1, const Args&... ar
 #define xr_strcpy strcpy_s
 #define xr_sprintf sprintf_s
 #define xr_strcat strcat_s
+
+XRCORE_API std::string StringToUTF8(const char* in);

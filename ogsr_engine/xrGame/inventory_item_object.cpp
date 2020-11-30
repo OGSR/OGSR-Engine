@@ -217,11 +217,6 @@ u32	 CInventoryItemObject::ef_weapon_type		() const
 	return								(0);
 }
 
-bool CInventoryItemObject::NeedToDestroyObject	() const
-{
-	return CInventoryItem::NeedToDestroyObject();
-}
-
 bool CInventoryItemObject::Useful				() const
 {
 	return			(CInventoryItem::Useful());

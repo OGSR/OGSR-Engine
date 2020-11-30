@@ -86,6 +86,10 @@ f_deffer 	main	( p_flat I )
 # endif
 #endif
 
+#ifdef USE_GRASS_WAVE
+	D *= I.tcdh.z;
+#endif
+
   // 2. Standart output
   float4 Ne     = float4	(normalize((float3)I.N.xyz), 					h			);
 #if !( defined(MSAA_ALPHATEST_DX10_1_ATOC) || defined(MSAA_ALPHATEST_DX10_1) )

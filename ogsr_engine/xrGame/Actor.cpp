@@ -1352,24 +1352,6 @@ bool		CActor::use_bolts				() const
 	return CInventoryOwner::use_bolts();
 };
 
-int		g_iCorpseRemove = 1;
-
-bool  CActor::NeedToDestroyObject() const
-{
-	if(g_Alive())				return false;
-	if(g_iCorpseRemove == -1)	return false;
-	if(g_iCorpseRemove == 0 && m_bAllowDeathRemove) return true;
-	return (TimePassedAfterDeath()>m_dwBodyRemoveTime && m_bAllowDeathRemove);
-}
-
-ALife::_TIME_ID	 CActor::TimePassedAfterDeath()	const
-{
-	if(!g_Alive())
-		return Level().timeServer() - GetLevelDeathTime();
-	else
-		return 0;
-}
-
 
 void CActor::OnItemTake			(CInventoryItem *inventory_item)
 {

@@ -97,12 +97,6 @@ public:
 	virtual CInventoryItem	*can_kill			(CInventory *inventory) const;
 	virtual const CInventoryItem *can_kill		(const xr_vector<const CGameObject*> &items) const;
 	virtual bool			ready_to_kill		() const;
-	virtual bool			NeedToDestroyObject	() const; 
-	virtual ALife::_TIME_ID	TimePassedAfterIndependant() const;
-protected:
-	//время удаления оружия
-	ALife::_TIME_ID			m_dwWeaponRemoveTime;
-	ALife::_TIME_ID			m_dwWeaponIndependencyTime;
 
 //////////////////////////////////////////////////////////////////////////
 //  Animation 
@@ -153,8 +147,6 @@ public:
 	BOOL					IsMisfire			() const;
 	BOOL					CheckForMisfire		();
 
-
-	BOOL					AutoSpawnAmmo		() const		{ return m_bAutoSpawnAmmo; };
 	bool					IsTriStateReload	() const		{ return m_bTriStateReload;}
 	EWeaponSubStates		GetReloadState		() const		{ return (EWeaponSubStates)m_sub_state;}
 	u8 idle_state();
@@ -167,7 +159,6 @@ protected:
 	// a misfire happens, you'll need to rearm weapon
 	bool					bMisfire;				
 
-	BOOL					m_bAutoSpawnAmmo;
 //////////////////////////////////////////////////////////////////////////
 //  Weapon Addons
 //////////////////////////////////////////////////////////////////////////
@@ -508,9 +499,6 @@ protected:
 	//для подсчета в GetAmmoCurrent
 	mutable int				iAmmoCurrent;
 	mutable u32				m_dwAmmoCurrentCalcFrame;	//кадр на котором просчитали кол-во патронов
-	//  [10/5/2005]
-	bool					m_bAmmoWasSpawned;
-	//  [10/5/2005]
 
 	virtual bool			IsNecessaryItem	    (const shared_str& item_sect);
 

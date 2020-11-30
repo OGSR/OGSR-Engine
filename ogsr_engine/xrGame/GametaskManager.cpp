@@ -12,6 +12,8 @@
 #include "ui/UIPDAWnd.h"
 #include "encyclopedia_article.h"
 #include "ui/UIEventsWnd.h"
+#include "..\xr_3da\DiscordRPC.hpp"
+#include "string_table.h"
 
 shared_str	g_active_task_id;
 u16			g_active_task_objective_id	= u16(-1);
@@ -35,7 +37,6 @@ CGameTaskManager::CGameTaskManager()
 	m_gametasks					= xr_new<CGameTaskWrapper>();
 	m_flags.zero				();
 	m_flags.set					(eChanged, TRUE);
-	if(g_active_task_id.size())	SetActiveTask(g_active_task_id, g_active_task_objective_id);
 }
 
 CGameTaskManager::~CGameTaskManager()
@@ -48,6 +49,9 @@ void CGameTaskManager::initialize(u16 id)
 	m_gametasks->registry().init(id);// actor's id
 	if (Core.Features.test(xrCore::Feature::keep_inprogress_tasks_only))
 		cleanup();
+
+	if (g_active_task_id.size())
+		SetActiveTask(g_active_task_id, g_active_task_objective_id);
 }
 
 GameTasks&	CGameTaskManager::GameTasks	() 
@@ -341,6 +345,8 @@ void CGameTaskManager::SetActiveTask(const TASK_ID& id, u16 idx, const bool safe
 		if(ml)
 			ml->EnablePointer();
 	}
+
+	Discord.Set_active_task_text(CStringTable().translate(o ? o->description : "st_no_active_task").c_str());
 }
 
 SGameTaskObjective* CGameTaskManager::ActiveObjective()

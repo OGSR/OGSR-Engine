@@ -21,6 +21,7 @@
 #include "../xr_3da/x_ray.h"
 #include "string_table.h"
 #include "HUDManager.h"
+#include "..\xr_3da\DiscordRPC.hpp"
 
 #ifndef MASTER_GOLD
 #	include "custommonster.h"
@@ -533,6 +534,8 @@ void CGamePersistent::OnFrame	()
 		else {
 			load_screen_renderer.stop();
 		}
+
+		Discord.Update(CStringTable().translate(Level().name()).c_str());
 	}
 
 	if( !m_pMainMenu->IsActive() )
@@ -695,8 +698,11 @@ void CGamePersistent::OnRenderPPUI_PP()
 
 void CGamePersistent::LoadTitle(const char* str)
 {
-	pApp->SetLoadStageTitle(CStringTable().translate(str).c_str());
+	const char* tittle = CStringTable().translate(str).c_str();
+	pApp->SetLoadStageTitle(tittle);
 	pApp->LoadStage();
+
+	Discord.Update(tittle);
 }
 
 bool CGamePersistent::CanBePaused()
