@@ -105,11 +105,16 @@ public:
 
 //--------------------------------------------------------------------------
 
-enum ESMFlags{
-    esmFX		= 1<<0,
-    esmStopAtEnd= 1<<1,
-    esmNoMix	= 1<<2,
-    esmSyncPart	= 1<<3
+enum ESMFlags
+{
+    esmFX = 1 << 0,
+    esmStopAtEnd = 1 << 1,
+    esmNoMix = 1 << 2,
+    esmSyncPart = 1 << 3,
+    esmUseFootSteps = 1 << 4,
+    esmRootMover = 1 << 5,
+    esmIdle = 1 << 6,
+    esmUseWeaponBone = 1 << 7,
 };
 
 struct ECORE_API SAnimParams		{

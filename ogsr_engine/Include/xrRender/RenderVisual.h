@@ -15,9 +15,7 @@ public:
 	virtual vis_data&	_BCL	getVisData() = 0;
 	virtual u32					getType() = 0;
 
-#ifdef DEBUG
 	virtual shared_str	_BCL	getDebugName() = 0;
-#endif
 
 	virtual	IKinematics*	_BCL	dcast_PKinematics			()				{ return 0;	}
 	virtual	IKinematicsAnimated*	dcast_PKinematicsAnimated	()				{ return 0;	}

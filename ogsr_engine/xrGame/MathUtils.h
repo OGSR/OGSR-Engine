@@ -1,6 +1,7 @@
 #ifndef MATH_UTILS_H
 #define MATH_UTILS_H
 
+constexpr float phInfinity = std::numeric_limits<float>::infinity();
 
 IC  float* cast_fp(Fvector& fv)
 {

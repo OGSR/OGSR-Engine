@@ -28,7 +28,7 @@
 #include "../xr_3da/device.h"
 
 //#define USE_SMART_HITS
-//#define USE_IK
+#define USE_IK
 
 void  NodynamicsCollide(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/)
 {
@@ -247,8 +247,8 @@ void CCharacterPhysicsSupport::SpawnInitPhysics(CSE_Abstract* e)
 		}
 #endif
 #ifdef	USE_IK
-		if( etStalker == m_eType || etActor == m_eType )
-				CreateIKController( );
+		if (etStalker == m_eType || etActor == m_eType || (m_EntityAlife.Visual()->dcast_PKinematics()->LL_UserData() && m_EntityAlife.Visual()->dcast_PKinematics()->LL_UserData()->section_exist("ik")))
+			CreateIKController();
 #endif
 		if( !m_EntityAlife.animation_movement_controlled( ) )
 			CreateCharacter( );
@@ -762,6 +762,12 @@ void CCharacterPhysicsSupport::ActivateShell			( CObject* who )
 }
 void CCharacterPhysicsSupport::in_ChangeVisual()
 {
+	if (m_ik_controller)
+	{
+		DestroyIKController();
+		CreateIKController();
+	}
+
 	if(!m_physics_skeleton&&!m_pPhysicsShell) 
 		return;
 
@@ -785,13 +791,6 @@ void CCharacterPhysicsSupport::in_ChangeVisual()
 	if (ka)
 	{
 		m_death_anims.setup(ka, m_EntityAlife.cNameSect().c_str(), pSettings);
-	}
-
-
-	if(m_ik_controller)
-	{
-		DestroyIKController();
-		CreateIKController();
 	}
 }
 
