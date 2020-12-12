@@ -40,6 +40,8 @@ jobs:
         
         md ..\Game\Resources_SoC_1.0006\bin_%PLATFORM%
         
+        del *.ico
+        
         copy *.* ..\Game\Resources_SoC_1.0006\bin_%PLATFORM%
         
         cd ..\Game\Resources_SoC_1.0006
