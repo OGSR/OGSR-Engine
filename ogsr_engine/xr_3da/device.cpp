@@ -579,3 +579,10 @@ bool CRenderDevice::CSecondVPParams::IsSVPFrame() //--#SM+#-- +SecondVP+
 		g_pGamePersistent->m_pGShaderConstants.m_blender_mode.y = cond ? 1.0f : 0.0f;
 	return cond;
 }
+
+void CRenderDevice::time_factor(const float& time_factor)
+{
+	Timer.time_factor(time_factor);
+	TimerGlobal.time_factor(time_factor);
+	psSoundTimeFactor = time_factor; //--#SM+#--
+}
