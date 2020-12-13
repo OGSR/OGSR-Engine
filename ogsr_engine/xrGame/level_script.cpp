@@ -245,6 +245,10 @@ void map_change_spot_ser(u16 id, LPCSTR spot_type, BOOL v)
     ml->SetSerializable(!!v);
 }
 
+void prefetch_many_sounds( LPCSTR prefix ) {
+  Level().PrefetchManySounds( prefix );
+}
+
 
 void map_remove_object_spot(u16 id, LPCSTR spot_type) { Level().MapManager().RemoveMapLocation(spot_type, id); }
 
@@ -935,6 +939,9 @@ void CLevel::script_register(lua_State* L)
 
             def("cover_in_direction", &cover_in_direction), def("vertex_in_direction", &vertex_in_direction), def("rain_factor", &rain_factor),
             def("patrol_path_exists", &patrol_path_exists), def("vertex_position", &vertex_position), def("name", &get_name), def("prefetch_sound", &prefetch_sound),
+
+            def("prefetch_sound", prefetch_sound),
+            def("prefetch_many_sounds", prefetch_many_sounds ),
 
             def("client_spawn_manager", &get_client_spawn_manager),
 

@@ -257,6 +257,22 @@ void CLevel::PrefetchSound(LPCSTR name)
         sound_registry[snd_name].create(snd_name.c_str(), st_Effect, sg_SourceType);
 }
 
+void CLevel::PrefetchManySounds( LPCSTR prefix ) {
+  string_path fn;
+  if ( FS.exist( fn, "$game_sounds$", prefix, ".ogg" ) )
+    PrefetchSound( prefix );
+  u32 i = 0;
+  while ( true ) {
+    string256 name;
+    sprintf_s( name, "%s%d", prefix, i );
+    if ( FS.exist( fn, "$game_sounds$", name, ".ogg" ) )
+      PrefetchSound( name );
+    else if ( i > 0 )
+      break;
+    i++;
+  }
+}
+
 // Game interface ////////////////////////////////////////////////////
 int CLevel::get_RPID(LPCSTR /**name/**/)
 {
