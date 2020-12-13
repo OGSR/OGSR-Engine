@@ -140,3 +140,12 @@ size_t mem_usage_impl( u32* pBlocksUsed, u32* pBlocksFree ) {
 u32 xrMemory::mem_usage( u32* pBlocksUsed, u32* pBlocksFree ) {
   return u32( mem_usage_impl( pBlocksUsed, pBlocksFree ) );
 }
+
+
+[[nodiscard]] void* operator new(size_t size) { return Memory.mem_alloc(size); }
+void operator delete(void* p) noexcept { xr_free(p); }
+void operator delete(void* p, size_t) noexcept { xr_free(p); }
+
+[[nodiscard]] void* operator new[](size_t size) { return Memory.mem_alloc(size); }
+void operator delete[](void* p) noexcept { xr_free(p); }
+void operator delete[](void* p, size_t) noexcept { xr_free(p); }
