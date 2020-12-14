@@ -51,6 +51,8 @@ public:
 	void						StartPath			(bool looped);
 	void						StopPath			();
 	void						PausePath			(bool val);
+	int LifeTime();
+	u32 Length();
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
