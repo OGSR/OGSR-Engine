@@ -56,11 +56,14 @@ public:
     {
         xr_vector<ref_sound*> m_sounds;
         u32 m_last_sound_id;
+        CSoundCollectionParams m_params;
+        bool m_loaded;
 
         CSoundCollection(const CSoundCollectionParams& params);
         ~CSoundCollection();
         IC ref_sound* add(ESoundTypes type, LPCSTR name) const;
         const ref_sound& random(const u32& id);
+        void load();
     };
 
     struct CSoundSingle : public CSoundParams
@@ -130,6 +133,7 @@ public:
     virtual void reload(LPCSTR section);
     void unload();
     u32 add(LPCSTR prefix, u32 max_count, ESoundTypes type, u32 priority, u32 mask, u32 internal_type, LPCSTR bone_name, CSound_UserDataPtr data = 0);
+    CSoundCollection* add_deferred(LPCSTR prefix, u32 max_count, ESoundTypes type, u32 priority, u32 mask, u32 internal_type, LPCSTR bone_name, CSound_UserDataPtr data = 0);
     void remove(u32 internal_type);
     void clear();
     void play(u32 internal_type, u32 max_start_time = 0, u32 min_start_time = 0, u32 max_stop_time = 0, u32 min_stop_time = 0, u32 id = u32(-1));

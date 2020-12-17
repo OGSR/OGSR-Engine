@@ -56,12 +56,17 @@ void CBurer::reload(LPCSTR section)
 {
     inherited::reload(section);
 
-    // add specific sounds
-    sound().add(pSettings->r_string(section, "sound_gravi_attack"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 2,
-                u32(MonsterSound::eBaseChannel), eMonsterSoundGraviAttack, get_head_bone_name());
+    if (!g_Alive())
+        return;
 
-    sound().add(pSettings->r_string(section, "sound_tele_attack"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 3,
-                u32(MonsterSound::eBaseChannel), eMonsterSoundTeleAttack, get_head_bone_name());
+    // add specific sounds
+    sound().add_deferred(pSettings->r_string(section, "sound_gravi_attack"), DEFAULT_SAMPLE_COUNT,
+        SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 2,
+        u32(MonsterSound::eBaseChannel), eMonsterSoundGraviAttack, get_head_bone_name());
+
+    sound().add_deferred(pSettings->r_string(section, "sound_tele_attack"), DEFAULT_SAMPLE_COUNT,
+        SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 3,
+        u32(MonsterSound::eBaseChannel), eMonsterSoundTeleAttack, get_head_bone_name());
 }
 
 void CBurer::ActivateShield() { m_shield_active = true; }

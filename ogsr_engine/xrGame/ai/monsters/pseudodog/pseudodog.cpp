@@ -130,11 +130,12 @@ void CAI_PseudoDog::reload(LPCSTR section)
         return;
 
     // load additional sounds
-    sound().add(pSettings->r_string(section, "sound_psy_attack"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 3, MonsterSound::eBaseChannel,
-                ePsyAttack, "bip01_head");
+    if (g_Alive())
+        sound().add_deferred(pSettings->r_string(section, "sound_psy_attack"), DEFAULT_SAMPLE_COUNT, SOUND_TYPE_MONSTER_ATTACKING, MonsterSound::eHighPriority + 3, MonsterSound::eBaseChannel, ePsyAttack, "bip01_head");
 
     // load jump params
     com_man().load_jump_data(0, "run_jamp_0", "run_jamp_1", "run_jamp_2", MonsterMovement::eVelocityParameterRunNormal, MonsterMovement::eVelocityParameterRunNormal, 0);
+
 }
 
 void CAI_PseudoDog::CheckSpecParams(u32 spec_params)

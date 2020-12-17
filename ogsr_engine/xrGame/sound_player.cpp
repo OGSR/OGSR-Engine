@@ -17,6 +17,7 @@
 #include "profiler.h"
 #include "sound_collection_storage.h"
 #include "object_broker.h"
+#include "level.h"
 
 CSoundPlayer::CSoundPlayer(CObject* object)
 {
@@ -60,8 +61,20 @@ void CSoundPlayer::unload()
 u32 CSoundPlayer::add(LPCSTR prefix, u32 max_count, ESoundTypes type, u32 priority, u32 mask, u32 internal_type, LPCSTR bone_name, CSound_UserDataPtr data)
 {
     SOUND_COLLECTIONS::iterator I = m_sounds.find(internal_type);
-    if (m_sounds.end() != I)
-        return (0);
+    if (I != m_sounds.end())
+        return 0;
+
+    CSoundCollection* sc = add_deferred(prefix, max_count, type, priority, mask, internal_type, bone_name, data);
+    sc->load();
+    return sc->m_sounds.size();
+}
+
+CSoundPlayer::CSoundCollection* CSoundPlayer::add_deferred(LPCSTR prefix, u32 max_count, ESoundTypes type, u32 priority, u32 mask, u32 internal_type, LPCSTR bone_name,
+                                                           CSound_UserDataPtr data)
+{
+    SOUND_COLLECTIONS::iterator I = m_sounds.find(internal_type);
+    if (I != m_sounds.end())
+        return nullptr;
 
     CSoundCollectionParamsFull sound_params;
     sound_params.m_priority = priority;
@@ -71,13 +84,15 @@ u32 CSoundPlayer::add(LPCSTR prefix, u32 max_count, ESoundTypes type, u32 priori
     sound_params.m_sound_player_prefix = m_sound_prefix;
     sound_params.m_max_count = max_count;
     sound_params.m_type = type;
+    sound_params.m_data = data;
 
     typedef CSoundCollectionStorage::SOUND_COLLECTION_PAIR SOUND_COLLECTION_PAIR;
     const SOUND_COLLECTION_PAIR& pair = sound_collection_storage().object(sound_params);
     VERIFY(pair.first == (CSoundCollectionParams&)sound_params);
     VERIFY(pair.second);
     m_sounds.insert(std::make_pair(internal_type, std::make_pair(sound_params, pair.second)));
-    return (pair.second->m_sounds.size());
+
+    return pair.second;
 }
 
 void CSoundPlayer::remove(u32 internal_type)
@@ -159,6 +174,7 @@ void CSoundPlayer::play(u32 internal_type, u32 max_start_time, u32 min_start_tim
 
     SOUND_COLLECTIONS::iterator I = m_sounds.find(internal_type);
     VERIFY(m_sounds.end() != I);
+    (*I).second.second->load();
     CSoundCollectionParamsFull& sound = (*I).second.first;
     if ((*I).second.second->m_sounds.empty())
     {
@@ -225,27 +241,43 @@ IC Fvector CSoundPlayer::compute_sound_point(const CSoundSingle& sound)
 CSoundPlayer::CSoundCollection::CSoundCollection(const CSoundCollectionParams& params)
 {
     m_last_sound_id = u32(-1);
+    m_loaded = false;
+    m_params = params;
 
     seed(u32(CPU::QPC() & 0xffffffff));
     m_sounds.clear();
-    for (int j = 0, N = _GetItemCount(*params.m_sound_prefix); j < N; ++j)
+    for (int j = 0, N = _GetItemCount(m_params.m_sound_prefix.c_str()); j < N; ++j)
+    {
+        string_path s, temp;
+        _GetItem(m_params.m_sound_prefix.c_str(), j, temp);
+        strconcat(sizeof(s), s, m_params.m_sound_player_prefix.c_str(), temp);
+        Level().PrefetchManySoundsLater(s);
+    }
+}
+
+void CSoundPlayer::CSoundCollection::load()
+{
+    if (m_loaded)
+        return;
+    m_loaded = true;
+    for (int j = 0, N = _GetItemCount(*m_params.m_sound_prefix); j < N; ++j)
     {
         string_path fn, s, temp;
-        _GetItem(*params.m_sound_prefix, j, temp);
-        strconcat(sizeof(s), s, *params.m_sound_player_prefix, temp);
+        _GetItem(*m_params.m_sound_prefix, j, temp);
+        strconcat(sizeof(s), s, *m_params.m_sound_player_prefix, temp);
         if (FS.exist(fn, "$game_sounds$", s, ".ogg"))
         {
-            ref_sound* temp = add(params.m_type, s);
+            ref_sound* temp = add(m_params.m_type, s);
             if (temp)
                 m_sounds.push_back(temp);
         }
-        for (u32 i = 0; i < params.m_max_count; ++i)
+        for (u32 i = 0; i < m_params.m_max_count; ++i)
         {
             string256 name;
             sprintf_s(name, "%s%d", s, i);
             if (FS.exist(fn, "$game_sounds$", name, ".ogg"))
             {
-                ref_sound* temp = add(params.m_type, name);
+                ref_sound* temp = add(m_params.m_type, name);
                 if (temp)
                     m_sounds.push_back(temp);
             }
@@ -253,7 +285,7 @@ CSoundPlayer::CSoundCollection::CSoundCollection(const CSoundCollectionParams& p
     }
 
     if (m_sounds.empty())
-        MsgDbg("- There are no sounds with prefix %s%s", *params.m_sound_player_prefix, *params.m_sound_prefix);
+        MsgDbg("- There are no sounds with prefix %s%s", *m_params.m_sound_player_prefix, *m_params.m_sound_prefix);
 }
 
 CSoundPlayer::CSoundCollection::~CSoundCollection()
@@ -272,19 +304,20 @@ CSoundPlayer::CSoundCollection::~CSoundCollection()
 
 const ref_sound& CSoundPlayer::CSoundCollection::random(const u32& id)
 {
+    load();
     VERIFY(!m_sounds.empty());
 
     if (id != u32(-1))
     {
         m_last_sound_id = id;
         VERIFY(id < m_sounds.size());
-        return (*m_sounds[id]);
+        return *m_sounds[id];
     }
 
     if (m_sounds.size() <= 2)
     {
         m_last_sound_id = CRandom32::random(m_sounds.size());
-        return (*m_sounds[m_last_sound_id]);
+        return *m_sounds[m_last_sound_id];
     }
 
     u32 result;
@@ -294,5 +327,5 @@ const ref_sound& CSoundPlayer::CSoundCollection::random(const u32& id)
     } while (result == m_last_sound_id);
 
     m_last_sound_id = result;
-    return (*m_sounds[result]);
+    return *m_sounds[result];
 }
