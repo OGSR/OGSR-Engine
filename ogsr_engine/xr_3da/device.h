@@ -278,7 +278,7 @@ private:
 	// Multi-threading
 	Event syncProcessFrame, syncFrameDone, syncThreadExit; // Secondary thread events
 	std::atomic_bool mt_bMustExit;
-	static void SecondaryThreadProc(void* context);
+	std::chrono::duration<double, std::milli> SecondThreadTasksElapsedTime;
 
 public:
 	ICF void remove_from_seq_parallel(const fastdelegate::FastDelegate<void()> &delegate)
