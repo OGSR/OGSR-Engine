@@ -316,34 +316,31 @@ void CHudItem::OnH_A_Independent	()
 }
 
 
-void CHudItem::animGet( MotionSVec& lst, LPCSTR prefix ) {
-  const MotionID &M = m_pHUD->animGet( prefix );
+void CHudItem::animGet( MotionSVec& lst, const char* anim_name, const char* prefix ) {
+  string64 eff_name;
+  const char* effector = READ_IF_EXISTS(pSettings, r_string, hud_sect, xr_strconcat(eff_name, prefix, "_effector"), nullptr);
+
+  const MotionID &M = m_pHUD->animGet( anim_name );
   if ( M )
-    lst.push_back( MotionIDEx( M ) );
+    lst.emplace_back( M, effector );
   for ( int i = 0; i < MAX_ANIM_COUNT; ++i ) {
     string128 sh_anim;
-    sprintf_s( sh_anim, "%s%d", prefix, i );
+    sprintf_s( sh_anim, "%s%d", anim_name, i );
     const MotionID &M = m_pHUD->animGet( sh_anim );
     if ( M )
-      lst.push_back( MotionIDEx( M ) );
+      lst.emplace_back( M, effector );
   }
-  ASSERT_FMT( !lst.empty(), "Can't find [anim_%s] in hud section [%s]", prefix, this->hud_sect.c_str() );
+  ASSERT_FMT( !lst.empty(), "Can't find anim [%s] in hud section [%s]", anim_name, hud_sect.c_str() );
 }
 
 
 void CHudItem::animGetEx( MotionSVec& lst, LPCSTR prefix, LPCSTR suffix, LPCSTR prefix2 ) {
-  std::string anim_name;
-  if ( prefix2 ) {
-    if ( pSettings->line_exist( hud_sect.c_str(), prefix ) )
-      anim_name = pSettings->r_string( hud_sect.c_str(), prefix  );
-    else
-      anim_name = pSettings->r_string( hud_sect.c_str(), prefix2 );
-  }
-  else
-    anim_name = pSettings->r_string( hud_sect.c_str(), prefix );
+  const char* final_prefix{ prefix2 ? (pSettings->line_exist(hud_sect, prefix) ? prefix : prefix2) : prefix };
+  std::string anim_name{ pSettings->r_string(hud_sect, final_prefix) };
   if ( suffix )
     anim_name += suffix;
-  animGet( lst, anim_name.c_str() );
+
+  animGet(lst, anim_name.c_str(), final_prefix);
 
   std::string speed_k = prefix;
   speed_k += "_speed_k";

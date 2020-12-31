@@ -67,10 +67,11 @@ extern weapon_hud_container*					g_pWeaponHUDContainer;
 class MotionIDEx {
 public:
   MotionID m_MotionID;
-  float    stop_k;
+  float stop_k{ 1.f };
+  const char* eff_name;
 
-  MotionIDEx();
-  MotionIDEx( MotionID );
+  MotionIDEx() = delete;
+  MotionIDEx(MotionID id, const char* eff) : m_MotionID(id), eff_name(eff) {}
 };
 
 
@@ -149,8 +150,7 @@ public:
 
 	// Animations
 	void				animPlay( MotionIDEx& M, BOOL bMixIn/*=TRUE*/, CHudItem*  W /*=0*/, u32 state );
-	void				animDisplay		(MotionID M, BOOL bMixIn);
-	void				animDisplay( MotionIDEx M, BOOL bMixIn );
+	void				animDisplay(const MotionIDEx& M, BOOL bMixIn);
 	MotionID			animGet			(LPCSTR name);
 	
 	void				UpdatePosition	(const Fmatrix& transform);
@@ -183,5 +183,5 @@ private:
 
 
 #define		MAX_ANIM_COUNT							8
-typedef		svector<MotionIDEx,MAX_ANIM_COUNT>		MotionSVec;
+using MotionSVec = std::vector<MotionIDEx>;
 MotionIDEx& random_anim( MotionSVec& v ); 

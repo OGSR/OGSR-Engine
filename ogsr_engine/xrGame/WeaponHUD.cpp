@@ -12,6 +12,7 @@
 #include "MathUtils.h"
 #include "actor.h"
 #include "ActorCondition.h"
+#include "ActorEffector.h"
 
 weapon_hud_container* g_pWeaponHUDContainer=0;
 
@@ -141,25 +142,38 @@ MotionID CWeaponHUD::animGet(LPCSTR name)
 	return m_shared_data.motion_id	(name);
 }
 
-void CWeaponHUD::animDisplay(MotionID M, BOOL bMixIn)
-{
-	if(m_bVisible){
-		IKinematicsAnimated* PKinematicsAnimated		= smart_cast<IKinematicsAnimated*>(Visual());
-		VERIFY											(PKinematicsAnimated);
-		PKinematicsAnimated->PlayCycle					(M,bMixIn);
-		PKinematicsAnimated->dcast_PKinematics()->CalculateBones_Invalidate	();
-	}
-}
+void CWeaponHUD::animDisplay(const MotionIDEx& M, BOOL bMixIn) {
+	if (!m_bVisible) return;
 
-void CWeaponHUD::animDisplay( MotionIDEx M, BOOL bMixIn ) {
-  animDisplay( M.m_MotionID, bMixIn );
+	auto PKinematicsAnimated = smart_cast<IKinematicsAnimated*>(Visual());
+	PKinematicsAnimated->PlayCycle(M.m_MotionID, bMixIn);
+	PKinematicsAnimated->dcast_PKinematics()->CalculateBones_Invalidate();
+
+	if (!M.eff_name) return;
+
+	auto current_actor = smart_cast<CActor*>(Level().CurrentControlEntity());
+	if (current_actor && smart_cast<CWeapon*>(m_pParentWeapon)->H_Parent() == current_actor)
+	{
+		string_path ce_path, anm_name;
+		xr_strconcat(anm_name, "camera_effects\\weapon\\", M.eff_name, ".anm");
+		ASSERT_FMT(FS.exist(ce_path, "$game_anims$", anm_name), "!![%s] Can't find [%s]", __FUNCTION__, anm_name);
+
+		current_actor->Cameras().RemoveCamEffector(eCEWeaponAction);
+
+		auto e = xr_new<CAnimatorCamEffector>();
+		e->SetType(eCEWeaponAction);
+		e->SetHudAffect(false);
+		e->SetCyclic(false);
+		e->Start(anm_name);
+		current_actor->Cameras().AddCamEffector(e);
+	}
 }
 
 void CWeaponHUD::animPlay( MotionIDEx& M, BOOL bMixIn, CHudItem* W, u32 state )
 {
 	m_startedAnimState				= state;
 	Show							();
-	animDisplay( M.m_MotionID, bMixIn );
+	animDisplay( M, bMixIn );
 	u32 anim_time					= m_shared_data.motion_length(M);
 	if (anim_time>0){
 		m_bStopAtEndAnimIsRunning	= true;
@@ -316,14 +330,4 @@ void CWeaponBobbing::Update(Fmatrix &m)
 		m.k.set(mR.k);
 		m.j.set(mR.j);
 	}
-}
-
-
-MotionIDEx::MotionIDEx() {
-  stop_k     = 1.f;
-}
-
-MotionIDEx::MotionIDEx( MotionID id ) {
-  m_MotionID = id;
-  stop_k     = 1.f;
 }
