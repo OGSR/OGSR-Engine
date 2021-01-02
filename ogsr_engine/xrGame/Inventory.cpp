@@ -160,10 +160,11 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 	{
 	case eItemPlaceBelt:
 		result							= Belt(pIItem); 
-#ifdef DEBUG
-		if(!result) 
-			Msg("cant put in belt item %s", *pIItem->object().cName());
-#endif
+		if (!result) {
+			Msg("!![%s] cant put in belt item [%s], moving to ruck...", __FUNCTION__, pIItem->object().cName().c_str());
+			pIItem->m_eItemPlace = eItemPlaceRuck;
+			R_ASSERT(Ruck(pIItem));
+		}
 
 		break;
 	case eItemPlaceRuck:
