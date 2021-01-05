@@ -772,12 +772,11 @@ Ivector2 CUICellContainer::TopVisibleCell()
 
 CUICell& CUICellContainer::GetCellAt(const Ivector2& pos)
 {
-	if (!(ValidCell(pos)))
-		Msg("!![CUICellContainer::GetCellAt] !(ValidCell(pos))");
-	//R_ASSERT			(ValidCell(pos));
+	if (!ValidCell(pos))
+		Msg("!![%s] invalid cell position: [%d , %d]", __FUNCTION__, pos.x, pos.y);
+	//R_ASSERT(ValidCell(pos));
 
-	CUICell&	c		= m_cells[m_cellsCapacity.x*pos.y+pos.x];
-	return				c;
+	return m_cells.at(m_cellsCapacity.x * pos.y + pos.x);
 }
 
 Ivector2 CUICellContainer::GetItemPos(CUICellItem* itm)
