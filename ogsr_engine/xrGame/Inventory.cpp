@@ -416,58 +416,6 @@ void CInventory::Activate_deffered	(u32 slot, u32 _frame)
 	 m_iLoadActiveSlotFrame		= _frame;
 }
 
-void  CInventory::ActivateNextItemInActiveSlot()
-{
-	if(m_iActiveSlot==NO_ACTIVE_SLOT)	return;
-	
-	PIItem current_item		= m_slots[m_iActiveSlot].m_pIItem;
-	PIItem new_item			= NULL;
-
-	bool b = (current_item==NULL);
-	
-	TIItemContainer::const_iterator it		= m_all.begin();
-	TIItemContainer::const_iterator it_e	= m_all.end();
-
-	for(; it!=it_e; ++it) 
-	{
-		PIItem _pIItem		= *it;
-		if(_pIItem==current_item)
-		{
-			b = true;
-			continue;
-		}
-		if(_pIItem->GetSlot()==m_iActiveSlot)
-			new_item = _pIItem;
-
-		if(b && new_item)
-			break;
-	}
-
-	if(new_item==NULL)
-		return; //only 1 item for this slot
-
-	bool res = Ruck						(current_item);
-	R_ASSERT							(res);
-	NET_Packet							P;
-	current_item->object().u_EventGen	(P, GEG_PLAYER_ITEM2RUCK, current_item->object().H_Parent()->ID());
-	P.w_u16								(current_item->object().ID());
-	current_item->object().u_EventSend	(P);
-
-	res = Slot							(new_item);
-	R_ASSERT							(res);
-	new_item->object().u_EventGen		(P, GEG_PLAYER_ITEM2SLOT, new_item->object().H_Parent()->ID());
-	P.w_u16								(new_item->object().ID());
-	new_item->object().u_EventSend		(P);
-	
-	//activate
-	new_item->object().u_EventGen		(P, GEG_PLAYER_ACTIVATE_SLOT, new_item->object().H_Parent()->ID());
-	P.w_u32								(new_item->GetSlot());
-	new_item->object().u_EventSend		(P);
-
-
-	Msg("CHANGE");
-}
-
 bool CInventory::Activate(u32 slot, EActivationReason reason, bool bForce, bool now ) 
 {	
 	if(	m_ActivationSlotReason==eKeyAction	&& reason==eImportUpdate )

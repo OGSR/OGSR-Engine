@@ -67,7 +67,6 @@ public:
 	void					Activate_deffered	(u32 slot, u32 _frame);
 	PIItem					ActiveItem			()const					{return m_iActiveSlot==NO_ACTIVE_SLOT ? NULL :m_slots[m_iActiveSlot].m_pIItem;}
 	PIItem					ItemFromSlot		(u32 slot) const;
-	void					ActivateNextItemInActiveSlot();
 	bool					Action				(s32 cmd, u32 flags);
 	void					Update				();
 	// Ищет на поясе аналогичный IItem
