@@ -131,7 +131,7 @@ public:
 	float				GetMaxWeight				() const				{return m_fMaxWeight;}
 	void				SetMaxWeight				(float weight)			{m_fMaxWeight = weight;}
 
-	u32					BeltWidth					() const;
+	u32					BeltSlotsCount					() const;
 
 	inline	CInventoryOwner*GetOwner				() const				{ return m_pOwner; }
 	
@@ -184,4 +184,7 @@ protected:
 	bool				m_drop_last_frame;
 
 	void				SendActionEvent		(s32 cmd, u32 flags);
+
+private:
+	u32 UpdatesCount{};
 };

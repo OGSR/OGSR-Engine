@@ -236,7 +236,7 @@ void CInventoryScript::script_register(lua_State *L)
 			class_<CInventoryItemObject, bases<CInventoryItem, CGameObject>>("CInventoryItemObject"),
 
 			class_ <CInventory>("CInventory")
-			.def_readwrite("max_belt"					,			&CInventory::m_iMaxBelt)
+			.def_readonly("max_belt"					,			&CInventory::m_iMaxBelt)
 			.def_readwrite("max_weight"					,			&CInventory::m_fMaxWeight)
 			.def_readwrite("take_dist"					,			&CInventory::m_fTakeDist)
 			.def_readonly ("total_weight"				,			&CInventory::m_fTotalWeight)

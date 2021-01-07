@@ -31,16 +31,21 @@ public:
 
 	virtual void					OnMoveToSlot		();
 	virtual void					OnMoveToRuck		();
+	void OnDrop() override;
 
-protected:
+private:
+	void OnDropOrMoveToRuck();
+
 	HitImmunity::HitTypeSVec		m_HitTypeProtection;
 	float							m_fPowerLoss{};
 
 	shared_str						m_ActorVisual;
 	shared_str						m_full_icon_name;
 	SBoneProtections*				m_boneProtection;	
-protected:
+
 	u32								m_ef_equipment_type{};
+
+	u32 m_artefact_count{};
 
 public:
 	float							m_additional_weight{};
@@ -58,4 +63,6 @@ public:
 	float m_fPowerRestoreSpeed;
 	float m_fSatietyRestoreSpeed;
 	float m_fThirstRestoreSpeed;
+
+	u32 get_artefact_count() const { return m_artefact_count; }
 };

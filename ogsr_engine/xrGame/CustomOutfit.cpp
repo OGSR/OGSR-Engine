@@ -10,6 +10,9 @@
 #include "BoneProtections.h"
 #include "..\Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/RenderVisual.h"
+#include "UIGameSP.h"
+#include "HudManager.h"
+#include "ui/UIInventoryWnd.h"
 
 CCustomOutfit::CCustomOutfit()
 {
@@ -88,6 +91,8 @@ void CCustomOutfit::Load(LPCSTR section)
 	m_fPowerRestoreSpeed     = READ_IF_EXISTS( pSettings, r_float, section, "power_restore_speed", 0.f );
 	m_fSatietyRestoreSpeed   = READ_IF_EXISTS( pSettings, r_float, section, "satiety_restore_speed", 0.f );
 	m_fThirstRestoreSpeed    = READ_IF_EXISTS( pSettings, r_float, section, "thirst_restore_speed", 0.f );
+
+	m_artefact_count = READ_IF_EXISTS(pSettings, r_u32, section, "artefact_count", pSettings->r_u32("inventory", "max_belt"));
 }
 
 void CCustomOutfit::Hit(float hit_power, ALife::EHitType hit_type)
@@ -139,26 +144,21 @@ void	CCustomOutfit::OnMoveToSlot		()
 			}
 			if(pSettings->line_exist(cNameSect(),"bones_koeff_protection")){
 				m_boneProtection->reload( pSettings->r_string(cNameSect(),"bones_koeff_protection"), smart_cast<IKinematics*>(pActor->Visual()) );
-			};
+			}
+
+			smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame())->InventoryMenu->UpdateOutfit();
 		}
 	}
-};
+}
 
-void	CCustomOutfit::OnMoveToRuck		()
-{
-	inherited::OnMoveToRuck();
-	if ( m_pCurrentInventory && !Level().is_removing_objects() )
+void CCustomOutfit::OnDropOrMoveToRuck() {
+	if (m_pCurrentInventory && !Level().is_removing_objects())
 	{
 		CActor* pActor = smart_cast<CActor*> (m_pCurrentInventory->GetOwner());
 		if (pActor)
 		{
-			// т.к. родительский инвентарь у предмета меняется раньше вызова этой функции, не будем ничего ломать, а просто проверим, есть ли в слоте бронька. Если есть - уходим.
-			CCustomOutfit* pOutfit = smart_cast<CCustomOutfit*>(pActor->inventory().ItemFromSlot(OUTFIT_SLOT));
-			if (pOutfit)
-				return;
-
 			CTorch* pTorch = smart_cast<CTorch*>(pActor->inventory().ItemFromSlot(TORCH_SLOT));
-			if(pTorch)
+			if (pTorch)
 			{
 				pTorch->SwitchNightVision(false);
 			}
@@ -168,11 +168,25 @@ void	CCustomOutfit::OnMoveToRuck		()
 				if (DefVisual.size())
 				{
 					pActor->ChangeVisual(DefVisual);
-				};
+				}
 			}
+
+			smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame())->InventoryMenu->UpdateOutfit();
 		}
 	}
-};
+}
+
+void CCustomOutfit::OnMoveToRuck() {
+	inherited::OnMoveToRuck();
+
+	OnDropOrMoveToRuck();
+}
+
+void CCustomOutfit::OnDrop() {
+	inherited::OnDrop();
+
+	OnDropOrMoveToRuck();
+}
 
 u32	CCustomOutfit::ef_equipment_type	() const
 {

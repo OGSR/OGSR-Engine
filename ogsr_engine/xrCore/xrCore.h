@@ -203,7 +203,7 @@ public:
 	  engine_ammo_repacker       = 1ull << 29,
 	  ruck_flag_preferred        = 1ull << 30,
 	  colorize_ammo              = 1ull << 31,
-	  highlight_cop              = 1ull << 32,
+	  // !Место свободно!        = 1ull << 32,
 	  colorize_untradable        = 1ull << 33,
 	  select_mode_1342           = 1ull << 34,
 	  old_outfit_slot_style      = 1ull << 35,

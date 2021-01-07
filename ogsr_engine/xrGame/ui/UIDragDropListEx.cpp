@@ -16,11 +16,12 @@ void CUICell::Clear()
 	m_bMainItem = false;
 	if(m_item)	m_item->SetOwnerList(NULL);
 	m_item		= NULL; 
+	//cell_disabled = false;
+	//is_highlighted = false;
 }
 
 CUIDragDropListEx::CUIDragDropListEx()
 {
-	is_highlighted = false;
 	m_flags.zero				();
 	m_container					= xr_new<CUICellContainer>(this);
 	m_vScrollBar				= xr_new<CUIScrollBar>();
@@ -44,10 +45,6 @@ CUIDragDropListEx::CUIDragDropListEx()
 	AddCallback("cell_item", DRAG_DROP_ITEM_DB_CLICK, fastdelegate::MakeDelegate(this, &CUIDragDropListEx::OnItemDBClick));
 
 	back_color = 0xFFFFFFFF;
-
-	SetDrawGrid(true);
-
-	tx = Core.Features.test(xrCore::Feature::highlight_cop) ? 0.125f : 0.5f;
 }
 
 CUIDragDropListEx::~CUIDragDropListEx()
@@ -404,6 +401,10 @@ void CUIDragDropListEx::SetCellsCapacity(const Ivector2 c)
 	m_container->SetCellsCapacity(c);
 }
 
+void CUIDragDropListEx::SetCellsAvailable(const u32 count) { m_container->SetCellsAvailable(count); }
+
+void CUIDragDropListEx::enable_highlight(const bool enable) { m_container->enable_highlight(enable); }
+
 const Ivector2& CUIDragDropListEx::CellSize()
 {
 	return m_container->CellSize();
@@ -725,25 +726,10 @@ bool CUICellContainer::IsRoomFree(const Ivector2& pos, const Ivector2& _size)
 
 			CUICell& C				= GetCellAt(tmp);
 
-			if(!C.Empty())			return		false;
+			if (!C.Empty() || C.cell_disabled)
+				return false;
 		}
 	return true;
-}
-
-void CUICellContainer::GetTexUVLT(Fvector2& uv, u32 col, u32 row, u8 select_mode)
-{
-	switch ( select_mode )
-	{
-	case 0:		uv.set(0.00f,  0.0f);	break;
-	case 1:		uv.set(0.125f, 0.0f);	break;
-	case 2:		uv.set(0.250f, 0.0f);	break;
-	case 3:		uv.set(0.375f, 0.0f);	break;
-	case 4:		uv.set(0.500f, 0.0f);	break;
-	case 5:		uv.set(0.625f, 0.0f);	break;
-	case 6:		uv.set(0.750f, 0.0f);	break;
-	case 7:		uv.set(0.875f, 0.0f);	break;
-	default:	uv.set(0.00f, 0.0f);	break;
-	}
 }
 
 void CUICellContainer::SetCellsCapacity(const Ivector2& c)
@@ -751,6 +737,17 @@ void CUICellContainer::SetCellsCapacity(const Ivector2& c)
 	m_cellsCapacity				= c;
 	m_cells.resize				(c.x*c.y);
 	ReinitSize					();
+}
+
+void CUICellContainer::SetCellsAvailable(const u32 count) {
+	u32 i{};
+	for (auto& cell : m_cells)
+		cell.cell_disabled = (++i > count);
+}
+
+void CUICellContainer::enable_highlight(const bool enable) {
+	for (auto& cell : m_cells)
+		cell.is_highlighted = enable;
 }
 
 void CUICellContainer::SetCellSize(const Ivector2& new_sz)
@@ -873,34 +870,41 @@ Ivector2 CUICellContainer::PickCell(const Fvector2& abs_pos)
 }
 
 
-u8 CUICellContainer::get_select_mode( int x, int y ) {
-  Ivector2 cpos;
-  cpos.set( x, y );
+CUICellContainer::CellTextureType CUICellContainer::get_select_mode( const int x, const int y ) {
+  Ivector2 cpos{ x, y };
   cpos.add( TopVisibleCell() );
   CUICell& ui_cell = GetCellAt( cpos );
-  u8 select_mode = 0;
+
+  CellTextureType select_mode = CellTextureTypeNormal;
   if ( !ui_cell.Empty() ) {
     if ( Core.Features.test( xrCore::Feature::select_mode_1342 ) ) {
       if ( ui_cell.m_item->m_selected )
-        select_mode = 1;
+        select_mode = CellTextureTypeCursorHover;
       else if ( ui_cell.m_item->m_select_armament )
-        select_mode = 3;
+        select_mode = CellTextureTypeArmanent;
       else if ( ui_cell.m_item->m_select_untradable )
-        select_mode = 4;
+        select_mode = CellTextureTypeUntradable;
       else if ( ui_cell.m_item->m_select_equipped )
-        select_mode = 2;
+        select_mode = CellTextureTypeEquipped;
     }
     else {
       if ( ui_cell.m_item->m_select_armament )
-        select_mode = 3;
+        select_mode = CellTextureTypeArmanent;
       else if ( ui_cell.m_item->m_select_untradable )
-        select_mode = 4;
+        select_mode = CellTextureTypeUntradable;
       else if ( ui_cell.m_item->m_select_equipped )
-        select_mode = 2;
+        select_mode = CellTextureTypeEquipped;
       else if ( ui_cell.m_item->m_selected )
-        select_mode = 1;
-     }
+        select_mode = CellTextureTypeCursorHover;
+    }
   }
+
+  if (ui_cell.is_highlighted)
+    select_mode = CellTextureTypeAvailableSlots;
+
+  if (ui_cell.cell_disabled)
+    select_mode = CellTextureTypeBlockedSlots;
+
   return select_mode;
 }
 
@@ -931,12 +935,20 @@ void CUICellContainer::Draw()
 	drawLT.set( lt_abs_pos.x + tgt_cells.lt.x * cell_sz.x, lt_abs_pos.y + tgt_cells.lt.y * cell_sz.y );
 	UI()->ClientToScreenScaled	(drawLT, drawLT.x, drawLT.y);
 
-	const Fvector2 pts[6] =		{{0.0f,0.0f},{1.0f,0.0f},{1.0f,1.0f},
-								 {0.0f,0.0f},{1.0f,1.0f},{0.0f,1.0f}};
-#define ty 1.0f
-	float tx = m_pParentDragDropList->tx;
-	const Fvector2 uvs[6] =		{{0.0f,0.0f},{tx,0.0f},{tx,ty},
-								 {0.0f,0.0f},{tx,ty},{0.0f,ty}};
+	constexpr Fvector2 pts[]{
+		{ 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f },
+		{ 0.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f }
+	};
+	constexpr float tx{ 0.125f }, ty{ 1.0f };
+	constexpr Fvector2 uvs[]{
+		{ 0.0f, 0.0f }, { tx, 0.0f }, { tx,   ty },
+		{ 0.0f, 0.0f }, { tx, ty   }, { 0.0f, ty }
+	};
+	constexpr Fvector2 tps[]{
+		{ tx * 0, 0.0f }, { tx * 1, 0.0f }, { tx * 2, 0.0f },
+		{ tx * 3, 0.0f }, { tx * 4, 0.0f }, { tx * 5, 0.0f },
+		{ tx * 6, 0.0f }, { tx * 7, 0.0f }
+	};
 
 	// calculate cell size in screen pixels
 	Fvector2 f_len, sp_len;
@@ -951,33 +963,23 @@ void CUICellContainer::Draw()
 	if ( m_pParentDragDropList->GetHighlightCellSp() )
 	  hl_len.add( sp_len );
 
-	u8 parent_select_mode = 0;
-	if ( Core.Features.test( xrCore::Feature::highlight_cop ) ) {
-	  if ( m_pParentDragDropList->is_highlighted ) {
-	    parent_select_mode = 5;
-	  }
-	  else if ( m_pParentDragDropList->GetHighlightAllCells() && m_pParentDragDropList->ItemsCount() ) {
-	    for ( int x = 0; x <= tgt_cells.width(); ++x ) {
-	      for ( int y = 0; y <= tgt_cells.height(); ++y ) {
-	        parent_select_mode = get_select_mode( x, y );
-	        if ( parent_select_mode > 0 ) break;
-	      }
-	      if ( parent_select_mode > 0 ) break;
-	    }
-	  }
+	CellTextureType parent_select_mode = CellTextureTypeNormal;
+	if (m_pParentDragDropList->GetHighlightAllCells() && m_pParentDragDropList->ItemsCount()) {
+		for (int x = 0; x <= tgt_cells.width(); ++x) {
+			for (int y = 0; y <= tgt_cells.height(); ++y) {
+				parent_select_mode = get_select_mode(x, y);
+				if (parent_select_mode != CellTextureTypeNormal) break;
+			}
+			if (parent_select_mode != CellTextureTypeNormal) break;
+		}
 	}
 
 	for (int x=0; x<=tgt_cells.width(); ++x){
 		for (int y=0; y<=tgt_cells.height(); ++y){
-			Fvector2			rect_offset;
-			rect_offset.set		( (drawLT.x + f_len.x*x + sp_len.x*x), (drawLT.y + f_len.y*y + sp_len.y*y) );
+			const Fvector2 rect_offset{ (drawLT.x + f_len.x * x + sp_len.x * x), (drawLT.y + f_len.y * y + sp_len.y * y) };
+			const CellTextureType select_mode = parent_select_mode == CellTextureTypeNormal ? get_select_mode(x, y) : parent_select_mode;
+			const Fvector2& tp = tps[select_mode]; //GetTexUVLT
 
-			u8 select_mode = parent_select_mode;
-			if ( Core.Features.test( xrCore::Feature::highlight_cop ) && select_mode == 0 )
-			  select_mode = get_select_mode( x, y );
-
-			Fvector2			tp;
-			GetTexUVLT( tp, tgt_cells.x1 + x, tgt_cells.y1 + y, select_mode );
 			for (u32 k=0; k<6; ++k){
 				const Fvector2& p	= pts[k];
 				const Fvector2& uv	= uvs[k];

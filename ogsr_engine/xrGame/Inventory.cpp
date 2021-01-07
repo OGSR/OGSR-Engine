@@ -18,6 +18,10 @@
 #include "clsid_game.h"
 #include "CustomOutfit.h"
 
+#include "UIGameSP.h"
+#include "HudManager.h"
+#include "ui/UIInventoryWnd.h"
+
 using namespace InventoryUtilities;
 
 // what to block
@@ -62,7 +66,7 @@ CInventory::CInventory()
 {
 	m_fTakeDist									= pSettings->r_float	("inventory","take_dist");
 	m_fMaxWeight								= pSettings->r_float	("inventory","max_weight");
-	m_iMaxBelt									= pSettings->r_s32		("inventory","max_belt");
+	m_iMaxBelt									= pSettings->r_u32		("inventory","max_belt");
 	
 	m_slots.resize								(SLOTS_TOTAL);
 	
@@ -257,9 +261,7 @@ bool CInventory::DropItem(CGameObject *pObj)
 			m_slots[pIItem->GetSlot()].m_pIItem = NULL;	
 
 			// хак для учета снятия брони - надо менять визуал актору
-			CCustomOutfit* pOutfit = smart_cast<CCustomOutfit*>(pObj);
-			if (pOutfit)
-				pIItem->OnMoveToRuck();
+			pIItem->OnDrop();
 
 			pIItem->object().processing_deactivate();
 		}break;
@@ -402,7 +404,11 @@ bool CInventory::Ruck(PIItem pIItem)
 
 	m_pOwner->OnItemRuck							(pIItem, pIItem->m_eItemPlace);
 	pIItem->m_eItemPlace							= eItemPlaceRuck;
-	pIItem->OnMoveToRuck							();
+
+	if (pIItem->GetSlot() != OUTFIT_SLOT || (smart_cast<CActor*>(GetOwner()) && in_slot)) //фикс сброса визуала актора при взятии в инвентарь любого костюма
+		pIItem->OnMoveToRuck();
+	else
+		pIItem->CInventoryItem::OnMoveToRuck();
 
 	if(in_slot)
 		pIItem->object().processing_deactivate();
@@ -630,8 +636,15 @@ bool CInventory::Action(s32 cmd, u32 flags)
 }
 
 
-void CInventory::Update() 
+void CInventory::Update()
 {
+	// Да, KRodin писал это в здравом уме и понимает, что это полная хуйня. Но ни одного нормального решения придумать не удалось. Может потом какие-то мысли появятся.
+	// А проблема вся в том, что арты и костюм выходят в онлайн в хаотичном порядке. И получается, что арты на пояс уже пытаются залезть, а костюма вроде как ещё нет,
+	// соотв. и слотов под арты как бы нет. Вот поэтому до первого апдейта CInventory актора считаем, что все слоты для артов доступны ( см. CInventory::BeltSlotsCount() )
+	// По моим наблюдениям на момент первого апдейта CInventory, все предметы в инвентаре актора уже вышли в онлайн.
+	if (smart_cast<CActor*>(m_pOwner) && (++UpdatesCount == 1))
+		smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame())->InventoryMenu->UpdateOutfit();
+
 	bool bActiveSlotVisible;
 	
 	if(m_iActiveSlot == NO_ACTIVE_SLOT || 
@@ -971,9 +984,9 @@ bool CInventory::CanPutInBelt(PIItem pIItem)
 	if(InBelt(pIItem))					return false;
 	if(!m_bBeltUseful)					return false;
 	if(!pIItem || !pIItem->Belt())		return false;
-	if(m_belt.size() == BeltWidth())	return false;
+	if(m_belt.size() >= BeltSlotsCount())	return false;
 
-	return FreeRoom_inBelt(m_belt, pIItem, BeltWidth(), 1);
+	return FreeRoom_inBelt(m_belt, pIItem, BeltSlotsCount(), 1);
 }
 //проверяет можем ли поместить вещь в рюкзак,
 //при этом реально ничего не меняется
@@ -1034,9 +1047,16 @@ bool CInventory::CanTakeItem(CInventoryItem *inventory_item) const
 }
 
 
-u32  CInventory::BeltWidth() const
+u32 CInventory::BeltSlotsCount() const
 {
-	return m_iMaxBelt;
+	if (auto pActor = smart_cast<CActor*>(m_pOwner))
+		if (auto outfit = pActor->GetOutfit())
+			return outfit->get_artefact_count();
+
+	static const u32 m_iMinBelt = READ_IF_EXISTS(pSettings, r_u32, "inventory", "min_belt", m_iMaxBelt); //Кол-во слотов под арты, когда костюма нет.
+
+	// см. комментарии в CInventory::Update()
+	return UpdatesCount ? m_iMinBelt : m_iMaxBelt;
 }
 
 void  CInventory::AddAvailableItems(TIItemContainer& items_container, bool for_trade) const

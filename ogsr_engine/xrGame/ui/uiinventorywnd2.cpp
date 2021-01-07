@@ -265,6 +265,8 @@ bool CUIInventoryWnd::ToSlot(CUICellItem* itm, bool force_place)
 		CUICellItem* slot_cell				= slot_list->GetItemIdx(0);
 		VERIFY(slot_cell && ((PIItem)slot_cell->m_pData) == GetInventory()->m_slots[_slot].m_pIItem);
 
+		dont_update_belt_flag = _slot == OUTFIT_SLOT;
+
 #ifdef DEBUG
 		bool result =
 #endif
