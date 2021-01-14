@@ -267,7 +267,6 @@ public:
 	virtual bool						unlimited_ammo			();
 	virtual	void						spawn_supplies			();
 	CAgentManager& agent_manager() const;
-	CAgentManager* get_agent_manager() const;
 	
 	virtual bool						human_being				() const
 	{

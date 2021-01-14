@@ -1067,8 +1067,3 @@ CAgentManager& CAI_Stalker::agent_manager() const
 {
 	return Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).agent_manager();
 }
-
-CAgentManager* CAI_Stalker::get_agent_manager() const
-{
-	return Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).get_agent_manager();
-}
