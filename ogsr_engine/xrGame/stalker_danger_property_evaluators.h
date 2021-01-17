@@ -138,13 +138,3 @@ public:
 						CStalkerPropertyEvaluatorEnemyWounded	(CAI_Stalker *object = 0, LPCSTR evaluator_name = "");
 	virtual _value_type	evaluate								();
 };
-
-
-class CStalkerPropertyEvaluatorEnemyWoundedAssigned : public CStalkerPropertyEvaluator {
-protected:
-	typedef CStalkerPropertyEvaluator inherited;
-
-public:
-	CStalkerPropertyEvaluatorEnemyWoundedAssigned( CAI_Stalker *object = 0, LPCSTR evaluator_name = "" );
-	virtual _value_type evaluate();
-};

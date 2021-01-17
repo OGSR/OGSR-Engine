@@ -167,8 +167,10 @@ protected:
 
 	TIItemContainer				ruck_list;
 	u32							m_iCurrentActiveSlot;
-
+private:
+	bool dont_update_belt_flag{};
 public:
 	PIItem						CurrentIItem();
 	void UpdateWeight();
+	void UpdateOutfit();
 };

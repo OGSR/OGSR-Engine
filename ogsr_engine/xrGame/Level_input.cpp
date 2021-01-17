@@ -26,6 +26,7 @@
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 #include "GamePersistent.h"
+#include "MainMenu.h"
 
 #ifdef DEBUG
 #	include "ai/monsters/BaseMonster/base_monster.h"
@@ -126,14 +127,17 @@ void CLevel::IR_OnKeyboardPress	(int key)
 		return;
 		break;
 
-	case kQUIT:	{
-		if(b_ui_exist && HUD().GetUI()->MainInputReceiver() ){
-				if(HUD().GetUI()->MainInputReceiver()->IR_OnKeyboardPress(key))	return;//special case for mp and main_menu
-				HUD().GetUI()->StartStopMenu( HUD().GetUI()->MainInputReceiver(), true);
-		}else
-			Console->Execute			("main_menu");
-		return;
-		}break;
+	case kQUIT: {
+	  if ( b_ui_exist && HUD().GetUI()->MainInputReceiver() && ( MainMenu()->IsActive() || !Device.Paused() ) ) {
+	    if ( HUD().GetUI()->MainInputReceiver()->IR_OnKeyboardPress( key ) )
+	      return; //special case for mp and main_menu
+	    HUD().GetUI()->StartStopMenu( HUD().GetUI()->MainInputReceiver(), true );
+	  }
+	  else
+	    Console->Execute( "main_menu" );
+	  return;
+	}
+	break;
 
 	case kPAUSE:
 		if(!g_block_pause)

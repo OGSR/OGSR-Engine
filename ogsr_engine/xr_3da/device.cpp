@@ -21,6 +21,8 @@
 //#include "xrSash.h"
 #include "igame_persistent.h"
 
+//#define SHOW_SECOND_THREAD_STATS
+
 ENGINE_API CRenderDevice Device;
 ENGINE_API CLoadScreenRenderer load_screen_renderer;
 
@@ -155,32 +157,6 @@ void CRenderDevice::End		(void)
 }
 
 
-void CRenderDevice::SecondaryThreadProc(void* context)
-{
-	set_current_thread_name("X-RAY Secondary thread");
-
-	CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-
-	auto& device = *static_cast<CRenderDevice*>(context);
-
-	while (true) {
-		device.syncProcessFrame.Wait();
-
-		if (device.mt_bMustExit)
-		{
-			device.syncThreadExit.Set();
-			return;
-		}
- 
-		for (const auto& Func : device.seqParallel)
-			Func();
-		device.seqParallel.clear_and_free();
-		device.seqFrameMT.Process(rp_Frame);
-
-		device.syncFrameDone.Set();
-	}
-}
-
 #include "igame_level.h"
 void CRenderDevice::PreCache	(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input)
 {
@@ -254,6 +230,10 @@ void CRenderDevice::on_idle		()
 	mView_saved				= mView;
 	mProject_saved			= mProject;
 
+#ifdef SHOW_SECOND_THREAD_STATS
+	const auto SecondThreadStartTime = std::chrono::high_resolution_clock::now();
+#endif
+
 	syncProcessFrame.Set(); // allow secondary thread to do its job
 
 	Statistic->RenderTOTAL_Real.FrameStart	();
@@ -295,8 +275,17 @@ void CRenderDevice::on_idle		()
 		}
 	}
 
+#ifdef SHOW_SECOND_THREAD_STATS
+	const auto SecondThreadEndTime = std::chrono::high_resolution_clock::now();
+#endif
 
 	syncFrameDone.WaitEx(66); // wait until secondary thread finish its job
+
+#ifdef SHOW_SECOND_THREAD_STATS
+	const std::chrono::duration<double, std::milli> SecondThreadElapsedTime = SecondThreadEndTime - SecondThreadStartTime;
+	const std::chrono::duration<double, std::milli> SecondThreadFreeTime = SecondThreadElapsedTime - SecondThreadTasksElapsedTime;
+	Msg("##[%s] Second thread work time: [%f]ms, used: [%f]ms, free: [%f]ms", __FUNCTION__, SecondThreadElapsedTime.count(), SecondThreadTasksElapsedTime.count(), SecondThreadFreeTime.count());
+#endif
 
 	if (!b_is_Active)
 		Sleep		(1);
@@ -353,7 +342,39 @@ void CRenderDevice::Run			()
 
 	// Start all threads
 	mt_bMustExit = false;
-	std::thread second_thread(SecondaryThreadProc, this);
+	// KRodin: TODO: Use C++20 std::jthread
+	std::thread second_thread([] (void* context) {
+		set_current_thread_name("X-RAY Secondary thread");
+
+		CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+
+		auto& device = *static_cast<CRenderDevice*>(context);
+
+		while (true) {
+			device.syncProcessFrame.Wait();
+
+			if (device.mt_bMustExit) {
+				device.syncThreadExit.Set();
+				return;
+			}
+
+#ifdef SHOW_SECOND_THREAD_STATS
+			const auto SecondThreadTasksStartTime = std::chrono::high_resolution_clock::now();
+#endif
+
+			for (const auto& Func : device.seqParallel)
+				Func();
+			device.seqParallel.clear_and_free();
+			device.seqFrameMT.Process(rp_Frame);
+
+#ifdef SHOW_SECOND_THREAD_STATS
+			const auto SecondThreadTasksEndTime = std::chrono::high_resolution_clock::now();
+			device.SecondThreadTasksElapsedTime = SecondThreadTasksEndTime - SecondThreadTasksStartTime;
+#endif
+
+			device.syncFrameDone.Set();
+		}
+	}, this);
 
 	// Message cycle
 	seqAppStart.Process			(rp_AppStart);
@@ -578,4 +599,11 @@ bool CRenderDevice::CSecondVPParams::IsSVPFrame() //--#SM+#-- +SecondVP+
 	if (g_pGamePersistent)
 		g_pGamePersistent->m_pGShaderConstants.m_blender_mode.y = cond ? 1.0f : 0.0f;
 	return cond;
+}
+
+void CRenderDevice::time_factor(const float& time_factor)
+{
+	Timer.time_factor(time_factor);
+	TimerGlobal.time_factor(time_factor);
+	psSoundTimeFactor = time_factor; //--#SM+#--
 }

@@ -22,6 +22,7 @@ void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector
 
 	if (0 == bReady)				return;
 	bLocked = TRUE;
+	Timer.time_factor(psSoundTimeFactor); //--#SM+#--
 	float new_tm = Timer.GetElapsed_sec();
 	fTimer_Delta = new_tm - fTimer_Value;
 	//.	float dt					= float(Timer_Delta)/1000.f;

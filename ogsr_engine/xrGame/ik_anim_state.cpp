@@ -1,40 +1,109 @@
-#include	"stdafx.h"
+#include "StdAfx.h"
 
-#include	"ik_anim_state.h"
+#include "ik_anim_state.h"
 
-#include	"..\Include/xrRender/KinematicsAnimated.h"
+#include "..\Include/xrRender/KinematicsAnimated.h"
+#include "../xr_3da/Motion.h"
 
-
-IC bool is_in( const motion_marks::interval &i, float v )
+IC bool is_in(const motion_marks::interval& i, float v)
 {
-	if( i.first < i.second )
-		return i.first < v && i.second > v;
-	else
-		return i.first < v || i.second > v;
+    if (i.first < i.second)
+        return i.first < v && i.second > v;
+    else
+        return i.first < v || i.second > v;
 }
 
-bool blend_in( const CBlend &b, const motion_marks& marks )
+float blend_time(const CBlend& b)
 {
-	VERIFY					(!fis_zero(b.timeTotal));
+    VERIFY(b.timeTotal > 0.f);
+    VERIFY(b.timeCurrent >= 0.f);
+    VERIFY(!fis_zero(b.timeTotal));
 
-	float blend_time		= ( b.timeCurrent/b.timeTotal ) ;
-	blend_time				-= floor( blend_time );
-	return marks.pick_mark	( blend_time * b.timeTotal );
+    float t = (b.timeCurrent / b.timeTotal);
+    t -= floor(t);
 
-//.	return	is_in( interval , blend_time );
+    VERIFY(t <= 1.f);
+    VERIFY(t >= 0.f);
+
+    return t * b.timeTotal;
 }
 
-void	ik_anim_state::update		( IKinematicsAnimated *K, const	CBlend *b, u16 i )
+float time_to_next_mark(const CBlend& b, const motion_marks& marks)
 {
- //Andy	is_step = m && b && blend_in( *b, m->get_interval( i ) );
-	VERIFY( K );
-	is_step = false;
-	if( !b || b->blendAmount <  b->blendPower - EPS_L )
-		return;
-	CMotionDef	&MD = *K->LL_GetMotionDef( b->motionID );
+    VERIFY(!marks.is_empty());
+    const float l_blend_time = blend_time(b);
+    float time = marks.time_to_next_mark(l_blend_time);
+    if (time < FLT_MAX)
+        return time;
+    time = marks.time_to_next_mark(EPS_S);
+    if (time < FLT_MAX)
+        return time + b.timeTotal - l_blend_time;
+    return b.timeTotal - l_blend_time;
+}
 
-	if( MD.marks.size() <= i )
-		return;
-	is_step =  blend_in( *b, MD.marks[i] );//MD.marks[i].pick_mark( b->timeCurrent );
-	
+bool blend_in(const CBlend& b, const motion_marks& marks) { return NULL != marks.pick_mark(blend_time(b)); }
+IC bool b_is_blending(const CBlend* current_blend, const CBlend* b)
+{
+    return current_blend && current_blend->blend_state() != CBlend::eFREE_SLOT && current_blend != b &&
+        b->blendAmount < b->blendPower - EPS_L;
+}
+
+void ik_anim_state::update(IKinematicsAnimated* K, const CBlend* b, u16 i)
+{
+    // Andy	is_step = m && b && blend_in( *b, m->get_interval( i ) );
+    VERIFY(K);
+    is_step = false;
+    is_idle = false;
+    do_glue = false;
+    is_blending = false;
+    if (!b)
+    {
+        current_blend = 0;
+        return;
+    }
+    CMotionDef& m_def_new = *K->LL_GetMotionDef(b->motionID);
+
+    if (m_def_new.marks.size() <= i)
+        return;
+
+    if (b_is_blending(current_blend, b))
+    {
+        is_blending = true;
+        CMotionDef& m_def_cur = *K->LL_GetMotionDef(current_blend->motionID);
+        bool is_cur_step = (m_def_cur.marks.size() > i) && blend_in(*current_blend, m_def_cur.marks[i]);
+        is_idle = !!(m_def_new.flags & esmIdle) && !!(m_def_cur.flags & esmIdle);
+        bool any_idle = (m_def_cur.flags & esmIdle) || (m_def_new.flags & esmIdle);
+        bool is_new_step = blend_in(*b, m_def_new.marks[i]);
+        bool any_step = is_cur_step || is_new_step;
+        bool step_all = is_cur_step && is_new_step;
+
+        // is_step = step_all || any_idle && is_cur_step || is_new_step;
+
+        do_glue = step_all || any_idle && is_new_step;
+        is_step = (!any_idle && any_step) || any_idle && do_glue;
+        // do_glue =true;
+    }
+    else
+    {
+        is_step = blend_in(*b, m_def_new.marks[i]);
+        current_blend = b;
+        is_idle = !!(m_def_new.flags & esmIdle);
+        do_glue = true;
+    }
+}
+
+bool ik_anim_state::time_step_begin(IKinematicsAnimated* K, const CBlend& B, u16 limb_id, float& time)
+{
+    time = 0;
+    CMotionDef& m_def_cur = *K->LL_GetMotionDef(B.motionID);
+    if (m_def_cur.marks.size() <= limb_id || !!(m_def_cur.flags & esmIdle))
+        return false;
+    motion_marks& marks = m_def_cur.marks[limb_id];
+    if (marks.is_empty())
+        return false;
+    // if( blend_in( *current_blend, marks ) )
+    //	time = 0;
+    time = time_to_next_mark(B, marks);
+    VERIFY(time < FLT_MAX);
+    return true;
 }

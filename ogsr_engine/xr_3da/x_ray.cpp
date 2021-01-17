@@ -78,7 +78,6 @@ void InitConsole	()
 
 	CORE_FEATURE_SET( colorize_ammo,              "dragdrop" );
 	CORE_FEATURE_SET( colorize_untradable,        "dragdrop" );
-	CORE_FEATURE_SET( highlight_cop,              "dragdrop" );
 	CORE_FEATURE_SET( equipped_untradable,        "dragdrop" );
 	CORE_FEATURE_SET( select_mode_1342,           "dragdrop" );
 	CORE_FEATURE_SET( highlight_equipped,         "dragdrop" );

@@ -270,6 +270,7 @@ float CVisualMemoryManager::object_visible_distance(const CGameObject *game_obje
 	min_view_distance					*= current_state().m_min_view_distance;
 
 	float								distance = (1.f - alpha/fov)*(max_view_distance - min_view_distance) + min_view_distance;
+	clamp( distance, 0.f, GamePersistent().Environment().CurrentEnv->fog_far );
 
 	return								(distance);
 }

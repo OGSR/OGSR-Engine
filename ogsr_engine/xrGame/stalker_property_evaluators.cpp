@@ -96,20 +96,8 @@ CStalkerPropertyEvaluatorEnemies::CStalkerPropertyEvaluatorEnemies	(
 
 _value_type CStalkerPropertyEvaluatorEnemies::evaluate	()
 {
-	const CEntityAlive* enemy = object().memory().enemy().selected();
-	if ( enemy ) {
-	  const CAI_Stalker* stalker = smart_cast<const CAI_Stalker *>( enemy );
-	  if ( stalker && stalker->wounded() && object().g_Alive() ) {
-	    if ( stalker->wounded( &object().movement().restrictions() ) ) {
-	      ASSERT_FMT( object().get_agent_manager(), "[%s]: %s has no agent_manager()", __FUNCTION__, object().cName().c_str() );
-	      ALife::_OBJECT_ID processor_id = object().agent_manager().enemy().wounded_processor( enemy );
-	      return ( processor_id == ALife::_OBJECT_ID(-1) || processor_id == object().ID() );
-	    }
-	    else
-	      return false;
-	  }
+	if (m_object->memory().enemy().selected())
 		return			(true);
-	}
 
 	if (m_dont_wait && *m_dont_wait)
 		return			(false);

@@ -107,27 +107,27 @@ void CUIScrollView::RecalcSize			()
 	pad_size.y			+= m_upIndent;
 	pad_size.y			+= m_downIndent;
 
-	if(GetVertFlip()){
-		for(WINDOW_LIST::reverse_iterator it = m_pad->GetChildWndList().rbegin(); m_pad->GetChildWndList().rend() != it; ++it)
-		{
-			(*it)->SetWndPos		(item_pos);
-			item_pos.y				+= (*it)->GetWndSize().y;
-			item_pos.y				+= m_vertInterval; 
-			pad_size.y				+= (*it)->GetWndSize().y;
-			pad_size.y				+= m_vertInterval;
-			pad_size.x				= _max(pad_size.x, (*it)->GetWndSize().x);
-		}
-
-	}else{
-		for(WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end() != it; ++it)
-		{
-			(*it)->SetWndPos		(item_pos);
-			item_pos.y				+= (*it)->GetWndSize().y;
-			item_pos.y				+= m_vertInterval; 
-			pad_size.y				+= (*it)->GetWndSize().y;
-			pad_size.y				+= m_vertInterval;
-			pad_size.x				= _max(pad_size.x, (*it)->GetWndSize().x);
-		}
+	if ( GetVertFlip() ) {
+	  for ( WINDOW_LIST::reverse_iterator it = m_pad->GetChildWndList().rbegin(); m_pad->GetChildWndList().rend() != it; ++it ) {
+	    (*it)->SetWndPos( item_pos );
+	    if ( !(*it)->GetVisible() ) continue;
+	    item_pos.y += (*it)->GetWndSize().y;
+	    item_pos.y += m_vertInterval; 
+	    pad_size.y += (*it)->GetWndSize().y;
+	    pad_size.y += m_vertInterval;
+	    pad_size.x = _max( pad_size.x, (*it)->GetWndSize().x );
+	  }
+	}
+	else {
+	  for ( WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); m_pad->GetChildWndList().end() != it; ++it ) {
+	    (*it)->SetWndPos( item_pos );
+	    if ( !(*it)->GetVisible() ) continue;
+	    item_pos.y += (*it)->GetWndSize().y;
+	    item_pos.y += m_vertInterval; 
+	    pad_size.y += (*it)->GetWndSize().y;
+	    pad_size.y += m_vertInterval;
+	    pad_size.x = _max( pad_size.x, (*it)->GetWndSize().x );
+	  }
 	};
 
 	m_pad->SetWndSize			(pad_size);
@@ -177,20 +177,22 @@ void CUIScrollView::Draw				()
 	visible_rect.top	+= m_upIndent;
 	visible_rect.bottom -= m_downIndent;
 	UI()->PushScissor					(visible_rect);
-	int iDone = 0;
+	bool bDone = false;
 
 	for(	WINDOW_LIST_it it = m_pad->GetChildWndList().begin(); 
 			m_pad->GetChildWndList().end()!=it; 
 			++it)
 	{
-		Frect	item_rect;
-		(*it)->GetAbsoluteRect(item_rect);
-		if(visible_rect.intersected		(item_rect)){
-			if ((*it)->GetVisible())
-                (*it)->Draw();
-			iDone						= 1;
-		}else
-			if(iDone==1)	break;
+	  if ( !(*it)->GetVisible() )
+	    continue;
+	  Frect item_rect;
+	  (*it)->GetAbsoluteRect( item_rect );
+	  if ( visible_rect.intersected( item_rect ) ) {
+	    (*it)->Draw();
+	    bDone = true;
+	  }
+	  else if ( bDone )
+	    break;
 	}
 	UI()->PopScissor					();
 

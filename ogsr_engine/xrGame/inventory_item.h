@@ -153,7 +153,8 @@ public:
 	virtual void				OnMoveToSlot		();
 	virtual void				OnMoveToBelt		();
 	virtual void				OnMoveToRuck		();
-					
+	virtual void				OnDrop() {};
+
 			int					GetGridWidth		() const ;
 			int					GetGridHeight		() const ;
 			const shared_str&	GetIconName			() const		{return m_icon_name;};

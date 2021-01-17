@@ -213,10 +213,10 @@ public:
 	// debug
 #ifdef DEBUG
 	void							DebugRender			(Fmatrix& XFORM);
+#endif
 protected:
 	virtual shared_str		_BCL	getDebugName()	{ return dbg_name; }
 public:
-#endif
 
 	// General "Visual" stuff
     virtual void					Copy				(dxRender_Visual *pFrom);

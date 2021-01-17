@@ -83,7 +83,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <DisableSpecificWarnings>4456;4457;4458;4459;4595;4315;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4456;4457;4458;4459;4315;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>xrEngine.lib;d3dx9.lib;d3dx10.lib;d3d10.lib;d3dcompiler.lib;dxgi.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -111,7 +111,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
-      <DisableSpecificWarnings>4456;4457;4458;4459;4595;4315;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4456;4457;4458;4459;4315;</DisableSpecificWarnings>
       <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OmitFramePointers>false</OmitFramePointers>

@@ -27,7 +27,7 @@ struct XRCORE_API xr_token
 	int 	id;
 };
 
-IC LPCSTR get_token_name(xr_token* tokens, int key)
+IC LPCSTR get_token_name(const xr_token* tokens, int key)
 {
     for (int k=0; tokens[k].name; k++)
     	if (key==tokens[k].id) return tokens[k].name;

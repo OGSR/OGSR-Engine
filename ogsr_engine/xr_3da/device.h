@@ -272,25 +272,13 @@ public:
 	void Initialize							(void);
 	void ShutDown							(void);
 
-public:
-	void time_factor						(const float &time_factor)
-	{
-		Timer.time_factor		(time_factor);
-		TimerGlobal.time_factor	(time_factor);
-	}
-	/*
-	IC	const float &time_factor			() const
-	{
-		VERIFY					(Timer.time_factor() == TimerGlobal.time_factor());
-		return					(Timer.time_factor());
-	}
-	*/
+	void time_factor(const float& time_factor); //--#SM+#--
 
 private:
 	// Multi-threading
 	Event syncProcessFrame, syncFrameDone, syncThreadExit; // Secondary thread events
 	std::atomic_bool mt_bMustExit;
-	static void SecondaryThreadProc(void* context);
+	std::chrono::duration<double, std::milli> SecondThreadTasksElapsedTime;
 
 public:
 	ICF void remove_from_seq_parallel(const fastdelegate::FastDelegate<void()> &delegate)

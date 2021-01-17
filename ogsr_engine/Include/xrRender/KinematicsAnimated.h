@@ -40,10 +40,8 @@ public:
 public:
 	virtual void		OnCalculateBones() = 0;
 
-#ifdef DEBUG
 	virtual std::pair<LPCSTR,LPCSTR>	LL_MotionDefName_dbg	(MotionID	ID) = 0;
 	virtual	void						LL_DumpBlends_dbg		( )=0;
-#endif
 
 	virtual u32							LL_PartBlendsCount		( u32 bone_part_id )=0;
 	virtual CBlend						*LL_PartBlend			( u32 bone_part_id, u32 n )=0;
