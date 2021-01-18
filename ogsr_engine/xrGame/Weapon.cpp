@@ -1068,7 +1068,11 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 					{
 						l_newType = (l_newType + 1) % m_ammoTypes.size();
 						b1 = l_newType != m_ammoType;
-						b2 = unlimited_ammo() ? false : (!m_pCurrentInventory->GetAmmo(*m_ammoTypes[l_newType], ParentIsActor()));
+						bool forActor = ParentIsActor();
+						if (Core.Features.test(xrCore::Feature::hard_ammo_reload) && forActor)
+							b2 = unlimited_ammo() ? false : (!m_pCurrentInventory->GetAmmoMaxCurr(*m_ammoTypes[l_newType], forActor));
+						else
+							b2 = unlimited_ammo() ? false : (!m_pCurrentInventory->GetAmmo(*m_ammoTypes[l_newType], forActor));
 					} while (b1 && b2);
 
 					if (l_newType != m_ammoType)

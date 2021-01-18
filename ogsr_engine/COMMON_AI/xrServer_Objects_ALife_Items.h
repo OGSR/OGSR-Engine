@@ -129,18 +129,18 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon,CSE_ALifeItem)
 	};
 
 	//текущее состояние аддонов
-	enum EWeaponAddonState 
-	{
-		eWeaponAddonScope = 0x01,
-		eWeaponAddonGrenadeLauncher = 0x02,
-		eWeaponAddonSilencer = 0x04,
-		eWeaponAddonGrip = 0x08,
-		eWeaponAddonMagazine = 0x10,
-		eWeaponAddonScopeMount = 0x20,
+enum EWeaponAddonState
+{
+	eWeaponAddonScope = 1 << 0,
+	eWeaponAddonGrenadeLauncher = 1 << 1,
+	eWeaponAddonSilencer = 1 << 2,
+	eWeaponAddonGrip = 1 << 3,
+	eWeaponAddonMagazine = 1 << 4,
+	eWeaponAddonScopeMount = 1 << 5,
 
-		//eVisUpdatesActivated = 0x40,
-		eForcedNotexScope = 0x80
-	};
+	eWeaponAmmoUnloaded = 1 << 6,
+	eForcedNotexScope = 1 << 7
+};
 
 	EWeaponAddonStatus				m_scope_status;
 	EWeaponAddonStatus				m_silencer_status;				

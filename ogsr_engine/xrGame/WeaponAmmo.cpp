@@ -171,7 +171,7 @@ void CWeaponAmmo::OnH_B_Independent(bool just_before_destroy)
 bool CWeaponAmmo::Useful() const
 {
 	// Если IItem еще не полностью использованый, вернуть true
-	return !!m_boxCurr;
+	return !!m_boxCurr || Core.Features.test(xrCore::Feature::hard_ammo_reload);
 }
 /*
 s32 CWeaponAmmo::Sort(PIItem pIItem) 

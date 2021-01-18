@@ -459,7 +459,7 @@ u8 CWeaponShotgun::AddCartridge		(u8 cnt)
 
 	//выкинуть коробку патронов, если она пустая
 	if(m_pAmmo && !m_pAmmo->m_boxCurr && OnServer()) 
-		m_pAmmo->SetDropManual(TRUE);
+		m_pAmmo->DestroyObject(); //SetDropManual(TRUE);
 
 	return cnt;
 }
