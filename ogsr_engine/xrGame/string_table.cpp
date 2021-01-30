@@ -83,16 +83,14 @@ void CStringTable::Load	(LPCSTR xml_file)
 		pData->m_StringTable[string_name] = str_val;
 	}
 }
+
 void CStringTable::ReparseKeyBindings()
 {
-	if(!pData)					return;
-	STRING_TABLE_MAP_IT it		= pData->m_string_key_binding.begin();
-	STRING_TABLE_MAP_IT it_e	= pData->m_string_key_binding.end();
+	if (!pData)
+		return;
 
-	for(;it!=it_e;++it)
-	{
-		pData->m_StringTable[it->first]			= ParseLine(*it->second, *it->first, false);
-	}
+	for (const auto& [key, val] : pData->m_string_key_binding)
+		pData->m_StringTable[key] = ParseLine(val.c_str(), key.c_str(), false);
 }
 
 

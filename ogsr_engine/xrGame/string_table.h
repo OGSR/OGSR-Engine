@@ -6,7 +6,7 @@
 
 #include "string_table_defs.h"
 
-DEFINE_MAP		(STRING_ID, STRING_VALUE, STRING_TABLE_MAP, STRING_TABLE_MAP_IT);
+using STRING_TABLE_MAP = string_unordered_map<STRING_ID, STRING_VALUE>;
 
 struct STRING_TABLE_DATA
 {
