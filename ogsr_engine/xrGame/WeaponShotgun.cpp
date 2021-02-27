@@ -423,44 +423,6 @@ bool CWeaponShotgun::HaveCartridgeInInventory( u8 cnt ) {
 
   return ( m_pAmmo && ac >= cnt );
 }
-/*
-bool CWeaponShotgun::HaveCartridgeInInventory		(u8 cnt)
-{
-	if (unlimited_ammo()) return true;
-	m_pAmmo = NULL;
-	if(m_pCurrentInventory) 
-	{
-		if (m_set_next_ammoType_on_reload != u32(-1)) {
-			m_ammoType = m_set_next_ammoType_on_reload;
-			m_set_next_ammoType_on_reload = u32(-1);
-
-			if (!m_magazine.empty()) 
-				UnloadMagazine();
-		}
-
-		bool forActor = ParentIsActor();
-
-		//попытаться найти в инвентаре патроны текущего типа 
-		m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[m_ammoType], forActor));
-		
-		if(!m_pAmmo && ( m_magazine.empty() || !m_bLockType ))
-		{
-			for(u32 i = 0; i < m_ammoTypes.size(); ++i) 
-			{
-				//проверить патроны всех подходящих типов
-				m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[i], forActor));
-
-				if(m_pAmmo) 
-				{ 
-					m_ammoType = i; 
-					break; 
-				}
-			}
-		}
-	}
-	return (m_pAmmo!=NULL)&&(m_pAmmo->m_boxCurr>=cnt) ;
-}
-*/
 
 
 u8 CWeaponShotgun::AddCartridge		(u8 cnt)
@@ -497,7 +459,7 @@ u8 CWeaponShotgun::AddCartridge		(u8 cnt)
 
 	//выкинуть коробку патронов, если она пустая
 	if(m_pAmmo && !m_pAmmo->m_boxCurr && OnServer()) 
-		m_pAmmo->SetDropManual(TRUE);
+		m_pAmmo->DestroyObject(); //SetDropManual(TRUE);
 
 	return cnt;
 }

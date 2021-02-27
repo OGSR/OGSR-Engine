@@ -376,6 +376,12 @@
     <ClInclude Include="Utils\imdexlib\utility.hpp">
       <Filter>Utils\imdexlib</Filter>
     </ClInclude>
+    <ClInclude Include="buffer_vector.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="buffer_vector_inline.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuildStep Include="FileSystem.h">

@@ -286,13 +286,13 @@ bool CInifile::save_as( LPCSTR new_fname ) {
             _decorate( val, *I.second );
             {
               // only name and value
-              sprintf_s( temp, "%8s%-32s = %-32s", " ", *I.first, val );
+              sprintf_s( temp, "%-32s = %-32s", *I.first, val );
             }
           }
           else {
             {
               // only name
-              sprintf_s( temp, "%8s%-32s = ", " ", *I.first );
+              sprintf_s( temp, "%-32s = ", *I.first );
             }
           }
         }

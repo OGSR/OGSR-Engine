@@ -40,11 +40,9 @@ private:
 class		ECORE_API			dxRender_Visual : public IRenderVisual
 {
 public:
-#ifdef DEBUG
 	shared_str					dbg_name	;
 	virtual shared_str	_BCL	getDebugName() { return dbg_name; }
-#endif
-public:
+
 	// Common data for rendering
 	u32							Type		;				// visual's type
 	vis_data					vis			;				// visibility-data

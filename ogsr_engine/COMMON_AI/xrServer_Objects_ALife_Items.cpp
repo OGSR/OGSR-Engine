@@ -458,12 +458,18 @@ u16	 CSE_ALifeItemWeapon::get_ammo_elapsed	()
 	return						((u16)a_elapsed);
 }
 
-u16	 CSE_ALifeItemWeapon::get_ammo_magsize	()
+u16 CSE_ALifeItemWeapon::get_ammo_magsize()
 {
-	if (pSettings->line_exist(s_name,"ammo_mag_size"))
-		return					(pSettings->r_u16(s_name,"ammo_mag_size"));
-	else
-		return					0;
+	if (Core.Features.test(xrCore::Feature::hard_ammo_reload))
+	{
+		const char* S = pSettings->r_string(s_name, "ammo_class");
+		string128 _ammoItem{};
+		_GetItem(S, 0, _ammoItem);
+		return std::min(pSettings->r_u16(_ammoItem, "box_size"), pSettings->r_u16(s_name, "ammo_mag_size"));
+	}
+	else {
+		return pSettings->r_u16(s_name, "ammo_mag_size");
+	}
 }
 
 BOOL CSE_ALifeItemWeapon::Net_Relevant()

@@ -236,7 +236,7 @@ void CInventoryScript::script_register(lua_State *L)
 			class_<CInventoryItemObject, bases<CInventoryItem, CGameObject>>("CInventoryItemObject"),
 
 			class_ <CInventory>("CInventory")
-			.def_readwrite("max_belt"					,			&CInventory::m_iMaxBelt)
+			.def_readonly("max_belt"					,			&CInventory::m_iMaxBelt)
 			.def_readwrite("max_weight"					,			&CInventory::m_fMaxWeight)
 			.def_readwrite("take_dist"					,			&CInventory::m_fTakeDist)
 			.def_readonly ("total_weight"				,			&CInventory::m_fTotalWeight)
@@ -449,6 +449,7 @@ void CWeaponScript::script_register(lua_State *L)
 			.def_readwrite("misfire_probability"		,			&CWeapon::misfireProbability)
 			.def_readwrite("misfire_condition_k"		,			&CWeapon::misfireConditionK)	
 			.def_readwrite("condition_shot_dec"			,			&CWeapon::conditionDecreasePerShot)
+			.def_readwrite("condition_shot_dec_silencer", &CWeapon::conditionDecreasePerShotSilencer )
 
 
 			.def_readwrite("PDM_disp_base"				,			&CWeapon::m_fPDM_disp_base)

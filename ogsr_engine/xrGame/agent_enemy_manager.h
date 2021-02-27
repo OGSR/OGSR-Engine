@@ -27,7 +27,6 @@ private:
 	CAgentManager			*m_object;
 	ENEMIES					m_enemies;
 	WOUNDED_ENEMIES			m_wounded;
-	static WOUNDED_ENEMIES m_wounded_processors;
 	bool					m_only_wounded_left;
 	bool					m_is_any_wounded;
 
@@ -61,7 +60,6 @@ public:
 			bool			wounded_processed	(const CEntityAlive *object) const;
 			bool			assigned_wounded	(const CEntityAlive *wounded, const CAI_Stalker *member);
 			bool			useful_enemy		(const CEntityAlive *enemy, const CAI_Stalker *member) const;
-			void remove_wounded_processor( const CEntityAlive* object );
 };
 
 #include "agent_enemy_manager_inline.h"

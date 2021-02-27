@@ -34,7 +34,6 @@
 #include "WeaponMagazinedWGrenade.h"
 #include "GamePersistent.h"
 
-#define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
 
 extern ENGINE_API Fvector4 w_states;
@@ -355,6 +354,7 @@ void CWeapon::Load		(LPCSTR section)
 	misfireConditionK			  = READ_IF_EXISTS(pSettings, r_float, section, "misfire_condition_k",	1.0f);
 	conditionDecreasePerShot	  = pSettings->r_float(section,"condition_shot_dec"); 
 	conditionDecreasePerShotOnHit = READ_IF_EXISTS( pSettings, r_float, section, "condition_shot_dec_on_hit", 0.f );
+	conditionDecreasePerShotSilencer = READ_IF_EXISTS( pSettings, r_float, section, "condition_shot_dec_silencer", conditionDecreasePerShot );
 		
 	vLoadedFirePoint	= pSettings->r_fvector3		(section,"fire_point"		);
 	
@@ -452,20 +452,6 @@ void CWeapon::Load		(LPCSTR section)
 	m_fScopeInertionFactor = m_fControlInertionFactor;
 
 	InitAddons();
-
-	//////////////////////////////////////
-	//время убирания оружия с уровня
-	if(pSettings->line_exist(section,"weapon_remove_time"))
-		m_dwWeaponRemoveTime = pSettings->r_u32(section,"weapon_remove_time");
-	else
-		m_dwWeaponRemoveTime = WEAPON_REMOVE_TIME;
-	//////////////////////////////////////
-	if(pSettings->line_exist(section,"auto_spawn_ammo"))
-		m_bAutoSpawnAmmo = pSettings->r_bool(section,"auto_spawn_ammo");
-	else
-		m_bAutoSpawnAmmo = TRUE;
-	//////////////////////////////////////
-
 
 	m_bHideCrosshairInZoom = true;
 	if(pSettings->line_exist(hud_sect, "zoom_hide_crosshair"))
@@ -676,11 +662,7 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 	UpdateAddonsVisibility();
 	InitAddons();
 
-
-	m_dwWeaponIndependencyTime = 0;
-
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
-	m_bAmmoWasSpawned		= false;
 
 	return bResult;
 }
@@ -869,7 +851,6 @@ void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 
 void CWeapon::OnH_A_Independent	()
 {
-	m_dwWeaponIndependencyTime = Level().timeServer();
 	inherited::OnH_A_Independent();
 	Light_Destroy				();
 };
@@ -902,7 +883,6 @@ void CWeapon::OnHiddenItem ()
 
 void CWeapon::OnH_B_Chield		()
 {
-	m_dwWeaponIndependencyTime = 0;
 	inherited::OnH_B_Chield		();
 
 	OnZoomOut					();
@@ -1088,7 +1068,11 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 					{
 						l_newType = (l_newType + 1) % m_ammoTypes.size();
 						b1 = l_newType != m_ammoType;
-						b2 = unlimited_ammo() ? false : (!m_pCurrentInventory->GetAmmo(*m_ammoTypes[l_newType], ParentIsActor()));
+						bool forActor = ParentIsActor();
+						if (Core.Features.test(xrCore::Feature::hard_ammo_reload) && forActor)
+							b2 = unlimited_ammo() ? false : (!m_pCurrentInventory->GetAmmoMaxCurr(*m_ammoTypes[l_newType], forActor));
+						else
+							b2 = unlimited_ammo() ? false : (!m_pCurrentInventory->GetAmmo(*m_ammoTypes[l_newType], forActor));
 					} while (b1 && b2);
 
 					if (l_newType != m_ammoType)
@@ -1213,7 +1197,6 @@ void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID)
 {
 	if(!m_ammoTypes.size())			return;
 	if (OnClient())					return;
-	m_bAmmoWasSpawned				= true;
 	
 	if (!ammoSect) ammoSect = m_ammoTypes.front().c_str();
 	
@@ -1728,24 +1711,6 @@ void CWeapon::activate_physic_shell()
 void CWeapon::setup_physic_shell()
 {
 	CPhysicsShellHolder::setup_physic_shell();
-}
-
-int		g_iWeaponRemove = 1;
-
-bool CWeapon::NeedToDestroyObject()	const
-{
-	if (H_Parent()) return false;
-	if (g_iWeaponRemove == -1) return false;
-	if (g_iWeaponRemove == 0) return true;
-	return (TimePassedAfterIndependant() > m_dwWeaponRemoveTime);
-}
-
-ALife::_TIME_ID	 CWeapon::TimePassedAfterIndependant()	const
-{
-	if(!H_Parent() && m_dwWeaponIndependencyTime != 0)
-		return Level().timeServer() - m_dwWeaponIndependencyTime;
-	else
-		return 0;
 }
 
 bool CWeapon::can_kill	() const

@@ -391,6 +391,8 @@ static LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 	save_mini_dump(pExceptionInfo);
 #endif
 
+	ExitFromWinMain = true;
+
 	return EXCEPTION_EXECUTE_HANDLER;
 }
 

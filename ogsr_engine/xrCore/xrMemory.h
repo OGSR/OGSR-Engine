@@ -43,10 +43,13 @@ IC void xr_free( T*& P ) {
 #define xr_realloc Memory.mem_realloc
 
 
-IC void* operator new( size_t size ) { return Memory.mem_alloc( size ? size : 1 ); }
-IC void operator delete( void* p ) { xr_free( p ); }
-IC void* operator new[]( size_t size ) { return Memory.mem_alloc( size ? size : 1 ); }
-IC void operator delete[]( void* p ) { xr_free( p ); }
+[[nodiscard]] void* operator new(size_t size);
+void operator delete(void* p) noexcept;
+void operator delete(void* p, size_t) noexcept;
+
+[[nodiscard]] void* operator new[](size_t size);
+void operator delete[](void* p) noexcept;
+void operator delete[](void* p, size_t) noexcept;
 
 
 template <typename T, typename... Args>

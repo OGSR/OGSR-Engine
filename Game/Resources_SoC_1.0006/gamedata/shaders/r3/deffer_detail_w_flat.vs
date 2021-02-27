@@ -52,6 +52,12 @@ v2p_flat 	main (v_detail v)
 # if defined(USE_R2_STATIC_SUN)
 	O.tcdh.w	= c0.x;								// (,,,dir-occlusion)
 # endif
+
+#ifdef USE_GRASS_WAVE
+	float 	_dp	= calc_cyclic   (dot(pos,wave*GRASS_WAVE_FREQ));
+	O.tcdh.z	= consts.w+consts.z*max(0.f, _dp)*frac*GRASS_WAVE_POWER;
+#endif
+
 	O.position	= float4	(Pe, 		c0.w		);
 
 	return O;

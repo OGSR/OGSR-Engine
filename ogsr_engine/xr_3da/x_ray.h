@@ -13,7 +13,6 @@ class ENGINE_API CApplication	:
 	struct					sLevelInfo
 	{
 		char*				folder;
-		char*				name;
 	};
 
 	ILoadingScreen* loadingScreen;

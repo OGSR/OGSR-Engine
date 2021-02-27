@@ -120,8 +120,7 @@ public:
 
 	virtual bool	Action			(s32 cmd, u32 flags);
 	virtual void	onMovementChanged	(ACTOR_DEFS::EMoveCommand cmd);
-	bool			IsAmmoAvailable	();
-	virtual void	UnloadMagazine	(bool spawn_ammo = true);
+	virtual bool	UnloadMagazine	(bool spawn_ammo = true);
 
 	virtual void	GetBriefInfo				(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
 

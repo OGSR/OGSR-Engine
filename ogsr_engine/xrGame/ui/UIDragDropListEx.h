@@ -15,11 +15,14 @@ enum EListType{
 		iwBelt
 };
 
-struct CUICell{
-							CUICell					()						{m_item=NULL; Clear();}
+struct CUICell {
+	CUICell() = default;
 
-		CUICellItem*		m_item;
-		bool				m_bMainItem;
+	CUICellItem* m_item{};
+	bool m_bMainItem{};
+	bool cell_disabled{};
+	bool is_highlighted{};
+
 		void				SetItem					(CUICellItem* itm, bool bMain)		{m_item = itm; VERIFY(m_item);m_bMainItem = bMain;}
 		bool				Empty					()						{return m_item == NULL;}
 		bool				MainItem				()						{return m_bMainItem;}
@@ -42,7 +45,7 @@ private:
 		flVerticalPlacement	= (1 << 3),
 		flAlwaysShowScroll	= (1 << 4),
 		flVirtualCells		= (1 << 5),
-		flDrawGrid		= (1 << 6),
+		// !Место свободно! = (1 << 6),
 		flHighlightCellSp	= (1 << 7),
 		flHighlightAllCells	= (1 << 8),
 	};
@@ -66,7 +69,6 @@ protected:
 	
 public:
 	static CUIDragItem*		m_drag_item;
-	float tx;
 							CUIDragDropListEx	();
 	virtual					~CUIDragDropListEx	();
 				void		Init				(float x, float y, float w, float h);
@@ -83,6 +85,7 @@ public:
 
 	const	Ivector2&		CellsCapacity		();
 			void			SetCellsCapacity	(const Ivector2 c);
+			void			SetCellsAvailable(const u32 count);
 			void			SetStartCellsCapacity(const Ivector2 c){m_orig_cell_capacity=c;SetCellsCapacity(c);};
 			void			ResetCellsCapacity	(){VERIFY(ItemsCount()==0);SetCellsCapacity(m_orig_cell_capacity);};
 	 const	Ivector2&		CellSize			();
@@ -108,8 +111,6 @@ public:
 			bool			GetCustomPlacement	();
 			void			SetVerticalPlacement(bool b);
 			bool			GetVerticalPlacement();
-			void			SetDrawGrid			(bool b)	{ m_flags.set(flDrawGrid, b); }
-			bool			GetDrawGrid			()			{ return !!m_flags.test(flDrawGrid); }
 			void			SetAlwaysShowScroll	(bool b);
 			bool			GetVirtualCells		();
 			void			SetVirtualCells		(bool b);
@@ -147,7 +148,7 @@ public:
 	virtual		bool		OnMouse				(float x, float y, EUIMessages mouse_action);
 	virtual		void		SendMessage			(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 
-	bool is_highlighted;
+	void enable_highlight(const bool);
 };
 
 class CUICellContainer :public CUIWindow
@@ -167,7 +168,6 @@ protected:
 
 	UI_CELLS_VEC				m_cells;
 
-	void						GetTexUVLT			( Fvector2& uv, u32 col, u32 row, u8 = 0 );
 	void						ReinitSize			();
 	u32							GetCellsInRange		(const Irect& rect, UI_CELLS_VEC& res);
 
@@ -179,6 +179,10 @@ protected:
 
 	IC const	Ivector2&		CellsCapacity		()								{return m_cellsCapacity;};	
 				void			SetCellsCapacity	(const Ivector2& c);
+				void			SetCellsAvailable(const u32 count);
+
+				void enable_highlight(const bool);
+
 	IC const	Ivector2&		CellSize			()								{return m_cellSize;};	
 				void			SetCellSize			(const Ivector2& new_sz);
 	IC const	Ivector2&		CellsSpacing		()								{return m_cellSpacing;};	
@@ -205,5 +209,16 @@ protected:
 				void			Shrink				();
 				void			ClearAll			(bool bDestroy);
 				void			clear_select_armament();
-				u8			get_select_mode( int, int );
+
+private:
+	enum CellTextureType : u32 {
+		CellTextureTypeNormal, //Обычная клетка инвентаря
+		CellTextureTypeCursorHover, //При наведении курсора на предмет
+		CellTextureTypeEquipped, //Предмет в слотах при торговле
+		CellTextureTypeArmanent, //Патроны для стволов, аддоны
+		CellTextureTypeUntradable, //Непродаваемый предмет при торговле
+		CellTextureTypeAvailableSlots, //Доступные слоты для предмета
+		CellTextureTypeBlockedSlots, //Заблокированные клетки для артов
+	};
+	CellTextureType get_select_mode( const int x, const int y );
 };

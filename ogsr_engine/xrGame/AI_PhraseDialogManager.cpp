@@ -52,7 +52,7 @@ void CAI_PhraseDialogManager::AnswerPhrase (DIALOG_SHARED_PTR& phrase_dialog)
 		int phrase_num = phrase_dialog->PhraseList().size()-1;
 		for(u32 i=0; i<phrase_dialog->PhraseList().size(); ++i)
 		{
-			phrase_goodwill = phrase_dialog->PhraseList()[phrase_num]->GoodwillLevel();
+			phrase_goodwill = phrase_dialog->PhraseList()[ i ]->GoodwillLevel();
 			if(attitude >= phrase_goodwill)
 			{
 				phrase_num = i;
@@ -62,7 +62,7 @@ void CAI_PhraseDialogManager::AnswerPhrase (DIALOG_SHARED_PTR& phrase_dialog)
 
 		for(u32 i=0; i<phrase_dialog->PhraseList().size(); i++)
 		{
-			if(phrase_goodwill == phrase_dialog->PhraseList()[phrase_num]->GoodwillLevel())
+			if ( phrase_goodwill == phrase_dialog->PhraseList()[ i ]->GoodwillLevel() )
 				phrases.push_back(i);
 		}
 		

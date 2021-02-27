@@ -27,7 +27,7 @@ public:
 	virtual CHudItem*cast_hud_item		()	 { return this; }
 
 
-	void PlaySound( HUD_SOUND& snd, const Fvector& position, bool overlap = false );
+	virtual void	PlaySound( HUD_SOUND& snd, const Fvector& position, bool overlap = false );
 										
 	///////////////////////////////////////////////
 	// общие функции HUD
@@ -90,7 +90,7 @@ public:
 
 
 	virtual	void	UpdateXForm			() = 0;
-	void					animGet		(MotionSVec& lst, LPCSTR prefix);
+	void animGet(MotionSVec& lst, const char* anim_name, const char* prefix);
 	void animGetEx( MotionSVec&, LPCSTR, LPCSTR = nullptr, LPCSTR = nullptr );
 
 	CWeaponHUD*		GetHUD				() {return m_pHUD;}

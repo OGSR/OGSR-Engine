@@ -164,10 +164,10 @@ ui_shader& InventoryUtilities::GetEquipmentIconsShader(size_t icon_group)
 	if (auto it = g_EquipmentIconsShaders.find(icon_group); it == g_EquipmentIconsShaders.end())
 	{
 		string_path file;
-		strcpy_s(file, sizeof(file), EQUIPMENT_ICONS);
+		strcpy_s(file, EQUIPMENT_ICONS);
 		if (icon_group > 0)
 		{
-			strcat_s(file, sizeof(file), "_");
+			strcat_s(file, "_");
 			itoa(icon_group, file + strlen(file), 10);
 		}
 

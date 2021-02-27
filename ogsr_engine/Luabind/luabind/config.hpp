@@ -40,10 +40,7 @@
 //
 #pragma comment(lib, "LuaJIT.lib") //LuaJIT теперь подключается только здесь и больше нигде.
 //
-#pragma warning(push)
-#pragma warning(disable:4595)
 #include "xrCore.h" //KRodin: Чтобы использовались операторы new/delete из xrCore. Иначе могут возникать проблемы при освобождении памяти.
-#pragma warning(pop)
 //
 //*************************************************************************************************
 

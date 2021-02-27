@@ -18,6 +18,7 @@
 #include "LightAnimLibrary.h"
 #include "../xrcdb/ispatial.h"
 #include "ILoadingScreen.h"
+#include "DiscordRPC.hpp"
 
 #define CORE_FEATURE_SET( feature, section )\
   Core.Features.set( xrCore::Feature::feature, READ_IF_EXISTS( pSettings, r_bool, section, #feature, false ) )
@@ -77,7 +78,6 @@ void InitConsole	()
 
 	CORE_FEATURE_SET( colorize_ammo,              "dragdrop" );
 	CORE_FEATURE_SET( colorize_untradable,        "dragdrop" );
-	CORE_FEATURE_SET( highlight_cop,              "dragdrop" );
 	CORE_FEATURE_SET( equipped_untradable,        "dragdrop" );
 	CORE_FEATURE_SET( select_mode_1342,           "dragdrop" );
 	CORE_FEATURE_SET( highlight_equipped,         "dragdrop" );
@@ -206,6 +206,8 @@ void Startup					( )
 	// Destroy LOGO
 	DestroyWindow				(logoWindow);
 	logoWindow					= NULL;
+
+	Discord.Init();
 
 	// Main cycle
 	Memory.mem_usage();
@@ -422,37 +424,16 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
 	return 0;
 }
 
-int stack_overflow_exception_filter	(int exception_code)
-{
-   if (exception_code == EXCEPTION_STACK_OVERFLOW)
-   {
-       // Do not call _resetstkoflw here, because
-       // at this point, the stack is not yet unwound.
-       // Instead, signal that the handler (the __except block)
-       // is to be executed.
-       return EXCEPTION_EXECUTE_HANDLER;
-   }
-   else
-       return EXCEPTION_CONTINUE_SEARCH;
-}
-
 int APIENTRY WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      char *    lpCmdLine,
                      int       nCmdShow)
 {
     gModulesLoaded = true;
-	__try 
-	{
-		Debug._initialize();
 
-		WinMain_impl		(hInstance,hPrevInstance,lpCmdLine,nCmdShow);
-	}
-	__except(stack_overflow_exception_filter(GetExceptionCode()))
-	{
-		_resetstkoflw		();
-		FATAL				("stack overflow");
-	}
+	Debug._initialize();
+
+	WinMain_impl(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
 	ExitFromWinMain = true;
 
@@ -556,7 +537,6 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 		for (u32 i=0; i<Levels.size(); i++)
 		{
 			xr_free(Levels[i].folder	);
-			xr_free(Levels[i].name	);
 		}
 	}
 	else if(E==eStart) 
@@ -715,10 +695,7 @@ void CApplication::Level_Append		(LPCSTR folder)
 		FS.exist("$game_levels$",N4)	
 		)
 	{
-		sLevelInfo			LI;
-		LI.folder			= xr_strdup(folder);
-		LI.name				= 0;
-		Levels.push_back	(LI);
+		Levels.emplace_back(sLevelInfo{ xr_strdup(folder) });
 	}
 }
 

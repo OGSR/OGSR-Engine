@@ -819,11 +819,6 @@ CScriptGameObject *CGameObject::lua_game_object() const
 	return							(m_lua_game_object);
 }
 
-bool CGameObject::NeedToDestroyObject()	const
-{
-	return false;
-}
-
 void CGameObject::DestroyObject()			
 {
 	

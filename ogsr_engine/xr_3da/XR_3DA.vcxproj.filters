@@ -100,6 +100,9 @@
     <Filter Include="Interfaces\LoadScreen">
       <UniqueIdentifier>{1afaf972-d4ae-4834-8a0e-869d27555c6f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Discord">
+      <UniqueIdentifier>{43bfe79c-eeb5-4f94-934d-a536c732336c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -322,6 +325,9 @@
     <ClInclude Include="ILoadingScreen.h">
       <Filter>Interfaces\LoadScreen</Filter>
     </ClInclude>
+    <ClInclude Include="DiscordRPC.hpp">
+      <Filter>Discord</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">
@@ -532,6 +538,9 @@
     <ClCompile Include="bone.cpp" />
     <ClCompile Include="GameMtlLib_Engine.cpp" />
     <ClCompile Include="GameMtlLib.cpp" />
+    <ClCompile Include="DiscordRPC.cpp">
+      <Filter>Discord</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">

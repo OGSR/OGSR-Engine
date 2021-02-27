@@ -381,7 +381,7 @@ struct p_bumped
 //	Defer flat
 struct	v2p_flat
 {
-#if defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)
+#if ((defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)) || defined(USE_GRASS_WAVE))
 	float4	tcdh	: TEXCOORD0;	// Texture coordinates,         w=sun_occlusion
 #else
 	float2	tcdh	: TEXCOORD0;	// Texture coordinates
@@ -399,7 +399,7 @@ struct	v2p_flat
 
 struct	p_flat
 {
-#if defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)
+#if ((defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)) || defined(USE_GRASS_WAVE))
 	float4	tcdh	: TEXCOORD0;	// Texture coordinates,         w=sun_occlusion
 #else
 	float2	tcdh	: TEXCOORD0;	// Texture coordinates

@@ -157,6 +157,7 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		.def("get_ammo_in_magazine",		&CScriptGameObject::GetAmmoElapsed)
 		.def("get_ammo_total",				&CScriptGameObject::GetAmmoCurrent)
 		.def("set_ammo_elapsed",			&CScriptGameObject::SetAmmoElapsed)
+		.def("set_ammo_type",				&CScriptGameObject::SetAmmoType)
 		.def("set_queue_size",				&CScriptGameObject::SetQueueSize)
 //		.def("best_hit",					&CScriptGameObject::GetBestHit)
 //		.def("best_sound",					&CScriptGameObject::GetBestSound)

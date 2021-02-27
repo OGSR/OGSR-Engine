@@ -370,6 +370,14 @@ void CScriptGameObject::SetAmmoElapsed(int ammo_elapsed)
 	weapon->SetAmmoElapsed(ammo_elapsed);
 }
 
+void CScriptGameObject::SetAmmoType(u32 ammo_type)
+{
+	auto weapon = smart_cast<CWeapon*>(&object());
+	R_ASSERT(weapon);
+	ASSERT_FMT(ammo_type < weapon->m_ammoTypes.size(), "!! Ammo type [%u] is out of range.", ammo_type);
+	weapon->m_ammoType = ammo_type;
+}
+
 u32 CScriptGameObject::GetAmmoCurrent() const
 {
 	const CWeapon	*weapon = smart_cast<const CWeapon*>(&object());

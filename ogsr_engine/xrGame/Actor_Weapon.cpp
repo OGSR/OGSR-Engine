@@ -224,28 +224,3 @@ Fvector CActor::weapon_recoil_last_delta()
 
 	return							(result);
 }
-//////////////////////////////////////////////////////////////////////////
-
-void	CActor::SpawnAmmoForWeapon	(CInventoryItem *pIItem)
-{
-	if (OnClient()) return;
-	if (!pIItem) return;
-
-	CWeaponMagazined* pWM = smart_cast<CWeaponMagazined*> (pIItem);
-	if (!pWM || !pWM->AutoSpawnAmmo()) return;
-
-	pWM->SpawnAmmo(0xffffffff, NULL, ID());
-};
-
-void	CActor::RemoveAmmoForWeapon	(CInventoryItem *pIItem)
-{
-	if (OnClient()) return;
-	if (!pIItem) return;
-
-	CWeaponMagazined* pWM = smart_cast<CWeaponMagazined*> (pIItem);
-	if (!pWM || !pWM->AutoSpawnAmmo()) return;
-
-	CWeaponAmmo* pAmmo = smart_cast<CWeaponAmmo*>(inventory().GetAny(*(pWM->m_ammoTypes[0]) ));
-	if (!pAmmo) return;
-	pAmmo->DestroyObject();
-};

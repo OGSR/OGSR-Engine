@@ -356,20 +356,20 @@ void CUIInventoryWnd::Hide()
 
 void CUIInventoryWnd::HideSlotsHighlight()
 {
-	m_pUIBeltList->is_highlighted = false;
+	m_pUIBeltList->enable_highlight(false);
 	for (const auto& DdList : m_slots_array)
 		if (DdList)
-			DdList->is_highlighted = false;
+			DdList->enable_highlight(false);
 }
 
 void CUIInventoryWnd::ShowSlotsHighlight(PIItem InvItem)
 {
 	if (InvItem->m_flags.test(CInventoryItem::Fbelt) && !Actor()->inventory().InBelt(InvItem))
-		m_pUIBeltList->is_highlighted = true;
+		m_pUIBeltList->enable_highlight(true);
 
 	for (const u8 slot : InvItem->GetSlots())
 		if (auto DdList = m_slots_array[slot]; DdList && (!Actor()->inventory().InSlot(InvItem) || InvItem->GetSlot() != slot))
-			DdList->is_highlighted = true;
+			DdList->enable_highlight(true);
 }
 
 
@@ -528,4 +528,28 @@ bool CUIInventoryWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 	if( inherited::OnKeyboard(dik,keyboard_action) )return true;
 
 	return false;
+}
+
+void CUIInventoryWnd::UpdateOutfit()
+{
+	if (dont_update_belt_flag) { //Чтобы арты не перемещались в рюкзак, при смене костюма
+		dont_update_belt_flag = false;
+		return;
+	}
+
+	auto& inv = Actor()->inventory();
+	const u32 new_slots_count = inv.BeltSlotsCount();
+	m_pUIBeltList->SetCellsAvailable(new_slots_count);
+
+	auto& l_blist = inv.m_belt;
+	bool modified{};
+	while (l_blist.size() > new_slots_count) {
+		inv.Ruck(l_blist.back());
+		modified = true;
+	}
+
+	if (modified) {
+		extern void update_inventory_window(); //некрасиво, зато просто
+		update_inventory_window();
+	}
 }

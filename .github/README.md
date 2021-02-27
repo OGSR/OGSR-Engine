@@ -18,7 +18,8 @@
 ### [>>Developers<<](https://github.com/OGSR/OGSR-Engine/graphs/contributors) ###
 ### [>>Wiki, changelog and more<<](https://github.com/OGSR/OGSR-Engine/wiki) ###
 ### [>>Latest release<<](https://github.com/OGSR/OGSR-Engine/releases/latest) ###
-### [Write here](https://github.com/OGSR/OGSR-Engine/issues) to report bugs and share suggestions ###
+### [Write here](https://github.com/OGSR/OGSR-Engine/issues) to report bugs ###
+### [Write here](https://github.com/OGSR/OGSR-Engine/discussions) your suggestions, questions and everything else ###
 #### For the engine to work with the worldwide version of SoC, use the ` -steam` launch parameter ####
 
 ### Compilation guide: ###
@@ -51,7 +52,8 @@ And everyone else whose work has been used. If you are not mentioned, send a mes
 ### [>>Разработчики<<](https://github.com/OGSR/OGSR-Engine/graphs/contributors) ###
 ### [>>Wiki, cписок изменений и прочая информация<<](https://github.com/OGSR/OGSR-Engine/wiki) ###
 ### [>>Свежий релиз<<](https://github.com/OGSR/OGSR-Engine/releases/latest) ###
-### С багами и предложениями - [писать сюда](https://github.com/OGSR/OGSR-Engine/issues) ###
+### Баги можно присылать [сюда](https://github.com/OGSR/OGSR-Engine/issues) ###
+### Предложения, вопросы и тп можно писать [сюда](https://github.com/OGSR/OGSR-Engine/discussions) ###
 #### Для того, чтобы движок работал с WW-версией SHOC - используйте специальный ключ запуска ` -steam` ####
 
 ### Инструкции по сборке: ###

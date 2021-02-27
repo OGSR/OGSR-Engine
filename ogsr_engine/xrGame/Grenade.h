@@ -42,17 +42,11 @@ public:
 
 	virtual	void			Hit									(SHit* pHDS);
 
-	virtual bool			NeedToDestroyObject					() const; 
-	virtual ALife::_TIME_ID	TimePassedAfterIndependant			() const;
-
 			void			PutNextToSlot						();
 
 	virtual void			Deactivate( bool = false );
 	virtual void			GetBriefInfo						(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
 	virtual bool			StopSprintOnFire() { return false; }
-protected:
-	ALife::_TIME_ID			m_dwGrenadeRemoveTime;
-	ALife::_TIME_ID			m_dwGrenadeIndependencyTime;
 protected:
 	HUD_SOUND				sndCheckout;
 	ESoundTypes				m_eSoundCheckout;

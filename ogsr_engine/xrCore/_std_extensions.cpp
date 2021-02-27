@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include <time.h>
+#include <codecvt>
 
 char*							timestamp				(string64& dest)
 {
@@ -33,4 +34,15 @@ char* xr_strdup( const char* string ) {
   char* memory = ( char* )Memory.mem_alloc( len );
   CopyMemory( memory, string, len );
   return memory;
+}
+
+// Очень полезная штука из OpenXRay
+std::string StringToUTF8(const char* in)
+{
+	const size_t len = strlen(in);
+	static const std::locale locale{ "" };
+	using wcvt = std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t>;
+	std::wstring wstr(len, L'\0');
+	std::use_facet<std::ctype<wchar_t>>(locale).widen(in, in + len, wstr.data());
+	return wcvt{}.to_bytes(wstr.data(), wstr.data() + wstr.size());
 }

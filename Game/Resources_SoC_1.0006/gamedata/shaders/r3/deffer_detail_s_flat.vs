@@ -41,6 +41,10 @@ v2p_flat 	main (v_detail v)
 	O.tcdh.w	= c0.x;								// (,,,dir-occlusion)
 # endif
 
+#ifdef USE_GRASS_WAVE
+	O.tcdh.z = 1.f;
+#endif
+
 	O.position	= float4	(Pe, 		c0.w		);
 
 	return O;

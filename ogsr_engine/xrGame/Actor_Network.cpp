@@ -606,8 +606,6 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	hit_slowmo				= 0.f;
 
 	OnChangeVisual();
-	//----------------------------------
-	m_bAllowDeathRemove = false;
 
 //	m_bHasUpdate = false;
 	m_bInInterpolation = false;
