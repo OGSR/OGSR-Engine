@@ -5,26 +5,26 @@
 
 class CUIStatic;
 
-class CUICursor:public pureRender
+class CUICursor: public pureRender
 {
-	bool			bVisible;
-	Fvector2		vPos;
-	Fvector2		vPrevPos;
+	bool bVisible{};
+	Fvector2 vPos{}, vPrevPos{};
+	std::unique_ptr<CUIStatic> m_static;
 
-	CUIStatic*		m_static;
-	void			InitInternal	();
+	void InitInternal();
+
 public:
-					CUICursor		();
-	virtual			~CUICursor		();
-	virtual void	OnRender		();
-	
-	Fvector2		GetCursorPositionDelta();
+	CUICursor();
+	virtual ~CUICursor();
+	void OnRender() override;
 
-	Fvector2		GetCursorPosition		();
-	void			SetUICursorPosition		(Fvector2 pos);
-	void			UpdateCursorPosition	();
+	Fvector2 GetCursorPositionDelta() const;
+	Fvector2 GetCursorPosition() const;
 
-	bool			IsVisible		() {return bVisible;}
-	void			Show			() {bVisible = true;}
-	void			Hide			() {bVisible = false;}
+	void SetUICursorPosition(const Fvector2& pos);
+	void UpdateCursorPosition(const int _dx, const int _dy);
+
+	bool IsVisible() const { return bVisible; }
+	void Show() { bVisible = true; }
+	void Hide() { bVisible = false; }
 };
