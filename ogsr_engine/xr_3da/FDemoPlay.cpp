@@ -58,7 +58,7 @@ CDemoPlay::CDemoPlay(const char *name, float ms, u32 cycles, float life_time) : 
 		Log				("~ Total key-frames: ",m_count);
 	}
 	stat_started		= FALSE;
-	//Device.PreCache(50, true, false); For working "demo_play"
+	Device.PreCache(50, false, false);
 }
 
 CDemoPlay::~CDemoPlay		()

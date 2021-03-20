@@ -115,10 +115,6 @@ void	IGame_Level::OnRender		( )
 	// Level render, only when no client output required
 		Render->Calculate			();
 		Render->Render				();
-
-	// Font
-//	pApp->pFontSystem->SetSizeI(0.023f);
-//	pApp->pFontSystem->OnRender	();
 }
 
 void	IGame_Level::OnFrame		( ) 

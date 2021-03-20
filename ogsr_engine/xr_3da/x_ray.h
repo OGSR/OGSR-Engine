@@ -30,8 +30,6 @@ class ENGINE_API CApplication	:
 	int max_load_stage;
 
 public:
-	CGameFont*				pFontSystem;
-
 	// Levels
 	xr_vector<sLevelInfo>	Levels;
 	u32						Level_Current;
