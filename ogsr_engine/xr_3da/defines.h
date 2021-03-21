@@ -37,6 +37,8 @@ enum {
 	rsR2							= (1ul<<16ul),
 	rsR3							= (1ul<<17ul),
 	rsR4							= (1ul<<18ul),
+
+	rsExclusiveMode = 1ul << 19ul,
 };
 
 
