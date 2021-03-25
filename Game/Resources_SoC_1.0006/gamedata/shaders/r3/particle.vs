@@ -16,7 +16,7 @@ struct v2p
 #ifdef	USE_SOFT_PARTICLES
 	float4 tctexgen	: TEXCOORD1;
 #endif	//	USE_SOFT_PARTICLES
-
+	float  fog	: FOG;	// Fog
 	float4 hpos	: SV_Position;
 };
 
@@ -27,7 +27,6 @@ v2p main (vv v)
 	v2p 		o;
 
 	o.hpos 		= mul	(m_WVP, v.P);		// xform, input in world coords
-//	o.hpos 		= mul	(m_VP, v.P);		// xform, input in world coords
 	o.tc		= v.tc;				// copy tc
 	o.c			= unpack_D3DCOLOR(v.c);				// copy color
 
@@ -36,6 +35,7 @@ v2p main (vv v)
 	o.tctexgen 	= mul( mVPTexgen, v.P);
 	o.tctexgen.z	= o.hpos.z;
 #endif	//	USE_SOFT_PARTICLES
+	o.fog = saturate(calc_fogging(v.P));	// // ForserX (Port SkyLoader fog fix): fog, input in world coords
 
 	return o;
 }
