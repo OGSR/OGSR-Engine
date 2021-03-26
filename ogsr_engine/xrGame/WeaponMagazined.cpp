@@ -54,6 +54,7 @@ CWeaponMagazined::~CWeaponMagazined()
 	HUD_SOUND::DestroySound(sndSilencerShot);
 	HUD_SOUND::DestroySound(sndEmptyClick);
 	HUD_SOUND::DestroySound(sndReload);
+	HUD_SOUND::DestroySound(sndReloadPartly);
 	HUD_SOUND::DestroySound(sndFireModes);
 	HUD_SOUND::DestroySound(sndZoomChange);
 	if (m_binoc_vision)
@@ -68,6 +69,7 @@ void CWeaponMagazined::StopHUDSounds		()
 	
 	HUD_SOUND::StopSound(sndEmptyClick);
 	HUD_SOUND::StopSound(sndReload);
+	HUD_SOUND::StopSound(sndReloadPartly);
 	HUD_SOUND::StopSound(sndFireModes);
 	HUD_SOUND::StopSound(sndZoomChange);
 
@@ -112,6 +114,12 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	HUD_SOUND::LoadSound(section,"snd_shoot"	, sndShot		, m_eSoundShot		);
 	HUD_SOUND::LoadSound(section,"snd_empty"	, sndEmptyClick	, m_eSoundEmptyClick	);
 	HUD_SOUND::LoadSound(section,"snd_reload"	, sndReload		, m_eSoundReload		);
+
+	if (pSettings->line_exist(section, "snd_reload_partly")) {
+		HUD_SOUND::LoadSound(section, "snd_reload_partly", sndReloadPartly, m_eSoundReload);
+		sndReloadPartlyExist = true;
+	}
+	
 	if ( pSettings->line_exist( section, "snd_fire_modes" ) )
 		HUD_SOUND::LoadSound( section, "snd_fire_modes", sndFireModes, m_eSoundEmptyClick );
 	if ( pSettings->line_exist( section, "snd_zoom_change" ) )
@@ -542,6 +550,7 @@ void CWeaponMagazined::UpdateSounds	()
 	if (sndShot.playing			()) sndShot.set_position		(get_LastFP());
 	if (sndSilencerShot.playing ()) sndSilencerShot.set_position(get_LastFP());
 	if (sndReload.playing		()) sndReload.set_position		(get_LastFP());
+	if (sndReloadPartly.playing())  sndReloadPartly.set_position(get_LastFP());
 	if (sndEmptyClick.playing	())	sndEmptyClick.set_position	(get_LastFP());
 	if (sndFireModes.playing	())	sndFireModes.set_position	(get_LastFP());
 	if (sndZoomChange.playing	())	sndZoomChange.set_position	(get_LastFP());
@@ -675,6 +684,7 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		case eReload:
 		  ReloadMagazine();
 		  HUD_SOUND::StopSound( sndReload );
+		  HUD_SOUND::StopSound(sndReloadPartly);
 		  SwitchState( eIdle );
 		  break;	// End of reload animation
 		case eHiding:	SwitchState(eHidden);   break;	// End of Hide
@@ -762,7 +772,10 @@ void CWeaponMagazined::switch2_Empty()
 }
 void CWeaponMagazined::PlayReloadSound()
 {
-	PlaySound	(sndReload,get_LastFP());
+	if (IsPartlyReloading() && sndReloadPartlyExist)
+		PlaySound(sndReloadPartly, get_LastFP());
+	else
+		PlaySound(sndReload, get_LastFP());
 }
 
 void CWeaponMagazined::switch2_Reload()
@@ -789,6 +802,7 @@ void CWeaponMagazined::switch2_Hidden()
 	CWeapon::FireEnd();
 
 	HUD_SOUND::StopSound( sndReload );
+	HUD_SOUND::StopSound(sndReloadPartly);
 	if (m_pHUD) m_pHUD->StopCurrentAnimWithoutCallback();
 
 	signal_HideComplete		();
