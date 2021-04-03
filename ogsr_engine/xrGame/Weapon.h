@@ -210,6 +210,9 @@ public:
 	shared_str m_sWpn_silencer_bone;
 	shared_str m_sWpn_launcher_bone;
 
+private:
+	std::vector<shared_str> hidden_bones;
+
 protected:
 	//состояние подключенных аддонов
 	u8 m_flagsAddOnState;
