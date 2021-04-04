@@ -68,11 +68,10 @@ void CWeaponRPG7::OnStateSwitch(u32 S)
 	UpdateMissileVisibility();
 }
 
-bool CWeaponRPG7::UnloadMagazine(bool spawn_ammo)
+void CWeaponRPG7::UnloadMagazine(bool spawn_ammo)
 {
-	bool res = inherited::UnloadMagazine(spawn_ammo);
-	UpdateMissileVisibility();
-	return res;
+	inherited::UnloadMagazine	(spawn_ammo);
+	UpdateMissileVisibility		();
 }
 
 void CWeaponRPG7::ReloadMagazine() 

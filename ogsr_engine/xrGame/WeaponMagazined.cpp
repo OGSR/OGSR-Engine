@@ -19,8 +19,7 @@
 #include "WeaponBinoculars.h"
 #include "WeaponBinocularsVision.h"
 #include "ai_object_location.h"
-#include "WeaponMagazinedWGrenade.h"
-#include "WeaponRPG7.h"
+
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 #include "script_game_object.h"
@@ -232,11 +231,7 @@ bool CWeaponMagazined::TryReload()
 	{
 		bool forActor = ParentIsActor();
 
-		CWeaponAmmo* m_pAmmo{};
-		if (Core.Features.test(xrCore::Feature::hard_ammo_reload) && forActor)
-			m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmoMaxCurr(*m_ammoTypes[m_ammoType], forActor));
-		else
-			m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[m_ammoType], forActor));
+		m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[m_ammoType], forActor));
 
 		if((m_pAmmo || m_set_next_ammoType_on_reload != u32(-1)) || unlimited_ammo() || (IsMisfire() && iAmmoElapsed))
 		{
@@ -246,11 +241,7 @@ bool CWeaponMagazined::TryReload()
 		}
 		else for(u32 i = 0; i < m_ammoTypes.size(); ++i) 
 		{
-			if (Core.Features.test(xrCore::Feature::hard_ammo_reload) && forActor)
-				m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmoMaxCurr(*m_ammoTypes[i], forActor));
-			else
-				m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(*m_ammoTypes[i], forActor));
-
+			m_pAmmo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo( *m_ammoTypes[i], forActor));
 			if(m_pAmmo) 
 			{ 
 				m_set_next_ammoType_on_reload = i; // https://github.com/revolucas/CoC-Xray/pull/5/commits/3c45cad1edb388664efbe3bb20a29f92e2d827ca
@@ -283,7 +274,7 @@ void CWeaponMagazined::OnMagazineEmpty()
 	inherited::OnMagazineEmpty();
 }
 
-bool CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
+void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 {
 	xr_map<LPCSTR, u16> l_ammo;
 	
@@ -308,9 +299,9 @@ bool CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 	
 	if (!spawn_ammo)
-		return false;
+		return;
 
-	bool forActor = ParentIsActor(), ammo_spawned = false;
+	bool forActor = ParentIsActor();
 
 	xr_map<LPCSTR, u16>::iterator l_it;
 	for(l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it) 
@@ -325,16 +316,8 @@ bool CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 				l_it->second = l_it->second - (l_free < l_it->second ? l_free : l_it->second);
 			}
 		}
-		if (l_it->second && !unlimited_ammo()) {
-			SpawnAmmo(l_it->second, l_it->first);
-			ammo_spawned = true;
-		}
+		if(l_it->second && !unlimited_ammo()) SpawnAmmo(l_it->second, l_it->first);
 	}
-
-	if (auto WGL = smart_cast<CWeaponMagazinedWGrenade*>(this); !WGL || !WGL->m_bGrenadeMode)
-		m_flagsAddOnState |= CSE_ALifeItemWeapon::EWeaponAddonState::eWeaponAmmoUnloaded;
-
-	return ammo_spawned;
 }
 
 void CWeaponMagazined::ReloadMagazine()
@@ -390,20 +373,17 @@ void CWeaponMagazined::ReloadMagazine()
 	//нет патронов для перезарядки
 	if(!m_pAmmo && !unlimited_ammo() ) return;
 
-	const bool weapon_unloaded = (m_flagsAddOnState & CSE_ALifeItemWeapon::EWeaponAddonState::eWeaponAmmoUnloaded) != 0;
-	bool ammo_spawned = false;
-
 	//разрядить магазин, если загружаем патронами другого типа
 	if (Core.Features.test(xrCore::Feature::hard_ammo_reload)) {
 		if (!m_bLockType && !m_magazine.empty())
 			if ((ParentIsActor() && !unlimited_ammo()) || (!m_pAmmo || xr_strcmp(m_pAmmo->cNameSect(), *m_magazine.back().m_ammoSect)))
-				ammo_spawned = UnloadMagazine();
+				UnloadMagazine();
 	}
 	else {
 		if (!m_bLockType && !m_magazine.empty() &&
 			(!m_pAmmo || xr_strcmp(m_pAmmo->cNameSect(),
 				*m_magazine.back().m_ammoSect)))
-			ammo_spawned = UnloadMagazine();
+			UnloadMagazine();
 	}
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
@@ -425,12 +405,11 @@ void CWeaponMagazined::ReloadMagazine()
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
 	//выкинуть коробку патронов, если она пустая
-	if(m_pAmmo && !m_pAmmo->m_boxCurr && OnServer() && ( !ParentIsActor() || (ammo_spawned || weapon_unloaded || smart_cast<CWeaponRPG7*>(this))))
-		m_pAmmo->DestroyObject(); //SetDropManual(TRUE);
+	if(m_pAmmo && !m_pAmmo->m_boxCurr && OnServer()) 
+		m_pAmmo->SetDropManual(TRUE);
 
 	if (Core.Features.test(xrCore::Feature::hard_ammo_reload) && ParentIsActor() && m_pAmmo ) {
-	  // KRodin: чтобы он только одну пачку заряжал, а не сразу несколько, если максимальный объем позволяет
-	  /*int box_size = m_pAmmo->m_boxSize;
+          int box_size = m_pAmmo->m_boxSize;
 	  if ( !m_bLockType && iMagazineSize > iAmmoElapsed && iMagazineSize > box_size ) {
 	    m_bLockType = true;
 	    int need_ammo = iMagazineSize - box_size;
@@ -441,9 +420,9 @@ void CWeaponMagazined::ReloadMagazine()
 	      need_ammo -= box_size;
 	    }
 	    m_bLockType = false;
-	  }*/
+	  }
 	}
-	else if (iMagazineSize > iAmmoElapsed && ParentIsActor())
+	else if (iMagazineSize > iAmmoElapsed) 
 	{ 
 		m_bLockType = true; 
 		ReloadMagazine(); 
@@ -451,9 +430,6 @@ void CWeaponMagazined::ReloadMagazine()
 	}
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
-
-	if (auto WGL = smart_cast<CWeaponMagazinedWGrenade*>(this); !WGL || !WGL->m_bGrenadeMode)
-		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::EWeaponAddonState::eWeaponAmmoUnloaded;
 }
 
 void CWeaponMagazined::OnStateSwitch	(u32 S)
