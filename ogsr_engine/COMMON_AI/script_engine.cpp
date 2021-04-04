@@ -87,8 +87,7 @@ int auto_load(lua_State *L)
 }
 
 
-using script_list_type = std::map<std::string, std::string>;
-static script_list_type xray_scripts;
+static string_unordered_map<shared_str, shared_str> xray_scripts;
 
 void CScriptEngine::setup_auto_load()
 {
@@ -190,7 +189,7 @@ bool CScriptEngine::process_file_if_exists( const char* file_name, bool warn_if_
     return false;
   }
 
-  script_list_type::iterator it = xray_scripts.find( *file_name ? ( strcmp( file_name, GlobalNamespace ) == 0 ? "_g" : file_name ) : "_g" );
+  auto it = xray_scripts.find( *file_name ? ( strcmp( file_name, GlobalNamespace ) == 0 ? "_g" : file_name ) : "_g" );
   if ( it != xray_scripts.end() ) {
     MsgDbg( "* loading script %s.script", file_name );
     m_reload_modules = false;
@@ -220,7 +219,7 @@ const char* ExtractFileName(const char* fname)
 	return result;
 }
 
-void CollectScriptFiles(script_list_type &map, const char* path)
+void CollectScriptFiles(decltype(xray_scripts)& map, const char* path)
 {
 	if (!strlen(path))
 		return;
