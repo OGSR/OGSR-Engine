@@ -1,5 +1,3 @@
-#ifndef xr_sharedH
-#define xr_sharedH
 #pragma once
 
 class XRCORE_API shared_value
@@ -12,10 +10,7 @@ public:
 template <class T>
 class shared_container
 {
-protected:
-	typedef xr_map< shared_str,T* >			SharedMap;
-	typedef typename SharedMap::iterator	SharedMapIt;
-	SharedMap				container;
+	string_unordered_map<shared_str, T*> container;
 public:
 							shared_container	(){}
 	virtual					~shared_container	(){VERIFY(container.empty());}
@@ -23,7 +18,7 @@ public:
 	T*						dock				(shared_str key, const _on_new& p)
 	{
 		T*	result				= 0	;
-		SharedMapIt	I			= container.find	(key);
+		auto I = container.find(key);
 		if (I!=container.end())	result = I->second;
 		if (0==result)			{
 			result				= xr_new<T>();
@@ -35,8 +30,8 @@ public:
 	}
 	virtual void			clean				(bool force_destroy)
 	{
-		SharedMapIt it			= container.begin();
-		SharedMapIt _E			= container.end();
+		auto it = container.begin();
+		auto _E = container.end();
 		if (force_destroy){
 			for (; it!=_E; it++){
 				T*	sv			= it->second;
@@ -47,8 +42,8 @@ public:
 			for (; it!=_E; )	{
 				T*	sv			= it->second;
 				if (0==sv->m_ref_cnt){
-					SharedMapIt	i_current	= it;
-					SharedMapIt	i_next		= ++it;
+					auto i_current = it;
+					auto i_next = ++it;
 					xr_delete			(sv);
 					container.erase		(i_current);
 					it					= i_next;
@@ -81,5 +76,3 @@ public:
 	template <typename _on_new>
 	void					create				(shared_str key, shared_container<T>* container, const _on_new& p){	T* v = container->dock(key,p); if (0!=v) v->m_ref_cnt++; destroy(); p_ = v;	}
 };
-
-#endif
