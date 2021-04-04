@@ -1,7 +1,9 @@
 <p align="center">
   <a href="https://github.com/OGSR/OGSR-Engine/releases/latest"><img src="https://img.shields.io/github/release/OGSR/OGSR-Engine.svg?style=flat-square" alt="GitHub release"></a>
   <a href="https://github.com/OGSR/OGSR-Engine/releases/latest"><img src="https://img.shields.io/github/downloads/OGSR/OGSR-Engine/total.svg?style=flat-square" alt="Total downloads"></a>
-  <a href="https://github.com/OGSR/OGSR-Engine/actions?query=branch%3Adev+event%3Apush+workflow%3A%22Main+Workflow%22"><img src="https://img.shields.io/github/workflow/status/OGSR/OGSR-Engine/Main%20Workflow?label=build&logo=github&style=flat-square" alt="Build Status"></a>
+  <a href="https://github.com/OGSR/OGSR-Engine/actions?query=event:push+workflow:%22Main+Workflow%22"><img src="https://img.shields.io/github/workflow/status/OGSR/OGSR-Engine/Main%20Workflow?label=build&logo=github&style=flat-square" alt="Build Status"></a>
+<p align="center">
+  <a href="https://discord.gg/Q6QDxbNcfR"><img src="https://img.shields.io/discord/508530704674455562.svg?style=for-the-badge&label=DISCORD&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)" alt="Discord"></a>
 
 <h3 align="center"> <a href="#english"><b>English</b></a>/<a href="#русский"><b>Русский</b></a></h3>
 

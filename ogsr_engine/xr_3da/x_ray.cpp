@@ -461,28 +461,6 @@ LPCSTR _GetFontTexName (LPCSTR section)
 	return pSettings->r_string(section,tex_names[def_idx]);
 }
 
-void _InitializeFont(CGameFont*& F, LPCSTR section, u32 flags)
-{
-	LPCSTR font_tex_name = _GetFontTexName(section);
-	R_ASSERT(font_tex_name);
-
-	LPCSTR sh_name = pSettings->r_string(section, "shader");
-	if (!F) {
-		F = xr_new<CGameFont>(sh_name, font_tex_name, flags);
-	}
-	else
-		F->Initialize(sh_name, font_tex_name);
-
-	if (pSettings->line_exist(section, "size")) {
-		float sz = pSettings->r_float(section, "size");
-		if (flags&CGameFont::fsDeviceIndependent)	F->SetHeightI(sz);
-		else										F->SetHeight(sz);
-	}
-	if (pSettings->line_exist(section, "interval"))
-		F->SetInterval(pSettings->r_fvector2(section, "interval"));
-
-}
-
 CApplication::CApplication()
 	: loadingScreen(nullptr)
 {
@@ -498,9 +476,6 @@ CApplication::CApplication()
 	Level_Current				= 0;
 	Level_Scan					( );
 
-	// Font
-	pFontSystem					= NULL;
-
 	// Register us
 	Device.seqFrame.Add			(this, REG_PRIORITY_HIGH+1000);
 	
@@ -512,9 +487,6 @@ CApplication::CApplication()
 CApplication::~CApplication()
 {
 	Console->Hide				( );
-
-	// font
-	xr_delete					( pFontSystem		);
 
 	Device.seqFrameMT.Remove	(&SoundProcessor);
 	Device.seqFrame.Remove		(&SoundProcessor);
@@ -593,8 +565,6 @@ void CApplication::LoadBegin()
 	if (1 == ll_dwReference) {
 
 		g_appLoaded = FALSE;
-
-		_InitializeFont(pFontSystem, "ui_font_letterica18_russian", 0);
 
 		phase_timer.Start();
 		load_stage = 0;

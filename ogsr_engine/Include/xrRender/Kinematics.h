@@ -20,7 +20,6 @@ struct SEnumVerticesCallback;
 class IKinematics
 {
 public:
-	typedef xr_vector<std::pair<shared_str,u16> >	accel;
 	struct	pick_result
 	{
 		Fvector	normal;
@@ -35,12 +34,11 @@ public:
 	virtual		void					EnumBoneVertices	(SEnumVerticesCallback &C, u16 bone_id) = 0;
 
 	// Low level interface
-	virtual u16					_BCL	LL_BoneID(LPCSTR  B) = 0;
-	virtual u16					_BCL	LL_BoneID(const shared_str& B) = 0;
-	virtual LPCSTR				_BCL	LL_BoneName_dbg(u16 ID) = 0;
+	virtual u16 LL_BoneID(const char* B) const = 0;
+	virtual u16 LL_BoneID(const shared_str& B) const = 0;
+	virtual const char* LL_BoneName_dbg(const u16 ID) const = 0;
 
 	virtual CInifile*			_BCL	LL_UserData() = 0;
-	virtual accel*						LL_Bones() = 0;
 
 	virtual ICF CBoneInstance&	_BCL	LL_GetBoneInstance(u16 bone_id) = 0;
 

@@ -535,7 +535,6 @@ public:
 };
 
 
-#ifndef DEDICATED_SERVER
 class CCC_soundDevice : public CCC_Token
 {
 	typedef CCC_Token inherited;
@@ -571,40 +570,19 @@ public:
 		inherited::Save			(F);
 	}
 };
-#endif
-//-----------------------------------------------------------------------
-class CCC_ExclusiveMode : public IConsole_Command {
-private:
-	typedef IConsole_Command inherited;
 
+
+class CCC_ExclusiveMode : public CCC_Mask {
+	using inherited = CCC_Mask;
 public:
-					CCC_ExclusiveMode	(LPCSTR N) :
-		inherited	(N)
-	{
-	}
+	CCC_ExclusiveMode(const char* N, Flags32* V, u32 M) : inherited(N, V, M) {}
 
-	virtual void	Execute				(LPCSTR args)
-	{
-		bool		value = false;
-		if (!xr_strcmp(args,"on"))
-			value	= true;
-		else if (!xr_strcmp(args,"off"))
-			value	= false;
-		else if (!xr_strcmp(args,"true"))
-			value	= true;
-		else if (!xr_strcmp(args,"false"))
-			value	= false;
-		else if (!xr_strcmp(args,"1"))
-			value	= true;
-		else if (!xr_strcmp(args,"0"))
-			value	= false;
-		else InvalidSyntax();
-		
-		pInput->exclusive_mode	(value);
-	}
+	void Execute(const char* args) override {
+		inherited::Execute(args);
 
-	virtual void	Save	(IWriter *F)	
-	{
+		const bool val = GetValue();
+		if (val != pInput->exclusive_mode())
+			pInput->exclusive_mode(val);
 	}
 };
 
@@ -771,7 +749,7 @@ void CCC_Register()
 	CMD1(CCC_DumpOpenFiles,		"dump_open_files");
 #endif
 
-	CMD1(CCC_ExclusiveMode, "input_exclusive_mode");
+	CMD3(CCC_ExclusiveMode, "input_exclusive_mode", &psDeviceFlags, rsExclusiveMode);
 
 	//extern int g_svTextConsoleUpdateRate;
 	//CMD4(CCC_Integer, "sv_console_update_rate", &g_svTextConsoleUpdateRate, 1, 100);

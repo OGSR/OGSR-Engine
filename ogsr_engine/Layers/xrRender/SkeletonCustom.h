@@ -108,8 +108,7 @@ protected:
 	u16							iRoot;			// Root bone index
 
 	// Fast search
-	accel*						bone_map_N;		// bones  associations	(shared)	- sorted by name
-	accel*						bone_map_P;		// bones  associations	(shared)	- sorted by name-pointer
+	string_unordered_map<shared_str, u16> bone_map_N; // bones associations
 
 	BOOL						Update_Visibility		;
 	u32							UCalc_Time				;
@@ -145,12 +144,11 @@ public:
 	virtual						~CKinematics		();
 
 	// Low level interface
-				u16				_BCL	LL_BoneID			(LPCSTR  B);
-				u16				_BCL	LL_BoneID			(const shared_str& B);
-				LPCSTR			_BCL	LL_BoneName_dbg		(u16 ID);
+	u16 LL_BoneID(const char* B) const override;
+	u16 LL_BoneID(const shared_str& B) const override;
+	const char* LL_BoneName_dbg(const u16 ID) const override;
 
 				CInifile*		_BCL	LL_UserData			()						{return pUserData;}
-				accel*					LL_Bones			()						{return bone_map_N;}
 	ICF			CBoneInstance&	_BCL	LL_GetBoneInstance	(u16 bone_id)			{	VERIFY(bone_id<LL_BoneCount()); VERIFY(bone_instances); return bone_instances[bone_id];	}
 	ICF const	CBoneInstance&	_BCL	LL_GetBoneInstance	(u16 bone_id) const		{	VERIFY(bone_id<LL_BoneCount()); VERIFY(bone_instances); return bone_instances[bone_id];	}
 	CBoneData&					_BCL	LL_GetData			(u16 bone_id)

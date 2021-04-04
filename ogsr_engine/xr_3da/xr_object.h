@@ -176,7 +176,9 @@ public:
 	// Position stack
 	IC u32								ps_Size				()			const	{ return PositionStack.size(); }
 	virtual	SavedPosition				ps_Element			(u32 ID)	const;
-	virtual void						ForceTransform(const Fmatrix& m, const bool from_demo_record = false) {}
+	
+	virtual void ForceTransform(const Fmatrix& m) = 0;
+	virtual void ForceTransformAndDirection(const Fmatrix& m) = 0;
 
 	// HUD
 	virtual void						OnHUDDraw			(CCustomHUD* hud)	{};

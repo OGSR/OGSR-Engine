@@ -1,60 +1,64 @@
-// CDemoRecord.h: interface for the CDemoRecord class.
-//
-//////////////////////////////////////////////////////////////////////
-
 #pragma once
 
 #include "iinputreceiver.h"
 #include "effector.h"
 
-class ENGINE_API CDemoRecord :
-	public CEffectorCam,
-	public IInputReceiver
+class ENGINE_API CDemoRecord : public CEffectorCam, public IInputReceiver, public pureRender
 {
-private:
-	int			iCount;
-	IWriter*	file;
-	Fvector		m_HPB;
-	Fvector		m_Position;
-	Fmatrix		m_Camera;
-	u32			m_Stage{};
+	struct force_position {
+		bool set_position;
+		Fvector p;
+	} g_position{};
 
-	Fvector		m_vT;
-    Fvector		m_vR;
-	Fvector		m_vVelocity;
-	Fvector		m_vAngularVelocity;
+	int iCount;
+	IWriter* file;
+	Fvector m_HPB;
+	Fvector m_Position;
+	Fmatrix m_Camera;
+	u32 m_Stage;
 
-	BOOL		m_bMakeCubeMap;
-	BOOL		m_bMakeScreenshot;
-	BOOL		m_bMakeLevelMap;
-	BOOL		m_bOverlapped;
+	Fvector m_vT;
+	Fvector m_vR;
+	Fvector m_vVelocity;
+	Fvector m_vAngularVelocity;
 
-	float		m_fSpeed0;
-	float		m_fSpeed1;
-	float		m_fSpeed2;
-	float		m_fSpeed3;
-	float		m_fAngSpeed0;
-	float		m_fAngSpeed1;
-	float		m_fAngSpeed2;
-	float		m_fAngSpeed3;
-	bool		m_bShowInfo;
+	bool m_bMakeCubeMap;
+	bool m_bMakeScreenshot;
+	int m_iLMScreenshotFragment;
+	bool m_bMakeLevelMap;
 
-	void		MakeCubeMapFace			(Fvector &D, Fvector &N);
-	void		MakeLevelMapProcess		();
-	void		MakeScreenshotFace		();
-	void		RecordKey				();
-	void		MakeCubemap				();
-	void		MakeScreenshot			();
-	void		MakeLevelMapScreenshot	();
+	float m_fSpeed0;
+	float m_fSpeed1;
+	float m_fSpeed2;
+	float m_fSpeed3;
+	float m_fAngSpeed0;
+	float m_fAngSpeed1;
+	float m_fAngSpeed2;
+	float m_fAngSpeed3;
+
+	bool m_b_redirect_input_to_level;
+
+	std::unique_ptr<CGameFont> pFontSystem;
+
+	void MakeCubeMapFace(Fvector& D, Fvector& N);
+	void MakeLevelMapProcess();
+	void MakeScreenshotFace();
+	void RecordKey();
+	void MakeCubemap();
+	void MakeScreenshot();
+	void MakeLevelMapScreenshot(bool bHQ);
+
 public:
-				CDemoRecord				(const char *name, float life_time=60*60*1000);
-	virtual		~CDemoRecord();
+	CDemoRecord(const char* name, float life_time = 60 * 60 * 1000);
+	virtual ~CDemoRecord();
 
-	virtual void IR_OnKeyboardPress		(int dik);
-	virtual void IR_OnKeyboardHold		(int dik);
-	virtual void IR_OnMouseMove			(int dx, int dy);
-	virtual void IR_OnMouseHold			(int btn);
-	
-	virtual BOOL Overlapped				(){return m_bOverlapped;}
-	virtual BOOL ProcessCam(SCamEffectorInfo& info);
+	void IR_OnKeyboardPress(int dik) override;
+	void IR_OnKeyboardHold(int dik) override;
+	void IR_OnMouseMove(int dx, int dy) override;
+	void IR_OnMouseHold(int btn) override;
+	BOOL ProcessCam(SCamEffectorInfo& info) override;
+	void OnRender() override { if (pFontSystem) pFontSystem->OnRender(); }
+
+	//static void SetGlobalPosition(const Fvector& p) { g_position.p.set(p), g_position.set_position = true; }
+	//static void GetGlobalPosition(Fvector& p) { p.set(g_position.p); }
 };

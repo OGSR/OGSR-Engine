@@ -9,7 +9,7 @@ struct 	v2p
 //	Igor: for additional depth dest
 	float4 tctexgen	: TEXCOORD1;
 #endif	//	USE_SOFT_PARTICLES
-
+	float   fog : FOG;			// fog
 	float4 hpos	: SV_Position;
 };
 
@@ -19,27 +19,10 @@ struct 	v2p
 Texture2D s_distort;
 float4 main ( v2p I ) : SV_Target
 {
-//	float4	distort	= tex2D		(s_distort,I.tc0);
-	float4	distort	= s_distort.Sample( smp_linear, I.tc0 );
-	float    factor	= distort.a * dot(I.c.rgb,0.33h);	
-/*
-#ifdef	USE_SOFT_PARTICLES
-	float2	zero = float2( 0.5, 0.5);
-	float	alphaDistort;
-	float2 tcProj = I.txtexgen.xy / I.texgen.w;
-#ifdef GBUFFER_OPTIMIZATION
-	gbuffer_data gbd = gbuffer_load_data( tcProj, I.HPos );
-#else
-	gbuffer_data gbd = gbuffer_load_data( tcProj );
-#endif
-	//float4 _P = tex2Dproj( s_position, I.tctexgen);
-	float4 _P = float4( gbd.P, gbd.mtl );
-	float spaceDepth = _P.z - I.tctexgen.z;
-	if (spaceDepth < -0.1h ) spaceDepth = 100000.0h; //  Skybox doesn't draw into position buffer
-	alphaDistort = saturate(1.3*spaceDepth);
-//	alphaDistort = 0;
-	distort.xy = lerp  ( zero, distort.xy, alphaDistort);
-#endif	//	USE_SOFT_PARTICLES
-*/
-	return	float4	(distort.rgb,factor);
+	float4	distort = s_distort.Sample(smp_linear, I.tc0);
+	float    factor = distort.a * dot(I.c.rgb,0.33h);
+	float4	result = float4	(distort.rgb, factor);
+
+	result.a *= I.fog*I.fog; // ForserX: Port Skyloader fog fix
+	return result;
 }

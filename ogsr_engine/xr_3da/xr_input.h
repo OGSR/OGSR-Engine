@@ -86,6 +86,7 @@ public:
 	IInputReceiver*				CurrentIR					();
 
 	void exclusive_mode(const bool exclusive);
+	bool exclusive_mode() const { return is_exclusive_mode; }
 
 public:
 	bool get_dik_name(int dik, LPSTR dest, int dest_sz);

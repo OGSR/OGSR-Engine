@@ -273,6 +273,10 @@ public:
 	void ShutDown							(void);
 
 	void time_factor(const float& time_factor); //--#SM+#--
+	inline const float time_factor() const {
+		VERIFY(Timer.time_factor() == TimerGlobal.time_factor());
+		return (Timer.time_factor());
+	}
 
 private:
 	// Multi-threading

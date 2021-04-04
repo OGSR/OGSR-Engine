@@ -640,8 +640,11 @@ virtual	bool				can_validate_position_on_spawn	(){return false;}
 	//////////////////////////////////////////////////////////////////////////
 public:
 			void			g_Physics		(Fvector& accel, float jump, float dt);
-			void			ForceTransform	(const Fmatrix &m, const bool from_demo_record = false) override;
-			void			SetPhPosition	(const Fmatrix& pos);
+			void			SetPhPosition(const Fmatrix& pos);
+
+	void ForceTransform(const Fmatrix& m) override;
+	void ForceTransformAndDirection(const Fmatrix& m) override;
+
 	virtual void			PH_B_CrPr		(); // actions & operations before physic correction-prediction steps
 	virtual void			PH_I_CrPr		(); // actions & operations after correction before prediction steps
 	virtual void			PH_A_CrPr		(); // actions & operations after phisic correction-prediction steps

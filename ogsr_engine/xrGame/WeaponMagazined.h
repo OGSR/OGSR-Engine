@@ -25,7 +25,8 @@ protected:
 	HUD_SOUND		sndHide;
 	HUD_SOUND		sndShot;
 	HUD_SOUND		sndEmptyClick;
-	HUD_SOUND		sndReload;
+	HUD_SOUND		sndReload, sndReloadPartly;
+	bool sndReloadPartlyExist{};
 	HUD_SOUND		sndFireModes;
 	HUD_SOUND		sndZoomChange;
 	//звук текущего выстрела
