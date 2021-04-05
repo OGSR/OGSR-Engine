@@ -9,7 +9,7 @@ class CClimableObject: public CPhysicsShellHolder
 {
 	typedef	CPhysicsShellHolder		inherited;
 	CPHLeaderGeomShell* m_pStaticShell;
-	Fobb				m_box;
+	Fobb				m_box{};
 	Fvector				m_axis;
 	Fvector				m_side;
 	Fvector				m_norm;

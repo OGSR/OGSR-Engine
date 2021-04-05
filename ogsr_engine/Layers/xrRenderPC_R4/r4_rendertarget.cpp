@@ -837,7 +837,7 @@ CRenderTarget::CRenderTarget		()
 			//t_material->surface_set		(t_material_surf);
 			//	Use DXGI_FORMAT_R8G8_UNORM
 
-			u16	tempData[TEX_material_LdotN*TEX_material_LdotH*TEX_material_Count];
+			constexpr u16 tempData[TEX_material_LdotN * TEX_material_LdotH * TEX_material_Count]{};
 
 			D3D_TEXTURE3D_DESC	desc;
 			desc.Width = TEX_material_LdotN;

@@ -24,20 +24,20 @@ void CIKFoot::Create(IKinematics* K, LPCSTR section, u16 bones[4])
 
     /// defaults
     m_ref_bone = 2;
-    if (m_ref_bone == 2)
-    {
+    //if (m_ref_bone == 2) //Эти условия бессмысленны из-за строки выше.
+    //{
         m_foot_normal.v.set(1, 0, 0); // 2
         m_foot_normal.bone = 2;
         m_foot_direction.v.set(0, 0, 1); // 2
         m_foot_direction.bone = 2;
-    }
+    /*}
     else
     {
         m_foot_normal.v.set(0, 0, -1); // 3
         m_foot_normal.bone = 3;
         m_foot_direction.v.set(1, 0, 0); // 3
         m_foot_direction.bone = 3;
-    }
+    }*/
 
     //	m_foot_normal.v			.set( 1, 0, 0 );//2
     //	m_foot_normal.bone		= 2;
@@ -406,6 +406,7 @@ void CIKFoot::SetFootGeom(ik_foot_geom& fg, const Fmatrix& ref_bone, const Fmatr
 
     Fvector heel;
     Fvector pos_hill;
+#pragma todo("KRodin: в строке ниже происходит какая-то черная магия, на которую естественно ругается PVS, я не представляю как это работает, и как должно работать, и что будет, если этот код изменить. Может быть поставить просто Fmatrix{} вместо foot?")
     Fmatrix foot = (Fmatrix().mul_43(object_matrix, ref_bone_to_foot(foot, ref_bone)));
     foot.transform_tiny(pos_hill, HeelPosition(heel));
     const Fvector v_m = Fvector().add(pos_toe, pos_hill).mul(0.5f);

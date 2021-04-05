@@ -366,42 +366,11 @@ int CScriptVarsTable::assign(lua_State *L,  int index)
 
 void CScriptVarsTable::get(lua_State *L, LPCSTR k, bool unpack)
 {
-	shared_str key;
-	shared_str from;
-	SCRIPT_VARS_MAP::iterator it;
-	try
-	{
-		R_ASSERT2(this,		"CScriptVarsTable::get this unassigned!");
-		R_ASSERT2(k,		"CScriptVarsTable::get key unassigned!");
-		
-
-/*
-		if (IsDebuggerPresent())
-		{			
-			LPCSTR name = this->name();			
-			from = get_lua_traceback(L, 2);
-			string4096 msg;
-			sprintf_s (msg, 4096, "$#CONTEXT: CScriptVarsTable::get this = 0x%p   name = %s (ref_count=%d), key = %s, from\n %s ",				    
-					 				(void*)this, name ? name : "NULL", this->ref_count, k ? k : "NULL", *from);
-			MsgCB(msg); // WARN: имплементация этой функции должна быть из последней ревизии с 4-кебибайтными буферами
-			
-		}
-*/
-		key = k;
-	 	it = map().find(key);
-	}
-	catch (...)
-	{
-		Msg("!EXCEPTION: probably using CScriptVarsTable object after destroying from. ");
-		if (from.size()) Log(*from);
-		//MsgCB("#DUMP_CONTEXT");
-		//log_script_error("Exception catched in CScriptVarsTable::get ");
-	}
+	auto it = map().find(k);
 
 	if (it != map().end())
 	{
 		SCRIPT_VAR &sv = it->second;
-		void *p;
 
 		switch (sv.eff_type())
 		{
@@ -427,11 +396,11 @@ void CScriptVarsTable::get(lua_State *L, LPCSTR k, bool unpack)
 			if (luaL_loadbuffer(L, (LPCSTR)sv.data, sv.size, k) != 0)
 				lua_pushnil (L);
 			break;
-		case LUA_TUSERDATA:
-			p = lua_newuserdata(L, sv.size);
+		case LUA_TUSERDATA: {
+			void* p = lua_newuserdata(L, sv.size);
 			memcpy(p, sv.data, sv.size);
-			break;			
-
+			break;
+		}
 		case LUA_TNETPACKET:
 			convert_to_lua<NET_Packet*>(L, sv.P); 
 			break;

@@ -5,9 +5,6 @@
 #pragma once
 
 class XRCORE_API EFS_Utils {
-	DEFINE_MAP	(xr_string,void*,HANDLEMap,HANDLEPairIt);
-
-    HANDLEMap 	m_LockFiles;
 public:
 				EFS_Utils		();
 	virtual 	~EFS_Utils		();

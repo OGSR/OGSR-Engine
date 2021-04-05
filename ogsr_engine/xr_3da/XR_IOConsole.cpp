@@ -279,14 +279,15 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
 	default:
 		char symbol = pInput->DikToChar(dik);
 		if (symbol) {
-			auto ptr = (char*)_alloca(2 * sizeof(char));
-			ptr[0] = symbol; ptr[1] = 0;
+			const char ptr[]{ symbol, 0 };
 			strcat_s(editor, ptr);
 		}
 		break;
 	}
-	u32	clip	= MAX_LEN-8;
+
+	constexpr u32 clip = MAX_LEN - 8;
 	if	(xr_strlen(editor)>=clip) editor[clip-1]=0;
+
 	bRepeat		= false;
 	rep_time	= 0;
 }

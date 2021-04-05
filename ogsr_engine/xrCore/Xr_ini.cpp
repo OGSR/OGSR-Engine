@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #include "fs_internal.h"
 
 XRCORE_API CInifile *pSettings = nullptr;
@@ -59,8 +58,7 @@ XRCORE_API void _decorate( LPSTR dest, LPCSTR src ) {
 
 
 BOOL CInifile::Sect::line_exist( LPCSTR L, LPCSTR* val ) {
-  shared_str s( L );
-  const auto A = Data.find( s );
+  const auto A = Data.find( L );
   if (A != Data.end() ){
     if ( val ) *val = *A->second;
     return TRUE;
@@ -72,8 +70,7 @@ LPCSTR CInifile::Sect::r_string( LPCSTR L ) {
 	if (!L || !strlen(L)) //--#SM+#-- [fix for one of "xrDebug - Invalid handler" error log]
 		Msg("!![ERROR] CInifile::Sect::r_string: S = [%s], L = [%s]", Name.c_str(), L);
 
-	shared_str k(L);
-	const auto A = Data.find(k);
+	const auto A = Data.find(L);
 	if (A != Data.end())
 		return A->second.c_str();
 	else
@@ -93,14 +90,14 @@ u32 CInifile::Sect::r_u32( LPCSTR L ) {
 
 Fvector3 CInifile::Sect::r_fvector3( LPCSTR L ) {
 	LPCSTR   C = r_string(L);
-	Fvector3 V = { 0.f, 0.f, 0.f };
+	Fvector3 V{};
 	sscanf(C, "%f,%f,%f", &V.x, &V.y, &V.z);
 	return V;
 }
 
 Ivector2 CInifile::Sect::r_ivector2( LPCSTR L ) {
 	LPCSTR   C = r_string(L);
-	Ivector2 V = { 0, 0 };
+	Ivector2 V{};
 	sscanf(C, "%d,%d", &V.x, &V.y);
 	return V;
 }
@@ -313,17 +310,14 @@ bool CInifile::save_as( LPCSTR new_fname ) {
 
 
 BOOL CInifile::section_exist( LPCSTR S ) {
-  shared_str k( S );
-  const auto I = DATA.find( k );
-  return I != DATA.end();
+  return DATA.find(S) != DATA.end();
 }
 
 
 BOOL CInifile::line_exist( LPCSTR S, LPCSTR L ) {
   if ( !section_exist( S ) ) return FALSE;
   Sect&   I = r_section( S );
-  shared_str k( L );
-  const auto A = I.Data.find( k );
+  const auto A = I.Data.find( L );
   return A != I.Data.end();
 }
 
@@ -370,8 +364,7 @@ LPCSTR CInifile::r_string ( LPCSTR S, LPCSTR L ) {
     Msg( "!![ERROR] CInifile::r_string: S = [%s], L = [%s]", S, L );
 
   Sect&   I = r_section( S );
-  shared_str k( L );
-  const auto A = I.Data.find( k );
+  const auto A = I.Data.find( L );
   if ( A != I.Data.end() )
     return A->second.c_str();
   else
@@ -437,7 +430,7 @@ float CInifile::r_float ( LPCSTR S, LPCSTR L ) {
 
 Fcolor CInifile::r_fcolor ( LPCSTR S, LPCSTR L ) {
   LPCSTR C = r_string( S, L );
-  Fcolor V = { 0, 0, 0, 0 };
+  Fcolor V{};
   sscanf( C, "%f,%f,%f,%f", &V.r, &V.g, &V.b, &V.a );
   return V;
 }
@@ -453,7 +446,7 @@ u32 CInifile::r_color ( LPCSTR S, LPCSTR L ) {
 
 Ivector2 CInifile::r_ivector2 ( LPCSTR S, LPCSTR L ) {
   LPCSTR   C = r_string( S, L );
-  Ivector2 V = { 0, 0 };
+  Ivector2 V{};
   sscanf( C, "%d,%d", &V.x, &V.y );
   return V;
 }
@@ -461,7 +454,7 @@ Ivector2 CInifile::r_ivector2 ( LPCSTR S, LPCSTR L ) {
 
 Ivector3 CInifile::r_ivector3 ( LPCSTR S, LPCSTR L ) {
   LPCSTR  C = r_string( S, L );
-  Ivector V = { 0, 0, 0 };
+  Ivector V{};
   sscanf( C, "%d,%d,%d", &V.x, &V.y, &V.z );
   return V;
 }
@@ -469,7 +462,7 @@ Ivector3 CInifile::r_ivector3 ( LPCSTR S, LPCSTR L ) {
 
 Ivector4 CInifile::r_ivector4 ( LPCSTR S, LPCSTR L ) {
   LPCSTR   C = r_string( S, L );
-  Ivector4 V = { 0, 0, 0, 0 };
+  Ivector4 V{};
   sscanf( C, "%d,%d,%d,%d", &V.x, &V.y, &V.z, &V.w );
   return V;
 }
@@ -477,7 +470,7 @@ Ivector4 CInifile::r_ivector4 ( LPCSTR S, LPCSTR L ) {
 
 Fvector2 CInifile::r_fvector2 ( LPCSTR S, LPCSTR L ) {
   LPCSTR   C = r_string( S, L );
-  Fvector2 V = { 0.f, 0.f };
+  Fvector2 V{};
   sscanf( C, "%f,%f", &V.x, &V.y );
   return V;
 }
@@ -485,7 +478,7 @@ Fvector2 CInifile::r_fvector2 ( LPCSTR S, LPCSTR L ) {
 
 Fvector3 CInifile::r_fvector3 ( LPCSTR S, LPCSTR L ) {
   LPCSTR   C = r_string( S, L );
-  Fvector3 V = { 0.f, 0.f, 0.f };
+  Fvector3 V{};
   sscanf( C, "%f,%f,%f", &V.x, &V.y, &V.z );
   return V;
 }
@@ -493,7 +486,7 @@ Fvector3 CInifile::r_fvector3 ( LPCSTR S, LPCSTR L ) {
 
 Fvector4 CInifile::r_fvector4 ( LPCSTR S, LPCSTR L ) {
   LPCSTR   C = r_string( S, L );
-  Fvector4 V = { 0.f, 0.f, 0.f, 0.f };
+  Fvector4 V{};
   sscanf( C, "%f,%f,%f,%f", &V.x, &V.y, &V.z, &V.w );
   return V;
 }
@@ -685,8 +678,7 @@ void CInifile::remove_line( LPCSTR S, LPCSTR L ) {
 
   if ( line_exist( S, L ) ) {
     Sect& data = r_section( S );
-    shared_str k( L );
-    auto A = data.Data.find( k );
+    auto A = data.Data.find( L );
     R_ASSERT( A != data.Data.end() );
     data.Data.erase( A );
     auto found = std::find_if(
@@ -705,8 +697,7 @@ void CInifile::remove_section( LPCSTR S ) {
   R_ASSERT( !bReadOnly );
 
   if ( section_exist( S ) ) {
-    shared_str k( S );
-    const auto I = DATA.find( k );
+    const auto I = DATA.find( S );
     R_ASSERT( I != DATA.end() );
     DATA.erase( I );
   }

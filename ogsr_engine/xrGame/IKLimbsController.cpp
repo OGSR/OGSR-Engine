@@ -43,11 +43,9 @@ void CIKLimbsController::Create(CGameObject* O)
 
 void CIKLimbsController::LimbSetup()
 {
-    _bone_chains.push_back(CIKLimb());
-
     IKinematicsAnimated* skeleton_animated = m_object->Visual()->dcast_PKinematicsAnimated();
 
-    _bone_chains.back().Create((u16)_bone_chains.size() - 1, skeleton_animated, true);
+    _bone_chains.emplace_back().Create((u16)_bone_chains.size() - 1, skeleton_animated, true);
 }
 
 void CIKLimbsController::LimbCalculate(SCalculateData& cd)

@@ -25,7 +25,7 @@ protected:
 	float m_MinPos;
 	float m_MaxPos;
 
-	float m_CurrentLength;
+	float m_CurrentLength{};
 
 	bool m_bBackgroundPresent;
 	Fvector2 m_BackgroundOffset;

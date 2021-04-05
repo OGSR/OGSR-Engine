@@ -5,6 +5,7 @@
 #include <sstream> //для std::stringstream
 #include <fstream> //для std::ofstream
 #include <iomanip> //для std::strftime
+#include <array> //для std::array
 
 static LogCallback LogCB = nullptr;
 std::vector<std::string> LogFile;
@@ -63,7 +64,7 @@ void Log(std::stringstream&& ss)
 
 	bool not_first_line = false;
 
-	static const std::vector<char> color_codes{ '-', '~', '!', '*', '#' }; //Зелёный, Жёлтый, Красный, Серый, Бирюзовый
+	constexpr std::array<char, 5> color_codes{ '-', '~', '!', '*', '#' }; //Зелёный, Жёлтый, Красный, Серый, Бирюзовый
 	const char& color_s = str.front();
 	const bool have_color = std::find(color_codes.begin(), color_codes.end(), color_s) != color_codes.end(); //Ищем в начале строки цветовой код
 

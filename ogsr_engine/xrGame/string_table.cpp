@@ -151,5 +151,6 @@ STRING_VALUE CStringTable::translate (const STRING_ID& str_id) const
 			Msg("[string table] '%s' has no entry", *str_id);
 		return str_id;
 	}
-	return					pData->m_StringTable[str_id];
+
+	return res;
 }
