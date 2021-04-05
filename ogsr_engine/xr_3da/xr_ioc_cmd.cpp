@@ -13,6 +13,7 @@
 #include <regex>
 #include "../Include/xrRender/RenderDeviceRender.h"
 #include "xr_object.h"
+#include "SkeletonMotions.h"
 
 
 xr_token* vid_quality_token = nullptr;
@@ -121,9 +122,7 @@ class CCC_MotionsStat : public IConsole_Command
 public:
 	CCC_MotionsStat(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = TRUE; };
 	virtual void Execute(LPCSTR args) {
-		//g_pMotionsContainer->dump();
-		//	TODO: move this console commant into renderer
-		VERIFY(0);
+		g_pMotionsContainer->dump();
 	}
 };
 class CCC_TexturesStat : public IConsole_Command
@@ -629,8 +628,8 @@ void CCC_Register()
 	CMD1(CCC_SaveCFG,	"cfg_save"				);
 	CMD1(CCC_LoadCFG,	"cfg_load"				);
 
-#ifdef DEBUG
 	CMD1(CCC_MotionsStat,	"stat_motions"		);
+#ifdef DEBUG
 	CMD1(CCC_TexturesStat,	"stat_textures"		);
 #endif // DEBUG
 
