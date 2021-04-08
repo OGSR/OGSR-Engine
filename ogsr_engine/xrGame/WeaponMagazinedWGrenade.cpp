@@ -668,10 +668,15 @@ void CWeaponMagazinedWGrenade::PlayAnimHide()
 {
 	VERIFY(GetState()==eHiding);
 	
-	if(IsGrenadeLauncherAttached())
-		m_pHUD->animPlay(random_anim(mhud_hide_w_gl),TRUE,this, GetState());
+	if (IsGrenadeLauncherAttached())
+	{
+		if (!m_bGrenadeMode)
+			m_pHUD->animPlay(random_anim(mhud_hide_w_gl), TRUE, this, GetState());
+		else
+			m_pHUD->animPlay(random_anim(mhud_hide_g), TRUE, this, GetState());
+	}
 	else
-		m_pHUD->animPlay (random_anim(mhud.mhud_hide),TRUE,this, GetState());
+		m_pHUD->animPlay(random_anim(mhud.mhud_hide), TRUE, this, GetState());
 }
 
 void CWeaponMagazinedWGrenade::PlayAnimReload() {
