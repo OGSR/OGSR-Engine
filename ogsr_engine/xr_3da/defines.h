@@ -9,9 +9,6 @@
 #define _RELEASE(x)			{ if(x) { (x)->Release();       (x)=NULL; } }
 #define _SHOW_REF(msg, x)   { if(x) { x->AddRef(); Log(msg,u32(x->Release()));}}
 
-// textures
-ENGINE_API extern	int		psTextureLOD		;
-
 // psDeviceFlags
 enum {
 	rsFullscreen					= (1ul<<0ul),
@@ -44,7 +41,6 @@ enum {
 
 //. ENGINE_API extern	u32			psCurrentMode		;
 ENGINE_API extern	u32			psCurrentVidMode[];
-ENGINE_API extern	u32			psCurrentBPP		;
 ENGINE_API extern	Flags32		psDeviceFlags		;
 
 // game path definition

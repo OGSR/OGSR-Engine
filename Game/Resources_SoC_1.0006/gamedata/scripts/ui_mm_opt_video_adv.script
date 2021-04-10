@@ -29,7 +29,7 @@ local function only_4_and_more_mode()           return get_current_renderer() >=
 local adv_vid_opt_params = {
 	{ "vis_dist",              "track", 0, hint_colors.yellow, "video_settings_name_2" , "video_settings_desc_2"  },
 	{ "geometry_lod",          "track", 0, hint_colors.yellow, "video_settings_name_3" , "video_settings_desc_3"  },
-	{ "texture_lod",           "track", 1, hint_colors.yellow, "video_settings_name_7" , "video_settings_desc_7"  },
+	{ "texture_lod",           "track", 1, hint_colors.yellow, "video_settings_name_7" , "video_settings_desc_7", only_3_and_more_mode_invisible  },
 	{ "aniso",                 "track", 0, hint_colors.yellow, "video_settings_name_8" , "video_settings_desc_8"  },
 	--
 	{ "aa",                    "list",  0, hint_colors.green , "video_settings_name_19", "video_settings_desc_19", only_2a_and_more_mode },

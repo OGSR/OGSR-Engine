@@ -690,15 +690,8 @@ void CCC_Register()
 
 	CMD3(CCC_Mask, "rs_hw_stats", &psDeviceFlags, rsHWInfo);
 
-	// Texture manager	
-	CMD4(CCC_Integer,	"texture_lod",			&psTextureLOD,				0,	4	);
-
 	// General video control
 	CMD1(CCC_VidMode,	"vid_mode"				);
-
-#ifdef DEBUG
-	CMD3(CCC_Token,		"vid_bpp",				&psCurrentBPP,	vid_bpp_token );
-#endif // DEBUG
 
 	CMD1(CCC_VID_Reset, "vid_restart"			);
 	

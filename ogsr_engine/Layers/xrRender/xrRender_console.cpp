@@ -291,6 +291,11 @@ float ps_r2_gloss_factor = 4.0f;
 float ps_r2_gloss_factor = 1.0f;
 #endif
 
+// textures 
+int psTextureLOD = 0;
+
+u32 psCurrentBPP = 32;
+
 #ifndef _EDITOR
 #include	"../../xr_3da/xr_ioconsole.h"
 #include	"../../xr_3da/xr_ioc_cmd.h"
@@ -770,6 +775,7 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float,		"r__wallmark_shift_pp",	&ps_r__WallmarkSHIFT,		0.0f,	1.f		);
 	CMD4(CCC_Float,		"r__wallmark_shift_v",	&ps_r__WallmarkSHIFT_V,		0.0f,	1.f		);
 	CMD1(CCC_ModelPoolStat,"stat_models"		);
+	CMD3(CCC_Token, "vid_bpp", &psCurrentBPP, vid_bpp_token);
 #endif // DEBUG
 	CMD4(CCC_Float,		"r__wallmark_ttl",		&ps_r__WallmarkTTL,			1.0f,	10.f * 60.f);
 
@@ -779,6 +785,11 @@ void		xrRender_initconsole	()
 
 	Fvector	tw_min,tw_max;
 	
+#if RENDER == R_R2
+	// Texture manager	
+	CMD4(CCC_Integer, "texture_lod", &psTextureLOD, 0, 4);
+#endif
+
 	CMD4(CCC_Float,		"r__geometry_lod",		&ps_r__LOD,					0.1f,	/*1.2f*/ 3.f		); //AVO: extended from 1.2f to 3.f
 //.	CMD4(CCC_Float,		"r__geometry_lod_pow",	&ps_r__LOD_Power,			0,		2		);
 

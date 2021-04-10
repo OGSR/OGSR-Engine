@@ -144,6 +144,11 @@ extern ECORE_API float ps_ext_SSLR_L;
 extern ECORE_API float ps_ext_SSLR_blur;
 #endif
 
+// textures
+extern ECORE_API int psTextureLOD;
+
+extern ECORE_API u32 psCurrentBPP;
+
 enum
 {
 	R2FLAG_SUN					= (1<<0),
