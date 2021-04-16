@@ -9,7 +9,6 @@ struct 	v2p
 //	Igor: for additional depth dest
 	float4 tctexgen	: TEXCOORD1;
 #endif	//	USE_SOFT_PARTICLES
-    float   fog:            FOG;		// fog
 };
 
 
@@ -33,6 +32,6 @@ half4 	main	( v2p I )	: COLOR
 //	result = saturate (spaceDepth*5.0);
 //	result.a = 1;
 #endif	//	USE_SOFT_PARTICLES
-	result.a	*= I.fog*I.fog; // skyloader: fog fix
+
 	return	result;
 }
