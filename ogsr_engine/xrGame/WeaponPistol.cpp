@@ -45,8 +45,8 @@ void CWeaponPistol::Load	(LPCSTR section)
 	animGetEx( mhud_pistol.mhud_show_empty,   "anim_draw_empty" );
 	animGetEx( mhud_pistol.mhud_reload_empty, "anim_reload_empty" );
 
-	animGetEx( mhud_pistol.mhud_idle_sprint_empty, pSettings->line_exist( hud_sect.c_str(), "anim_idle_sprint_empty" ) ? "anim_idle_sprint_empty" : pSettings->line_exist( hud_sect.c_str(), "anim_idle_sprint" ) ? "anim_idle_sprint" : "anim_idle" );
-	animGetEx( mhud_pistol.mhud_idle_moving_empty, pSettings->line_exist( hud_sect.c_str(), "anim_idle_moving_empty" ) ? "anim_idle_moving_empty" : pSettings->line_exist( hud_sect.c_str(), "anim_idle_moving" ) ? "anim_idle_sprint" : "anim_idle" );
+	animGetEx( mhud_pistol.mhud_idle_sprint_empty, pSettings->line_exist( hud_sect.c_str(), "anim_idle_sprint_empty" ) ? "anim_idle_sprint_empty" : pSettings->line_exist( hud_sect.c_str(), "anim_idle_sprint" ) ? "anim_idle_sprint" : "anim_empty" );
+	animGetEx( mhud_pistol.mhud_idle_moving_empty, pSettings->line_exist( hud_sect.c_str(), "anim_idle_moving_empty" ) ? "anim_idle_moving_empty" : pSettings->line_exist( hud_sect.c_str(), "anim_idle_moving" ) ? "anim_idle_moving" : "anim_empty" );
 
 	animGetEx( mhud_pistol_r.mhud_empty,        "anim_empty", "_r" );
 	animGetEx( mhud_pistol_r.mhud_shot_l,       "anim_shot_last", "_r" );
@@ -54,8 +54,8 @@ void CWeaponPistol::Load	(LPCSTR section)
 	animGetEx( mhud_pistol_r.mhud_show_empty,   "anim_draw_empty", "_r" );
 	animGetEx( mhud_pistol_r.mhud_reload_empty, "anim_reload_empty", "_r" );
 
-	animGetEx( mhud_pistol_r.mhud_idle_sprint_empty, pSettings->line_exist(hud_sect.c_str(), "anim_idle_sprint_empty") ? "anim_idle_sprint_empty" : pSettings->line_exist(hud_sect.c_str(), "anim_idle_sprint") ? "anim_idle_sprint" : "anim_idle");
-	animGetEx( mhud_pistol_r.mhud_idle_moving_empty, pSettings->line_exist(hud_sect.c_str(), "anim_idle_moving_empty") ? "anim_idle_moving_empty" : pSettings->line_exist(hud_sect.c_str(), "anim_idle_moving") ? "anim_idle_sprint" : "anim_idle");
+	animGetEx( mhud_pistol_r.mhud_idle_sprint_empty, pSettings->line_exist(hud_sect.c_str(), "anim_idle_sprint_empty") ? "anim_idle_sprint_empty" : pSettings->line_exist(hud_sect.c_str(), "anim_idle_sprint") ? "anim_idle_sprint" : "anim_empty" );
+	animGetEx( mhud_pistol_r.mhud_idle_moving_empty, pSettings->line_exist(hud_sect.c_str(), "anim_idle_moving_empty") ? "anim_idle_moving_empty" : pSettings->line_exist(hud_sect.c_str(), "anim_idle_moving") ? "anim_idle_moving" : "anim_empty" );
 
 	animGetEx( wm_mhud_r.mhud_idle,             "anim_idle", "_r" );
 	animGetEx( wm_mhud_r.mhud_reload,           "anim_reload", "_r" );
