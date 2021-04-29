@@ -836,6 +836,25 @@ struct CCC_JumpToLevel : public IConsole_Command {
 		Msg							("! There is no level \"%s\" in the game graph!",level);
 	}
 };
+
+class CCC_Spawn : public IConsole_Command {
+public:
+	CCC_Spawn(LPCSTR N) : IConsole_Command(N) {}
+
+	void Execute(LPCSTR args)
+	{
+		if (!g_pGameLevel)
+			return;
+
+		if (!pSettings->section_exist(args))
+		{
+			Msg("! Can't find section: %s", args);
+			return;
+		}
+
+		Level().g_cl_Spawn(args, 0xff, M_SPAWN_OBJECT_LOCAL, Actor()->Position());
+	}
+};
 //#endif // MASTER_GOLD
 
 #include "GamePersistent.h"
@@ -1279,14 +1298,15 @@ void CCC_RegisterCommands()
 
 
 //#ifndef MASTER_GOLD
-	CMD1(CCC_JumpToLevel,	"jump_to_level"		);
+	CMD1(CCC_JumpToLevel,	"jump_to_level");
+	CMD1(CCC_Spawn,			"g_spawn");
 	CMD3(CCC_Mask,			"g_god",				&psActorFlags,	AF_GODMODE	);
 	CMD3(CCC_Mask,			"g_unlimitedammo",		&psActorFlags,	AF_UNLIMITEDAMMO);
 	CMD3(CCC_Mask,			"g_ammunition_on_belt",	&psActorFlags,	AF_AMMO_ON_BELT);
 	CMD3(CCC_Mask,			"g_3d_scopes",			&psActorFlags,	AF_3D_SCOPES);
 	CMD3(CCC_Mask,			"g_crosshair_dbg",		&psActorFlags,	AF_CROSSHAIR_DBG);
 	CMD1(CCC_TimeFactor,	"time_factor")	
-	CMD1(CCC_SetWeather, "set_weather");
+	CMD1(CCC_SetWeather,	"set_weather");
 //#endif // MASTER_GOLD
 
 	CMD3(CCC_Mask,		"g_music_tracks",		&psActorFlags,	AF_MUSIC_TRACKS);
