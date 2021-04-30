@@ -25,7 +25,6 @@ public:
 
 public:
 	typedef xr_vector<ALife::_SPAWN_ID>												SPAWN_IDS;
-	typedef associative_vector<ALife::_SPAWN_STORY_ID,ALife::_OBJECT_ID>			SPAWN_STORY_IDS;
 
 private:
 	CALifeSpawnHeader						m_header{};
@@ -35,7 +34,9 @@ private:
 	SPAWN_IDS								m_spawn_roots;
 	SPAWN_IDS								m_temp0;
 	SPAWN_IDS								m_temp1;
-	SPAWN_STORY_IDS							m_spawn_story_ids;
+
+	std::unordered_map<ALife::_SPAWN_STORY_ID, ALife::_SPAWN_ID> m_spawn_story_ids;
+	string_unordered_map<shared_str, ALife::_SPAWN_ID> m_spawn_ids_by_name;
 
 protected:
 			//void							save_updates				(IWriter &stream);
@@ -63,7 +64,11 @@ public:
 	IC		const CALifeSpawnHeader			&header						() const;
 	IC		const SPAWN_GRAPH				&spawns						() const;
 	//IC		void							assign_artefact_position	(CSE_ALifeAnomalousZone	*anomaly, CSE_ALifeDynamicObject *object) const;
-	IC		const ALife::_SPAWN_ID			&spawn_id					(const ALife::_SPAWN_STORY_ID &spawn_story_id) const;
+
+	//Используется только в луа
+	ALife::_SPAWN_ID spawn_id(const ALife::_SPAWN_STORY_ID& spawn_story_id) const;
+	//Используется только в луа
+	ALife::_SPAWN_ID spawn_id(const char* obj_name) const;
 };
 
 #include "alife_spawn_registry_inline.h"

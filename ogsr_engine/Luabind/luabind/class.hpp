@@ -873,20 +873,20 @@ namespace luabind
 		}
 
 		template<typename F>
-		class_&& def(const char* name, F f) &&
+		class_&& def(const char* name, const F f) &&
 		{
 			return std::move(*this).virtual_def(name, f, detail::policy_cons<>(), detail::policy_cons<>(), std::true_type());
 		}
 
 		// virtual functions
 		template<typename F, typename DefaultOrPolicies>
-		class_&& def(char const* name, F fn, DefaultOrPolicies default_or_policies) &&
+		class_&& def(char const* name, const F fn, DefaultOrPolicies default_or_policies) &&
 		{
 			return std::move(*this).virtual_def(name, fn, default_or_policies, detail::policy_cons<>(), detail::is_policy_cons<DefaultOrPolicies>());
 		}
 
 		template<typename F, typename Default, typename... Policies>
-		class_&& def(char const* name, F fn, Default default_, const detail::policy_cons<Policies...> policies) &&
+		class_&& def(char const* name, const F fn, Default default_, const detail::policy_cons<Policies...> policies) &&
 		{
 			return std::move(*this).virtual_def(name, fn, default_, policies, std::false_type());
 		}
@@ -1137,43 +1137,83 @@ namespace luabind
 
 		// these handle default implementation of virtual functions
 		template<typename F, typename... Policies>
-		class_&& virtual_def(char const* name, F const& fn, const detail::policy_cons<Policies...> policies, const detail::policy_cons<>, std::true_type /*is policy_cons*/) &&
+		class_&& virtual_def(char const* name, const F fn, const detail::policy_cons<Policies...> policies, const detail::policy_cons<>, std::true_type /*is policy_cons*/) &&
 		{
 			// normal def() call
-			detail::overload_rep o(fn, policies);
 
-			o.set_match_fun(detail::mem_fn_matcher<F, T, Policies...>(fn));
-			o.set_fun(detail::mem_fn_callback<F, T, Policies...>(fn));
+			if constexpr (!std::is_function_v<std::remove_pointer_t<F>> && !std::is_member_function_pointer_v<F>)
+			{
+				constexpr auto lambda_cast = cdecl_cast(fn, &F::operator());
+
+				detail::overload_rep o(lambda_cast, policies);
+
+				o.set_match_fun(detail::mem_fn_matcher<decltype(lambda_cast), T, Policies...>(lambda_cast));
+				o.set_fun(detail::mem_fn_callback<decltype(lambda_cast), T, Policies...>(lambda_cast));
 
 #ifndef LUABIND_NO_ERROR_CHECKING
-			o.set_sig_fun(&detail::get_member_signature<F>::apply);
+				o.set_sig_fun(&detail::get_member_signature<decltype(lambda_cast)>::apply);
 #endif
-			this->add_method(name, std::move(o));
-            return std::move(*this);
+				this->add_method(name, std::move(o));
+			}
+			else
+			{
+				detail::overload_rep o(fn, policies);
+
+				o.set_match_fun(detail::mem_fn_matcher<F, T, Policies...>(fn));
+				o.set_fun(detail::mem_fn_callback<F, T, Policies...>(fn));
+
+#ifndef LUABIND_NO_ERROR_CHECKING
+				o.set_sig_fun(&detail::get_member_signature<F>::apply);
+#endif
+				this->add_method(name, std::move(o));
+			}
+
+			return std::move(*this);
 		}
 
 		template<typename F, typename Default, typename... Policies>
-		class_&& virtual_def(char const* name, F const& fn, Default const& default_, const detail::policy_cons<Policies...> policies, std::false_type /*is policy_cons*/) &&
+		class_&& virtual_def(char const* name, const F fn, Default const& default_, const detail::policy_cons<Policies...> policies, std::false_type /*is policy_cons*/) &&
 		{
 			// default_ is a default implementation
 			// policies is either null_type or a policy list
 
 			// normal def() call
-			detail::overload_rep o(fn, policies);
 
-			o.set_match_fun(detail::mem_fn_matcher<F, T, Policies...>(fn));
-			o.set_fun(detail::mem_fn_callback<F, T, Policies...>(fn));
+			if constexpr (!std::is_function_v<std::remove_pointer_t<F>> && !std::is_member_function_pointer_v<F>)
+			{
+				constexpr auto lambda_cast = cdecl_cast(fn, &F::operator());
 
-			o.set_fun_static(
-				detail::mem_fn_callback<Default, T, Policies...>(default_));
+				detail::overload_rep o(lambda_cast, policies);
+
+				o.set_match_fun(detail::mem_fn_matcher<decltype(lambda_cast), T, Policies...>(lambda_cast));
+				o.set_fun(detail::mem_fn_callback<decltype(lambda_cast), T, Policies...>(lambda_cast));
+
+				o.set_fun_static(detail::mem_fn_callback<Default, T, Policies...>(default_));
 
 #ifndef LUABIND_NO_ERROR_CHECKING
-			o.set_sig_fun(&detail::get_member_signature<F>::apply);
+				o.set_sig_fun(&detail::get_member_signature<decltype(lambda_cast)>::apply);
 #endif
 
-			this->add_method(name, std::move(o));
+				this->add_method(name, std::move(o));
+			}
+			else
+			{
+				detail::overload_rep o(fn, policies);
+
+				o.set_match_fun(detail::mem_fn_matcher<F, T, Policies...>(fn));
+				o.set_fun(detail::mem_fn_callback<F, T, Policies...>(fn));
+
+				o.set_fun_static(detail::mem_fn_callback<Default, T, Policies...>(default_));
+
+#ifndef LUABIND_NO_ERROR_CHECKING
+				o.set_sig_fun(&detail::get_member_signature<F>::apply);
+#endif
+
+				this->add_method(name, std::move(o));
+			}
+
 			// register virtual function
-            return std::move(*this);
+			return std::move(*this);
 		}
 
         template<typename... Policies, typename... Ts>

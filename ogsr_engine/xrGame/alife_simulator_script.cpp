@@ -270,11 +270,6 @@ CSE_Abstract *CALifeSimulator__spawn_ammo		(CALifeSimulator *self, LPCSTR sectio
 	return								(self->server().Process_spawn(packet,clientID));
 }
 
-ALife::_SPAWN_ID CALifeSimulator__spawn_id		(CALifeSimulator *self, ALife::_SPAWN_STORY_ID spawn_story_id)
-{
-	return								(((const CALifeSimulator *)self)->spawns().spawn_id(spawn_story_id));
-}
-
 void CALifeSimulator__release					(CALifeSimulator *self, CSE_Abstract *object, bool)
 {
 	VERIFY								(self);
@@ -448,7 +443,8 @@ void CALifeSimulator::script_register			(lua_State *L)
 			.def("create",					&CALifeSimulator__spawn_item)
 			.def("create_ammo",				&CALifeSimulator__spawn_ammo)
 			.def("release",					&CALifeSimulator__release)
-			.def("spawn_id",				&CALifeSimulator__spawn_id)
+			.def("spawn_id", [](CALifeSimulator* self, ALife::_SPAWN_STORY_ID spawn_story_id) { return self->spawns().spawn_id(spawn_story_id); })
+			.def("spawn_id", [](CALifeSimulator* self, const char* obj_name) { return self->spawns().spawn_id(obj_name); })
 			.def("actor",					&get_actor)
 			.def("has_info",				&has_info)
 			.def("dont_has_info",			&dont_has_info)

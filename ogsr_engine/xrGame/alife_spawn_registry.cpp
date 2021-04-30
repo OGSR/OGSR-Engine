@@ -219,13 +219,15 @@ void CALifeSpawnRegistry::build_story_spawns()
 	{
 		const auto* object = smart_cast<const CSE_ALifeObject*>(&obj->data()->object());
 
+		m_spawn_ids_by_name.emplace(object->name_replace(), id);
+
 		if (object->m_spawn_story_id != INVALID_SPAWN_STORY_ID) {
 #ifdef USE_STORY_ID_AS_SPAWN_ID
 			//Особо умные могут назначить одинаковые спавн айди куче разных объектов.
 			ASSERT_FMT(m_spawn_story_ids.find(object->m_spawn_story_id) == m_spawn_story_ids.end(), "!!Twoy allspawn - xyina, davai po novoy!");
 #endif
 			//Msg("--[%s] Adding spawn_id to object: [%s] spawn_story_id: [%u] story_id: [%u] object_id: [%u]", __FUNCTION__, object->name_replace(), object->m_spawn_story_id, object->m_story_id, id);
-			m_spawn_story_ids.insert({ object->m_spawn_story_id, id });
+			m_spawn_story_ids.emplace(object->m_spawn_story_id, id);
 		}
 #ifdef USE_STORY_ID_AS_SPAWN_ID
 		else if (object->m_story_id != INVALID_STORY_ID) {
@@ -233,8 +235,28 @@ void CALifeSpawnRegistry::build_story_spawns()
 			ASSERT_FMT(m_spawn_story_ids.find(object->m_story_id) == m_spawn_story_ids.end(), "!!Twoy allspawn - xyina, davai po novoy!");
 
 			//Msg("~~[%s] Adding spawn_id (story_id) to object: [%s] spawn_story_id: [%u] story_id: [%u] object_id: [%u]", __FUNCTION__, object->name_replace(), object->m_spawn_story_id, object->m_story_id, id);
-			m_spawn_story_ids.insert({ object->m_story_id, id });
+			m_spawn_story_ids.emplace(object->m_story_id, id);
 		}
 #endif
 	}
+}
+
+ALife::_SPAWN_ID CALifeSpawnRegistry::spawn_id(const ALife::_SPAWN_STORY_ID& spawn_story_id) const
+{
+	auto it = m_spawn_story_ids.find(spawn_story_id);
+	if (it != m_spawn_story_ids.end())
+		return it->second;
+
+	//KRodin: В оригинале при ненахождении стори айди, возвращался рандомный мусор, на мой взгляд лучше вернуть -1 и в лог написать, потому что там стоял VERIFY. Хотя я не уверен что надо писать...
+	Msg("!![%s] Spawn story id [%u] cannot be found!", __FUNCTION__, spawn_story_id);
+	return ALife::_SPAWN_ID(-1);
+}
+
+ALife::_SPAWN_ID CALifeSpawnRegistry::spawn_id(const char* obj_name) const {
+	auto it = m_spawn_ids_by_name.find(obj_name);
+	if (it != m_spawn_ids_by_name.end())
+		return it->second;
+
+	//KRodin: а вот тут надо в лог писать или нет? Хз, надеюсь т.к. метод новый, код с его использованием будут писать более адекватно и поэтому вывод в лог не нужен.
+	return ALife::_SPAWN_ID(-1);
 }
