@@ -360,6 +360,8 @@ void CLevel::ProcessGameEvents		()
 			Msg("- d[%d],ts[%d] -- E[svT=%d],[evT=%d]",Device.dwTimeGlobal,timeServer(),svT,game_events->queue.begin()->timestamp);
 		*/
 
+		m_just_destroyed.clear();
+
 		while	(game_events->available(svT))
 		{
 			u16 ID,dest,type;
@@ -878,6 +880,10 @@ bool CLevel::IsClient ()
 void CLevel::OnSessionTerminate		(LPCSTR reason)
 {
 	MainMenu()->OnSessionTerminate(reason);
+}
+
+void CLevel::OnDestroyObject(u16 id) {
+	m_just_destroyed.push_back(id);
 }
 
 u32	GameID()
