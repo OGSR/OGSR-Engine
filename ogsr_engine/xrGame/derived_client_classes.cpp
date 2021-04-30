@@ -243,6 +243,8 @@ void CInventoryScript::script_register(lua_State *L)
 			.property	  ("active_item"				,			&inventory_active_item)
 			.property	  ("selected_item"				,			&inventory_selected_item)
 			.property	  ("target"						,			&get_inventory_target)
+			.def("is_active_slot_blocked", &CInventory::IsActiveSlotBlocked)
+
 			//.property	  ("class_name"					,			&get_lua_class_name)
 			//.def		  ("to_belt"					,			&item_to_slot,   raw(_2))
 			//.def		  ("to_slot"					,			&item_to_slot,   raw(_2))
