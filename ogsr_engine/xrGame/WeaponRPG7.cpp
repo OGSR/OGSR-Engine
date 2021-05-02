@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "weaponrpg7.h"
-#include "WeaponHUD.h"
 #include "xrserver_objects_alife_items.h"
 #include "explosiverocket.h"
 #include "entity.h"
 #include "level.h"
+#include "player_hud.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "game_object_space.h"
 
@@ -36,16 +36,14 @@ void CWeaponRPG7::UpdateMissileVisibility()
 	vis_hud		= (!!iAmmoElapsed || GetState() == eReload);
 	vis_weap	= !!iAmmoElapsed;
 
-	IKinematics* pHudVisual = smart_cast<IKinematics*>(m_pHUD->Visual());
-	VERIFY(pHudVisual);
-	if (H_Parent() != Level().CurrentEntity()) pHudVisual = NULL;
-	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual()); 
-	VERIFY(pWeaponVisual);
+	if (GetHUDmode())
+	{
+		HudItemData()->set_bone_visible(m_sHudGrenadeBoneName, vis_hud, TRUE);
+	}
 
-	if (pHudVisual) pHudVisual->LL_SetBoneVisible(pHudVisual->LL_BoneID(*m_sHudGrenadeBoneName),vis_hud,TRUE);
-	pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID(*m_sGrenadeBoneName),vis_weap,TRUE);
-	pWeaponVisual->CalculateBones_Invalidate();
-	pWeaponVisual->CalculateBones();
+	IKinematics* pWeaponVisual = smart_cast<IKinematics*>(Visual());
+	VERIFY(pWeaponVisual);
+	pWeaponVisual->LL_SetBoneVisible(pWeaponVisual->LL_BoneID(m_sGrenadeBoneName), vis_weap, TRUE);
 }
 
 
@@ -62,9 +60,9 @@ BOOL CWeaponRPG7::net_Spawn(CSE_Abstract* DC)
 	return l_res;
 }
 
-void CWeaponRPG7::OnStateSwitch(u32 S) 
+void CWeaponRPG7::OnStateSwitch(u32 S, u32 oldState)
 {
-	inherited::OnStateSwitch(S);
+	inherited::OnStateSwitch(S, oldState);
 	UpdateMissileVisibility();
 }
 
@@ -91,6 +89,12 @@ void CWeaponRPG7::SwitchState(u32 S)
 void CWeaponRPG7::FireStart()
 {
 	inherited::FireStart();
+}
+
+void CWeaponRPG7::on_a_hud_attach()
+{
+	inherited::on_a_hud_attach();
+	UpdateMissileVisibility();
 }
 
 #include "inventory.h"
@@ -181,5 +185,5 @@ void CWeaponRPG7::PlayAnimReload()
 {
 	VERIFY(GetState() == eReload);
 	// play anim with MixIn=FALSE to avoid issue with blinking rocket during reload
-	m_pHUD->animPlay(random_anim(mhud.mhud_reload), FALSE, this, GetState());
+	PlayHUDMotion("anim_reload", "anm_reload", FALSE, this, GetState());
 }

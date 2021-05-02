@@ -6,7 +6,8 @@
 #include "..\xr_3da\igame_level.h"
 #include "clsid_game.h"
 #include "GamePersistent.h"
-
+#include "Car.h"
+#include "Spectator.h"
 
 CFontManager::CFontManager()
 {
@@ -166,18 +167,35 @@ void CHUDManager::OnFrame()
 }
 //--------------------------------------------------------------------
 
+bool need_render_hud()
+{
+	CObject* O = (g_pGameLevel) ? g_pGameLevel->CurrentViewEntity() : nullptr;
+	if (!O)
+		return false;
+
+	CActor* A = smart_cast<CActor*>(O);
+	if (A && (!A->HUDview() || !A->g_Alive()))
+		return false;
+
+	if (smart_cast<CCar*>(O) || smart_cast<CSpectator*>(O))
+		return false;
+
+	return true;
+}
 
 void CHUDManager::Render_First()
 {
-	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT))return;
-	if (0==pUI)						return;
-	CObject*	O					= g_pGameLevel->CurrentViewEntity();
-	if (0==O)						return;
-	CActor*		A					= smart_cast<CActor*> (O);
-	if (!A)							return;
-	if (A && !A->HUDview())			return;
+	if (!psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT))
+		return;
+
+	if (pUI == nullptr)
+		return;
+	
+	if (!need_render_hud())
+		return;
 
 	// only shadow 
+	CObject* O = g_pGameLevel->CurrentViewEntity();
 	::Render->set_Invisible			(TRUE);
 	::Render->set_Object			(O->H_Root());
 	O->renderable_Render			();
@@ -204,6 +222,7 @@ void CHUDManager::Render_Last()
 	O->OnHUDDraw					(this);
 	::Render->set_HUD				(FALSE);
 }
+
 void CHUDManager::Render_Actor_Shadow()	// added by KD
 {
 	if (0==pUI)						return;
@@ -216,6 +235,7 @@ void CHUDManager::Render_Actor_Shadow()	// added by KD
 	::Render->set_Object			(O->H_Root());
 	O->renderable_Render			();
 }
+
 extern void draw_wnds_rects();
 extern ENGINE_API BOOL bShowPauseString;
 //отрисовка элементов интерфейса
@@ -318,29 +338,19 @@ void CHUDManager::net_Relcase	(CObject *object)
 	m_pHUDTarget->net_Relcase	(object);
 }
 
-#pragma todo("KRodin: Доделать эти два метода, если они нужны! Мне кажется, или в ТЧ они не нужны. По крайней мере я проблем не вижу с рендером UI, худа и тп.")
-//#include "player_hud.h"
-bool   CHUDManager::RenderActiveItemUIQuery()
+#include "player_hud.h"
+bool CHUDManager::RenderActiveItemUIQuery()
 {
-	/*
-	if (!psHUD_Flags.is(HUD_DRAW_RT2))
+	if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT))
 		return false;
 
-	if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT | HUD_WEAPON_RT2))return false;
-
-	if (!need_render_hud())			return false;
+	if (!need_render_hud())
+		return false;
 
 	return (g_player_hud && g_player_hud->render_item_ui_query());
-	*/
-	return false;
 }
 
-void   CHUDManager::RenderActiveItemUI()
+void CHUDManager::RenderActiveItemUI()
 {
-	/*
-	if (!psHUD_Flags.is(HUD_DRAW_RT2))
-		return;
-
 	g_player_hud->render_item_ui();
-	*/
 }

@@ -10,11 +10,11 @@
 #include "base_client_classes.h"
 #include "derived_client_classes.h"
 #include "HUDManager.h"
-#include "WeaponHUD.h"
 #include "exported_classes_def.h"
 #include "script_game_object.h"
 #include "ui/UIDialogWnd.h"
 #include "ui/UIInventoryWnd.h"
+#include "player_hud.h"
 
 /* Декларация о стиле экспорта свойств и методов:
      * Свойства объектов экспортируются по возможности так, как они выглядят в файлах конфигурации (*.ltx), а не так как они названы в исходниках движка
@@ -328,12 +328,12 @@ void COutfitScript::script_register(lua_State *L)
 		];
 
 }
-
+/*
 int			get_fire_bone(CWeaponHUD *hud)  { return hud->FireBone();  }
 const Fvector&	get_fire_point1 (CWeaponHUD *hud) { return hud->FirePoint(); }
 const Fvector&	get_fire_point2 (CWeaponHUD *hud) { return hud->FirePoint2(); }
 IRenderVisual* get_hud_visual(CWeaponHUD *hud)   { return hud->Visual(); }
-
+*/
 #ifdef NLC_EXTENSIONS
 extern void attach_upgrades(lua_State *L);
 #endif
@@ -422,7 +422,7 @@ void CWeaponScript::script_register(lua_State *L)
 #endif
 	module(L)
 		[
-			class_<CWeaponHUD>("CWeaponHUD")
+			/*class_<CWeaponHUD>("CWeaponHUD")
 			.property("fire_bone"						,			&get_fire_bone)
 			.property("fire_point"						,			&get_fire_point1)
 			.property("fire_point2"						,			&get_fire_point2)
@@ -430,7 +430,7 @@ void CWeaponScript::script_register(lua_State *L)
 			.property("visual"							,			&get_hud_visual)
 			.def_readonly("transform"					,			&CWeaponHUD::m_Transform)
 			.def_readonly("visible"						,			&CWeaponHUD::m_bVisible)
-			,
+			,*/
 
 			class_<CWeapon,	CInventoryItemObject>		("CWeapon")
 			// из неэкспортируемого класса CHudItemObject:

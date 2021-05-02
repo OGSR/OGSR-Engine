@@ -13,6 +13,7 @@
 #include "xrserver_objects_alife_monsters.h"
 #include "CameraLook.h"
 #include "CameraFirstEye.h"
+#include "player_hud.h"
 #include "effectorfall.h"
 #include "EffectorBobbing.h"
 #include "clsid_game.h"
@@ -903,6 +904,17 @@ void CActor::UpdateCL	()
 		else
 			xr_delete(m_sndShockEffector);
 	}
+
+	Fmatrix trans;
+	if (cam_Active() == cam_FirstEye())
+	{
+		Cameras().hud_camera_Matrix(trans);
+	}
+	else
+		Cameras().camera_Matrix(trans);
+
+	if (IsFocused())
+		g_player_hud->update(trans);
 }
 
 #if defined(OGSR_MOD) || defined(DSH_MOD)
@@ -916,10 +928,39 @@ void CActor::shedule_Update	(u32 DT)
 {
 	setSVU(OnServer());
 
-	//установить режим показа HUD для текущего активного слота
-	CHudItem* pHudItem = smart_cast<CHudItem*>(inventory().ActiveItem());	
-	if(pHudItem) 
-		pHudItem->SetHUDmode(HUDview());
+	if (IsFocused())
+	{
+		BOOL bHudView = HUDview();
+		if (bHudView)
+		{
+			CInventoryItem* pInvItem = inventory().ActiveItem();
+			if (pInvItem)
+			{
+				CHudItem* pHudItem = smart_cast<CHudItem*>(pInvItem);
+				if (pHudItem)
+				{
+					if (pHudItem->IsHidden())
+					{
+						g_player_hud->detach_item(pHudItem);
+					}
+					else
+					{
+						g_player_hud->attach_item(pHudItem);
+					}
+				}
+			}
+			else
+			{
+				g_player_hud->detach_item_idx(0);
+				// Msg("---No active item in inventory(), item 0 detached.");
+			}
+		}
+		else
+		{
+			g_player_hud->detach_all_items();
+			// Msg("---No hud view found, all items detached.");
+		}
+	}
 
 	//обновление инвентаря
 	if ( !updated )
@@ -1228,12 +1269,8 @@ extern	BOOL	g_ShowAnimationInfo		;
 // HUD
 void CActor::OnHUDDraw	(CCustomHUD* /**hud/**/)
 {
-	CHudItem* pHudItem = smart_cast<CHudItem*>(inventory().ActiveItem());
-	if (pHudItem && pHudItem->GetHUDmode())
-//	if(inventory().ActiveItem()  ) 
-	{
-		inventory().ActiveItem()->renderable_Render();
-	}
+	if (!(mstate_real&mcLookout))
+		g_player_hud->render_hud();
 
 #if 0//ndef NDEBUG
 	if (Level().CurrentControlEntity() == this && g_ShowAnimationInfo)

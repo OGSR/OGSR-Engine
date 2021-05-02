@@ -29,6 +29,7 @@
 #include "visual_memory_manager.h"
 #include "agent_manager.h"
 #include "agent_member_manager.h"
+#include "player_hud.h"
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -439,9 +440,7 @@ void CScriptGameObject::SetHudBoneVisible(LPCSTR _bone_name, BOOL _visible)
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CHudItem : cannot access class member SetHudBoneVisible!");
 		return;
 	}
-	IKinematics *kin = smart_cast<IKinematics *>(k->GetHUD()->Visual());
-	kin->LL_SetBoneVisible(kin->LL_BoneID(_bone_name), _visible, TRUE);
-	kin->CalculateBones_Invalidate();
+	k->HudItemData()->set_bone_visible(_bone_name, _visible);
 }
 
 BOOL CScriptGameObject::GetHudBoneVisible(LPCSTR _bone_name)
@@ -451,8 +450,7 @@ BOOL CScriptGameObject::GetHudBoneVisible(LPCSTR _bone_name)
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CHudItem : cannot access class member GetHudBoneVisible!");
         return FALSE;
     }
-    IKinematics *kin = smart_cast<IKinematics *>(k->GetHUD()->Visual());
-    return kin->LL_GetBoneVisible(kin->LL_BoneID(_bone_name));
+	return k->HudItemData()->get_bone_visible(_bone_name);
 }
 
 u16 CScriptGameObject::GetBoneID(LPCSTR _bone_name)
@@ -590,7 +588,7 @@ void CScriptGameObject::SetHudOffset(Fvector _offset)
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CHudItem : cannot access class member SetHudOffset!");
 		return;
 	}
-	k->GetHUD()->SetZoomOffset(_offset);
+	k->HudItemData()->hands_offset_pos().set(_offset);
 }
 
 void CScriptGameObject::SetHudRotate(Fvector2 _v)
@@ -600,8 +598,7 @@ void CScriptGameObject::SetHudRotate(Fvector2 _v)
 		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CHudItem : cannot access class member SetHudRotate!");
 		return;
 	}
-	k->GetHUD()->SetZoomRotateX(_v.x);
-	k->GetHUD()->SetZoomRotateY(_v.y);
+	k->HudItemData()->hands_attach_rot().set(Fvector().set(_v.x, _v.y, 0.f));
 }
 /*
 void CScriptGameObject::SetHudRotate(float _x, float _y)
@@ -717,18 +714,7 @@ void CScriptGameObject::play_hud_animation( LPCSTR anim, bool mix_in ) {
 		ai().script_engine().script_log( ScriptStorage::eLuaMessageTypeError, "CHudItem : cannot access class member play_hud_animation!" );
 		return;
 	}
-	IKinematicsAnimated* sa = smart_cast<IKinematicsAnimated*>( k->GetHUD()->Visual() );
-	if( sa ) {
-		MotionID m = sa->ID_Cycle( anim );
-		if ( m )
-			sa->PlayCycle( m, (BOOL) mix_in );
-		else {
-			ai().script_engine().script_log( ScriptStorage::eLuaMessageTypeError, "CHudItem : has not cycle %s", anim );
-		}
-	}
-	else {
-		ai().script_engine().script_log( ScriptStorage::eLuaMessageTypeError, "CHudItem : is not animated object" );
-	}
+	k->PlayHUDMotion(anim, mix_in, k, k->GetState());
 }
 
 void CScriptGameObject::play_hud_animation( LPCSTR anim ) {

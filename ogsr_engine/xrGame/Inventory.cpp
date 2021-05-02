@@ -17,6 +17,7 @@
 #include "game_base_space.h"
 #include "clsid_game.h"
 #include "CustomOutfit.h"
+#include "HudItem.h"
 
 #include "UIGameSP.h"
 #include "HudManager.h"
@@ -75,7 +76,8 @@ CInventory::CInventory()
 	m_iPrevActiveSlot							= NO_ACTIVE_SLOT;
 	m_iLoadActiveSlot							= NO_ACTIVE_SLOT;
 	m_ActivationSlotReason						= eGeneral;
-	m_pTarget									= NULL;
+	m_pTarget									= nullptr;
+	m_pOwner									= nullptr;
 
 	string256 temp;
 	for(u32 i=0; i<m_slots.size(); ++i ) 
@@ -464,7 +466,8 @@ bool CInventory::Activate(u32 slot, EActivationReason reason, bool bForce, bool 
 		(m_iNextActiveSlot == slot &&
 		 m_iActiveSlot != NO_ACTIVE_SLOT &&
 		 m_slots[m_iActiveSlot].m_pIItem &&
-		 m_slots[m_iActiveSlot].m_pIItem->IsHiding()
+		 m_slots[m_iActiveSlot].m_pIItem->cast_hud_item() &&
+		 m_slots[m_iActiveSlot].m_pIItem->cast_hud_item()->IsHiding()
 		 )
 	   )
 	{
@@ -649,7 +652,8 @@ void CInventory::Update()
 	
 	if(m_iActiveSlot == NO_ACTIVE_SLOT || 
 		!m_slots[m_iActiveSlot].m_pIItem ||
-        m_slots[m_iActiveSlot].m_pIItem->IsHidden())
+        !m_slots[m_iActiveSlot].m_pIItem->cast_hud_item() ||
+		m_slots[m_iActiveSlot].m_pIItem->cast_hud_item()->IsHidden())
 	{ 
 		bActiveSlotVisible = false;
 	}
@@ -1104,18 +1108,12 @@ bool CInventory::isBeautifulForActiveSlot	(CInventoryItem *pIItem)
 	return				(false);
 }
 
-#include "WeaponHUD.h"
 void CInventory::Items_SetCurrentEntityHud(bool current_entity)
 {
 	TIItemContainer::iterator it;
 	for(it = m_all.begin(); m_all.end() != it; ++it) 
 	{
 		PIItem pIItem = *it;
-		CHudItem* pHudItem = smart_cast<CHudItem*> (pIItem);
-		if (pHudItem) 
-		{
-			pHudItem->GetHUD()->Visible(current_entity);
-		};
 		CWeapon* pWeapon = smart_cast<CWeapon*>(pIItem);
 		if (pWeapon)
 		{
@@ -1151,13 +1149,13 @@ void CInventory::SetSlotsBlocked( u16 mask, bool bBlock, bool now )
 		u32 PrevActiveSlot	= GetPrevActiveSlot();
 
 		if ( PrevActiveSlot == NO_ACTIVE_SLOT ) {
-		  if ( GetNextActiveSlot() != NO_ACTIVE_SLOT && m_slots[GetNextActiveSlot()].m_pIItem && m_slots[ GetNextActiveSlot() ].m_pIItem->IsShowing() ) {
+		  if ( GetNextActiveSlot() != NO_ACTIVE_SLOT && m_slots[GetNextActiveSlot()].m_pIItem && m_slots[GetNextActiveSlot()].m_pIItem->cast_hud_item() && m_slots[GetNextActiveSlot()].m_pIItem->cast_hud_item()->IsShowing() ) {
 		    ActiveSlot = GetNextActiveSlot();
 		    SetActiveSlot( GetNextActiveSlot() );
 		    m_slots[ ActiveSlot ].m_pIItem->Activate( true );
 		  }
 		}
-		else if ( m_slots[ PrevActiveSlot ].m_pIItem && m_slots[ PrevActiveSlot ].m_pIItem->IsHiding() ) {
+		else if ( m_slots[PrevActiveSlot].m_pIItem && m_slots[PrevActiveSlot].m_pIItem->cast_hud_item() && m_slots[PrevActiveSlot].m_pIItem->cast_hud_item()->IsHiding() ) {
 		  m_slots[ PrevActiveSlot ].m_pIItem->Deactivate( true );
 		  ActiveSlot = NO_ACTIVE_SLOT;
 		  SetActiveSlot( NO_ACTIVE_SLOT );

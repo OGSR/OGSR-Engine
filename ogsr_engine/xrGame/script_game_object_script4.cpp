@@ -37,6 +37,7 @@
 #include "ActorCondition.h"
 #include "EntityCondition.h"
 #include "holder_custom.h"
+#include "player_hud.h"
 
 #include "ai_space_inline.h"
 
@@ -102,20 +103,20 @@ CSE_ALifeDynamicObject* CScriptGameObject::alife_object() const
 	return object().alife_object();
 }
 
-CWeaponHUD*  CScriptGameObject::GetWeaponHUD() const
+attachable_hud_item* CScriptGameObject::GetWeaponHUD() const
 {
 	CGameObject *obj = &this->object();
-	CWeapon *wpn = smart_cast<CWeapon*>(obj);
-	if (!wpn) return NULL;
+	CWeapon* wpn = smart_cast<CWeapon*>(obj);
+	if (!wpn) return nullptr;
 
-	return wpn->GetHUD();
+	return wpn->HudItemData();
 }
 
 IRenderVisual* CScriptGameObject::GetWeaponHUD_Visual() const
 {
-	CWeaponHUD *hud = GetWeaponHUD();
-	if (!hud) return NULL;
-	return hud->Visual();
+	attachable_hud_item* hud = GetWeaponHUD();
+	if (!hud || !hud->m_model) return nullptr;
+	return hud->m_model->dcast_RenderVisual();
 }
 
 void CScriptGameObject::LoadWeaponHUD_Visual(LPCSTR wpn_hud_section)
@@ -124,7 +125,7 @@ void CScriptGameObject::LoadWeaponHUD_Visual(LPCSTR wpn_hud_section)
 	CWeapon *wpn = smart_cast<CWeapon*>(obj);
 	if (!wpn) return;
 
-	wpn->GetHUD()->Load(wpn_hud_section);
+	wpn->HudItemData()->load(wpn_hud_section);
 }
 
 CGameObject *client_obj(u32 id)

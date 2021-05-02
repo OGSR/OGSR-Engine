@@ -13,7 +13,6 @@
 #include "xr_time.h"
 #include "character_info_defs.h"
 #include "..\xr_3da\CameraBase.h"
-#include "WeaponHUD.h"
 #include "ui/UIStatic.h"
 #include "../COMMON_AI/PATH/patrol_path.h"
 
@@ -92,6 +91,7 @@ class CCar;
 class CDangerObject;
 class CScriptGameObject;
 class CProjector;
+struct attachable_hud_item;
 
 #ifdef DEBUG
 	template <typename _object_type>
@@ -776,7 +776,7 @@ public:
 			// alpet: visual functions for CWeapon descedants 
 			_DECLARE_FUNCTION10 (alife_object			,			CSE_ALifeDynamicObject*);
 			_DECLARE_FUNCTION10 (GetWeaponHUD_Visual	,			IRenderVisual*);
-			_DECLARE_FUNCTION10 (GetWeaponHUD			,			CWeaponHUD*);
+			_DECLARE_FUNCTION10 (GetWeaponHUD			,			attachable_hud_item*);
 			void				LoadWeaponHUD_Visual	(LPCSTR wpn_hud_section);
 
 			void play_hud_animation (LPCSTR anim, bool mix_in);

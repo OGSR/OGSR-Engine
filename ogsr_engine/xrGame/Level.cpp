@@ -41,6 +41,7 @@
 #include "Debug_Renderer.h"
 #include "Actor_Flags.h"
 #include "level_changer.h"
+#include "player_hud.h"
 
 #ifdef DEBUG
 #	include "level_debug.h"
@@ -163,12 +164,16 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	//---------------------------------------------------------	
 
 	m_is_removing_objects = false;
+
+	g_player_hud = xr_new<player_hud>();
+	g_player_hud->load_default();
 }
 
 extern CAI_Space *g_ai_space;
 
 CLevel::~CLevel()
 {
+	xr_delete					(g_player_hud);
 //	g_pGameLevel		= NULL;
 	Msg							("- Destroying level");
 

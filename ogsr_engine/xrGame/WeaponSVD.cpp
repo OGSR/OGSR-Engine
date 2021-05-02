@@ -12,8 +12,7 @@ CWeaponSVD::~CWeaponSVD(void)
 
 void CWeaponSVD::switch2_Fire	()
 {
-	m_bPending = true;
-
+	SetPending(TRUE);
 	inherited::switch2_Fire();
 }
 

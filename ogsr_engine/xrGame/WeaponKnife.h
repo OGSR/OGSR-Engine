@@ -7,19 +7,10 @@ class CWeaponKnife: public CWeapon {
 private:
 	typedef CWeapon inherited;
 protected:
-	MotionSVec			mhud_idle;
-	MotionSVec			mhud_idle_moving;
-	MotionSVec			mhud_idle_sprint;
-	MotionSVec			mhud_hide;
-	MotionSVec			mhud_show;
-	MotionSVec			mhud_attack;
-	MotionSVec			mhud_attack2;
-	MotionSVec			mhud_attack_e;
-	MotionSVec			mhud_attack2_e;
-
 	HUD_SOUND			m_sndShot;
 
 	bool				m_attackStart;
+	bool				m_attackMotionMarksAvailable;
 
 protected:
 
@@ -30,7 +21,7 @@ protected:
 			void		switch2_Attacking			(u32 state);
 
 	virtual void		OnAnimationEnd				(u32 state);
-	virtual void		OnStateSwitch				(u32 S);
+	virtual void		OnStateSwitch				(u32 S, u32 oldState);
 
 	void				state_Attacking				(float dt);
 
@@ -64,10 +55,7 @@ public:
 
 	virtual bool		Action							(s32 cmd, u32 flags);
 
-	virtual void		StartIdleAnim					();
 	virtual void		GetBriefInfo					(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
-	virtual void	PlayAnimIdle( u8 );
-	virtual void onMovementChanged( ACTOR_DEFS::EMoveCommand );
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

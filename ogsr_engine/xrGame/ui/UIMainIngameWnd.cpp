@@ -9,7 +9,6 @@
 #include "../actor.h"
 #include "../HUDManager.h"
 #include "../PDA.h"
-#include "../WeaponHUD.h"
 #include "../character_info.h"
 #include "../inventory.h"
 #include "../UIGameSP.h"
@@ -62,8 +61,8 @@ void test_update();
 using namespace InventoryUtilities;
 
 //	hud adjust mode
-int			g_bHudAdjustMode			= 0;
-float		g_fHudAdjustValue			= 0.0f;
+//int			g_bHudAdjustMode			= 0;
+//float		g_fHudAdjustValue			= 0.0f;
 
 #define DEFAULT_MAP_SCALE 1.f
 #define MAININGAME_XML "maingame.xml"
@@ -507,7 +506,7 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 	test_key(dik);
 #endif
 	// поддержка режима adjust hud mode
-	bool flag = false;
+	/*bool flag = false;
 	if (g_bHudAdjustMode)
 	{
 		CWeaponHUD *pWpnHud = NULL;
@@ -810,7 +809,7 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 		
 
 		if (flag) return true;
-	}
+	}*/
 
 #ifdef DEBUG
 		if(CAttachableItem::m_dbgItem){
@@ -874,7 +873,7 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 		if(flag)return true;;
 		}
 #endif		
-
+	
 	if(Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT))
 	{
 		switch(dik)
@@ -1257,7 +1256,7 @@ void test_draw	()
 
 void CUIMainIngameWnd::draw_adjust_mode()
 {
-	if (g_bHudAdjustMode&&m_pWeapon) //draw firePoint,ShellPoint etc
+/*	if (g_bHudAdjustMode&&m_pWeapon) //draw firePoint,ShellPoint etc
 	{
 		CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
 		if(!pActor)
@@ -1326,6 +1325,7 @@ void CUIMainIngameWnd::draw_adjust_mode()
 		}
 	}
 }
+*/
 #endif
 
 

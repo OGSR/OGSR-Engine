@@ -100,10 +100,6 @@ public:
 	virtual void				Deactivate( bool = false );								// !!! Переопределить. (см. в Inventory.cpp)
 	virtual bool				Action				(s32 cmd, u32 flags) {return false;}	// true если известная команда, иначе false
 
-	virtual bool				IsHidden			()	const	{return true;}
-	virtual bool				IsHiding			()	const	{return false;}
-	virtual bool 				IsShowing			()  const	{return false;}
-
 	virtual void				OnH_B_Chield		();
 	virtual void				OnH_A_Chield		();
     virtual void				OnH_B_Independent	(bool just_before_destroy);

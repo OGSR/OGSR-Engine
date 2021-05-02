@@ -22,12 +22,12 @@ public:
 	virtual void	net_Relcase(CObject *object);
 
 	//анимации
-	virtual bool	TryPlayAnimIdle( u8 );
-	virtual void	PlayAnimShow	();
-	virtual void	PlayAnimIdle	( u8 );
-	virtual void	PlayAnimHide	();
-	virtual void	PlayAnimReload	();
-	virtual void	PlayAnimShoot	();
+	virtual void	PlayAnimShow	() override;
+	virtual void	PlayAnimIdle	() override;
+	virtual void	PlayAnimAim		() override;
+	virtual void	PlayAnimHide	() override;
+	virtual void	PlayAnimReload	() override;
+	virtual void	PlayAnimShoot	() override;
 
 	virtual void	UpdateSounds	();
 protected:	
@@ -35,20 +35,6 @@ protected:
 
 	HUD_SOUND			sndClose;
 	ESoundTypes			m_eSoundClose;
-	struct WWPMotions{
-		MotionSVec		mhud_show_empty;
-		MotionSVec		mhud_empty;
-		MotionSVec		mhud_shot_l;
-		MotionSVec		mhud_close;
-		MotionSVec		mhud_reload_empty;
-		MotionSVec		mhud_idle_sprint_empty;
-		MotionSVec		mhud_idle_moving_empty;
-	};
-	WWPMotions			mhud_pistol,mhud_pistol_r;
-	SWMmotions			wm_mhud_r;
-	
-	WWPMotions&			wwpm_current	();
-	SWMmotions&			swm_current	();
 
 	bool m_opened;
 };

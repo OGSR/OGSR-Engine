@@ -12,6 +12,7 @@
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Items.h"
 #include "actor.h"
+#include "firedeps.h"
 
 // refs
 class CEntity;
@@ -60,6 +61,7 @@ public:
 
 	virtual void			renderable_Render	();
 	virtual void			OnDrawUI			();
+	virtual bool			need_renderable		();
 
 	virtual void			OnH_B_Chield		();
 	virtual void			OnH_A_Chield		();
@@ -116,13 +118,9 @@ public:
 //////////////////////////////////////////////////////////////////////////
 public:
 	enum EWeaponStates {
-		eIdle		= 0,
-		eFire,
+		eFire = eLastBaseState + 1,
 		eFire2,
 		eReload,
-		eShowing,
-		eHiding,
-		eHidden,
 		eMisfire,
 		eMagEmpty,
 		eSwitch,
@@ -209,9 +207,13 @@ public:
 	shared_str m_sWpn_scope_bone;
 	shared_str m_sWpn_silencer_bone;
 	shared_str m_sWpn_launcher_bone;
+	shared_str m_sHud_wpn_scope_bone;
+	shared_str m_sHud_wpn_silencer_bone;
+	shared_str m_sHud_wpn_launcher_bone;
 
 private:
 	std::vector<shared_str> hidden_bones;
+	std::vector<shared_str> hud_hidden_bones;
 
 protected:
 	//состояние подключенных аддонов
@@ -334,48 +336,35 @@ protected:
 
 public:
 	//загружаемые параметры
-	Fvector					vLoadedFirePoint	;
-	Fvector					vLoadedFirePoint2	;
-
+	Fvector					vLoadedFirePoint;
+	Fvector					vLoadedFirePoint2;
 private:
-	//текущее положение и напрвление для партиклов
-	struct					_firedeps
-	{
-		Fmatrix				m_FireParticlesXForm;	//направление для партиклов огня и дыма
-		Fvector				vLastFP, vLastFP2	;	//огня
-		Fvector				vLastFD				;	// direction
-		Fvector				vLastSP				;	//гильз	
+	firedeps				m_current_firedeps{};
 
-		_firedeps()			{
-			m_FireParticlesXForm.identity();
-			vLastFP.set			(0,0,0);
-			vLastFP2.set		(0,0,0);
-			vLastFD.set			(0,0,0);
-			vLastSP.set			(0,0,0);
-		}
-	}						m_firedeps			;
 protected:
 	virtual void			UpdateFireDependencies_internal	();
 	virtual void			UpdatePosition			(const Fmatrix& transform);	//.
 	virtual void			UpdateXForm				();
 
-	float m_fLR_MovingFactor; // !!!!
-	Fvector m_strafe_offset[3][2]; //pos,rot,data/ normal,aim-GL --#SM+#--
-	u8 GetCurrentHudOffsetIdx() const;
+	float					m_fLR_MovingFactor; // !!!!
+	Fvector					m_strafe_offset[3][2]; //pos,rot,data/ normal,aim-GL --#SM+#--
+
+	virtual	u8				GetCurrentHudOffsetIdx	();
+	virtual bool			MovingAnimAllowedNow	();
 	virtual void			UpdateHudAdditonal		(Fmatrix&);
 
 	IC		void			UpdateFireDependencies	()			{ if (dwFP_Frame==Device.dwFrame) return; UpdateFireDependencies_internal(); };
 
 	virtual void			LoadFireParams		(LPCSTR section, LPCSTR prefix);
 public:	
-	IC		const Fvector&	get_LastFP				()			{ UpdateFireDependencies(); return m_firedeps.vLastFP;	}
-	IC		const Fvector&	get_LastFP2				()			{ UpdateFireDependencies(); return m_firedeps.vLastFP2;	}
-	IC		const Fvector&	get_LastFD				()			{ UpdateFireDependencies(); return m_firedeps.vLastFD;	}
-	IC		const Fvector&	get_LastSP				()			{ UpdateFireDependencies(); return m_firedeps.vLastSP;	}
+	IC		const Fvector&	get_LastFP				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastFP;	}
+	IC		const Fvector&	get_LastFP2				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastFP2;	}
+	IC		const Fvector&	get_LastFD				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastFD;	}
+	IC		const Fvector&	get_LastSP				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastSP;	}
 
 	virtual const Fvector&	get_CurrentFirePoint	()			{ return get_LastFP();				}
 	virtual const Fvector&	get_CurrentFirePoint2	()			{ return get_LastFP2();				}
-	virtual const Fmatrix&	get_ParticlesXFORM		()			{ UpdateFireDependencies(); return m_firedeps.m_FireParticlesXForm;	}
+	virtual const Fmatrix&	get_ParticlesXFORM		()			{ UpdateFireDependencies(); return m_current_firedeps.m_FireParticlesXForm;	}
 	virtual void			ForceUpdateFireParticles();
 
 	//////////////////////////////////////////////////////////////////////////

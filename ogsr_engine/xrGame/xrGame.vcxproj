@@ -446,6 +446,7 @@
     <ClInclude Include="mt_config.h" />
     <ClInclude Include="damage_manager.h" />
     <ClInclude Include="DamageSource.h" />
+    <ClInclude Include="player_hud.h" />
     <ClInclude Include="pose_extrapolation.h" />
     <ClInclude Include="script_actor.h" />
     <ClInclude Include="script_game_object_impl.h" />
@@ -1301,7 +1302,6 @@
     <ClInclude Include="WeaponFORT.h" />
     <ClInclude Include="WeaponRG6.h" />
     <ClInclude Include="weaponBM16.h" />
-    <ClInclude Include="WeaponHUD.h" />
     <ClInclude Include="WeaponMounted.h" />
     <ClInclude Include="WeaponStatMgun.h" />
     <ClInclude Include="Artifact.h" />
@@ -1668,6 +1668,8 @@
     <ClCompile Include="ik_limb_state.cpp" />
     <ClCompile Include="ik_object_shift.cpp" />
     <ClCompile Include="InventoryContainer.cpp" />
+    <ClCompile Include="player_hud.cpp" />
+    <ClCompile Include="player_hud_tune.cpp" />
     <ClCompile Include="pose_extrapolation.cpp" />
     <ClCompile Include="script_action_wrapper.cpp" />
     <ClCompile Include="action_planner_script.cpp" />
@@ -2240,7 +2242,6 @@
     <ClCompile Include="WeaponRG6_script.cpp" />
     <ClCompile Include="weaponBM16.cpp" />
     <ClCompile Include="weaponBM16_script.cpp" />
-    <ClCompile Include="WeaponHUD.cpp" />
     <ClCompile Include="WeaponMounted.cpp" />
     <ClCompile Include="WeaponStatMgun.cpp" />
     <ClCompile Include="WeaponStatMgunFire.cpp" />

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "weaponshotgun.h"
-#include "WeaponHUD.h"
 #include "entity.h"
 #include "ParticlesObject.h"
 #include "xr_level_controller.h"
@@ -38,22 +37,11 @@ void CWeaponShotgun::Load	(LPCSTR section)
 
 	// Звук и анимация для выстрела дуплетом
 	HUD_SOUND::LoadSound(section, "snd_shoot_duplet", sndShotBoth, m_eSoundShotBoth);
-	animGetEx( mhud_shot_boths, "anim_shoot_both" );
 
-	if(pSettings->line_exist(section, "tri_state_reload")){
+	if (pSettings->line_exist(section, "tri_state_reload"))
+	{
 		m_bTriStateReload = !!pSettings->r_bool(section, "tri_state_reload");
-	};
-	if(m_bTriStateReload){
-		HUD_SOUND::LoadSound(section, "snd_open_weapon", m_sndOpen, m_eSoundOpen);
-		animGetEx( mhud_open, "anim_open_weapon" );
-
-		HUD_SOUND::LoadSound(section, "snd_add_cartridge", m_sndAddCartridge, m_eSoundAddCartridge);
-		animGetEx( mhud_add_cartridge, "anim_add_cartridge" );
-
-		HUD_SOUND::LoadSound(section, "snd_close_weapon", m_sndClose, m_eSoundClose);
-		animGetEx( mhud_close, "anim_close_weapon" );
-	};
-
+	}
 }
 
 void CWeaponShotgun::OnShot () 
@@ -63,7 +51,8 @@ void CWeaponShotgun::OnShot ()
 
 void CWeaponShotgun::Fire2Start () 
 {
-	if(m_bPending) return;
+	if (IsPending()) 
+		return;
 
 	inherited::Fire2Start();
 
@@ -111,7 +100,7 @@ void CWeaponShotgun::OnShotBoth()
 	AddShotEffector		();
 	
 	// анимация дуплета
-	m_pHUD->animPlay			(random_anim(mhud_shot_boths),FALSE,this,GetState());
+	PlayHUDMotion("anim_shoot_both", "anm_shots_both", false, this, GetState());
 	
 	// Shell Drop
 	Fvector vel; 
@@ -167,7 +156,7 @@ void CWeaponShotgun::UpdateCL()
 
 void CWeaponShotgun::switch2_Fire	()
 {
-	m_bPending = true;
+	SetPending(TRUE);
 	inherited::switch2_Fire	();
 }
 
@@ -177,7 +166,7 @@ void CWeaponShotgun::switch2_Fire2	()
 
 	if (fTime<=0)
 	{
-		m_bPending = true;
+		SetPending(TRUE);
 
 		// Fire
 		Fvector						p1, d; 
@@ -327,14 +316,14 @@ void CWeaponShotgun::TriStateReload()
 	SwitchState			(eReload);
 }
 
-void CWeaponShotgun::OnStateSwitch	(u32 S)
+void CWeaponShotgun::OnStateSwitch	(u32 S, u32 oldState)
 {
 	if(!m_bTriStateReload || S != eReload){
-		inherited::OnStateSwitch(S);
+		inherited::OnStateSwitch(S, oldState);
 		return;
 	}
 
-	CWeapon::OnStateSwitch(S);
+	CWeapon::OnStateSwitch(S, oldState);
 
 	if ( m_magazine.size() >= (u32)iMagazineSize || !HaveCartridgeInInventory(1) ) {
 			m_sub_state = eSubstateReloadEnd;
@@ -360,39 +349,43 @@ void CWeaponShotgun::switch2_StartReload()
 {
 	PlaySound			(m_sndOpen,get_LastFP());
 	PlayAnimOpenWeapon	();
-	m_bPending = true;
+	SetPending(TRUE);
 }
 
 void CWeaponShotgun::switch2_AddCartgidge	()
 {
 	PlaySound	(m_sndAddCartridge,get_LastFP());
 	PlayAnimAddOneCartridgeWeapon();
-	m_bPending = true;
+	SetPending(TRUE);
 }
 
 void CWeaponShotgun::switch2_EndReload	()
 {
 	PlaySound			(m_sndClose,get_LastFP());
 	PlayAnimCloseWeapon	();
-	m_bPending = true;
+	SetPending(TRUE);
 }
 
 void CWeaponShotgun::PlayAnimOpenWeapon()
 {
 	VERIFY(GetState()==eReload);
-	m_pHUD->animPlay(random_anim(mhud_open),TRUE,this,GetState());
+
+	PlayHUDMotion("anim_open_weapon", "anm_open", FALSE, this, GetState());
 }
+
 void CWeaponShotgun::PlayAnimAddOneCartridgeWeapon()
 {
 	VERIFY(GetState()==eReload);
-	m_pHUD->animPlay(random_anim(mhud_add_cartridge),TRUE,this,GetState());
+
+	PlayHUDMotion("anim_add_cartridge", "anm_add_cartridge", FALSE, this, GetState());
 }
+
 void CWeaponShotgun::PlayAnimCloseWeapon()
 {
 	VERIFY(GetState()==eReload);
-	m_pHUD->animPlay(random_anim(mhud_close),TRUE,this,GetState());
-}
 
+	PlayHUDMotion("anim_close_weapon", "anm_close", FALSE, this, GetState());
+}
 
 bool CWeaponShotgun::HaveCartridgeInInventory( u8 cnt ) {
   if ( unlimited_ammo() ) return true;
@@ -497,7 +490,7 @@ void	CWeaponShotgun::net_Import	(NET_Packet& P)
 void CWeaponShotgun::TryReload() {
   if ( m_pCurrentInventory ) {
     if ( HaveCartridgeInInventory( 1 ) || unlimited_ammo() || ( IsMisfire() && iAmmoElapsed ) ) {
-      m_bPending = true;
+      SetPending(TRUE);
       SwitchState( eReload ); 
       return;
     }

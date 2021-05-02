@@ -11,9 +11,6 @@ class CWeaponMagazinedWGrenade : public CWeaponMagazined,
 {
 	typedef CWeaponMagazined inherited;
 
-protected:
-	bool TryPlayAnimIdle( u8 );
-
 public:
 					CWeaponMagazinedWGrenade	(LPCSTR name="AK74",ESoundTypes eSoundType=SOUND_TYPE_WEAPON_SUBMACHINEGUN);
 	virtual			~CWeaponMagazinedWGrenade	();
@@ -41,9 +38,10 @@ public:
 	virtual void	InitAddons();
 	virtual bool	UseScopeTexture();
 	virtual	float	CurrentZoomFactor	();
+	virtual u8		GetCurrentHudOffsetIdx();
 
 	
-	virtual void	OnStateSwitch	(u32 S);
+	virtual void	OnStateSwitch	(u32 S, u32 oldState);
 	
 	virtual void	switch2_Idle	();
 	virtual void	switch2_Reload	();
@@ -66,40 +64,16 @@ public:
 	virtual bool	IsNecessaryItem	    (const shared_str& item_sect);
 
 	//виртуальные функции для проигрывания анимации HUD
-	virtual void	PlayAnimShow();
-	virtual void	PlayAnimHide();
-	virtual void	PlayAnimReload();
-	virtual void	PlayAnimIdle( u8 );
-	virtual void	PlayAnimShoot();
+	virtual void	PlayAnimShow	();
+	virtual void	PlayAnimHide	();
+	virtual void	PlayAnimReload	();
+	virtual void	PlayAnimIdle	();
+	virtual void	PlayAnimShoot	();
 	virtual void	PlayAnimModeSwitch();
 	
 	HUD_SOUND			sndShotG;
 	HUD_SOUND			sndReloadG;
 	HUD_SOUND			sndSwitch;
-
-
-	//анимации с подключенным подствольником
-	//(режим обычной стрельбы)
-	MotionSVec			mhud_idle_g;
-	MotionSVec			mhud_idle_g_aim;
-	MotionSVec			mhud_idle_moving_g;
-	MotionSVec			mhud_idle_sprint_g;
-	MotionSVec			mhud_reload_g;
-	MotionSVec			mhud_shots_g;
-	MotionSVec			mhud_switch_g, mhud_switch;
-	MotionSVec			mhud_show_g;
-	MotionSVec			mhud_hide_g;
-	//(режим стрельбы из подствольника)
-	MotionSVec			mhud_idle_moving_gl;
-	MotionSVec			mhud_idle_sprint_gl;
-	MotionSVec			mhud_idle_w_gl;
-	MotionSVec			mhud_idle_w_gl_aim;
-	MotionSVec			mhud_reload_w_gl;
-	MotionSVec			mhud_shots_w_gl;
-	MotionSVec			mhud_show_w_gl;
-	MotionSVec			mhud_hide_w_gl;
-	MotionSVec			mhud_reload_w_gl_partly;
-
 
 	//дополнительные параметры патронов 
 	//для подствольника

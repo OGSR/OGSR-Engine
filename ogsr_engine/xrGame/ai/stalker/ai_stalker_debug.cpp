@@ -127,7 +127,7 @@ void restore_actor()
 	CHudItem* pHudItem = smart_cast<CHudItem*>(g_debug_actor->inventory().ActiveItem());
 	if (pHudItem) 
 	{
-		pHudItem->OnStateSwitch(pHudItem->GetState());
+		pHudItem->OnStateSwitch(pHudItem->GetState(), pHudItem->GetState());
 	}
 }
 
