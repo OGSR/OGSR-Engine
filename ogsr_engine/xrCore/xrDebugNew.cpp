@@ -149,7 +149,7 @@ void xrDebug::do_exit(const std::string &message)
 	MessageBox(gGameWindow, message.c_str(), "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 
 	if ( !IsDebuggerPresent() )
-		quick_exit(EXIT_FAILURE);
+		quick_exit(EXIT_SUCCESS);
 	else
 		DEBUG_INVOKE;
 }
@@ -188,7 +188,7 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 
 #endif
 	if ( !IsDebuggerPresent() )
-		quick_exit(EXIT_FAILURE);
+		quick_exit(EXIT_SUCCESS);
 	else
 		DEBUG_INVOKE;
 }
@@ -390,8 +390,6 @@ static LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 #ifdef USE_OWN_MINI_DUMP
 	save_mini_dump(pExceptionInfo);
 #endif
-
-	ExitFromWinMain = true;
 
 	return EXCEPTION_EXECUTE_HANDLER;
 }
