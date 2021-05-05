@@ -328,12 +328,7 @@ void COutfitScript::script_register(lua_State *L)
 		];
 
 }
-/*
-int			get_fire_bone(CWeaponHUD *hud)  { return hud->FireBone();  }
-const Fvector&	get_fire_point1 (CWeaponHUD *hud) { return hud->FirePoint(); }
-const Fvector&	get_fire_point2 (CWeaponHUD *hud) { return hud->FirePoint2(); }
-IRenderVisual* get_hud_visual(CWeaponHUD *hud)   { return hud->Visual(); }
-*/
+
 #ifdef NLC_EXTENSIONS
 extern void attach_upgrades(lua_State *L);
 #endif
@@ -422,16 +417,6 @@ void CWeaponScript::script_register(lua_State *L)
 #endif
 	module(L)
 		[
-			/*class_<CWeaponHUD>("CWeaponHUD")
-			.property("fire_bone"						,			&get_fire_bone)
-			.property("fire_point"						,			&get_fire_point1)
-			.property("fire_point2"						,			&get_fire_point2)
-			
-			.property("visual"							,			&get_hud_visual)
-			.def_readonly("transform"					,			&CWeaponHUD::m_Transform)
-			.def_readonly("visible"						,			&CWeaponHUD::m_bVisible)
-			,*/
-
 			class_<CWeapon,	CInventoryItemObject>		("CWeapon")
 			// из неэкспортируемого класса CHudItemObject:
 			.property("state", &CHudItemObject::GetState)
