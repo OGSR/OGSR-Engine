@@ -119,6 +119,40 @@ struct attachable_hud_item
 	u32 anim_play(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md, u8& rnd, bool randomAnim);
 };
 
+class CWeaponBobbing
+{
+public:
+	CWeaponBobbing();
+	~CWeaponBobbing() = default;
+
+	void Load();
+	void Update(Fmatrix& m, attachable_hud_item* hi);
+	void CheckState();
+
+private:
+	float	fTime;
+	Fvector	vAngleAmplitude;
+	float	fYAmplitude;
+	float	fSpeed;
+
+	u32		dwMState;
+	float	fReminderFactor;
+	bool	is_limping;
+	bool	m_bZoomMode;
+
+	float	m_fAmplitudeRun;
+	float	m_fAmplitudeWalk;
+	float	m_fAmplitudeLimp;
+
+	float	m_fSpeedRun;
+	float	m_fSpeedWalk;
+	float	m_fSpeedLimp;
+
+	float	m_fCrouchFactor;
+	float	m_fZoomFactor;
+	float	m_fScopeZoomFactor;
+};
+
 class player_hud
 {
 public:
@@ -155,6 +189,7 @@ private:
 	void update_inertion(Fmatrix& trans);
 	void update_additional(Fmatrix& trans);
 	bool inertion_allowed();
+	bool bobbing_allowed();
 
 private:
 	shared_str m_sect_name;
@@ -166,6 +201,7 @@ private:
 	xr_vector<u16> m_ancors;
 	attachable_hud_item* m_attached_items[2];
 	xr_vector<attachable_hud_item*> m_pool;
+	CWeaponBobbing* m_bobbing;
 };
 
 extern player_hud* g_player_hud;

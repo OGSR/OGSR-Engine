@@ -23,6 +23,7 @@ CHudItem::CHudItem(void)
 	RenderHud			(TRUE);
 	EnableHudInertion	(TRUE);
 	AllowHudInertion	(TRUE);
+	AllowHudBobbing		(TRUE);
 
 	m_bStopAtEndAnimIsRunning = false;
 	m_current_motion_def = nullptr;
@@ -68,6 +69,9 @@ void CHudItem::Load(LPCSTR section)
 
 		if (pSettings->line_exist(hud_sect, "allow_collision"))
 			EnableHudCollision(pSettings->r_bool(hud_sect, "allow_collision"));
+
+		if (pSettings->line_exist(hud_sect, "allow_bobbing"))
+			AllowHudBobbing(pSettings->r_bool(hud_sect, "allow_bobbing"));
 
 		m_origin_offset			= READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_origin_offset", ORIGIN_OFFSET);
 		m_tendto_speed			= READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_tendto_speed", TENDTO_SPEED);
@@ -373,14 +377,17 @@ bool CHudItem::TryPlayAnimIdle()
 				PlayAnimIdleSprint();
 				return true;
 			}
-			if (Actor()->get_state()&ACTOR_DEFS::mcAnyMove)
+			if (!Core.Features.test(xrCore::Feature::wpn_bobbing))
 			{
-				if (!st.bCrouch)
+				if (Actor()->get_state()&ACTOR_DEFS::mcAnyMove)
 				{
-					if (AnimationExist("anim_idle_moving") || AnimationExist("anm_idle_moving"))
+					if (!st.bCrouch)
 					{
-						PlayAnimIdleMoving();
-						return true;
+						if (AnimationExist("anim_idle_moving") || AnimationExist("anm_idle_moving"))
+						{
+							PlayAnimIdleMoving();
+							return true;
+						}
 					}
 				}
 			}

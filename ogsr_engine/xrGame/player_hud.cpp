@@ -6,6 +6,9 @@
 #include "physic_item.h"
 #include "ActorEffector.h"
 #include "../xr_3da/IGame_Persistent.h"
+#include "Weapon.h"
+#include "Actor.h"
+#include "ActorCondition.h"
 
 player_hud* g_player_hud = nullptr;
 Fvector _ancor_pos;
@@ -291,7 +294,11 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 		m_item_attach[1] = pSettings->r_fvector3(sect_name, "item_orientation");
 
 	shared_str bone_name;
-	bool useCopFirePoint = READ_IF_EXISTS(pSettings, r_bool, sect_name, "use_cop_fire_point", false);
+	bool useCopFirePoint;
+	if (pSettings->line_exist(sect_name, "use_cop_fire_point"))
+		useCopFirePoint = !!pSettings->r_bool(sect_name, "use_cop_fire_point");
+	else
+		useCopFirePoint = !!pSettings->line_exist(sect_name, "item_visual");
 
 	if (!useCopFirePoint) // shoc configs
 	{
@@ -546,6 +553,8 @@ player_hud::player_hud()
 	m_attached_items[0] = nullptr;
 	m_attached_items[1] = nullptr;
 	m_transform.identity();
+	if (Core.Features.test(xrCore::Feature::wpn_bobbing))
+		m_bobbing = xr_new<CWeaponBobbing>();
 }
 
 player_hud::~player_hud()
@@ -565,6 +574,8 @@ player_hud::~player_hud()
 		xr_delete(a);
 	}
 	m_pool.clear();
+	if (Core.Features.test(xrCore::Feature::wpn_bobbing))
+		xr_delete(m_bobbing);
 }
 
 void player_hud::load(const shared_str& player_hud_sect)
@@ -724,6 +735,10 @@ void player_hud::update(const Fmatrix& cam_trans)
 		tmp = Fvector().set(0.f, 0.f, 0.f);
 
 	m_attach_offset.translate_over(tmp);
+
+	if (Core.Features.test(xrCore::Feature::wpn_bobbing) && bobbing_allowed())
+		m_bobbing->Update(m_attach_offset, m_attached_items[0]);
+
 	m_transform.mul(trans, m_attach_offset);
 	// insert inertion here
 
@@ -1001,6 +1016,16 @@ bool player_hud::inertion_allowed()
 	return true;
 }
 
+bool player_hud::bobbing_allowed()
+{
+	attachable_hud_item* hi = m_attached_items[0];
+	if (hi)
+	{
+		return hi->m_parent_hud_item->HudBobbingAllowed();
+	}
+	return true;
+}
+
 void player_hud::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 {
 	if (cmd == 0)
@@ -1023,5 +1048,113 @@ void player_hud::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 
 		if (m_attached_items[1])
 			m_attached_items[1]->m_parent_hud_item->OnMovementChanged(cmd);
+	}
+}
+
+#define BOBBING_SECT	"wpn_bobbing_effector"
+#define SPEED_REMINDER	5.f 
+
+CWeaponBobbing::CWeaponBobbing()
+{
+	Load();
+}
+
+void CWeaponBobbing::Load()
+{
+	fTime = 0.f;
+	fReminderFactor = 0.f;
+	is_limping = false;
+
+	m_fAmplitudeRun = pSettings->r_float(BOBBING_SECT, "run_amplitude");
+	m_fAmplitudeWalk = pSettings->r_float(BOBBING_SECT, "walk_amplitude");
+	m_fAmplitudeLimp = pSettings->r_float(BOBBING_SECT, "limp_amplitude");
+
+	m_fSpeedRun = pSettings->r_float(BOBBING_SECT, "run_speed");
+	m_fSpeedWalk = pSettings->r_float(BOBBING_SECT, "walk_speed");
+	m_fSpeedLimp = pSettings->r_float(BOBBING_SECT, "limp_speed");
+
+	m_fCrouchFactor = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "crouch_k", 0.75f);
+	m_fZoomFactor = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_k", 1.f);
+	m_fScopeZoomFactor = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "scope_zoom_k", m_fZoomFactor);
+}
+
+void CWeaponBobbing::CheckState()
+{
+	dwMState = Actor()->get_state();
+	is_limping = Actor()->conditions().IsLimping();
+	m_bZoomMode = Actor()->IsZoomAimingMode();
+	fTime += Device.fTimeDelta;
+}
+
+void CWeaponBobbing::Update(Fmatrix& m, attachable_hud_item* hi)
+{
+	CheckState();
+	if (dwMState & ACTOR_DEFS::mcAnyMove)
+	{
+		if (fReminderFactor < 1.f)
+			fReminderFactor += SPEED_REMINDER * Device.fTimeDelta;
+		else
+			fReminderFactor = 1.f;
+	}
+	else
+	{
+		if (fReminderFactor > 0.f)
+			fReminderFactor -= SPEED_REMINDER * Device.fTimeDelta;
+		else
+			fReminderFactor = 0.f;
+	}
+
+	if (!fsimilar(fReminderFactor, 0))
+	{
+		Fvector dangle;
+		Fmatrix R, mR;
+		float k = (dwMState&ACTOR_DEFS::mcCrouch) ? m_fCrouchFactor : 1.f;
+		float k2 = k;
+
+		if (m_bZoomMode) 
+		{
+			float zoom_factor = m_fZoomFactor;
+			if (hi)
+			{
+				CWeapon* wpn = smart_cast<CWeapon*>(hi->m_parent_hud_item);
+				if (wpn && wpn->IsScopeAttached() && !wpn->IsGrenadeMode())
+					zoom_factor = m_fScopeZoomFactor;
+			}
+			k2 *= zoom_factor;
+		}
+
+		float A, ST;
+
+		if (isActorAccelerated(dwMState, m_bZoomMode))
+		{
+			A = m_fAmplitudeRun * k2;
+			ST = m_fSpeedRun * fTime * k;
+		}
+		else if (is_limping)
+		{
+			A = m_fAmplitudeLimp * k2;
+			ST = m_fSpeedLimp * fTime * k;
+		}
+		else
+		{
+			A = m_fAmplitudeWalk * k2;
+			ST = m_fSpeedWalk * fTime * k;
+		}
+
+		float _sinA = _abs(_sin(ST) * A) * fReminderFactor;
+		float _cosA = _cos(ST) * A * fReminderFactor;
+
+		m.c.y += _sinA;
+		dangle.x = _cosA;
+		dangle.z = _cosA;
+		dangle.y = _sinA;
+
+
+		R.setHPB(dangle.x, dangle.y, dangle.z);
+
+		mR.mul(m, R);
+
+		m.k.set(mR.k);
+		m.j.set(mR.j);
 	}
 }

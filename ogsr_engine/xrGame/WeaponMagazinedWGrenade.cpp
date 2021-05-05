@@ -713,11 +713,16 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle()
 				CEntity::SEntityState st;
 				pActor->g_State(st);
 				if (st.bSprint)
-					act_state = 1;
-				else if (Actor()->get_state()&ACTOR_DEFS::mcAnyMove)
 				{
-					if (!st.bCrouch)
-						act_state = 2;
+					act_state = 1;
+				}
+				else if (!Core.Features.test(xrCore::Feature::wpn_bobbing))
+				{
+					if (Actor()->get_state()&ACTOR_DEFS::mcAnyMove)
+					{
+						if (!st.bCrouch)
+							act_state = 2;
+					}
 				}
 			}
 

@@ -69,6 +69,7 @@ protected: //чтоб нельзя было вызвать на прямую
 		fl_inertion_allow	= (1 << 3),
 		fl_aiming			= (1 << 4),
 		fl_collision_hud	= (1 << 5),
+		fl_bobbing_allow	= (1 << 6),
 	};
 
 	// Motion data
@@ -162,9 +163,11 @@ public:
 	IC bool			HudInertionEnabled		() const { return m_huditem_flags.test(fl_inertion_enable); }
 	IC bool			HudInertionAllowed		() const { return m_huditem_flags.test(fl_inertion_allow); }
 	IC bool			HudCollisionEnabled		() const { return m_huditem_flags.test(fl_collision_hud); }
+	IC bool			HudBobbingAllowed		() const { return m_huditem_flags.test(fl_bobbing_allow); }
 	IC void			EnableHudInertion		(BOOL B) { m_huditem_flags.set(fl_inertion_enable, B); }
 	IC void			AllowHudInertion		(BOOL B) { m_huditem_flags.set(fl_inertion_allow, B); }
 	IC void			EnableHudCollision		(BOOL B) { m_huditem_flags.set(fl_collision_hud, B); }
+	IC void			AllowHudBobbing			(BOOL B) { m_huditem_flags.set(fl_bobbing_allow, B); }
 	virtual void	render_hud_mode			() {};
 	virtual bool	need_renderable			() { return true; };
 	virtual void	render_item_3d_ui		() {}
