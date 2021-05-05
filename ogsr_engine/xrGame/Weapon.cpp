@@ -237,9 +237,11 @@ void CWeapon::Load		(LPCSTR section)
 	inherited::Load					(section);
 	CShootingObject::Load			(section);
 
-	
 	if(pSettings->line_exist(section, "flame_particles_2"))
 		m_sFlameParticles2 = pSettings->r_string(section, "flame_particles_2");
+
+	if (!m_bForcedParticlesHudMode)
+		m_bParticlesHudMode = !!pSettings->line_exist(hud_sect, "item_visual");
 
 #ifdef DEBUG
 	{

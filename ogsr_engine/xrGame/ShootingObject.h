@@ -67,6 +67,8 @@ protected:
 	Fvector4				fvHitPower;
 	//float					fHitPower;
 	float					fHitImpulse;
+	bool					m_bForcedParticlesHudMode;
+	bool					m_bParticlesHudMode;
 
 	//скорость вылета пули из ствола
 	float					m_fStartBulletSpeed;
