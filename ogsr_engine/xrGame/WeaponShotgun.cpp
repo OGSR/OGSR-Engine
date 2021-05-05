@@ -42,6 +42,13 @@ void CWeaponShotgun::Load	(LPCSTR section)
 	{
 		m_bTriStateReload = !!pSettings->r_bool(section, "tri_state_reload");
 	}
+
+	if (m_bTriStateReload)
+	{
+		HUD_SOUND::LoadSound(section, "snd_open_weapon", m_sndOpen, m_eSoundOpen);
+		HUD_SOUND::LoadSound(section, "snd_add_cartridge", m_sndAddCartridge, m_eSoundAddCartridge);
+		HUD_SOUND::LoadSound(section, "snd_close_weapon", m_sndClose, m_eSoundClose);
+	}
 }
 
 void CWeaponShotgun::OnShot () 

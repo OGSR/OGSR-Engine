@@ -294,8 +294,11 @@ void CMissile::State(u32 state, u32 oldState)
 	break;
 	case eThrowEnd:
 	{
-		SetPending(TRUE);
 		PlayHUDMotion("anim_throw_end", "anm_throw_end", TRUE, this, GetState());
+		if (m_throwMotionMarksAvailable)
+			SwitchState(eShowing);
+		else
+			SetPending(TRUE);
 	}
 	break;
 	case eBore:

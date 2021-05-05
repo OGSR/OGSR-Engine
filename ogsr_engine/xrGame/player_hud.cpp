@@ -56,19 +56,29 @@ void player_hud_motion_container::load(attachable_hud_item* parent, IKinematicsA
 			// base and alias name
 			pm->m_alias_name = _b->first;
 
-			if (_GetItemCount(anm.c_str()) == 1)
+			if (parent->m_has_separated_hands)
 			{
-				pm->m_base_name = anm;
-				pm->m_additional_name = anm;
+				if (_GetItemCount(anm.c_str()) == 1)
+				{
+					pm->m_base_name = anm;
+					pm->m_additional_name = anm;
+				}
+				else
+				{
+					R_ASSERT2(_GetItemCount(anm.c_str()) == 2, anm.c_str());
+					string512 str_item;
+					_GetItem(anm.c_str(), 0, str_item);
+					pm->m_base_name = str_item;
+
+					_GetItem(anm.c_str(), 1, str_item);
+					pm->m_additional_name = str_item;
+				}
 			}
 			else
 			{
-				R_ASSERT2(_GetItemCount(anm.c_str()) == 2, anm.c_str());
 				string512 str_item;
 				_GetItem(anm.c_str(), 0, str_item);
 				pm->m_base_name = str_item;
-
-				_GetItem(anm.c_str(), 1, str_item);
 				pm->m_additional_name = str_item;
 			}
 

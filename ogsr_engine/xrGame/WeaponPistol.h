@@ -23,6 +23,9 @@ public:
 
 	//анимации
 	virtual void	PlayAnimShow	() override;
+	virtual void	PlayAnimBore	() override;
+	virtual void	PlayAnimIdleSprint() override;
+	virtual void	PlayAnimIdleMoving() override;
 	virtual void	PlayAnimIdle	() override;
 	virtual void	PlayAnimAim		() override;
 	virtual void	PlayAnimHide	() override;

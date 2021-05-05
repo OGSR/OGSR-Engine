@@ -375,15 +375,23 @@ bool CHudItem::TryPlayAnimIdle()
 			}
 			if (Actor()->get_state()&ACTOR_DEFS::mcAnyMove)
 			{
-				if (AnimationExist("anim_idle_moving") || AnimationExist("anm_idle_moving"))
+				if (!st.bCrouch)
 				{
-					PlayAnimIdleMoving();
-					return true;
+					if (AnimationExist("anim_idle_moving") || AnimationExist("anm_idle_moving"))
+					{
+						PlayAnimIdleMoving();
+						return true;
+					}
 				}
 			}
 		}
 	}
 	return false;
+}
+
+void CHudItem::PlayAnimBore()
+{
+	PlayHUDMotion("anim_idle", "anm_bore", TRUE, this, GetState());
 }
 
 bool CHudItem::AnimationExist(const shared_str& anim_name) const

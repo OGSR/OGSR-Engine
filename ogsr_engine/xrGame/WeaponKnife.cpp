@@ -63,7 +63,6 @@ void CWeaponKnife::OnStateSwitch(u32 S, u32 oldState)
 		}break;
 	}
 }
-	
 
 void CWeaponKnife::KnifeStrike(u32 state, const Fvector& pos, const Fvector& dir)
 {
@@ -151,6 +150,19 @@ void CWeaponKnife::KnifeStrike(u32 state, const Fvector& pos, const Fvector& dir
 	}
 }
 
+void CWeaponKnife::OnMotionMark(u32 state, const motion_marks& M)
+{
+	inherited::OnMotionMark(state, M);
+
+	if (H_Parent())
+	{
+		Fvector p1, d;
+		p1.set(get_LastFP());
+		d.set(get_LastFD());
+		smart_cast<CEntity*>(H_Parent())->g_fireParams(this, p1, d);
+		KnifeStrike(state, p1, d);
+	}
+}
 
 void CWeaponKnife::OnAnimationEnd(u32 state)
 {

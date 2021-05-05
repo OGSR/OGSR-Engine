@@ -97,7 +97,7 @@ void CGrenade::State(u32 state, u32 oldState)
 			Center						(C);
 			PlaySound					(sndCheckout,C);
 		}break;
-	case eHidden:
+	case eThrowEnd:
 		{
 			if(m_thrown)
 			{

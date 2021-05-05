@@ -1269,8 +1269,7 @@ extern	BOOL	g_ShowAnimationInfo		;
 // HUD
 void CActor::OnHUDDraw	(CCustomHUD* /**hud/**/)
 {
-	if (!(mstate_real&mcLookout))
-		g_player_hud->render_hud();
+	g_player_hud->render_hud();
 
 #if 0//ndef NDEBUG
 	if (Level().CurrentControlEntity() == this && g_ShowAnimationInfo)
