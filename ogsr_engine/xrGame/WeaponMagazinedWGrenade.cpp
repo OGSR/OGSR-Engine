@@ -25,6 +25,8 @@
 #include "alife_registry_wrappers.h"
 #include "alife_simulator_header.h"
 
+LPCSTR grenade_launcher_def_bone_cop = "grenade";
+
 CWeaponMagazinedWGrenade::CWeaponMagazinedWGrenade(LPCSTR name,ESoundTypes eSoundType) : CWeaponMagazined(name, eSoundType)
 {
 	m_ammoType2 = 0;
@@ -68,7 +70,7 @@ void CWeaponMagazinedWGrenade::Load	(LPCSTR section)
 		CRocketLauncher::m_fLaunchSpeed = pSettings->r_float(section, "grenade_vel");
 	}
 
-	grenade_bone_name = pSettings->r_string(*hud_sect, "grenade_bone");
+	grenade_bone_name = READ_IF_EXISTS(pSettings, r_string, hud_sect, "grenade_bone", grenade_launcher_def_bone_cop);
 
 	// load ammo classes SECOND (grenade_class)
 	m_ammoTypes2.clear	(); 

@@ -70,7 +70,14 @@ void CWeaponPistol::PlayAnimBore()
 void CWeaponPistol::PlayAnimIdleSprint()
 {
 	if (m_opened)
-		PlayHUDMotion("anim_empty", "anm_idle_sprint_empty", TRUE, nullptr, GetState());
+	{
+		if (AnimationExist("anm_idle_sprint_empty") || AnimationExist("anm_idle_sprint"))
+			PlayHUDMotion("anm_idle_sprint_empty", "anm_idle_sprint", TRUE, nullptr, GetState());
+		else if (AnimationExist("anim_idle_sprint_empty") || AnimationExist("anim_idle_sprint"))
+			PlayHUDMotion("anim_idle_sprint_empty", "anim_idle_sprint", TRUE, nullptr, GetState());
+		else
+			PlayHUDMotion("anim_empty", TRUE, nullptr, GetState());
+	}
 	else
 		inherited::PlayAnimIdleSprint();
 }
@@ -99,7 +106,7 @@ void CWeaponPistol::PlayAnimIdle()
 
 void CWeaponPistol::PlayAnimAim()
 {
-	if (iAmmoElapsed == 0)
+	if (m_opened)
 		PlayHUDMotion("anim_empty", "anm_idle_aim_empty", TRUE, nullptr, GetState());
 	else
 		inherited::PlayAnimAim();
