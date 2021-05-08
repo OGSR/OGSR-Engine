@@ -1989,6 +1989,11 @@ void CWeapon::OnDrawUI()
 	}
 }
 
+bool CWeapon::IsHudModeNow()
+{ 
+	return (HudItemData() != nullptr);
+}
+
 bool CWeapon::unlimited_ammo() 
 { 
 	if (m_pCurrentInventory)

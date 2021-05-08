@@ -352,6 +352,7 @@ protected:
 	virtual	u8				GetCurrentHudOffsetIdx	();
 	virtual bool			MovingAnimAllowedNow	();
 	virtual void			UpdateHudAdditonal		(Fmatrix&);
+	virtual bool			IsHudModeNow			();
 
 	IC		void			UpdateFireDependencies	()			{ if (dwFP_Frame==Device.dwFrame) return; UpdateFireDependencies_internal(); };
 
