@@ -695,10 +695,6 @@ public:
 
 			u32					GetCurrAmmo();
 
-			void				SetHudOffset(Fvector _offset);
-//			void				SetHudRotate(float _x, float _y);
-			void				SetHudRotate(Fvector2 _v);
-
 			CScriptGameObject	*GetActorHolder();
 			CCameraBase			*GetCarCamera();
 			Fmatrix				*GetXForm();
@@ -775,9 +771,6 @@ public:
 
 			// alpet: visual functions for CWeapon descedants 
 			_DECLARE_FUNCTION10 (alife_object			,			CSE_ALifeDynamicObject*);
-			_DECLARE_FUNCTION10 (GetWeaponHUD_Visual	,			IRenderVisual*);
-			_DECLARE_FUNCTION10 (GetWeaponHUD			,			attachable_hud_item*);
-			void				LoadWeaponHUD_Visual	(LPCSTR wpn_hud_section);
 
 			void play_hud_animation (LPCSTR anim, bool mix_in);
 			void play_hud_animation (LPCSTR anim);

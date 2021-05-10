@@ -580,37 +580,6 @@ u32 CScriptGameObject::GetAmmoElapsed2()
 	return (weapon->GetAmmoElapsed2());
 }
 
-
-void CScriptGameObject::SetHudOffset(Fvector _offset)
-{
-	CHudItem						*k = smart_cast<CHudItem*>(&object());
-	if (!k) {
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CHudItem : cannot access class member SetHudOffset!");
-		return;
-	}
-	k->HudItemData()->hands_offset_pos().set(_offset);
-}
-
-void CScriptGameObject::SetHudRotate(Fvector2 _v)
-{
-	CHudItem						*k = smart_cast<CHudItem*>(&object());
-	if (!k) {
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CHudItem : cannot access class member SetHudRotate!");
-		return;
-	}
-	k->HudItemData()->hands_attach_rot().set(Fvector().set(_v.x, _v.y, 0.f));
-}
-/*
-void CScriptGameObject::SetHudRotate(float _x, float _y)
-{
-	CHudItem						*k = smart_cast<CHudItem*>(&object());
-	if (!k) {
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CHudItem : cannot access class member SetHudRotate!");
-		return;
-	}
-	k->GetHUD()->SetZoomRotateX(_x);
-	k->GetHUD()->SetZoomRotateY(_y);
-}*/
 CScriptGameObject *CScriptGameObject::GetActorHolder()
 {
 	CActor						*k = smart_cast<CActor*>(&object());
