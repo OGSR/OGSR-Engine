@@ -130,14 +130,12 @@ Fvector& attachable_hud_item::hands_attach_pos() { return m_measures.m_hands_att
 Fvector& attachable_hud_item::hands_attach_rot() { return m_measures.m_hands_attach[1]; }
 Fvector& attachable_hud_item::hands_offset_pos()
 {
-	u8 idx = m_parent_hud_item->GetCurrentHudOffsetIdx();
-	return m_measures.m_hands_offset[0][idx];
+	return m_measures.m_hands_offset[hud_item_measures::m_hands_offset_pos][m_parent_hud_item->GetCurrentHudOffsetIdx()];
 }
 
 Fvector& attachable_hud_item::hands_offset_rot()
 {
-	u8 idx = m_parent_hud_item->GetCurrentHudOffsetIdx();
-	return m_measures.m_hands_offset[1][idx];
+	return m_measures.m_hands_offset[hud_item_measures::m_hands_offset_rot][m_parent_hud_item->GetCurrentHudOffsetIdx()];
 }
 
 void attachable_hud_item::set_bone_visible(const shared_str& bone_name, BOOL bVisibility, BOOL bSilent)
@@ -372,40 +370,68 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 			m_shell_point_offset.set(0.f, 0.f, 0.f);
 	}
 
-	m_hands_offset[0][0].set(0.f, 0.f, 0.f);
-	m_hands_offset[1][0].set(0.f, 0.f, 0.f);
-
 	strconcat(sizeof(val_name), val_name, "aim_hud_offset_pos", _prefix);
 	if (is_16x9 && !pSettings->line_exist(sect_name, val_name))
 		xr_strcpy(val_name, "aim_hud_offset_pos");
 	if (!pSettings->line_exist(sect_name, val_name) && pSettings->line_exist(sect_name, "zoom_offset"))
-		m_hands_offset[0][1] = pSettings->r_fvector3(sect_name, "zoom_offset");
+		m_hands_offset[m_hands_offset_pos][m_hands_offset_type_aim] = pSettings->r_fvector3(sect_name, "zoom_offset");
 	else
-		m_hands_offset[0][1] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector().set(0.f, 0.f, 0.f));
+		m_hands_offset[m_hands_offset_pos][m_hands_offset_type_aim] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector{});
 
 	strconcat(sizeof(val_name), val_name, "aim_hud_offset_rot", _prefix);
 	if (is_16x9 && !pSettings->line_exist(sect_name, val_name))
 		xr_strcpy(val_name, "aim_hud_offset_rot");
 	if (!pSettings->line_exist(sect_name, val_name) && pSettings->line_exist(sect_name, "zoom_rotate_x") && pSettings->line_exist(sect_name, "zoom_rotate_y"))
-		m_hands_offset[1][1] = Fvector().set(pSettings->r_float(sect_name, "zoom_rotate_x"), pSettings->r_float(sect_name, "zoom_rotate_y"), 0.f);
+		m_hands_offset[m_hands_offset_rot][m_hands_offset_type_aim] = Fvector().set(pSettings->r_float(sect_name, "zoom_rotate_x"), pSettings->r_float(sect_name, "zoom_rotate_y"), 0.f);
 	else
-		m_hands_offset[1][1] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector().set(0.f, 0.f, 0.f));
+		m_hands_offset[m_hands_offset_rot][m_hands_offset_type_aim] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector{});
 
 	strconcat(sizeof(val_name), val_name, "gl_hud_offset_pos", _prefix);
 	if (is_16x9 && !pSettings->line_exist(sect_name, val_name))
 		xr_strcpy(val_name, "gl_hud_offset_pos");
 	if (!pSettings->line_exist(sect_name, val_name) && pSettings->line_exist(sect_name, "grenade_zoom_offset"))
-		m_hands_offset[0][2] = pSettings->r_fvector3(sect_name, "grenade_zoom_offset");
+		m_hands_offset[m_hands_offset_pos][m_hands_offset_type_gl] = pSettings->r_fvector3(sect_name, "grenade_zoom_offset");
 	else
-		m_hands_offset[0][2] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector().set(0.f, 0.f, 0.f));
+		m_hands_offset[m_hands_offset_pos][m_hands_offset_type_gl] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector{});
 
 	strconcat(sizeof(val_name), val_name, "gl_hud_offset_rot", _prefix);
 	if (is_16x9 && !pSettings->line_exist(sect_name, val_name))
 		xr_strcpy(val_name, "gl_hud_offset_rot");
 	if (!pSettings->line_exist(sect_name, val_name) && pSettings->line_exist(sect_name, "grenade_zoom_rotate_x") && pSettings->line_exist(sect_name, "grenade_zoom_rotate_y"))
-		m_hands_offset[1][2] = Fvector().set(pSettings->r_float(sect_name, "grenade_zoom_rotate_x"), pSettings->r_float(sect_name, "grenade_zoom_rotate_y"), 0.f);
+		m_hands_offset[m_hands_offset_rot][m_hands_offset_type_gl] = Fvector().set(pSettings->r_float(sect_name, "grenade_zoom_rotate_x"), pSettings->r_float(sect_name, "grenade_zoom_rotate_y"), 0.f);
 	else
-		m_hands_offset[1][2] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector().set(0.f, 0.f, 0.f));
+		m_hands_offset[m_hands_offset_rot][m_hands_offset_type_gl] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector{});
+
+
+	//ОГСР-специфичные параметры
+	if (pSettings->line_exist(sect_name, "scope_zoom_offset"))
+		m_hands_offset[m_hands_offset_pos][m_hands_offset_type_aim_scope] = pSettings->r_fvector3(sect_name, "scope_zoom_offset");
+
+	if (pSettings->line_exist(sect_name, "scope_zoom_rotate_x") && pSettings->line_exist(sect_name, "scope_zoom_rotate_y"))
+		m_hands_offset[m_hands_offset_rot][m_hands_offset_type_aim_scope] = Fvector().set(pSettings->r_float(sect_name, "scope_zoom_rotate_x"), pSettings->r_float(sect_name, "scope_zoom_rotate_y"), 0.f);
+
+	if (pSettings->line_exist(sect_name, "scope_grenade_zoom_offset"))
+		m_hands_offset[m_hands_offset_pos][m_hands_offset_type_gl_scope] = pSettings->r_fvector3(sect_name, "scope_grenade_zoom_offset");
+
+	if (pSettings->line_exist(sect_name, "scope_grenade_zoom_rotate_x") && pSettings->line_exist(sect_name, "scope_grenade_zoom_rotate_y"))
+		m_hands_offset[m_hands_offset_rot][m_hands_offset_type_gl_scope] = Fvector().set(pSettings->r_float(sect_name, "scope_grenade_zoom_rotate_x"), pSettings->r_float(sect_name, "scope_grenade_zoom_rotate_y"), 0.f);
+
+	if (pSettings->line_exist(sect_name, "grenade_normal_zoom_offset"))
+		m_hands_offset[m_hands_offset_pos][m_hands_offset_type_aim_gl_normal] = pSettings->r_fvector3(sect_name, "grenade_normal_zoom_offset");
+	else
+		m_hands_offset[m_hands_offset_pos][m_hands_offset_type_aim_gl_normal] = m_hands_offset[m_hands_offset_pos][m_hands_offset_type_aim];
+
+	if (pSettings->line_exist(sect_name, "grenade_normal_zoom_rotate_x") && pSettings->line_exist(sect_name, "grenade_normal_zoom_rotate_y"))
+		m_hands_offset[m_hands_offset_rot][m_hands_offset_type_aim_gl_normal] = Fvector().set(pSettings->r_float(sect_name, "grenade_normal_zoom_rotate_x"), pSettings->r_float(sect_name, "grenade_normal_zoom_rotate_y"), 0.f);
+	else
+		m_hands_offset[m_hands_offset_rot][m_hands_offset_type_aim_gl_normal] = m_hands_offset[m_hands_offset_rot][m_hands_offset_type_aim];
+
+	if (pSettings->line_exist(sect_name, "scope_grenade_normal_zoom_offset"))
+		m_hands_offset[m_hands_offset_pos][m_hands_offset_type_gl_normal_scope] = pSettings->r_fvector3(sect_name, "scope_grenade_normal_zoom_offset");
+
+	if (pSettings->line_exist(sect_name, "scope_grenade_normal_zoom_rotate_x") && pSettings->line_exist(sect_name, "scope_grenade_normal_zoom_rotate_y"))
+		m_hands_offset[m_hands_offset_rot][m_hands_offset_type_gl_normal_scope] = Fvector().set(pSettings->r_float(sect_name, "scope_grenade_normal_zoom_rotate_x"), pSettings->r_float(sect_name, "scope_grenade_normal_zoom_rotate_y"), 0.f);
+
 
 	if (useCopFirePoint) // cop configs
 	{

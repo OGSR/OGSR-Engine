@@ -38,8 +38,6 @@ public:
 	virtual void	InitAddons();
 	virtual bool	UseScopeTexture();
 	virtual	float	CurrentZoomFactor	();
-	virtual u8		GetCurrentHudOffsetIdx();
-
 	
 	virtual void	OnStateSwitch	(u32 S, u32 oldState);
 	

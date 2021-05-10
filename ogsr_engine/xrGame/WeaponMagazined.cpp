@@ -1028,7 +1028,6 @@ void CWeaponMagazined::InitAddons()
 	//////////////////////////////////////////////////////////////////////////
 	// Прицел
 	m_fIronSightZoomFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "ironsight_zoom_factor", 50.0f);
-	m_fSecondScopeZoomFactor = READ_IF_EXISTS(pSettings, r_float, cNameSect(), "second_scope_zoom_factor", m_fIronSightZoomFactor);
 
 	if(IsScopeAttached())
 	{
@@ -1126,7 +1125,7 @@ void CWeaponMagazined::InitAddons()
 	inherited::InitAddons();
 	callback(GameObject::eOnAddonInit)(1);
 
-	UpdateZoomOffset();
+	m_fZoomFactor = CurrentZoomFactor();
 }
 
 void CWeaponMagazined::ApplySilencerKoeffs	()

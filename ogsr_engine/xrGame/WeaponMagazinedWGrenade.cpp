@@ -129,8 +129,6 @@ BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 
 		m_ammoTypes.swap(m_ammoTypes2);
 
-		UpdateZoomOffset();
-
 		StateSwitchCallback( GameObject::eOnActorWeaponSwitchGL, GameObject::eOnNPCWeaponSwitchGL );
 
 		// reloading
@@ -251,8 +249,6 @@ void  CWeaponMagazinedWGrenade::PerformSwitchGL()
 
 	iAmmoElapsed  = (int)m_magazine.size();
 	iAmmoElapsed2 = (int)m_magazine2.size();
-
-	UpdateZoomOffset();
 }
 
 bool CWeaponMagazinedWGrenade::Action(s32 cmd, u32 flags) 
@@ -890,17 +886,4 @@ bool CWeaponMagazinedWGrenade::IsNecessaryItem	    (const shared_str& item_sect)
 
 float CWeaponMagazinedWGrenade::Weight() const {
   return inherited::Weight() + GetMagazineWeight( m_magazine2 );
-}
-
-u8 CWeaponMagazinedWGrenade::GetCurrentHudOffsetIdx()
-{
-	bool b_aiming = ((IsZoomed() && m_fZoomRotationFactor <= 1.f) ||
-		(!IsZoomed() && m_fZoomRotationFactor > 0.f));
-
-	if (!b_aiming)
-		return 0;
-	else if (m_bGrenadeMode)
-		return 2;
-	else
-		return 1;
 }

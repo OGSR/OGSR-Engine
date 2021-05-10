@@ -250,8 +250,6 @@ protected:
 	float			m_fIronSightZoomFactor;
 	//коэффициент увеличения прицела
 	float			m_fScopeZoomFactor;
-	//коэффициент увеличения второго прицела
-	float			m_fSecondScopeZoomFactor;
 	//когда режим приближения включен
 	bool			m_bZoomMode;
 	//от 0 до 1, показывает насколько процентов
@@ -306,8 +304,6 @@ public:
 	//показывает, что оружие находится в соостоянии поворота для приближенного прицеливания
 			bool			IsRotatingToZoom	() const		{	return (m_fZoomRotationFactor<1.f);}
 
-			void			LoadZoomOffset		(LPCSTR section, LPCSTR prefix);
-
 	virtual float			Weight				() const;		
 	virtual u32				Cost				() const;
 	virtual float			GetControlInertionFactor() const;
@@ -349,7 +345,7 @@ protected:
 	float					m_fLR_MovingFactor; // !!!!
 	Fvector					m_strafe_offset[3][2]; //pos,rot,data/ normal,aim-GL --#SM+#--
 
-	virtual	u8				GetCurrentHudOffsetIdx	();
+	virtual	u8				GetCurrentHudOffsetIdx	() override;
 	virtual bool			MovingAnimAllowedNow	();
 	virtual void			UpdateHudAdditonal		(Fmatrix&);
 	virtual bool			IsHudModeNow			();
@@ -554,17 +550,11 @@ private:
 public:
 	const float				&hit_probability			() const;
 	void					UpdateWeaponParams();
-	//
-	bool is_second_zoom_offset_enabled = false;
-	void UpdateZoomOffset();
-	//
 	void UpdateSecondVP(); //
 	float GetZRotatingFactor() const { return m_fZoomRotationFactor; } //--#SM+#--
 	float GetSecondVPFov() const; //--#SM+#--
 	bool SecondVPEnabled() const;
 	float GetHudFov();
-
-	void SwitchScope();
 
 	virtual void OnBulletHit();
 	bool IsPartlyReloading();

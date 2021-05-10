@@ -355,12 +355,13 @@ void CWeapon::Load		(LPCSTR section)
 	m_bScopeShowIndicators = !!READ_IF_EXISTS(pSettings, r_bool, section, "scope_show_indicators", true);
 	m_bIgnoreScopeTexture = !!READ_IF_EXISTS(pSettings, r_bool, section, "ignore_scope_texture", false);
 
-	m_fZoomRotateTime = ROTATION_TIME;
+	m_fZoomRotateTime = READ_IF_EXISTS(pSettings, r_float, hud_sect, "zoom_rotate_time", ROTATION_TIME);
+
 	m_bScopeDynamicZoom = false;
 	m_fScopeZoomFactor = 0;
 	m_fRTZoomFactor = 0;
 
-	UpdateZoomOffset();
+	m_fZoomFactor = CurrentZoomFactor();
 
         m_allScopeNames.clear();
 	m_highlightAddons.clear();
@@ -555,80 +556,6 @@ void CWeapon::LoadFireParams		(LPCSTR section, LPCSTR prefix)
 		camDispersionInc = 0;
 
 	CShootingObject::LoadFireParams(section, prefix);
-};
-
-void CWeapon::LoadZoomOffset(LPCSTR section, LPCSTR prefix)
-{
-	string256 full_name;
-	/*if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system)
-		&& is_second_zoom_offset_enabled //Если включен режим второго прицеливания
-		&& !READ_IF_EXISTS(pSettings, r_bool, *cNameSect(), "disable_second_scope", false) //И второй прицел не запрещён (нужно для поддержки замороченной системы ogse_addons)
-		&& pSettings->line_exist(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_offset")) //И в секциии худа есть настройки для второго режима прицеливания
-		&& pSettings->line_exist(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_rotate_x"))
-		&& pSettings->line_exist(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_rotate_y"))
-	) { //Используем настройки для второго режима прицеливания
-		m_pHUD->SetZoomOffset(pSettings->r_fvector3(hud_sect, strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_offset")));
-		m_pHUD->SetZoomRotateX(pSettings->r_float(hud_sect,   strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_rotate_x")));
-		m_pHUD->SetZoomRotateY(pSettings->r_float(hud_sect,   strconcat(sizeof(full_name), full_name, "second_", prefix, "zoom_rotate_y")));
-		//
-		is_second_zoom_offset_enabled = true;
-		//Msg("--Second scope enabled!");
-	}
-	else //В противном случае используем стандартные настройки
-	{
-		m_pHUD->SetZoomOffset(pSettings->r_fvector3(hud_sect, strconcat(sizeof(full_name), full_name, prefix, "zoom_offset")));
-		m_pHUD->SetZoomRotateX(pSettings->r_float(hud_sect,   strconcat(sizeof(full_name), full_name, prefix, "zoom_rotate_x")));
-		m_pHUD->SetZoomRotateY(pSettings->r_float(hud_sect,   strconcat(sizeof(full_name), full_name, prefix, "zoom_rotate_y")));
-		//
-		is_second_zoom_offset_enabled = false;
-		//Msg("~~Second scope disabled!");
-	}*/
-
-	//Зум фактор обновлять здесь необходимо. second_soom_factor поддерживается.
-	m_fZoomFactor = this->CurrentZoomFactor();
-	//
-
-	if(pSettings->line_exist(hud_sect, "zoom_rotate_time"))
-		m_fZoomRotateTime = pSettings->r_float(hud_sect,"zoom_rotate_time");
-
-	callback(GameObject::eOnSecondScopeSwitch)(is_second_zoom_offset_enabled); //Для нормальной поддержки скриптовых оружейных наворотов ОГСЕ
-}
-
-void CWeapon::UpdateZoomOffset() //Собрал все манипуляции с зум оффсетом сюда, чтоб были в одном месте.
-{
-	if (m_bZoomEnabled && HudItemData())
-	{
-		const bool has_gl = GrenadeLauncherAttachable() && IsGrenadeLauncherAttached();
-		const bool has_scope = ScopeAttachable() && IsScopeAttached();
-
-		if (IsGrenadeMode())
-		{
-			if (m_bUseScopeGrenadeZoom && has_scope)
-				LoadZoomOffset(*hud_sect, "scope_grenade_");
-			else
-				LoadZoomOffset(*hud_sect, "grenade_");
-		}
-		else if (has_gl)
-		{
-			if (m_bUseScopeZoom && has_scope)
-				LoadZoomOffset(*hud_sect, "scope_grenade_normal_");
-			else
-				LoadZoomOffset(*hud_sect, "grenade_normal_");
-		}
-		else
-		{
-			if (m_bUseScopeZoom && has_scope)
-				LoadZoomOffset(*hud_sect, "scope_");
-			else
-				LoadZoomOffset(*hud_sect, "");
-		}
-	}
-}
-
-void CWeapon::SwitchScope()
-{
-	is_second_zoom_offset_enabled = !is_second_zoom_offset_enabled;
-	UpdateZoomOffset();
 }
 
 BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
@@ -996,10 +923,6 @@ void CWeapon::UpdateCL		()
 
 void CWeapon::renderable_Render		()
 {
-	//KRodin: чтоб ствол в руках актора не был виден внутри 3D прицела.
-	if (Device.m_SecondViewport.IsSVPFrame() && this->m_fZoomRotationFactor > 0.05f)
-		return;
-
 	UpdateXForm				();
 
 	//нарисовать подсветку
@@ -1016,7 +939,7 @@ void CWeapon::renderable_Render		()
 
 bool CWeapon::need_renderable() 
 {
-	return !(IsZoomed() && ZoomTexture() && !IsRotatingToZoom()); 
+	return !Device.m_SecondViewport.IsSVPFrame() && !(IsZoomed() && ZoomTexture() && !IsRotatingToZoom());
 }
 
 bool CWeapon::MovingAnimAllowedNow()
@@ -1127,7 +1050,7 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 		case kWPN_ZOOM_INC:
 		case kWPN_ZOOM_DEC:
 		{
-			if (IsZoomEnabled() && IsZoomed() && m_bScopeDynamicZoom && IsScopeAttached() && !is_second_zoom_offset_enabled && (flags&CMD_START))
+			if (IsZoomEnabled() && IsZoomed() && m_bScopeDynamicZoom && IsScopeAttached() && (flags&CMD_START))
 			{
 				// если в режиме ПГ - не будем давать использовать динамический зум
 				if (IsGrenadeMode())
@@ -1139,13 +1062,6 @@ bool CWeapon::Action(s32 cmd, u32 flags)
 			}
 			else
 				return false;
-		}
-		case kSWITCH_SCOPE: //KRodin: заюзаем эту кнопку, один хрен она только в мультиплеере нужна, а он вырезан.
-		{
-			if (flags&CMD_START)
-			{
-				this->SwitchScope();
-			}
 		}
 	}
 	return false;
@@ -1553,9 +1469,7 @@ void CWeapon::InitAddons()
 
 float CWeapon::CurrentZoomFactor()
 {
-	if (is_second_zoom_offset_enabled)
-		return m_fSecondScopeZoomFactor;
-	else if (SecondVPEnabled())
+	if (SecondVPEnabled())
 		return Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.0f : m_fIronSightZoomFactor; // no change to main fov zoom when use second vp
 	else if (IsScopeAttached())
 		return m_fScopeZoomFactor;
@@ -1604,7 +1518,6 @@ void CWeapon::OnZoomOut()
 
 bool CWeapon::UseScopeTexture() {
 	return (( GetAddonsState() & CSE_ALifeItemWeapon::eForcedNotexScope ) == 0) 
-		&& !is_second_zoom_offset_enabled
 		&& !SecondVPEnabled()
 		&& m_UIScope; // только если есть текстура прицела - для простого создания коллиматоров
 };
@@ -1779,18 +1692,37 @@ bool CWeapon::ready_to_kill	() const
 // Получить индекс текущих координат худа
 u8 CWeapon::GetCurrentHudOffsetIdx()
 {
-	auto pActor = smart_cast<const CActor*>(H_Parent());
-	if (!pActor)
-		return 0;
+	const bool b_aiming = ((IsZoomed() && m_fZoomRotationFactor <= 1.f) || (!IsZoomed() && m_fZoomRotationFactor > 0.f));
 
-	bool b_aiming = ((IsZoomed() && /*m_zoom_params.*/m_fZoomRotationFactor <= 1.f) || (!IsZoomed() && /*m_zoom_params.*/m_fZoomRotationFactor > 0.f));
+	if (b_aiming)
+	{
+		const bool has_gl = GrenadeLauncherAttachable() && IsGrenadeLauncherAttached();
+		const bool has_scope = ScopeAttachable() && IsScopeAttached();
 
-	if (!b_aiming)
-		return 0;
-	else if (IsGrenadeMode())
-		return 2;
-	else
-		return 1;
+		if (IsGrenadeMode())
+		{
+			if (m_bUseScopeGrenadeZoom && has_scope)
+				return hud_item_measures::m_hands_offset_type_gl_scope;
+			else
+				return hud_item_measures::m_hands_offset_type_gl;
+		}
+		else if (has_gl)
+		{
+			if (m_bUseScopeZoom && has_scope)
+				return hud_item_measures::m_hands_offset_type_gl_normal_scope;
+			else
+				return hud_item_measures::m_hands_offset_type_aim_gl_normal;
+		}
+		else
+		{
+			if (m_bUseScopeZoom && has_scope)
+				return hud_item_measures::m_hands_offset_type_aim_scope;
+			else
+				return hud_item_measures::m_hands_offset_type_aim;
+		}
+	}
+
+	return hud_item_measures::m_hands_offset_type_normal;
 }
 
 
@@ -1804,13 +1736,11 @@ void CWeapon::UpdateHudAdditonal		(Fmatrix& trans)
 	if(		(pActor->IsZoomAimingMode() && m_fZoomRotationFactor<=1.f) ||
 			(!pActor->IsZoomAimingMode() && m_fZoomRotationFactor>0.f))
 	{
-		u8 idx = GetCurrentHudOffsetIdx();
-
 		attachable_hud_item* hi = HudItemData();
 		R_ASSERT(hi);
 		Fvector curr_offs, curr_rot;
-		curr_offs = hi->m_measures.m_hands_offset[0][idx]; // pos,aim
-		curr_rot = hi->m_measures.m_hands_offset[1][idx]; // rot,aim
+		curr_offs = hi->m_measures.m_hands_offset[hud_item_measures::m_hands_offset_pos][idx];
+		curr_rot = hi->m_measures.m_hands_offset[hud_item_measures::m_hands_offset_rot][idx];
 		curr_offs.mul(m_fZoomRotationFactor);
 		curr_rot.mul(m_fZoomRotationFactor);
 
@@ -2166,10 +2096,9 @@ bool CWeapon::SecondVPEnabled() const
 {	
 	bool bCond_2 = m_fSecondVPZoomFactor > 0.0f;     // В конфиге должен быть прописан фактор зума (scope_lense_fov_factor) больше чем 0
 	bool bCond_4 = !IsGrenadeMode();     // Мы не должны быть в режиме подствольника
-	bool bCond_5 = !is_second_zoom_offset_enabled; // Мы не должны быть в режиме второго прицеливания.
 	bool bcond_6 = psActorFlags.test(AF_3D_SCOPES);
 
-	return bCond_2 && bCond_4 && bCond_5 && bcond_6;
+	return bCond_2 && bCond_4 && bcond_6;
 }
 
 // Чувствительность мышкии с оружием в руках во время прицеливания

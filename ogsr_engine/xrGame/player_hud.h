@@ -42,8 +42,25 @@ struct hud_item_measures
 	};
 	Flags8 m_prop_flags;
 
-	Fvector m_item_attach[2]; // pos,rot
-	Fvector m_hands_offset[2][3]; // pos,rot/ normal,aim,GL
+	Fvector m_item_attach[2]{}; // pos,rot
+
+
+	enum m_hands_offset_coords : u8 {
+		m_hands_offset_pos,
+		m_hands_offset_rot,
+		m_hands_offset_size
+	};
+	enum m_hands_offset_type : u8 { //Потом может очередность поменять.
+		m_hands_offset_type_normal, // Не прицеливаемся
+		m_hands_offset_type_aim, // Смотрим в механический прицел
+		m_hands_offset_type_gl, // Смотрим в механический прицел в режиме ПГ
+		m_hands_offset_type_aim_scope, // Смотрим в присоединяемый нетекстурный прицел (будь то 3д прицел или колиматор) если включен "use_scope_zoom"
+		m_hands_offset_type_gl_scope, // Смотрим в присоединяемый нетекстурный прицел (будь то 3д прицел или колиматор) в режиме ПГ если включен "use_scope_grenade_zoom" - мне вот щас не понятно зачем это надо, но это как-то используют.
+		m_hands_offset_type_aim_gl_normal, // Смотрим в механический прицел если гранатомет присоединен
+		m_hands_offset_type_gl_normal_scope, // Смотрим в присоединяемый нетекстурный прицел (будь то 3д прицел или колиматор) если включен "use_scope_zoom" и гранатомет присоединен
+		m_hands_offset_type_size
+	};
+	Fvector m_hands_offset[m_hands_offset_size][m_hands_offset_type_size]{};
 
 	u16 m_fire_bone;
 	Fvector m_fire_point_offset;

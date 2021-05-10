@@ -484,8 +484,6 @@ void CWeaponScript::script_register(lua_State *L)
 			.def_readonly("misfire"						,			&CWeapon::bMisfire)
 			.def_readonly("zoom_mode"					,			&CWeapon::m_bZoomMode)
 
-			.def_readonly("is_second_zoom_offset_enabled",			&CWeapon::is_second_zoom_offset_enabled)
-			.def("switch_scope"							,			&CWeapon::SwitchScope)
 			.def_readwrite("scope_inertion_factor"		,			&CWeapon::m_fScopeInertionFactor)
 
 			.def_readwrite("scope_lense_fov_factor",				&CWeapon::m_fSecondVPZoomFactor)
