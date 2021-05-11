@@ -40,24 +40,19 @@ player_hud_motion* player_hud_motion_container::find_motion(const shared_str& na
 
 void player_hud_motion_container::load(attachable_hud_item* parent, IKinematicsAnimated* model, IKinematicsAnimated* animatedHudItem, const shared_str& sect)
 {
-	CInifile::Sect& _sect = pSettings->r_section(sect);
-	auto _b = _sect.Data.cbegin();
-	auto _e = _sect.Data.cend();
-	player_hud_motion* pm = nullptr;
-
 	string512 buff;
 	MotionID motion_ID;
 
-	for (; _b != _e; ++_b)
+	for (const auto&[name, anm]: pSettings->r_section(sect).Data)
 	{
-		if (strstr(_b->first.c_str(), "anm_") == _b->first.c_str() ||
-			strstr(_b->first.c_str(), "anim_") == _b->first.c_str())
+		if (
+			(strstr(name.c_str(), "anm_") == name.c_str() || strstr(name.c_str(), "anim_") == name.c_str())
+			&& !strstr(name.c_str(), "_speed_k") && !strstr(name.c_str(), "_stop_k")
+		)
 		{
-			const shared_str& anm = _b->second;
-			m_anims.resize(m_anims.size() + 1);
-			pm = &m_anims.back();
+			player_hud_motion* pm = &m_anims.emplace_back();
 			// base and alias name
-			pm->m_alias_name = _b->first;
+			pm->m_alias_name = name;
 
 			if (parent->m_has_separated_hands)
 			{
@@ -99,29 +94,47 @@ void player_hud_motion_container::load(attachable_hud_item* parent, IKinematicsA
 					motion_ID = model->ID_Cycle_Safe(buff);
 					if (motion_ID.valid())
 					{
-						pm->m_animations.resize(pm->m_animations.size() + 1);
-						pm->m_animations.back().mid = motion_ID;
-						pm->m_animations.back().name = buff;
+						auto& Anim = pm->m_animations.emplace_back();
+						Anim.mid = motion_ID;
+						Anim.name = buff;
 #ifdef DEBUG
 //						Msg(" alias=[%s] base=[%s] name=[%s]",pm->m_alias_name.c_str(), pm->m_base_name.c_str(), buff);
-#endif // #ifdef DEBUG
+#endif
 					}
 				}
 				else if (animatedHudItem && !parent->m_has_separated_hands)
 				{
 					motion_ID = animatedHudItem->ID_Cycle_Safe(buff);
+
 					if (motion_ID.valid())
 					{
-						pm->m_animations.resize(pm->m_animations.size() + 1);
-						pm->m_animations.back().mid = motion_ID;
-						pm->m_animations.back().name = buff;
+						auto& Anim = pm->m_animations.emplace_back();
+						Anim.mid = motion_ID;
+						Anim.name = buff;
+
+						string_path speed_param;
+						xr_strconcat(speed_param, name.c_str(), "_speed_k");
+						if (pSettings->line_exist(sect, speed_param)) {
+							const float k = pSettings->r_float(sect, speed_param);
+							if (!fsimilar(k, 1.f))
+								Anim.speed_k = k;
+						}
+
+						string_path stop_param;
+						xr_strconcat(stop_param, name.c_str(), "_stop_k");
+						if (pSettings->line_exist(sect, stop_param)) {
+							const float k = pSettings->r_float(sect, stop_param);
+							if (k < 1.f)
+								Anim.stop_k = k;
+						}
+
 #ifdef DEBUG
 //						Msg(" alias=[%s] base=[%s] name=[%s]",pm->m_alias_name.c_str(), pm->m_base_name.c_str(), buff);
-#endif // #ifdef DEBUG
+#endif
 					}
 				}
 			}
-			R_ASSERT2(pm->m_animations.size(), make_string("motion not found [%s]", pm->m_base_name.c_str()).c_str());
+			ASSERT_FMT(pm->m_animations.size(), "[%s] motion [%s](%s) not found in section [%s]", __FUNCTION__, pm->m_base_name.c_str(), name.c_str(), sect.c_str());
 		}
 	}
 }
@@ -489,8 +502,6 @@ void attachable_hud_item::load(const shared_str& sect_name)
 
 u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, const CMotionDef*& md, u8& rnd_idx, bool randomAnim)
 {
-	float speed = 1.f;
-
 	R_ASSERT(strstr(anm_name_b.c_str(), "anm_") == anm_name_b.c_str() || strstr(anm_name_b.c_str(), "anim_") == anm_name_b.c_str());
 	string256 anim_name_r;
 	bool is_16x9 = UI()->is_widescreen();
@@ -508,7 +519,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 	const motion_descr& M = anm->m_animations[rnd_idx];
 
 	IKinematicsAnimated* ka = m_model->dcast_PKinematicsAnimated();
-	u32 ret = g_player_hud->anim_play(m_attach_place_idx, M.mid, bMixIn, md, speed, ka);
+	u32 ret = g_player_hud->anim_play(m_attach_place_idx, M, bMixIn, md, M.speed_k, ka);
 
 	if (ka)
 	{
@@ -539,7 +550,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 		{
 			CBlend* B = ka->PlayCycle(pid, M2, bMixIn);
 			R_ASSERT(B);
-			B->speed *= speed;
+			B->speed *= M.speed_k;
 		}
 
 		m_model->CalculateBones_Invalidate();
@@ -553,14 +564,11 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 		CActor* current_actor = smart_cast<CActor*>(Level().CurrentControlEntity());
 		VERIFY(current_actor);
 
-		string_path ce_path;
-		string_path anm_name;
+		string_path ce_path, anm_name;
 		strconcat(sizeof(anm_name), anm_name, "camera_effects\\weapon\\", M.name.c_str(), ".anm");
 		if (FS.exist(ce_path, "$game_anims$", anm_name))
 		{
-			CEffectorCam* ec = current_actor->Cameras().GetCamEffector(eCEWeaponAction);
-			if (ec)
-				current_actor->Cameras().RemoveCamEffector(eCEWeaponAction);
+			current_actor->Cameras().RemoveCamEffector(eCEWeaponAction);
 			
 			CAnimatorCamEffector* e = xr_new<CAnimatorCamEffector>();
 			e->SetType(eCEWeaponAction);
@@ -600,7 +608,7 @@ player_hud::~player_hud()
 		xr_delete(a);
 	}
 	m_pool.clear();
-	if (Core.Features.test(xrCore::Feature::wpn_bobbing))
+	if (m_bobbing)
 		xr_delete(m_bobbing);
 }
 
@@ -704,17 +712,16 @@ void player_hud::render_hud()
 
 u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md)
 {
-	float speed = 1.f;
 	attachable_hud_item* pi = create_hud_item(hud_name);
 	player_hud_motion* pm = pi->m_hand_motions.find_motion(anim_name);
 	if (!pm)
 		return 100; // ms TEMPORARY
 	R_ASSERT2(pm,
 		make_string("hudItem model [%s] has no motion with alias [%s]", hud_name.c_str(), anim_name.c_str()).c_str());
-	return motion_length(pm->m_animations[0].mid, md, speed, smart_cast<IKinematicsAnimated*>(pi->m_model), pi);
+	return motion_length(pm->m_animations[0], md, pm->m_animations[0].speed_k, smart_cast<IKinematicsAnimated*>(pi->m_model), pi);
 }
 
-u32 player_hud::motion_length(const MotionID& M, const CMotionDef*& md, float speed, IKinematicsAnimated* itemModel, attachable_hud_item* pi)
+u32 player_hud::motion_length(const motion_descr& M, const CMotionDef*& md, float speed, IKinematicsAnimated* itemModel, attachable_hud_item* pi)
 {
 	bool hasHands;
 	if (pi)
@@ -725,12 +732,12 @@ u32 player_hud::motion_length(const MotionID& M, const CMotionDef*& md, float sp
 	IKinematicsAnimated* model = m_model;
 	if ((!model || !hasHands) && itemModel)
 		model = itemModel;
-	md = model->LL_GetMotionDef(M);
+	md = model->LL_GetMotionDef(M.mid);
 	VERIFY(md);
 	if (md->flags & esmStopAtEnd)
 	{
-		CMotion* motion = model->LL_GetRootMotion(M);
-		return iFloor(0.5f + 1000.f * motion->GetLength() / (md->speed * speed));
+		CMotion* motion = model->LL_GetRootMotion(M.mid);
+		return iFloor(0.5f + 1000.f * motion->GetLength() / (md->Speed() * speed) * M.stop_k);
 	}
 	return 0;
 }
@@ -762,7 +769,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 
 	m_attach_offset.translate_over(tmp);
 
-	if (Core.Features.test(xrCore::Feature::wpn_bobbing) && bobbing_allowed())
+	if (bobbing_allowed())
 		m_bobbing->Update(m_attach_offset, m_attached_items[0]);
 
 	m_transform.mul(trans, m_attach_offset);
@@ -782,7 +789,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 		m_attached_items[1]->update(true);
 }
 
-u32 player_hud::anim_play(u16 part, const MotionID& M, BOOL bMixIn, const CMotionDef*& md, float speed, IKinematicsAnimated* itemModel)
+u32 player_hud::anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CMotionDef*& md, float speed, IKinematicsAnimated* itemModel)
 {
 	bool hasHands = (attached_item(0) && attached_item(0)->m_has_separated_hands);
 	if (m_model && hasHands)
@@ -796,7 +803,7 @@ u32 player_hud::anim_play(u16 part, const MotionID& M, BOOL bMixIn, const CMotio
 		{
 			if (pid == 0 || pid == part_id || part_id == u16(-1))
 			{
-				CBlend* B = m_model->PlayCycle(pid, M, bMixIn);
+				CBlend* B = m_model->PlayCycle(pid, M.mid, bMixIn);
 				R_ASSERT(B);
 				B->speed *= speed;
 			}
@@ -1049,7 +1056,7 @@ bool player_hud::bobbing_allowed()
 	{
 		return hi->m_parent_hud_item->HudBobbingAllowed();
 	}
-	return true;
+	return Core.Features.test(xrCore::Feature::wpn_bobbing);
 }
 
 void player_hud::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)

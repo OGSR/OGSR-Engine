@@ -714,7 +714,7 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle()
 				{
 					act_state = 1;
 				}
-				else if (!Core.Features.test(xrCore::Feature::wpn_bobbing))
+				else if (!HudBobbingAllowed())
 				{
 					if (Actor()->get_state()&ACTOR_DEFS::mcAnyMove)
 					{

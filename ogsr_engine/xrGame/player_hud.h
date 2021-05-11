@@ -14,6 +14,8 @@ struct motion_descr
 {
 	MotionID mid;
 	shared_str name;
+	float speed_k{ 1.0f };
+	float stop_k{ 1.0f };
 };
 
 struct player_hud_motion
@@ -181,7 +183,7 @@ public:
 	void render_hud();
 	void render_item_ui();
 	bool render_item_ui_query();
-	u32 anim_play(u16 part, const MotionID& M, BOOL bMixIn, const CMotionDef*& md, float speed, IKinematicsAnimated* itemModel = nullptr);
+	u32 anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CMotionDef*& md, float speed, IKinematicsAnimated* itemModel = nullptr);
 	const shared_str& section_name() const { return m_sect_name; }
 	attachable_hud_item* create_hud_item(const shared_str& sect);
 
@@ -198,7 +200,7 @@ public:
 
 	void calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result);
 	void tune(Ivector values);
-	u32 motion_length(const MotionID& M, const CMotionDef*& md, float speed, IKinematicsAnimated* itemModel, attachable_hud_item* pi = nullptr);
+	u32 motion_length(const motion_descr& M, const CMotionDef*& md, float speed, IKinematicsAnimated* itemModel, attachable_hud_item* pi = nullptr);
 	u32 motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md);
 	void OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd);
 
@@ -218,7 +220,7 @@ private:
 	xr_vector<u16> m_ancors;
 	attachable_hud_item* m_attached_items[2];
 	xr_vector<attachable_hud_item*> m_pool;
-	CWeaponBobbing* m_bobbing;
+	CWeaponBobbing* m_bobbing{};
 };
 
 extern player_hud* g_player_hud;

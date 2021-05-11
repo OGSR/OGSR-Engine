@@ -23,7 +23,7 @@ CHudItem::CHudItem(void)
 	RenderHud			(TRUE);
 	EnableHudInertion	(TRUE);
 	AllowHudInertion	(TRUE);
-	AllowHudBobbing		(TRUE);
+	AllowHudBobbing(Core.Features.test(xrCore::Feature::wpn_bobbing));
 
 	m_bStopAtEndAnimIsRunning = false;
 	m_current_motion_def = nullptr;
@@ -280,30 +280,6 @@ u32 CHudItem::PlayHUDMotion(const shared_str& M, BOOL bMixIn, CHudItem* W, u32 s
 	else
 		m_bStopAtEndAnimIsRunning = false;
 
-	/*
-	  std::string speed_k = prefix;
-	  speed_k += "_speed_k";
-	  if ( pSettings->line_exist( hud_sect.c_str(), speed_k.c_str() ) ) {
-		float k = pSettings->r_float( hud_sect.c_str(), speed_k.c_str() );
-		if ( !fsimilar( k, 1.f ) ) {
-		  for ( const auto& M : lst ) {
-			auto *animated   = m_pHUD->Visual()->dcast_PKinematicsAnimated();
-			auto *motion_def = animated->LL_GetMotionDef( M.m_MotionID );
-			motion_def->SetSpeedKoeff( k );
-		  }
-		}
-	  }
-
-	  std::string stop_k = prefix;
-	  stop_k += "_stop_k";
-	  if ( pSettings->line_exist( hud_sect.c_str(), stop_k.c_str() ) ) {
-		float k = pSettings->r_float( hud_sect.c_str(), stop_k.c_str() );
-		if ( k < 1.f )
-		  for ( auto& M : lst )
-			M.stop_k = k;
-	  }
-	*/
-
 	return anim_time;
 }
 
@@ -377,7 +353,7 @@ bool CHudItem::TryPlayAnimIdle()
 				PlayAnimIdleSprint();
 				return true;
 			}
-			if (!Core.Features.test(xrCore::Feature::wpn_bobbing))
+			if (!HudBobbingAllowed())
 			{
 				if (Actor()->get_state()&ACTOR_DEFS::mcAnyMove)
 				{
