@@ -569,8 +569,11 @@ void CLevel::OnRender()
 		DBG().draw_text						();
 		DBG().draw_level_info				();
 	}
+#endif
 
-	debug_renderer().render					();
+	debug_renderer().render();
+
+#ifdef DEBUG
 
 	if (psAI_Flags.is(aiVision)) {
 		for (u32 I=0; I < Level().Objects.o_count(); I++) {
