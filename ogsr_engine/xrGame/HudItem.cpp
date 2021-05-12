@@ -89,7 +89,6 @@ void CHudItem::renderable_Render()
 		if (!object().H_Parent() || (!_hud_render && !IsHidden()))
 		{
 			on_renderable_Render();
-			//debug_draw_firedeps();
 		}
 		else if (object().H_Parent())
 		{

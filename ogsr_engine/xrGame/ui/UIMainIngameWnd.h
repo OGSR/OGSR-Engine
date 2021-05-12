@@ -14,10 +14,6 @@
 #include "../hudsound.h"
 #include "../script_export_space.h"
 
-//для режима настройки HUD
-//extern int				g_bHudAdjustMode;
-//extern float			g_fHudAdjustValue;
-
 struct					GAME_NEWS_DATA;
 
 class					CUIPdaMsgListItem;
@@ -169,9 +165,6 @@ public:
 	void				SetPickUpItem	(CInventoryItem* PickUpItem);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
-#ifdef DEBUG
-	void				draw_adjust_mode					();
-#endif
 };
 
 add_to_type_list(CUIMainIngameWnd)
