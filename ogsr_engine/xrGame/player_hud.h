@@ -75,7 +75,7 @@ struct hud_item_measures
 	Fvector m_hands_attach[2]{}; // pos,rot
 
 	void load(const shared_str& sect_name, IKinematics* K);
-	
+
 	struct inertion_params
 	{
 		float m_pitch_offset_r;

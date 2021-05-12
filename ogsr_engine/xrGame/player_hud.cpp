@@ -15,14 +15,14 @@ Fvector _ancor_pos;
 Fvector _wpn_root_pos;
 
 // --#SM+# Begin--
-constexpr float PITCH_OFFSET_R		= 0.0f;		// Насколько сильно ствол смещается вбок (влево) при вертикальных поворотах камеры
-constexpr float PITCH_OFFSET_N		= 0.0f;		// Насколько сильно ствол поднимается\опускается при вертикальных поворотах камеры
-constexpr float PITCH_OFFSET_D		= 0.02f;	// Насколько сильно ствол приближается\отдаляется при вертикальных поворотах камеры
-constexpr float PITCH_LOW_LIMIT		= -PI;		// Минимальное значение pitch при использовании совместно с PITCH_OFFSET_N
-constexpr float ORIGIN_OFFSET		= -0.05f;	// Фактор влияния инерции на положение ствола (чем меньше, тем масштабней инерция)
-constexpr float ORIGIN_OFFSET_AIM	= -0.03f;	// (Для прицеливания)
-constexpr float TENDTO_SPEED		= 5.f;		// Скорость нормализации положения ствола
-constexpr float TENDTO_SPEED_AIM	= 8.f;		// (Для прицеливания)
+constexpr float PITCH_OFFSET_R = 0.0f;		// Насколько сильно ствол смещается вбок (влево) при вертикальных поворотах камеры
+constexpr float PITCH_OFFSET_N = 0.0f;		// Насколько сильно ствол поднимается\опускается при вертикальных поворотах камеры
+constexpr float PITCH_OFFSET_D = 0.02f;	// Насколько сильно ствол приближается\отдаляется при вертикальных поворотах камеры
+constexpr float PITCH_LOW_LIMIT = -PI;		// Минимальное значение pitch при использовании совместно с PITCH_OFFSET_N
+constexpr float ORIGIN_OFFSET = -0.05f;	// Фактор влияния инерции на положение ствола (чем меньше, тем масштабней инерция)
+constexpr float ORIGIN_OFFSET_AIM = -0.03f;	// (Для прицеливания)
+constexpr float TENDTO_SPEED = 5.f;		// Скорость нормализации положения ствола
+constexpr float TENDTO_SPEED_AIM = 8.f;		// (Для прицеливания)
 // --#SM+# End--
 
 player_hud_motion* player_hud_motion_container::find_motion(const shared_str& name)
@@ -43,12 +43,12 @@ void player_hud_motion_container::load(attachable_hud_item* parent, IKinematicsA
 	string512 buff;
 	MotionID motion_ID;
 
-	for (const auto&[name, anm]: pSettings->r_section(sect).Data)
+	for (const auto& [name, anm] : pSettings->r_section(sect).Data)
 	{
 		if (
 			(strstr(name.c_str(), "anm_") == name.c_str() || strstr(name.c_str(), "anim_") == name.c_str())
 			&& !strstr(name.c_str(), "_speed_k") && !strstr(name.c_str(), "_stop_k") && !strstr(name.c_str(), "_effector")
-		)
+			)
 		{
 			player_hud_motion* pm = &m_anims.emplace_back();
 			// base and alias name
@@ -98,7 +98,7 @@ void player_hud_motion_container::load(attachable_hud_item* parent, IKinematicsA
 						Anim.mid = motion_ID;
 						Anim.name = buff;
 #ifdef DEBUG
-//						Msg(" alias=[%s] base=[%s] name=[%s]",pm->m_alias_name.c_str(), pm->m_base_name.c_str(), buff);
+						//						Msg(" alias=[%s] base=[%s] name=[%s]",pm->m_alias_name.c_str(), pm->m_base_name.c_str(), buff);
 #endif
 					}
 				}
@@ -132,7 +132,7 @@ void player_hud_motion_container::load(attachable_hud_item* parent, IKinematicsA
 						Anim.eff_name = READ_IF_EXISTS(pSettings, r_string, sect, xr_strconcat(eff_param, name.c_str(), "_effector"), nullptr);
 
 #ifdef DEBUG
-//						Msg(" alias=[%s] base=[%s] name=[%s]",pm->m_alias_name.c_str(), pm->m_base_name.c_str(), buff);
+						//						Msg(" alias=[%s] base=[%s] name=[%s]",pm->m_alias_name.c_str(), pm->m_base_name.c_str(), buff);
 #endif
 					}
 				}
@@ -257,9 +257,9 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
 	}
 }
 
-bool attachable_hud_item::need_renderable() 
-{ 
-	return m_parent_hud_item->need_renderable(); 
+bool attachable_hud_item::need_renderable()
+{
+	return m_parent_hud_item->need_renderable();
 }
 
 void attachable_hud_item::render()
@@ -270,14 +270,14 @@ void attachable_hud_item::render()
 	m_parent_hud_item->render_hud_mode();
 }
 
-bool attachable_hud_item::render_item_ui_query() 
-{ 
-	return m_parent_hud_item->render_item_3d_ui_query(); 
+bool attachable_hud_item::render_item_ui_query()
+{
+	return m_parent_hud_item->render_item_3d_ui_query();
 }
 
 void attachable_hud_item::render_item_ui()
-{ 
-	m_parent_hud_item->render_item_3d_ui(); 
+{
+	m_parent_hud_item->render_item_3d_ui();
 }
 
 void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
@@ -569,7 +569,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 		if (FS.exist(ce_path, "$game_anims$", anm_name))
 		{
 			current_actor->Cameras().RemoveCamEffector(eCEWeaponAction);
-			
+
 			CAnimatorCamEffector* e = xr_new<CAnimatorCamEffector>();
 			e->SetType(eCEWeaponAction);
 			e->SetHudAffect(false);
@@ -754,7 +754,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 
 	ypr.mul(PI / 180.f);
 	m_attach_offset.setHPB(ypr.x, ypr.y, ypr.z);
-	
+
 	Fvector tmp;
 	if (m_attached_items[0])
 		tmp = m_attached_items[0]->hands_attach_pos();
@@ -829,7 +829,7 @@ void player_hud::update_inertion(Fmatrix& trans)
 		Fvector& origin = trans.c;
 		xform = trans;
 
-		static Fvector st_last_dir = {0, 0, 0};
+		static Fvector st_last_dir = { 0, 0, 0 };
 
 		// load params
 		hud_item_measures::inertion_params inertion_data;
@@ -1137,10 +1137,10 @@ void CWeaponBobbing::Update(Fmatrix& m, attachable_hud_item* hi)
 	{
 		Fvector dangle;
 		Fmatrix R, mR;
-		float k = (dwMState&ACTOR_DEFS::mcCrouch) ? m_fCrouchFactor : 1.f;
+		float k = (dwMState & ACTOR_DEFS::mcCrouch) ? m_fCrouchFactor : 1.f;
 		float k2 = k;
 
-		if (m_bZoomMode) 
+		if (m_bZoomMode)
 		{
 			float zoom_factor = m_fZoomFactor;
 			if (hi)
