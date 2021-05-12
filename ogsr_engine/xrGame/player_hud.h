@@ -16,6 +16,7 @@ struct motion_descr
 	shared_str name;
 	float speed_k{ 1.0f };
 	float stop_k{ 1.0f };
+	const char* eff_name{};
 };
 
 struct player_hud_motion
@@ -52,7 +53,7 @@ struct hud_item_measures
 		m_hands_offset_rot,
 		m_hands_offset_size
 	};
-	enum m_hands_offset_type : u8 { //Потом может очередность поменять.
+	enum m_hands_offset_type : u8 {
 		m_hands_offset_type_normal, // Не прицеливаемся
 		m_hands_offset_type_aim, // Смотрим в механический прицел
 		m_hands_offset_type_gl, // Смотрим в механический прицел в режиме ПГ
@@ -71,7 +72,7 @@ struct hud_item_measures
 	u16 m_shell_bone;
 	Fvector m_shell_point_offset;
 
-	Fvector m_hands_attach[2]; // pos,rot
+	Fvector m_hands_attach[2]{}; // pos,rot
 
 	void load(const shared_str& sect_name, IKinematics* K);
 	
@@ -81,9 +82,13 @@ struct hud_item_measures
 		float m_pitch_offset_n;
 		float m_pitch_offset_d;
 		float m_pitch_low_limit;
+		// отклонение модели от "курса" из за инерции во время движения
 		float m_origin_offset;
+		// отклонение модели от "курса" из за инерции во время движения с прицеливанием
 		float m_origin_offset_aim;
+		// скорость возврата худ модели в нужное положение
 		float m_tendto_speed;
+		// скорость возврата худ модели в нужное положение во время прицеливания
 		float m_tendto_speed_aim;
 	};
 	inertion_params m_inertion_params; //--#SM+#--	
@@ -92,13 +97,13 @@ struct hud_item_measures
 struct attachable_hud_item
 {
 	player_hud* m_parent;
-	CHudItem* m_parent_hud_item;
+	CHudItem* m_parent_hud_item{};
 	shared_str m_sect_name;
 	shared_str m_visual_name;
-	IKinematics* m_model;
-	u16 m_attach_place_idx;
+	IKinematics* m_model{};
+	u16 m_attach_place_idx{};
 	hud_item_measures m_measures;
-	bool m_has_separated_hands;
+	bool m_has_separated_hands{};
 
 	// runtime positioning
 	Fmatrix m_attach_offset;
@@ -106,9 +111,7 @@ struct attachable_hud_item
 
 	player_hud_motion_container m_hand_motions;
 
-	attachable_hud_item(player_hud* pparent) : m_parent(pparent), m_upd_firedeps_frame(u32(-1)),
-											   m_parent_hud_item(nullptr), m_model(nullptr),
-											   m_attach_place_idx(0), m_has_separated_hands(false) {}
+	attachable_hud_item(player_hud* pparent) : m_parent(pparent), m_upd_firedeps_frame(u32(-1)) {}
 	~attachable_hud_item();
 
 	void load(const shared_str& sect_name);
@@ -196,7 +199,7 @@ public:
 	{
 		m_attached_items[0] = nullptr;
 		m_attached_items[1] = nullptr;
-	};
+	}
 
 	void calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result);
 	void tune(Ivector values);
@@ -216,9 +219,9 @@ private:
 	Fmatrix m_attach_offset;
 
 	Fmatrix m_transform;
-	IKinematicsAnimated* m_model;
+	IKinematicsAnimated* m_model{};
 	xr_vector<u16> m_ancors;
-	attachable_hud_item* m_attached_items[2];
+	attachable_hud_item* m_attached_items[2]{};
 	xr_vector<attachable_hud_item*> m_pool;
 	CWeaponBobbing* m_bobbing{};
 };

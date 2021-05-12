@@ -162,11 +162,9 @@ public:
 	IC BOOL			RenderHud				() { return m_huditem_flags.test(fl_renderhud); }
 	IC bool			HudInertionEnabled		() const { return m_huditem_flags.test(fl_inertion_enable); }
 	IC bool			HudInertionAllowed		() const { return m_huditem_flags.test(fl_inertion_allow); }
-	IC bool			HudCollisionEnabled		() const { return m_huditem_flags.test(fl_collision_hud); }
 	IC bool			HudBobbingAllowed		() const { return m_huditem_flags.test(fl_bobbing_allow); }
 	IC void			EnableHudInertion		(BOOL B) { m_huditem_flags.set(fl_inertion_enable, B); }
 	IC void			AllowHudInertion		(BOOL B) { m_huditem_flags.set(fl_inertion_allow, B); }
-	IC void			EnableHudCollision		(BOOL B) { m_huditem_flags.set(fl_collision_hud, B); }
 	IC void			AllowHudBobbing			(BOOL B) { m_huditem_flags.set(fl_bobbing_allow, B); }
 	virtual void	render_hud_mode			() {};
 	virtual bool	need_renderable			() { return true; };
@@ -185,16 +183,6 @@ protected:
 
 protected:
 	u32						m_animation_slot;
-
-	// отклонение модели от "курса" из за инерции во время движения
-	float m_origin_offset;
-	// скорость возврата худ модели в нужное положение
-	float m_tendto_speed;
-
-	// отклонение модели от "курса" из за инерции во время движения с прицеливанием
-	float m_zoom_origin_offset;
-	// скорость возврата худ модели в нужное положение во время прицеливания
-	float m_zoom_tendto_speed;
 
 public:
 	IC		u32				animation_slot			()	{	return m_animation_slot;}

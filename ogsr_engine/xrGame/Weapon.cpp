@@ -475,7 +475,7 @@ void CWeapon::Load		(LPCSTR section)
 		m_bHideCrosshairInZoom = !!pSettings->r_bool(hud_sect, "zoom_hide_crosshair");
 
 	m_bZoomInertionAllow = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "allow_zoom_inertion", READ_IF_EXISTS(pSettings, r_bool, "features", "default_allow_zoom_inertion", true));
-	m_bScopeZoomInertionAllow = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "allow_scope_zoom_inertion", false);
+	m_bScopeZoomInertionAllow = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "allow_scope_zoom_inertion", READ_IF_EXISTS(pSettings, r_bool, "features", "default_allow_scope_zoom_inertion", true));
 
 	//////////////////////////////////////////////////////////
 
@@ -1487,6 +1487,13 @@ void CWeapon::OnZoomIn()
 	else
 		m_fZoomFactor = CurrentZoomFactor();
 
+	if (IsScopeAttached() && !IsGrenadeMode()) {
+		if (!m_bScopeZoomInertionAllow)
+			AllowHudInertion(FALSE);
+	}
+	else if (!m_bZoomInertionAllow)
+		AllowHudInertion(FALSE);
+
 	if(GetHUDmode())
 		GamePersistent().SetPickableEffectorDOF(true);
 
@@ -1509,6 +1516,8 @@ void CWeapon::OnZoomOut()
 			pActor->callback(GameObject::eOnActorWeaponZoomOut)(lua_game_object());
 		}
 	}
+
+	AllowHudInertion(TRUE);
 
 	if (GetHUDmode())
 		GamePersistent().SetPickableEffectorDOF(false);
@@ -1726,6 +1735,7 @@ u8 CWeapon::GetCurrentHudOffsetIdx()
 }
 
 
+// Обновление координат текущего худа
 void CWeapon::UpdateHudAdditonal		(Fmatrix& trans)
 {
 	auto pActor = smart_cast<const CActor*>(H_Parent());
@@ -1733,6 +1743,7 @@ void CWeapon::UpdateHudAdditonal		(Fmatrix& trans)
 
 	u8 idx = GetCurrentHudOffsetIdx();
 
+	//============= Поворот ствола во время аима =============//
 	if(		(pActor->IsZoomAimingMode() && m_fZoomRotationFactor<=1.f) ||
 			(!pActor->IsZoomAimingMode() && m_fZoomRotationFactor>0.f))
 	{

@@ -15,14 +15,14 @@ Fvector _ancor_pos;
 Fvector _wpn_root_pos;
 
 // --#SM+# Begin--
-const float PITCH_OFFSET_R		= 0.0f;		// Насколько сильно ствол смещается вбок (влево) при вертикальных поворотах камеры
-const float PITCH_OFFSET_N		= 0.0f;		// Насколько сильно ствол поднимается\опускается при вертикальных поворотах камеры
-const float PITCH_OFFSET_D		= 0.02f;	// Насколько сильно ствол приближается\отдаляется при вертикальных поворотах камеры
-const float PITCH_LOW_LIMIT		= -PI;		// Минимальное значение pitch при использовании совместно с PITCH_OFFSET_N
-const float ORIGIN_OFFSET		= -0.05f;	// Фактор влияния инерции на положение ствола (чем меньше, тем масштабней инерция)
-const float ORIGIN_OFFSET_AIM	= -0.03f;	// (Для прицеливания)
-const float TENDTO_SPEED		= 5.f;		// Скорость нормализации положения ствола
-const float TENDTO_SPEED_AIM	= 8.f;		// (Для прицеливания)
+constexpr float PITCH_OFFSET_R		= 0.0f;		// Насколько сильно ствол смещается вбок (влево) при вертикальных поворотах камеры
+constexpr float PITCH_OFFSET_N		= 0.0f;		// Насколько сильно ствол поднимается\опускается при вертикальных поворотах камеры
+constexpr float PITCH_OFFSET_D		= 0.02f;	// Насколько сильно ствол приближается\отдаляется при вертикальных поворотах камеры
+constexpr float PITCH_LOW_LIMIT		= -PI;		// Минимальное значение pitch при использовании совместно с PITCH_OFFSET_N
+constexpr float ORIGIN_OFFSET		= -0.05f;	// Фактор влияния инерции на положение ствола (чем меньше, тем масштабней инерция)
+constexpr float ORIGIN_OFFSET_AIM	= -0.03f;	// (Для прицеливания)
+constexpr float TENDTO_SPEED		= 5.f;		// Скорость нормализации положения ствола
+constexpr float TENDTO_SPEED_AIM	= 8.f;		// (Для прицеливания)
 // --#SM+# End--
 
 player_hud_motion* player_hud_motion_container::find_motion(const shared_str& name)
@@ -47,7 +47,7 @@ void player_hud_motion_container::load(attachable_hud_item* parent, IKinematicsA
 	{
 		if (
 			(strstr(name.c_str(), "anm_") == name.c_str() || strstr(name.c_str(), "anim_") == name.c_str())
-			&& !strstr(name.c_str(), "_speed_k") && !strstr(name.c_str(), "_stop_k")
+			&& !strstr(name.c_str(), "_speed_k") && !strstr(name.c_str(), "_stop_k") && !strstr(name.c_str(), "_effector")
 		)
 		{
 			player_hud_motion* pm = &m_anims.emplace_back();
@@ -128,6 +128,9 @@ void player_hud_motion_container::load(attachable_hud_item* parent, IKinematicsA
 								Anim.stop_k = k;
 						}
 
+						string_path eff_param;
+						Anim.eff_name = READ_IF_EXISTS(pSettings, r_string, sect, xr_strconcat(eff_param, name.c_str(), "_effector"), nullptr);
+
 #ifdef DEBUG
 //						Msg(" alias=[%s] base=[%s] name=[%s]",pm->m_alias_name.c_str(), pm->m_base_name.c_str(), buff);
 #endif
@@ -160,7 +163,7 @@ void attachable_hud_item::set_bone_visible(const shared_str& bone_name, BOOL bVi
 	{
 		if (bSilent)
 			return;
-		R_ASSERT2(0, make_string("model [%s] has no bone [%s]", m_visual_name.c_str(), bone_name.c_str()).c_str());
+		FATAL("model [%s] has no bone [%s]", m_visual_name.c_str(), bone_name.c_str());
 	}
 	bVisibleNow = m_model->LL_GetBoneVisible(bone_id);
 	if (bVisibleNow != bVisibility)
@@ -287,12 +290,12 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 	strconcat(sizeof(val_name), val_name, "hands_position", _prefix);
 	if (is_16x9 && !pSettings->line_exist(sect_name, val_name))
 		xr_strcpy(val_name, "hands_position");
-	m_hands_attach[0] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector().set(0.f, 0.f, 0.f));
+	m_hands_attach[0] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector{});
 
 	strconcat(sizeof(val_name), val_name, "hands_orientation", _prefix);
 	if (is_16x9 && !pSettings->line_exist(sect_name, val_name))
 		xr_strcpy(val_name, "hands_orientation");
-	m_hands_attach[1] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector().set(0.f, 0.f, 0.f));
+	m_hands_attach[1] = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, val_name, Fvector{});
 
 	if (!pSettings->line_exist(sect_name, "item_position") && pSettings->line_exist(sect_name, "position"))
 		m_item_attach[0] = pSettings->r_fvector3(sect_name, "position");
@@ -465,9 +468,9 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 	m_inertion_params.m_pitch_low_limit = READ_IF_EXISTS(pSettings, r_float, sect_name, "pitch_offset_up_low_limit", PITCH_LOW_LIMIT);
 
 	m_inertion_params.m_origin_offset = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertion_origin_offset", ORIGIN_OFFSET);
-	m_inertion_params.m_origin_offset_aim = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertion_origin_aim_offset", ORIGIN_OFFSET_AIM);
+	m_inertion_params.m_origin_offset_aim = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertion_zoom_origin_offset", ORIGIN_OFFSET_AIM);
 	m_inertion_params.m_tendto_speed = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertion_tendto_speed", TENDTO_SPEED);
-	m_inertion_params.m_tendto_speed_aim = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertion_tendto_aim_speed", TENDTO_SPEED_AIM);
+	m_inertion_params.m_tendto_speed_aim = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertion_zoom_tendto_speed", TENDTO_SPEED_AIM);
 	//--#SM+# End--
 }
 
@@ -508,11 +511,8 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 	xr_sprintf(anim_name_r, "%s%s", anm_name_b.c_str(), ((m_attach_place_idx == 1) && is_16x9) ? "_16x9" : "");
 
 	player_hud_motion* anm = m_hand_motions.find_motion(anim_name_r);
-	R_ASSERT2(
-		anm, make_string("model [%s] has no motion alias defined [%s]", m_visual_name.c_str(), anim_name_r).c_str());
-	R_ASSERT2(anm->m_animations.size(), make_string("model [%s] has no motion defined in motion_alias [%s]",
-											m_visual_name.c_str(), anim_name_r)
-											.c_str());
+	ASSERT_FMT(anm, "model [%s] has no motion alias defined [%s]", m_visual_name.c_str(), anim_name_r);
+	ASSERT_FMT(anm->m_animations.size(), "model [%s] has no motion defined in motion_alias [%s]", m_visual_name.c_str(), anim_name_r);
 
 	if (randomAnim)
 		rnd_idx = (u8)Random.randI(anm->m_animations.size());
@@ -565,7 +565,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 		VERIFY(current_actor);
 
 		string_path ce_path, anm_name;
-		strconcat(sizeof(anm_name), anm_name, "camera_effects\\weapon\\", M.name.c_str(), ".anm");
+		xr_strconcat(anm_name, "camera_effects\\weapon\\", M.eff_name ? M.eff_name : M.name.c_str(), ".anm");
 		if (FS.exist(ce_path, "$game_anims$", anm_name))
 		{
 			current_actor->Cameras().RemoveCamEffector(eCEWeaponAction);
@@ -583,9 +583,6 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 
 player_hud::player_hud()
 {
-	m_model = nullptr;
-	m_attached_items[0] = nullptr;
-	m_attached_items[1] = nullptr;
 	m_transform.identity();
 	if (Core.Features.test(xrCore::Feature::wpn_bobbing))
 		m_bobbing = xr_new<CWeaponBobbing>();
@@ -716,8 +713,7 @@ u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud
 	player_hud_motion* pm = pi->m_hand_motions.find_motion(anim_name);
 	if (!pm)
 		return 100; // ms TEMPORARY
-	R_ASSERT2(pm,
-		make_string("hudItem model [%s] has no motion with alias [%s]", hud_name.c_str(), anim_name.c_str()).c_str());
+	ASSERT_FMT(pm, "hudItem model [%s] has no motion with alias [%s]", hud_name.c_str(), anim_name.c_str());
 	return motion_length(pm->m_animations[0], md, pm->m_animations[0].speed_k, smart_cast<IKinematicsAnimated*>(pi->m_model), pi);
 }
 
@@ -1084,8 +1080,8 @@ void player_hud::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 	}
 }
 
-#define BOBBING_SECT	"wpn_bobbing_effector"
-#define SPEED_REMINDER	5.f 
+constexpr char* BOBBING_SECT = "wpn_bobbing_effector";
+constexpr float SPEED_REMINDER = 5.f;
 
 CWeaponBobbing::CWeaponBobbing()
 {

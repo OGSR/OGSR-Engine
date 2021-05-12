@@ -29,11 +29,6 @@ CHudItem::CHudItem(void)
 	m_current_motion_def = nullptr;
 	m_started_rnd_anim_idx = u8(-1);
 	m_dwStateTime		= 0;
-
-	m_origin_offset		= 0.f;
-	m_tendto_speed		= 0.f;
-	m_zoom_origin_offset = 0.f;
-	m_zoom_tendto_speed	= 0.f;
 }
 
 CHudItem::~CHudItem(void)
@@ -51,12 +46,6 @@ DLL_Pure *CHudItem::_construct	()
 	return				(m_object);
 }
 
-static const float ORIGIN_OFFSET = -0.05f;
-static const float TENDTO_SPEED = 5.f;
-
-static const float ZOOM_ORIGIN_OFFSET = -0.01f;
-static const float ZOOM_TENDTO_SPEED = 10.f;
-
 void CHudItem::Load(LPCSTR section)
 {
 	//загрузить hud, если он нужен
@@ -65,18 +54,10 @@ void CHudItem::Load(LPCSTR section)
 		hud_sect		= pSettings->r_string(section, "hud");
 
 		if (pSettings->line_exist(hud_sect, "allow_inertion"))
-			AllowHudInertion(pSettings->r_bool(hud_sect, "allow_inertion"));
-
-		if (pSettings->line_exist(hud_sect, "allow_collision"))
-			EnableHudCollision(pSettings->r_bool(hud_sect, "allow_collision"));
+			EnableHudInertion(pSettings->r_bool(hud_sect, "allow_inertion"));
 
 		if (pSettings->line_exist(hud_sect, "allow_bobbing"))
 			AllowHudBobbing(pSettings->r_bool(hud_sect, "allow_bobbing"));
-
-		m_origin_offset			= READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_origin_offset", ORIGIN_OFFSET);
-		m_tendto_speed			= READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_tendto_speed", TENDTO_SPEED);
-		m_zoom_origin_offset	= READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_zoom_origin_offset", ZOOM_ORIGIN_OFFSET);
-		m_zoom_tendto_speed		= READ_IF_EXISTS(pSettings, r_float, hud_sect, "inertion_zoom_tendto_speed", ZOOM_TENDTO_SPEED);
 	}
 
 	m_animation_slot	= pSettings->r_u32(section,"animation_slot");
