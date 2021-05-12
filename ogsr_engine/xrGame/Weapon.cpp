@@ -227,10 +227,10 @@ void CWeapon::ForceUpdateFireParticles()
 	}
 }
 
-LPCSTR wpn_scope_def_bone = "wpn_scope";
-LPCSTR wpn_silencer_def_bone = "wpn_silencer";
-LPCSTR wpn_launcher_def_bone_shoc = "wpn_launcher";
-LPCSTR wpn_launcher_def_bone_cop = "wpn_grenade_launcher";
+constexpr char* wpn_scope_def_bone = "wpn_scope";
+constexpr char* wpn_silencer_def_bone = "wpn_silencer";
+constexpr char* wpn_launcher_def_bone_shoc = "wpn_launcher";
+constexpr char* wpn_launcher_def_bone_cop = "wpn_grenade_launcher";
 
 void CWeapon::Load		(LPCSTR section)
 {
@@ -400,21 +400,11 @@ void CWeapon::Load		(LPCSTR section)
 		m_iGrenadeLauncherY = pSettings->r_s32(section,"grenade_launcher_y");
 	}
 
+
 	// Кости мировой модели оружия
-	if (pSettings->line_exist(section, "scope_bone"))
-		m_sWpn_scope_bone = pSettings->r_string(section, "scope_bone");
-	else
-		m_sWpn_scope_bone = wpn_scope_def_bone;
-
-	if (pSettings->line_exist(section, "silencer_bone"))
-		m_sWpn_silencer_bone = pSettings->r_string(section, "silencer_bone");
-	else
-		m_sWpn_silencer_bone = wpn_silencer_def_bone;
-
-	if (pSettings->line_exist(section, "launcher_bone"))
-		m_sWpn_launcher_bone = pSettings->r_string(section, "launcher_bone");
-	else
-		m_sWpn_launcher_bone = wpn_launcher_def_bone_shoc;
+	m_sWpn_scope_bone    = READ_IF_EXISTS(pSettings, r_string, section, "scope_bone", wpn_scope_def_bone);
+	m_sWpn_silencer_bone = READ_IF_EXISTS(pSettings, r_string, section, "silencer_bone", wpn_silencer_def_bone);
+	m_sWpn_launcher_bone = READ_IF_EXISTS(pSettings, r_string, section, "launcher_bone", wpn_launcher_def_bone_shoc);
 
 	if (pSettings->line_exist(section, "hidden_bones"))
 	{
@@ -431,36 +421,28 @@ void CWeapon::Load		(LPCSTR section)
 		}
 	}
 
-	// Кости худовой модели оружия
-	if (pSettings->line_exist(hud_sect, "scope_bone"))
-		m_sHud_wpn_scope_bone = pSettings->r_string(hud_sect, "scope_bone");
-	else
-		m_sHud_wpn_scope_bone = wpn_scope_def_bone;
+	// Кости худовой модели оружия - если не прописаны, используются имена из конфига мировой модели.
+	m_sHud_wpn_scope_bone    = READ_IF_EXISTS(pSettings, r_string, hud_sect, "scope_bone", m_sWpn_scope_bone);
+	m_sHud_wpn_silencer_bone = READ_IF_EXISTS(pSettings, r_string, hud_sect, "silencer_bone", m_sWpn_silencer_bone);
+	m_sHud_wpn_launcher_bone = READ_IF_EXISTS(pSettings, r_string, hud_sect, "launcher_bone", m_sWpn_launcher_bone);
 
-	if (pSettings->line_exist(hud_sect, "silencer_bone"))
-		m_sHud_wpn_silencer_bone = pSettings->r_string(hud_sect, "silencer_bone");
-	else
-		m_sHud_wpn_silencer_bone = wpn_silencer_def_bone;
-
-	if (pSettings->line_exist(hud_sect, "launcher_bone"))
-		m_sHud_wpn_launcher_bone = pSettings->r_string(hud_sect, "launcher_bone");
-	else
-		m_sHud_wpn_launcher_bone = wpn_launcher_def_bone_shoc;
-
-	if (pSettings->line_exist(hud_sect, "hidden_bones")) 
+	if (pSettings->line_exist(hud_sect, "hidden_bones"))
 	{
 		const char* S = pSettings->r_string(hud_sect, "hidden_bones");
 		if (S && strlen(S))
 		{
 			const int count = _GetItemCount(S);
 			string128 _hidden_bone{};
-			for (int it = 0; it < count; ++it) 
+			for (int it = 0; it < count; ++it)
 			{
 				_GetItem(S, it, _hidden_bone);
 				hud_hidden_bones.push_back(_hidden_bone);
 			}
 		}
 	}
+	else
+		hud_hidden_bones = hidden_bones;
+
 
 	//Можно и из конфига прицела читать и наоборот! Пока так.
 	m_fSecondVPZoomFactor = 0.0f;
@@ -1310,32 +1292,22 @@ bool CWeapon::SilencerAttachable() const
 
 void CWeapon::UpdateHUDAddonsVisibility()
 {
-	if (H_Parent() != Level().CurrentEntity()) //actor only
-		return;
-
 	if (!GetHUDmode())
 		return;
 
 	if (ScopeAttachable())
-	{
 		HudItemData()->set_bone_visible(m_sHud_wpn_scope_bone, IsScopeAttached());
-	}
 
 	if (m_eScopeStatus == ALife::eAddonDisabled)
-	{
 		HudItemData()->set_bone_visible(m_sHud_wpn_scope_bone, FALSE, TRUE);
-	}
 	else if (m_eScopeStatus == ALife::eAddonPermanent)
 		HudItemData()->set_bone_visible(m_sHud_wpn_scope_bone, TRUE, TRUE);
 
 	if (SilencerAttachable())
-	{
 		HudItemData()->set_bone_visible(m_sHud_wpn_silencer_bone, IsSilencerAttached());
-	}
+
 	if (m_eSilencerStatus == ALife::eAddonDisabled)
-	{
 		HudItemData()->set_bone_visible(m_sHud_wpn_silencer_bone, FALSE, TRUE);
-	}
 	else if (m_eSilencerStatus == ALife::eAddonPermanent)
 		HudItemData()->set_bone_visible(m_sHud_wpn_silencer_bone, TRUE, TRUE);
 
@@ -1343,22 +1315,15 @@ void CWeapon::UpdateHUDAddonsVisibility()
 		m_sHud_wpn_launcher_bone = wpn_launcher_def_bone_cop;
 
 	if (GrenadeLauncherAttachable())
-	{
 		HudItemData()->set_bone_visible(m_sHud_wpn_launcher_bone, IsGrenadeLauncherAttached());
-	}
+	
 	if (m_eGrenadeLauncherStatus == ALife::eAddonDisabled)
-	{
 		HudItemData()->set_bone_visible(m_sHud_wpn_launcher_bone, FALSE, TRUE);
-	}
 	else if (m_eGrenadeLauncherStatus == ALife::eAddonPermanent)
 		HudItemData()->set_bone_visible(m_sHud_wpn_launcher_bone, TRUE, TRUE);
 
-	///////////////////////////////////////////////////////////////////
-
 	for (const shared_str& bone_name : hud_hidden_bones)
-	{
 		HudItemData()->set_bone_visible(bone_name, FALSE, TRUE);
-	}
 
 	callback(GameObject::eOnUpdateHUDAddonsVisibiility)();
 }
@@ -1369,8 +1334,6 @@ void CWeapon::UpdateAddonsVisibility()
 	VERIFY(pWeaponVisual);
 
 	UpdateHUDAddonsVisibility();
-
-	callback(GameObject::eOnUpdateAddonsVisibiility)();
 
 	///////////////////////////////////////////////////////////////////
 
@@ -1451,6 +1414,8 @@ void CWeapon::UpdateAddonsVisibility()
 	}
 
 	///////////////////////////////////////////////////////////////////
+
+	callback(GameObject::eOnUpdateAddonsVisibiility)();
 
 	pWeaponVisual->CalculateBones_Invalidate();
 	pWeaponVisual->CalculateBones();
