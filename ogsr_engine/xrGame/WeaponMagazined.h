@@ -1,5 +1,3 @@
-#ifndef __XR_WEAPON_MAG_H__
-#define __XR_WEAPON_MAG_H__
 #pragma once
 
 #include "weapon.h"
@@ -44,19 +42,7 @@ protected:
 	ESoundTypes		m_eSoundShot;
 	ESoundTypes		m_eSoundEmptyClick;
 	ESoundTypes		m_eSoundReload;
-	struct SWMmotions{
-		MotionSVec		mhud_idle;
-		MotionSVec		mhud_idle_aim;
-		MotionSVec		mhud_reload;	//
-		MotionSVec		mhud_hide;		//
-		MotionSVec		mhud_show;		//
-		MotionSVec		mhud_shots;		//
-		MotionSVec		mhud_idle_sprint;
-		MotionSVec		mhud_idle_moving;
-		MotionSVec		mhud_reload_partly;
-	};
-	SWMmotions			mhud;	
-	
+
 	// General
 	//кадр момента пересчета UpdateSounds
 	u32				dwUpdateSounds_Frame;
@@ -77,7 +63,7 @@ protected:
 	virtual void	OnEmptyClick	();
 
 	virtual void	OnAnimationEnd	(u32 state);
-	virtual void	OnStateSwitch	(u32 S);
+	virtual void	OnStateSwitch	(u32 S, u32 oldState);
 
 	virtual void	UpdateSounds	();
 
@@ -120,7 +106,6 @@ public:
 	virtual void	InitZoomParams(LPCSTR section, bool useTexture);
 
 	virtual bool	Action			(s32 cmd, u32 flags);
-	virtual void	onMovementChanged	(ACTOR_DEFS::EMoveCommand cmd);
 	virtual void	UnloadMagazine	(bool spawn_ammo = true);
 
 	virtual void	GetBriefInfo				(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
@@ -192,15 +177,14 @@ protected:
 	virtual bool	AllowFireWhileWorking() {return false;}
 
 	//виртуальные функции для проигрывания анимации HUD
-	virtual bool	TryPlayAnimIdle( u8 );
-	virtual void	PlayAnimShow();
-	virtual void	PlayAnimHide();
-	virtual void	PlayAnimReload();
-	virtual void	PlayAnimIdle( u8 );
-	virtual void	PlayAnimShoot();
+	virtual void	PlayAnimShow		();
+	virtual void	PlayAnimHide		();
+	virtual void	PlayAnimReload		();
+	virtual void	PlayAnimIdle		();
+	virtual void	PlayAnimAim			();
+	virtual void	PlayAnimShoot		();
 	virtual void	PlayReloadSound		();
 
-	virtual void	StartIdleAnim		();
 	virtual	int		ShotsFired			() { return m_iShotNum; }
 	virtual float	GetWeaponDeterioration	();
 
@@ -209,5 +193,3 @@ protected:
 
   bool ScopeRespawn( PIItem );
 };
-
-#endif //__XR_WEAPON_MAG_H__

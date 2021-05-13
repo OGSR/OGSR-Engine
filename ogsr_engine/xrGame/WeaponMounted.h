@@ -35,8 +35,9 @@ public:
 	virtual					~CWeaponMounted		();
 
 	// for shooting object
-	virtual const Fvector&	get_CurrentFirePoint()	{return fire_pos;}
-	virtual const Fmatrix&	get_ParticlesXFORM()	;
+	virtual const Fvector&	get_CurrentFirePoint() { return fire_pos; }
+	virtual const Fmatrix&	get_ParticlesXFORM	();
+	virtual bool			IsHudModeNow		() { return false; };
 
 	//////////////////////////////////////////////////
 	// непосредственно обработка стрельбы

@@ -408,9 +408,6 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("get_ammo_box_size", &CScriptGameObject::GetAmmoBoxSize)
 		.def("set_ammo_box_size", &CScriptGameObject::SetAmmoBoxSize)
 
-		.def("set_hud_offset", &CScriptGameObject::SetHudOffset)
-		.def("set_hud_rotate", /*(void (CScriptGameObject::*)(Fvector2))(*/&CScriptGameObject::SetHudRotate)//)
-
 		.def("get_holder", &CScriptGameObject::GetActorHolder)
 		.def("get_camera", &CScriptGameObject::GetCarCamera)
 

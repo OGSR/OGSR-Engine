@@ -40,6 +40,8 @@ CShootingObject::CShootingObject(void)
 	m_sFlameParticlesCurrent		= m_sFlameParticles = NULL;
 	m_sSmokeParticlesCurrent		= m_sSmokeParticles = NULL;
 	m_sShellParticles				= NULL;
+	m_bForcedParticlesHudMode		= false;
+	m_bParticlesHudMode				= false;
 	
 	bWorking						= false;
 
@@ -77,6 +79,10 @@ void CShootingObject::Load	(LPCSTR section)
 	//Cycle down RPM after first 2 shots; used for Abakan/AN-94
 	bCycleDown = !!READ_IF_EXISTS(pSettings, r_bool, section, "cycle_down", false);
 	//Alundaio: END
+
+	m_bForcedParticlesHudMode = !!pSettings->line_exist(section, "forced_particle_hud_mode");
+	if (m_bForcedParticlesHudMode)
+		m_bParticlesHudMode = !!pSettings->r_bool(section, "forced_particle_hud_mode");
 
 	LoadFireParams		(section, "");
 	LoadLights			(section, "");
@@ -209,8 +215,10 @@ void CShootingObject::StartParticles (CParticlesObject*& pParticles, LPCSTR part
 	pParticles = CParticlesObject::Create(particles_name,(BOOL)auto_remove_flag);
 	
 	UpdateParticles(pParticles, pos, vel);
-	pParticles->Play();
+	BOOL hudMode = IsHudModeNow() && m_bParticlesHudMode;
+	pParticles->Play(hudMode);
 }
+
 void CShootingObject::StopParticles (CParticlesObject*&	pParticles)
 {
 	if(pParticles == NULL) return;
@@ -300,7 +308,8 @@ void CShootingObject::OnShellDrop	(const Fvector& play_pos,
 	particles_pos.c.set		(play_pos);
 
 	pShellParticles->UpdateParent		(particles_pos, parent_vel); 
-	pShellParticles->Play				();
+	BOOL hudMode = IsHudModeNow() && m_bParticlesHudMode;
+	pShellParticles->Play				(hudMode);
 }
 
 
@@ -329,7 +338,8 @@ void CShootingObject::StartFlameParticles	()
 	StopFlameParticles();
 	m_pFlameParticles = CParticlesObject::Create(*m_sFlameParticlesCurrent,FALSE);
 	UpdateFlameParticles();
-	m_pFlameParticles->Play();
+	BOOL hudMode = IsHudModeNow() && m_bParticlesHudMode;
+	m_pFlameParticles->Play(hudMode);
 
 }
 void CShootingObject::StopFlameParticles	()

@@ -19,17 +19,7 @@ slots_extend_menu = true
 
 ; Эффект раскачки оружия при движении.
 ; Для работы требуется секция с названием wpn_bobbing_effector. Пример настроек находится чуть ниже.
-wpn_bobbing = false
-;[wpn_bobbing_effector]
-;limp_amplitude = 0.011
-;limp_speed     = 4.6
-;run_amplitude  = 0.0075
-;run_speed      = 6.74
-;walk_amplitude = 0.005
-;walk_speed     = 6.26
-;crouch_k = 0.75
-;;zoom_k   = 0.1
-;scope_zoom_k = 0.1
+wpn_bobbing = true
 
 ; Показывать полоску состояния предметов в инвентаре, на его иконке.
 ; Включает поддержку аттрибута condition_progress_bar для dragdrop элементов
@@ -159,10 +149,13 @@ autoreload_wpn = false
 ; при установке движка в какие либо моды, чтобы не править там 100500 конфигов оружия.
 ; У настроек из конфигов оружия приоритет выше.
 
-; Инерция при прицеливании. По умолчанию эффект не сильный, не навязчивый.
+; Инерция при прицеливании в механический прицел
 default_allow_zoom_inertion = true
 
-; Наклоны оружия при стрейфах. По умолчанию эффект не сильный, не навязчивый.
+; Инерция при прицеливании в присоединяемые нетекстурные прицелы (3д прицелы и тп)
+default_allow_scope_zoom_inertion = true
+
+; Наклоны оружия при стрейфах.
 default_strafe_enabled = true
 
 ; Изменение HUD FOV когда игрок стоит вплотную к стене.
@@ -216,6 +209,19 @@ select_mode_1342 = true
 [user_spots]
 ; Переопределить тип метки, используемой для пользовательских меток на карте. По умолчанию используется red_location
 ;spot_type = red_location
+
+
+; Настройки для wpn_bobbing
+[wpn_bobbing_effector]
+limp_amplitude = 0.011
+limp_speed     = 4.6
+run_amplitude  = 0.0075
+run_speed      = 6.74
+walk_amplitude = 0.005
+walk_speed     = 6.26
+crouch_k = 0.75
+;zoom_k   = 0.1
+scope_zoom_k = 0.1
 
 
 [engine_callbacks]

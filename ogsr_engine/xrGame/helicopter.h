@@ -296,6 +296,7 @@ public:
 	
 	virtual const Fmatrix&			get_ParticlesXFORM			();
 	virtual const Fvector&			get_CurrentFirePoint		();
+	virtual bool					IsHudModeNow				() { return false; };
 
 	virtual CGameObject				*cast_game_object			()	{return this;}
 	virtual CExplosive				*cast_explosive				()	{return this;}

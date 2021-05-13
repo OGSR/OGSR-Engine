@@ -37,7 +37,7 @@ public:
 	void				UpdateParent		(const Fmatrix& m, const Fvector& vel);
 
 	void				play_at_pos			(const Fvector& pos, BOOL xform=FALSE);
-	virtual void		Play				();
+	virtual void		Play				(BOOL hudMode = FALSE);
 	void				Stop				(BOOL bDefferedStop=TRUE);
 	virtual BOOL		Locked				()				{ return mt_dt; }
 	

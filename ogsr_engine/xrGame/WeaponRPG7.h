@@ -14,11 +14,12 @@ public:
 	virtual ~CWeaponRPG7(void);
 
 	virtual BOOL net_Spawn		(CSE_Abstract* DC);
-	virtual void OnStateSwitch	(u32 S);
+	virtual void OnStateSwitch	(u32 S, u32 oldState);
 	virtual void OnEvent		(NET_Packet& P, u16 type);
 	virtual void ReloadMagazine	();
 	virtual void Load			(LPCSTR section);
 	virtual void switch2_Fire	();
+	virtual void on_a_hud_attach();
 
 	virtual void FireStart		();
 	virtual void SwitchState	(u32 S);

@@ -67,6 +67,7 @@ protected:
 	void					UpdateBarrelDir		();
 	virtual const Fvector&	get_CurrentFirePoint();
 	virtual const Fmatrix&	get_ParticlesXFORM	();
+	virtual bool			IsHudModeNow		() { return false; };
 
 	virtual	void			FireStart			();
 	virtual	void			FireEnd				();

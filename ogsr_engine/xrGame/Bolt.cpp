@@ -37,7 +37,7 @@ bool CBolt::Activate( bool now )
 
 void CBolt::Deactivate( bool now )
 {
-	Hide( now || ( GetState() == MS_THREATEN || GetState() == MS_READY || GetState() == MS_THROW ) );
+	Hide( now || ( GetState() == eThrowStart || GetState() == eReady || GetState() == eThrow ) );
 }
 
 void CBolt::Throw() 
@@ -56,26 +56,8 @@ bool CBolt::Useful() const
 
 bool CBolt::Action(s32 cmd, u32 flags) 
 {
-	if(inherited::Action(cmd, flags)) return true;
-/*
-	switch(cmd) 
-	{
-	case kDROP:
-		{
-			if(flags&CMD_START) 
-			{
-				m_throw = false;
-				if(State() == MS_IDLE) State(MS_THREATEN);
-			} 
-			else if(State() == MS_READY || State() == MS_THREATEN) 
-			{
-				m_throw = true; 
-				if(State() == MS_READY) State(MS_THROW);
-			}
-		} 
+	if (inherited::Action(cmd, flags))
 		return true;
-	}
-*/
 	return false;
 }
 
@@ -84,17 +66,18 @@ void CBolt::Destroy()
 	inherited::Destroy();
 }
 
-void CBolt::activate_physic_shell	()
+void CBolt::activate_physic_shell()
 {
-	inherited::activate_physic_shell	();
-	m_pPhysicsShell->SetAirResistance	(.0001f);
+	inherited::activate_physic_shell();
+	m_pPhysicsShell->SetAirResistance(.0001f);
 }
 
-void CBolt::SetInitiator			(u16 id)
+void CBolt::SetInitiator(u16 id)
 {
-	m_thrower_id=id;
+	m_thrower_id = id;
 }
-u16	CBolt::Initiator				()
+
+u16	CBolt::Initiator()
 {
 	return m_thrower_id;
 }

@@ -66,10 +66,9 @@ CArtefact::CArtefact(void)
 {
 	shedule.t_min				= 20;
 	shedule.t_max				= 50;
-	m_sParticlesName			= NULL;
-	m_pTrailLight				= NULL;
-	m_activationObj				= NULL;
-	m_idle_state				= eIdle;
+	m_sParticlesName			= nullptr;
+	m_pTrailLight				= nullptr;
+	m_activationObj				= nullptr;
 }
 
 
@@ -104,14 +103,6 @@ void CArtefact::Load(LPCSTR section)
 		m_fThirstRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "thirst_restore_speed", 0.f);
 	}
 	m_bCanSpawnZone = !!pSettings->line_exist("artefact_spawn_zones", section);
-
-
-	animGetEx( m_anim_idle,        "anim_idle" );
-	animGetEx( m_anim_idle_moving, pSettings->line_exist(hud_sect.c_str(), "anim_idle_moving") ? "anim_idle_moving" : "anim_idle");
-	animGetEx( m_anim_idle_sprint, pSettings->line_exist(hud_sect.c_str(), "anim_idle_sprint") ? "anim_idle_sprint" : "anim_idle");
-	animGetEx( m_anim_hide,        "anim_hide" );
-	animGetEx( m_anim_show,        "anim_show" );
-	animGetEx( m_anim_activate,    "anim_activate" );
 }
 
 BOOL CArtefact::net_Spawn(CSE_Abstract* DC) 
@@ -187,30 +178,6 @@ void CArtefact::UpdateCL		()
 	
 	if (o_fastmode || m_activationObj)
 		UpdateWorkload			(Device.dwTimeDelta);
-
-	if (GetState() == eIdle) {
-		auto state = idle_state();
-		if (m_idle_state != state) {
-			m_idle_state = state;
-			SwitchState(eIdle);
-		}
-	}
-	else
-		m_idle_state = eIdle;
-}
-
-u8 CArtefact::idle_state() {
-	auto* actor = smart_cast<CActor*>(H_Parent());
-
-	if (actor) {
-		u32 st = actor->get_state();
-		if (st & mcSprint)
-			return eSubstateIdleSprint;
-		else if (st & mcAnyAction && !(st & mcJump) && !(st & mcFall))
-			return eSubstateIdleMoving;
-	}
-
-	return eIdle;
 }
 
 void CArtefact::UpdateWorkload		(u32 dt) 
@@ -389,53 +356,37 @@ bool CArtefact::Action(s32 cmd, u32 flags)
 	return inherited::Action(cmd,flags);
 }
 
-void CArtefact::onMovementChanged	(ACTOR_DEFS::EMoveCommand cmd)
+void CArtefact::OnStateSwitch(u32 S, u32 oldState)
 {
-	if ((cmd == ACTOR_DEFS::mcSprint) && (GetState() == eIdle))
+	inherited::OnStateSwitch(S, oldState);
+	switch (S)
 	{
-		m_idle_state = eSubstateIdleSprint;
-		PlayAnimIdle(m_idle_state);
-	}
-}
-
-void CArtefact::OnStateSwitch		(u32 S)
-{
-	inherited::OnStateSwitch	(S);
-	switch(S){
-	case eShowing:
-		{
-			m_pHUD->animPlay(random_anim(m_anim_show),		FALSE, this, S);
-		}break;
+	case eShowing: 
+	{ 
+		PlayHUDMotion("anim_show", "anm_show", FALSE, this, S);
+	} break;
 	case eHiding:
-		{
-			m_pHUD->animPlay(random_anim(m_anim_hide),		FALSE, this, S);
-		}break;
+	{
+		if (oldState != eHiding)
+			PlayHUDMotion("anim_hide", "anm_hide", FALSE, this, S);
+	} break;
 	case eActivating:
-		{
-			m_pHUD->animPlay(random_anim(m_anim_activate),	FALSE, this, S);
-		}break;
+	{
+		PlayHUDMotion("anim_activate", "anm_activate", FALSE, this, S);
+	} break;
 	case eIdle:
-		{
-			PlayAnimIdle(m_idle_state);
-		}break;
+	{ 
+		PlayAnimIdle();
+	} break;
 	};
 }
 
-void CArtefact::PlayAnimIdle(u8 state)
-{
-	switch (state) {
-	case eSubstateIdleMoving:
-		m_pHUD->animPlay(random_anim(m_anim_idle_moving), TRUE, this, GetState());
-		break;
-	case eSubstateIdleSprint:
-		m_pHUD->animPlay(random_anim(m_anim_idle_sprint), TRUE, this, GetState());
-		break;
-	default:
-		m_pHUD->animPlay(random_anim(m_anim_idle), TRUE, this, GetState());
-	}
+void CArtefact::PlayAnimIdle()
+{ 
+	PlayHUDMotion("anim_idle", "anm_idle", FALSE, nullptr, eIdle);
 }
 
-void CArtefact::OnAnimationEnd		(u32 state)
+void CArtefact::OnAnimationEnd(u32 state)
 {
 	switch (state)
 	{
