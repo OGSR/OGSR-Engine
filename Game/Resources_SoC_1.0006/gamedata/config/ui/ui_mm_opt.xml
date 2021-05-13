@@ -583,6 +583,13 @@
 			<options_item entry="r_sslr_enable" group="mm_opt_video_adv"/>
 		</check_r_sslr_enable>
 
+		<cap_3d_scopes_fps_factor x="5" y="5" width="143" height="21">
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_3d_scopes_fps_factor</text>
+		</cap_3d_scopes_fps_factor>
+		<track_3d_scopes_fps_factor x="249" y="0" width="190" height="21" is_integer="1" step="1">
+			<options_item entry="g_3d_scopes_fps_factor" group="mm_opt_video_adv"/>
+		</track_3d_scopes_fps_factor>
+
 		<btn_to_simply x="342" y="325" width="111" height="29">
 			<text align="c" font="letterica16" r="227" g="199" b="178">ui_mm_simply</text>
 			<texture>ui_button_ordinary</texture>
