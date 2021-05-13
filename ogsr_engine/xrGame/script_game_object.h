@@ -91,7 +91,6 @@ class CCar;
 class CDangerObject;
 class CScriptGameObject;
 class CProjector;
-struct attachable_hud_item;
 
 #ifdef DEBUG
 	template <typename _object_type>

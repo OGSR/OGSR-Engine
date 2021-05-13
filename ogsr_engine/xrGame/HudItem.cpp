@@ -352,10 +352,10 @@ bool CHudItem::TryPlayAnimIdle()
 	return false;
 }
 
-void CHudItem::PlayAnimBore()
+/*void CHudItem::PlayAnimBore()
 {
 	PlayHUDMotion("anim_idle", "anm_bore", TRUE, this, GetState());
-}
+}*/
 
 bool CHudItem::AnimationExist(const shared_str& anim_name) const
 {

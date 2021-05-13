@@ -59,13 +59,13 @@ void CWeaponPistol::PlayAnimShow()
 		inherited::PlayAnimShow();
 }
 
-void CWeaponPistol::PlayAnimBore()
+/*void CWeaponPistol::PlayAnimBore()
 {
 	if (m_opened)
 		PlayHUDMotion("anim_empty", "anm_bore_empty", TRUE, this, GetState());
 	else
 		inherited::PlayAnimBore();
-}
+}*/
 
 void CWeaponPistol::PlayAnimIdleSprint()
 {

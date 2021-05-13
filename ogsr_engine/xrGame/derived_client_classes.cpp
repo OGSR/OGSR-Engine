@@ -14,7 +14,6 @@
 #include "script_game_object.h"
 #include "ui/UIDialogWnd.h"
 #include "ui/UIInventoryWnd.h"
-#include "player_hud.h"
 
 /* Декларация о стиле экспорта свойств и методов:
      * Свойства объектов экспортируются по возможности так, как они выглядят в файлах конфигурации (*.ltx), а не так как они названы в исходниках движка

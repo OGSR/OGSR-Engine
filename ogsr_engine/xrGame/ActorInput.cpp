@@ -25,9 +25,7 @@
 #include "CharacterPhysicsSupport.h"
 #include "InventoryBox.h"
 #include "player_hud.h"
-
-//#include "game_object_space.h"
-//#include "script_callback_ex.h"
+#include "HudItem.h"
 
 bool g_bAutoClearCrouch = true;
 extern int g_bHudAdjustMode;
@@ -279,6 +277,10 @@ void CActor::IR_OnMouseMove(int dx, int dy)
 		g_player_hud->tune(Ivector().set(dx, dy, 0));
 		return;
 	}
+
+	PIItem iitem = inventory().ActiveItem();
+	if (iitem && iitem->cast_hud_item())
+		iitem->cast_hud_item()->ResetSubStateTime();
 
 	if (Remote())		return;
 //	if (conditions().IsSleeping())	return;

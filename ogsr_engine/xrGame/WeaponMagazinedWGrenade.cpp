@@ -25,7 +25,7 @@
 #include "alife_registry_wrappers.h"
 #include "alife_simulator_header.h"
 
-LPCSTR grenade_launcher_def_bone_cop = "grenade";
+constexpr char* grenade_launcher_def_bone_cop = "grenade";
 
 CWeaponMagazinedWGrenade::CWeaponMagazinedWGrenade(LPCSTR name,ESoundTypes eSoundType) : CWeaponMagazined(name, eSoundType)
 {
@@ -821,9 +821,6 @@ void CWeaponMagazinedWGrenade::UpdateSounds	()
 
 void CWeaponMagazinedWGrenade::UpdateGrenadeVisibility(bool visibility)
 {
-	if (H_Parent() != Level().CurrentEntity())
-		return;
-
 	if (!GetHUDmode())
 		return;
 

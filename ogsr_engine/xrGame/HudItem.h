@@ -67,9 +67,7 @@ protected: //чтоб нельзя было вызвать на прямую
 		fl_renderhud		= (1 << 1),
 		fl_inertion_enable	= (1 << 2),
 		fl_inertion_allow	= (1 << 3),
-		fl_aiming			= (1 << 4),
-		fl_collision_hud	= (1 << 5),
-		fl_bobbing_allow	= (1 << 6),
+		fl_bobbing_allow	= (1 << 4),
 	};
 
 	// Motion data
@@ -130,7 +128,7 @@ public:
 	virtual void	PlayAnimIdle		();
 	bool			TryPlayAnimIdle		();
 	virtual bool	MovingAnimAllowedNow() { return true; }
-	virtual void	PlayAnimBore		();
+	//virtual void	PlayAnimBore		();
 	virtual void	PlayAnimIdleMoving	();
 	virtual void	PlayAnimIdleSprint	();
 

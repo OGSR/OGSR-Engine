@@ -89,22 +89,14 @@ void player_hud_motion_container::load(attachable_hud_item* parent, IKinematicsA
 				else
 					xr_sprintf(buff, "%s%d", pm->m_base_name.c_str(), i);
 
+				IKinematicsAnimated* final_model{};
 				if (model && parent->m_has_separated_hands)
-				{
-					motion_ID = model->ID_Cycle_Safe(buff);
-					if (motion_ID.valid())
-					{
-						auto& Anim = pm->m_animations.emplace_back();
-						Anim.mid = motion_ID;
-						Anim.name = buff;
-#ifdef DEBUG
-						//						Msg(" alias=[%s] base=[%s] name=[%s]",pm->m_alias_name.c_str(), pm->m_base_name.c_str(), buff);
-#endif
-					}
-				}
+					final_model = model;
 				else if (animatedHudItem && !parent->m_has_separated_hands)
+					final_model = animatedHudItem;
+
 				{
-					motion_ID = animatedHudItem->ID_Cycle_Safe(buff);
+					motion_ID = final_model->ID_Cycle_Safe(buff);
 
 					if (motion_ID.valid())
 					{
@@ -130,10 +122,6 @@ void player_hud_motion_container::load(attachable_hud_item* parent, IKinematicsA
 
 						string_path eff_param;
 						Anim.eff_name = READ_IF_EXISTS(pSettings, r_string, sect, xr_strconcat(eff_param, name.c_str(), "_effector"), nullptr);
-
-#ifdef DEBUG
-						//						Msg(" alias=[%s] base=[%s] name=[%s]",pm->m_alias_name.c_str(), pm->m_base_name.c_str(), buff);
-#endif
 					}
 				}
 			}

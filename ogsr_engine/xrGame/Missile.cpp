@@ -18,9 +18,6 @@
 #	include "phdebug.h"
 #endif
 
-
-#define PLAYING_ANIM_TIME 10000
-
 #include "ui/UIProgressShape.h"
 #include "ui/UIXmlInit.h"
 
@@ -190,7 +187,7 @@ void CMissile::UpdateCL()
 		CActor* pActor = smart_cast<CActor*>(H_Parent());
 		if (pActor && !(pActor->get_state()&EMoveCommand::mcAnyMove) && this == pActor->inventory().ActiveItem())
 		{
-			if (g_bHudAdjustMode == 0 && GetState() == eIdle && m_dwStateTime > PLAYING_ANIM_TIME)
+			if (g_bHudAdjustMode == 0 && GetState() == eIdle && (Device.dwTimeGlobal - m_dw_curr_substate_time > 20000))
 			{
 				SwitchState(eBore);
 				ResetSubStateTime();

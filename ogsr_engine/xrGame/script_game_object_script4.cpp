@@ -37,7 +37,6 @@
 #include "ActorCondition.h"
 #include "EntityCondition.h"
 #include "holder_custom.h"
-#include "player_hud.h"
 
 #include "ai_space_inline.h"
 
