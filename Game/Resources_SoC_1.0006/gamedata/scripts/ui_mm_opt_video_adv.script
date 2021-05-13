@@ -78,6 +78,7 @@ local adv_vid_opt_params = {
 	{ "r2_rain_drops",         "check", 0, hint_colors.green , "video_settings_name_47", "video_settings_desc_47", only_2a_and_more_mode },
 	{ "r2_actor_shadow",       "check", 0, hint_colors.green , "video_settings_name_56", "",                       only_2a_and_more_mode },
 	{ "r_sslr_enable",         "check", 1, hint_colors.yellow, "", "",                                             only_4_and_more_mode },
+	{ "3d_scopes_fps_factor",  "track", 0, hint_colors.red   , "video_settings_name_64", "video_settings_desc_64", },
 }
 
 local control_init_funs = {

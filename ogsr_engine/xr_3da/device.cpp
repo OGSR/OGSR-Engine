@@ -28,6 +28,7 @@ ENGINE_API CLoadScreenRenderer load_screen_renderer;
 
 ENGINE_API BOOL g_bRendering = FALSE; 
 u32 g_dwFPSlimit = 60;
+ENGINE_API int g_3dscopes_fps_factor = 2; // На каком кадре с момента прошлого рендера во второй вьюпорт мы начнём новый (не может быть меньше 2 - каждый второй кадр, чем больше тем более низкий FPS во втором вьюпорте)
 
 BOOL		g_bLoaded = FALSE;
 //static ref_light precache_light{};
@@ -596,7 +597,7 @@ void CRenderDevice::CSecondVPParams::SetSVPActive(bool bState) //--#SM+#-- +Seco
 
 bool CRenderDevice::CSecondVPParams::IsSVPFrame() //--#SM+#-- +SecondVP+
 {
-	bool cond = IsSVPActive() && ((Device.dwFrame % m_FrameDelay) == 0);
+	bool cond = IsSVPActive() && ((Device.dwFrame % g_3dscopes_fps_factor) == 0);
 	if (g_pGamePersistent)
 		g_pGamePersistent->m_pGShaderConstants.m_blender_mode.y = cond ? 1.0f : 0.0f;
 	return cond;

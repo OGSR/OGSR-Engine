@@ -498,6 +498,10 @@
 		<text>Pond reflections</text>
 	</string>
 
+	<string id="ui_mm_3d_scopes_fps_factor">
+		<text>FPS in 3D Scopes</text>
+	</string>
+
 	<string id="ui_mm_fov">
 		<text>Field of view (fov)</text>
 	</string>
@@ -783,6 +787,9 @@
 	<string id="video_settings_name_63">
 		<text>Hemi освещенность - r2_sun_lumscale_hemi</text>
 	</string>
+	<string id="video_settings_name_64">
+		<text>FPS in 3D Scopes - g_3d_scopes_fps_factor</text>
+	</string>
 
 	<string id="video_settings_desc_1">
 		<text>This option adjusts the degree of inertia applied on the player's view. The higher it is set, the more the player's viewpoint will bob when walking, running and getting hit. In addition, the player's weapon will sway with increased intensity after running for a long period of time.\n \nBEWARE! This option may not be to everyone's taste. If you are unsure of its effects, it is best left at its default value.</text>
@@ -960,6 +967,9 @@
 	</string>
 	<string id="video_settings_desc_63">
 		<text>Эта настройка регулирует интенсивность hemi освещения. Чем она выше, тем будет светлее. ВНИМАНИЕ! Это настройка из разряда \"на любителя\", и если вы не знаете точно, что делаете - оставьте её на значении по-умолчанию. Повысьте, если в целом игра вам кажется слишком темной и ползунками настройки яркости/контрастности вы не можете достичь желаемого эффекта.</text>
+	</string>
+	<string id="video_settings_desc_64">
+		<text>This setting controls which frame in turn will be rendered in the 3D scope. By default - every 2. If you increase it, the FPS in the game will increase, but the FPS in the 3D scope will decrease.</text>
 	</string>
 
 </string_table>
