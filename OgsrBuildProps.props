@@ -5,7 +5,7 @@
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
 
     <!-- Default is v142 -->
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
 
     <!-- v141 is allowed -->
     <PlatformToolset Condition="'$(DefaultPlatformToolset)'=='v141'">v141</PlatformToolset>
