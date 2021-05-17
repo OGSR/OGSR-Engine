@@ -112,9 +112,17 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	HUD_SOUND::LoadSound(section,"snd_holster"	, sndHide		, m_eSoundHide		);
 	HUD_SOUND::LoadSound(section,"snd_shoot"	, sndShot		, m_eSoundShot		);
 	HUD_SOUND::LoadSound(section,"snd_empty"	, sndEmptyClick	, m_eSoundEmptyClick	);
-	HUD_SOUND::LoadSound(section,"snd_reload"	, sndReload		, m_eSoundReload		);
 
-	if (pSettings->line_exist(section, "snd_reload_partly")) {
+	if (pSettings->line_exist(section, "snd_reload_empty"))
+		HUD_SOUND::LoadSound(section, "snd_reload_empty", sndReload, m_eSoundReload);
+	else
+		HUD_SOUND::LoadSound(section, "snd_reload", sndReload, m_eSoundReload);
+
+	if (pSettings->line_exist(section, "snd_reload_empty")) { //OpenXRay-style неполная перезарядка
+		HUD_SOUND::LoadSound(section, "snd_reload", sndReloadPartly, m_eSoundReload);
+		sndReloadPartlyExist = true;
+	}
+	else if (pSettings->line_exist(section, "snd_reload_partly")) { //OGSR-style неполная перезарядка
 		HUD_SOUND::LoadSound(section, "snd_reload_partly", sndReloadPartly, m_eSoundReload);
 		sndReloadPartlyExist = true;
 	}
@@ -1182,16 +1190,17 @@ void CWeaponMagazined::PlayAnimReload()
 	VERIFY(GetState() == eReload);
 	if (IsPartlyReloading())
 	{
-		if (AnimationExist("anim_reload_partly"))
-			PlayHUDMotion("anim_reload_partly", TRUE, nullptr, GetState());
-		else if (AnimationExist("anm_reload_partly"))
-			PlayHUDMotion("anm_reload_partly", TRUE, nullptr, GetState());
+		if (AnimationExist("anim_reload_partly") || AnimationExist("anm_reload_partly"))
+			PlayHUDMotion("anim_reload_partly", "anm_reload_partly", TRUE, nullptr, GetState());
 		else
 			PlayHUDMotion("anim_reload", "anm_reload", TRUE, nullptr, GetState());
 	}
 	else
 	{
-		PlayHUDMotion("anim_reload", "anm_reload", TRUE, nullptr, GetState());
+		if (AnimationExist("anm_reload_empty"))
+			PlayHUDMotion("anm_reload_empty", TRUE, nullptr, GetState());
+		else
+			PlayHUDMotion("anim_reload", "anm_reload", TRUE, nullptr, GetState());
 	}
 }
 

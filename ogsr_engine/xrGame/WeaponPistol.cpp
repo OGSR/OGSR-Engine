@@ -116,25 +116,10 @@ void CWeaponPistol::PlayAnimReload()
 {
 	VERIFY(GetState() == eReload);
 	if (m_opened)
-	{
 		PlayHUDMotion("anim_reload_empty", "anm_reload_empty", TRUE, nullptr, GetState());
-	}
 	else 
-	{
-		if (IsPartlyReloading())
-		{
-			if (AnimationExist("anim_reload_partly"))
-				PlayHUDMotion("anim_reload_partly", TRUE, nullptr, GetState());
-			else if	(AnimationExist("anm_reload_partly"))
-				PlayHUDMotion("anm_reload_partly", TRUE, nullptr, GetState());
-			else
-				PlayHUDMotion("anim_reload", "anm_reload", TRUE, nullptr, GetState());
-		}
-		else
-		{
-			inherited::PlayAnimReload();
-		}
-	}
+		inherited::PlayAnimReload();
+
 	m_opened = false;
 }
 
