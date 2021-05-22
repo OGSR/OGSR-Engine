@@ -1,0 +1,169 @@
+#define USE_TDETAIL //for fucking tcdbump
+#include "common.h"
+
+
+#define DEFFER_IBM_MODE 3
+#define mix lerp
+
+#define PARALLAX_NEAR_PLANE 0.01
+#define PARALLAX_FAR_PLANE 40
+#define PARALLAX_DEPTH 0.013
+
+
+#ifdef SSLR_ENABLED
+uniform Texture2D s_puddles;
+#endif
+
+//Height maps
+uniform Texture2D s_dnE_r;
+uniform Texture2D s_dnE_g;
+uniform Texture2D s_dnE_b;
+uniform Texture2D s_dnE_a;
+
+struct surface {
+	float4 base;
+	float3 normal;
+	float  gloss;
+};
+
+void perform_tc_offset(inout p_bumped p, in Texture2D s_bumpX_new)
+{
+	if ((p.position.z > PARALLAX_NEAR_PLANE) && (p.position.z < PARALLAX_FAR_PLANE))
+	{
+		float3 eye = normalize(mul(float3x3(p.M1.x, p.M2.x, p.M3.x,
+			p.M1.y, p.M2.y, p.M3.y,
+			p.M1.z, p.M2.z, p.M3.z), -p.position));
+
+#if (DEFFER_IBM_MODE == 1)
+		p.tcdbump += eye * PARALLAX_DEPTH * (s_bumpX_new.Sample(smp_base, p.tcdbump).ww - 0.5);
+#elif (DEFFER_IBM_MODE == 2) || (DEFFER_IBM_MODE == 3)
+		// steps minmax and refines minmax
+		int4 steps = int4(3, 10, 4, 6); // 3..10, 7..16
+
+		bool need_disp_lerp = true;
+
+#if (DEFFER_IBM_MODE == 2)
+		bool need_refine = false;
+#elif (DEFFER_IBM_MODE == 3)
+		bool need_refine = true;
+#endif
+
+		float view_angle = abs(dot(float3(0.0, 0.0, 1.0), eye));
+
+		float layer_step = rcp(mix(steps.y, steps.x, view_angle));
+
+		float2 tc_step = layer_step * eye.xy * PARALLAX_DEPTH;
+
+		float2 displaced_tc = p.tcdbump;
+
+		float curr_disp, curr_layer = 0;
+
+		do
+		{
+			displaced_tc -= tc_step;
+			curr_disp = 1 - s_bumpX_new.SampleLevel(smp_base, displaced_tc, 0).w;
+			curr_layer += layer_step;
+		} while (curr_layer < curr_disp);
+
+		if (need_refine)
+		{
+			displaced_tc += tc_step;
+			curr_layer -= layer_step;
+
+			float refine_steps = mix(steps.w, steps.z, view_angle);
+
+			tc_step /= refine_steps;
+			layer_step /= refine_steps;
+
+			do
+			{
+				displaced_tc -= tc_step;
+				curr_disp = 1 - s_bumpX_new.SampleLevel(smp_base, displaced_tc, 0).w;
+				curr_layer += layer_step;
+			} while (curr_layer < curr_disp);
+		}
+
+		if (need_disp_lerp)
+		{
+			float2 displaced_tc_prev = displaced_tc + tc_step;
+
+			float after_depth = curr_disp - curr_layer;
+			float before_depth = 1 - s_bumpX_new.SampleLevel(smp_base, displaced_tc_prev, 0).w - curr_layer + layer_step;
+
+			float weight = after_depth / (after_depth - before_depth);
+
+			displaced_tc = mix(displaced_tc, displaced_tc_prev, weight);
+		}
+
+		p.tcdbump = displaced_tc;
+#endif
+	}
+}
+
+surface fill(p_bumped p, Texture2D s_base_det, Texture2D s_bump_det, Texture2D s_bumpX_det, uint need_mask, float mask)
+{
+	surface S;
+
+	mask = need_mask ? mask : 1;
+
+	if (mask <= 0)
+	{
+		S.base = 0;
+		S.gloss = 0;
+		S.normal = 0;
+		return S;
+	}
+
+#if defined(DEFFER_IBM_MODE)
+	perform_tc_offset(p, s_bumpX_det);
+#endif
+
+	S.base = s_base_det.Sample(smp_base, p.tcdbump) * mask;
+
+	float4 Nu = s_bump_det.Sample(smp_base, p.tcdbump);
+
+	S.gloss = Nu.x * mask;
+	S.normal = (Nu.wzy - 0.5) * mask;
+
+	return S;
+}
+
+
+f_deffer main(p_bumped I)
+{
+	float4 C = s_base.Sample(smp_base, I.tcdh.xy);
+
+	float4 mask = s_mask.Sample(smp_base, I.tcdh.xy);
+	mask /= dot(mask, 1);
+
+#ifdef SSLR_ENABLED
+	//Если убрать умножение на mask.g - лужи будут в т.ч. и на земле.
+	float puddles = s_puddles.Sample(smp_linear, I.tcdh.xy * dt_params).r * mask.g;
+#else
+	float puddles = 0.0f;
+#endif
+
+	surface Sr = fill(I, s_dt_r, s_dn_r, s_dnE_r, 1, mask.r);
+	surface Sg = fill(I, s_dt_g, s_dn_g, s_dnE_g, 1, mask.g);
+	surface Sb = fill(I, s_dt_b, s_dn_b, s_dnE_b, 1, mask.b);
+	surface Sa = fill(I, s_dt_a, s_dn_a, s_dnE_a, 1, mask.a);
+
+	float4 Ne = float4(normalize(mul(float3x3(I.M1, I.M2, I.M3), Sr.normal + Sg.normal + Sb.normal + Sa.normal)), C.w);
+
+	C.xyz = (Sr.base.xyz + Sg.base.xyz + Sb.base.xyz + Sa.base.xyz) * C.xyz * 2;
+
+	float G = Sr.gloss + Sg.gloss + Sb.gloss + Sa.gloss;
+
+#ifdef USE_R2_STATIC_SUN
+	float ms = s_lmap.Sample(smp_base, I.tcdh.xy).w;
+#else
+	float ms = xmaterial;
+#endif
+
+	return pack_gbuffer(
+		Ne, // normal.hemi
+		float4(I.position.xyz, ms), // depth.( mtl or sun )
+		float4(C.rgb, G), // color.gloss
+		float4(puddles, 0.f, 0.f, 0.f)
+	);
+}
