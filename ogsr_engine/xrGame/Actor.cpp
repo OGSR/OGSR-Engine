@@ -913,8 +913,10 @@ void CActor::UpdateCL	()
 	else
 		Cameras().camera_Matrix(trans);
 
-	if (IsFocused())
+	if (IsFocused()) {
+		trans.c.sub(Device.vCameraPosition);
 		g_player_hud->update(trans);
+	}
 }
 
 #if defined(OGSR_MOD) || defined(DSH_MOD)

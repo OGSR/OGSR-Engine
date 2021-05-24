@@ -31,6 +31,12 @@ ICF	float	CalcSSA				(float& distSQ, Fvector& C, float R)
 	distSQ	= Device.vCameraPosition.distance_to_sqr(C)+EPS;
 	return	R/distSQ;
 }
+ICF    float    CalcHudSSA		(float& distSQ, Fvector& C, dxRender_Visual* V)
+{
+	float R = V->vis.sphere.R + 0;
+	distSQ = Fvector().set(0.f, 0.f, 0.f).distance_to_sqr(C) + EPS;
+	return  R/distSQ;
+}
 
 void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fvector& Center)
 {
@@ -45,7 +51,12 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic	(dxRender_Visual *pVisual, Fv
 #endif
 
 	float distSQ			;
-	float SSA				=	CalcSSA		(distSQ,Center,pVisual);
+	float SSA;
+	if (!RI.val_bHUD)
+		SSA = CalcSSA(distSQ, Center, pVisual);
+	else
+		SSA = CalcHudSSA(distSQ, Center, pVisual);
+
 	if (SSA<=r_ssaDISCARD)		return;
 
 	// Distortive geometry should be marked and R2 special-cases it
