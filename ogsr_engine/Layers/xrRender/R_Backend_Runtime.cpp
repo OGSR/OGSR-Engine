@@ -97,6 +97,7 @@ DX10_ONLY(gs					= NULL);
 	stencil_pass=u32(-1);
 	stencil_zfail=u32(-1);
 	cull_mode=u32(-1);
+	fill_mode = u32(-1);
 	z_enable=u32(-1);
 	z_func=u32(-1);
 	alpha_ref=u32(-1);

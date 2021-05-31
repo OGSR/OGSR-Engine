@@ -75,6 +75,7 @@ void CLevelGraph::draw_nodes	()
 
 	Fvector	DUP;		DUP.set(0,1,0);
 
+	DRender->OnFrameEnd();
 	DRender->SetShader(sh_debug);
 
 	F->SetColor			(color_rgba(255,255,255,255));

@@ -1,5 +1,20 @@
 #include "stdafx.h"
-#pragma hdrstop
+
+#if defined(USE_DX10) || defined(USE_DX11)
+extern IC u32 GetIndexCount(D3DPRIMITIVETYPE T, u32 iPrimitiveCount);
+
+void CBackend::InitializeDebugDraw()
+{
+	vs_L.create(FVF::F_L, RCache.Vertex.Buffer(), RCache.Index.Buffer());
+	vs_TL.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.Index.Buffer());
+}
+
+void CBackend::DestroyDebugDraw()
+{
+	vs_L.destroy();
+	vs_TL.destroy();
+}
+#endif
 
 void CBackend::dbg_DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc)
 {
@@ -18,8 +33,29 @@ void CBackend::dbg_DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV
 void CBackend::dbg_Draw			(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx, int pcnt)
 {
 #if defined(USE_DX10) || defined(USE_DX11)
-	//	TODO: DX10: implement
-	//VERIFY(!"CBackend::dbg_Draw not implemented.");
+    u32 vBase;
+    {
+        FVF::L* pv = (FVF::L*)Vertex.Lock(vcnt, vs_L->vb_stride, vBase);
+        for (size_t i = 0; i < vcnt; i++)
+        {
+            pv[i] = pVerts[i];
+        }
+        Vertex.Unlock(vcnt, vs_L->vb_stride);
+    }
+
+    u32 iBase;
+    {
+        const u32 count = GetIndexCount(T, pcnt);
+        u16* indices = Index.Lock(count, iBase);
+        for (size_t i = 0; i < count; i++)
+            indices[i] = pIdx[i];
+        Index.Unlock(count);
+    }
+    set_Geometry(vs_L);
+    set_RT(HW.pBaseRT);
+    RImplementation.rmNormal();
+    set_Stencil(FALSE);
+    Render(T, vBase, 0, vcnt, iBase, pcnt);
 #else	//	USE_DX10
 	OnFrameEnd					();
 	CHK_DX(HW.pDevice->SetFVF	(FVF::F_L));
@@ -32,8 +68,21 @@ void CBackend::dbg_Draw			(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pI
 void CBackend::dbg_Draw			(D3DPRIMITIVETYPE T, FVF::L* pVerts, int pcnt)
 {
 #if defined(USE_DX10) || defined(USE_DX11)
-	//	TODO: DX10: implement
-	//VERIFY(!"CBackend::dbg_Draw not implemented.");
+	u32 vBase;
+	{
+		const u32 count = GetIndexCount(T, pcnt);
+		FVF::L* pv = (FVF::L*)Vertex.Lock(count, vs_L->vb_stride, vBase);
+		for (size_t i = 0; i < count; i++)
+		{
+			pv[i] = pVerts[i];
+		}
+		Vertex.Unlock(count, vs_L->vb_stride);
+}
+	set_Geometry(vs_L);
+	set_RT(HW.pBaseRT);
+	RImplementation.rmFar();
+	set_Stencil(FALSE);
+	Render(T, vBase, pcnt);
 #else	//	USE_DX10
 	OnFrameEnd					();
 	CHK_DX(HW.pDevice->SetFVF	(FVF::F_L));
@@ -63,6 +112,10 @@ void CBackend::dbg_DrawOBB		(Fmatrix& T, Fvector& half_dim, u32 C)
 		0,1,  1,2,  2,3,  3,0,  4,5,  5,6,  6,7,  7,4,  1,5,  2,6,  3,7,  0,4
 	};
 	set_xform_world	(mL2W_Transform);
+#if defined(USE_DX10) || defined(USE_DX11)
+	RCache.set_c("tfactor", float(color_get_R(C)) / 255.f, float(color_get_G(C)) / 255.f, \
+		float(color_get_B(C)) / 255.f, float(color_get_A(C)) / 255.f);
+#endif
 	dbg_Draw(D3DPT_LINELIST,aabb,8,aabb_id,12);
 }
 void CBackend::dbg_DrawTRI	(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C)
@@ -73,6 +126,10 @@ void CBackend::dbg_DrawTRI	(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u
 	tri[2].p = p3; tri[2].color = C;
 
 	set_xform_world	(T);
+#if defined(USE_DX10) || defined(USE_DX11)
+	RCache.set_c("tfactor", float(color_get_R(C)) / 255.f, float(color_get_G(C)) / 255.f, \
+		float(color_get_B(C)) / 255.f, float(color_get_A(C)) / 255.f);
+#endif // !USE_DX9
 	dbg_Draw(D3DPT_TRIANGLESTRIP,tri,1);
 }
 void CBackend::dbg_DrawLINE(Fmatrix& T, Fvector& p1, Fvector& p2, u32 C)
@@ -82,11 +139,15 @@ void CBackend::dbg_DrawLINE(Fmatrix& T, Fvector& p1, Fvector& p2, u32 C)
 	line[1].p = p2; line[1].color = C;
 
 	set_xform_world	(T);
+#if defined(USE_DX10) || defined(USE_DX11)
+	RCache.set_c("tfactor", float(color_get_R(C)) / 255.f, float(color_get_G(C)) / 255.f, \
+		float(color_get_B(C)) / 255.f, float(color_get_A(C)) / 255.f);
+#endif // !USE_DX9
 	dbg_Draw(D3DPT_LINELIST,line,1);
 }
 void CBackend::dbg_DrawEllipse(Fmatrix& T, u32 C)
 {
-	float gVertices[] =
+	constexpr float gVertices[] =
 	{
 		0.0000f,0.0000f,1.0000f,  0.0000f,0.3827f,0.9239f,  -0.1464f,0.3536f,0.9239f,
 			-0.2706f,0.2706f,0.9239f,  -0.3536f,0.1464f,0.9239f,  -0.3827f,0.0000f,0.9239f,
@@ -127,7 +188,7 @@ void CBackend::dbg_DrawEllipse(Fmatrix& T, u32 C)
 			0.3536f,-0.1464f,-0.9239f,  0.3827f,0.0000f,-0.9239f,  0.3536f,0.1464f,-0.9239f,
 			0.2706f,0.2706f,-0.9239f,  0.1464f,0.3536f,-0.9239f,  0.0000f,0.0000f,-1.0000f
 	};
-#if !defined(USE_DX10) && !defined(USE_DX11)
+
 	u16 gFaces[224*3] =
 	{
 		0,1,2, 0,2,3, 0,3,4, 0,4,5, 0,5,6, 0,6,7, 0,7,8, 0,8,9, 0,9,10,
@@ -156,26 +217,22 @@ void CBackend::dbg_DrawEllipse(Fmatrix& T, u32 C)
 			96,97,81, 113,98,97, 113,99,98, 113,100,99, 113,101,100, 113,102,101, 113,103,102, 113,104,103, 113,105,104,
 			113,106,105, 113,107,106, 113,108,107, 113,109,108, 113,110,109, 113,111,110, 113,112,111, 113,97,112
 	};
-#endif // #if defined(USE_DX10) || defined(USE_DX11)
 
-	const int vcnt = sizeof(gVertices)/(sizeof(float)*3); //-V706
+	constexpr int vcnt = sizeof(gVertices)/(sizeof(float)*3); //-V706
 	FVF::L  verts[vcnt];
 	for (int i=0; i<vcnt; i++) {
 		int k=i*3;
 		verts[i].set(gVertices[k],gVertices[k+1],gVertices[k+2],C);
 	}
 
-	set_xform_world				(T);
+	set_xform_world(T);
 
 #if defined(USE_DX10) || defined(USE_DX11)
-	//	TODO: DX10: implement
-	//VERIFY(!"CBackend::dbg_Draw not implemented.");
-	//dbg_Draw(D3DPT_TRIANGLELIST,verts,vcnt,gFaces,224);
-#else	//	USE_DX10
-	HW.pDevice->SetRenderState	(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-	dbg_Draw(D3DPT_TRIANGLELIST,verts,vcnt,gFaces,224);
-	HW.pDevice->SetRenderState	(D3DRS_FILLMODE, D3DFILL_SOLID);
-#endif	//	USE_DX10
-}
+	RCache.set_c("tfactor", float(color_get_R(C)) / 255.f, float(color_get_G(C)) / 255.f, \
+		float(color_get_B(C)) / 255.f, float(color_get_A(C)) / 255.f);
+#endif // !USE_DX9
 
-//#endif
+	RCache.set_FillMode(D3DFILL_WIREFRAME);
+	dbg_Draw(D3DPT_TRIANGLELIST,verts,vcnt,gFaces,224);
+	RCache.set_FillMode(D3DFILL_SOLID);
+}

@@ -209,6 +209,15 @@ ICF void	CBackend::set_CullMode		(u32 _mode)
 	if (cull_mode		!= _mode)		{ cull_mode = _mode;			CHK_DX(HW.pDevice->SetRenderState	( D3DRS_CULLMODE,			_mode				)); }
 }
 
+ICF void CBackend::set_FillMode(u32 _mode)
+{
+	if (fill_mode != _mode)
+	{
+		fill_mode = _mode;
+		CHK_DX(HW.pDevice->SetRenderState(D3DRS_FILLMODE, _mode));
+	}
+}
+
 ICF void CBackend::set_VS(ref_vs& _vs)
 {
 	set_VS(_vs->vs,_vs->cName.c_str());				

@@ -213,7 +213,7 @@ void CLevelChanger::OnRender()
 	xr_vector<CCF_Shape::shape_def> &l_shapes = ((CCF_Shape*)CFORM())->Shapes();
 	xr_vector<CCF_Shape::shape_def>::iterator l_pShape;
 
-	u32 Color = D3DCOLOR_XRGB(255, 0, 255);
+	constexpr u32 Color = D3DCOLOR_XRGB(255, 0, 255);
 
 	for (l_pShape = l_shapes.begin(); l_shapes.end() != l_pShape; ++l_pShape)
 	{
@@ -266,7 +266,7 @@ void CLevelChanger::OnRender()
 		float x = (1.f + v_res.x) / 2.f * (Device.dwWidth);
 		float y = (1.f - v_res.y) / 2.f * (Device.dwHeight) - delta_height;
 
-		HUD().Font().pFontMedium->SetColor(0xffff0000);
+		HUD().Font().pFontMedium->SetColor(Color);
 		HUD().Font().pFontMedium->OutSet(x, y -= delta_height);
 		HUD().Font().pFontMedium->OutNext(Name());
 	}
