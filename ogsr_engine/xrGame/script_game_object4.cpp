@@ -21,6 +21,7 @@
 
 #include "WeaponBinoculars.h"
 #include "WeaponKnife.h"
+#include "WeaponPistol.h"
 
 #include "HangingLamp.h"
 #include "CharacterPhysicsSupport.h"
@@ -300,6 +301,7 @@ TEST_OBJECT_CLASS(CScriptGameObject::IsWeaponGL, CWeaponMagazinedWGrenade)
 TEST_OBJECT_CLASS(CScriptGameObject::IsInventoryBox, IInventoryBox)
 TEST_OBJECT_CLASS(CScriptGameObject::IsWeaponBinoculars, CWeaponBinoculars)
 TEST_OBJECT_CLASS(CScriptGameObject::IsKnife, CWeaponKnife)
+TEST_OBJECT_CLASS(CScriptGameObject::IsPistol, CWeaponPistol)
 // KD
 
 void CScriptGameObject::SetActorCamDir(Fvector _dir)

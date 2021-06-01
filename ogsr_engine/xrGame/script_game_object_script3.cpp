@@ -359,6 +359,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("is_inventory_box", &CScriptGameObject::IsInventoryBox)
 		.def("is_binoculars", &CScriptGameObject::IsWeaponBinoculars)
 		.def("is_knife", &CScriptGameObject::IsKnife)
+		.def("is_pistol", &CScriptGameObject::IsPistol)
 
 		.def("set_camera_direction", &CScriptGameObject::SetActorCamDir)
 		.def("update_condition", &CScriptGameObject::UpdateCondition)
