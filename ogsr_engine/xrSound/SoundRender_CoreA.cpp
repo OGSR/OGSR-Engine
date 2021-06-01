@@ -125,18 +125,28 @@ void CSoundRender_CoreA::_initialize(int stage)
 	A_CHK(alListenerfv(AL_ORIENTATION, &orient[0].x));
 	A_CHK(alListenerf(AL_GAIN, 1.f));
 
-	// Check for EAX extension
-	bEAX = deviceDesc.props.eax && !deviceDesc.props.eax_unwanted;
-
-	eaxSet = (EAXSet)alGetProcAddress((const ALchar*)"EAXSet");
-	if (eaxSet == NULL) bEAX = false;
-	eaxGet = (EAXGet)alGetProcAddress((const ALchar*)"EAXGet");
-	if (eaxGet == NULL) bEAX = false;
-
-	if (bEAX)
+	if (!pDeviceList->IS_OpenAL_Soft)
 	{
-		bDeferredEAX = EAXTestSupport(TRUE);
-		bEAX = EAXTestSupport(FALSE);
+		// Check for EAX extension
+		bEAX = deviceDesc.props.eax && !deviceDesc.props.eax_unwanted;
+
+		eaxSet = (EAXSet)alGetProcAddress((const ALchar*)"EAXSet");
+		if (eaxSet == NULL) bEAX = false;
+		eaxGet = (EAXGet)alGetProcAddress((const ALchar*)"EAXGet");
+		if (eaxGet == NULL) bEAX = false;
+
+		if (bEAX)
+		{
+			bDeferredEAX = EAXTestSupport(TRUE);
+			bEAX = EAXTestSupport(FALSE);
+		}
+		Msg("[OpenAL] EAX 2.0 extension: %s", bEAX ? "present" : "absent");
+		Msg("[OpenAL] EAX 2.0 deferred: %s", bDeferredEAX ? "present" : "absent");
+	}
+	else if (deviceDesc.props.efx) {
+		InitAlEFXAPI();
+		bEFX = EFXTestSupport();
+		Msg("[OpenAL] EFX: %s", bEFX ? "present" : "absent");
 	}
 
 	inherited::_initialize(stage);
@@ -150,6 +160,9 @@ void CSoundRender_CoreA::_initialize(int stage)
 			T = xr_new<CSoundRender_TargetA>();
 			if (T->_initialize())
 			{
+				if (bEFX)
+					T->alAuxInit(slot);
+
 				T->alsoft_flag = pDeviceList->IS_OpenAL_Soft;
 				s_targets.push_back(T);
 			}

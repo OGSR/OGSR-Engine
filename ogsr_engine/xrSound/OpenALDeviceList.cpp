@@ -91,18 +91,25 @@ void ALDeviceList::Enumerate()
 						alcGetIntegerv(device, ALC_MAJOR_VERSION, sizeof(int), &major);
 						alcGetIntegerv(device, ALC_MINOR_VERSION, sizeof(int), &minor);
 						m_devices.emplace_back(actualDeviceName, minor, major);
-						m_devices.back().props.eax = 0;
-						if (alIsExtensionPresent("EAX2.0"))
-							m_devices.back().props.eax = 2;
-						if (alIsExtensionPresent("EAX3.0"))
-							m_devices.back().props.eax = 3;
-						if (alIsExtensionPresent("EAX4.0"))
-							m_devices.back().props.eax = 4;
-						if (alIsExtensionPresent("EAX5.0"))
-							m_devices.back().props.eax = 5;
 
-						m_devices.back().props.efx = (alIsExtensionPresent("ALC_EXT_EFX") == TRUE);
-						m_devices.back().props.xram = (alIsExtensionPresent("EAX_RAM") == TRUE);
+						if (!stricmp(m_devices.back().name, AL_SOFT))
+						{
+							m_devices.back().props.efx = alcIsExtensionPresent(alcGetContextsDevice(alcGetCurrentContext()), "ALC_EXT_EFX");
+							m_devices.back().props.xram = alcIsExtensionPresent(alcGetContextsDevice(alcGetCurrentContext()), "EAX_RAM");
+						}
+						else
+						{
+							if (alIsExtensionPresent("EAX2.0"))
+								m_devices.back().props.eax = 2;
+							if (alIsExtensionPresent("EAX3.0"))
+								m_devices.back().props.eax = 3;
+							if (alIsExtensionPresent("EAX4.0"))
+								m_devices.back().props.eax = 4;
+							if (alIsExtensionPresent("EAX5.0"))
+								m_devices.back().props.eax = 5;
+
+							m_devices.back().props.xram = alIsExtensionPresent("EAX-RAM");
+						}
 
 						// KD: disable unwanted eax flag to force eax on all devices
 						m_devices.back().props.eax_unwanted = 0; // ((0 == xr_strcmp(actualDeviceName, AL_GENERIC_HARDWARE)) || (0 == xr_strcmp(actualDeviceName, AL_GENERIC_SOFTWARE)));

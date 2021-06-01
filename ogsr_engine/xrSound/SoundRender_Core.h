@@ -1,5 +1,8 @@
 #pragma once
 
+#include <al.h>
+#include <efx-presets.h>
+
 #include "SoundRender.h"
 #include "SoundRender_Environment.h"
 #include "SoundRender_Cache.h"
@@ -24,6 +27,7 @@ public:
 	BOOL								bUserEnvironment;
 	BOOL	 							bEAX;					// Boolean variable to indicate presence of EAX Extension 
 	BOOL								bDeferredEAX;
+	bool	 							bEFX; // boolean variable to indicate presence of EFX Extension 
 	BOOL								bReady;
 
 	CTimer								Timer;
@@ -95,6 +99,9 @@ public:
 	void								i_eax_listener_set(CSound_environment* E);
 	void								i_eax_listener_get(CSound_environment* E);
 
+	void								i_efx_listener_set(CSound_environment* E);
+	bool								i_efx_commit_setting();
+
 public:
 	CSoundRender_Source*				i_create_source(LPCSTR name);
 	void								i_destroy_source(CSoundRender_Source*  S);
@@ -108,12 +115,19 @@ public:
 	virtual void						object_relcase(CObject* obj);
 
 	virtual float						get_occlusion_to(const Fvector& hear_pt, const Fvector& snd_pt, float dispersion = 0.2f);
-	XRSOUND_API float					get_occlusion(Fvector& P, float R, Fvector* occ);
+	float								get_occlusion(Fvector& P, float R, Fvector* occ);
 	CSoundRender_Environment*			get_environment(const Fvector& P);
 
 	void								env_load();
 	void								env_unload();
 	void								env_apply();
+
+protected: // EFX
+	EFXEAXREVERBPROPERTIES				efx_reverb;
+	ALuint								effect;
+	ALuint								slot;
+	bool 								EFXTestSupport();
+	void								InitAlEFXAPI();
 };
 
 extern XRSOUND_API CSoundRender_Core* SoundRender;

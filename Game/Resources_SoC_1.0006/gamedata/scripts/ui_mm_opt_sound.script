@@ -26,5 +26,4 @@ function opt_sound:InitControls(x, y, xml, handler)
 
 	local ctl = xml:InitCheck("tab_sound:check_eax", self)
 	handler:Register(ctl, "tab_sound:check_eax")
-	handler:AddCallback( "tab_sound:check_eax", ui_events.BUTTON_CLICKED, handler.show_need_restart_wnd, handler )
 end
