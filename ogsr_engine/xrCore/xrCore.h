@@ -167,7 +167,7 @@ public:
 	  dbg = ( 1 << 0 ),
 	};
 
-	Flags64 Features;
+	Flags64 Features{};
 	struct  Feature {
 	  static constexpr u64
 	  equipped_untradable        = 1ull << 0,
@@ -202,7 +202,7 @@ public:
 	  engine_ammo_repacker       = 1ull << 29,
 	  ruck_flag_preferred        = 1ull << 30,
 	  colorize_ammo              = 1ull << 31,
-	  // !Место свободно!        = 1ull << 32,
+	  use_cop_thm_format         = 1ull << 32,
 	  colorize_untradable        = 1ull << 33,
 	  select_mode_1342           = 1ull << 34,
 	  old_outfit_slot_style      = 1ull << 35,
