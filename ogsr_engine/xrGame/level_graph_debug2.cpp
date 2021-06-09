@@ -41,7 +41,10 @@
 
 void CLevelGraph::draw_nodes	()
 {
-	CGameObject*	O	= smart_cast<CGameObject*> (Level().CurrentEntity());
+	auto O = smart_cast<CGameObject*>(Level().CurrentEntity());
+	if (!O)
+		return;
+
 	Fvector	POSITION	= O->Position();
 	POSITION.y += 0.5f;
 
