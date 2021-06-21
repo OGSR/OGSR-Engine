@@ -312,7 +312,7 @@ float CVisualMemoryManager::get_object_velocity	(const CGameObject *game_object,
 	);
 }
 
-float CVisualMemoryManager::get_visible_value	(float distance, float object_distance, float time_delta, float object_velocity, float luminocity) const
+float CVisualMemoryManager::get_visible_value( float distance, float object_distance, float time_delta, float object_velocity, float luminocity, float trans ) const
 {
 	float always_visible_distance = current_state().m_always_visible_distance;
 	if ( object_distance <= always_visible_distance )
@@ -336,6 +336,7 @@ float CVisualMemoryManager::get_visible_value	(float distance, float object_dist
 		(distance - object_distance) /
 		(distance - always_visible_distance)
 		* fog_factor
+		* trans
 	);
 }
 
@@ -396,12 +397,19 @@ bool CVisualMemoryManager::visible				(const CGameObject *game_object, float tim
 	}
 
 	float luminocity = object_luminocity( game_object );
+	float trans;
+        if ( current_state().m_transparency_factor > 0 && smart_cast<const CActor*>( game_object ) ) {
+	  trans = visible_transparency_threshold( game_object ) * current_state().m_transparency_factor;
+	  clamp( trans, 0.f, 1.f );
+	}
+	else
+	  trans = 1.f;
 
 	if (!object) {
 		CNotYetVisibleObject		new_object;
 		new_object.m_object			= game_object;
 		new_object.m_prev_time		= 0;
-		new_object.m_value = get_visible_value( distance, object_distance, time_delta, get_object_velocity( game_object, new_object ), luminocity );
+		new_object.m_value = get_visible_value( distance, object_distance, time_delta, get_object_velocity( game_object, new_object ), luminocity, trans );
 		clamp						(new_object.m_value,0.f,current_state().m_visibility_threshold + EPS_L);
 		new_object.m_update_time	= Device.dwTimeGlobal;
 		new_object.m_prev_time		= get_prev_time(game_object);
@@ -410,7 +418,7 @@ bool CVisualMemoryManager::visible				(const CGameObject *game_object, float tim
 	}
 
 	object->m_update_time		= Device.dwTimeGlobal;
-	object->m_value	+= get_visible_value( distance, object_distance, time_delta, get_object_velocity( game_object, *object ), luminocity );
+	object->m_value += get_visible_value( distance, object_distance, time_delta, get_object_velocity( game_object, *object ), luminocity, trans );
 	clamp						(object->m_value,0.f,current_state().m_visibility_threshold + EPS_L);
 	object->m_prev_time			= get_prev_time(game_object);
 

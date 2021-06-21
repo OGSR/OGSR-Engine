@@ -21,6 +21,7 @@ struct CVisionParameters {
 	u32							m_still_visible_time;
 	float m_fog_factor;
 	float m_fog_pow;
+	float m_transparency_factor;
 
 			void	Load		(LPCSTR section, bool not_a_stalker);
 };
