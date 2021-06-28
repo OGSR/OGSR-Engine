@@ -246,7 +246,7 @@ void map_change_spot_ser(u16 id, LPCSTR spot_type, BOOL v)
 }
 
 void prefetch_many_sounds( LPCSTR prefix ) {
-  Level().PrefetchManySounds( prefix );
+  Level().PrefetchManySoundsLater( prefix );
 }
 
 
