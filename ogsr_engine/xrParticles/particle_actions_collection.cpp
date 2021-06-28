@@ -1753,51 +1753,17 @@ void PATurbulence::Execute(ParticleEffect *effect, float dt)
 	if ( ! p_cnt )
 		return;
 
-	size_t nWorkers = TTAPI->threads.size();
-	size_t nSlice   = 128;
-	size_t nStep    = p_cnt / nSlice;
-	if ( nStep > nWorkers ) nStep = nWorkers;
-	if ( nStep < 2 ) {
-	  TES_PARAMS tesParams;
-	  tesParams.p_from    = 0;
-	  tesParams.p_to      = p_cnt;
-	  tesParams.effect    = effect;
-	  tesParams.offset    = offset;
-	  tesParams.age       = age;
-	  tesParams.epsilon   = epsilon;
-	  tesParams.frequency = frequency;
-	  tesParams.octaves   = octaves;
-	  tesParams.magnitude = magnitude;
-	  PATurbulenceExecuteStream( &tesParams );
-	}
-	else {
-	  nSlice = p_cnt / nStep;
-	  auto tesParams = (TES_PARAMS*)_alloca( sizeof( TES_PARAMS ) * nStep );
-	  for ( size_t i = 0; i < nStep; ++i ) {
-	    tesParams[ i ].effect    = effect;
-	    tesParams[ i ].offset    = offset;
-	    tesParams[ i ].age       = age;
-	    tesParams[ i ].epsilon   = epsilon;
-	    tesParams[ i ].frequency = frequency;
-	    tesParams[ i ].octaves   = octaves;
-	    tesParams[ i ].magnitude = magnitude;
-	    u32 cur_cnt = u32( i * nSlice );
-	    tesParams[ i ].p_from    = cur_cnt;
-	    if ( i == nStep - 1 ) {
-	      tesParams[ i ].p_to = p_cnt;
-	      PATurbulenceExecuteStream( &tesParams[ i ] );
-	    }
-	    else {
-	      tesParams[ i ].p_to = u32( cur_cnt + nSlice );
-	      TTAPI->threads[ i ]->addJob(
-	        [&tesParams, i] {
-	          PATurbulenceExecuteStream( &tesParams[ i ] );
-	        }
-	      );
-	    }
-	  }
-	  TTAPI->wait();
-	}
+	TES_PARAMS tesParams;
+	tesParams.p_from    = 0;
+	tesParams.p_to      = p_cnt;
+	tesParams.effect    = effect;
+	tesParams.offset    = offset;
+	tesParams.age       = age;
+	tesParams.epsilon   = epsilon;
+	tesParams.frequency = frequency;
+	tesParams.octaves   = octaves;
+	tesParams.magnitude = magnitude;
+	PATurbulenceExecuteStream( &tesParams );
 }
 
 

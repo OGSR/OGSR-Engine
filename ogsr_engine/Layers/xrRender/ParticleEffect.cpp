@@ -501,43 +501,13 @@ void CParticleEffect::Render(float )
 			FVF::LIT* pv_start	= (FVF::LIT*)RCache.Vertex.Lock(p_cnt*4*4,geom->vb_stride,dwOffset);
 			FVF::LIT* pv		= pv_start;
 
-			size_t nWorkers = TTAPI->threads.size();
-			size_t nSlice   = 128;
-			size_t nStep    = p_cnt / nSlice;
-			if (nStep > nWorkers) nStep = nWorkers;
-			if (nStep < 2) {
-				PRS_PARAMS prsParams;
-				prsParams.pPE = this;
-				prsParams.particles = particles;
-				prsParams.p_from = 0;
-				prsParams.p_to = p_cnt;
-				prsParams.pv = pv;
-				ParticleRenderStream(&prsParams);
-			}
-			else {
-			  nSlice = p_cnt / nStep;
-			  auto prsParams = (PRS_PARAMS*)_alloca( sizeof( PRS_PARAMS ) * nStep );
-			  for ( size_t i = 0; i < nStep; ++i ) {
-			    prsParams[ i ].pPE = this;
-			    prsParams[ i ].particles = particles;
-			    u32 cur_cnt = u32( i * nSlice );
-			    prsParams[ i ].p_from = cur_cnt;
-			    prsParams[ i ].pv     = pv + cur_cnt * 4;
-			    if ( i == nStep - 1 ) {
-			      prsParams[ i ].p_to = p_cnt;
-			      ParticleRenderStream( &prsParams[ i ] );
-			    }
-			    else {
-			      prsParams[ i ].p_to = u32( cur_cnt + nSlice );
-			      TTAPI->threads[ i ]->addJob(
-			        [&prsParams, i] {
-			          ParticleRenderStream( &prsParams[ i ] );
-		    	        }
-			      );
-			    }
-			  }
-			  TTAPI->wait();
-			}
+			PRS_PARAMS prsParams;
+			prsParams.pPE  = this;
+			prsParams.particles = particles;
+			prsParams.p_from = 0;
+			prsParams.p_to = p_cnt;
+			prsParams.pv   = pv;
+			ParticleRenderStream( &prsParams );
 
 			dwCount = p_cnt<<2;
 
