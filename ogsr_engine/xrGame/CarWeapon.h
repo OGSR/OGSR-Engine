@@ -19,6 +19,7 @@ protected:
 	void					UpdateBarrelDir		();
 	virtual const Fvector&	get_CurrentFirePoint();
 	virtual const Fmatrix&	get_ParticlesXFORM	();
+	virtual bool			IsHudModeNow		() { return false; };
 	
 	CPhysicsShellHolder*	m_object;
 	bool					m_bActive;

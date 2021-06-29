@@ -4,6 +4,8 @@
 #include "soundrender_emitter.h"
 #include "soundrender_source.h"
 
+#include <efx.h>
+
 xr_vector<u8> g_target_temp_data;
 
 CSoundRender_TargetA::CSoundRender_TargetA() :CSoundRender_Target()
@@ -36,6 +38,11 @@ BOOL	CSoundRender_TargetA::_initialize()
 		Msg("! sound: OpenAL: Can't create source. Error: %s.", (LPCSTR)alGetString(error));
 		return 			FALSE;
 	}
+}
+
+void CSoundRender_TargetA::alAuxInit(ALuint slot)
+{
+	A_CHK(alSource3i(pSource, AL_AUXILIARY_SEND_FILTER, slot, 0, AL_FILTER_NULL));
 }
 
 void	CSoundRender_TargetA::_destroy()

@@ -12,7 +12,6 @@
 #include "ParticlesObject.h"
 #include "actor.h"
 #include "game_base_space.h"
-#include "weaponhud.h"
 #include "stalker_animation_data_storage.h"
 #include "stalker_velocity_holder.h"
 #include "ActorEffector.h"
@@ -84,8 +83,6 @@ CGamePersistent::CGamePersistent(void)
 		eDemoStart			=	NULL;
 	}
 
-	CWeaponHUD::CreateSharedContainer();
-
 	eQuickLoad					= Engine.Event.Handler_Attach("Game:QuickLoad",this);
 	Fvector3* DofValue		= Console->GetFVectorPtr("r2_dof");
 	SetBaseDof				(*DofValue);
@@ -93,7 +90,6 @@ CGamePersistent::CGamePersistent(void)
 
 CGamePersistent::~CGamePersistent(void)
 {	
-	CWeaponHUD::DestroySharedContainer();
 	FS.r_close					(pDemoFile);
 	Device.seqFrame.Remove		(this);
 	Engine.Event.Handler_Detach	(eDemoStart,this);
@@ -167,8 +163,6 @@ void CGamePersistent::Start		(LPCSTR op)
 
 void CGamePersistent::Disconnect()
 {
-	CWeaponHUD::CleanSharedContainer();
-
 	// destroy ambient particles
 	CParticlesObject::Destroy(ambient_particles);
 
@@ -203,8 +197,6 @@ void CGamePersistent::OnGameEnd	()
 
 	xr_delete							(g_stalker_animation_data_storage);
 	xr_delete							(g_stalker_velocity_holder);
-
-	CWeaponHUD::CleanSharedContainer	();
 }
 
 

@@ -695,6 +695,9 @@ void NvStripifier::RemoveSmallStrips(NvStripInfoVec& allStrips, NvStripInfoVec& 
 		}
 	}
 	
+	if (tempFaceList.empty())
+		return;
+
 	bool *bVisitedList	= xr_alloc<bool> (tempFaceList.size());
 	ZeroMemory			(bVisitedList, tempFaceList.size()*sizeof(bool));
 	

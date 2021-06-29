@@ -359,6 +359,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("is_inventory_box", &CScriptGameObject::IsInventoryBox)
 		.def("is_binoculars", &CScriptGameObject::IsWeaponBinoculars)
 		.def("is_knife", &CScriptGameObject::IsKnife)
+		.def("is_pistol", &CScriptGameObject::IsPistol)
 
 		.def("set_camera_direction", &CScriptGameObject::SetActorCamDir)
 		.def("update_condition", &CScriptGameObject::UpdateCondition)
@@ -407,9 +408,6 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 		.def("set_ammo_box_curr", &CScriptGameObject::SetAmmoBoxCurr)
 		.def("get_ammo_box_size", &CScriptGameObject::GetAmmoBoxSize)
 		.def("set_ammo_box_size", &CScriptGameObject::SetAmmoBoxSize)
-
-		.def("set_hud_offset", &CScriptGameObject::SetHudOffset)
-		.def("set_hud_rotate", /*(void (CScriptGameObject::*)(Fvector2))(*/&CScriptGameObject::SetHudRotate)//)
 
 		.def("get_holder", &CScriptGameObject::GetActorHolder)
 		.def("get_camera", &CScriptGameObject::GetCarCamera)

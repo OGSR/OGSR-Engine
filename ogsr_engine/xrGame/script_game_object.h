@@ -13,7 +13,6 @@
 #include "xr_time.h"
 #include "character_info_defs.h"
 #include "..\xr_3da\CameraBase.h"
-#include "WeaponHUD.h"
 #include "ui/UIStatic.h"
 #include "../COMMON_AI/PATH/patrol_path.h"
 
@@ -695,10 +694,6 @@ public:
 
 			u32					GetCurrAmmo();
 
-			void				SetHudOffset(Fvector _offset);
-//			void				SetHudRotate(float _x, float _y);
-			void				SetHudRotate(Fvector2 _v);
-
 			CScriptGameObject	*GetActorHolder();
 			CCameraBase			*GetCarCamera();
 			Fmatrix				*GetXForm();
@@ -760,6 +755,7 @@ public:
 			_DECLARE_FUNCTION10(IsInventoryBox, bool);
 			_DECLARE_FUNCTION10(IsWeaponBinoculars, bool);
 			_DECLARE_FUNCTION10(IsKnife, bool);
+			_DECLARE_FUNCTION10(IsPistol, bool);
 
 			float				GetActorJumpSpeed() const;
 			void				SetActorJumpSpeed(float _factor);
@@ -775,9 +771,6 @@ public:
 
 			// alpet: visual functions for CWeapon descedants 
 			_DECLARE_FUNCTION10 (alife_object			,			CSE_ALifeDynamicObject*);
-			_DECLARE_FUNCTION10 (GetWeaponHUD_Visual	,			IRenderVisual*);
-			_DECLARE_FUNCTION10 (GetWeaponHUD			,			CWeaponHUD*);
-			void				LoadWeaponHUD_Visual	(LPCSTR wpn_hud_section);
 
 			void play_hud_animation (LPCSTR anim, bool mix_in);
 			void play_hud_animation (LPCSTR anim);

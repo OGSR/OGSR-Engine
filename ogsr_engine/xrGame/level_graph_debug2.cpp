@@ -41,7 +41,10 @@
 
 void CLevelGraph::draw_nodes	()
 {
-	CGameObject*	O	= smart_cast<CGameObject*> (Level().CurrentEntity());
+	auto O = smart_cast<CGameObject*>(Level().CurrentEntity());
+	if (!O)
+		return;
+
 	Fvector	POSITION	= O->Position();
 	POSITION.y += 0.5f;
 
@@ -75,6 +78,7 @@ void CLevelGraph::draw_nodes	()
 
 	Fvector	DUP;		DUP.set(0,1,0);
 
+	DRender->OnFrameEnd();
 	DRender->SetShader(sh_debug);
 
 	F->SetColor			(color_rgba(255,255,255,255));

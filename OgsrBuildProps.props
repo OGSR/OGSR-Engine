@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+    <!--PreferredToolArchitecture>x64</PreferredToolArchitecture-->
 
     <!-- Default is v142 -->
     <PlatformToolset>v141</PlatformToolset>

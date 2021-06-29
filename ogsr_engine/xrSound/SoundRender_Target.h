@@ -1,5 +1,6 @@
 #pragma once
 
+#include <al.h>
 #include "soundrender.h"
 
 class CSoundRender_Target
@@ -37,4 +38,5 @@ public:
 	virtual void				stop() = 0;
 	virtual void				update() = 0;
 	virtual void				fill_parameters() = 0;
+	virtual	void				alAuxInit(ALuint slot) = 0;
 };

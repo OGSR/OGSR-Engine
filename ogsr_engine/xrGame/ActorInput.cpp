@@ -24,14 +24,23 @@
 #include "UI/UIStatic.h"
 #include "CharacterPhysicsSupport.h"
 #include "InventoryBox.h"
-
-//#include "game_object_space.h"
-//#include "script_callback_ex.h"
+#include "player_hud.h"
+#include "HudItem.h"
+#include "../xr_3da/xr_input.h"
 
 bool g_bAutoClearCrouch = true;
+extern int g_bHudAdjustMode;
 
 void CActor::IR_OnKeyboardPress(int cmd)
 {
+	if (g_bHudAdjustMode && pInput->iGetAsyncKeyState(DIK_LSHIFT))
+	{
+		if (pInput->iGetAsyncKeyState(DIK_RETURN) || pInput->iGetAsyncKeyState(DIK_BACKSPACE) || pInput->iGetAsyncKeyState(DIK_DELETE))
+			g_player_hud->tune(Ivector{});
+
+		return;
+	}
+
 	if (m_blocked_actions.find((EGameActions)cmd) != m_blocked_actions.end() ) return; // Real Wolf. 14.10.2014
 
 	if (Remote())		return;
@@ -160,6 +169,12 @@ void CActor::IR_OnKeyboardPress(int cmd)
 }
 void CActor::IR_OnMouseWheel(int direction)
 {
+	if (g_bHudAdjustMode)
+	{
+		g_player_hud->tune(Ivector().set(0, 0, direction));
+		return;
+	}
+
 //	if (psCallbackFlags.test(CF_MOUSE_WHEEL_ROT))
 //		this->callback(GameObject::eOnMouseWheel)(direction);
 
@@ -175,6 +190,9 @@ void CActor::IR_OnMouseWheel(int direction)
 }
 void CActor::IR_OnKeyboardRelease(int cmd)
 {
+	if (g_bHudAdjustMode && pInput->iGetAsyncKeyState(DIK_LSHIFT))
+		return;
+
 	if (m_blocked_actions.find((EGameActions)cmd) != m_blocked_actions.end() ) return; // Real Wolf. 14.10.2014
 
 	if (Remote())		return;
@@ -212,6 +230,19 @@ void CActor::IR_OnKeyboardRelease(int cmd)
 
 void CActor::IR_OnKeyboardHold(int cmd)
 {
+	if (g_bHudAdjustMode && pInput->iGetAsyncKeyState(DIK_LSHIFT))
+	{
+		if (pInput->iGetAsyncKeyState(DIK_UP))
+			g_player_hud->tune(Ivector{ 0, -1, 0 });
+		else if (pInput->iGetAsyncKeyState(DIK_DOWN))
+			g_player_hud->tune(Ivector{ 0, 1, 0 });
+		else if (pInput->iGetAsyncKeyState(DIK_LEFT))
+			g_player_hud->tune(Ivector{ -1, 0, 0 });
+		else if (pInput->iGetAsyncKeyState(DIK_RIGHT))
+			g_player_hud->tune(Ivector{ 1, 0, 0 });
+		return;
+	}
+
 	if (m_blocked_actions.find((EGameActions)cmd) != m_blocked_actions.end() ) return; // Real Wolf. 14.10.2014
 
 	if (Remote() || !g_Alive())					return;
@@ -257,6 +288,16 @@ void CActor::IR_OnKeyboardHold(int cmd)
 
 void CActor::IR_OnMouseMove(int dx, int dy)
 {
+	if (g_bHudAdjustMode)
+	{
+		g_player_hud->tune(Ivector().set(dx, dy, 0));
+		return;
+	}
+
+	PIItem iitem = inventory().ActiveItem();
+	if (iitem && iitem->cast_hud_item())
+		iitem->cast_hud_item()->ResetSubStateTime();
+
 	if (Remote())		return;
 //	if (conditions().IsSleeping())	return;
 

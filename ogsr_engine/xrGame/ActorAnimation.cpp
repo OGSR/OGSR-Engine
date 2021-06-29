@@ -21,6 +21,8 @@
 #include "../xr_3da/Motion.h"
 #include "artifact.h"
 #include "IKLimbsController.h"
+#include "player_hud.h"
+
 static const float y_spin0_factor		= 0.0f;
 static const float y_spin1_factor		= 0.4f;
 static const float y_shoulder_factor	= 0.4f;
@@ -363,13 +365,16 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 	}
 	//---------------------------------------------------------------
 	if (this == Level().CurrentViewEntity())
-	{	
+	{
 		if ((mstate_rl&mcSprint) != (mstate_old&mcSprint))
 		{
-			CHudItem* pHudItem = smart_cast<CHudItem*>(inventory().ActiveItem());	
-			if (pHudItem) pHudItem->onMovementChanged(mcSprint);
-		};
-	};
+			g_player_hud->OnMovementChanged(mcSprint);
+		}
+		else if ((mstate_rl&mcAnyMove) != (mstate_old&mcAnyMove))
+		{
+			g_player_hud->OnMovementChanged(mcAnyMove);
+		}
+	}
 	//-----------------------------------------------------------------------
 	// Torso
 	if(mstate_rl&mcClimb)
@@ -469,32 +474,30 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 						{
 							if (is_standing)
 							{
-								switch (M->GetState()) 
+								switch (M->GetState())
 								{
-								case MS_SHOWING:		M_torso = TW->draw;								break;
-								case MS_HIDING:			M_torso = TW->holster;							break;
-								case MS_IDLE:			M_torso = TW->moving[moving_idx];				break;
-								case MS_EMPTY:			M_torso = TW->zoom;								break;
-								case MS_THREATEN:		M_torso = M_legs = M_head = TW->all_attack_0;	break;
-								case MS_READY:			M_torso = M_legs = M_head = TW->all_attack_1;	break;
-								case MS_THROW:			M_torso = M_legs = M_head = TW->all_attack_2;	break;
-								case MS_END:			M_torso = M_legs = M_head = TW->all_attack_2;	break;
-								default:				M_torso = TW->draw;								break;
+								case CMissile::eShowing:	M_torso = TW->draw;								break;
+								case CMissile::eHiding:		M_torso = TW->holster;							break;
+								case CMissile::eIdle:		M_torso = TW->moving[moving_idx];				break;
+								case CMissile::eThrowStart:	M_torso = M_legs = M_head = TW->all_attack_0;	break;
+								case CMissile::eReady:		M_torso = M_legs = M_head = TW->all_attack_1;	break;
+								case CMissile::eThrow:		M_torso = M_legs = M_head = TW->all_attack_2;	break;
+								case CMissile::eThrowEnd:	M_torso = M_legs = M_head = TW->all_attack_2;	break;
+								default:					M_torso = TW->draw;								break;
 								}
 							}
 							else
 							{
 								switch (M->GetState())
 								{
-								case MS_SHOWING:		M_torso = TW->draw;								break;
-								case MS_HIDING:			M_torso = TW->holster;							break;
-								case MS_IDLE:			M_torso = TW->moving[moving_idx];				break;
-								case MS_EMPTY:			M_torso = TW->moving[moving_idx];				break;
-								case MS_THREATEN:		M_torso = TW->attack_zoom;						break;
-								case MS_READY:			M_torso = TW->fire_idle;						break;
-								case MS_THROW:			M_torso = TW->fire_end;							break;
-								case MS_END:			M_torso = TW->fire_end;							break;
-								default:				M_torso = TW->draw;								break;
+								case CMissile::eShowing:	M_torso = TW->draw;								break;
+								case CMissile::eHiding:		M_torso = TW->holster;							break;
+								case CMissile::eIdle:		M_torso = TW->moving[moving_idx];				break;
+								case CMissile::eThrowStart:	M_torso = TW->attack_zoom;						break;
+								case CMissile::eReady:		M_torso = TW->fire_idle;						break;
+								case CMissile::eThrow:		M_torso = TW->fire_end;							break;
+								case CMissile::eThrowEnd:	M_torso = TW->fire_end;							break;
+								default:					M_torso = TW->draw;								break;
 								}
 							}
 						}

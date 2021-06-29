@@ -303,9 +303,6 @@
     <ClInclude Include="xr_resource.h">
       <Filter>shared memory/string library</Filter>
     </ClInclude>
-    <ClInclude Include="xr_shared.h">
-      <Filter>shared memory/string library</Filter>
-    </ClInclude>
     <ClInclude Include="xrsharedmem.h">
       <Filter>shared memory/string library</Filter>
     </ClInclude>

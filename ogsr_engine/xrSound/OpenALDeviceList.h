@@ -24,7 +24,7 @@ struct ALDeviceDesc {
 		};
 		u16 storage;
 	};
-	ESndProps				props;
+	ESndProps props{};
 	ALDeviceDesc(LPCSTR nm, int mn, int mj) { xr_strcpy(name, nm); minor_ver = mn; major_ver = mj; props.storage = 0; props.eax_unwanted = true; }
 };
 

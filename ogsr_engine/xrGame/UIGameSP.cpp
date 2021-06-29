@@ -70,6 +70,8 @@ void CUIGameSP::SetClGame (game_cl_GameState* g)
 	R_ASSERT							(m_game);
 }
 
+void hud_adjust_mode_keyb(int dik);
+void hud_draw_adjust_mode();
 
 bool CUIGameSP::IR_OnKeyboardPress(int dik) 
 {
@@ -80,6 +82,8 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
 	CActor *pActor = smart_cast<CActor*>(Level().CurrentEntity());
 	if(!pActor)								return false;
 	if( pActor && !pActor->g_Alive() )		return false;
+
+	hud_adjust_mode_keyb(dik);
 
 	switch ( get_binded_action(dik) )
 	{
@@ -134,6 +138,11 @@ bool CUIGameSP::IR_OnKeyboardRelease(int dik)
 	return false;
 }
 
+void CUIGameSP::Render()
+{
+	inherited::Render();
+	hud_draw_adjust_mode();
+}
 
 void CUIGameSP::StartTalk()
 {
