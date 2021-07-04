@@ -28,7 +28,14 @@ extern STORY_PAIRS story_ids;
 
 ALife::_STORY_ID story_id( LPCSTR story_id ) {
   auto I = story_ids.find( story_id );
-  ASSERT_FMT_DBG( I != story_ids.end(), "story_id not found: %s", story_id );
+  if (I == story_ids.end()) {
+	  int sid = atoi(story_id);
+	  if (sid) {
+		return ALife::_STORY_ID(sid);
+	  } else {
+		  Msg("story_id not found: %s", story_id);
+	  }
+  }
   return ALife::_STORY_ID( (*I).second );
 }
 
@@ -139,6 +146,11 @@ void CGameTask::Load(const TASK_ID& id)
 
 		LPCSTR object_story_id			= g_gameTaskXml->Read(l_root, "object_story_id", 0, NULL);
 
+		if ((NULL == object_story_id) && (NULL != objective.map_location)) {
+			object_story_id = g_gameTaskXml->ReadAttrib(l_root, "map_location_type", 0, "story_id", NULL);
+		}
+		
+
 //*
 		LPCSTR ddd;
 		ddd								= g_gameTaskXml->Read(l_root, "map_location_hidden", 0, NULL);
@@ -156,7 +168,7 @@ void CGameTask::Load(const TASK_ID& id)
 //.
 		objective.map_hint				= g_gameTaskXml->ReadAttrib(l_root, "map_location_type", 0, "hint", NULL);
 
-		if(object_story_id){
+		if(NULL != object_story_id){
 			ALife::_STORY_ID _sid		= story_id(object_story_id);
 			objective.object_id			= storyId2GameId(_sid);
 		}
