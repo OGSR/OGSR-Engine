@@ -168,7 +168,7 @@ void CGameTask::Load(const TASK_ID& id)
 //.
 		objective.map_hint				= g_gameTaskXml->ReadAttrib(l_root, "map_location_type", 0, "hint", NULL);
 
-		if(NULL != object_story_id){
+		if(object_story_id){
 			ALife::_STORY_ID _sid		= story_id(object_story_id);
 			objective.object_id			= storyId2GameId(_sid);
 		}
