@@ -368,14 +368,6 @@ IC void FillSprite	(FVF::LIT*& pv, const Fvector& pos, const Fvector& dir, const
 
 extern ENGINE_API float		psHUD_FOV;
 
-struct PRS_PARAMS {
-	FVF::LIT* pv;
-	u32 p_from;
-	u32 p_to;
-	PAPI::Particle* particles;
-	CParticleEffect* pPE;
-};
-
 __forceinline void magnitude_sse( Fvector &vec , float &res )
 {
 	__m128 tv,tu;
@@ -391,18 +383,12 @@ __forceinline void magnitude_sse( Fvector &vec , float &res )
 	_mm_store_ss( (float*) &res , tv );
 }
 
-void ParticleRenderStream(PRS_PARAMS* pParams)
+void ParticleRenderStream( CParticleEffect& pPE, PAPI::Particle* particles, FVF::LIT* pv, u32 p_from, u32 p_to )
 {
 			float sina = 0.0f , cosa = 0.0f;
 			// Xottab_DUTY: changed angle to be float instead of DWORD
 			// But it must be 0xFFFFFFFF or otherwise some particles won't play
 			float angle = 0xFFFFFFFF;
-
-			FVF::LIT* pv = pParams->pv;
-			u32 p_from = pParams->p_from;
-			u32 p_to = pParams->p_to;
-			PAPI::Particle* particles = pParams->particles;
-			CParticleEffect &pPE = *pParams->pPE;
 
 			for(u32 i = p_from; i < p_to; i++){
 				PAPI::Particle &m = particles[i];
@@ -501,13 +487,7 @@ void CParticleEffect::Render(float )
 			FVF::LIT* pv_start	= (FVF::LIT*)RCache.Vertex.Lock(p_cnt*4*4,geom->vb_stride,dwOffset);
 			FVF::LIT* pv		= pv_start;
 
-			PRS_PARAMS prsParams;
-			prsParams.pPE  = this;
-			prsParams.particles = particles;
-			prsParams.p_from = 0;
-			prsParams.p_to = p_cnt;
-			prsParams.pv   = pv;
-			ParticleRenderStream( &prsParams );
+			ParticleRenderStream( *this, particles, pv, 0, p_cnt );
 
 			dwCount = p_cnt<<2;
 
