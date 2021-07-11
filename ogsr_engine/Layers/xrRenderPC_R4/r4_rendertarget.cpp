@@ -473,6 +473,11 @@ CRenderTarget::CRenderTarget		()
 		// generic(LDR) RTs
 		rt_Generic_0.create		(r2_RT_generic0,w,h,D3DFMT_A8R8G8B8, 1		);
 		rt_Generic_1.create		(r2_RT_generic1,w,h,D3DFMT_A8R8G8B8, 1		);
+		
+        if (RImplementation.o.dx10_msaa)
+            rt_Generic_0_temp.create(r2_RT_generic0_temp, w, h, D3DFMT_A8R8G8B8, SampleCount);
+        else
+            rt_Generic_0_temp.create(r2_RT_generic0_temp, w, h, D3DFMT_A8R8G8B8, 1);
 
 		rt_secondVP.create(r2_RT_secondVP, w, h, D3DFMT_A8R8G8B8, 1); //--#SM+#-- +SecondVP+
 
