@@ -213,7 +213,7 @@ public:
 	  pickup_check_overlaped     = 1ull << 40,
 	  disable_dialog_break       = 1ull << 41,
 	  actor_thirst               = 1ull << 42,
-	  no_progress_bar_animation  = 1ull << 43;
+	  no_progress_bar_animation  = 1ull << 43,
 	  actor_legs                 = 1ull << 44;
 	};
 

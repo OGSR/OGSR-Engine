@@ -110,8 +110,10 @@ void CActor::camUpdateLadder(float dt)
 void CActor::cam_UnsetLadder()
 {
 	if (Core.Features.test(xrCore::Feature::actor_legs))
+	{
 		setVisible(TRUE);
-		m_bDrawLegs				= true;
+		m_bDrawLegs = true;
+	}
 	else
 		setVisible(FALSE);
 		m_bDrawLegs				= false;
