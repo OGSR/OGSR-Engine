@@ -425,16 +425,16 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 								case CWeapon::eIdle:		M_torso	= TW->moving[moving_idx];		break;
 							
 								case CWeapon::eFire:	
-									if(is_standing)
+									/*if(is_standing)
 															M_torso = M_legs = M_head = TW->all_attack_0;
-									else
+									else*/
 															M_torso	= TW->attack_zoom;
 									break;
 
 								case CWeapon::eFire2:
-									if(is_standing)
+									/*if(is_standing)
 															M_torso = M_legs = M_head = TW->all_attack_1;
-									else
+									else*/
 															M_torso	= TW->fire_idle;
 									break;
 
@@ -479,10 +479,10 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 								case CMissile::eShowing:	M_torso = TW->draw;								break;
 								case CMissile::eHiding:		M_torso = TW->holster;							break;
 								case CMissile::eIdle:		M_torso = TW->moving[moving_idx];				break;
-								case CMissile::eThrowStart:	M_torso = M_legs = M_head = TW->all_attack_0;	break;
+								case CMissile::eThrowStart:	M_torso	= TW->fire_idle;	break;
 								case CMissile::eReady:		M_torso = M_legs = M_head = TW->all_attack_1;	break;
-								case CMissile::eThrow:		M_torso = M_legs = M_head = TW->all_attack_2;	break;
-								case CMissile::eThrowEnd:	M_torso = M_legs = M_head = TW->all_attack_2;	break;
+								case CMissile::eThrow:		M_torso	= TW->fire_idle;	break;
+								case CMissile::eThrowEnd:	M_torso	= TW->fire_idle;	break;
 								default:					M_torso = TW->draw;								break;
 								}
 							}

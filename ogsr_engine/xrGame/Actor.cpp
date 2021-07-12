@@ -427,6 +427,13 @@ void CActor::Load	(LPCSTR section )
 	LPCSTR							default_outfit = READ_IF_EXISTS(pSettings,r_string,section,"default_outfit",0);
 	SetDefaultVisualOutfit			(default_outfit);
 
+	LPCSTR							default_outfit_legs = pSettings->r_string(section, "default_outfit_legs");
+	SetDefaultVisualOutfit_legs		(default_outfit_legs);
+	if (Core.Features.test(xrCore::Feature::actor_legs))
+		m_bDrawLegs						= true;
+	else
+		m_bDrawLegs						= false;
+
 	invincibility_fire_shield_1st	= READ_IF_EXISTS(pSettings,r_string,section,"Invincibility_Shield_1st",0);
 	invincibility_fire_shield_3rd	= READ_IF_EXISTS(pSettings,r_string,section,"Invincibility_Shield_3rd",0);
 //-----------------------------------------
@@ -701,6 +708,9 @@ void CActor::Die(CObject* who)
 		while (!l_blist.empty())	
 			inventory().Ruck(l_blist.front());
 	}
+
+	shared_str m_DefaultVisualOutfit = GetDefaultVisualOutfit();
+	ChangeVisual(m_DefaultVisualOutfit);
 
 	cam_Set					(eacFreeLook);
 	mstate_wishful	&=		~mcAnyMove;
@@ -1143,7 +1153,10 @@ void CActor::shedule_Update	(u32 DT)
 	
 	//если в режиме HUD, то сама модель актера не рисуется
 	if( !character_physics_support()->IsRemoved() && !m_holder )
-										setVisible				(!HUDview	());
+		if (m_bDrawLegs) 
+			setVisible				(TRUE);
+		else
+			setVisible				(!HUDview	());
 	//что актер видит перед собой
 	collide::rq_result& RQ = HUD().GetCurrentRayQuery();
 	

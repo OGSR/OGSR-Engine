@@ -338,6 +338,16 @@ void CScriptGameObject::SetActorDirection		(float dir)
 		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"ScriptGameObject : attempt to call SetActorDirection method for non-actor object");
 }
 
+void CScriptGameObject::SetActorLegsVisible			(bool val)
+{
+	CActor* actor = smart_cast<CActor*>(&object());
+	if(actor){
+		actor->setVisible(val);
+		actor->SetDrawLegs(val);
+	}else
+		ai().script_engine().script_log		(ScriptStorage::eLuaMessageTypeError,"ScriptGameObject : attempt to call SetActorLegsVisible method for non-actor object");
+}
+
 CHolderCustom* CScriptGameObject::get_current_holder()
 {
 	CActor* actor = smart_cast<CActor*>(&object());

@@ -33,6 +33,11 @@ void CActor::attach_Vehicle(CHolderCustom* vehicle)
 	PickupModeOff		();
 	m_holder=vehicle;
 
+	CActor *pA = smart_cast<CActor*>(this);
+		if (pA)
+		pA->cam_Set(eacLookAt);
+
+
 	IKinematicsAnimated* V		= smart_cast<IKinematicsAnimated*>(Visual()); R_ASSERT(V);
 	
 	if(!m_holder->attach_Actor(this)){
@@ -90,6 +95,10 @@ void CActor::detach_Vehicle()
 
 //.	SetWeaponHideState(whs_CAR, FALSE);
 	SetWeaponHideState(INV_STATE_CAR, false);
+
+	CActor *pA = smart_cast<CActor*>(this);
+		if (pA)
+		pA->cam_Set(eacFirstEye);
 
 	this->callback(GameObject::eDetachVehicle)(car->lua_game_object());
 }

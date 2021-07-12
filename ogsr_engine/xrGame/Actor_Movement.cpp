@@ -563,7 +563,7 @@ void CActor::g_cl_Orientate	(u32 mstate_rl, float dt)
 			mstate_real	&=~mcTurn;
 		}
 		if (mstate_rl&mcTurn){
-			angle_lerp	(r_model_yaw,r_model_yaw_dest,PI_MUL_2,dt);
+			angle_lerp	(r_model_yaw,r_model_yaw_dest,PI_MUL_8,dt);
 		}
 	}
 }

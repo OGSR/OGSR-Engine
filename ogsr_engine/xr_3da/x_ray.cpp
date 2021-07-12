@@ -120,6 +120,7 @@ void InitConsole	()
 	CORE_FEATURE_SET( no_progress_bar_animation,  "features" );
 	CORE_FEATURE_SET( disable_dialog_break,       "features" );
 	CORE_FEATURE_SET( use_cop_thm_format,         "features" );
+	CORE_FEATURE_SET( actor_legs,                 "features" );
 }
 
 void InitInput()

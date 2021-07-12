@@ -21,12 +21,32 @@
 #include "EffectorShot.h"
 #include "phcollidevalidator.h"
 #include "PHShell.h"
+#include "CustomOutfit.h"
 
 ENGINE_API extern float psHUD_FOV; //--#SM+#--
 ENGINE_API extern float psHUD_FOV_def; //--#SM+#--
 
 void CActor::cam_Set	(EActorCameras style)
 {
+	if (eacFirstEye==cam_active)
+	{
+		m_bFirstEye = false;
+		CCustomOutfit *pOutfit = smart_cast<CCustomOutfit*>(inventory().ItemFromSlot(OUTFIT_SLOT));
+		if (pOutfit)
+			pOutfit->OnMoveToSlot();
+		else
+			ChangeVisual(m_DefaultVisualOutfit);
+	} 
+	else if (eacFirstEye==style) 
+	{
+		m_bFirstEye = true;
+		CCustomOutfit *pOutfit = smart_cast<CCustomOutfit*>(inventory().ItemFromSlot(OUTFIT_SLOT));
+		if (pOutfit)
+			pOutfit->OnMoveToSlot();
+		else
+			ChangeVisual(m_DefaultVisualOutfit_legs);
+	}
+
 	CCameraBase* old_cam = cam_Active();
 	cam_active = style;
 	old_cam->OnDeactivate();
@@ -35,6 +55,9 @@ void CActor::cam_Set	(EActorCameras style)
 float CActor::f_Ladder_cam_limit=1.f;
 void CActor::cam_SetLadder()
 {
+	setVisible(FALSE);
+	m_bDrawLegs = false;
+	
 	CCameraBase* C			= cameras[eacFirstEye];
 	g_LadderOrient			();
 	float yaw				= (-XFORM().k.getH());
@@ -86,6 +109,13 @@ void CActor::camUpdateLadder(float dt)
 
 void CActor::cam_UnsetLadder()
 {
+	if (Core.Features.test(xrCore::Feature::actor_legs))
+		setVisible(TRUE);
+		m_bDrawLegs				= true;
+	else
+		setVisible(FALSE);
+		m_bDrawLegs				= false;
+	
 	CCameraBase* C			= cameras[eacFirstEye];
 	C->lim_yaw[0]			= 0;
 	C->lim_yaw[1]			= 0;

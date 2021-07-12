@@ -107,9 +107,28 @@ void CActor::IR_OnKeyboardPress(int cmd)
 			else
 				mstate_wishful |= mcSprint;					
 		}break;
-	case kCAM_1:	cam_Set			(eacFirstEye);				break;
-	case kCAM_2:	cam_Set			(eacLookAt);				break;
-	case kCAM_3:	cam_Set			(eacFreeLook);				break;
+	case kCAM_1:
+	{
+		cam_Set(eacFirstEye);
+		shared_str m_DefaultVisualOutfit_legs = GetDefaultVisualOutfit_legs();
+		ChangeVisual(m_DefaultVisualOutfit_legs);
+		break;
+	}
+	case kCAM_2:
+	{
+		cam_Set(eacLookAt);
+		shared_str m_DefaultVisualOutfit = GetDefaultVisualOutfit();
+		ChangeVisual(m_DefaultVisualOutfit);
+		break;
+	}
+	case kCAM_3:
+	{
+		cam_Set(eacFreeLook);
+		shared_str m_DefaultVisualOutfit = GetDefaultVisualOutfit();
+		ChangeVisual(m_DefaultVisualOutfit);
+		break;
+	}
+	
 	case kNIGHT_VISION: {
 			CTorch* pTorch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
 			if (pTorch) {
