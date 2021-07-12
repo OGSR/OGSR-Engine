@@ -427,8 +427,12 @@ void CActor::Load	(LPCSTR section )
 	LPCSTR							default_outfit = READ_IF_EXISTS(pSettings,r_string,section,"default_outfit",0);
 	SetDefaultVisualOutfit			(default_outfit);
 
-	LPCSTR							default_outfit_legs = pSettings->r_string(section, "default_outfit_legs");
-	SetDefaultVisualOutfit_legs		(default_outfit_legs);
+	LPCSTR							default_outfit_legs = READ_IF_EXISTS(pSettings,r_string,section,"default_outfit_legs",0);
+	if (Core.Features.test(xrCore::Feature::actor_legs))
+		SetDefaultVisualOutfit_legs		(default_outfit_legs);
+	else
+		SetDefaultVisualOutfit_legs		(default_outfit);
+	
 	if (Core.Features.test(xrCore::Feature::actor_legs))
 		m_bDrawLegs						= true;
 	else
