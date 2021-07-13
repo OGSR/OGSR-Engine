@@ -233,7 +233,7 @@ void CObjectList::net_Unregister	(CObject* O)
 
 int	g_Dump_Export_Obj = 0;
 
-u32	CObjectList::net_Export			(NET_Packet* _Packet,	u32 start, u32 max_object_size	)
+u32 CObjectList::net_Export( NET_Packet* _Packet, u32 start, u32 max_object_size, std::vector<CObject*>& net_exported_objects )
 {
 	if (g_Dump_Export_Obj) Msg("---- net_export --- ");
 
@@ -246,6 +246,7 @@ u32	CObjectList::net_Export			(NET_Packet* _Packet,	u32 start, u32 max_object_si
 			Packet.w_chunk_open8	(position);
 			//Msg						("cl_export: %d '%s'",P->ID(),*P->cName());
 			P->net_Export			(Packet);
+			net_exported_objects.push_back( P );
 
 #ifdef DEBUG
 			u32 size				= u32		(Packet.w_tell()-position)-sizeof(u8);

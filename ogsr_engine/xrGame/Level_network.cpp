@@ -159,21 +159,29 @@ void CLevel::ClientSend()
 		FATAL(""); //Это не должно быть вызвано
 		return;
 	}
-	//-------------------------------------------------
+
+	std::vector<CObject*> net_exported_objects;
 	while (1)
 	{
 		P.w_begin						(M_UPDATE);
-		start	= Objects.net_Export	(&P, start, max_objects_size);
+		start = Objects.net_Export( &P, start, max_objects_size, net_exported_objects );
 
 		if (P.B.count>2)
 		{
 			Device.Statistic->TEST3.Begin();
 				Send	(P, net_flags(FALSE));
 			Device.Statistic->TEST3.End();
+			if ( start == Objects.o_count() )
+			  break;
 		}else
 			break;
 	}
 
+	for ( const auto& it : net_exported_objects ) {
+	  CSE_Abstract* E = Server->ID_to_entity( it->ID() );
+	  if ( E )
+	    it->net_Export( E );
+	}
 }
 
 

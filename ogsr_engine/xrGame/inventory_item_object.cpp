@@ -133,6 +133,10 @@ void CInventoryItemObject::net_Export		(NET_Packet& P)
 	CInventoryItem::net_Export			(P);
 }
 
+void CInventoryItemObject::net_Export( CSE_Abstract* E ) {
+  CInventoryItem::net_Export( E );
+}
+
 void CInventoryItemObject::save				(NET_Packet &packet)
 {
 	CPhysicItem::save					(packet);

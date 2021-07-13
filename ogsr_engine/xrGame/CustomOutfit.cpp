@@ -14,6 +14,7 @@
 #include "HudManager.h"
 #include "ui/UIInventoryWnd.h"
 #include "player_hud.h"
+#include "xrserver_objects_alife_items.h"
 
 CCustomOutfit::CCustomOutfit()
 {
@@ -45,10 +46,23 @@ void CCustomOutfit::net_Export(NET_Packet& P)
 	P.w_float_q8			(m_fCondition,0.0f,1.0f);
 }
 
+void CCustomOutfit::net_Export( CSE_Abstract* E ) {
+  inherited::net_Export( E );
+  CSE_ALifeInventoryItem *itm = smart_cast<CSE_ALifeInventoryItem*>( E );
+  if ( itm )
+    itm->m_fCondition = m_fCondition;
+}
+
 void CCustomOutfit::net_Import(NET_Packet& P)
 {
 	inherited::net_Import	(P);
 	P.r_float_q8			(m_fCondition,0.0f,1.0f);
+	auto se_obj = alife_object();
+	if ( se_obj ) {
+	  CSE_ALifeInventoryItem *itm = smart_cast<CSE_ALifeInventoryItem*>( se_obj );
+	  if ( itm )
+	    m_fCondition = itm->m_fCondition;
+	}
 }
 
 void CCustomOutfit::Load(LPCSTR section) 

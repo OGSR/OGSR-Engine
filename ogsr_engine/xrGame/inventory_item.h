@@ -210,6 +210,7 @@ public:
 
 	virtual void				net_Import			(NET_Packet& P);					// import from server
 	virtual void				net_Export			(NET_Packet& P);					// export to server
+	virtual void net_Export( CSE_Abstract* E ) {}
 
 public:
 	virtual void				activate_physic_shell		();

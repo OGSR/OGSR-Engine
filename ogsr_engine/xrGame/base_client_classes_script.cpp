@@ -112,7 +112,7 @@ void CObjectScript::script_register		(lua_State *L)
 			.def("_construct",			&CGameObject::_construct,&CGameObjectWrapper::_construct_static)
 			.def("Visual",				&CGameObject::Visual)
 
-			.def("net_Export",			&CGameObject::net_Export,		&CGameObjectWrapper::net_Export_static)
+			.def( "net_Export", ( void ( CGameObject::* ) ( NET_Packet& ) ) &CGameObject::net_Export, &CGameObjectWrapper::net_Export_static )
 			.def("net_Import",			&CGameObject::net_Import,		&CGameObjectWrapper::net_Import_static)
 			.def("net_Spawn",			&CGameObject::net_Spawn,	&CGameObjectWrapper::net_Spawn_static)
 

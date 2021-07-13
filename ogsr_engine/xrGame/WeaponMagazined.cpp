@@ -1370,6 +1370,10 @@ void CWeaponMagazined::net_Export	(NET_Packet& P)
 	P.w_u8(u8(m_iCurFireMode&0x00ff));
 }
 
+void CWeaponMagazined::net_Export( CSE_Abstract* E ) {
+  inherited::net_Export( E );
+}
+
 void CWeaponMagazined::net_Import	(NET_Packet& P)
 {
 	//	if (Level().IsDemoPlay())
@@ -1451,12 +1455,8 @@ bool CWeaponMagazined::ScopeRespawn( PIItem pIItem ) {
       P.w_begin( M_UPDATE );
       net_Export( P );
       P.r_begin( id );
-      sobj1->UPDATE_Read( P );
-
-      P.w_begin( M_UPDATE );
-      sobj1->UPDATE_Write( P );
-      P.r_begin( id );
       sobj2->UPDATE_Read( P );
+      net_Export( _abstract );
 
       auto io = smart_cast<CInventoryOwner*>( H_Parent() );
       auto ii = smart_cast<CInventoryItem*>( this );
