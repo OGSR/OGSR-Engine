@@ -633,6 +633,14 @@ void CWeapon::net_Export( CSE_Abstract* E ) {
   CSE_ALifeInventoryItem *itm = smart_cast<CSE_ALifeInventoryItem*>( E );
   if ( itm )
     itm->m_fCondition = m_fCondition;
+
+  CSE_ALifeItemWeapon* wpn = smart_cast<CSE_ALifeItemWeapon*>( E );
+  wpn->wpn_flags = IsUpdating() ? 1 : 0;
+  wpn->a_elapsed = u16( iAmmoElapsed );
+  wpn->m_addon_flags.flags = m_flagsAddOnState;
+  wpn->ammo_type = (u8)m_ammoType;
+  wpn->wpn_state = (u8)GetState();
+  wpn->m_bZoom   = (u8)m_bZoomMode;
 }
 
 void CWeapon::net_Import(NET_Packet& P)

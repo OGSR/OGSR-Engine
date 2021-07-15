@@ -229,6 +229,12 @@ void CWeaponAmmo::net_Export(NET_Packet& P)
 	P.w_u16					(m_boxCurr);
 }
 
+void CWeaponAmmo::net_Export( CSE_Abstract* E ) {
+  inherited::net_Export( E );
+  CSE_ALifeItemAmmo* ammo = smart_cast<CSE_ALifeItemAmmo*>( E );
+  ammo->a_elapsed = m_boxCurr;
+}
+
 void CWeaponAmmo::net_Import(NET_Packet& P) 
 {
 	inherited::net_Import	(P);

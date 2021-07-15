@@ -867,6 +867,14 @@ void CWeaponMagazinedWGrenade::net_Export(NET_Packet& P)
 	P.w_u16( (u16)m_magazine2.size() );
 }
 
+void CWeaponMagazinedWGrenade::net_Export( CSE_Abstract* E ) {
+  inherited::net_Export( E );
+  CSE_ALifeItemWeaponMagazinedWGL* gl = smart_cast<CSE_ALifeItemWeaponMagazinedWGL*>( E );
+  gl->m_bGrenadeMode = m_bGrenadeMode;
+  gl->ammo_type2     = (u8)m_ammoType2;
+  gl->a_elapsed2     = (u16)m_magazine2.size();
+}
+
 void CWeaponMagazinedWGrenade::net_Import(NET_Packet& P) //Этот и все подобные методы вообще не вызываются в в синглплеере, походу.
 {
 	u8 _data = P.r_u8();

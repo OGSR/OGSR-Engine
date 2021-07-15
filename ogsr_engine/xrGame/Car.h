@@ -560,6 +560,7 @@ public:
 
 	// Network
 	virtual void			net_Export					(NET_Packet& P);				// export to server
+	virtual void net_Export( CSE_Abstract* E );
 	virtual void			net_Import					(NET_Packet& P);				// import from server
 	virtual BOOL			net_Relevant				()	{ return getLocal(); };		// relevant for export to server
 	virtual BOOL			UsedAI_Locations			();

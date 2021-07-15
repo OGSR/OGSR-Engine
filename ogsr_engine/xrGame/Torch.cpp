@@ -478,6 +478,15 @@ void CTorch::net_Export			(NET_Packet& P)
 //	Msg("CTorch::net_export - NV[%d]", m_bNightVisionOn);
 }
 
+void CTorch::net_Export( CSE_Abstract* E ) {
+  inherited::net_Export( E );
+  CSE_ALifeItemTorch* torch = smart_cast<CSE_ALifeItemTorch*>( E );
+  torch->m_active = m_switched_on;
+  torch->m_nightvision_active = m_bNightVisionOn;
+  const CActor *pA = smart_cast<const CActor*>( H_Parent() );
+  torch->m_attached = ( pA && pA->attached( this ) );
+}
+
 void CTorch::net_Import			(NET_Packet& P)
 {
 	inherited::net_Import		(P);

@@ -11,6 +11,7 @@
 #include "xr_level_controller.h"
 #include "game_object_space.h"
 #include "level.h"
+#include "xrserver_objects_alife.h"
 
 void 	CWeaponStatMgun::BoneCallbackX		(CBoneInstance *B)
 {
@@ -132,6 +133,13 @@ void CWeaponStatMgun::net_Export(NET_Packet& P)	// export to server
 	inheritedPH::net_Export			(P);
 	P.w_u8							(IsWorking() ? 1 : 0);
 	save_data						(m_destEnemyDir, P);
+}
+
+void CWeaponStatMgun::net_Export( CSE_Abstract* E ) {
+  inheritedPH::net_Export( E );
+  CSE_ALifeStationaryMgun* mgun = smart_cast<CSE_ALifeStationaryMgun*>( E );
+  mgun->m_bWorking     = IsWorking();
+  mgun->m_destEnemyDir = m_destEnemyDir;
 }
 
 void CWeaponStatMgun::net_Import(NET_Packet& P)	// import from server

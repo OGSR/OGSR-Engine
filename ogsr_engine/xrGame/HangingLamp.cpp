@@ -356,6 +356,10 @@ void CHangingLamp::net_Export(NET_Packet& P)
 	VERIFY					(Local());
 }
 
+void CHangingLamp::net_Export( CSE_Abstract* E ) {
+  VERIFY( Local() );
+}
+
 void CHangingLamp::net_Import(NET_Packet& P)
 {
 	VERIFY					(Remote());

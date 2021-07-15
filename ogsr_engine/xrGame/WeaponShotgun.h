@@ -14,6 +14,7 @@ public:
 	
 	virtual void	net_Destroy			();
 	virtual void	net_Export			(NET_Packet& P);
+	virtual void net_Export( CSE_Abstract* E );
 	virtual void	net_Import			(NET_Packet& P);
 
 	virtual void	Reload				();

@@ -475,6 +475,16 @@ void	CWeaponShotgun::net_Export	(NET_Packet& P)
 	}
 }
 
+void CWeaponShotgun::net_Export( CSE_Abstract* E ) {
+  inherited::net_Export( E );
+  CSE_ALifeItemWeaponShotGun* sg = smart_cast<CSE_ALifeItemWeaponShotGun*>( E );
+  sg->m_AmmoIDs.clear();
+  for ( u32 i = 0; i < m_magazine.size(); i++ ) {
+    CCartridge& l_cartridge = *( m_magazine.begin() + i );
+    sg->m_AmmoIDs.push_back( l_cartridge.m_LocalAmmoType );
+  }
+}
+
 void	CWeaponShotgun::net_Import	(NET_Packet& P)
 {
 	inherited::net_Import(P);	

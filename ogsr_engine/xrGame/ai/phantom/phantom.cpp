@@ -352,6 +352,25 @@ void CPhantom::net_Export	(NET_Packet& P)					// export to server
 	P.w_u8				(u8(g_Group()));
 }
 
+void CPhantom::net_Export( CSE_Abstract* E ) {
+  R_ASSERT( Local() );
+
+  CSE_ALifeCreatureAbstract* creature = smart_cast<CSE_ALifeCreatureAbstract*>( E );
+  creature->fHealth       = GetfHealth();
+  creature->timestamp     = Level().timeServer();
+  creature->flags         = 0;
+  creature->o_Position    = Position();
+  float yaw, pitch, bank;
+  XFORM().getHPB( yaw, pitch, bank);
+  creature->o_model       = yaw;
+  creature->o_torso.yaw   = yaw;
+  creature->o_torso.pitch = pitch;
+  creature->o_torso.roll  = 0;
+  creature->s_team        = u8( g_Team() );
+  creature->s_squad       = u8( g_Squad() );
+  creature->s_group       = u8( g_Group() );
+}
+
 void CPhantom::net_Import	(NET_Packet& P)
 {
 	// import

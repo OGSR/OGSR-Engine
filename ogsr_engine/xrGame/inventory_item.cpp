@@ -536,6 +536,11 @@ void CInventoryItem::net_Export(NET_Packet& P)
 	P.w_u8(0);
 };
 
+void CInventoryItem::net_Export( CSE_Abstract* E ) {
+  CSE_ALifeInventoryItem* item = smart_cast<CSE_ALifeInventoryItem*>( E );
+  item->m_u8NumItems = 0;
+};
+
 void CInventoryItem::load(IReader &packet)
 {
 	m_eItemPlace			= (EItemPlace)packet.r_u8();

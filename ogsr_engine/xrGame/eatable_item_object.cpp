@@ -128,6 +128,10 @@ void CEatableItemObject::net_Export		(NET_Packet& P)
 	CEatableItem::net_Export			(P);
 }
 
+void CEatableItemObject::net_Export( CSE_Abstract* E ) {	
+  CEatableItem::net_Export( E );
+}
+
 void CEatableItemObject::save				(NET_Packet &packet)
 {
 	CPhysicItem::save					(packet);

@@ -529,6 +529,10 @@ void	CCar::net_Export			(NET_Packet& P)
 //	P.w_u16 (0);
 }
 
+void CCar::net_Export( CSE_Abstract* E ) {
+  inherited::net_Export( E );
+}
+
 void	CCar::net_Import			(NET_Packet& P)
 {
 	inherited::net_Import(P);

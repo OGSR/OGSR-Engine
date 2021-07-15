@@ -103,6 +103,10 @@ void CBreakableObject::net_Export(NET_Packet& P)
 	VERIFY					(Local());
 }
 
+void CBreakableObject::net_Export( CSE_Abstract* E ) {
+  VERIFY( Local() );
+}
+
 void CBreakableObject::net_Import(NET_Packet& P)
 {
 	VERIFY					(Remote());

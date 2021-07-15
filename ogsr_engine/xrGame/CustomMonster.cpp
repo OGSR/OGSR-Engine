@@ -259,6 +259,27 @@ void CCustomMonster::net_Export(NET_Packet& P)					// export to server
 	P.w_u8					(u8(g_Group()));
 }
 
+void CCustomMonster::net_Export( CSE_Abstract* E ) {
+  R_ASSERT( Local() );
+
+  // export last known packet
+  R_ASSERT( !NET.empty() );
+  net_update& N = NET.back();
+
+  CSE_ALifeCreatureAbstract* creature = smart_cast<CSE_ALifeCreatureAbstract*>( E );
+  creature->fHealth       = GetfHealth();
+  creature->timestamp     = N.dwTimeStamp;
+  creature->flags         = 0;
+  creature->o_Position    = N.p_pos;
+  creature->o_model       = N.o_model;
+  creature->o_torso.yaw   = N.o_torso.yaw;
+  creature->o_torso.pitch = N.o_torso.pitch;
+  creature->o_torso.roll  = N.o_torso.roll;
+  creature->s_team        = u8( g_Team() );
+  creature->s_squad       = u8( g_Squad() );
+  creature->s_group       = u8( g_Group() );
+}
+
 void CCustomMonster::net_Import(NET_Packet& P)
 {
 	R_ASSERT				(Remote());

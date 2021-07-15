@@ -1777,4 +1777,28 @@ BOOL				CActor::BonePassBullet					(int boneID)
 void			CActor::On_B_NotCurrentEntity		()
 {
 	inventory().Items_SetCurrentEntityHud(false);
+}
+
+void CActor::net_Export (CSE_Abstract* E ) {
+  CSE_ALifeCreatureAbstract* creature = smart_cast<CSE_ALifeCreatureAbstract*>( E );
+  creature->fHealth       = GetfHealth();
+  creature->timestamp     = Level().timeServer();
+  creature->flags         = 0;
+  creature->o_Position    = Position();
+  creature->o_model       = angle_normalize( r_model_yaw );
+  creature->o_torso.yaw   = angle_normalize( unaffected_r_torso.yaw );
+  creature->o_torso.pitch = angle_normalize( unaffected_r_torso.pitch );
+  creature->o_torso.roll  = angle_normalize( unaffected_r_torso.roll );
+  creature->s_team        = u8( g_Team() );
+  creature->s_squad       = u8( g_Squad() );
+  creature->s_group       = u8( g_Group() );
+
+  CSE_ALifeCreatureActor* actor = smart_cast<CSE_ALifeCreatureActor*>( E );
+  actor->mstate     = (u16)( mstate_real & 0x0000ffff );
+  actor->accel      = NET_SavedAccel;
+  actor->velocity   = character_physics_support()->movement()->GetVelocity();
+  actor->fRadiation = g_Radiation();
+  actor->weapon     = u8( inventory().GetActiveSlot() );
+  /////////////////////////////////////////////////
+  actor->m_u16NumItems = 0;
 };
