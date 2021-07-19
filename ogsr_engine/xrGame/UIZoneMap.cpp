@@ -62,19 +62,17 @@ void CUIZoneMap::Init()
 
 void CUIZoneMap::Render()
 {
-      if (psActorFlags.test(AF_RENDERMINIMAP)) {
-	m_clipFrame.Draw();
-	m_background.Draw();
-	m_compass.Draw();
-      }
+	if (psActorFlags.test(AF_RENDERMINIMAP)) {
+		m_clipFrame.Draw();
+		m_background.Draw();
+		m_compass.Draw();
+	}
 }
 
 void CUIZoneMap::SetHeading		(float angle)
 {
-      if (psActorFlags.test(AF_RENDERMINIMAP)) {
 	m_activeMap->SetHeading(angle);
 	m_compass.SetHeading(angle);
-      }
 };
 
 void CUIZoneMap::UpdateRadar		(Fvector pos)
