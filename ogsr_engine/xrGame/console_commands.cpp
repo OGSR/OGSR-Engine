@@ -1319,6 +1319,8 @@ void CCC_RegisterCommands()
 //#endif // MASTER_GOLD
 
 	CMD3(CCC_Mask,		"g_music_tracks",		&psActorFlags,	AF_MUSIC_TRACKS);
+	
+	CMD3(CCC_Mask, "g_render_minimap", &psActorFlags, AF_RENDERMINIMAP);
 
 	CMD1(CCC_LuaHelp, "lua_help");
 
