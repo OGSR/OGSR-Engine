@@ -612,12 +612,7 @@ bool CScriptGameObject::addon_IsActorHideout() const
 		actorInhideout = !!g_pGameLevel->ObjectSpace.RayPick(Device.vCameraPosition, Fvector().set(0, 1, 0), 50.f, collide::rqtBoth, RQ, g_pGameLevel->CurrentViewEntity());
 	}
 
-	if (actorInhideout) {
-		return TRUE;
-	} else {
-		return FALSE;
-	}
-
+	return actorInhideout;
 }
 
 float CScriptGameObject::GetActorJumpSpeed() const
