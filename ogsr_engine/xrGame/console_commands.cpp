@@ -1321,6 +1321,7 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,		"g_music_tracks",		&psActorFlags,	AF_MUSIC_TRACKS);
 	
 	CMD3(CCC_Mask, "g_render_minimap", &psActorFlags, AF_RENDERMINIMAP);
+	psActorFlags.set(AF_RENDERMINIMAP, true);
 
 	CMD1(CCC_LuaHelp, "lua_help");
 
