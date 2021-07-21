@@ -628,6 +628,8 @@ public:
 
 			/**************************************************** added by Cribbledirge END ****************************************************/
 
+			bool				addon_IsActorHideout() const;		// проверка что актор под каким либо укрытием
+
 			// KD
 			// functions for CInventoryOwner class
 			CScriptGameObject	*ItemOnBelt(u32 item_id) const;
