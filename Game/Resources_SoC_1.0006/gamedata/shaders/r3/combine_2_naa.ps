@@ -1,6 +1,7 @@
 #include "common.h"
 #include "mblur.h"
 #include "dof.h"
+#include "visor.h"
 /*
 struct 	v2p
 {
@@ -93,6 +94,10 @@ c2_out main( v2p_aa_AA I )
 //			img 	= mblur		(center,tex2D(s_position,I.tc0),img.rgb);
 //			img 	= mblur( center, s_position.Sample( smp_nofilter, tc0), img.rgb);
 			img 	= mblur( center, ( gbd ).P, img.rgb);
+
+if (addon_VControl.w == 1) {
+	img    = visor_reflection(img,center);	
+}
 
 #ifdef 	USE_DISTORT
  	float3	blurred	= bloom*def_hdr	;

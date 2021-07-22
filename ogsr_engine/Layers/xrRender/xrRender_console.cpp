@@ -265,6 +265,9 @@ int ps_r3_dyn_wet_surf_enable_streaks = 0;
 float ps_r2_rain_drops_intensity = 0.00025f;
 float ps_r2_rain_drops_speed = 1.25f;
 
+float ps_r2_visor_refl_intensity = 0.39f;
+float ps_r2_visor_refl_radius = 0.4f;
+
 #if RENDER==R_R4
 float ps_ext_SSLR_L = 1.f;
 float ps_ext_SSLR_blur = 0.f;
@@ -992,6 +995,11 @@ void		xrRender_initconsole	()
 	//	Igor: need restart
 	CMD3(CCC_Mask,		"r2_soft_water",				&ps_r2_ls_flags,			R2FLAG_SOFT_WATER);
 	CMD3(CCC_Mask,		"r2_soft_particles",			&ps_r2_ls_flags,			R2FLAG_SOFT_PARTICLES);
+
+	CMD3(CCC_Mask, "r2_visor_refl",						&ps_r2_ls_flags_ext,			R2FLAG_VISOR_REFL);
+	CMD3(CCC_Mask, "r2_visor_refl_control",				&ps_r2_ls_flags_ext,			R2FLAG_VISOR_REFL_CONTROL);
+	CMD4(CCC_Float, "r2_visor_refl_intensity",			&ps_r2_visor_refl_intensity,	0.f, 1.f);
+	CMD4(CCC_Float, "r2_visor_refl_radius",				&ps_r2_visor_refl_radius,		0.3f, 0.6f);
 
 	CMD3(CCC_Token, "r_aa_mode", &ps_r_pp_aa_mode, pp_aa_mode_token);
 
