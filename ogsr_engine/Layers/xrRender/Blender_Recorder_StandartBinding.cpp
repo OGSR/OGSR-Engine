@@ -418,13 +418,11 @@ static class cl_ogsr_game_time : public R_constant_setup
 
 static class cl_addon_VControl : public R_constant_setup
 {
-	virtual void setup(R_constant* C) override
-	{
-		if (ps_r2_ls_flags_ext.test(R2FLAG_VISOR_REFL) && ps_r2_ls_flags_ext.test(R2FLAG_VISOR_REFL_CONTROL)) {
-			RCache.set_c(C, (float)ps_r2_visor_refl_intensity, (float)ps_r2_visor_refl_radius, float(0), float(1));
-		} else {
-			RCache.set_c(C, float(0), float(0), float(0), float(0));
-		}
+	void setup(R_constant* C) override {
+		if (ps_r2_ls_flags_ext.test(R2FLAG_VISOR_REFL) && ps_r2_ls_flags_ext.test(R2FLAG_VISOR_REFL_CONTROL))
+			RCache.set_c(C, ps_r2_visor_refl_intensity, ps_r2_visor_refl_radius, 0.f, 1.f);
+		else
+			RCache.set_c(C, 0.f, 0.f, 0.f, 0.f);
 	}
 } binder_addon_VControl;
 
