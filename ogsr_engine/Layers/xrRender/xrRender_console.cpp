@@ -192,7 +192,6 @@ Flags32		ps_r2_ls_flags				= { R2FLAG_SUN
 
 Flags32 ps_r2_ls_flags_ext = {
 	/*R2FLAGEXT_SSAO_OPT_DATA |*/ R2FLAGEXT_SSAO_HALF_DATA | R2FLAGEXT_ENABLE_TESSELLATION | R2FLAGEXT_RAIN_DROPS | R2FLAGEXT_RAIN_DROPS_CONTROL
-	| R2FLAG_VISOR_REFL | R2FLAG_VISOR_REFL_CONTROL
 #if RENDER==R_R4
 	| R2FLAGEXT_SSLR
 #endif
@@ -1001,8 +1000,6 @@ void		xrRender_initconsole	()
 	CMD3(CCC_Mask, "r2_visor_refl_control",				&ps_r2_ls_flags_ext,			R2FLAG_VISOR_REFL_CONTROL);
 	CMD4(CCC_Float, "r2_visor_refl_intensity",			&ps_r2_visor_refl_intensity,	0.f, 1.f);
 	CMD4(CCC_Float, "r2_visor_refl_radius",				&ps_r2_visor_refl_radius,		0.3f, 0.6f);
-	ps_r2_ls_flags_ext.set(R2FLAG_VISOR_REFL, false);
-	ps_r2_ls_flags_ext.set(R2FLAG_VISOR_REFL_CONTROL, false);
 
 	CMD3(CCC_Token, "r_aa_mode", &ps_r_pp_aa_mode, pp_aa_mode_token);
 
