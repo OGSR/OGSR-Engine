@@ -1,6 +1,6 @@
 |// Low-level VM code for x86 CPUs.
 |// Bytecode interpreter, fast functions and helper functions.
-|// Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
+|// Copyright (C) 2005-2021 Mike Pall. See Copyright Notice in luajit.h
 |
 |.if P64
 |.arch x64
@@ -1372,7 +1372,11 @@ static void build_subroutines(BuildCtx *ctx)
   |  mov LFUNC:RB, [RA-8]
   |  add NARGS:RD, 1
   |  // This is fragile. L->base must not move, KBASE must always be defined.
+  |.if x64
+  |  cmp KBASEa, rdx			// Continue with CALLT if flag set.
+  |.else
   |  cmp KBASE, BASE			// Continue with CALLT if flag set.
+  |.endif
   |  je ->BC_CALLT_Z
   |  mov BASE, RA
   |  ins_call				// Otherwise call resolved metamethod.
@@ -2233,7 +2237,7 @@ static void build_subroutines(BuildCtx *ctx)
   |  xorps xmm4, xmm4; jmp <1			// Return +-Inf and +-0.
   |
   |.macro math_minmax, name, cmovop, sseop
-  |  .ffunc name
+  |  .ffunc_1 name
   |  mov RA, 2
   |  cmp dword [BASE+4], LJ_TISNUM
   |.if DUALNUM
@@ -2419,9 +2423,9 @@ static void build_subroutines(BuildCtx *ctx)
   |   lea SBUF:FCARG1, [DISPATCH+DISPATCH_GL(tmpbuf)]
   |  mov L:RB->base, BASE
   |  mov STR:FCARG2, [BASE]		// Caveat: FCARG2 == BASE
-  |   mov RC, SBUF:FCARG1->b
+  |   mov RCa, SBUF:FCARG1->b
   |   mov SBUF:FCARG1->L, L:RB
-  |   mov SBUF:FCARG1->p, RC
+  |   mov SBUF:FCARG1->w, RCa
   |  mov SAVE_PC, PC
   |  call extern lj_buf_putstr_ .. name .. @8
   |  mov FCARG1, eax
@@ -2960,10 +2964,10 @@ static void build_subroutines(BuildCtx *ctx)
   |  jmp <2
   |
   |9:  // Rethrow error from the right C frame.
-  |  neg RD
-  |  mov FCARG1, L:RB
   |  mov FCARG2, RD
-  |  call extern lj_err_throw@8		// (lua_State *L, int errcode)
+  |  mov FCARG1, L:RB
+  |  neg FCARG2
+  |  call extern lj_err_trace@8		// (lua_State *L, int errcode)
   |.endif
   |
   |//-----------------------------------------------------------------------
@@ -5548,7 +5552,7 @@ static void emit_asm_debug(BuildCtx *ctx)
 	".LEFDE1:\n\n", (int)ctx->codesz - fcofs);
 #endif
 #if !LJ_NO_UNWIND
-#if (defined(__sun__) && defined(__svr4__))
+#if LJ_TARGET_SOLARIS
 #if LJ_64
     fprintf(ctx->fp, "\t.section .eh_frame,\"a\",@unwind\n");
 #else

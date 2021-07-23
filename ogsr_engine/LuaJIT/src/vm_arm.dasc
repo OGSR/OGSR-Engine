@@ -1,6 +1,6 @@
 |// Low-level VM code for ARM CPUs.
 |// Bytecode interpreter, fast functions and helper functions.
-|// Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
+|// Copyright (C) 2005-2021 Mike Pall. See Copyright Notice in luajit.h
 |
 |.arch arm
 |.section code_op, code_sub
@@ -699,6 +699,7 @@ static void build_subroutines(BuildCtx *ctx)
   |->vmeta_tsetr:
   |  str BASE, L->base
   |  .IOS mov RC, BASE
+  |  mov CARG1, L
   |  str PC, SAVE_PC
   |  bl extern lj_tab_setinth  // (lua_State *L, GCtab *t, int32_t key)
   |  // Returns TValue *.
@@ -1715,8 +1716,8 @@ static void build_subroutines(BuildCtx *ctx)
   |.endif
   |.endmacro
   |
-  |  math_minmax math_min, gt, hi
-  |  math_minmax math_max, lt, lo
+  |  math_minmax math_min, gt, pl
+  |  math_minmax math_max, lt, le
   |
   |//-- String library -----------------------------------------------------
   |
@@ -1809,7 +1810,7 @@ static void build_subroutines(BuildCtx *ctx)
   |   str BASE, L->base
   |   str PC, SAVE_PC
   |   str L, SBUF:CARG1->L
-  |  str CARG4, SBUF:CARG1->p
+  |  str CARG4, SBUF:CARG1->w
   |  bl extern lj_buf_putstr_ .. name
   |  bl extern lj_buf_tostr
   |  b ->fff_resstr
@@ -2246,7 +2247,7 @@ static void build_subroutines(BuildCtx *ctx)
   |9:  // Rethrow error from the right C frame.
   |  rsb CARG2, CARG1, #0
   |  mov CARG1, L
-  |  bl extern lj_err_throw		// (lua_State *L, int errcode)
+  |  bl extern lj_err_trace		// (lua_State *L, int errcode)
   |.endif
   |
   |//-----------------------------------------------------------------------
