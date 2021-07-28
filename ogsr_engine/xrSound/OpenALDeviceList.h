@@ -18,14 +18,13 @@ struct ALDeviceDesc {
 			u16				eax : 3;
 			u16				efx : 1;
 			u16				xram : 1;
-			u16				eax_unwanted : 1;
 
 			u16				unused : 9;
 		};
 		u16 storage;
 	};
 	ESndProps props{};
-	ALDeviceDesc(LPCSTR nm, int mn, int mj) { xr_strcpy(name, nm); minor_ver = mn; major_ver = mj; props.storage = 0; props.eax_unwanted = true; }
+	ALDeviceDesc(LPCSTR nm, int mn, int mj) { xr_strcpy(name, nm); minor_ver = mn; major_ver = mj; props.storage = 0; }
 };
 
 class ALDeviceList
