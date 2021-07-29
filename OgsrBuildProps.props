@@ -7,6 +7,9 @@
 
     <!-- v141 is allowed -->
     <PlatformToolset Condition="'$(DefaultPlatformToolset)'=='v141'">v141</PlatformToolset>
+  
+    <!-- v143 is allowed -->
+    <PlatformToolset Condition="'$(DefaultPlatformToolset)'=='v143'">v143</PlatformToolset>
   </PropertyGroup>
 
   <PropertyGroup Label="Globals">

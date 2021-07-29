@@ -256,11 +256,10 @@ bool   ChimeraAttackState<Object>::select_target_for_jump (enum_action const	act
 
 	Fvector	const	self_pos				=	object->Position();
 	Fvector	const	self2enemy				=	enemy_pos - self_pos;
-	float	const	self2enemy_mag			=	magnitude(self2enemy);
 
 	m_attack_jump							=	false;
 
-	VERIFY										(self2enemy_mag < m_min_run_distance);
+	VERIFY										(magnitude(self2enemy) < m_min_run_distance);
 	VERIFY										(get_attack_radius() >= 4);
 	float	const	attack_radius			=	3 + float(rand() % (u32)(get_attack_radius() - 3) );
 
