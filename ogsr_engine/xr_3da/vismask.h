@@ -69,8 +69,8 @@ struct ENGINE_API VisMask final
 	}
 	IC	void						and (const VisMask& _second)
 	{
-		_visimask. and (_second._visimask.flags);
-		_visimask_ex. and (_second._visimask_ex.flags);
+		_visimask.And(_second._visimask.flags);
+		_visimask_ex.And(_second._visimask_ex.flags);
 	}
 	IC	void						invert()
 	{

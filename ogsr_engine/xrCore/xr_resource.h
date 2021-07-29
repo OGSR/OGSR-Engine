@@ -55,26 +55,26 @@ protected:
 	typedef resptr_core			this_type;
 	typedef resptr_core<T,C>	self;
 public:
-						// construction
-						resptr_core		()												{	p_ = 0;						}
-						resptr_core		(T * p, bool add_ref = true) 					{	p_ = p;	if(add_ref)	_inc(); }
-						resptr_core		(const self & rhs)								{	p_ = rhs.p_; _inc();		}
-						~resptr_core	()												{	_dec();						}
+	// construction
+	resptr_core() { C::p_ = nullptr; }
+	resptr_core(T* p, const bool add_ref = true) { C::p_ = p; if (add_ref) C::_inc(); }
+	resptr_core(const self& rhs) { C::p_ = rhs.p_; C::_inc(); }
+	~resptr_core() { C::_dec(); }
 
 						// assignment
-	self &				operator=		(const self & rhs)								{	_set(rhs);	return (self&)*this;	}
+	self &				operator=		(const self & rhs)								{	C::_set(rhs);	return (self&)*this;	}
 
 						// accessors
-	T &					operator*() const												{	return *p_;	}
-	T *					operator->() const												{	return p_;	}
+	T &					operator*() const												{	return *C::p_;	}
+	T *					operator->() const												{	return C::p_;	}
 
 						// unspecified bool type
 						typedef T * (resptr_core::*unspecified_bool_type) () const;
-						operator unspecified_bool_type () const							{	return p_ == 0? 0: &resptr_core::_get;	}
-						bool operator!	() const										{	return p_ == 0;	}
+						operator unspecified_bool_type () const							{	return C::p_ == 0? 0: &resptr_core::_get;	}
+						bool operator!	() const										{	return !C::p_;	}
 
 						// fast swapping
-	void				swap			(self & rhs)									{	T * tmp = p_; p_ = rhs.p_; rhs.p_ = tmp;	}
+	void				swap			(self & rhs)									{	T * tmp = C::p_; C::p_ = rhs.p_; rhs.p_ = tmp;	}
 };
 
 // res_ptr == res_ptr

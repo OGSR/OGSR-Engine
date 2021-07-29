@@ -56,7 +56,7 @@ typename luabind::memory_allocator<T>::pointer luabind::memory_allocator<T>::all
 template <typename T>
 char *luabind::memory_allocator<T>::__charalloc										(size_type const n)
 {
-	return 			((char _FARQ *)allocate(n));
+	return (char*)allocate(n);
 }
 
 template <typename T>
