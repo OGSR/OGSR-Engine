@@ -416,6 +416,16 @@ static class cl_ogsr_game_time : public R_constant_setup
 } binder_ogsr_game_time;
 
 
+static class cl_addon_VControl : public R_constant_setup
+{
+	void setup(R_constant* C) override {
+		if (ps_r2_ls_flags_ext.test(R2FLAG_VISOR_REFL) && ps_r2_ls_flags_ext.test(R2FLAG_VISOR_REFL_CONTROL))
+			RCache.set_c(C, ps_r2_visor_refl_intensity, ps_r2_visor_refl_radius, 0.f, 1.f);
+		else
+			RCache.set_c(C, 0.f, 0.f, 0.f, 0.f);
+	}
+} binder_addon_VControl;
+
 // Standart constant-binding
 void	CBlender_Compile::SetMapping	()
 {
@@ -491,6 +501,8 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant("m_blender_mode", &binder_blend_mode); //--#SM+#--
 
 	r_Constant("ogsr_game_time", &binder_ogsr_game_time);
+	
+	r_Constant("addon_VControl", &binder_addon_VControl);
 
 	// other common
 	for (const auto& [name, s] : DEV->v_constant_setup)

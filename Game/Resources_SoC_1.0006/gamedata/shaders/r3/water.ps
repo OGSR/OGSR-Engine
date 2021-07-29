@@ -2,9 +2,9 @@
 
 #include "reflections.h"
 
-uniform float4 ogsr_game_time; // hour, min, sec, ms
-static const float REFLS_DISABLE_TIME_START = ( 20 * 60 ) + 30; //20:30
-static const float REFLS_DISABLE_TIME_STOP  = ( 4 * 60 ); //04:00
+//uniform float4 ogsr_game_time; // hour, min, sec, ms
+//static const float REFLS_DISABLE_TIME_START = ( 20 * 60 ) + 30; //20:30
+//static const float REFLS_DISABLE_TIME_STOP  = ( 4 * 60 ); //04:00
 
 struct   vf
 {
@@ -58,18 +58,18 @@ float4 main( vf I ) : SV_Target
 
 	float3 env = calc_envmap(vreflect);
 	float3 c_reflection = {0.f, 0.f, 0.f};
-	float current_time = (ogsr_game_time.x * 60 ) + ogsr_game_time.y;
+	//float current_time = (ogsr_game_time.x * 60 ) + ogsr_game_time.y;
 
-	if (current_time > REFLS_DISABLE_TIME_START || current_time < REFLS_DISABLE_TIME_STOP)
-	{
-		c_reflection = env;
-	}
-	else
-	{
+	//if (current_time > REFLS_DISABLE_TIME_START || current_time < REFLS_DISABLE_TIME_STOP)
+	//{
+	//	c_reflection = env;
+	//}
+	//else
+	//{
 		float4 refl = compute_ssr(I.position_w.xyz, Nw.xyz);
 		refl.xyz *= 1.6;
 		c_reflection = lerp(env.xyz, refl.xyz, refl.www);
-	}
+	//}
 
 	base.rgb *= I.c0.xyz;
 

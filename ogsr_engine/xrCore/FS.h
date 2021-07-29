@@ -140,33 +140,33 @@ public:
 	
 	IC void			r			(void *p,int cnt) {impl().r(p,cnt);}
 
-	IC Fvector		r_vec3		()			{Fvector tmp;r(&tmp,3*sizeof(float));return tmp;	};
-	IC Fvector4		r_vec4		()			{Fvector4 tmp;r(&tmp,4*sizeof(float));return tmp;	};
-	IC u64			r_u64		()			{	u64 tmp;	r(&tmp,sizeof(tmp)); return tmp;	};
-	IC u32			r_u32		()			{	u32 tmp;	r(&tmp,sizeof(tmp)); return tmp;	};
-	IC u16			r_u16		()			{	u16 tmp;	r(&tmp,sizeof(tmp)); return tmp;	};
-	IC u8			r_u8		()			{	u8 tmp;		r(&tmp,sizeof(tmp)); return tmp;	};
-	IC s64			r_s64		()			{	s64 tmp;	r(&tmp,sizeof(tmp)); return tmp;	};
-	IC s32			r_s32		()			{	s32 tmp;	r(&tmp,sizeof(tmp)); return tmp;	};
-	IC s16			r_s16		()			{	s16 tmp;	r(&tmp,sizeof(tmp)); return tmp;	};
-	IC s8			r_s8		()			{	s8 tmp;		r(&tmp,sizeof(tmp)); return tmp;	};
-	IC float		r_float		()			{	float tmp;	r(&tmp,sizeof(tmp)); return tmp;	};
-	IC void			r_fvector4	(Fvector4 &v){	r(&v,sizeof(Fvector4));	}
-	IC void			r_fvector3	(Fvector3 &v){	r(&v,sizeof(Fvector3));	}
-	IC void			r_fvector2	(Fvector2 &v){	r(&v,sizeof(Fvector2));	}
-	IC void			r_ivector4	(Ivector4 &v){	r(&v,sizeof(Ivector4));	}
-	IC void			r_ivector4	(Ivector3 &v){	r(&v,sizeof(Ivector3));	}
-	IC void			r_ivector4	(Ivector2 &v){	r(&v,sizeof(Ivector2));	}
-	IC void			r_fcolor	(Fcolor &v)	{	r(&v,sizeof(Fcolor));	}
+	virtual Fvector		r_vec3		()			{Fvector tmp;r(&tmp,3*sizeof(float));return tmp;	};
+	virtual Fvector4	r_vec4		()			{Fvector4 tmp;r(&tmp,4*sizeof(float));return tmp;	};
+	virtual u64		r_u64		()			{	u64 tmp;	r(&tmp,sizeof(tmp)); return tmp;	};
+	virtual u32		r_u32		()			{	u32 tmp;	r(&tmp,sizeof(tmp)); return tmp;	};
+	virtual u16		r_u16		()			{	u16 tmp;	r(&tmp,sizeof(tmp)); return tmp;	};
+	virtual u8		r_u8		()			{	u8 tmp;		r(&tmp,sizeof(tmp)); return tmp;	};
+	virtual s64		r_s64		()			{	s64 tmp;	r(&tmp,sizeof(tmp)); return tmp;	};
+	virtual s32		r_s32		()			{	s32 tmp;	r(&tmp,sizeof(tmp)); return tmp;	};
+	virtual s16		r_s16		()			{	s16 tmp;	r(&tmp,sizeof(tmp)); return tmp;	};
+	virtual s8		r_s8		()			{	s8 tmp;		r(&tmp,sizeof(tmp)); return tmp;	};
+	virtual float		r_float		()			{	float tmp;	r(&tmp,sizeof(tmp)); return tmp;	};
+	virtual void		r_fvector4	(Fvector4 &v){	r(&v,sizeof(Fvector4));	}
+	virtual void		r_fvector3	(Fvector3 &v){	r(&v,sizeof(Fvector3));	}
+	virtual void		r_fvector2	(Fvector2 &v){	r(&v,sizeof(Fvector2));	}
+	virtual void		r_ivector4	(Ivector4 &v){	r(&v,sizeof(Ivector4));	}
+	virtual void		r_ivector4	(Ivector3 &v){	r(&v,sizeof(Ivector3));	}
+	virtual void		r_ivector4	(Ivector2 &v){	r(&v,sizeof(Ivector2));	}
+	virtual void		r_fcolor	(Fcolor &v)	{	r(&v,sizeof(Fcolor));	}
 	
-	IC float		r_float_q16	(float min, float max)
+	virtual float		r_float_q16	(float min, float max)
 	{
 		u16	val 	= r_u16();
 		float A		= (float(val)*(max-min))/65535.f + min;		// floating-point-error possible
 		VERIFY		((A >= min-EPS_S) && (A <= max+EPS_S));
         return A;
 	}
-	IC float		r_float_q8	(float min, float max)
+	virtual float		r_float_q8	(float min, float max)
 	{
 		u8 val		= r_u8();
 		float	A	= (float(val)/255.0001f) *(max-min) + min;	// floating-point-error possible
@@ -175,8 +175,8 @@ public:
 	}
 	IC float		r_angle16	()			{ return r_float_q16(0,PI_MUL_2);	}
 	IC float		r_angle8	()			{ return r_float_q8	(0,PI_MUL_2);	}
-	IC void			r_dir		(Fvector& A){ u16 t=r_u16(); pvDecompress(A,t); }
-	IC void			r_sdir		(Fvector& A)
+	virtual void		r_dir		(Fvector& A){ u16 t=r_u16(); pvDecompress(A,t); }
+	virtual void		r_sdir		(Fvector& A)
 	{
 		u16	t		= r_u16();
 		float s		= r_float();
@@ -279,6 +279,48 @@ public:
 	void			r_stringZ	(char *dest, u32 tgt_sz);
 	void			r_stringZ	(shared_str& dest);
 	void			r_stringZ	(xr_string& dest);
+
+	IC Fvector r_vec3() { Fvector tmp; tmp = *(Fvector*)(&data[Pos]); advance( sizeof( Fvector ) ); return tmp; };
+	IC Fvector4 r_vec4(){ Fvector4 tmp; tmp = *(Fvector4*)(&data[Pos]); advance( sizeof( Fvector4 ) ); return tmp; };
+	IC u64 r_u64() { u64 tmp; tmp = *(u64*)(&data[Pos]); advance( sizeof( u64 ) ); return tmp; };
+	IC u32 r_u32() { u32 tmp; tmp = *(u32*)(&data[Pos]); advance( sizeof( u32 ) ); return tmp; };
+	IC u16 r_u16() { u16 tmp; tmp = *(u16*)(&data[Pos]); advance( sizeof( u16 ) ); return tmp; };
+	IC u8 r_u8() { u8 tmp; tmp = *(u8*)(&data[Pos]); advance( sizeof( u8 ) ); return tmp; };
+	IC s64 r_s64() { s64 tmp; tmp = *(s64*)(&data[Pos]); advance( sizeof( s64 ) ); return tmp; };
+	IC s32 r_s32() { s32 tmp; tmp = *(s32*)(&data[Pos]); advance( sizeof( s32 ) ); return tmp; };
+	IC s16 r_s16() { s16 tmp; tmp = *(s16*)(&data[Pos]); advance( sizeof( s16 ) ); return tmp; };
+	IC s8 r_s8() { s8 tmp; tmp = *(s8*)(&data[Pos]); advance( sizeof( s8 ) ); return tmp; };
+	IC float r_float() { float tmp; tmp = *(float*)(&data[Pos]); advance( sizeof( float ) ); return tmp; };
+	IC void r_fvector4( Fvector4 &v) { v = *(Fvector4*)(&data[Pos]); advance( sizeof( Fvector4 ) ); }
+	IC void r_fvector3( Fvector3 &v ) { v = *(Fvector3*)(&data[Pos]); advance( sizeof( Fvector3 ) ); }
+	IC void r_fvector2( Fvector2 &v ) { v = *(Fvector2*)(&data[Pos]); advance( sizeof( Fvector2 ) ); }
+	IC void r_ivector4( Ivector4 &v ) { v = *(Ivector4*)(&data[Pos]); advance( sizeof( Ivector4 ) ); }
+	IC void r_ivector4( Ivector3 &v ) { v = *(Ivector3*)(&data[Pos]); advance( sizeof( Ivector3 ) ); }
+	IC void r_ivector4( Ivector2 &v ) { v = *(Ivector2*)(&data[Pos]); advance( sizeof( Ivector2 ) ); }
+	IC void r_fcolor( Fcolor &v ) { v = *(Fcolor*)(&data[Pos]); advance( sizeof( Fcolor ) ); }
+
+	IC float r_float_q16( float min, float max ) {
+	  u16 &val = *(u16*)(&data[Pos]); advance( sizeof( u16 ) );
+	  float A = ( float(val) * ( max - min ) ) / 65535.f + min; // floating-point-error possible
+	  VERIFY( ( A >= min - EPS_S ) && ( A <= max + EPS_S ) );
+	  return A;
+	}
+	IC float r_float_q8( float min, float max ) {
+	  u8 &val = *(u8*)(&data[Pos]); advance( sizeof( u8 ) );
+	  float A = ( float(val) / 255.0001f ) * ( max - min ) + min; // floating-point-error possible
+	  VERIFY( A >= min && A <= max );
+	  return A;
+	}
+	IC void r_dir( Fvector& A ) {
+	  u16 &t = *(u16*)(&data[Pos]); advance( sizeof( u16 ) );
+	  pvDecompress( A, t );
+	}
+	IC void r_sdir( Fvector& A ) {
+	  u16   &t = *(u16*)(&data[Pos]); advance( sizeof( u16 ) );
+	  float &s = *(float*)(&data[Pos]); advance( sizeof( float ) );
+	  pvDecompress( A, t );
+	  A.mul( s );
+	}
 
 public:
 	void			close		();

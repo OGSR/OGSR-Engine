@@ -1,6 +1,6 @@
 /*
 ** SSA IR (Intermediate Representation) format.
-** Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2021 Mike Pall. See Copyright Notice in luajit.h
 */
 
 #ifndef _LJ_IR_H
@@ -75,7 +75,6 @@
   _(NEG,	N , ref, ref) \
   \
   _(ABS,	N , ref, ref) \
-  _(ATAN2,	N , ref, ref) \
   _(LDEXP,	N , ref, ref) \
   _(MIN,	C , ref, ref) \
   _(MAX,	C , ref, ref) \
@@ -96,6 +95,7 @@
   _(UREFO,	LW, ref, lit) \
   _(UREFC,	LW, ref, lit) \
   _(FREF,	R , ref, lit) \
+  _(TMPREF,	S , ref, lit) \
   _(STRREF,	N , ref, ref) \
   _(LREF,	L , ___, ___) \
   \
@@ -107,6 +107,7 @@
   _(XLOAD,	L , ref, lit) \
   _(SLOAD,	L , lit, lit) \
   _(VLOAD,	L , ref, ___) \
+  _(ALEN,	L , ref, ref) \
   \
   _(ASTORE,	S , ref, ref) \
   _(HSTORE,	S , ref, ref) \
@@ -124,8 +125,8 @@
   \
   /* Buffer operations. */ \
   _(BUFHDR,	L , ref, lit) \
-  _(BUFPUT,	L , ref, ref) \
-  _(BUFSTR,	A , ref, ref) \
+  _(BUFPUT,	LW, ref, ref) \
+  _(BUFSTR,	AW, ref, ref) \
   \
   /* Barriers. */ \
   _(TBAR,	S , ref, ___) \
@@ -133,15 +134,15 @@
   _(XBAR,	S , ___, ___) \
   \
   /* Type conversions. */ \
-  _(CONV,	NW, ref, lit) \
+  _(CONV,	N , ref, lit) \
   _(TOBIT,	N , ref, ref) \
   _(TOSTR,	N , ref, lit) \
   _(STRTO,	N , ref, ___) \
   \
   /* Calls. */ \
-  _(CALLN,	N , ref, lit) \
-  _(CALLA,	A , ref, lit) \
-  _(CALLL,	L , ref, lit) \
+  _(CALLN,	NW, ref, lit) \
+  _(CALLA,	AW, ref, lit) \
+  _(CALLL,	LW, ref, lit) \
   _(CALLS,	S , ref, lit) \
   _(CALLXS,	S , ref, ref) \
   _(CARG,	N , ref, ref) \
@@ -178,8 +179,7 @@ LJ_STATIC_ASSERT((int)IR_XLOAD + IRDELTA_L2S == (int)IR_XSTORE);
 /* FPMATH sub-functions. ORDER FPM. */
 #define IRFPMDEF(_) \
   _(FLOOR) _(CEIL) _(TRUNC)  /* Must be first and in this order. */ \
-  _(SQRT) _(EXP) _(EXP2) _(LOG) _(LOG2) _(LOG10) \
-  _(SIN) _(COS) _(TAN) \
+  _(SQRT) _(LOG) _(LOG2) \
   _(OTHER)
 
 typedef enum {
@@ -205,9 +205,15 @@ IRFPMDEF(FPMENUM)
   _(UDATA_META,	offsetof(GCudata, metatable)) \
   _(UDATA_UDTYPE, offsetof(GCudata, udtype)) \
   _(UDATA_FILE,	sizeof(GCudata)) \
+  _(SBUF_W,	sizeof(GCudata) + offsetof(SBufExt, w)) \
+  _(SBUF_E,	sizeof(GCudata) + offsetof(SBufExt, e)) \
+  _(SBUF_B,	sizeof(GCudata) + offsetof(SBufExt, b)) \
+  _(SBUF_L,	sizeof(GCudata) + offsetof(SBufExt, L)) \
+  _(SBUF_REF,	sizeof(GCudata) + offsetof(SBufExt, cowref)) \
+  _(SBUF_R,	sizeof(GCudata) + offsetof(SBufExt, r)) \
   _(CDATA_CTYPEID, offsetof(GCcdata, ctypeid)) \
   _(CDATA_PTR,	sizeof(GCcdata)) \
-  _(CDATA_INT, sizeof(GCcdata)) \
+  _(CDATA_INT,	sizeof(GCcdata)) \
   _(CDATA_INT64, sizeof(GCcdata)) \
   _(CDATA_INT64_4, sizeof(GCcdata) + 4)
 
@@ -218,6 +224,11 @@ IRFLDEF(FLENUM)
   IRFL__MAX
 } IRFieldID;
 
+/* TMPREF mode bits, stored in op2. */
+#define IRTMPREF_IN1		0x01	/* First input value. */
+#define IRTMPREF_OUT1		0x02	/* First output value. */
+#define IRTMPREF_OUT2		0x04	/* Second output value. */
+
 /* SLOAD mode bits, stored in op2. */
 #define IRSLOAD_PARENT		0x01	/* Coalesce with parent trace. */
 #define IRSLOAD_FRAME		0x02	/* Load 32 bits of ftsz. */
@@ -226,14 +237,15 @@ IRFLDEF(FLENUM)
 #define IRSLOAD_READONLY	0x10	/* Read-only, omit slot store. */
 #define IRSLOAD_INHERIT		0x20	/* Inherited by exits/side traces. */
 
-/* XLOAD mode, stored in op2. */
-#define IRXLOAD_READONLY	1	/* Load from read-only data. */
-#define IRXLOAD_VOLATILE	2	/* Load from volatile data. */
-#define IRXLOAD_UNALIGNED	4	/* Unaligned load. */
+/* XLOAD mode bits, stored in op2. */
+#define IRXLOAD_READONLY	0x01	/* Load from read-only data. */
+#define IRXLOAD_VOLATILE	0x02	/* Load from volatile data. */
+#define IRXLOAD_UNALIGNED	0x04	/* Unaligned load. */
 
 /* BUFHDR mode, stored in op2. */
 #define IRBUFHDR_RESET		0	/* Reset buffer. */
 #define IRBUFHDR_APPEND		1	/* Append to buffer. */
+#define IRBUFHDR_WRITE		2	/* Write to string buffer. */
 
 /* CONV mode, stored in op2. */
 #define IRCONV_SRCMASK		0x001f	/* Source IRType. */
@@ -250,6 +262,7 @@ IRFLDEF(FLENUM)
 #define IRCONV_ANY    (1<<IRCONV_CSH)	/* Any FP number is ok. */
 #define IRCONV_INDEX  (2<<IRCONV_CSH)	/* Check + special backprop rules. */
 #define IRCONV_CHECK  (3<<IRCONV_CSH)	/* Number checked for integerness. */
+#define IRCONV_NONE   IRCONV_ANY	/* INT|*64 no conv, but change type. */
 
 /* TOSTR mode, stored in op2. */
 #define IRTOSTR_INT		0	/* Convert integer to string. */
@@ -414,11 +427,12 @@ static LJ_AINLINE IRType itype2irt(const TValue *tv)
 
 static LJ_AINLINE uint32_t irt_toitype_(IRType t)
 {
-  lua_assert(!LJ_64 || LJ_GC64 || t != IRT_LIGHTUD);
+  lj_assertX(!LJ_64 || LJ_GC64 || t != IRT_LIGHTUD,
+	     "no plain type tag for lightuserdata");
   if (LJ_DUALNUM && t > IRT_NUM) {
     return LJ_TISNUM;
   } else {
-    lua_assert(t <= IRT_NUM);
+    lj_assertX(t <= IRT_NUM, "no plain type tag for IR type %d", t);
     return ~(uint32_t)t;
   }
 }
@@ -562,6 +576,11 @@ typedef union IRIns {
   TValue tv;		/* TValue constant (overlaps entire slot). */
 } IRIns;
 
+#define ir_isk64(ir) \
+  ((ir)->o == IR_KNUM || (ir)->o == IR_KINT64 || \
+   (LJ_GC64 && \
+    ((ir)->o == IR_KGC || (ir)->o == IR_KPTR || (ir)->o == IR_KKPTR)))
+
 #define ir_kgc(ir)	check_exp((ir)->o == IR_KGC, gcref((ir)[LJ_GC64].gcr))
 #define ir_kstr(ir)	(gco2str(ir_kgc((ir))))
 #define ir_ktab(ir)	(gco2tab(ir_kgc((ir))))
@@ -569,12 +588,7 @@ typedef union IRIns {
 #define ir_kcdata(ir)	(gco2cd(ir_kgc((ir))))
 #define ir_knum(ir)	check_exp((ir)->o == IR_KNUM, &(ir)[1].tv)
 #define ir_kint64(ir)	check_exp((ir)->o == IR_KINT64, &(ir)[1].tv)
-#define ir_k64(ir) \
-  check_exp((ir)->o == IR_KNUM || (ir)->o == IR_KINT64 || \
-	    (LJ_GC64 && \
-	     ((ir)->o == IR_KGC || \
-	      (ir)->o == IR_KPTR || (ir)->o == IR_KKPTR)), \
-	    &(ir)[1].tv)
+#define ir_k64(ir)	check_exp(ir_isk64(ir), &(ir)[1].tv)
 #define ir_kptr(ir) \
   check_exp((ir)->o == IR_KPTR || (ir)->o == IR_KKPTR, \
     mref((ir)[LJ_GC64].ptr, void))
@@ -586,5 +600,13 @@ static LJ_AINLINE int ir_sideeff(IRIns *ir)
 }
 
 LJ_STATIC_ASSERT((int)IRT_GUARD == (int)IRM_W);
+
+/* Replace IR instruction with NOP. */
+static LJ_AINLINE void lj_ir_nop(IRIns *ir)
+{
+  ir->ot = IRT(IR_NOP, IRT_NIL);
+  ir->op1 = ir->op2 = 0;
+  ir->prev = 0;
+}
 
 #endif

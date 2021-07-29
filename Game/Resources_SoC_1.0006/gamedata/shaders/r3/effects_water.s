@@ -26,7 +26,7 @@ function normal                (shader, t_base, t_second, t_detail)
 	shader:dx10texture	("s_env0",		tex_env0)
 	shader:dx10texture	("s_env1",		tex_env1)
 	shader:dx10texture	("s_position",	"$user$position")
-
+	shader:dx10texture	("s_image", "$user$generic0_temp")
 	shader:dx10texture	("s_leaves",	tex_leaves)
 
 	shader:dx10sampler	("smp_base")
