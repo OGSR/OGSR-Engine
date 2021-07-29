@@ -144,8 +144,8 @@ struct CLoader {
 	IC	static void load_data(std::pair<T1,T2> &data, M &stream, const P &p)
 	{
 		if (p(data,const_cast<object_type_traits::remove_const<T1>::type&>(data.first),true)) {
-			const bool					value = object_type_traits::is_same<T1,LPCSTR>::value;
-			VERIFY						(!value);
+
+			VERIFY						(!(object_type_traits::is_same<T1, LPCSTR>::value));
 			load_data					(const_cast<object_type_traits::remove_const<T1>::type&>(data.first),stream,p);
 		}
 		if (p(data,data.second,false))
