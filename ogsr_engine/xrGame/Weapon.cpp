@@ -1790,7 +1790,7 @@ void CWeapon::UpdateHudAdditonal		(Fmatrix& trans)
 		m_fLR_MovingFactor += fVal;
 	}
 	else
-	{
+	{ // Двигаемся в любом другом направлении
 		if (m_fLR_MovingFactor < 0.0f)
 		{
 			m_fLR_MovingFactor += fStepPerUpd;
