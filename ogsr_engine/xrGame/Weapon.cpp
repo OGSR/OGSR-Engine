@@ -1878,9 +1878,9 @@ void CWeapon::UpdateHudAdditonal		(Fmatrix& trans)
 		trans.mulB_43(hud_rotation);
 	}
 
-	bool bEnabled = m_longitudinal_offset[4 + idx];
+	bool bEnabled = m_longitudinal_offset[4 + idx];	
 	if (bEnabled)
-	{
+	{ // Смещение худа при движении вперёд/назад
 		float curr_offs;
 		curr_offs = m_longitudinal_offset[idx];
 		curr_offs *= m_fFB_MovingFactor;
