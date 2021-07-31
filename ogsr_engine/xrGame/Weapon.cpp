@@ -523,8 +523,8 @@ void CWeapon::Load(LPCSTR section)
 	bool bStrafeEnabled_aim = READ_IF_EXISTS(pSettings, r_bool, section, "strafe_aim_enabled", false);
 
 	// Параметры движения вперёд/назад
-	float fFullLongitudinalTime = READ_IF_EXISTS(pSettings, r_float, section, "longitudinal_transition_time", 0.06f);
-	float fFullLongitudinalTime_aim = READ_IF_EXISTS(pSettings, r_float, section, "longitudinal_transition_time_aim", 0.06f);
+	float fFullLongitudinalTime = READ_IF_EXISTS(pSettings, r_float, section, "longitudinal_transition_time", 0.18f);
+	float fFullLongitudinalTime_aim = READ_IF_EXISTS(pSettings, r_float, section, "longitudinal_transition_time_aim", fFullLongitudinalTime);
 	bool bLongitudinalOffsetEnabled = READ_IF_EXISTS(pSettings, r_bool, section, "longitudinal_offset_enabled",
 		READ_IF_EXISTS(pSettings, r_bool, "features", "default_longitudinal_offset_enabled", false));
 	bool bLongitudinalOffsetEnabled_aim = READ_IF_EXISTS(pSettings, r_bool, section, "longitudinal_offset_aim_enabled", bLongitudinalOffsetEnabled);
@@ -1777,6 +1777,7 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 		fLongitudinalMaxTime = 0.01f;
 
 	float fStepPerUpd = Device.fTimeDelta / fStrafeMaxTime; // Величина изменение фактора поворота
+	float fStepPerUpdLongitudinal = Device.fTimeDelta / fLongitudinalMaxTime; // ^ смещения при передвижении вперёд/назад
 
 	u32 iMovingState = pActor->MovingState();
 	if ((iMovingState & mcLStrafe) != 0)
@@ -1805,25 +1806,25 @@ void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 	if ((iMovingState & mcBack) != 0)
 	{
 		// Движемся назад
-		float fVal = m_fFB_MovingFactor < 0.0f ? fLongitudinalMaxTime * 3 : fLongitudinalMaxTime;
+		float fVal = m_fFB_MovingFactor < 0.0f ? fStepPerUpdLongitudinal * 3 : fStepPerUpdLongitudinal;
 		m_fFB_MovingFactor += fVal;
 	}
 	else if ((iMovingState & mcFwd) != 0)
 	{
 		// Движемся вперёд
-		float fVal = m_fFB_MovingFactor > 0.0f ? fLongitudinalMaxTime * 3 : fLongitudinalMaxTime;
+		float fVal = m_fFB_MovingFactor > 0.0f ? fStepPerUpdLongitudinal * 3 : fStepPerUpdLongitudinal;
 		m_fFB_MovingFactor -= fVal;
 	}
 	else
 	{
 		if (m_fFB_MovingFactor < 0.0f)
 		{
-			m_fFB_MovingFactor += fLongitudinalMaxTime;
+			m_fFB_MovingFactor += fStepPerUpdLongitudinal;
 			clamp(m_fFB_MovingFactor, -1.0f, 0.0f);
 		}
 		else
 		{
-			m_fFB_MovingFactor -= fLongitudinalMaxTime;
+			m_fFB_MovingFactor -= fStepPerUpdLongitudinal;
 			clamp(m_fFB_MovingFactor, 0.0f, 1.0f);
 		}
 	}
