@@ -45,9 +45,7 @@ public:
 	
 	virtual	void	Hit					(SHit* pHDS);
 
-	virtual void	net_Export			(NET_Packet& P);
 	virtual void net_Export( CSE_Abstract* E );
-	virtual void	net_Import			(NET_Packet& P);
 	virtual BOOL	UsedAI_Locations	();
 private:
 	void			Init				();

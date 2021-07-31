@@ -594,20 +594,6 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 		if (mstate_rl&mcRLookout)	strcat(buf,"RLookout ");
 		if (m_bJumpKeyPressed)		strcat(buf,"+Jumping ");
 		HUD().Font().pFontStat->OutNext	("MSTATE:     [%s]",buf);
-/*
-		switch (m_PhysicMovementControl->Environment())
-		{
-		case CPHMovementControl::peOnGround:	strcpy(buf,"ground");			break;
-		case CPHMovementControl::peInAir:		strcpy(buf,"air");				break;
-		case CPHMovementControl::peAtWall:		strcpy(buf,"wall");				break;
-		}
-		HUD().Font().pFontStat->OutNext	(buf);
-		HUD().Font().pFontStat->OutNext	("Accel     [%3.2f, %3.2f, %3.2f]",VPUSH(NET_SavedAccel));
-		HUD().Font().pFontStat->OutNext	("V         [%3.2f, %3.2f, %3.2f]",VPUSH(m_PhysicMovementControl->GetVelocity()));
-		HUD().Font().pFontStat->OutNext	("vertex ID   %d",ai_location().level_vertex_id());
-		
-		Game().m_WeaponUsageStatistic->Draw();
-		*/
 	};
 #endif
 

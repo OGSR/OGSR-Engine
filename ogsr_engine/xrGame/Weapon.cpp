@@ -612,21 +612,6 @@ BOOL CWeapon::IsUpdating()
 	return bIsActiveItem || bWorking || IsPending() || getVisible();
 }
 
-void CWeapon::net_Export(NET_Packet& P)
-{
-	inherited::net_Export	(P);
-
-	P.w_float_q8			(m_fCondition,0.0f,1.0f);
-
-	u8 need_upd				= IsUpdating() ? 1 : 0;
-	P.w_u8					(need_upd);
-	P.w_u16					(u16(iAmmoElapsed));
-	P.w_u8					(m_flagsAddOnState);
-	P.w_u8					((u8)m_ammoType);
-	P.w_u8					((u8)GetState());
-	P.w_u8					((u8)m_bZoomMode);
-}
-
 void CWeapon::net_Export( CSE_Abstract* E ) {
   inherited::net_Export( E );
 
@@ -641,67 +626,6 @@ void CWeapon::net_Export( CSE_Abstract* E ) {
   wpn->ammo_type = (u8)m_ammoType;
   wpn->wpn_state = (u8)GetState();
   wpn->m_bZoom   = (u8)m_bZoomMode;
-}
-
-void CWeapon::net_Import(NET_Packet& P)
-{
-	inherited::net_Import (P);
-
-	P.r_float_q8			(m_fCondition,0.0f,1.0f);
-	auto se_obj = alife_object();
-	if ( se_obj ) {
-	  CSE_ALifeInventoryItem *itm = smart_cast<CSE_ALifeInventoryItem*>( se_obj );
-	  if ( itm )
-	    m_fCondition = itm->m_fCondition;
-	}
-
-	u8 flags				= 0;
-	P.r_u8					(flags);
-
-	u16 ammo_elapsed = 0;
-	P.r_u16					(ammo_elapsed);
-
-	u8						NewAddonState;
-	P.r_u8					(NewAddonState);
-
-	m_flagsAddOnState		= NewAddonState;
-	UpdateAddonsVisibility	();
-
-	u8 ammoType, wstate;
-	P.r_u8					(ammoType);
-	P.r_u8					(wstate);
-
-	u8 Zoom;
-	P.r_u8					(Zoom);
-
-	if (H_Parent() && H_Parent()->Remote())
-	{
-		if (Zoom) 
-			OnZoomIn();
-		else 
-			OnZoomOut();
-	};
-	switch (wstate)
-	{	
-	case eFire:
-	case eFire2:
-	case eSwitch:
-	case eReload:
-		{
-		}break;	
-	default:
-		{
-			if (ammoType >= m_ammoTypes.size())
-				Msg("!! Weapon [%d], State - [%d]", ID(), wstate);
-			else
-			{
-				m_ammoType = ammoType;
-				SetAmmoElapsed((ammo_elapsed));
-			}
-		}break;
-	}
-	
-	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 }
 
 void CWeapon::save(NET_Packet &output_packet)
@@ -766,10 +690,6 @@ void CWeapon::OnEvent(NET_Packet& P, u16 type)
 
 void CWeapon::shedule_Update	(u32 dT)
 {
-	// Queue shrink
-//	u32	dwTimeCL		= Level().timeServer()-NET_Latency;
-//	while ((NET.size()>2) && (NET[1].dwTimeStamp<dwTimeCL)) NET.pop_front();	
-
 	// Inherited
 	inherited::shedule_Update	(dT);
 }

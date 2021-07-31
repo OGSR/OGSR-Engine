@@ -168,7 +168,6 @@ void CLevel::ClientSave() {
 
 
 extern		float		phTimefactor;
-extern		BOOL		g_SV_Disable_Auth_Check;
 
 void CLevel::Send		(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
 {
@@ -365,17 +364,6 @@ void			CLevel::ClearAllObjects				()
 	ProcessGameEvents();
 };
 
-void				CLevel::OnInvalidHost			()
-{
-};
-
-void				CLevel::OnInvalidPassword		()
-{
-};
-
-void				CLevel::OnSessionFull			()
-{
-}
 
 void				CLevel::OnConnectRejected		()
 {

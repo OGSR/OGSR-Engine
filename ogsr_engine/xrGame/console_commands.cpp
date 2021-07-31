@@ -53,9 +53,6 @@ extern	float	psSqueezeVelocity;
 
 extern	int		x_m_x;
 extern	int		x_m_z;
-extern	BOOL	net_cl_inputguaranteed	;
-extern	BOOL	net_sv_control_hit		;
-extern	int		g_dwInputUpdateDelta	;
 #ifdef DEBUG
 extern	BOOL	g_ShowAnimationInfo		;
 #endif // DEBUG
@@ -537,27 +534,6 @@ public:
 	  virtual void	Execute	(LPCSTR args)
 	  {
 		  CCC_Float::Execute(args);
-	  }
-};
-
-
-
-class CCC_Net_CL_InputUpdateRate : public CCC_Integer {
-protected:
-	int		*value_blin;
-public:
-	CCC_Net_CL_InputUpdateRate(LPCSTR N, int* V, int _min=0, int _max=999) :
-	  CCC_Integer(N,V,_min,_max),
-		  value_blin(V)
-	  {};
-
-	  virtual void	Execute	(LPCSTR args)
-	  {
-		  CCC_Integer::Execute(args);
-		  if ((*value_blin > 0) && g_pGameLevel)
-		  {
-			  g_dwInputUpdateDelta = 1000/(*value_blin);
-		  };
 	  }
 };
 

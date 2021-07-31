@@ -25,10 +25,6 @@ public:
 	static  bool		net_Spawn_static			(CScriptBinderObject *script_binder_object, SpawnType DC);
 	virtual void		net_Destroy					();
 	static  void		net_Destroy_static			(CScriptBinderObject *script_binder_object);
-	virtual void		net_Import					(NET_Packet *net_packet);
-	static  void		net_Import_static			(CScriptBinderObject *script_binder_object, NET_Packet *net_packet);
-	virtual void		net_Export					(NET_Packet *net_packet);
-	static  void		net_Export_static			(CScriptBinderObject *script_binder_object, NET_Packet *net_packet);
 	virtual void		shedule_Update				(u32 time_delta);
 	static  void		shedule_Update_static		(CScriptBinderObject *script_binder_object, u32 time_delta);
 	virtual void		save						(NET_Packet *output_packet);

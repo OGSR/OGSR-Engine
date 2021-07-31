@@ -445,7 +445,6 @@ void CCustomRocket::StopEngine				()
 
 void CCustomRocket::UpdateEnginePh			()
 {
-	if (Level().In_NetCorrectionPrediction()) return;
 	float force = m_fEngineImpulse*fixed_step;// * Device.fTimeDelta;
 	float k_back=1.f;
 	Fvector l_pos, l_dir; 

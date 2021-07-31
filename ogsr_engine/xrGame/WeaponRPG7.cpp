@@ -177,12 +177,6 @@ void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type)
 	}
 }
 
-void CWeaponRPG7::net_Import( NET_Packet& P)
-{
-	inherited::net_Import		(P);
-	UpdateMissileVisibility		();
-}
-
 void CWeaponRPG7::PlayAnimReload()
 {
 	VERIFY(GetState() == eReload);

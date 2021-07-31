@@ -57,9 +57,6 @@ public:
 	void						net_Register		( CObject*		O		);
 	void						net_Unregister		( CObject*		O		);
 
-	// return next start
-	u32 net_Export( NET_Packet* P, u32 _start, u32 _count, std::vector<CObject*>& net_exported_objects );
-	void						net_Import			( NET_Packet*	P		);
 	CObject*					net_Find			( u32 ID				);
 
 	void						o_crow				(CObject*	O)			{

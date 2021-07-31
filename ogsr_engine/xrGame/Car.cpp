@@ -522,24 +522,8 @@ void	CCar::renderable_Render				( )
 		m_car_weapon->Render_internal();
 }
 
-void	CCar::net_Export			(NET_Packet& P)
-{
-	inherited::net_Export(P);
-//	P.w_u32 (Level().timeServer());
-//	P.w_u16 (0);
-}
-
 void CCar::net_Export( CSE_Abstract* E ) {
   inherited::net_Export( E );
-}
-
-void	CCar::net_Import			(NET_Packet& P)
-{
-	inherited::net_Import(P);
-//	u32 TimeStamp = 0;
-//	P.w_u32 (TimeStamp);
-//	u16 NumItems = 0;
-//	P.w_u32 (NumItems);
 }
 
 void	CCar::OnHUDDraw				(CCustomHUD* /**hud/**/)

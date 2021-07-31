@@ -111,8 +111,6 @@ public:
 	};
 	xr_deque<net_update>	NET;
 	net_update				NET_Last;
-	BOOL					NET_WasInterpolating;	// previous update was by interpolation or by extrapolation
-	u32						NET_Time;				// server time of last update
 //------------------------------
 
 	virtual BOOL		feel_touch_on_contact	(CObject *);
@@ -150,10 +148,7 @@ public:
 	virtual void		shedule_Update					( u32		DT		);
 	virtual void		UpdateCL				( );
 
-	// Network
-	virtual void		net_Export				(NET_Packet& P);				// export to server
 	virtual void net_Export( CSE_Abstract* );
-	virtual void		net_Import				(NET_Packet& P);				// import from server
 	virtual void		net_Relcase				(CObject*	 O);
 
 	virtual void		SelectAnimation			( const Fvector& _view, const Fvector& _move, float speed ) = 0;

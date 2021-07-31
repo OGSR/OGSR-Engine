@@ -95,7 +95,6 @@ public:
 	virtual void					OnStateSwitch		(u32 S, u32 oldState);
 	virtual void					OnAnimationEnd		(u32 state);
 	virtual bool					IsHidden			()	const	{return GetState()==eHidden;}
-	virtual u16						bone_count_to_synchronize	() const;
 	virtual void					GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
 
 	// optimization FAST/SLOW mode

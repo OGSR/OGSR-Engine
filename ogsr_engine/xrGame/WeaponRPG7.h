@@ -28,7 +28,6 @@ public:
 	virtual void UnloadMagazine				(bool spawn_ammo = true);
 	virtual void PlayAnimReload();
 
-	virtual void net_Import			( NET_Packet& P);				// import from server
 protected:
 	shared_str	m_sGrenadeBoneName;
 	shared_str	m_sHudGrenadeBoneName;

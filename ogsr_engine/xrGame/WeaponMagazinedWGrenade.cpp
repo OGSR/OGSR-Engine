@@ -856,38 +856,12 @@ void CWeaponMagazinedWGrenade::load(IReader &input_packet)
 	//Msg( "~~[%s][%s] loaded: m_bGrenadeMode: [%d], iAmmoElapsed2: [%d], m_ammoType2: [%u]", __FUNCTION__, this->Name(), m_bGrenadeMode, iAmmoElapsed2, m_ammoType2 );
 }
 
-void CWeaponMagazinedWGrenade::net_Export(NET_Packet& P)
-{
-	//Msg( "~~[%s][%s] net_export: m_bGrenadeMode: [%d], iAmmoElapsed2: [%d], m_ammoType2: [%u]", __FUNCTION__, this->Name(), m_bGrenadeMode, m_magazine2.size(), m_ammoType2 );
-	P.w_u8( m_bGrenadeMode ? 1 : 0 );
-
-	inherited::net_Export(P);
-
-	P.w_u8( (u8)m_ammoType2 );
-	P.w_u16( (u16)m_magazine2.size() );
-}
-
 void CWeaponMagazinedWGrenade::net_Export( CSE_Abstract* E ) {
   inherited::net_Export( E );
   CSE_ALifeItemWeaponMagazinedWGL* gl = smart_cast<CSE_ALifeItemWeaponMagazinedWGL*>( E );
   gl->m_bGrenadeMode = m_bGrenadeMode;
   gl->ammo_type2     = (u8)m_ammoType2;
   gl->a_elapsed2     = (u16)m_magazine2.size();
-}
-
-void CWeaponMagazinedWGrenade::net_Import(NET_Packet& P) //Этот и все подобные методы вообще не вызываются в в синглплеере, походу.
-{
-	u8 _data = P.r_u8();
-	bool NewMode = !!(_data & 0x1);
-
-	inherited::net_Import(P);
-
-	m_ammoType2   = P.r_u8();
-	iAmmoElapsed2 = P.r_u16();
-
-	if (NewMode != m_bGrenadeMode)
-		SwitchMode();
-	//Msg( "~~[%s][%s] net_import: m_bGrenadeMode: [%d], iAmmoElapsed2: [%d], m_ammoType2: [%u]", __FUNCTION__, this->Name(), NewMode, iAmmoElapsed2, m_ammoType2 );
 }
 
 bool CWeaponMagazinedWGrenade::IsNecessaryItem	    (const shared_str& item_sect)

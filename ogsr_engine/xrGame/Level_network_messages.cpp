@@ -31,7 +31,6 @@ void CLevel::ClientReceive()
 		m_dwRPS += P->B.count;
 		//-----------------------------------------------------
 		u16			m_type;
-		u16			ID;
 		P->r_begin	(m_type);
 		switch (m_type)
 		{
@@ -76,70 +75,6 @@ void CLevel::ClientReceive()
 				//-------------------------------------------
 			};	// ни в коем случае нельзя здесь ставить break, т.к. в случае если все объекты не влазят в пакет M_UPDATE,
 				// они досылаются через M_UPDATE_OBJECTS
-		case M_UPDATE_OBJECTS:
-			{
-				FATAL(""); //Это не должно быть вызвано
-			}break;
-		//----------- for E3 -----------------------------
-		case M_CL_UPDATE:
-			{
-				if (OnClient()) break;
-				P->r_u16		(ID);
-				u32 Ping = P->r_u32();
-				CGameObject*	O	= smart_cast<CGameObject*>(Objects.net_Find		(ID));
-				if (0 == O)		break;
-				O->net_Import(*P);
-		//---------------------------------------------------
-				UpdateDeltaUpd(timeServer());
-				if (pObjects4CrPr.empty() && pActors4CrPr.empty())
-					break;
-				if (O->CLS_ID != CLSID_OBJECT_ACTOR)
-					break;
-
-				u32 dTime = 0;
-				if ((Level().timeServer() + Ping) < P->timeReceive)
-				{
-#ifdef DEBUG
-//					Msg("! TimeServer[%d] < TimeReceive[%d]", Level().timeServer(), P->timeReceive);
-#endif
-					dTime = Ping;
-				}
-				else					
-					dTime = Level().timeServer() - P->timeReceive + Ping;
-				u32 NumSteps = ph_world->CalcNumSteps(dTime);
-				SetNumCrSteps(NumSteps);
-
-				O->CrPr_SetActivationStep(u32(ph_world->m_steps_num) - NumSteps);
-				AddActor_To_Actors4CrPr(O);
-
-			}break;
-		case M_MOVE_PLAYERS:
-			{
-				u8 Count = P->r_u8();
-				for (u8 i=0; i<Count; i++)
-				{
-					u16 ID = P->r_u16();					
-					Fvector NewPos, NewDir;
-					P->r_vec3(NewPos);
-					P->r_vec3(NewDir);
-
-					CActor*	OActor	= smart_cast<CActor*>(Objects.net_Find		(ID));
-					if (0 == OActor)		break;
-					OActor->MoveActor(NewPos, NewDir);
-				};
-
-				NET_Packet PRespond;
-				PRespond.w_begin(M_MOVE_PLAYERS_RESPOND);
-				Send(PRespond, net_flags(TRUE, TRUE));
-			}break;
-		//------------------------------------------------
-		case M_CL_INPUT:
-			{
-				P->r_u16		(ID);
-				CObject*	O	= Objects.net_Find		(ID);
-				if (0 == O)		break;
-				O->net_ImportInput(*P);
-			}break;
 		//---------------------------------------------------
 		case 	M_SV_CONFIG_NEW_CLIENT:
 			InitializeClientGame(*P);
@@ -204,7 +139,6 @@ void CLevel::ClientReceive()
 				if (!game) break;
 				Game().OnWarnMessage(P);
 			}break;
-		case M_REMOTE_CONTROL_AUTH:
 		case M_REMOTE_CONTROL_CMD:
 			{
 				Game().OnRadminMessage(m_type, P);

@@ -192,7 +192,6 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	hit_probability			= 1.f;
 	m_feel_touch_characters = 0;
 	//-----------------------------------------------------------------------------------
-	m_dwILastUpdateTime		= 0;
 
 	m_location_manager		= xr_new<CLocationManager>(this);
 
@@ -1056,32 +1055,8 @@ void CActor::shedule_Update	(u32 DT)
 	}
 	else if ( !m_holder )
 	{
-		make_Interpolation();
-	
-		if (NET.size())
-		{
-			
-//			NET_SavedAccel = NET_Last.p_accel;
-//			mstate_real = mstate_wishful = NET_Last.mstate;
-
-			g_sv_Orientate				(mstate_real,dt			);
-			g_Orientate					(mstate_real,dt			);
-			g_Physics					(NET_SavedAccel,NET_Jump,dt	);			
-			if (!m_bInInterpolation)
-				g_cl_ValidateMState			(dt,mstate_wishful);
-			g_SetAnimation				(mstate_real);
-
-			if (NET_Last.mstate & mcCrouch)
-			{
-				if (isActorAccelerated(mstate_real, IsZoomAimingMode()))
-					character_physics_support()->movement()->ActivateBox(1, true);
-				else
-					character_physics_support()->movement()->ActivateBox(2, true);
-			}
-			else 
-				character_physics_support()->movement()->ActivateBox(0, true);
-		}	
-		mstate_old = mstate_real;
+		//Этот код не должен быть взван
+		R_ASSERT(0);
 	}
 
 	if ( this == Level().CurrentViewEntity() && !m_holder )

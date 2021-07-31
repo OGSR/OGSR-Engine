@@ -123,18 +123,8 @@ void	CWeaponMounted::net_Destroy()
 	xr_delete(m_pPhysicsShell);
 }
 
-void	CWeaponMounted::net_Export(NET_Packet& P)
-{
-	inherited::net_Export(P);
-}
-
 void CWeaponMounted::net_Export( CSE_Abstract* E ) {
   inherited::net_Export( E );
-}
-
-void	CWeaponMounted::net_Import(NET_Packet& P)
-{
-	inherited::net_Import(P);
 }
 
 void	CWeaponMounted::UpdateCL()

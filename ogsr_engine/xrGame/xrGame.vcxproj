@@ -2378,7 +2378,6 @@
     <ClCompile Include="xrServer_perform_GameExport.cpp" />
     <ClCompile Include="xrServer_perform_RPgen.cpp" />
     <ClCompile Include="xrServer_perform_sls_default.cpp" />
-    <ClCompile Include="xrServer_perform_sls_load.cpp" />
     <ClCompile Include="xrServer_perform_sls_save.cpp" />
     <ClCompile Include="xrServer_perform_transfer.cpp" />
     <ClCompile Include="xrServer_sls_clear.cpp" />
@@ -2422,7 +2421,6 @@
     <ClCompile Include="PHJoint.cpp" />
     <ClCompile Include="PHShell.cpp" />
     <ClCompile Include="PHShellActivate.cpp" />
-    <ClCompile Include="PHShellNetState.cpp" />
     <ClCompile Include="ShellHit.cpp" />
     <ClCompile Include="PHFracture.cpp" />
     <ClCompile Include="PHJointDestroyInfo.cpp" />
