@@ -116,64 +116,16 @@ void CLevel::net_Stop		()
 }
 
 
-void CLevel::ClientSend()
-{
-	NET_Packet				P;
-	u32						start	= 0;
-	//----------- for E3 -----------------------------
-//	if () 
-	{
-//		if (!(Game().local_player) || Game().local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD)) return;
-		if (CurrentControlEntity()) 
-		{
-			CObject* pObj = CurrentControlEntity();
-			if (!pObj->getDestroy() && pObj->net_Relevant())
-			{				
-				P.w_begin		(M_CL_UPDATE);
-				
-
-				P.w_u16			(u16(pObj->ID())	);
-				P.w_u32			(0);	//reserved place for client's ping
-
-				pObj->net_Export			(P);
-
-				if (P.B.count>9)				
-				{
-					if (OnServer())
-					{
-						if (net_IsSyncronised() && IsDemoSave()) 
-						{
-							DemoCS.Enter();
-							Demo_StoreData(P.B.data, P.B.count, DATA_CLIENT_PACKET);
-							DemoCS.Leave();
-						}						
-					}
-					else
-						Send	(P, net_flags(FALSE));
-				}				
-			}			
-		}		
-	};
-	if (OnClient()) 
-	{
-		FATAL(""); //Это не должно быть вызвано
-		return;
-	}
-	//-------------------------------------------------
-	while (1)
-	{
-		P.w_begin						(M_UPDATE);
-		start	= Objects.net_Export	(&P, start, max_objects_size);
-
-		if (P.B.count>2)
-		{
-			Device.Statistic->TEST3.Begin();
-				Send	(P, net_flags(FALSE));
-			Device.Statistic->TEST3.End();
-		}else
-			break;
-	}
-
+void CLevel::ClientSend() {
+  ASSERT_FMT( !OnClient(), "" );
+  for ( u32 i = 0; i < Objects.o_count(); i++ ) {
+    CObject* O = Objects.o_get_by_iterator( i );
+    if ( O->net_Relevant() && !O->getDestroy() ) {
+      CSE_Abstract* E = Server->ID_to_entity( O->ID() );
+      if ( E )
+        O->net_Export( E );
+    }
+  }
 }
 
 
@@ -216,7 +168,6 @@ void CLevel::ClientSave() {
 
 
 extern		float		phTimefactor;
-extern		BOOL		g_SV_Disable_Auth_Check;
 
 void CLevel::Send		(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
 {
@@ -413,17 +364,6 @@ void			CLevel::ClearAllObjects				()
 	ProcessGameEvents();
 };
 
-void				CLevel::OnInvalidHost			()
-{
-};
-
-void				CLevel::OnInvalidPassword		()
-{
-};
-
-void				CLevel::OnSessionFull			()
-{
-}
 
 void				CLevel::OnConnectRejected		()
 {

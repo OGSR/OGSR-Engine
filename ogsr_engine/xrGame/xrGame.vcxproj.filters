@@ -8173,9 +8173,6 @@
     <ClCompile Include="xrServer_perform_sls_default.cpp">
       <Filter>Core\Server\ServerPerform</Filter>
     </ClCompile>
-    <ClCompile Include="xrServer_perform_sls_load.cpp">
-      <Filter>Core\Server\ServerPerform</Filter>
-    </ClCompile>
     <ClCompile Include="xrServer_perform_sls_save.cpp">
       <Filter>Core\Server\ServerPerform</Filter>
     </ClCompile>
@@ -8303,9 +8300,6 @@
       <Filter>Core\Client\Objects\physics\Base\Objects\Shell</Filter>
     </ClCompile>
     <ClCompile Include="PHShellActivate.cpp">
-      <Filter>Core\Client\Objects\physics\Base\Objects\Shell</Filter>
-    </ClCompile>
-    <ClCompile Include="PHShellNetState.cpp">
       <Filter>Core\Client\Objects\physics\Base\Objects\Shell</Filter>
     </ClCompile>
     <ClCompile Include="ShellHit.cpp">

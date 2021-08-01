@@ -181,25 +181,12 @@ const animation_movement_controller*animation_movement		( ) const	{ return	m_ani
 			void			init				();
 	virtual	void			reinit				();
 	virtual	void			reload				(LPCSTR section);
-	///////////////////// network /////////////////////////////////////////
-private:
-	bool					m_bCrPr_Activated;
-	u32						m_dwCrPr_ActivationStep;
 
 public:
-	virtual void			make_Interpolation	() {}; // interpolation from last visible to corrected position/rotation
-	virtual void			PH_B_CrPr			() {}; // actions & operations before physic correction-prediction steps
-	virtual void			PH_I_CrPr			() {}; // actions & operations after correction before prediction steps
 #ifdef DEBUG
-	virtual void			PH_Ch_CrPr			() {}; // 
 	virtual	void			dbg_DrawSkeleton	();
 #endif
-	virtual void			PH_A_CrPr			() {}; // actions & operations after phisic correction-prediction steps
-	virtual void			CrPr_SetActivationStep	(u32 Step)	{m_dwCrPr_ActivationStep = Step; };
-	virtual u32				CrPr_GetActivationStep	()	{ return m_dwCrPr_ActivationStep; };
-	virtual void			CrPr_SetActivated		(bool Activate)	{ m_bCrPr_Activated = Activate; };
-	virtual bool			CrPr_IsActivated		()				{ return m_bCrPr_Activated; };
-	///////////////////////////////////////////////////////////////////////
+
 	virtual const SRotation	Orientation			() const
 	{
 		SRotation			rotation;

@@ -730,8 +730,3 @@ void CMissile::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_s
 	str_count		= "";
 	icon_sect_name	= "";
 }
-
-u16 CMissile::bone_count_to_synchronize	() const
-{
-	return CInventoryItem::object().PHGetSyncItemsNumber();
-}

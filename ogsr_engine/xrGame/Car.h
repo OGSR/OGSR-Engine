@@ -558,9 +558,7 @@ public:
 	virtual	bool			bfAssignMovement			(CScriptEntityAction *tpEntityAction);
 	virtual	bool			bfAssignObject				(CScriptEntityAction *tpEntityAction);
 
-	// Network
-	virtual void			net_Export					(NET_Packet& P);				// export to server
-	virtual void			net_Import					(NET_Packet& P);				// import from server
+	virtual void net_Export( CSE_Abstract* E );
 	virtual BOOL			net_Relevant				()	{ return getLocal(); };		// relevant for export to server
 	virtual BOOL			UsedAI_Locations			();
 	virtual	void			net_Relcase					(CObject* O );

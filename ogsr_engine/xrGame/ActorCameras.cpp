@@ -331,8 +331,6 @@ void CActor::OnRender	()
 	if ((dbg_net_Draw_Flags.is_any((1<<5))))
 		character_physics_support()->movement()->dbg_Draw	();
 
-	OnRender_Network();
-
 	inherited::OnRender();
 }
 #endif

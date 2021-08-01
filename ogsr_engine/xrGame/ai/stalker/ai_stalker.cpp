@@ -467,95 +467,43 @@ BOOL CAI_Stalker::net_SaveRelevant	()
 	return (inherited::net_SaveRelevant() || BOOL(PPhysicsShell()!=NULL));
 }
 
-void CAI_Stalker::net_Export		(NET_Packet& P)
-{
-	R_ASSERT						(Local());
+void CAI_Stalker::net_Export( CSE_Abstract* E ) {
+  R_ASSERT( Local() );
 
-	// export last known packet
-	R_ASSERT						(!NET.empty());
-	net_update& N					= NET.back();
-//	P.w_float						(inventory().TotalWeight());
-//	P.w_u32							(m_dwMoney);
+  // export last known packet
+  R_ASSERT( !NET.empty() );
+  net_update& N = NET.back();
 
-	P.w_float						(GetfHealth());
+  CSE_ALifeCreatureAbstract* creature = smart_cast<CSE_ALifeCreatureAbstract*>( E );
+  creature->fHealth       = GetfHealth();
+  creature->timestamp     = N.dwTimeStamp;
+  creature->flags         = 0;
+  creature->o_Position    = N.p_pos;
+  creature->o_model       = N.o_model;
+  creature->o_torso.yaw   = N.o_torso.yaw;
+  creature->o_torso.pitch = N.o_torso.pitch;
+  creature->o_torso.roll  = N.o_torso.roll;
+  creature->s_team        = u8( g_Team() );
+  creature->s_squad       = u8( g_Squad() );
+  creature->s_group       = u8( g_Group() );
 
-	P.w_u32							(N.dwTimeStamp);
-	P.w_u8							(0);
-	P.w_vec3						(N.p_pos);
-	P.w_float /*w_angle8*/						(N.o_model);
-	P.w_float /*w_angle8*/						(N.o_torso.yaw);
-	P.w_float /*w_angle8*/						(N.o_torso.pitch);
-	P.w_float /*w_angle8*/						(N.o_torso.roll);
-	P.w_u8							(u8(g_Team()));
-	P.w_u8							(u8(g_Squad()));
-	P.w_u8							(u8(g_Group()));
-	
+  CSE_ALifeMonsterAbstract* monster = smart_cast<CSE_ALifeMonsterAbstract*>( E );
+  GameGraph::_GRAPH_ID l_game_vertex_id = ai_location().game_vertex_id();
+  monster->m_tNextGraphID = l_game_vertex_id;
+  monster->m_tPrevGraphID = l_game_vertex_id;
+  if ( ai().game_graph().valid_vertex_id( l_game_vertex_id ) ) {
+    monster->m_fDistanceFromPoint = Position().distance_to( ai().game_graph().vertex( l_game_vertex_id )->level_point() );
+    monster->m_fDistanceToPoint   = Position().distance_to( ai().game_graph().vertex( l_game_vertex_id )->level_point() );
+  }
+  else {
+    monster->m_fDistanceFromPoint = 0;
+    monster->m_fDistanceToPoint   = 0;
+  }
 
-	float					f1 = 0;
-	GameGraph::_GRAPH_ID		l_game_vertex_id = ai_location().game_vertex_id();
-	P.w						(&l_game_vertex_id,			sizeof(l_game_vertex_id));
-	P.w						(&l_game_vertex_id,			sizeof(l_game_vertex_id));
-//	P.w						(&f1,						sizeof(f1));
-//	P.w						(&f1,						sizeof(f1));
-	if (ai().game_graph().valid_vertex_id(l_game_vertex_id)) {
-		f1					= Position().distance_to	(ai().game_graph().vertex(l_game_vertex_id)->level_point());
-		P.w					(&f1,						sizeof(f1));
-		f1					= Position().distance_to	(ai().game_graph().vertex(l_game_vertex_id)->level_point());
-		P.w					(&f1,						sizeof(f1));
-	}
-	else {
-		P.w					(&f1,						sizeof(f1));
-		P.w					(&f1,						sizeof(f1));
-	}
-
-	P.w_stringZ						(m_sStartDialog);
+  CSE_ALifeHumanStalker* stalker = smart_cast<CSE_ALifeHumanStalker*>( E );
+  stalker->m_start_dialog = m_sStartDialog;
 }
 
-void CAI_Stalker::net_Import		(NET_Packet& P)
-{
-	R_ASSERT						(Remote());
-	net_update						N;
-
-	u8 flags;
-
-	P.r_float						();
-	set_money						( P.r_u32(), false );
-
-	float health;
-	P.r_float			(health);
-	SetfHealth			(health);
-//	fEntityHealth = health;
-
-	P.r_u32							(N.dwTimeStamp);
-	P.r_u8							(flags);
-	P.r_vec3						(N.p_pos);
-	P.r_float /*r_angle8*/						(N.o_model);
-	P.r_float /*r_angle8*/						(N.o_torso.yaw);
-	P.r_float /*r_angle8*/						(N.o_torso.pitch);
-	P.r_float /*r_angle8*/						(N.o_torso.roll	);
-	id_Team							= P.r_u8();
-	id_Squad						= P.r_u8();
-	id_Group						= P.r_u8();
-
-
-	GameGraph::_GRAPH_ID				graph_vertex_id = movement().game_dest_vertex_id();
-	P.r								(&graph_vertex_id,		sizeof(GameGraph::_GRAPH_ID));
-	graph_vertex_id					= ai_location().game_vertex_id();
-	P.r								(&graph_vertex_id,		sizeof(GameGraph::_GRAPH_ID));
-
-	if (NET.empty() || (NET.back().dwTimeStamp<N.dwTimeStamp))	{
-		NET.push_back				(N);
-		NET_WasInterpolating		= TRUE;
-	}
-
-	P.r_float						();
-	P.r_float						();
-
-	P.r_stringZ						(m_sStartDialog);
-
-	setVisible						(TRUE);
-	setEnabled						(TRUE);
-}
 
 void CAI_Stalker::update_object_handler	()
 {

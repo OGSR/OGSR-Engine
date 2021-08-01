@@ -459,40 +459,13 @@ void CTorch::setup_physic_shell	()
 	CPhysicsShellHolder::setup_physic_shell();
 }
 
-void CTorch::net_Export			(NET_Packet& P)
-{
-	inherited::net_Export		(P);
-//	P.w_u8						(m_switched_on ? 1 : 0);
-
-
-	BYTE F = 0;
-	F |= (m_switched_on ? eTorchActive : 0);
-	F |= (m_bNightVisionOn ? eNightVisionActive : 0);
-	const CActor *pA = smart_cast<const CActor *>(H_Parent());
-	if (pA)
-	{
-		if (pA->attached(this))
-			F |= eAttached;
-	}
-	P.w_u8(F);
-//	Msg("CTorch::net_export - NV[%d]", m_bNightVisionOn);
-}
-
-void CTorch::net_Import			(NET_Packet& P)
-{
-	inherited::net_Import		(P);
-	
-	BYTE F = P.r_u8();
-	bool new_m_switched_on				= !!(F & eTorchActive);
-	bool new_m_bNightVisionOn			= !!(F & eNightVisionActive);
-
-	if (new_m_switched_on != m_switched_on)			Switch						(new_m_switched_on);
-	if (new_m_bNightVisionOn != m_bNightVisionOn)	
-	{
-//		Msg("CTorch::net_Import - NV[%d]", new_m_bNightVisionOn);
-
-		SwitchNightVision			(new_m_bNightVisionOn);
-	}
+void CTorch::net_Export( CSE_Abstract* E ) {
+  inherited::net_Export( E );
+  CSE_ALifeItemTorch* torch = smart_cast<CSE_ALifeItemTorch*>( E );
+  torch->m_active = m_switched_on;
+  torch->m_nightvision_active = m_bNightVisionOn;
+  const CActor *pA = smart_cast<const CActor*>( H_Parent() );
+  torch->m_attached = ( pA && pA->attached( this ) );
 }
 
 bool  CTorch::can_be_attached		() const

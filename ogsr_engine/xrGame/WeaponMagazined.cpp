@@ -1363,22 +1363,10 @@ void CWeaponMagazined::load(IReader &input_packet)
 	load_data		(m_iCurFireMode, input_packet);
 }
 
-void CWeaponMagazined::net_Export	(NET_Packet& P)
-{
-	inherited::net_Export (P);
-
-	P.w_u8(u8(m_iCurFireMode&0x00ff));
-}
-
-void CWeaponMagazined::net_Import	(NET_Packet& P)
-{
-	//	if (Level().IsDemoPlay())
-	//		Msg("CWeapon::net_Import [%d]", ID());
-
-	inherited::net_Import (P);
-
-	m_iCurFireMode = P.r_u8();
-	SetQueueSize(GetCurrentFireMode());
+void CWeaponMagazined::net_Export( CSE_Abstract* E ) {
+  inherited::net_Export( E );
+  CSE_ALifeItemWeaponMagazined* wpn = smart_cast<CSE_ALifeItemWeaponMagazined*>( E );
+  wpn->m_u8CurFireMode = u8( m_iCurFireMode&0x00ff );
 }
 
 void CWeaponMagazined::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count)
@@ -1448,15 +1436,7 @@ bool CWeaponMagazined::ScopeRespawn( PIItem pIItem ) {
       P.r_u16( size );
       sobj2->STATE_Read( P, size );
 
-      P.w_begin( M_UPDATE );
-      net_Export( P );
-      P.r_begin( id );
-      sobj1->UPDATE_Read( P );
-
-      P.w_begin( M_UPDATE );
-      sobj1->UPDATE_Write( P );
-      P.r_begin( id );
-      sobj2->UPDATE_Read( P );
+      net_Export( _abstract );
 
       auto io = smart_cast<CInventoryOwner*>( H_Parent() );
       auto ii = smart_cast<CInventoryItem*>( this );

@@ -75,7 +75,7 @@ void game_PlayerState::resetFlag(u16 f)
 	flags__ &= ~(f);
 }
 
-void	game_PlayerState::net_Export(NET_Packet& P, BOOL Full) //KRodin: НЕ ИЗМЕНЯТЬ! Иначе будет несовместимо по сейвам!
+void	game_PlayerState::net_Export(NET_Packet& P, BOOL Full) //KRodin: НЕ ИЗМЕНЯТЬ! Иначе будет несовместимо по сейвам! Единственный нужный нет_экспорт с нетпакетами на данный момент
 {
 	P.w_u8			(Full ? 1 : 0);
 	if (Full)
@@ -100,7 +100,7 @@ void	game_PlayerState::net_Export(NET_Packet& P, BOOL Full) //KRodin: НЕ ИЗ�
 	P.w_u32			(Device.dwTimeGlobal - DeathTime);
 };
 
-void	game_PlayerState::net_Import(NET_Packet& P) //KRodin: НЕ ИЗМЕНЯТЬ! Иначе будет несовместимо по сейвам!
+void	game_PlayerState::net_Import(NET_Packet& P) //KRodin: НЕ ИЗМЕНЯТЬ! Иначе будет несовместимо по сейвам! Это походу единственный нет_импорт, который нужен.
 {
 	BOOL	bFullUpdate = !!P.r_u8();
 

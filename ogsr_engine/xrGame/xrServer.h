@@ -139,7 +139,6 @@ public:
 	void					AttachNewClient			(IClient* CL);
 	virtual void			OnBuildVersionRespond				(IClient* CL, NET_Packet& P);
 protected:
-	bool					CheckAdminRights		(const shared_str& user, const shared_str& pass, string512 reason);
 	virtual IClient*		new_client				( SClientConnectData* cl_data );
 	
 	virtual bool			Check_ServerAccess( IClient* CL, string512& reason )	{ return true; }
@@ -189,7 +188,6 @@ public:
 	void					SLS_Default			();
 	void					SLS_Clear			();
 	void					SLS_Save			(IWriter&	fs);
-	void					SLS_Load			(IReader&	fs);	
 			shared_str		level_name			(const shared_str &server_options) const;
 
 	void					create_direct_client();

@@ -314,13 +314,14 @@ void xrServer::SendUpdatesToAll()
 
 					if (pCurUpdatePacket->B.count + tmpPacket.B.count >= NET_PacketSizeLimit)
 					{
-						m_iCurUpdatePacket++;
+						R_ASSERT(0);
+						//m_iCurUpdatePacket++;
 
-						if (m_aUpdatePackets.size() == m_iCurUpdatePacket) m_aUpdatePackets.emplace_back();
-
-						PacketType = M_UPDATE_OBJECTS;
-						pCurUpdatePacket = &(m_aUpdatePackets[m_iCurUpdatePacket]);
-						pCurUpdatePacket->w_begin(PacketType);						
+						//if (m_aUpdatePackets.size() == m_iCurUpdatePacket) m_aUpdatePackets.emplace_back();
+						
+						//PacketType = M_UPDATE_OBJECTS;
+						//pCurUpdatePacket = &(m_aUpdatePackets[m_iCurUpdatePacket]);
+						//pCurUpdatePacket->w_begin(PacketType);						
 					}
 					pCurUpdatePacket->w(tmpPacket.B.data, tmpPacket.B.count);
 				}//all entities
@@ -461,37 +462,7 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 				OnMessage			(tmpP, sender);
 			};			
 		}break;
-	case M_CL_UPDATE:
-		{
-			xrClientData* CL		= ID_to_client	(sender);
-			if (!CL)				break;
-			CL->net_Ready			= TRUE;
-
-			if (!CL->net_PassUpdates)
-				break;
-			//-------------------------------------------------------------------
-			u32 ClientPing = 0;
-			P.w_seek(P.r_tell()+2, &ClientPing, 4);
-			//-------------------------------------------------------------------
-			if (SV_Client) 
-				SendTo	(SV_Client->ID, P, net_flags(TRUE, TRUE));
-			VERIFY					(verify_entities());
-		}break;
-	case M_MOVE_PLAYERS_RESPOND:
-		{
-			xrClientData* CL		= ID_to_client	(sender);
-			if (!CL)				break;
-			CL->net_Ready			= TRUE;
-			CL->net_PassUpdates		= TRUE;
-		}break;
 	//-------------------------------------------------------------------
-	case M_CL_INPUT:
-		{
-			xrClientData* CL		= ID_to_client	(sender);
-			if (CL)	CL->net_Ready	= TRUE;
-			if (SV_Client) SendTo	(SV_Client->ID, P, net_flags(TRUE, TRUE));
-			VERIFY					(verify_entities());
-		}break;
 	case M_GAMEMESSAGE:
 		{
 			SendBroadcast			(BroadcastCID,P,net_flags(TRUE,TRUE));
@@ -578,35 +549,6 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 			if (game)
 				game->OnPlayerFire(sender, P);
 		}break;
-	case M_REMOTE_CONTROL_AUTH:
-		{
-			string512				reason;
-			shared_str				user;
-			shared_str				pass;
-			P.r_stringZ				(user);
-			if(0==stricmp(user.c_str(),"logoff"))
-			{
-				CL->m_admin_rights.m_has_admin_rights	= FALSE;
-				strcpy_s(reason,"logged off");
-				Msg("# Remote administrator logged off.");
-			}else
-			{
-				P.r_stringZ				(pass);
-				bool res = CheckAdminRights(user, pass, reason);
-				if(res){
-					CL->m_admin_rights.m_has_admin_rights	= TRUE;
-					CL->m_admin_rights.m_dwLoginTime		= Device.dwTimeGlobal;
-					Msg("# User [%s] logged as remote administrator.", user.c_str());
-				}else
-					Msg("# User [%s] tried to login as remote administrator. Access denied.", user.c_str());
-
-			}
-			NET_Packet			P_answ;			
-			P_answ.w_begin		(M_REMOTE_CONTROL_CMD);
-			P_answ.w_stringZ	(reason);
-			SendTo				(CL->ID,P_answ,net_flags(TRUE,TRUE));
-		}break;
-
 	case M_REMOTE_CONTROL_CMD:
 		{
 			AddDelayedPacket(P, sender);
@@ -618,32 +560,6 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 	csPlayers.Leave					();
 
 	return							IPureServer::OnMessage(P, sender);
-}
-
-bool xrServer::CheckAdminRights(const shared_str& user, const shared_str& pass, string512 reason)
-{
-	bool res			= false;
-	string_path			fn;
-	FS.update_path		(fn,"$app_data_root$","radmins.ltx");
-	if(FS.exist(fn))
-	{
-		CInifile			ini(fn);
-		if(ini.line_exist("radmins",user.c_str()))
-		{
-			if (ini.r_string ("radmins",user.c_str()) == pass)
-			{
-				strcpy			(reason,"Access permitted.");
-				res				= true;
-			}else
-			{
-				strcpy			(reason,"Access denied. Wrong password.");
-			}
-		}else
-			strcpy			(reason,"Access denied. No such user.");
-	}else
-		strcpy				(reason,"Access denied.");
-
-	return				res;
 }
 
 void xrServer::SendTo_LL			(ClientID ID, void* data, u32 size, u32 dwFlags, u32 dwTimeout)

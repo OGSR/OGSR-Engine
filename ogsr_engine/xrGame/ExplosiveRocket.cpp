@@ -114,33 +114,7 @@ void  CExplosiveRocket::OnEvent (NET_Packet& P, u16 type)
 	inherited::OnEvent(P,type);
 }
 
-
-void CExplosiveRocket::make_Interpolation ()
-{
-	inherited::make_Interpolation();
-}
-
-void CExplosiveRocket::PH_B_CrPr			()
-{
-	inherited::PH_B_CrPr		();
-}
-
-void CExplosiveRocket::PH_I_CrPr			()
-{
-	inherited::PH_I_CrPr		();
-}
-
-void CExplosiveRocket::PH_A_CrPr			()
-{
-	inherited::PH_A_CrPr		();
-}
-
 #ifdef DEBUG
-void CExplosiveRocket::PH_Ch_CrPr			()
-{
-	inherited::PH_Ch_CrPr		();
-}
-
 void CExplosiveRocket::OnRender				()
 {
 	inherited::OnRender			();
