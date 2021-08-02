@@ -324,14 +324,11 @@ void CUIMainIngameWnd::SetAmmoIcon (const shared_str& sect_name)
 
 	UIWeaponIcon.Show			(true);
 	//properties used by inventory menu
-	float iGridWidth = pSettings->r_float(sect_name, "inv_grid_width");
-	float iGridHeight = pSettings->r_float(sect_name, "inv_grid_height");
+	CIconParams icon_params(sect_name);
 
-	float iXPos = pSettings->r_float(sect_name, "inv_grid_x");
-	float iYPos = pSettings->r_float(sect_name, "inv_grid_y");
+	icon_params.set_shader( &UIWeaponIcon );
 
-	float iXPos = pSettings->r_float(sect_name, "inv_grid_x");
-	float iYPos = pSettings->r_float(sect_name, "inv_grid_y");
+	float iGridWidth = icon_params.grid_width;
 
 	// now perform only width scale for ammo, which (W)size >2
 	// all others ammo (1x1, 1x2) will be not scaled (original picture)
