@@ -325,25 +325,24 @@ void CUIMainIngameWnd::SetAmmoIcon (const shared_str& sect_name)
 	UIWeaponIcon.Show			(true);
 	//properties used by inventory menu
 	CIconParams icon_params(sect_name);
-	Frect rect = icon_params.original_rect();
 
 	icon_params.set_shader( &UIWeaponIcon );
 
-	int iGridWidth = (int)round(rect.width());
+	float iGridWidth = icon_params.grid_width;
 
 	// now perform only width scale for ammo, which (W)size >2
 	// all others ammo (1x1, 1x2) will be not scaled (original picture)
-	float w = ((iGridWidth>2)?1.5f:iGridWidth)*INV_GRID_WIDTH*0.8f;
-	float h = INV_GRID_HEIGHT*0.8f;//1 cell
+	float w = ((iGridWidth > 2) ? 1.6f : iGridWidth) * INV_GRID_WIDTH * 0.8f;
+	float h = INV_GRID_HEIGHT * 0.9f;//1 cell
 
-/*	float x = UIWeaponIcon_rect.x1;
-	if	(iGridWidth<2)
-		x	+= ( UIWeaponIcon_rect.width() - w) / 2.0f;
+	float x = UIWeaponIcon_rect.x1;
+	if (iGridWidth < 2)
+		x += (UIWeaponIcon_rect.width() - w) / 2.0f;
 
-	UIWeaponIcon.SetWndPos	(x, UIWeaponIcon_rect.y1);*/
+	UIWeaponIcon.SetWndPos(x, UIWeaponIcon_rect.y1);
 
-	UIWeaponIcon.SetWidth	(w*UI()->get_current_kx());
-	UIWeaponIcon.SetHeight	(h);
+	UIWeaponIcon.SetWidth(w * UI()->get_current_kx());
+	UIWeaponIcon.SetHeight(h);
 };
 
 void CUIMainIngameWnd::Update()
