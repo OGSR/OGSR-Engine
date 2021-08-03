@@ -21,8 +21,6 @@
 // OR OTHER DEALINGS IN THE SOFTWARE.
 
 #pragma once
-#include <lua.hpp>
-#include <luabind/luabind.hpp>
 
 #include <luabind/config.hpp>
 #include <luabind/detail/policy.hpp>

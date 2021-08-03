@@ -66,6 +66,7 @@ namespace luabind { namespace detail
 		assert((crep != 0) && "internal error, please report");
 		assert((is_class_rep(L, lua_upvalueindex(1))) && "internal error, please report");
 
+#ifndef LUABIND_NO_ERROR_CHECKING
 
 		if (!is_class_rep(L, 1))
 		{
@@ -74,12 +75,11 @@ namespace luabind { namespace detail
 			err_line += crep->name();
 			err_line += "] to derive from or a newline";
 			Log(err_line.c_str());
-	#ifndef LUABIND_NO_ERROR_CHECKING
 			lua_pushstring(L, err_line.c_str());
 			lua_error(L);
-	#endif
 		}
 
+#endif
 
 		class_rep* base = static_cast<class_rep*>(lua_touserdata(L, 1));
 		class_rep::base_info binfo;

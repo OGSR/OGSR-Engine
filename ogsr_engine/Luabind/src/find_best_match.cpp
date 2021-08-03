@@ -22,13 +22,14 @@
 #include "stdafx.h"
 
 #include <luabind/luabind.hpp>
+#include <luabind/detail/find_best_match.hpp>
 
 using namespace luabind::detail;
 
 bool luabind::detail::find_best_match(
     lua_State* L
   , const overload_rep_base* start
-  , int num_overloads
+  , size_t num_overloads
   , size_t orep_size
   , bool& ambiguous
   , int& min_match
@@ -38,7 +39,7 @@ bool luabind::detail::find_best_match(
     int min_but_one_match = std::numeric_limits<int>::max();
     bool found = false;
 
-    for (int index = 0; index < num_overloads; ++index)
+    for (size_t index = 0; index < num_overloads; ++index)
     {
         int match_value = start->match(L, num_params);
         reinterpret_cast<const char*&>(start) += orep_size;
@@ -47,7 +48,7 @@ bool luabind::detail::find_best_match(
         if (match_value < min_match)
         {
             found = true;
-            match_index = index;
+            match_index = static_cast<int>(index);
             min_but_one_match = min_match;
             min_match = match_value;
         }
@@ -64,13 +65,13 @@ bool luabind::detail::find_best_match(
 void luabind::detail::find_exact_match(
     lua_State* L
   , const overload_rep_base* start
-  , int num_overloads
+  , size_t num_overloads
   , size_t orep_size
   , int cmp_match
   , int num_params
   , vector_class<const overload_rep_base*>& dest)
 {
-    for (int i = 0; i < num_overloads; ++i)
+    for (size_t i = 0; i < num_overloads; ++i)
     {
         int match_value = start->match(L, num_params);
         if (match_value == cmp_match) dest.push_back(start);

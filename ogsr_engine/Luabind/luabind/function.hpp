@@ -249,20 +249,6 @@ namespace luabind
 		}
 	}
 
-	// deprecated
-	template<typename F, typename... Policies>
-	void function(lua_State* L, const char* name, F f, const detail::policy_cons<Policies...> p)
-	{
-		module(L) [ def(name, f, p) ];
-	}
-
-	// deprecated
-	template<typename F>
-	void function(lua_State* L, const char* name, F f)
-	{
-		luabind::function(L, name, f, detail::policy_cons<>());
-	}
-
 	namespace detail
 	{
 		template<typename F, typename... Policies>
