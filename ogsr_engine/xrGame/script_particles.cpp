@@ -27,13 +27,15 @@ CScriptParticlesCustom::~CScriptParticlesCustom()
 
 void CScriptParticlesCustom::PSI_internal_delete()
 {
-	m_owner->m_particles					= NULL;
+	if ( m_owner )
+		m_owner->m_particles				= NULL;
 	CParticlesObject::PSI_internal_delete	();
 }
 
 void CScriptParticlesCustom::PSI_destroy()
 {
-	m_owner->m_particles			= NULL;
+	if ( m_owner )
+		m_owner->m_particles				= NULL;
 	CParticlesObject::PSI_destroy	();
 }
 
@@ -73,6 +75,12 @@ void CScriptParticlesCustom::StopPath()
 	m_animator->Stop			();
 }
 
+void CScriptParticlesCustom::remove_owner	()
+{
+	R_ASSERT					(m_owner);
+	m_owner						= 0;
+}
+
 CScriptParticles::CScriptParticles(LPCSTR caParticlesName)
 {
 	m_particles					= xr_new<CScriptParticlesCustom>(this, caParticlesName);
@@ -83,7 +91,11 @@ CScriptParticles::~CScriptParticles()
 	if(m_particles)
 	{
 		// destroy particles
-		m_particles->PSI_destroy	();
+		m_particles->remove_owner	();
+		if ( !m_particles->IsLooped() && ( m_particles->IsPlaying() || m_particles->LifeTime() > 0 ) )
+		  m_particles->SetAutoRemove( true );
+		else
+		  m_particles->PSI_destroy();
 		m_particles					= 0;
 	}
 }
