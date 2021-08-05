@@ -34,6 +34,7 @@ void CHangingLamp::Init()
 	light_render			= 0;
 	light_ambient			= 0;
 	glow_render				= 0;
+	m_bState				= 1;				 
 }
 
 void CHangingLamp::RespawnInit()
@@ -151,7 +152,8 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
 	if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPhysic)&&!Visual())
 		Msg("! WARNING: lamp, obj name [%s],flag physics set, but has no visual",*cName());
 //.	if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPhysic)&&Visual()&&!guid_physic_bone)	fHealth=0.f;
-	if (Alive())			TurnOn	();
+	if (Alive() && m_bState)
+		TurnOn	();
 	else{
 		processing_activate		();	// temporal enable
 		TurnOff					();	// -> and here is disable :)
@@ -190,9 +192,20 @@ void	CHangingLamp::net_Save			(NET_Packet& P)
 
 BOOL	CHangingLamp::net_SaveRelevant	()
 {
-	return (inherited::net_SaveRelevant() || BOOL(PPhysicsShell()!=NULL));
+	return (TRUE);
 }
 
+void	CHangingLamp::	save			(NET_Packet &output_packet)
+{
+	inherited::save(output_packet);
+	output_packet.w_u8((u8)m_bState);
+
+}
+void	CHangingLamp::load				(IReader &input_packet)
+{
+	inherited::load(input_packet);
+	m_bState	= (u8)input_packet.r_u8();
+}
 void CHangingLamp::shedule_Update	(u32 dt)
 {
 	CPHSkeleton::Update(dt);
@@ -257,25 +270,45 @@ void CHangingLamp::UpdateCL	()
 
 void CHangingLamp::TurnOn	()
 {
-	light_render->set_active						(true);
-	if (glow_render)	glow_render->set_active		(true);
-	if (light_ambient)	light_ambient->set_active	(true);
-	if (Visual()){
+	if (!Alive())
+		return;
+
+	Fvector p						= XFORM().c;
+	light_render->set_position		(p);
+	light_render->set_active		(true);
+	if (glow_render)	
+	{
+		glow_render->set_position		(p);
+		glow_render->set_active		(true);
+	}
+	if (light_ambient)	
+	{
+		light_ambient->set_position	(p);
+		light_ambient->set_active	(true);
+	}
+	if (Visual())
+	{
 		IKinematics* K				= smart_cast<IKinematics*>(Visual());
 		K->LL_SetBoneVisible		(light_bone, TRUE, TRUE);
 		K->CalculateBones_Invalidate();
 		K->CalculateBones			();
+		K->LL_SetBoneVisible		(light_bone, TRUE, TRUE); //hack		
 	}
 	processing_activate		();
+	m_bState				= 1;
 }
 
 void CHangingLamp::TurnOff	()
 {
+	if (!m_bState)
+		return;
 	light_render->set_active						(false);
 	if (glow_render)	glow_render->set_active		(false);
 	if (light_ambient)	light_ambient->set_active	(false);
 	if (Visual())		smart_cast<IKinematics*>(Visual())->LL_SetBoneVisible(light_bone, FALSE, TRUE);
-	processing_deactivate	();
+	if(!PPhysicsShell())//if we have physiccs_shell it will call processing deactivate when disable
+		processing_deactivate	();
+	m_bState				= 0;
 		
 }
 

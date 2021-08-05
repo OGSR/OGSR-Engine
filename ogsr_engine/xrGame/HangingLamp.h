@@ -28,6 +28,7 @@ private:
 	ref_light		light_ambient;
 	CLAItem*		lanim;
 	float			ambient_power;
+	BOOL			m_bState;				 
 	
 	ref_glow		glow_render;
 	
@@ -55,7 +56,9 @@ public:
 	virtual CPhysicsShellHolder*	PPhysicsShellHolder	()	{return PhysicsShellHolder();}								;
 	virtual	void	CopySpawnInit		()																				;
 	virtual void	net_Save			(NET_Packet& P)																	;
-	virtual	BOOL	net_SaveRelevant	()																				;
+	virtual	BOOL	net_SaveRelevant	();
+	virtual void	save				(NET_Packet &output_packet);
+	virtual void	load				(IReader &input_packet);			  
 
 	virtual BOOL	renderable_ShadowGenerate	( ) { return TRUE;	}
 	virtual BOOL	renderable_ShadowReceive	( ) { return TRUE;	}
