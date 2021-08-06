@@ -248,7 +248,7 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 	if (FAILED(hr))
 		goto _end_;
 
-	// Image processing (gamma-correct)
+	{// Image processing (gamma-correct)
 	u32* pPixel		= (u32*)D.pBits;
 	u32* pEnd		= pPixel+(Device.dwWidth*Device.dwHeight);
 	//	IGOR: Remove inverse color correction and kill alpha
@@ -279,6 +279,7 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 			color_get_G(p),
 			color_get_B(p)
 		);
+	}
 	}
 
 	hr					= pFB->UnlockRect();

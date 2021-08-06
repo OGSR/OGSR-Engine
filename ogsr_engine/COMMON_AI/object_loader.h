@@ -93,7 +93,7 @@ struct CLoader {
 				data.clear();
 			u32								count = stream.r_u32();
 			for (u32 i=0; i<count; ++i) {
-				T::value_type				temp;
+				typename T::value_type				temp;
 				CLoader<M,P>::load_data		(temp,stream,p);
 				if (p(data,temp))
 					add						(data,temp);
@@ -178,7 +178,7 @@ struct CLoader {
 			data.clear();
 		u32								count = stream.r_u32();
 		for (u32 i=0; i<count; ++i) {
-			svector<T,size>::value_type	temp;
+			typename svector<T,size>::value_type temp;
 			CLoader<M,P>::load_data		(temp,stream,p);
 			if (p(data,temp))
 				data.push_back			(temp);
@@ -195,7 +195,7 @@ struct CLoader {
 		std::queue<T1,T2>				temp;
 		u32								count = stream.r_u32();
 		for (u32 i=0; i<count; ++i) {
-			std::queue<T1,T2>::value_type	t;
+			typename std::queue<T1,T2>::value_type t;
 			CLoader<M,P>::load_data		(t,stream,p);
 			if (p(temp,t))
 				temp.push				(t);
@@ -214,7 +214,7 @@ struct CLoader {
 		T1<T2,T3>						temp;
 		u32								count = stream.r_u32();
 		for (u32 i=0; i<count; ++i) {
-			T1<T2,T3>::value_type		t;
+			typename T1<T2,T3>::value_type t;
 			CLoader<M,P>::load_data		(t,stream,p);
 			if (p(temp,t))
 				temp.push				(t);
@@ -233,7 +233,7 @@ struct CLoader {
 		T1<T2,T3,T4>					temp;
 		u32								count = stream.r_u32();
 		for (u32 i=0; i<count; ++i) {
-			T1<T2,T3,T4>::value_type	t;
+			typename T1<T2,T3,T4>::value_type t;
 			CLoader<M,P>::load_data		(t,stream,p);
 			if (p(temp,t))
 				temp.push				(t);

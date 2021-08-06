@@ -360,7 +360,7 @@ void CPHSkeleton::UnsplitSingle(CPHSkeleton* SO)
 	mask0 = pKinematics->LL_GetBonesVisible();//first part mask
 	VERIFY2(mask0._visimask.flags,"mask0 -Zero");
 	mask0.invert();
-	mask1.and(mask0);//second part mask
+	mask1.And(mask0);//second part mask
 
 
 	newKinematics->LL_SetBoneRoot		(split_bone);
