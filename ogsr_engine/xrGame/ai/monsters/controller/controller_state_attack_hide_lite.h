@@ -5,6 +5,7 @@ template<typename _Object>
 class CStateControlHideLite : public CState<_Object> {
 	typedef	CState<_Object>		inherited;
 	typedef	CState<_Object>*	state_ptr;
+	using inherited::object;
 
 	struct {
 		Fvector position;

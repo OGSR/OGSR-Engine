@@ -60,6 +60,7 @@ protected:
 				_iteration_type
 			> inherited;
 
+	using inherited::graph;
 protected:
 	_Parameters		*m_evaluator;
 	bool			m_start_is_accessible;

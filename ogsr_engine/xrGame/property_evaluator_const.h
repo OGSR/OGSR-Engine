@@ -14,7 +14,7 @@ template <typename _object_type>
 class CPropertyEvaluatorConst : public CPropertyEvaluator<_object_type> {
 protected:
 	typedef CPropertyEvaluator<_object_type>		inherited;
-
+	using inherited::m_evaluator_name;
 protected:
 	using val_type = inherited::_value_type;
 	val_type			m_value;

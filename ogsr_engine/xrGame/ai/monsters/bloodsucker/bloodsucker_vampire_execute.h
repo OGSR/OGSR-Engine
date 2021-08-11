@@ -4,6 +4,7 @@
 template<typename _Object>
 class	CStateBloodsuckerVampireExecute : public CState<_Object> {
 	typedef CState<_Object>		inherited;
+	using inherited::object;
 
 	enum {
 		eActionPrepare,

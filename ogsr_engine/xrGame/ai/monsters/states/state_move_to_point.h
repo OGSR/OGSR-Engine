@@ -5,7 +5,9 @@
 template<typename _Object>
 class CStateMonsterMoveToPoint : public CState<_Object> {
 	typedef CState<_Object> inherited;
-	
+	using inherited::object;
+	using inherited::time_state_started;
+
 	SStateDataMoveToPoint data;
 
 public:
@@ -24,6 +26,8 @@ public:
 template<typename _Object>
 class CStateMonsterMoveToPointEx : public CState<_Object> {
 	typedef CState<_Object> inherited;
+	using inherited::object;
+	using inherited::time_state_started;
 
 protected:
 	

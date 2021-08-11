@@ -4,6 +4,7 @@
 template<typename _Object>
 class CStateMonsterSmartTerrainTaskGraphWalk : public CStateMove<_Object> {
 	typedef CStateMove<_Object> inherited;
+	using inherited::inherited::object;
 
 	CALifeSmartTerrainTask	*m_task;
 

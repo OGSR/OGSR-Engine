@@ -5,6 +5,7 @@
 template<typename _Object>
 class CStateMonsterFindEnemyWalkAround : public CState<_Object> {
 	typedef CState<_Object> inherited;
+	using inherited::object;
 
 public:
 						CStateMonsterFindEnemyWalkAround	(_Object *obj) : inherited(obj) {}

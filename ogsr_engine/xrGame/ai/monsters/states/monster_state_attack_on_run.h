@@ -6,6 +6,7 @@
 template<typename _Object>
 class CStateMonsterAttackOnRun : public CState<_Object> {
 	typedef CState<_Object> inherited;
+	using inherited::object;
 
 public:
 					CStateMonsterAttackOnRun		(_Object *obj);
