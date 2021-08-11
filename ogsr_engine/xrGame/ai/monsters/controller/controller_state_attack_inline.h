@@ -6,6 +6,9 @@
 #include "controller_state_attack_camp.h"
 #include "controller_state_attack_fire.h"
 #include "controller_tube.h"
+#include "..\states\monster_state_home_point_attack.h"
+#include "..\states\monster_state_attack_run.h"
+#include "..\states\monster_state_attack_melee.h"
 
 #define CONTROL_FIRE_PERC 80
 #define CONTROL_TUBE_PERC 20

@@ -29,7 +29,7 @@ public:
 
 	DLL_Pure* _construct() override
 	{
-		return			(call_member<DLL_Pure*>(this,"_construct"));
+		return			(luabind::call_member<DLL_Pure*>(this,"_construct"));
 	}
 
 	static	DLL_Pure*	_construct_static	(Base *self)

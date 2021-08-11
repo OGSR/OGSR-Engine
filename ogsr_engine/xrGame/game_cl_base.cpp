@@ -164,8 +164,8 @@ void game_cl_GameState::TranslateGameMessage	(u32 msg, NET_Packet& P)
 	CStringTable st;
 
 	string512 Text;
-	char	Color_Main[]	= "%c[255,192,192,192]";
-	LPSTR	Color_Teams[3]	= {"%c[255,255,240,190]", "%c[255,64,255,64]", "%c[255,64,64,255]"};
+	constexpr const char* Color_Main = "%c[255,192,192,192]";
+	constexpr const char* Color_Teams[] = { "%c[255,255,240,190]", "%c[255,64,255,64]", "%c[255,64,64,255]" };
 
 	switch (msg)
 	{

@@ -8,7 +8,7 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "game_object_space.h"
 
-constexpr char* grenade_def_bone_cop = "grenade";
+constexpr const char* grenade_def_bone_cop = "grenade";
 
 CWeaponRPG7::CWeaponRPG7(void) : CWeaponCustomPistol("RPG7") 
 {

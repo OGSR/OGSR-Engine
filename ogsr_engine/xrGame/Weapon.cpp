@@ -227,10 +227,10 @@ void CWeapon::ForceUpdateFireParticles()
 	}
 }
 
-constexpr char* wpn_scope_def_bone = "wpn_scope";
-constexpr char* wpn_silencer_def_bone = "wpn_silencer";
-constexpr char* wpn_launcher_def_bone_shoc = "wpn_launcher";
-constexpr char* wpn_launcher_def_bone_cop = "wpn_grenade_launcher";
+constexpr const char* wpn_scope_def_bone = "wpn_scope";
+constexpr const char* wpn_silencer_def_bone = "wpn_silencer";
+constexpr const char* wpn_launcher_def_bone_shoc = "wpn_launcher";
+constexpr const char* wpn_launcher_def_bone_cop = "wpn_grenade_launcher";
 
 void CWeapon::Load		(LPCSTR section)
 {

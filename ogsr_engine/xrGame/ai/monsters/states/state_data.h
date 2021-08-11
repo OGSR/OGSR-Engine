@@ -135,4 +135,4 @@ struct SStateDataActionLook : public SStateDataAction {
 	}
 };
 
-
+inline TTime current_time() { return Device.dwTimeGlobal; }

@@ -157,8 +157,6 @@ public:
 
 	float	get_vampire_distance () const { return m_vampire_distance; }
 
-	virtual	char* get_monster_class_name () { return "bloodsucker"; }
-
 	virtual void  renderable_Render		 ();
 
 #ifdef DEBUG
