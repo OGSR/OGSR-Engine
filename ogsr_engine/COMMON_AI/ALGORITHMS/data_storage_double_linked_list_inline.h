@@ -117,7 +117,8 @@ IC	typename CDoubleLinkedList::CGraphVertex &CDoubleLinkedList::get_best	() cons
 		return				(*m_list_head->next());
 
 	_dist_type				fmin = m_max_distance;
-	for (CGraphVertex *i = m_list_head->next(), *best = 0; i; i = i->next())
+	CGraphVertex* best = nullptr;
+	for (CGraphVertex *i = m_list_head->next(); i; i = i->next())
 		if (i->f() < fmin) {
 			fmin			= i->f();
 			best			= i;

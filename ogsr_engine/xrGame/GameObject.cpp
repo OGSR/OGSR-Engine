@@ -285,16 +285,8 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	VERIFY							(!fis_zero(DET(renderable.xform)));
 	CSE_ALifeObject					*O = smart_cast<CSE_ALifeObject*>(E);
 	if (O && xr_strlen(O->m_ini_string)) {
-#pragma warning(push)
-#pragma warning(disable:4238)
-		m_ini_file					= xr_new<CInifile>(
-			&IReader				(
-				(void*)(*(O->m_ini_string)),
-				O->m_ini_string.size()
-			),
-			FS.get_path("$game_config$")->m_Path
-		);
-#pragma warning(pop)
+		IReader r((void*)O->m_ini_string.c_str(), O->m_ini_string.size());
+		m_ini_file = xr_new<CInifile>(&r, FS.get_path("$game_config$")->m_Path);
 	}
 
 	m_story_id						= ALife::_STORY_ID(-1);
