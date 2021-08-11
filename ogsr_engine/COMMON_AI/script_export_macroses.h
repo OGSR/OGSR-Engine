@@ -8,18 +8,6 @@
 
 #pragma once
 
-#define MAKE_WRAPPER_NAME(cls)                                                          \
-	cls##_wrapper
-
-#define DEFINE_LUA_WRAPPER_HEADER_0(cls)												\
-	struct MAKE_WRAPPER_NAME(cls) : public cls, public luabind::wrap_base {				\
-		typedef cls inherited;                                                          \
-		typedef MAKE_WRAPPER_NAME(cls) self_type;										\
-		MAKE_WRAPPER_NAME(cls) ():inherited() {}
-
-#define DEFINE_LUA_WRAPPER_FOOTER(cls)													\
-	};
-
 #define DEFINE_LUABIND_CLASS_WRAPPER_0(a,b,c) \
 	luabind::class_<a,b >(c)
 
@@ -40,12 +28,6 @@
 
 #define DEFINE_LUABIND_VIRTUAL_FUNCTION_EXPLICIT_CONST_0(a,b,c,d) \
 	.def(#c, (d (a::*)() const)(&a::c), (d (*)(const a*))(&b::c##_static))
-
-#define DEFINE_LUABIND_VIRTUAL_FUNCTION_EXPLICIT_1(a,b,c,d,e) \
-	.def(#c, (d (a::*)(e))(&a::c), (d (*)(a*,e))(&b::c##_static))
-/*
-#define DEFINE_LUABIND_VIRTUAL_FUNCTION_EXPLICIT_1(a,b,c,d,e,f) \
-	.def(#c, (d (a::*)(e))(&a::c), (d (*)(b*,f))(&b::c##_static))*/
 
 #ifndef LUABIND_NO_EXCEPTIONS
 #	define CAST_FAILED(v_func_name,ret_type) \
@@ -129,48 +111,6 @@
 			ptr->self_type::inherited::v_func_name(p1);									\
 		}
 
-#define DEFINE_LUA_WRAPPER_METHOD_V2(v_func_name,t1,t2)									\
-		virtual void v_func_name(t1 p1, t2 p2)											\
-		{																				\
-			try {																		\
-				call_member<void>(this,#v_func_name,p1,p2);								\
-			}																			\
-			catch(...) {																\
-			}																			\
-		}																				\
-		static void v_func_name##_static(inherited* ptr, t1 p1, t2 p2)					\
-		{                                                                               \
-			ptr->self_type::inherited::v_func_name(p1,p2);								\
-		}
-
-#define DEFINE_LUA_WRAPPER_METHOD_V3(v_func_name,t1,t2,t3)								\
-		virtual void v_func_name(t1 p1, t2 p2, t3 p3)									\
-		{																				\
-			try {																		\
-				call_member<void>(this,#v_func_name,p1,p2,p3);							\
-			}																			\
-			catch(...) {																\
-			}																			\
-		}																				\
-		static void v_func_name##_static(inherited* ptr, t1 p1, t2 p2, t3 p3)			\
-		{                                                                               \
-			ptr->self_type::inherited::v_func_name(p1,p2,p3);							\
-		}
-
-#define DEFINE_LUA_WRAPPER_METHOD_V4(v_func_name,t1,t2,t3,t4)							\
-		virtual void v_func_name(t1 p1, t2 p2, t3 p3, t4 p4)							\
-		{																				\
-			try {																		\
-				call_member<void>(this,#v_func_name,p1,p2,p3,p4);						\
-			}																			\
-			catch(...) {																\
-			}																			\
-		}																				\
-		static void v_func_name##_static(inherited* ptr, t1 p1, t2 p2, t3 p3, t4 p4)	\
-		{                                                                               \
-			ptr->self_type::inherited::v_func_name(p1,p2,p3,p4);						\
-		}
-
 #define DEFINE_LUA_WRAPPER_METHOD_0(v_func_name,ret_type)								\
 		virtual ret_type v_func_name()													\
 		{																				\
@@ -203,57 +143,6 @@
 			return ptr->self_type::inherited::v_func_name(p1);                          \
 		}
 
-#define DEFINE_LUA_WRAPPER_METHOD_2(v_func_name,ret_type,t1,t2)							\
-		virtual ret_type v_func_name(t1 p1, t2 p2)                                    	\
-		{																				\
-			try {																		\
-				return call_member<ret_type>(this,#v_func_name,p1,p2);					\
-			}																			\
-			CAST_FAILED(v_func_name,ret_type)											\
-			catch(...) {																\
-				return ((ret_type)(0));													\
-			}																			\
-		}                                   											\
-		static  ret_type v_func_name##_static(inherited* ptr, t1 p1, t2 p2)            	\
-		{																				\
-			return ptr->self_type::inherited::v_func_name(p1,p2);						\
-		}
-
-#define DEFINE_LUA_WRAPPER_METHOD_3(v_func_name,ret_type,t1,t2,t3)						\
-		virtual ret_type v_func_name(t1 p1, t2 p2, t3 p3)                               \
-		{																				\
-			try {																		\
-				return call_member<ret_type>(this,#v_func_name,p1,p2,p3);				\
-			}																			\
-			CAST_FAILED(v_func_name,ret_type)											\
-			catch(...) {																\
-				return ((ret_type)(0));													\
-			}																			\
-		}                                   											\
-		static  ret_type v_func_name##_static(inherited* ptr, t1 p1, t2 p2, t3 p3)      \
-		{																				\
-			return ptr->self_type::inherited::v_func_name(p1,p2,p3);					\
-		}
-
-#define DEFINE_LUA_WRAPPER_METHOD_4(v_func_name,ret_type,t1,t2,t3,t4)					\
-		virtual ret_type v_func_name(t1 p1, t2 p2, t3 p3, t4 p4)						\
-		{																				\
-			try {																		\
-				return call_member<ret_type>(this,#v_func_name,p1,p2,p3,p4);			\
-			}																			\
-			CAST_FAILED(v_func_name,ret_type)											\
-			catch(...) {																\
-				return ((ret_type)(0));													\
-			}																			\
-		}                                   											\
-		static  ret_type v_func_name##_static(inherited* ptr, t1 p1, t2 p2, t3 p3, t4 p4)\
-		{																				\
-			return ptr->self_type::inherited::v_func_name(p1,p2,p3,p4);					\
-		}
-
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
 #define DEFINE_LUA_WRAPPER_METHOD_R2P1_V1(v_func_name,t1)								\
@@ -282,46 +171,4 @@
 		static  void v_func_name##_static(inherited* ptr, t1* p1, t2 p2)				\
 		{																				\
 			ptr->self_type::inherited::v_func_name(*p1,p2);								\
-		}
-
-#define DEFINE_LUA_WRAPPER_METHOD_R2P2_V2(v_func_name,t1,t2)							\
-		virtual void v_func_name(t1 p1, t2& p2)											\
-		{																				\
-			try {																		\
-				call<void>(#v_func_name,p1,&p2);										\
-			}																			\
-			catch(...) {																\
-			}																			\
-		}                                   											\
-		static  void v_func_name##_static(inherited* ptr, t1 p1, t2* p2)				\
-		{																				\
-			ptr->self_type::inherited::v_func_name(p1,*p2);								\
-		}
-
-#define DEFINE_LUA_WRAPPER_METHOD_R2P1_V4(v_func_name,t1,t2,t3,t4)						\
-		virtual void v_func_name(t1& p1, t2 p2, t3 p3, t4 p4)							\
-		{																				\
-			try {																		\
-				call<void>(#v_func_name,&p1,p2,p3,p4);									\
-			}																			\
-			catch(...) {																\
-			}																			\
-		}                                   											\
-		static  void v_func_name##_static(inherited* ptr, t1* p1, t2 p2, t3 p3, t4 p4)	\
-		{																				\
-			ptr->self_type::inherited::v_func_name(*p1,p2,p3,p4);						\
-		}
-
-#define DEFINE_LUA_WRAPPER_METHOD_R2P3_V3(v_func_name,t1,t2,t3)							\
-		virtual void v_func_name(t1 p1, t2 p2, t3& p3)									\
-		{																				\
-			try {																		\
-				call<void>(#v_func_name,p1,p2,&p3);										\
-			}																			\
-			catch(...) {																\
-			}																			\
-		}                                   											\
-		static  void v_func_name##_static(inherited* ptr, t1 p1, t2 p2, t3* p3)			\
-		{																				\
-			ptr->self_type::inherited::v_func_name(p1,p2,*p3);							\
 		}
