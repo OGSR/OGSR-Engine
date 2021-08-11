@@ -99,6 +99,7 @@
 #include <luabind/detail/pointee_typeid.hpp>
 #include <luabind/detail/link_compatibility.hpp>
 #include <luabind/raw_policy.hpp>
+#include <luabind/cdecl_cast.hpp>
 
 // to remove the 'this' used in initialization list-warning
 #ifdef _MSC_VER
