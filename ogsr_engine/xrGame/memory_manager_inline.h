@@ -11,8 +11,8 @@
 template <typename T, typename _predicate>
 IC	void CMemoryManager::fill_enemies	(const xr_vector<T> &objects, const _predicate &predicate) const
 {
-	xr_vector<T>::const_iterator	I = objects.begin();
-	xr_vector<T>::const_iterator	E = objects.end();
+	auto I = objects.cbegin();
+	auto E = objects.cend();
 	for ( ; I != E; ++I) {
 		if (!(*I).m_enabled)
 			continue;
