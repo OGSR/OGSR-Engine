@@ -22,10 +22,6 @@ CMonsterEnemyManager::CMonsterEnemyManager()
 	m_time_start_see_enemy			= 0;
 }
 
-CMonsterEnemyManager::~CMonsterEnemyManager()
-{
-
-}
 void CMonsterEnemyManager::init_external(CBaseMonster *M)
 {
 	monster = M;

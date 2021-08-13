@@ -102,7 +102,7 @@ struct attachable_hud_item
 	shared_str m_visual_name;
 	IKinematics* m_model{};
 	u16 m_attach_place_idx{};
-	hud_item_measures m_measures;
+	hud_item_measures m_measures{};
 	bool m_has_separated_hands{};
 
 	// runtime positioning

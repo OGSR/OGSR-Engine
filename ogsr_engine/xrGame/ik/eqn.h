@@ -82,7 +82,7 @@ struct PsiEquation
         num_crits_ptr = &num_crits;
     }
 
-    PsiEquation() {}
+    PsiEquation() = default;
     PsiEquation(float a, float b, float x) { Reset(a, b, x); }
     float eval(float psi) const
     {

@@ -56,7 +56,7 @@ typedef struct D3DXFLOAT16
 {
 #ifdef __cplusplus
 public:
-    D3DXFLOAT16() {};
+    D3DXFLOAT16() = default;
     D3DXFLOAT16( FLOAT );
     D3DXFLOAT16( CONST D3DXFLOAT16& );
 
@@ -88,7 +88,7 @@ typedef struct D3DXVECTOR2
 {
 #ifdef __cplusplus
 public:
-    D3DXVECTOR2() {};
+    D3DXVECTOR2() = default;
     D3DXVECTOR2( CONST FLOAT * );
     D3DXVECTOR2( CONST D3DXFLOAT16 * );
     D3DXVECTOR2( FLOAT x, FLOAT y );
@@ -162,7 +162,7 @@ public:
 typedef struct D3DXVECTOR3 : public D3DVECTOR
 {
 public:
-    D3DXVECTOR3() {};
+    D3DXVECTOR3() = default;
     D3DXVECTOR3( CONST FLOAT * );
     D3DXVECTOR3( CONST D3DVECTOR& );
     D3DXVECTOR3( CONST D3DXFLOAT16 * );
@@ -237,7 +237,7 @@ typedef struct D3DXVECTOR4
 {
 #ifdef __cplusplus
 public:
-    D3DXVECTOR4() {};
+    D3DXVECTOR4() = default;
     D3DXVECTOR4( CONST FLOAT* );
     D3DXVECTOR4( CONST D3DXFLOAT16* );
     D3DXVECTOR4( CONST D3DVECTOR& xyz, FLOAT w );
@@ -426,7 +426,7 @@ typedef struct D3DXQUATERNION
 {
 #ifdef __cplusplus
 public:
-    D3DXQUATERNION() {}
+    D3DXQUATERNION() = default;
     D3DXQUATERNION( CONST FLOAT * );
     D3DXQUATERNION( CONST D3DXFLOAT16 * );
     D3DXQUATERNION( FLOAT x, FLOAT y, FLOAT z, FLOAT w );
@@ -472,7 +472,7 @@ typedef struct D3DXPLANE
 {
 #ifdef __cplusplus
 public:
-    D3DXPLANE() {}
+    D3DXPLANE() = default;
     D3DXPLANE( CONST FLOAT* );
     D3DXPLANE( CONST D3DXFLOAT16* );
     D3DXPLANE( FLOAT a, FLOAT b, FLOAT c, FLOAT d );
@@ -513,7 +513,7 @@ typedef struct D3DXCOLOR
 {
 #ifdef __cplusplus
 public:
-    D3DXCOLOR() {}
+    D3DXCOLOR() = default;
     D3DXCOLOR( DWORD argb );
     D3DXCOLOR( CONST FLOAT * );
     D3DXCOLOR( CONST D3DXFLOAT16 * );

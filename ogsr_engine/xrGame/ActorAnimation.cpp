@@ -233,10 +233,6 @@ void SActorMotions::Create(IKinematicsAnimated* V)
 	m_sprint.Create(V);
 }
 
-SActorVehicleAnims::SActorVehicleAnims()
-{
-	
-}
 void SActorVehicleAnims::Create(IKinematicsAnimated* V)
 {
 	for(u16 i=0;TYPES_NUMBER>i;++i) m_vehicles_type_collections[i].Create(V,i);

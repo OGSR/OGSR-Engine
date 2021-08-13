@@ -192,7 +192,7 @@ class dSphere : public dGeom {
   void operator= (dSphere &);
 
 public:
-  dSphere () { }
+  dSphere () = default;
   dSphere (dSpaceID space, dReal radius)
     { _id = dCreateSphere (space, radius); }
 
@@ -214,7 +214,7 @@ class dBox : public dGeom {
   void operator= (dBox &);
 
 public:
-  dBox () { }
+  dBox () = default;
   dBox (dSpaceID space, dReal lx, dReal ly, dReal lz)
     { _id = dCreateBox (space,lx,ly,lz); }
 
@@ -236,7 +236,7 @@ class dPlane : public dGeom {
   void operator= (dPlane &);
 
 public:
-  dPlane() { }
+  dPlane() = default;
   dPlane (dSpaceID space, dReal a, dReal b, dReal c, dReal d)
     { _id = dCreatePlane (space,a,b,c,d); }
 
@@ -258,7 +258,7 @@ class dCCylinder : public dGeom {
   void operator= (dCCylinder &);
 
 public:
-  dCCylinder() { }
+  dCCylinder() = default;
   dCCylinder (dSpaceID space, dReal radius, dReal length)
     { _id = dCreateCCylinder (space,radius,length); }
 
@@ -280,7 +280,7 @@ class dRay : public dGeom {
   void operator= (dRay &);
 
 public:
-  dRay() { }
+  dRay() = default;
   dRay (dSpaceID space, dReal length)
     { _id = dCreateRay (space,length); }
 
@@ -316,7 +316,7 @@ class dGeomTransform : public dGeom {
   void operator= (dGeomTransform &);
 
 public:
-  dGeomTransform() { }
+  dGeomTransform() = default;
   dGeomTransform (dSpaceID space)
     { _id = dCreateGeomTransform (space); }
 

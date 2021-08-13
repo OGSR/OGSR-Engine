@@ -13,10 +13,6 @@ CSoundRender_Cache::CSoundRender_Cache()
 	_count = 0;
 }
 
-CSoundRender_Cache::~CSoundRender_Cache()
-{
-}
-
 
 void	CSoundRender_Cache::move2top(cache_line* line)
 {

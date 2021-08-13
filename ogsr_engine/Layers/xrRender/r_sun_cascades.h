@@ -5,7 +5,7 @@ namespace sun
 
 struct ray
 {
-	ray( ) { }
+	ray() = default;
 	ray( Fvector3 const& _P, Fvector3 const& _D ):	P(_P), D(_D) { }
 
 	Fvector3 D;

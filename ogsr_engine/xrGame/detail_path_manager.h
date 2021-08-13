@@ -21,7 +21,7 @@ public:
 		float			angular_velocity; 
 		float			real_angular_velocity; 
 
-		STravelParams(){}
+		STravelParams() = default;
 		STravelParams(float l, float a) : linear_velocity(l), angular_velocity(a), real_angular_velocity(a) {}
 		STravelParams(float l, float a, float ra) : linear_velocity(l), angular_velocity(a), real_angular_velocity(ra) {}
 	};
@@ -29,7 +29,7 @@ public:
 	struct STravelParamsIndex : public STravelParams {
 		u32				index;
 		
-		STravelParamsIndex(){}
+		STravelParamsIndex() = default;
 		STravelParamsIndex(float l, float a, u32 i) : STravelParams(l,a), index(i) {}
 	};
 

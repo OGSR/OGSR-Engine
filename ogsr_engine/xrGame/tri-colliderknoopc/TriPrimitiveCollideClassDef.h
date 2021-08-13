@@ -5,7 +5,7 @@
 class primitive##Tri\
 {\
 		dcTriListCollider &m_tri_list																						;\
-		primitive##Tri&	operator	=	(primitive##Tri&	nx_nado)	{;}											\
+		primitive##Tri&	operator=(primitive##Tri&) = delete; \
 public:\
 		explicit	 primitive##Tri	(dcTriListCollider &tri_list):m_tri_list(tri_list)										{};\
 	IC	float	Proj  (dxGeom* o,const dReal* normal);\
