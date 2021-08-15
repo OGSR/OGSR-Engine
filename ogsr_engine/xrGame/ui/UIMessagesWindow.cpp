@@ -27,10 +27,6 @@ CUIMessagesWindow::~CUIMessagesWindow(){
 	
 }
 
-void CUIMessagesWindow::AddLogMessage(const shared_str& msg){
-	m_pGameLog->AddLogMessage(*msg);
-}
-
 void CUIMessagesWindow::Init(float x, float y, float width, float height){
 
 	CUIXml		 xml;

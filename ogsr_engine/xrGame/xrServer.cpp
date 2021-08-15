@@ -462,12 +462,6 @@ u32 xrServer::OnMessage	(NET_Packet& P, ClientID sender)			// Non-Zero means bro
 				OnMessage			(tmpP, sender);
 			};			
 		}break;
-	//-------------------------------------------------------------------
-	case M_GAMEMESSAGE:
-		{
-			SendBroadcast			(BroadcastCID,P,net_flags(TRUE,TRUE));
-			VERIFY					(verify_entities());
-		}break;
 	case M_CLIENTREADY:
 		{
 			xrClientData* CL		= ID_to_client(sender);
@@ -602,52 +596,6 @@ void			xrServer::entity_Destroy	(CSE_Abstract *&P)
 		F_entity_Destroy		(P);
 	}
 }
-
-//--------------------------------------------------------------------
-void			xrServer::Server_Client_Check	( IClient* CL )
-{
-	clients_Lock	();
-	
-	if (SV_Client && SV_Client->ID == CL->ID)
-	{
-		if (!CL->flags.bConnected)
-		{
-			SV_Client = NULL;
-		};
-		clients_Unlock	();
-		return;
-	};
-
-	if (SV_Client && SV_Client->ID != CL->ID)
-	{
-		clients_Unlock	();
-		return;
-	};
-
-
-	if (!CL->flags.bConnected) 
-	{
-		clients_Unlock();
-		return;
-	};
-
-	if( CL->process_id == GetCurrentProcessId() )
-	{
-		CL->flags.bLocal	= 1;
-		SV_Client			= (xrClientData*)CL;
-		Msg( "New SV client %s", SV_Client->name.c_str() );
-	}else
-	{
-		CL->flags.bLocal	= 0;
-	}
-
-	clients_Unlock();
-};
-
-bool		xrServer::OnCL_QueryHost		() 
-{
-	return false;
-};
 
 CSE_Abstract*	xrServer::GetEntity			(u32 Num)
 {

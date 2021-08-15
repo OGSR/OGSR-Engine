@@ -24,7 +24,6 @@ enum {
 	M_SAVE_PACKET,
 
 	M_SWITCH_DISTANCE,
-	M_GAMEMESSAGE,					// Game Message
 	M_EVENT_PACK,					// Pack of M_EVENT
 
 	//-----------------------------------------------------
@@ -133,10 +132,7 @@ enum EGameMessages {  //game_cl <----> game_sv messages
 	GAME_EVENT_PLAYER_GAME_MENU_RESPOND,	
 
 	GAME_EVENT_PLAYER_CONNECTED	,
-	GAME_EVENT_PLAYER_DISCONNECTED	,
-	GAME_EVENT_PLAYER_ENTERED_GAME	,
 	
-	GAME_EVENT_PLAYER_KILLED			,//////!!!!!
 	GAME_EVENT_PLAYER_HITTED,
 
 	GAME_EVENT_PLAYER_JOIN_TEAM		,

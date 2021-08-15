@@ -2353,7 +2353,6 @@
     <ClCompile Include="xr_time.cpp" />
     <ClCompile Include="game_sv_single.cpp" />
     <ClCompile Include="xrServer_CL_connect.cpp" />
-    <ClCompile Include="xrServer_CL_disconnect.cpp" />
     <ClCompile Include="xrServer_Connect.cpp" />
     <ClCompile Include="xrServer_Disconnect.cpp" />
     <ClCompile Include="..\COMMON_AI\xrServer_Factory.cpp" />

@@ -86,11 +86,6 @@ void CLevel::ClientReceive()
 			game_configured			= TRUE;
 			Msg("- Game configuring : Finished ");
 			break;		
-		case M_GAMEMESSAGE:
-			{
-				if (!game) break;
-				Game().OnGameMessage(*P);
-			}break;
 		case M_RELOAD_GAME:
 		case M_LOAD_GAME:
 		case M_CHANGE_LEVEL:
