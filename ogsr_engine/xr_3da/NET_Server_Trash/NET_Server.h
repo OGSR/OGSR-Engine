@@ -70,10 +70,10 @@ public:
 	u32					process_id;
 
     IPureServer*        server;
+	bool operator==(ClientID const&) = delete;
 };
 
 
-IC bool operator== (IClient const* pClient, ClientID const& ID) { return pClient->ID == ID; }
 
 class CServerInfo;
 
