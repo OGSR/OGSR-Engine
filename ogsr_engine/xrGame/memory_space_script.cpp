@@ -87,7 +87,7 @@ void CMemoryInfo::script_register(lua_State *L)
 #ifdef USE_FIRST_GAME_TIME
 			.def_readonly("first_game_time",&MemorySpace::SMemoryObject::m_first_game_time)
 #endif
-#ifdef USE_FIRST_LEVEL_TIME
+#ifdef USE_LEVEL_TIME //USE_FIRST_LEVEL_TIME
 			.def_readonly("first_level_time",&MemorySpace::SMemoryObject::m_first_level_time)
 #endif
 #ifdef USE_UPDATE_COUNT

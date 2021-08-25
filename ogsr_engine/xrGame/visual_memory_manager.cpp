@@ -434,7 +434,7 @@ void CVisualMemoryManager::add_visible_object	(const CObject *object, float time
 #ifdef USE_FIRST_GAME_TIME
 		visible_object.m_first_game_time	= Level().GetGameTime();
 #endif
-#ifdef USE_FIRST_LEVEL_TIME
+#ifdef USE_LEVEL_TIME //USE_FIRST_LEVEL_TIME
 		visible_object.m_first_level_time	= Device.dwTimeGlobal;
 #endif
 
@@ -458,7 +458,7 @@ void CVisualMemoryManager::add_visible_object	(const CObject *object, float time
 //	STOP_PROFILE
 }
 
-void CVisualMemoryManager::add_visible_object	(const CVisibleObject visible_object)
+void CVisualMemoryManager::add_visible_object	(CVisibleObject visible_object)
 {
 #ifndef MASTER_GOLD
 	if (visible_object.m_object && (visible_object.m_object->CLS_ID == CLSID_OBJECT_ACTOR) && psAI_Flags.test(aiIgnoreActor))
@@ -466,6 +466,9 @@ void CVisualMemoryManager::add_visible_object	(const CVisibleObject visible_obje
 #endif // MASTER_GOLD
 
 	VERIFY										(m_objects);
+#ifdef USE_LEVEL_TIME //USE_FIRST_LEVEL_TIME
+	visible_object.m_first_level_time = Device.dwTimeGlobal;
+#endif
 	xr_vector<CVisibleObject>::iterator			J = std::find(m_objects->begin(),m_objects->end(),object_id(visible_object.m_object));
 	if (m_objects->end() != J)
 		*J				= visible_object;
@@ -783,6 +786,7 @@ void CVisualMemoryManager::load	(IReader &packet)
 		VERIFY						(Device.dwTimeGlobal >= object.m_level_time);
 		object.m_level_time			= packet.r_u32();
 		object.m_level_time			= Device.dwTimeGlobal - object.m_level_time;
+		object.m_first_level_time	= Device.dwTimeGlobal;
 #endif // USE_LEVEL_TIME
 #ifdef USE_LAST_LEVEL_TIME
 		VERIFY						(Device.dwTimeGlobal >= object.m_last_level_time);

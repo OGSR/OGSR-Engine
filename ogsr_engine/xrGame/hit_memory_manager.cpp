@@ -131,7 +131,7 @@ void CHitMemoryManager::add					(float amount, const Fvector &vLocalDir, const C
 #ifdef USE_FIRST_GAME_TIME
 		hit_object.m_first_game_time	= Level().GetGameTime();
 #endif
-#ifdef USE_FIRST_LEVEL_TIME
+#ifdef USE_LEVEL_TIME //USE_FIRST_LEVEL_TIME
 		hit_object.m_first_level_time	= Device.dwTimeGlobal;
 #endif
 		hit_object.m_amount				= amount;
@@ -162,6 +162,9 @@ void CHitMemoryManager::add					(const CHitObject &_hit_object)
 		return;
 
 	CHitObject					hit_object = _hit_object;
+#ifdef USE_LEVEL_TIME //USE_FIRST_LEVEL_TIME
+	hit_object.m_first_level_time = Device.dwTimeGlobal;
+#endif
 
 	if (m_stalker)
 		hit_object.m_squad_mask.set	(m_stalker->agent_manager().member().mask(m_stalker),TRUE);
@@ -329,6 +332,7 @@ void CHitMemoryManager::load	(IReader &packet)
 		VERIFY						(Device.dwTimeGlobal >= object.m_level_time);
 		object.m_level_time			= packet.r_u32();
 		object.m_level_time			= Device.dwTimeGlobal - object.m_level_time;
+		object.m_first_level_time		= Device.dwTimeGlobal;
 #endif // USE_LEVEL_TIME
 #ifdef USE_LAST_LEVEL_TIME
 		VERIFY						(Device.dwTimeGlobal >= object.m_last_level_time);

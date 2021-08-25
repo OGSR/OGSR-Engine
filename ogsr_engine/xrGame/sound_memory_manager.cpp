@@ -214,7 +214,7 @@ void CSoundMemoryManager::feel_sound_new(CObject *object, int sound_type, CSound
 	VERIFY					(_valid(m_sound_threshold));
 }
 
-void CSoundMemoryManager::add			(const CSoundObject &sound_object, bool check_for_existance)
+void CSoundMemoryManager::add			(CSoundObject &sound_object, bool check_for_existance)
 {
 	if (check_for_existance) {
 		if (m_sounds->end() != std::find(m_sounds->begin(),m_sounds->end(),object_id(sound_object.m_object)))
@@ -222,6 +222,9 @@ void CSoundMemoryManager::add			(const CSoundObject &sound_object, bool check_fo
 	}
 
 	VERIFY					(m_max_sound_count);
+#ifdef USE_LEVEL_TIME //USE_FIRST_LEVEL_TIME
+	sound_object.m_first_level_time	= Device.dwTimeGlobal;
+#endif
 	if (m_max_sound_count <= m_sounds->size()) {
 		xr_vector<CSoundObject>::iterator	I = std::min_element(m_sounds->begin(),m_sounds->end(),SLevelTimePredicate<CGameObject>());
 		VERIFY				(m_sounds->end() != I);
@@ -292,7 +295,7 @@ void CSoundMemoryManager::add			(const CObject *object, int sound_type, const Fv
 #ifdef USE_FIRST_GAME_TIME
 		sound_object.m_first_game_time	= Level().GetGameTime();
 #endif
-#ifdef USE_FIRST_LEVEL_TIME
+#ifdef USE_LEVEL_TIME //USE_FIRST_LEVEL_TIME
 		sound_object.m_first_level_time	= Device.dwTimeGlobal;
 #endif
 		add						(sound_object);
@@ -464,6 +467,7 @@ void CSoundMemoryManager::load	(IReader &packet)
 		VERIFY						(Device.dwTimeGlobal >= object.m_level_time);
 		object.m_level_time			= packet.r_u32();
 		object.m_level_time			= Device.dwTimeGlobal - object.m_level_time;
+		object.m_first_level_time	= Device.dwTimeGlobal;
 #endif // USE_LEVEL_TIME
 #ifdef USE_LAST_LEVEL_TIME
 		VERIFY						(Device.dwTimeGlobal >= object.m_last_level_time);

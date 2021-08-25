@@ -79,7 +79,7 @@ namespace MemorySpace {
 #ifdef USE_FIRST_GAME_TIME
 		ALife::_TIME_ID				m_first_game_time;
 #endif
-#ifdef USE_FIRST_LEVEL_TIME
+#ifdef USE_LEVEL_TIME //USE_FIRST_LEVEL_TIME
 		u32							m_first_level_time;
 #endif
 #ifdef USE_UPDATE_COUNT
@@ -103,7 +103,7 @@ namespace MemorySpace {
 #ifdef USE_FIRST_GAME_TIME
 							m_first_game_time(0),
 #endif
-#ifdef USE_FIRST_LEVEL_TIME
+#ifdef USE_LEVEL_TIME //USE_FIRST_LEVEL_TIME
 							m_first_level_time(0),
 #endif
 #ifdef USE_UPDATE_COUNT

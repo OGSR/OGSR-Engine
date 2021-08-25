@@ -73,7 +73,7 @@ private:
 private:
 	IC		void				update_sound_threshold	();
 	IC		u32					priority				(const CSoundObject &sound) const;
-			void				add						(const CSoundObject &sound_object, bool check_for_existance = false);
+			void				add						(CSoundObject &sound_object, bool check_for_existance = false);
 			void				add						(const CObject *object, int sound_type, const Fvector &position, float sound_power);
 
 protected:
