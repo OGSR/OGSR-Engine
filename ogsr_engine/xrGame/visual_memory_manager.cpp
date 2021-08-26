@@ -435,7 +435,7 @@ void CVisualMemoryManager::add_visible_object	(const CObject *object, float time
 		return;
 #endif // MASTER_GOLD
 
-	xr_vector<CVisibleObject>::iterator	J;
+	std::deque<CVisibleObject>::iterator	J;
 	const CGameObject *game_object;
 	const CGameObject *self;
 
@@ -463,15 +463,12 @@ void CVisualMemoryManager::add_visible_object	(const CObject *object, float time
 #endif
 
 		if ( m_objects->size() >= m_max_object_count ) {
-		  xr_vector<CVisibleObject>::iterator I = std::min_element( m_objects->begin(), m_objects->end(), SLevelTimePredicate<CGameObject>() );
+		  std::deque<CVisibleObject>::iterator I = std::min_element( m_objects->begin(), m_objects->end(), SLevelTimePredicate<CGameObject>() );
 		  VERIFY( m_objects->end() != I );
 		  if ( !m_adaptive_max_object_count || I->m_level_time + m_adaptive_max_object_count < Device.dwTimeGlobal )
-		    *I = visible_object;
-		  else
-		    m_objects->push_back( visible_object );
+		    m_objects->erase( I );
 		}
-		else
-		  m_objects->push_back( visible_object );
+		m_objects->push_front( visible_object );
 	}
 	else {
 		if (!fictitious)
@@ -493,31 +490,29 @@ void CVisualMemoryManager::add_visible_object	(CVisibleObject visible_object)
 #endif // MASTER_GOLD
 
 	VERIFY										(m_objects);
-#ifdef USE_LEVEL_TIME //USE_FIRST_LEVEL_TIME
-	visible_object.m_first_level_time = Device.dwTimeGlobal;
-#endif
-	xr_vector<CVisibleObject>::iterator			J = std::find(m_objects->begin(),m_objects->end(),object_id(visible_object.m_object));
+	std::deque<CVisibleObject>::iterator			J = std::find(m_objects->begin(),m_objects->end(),object_id(visible_object.m_object));
 	if (m_objects->end() != J)
 		*J				= visible_object;
-	else
+	else {
+#ifdef USE_LEVEL_TIME //USE_FIRST_LEVEL_TIME
+		visible_object.m_first_level_time = Device.dwTimeGlobal;
+#endif
 		if ( m_objects->size() >= m_max_object_count ) {
-		  xr_vector<CVisibleObject>::iterator I = std::min_element( m_objects->begin(), m_objects->end(), SLevelTimePredicate<CGameObject>() );
+		  std::deque<CVisibleObject>::iterator I = std::min_element( m_objects->begin(), m_objects->end(), SLevelTimePredicate<CGameObject>() );
 		  VERIFY( m_objects->end() != I );
 		  if ( !m_adaptive_max_object_count || I->m_level_time + m_adaptive_max_object_count < Device.dwTimeGlobal )
-		    *I = visible_object;
-		  else
-		    m_objects->push_back( visible_object );
+		    m_objects->erase( I );
 		}
-		else
-		  m_objects->push_back( visible_object );
+		m_objects->push_front( visible_object );
+	}
 }
 
 #ifdef DEBUG
 void CVisualMemoryManager::check_visibles	() const
 {
 	squad_mask_type						mask = this->mask();
-	xr_vector<CVisibleObject>::iterator	I = m_objects->begin();
-	xr_vector<CVisibleObject>::iterator	E = m_objects->end();
+	std::deque<CVisibleObject>::iterator	I = m_objects->begin();
+	std::deque<CVisibleObject>::iterator	E = m_objects->end();
 	for ( ; I != E; ++I) {
 		if (!(*I).visible(mask))
 			continue;
@@ -646,8 +641,8 @@ void CVisualMemoryManager::update				(float time_delta)
 
 	START_PROFILE("Memory Manager/visuals/update/make_invisible")
 	{
-		xr_vector<CVisibleObject>::iterator	I = m_objects->begin();
-		xr_vector<CVisibleObject>::iterator	E = m_objects->end();
+		std::deque<CVisibleObject>::iterator	I = m_objects->begin();
+		std::deque<CVisibleObject>::iterator	E = m_objects->end();
 		for ( ; I != E; ++I)
 			if ((*I).m_level_time + current_state().m_still_visible_time < Device.dwTimeGlobal)
 				(*I).visible			(mask,false);

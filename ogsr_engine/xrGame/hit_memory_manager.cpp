@@ -139,10 +139,9 @@ void CHitMemoryManager::add					(float amount, const Fvector &vLocalDir, const C
 		if (m_max_hit_count <= m_hits->size()) {
 			HITS::iterator		I = std::min_element(m_hits->begin(),m_hits->end(),SLevelTimePredicate<CEntityAlive>());
 			VERIFY				(m_hits->end() != I);
-			*I					= hit_object;
+			m_hits->erase( I );
 		}
-		else
-			m_hits->push_back	(hit_object);
+		m_hits->push_front( hit_object );
 	}
 	else {
 		(*J).fill				(entity_alive,m_object,(!m_stalker ? (*J).m_squad_mask.get() : ((*J).m_squad_mask.get() | m_stalker->agent_manager().member().mask(m_stalker))));
@@ -162,9 +161,6 @@ void CHitMemoryManager::add					(const CHitObject &_hit_object)
 		return;
 
 	CHitObject					hit_object = _hit_object;
-#ifdef USE_LEVEL_TIME //USE_FIRST_LEVEL_TIME
-	hit_object.m_first_level_time = Device.dwTimeGlobal;
-#endif
 
 	if (m_stalker)
 		hit_object.m_squad_mask.set	(m_stalker->agent_manager().member().mask(m_stalker),TRUE);
@@ -172,13 +168,15 @@ void CHitMemoryManager::add					(const CHitObject &_hit_object)
 	const CEntityAlive			*entity_alive = hit_object.m_object;
 	HITS::iterator	J = std::find(m_hits->begin(),m_hits->end(),object_id(entity_alive));
 	if (m_hits->end() == J) {
+#ifdef USE_LEVEL_TIME //USE_FIRST_LEVEL_TIME
+		hit_object.m_first_level_time = Device.dwTimeGlobal;
+#endif
 		if (m_max_hit_count <= m_hits->size()) {
 			HITS::iterator	I = std::min_element(m_hits->begin(),m_hits->end(),SLevelTimePredicate<CEntityAlive>());
 			VERIFY				(m_hits->end() != I);
-			*I					= hit_object;
+			m_hits->erase( I );
 		}
-		else
-			m_hits->push_back	(hit_object);
+		m_hits->push_front( hit_object );
 	}
 	else {
 		hit_object.m_squad_mask.assign	(hit_object.m_squad_mask.get() | (*J).m_squad_mask.get());
