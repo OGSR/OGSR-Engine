@@ -427,42 +427,73 @@ bool CUIXmlInit::InitDragDropListEx(CUIXml& xml_doc, const char* path, int index
 
 	InitAlignment	(xml_doc, path, index, x, y, pWnd);
 
+	// Add by Zander | 
+	// UP - user-pixels; (in user-screen-size coordinate system)
+	// CP - coordinate-pixels (in X-Ray 1024 x 768 pix coordinate system)
+	Fvector2 device_scale; 
+	device_scale.x = 1024.0f / _max((float)Device.dwWidth, 1.0f);
+	device_scale.y = 768.0f / _max((float)Device.dwHeight, 1.0f);
+	bool use_real_pix = (xml_doc.ReadAttribInt(path, index, "as_is", 0));
+	Fvector2 real_wh; // Реальные размеры ДДлиста
+	if (use_real_pix) {
+		real_wh.x = width;
+		real_wh.y = height;
+		width *= device_scale.x;
+		height *= device_scale.y;
+		pWnd->Init		(x,y, width,height);
+	}
+	else {
+		pWnd->Init		(x,y, width,height);
+		real_wh.x = width / device_scale.x; // UP
+		real_wh.y = height / device_scale.y; // UP
+	}
+	
+	Ivector2 w_cell_sz, w_cells, w_cell_sp, max_cell_size;
 
-
-	pWnd->Init		(x,y, width,height);
-
-	Ivector2 w_cell_sz, w_cells, w_cell_sp;
-
-	w_cell_sz.x				= xml_doc.ReadAttribInt(path, index, "cell_width");
-	w_cell_sz.y				= xml_doc.ReadAttribInt(path, index, "cell_height");
-	w_cells.y				= xml_doc.ReadAttribInt(path, index, "rows_num");
+	w_cells.y				= xml_doc.ReadAttribInt(path, index, "rows_num");  // cell count in grid
 	w_cells.x				= xml_doc.ReadAttribInt(path, index, "cols_num");
-
-	w_cell_sp.x				= xml_doc.ReadAttribInt(path, index, "cell_sp_x", 0);
+	int cell_size = xml_doc.ReadAttribInt(path, index, "cell_size", 50); // UP
+	
+	// Определяем максимально допустимый размер ячеек, при котором у нас вместится нужное количество. 
+	max_cell_size.x = (int)trunc(_max(1.f, (real_wh.x - 1.f)) / _max((float)w_cells.x, 1.0f)); // UP
+	max_cell_size.y = (int)trunc(_max(1.f, (real_wh.y - 1.f)) / _max((float)w_cells.y, 1.0f)); // UP
+	float safe_cell_scale = _max( 
+		float(cell_size) / _max(1.0f, float(max_cell_size.x)), 
+		float(cell_size) / _max(1.0f, float(max_cell_size.y))
+	);
+	float real_cell_size = float(cell_size) / safe_cell_scale; // UP
+	// Вычисляем размеры ячеек в координатах 1024-768
+	w_cell_sz.x = (int)round(real_cell_size * device_scale.x); // CP // cell size in grid
+	w_cell_sz.y = (int)round(real_cell_size * device_scale.y); // CP
+	// Вычисляем количество ячеек в координатах 1024-768
+	w_cells.x = (int)round(_max(1.f, (width - 1.f)) / _max((float)w_cell_sz.x, 1.0f));  // cell count in grid
+	w_cells.y = (int)round(_max(1.f, (height - 1.f)) / _max((float)w_cell_sz.y, 1.0f));
+	
+	w_cell_sp.x				= xml_doc.ReadAttribInt(path, index, "cell_sp_x", 0); 
 	w_cell_sp.y				= xml_doc.ReadAttribInt(path, index, "cell_sp_y", 0);
 
 	pWnd->SetCellSize		(w_cell_sz);	
 	pWnd->SetCellsSpacing		(w_cell_sp);	
 	pWnd->SetStartCellsCapacity	(w_cells);	
-
-	int tmp					= xml_doc.ReadAttribInt(path, index, "unlimited", 0);
+	/** end Add by Zander */
+	int tmp					= xml_doc.ReadAttribInt(path, index, "unlimited", 0); // unlim hab
 	pWnd->SetAutoGrow		(tmp!=0);
-
-	tmp						= xml_doc.ReadAttribInt(path, index, "group_similar", 0);
+	
+	tmp						= xml_doc.ReadAttribInt(path, index, "group_similar", 0); // gp... ?
 	pWnd->SetGrouping		(tmp!=0);
-
-	tmp						= xml_doc.ReadAttribInt(path, index, "custom_placement", 1);
+	
+	tmp						= xml_doc.ReadAttribInt(path, index, "custom_placement", 1); // cp...?
 	pWnd->SetCustomPlacement(tmp!=0);
-
-	tmp						= xml_doc.ReadAttribInt(path, index, "vertical_placement", 0);
+	
+	tmp						= xml_doc.ReadAttribInt(path, index, "vertical_placement", 0); // thorn
 	pWnd->SetVerticalPlacement(tmp != 0);
-
+	
 	tmp						= xml_doc.ReadAttribInt(path, index, "always_show_scroll", 0);
 	pWnd->SetAlwaysShowScroll(tmp!=0);
-
+	
 	tmp 					= xml_doc.ReadAttribInt(path, index, "condition_progress_bar", 0);
-	pWnd->SetConditionProgBarVisibility(tmp!=0);	
-
+	pWnd->SetConditionProgBarVisibility(tmp!=0);
+	
 	tmp						= xml_doc.ReadAttribInt(path, index, "virtual_cells", 0);
 	pWnd->SetVirtualCells(tmp!=0);
 
