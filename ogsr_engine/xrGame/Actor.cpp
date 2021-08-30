@@ -99,6 +99,8 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	// Cameras
 	cameras[eacFirstEye]	= xr_new<CCameraFirstEye>				(this);
 	cameras[eacFirstEye]->Load("actor_firsteye_cam");
+	
+	hasCompleteLoading = false;
 
 	if constexpr ( true /*strstr(Core.Params,"-psp")*/ )
 		psActorFlags.set(AF_PSP, TRUE);
@@ -260,6 +262,7 @@ void CActor::reload	(LPCSTR section)
 	CStepManager::reload		(section);
 	memory().reload			(section);
 	m_location_manager->reload	(section);
+	hasCompleteLoading = false;
 }
 
 void CActor::Load	(LPCSTR section )
@@ -269,6 +272,7 @@ void CActor::Load	(LPCSTR section )
 	material().Load				(section);
 	CInventoryOwner::Load		(section);
 	m_location_manager->Load	(section);
+	hasCompleteLoading = false;
 
 	OnDifficultyChanged		();
 	//////////////////////////////////////////////////////////////////////////
@@ -916,6 +920,15 @@ void CActor::UpdateCL	()
 		trans.c.sub(Device.vCameraPosition);
 		g_player_hud->update(trans);
 	}
+	
+	if (!hasCompleteLoading && 0 == Device.dwPrecacheFrame) OnCompleteLoading();
+}
+
+void CActor::OnCompleteLoading()
+{
+	callback(GameObject::eOnSyncComplete)();
+	hasCompleteLoading = true;
+	Msg("Sync complete, Game ready.");
 }
 
 #if defined(OGSR_MOD) || defined(DSH_MOD)

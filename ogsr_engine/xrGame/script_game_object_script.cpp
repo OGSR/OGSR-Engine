@@ -166,6 +166,7 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("on_inv_box_item_take", int(GameObject::eOnInvBoxItemTake)),
 				value("on_inv_box_item_drop", int(GameObject::eOnInvBoxItemDrop)),
 				value("on_inv_box_open", int(GameObject::eOnInvBoxOpen)),
+				value("on_sync_complete", int(GameObject::eOnSyncComplete)),
 
 				value("select_pda_contact", int(GameObject::eSelectPdaContact))
 			],

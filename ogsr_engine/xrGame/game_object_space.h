@@ -115,6 +115,7 @@ namespace GameObject {
 		eOnInvBoxItemTake,
 		eOnInvBoxItemDrop,
 		eOnInvBoxOpen,
+		eOnSyncComplete,
 		
 		eSelectPdaContact,
 
