@@ -70,12 +70,9 @@ void CLevel::ClientReceive()
 		case M_UPDATE:
 			{
 				game->net_import_update	(*P);
-				//-------------------------------------------
-				if (OnServer()) break;
-				//-------------------------------------------
-			};	// ни в коем случае нельзя здесь ставить break, т.к. в случае если все объекты не влазят в пакет M_UPDATE,
-				// они досылаются через M_UPDATE_OBJECTS
-		//---------------------------------------------------
+
+				R_ASSERT(OnServer(), "Something strange!");
+			}break;
 		case 	M_SV_CONFIG_NEW_CLIENT:
 			InitializeClientGame(*P);
 			break;
