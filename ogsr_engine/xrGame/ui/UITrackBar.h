@@ -30,6 +30,7 @@ public:
 			void	SetType					(bool b_float){m_b_is_float=b_float;};
 			bool	GetCheck				();
 			void	SetCheck				(bool b);
+			float 	GetTrackValue 			();
 
 			void	SetMin					(float v) { m_f_min_xml = v; }
 			void	SetMax					(float v) { m_f_max_xml = v; }
