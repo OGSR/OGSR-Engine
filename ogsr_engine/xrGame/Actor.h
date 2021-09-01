@@ -145,11 +145,6 @@ protected:
 //	virtual void AddMapLocationsFromInfo (const CInfoPortion* info_portion) const;
 	virtual void AddEncyclopediaArticle( const CInfoPortion*, bool = false ) const;
 	virtual void AddGameTask			(const CInfoPortion* info_portion) const;
-	/*** Add by Zander **/
-	
-	bool 			hasCompleteLoading;
-	void 			OnCompleteLoading();
-	/*** End Add ********/
 protected:
 struct SDefNewsMsg{
 		GAME_NEWS_DATA*	news_data;
