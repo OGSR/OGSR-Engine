@@ -24,6 +24,8 @@ class CUITextureMaster{
 public:
 
 	static void ParseShTexInfo			(LPCSTR xml_file);
+	static void ParseConfigIcon			(LPCSTR section);
+	static LPCSTR CheckName(LPCSTR texture_name);
 
 	static void		InitTexture			(LPCSTR texture_name,		IUISimpleTextureControl* tc);
 	static void		InitTexture			(LPCSTR texture_name, const char* shader_name, IUISimpleTextureControl* tc);
@@ -34,6 +36,7 @@ public:
 	static void		GetTextureShader	(LPCSTR texture_name, ui_shader& sh);
 	static TEX_INFO	FindItem			(LPCSTR texture_name, LPCSTR def_texture_name);
 	static void WriteLog();
+	static bool		CheckTextureExist	(LPCSTR texture_name);
 
 protected:
 	IC	static bool IsSh					(const char* texture_name);

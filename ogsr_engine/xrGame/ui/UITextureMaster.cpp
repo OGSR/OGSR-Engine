@@ -51,11 +51,47 @@ void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file){
 //	}
 }
 
+LPCSTR CUITextureMaster::CheckName(const char* texture_name){
+	LPCSTR r;
+	if (pSettings->section_exist(texture_name))
+	{
+		shared_str subsection = pSettings->r_string(texture_name, "icon_section", texture_name);
+		subsection = pSettings->r_string(subsection, "used_icon_texture", subsection.c_str());
+		r = subsection.c_str();
+	}
+	else {
+		r = texture_name;
+	}
+	if (!CheckTextureExist(r)) ParseConfigIcon(r);
+	if (!CheckTextureExist(r)) r = texture_name;
+	return r;
+}
+
+void CUITextureMaster::ParseConfigIcon(LPCSTR section){
+	if (pSettings->section_exist(section))
+	{
+		shared_str subsection = pSettings->r_string(section, "icon_section", section);
+		subsection = pSettings->r_string(subsection, "used_icon_texture", subsection);
+		int place_id = pSettings->r_float(subsection, "icon_group", 0);
+		TEX_INFO info;
+		shared_str file = "ui\\ui_icon_equipment";
+		if (place_id != 0) file.sprintf("ui\\ui_icon_equipment_%u", place_id);
+		info.file = file;
+			info.rect.x1 = pSettings->r_float(subsection, "inv_grid_x", 0) * 50;
+			info.rect.x2 = (pSettings->r_float(subsection, "inv_grid_width", 0) * 50) + info.rect.x1;
+			info.rect.y1 = pSettings->r_float(subsection, "inv_grid_y", 0) * 50;
+			info.rect.y2 = (pSettings->r_float(subsection, "inv_grid_height", 0) * 50) + info.rect.y1;
+			//shared_str id = subsection;
+		if (!CheckTextureExist(subsection.c_str())) m_textures.insert(mk_pair(subsection,info));
+	}
+}
+
 bool CUITextureMaster::IsSh(const char* texture_name){
 	return !strchr(texture_name, '\\');
 }
 
 void CUITextureMaster::InitTexture(const char* texture_name, IUISimpleTextureControl* tc){
+	const char* ntn = CheckName(texture_name);
 #ifdef DEBUG
 	CTimer T;
 	T.Start();
@@ -63,7 +99,7 @@ void CUITextureMaster::InitTexture(const char* texture_name, IUISimpleTextureCon
 
 	xr_map<shared_str, TEX_INFO>::iterator	it;
 
-	it = m_textures.find(texture_name);
+	it = m_textures.find(ntn);
 
 	if (it != m_textures.end())
 	{
@@ -74,13 +110,14 @@ void CUITextureMaster::InitTexture(const char* texture_name, IUISimpleTextureCon
 #endif
 		return;
 	}
-	tc->CreateShader(texture_name);
+	tc->CreateShader(ntn);
 #ifdef DEBUG
 	m_time += T.GetElapsed_ms();
 #endif
 }
 
 void CUITextureMaster::InitTexture(const char* texture_name, const char* shader_name, IUISimpleTextureControl* tc){
+	const char* ntn = CheckName(texture_name);
 #ifdef DEBUG
 	CTimer T;
 	T.Start();
@@ -88,7 +125,7 @@ void CUITextureMaster::InitTexture(const char* texture_name, const char* shader_
 
 	xr_map<shared_str, TEX_INFO>::iterator	it;
 
-	it = m_textures.find(texture_name);
+	it = m_textures.find(ntn);
 
 	if (it != m_textures.end())
 	{
@@ -99,15 +136,16 @@ void CUITextureMaster::InitTexture(const char* texture_name, const char* shader_
 #endif
 		return;
 	}
-	tc->CreateShader(texture_name, shader_name);
+	tc->CreateShader(ntn, shader_name);
 #ifdef DEBUG
 	m_time += T.GetElapsed_ms();
 #endif
 }
 
 float CUITextureMaster::GetTextureHeight(const char* texture_name){
+	const char* ntn = CheckName(texture_name);
 	xr_map<shared_str, TEX_INFO>::iterator	it;
-	it = m_textures.find(texture_name);
+	it = m_textures.find(ntn);
 
 	if (it != m_textures.end())
 		return (*it).second.rect.height();
@@ -117,21 +155,37 @@ float CUITextureMaster::GetTextureHeight(const char* texture_name){
 	return 0;
 }
 
-Frect CUITextureMaster::GetTextureRect(const char* texture_name){
+bool CUITextureMaster::CheckTextureExist(const char* texture_name){
+	//const char* ntn = CheckName(texture_name);
 	xr_map<shared_str, TEX_INFO>::iterator	it;
 	it = m_textures.find(texture_name);
+
+	if (it != m_textures.end())
+		return true;
+	// Zander: I want to know if such a texture exists in advance
+	return false;
+}
+
+Frect CUITextureMaster::GetTextureRect(const char* texture_name){
+	const char* ntn = CheckName(texture_name);
+	xr_map<shared_str, TEX_INFO>::iterator	it;
+	it = m_textures.find(ntn);
 	if (it != m_textures.end())
 		return (*it).second.rect;
 
 	// KD: we don't need to die :)
 //	R_ASSERT3(false,"CUITextureMaster::GetTextureHeight Can't find texture", texture_name);
-	Msg("! CUITextureMaster::GetTextureRect Can't find texture", texture_name);
-	return Frect();
+	//ParseConfigIcon(texture_name);
+	Msg("! CUITextureMaster::GetTextureRect Can't find texture '%s'", texture_name);
+	Frect emergency_r = Frect();
+	emergency_r.set(0,0,0,0);
+	return emergency_r;
 }
 
 float CUITextureMaster::GetTextureWidth(const char* texture_name){
+	const char* ntn = CheckName(texture_name);
 	xr_map<shared_str, TEX_INFO>::iterator	it;
-	it = m_textures.find(texture_name);
+	it = m_textures.find(ntn);
 
 	if (it != m_textures.end())
 		return (*it).second.rect.width();
@@ -142,8 +196,9 @@ float CUITextureMaster::GetTextureWidth(const char* texture_name){
 }
 
 LPCSTR CUITextureMaster::GetTextureFileName(const char* texture_name){
+	const char* ntn = CheckName(texture_name);
 	xr_map<shared_str, TEX_INFO>::iterator	it;
-	it = m_textures.find(texture_name);
+	it = m_textures.find(ntn);
 
 	if (it != m_textures.end())
 		return *((*it).second.file);
@@ -155,20 +210,22 @@ LPCSTR CUITextureMaster::GetTextureFileName(const char* texture_name){
 
 TEX_INFO CUITextureMaster::FindItem(LPCSTR texture_name, LPCSTR def_texture_name)
 {
+	const char* ntn = CheckName(texture_name);
 	xr_map<shared_str, TEX_INFO>::iterator	it;
-	it = m_textures.find(texture_name);
+	it = m_textures.find(ntn);
 
 	if (it != m_textures.end())
 		return (it->second);
 	else{
-		R_ASSERT2(m_textures.find(def_texture_name)!=m_textures.end(),texture_name);
+		R_ASSERT2(m_textures.find(def_texture_name)!=m_textures.end(),ntn);
 		return FindItem	(def_texture_name,NULL);
 	}
 }
 
 void CUITextureMaster::GetTextureShader(LPCSTR texture_name, ui_shader& sh){
+	const char* ntn = CheckName(texture_name);
 	xr_map<shared_str, TEX_INFO>::iterator	it;
-	it = m_textures.find(texture_name);
+	it = m_textures.find(ntn);
 
 //	R_ASSERT3(it != m_textures.end(), "can't find texture", texture_name);
 	if (it == m_textures.end())
