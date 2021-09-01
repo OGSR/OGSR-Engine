@@ -616,8 +616,7 @@ void CWeapon::net_Export( CSE_Abstract* E ) {
   inherited::net_Export( E );
 
   CSE_ALifeInventoryItem *itm = smart_cast<CSE_ALifeInventoryItem*>( E );
-  if ( itm )
-    itm->m_fCondition = m_fCondition;
+  itm->m_fCondition = m_fCondition;
 
   CSE_ALifeItemWeapon* wpn = smart_cast<CSE_ALifeItemWeapon*>( E );
   wpn->wpn_flags = IsUpdating() ? 1 : 0;
