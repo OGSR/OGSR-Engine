@@ -528,7 +528,7 @@ float CUILines::GetVIndentByAlign()
 #endif
 }
 
-// %c[255,255,255,255]
+// %c[255,255,255,255] or %c[255,255,255]
 u32 CUILines::GetColorFromText(const xr_string& str)const{
 //	typedef xr_string::size_type size;
 
@@ -557,24 +557,42 @@ u32 CUILines::GetColorFromText(const xr_string& str)const{
 	comma2_pos = str.find(',', comma1_pos + 1);
 	comma3_pos = str.find(',', comma2_pos + 1);
 
-    R_ASSERT2(npos != comma1_pos, "CUISubLine::GetColorFromText -- can't find first comma");        
-	R_ASSERT2(npos != comma2_pos, "CUISubLine::GetColorFromText -- can't find second comma");
-	R_ASSERT2(npos != comma3_pos, "CUISubLine::GetColorFromText -- can't find third comma");
-	
+    //R_ASSERT2(npos != comma1_pos, "CUISubLine::GetColorFromText -- can't find first comma");        
+	//R_ASSERT2(npos != comma2_pos, "CUISubLine::GetColorFromText -- can't find second comma");
+	//R_ASSERT2(npos != comma3_pos, "CUISubLine::GetColorFromText -- can't find third comma");
+	// commented by Zander
 
 	u32 a, r, g, b;
 	xr_string single_color;
 
 	begin+=3;
 
-	single_color = str.substr(begin, comma1_pos - 1);
-	a = atoi(single_color.c_str());
-	single_color = str.substr(comma1_pos + 1, comma2_pos - 1);
-	r = atoi(single_color.c_str());
-	single_color = str.substr(comma2_pos + 1, comma3_pos - 1);
-	g = atoi(single_color.c_str());
-	single_color = str.substr(comma3_pos + 1, end - 1);
-	b = atoi(single_color.c_str());
+	// Этот код воспринимает цвет и в ARGB, и в RGB формате. При не-валидном коде цвета устанавливается ARGB 255,200,200,200.
+	if (npos != comma1_pos && npos != comma2_pos) { // have 2+ comma`s
+		if (npos != comma3_pos) { // ARGB code found
+			single_color = str.substr(begin, comma1_pos - 1);
+			a = atoi(single_color.c_str());
+			single_color = str.substr(comma1_pos + 1, comma2_pos - 1);
+			r = atoi(single_color.c_str());
+			single_color = str.substr(comma2_pos + 1, comma3_pos - 1);
+			g = atoi(single_color.c_str());
+			single_color = str.substr(comma3_pos + 1, end - 1);
+			b = atoi(single_color.c_str());
+		}
+		else { // RGB code found
+			a = 255;
+			single_color = str.substr(begin, comma1_pos - 1);
+			r = atoi(single_color.c_str());
+			single_color = str.substr(comma1_pos + 1, comma2_pos - 1);
+			g = atoi(single_color.c_str());
+			single_color = str.substr(comma2_pos + 1, end - 1);
+			b = atoi(single_color.c_str());
+		}
+	}
+	else { // necessary comma not contains
+		Msg("!not valid text-color code detected.");
+		a = 255; r = 200; g = 200; b = 200;
+	}
 
     return color_argb(a,r,g,b);
 }
