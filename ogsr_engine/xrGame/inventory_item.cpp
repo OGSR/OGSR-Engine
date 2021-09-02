@@ -131,6 +131,18 @@ void CInventoryItem::Load(LPCSTR section)
 	if ( pSettings->line_exist(section, "description") )
 		m_Description = CStringTable().translate( pSettings->r_string(section, "description") );
 
+	//if ( pSettings->line_exist(section, "description_0") )
+	// {	// Use multi-line descriptions
+		LPCSTR m_main_descr = m_Description.c_str();
+		for ( u8 i = 0; i < 200; i++) {
+			if (pSettings->line_exist(section, shared_str().sprintf("description_%i", i).c_str())) {
+				shared_str i_desc = CStringTable().translate( pSettings->r_string(section, shared_str().sprintf("description_%i", i).c_str()) );
+				if (i_desc.size()) m_main_descr = shared_str().sprintf("%s \\n  \\n%s", m_main_descr, i_desc.c_str()).c_str();
+			}
+		}
+		m_Description = shared_str(m_main_descr);
+	// }
+
 	m_flags.set(Fbelt,			READ_IF_EXISTS(pSettings, r_bool, section, "belt",				FALSE));
 	m_flags.set(FRuckDefault,	READ_IF_EXISTS(pSettings, r_bool, section, "default_to_ruck",	TRUE));
 	m_flags.set(FCanTake,		READ_IF_EXISTS(pSettings, r_bool, section, "can_take",			TRUE));
