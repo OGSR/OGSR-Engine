@@ -119,6 +119,7 @@ void CEatableItem::ZeroAllEffects()
 	m_fMaxPowerUpInfluence = 0.f;
 	m_fPsyHealthInfluence = 0.f;
 	m_fWoundsHealPerc = 0.f;
+	m_fThirstInfluence = 0.f;
 }
 void CEatableItem::SetRadiation(float _rad)
 {
