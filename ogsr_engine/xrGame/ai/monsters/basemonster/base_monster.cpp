@@ -233,7 +233,7 @@ bool enemy_inaccessible (CBaseMonster * const object)
 	if ( xz_dist_to_vertex > 0.5f && y_dist_to_vertex > 3.f )
 		return							true;
 
-	if ( xz_dist_to_vertex > 1.2f )
+	if ( xz_dist_to_vertex >= 1.2f || y_dist_to_vertex >= 1.2f )
 		return							true;
 
 	if ( !object->Home->at_home(enemy_pos) )

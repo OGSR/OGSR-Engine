@@ -242,6 +242,9 @@
     <ClInclude Include="luabind\yield_policy.hpp">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="luabind\cdecl_cast.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="pch">

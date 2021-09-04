@@ -31,10 +31,10 @@ public:
 	int format;
 	int scanlenght;
 	int width,height;
-	void *data;
+	void* data{};
 public:
-	TGAdesc()	{ data = 0; };
-	~TGAdesc()	{};
+	TGAdesc() = default;
+	~TGAdesc() = default;
 
 	void maketga( IWriter &fs );
 //	void maketga( int hf );

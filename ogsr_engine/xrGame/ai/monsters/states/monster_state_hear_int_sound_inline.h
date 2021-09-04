@@ -1,6 +1,7 @@
 #pragma once
 
 #include "state_custom_action_look.h"
+#include "state_move_to_point.h"
 
 #define TEMPLATE_SPECIALIZATION template <\
 	typename _Object\

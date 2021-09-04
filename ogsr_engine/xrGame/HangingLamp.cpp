@@ -351,14 +351,8 @@ void CHangingLamp::CreateBody(CSE_ALifeObjectHangingLamp	*lamp)
 	ApplySpawnIniToPhysicShell(&lamp->spawn_ini(),m_pPhysicsShell,fixed_bones[0]!='\0');
 }
 
-void CHangingLamp::net_Export(NET_Packet& P)
-{
-	VERIFY					(Local());
-}
-
-void CHangingLamp::net_Import(NET_Packet& P)
-{
-	VERIFY					(Remote());
+void CHangingLamp::net_Export( CSE_Abstract* E ) {
+  VERIFY( Local() );
 }
 
 BOOL CHangingLamp::UsedAI_Locations()

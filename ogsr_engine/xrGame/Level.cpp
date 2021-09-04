@@ -49,11 +49,7 @@
 #	include "physicobject.h"
 #endif
 
-extern BOOL	g_bDebugDumpPhysicsStep;
-
 CPHWorld	*ph_world			= 0;
-float		g_cl_lvInterp		= 0;
-u32			lvInterpSteps		= 0;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -86,14 +82,6 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 
 	m_map_manager				= xr_new<CMapManager>();
 
-//	m_pFogOfWarMngr				= xr_new<CFogOfWarMngr>();
-//----------------------------------------------------
-	m_bNeed_CrPr				= false;
-	m_bIn_CrPr					= false;
-	m_dwNumSteps				= 0;
-	m_dwDeltaUpdate				= u32(fixed_step*1000);
-	m_dwLastNetUpdateTime		= 0;
-
 	physics_step_time_callback	= (PhysicsStepTimeCallback*) &PhisStepsCallback;
 	m_seniority_hierarchy_holder= xr_new<CSeniorityHierarchyHolder>();
 
@@ -115,9 +103,6 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	//---------------------------------------------------------
 	pStatGraphR = NULL;
 	pStatGraphS = NULL;
-	//---------------------------------------------------------
-	pObjects4CrPr.clear();
-	pActors4CrPr.clear();
 	//---------------------------------------------------------
 	pCurrentControlEntity = NULL;
 
@@ -233,8 +218,6 @@ CLevel::~CLevel()
 	xr_delete					(m_ph_commander);
 	xr_delete					(m_ph_commander_scripts);
 	//-----------------------------------------------------------
-	pObjects4CrPr.clear();
-	pActors4CrPr.clear();
 
 	ai().unload					();
 	//-----------------------------------------------------------	
@@ -411,9 +394,6 @@ void CLevel::OnFrame	()
 		Device.Statistic->netClient1.End	();
 
 	ProcessGameEvents	();
-
-
-	if (m_bNeed_CrPr)					make_NetCorrectionPrediction();
 
 	MapManager().Update		();
 	// Inherited update
@@ -623,169 +603,8 @@ void CLevel::OnEvent(EVENT E, u64 P1, u64 /**P2/**/)
 	} else return;
 }
 
-void	CLevel::AddObject_To_Objects4CrPr	(CGameObject* pObj)
-{
-	if (!pObj) return;
-	for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
-	{
-		if (*OIt == pObj) return;
-	}
-	pObjects4CrPr.push_back(pObj);
-
-}
-void	CLevel::AddActor_To_Actors4CrPr		(CGameObject* pActor)
-{
-	if (!pActor) return;
-	if (pActor->CLS_ID != CLSID_OBJECT_ACTOR) return;
-	for	(OBJECTS_LIST_it AIt = pActors4CrPr.begin(); AIt != pActors4CrPr.end(); AIt++)
-	{
-		if (*AIt == pActor) return;
-	}
-	pActors4CrPr.push_back(pActor);
-}
-
-void	CLevel::RemoveObject_From_4CrPr		(CGameObject* pObj)
-{
-	if (!pObj) return;
-	
-	OBJECTS_LIST_it OIt = std::find(pObjects4CrPr.begin(), pObjects4CrPr.end(), pObj);
-	if (OIt != pObjects4CrPr.end())
-	{
-		pObjects4CrPr.erase(OIt);
-	}
-
-	OBJECTS_LIST_it AIt = std::find(pActors4CrPr.begin(), pActors4CrPr.end(), pObj);
-	if (AIt != pActors4CrPr.end())
-	{
-		pActors4CrPr.erase(AIt);
-	}
-}
-
-void CLevel::make_NetCorrectionPrediction	()
-{
-	m_bNeed_CrPr	= false;
-	m_bIn_CrPr		= true;
-	u64 NumPhSteps = ph_world->m_steps_num;
-	ph_world->m_steps_num -= m_dwNumSteps;
-	if(g_bDebugDumpPhysicsStep&&m_dwNumSteps>10)
-	{
-		Msg("!!!TOO MANY PHYSICS STEPS FOR CORRECTION PREDICTION = %d !!!",m_dwNumSteps);
-		m_dwNumSteps = 10;
-	};
-//////////////////////////////////////////////////////////////////////////////////
-	ph_world->Freeze();
-
-	//setting UpdateData and determining number of PH steps from last received update
-	for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
-	{
-		CGameObject* pObj = *OIt;
-		if (!pObj) continue;
-		pObj->PH_B_CrPr();
-	};
-//////////////////////////////////////////////////////////////////////////////////
-	//first prediction from "delivered" to "real current" position
-	//making enought PH steps to calculate current objects position based on their updated state	
-	
-	for (u32 i =0; i<m_dwNumSteps; i++)	
-	{
-		ph_world->Step();
-
-		for	(OBJECTS_LIST_it AIt = pActors4CrPr.begin(); AIt != pActors4CrPr.end(); AIt++)
-		{
-			CGameObject* pActor = *AIt;
-			if (!pActor || pActor->CrPr_IsActivated()) continue;
-			pActor->PH_B_CrPr();
-		};
-	};
-//////////////////////////////////////////////////////////////////////////////////
-	for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
-	{
-		CGameObject* pObj = *OIt;
-		if (!pObj) continue;
-		pObj->PH_I_CrPr();
-	};
-//////////////////////////////////////////////////////////////////////////////////
-	if (!InterpolationDisabled())
-	{
-		for (u32 i =0; i<lvInterpSteps; i++)	//second prediction "real current" to "future" position
-		{
-			ph_world->Step();
-#ifdef DEBUG
-/*
-			for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
-			{
-				CGameObject* pObj = *OIt;
-				if (!pObj) continue;
-				pObj->PH_Ch_CrPr();
-			};
-*/
-#endif
-		}
-		//////////////////////////////////////////////////////////////////////////////////
-		for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
-		{
-			CGameObject* pObj = *OIt;
-			if (!pObj) continue;
-			pObj->PH_A_CrPr();
-		};
-	};
-	ph_world->UnFreeze();
-
-	ph_world->m_steps_num = NumPhSteps;
-	m_dwNumSteps = 0;
-	m_bIn_CrPr = false;
-
-	pObjects4CrPr.clear();
-	pActors4CrPr.clear();
-};
-
-u32			CLevel::GetInterpolationSteps	()
-{
-	return lvInterpSteps;
-};
-
-void		CLevel::UpdateDeltaUpd	( u32 LastTime )
-{
-	u32 CurrentDelta = LastTime - m_dwLastNetUpdateTime;
-	if (CurrentDelta < m_dwDeltaUpdate) 
-		CurrentDelta = iFloor(float(m_dwDeltaUpdate * 10 + CurrentDelta) / 11);
-
-	m_dwLastNetUpdateTime = LastTime;
-	m_dwDeltaUpdate = CurrentDelta;
-
-	if (0 == g_cl_lvInterp) ReculcInterpolationSteps();
-	else 
-		if (g_cl_lvInterp>0)
-		{
-			lvInterpSteps = iCeil(g_cl_lvInterp / fixed_step);
-		}
-};
-
-void		CLevel::ReculcInterpolationSteps ()
-{
-	lvInterpSteps			= iFloor(float(m_dwDeltaUpdate) / (fixed_step*1000));
-	if (lvInterpSteps > 60) lvInterpSteps = 60;
-	if (lvInterpSteps < 3)	lvInterpSteps = 3;
-};
-
-bool		CLevel::InterpolationDisabled	()
-{
-	return g_cl_lvInterp < 0; 
-};
-
 void 		CLevel::PhisStepsCallback		( u32 , u32 )
 {}
-
-void				CLevel::SetNumCrSteps		( u32 NumSteps )
-{
-	m_bNeed_CrPr = true;
-	if (m_dwNumSteps > NumSteps) return;
-	m_dwNumSteps = NumSteps;
-	if (m_dwNumSteps > 1000000)
-	{
-		VERIFY(0);
-	}
-};
 
 
 ALife::_TIME_ID CLevel::GetGameTime()

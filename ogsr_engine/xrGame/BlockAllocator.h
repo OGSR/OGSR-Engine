@@ -1,5 +1,5 @@
-#ifndef BLOCK_ALLOCATOR_H
-#define BLOCK_ALLOCATOR_H
+#pragma once
+
 template<class T,u32 block_size>
 class CBlockAllocator
 {
@@ -43,7 +43,7 @@ public:
 	}
 	IC	void clear()
 	{
-		xr_vector<T*>::iterator i=blocks.begin(),e=blocks.end();
+		auto i=blocks.begin(),e=blocks.end();
 		for(;i!=e;++i) xr_free(*i);
 		blocks.clear();
 		init();
@@ -68,8 +68,8 @@ public:
 	IC	void for_each(const _Predicate &pred)
 	{
 		if(! current_block) return;
-		xr_vector<T*>::iterator	i = blocks.begin();
-		xr_vector<T*>::iterator	e = blocks.begin()+block_count;
+		auto i = blocks.begin();
+		auto e = blocks.begin()+block_count;
 		u32 j;
 		for ( ; i != e; ++i)
 		{
@@ -102,17 +102,4 @@ private:
 	{
 		return *pointer(position);
 	}
-
-	IC void construct(u32 position)
-	{
-		xr_allocator_t <T> ().construct(pointer(position));
-	}
-
-	IC void construct_back()
-	{
-		xr_allocator_t <T> ().construct(back_pointer());
-	}
 };
-
-
-#endif

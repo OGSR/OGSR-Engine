@@ -69,13 +69,11 @@ public:
 	
 public:
 	virtual		void				OnPlayerConnect			(ClientID id_who);
-	virtual		void				OnPlayerDisconnect		(ClientID id_who, LPSTR Name, u16 GameID);
 	virtual		void				OnPlayerReady			(ClientID id_who)							   {};
 	virtual		void				OnPlayerEnteredGame		(ClientID id_who)	{};
 	virtual		void				OnPlayerConnectFinished	(ClientID id_who)	{};
 	virtual		void				OnPlayerFire			(ClientID id_who, NET_Packet &P) {};
 	virtual		void				OnPlayer_Sell_Item		(ClientID id_who, NET_Packet &P) {};
-				void				GenerateGameMessage		(NET_Packet &P);
 	
 
 	virtual		void				OnRoundStart			();									// старт раунда

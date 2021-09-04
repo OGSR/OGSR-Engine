@@ -37,7 +37,7 @@ namespace luabind { namespace detail
 
 	struct null_type {};
 
-    enum class Direction : size_t
+    enum class Direction : unsigned
     {
         lua_to_cpp,
         cpp_to_lua

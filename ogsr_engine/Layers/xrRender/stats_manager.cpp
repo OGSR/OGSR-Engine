@@ -197,13 +197,13 @@ void stats_manager::decrement_stats( u32 size, enum_stats_buffer_type type, _D3D
 	memory_usage_summary [type][location]		-= size;
 }
 
-stats_manager::~stats_manager ()
-{
-#ifdef DEBUG
-	Msg		( "m_buffers_list.size() = %d", m_buffers_list.size() );
-//	R_ASSERT( m_buffers_list.size() == 0);	//  Some buffers stats are not removed from the list.
-#endif 
-}
+//stats_manager::~stats_manager ()
+//{
+//#ifdef DEBUG
+//	Msg		( "m_buffers_list.size() = %d", m_buffers_list.size() );
+///	R_ASSERT( m_buffers_list.size() == 0);	//  Some buffers stats are not removed from the list.
+//#endif 
+//}
 
 u32 get_format_pixel_size( D3DFORMAT format )
 {

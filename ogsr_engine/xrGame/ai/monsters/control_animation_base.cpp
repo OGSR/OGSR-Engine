@@ -15,7 +15,7 @@
 #include "../../actor.h"
 
 // DEBUG purpose only
-char *dbg_action_name_table[] = {
+constexpr const char *dbg_action_name_table[] = {
 	"ACT_STAND_IDLE",
 		"ACT_SIT_IDLE",
 		"ACT_LIE_IDLE",

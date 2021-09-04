@@ -127,6 +127,8 @@ static void r_qt_q16(NET_Packet& P,Fquaternion& q)
 ///////////////////////////////////////////////////////////////////////////////////
 void	SPHNetState::net_Export(NET_Packet& P)
 {
+	R_ASSERT(0);
+
 	P.w_vec3(linear_vel);
 	//P.w_vec3(angular_vel);
 	//P.w_vec3(force);
@@ -152,10 +154,12 @@ void	SPHNetState::read				(src&			P)
 
 void	SPHNetState::net_Import(NET_Packet&	P)
 {
+	R_ASSERT(0);
 	read(P);
 }
 void SPHNetState::net_Import(IReader& P)
 {
+	R_ASSERT(0);
 	read(P);
 }
 
@@ -166,11 +170,15 @@ void SPHNetState::net_Save(NET_Packet &P)
 
 void SPHNetState::net_Load(NET_Packet &P)
 {
+	R_ASSERT(0);
+
 	net_Import(P);
 	previous_position.set(position);
 }
 void SPHNetState::net_Load(IReader &P)
 {
+	R_ASSERT(0);
+
 	net_Import(P);
 	previous_position.set(position);
 }

@@ -21,9 +21,10 @@
 // OR OTHER DEALINGS IN THE SOFTWARE.
 #include "stdafx.h"
 
-#include <luabind/detail/object_rep.hpp>
 #include <luabind/detail/class_rep.hpp>
 #include <luabind/detail/stack_utils.hpp>
+#include <luabind/detail/object_rep.hpp>
+#include <luabind/detail/method_rep.hpp>
 
 
 namespace luabind { namespace detail

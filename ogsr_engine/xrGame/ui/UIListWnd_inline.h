@@ -16,7 +16,7 @@ bool CUIListWnd::AddItem(const char*  str, const float shift, void* pData,
 
 	VERIFY(pItem);
 
-	pItem->Init(str, shift, m_bVertFlip?GetHeight()-GetSize()* m_iItemHeight-m_iItemHeight:GetSize()* m_iItemHeight, 
+	pItem->Init(str, shift, m_bVertFlip?GetHeight()- GetItemsCount()* m_iItemHeight-m_iItemHeight: GetItemsCount() * m_iItemHeight,
 		m_iItemWidth, m_iItemHeight);
 
 	pItem->SetData(pData);

@@ -43,6 +43,8 @@ struct CDataStorageBucketList {
 		typedef typename CGraphVertex::_index_type	_index_type;
 
 	protected:
+		using inherited::current_path_id;
+
 		_dist_type				m_min_bucket_value;
 		_dist_type				m_max_bucket_value;
 		CGraphVertex			*m_buckets[bucket_count];

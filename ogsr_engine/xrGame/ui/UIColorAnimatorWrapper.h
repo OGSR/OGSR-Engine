@@ -25,7 +25,7 @@ public:
 	// Для проигрывания только 1 цикла вызовите Cyclic(false);
 
 						CUIColorAnimatorWrapper	();
-						~CUIColorAnimatorWrapper(){};
+						~CUIColorAnimatorWrapper() = default;
 	// colorToModify - указатель на цвет который меняем
 	// animationName - имя цветовой анимации
 	explicit			CUIColorAnimatorWrapper	(const shared_str &animationName);

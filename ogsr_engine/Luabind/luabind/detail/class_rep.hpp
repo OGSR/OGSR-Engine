@@ -27,16 +27,10 @@
 #include <functional>
 
 #include <luabind/config.hpp>
-#include <luabind/detail/object_rep.hpp>
+#include <luabind/detail/primitives.hpp>
 #include <luabind/detail/construct_rep.hpp>
-#include <luabind/detail/garbage_collector.hpp>
 #include <luabind/detail/operator_id.hpp>
-#include <luabind/detail/signature_match.hpp>
-#include <luabind/detail/class_registry.hpp>
-#include <luabind/detail/find_best_match.hpp>
-#include <luabind/detail/get_overload_signature.hpp>
-#include <luabind/error.hpp>
-#include <luabind/detail/method_rep.hpp>
+#include <luabind/detail/ref.hpp>
 
 namespace luabind
 {
@@ -48,7 +42,7 @@ namespace luabind
 
 namespace luabind { namespace detail
 {
-
+	class object_rep;
 	struct method_rep;
 	LUABIND_API string_class stack_content_by_name(lua_State* L, int start_index);
 	int construct_lua_class_callback(lua_State* L);
@@ -73,8 +67,9 @@ namespace luabind { namespace detail
 	friend int lua_class_settable(lua_State*);
 	friend int static_class_gettable(lua_State*);
 	public:
+		std::pair<void*, void*> allocate(lua_State* L) const;
 
-		enum class_type
+		enum class_type: unsigned
 		{
 			cpp_class = 0,
 			lua_class = 1
@@ -116,9 +111,7 @@ namespace luabind { namespace detail
 		// INSTANTIATED!
 		class_rep(lua_State* L, const char* name);
 
-		~class_rep();
-
-		std::pair<void*,void*> allocate(lua_State* L) const;
+		~class_rep() = default;
 
 		// called from the metamethod for __index
 		// the object pointer is passed on the lua stack
@@ -309,9 +302,9 @@ namespace luabind { namespace detail
 
 		struct operator_callback: public overload_rep_base
 		{
-			void set_fun(int (*f)(lua_State*)) { func = f; }
-			int call(lua_State* L) { return func(L); }
-			void set_arity(int arity) { m_arity = arity; }
+			inline void set_fun(int (*f)(lua_State*)) { func = f; }
+			inline int call(lua_State* L) { return func(L); }
+			inline void set_arity(int arity) { m_arity = arity; }
 
 		private:
 			int(*func)(lua_State*);
@@ -450,12 +443,10 @@ namespace luabind { namespace detail
 		int m_operator_cache;
 
 		public:
-			const STATIC_CONSTANTS &static_constants() const {return m_static_constants;}
-			const construct_rep &constructors() const {return m_constructor;}
+			inline const STATIC_CONSTANTS &static_constants() const {return m_static_constants;}
+			inline const construct_rep &constructors() const {return m_constructor;}
 	};
 
 	bool is_class_rep(lua_State* L, int index);
 
 }}
-
-#include <luabind/detail/overload_rep_impl.hpp>

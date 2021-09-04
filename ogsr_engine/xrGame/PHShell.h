@@ -86,8 +86,6 @@ private:
 public:
 	virtual	void			Build					(bool disable=false);
 	virtual	void			RunSimulation			(bool place_current_forms=true);
-	virtual	void			net_Import				(NET_Packet& P);
-	virtual	void			net_Export				(NET_Packet& P);
 			void			PresetActive			();
 			void			AfterSetActive			();
 			void			PureActivate			();

@@ -6,14 +6,16 @@
 #include "../../Include/xrAPI/xrAPI.h"
 
 #define FACTORY_PTR_INSTANCIATE(Class) \
-	inline void FactoryPtr<I##Class>::CreateObject(void) \
+template<> \
+inline void FactoryPtr<I##Class>::CreateObject() \
 { \
 	m_pObject = RenderFactory->Create##Class(); \
 } \
-	inline void FactoryPtr<I##Class>::DestroyObject(void) \
+template<> \
+inline void FactoryPtr<I##Class>::DestroyObject() \
 { \
 	RenderFactory->Destroy##Class(m_pObject); \
-	m_pObject = NULL; \
+	m_pObject = nullptr; \
 }
 	
 

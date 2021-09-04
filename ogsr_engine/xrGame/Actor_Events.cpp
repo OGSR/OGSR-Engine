@@ -215,22 +215,8 @@ void CActor::OnEvent		(NET_Packet& P, u16 type)
 			VERIFY(id == smart_cast<CGameObject*>(m_holder)->ID());
 			use_Holder		(NULL);
 		}break;
-	case GEG_PLAYER_PLAY_HEADSHOT_PARTICLE:
-		{
-			OnPlayHeadShotParticle(P);
-		}break;
 	case GE_ACTOR_JUMPING:
 		{
-			/*
-			Fvector dir;
-			P.r_dir(dir);
-			float jump = P.r_float();
-			NET_SavedAccel = dir;
-			extern float NET_Jump;
-			NET_Jump = jump;
-			m_bInInterpolation = false;
-			mstate_real |= mcJump;
-			*/
 		}break;
 	}
 }
@@ -249,6 +235,4 @@ void			CActor::MoveActor		(Fvector NewPos, Fvector NewDir)
 	r_torso_tgt_roll		= 0;
 	cam_Active()->Set		(-unaffected_r_torso.yaw,unaffected_r_torso.pitch,unaffected_r_torso.roll);
 	ForceTransform(M);
-
-	m_bInInterpolation = false;	
 }

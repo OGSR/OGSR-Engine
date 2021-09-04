@@ -336,8 +336,8 @@ _DDS:
 #endif // DEBUG
 		img_size				= S->length	();
 		R_ASSERT				(S);
-		HRESULT const result	= D3DXGetImageInfoFromFileInMemory	(S->pointer(),S->length(),&IMG);
-		if ( FAILED(result) ) {
+
+		if (FAILED(D3DXGetImageInfoFromFileInMemory(S->pointer(), S->length(), &IMG))) {
 			Msg					("! Can't get image info for texture '%s'",fn);
 			FS.r_close			(S);
 			string_path			temp;

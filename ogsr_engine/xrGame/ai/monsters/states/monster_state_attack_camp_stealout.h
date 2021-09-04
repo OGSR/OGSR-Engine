@@ -4,6 +4,8 @@
 template<typename _Object>
 class CStateMonsterAttackCampStealOut : public CStateMove<_Object> {
 	typedef CStateMove<_Object> inherited;
+	using inherited::inherited::object;
+	using inherited::time_state_started;
 
 public:
 						CStateMonsterAttackCampStealOut	(_Object *obj);

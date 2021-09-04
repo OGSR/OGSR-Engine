@@ -6,6 +6,7 @@
 template<typename _Object>
 class	CStateMonsterControlledAttack : public CStateMonsterAttack<_Object> {
 	typedef CStateMonsterAttack<_Object>	inherited;
+	using inherited::object;
 
 public:
 						CStateMonsterControlledAttack	(_Object *obj);

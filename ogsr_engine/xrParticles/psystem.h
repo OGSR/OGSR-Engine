@@ -25,7 +25,7 @@ namespace PAPI{
 	{
 	public:
 		IC 			pVector		(float ax, float ay, float az)	{ set(ax,ay,az);								}
-		IC 			pVector		()								{}
+		pVector() = default;
 		IC float 	length		() const						{	return _sqrt(x*x+y*y+z*z);					}
 		IC float 	length2		() const						{	return (x*x+y*y+z*z);						}
 		IC float 	operator*	(const pVector &a) const		{	return x*a.x + y*a.y + z*a.z;				}

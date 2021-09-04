@@ -56,14 +56,17 @@ public:
 						~shared_str	()								{	_dec();											}
 
 	// assignment & accessors
-	shared_str&			operator=	(const char* rhs)						{	_set(rhs);	return (shared_str&)*this;			}
-	shared_str&			operator=	(shared_str const &rhs)			{	_set(rhs);	return (shared_str&)*this;			}
-	const char*				operator*	() const						{	return p_?p_->value:0;							}
-	bool				operator!	() const						{	return p_ == 0;									}
-	bool				operator<	(shared_str const &rhs)			{   if (0 == p_) return true; else return (xr_strcmp(p_->value, *rhs) < 0); }
-	bool				operator==	( shared_str const &rhs ) { return _get() == rhs._get(); }
-	char				operator[]	(size_t id)						{	return p_->value[id];							}
-	const char*				c_str		() const						{	return p_?p_->value:0;							}
+	shared_str& operator=(const char* rhs)       { _set(rhs); return reinterpret_cast<shared_str&>(*this); }
+	shared_str& operator=(shared_str const& rhs) { _set(rhs); return reinterpret_cast<shared_str&>(*this); }
+	bool operator==(shared_str const& rhs) const { return _get() == rhs._get(); }
+	bool operator!=(shared_str const& rhs) const { return _get() != rhs._get(); }
+	bool operator<(shared_str const& rhs) const { if (!p_) return true; else return strcmp(p_->value, rhs.c_str()) < 0; }
+	bool operator>(shared_str const&) const = delete;
+	char operator[](size_t id) const { return p_->value[id]; }
+	bool operator!() const { return !p_; }
+	const char* operator*() const { return p_ ? p_->value : nullptr; }
+
+	const char* c_str()     const { return p_ ? p_->value : nullptr; }
 
 	// misc func
 	u32					size		()						const	{	if (0==p_) return 0; else return p_->dwLength;	}
@@ -79,19 +82,6 @@ public:
 		return 		(shared_str&)*this;
 	}
 };
-
-// res_ptr == res_ptr
-// res_ptr != res_ptr
-// const res_ptr == ptr
-// const res_ptr != ptr
-// ptr == const res_ptr
-// ptr != const res_ptr
-// res_ptr < res_ptr
-// res_ptr > res_ptr
-IC bool operator	==	(shared_str const & a, shared_str const & b)		{ return a._get() == b._get();					}
-IC bool operator	!=	(shared_str const & a, shared_str const & b)		{ return a._get() != b._get();					}
-IC bool operator	<	(shared_str const & a, shared_str const & b)		{ return a._get() <  b._get();					}
-IC bool operator	>	(shared_str const & a, shared_str const & b)		{ return a._get() >  b._get();					}
 
 // externally visible standart functionality
 IC void swap			(shared_str & lhs, shared_str & rhs)				{ lhs.swap(rhs);		}

@@ -23,6 +23,7 @@
 
 #include <luabind/luabind.hpp>
 #include <luabind/function.hpp>
+#include <luabind/detail/garbage_collector.hpp>
 
 namespace luabind {
 

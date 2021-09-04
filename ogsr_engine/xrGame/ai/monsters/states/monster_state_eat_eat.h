@@ -5,6 +5,8 @@ template<typename _Object>
 class CStateMonsterEating : public CState<_Object> {
 protected:
 	typedef CState<_Object>		inherited;
+	using inherited::object;
+	using inherited::time_state_started;
 
 	CEntityAlive	*corpse;
 	u32				time_last_eat{};

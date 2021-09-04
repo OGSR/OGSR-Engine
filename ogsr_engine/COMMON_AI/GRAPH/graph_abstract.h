@@ -76,7 +76,13 @@ template <
 	typename _vertex_id_type = u32
 >
 class CGraphAbstractSerialize : public CGraphAbstract<_data_type,_edge_weight_type,_vertex_id_type>, public IPureSerializeObject<IReader,IWriter> {
+	using inherited = CGraphAbstract<_data_type, _edge_weight_type, _vertex_id_type>;
 public:
+	using inherited::vertices;
+	using inherited::clear;
+	using inherited::add_vertex;
+	using inherited::add_edge;
+
 	virtual void						save			(IWriter &stream);
 	virtual void						load			(IReader &stream);
 };

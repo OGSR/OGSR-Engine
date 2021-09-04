@@ -102,47 +102,18 @@ public:
 
 public:
 	////////////// network ////////////////////////
-	u32							GetInterpolationSteps	();
-	void						SetInterpolationSteps	(u32 InterpSteps);
-	bool						InterpolationDisabled	();
-	void						ReculcInterpolationSteps();
-	u32							GetNumCrSteps			() const	{return m_dwNumSteps; };
-	void						SetNumCrSteps			( u32 NumSteps );
+	constexpr u32 GetInterpolationSteps() { return 0; }
 	static void 				PhisStepsCallback		( u32 Time0, u32 Time1 );
-	bool						In_NetCorrectionPrediction	() {return m_bIn_CrPr;};
 
 	virtual void				OnMessage				(void* data, u32 size);
-	virtual void				OnInvalidHost			();
-	virtual void				OnInvalidPassword		();
-	virtual void				OnSessionFull			();
 	virtual void				OnConnectRejected		();
 private:
-	BOOL						m_bNeed_CrPr;
-	u32							m_dwNumSteps;
-	bool						m_bIn_CrPr;
-
-	DEF_VECTOR					(OBJECTS_LIST, CGameObject*);
-
-	OBJECTS_LIST				pObjects4CrPr;
-	OBJECTS_LIST				pActors4CrPr;
-
 	CObject*					pCurrentControlEntity;
 	xrServer::EConnect			m_connect_server_err;
 public:
-	void						AddObject_To_Objects4CrPr	(CGameObject* pObj);
-	void						AddActor_To_Actors4CrPr		(CGameObject* pActor);
-
-	void						RemoveObject_From_4CrPr		(CGameObject* pObj);	
-
 	CObject*					CurrentControlEntity	( void ) const		{ return pCurrentControlEntity; }
 	void						SetControlEntity		( CObject* O  )		{ pCurrentControlEntity=O; }
 private:
-	
-	void						make_NetCorrectionPrediction	();
-
-	u32							m_dwDeltaUpdate ;
-	u32							m_dwLastNetUpdateTime;
-	void						UpdateDeltaUpd					( u32 LastTime );
 
 	BOOL						Connect2Server					(LPCSTR options);
 private:
@@ -258,7 +229,6 @@ public:
 	void						g_sv_Spawn				(CSE_Abstract* E);					// server reply/command spawning
 	
 	// Save/Load/State
-	void						SLS_Load				(LPCSTR name);		// Game Load
 	void						SLS_Default				();					// Default/Editor Load
 	
 	IC CSpaceRestrictionManager		&space_restriction_manager	();

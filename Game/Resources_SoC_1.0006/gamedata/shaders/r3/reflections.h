@@ -108,7 +108,7 @@ float4 compute_ssr(float3 position, float3 normal)
 	float edge = RayAttenBorder(refl_tc.xy, SSR_EDGE_ATTENUATION);
 
 	/*Sample image with reflected TC*/	
-	float3 img = s_diffuse.Load(int3(refl_tc.xy * screen_res.xy,0),0);
+	float3 img = s_image.Load(int3(refl_tc.xy * screen_res.xy,0),0);
 
 	/*Image.rgb, Reflcontrol.a*/
 	return float4(img.xyz, reflection*edge);

@@ -31,6 +31,7 @@
 
 #include <luabind/scope.hpp>
 #include <luabind/detail/calc_has_arg.hpp>
+#include <luabind/cdecl_cast.hpp>
 
 namespace luabind
 {
@@ -249,20 +250,6 @@ namespace luabind
 		}
 	}
 
-	// deprecated
-	template<typename F, typename... Policies>
-	void function(lua_State* L, const char* name, F f, const detail::policy_cons<Policies...> p)
-	{
-		module(L) [ def(name, f, p) ];
-	}
-
-	// deprecated
-	template<typename F>
-	void function(lua_State* L, const char* name, F f)
-	{
-		luabind::function(L, name, f, detail::policy_cons<>());
-	}
-
 	namespace detail
 	{
 		template<typename F, typename... Policies>
@@ -341,12 +328,6 @@ namespace luabind
 		};
 	}
 
-
-	template <typename C, typename R, typename... A>
-	constexpr decltype(auto) cdecl_cast(const C& c, R(C::*f)(A...) const)
-	{
-		return static_cast<R(__cdecl*)(A...)>(c);
-	}
 
 	template<typename Function, typename... Policies>
 	scope def(const char* name, const Function f, const detail::policy_cons<Policies...> policies)

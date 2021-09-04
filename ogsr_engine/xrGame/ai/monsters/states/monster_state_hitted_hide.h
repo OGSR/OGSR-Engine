@@ -4,6 +4,8 @@ template<typename _Object>
 class CStateMonsterHittedHide : public CState<_Object> {
 	typedef	CState<_Object>		inherited;
 	typedef	CState<_Object>*	state_ptr;
+	using inherited::object;
+	using inherited::time_state_started;
 
 public:
 

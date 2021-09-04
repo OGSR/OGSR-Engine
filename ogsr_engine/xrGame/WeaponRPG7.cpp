@@ -8,7 +8,7 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "game_object_space.h"
 
-constexpr char* grenade_def_bone_cop = "grenade";
+constexpr const char* grenade_def_bone_cop = "grenade";
 
 CWeaponRPG7::CWeaponRPG7(void) : CWeaponCustomPistol("RPG7") 
 {
@@ -175,12 +175,6 @@ void CWeaponRPG7::OnEvent(NET_Packet& P, u16 type)
 			CRocketLauncher::DetachRocket(id, bLaunch);
 		} break;
 	}
-}
-
-void CWeaponRPG7::net_Import( NET_Packet& P)
-{
-	inherited::net_Import		(P);
-	UpdateMissileVisibility		();
 }
 
 void CWeaponRPG7::PlayAnimReload()

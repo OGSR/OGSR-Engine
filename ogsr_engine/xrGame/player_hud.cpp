@@ -1105,7 +1105,7 @@ void player_hud::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 	}
 }
 
-constexpr char* BOBBING_SECT = "wpn_bobbing_effector";
+constexpr const char* BOBBING_SECT = "wpn_bobbing_effector";
 constexpr float SPEED_REMINDER = 5.f;
 
 CWeaponBobbing::CWeaponBobbing()

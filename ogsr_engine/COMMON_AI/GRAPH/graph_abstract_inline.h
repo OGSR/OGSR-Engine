@@ -44,7 +44,7 @@ IC	void CAbstractGraph::remove_vertex		(const _vertex_id_type &vertex_id)
 {
 	vertex_iterator				I = m_vertices.find(vertex_id);
 	VERIFY						(m_vertices.end() != I);
-	VERTICES::value_type		v = *I;
+	auto v = *I;
 	delete_data					(v);
 	m_vertices.erase			(I);
 }
@@ -217,12 +217,9 @@ IC	void CAbstractGraph::save			(IWriter &stream)
 	stream.close_chunk			();
 	
 	stream.open_chunk			(1);
-	const_vertex_iterator		I = vertices().begin();
-	const_vertex_iterator		E = vertices().end();
-#pragma warning( push ) // ОЧЕНЬ странный варнинг, с чего он вдруг появился - понятия не имею.
-#pragma warning( disable : 4913 ) // warning C4913: пользовательский двоичный оператор "," существует, но ни одной перегрузке не удалось преобразовать все операнды, по умолчанию использован встроенный двоичный оператор "," (компилируется исходный файл ui\UIMainIngameWnd.cpp)
-	for (int i=0; I != E; ++I, ++i) {
-#pragma warning( pop )
+	auto I = vertices().cbegin();
+	auto E = vertices().cend();
+	for (u32 i = 0; I != E; ++I, ++i) {
 		stream.open_chunk		(i);
 		{
 			stream.open_chunk	(0);
@@ -239,8 +236,8 @@ IC	void CAbstractGraph::save			(IWriter &stream)
 
 	stream.open_chunk			(2);
 	{
-		const_vertex_iterator	I = vertices().begin();
-		const_vertex_iterator	E = vertices().end();
+		auto I = vertices().cbegin();
+		auto E = vertices().cend();
 		for ( ; I != E; ++I) {
 			if ((*I).second->edges().empty())
 				continue;
@@ -248,8 +245,8 @@ IC	void CAbstractGraph::save			(IWriter &stream)
 			save_data			((*I).second->vertex_id(),stream);
 
 			stream.w_u32		((u32)(*I).second->edges().size());
-			const_iterator		i = (*I).second->edges().begin();
-			const_iterator		e = (*I).second->edges().end();
+			auto i = (*I).second->edges().cbegin();
+			auto e = (*I).second->edges().cend();
 			for ( ; i != e; ++i) {
 				save_data		((*i).vertex_id(),stream);
 				save_data		((*i).weight(),stream);

@@ -15,10 +15,10 @@ dx10StateManager::dx10StateManager()
 	Reset();
 }
 
-dx10StateManager::~dx10StateManager()
-{
+//dx10StateManager::~dx10StateManager()
+//{
 	//	Don't own any object so no release is needed
-}
+//}
 
 //	Set all states to default
 void dx10StateManager::Reset()

@@ -3,6 +3,8 @@
 #include "state_hide_from_point.h"
 #include "state_look_unprotected_area.h"
 #include "state_custom_action.h"
+#include "../ai_monster_squad.h"
+#include "../ai_monster_squad_manager.h"
 #include "monster_state_home_point_danger.h"
 
 #define TEMPLATE_SPECIALIZATION template <\

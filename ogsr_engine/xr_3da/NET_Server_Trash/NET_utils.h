@@ -48,20 +48,25 @@ public:
 		CopyMemory(&B.data[pos],p,count);
 	}
 	IC u32	w_tell	()	{ return B.count; }
+	IC void w_advance( u32 count )
+	{
+		B.count		+= count;
+		VERIFY		(B.count<NET_PacketSizeLimit);
+	}
 
 	// writing - utilities
-	IC void	w_float		( float a       )	{ w(&a,4);					}			// float
-	IC void w_vec3		( const Fvector& a) { w(&a,3*sizeof(float));	}			// vec3
-	IC void w_vec4		( const Fvector4& a){ w(&a,4*sizeof(float));	}			// vec4
-	IC void w_u64		( u64 a			)	{ w(&a,8);					}			// qword (8b)
-	IC void w_s64		( s64 a			)	{ w(&a,8);					}			// qword (8b)
-	IC void w_u32		( u32 a			)	{ w(&a,4);					}			// dword (4b)
-	IC void w_s32		( s32 a			)	{ w(&a,4);					}			// dword (4b)
+	IC void w_float( float a ) { *(float*)( &B.data[ B.count ] ) = a; w_advance( sizeof( float ) ); }; // float
+	IC void w_vec3( const Fvector& a ) { *(Fvector*)( &B.data[ B.count ] ) = a; w_advance( sizeof( Fvector ) ); }; // vec3
+	IC void w_vec4( const Fvector4& a ) { *(Fvector4*)( &B.data[ B.count ] ) = a; w_advance( sizeof( Fvector4 ) ); }; // vec4
+	IC void w_u64( u64 a ) { *(u64*)( &B.data[ B.count ] ) = a; w_advance( sizeof( u64 ) ); }; // qword (8b)
+	IC void w_s64( s64 a ) { *(s64*)( &B.data[ B.count ] ) = a; w_advance( sizeof( s64 ) ); }; // qword (8b)
+	IC void w_u32( u32 a ) { *(u32*)( &B.data[ B.count ] ) = a; w_advance( sizeof( u32 ) ); }; // dword (4b)
+	IC void w_s32( s32 a ) { *(s32*)( &B.data[ B.count ] ) = a; w_advance( sizeof( s32 ) ); }; // dword (4b)
 	IC void w_u24		( u32 a			)	{ w(&a,3);					}			// dword (3b)
-	IC void w_u16		( u16 a			)	{ w(&a,2);					}			// word (2b)
-	IC void w_s16		( s16 a			)	{ w(&a,2);					}			// word (2b)
-	IC void	w_u8		( u8 a			)	{ w(&a,1);					}			// byte (1b)
-	IC void	w_s8		( s8 a			)	{ w(&a,1);					}			// byte (1b)
+	IC void w_u16( u16 a ) { *(u16*)( &B.data[ B.count ] ) = a; w_advance( sizeof( u16 ) ); }; // word (2b)
+	IC void w_s16( s16 a ) { *(s16*)( &B.data[ B.count ] ) = a; w_advance( sizeof( s16 ) ); }; // word (2b)
+	IC void w_u8( u8 a ) { *(u8*)( &B.data[ B.count ] ) = a; w_advance( sizeof( u8 ) ); }; // byte (1b)
+	IC void w_s8( s8 a ) { *(s8*)( &B.data[ B.count ] ) = a; w_advance( sizeof( s8 ) ); }; // byte (1b)
 	IC void w_float_q16	( float a, float min, float max)
 	{
 		VERIFY		(a>=min && a<=max);
@@ -186,56 +191,54 @@ public:
 	}
 
 	// reading - utilities
-	IC void		r_vec3			(Fvector& A)	{ r(&A,3*sizeof(float));		} // vec3
-	IC void		r_vec4			(Fvector4& A)	{ r(&A,4*sizeof(float));		} // vec4
-	IC void		r_float			(float& A )		{ r(&A,4);						} // float
-	IC void 	r_u64			(u64& A)		{ r(&A,8);						} // qword (8b)
-	IC void 	r_s64			(s64& A)		{ r(&A,8);						} // qword (8b)
-	IC void 	r_u32			(u32& A)		{ r(&A,4);						} // dword (4b)
-	IC void		r_s32			(s32& A)		{ r(&A,4);						} // dword (4b)
+	IC void r_vec3( Fvector& A ) { A = *(Fvector*)( &B.data[ r_pos ] ); r_advance( sizeof( Fvector ) ); }; // vec3
+	IC void r_vec4( Fvector4& A ) { A = *(Fvector4*)( &B.data[ r_pos ] ); r_advance( sizeof( Fvector4 ) ); }; // vec4
+	IC void r_float( float& A ) { A = *(float*)( &B.data[ r_pos ] ); r_advance( sizeof( float ) ); }; // float
+	IC void r_u64( u64& A ) { A = *(u64*)( &B.data[ r_pos ] ); r_advance( sizeof( u64 ) ); }; // qword (8b)
+	IC void r_s64( s64& A ) { A = *(s64*)( &B.data[ r_pos ] ); r_advance( sizeof( s64 ) ); }; // qword (8b)
+	IC void r_u32( u32& A ) { A = *(u32*)( &B.data[ r_pos ] ); r_advance( sizeof( u32 ) ); }; // dword (4b)
+	IC void r_s32( s32& A ) { A = *(s32*)( &B.data[ r_pos ] ); r_advance( sizeof( s32 ) ); }; // dword (4b)
 	IC void		r_u24			(u32& A)		{ A=0; r(&A,3);					} // dword (3b)
-	IC void		r_u16			(u16& A)		{ r(&A,2);						} // word (2b)
-	IC void		r_s16			(s16& A)		{ r(&A,2);						} // word (2b)
-	IC void		r_u8			(u8&  A)		{ r(&A,1);						} // byte (1b)
-	IC void		r_s8			(s8&  A)		{ r(&A,1);						} // byte (1b)
+	IC void r_u16( u16& A ) { A = *(u16*)( &B.data[ r_pos ] ); r_advance( sizeof( u16 ) ); }; // word (2b)
+	IC void r_s16( s16& A ) { A = *(s16*)( &B.data[ r_pos ] ); r_advance( sizeof( s16 ) ); }; // word (2b)
+	IC void r_u8( u8& A ) { A = *(u8*)( &B.data[ r_pos ] ); r_advance( sizeof( u8 ) ); }; // byte (1b)
+	IC void r_s8( s8& A ) { A = *(s8*)( &B.data[ r_pos ] ); r_advance( sizeof( s8 ) ); }; // byte (1b)
 	// IReader compatibility
-	IC Fvector	r_vec3			()		{Fvector A;r(&A,3*sizeof(float));	return(A);		} // vec3
-	IC Fvector4	r_vec4			()		{Fvector4 A;r(&A,4*sizeof(float));	return(A);		} // vec4
+	IC Fvector r_vec3() { Fvector tmp; tmp = *(Fvector*)( &B.data[ r_pos ] ); r_advance( sizeof( Fvector ) ); return tmp; }; // vec3
+	IC Fvector4 r_vec4() { Fvector4 tmp; tmp = *(Fvector4*)( &B.data[ r_pos ] ); r_advance( sizeof( Fvector4 ) ); return tmp; }; // vec4
 	IC float	r_float_q8		(float min,float max){float A;r_float_q8(A,min,max);return A;}
 	IC float	r_float_q16		(float min, float max){float A;r_float_q16(A,min,max);return A;}
-	IC float	r_float			()		{ float A; r(&A,4);					return(A);		} // float
-	IC u64 		r_u64			()		{ u64 	A; r(&A,8);					return(A);		} // qword (8b)
-	IC s64 		r_s64			()		{ s64 	A; r(&A,8);					return(A);		} // qword (8b)
-	IC u32 		r_u32			()		{ u32 	A; r(&A,4);					return(A);		} // dword (4b)
-	IC s32		r_s32			()		{ s32	A; r(&A,4);					return(A);		} // dword (4b)
+	IC float r_float() { float tmp; tmp = *(float*)( &B.data[ r_pos ] ); r_advance( sizeof( float ) ); return tmp; }; // float
+	IC u64 r_u64() { u64 tmp; tmp = *(u64*)( &B.data[ r_pos ] ); r_advance( sizeof( u64 ) ); return tmp; }; // qword (8b)
+	IC s64 r_s64() { s64 tmp; tmp = *(s64*)( &B.data[ r_pos ] ); r_advance( sizeof( s64 ) ); return tmp; }; // qword (8b)
+	IC u32 r_u32() { u32 tmp; tmp = *(u32*)( &B.data[ r_pos ] ); r_advance( sizeof( u32 ) ); return tmp; }; // dword (4b)
+	IC s32 r_s32() { s32 tmp; tmp = *(s32*)( &B.data[ r_pos ] ); r_advance( sizeof( s32 ) ); return tmp; }; // dword (4b)
 	IC u32		r_u24			()		{ u32	A=0; r(&A,3);				return(A);		} // dword (3b)
-	IC u16		r_u16			()		{ u16	A; r(&A,2);					return(A);		} // word (2b)
-	IC s16		r_s16			()		{ s16	A; r(&A,2);					return(A);		} // word (2b)
-	IC u8		r_u8			()		{ u8	A; r(&A,1);					return(A);		} // byte (1b)
-	IC s8		r_s8			()		{ s8	A; r(&A,1);					return(A);		} // byte (1b)
+	IC u16 r_u16() { u16 tmp; tmp = *(u16*)( &B.data[ r_pos ] ); r_advance( sizeof( u16 ) ); return tmp; }; // word (2b)
+	IC s16 r_s16() { s16 tmp; tmp = *(s16*)( &B.data[ r_pos ] ); r_advance( sizeof( s16 ) ); return tmp; }; // word (2b)
+	IC u8 r_u8() { u8 tmp; tmp = *(u8*)( &B.data[ r_pos ] ); r_advance( sizeof( u8 ) ); return tmp; }; // byte (1b)
+	IC s8 r_s8() { s8 tmp; tmp = *(s8*)( &B.data[ r_pos ] ); r_advance( sizeof( s8 ) ); return tmp; }; // byte (1b)
 
 	IC void		r_float_q16		(float& A, float min, float max)
 	{
-		u16				val;
-		r_u16			(val);
+		u16 &val = *(u16*)( &B.data[ r_pos ] ); r_advance( sizeof( u16 ) );
 		A				= (float(val)*(max-min))/65535.f + min;		// floating-point-error possible
 		VERIFY			((A >= min-EPS_S) && (A <= max+EPS_S));
 	}
 	IC void		r_float_q8		(float& A, float min, float max)
 	{
-		u8				val;
-		r_u8			(val);
+		u8 &val = *(u8*)( &B.data[ r_pos ] ); r_advance( sizeof( u8 ) );
 		A				= (float(val)/255.0001f) *(max-min) + min;	// floating-point-error possible
 		VERIFY			((A >= min) && (A <= max));
 	}
 	IC void		r_angle16		(float& A)		{ r_float_q16	(A,0,PI_MUL_2);	}
 	IC void		r_angle8		(float& A)		{ r_float_q8	(A,0,PI_MUL_2);	}
-	IC void		r_dir			(Fvector& A)	{ u16 t; r_u16(t); pvDecompress  (A,t); }
+	IC void r_dir( Fvector& A ) { u16 &t = *(u16*)( &B.data[ r_pos ] ); r_advance( sizeof( u16 ) ); pvDecompress ( A, t ); }
 
 	IC void		r_sdir			(Fvector& A)
 	{
-		u16	t;	r_u16	(t);
-		float s;r_float	(s);
+		u16 &t = *(u16*)( &B.data[ r_pos ] ); r_advance( sizeof( u16 ) );
+		float &s = *(float*)( &B.data[ r_pos ] ); r_advance( sizeof( float ) );
 		pvDecompress	(A,t);
 		A.mul			(s);
 	}

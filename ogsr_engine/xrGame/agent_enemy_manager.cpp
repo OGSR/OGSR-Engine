@@ -341,7 +341,7 @@ void CAgentEnemyManager::permutate_enemies		()
 template <typename T>
 IC	void CAgentEnemyManager::setup_mask			(xr_vector<T> &objects, CMemberEnemy &enemy, const squad_mask_type &non_combat_members)
 {
-	xr_vector<T>::iterator	I = std::find(objects.begin(),objects.end(),enemy.m_object->ID());
+	auto I = std::find(objects.begin(),objects.end(),enemy.m_object->ID());
 	if (I != objects.end()) {
 		(*I).m_squad_mask.assign	(
 			(*I).m_squad_mask.get() |

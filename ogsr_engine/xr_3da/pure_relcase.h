@@ -1,5 +1,6 @@
-#ifndef pure_relcaseH
-#define pure_relcaseH
+#pragma once
+
+#include "IGame_Level.h"
 
 class ENGINE_API pure_relcase{
 private:
@@ -20,5 +21,3 @@ public:
 	}
 	virtual ~pure_relcase		();
 };
-
-#endif // pure_relcaseH

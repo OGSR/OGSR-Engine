@@ -145,7 +145,7 @@ void CWeaponPistol::PlayAnimShoot()
 	}
 	else
 	{
-		PlayHUDMotion("anim_shoot_last", "anm_shot_l", FALSE, this, GetState());
+		PlayHUDMotion("anim_shot_last", "anm_shot_l", FALSE, this, GetState());
 		m_opened = true;
 	}
 }

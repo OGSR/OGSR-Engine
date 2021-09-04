@@ -5,6 +5,7 @@
 template<typename _Object>
 class CStateZombieAttackRun : public CState<_Object> {
 	typedef CState<_Object> inherited;
+	using inherited::object;
 
 	TTime				m_time_action_change{};
 	EAction				action;

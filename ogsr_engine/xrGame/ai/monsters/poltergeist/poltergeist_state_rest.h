@@ -6,6 +6,13 @@ template<typename _Object>
 class	CPoltergeistStateRest : public CStateMonsterRest<_Object> {
 protected:
 	typedef CStateMonsterRest<_Object>		inherited;
+	using inherited::object;
+	using inherited::prev_substate;
+	using inherited::current_substate;
+	using inherited::select_state;
+	using inherited::get_state_current;
+	using inherited::get_state;
+	using inherited::add_state;
 public:
 						CPoltergeistStateRest		(_Object *obj) : inherited(obj) {}
 	virtual	void		execute					();

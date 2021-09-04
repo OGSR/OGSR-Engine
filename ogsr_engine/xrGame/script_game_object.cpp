@@ -602,6 +602,19 @@ bool CScriptGameObject::IsActorOutdoors() const
 	return e->renderable_ROS()->get_luminocity_hemi() > 0.04f; //--#SM+#-- [0.05f слишком завышен был]
 }
 
+bool CScriptGameObject::addon_IsActorHideout() const
+{
+	static bool actorInhideout = true;
+	static u32 last_ray_pick_time = Device.dwTimeGlobal;
+	if (Device.dwTimeGlobal > (last_ray_pick_time + 500)) { 
+		last_ray_pick_time = Device.dwTimeGlobal;
+		collide::rq_result RQ;
+		actorInhideout = !!g_pGameLevel->ObjectSpace.RayPick(Device.vCameraPosition, Fvector().set(0, 1, 0), 50.f, collide::rqtBoth, RQ, g_pGameLevel->CurrentViewEntity());
+	}
+
+	return actorInhideout;
+}
+
 float CScriptGameObject::GetActorJumpSpeed() const
 {
 	const CActor	*act = smart_cast<CActor*>(&object());

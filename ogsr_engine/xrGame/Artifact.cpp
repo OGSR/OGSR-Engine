@@ -414,12 +414,6 @@ void CArtefact::OnAnimationEnd(u32 state)
 }
 
 
-
-u16	CArtefact::bone_count_to_synchronize	() const
-{
-	return CInventoryItem::object().PHGetSyncItemsNumber();
-}
-
 void CArtefact::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count)
 {
 	str_name = NameShort();

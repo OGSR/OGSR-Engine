@@ -2,7 +2,7 @@
 
 #include "DiscordRPC.hpp"
 
-constexpr char* DISCORD_LIBRARY_DLL{ "discord-rpc.dll" };
+constexpr const char* DISCORD_LIBRARY_DLL{ "discord-rpc.dll" };
 
 ENGINE_API DiscordRPC Discord;
 

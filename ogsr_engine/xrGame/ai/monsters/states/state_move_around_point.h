@@ -6,6 +6,7 @@
 template<typename _Object>
 class CStateMonsterMoveAroundPoint : public CState<_Object> {
 	typedef CState<_Object> inherited;
+	using inherited::object;
 
 	SStateDataMoveAroundPoint data;
 

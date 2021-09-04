@@ -14,7 +14,11 @@ template <typename _object_type>
 class CPropertyEvaluatorMember : public CPropertyEvaluator<_object_type> {
 protected:
 	typedef CPropertyEvaluator<_object_type>	inherited;
+	using _condition_type = typename inherited::_condition_type;
+	using _value_type = typename inherited::_value_type;
 
+	using inherited::m_evaluator_name;
+	using inherited::m_storage;
 protected:
 	_condition_type		m_condition_id;
 	_value_type			m_value;

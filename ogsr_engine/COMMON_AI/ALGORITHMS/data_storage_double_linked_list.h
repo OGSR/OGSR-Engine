@@ -42,6 +42,10 @@ struct CDataStorageDoubleLinkedList {
 		typedef typename CGraphVertex::_index_type	_index_type;
 
 	protected:
+		using inherited::m_list_tail;
+		using inherited::m_list_head;
+		using inherited::m_max_distance;
+
 		_dist_type				m_switch_factor;
 
 	public:

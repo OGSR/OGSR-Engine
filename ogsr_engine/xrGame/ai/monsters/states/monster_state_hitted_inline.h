@@ -2,6 +2,8 @@
 
 #include "monster_state_hitted_hide.h"
 #include "monster_state_hitted_moveout.h"
+#include "../ai_monster_squad.h"
+#include "../ai_monster_squad_manager.h"
 #include "monster_state_home_point_danger.h"
 
 #define TEMPLATE_SPECIALIZATION template <\

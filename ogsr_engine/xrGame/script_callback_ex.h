@@ -104,6 +104,11 @@ public:
 
 template <typename _return_type>
 class CScriptCallbackEx : public CScriptCallbackEx_<_return_type> {
+	using inherited = CScriptCallbackEx_<_return_type>;
+	using return_type = typename inherited::return_type;
+	using inherited::m_functor;
+	using inherited::m_object;
+
 	template <typename T>
 	static void do_return(T&& value, std::true_type /*is_void*/) {
 		(void)value;

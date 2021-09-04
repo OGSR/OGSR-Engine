@@ -66,5 +66,5 @@ public:
 	}
 
 	CSoundRender_Cache();
-	~CSoundRender_Cache();
+	~CSoundRender_Cache() = default;
 };

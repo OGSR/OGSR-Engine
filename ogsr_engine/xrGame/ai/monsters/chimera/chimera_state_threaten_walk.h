@@ -4,6 +4,8 @@
 template<typename _Object>
 class CStateChimeraThreatenWalk : public CStateMonsterMoveToPointEx<_Object> {
 	typedef CStateMonsterMoveToPointEx<_Object>		inherited;
+	using inherited::inherited::object;
+	using inherited::data;
 
 public:
 	IC					CStateChimeraThreatenWalk	(_Object *obj) : inherited(obj){}

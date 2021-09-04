@@ -40,7 +40,7 @@ void CSSetupManager::reinit							()
 TEMPLATE_SPECIALIZATION
 IC	_action_type &CSSetupManager::action			(const _action_id_type &action_id) const
 {
-	setup_actions::const_iterator	I = std::find_if(actions().begin(),actions().end(),setup_pred(action_id));
+	auto I = std::find_if(actions().begin(),actions().end(),setup_pred(action_id));
 	VERIFY					(I != actions().end());
 	return					(*(*I).second);
 }
@@ -106,8 +106,8 @@ IC	void CSSetupManager::select_action				()
 		}
 
 		float				m_total_weight = 0.f;
-		setup_actions::const_iterator	I = actions().begin();
-		setup_actions::const_iterator	E = actions().end();
+		auto I = actions().cbegin();
+		auto E = actions().cend();
 		for ( ; I != E; ++I)
 			if (((*I).first != m_current_action_id) && (*I).second->applicable())
 				m_total_weight += (*I).second->weight();

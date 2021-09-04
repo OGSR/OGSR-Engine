@@ -40,14 +40,6 @@ void CScriptBinderObject::net_Destroy		()
 {
 }
 
-void CScriptBinderObject::net_Import		(NET_Packet *net_packet)
-{
-}
-
-void CScriptBinderObject::net_Export		(NET_Packet *net_packet)
-{
-}
-
 void CScriptBinderObject::shedule_Update	(u32 time_delta)
 {
 }

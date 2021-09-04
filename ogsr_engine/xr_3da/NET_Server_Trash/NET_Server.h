@@ -70,10 +70,10 @@ public:
 	u32					process_id;
 
     IPureServer*        server;
+	bool operator==(ClientID const&) = delete;
 };
 
 
-IC bool operator== (IClient const* pClient, ClientID const& ID) { return pClient->ID == ID; }
 
 class CServerInfo;
 
@@ -117,7 +117,6 @@ public:
 
 	// extended functionality
 	virtual u32				OnMessage			(NET_Packet& P, ClientID sender);	// Non-Zero means broadcasting with "flags" as returned
-	virtual bool			OnCL_QueryHost		()		{ return true; };
 
 	virtual IClient*		client_Create		()				= 0;			// create client info
 	virtual void			client_Replicate	()				= 0;			// replicate current state to client

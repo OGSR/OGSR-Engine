@@ -49,8 +49,7 @@ public:
 	virtual DLL_Pure	*_construct		();
 	virtual void		Load			( LPCSTR section );
 	virtual BOOL		net_Spawn		( CSE_Abstract* DC );
-	virtual void		net_Export		(NET_Packet& P);
-	virtual void		net_Import		(NET_Packet& P);
+	virtual void		net_Export(CSE_Abstract*);
 	virtual	void		net_Destroy		();
 
 	virtual void		save			(NET_Packet &output_packet);

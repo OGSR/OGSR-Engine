@@ -75,7 +75,7 @@ public:
 	#endif
 	
 	occRasterizer	();
-	~occRasterizer	();
+	~occRasterizer() = default;
 };
 
 extern occRasterizer	Raster;

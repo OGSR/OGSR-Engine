@@ -326,63 +326,22 @@ void CPhantom::load(IReader &input_packet)
 {
 	SwitchToState	(EState(input_packet.r_s32()));
 }
-void CPhantom::net_Export	(NET_Packet& P)					// export to server
-{
-	// export 
-	R_ASSERT			(Local());
 
-	u8					flags = 0;
-	P.w_float			(GetfHealth());
+void CPhantom::net_Export( CSE_Abstract* E ) {
+  R_ASSERT( Local() );
 
-	P.w_float			(0);
-	P.w_u32				(0);
-	P.w_u32				(0);
-
-	P.w_u32				(Device.dwTimeGlobal);
-	P.w_u8				(flags);
-
-	float				yaw, pitch, bank;
-	XFORM().getHPB		(yaw,pitch,bank);
-	P.w_float /*w_angle8*/			(yaw);
-	P.w_float /*w_angle8*/			(yaw);
-	P.w_float /*w_angle8*/			(pitch);
-	P.w_float /*w_angle8*/			(0);
-	P.w_u8				(u8(g_Team()));
-	P.w_u8				(u8(g_Squad()));
-	P.w_u8				(u8(g_Group()));
+  CSE_ALifeCreatureAbstract* creature = smart_cast<CSE_ALifeCreatureAbstract*>( E );
+  creature->fHealth       = GetfHealth();
+  creature->timestamp     = Level().timeServer();
+  creature->flags         = 0;
+  creature->o_Position    = Position();
+  float yaw, pitch, bank;
+  XFORM().getHPB( yaw, pitch, bank);
+  creature->o_model       = yaw;
+  creature->o_torso.yaw   = yaw;
+  creature->o_torso.pitch = pitch;
+  creature->o_torso.roll  = 0;
+  creature->s_team        = u8( g_Team() );
+  creature->s_squad       = u8( g_Squad() );
+  creature->s_group       = u8( g_Group() );
 }
-
-void CPhantom::net_Import	(NET_Packet& P)
-{
-	// import
-	R_ASSERT			(Remote());
-
-	u8					flags;
-
-	float health;
-	P.r_float			(health);
-	SetfHealth			(health);
-
-	float fDummy;
-	u32 dwDummy;
-	P.r_float			(fDummy);
-	P.r_u32				(dwDummy);
-	P.r_u32				(dwDummy);
-
-	P.r_u32				(dwDummy);
-	P.r_u8				(flags);
-
-	float				yaw, pitch, bank = 0, roll = 0;
-
-	P.r_float /*r_angle8*/			(yaw);
-	P.r_float /*r_angle8*/			(yaw);
-	P.r_float /*r_angle8*/			(pitch);
-	P.r_float /*r_angle8*/			(roll);
-
-	id_Team				= P.r_u8();
-	id_Squad			= P.r_u8();
-	id_Group			= P.r_u8();
-
-	XFORM().setHPB		(yaw,pitch,bank);
-}
-

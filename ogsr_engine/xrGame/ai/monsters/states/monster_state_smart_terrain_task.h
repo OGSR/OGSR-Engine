@@ -7,6 +7,13 @@ template<typename _Object>
 class CStateMonsterSmartTerrainTask : public CState<_Object> {
 	typedef CState<_Object>		inherited;
 	typedef CState<_Object>*	state_ptr;
+	using inherited::object;
+	using inherited::prev_substate;
+	using inherited::current_substate;
+	using inherited::select_state;
+	using inherited::get_state_current;
+	using inherited::get_state;
+	using inherited::add_state;
 
 	CALifeSmartTerrainTask *m_current_task;
 public:

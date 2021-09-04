@@ -596,11 +596,12 @@ int __cdecl main(int argc, char* argv[])
 	Msg("Compressing files [%s]...", folder);
 	Log("\n");
 
-	BOOL bFast = 0 != strstr(params, "-fast");
-
-	LPCSTR p = strstr(params, "-ltx");
-	R_ASSERT2(p, "wrong params passed. -ltx option needed");
-	ProcessLTX(argv[1], p + 4, bFast);
+	{
+		BOOL bFast = 0 != strstr(params, "-fast");
+		LPCSTR p = strstr(params, "-ltx");
+		R_ASSERT2(p, "wrong params passed. -ltx option needed");
+		ProcessLTX(argv[1], p + 4, bFast);
+	}
 
 	Core._destroy();
 

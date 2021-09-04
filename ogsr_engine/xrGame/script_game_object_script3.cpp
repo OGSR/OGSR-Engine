@@ -299,6 +299,8 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 
 		/**************************************************** added by Cribbledirge END ****************************************************/
 		
+		.def("is_ActorHide", &CScriptGameObject::addon_IsActorHideout)			// проверка что актор под  каким либо укрытием
+		
 		// KD
 		// functions for CInventoryOwner class
 		.def("item_on_belt", &CScriptGameObject::ItemOnBelt)

@@ -8098,9 +8098,6 @@
     <ClCompile Include="xrServer_CL_connect.cpp">
       <Filter>Core\Server\Games\server\single\ServerConnect</Filter>
     </ClCompile>
-    <ClCompile Include="xrServer_CL_disconnect.cpp">
-      <Filter>Core\Server\Games\server\single\ServerConnect</Filter>
-    </ClCompile>
     <ClCompile Include="xrServer_Connect.cpp">
       <Filter>Core\Server\Games\server\single\ServerConnect</Filter>
     </ClCompile>
@@ -8171,9 +8168,6 @@
       <Filter>Core\Server\ServerPerform</Filter>
     </ClCompile>
     <ClCompile Include="xrServer_perform_sls_default.cpp">
-      <Filter>Core\Server\ServerPerform</Filter>
-    </ClCompile>
-    <ClCompile Include="xrServer_perform_sls_load.cpp">
       <Filter>Core\Server\ServerPerform</Filter>
     </ClCompile>
     <ClCompile Include="xrServer_perform_sls_save.cpp">
@@ -8303,9 +8297,6 @@
       <Filter>Core\Client\Objects\physics\Base\Objects\Shell</Filter>
     </ClCompile>
     <ClCompile Include="PHShellActivate.cpp">
-      <Filter>Core\Client\Objects\physics\Base\Objects\Shell</Filter>
-    </ClCompile>
-    <ClCompile Include="PHShellNetState.cpp">
       <Filter>Core\Client\Objects\physics\Base\Objects\Shell</Filter>
     </ClCompile>
     <ClCompile Include="ShellHit.cpp">

@@ -23,7 +23,6 @@
 #pragma once
 
 #include <luabind/config.hpp>
-#include <lua.hpp>
 
 namespace luabind { 
     

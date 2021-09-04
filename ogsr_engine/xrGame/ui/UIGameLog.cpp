@@ -24,20 +24,6 @@ CUIGameLog::CUIGameLog()
 CUIGameLog::~CUIGameLog()
 {}
 
-
-CUIStatic* CUIGameLog::AddLogMessage(LPCSTR msg)
-{
-	CUIStatic* pItem				= NULL;
-	ADD_TEXT_TO_VIEW3				(msg, pItem, this);
-	pItem->SetTextComplexMode		(true);
-	pItem->SetFont					(GetFont());
-	pItem->SetTextColor				(txt_color);
-	pItem->SetClrAnimDelay			(5000.0f);
-	pItem->SetClrLightAnim			(CHAT_LOG_ITEMS_ANIMATION, false, true, true, true);
-	ForceUpdate						();
-	return							pItem;
-}
-
 // warning: initialization of item is incomplete!
 // initialization of item's height, text static and icon still necessary
 CUIPdaMsgListItem* CUIGameLog::AddPdaMessage(LPCSTR msg, float delay){
