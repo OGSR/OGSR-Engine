@@ -298,7 +298,7 @@ void	CPHShell::	applyImpulseTrace		(const Fvector& pos, const Fvector& dir, floa
 	CBoneInstance& instance=m_pKinematics->LL_GetBoneInstance				(id);
 	if(instance.callback_type() != bctPhysics || !instance.callback_param()) return;
 
-	((CPhysicsElement*)instance.callback_param())->applyImpulseTrace		( pos,  dir,  val, id);
+	static_cast<CPhysicsElement*>(instance.callback_param())->applyImpulseTrace( pos,  dir,  val, id);
 	EnableObject(0);
 }
 

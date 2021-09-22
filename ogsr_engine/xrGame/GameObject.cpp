@@ -874,9 +874,9 @@ u32	CGameObject::ef_anomaly_type		() const
 u32	CGameObject::ef_weapon_type			() const
 {
 	string16	temp; CLSID2TEXT(CLS_ID,temp);
-	R_ASSERT3	(false,"Invalid weapon type request, virtual function is not properly overridden!",temp);
-	return		(u32(-1));
-//	return		(u32(0));
+	//R_ASSERT3	(false,"Invalid weapon type request, virtual function is not properly overridden!",temp);
+	Msg("!![%s] Invalid weapon type request, virtual function is not properly overridden [%s] ", __FUNCTION__, temp);
+	return u32(-1);
 }
 
 u32	CGameObject::ef_detector_type		() const
