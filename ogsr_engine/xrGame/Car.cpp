@@ -1729,6 +1729,11 @@ void CCar::OnEvent(NET_Packet& P, u16 type)
 			P.r_u16		(id);
 			CObject* O	= Level().Objects.net_Find	(id);
 
+			if (!O) {
+				Msg("! [%s] Error: No object to reject/sell [%u]", __FUNCTION__, id);
+				break;
+			}
+
 			bool just_before_destroy = !P.r_eof() && P.r_u8();
 			bool dont_create_shell = (type == GE_TRADE_SELL) || (type == GE_TRANSFER_REJECT) || just_before_destroy;
 
