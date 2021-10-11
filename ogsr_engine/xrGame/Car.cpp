@@ -893,7 +893,7 @@ void CCar::Init()
 		
 		m_bone_steer=pKinematics->LL_BoneID(ini->r_string("car_definition","steer"));
 		VERIFY2(fsimilar(DET(pKinematics->LL_GetTransform(m_bone_steer)),1.f,EPS_L),"BBADD MTX");
-		pKinematics->LL_GetBoneInstance(m_bone_steer).set_callback(bctPhysics,cb_Steer,this);
+		pKinematics->LL_GetBoneInstance(m_bone_steer).set_callback(bctCustom,cb_Steer,this);
 	}
 	m_steer_angle=0.f;
 	//ref_wheel.Init();
