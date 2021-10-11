@@ -18,6 +18,22 @@ static bool error_after_dialog = false;
 #include "stacktrace_collector.h"
 #include <sstream>
 #include <VersionHelpers.h>
+#include <shellapi.h>
+
+
+static void ShowErrorMessage(const char* msg, const bool show_msg = false)
+{
+	ShowWindow(gGameWindow, SW_HIDE);
+
+	while (ShowCursor(TRUE) < 0);
+
+	if (!IsDebuggerPresent()) {
+		if (show_msg)
+			MessageBox(gGameWindow, msg, "FATAL ERROR", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+		else
+			ShellExecute(gGameWindow, "open", logFName, nullptr, nullptr, SW_SHOW);
+	}
+}
 
 
 static const char* GetThreadName()
@@ -130,23 +146,17 @@ void gather_info(const char *expression, const char *description, const char *ar
 		}
 	}
 
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 #ifdef USE_OWN_MINI_DUMP
 	buffer += sprintf(buffer, "See log file and minidump for detailed information\r\n");
 #else
 	buffer += sprintf(buffer, "See log file for detailed information\r\n");
-#endif
 #endif
 	LogStackTrace("!!stack trace:\n");
 }
 
 void xrDebug::do_exit(const std::string &message)
 {
-	ShowWindow(gGameWindow, SW_HIDE);
-
-	while (ShowCursor(TRUE) < 0);
-
-	MessageBox(gGameWindow, message.c_str(), "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+	ShowErrorMessage(message.c_str(), true);
 
 	if ( !IsDebuggerPresent() )
 		quick_exit(EXIT_SUCCESS);
@@ -168,25 +178,14 @@ void xrDebug::backend(const char *expression, const char *description, const cha
 		save_mini_dump(nullptr);
 #endif
 */
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-	ShowWindow(gGameWindow, SW_HIDE);
-
 	auto endline = "\r\n";
 	auto buffer = assertion_info + xr_strlen(assertion_info);
 	buffer += sprintf(buffer, "%sPress OK to abort execution%s", endline, endline);
 
-	while (ShowCursor(TRUE) < 0);
-
 	error_after_dialog = true;
 
-	MessageBox(
-		gGameWindow,
-		assertion_info,
-		"FATAL ERROR",
-		MB_OK | MB_ICONERROR | MB_SYSTEMMODAL
-	);
+	ShowErrorMessage(assertion_info);
 
-#endif
 	if ( !IsDebuggerPresent() )
 		quick_exit(EXIT_SUCCESS);
 	else
@@ -378,13 +377,7 @@ static LONG WINAPI UnhandledFilter(_EXCEPTION_POINTERS *pExceptionInfo)
 
 		LogStackTrace("!!Unhandled exception stack trace:\n", pExceptionInfo, true);
 
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-		ShowWindow(gGameWindow, SW_HIDE);
-
-		while (ShowCursor(TRUE) < 0);
-
-		MessageBox(gGameWindow, "Fatal error occured\n\nPress OK to abort program execution", "FATAL ERROR", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
-#endif
+		ShowErrorMessage("Fatal error occured\n\nPress OK to abort program execution");
 	}
 
 #ifdef USE_OWN_MINI_DUMP
@@ -563,8 +556,6 @@ void xrDebug::_initialize()
 
 	PreventSetUnhandledExceptionFilter();
 
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 	// Выключаем окно "Прекращена работа программы...". У нас своё окно для сообщений об ошибках есть.
-	SetErrorMode(GetErrorMode() | SEM_NOGPFAULTERRORBOX);
-#endif
+	//SetErrorMode(GetErrorMode() | SEM_NOGPFAULTERRORBOX);
 }
