@@ -74,9 +74,8 @@ void CUICursor::UpdateCursorPosition(const int _dx, const int _dy)
 
 	if (m_b_use_win_cursor)
 	{
-		POINT pti;
-		if (!GetCursorPos(&pti))
-			return; // KRodin: А такое бывает???
+		Ivector2 pti;
+		IInputReceiver::IR_GetMousePosReal(pti);
 
 		vPos.x = (float)pti.x * (UI_BASE_WIDTH / (float)Device.dwWidth);
 		vPos.y = (float)pti.y * (UI_BASE_HEIGHT / (float)Device.dwHeight);
