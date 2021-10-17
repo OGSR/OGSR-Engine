@@ -255,15 +255,15 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 		if (useVolumetric)
 		{
 			float volQuality = READ_IF_EXISTS(pUserData, r_float, "torch_definition", "volumetric_quality", 1.0f);
-			std::clamp(volQuality, 0.f, 1.f);
+			volQuality = std::clamp(volQuality, 0.f, 1.f);
 			light_render->set_volumetric_quality(volQuality);
 
 			float volIntensity = READ_IF_EXISTS(pUserData, r_float, "torch_definition", "volumetric_intensity", 0.15f);
-			std::clamp(volIntensity, 0.f, 10.f);
+			volIntensity = std::clamp(volIntensity, 0.f, 10.f);
 			light_render->set_volumetric_intensity(volIntensity);
 
 			float volDistance = READ_IF_EXISTS(pUserData, r_float, "torch_definition", "volumetric_distance", 0.45f);
-			std::clamp(volDistance, 0.f, 1.f);
+			volDistance = std::clamp(volDistance, 0.f, 1.f);
 			light_render->set_volumetric_distance(volDistance);
 		}
 	}
