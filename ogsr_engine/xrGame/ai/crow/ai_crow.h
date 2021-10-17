@@ -119,7 +119,7 @@ public:
 
 	virtual void net_Export( CSE_Abstract* E );
 
-	virtual void	g_fireParams				(const CHudItem* /**pHudItem/**/, Fvector& /**P/**/, Fvector& /**D/**/)	{};
+	virtual void g_fireParams(CHudItem* /**pHudItem/**/, Fvector& /**P/**/, Fvector& /**D/**/) override {}
 	virtual void	g_WeaponBones				(int &/**L/**/, int &/**R1/**/, int &/**R2/**/)	{};
 
 	virtual void	HitSignal					(float	HitAmount,	Fvector& local_dir, CObject* who, s16 element);

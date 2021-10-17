@@ -10,7 +10,7 @@
 
 #include "..\xr_3da\Environment.h"
 #include "..\xr_3da\CustomHUD.h"
-#include "Entity.h"
+#include "Actor.h"
 #include "level.h"
 #include "game_cl_base.h"
 #include "..\xr_3da\IGame_Persistent.h"
@@ -26,6 +26,7 @@
 #include "inventory_item.h"
 #include "inventory.h"
 #include "monster_community.h"
+#include "HudItem.h"
 
 u32 C_ON_ENEMY		D3DCOLOR_XRGB(0xff,0,0);
 u32 C_ON_NEUTRAL	D3DCOLOR_XRGB(0xff,0xff,0x80);
@@ -141,14 +142,15 @@ void CHUDTarget::Render()
 {
 	VERIFY		(g_bRendering);
 
-	CObject*	O		= Level().CurrentEntity();
-	if (0==O)	return;
-	CEntity*	E		= smart_cast<CEntity*>(O);
-	if (0==E)	return;
+	CActor* Actor = smart_cast<CActor*>(Level().CurrentEntity());
+	if (!Actor)	return;
 
-	Fvector p1				= Device.vCameraPosition;
-	Fvector dir				= Device.vCameraDirection;
-	
+	Fvector p1 = Device.vCameraPosition;
+	Fvector dir = Device.vCameraDirection;
+
+	if (auto Wpn = smart_cast<CHudItem*>(Actor->inventory().ActiveItem()))
+		Actor->g_fireParams(Wpn, p1, dir);
+
 	// Render cursor
 	u32 C				= C_DEFAULT;
 	
@@ -227,25 +229,24 @@ void CHUDTarget::Render()
 		clamp(fuzzyShowInfo,0.f,1.f);
 	}
 
+	Fvector2 scr_size;
+	scr_size.set(float(Device.dwWidth), float(Device.dwHeight));
+	float size_x = scr_size.x * di_size;
+	float size_y = scr_size.y * di_size;
+
+	size_y = size_x;
+
+	float w_2 = scr_size.x / 2.0f;
+	float h_2 = scr_size.y / 2.0f;
+
+	// Convert to screen coords
+	float cx = (pt.x + 1) * w_2;
+	float cy = (pt.y + 1) * h_2;
+
 	//отрендерить кружочек или крестик
 	if(!m_bShowCrosshair){
 		// actual rendering
 		UIRender->StartPrimitive(6, IUIRender::ptTriList, UI()->m_currentPointType);
-
-		Fvector2		scr_size;
-//.		scr_size.set	(float(::Render->getTarget()->get_width()), float(::Render->getTarget()->get_height()));
-		scr_size.set	(float(Device.dwWidth) ,float(Device.dwHeight));
-		float			size_x = scr_size.x	* di_size;
-		float			size_y = scr_size.y * di_size;
-
-		size_y			= size_x;
-
-		float			w_2		= scr_size.x/2.0f;
-		float			h_2		= scr_size.y/2.0f;
-
-		// Convert to screen coords
-		float cx = (pt.x + 1)*w_2;
-		float cy = (pt.y + 1)*h_2;
 
 		//	TODO: return code back to indexed rendering since we use quads
 		//	Tri 1
@@ -263,7 +264,6 @@ void CHUDTarget::Render()
 	}else{
 		//отрендерить прицел
 		HUDCrosshair.cross_color	= C;
-		HUDCrosshair.OnRender		();
+		HUDCrosshair.OnRender(Fvector2{ cx, cy }, scr_size);
 	}
 }
-

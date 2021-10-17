@@ -101,7 +101,7 @@ public:
 	virtual void			OnEvent				( NET_Packet& P, u16 type		);
 
 	virtual BOOL			IsVisibleForHUD		()	{return g_Alive();	}
-	virtual void			g_fireParams		(const CHudItem*, Fvector &, Fvector &){}; 
+	virtual void g_fireParams(CHudItem*, Fvector&, Fvector&) {}
 
 	//time of entity death
 	u32						m_level_death_time;
