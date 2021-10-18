@@ -114,26 +114,27 @@ ICF static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params)
 	return FALSE;
 }
 
-void CHUDTarget::CursorOnFrame ()
+void CHUDTarget::CursorOnFrame()
 {
-	Fvector				p1,dir;
+	CActor* Actor = smart_cast<CActor*>(Level().CurrentEntity());
+	if (!Actor)	return;
 
-	p1					= Device.vCameraPosition;
-	dir					= Device.vCameraDirection;
-	
+	Fvector p1 = Device.vCameraPosition;
+	Fvector dir = Device.vCameraDirection;
+
+	if (auto Wpn = smart_cast<CHudItem*>(Actor->inventory().ActiveItem()))
+		Actor->g_fireParams(Wpn, p1, dir);
+
 	// Render cursor
-	if(Level().CurrentEntity()){
-		RQ.O			= 0; 
-		RQ.range		= g_pGamePersistent->Environment().CurrentEnv->far_plane*0.99f;
-		RQ.element		= -1;
-		
-		collide::ray_defs	RD(p1, dir, RQ.range, CDB::OPT_CULL, collide::rqtBoth);
-		RQR.r_clear			();
-		VERIFY				(!fis_zero(RD.dir.square_magnitude()));
-		if(Level().ObjectSpace.RayQuery(RQR,RD, pick_trace_callback, &RQ, NULL, Level().CurrentEntity()))
-			clamp			(RQ.range,NEAR_LIM,RQ.range);
-	}
+	RQ.O = nullptr;
+	RQ.range = g_pGamePersistent->Environment().CurrentEnv->far_plane * 0.99f;
+	RQ.element = -1;
 
+	collide::ray_defs RD(p1, dir, RQ.range, CDB::OPT_CULL, collide::rqtBoth);
+	RQR.r_clear();
+	VERIFY(!fis_zero(RD.dir.square_magnitude()));
+	if (Level().ObjectSpace.RayQuery(RQR, RD, pick_trace_callback, &RQ, nullptr, Level().CurrentEntity()))
+		clamp(RQ.range, NEAR_LIM, RQ.range);
 }
 
 extern ENGINE_API BOOL g_bRendering;

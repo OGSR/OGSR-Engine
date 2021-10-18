@@ -73,7 +73,7 @@ void CActor::g_fireParams(CHudItem* pHudItem, Fvector &fire_pos, Fvector &fire_d
 	{
 		if (cam_active == eacFirstEye && !(weapon->IsZoomed() && !weapon->IsRotatingToZoom()))
 		{
-			//fire_dir = weapon->get_LastFD();
+			fire_dir = weapon->get_LastFD();
 			fire_pos = weapon->get_LastFP();
 		}
 	}
