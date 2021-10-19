@@ -3,6 +3,8 @@
 #include "HUDCrosshair.h"
 #include "..\xrcdb\xr_collide_defs.h"
 
+constexpr u32 C_ON_ENEMY = D3DCOLOR_XRGB(0xff, 0, 0), C_ON_NEUTRAL = D3DCOLOR_XRGB(0xff, 0xff, 0x80), C_ON_FRIEND = D3DCOLOR_XRGB(0, 0xff, 0), C_DEFAULT = D3DCOLOR_XRGB(0xff, 0xff, 0xff);
+
 class CHUDManager;
 
 class CHUDTarget {

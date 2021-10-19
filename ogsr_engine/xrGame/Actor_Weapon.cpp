@@ -14,6 +14,7 @@
 #include "EffectorShot.h"
 #include "WeaponMagazined.h"
 #include "game_base_space.h"
+#include "../xr_3da/CustomHUD.h"
 
 constexpr float VEL_MAX = 10.f;
 constexpr float VEL_A_MAX = 10.f;
@@ -71,7 +72,7 @@ void CActor::g_fireParams(CHudItem* pHudItem, Fvector &fire_pos, Fvector &fire_d
 	}
 	else if (auto weapon = smart_cast<CWeapon*>(pHudItem))
 	{
-		if (cam_active == eacFirstEye && !(weapon->IsZoomed() && !weapon->IsRotatingToZoom()))
+		if (psHUD_Flags.test(HUD_CROSSHAIR_HARD) && !(weapon->IsZoomed() && !weapon->IsRotatingToZoom()))
 		{
 			fire_dir = weapon->get_LastFD();
 			fire_pos = weapon->get_LastFP();

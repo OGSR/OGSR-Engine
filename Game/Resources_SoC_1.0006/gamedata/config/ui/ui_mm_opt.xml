@@ -700,6 +700,11 @@
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_small_font</text>
 		</check_small_font>
 
+		<check_crosshair_hard x="20" y="305" width="243" height="21">
+			<options_item entry="hud_crosshair_hard" group="mm_opt_gameplay"/>
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_crosshair_hard</text>
+		</check_crosshair_hard>
+
 	</tab_gameplay>
 	<tab_controls>
 		<cap_mousesens x="20" y="25" width="150" height="21">

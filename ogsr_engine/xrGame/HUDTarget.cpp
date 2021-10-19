@@ -15,7 +15,6 @@
 #include "game_cl_base.h"
 #include "..\xr_3da\IGame_Persistent.h"
 
-
 #include "InventoryOwner.h"
 #include "relation_registry.h"
 #include "character_info.h"
@@ -28,31 +27,7 @@
 #include "monster_community.h"
 #include "HudItem.h"
 
-u32 C_ON_ENEMY		D3DCOLOR_XRGB(0xff,0,0);
-u32 C_ON_NEUTRAL	D3DCOLOR_XRGB(0xff,0xff,0x80);
-u32 C_ON_FRIEND		D3DCOLOR_XRGB(0,0xff,0);
-
-
-#define C_DEFAULT	D3DCOLOR_XRGB(0xff,0xff,0xff)
-#define C_SIZE		0.025f
-#define NEAR_LIM	0.5f
-
-#define SHOW_INFO_SPEED		0.5f
-#define HIDE_INFO_SPEED		10.f
-
-
-IC	float	recon_mindist	()		{
-	return 2.f;
-}
-IC	float	recon_maxdist	()		{
-	return 50.f;
-}
-IC	float	recon_minspeed	()		{
-	return 0.5f;
-}
-IC	float	recon_maxspeed	()		{
-	return 10.f;
-}
+constexpr float C_SIZE = 0.025f, NEAR_LIM = 0.5f, SHOW_INFO_SPEED = 0.5f, HIDE_INFO_SPEED = 10.f;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

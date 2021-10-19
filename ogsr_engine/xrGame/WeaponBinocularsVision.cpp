@@ -14,12 +14,9 @@
 #include "game_cl_base.h"
 #include "AI/Monsters/BaseMonster/base_monster.h"
 #include "..\xr_3da\IGame_Persistent.h"
+#include "HUDTarget.h"
 
 #define RECT_SIZE	16
-
-extern u32 C_ON_ENEMY;
-extern u32 C_ON_NEUTRAL;
-extern u32 C_ON_FRIEND;
 
 struct FindVisObjByObject{
 	const CObject*			O;
