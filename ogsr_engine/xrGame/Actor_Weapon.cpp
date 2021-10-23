@@ -15,6 +15,7 @@
 #include "WeaponMagazined.h"
 #include "game_base_space.h"
 #include "../xr_3da/CustomHUD.h"
+#include "WeaponKnife.h"
 
 constexpr float VEL_MAX = 10.f;
 constexpr float VEL_A_MAX = 10.f;
@@ -70,7 +71,7 @@ void CActor::g_fireParams(CHudItem* pHudItem, Fvector &fire_pos, Fvector &fire_d
 		//XFORM().transform_dir(offset, pMissile->throw_point_offset());
 		fire_pos.add(offset);
 	}
-	else if (auto weapon = smart_cast<CWeapon*>(pHudItem))
+	else if (auto weapon = smart_cast<CWeapon*>(pHudItem); weapon && !smart_cast<CWeaponKnife*>(pHudItem))
 	{
 		if (psHUD_Flags.test(HUD_CROSSHAIR_HARD) && !(weapon->IsZoomed() && !weapon->IsRotatingToZoom()))
 		{
