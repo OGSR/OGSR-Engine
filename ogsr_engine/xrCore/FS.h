@@ -149,6 +149,7 @@ public:
     }
 #pragma warning(pop)
     bool save_to(LPCSTR fn);
+    void reserve(const size_t count);
 };
 
 //------------------------------------------------------------------------------------

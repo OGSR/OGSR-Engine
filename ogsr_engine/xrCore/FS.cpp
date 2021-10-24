@@ -76,7 +76,7 @@ void CMemoryWriter::w(const void* ptr, u32 count)
     {
         // reallocate
         if (mem_size == 0)
-            mem_size = 128;
+            mem_size = 1024 * 1024;
         while (mem_size <= (position + count))
             mem_size *= 2;
         if (0 == data)
@@ -90,7 +90,12 @@ void CMemoryWriter::w(const void* ptr, u32 count)
         file_size = position;
 }
 
-// static const u32 mb_sz = 0x1000000;
+void CMemoryWriter::reserve(const size_t count)
+{
+    mem_size = count;
+    data = (BYTE*)Memory.mem_alloc(mem_size);
+}
+
 bool CMemoryWriter::save_to(LPCSTR fn)
 {
     IWriter* F = FS.w_open(fn);
