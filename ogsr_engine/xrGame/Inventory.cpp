@@ -192,18 +192,29 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 
 		break;
 	default:
-		bool def_to_slot = true;
-		auto pActor      = smart_cast<CActor*>( m_pOwner );
-		if (Core.Features.test(xrCore::Feature::ruck_flag_preferred))
-			def_to_slot = pActor ? !pIItem->RuckDefault() : true;
+		bool force_move_to_slot{}, force_ruck_default{};
+		if (!m_pOwner->m_tmp_next_item_slot)
+		{
+			force_ruck_default = true;
+			m_pOwner->m_tmp_next_item_slot = NO_ACTIVE_SLOT;
+		}
+		else if (m_pOwner->m_tmp_next_item_slot != NO_ACTIVE_SLOT)
+		{
+			pIItem->SetSlot(m_pOwner->m_tmp_next_item_slot);
+			force_move_to_slot = true;
+			m_pOwner->m_tmp_next_item_slot = NO_ACTIVE_SLOT;
+		}
 
-		if(def_to_slot && CanPutInSlot(pIItem))
+		auto pActor = smart_cast<CActor*>(m_pOwner);
+		const bool def_to_slot = (pActor && Core.Features.test(xrCore::Feature::ruck_flag_preferred)) ? !pIItem->RuckDefault() : true;
+
+		if((!force_ruck_default && def_to_slot && CanPutInSlot(pIItem)) || force_move_to_slot)
 		{
 			if ( pActor && Device.dwPrecacheFrame )
 				bNotActivate = true;
 			result						= Slot(pIItem, bNotActivate); VERIFY(result);
 		} 
-		else if (!pIItem->RuckDefault() && CanPutInBelt(pIItem))
+		else if (!force_ruck_default && !pIItem->RuckDefault() && CanPutInBelt(pIItem))
 		{
 			result						= Belt(pIItem); VERIFY(result);
 		}

@@ -298,13 +298,6 @@ void CInventoryOwner::OnItemTake			(CInventoryItem *inventory_item)
 		inventory().Activate(m_tmp_active_slot_num);
 		m_tmp_active_slot_num	= NO_ACTIVE_SLOT;
 	}
-
-	if (m_tmp_next_item_slot != NO_ACTIVE_SLOT)
-	{
-		inventory_item->SetSlot(m_tmp_next_item_slot);
-		inventory().Slot(inventory_item, true);
-		m_tmp_next_item_slot = NO_ACTIVE_SLOT;
-	}
 }
 
 //возвращает текуший разброс стрельбы с учетом движения (в радианах)

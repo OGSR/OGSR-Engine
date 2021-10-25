@@ -104,6 +104,7 @@ protected:
 	bool				m_bAllowTrade;
 
 	u32					m_tmp_active_slot_num;
+public:
 	u32 m_tmp_next_item_slot;
 	//////////////////////////////////////////////////////////////////////////
 	// сюжетная информация
