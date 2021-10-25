@@ -2,7 +2,6 @@
 //
 #include "stdafx.h"
 
-
 #include <mmsystem.h>
 #include <objbase.h>
  
@@ -17,7 +16,6 @@ XRCORE_API bool gModulesLoaded = false;
 
 static u32	init_counter	= 0;
 
-#include "..\xr_3da\trivial_encryptor.h"
 
 void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, LPCSTR fs_fname)
 {
@@ -85,8 +83,6 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 		xr_EFS = std::make_unique<EFS_Utils>();
 	}
 	if (init_fs){
-		g_temporary_stuff = &trivial_encryptor::decode;
-
 		u32 flags			= 0;
 		if (0!=strstr(Params,"-build"))	 flags |= CLocatorAPI::flBuildCopy;
 		if (0!=strstr(Params,"-ebuild")) flags |= CLocatorAPI::flBuildCopy|CLocatorAPI::flEBuildCopy;
