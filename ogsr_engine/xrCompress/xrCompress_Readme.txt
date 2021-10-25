@@ -1,12 +1,13 @@
 OGSR Engine x64 Compressor
 
 Запуск упаковки через батник вида:
-xrCompress "gamedata" -ltx xrCompress_Cfg.ltx -unique_logs
+xrCompress "gamedata" -ltx xrCompress_Cfg.ltx -filename gamedata.db_base_configs -unique_logs
 
 Первый параметр - имя папки, содержимое которой надо упаковать.
 
 Команды:
 -ltx         : путь до файла конфигурации. Он важен, без него не запустится.
+-filename    : имя архива, который будет создан компрессором (БЕЗ ПРОБЕЛОВ!)
 -xdb         : упаковка архивов в .xdb формат.
 -fast        : быстрая упаковка, небольшое сжатие.
 -store       : упаковка всех файлов без сжатия. Самый быстрый режим.

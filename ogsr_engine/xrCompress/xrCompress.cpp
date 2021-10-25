@@ -30,6 +30,8 @@ static u32 bytesSRC{}, bytesDST{}, filesTOTAL{}, filesSKIP{}, filesVFS{}, filesA
 static CTimer t_compress{};
 static u8* c_heap{};
 
+static string_path ARCH_NAME{};
+
 static u32 XRP_MAX_SIZE{ 1024 * 1024 * XRP_MAX_SIZE_DEF };
 
 struct	ALIAS {
@@ -272,9 +274,14 @@ static void OpenPack(LPCSTR tgt_folder, int num)
 
 	VERIFY(0 == fs);
 
-	string_path fname;
-	const char* ext = MOD_COMPRESS ? ".xdb" : ".db_pack_#";
-	strconcat(sizeof(fname), fname, "!Ready\\", tgt_folder, ext, std::to_string(num).c_str());
+	string_path fname{};
+	if (strlen(ARCH_NAME)) {
+		xr_strconcat(fname, "!Ready\\", ARCH_NAME, num > 0 ? std::to_string(num).c_str() : "");
+	}
+	else {
+		const char* ext = MOD_COMPRESS ? ".xdb" : ".db_pack_#";
+		strconcat(sizeof(fname), fname, "!Ready\\", tgt_folder, ext, std::to_string(num).c_str());
+	}
 
 	unlink(fname);
 	fs = FS.w_open(fname);
@@ -582,6 +589,13 @@ int __cdecl main(int argc, char* argv[])
 		BOOL bFast = 0 != strstr(params, "-fast");
 		LPCSTR p = strstr(params, "-ltx");
 		R_ASSERT2(p, "wrong params passed. -ltx option needed");
+
+		if (const char* filename = strstr(params, "-filename")) {
+			strcpy_s(ARCH_NAME, filename + 10);
+			if (char* end_of_fname = strchr(ARCH_NAME, ' '))
+				*end_of_fname = 0;
+		}
+
 		ProcessLTX(argv[1], p + 4, bFast);
 	}
 
