@@ -30,7 +30,7 @@ void CDebugRenderer::draw_obb(const Fmatrix &matrix, const u32 &color)
 		0,1,  1,2,  2,3,  3,0,  4,5,  5,6,  6,7,  7,4,  1,5,  2,6,  3,7,  0,4
 	};
 
-	add_lines(aabb, sizeof(aabb) / sizeof(Fvector), &aabb_id[0], sizeof(aabb_id) / (2 * sizeof(u16)), color); //-V706
+	//add_lines(aabb, sizeof(aabb) / sizeof(Fvector), &aabb_id[0], sizeof(aabb_id) / (2 * sizeof(u16)), color); //-V706
 }
 
 void CDebugRenderer::draw_obb(const Fmatrix &matrix, const Fvector &half_size, const u32 &color)
