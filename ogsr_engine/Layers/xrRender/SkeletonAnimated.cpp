@@ -696,7 +696,7 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
 	}
 
 	if ( omfs.size() ) {
-	  R_ASSERT( omfs.size() < MAX_ANIM_SLOT );
+	  //R_ASSERT( omfs.size() < MAX_ANIM_SLOT );
 	  m_Motions.reserve( omfs.size() );
 	  for ( const auto& s : omfs ) {
 	    auto nm = s.c_str();
