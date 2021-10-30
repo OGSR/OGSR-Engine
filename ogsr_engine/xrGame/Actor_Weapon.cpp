@@ -58,12 +58,12 @@ float CActor::GetWeaponAccuracy() const
 }
 
 
-void CActor::g_fireParams(CHudItem* pHudItem, Fvector &fire_pos, Fvector &fire_dir)
+void CActor::g_fireParams(CHudItem* pHudItem, Fvector &fire_pos, Fvector &fire_dir, const bool for_cursor)
 {
 	fire_dir = Cameras().Direction();
 	fire_pos = Cameras().Position();
 
-	if (smart_cast<CMissile*>(pHudItem))
+	if (smart_cast<CMissile*>(pHudItem) && !for_cursor)
 	{
 		Fvector offset;
 		XFORM().transform_dir(offset, m_vMissileOffset);
@@ -71,7 +71,7 @@ void CActor::g_fireParams(CHudItem* pHudItem, Fvector &fire_pos, Fvector &fire_d
 		//XFORM().transform_dir(offset, pMissile->throw_point_offset());
 		fire_pos.add(offset);
 	}
-	else if (auto weapon = smart_cast<CWeapon*>(pHudItem); weapon && !smart_cast<CWeaponKnife*>(pHudItem))
+	else if (auto weapon = smart_cast<CWeapon*>(pHudItem); weapon && !smart_cast<CWeaponKnife*>(pHudItem) && !smart_cast<CMissile*>(pHudItem))
 	{
 		if (psHUD_Flags.test(HUD_CROSSHAIR_HARD) && !(weapon->IsZoomed() && !weapon->IsRotatingToZoom()))
 		{

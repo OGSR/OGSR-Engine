@@ -98,7 +98,7 @@ float CAI_Stalker::GetWeaponAccuracy	() const
 			return m_fDispBase + base * m_disp_stand_crouch_zoom;
 }
 
-void CAI_Stalker::g_fireParams(CHudItem* pHudItem, Fvector& P, Fvector& D)
+void CAI_Stalker::g_fireParams(CHudItem* pHudItem, Fvector& P, Fvector& D, const bool for_cursor)
 {
 //.	VERIFY				(inventory().ActiveItem());
 	if (!inventory().ActiveItem()) {

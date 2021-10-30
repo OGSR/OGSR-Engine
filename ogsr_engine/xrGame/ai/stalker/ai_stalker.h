@@ -195,7 +195,7 @@ public:
 	virtual BOOL						UsedAI_Locations					();
 
 	virtual void						g_WeaponBones						(int &L, int &R1, int &R2);
-	virtual void g_fireParams(CHudItem* pHudItem, Fvector& P, Fvector& D) override;
+	virtual void g_fireParams(CHudItem* pHudItem, Fvector& P, Fvector& D, const bool for_cursor = false) override;
 	virtual void						HitSignal							(float P,	Fvector& vLocalDir, CObject* who, s16 element);
 	virtual void						Die									(CObject* who);
 

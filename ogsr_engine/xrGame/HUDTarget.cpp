@@ -98,7 +98,7 @@ void CHUDTarget::CursorOnFrame()
 	Fvector dir = Device.vCameraDirection;
 
 	if (auto Wpn = smart_cast<CHudItem*>(Actor->inventory().ActiveItem()))
-		Actor->g_fireParams(Wpn, p1, dir);
+		Actor->g_fireParams(Wpn, p1, dir, true);
 
 	// Render cursor
 	RQ.O = nullptr;
@@ -125,7 +125,7 @@ void CHUDTarget::Render()
 	Fvector dir = Device.vCameraDirection;
 
 	if (auto Wpn = smart_cast<CHudItem*>(Actor->inventory().ActiveItem()))
-		Actor->g_fireParams(Wpn, p1, dir);
+		Actor->g_fireParams(Wpn, p1, dir, true);
 
 	// Render cursor
 	u32 C				= C_DEFAULT;
