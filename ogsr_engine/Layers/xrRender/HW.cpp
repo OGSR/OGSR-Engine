@@ -700,7 +700,7 @@ void fill_vid_mode_list(CHW* _hw)
 		string32		str;
 
 		_hw->pD3D->EnumAdapterModes(_hw->DevAdapter, _hw->Caps.fTarget, i, &Mode);
-		if(Mode.Width < 800)		continue;
+		//if(Mode.Width < 800)		continue;
 
 		xr_sprintf						(str,sizeof(str),"%dx%d", Mode.Width, Mode.Height);
 	
