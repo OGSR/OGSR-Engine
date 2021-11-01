@@ -332,16 +332,17 @@ void CUIMainIngameWnd::SetAmmoIcon (const shared_str& sect_name)
 
 	// now perform only width scale for ammo, which (W)size >2
 	// all others ammo (1x1, 1x2) will be not scaled (original picture)
-	float w = ((iGridWidth > 2) ? 1.6f : iGridWidth) * INV_GRID_WIDTH * 0.8f;
-	float h = INV_GRID_HEIGHT * 0.9f;//1 cell
+	float w = (iGridWidth > 1.f ? iGridWidth : 1.f) * INV_GRID_WIDTH;
+	float h = INV_GRID_HEIGHT;//1 cell
+	w *= UI()->get_current_kx();
 
 	float x = UIWeaponIcon_rect.x1;
-	if (iGridWidth < 2)
-		x += (UIWeaponIcon_rect.width() - w) / 2.0f;
+	if (iGridWidth < 2.f)
+		x += w / 2.0f;
 
 	UIWeaponIcon.SetWndPos(x, UIWeaponIcon_rect.y1);
 
-	UIWeaponIcon.SetWidth(w * UI()->get_current_kx());
+	UIWeaponIcon.SetWidth(w);
 	UIWeaponIcon.SetHeight(h);
 };
 
