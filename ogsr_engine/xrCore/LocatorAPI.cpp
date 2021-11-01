@@ -259,19 +259,18 @@ static IReader* open_chunk(void* ptr, const u32 ID, const char* archiveName, con
 				unsigned dest_sz{};
 
 				if (shouldDecrypt)
-				{
 					g_trivial_encryptor.decode(src_data, dwSize, src_data); // Try russian key first
-					bool result = _decompressLZ(&dest, &dest_sz, src_data, dwSize, archiveSize);
 
-					if (!result)// Let's try to decode with WW key
-					{
-						g_trivial_encryptor.encode(src_data, dwSize, src_data); // rollback
-						g_trivial_encryptor.decode(src_data, dwSize, src_data, trivial_encryptor::key_flag::worldwide);
-						result = _decompressLZ(&dest, &dest_sz, src_data, dwSize, archiveSize);
-					}
+				bool result = _decompressLZ(&dest, &dest_sz, src_data, dwSize, archiveSize);
 
-					ASSERT_FMT(result, "[%s] Can't decompress archive [%s]", __FUNCTION__, archiveName);
+				if (!result && shouldDecrypt)// Let's try to decode with WW key
+				{
+					g_trivial_encryptor.encode(src_data, dwSize, src_data); // rollback
+					g_trivial_encryptor.decode(src_data, dwSize, src_data, trivial_encryptor::key_flag::worldwide);
+					result = _decompressLZ(&dest, &dest_sz, src_data, dwSize, archiveSize);
 				}
+
+				ASSERT_FMT(result, "[%s] Can't decompress archive [%s]", __FUNCTION__, archiveName);
 
 				xr_free			(src_data);
 				return xr_new<CTempReader>(dest,dest_sz,0);
