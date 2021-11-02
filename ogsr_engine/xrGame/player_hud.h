@@ -92,6 +92,8 @@ struct hud_item_measures
 		float m_tendto_speed_aim;
 	};
 	inertion_params m_inertion_params; //--#SM+#--	
+
+	bool useCopFirePoint{};
 };
 
 struct attachable_hud_item

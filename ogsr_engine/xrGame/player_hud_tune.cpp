@@ -195,8 +195,10 @@ void attachable_hud_item::debug_draw_firedeps()
 		firedeps			fd;
 		setup_firedeps(fd);
 
-		if (g_bHudAdjustMode == 5 || bForce)
+		if (g_bHudAdjustMode == 5 || bForce) {
 			render.draw_aabb(fd.vLastFP, 0.005f, 0.005f, 0.005f, D3DCOLOR_XRGB(255, 0, 0));
+			//render.draw_aabb(fd.vLastShootPoint, 0.005f, 0.005f, 0.005f, D3DCOLOR_XRGB(5, 107, 0));
+		}
 
 		if (g_bHudAdjustMode == 6)
 			render.draw_aabb(fd.vLastFP2, 0.005f, 0.005f, 0.005f, D3DCOLOR_XRGB(0, 0, 255));

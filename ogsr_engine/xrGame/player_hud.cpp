@@ -213,6 +213,17 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
 		m_item_transform.transform_tiny(fd.vLastFP);
 		fd.vLastFP.add(Device.vCameraPosition);
 
+		//KRodin придумал костыль. Из-за того, что fire_point расположен сильно впереди ствола, попробуем точку вылета пули считать от позиции fire_point.z == -0.5, т.е. ближе к актору, чтобы нельзя было стрелять сквозь стены.
+		if (m_measures.useCopFirePoint)
+		{
+			const Fvector m_shoot_point_offset{ m_measures.m_fire_point_offset.x, m_measures.m_fire_point_offset.y, -0.5f };
+			fire_mat.transform_tiny(fd.vLastShootPoint, m_shoot_point_offset);
+			m_item_transform.transform_tiny(fd.vLastShootPoint);
+			fd.vLastShootPoint.add(Device.vCameraPosition);
+		}
+		else //На ТЧ - стволах fire_point живет от стволов отдельной жизнью, поэтому если пытаться там править координаты - всё плывёт, оставим как есть.
+			fd.vLastShootPoint = fd.vLastFP;
+
 		fd.vLastFD.set(0.f, 0.f, 1.f);
 		m_item_transform.transform_dir(fd.vLastFD);
 		VERIFY(_valid(fd.vLastFD));
@@ -297,7 +308,6 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 		m_item_attach[1] = pSettings->r_fvector3(sect_name, "item_orientation");
 
 	shared_str bone_name;
-	bool useCopFirePoint;
 	if (pSettings->line_exist(sect_name, "use_cop_fire_point"))
 		useCopFirePoint = !!pSettings->r_bool(sect_name, "use_cop_fire_point");
 	else
