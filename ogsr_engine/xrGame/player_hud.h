@@ -71,6 +71,7 @@ struct hud_item_measures
 	Fvector m_fire_point2_offset;
 	u16 m_shell_bone;
 	Fvector m_shell_point_offset;
+	Fvector m_shoot_point_offset{};
 
 	Fvector m_hands_attach[2]{}; // pos,rot
 
@@ -92,6 +93,8 @@ struct hud_item_measures
 		float m_tendto_speed_aim;
 	};
 	inertion_params m_inertion_params; //--#SM+#--	
+
+	bool useCopFirePoint{};
 };
 
 struct attachable_hud_item

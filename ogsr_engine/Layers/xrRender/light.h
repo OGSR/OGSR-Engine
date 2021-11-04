@@ -118,6 +118,7 @@ public:
 	virtual void	set_rotation			(const Fvector& D, const Fvector& R);
 	virtual void	set_cone				(float angle);
 	virtual void	set_range				(float R);
+	float		get_range() const override { return range; };
 	virtual void set_virtual_size(float S) {
 #if RENDER != R_R1
 		virtual_size = (S > MIN_VIRTUAL_SIZE) ? S : MIN_VIRTUAL_SIZE;

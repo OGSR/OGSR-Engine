@@ -60,6 +60,7 @@ public:
 	virtual void					set_rotation		(const Fvector& D, const Fvector& R)= 0;
 	virtual void					set_cone			(float angle)						= 0;
 	virtual void					set_range			(float R)							= 0;
+	virtual float get_range() const = 0;
 	virtual void					set_virtual_size	(float R)							= 0;
 	virtual void					set_texture			(LPCSTR name)						= 0;
 

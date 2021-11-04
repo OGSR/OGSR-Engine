@@ -242,7 +242,7 @@ void CAI_Trader::g_WeaponBones	(int &L, int &R1, int &R2)
 	L				= V->LL_BoneID("bip01_l_finger1");
 }
 
-void CAI_Trader::g_fireParams(const CHudItem* pHudItem, Fvector& P, Fvector& D)
+void CAI_Trader::g_fireParams(CHudItem* pHudItem, Fvector& P, Fvector& D, const bool for_cursor)
 {
 	VERIFY			(inventory().ActiveItem());
 	if (g_Alive() && inventory().ActiveItem()) {

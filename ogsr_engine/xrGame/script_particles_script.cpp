@@ -32,5 +32,7 @@ void CScriptParticles::script_register(lua_State *L)
 			.def("start_path",					&CScriptParticles::StartPath)
 			.def("stop_path",					&CScriptParticles::StopPath)
 			.def("pause_path",					&CScriptParticles::PausePath)
+			.def( "life_time", &CScriptParticles::LifeTime )
+			.def( "length",    &CScriptParticles::Length   )
 	];
 }

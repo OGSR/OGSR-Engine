@@ -92,7 +92,6 @@ copy /Y "$(ProjectDir)xrCompress_Readme.txt" "$(OutDir)xrCompress_Readme.txt"
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="trivial_encryptor.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\xrCore\xrCore.vcxproj">

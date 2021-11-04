@@ -213,6 +213,16 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
 		m_item_transform.transform_tiny(fd.vLastFP);
 		fd.vLastFP.add(Device.vCameraPosition);
 
+		//KRodin придумал костыль. Из-за того, что fire_point расположен сильно впереди ствола, попробуем точку вылета пули считать от позиции fire_point.z == -0.5, т.е. ближе к актору, чтобы нельзя было стрелять сквозь стены.
+		if (m_measures.useCopFirePoint)
+		{
+			fire_mat.transform_tiny(fd.vLastShootPoint, m_measures.m_shoot_point_offset);
+			m_item_transform.transform_tiny(fd.vLastShootPoint);
+			fd.vLastShootPoint.add(Device.vCameraPosition);
+		}
+		else //На ТЧ - стволах fire_point живет от стволов отдельной жизнью, поэтому если пытаться там править координаты - всё плывёт, оставим как есть.
+			fd.vLastShootPoint = fd.vLastFP;
+
 		fd.vLastFD.set(0.f, 0.f, 1.f);
 		m_item_transform.transform_dir(fd.vLastFD);
 		VERIFY(_valid(fd.vLastFD));
@@ -297,7 +307,6 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 		m_item_attach[1] = pSettings->r_fvector3(sect_name, "item_orientation");
 
 	shared_str bone_name;
-	bool useCopFirePoint;
 	if (pSettings->line_exist(sect_name, "use_cop_fire_point"))
 		useCopFirePoint = !!pSettings->r_bool(sect_name, "use_cop_fire_point");
 	else
@@ -350,6 +359,7 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 			bone_name = pSettings->r_string(sect_name, "fire_bone");
 			m_fire_bone = K->LL_BoneID(bone_name);
 			m_fire_point_offset = pSettings->r_fvector3(sect_name, "fire_point");
+			m_shoot_point_offset = READ_IF_EXISTS(pSettings, r_fvector3, sect_name, "shoot_point", (Fvector{ m_fire_point_offset.x, m_fire_point_offset.y, -0.5f }));
 		}
 		else
 			m_fire_point_offset.set(0.f, 0.f, 0.f);
@@ -973,7 +983,7 @@ void player_hud::attach_item(CHudItem* item)
 	attachable_hud_item* pi = create_hud_item(item->HudSection());
 	int item_idx = pi->m_attach_place_idx;
 
-	if (m_attached_items[item_idx] != pi)
+	if (m_attached_items[item_idx] != pi || pi->m_parent_hud_item != item)
 	{
 		if (m_attached_items[item_idx])
 			m_attached_items[item_idx]->m_parent_hud_item->on_b_hud_detach();

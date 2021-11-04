@@ -117,8 +117,8 @@ void CUICustomItem::Render(const Fvector2& pos_ns, u32 color, float angle)
 	LTt.set								(iOriginalRect.x1/ts.x+hp.x, iOriginalRect.y1/ts.y+hp.y);
 	RBt.set								(iOriginalRect.x2/ts.x+hp.x, iOriginalRect.y2/ts.y+hp.y);
 
-//	float kx = (UI()->is_16_9_mode())?0.8333f: 1.0f;
-	float kx = UI()->is_16_9_mode() ? UI()->get_current_kx() : 1.0f;
+//	float kx = (UI()->is_widescreen())?0.8333f: 1.0f;
+	float kx = UI()->is_widescreen() ? UI()->get_current_kx() : 1.0f;
 	// clip poly
 	sPoly2D			S; S.resize(4);
 	// LT

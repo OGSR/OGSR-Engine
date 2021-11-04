@@ -502,7 +502,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 public:
 	virtual void						g_WeaponBones		(int &L, int &R1, int &R2);
-	virtual void						g_fireParams		(const CHudItem* pHudItem, Fvector& P, Fvector& D);
+	virtual void g_fireParams(CHudItem* pHudItem, Fvector& P, Fvector& D, const bool for_cursor = false) override;
 	virtual BOOL						g_State				(SEntityState& state) const;
 	virtual	float						GetWeaponAccuracy	() const;
 			bool						IsZoomAimingMode	() const {return m_bZoomAimingMode;}

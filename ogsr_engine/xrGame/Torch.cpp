@@ -213,6 +213,11 @@ void CTorch::Switch	(bool light_on)
 	}
 }
 
+bool CTorch::torch_active					() const
+{
+	return (m_switched_on);
+}
+
 BOOL CTorch::net_Spawn(CSE_Abstract* DC) 
 {
 	CSE_Abstract			*e	= (CSE_Abstract*)(DC);
@@ -242,6 +247,26 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 	float range				= pUserData->r_float				("torch_definition",(b_r2)?"range_r2":"range");
 	light_render->set_color( m_color );
 	light_render->set_range	(range);
+
+	if (b_r2)
+	{
+		bool useVolumetric = READ_IF_EXISTS(pUserData, r_bool, "torch_definition", "volumetric_enabled", false);
+		light_render->set_volumetric(useVolumetric);
+		if (useVolumetric)
+		{
+			float volQuality = READ_IF_EXISTS(pUserData, r_float, "torch_definition", "volumetric_quality", 1.0f);
+			volQuality = std::clamp(volQuality, 0.f, 1.f);
+			light_render->set_volumetric_quality(volQuality);
+
+			float volIntensity = READ_IF_EXISTS(pUserData, r_float, "torch_definition", "volumetric_intensity", 0.15f);
+			volIntensity = std::clamp(volIntensity, 0.f, 10.f);
+			light_render->set_volumetric_intensity(volIntensity);
+
+			float volDistance = READ_IF_EXISTS(pUserData, r_float, "torch_definition", "volumetric_distance", 0.45f);
+			volDistance = std::clamp(volDistance, 0.f, 1.f);
+			light_render->set_volumetric_distance(volDistance);
+		}
+	}
 
 	Fcolor clr_o			= pUserData->r_fcolor				("torch_definition",(b_r2)?"omni_color_r2":"omni_color");
 	float range_o			= pUserData->r_float				("torch_definition",(b_r2)?"omni_range_r2":"omni_range");
@@ -495,4 +520,8 @@ void CTorch::renderable_Render()
 
 void CTorch::calc_m_delta_h( float range ) {
   m_delta_h = PI_DIV_2 - atan( ( range * 0.5f ) / _abs( TORCH_OFFSET.x ) );
+}
+
+float CTorch::get_range() const {
+  return light_render->get_range();
 }

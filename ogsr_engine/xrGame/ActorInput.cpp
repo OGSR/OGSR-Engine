@@ -240,6 +240,10 @@ void CActor::IR_OnKeyboardHold(int cmd)
 			g_player_hud->tune(Ivector{ -1, 0, 0 });
 		else if (pInput->iGetAsyncKeyState(DIK_RIGHT))
 			g_player_hud->tune(Ivector{ 1, 0, 0 });
+		else if (pInput->iGetAsyncKeyState(DIK_PGUP))
+			g_player_hud->tune(Ivector{ 0, 0, 1 });
+		else if (pInput->iGetAsyncKeyState(DIK_PGDN))
+			g_player_hud->tune(Ivector{ 0, 0, -1 });
 		return;
 	}
 

@@ -127,7 +127,7 @@ const CCoverPoint *CScriptGameObject::ambush_cover( const Fvector &position, con
   return nullptr;
 }
 
-const xr_vector<MemorySpace::CVisibleObject>	&CScriptGameObject::memory_visible_objects	() const
+const std::deque<MemorySpace::CVisibleObject>	&CScriptGameObject::memory_visible_objects	() const
 {
 	CCustomMonster	*monster = smart_cast<CCustomMonster*>(&object());
 	if (!monster) {
@@ -137,7 +137,7 @@ const xr_vector<MemorySpace::CVisibleObject>	&CScriptGameObject::memory_visible_
 	return			(monster->memory().visual().objects());
 }
 
-const xr_vector<MemorySpace::CSoundObject>	&CScriptGameObject::memory_sound_objects	() const
+const std::deque<MemorySpace::CSoundObject>	&CScriptGameObject::memory_sound_objects	() const
 {
 	CCustomMonster	*monster = smart_cast<CCustomMonster*>(&object());
 	if (!monster) {
@@ -147,7 +147,7 @@ const xr_vector<MemorySpace::CSoundObject>	&CScriptGameObject::memory_sound_obje
 	return			(monster->memory().sound().objects());
 }
 
-const xr_vector<MemorySpace::CHitObject>		&CScriptGameObject::memory_hit_objects		() const
+const std::deque<MemorySpace::CHitObject>		&CScriptGameObject::memory_hit_objects		() const
 {
 	CCustomMonster	*monster = smart_cast<CCustomMonster*>(&object());
 	if (!monster) {

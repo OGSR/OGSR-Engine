@@ -196,6 +196,7 @@ void CWeapon::UpdateFireDependencies_internal()
 			parent.transform_tiny(m_current_firedeps.vLastFP, fp);
 			parent.transform_tiny(m_current_firedeps.vLastFP2, fp2);
 			parent.transform_tiny(m_current_firedeps.vLastSP, sp);
+			parent.transform_tiny(m_current_firedeps.vLastShootPoint, fp);
 
 			m_current_firedeps.vLastFD.set(0.f, 0.f, 1.f);
 			parent.transform_dir(m_current_firedeps.vLastFD);

@@ -27,7 +27,7 @@ public:
 					CHUDCrosshair	();
 					~CHUDCrosshair	();
 
-			void	OnRender		();
+	void OnRender(const Fvector2& center, const Fvector2& scr_size);
 			void	SetDispersion	(float disp);
 
 			void	Load			();

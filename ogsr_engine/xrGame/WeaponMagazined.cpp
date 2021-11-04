@@ -640,6 +640,10 @@ void CWeaponMagazined::SetDefaults	()
 
 void CWeaponMagazined::OnShot		()
 {
+	// Если актор бежит - останавливаем его
+	if (ParentIsActor())
+		Actor()->set_state_wishful(Actor()->get_state_wishful() & (~mcSprint));
+
 	// Sound
 	PlaySound( *m_pSndShotCurrent, get_LastFP(), true );
 
@@ -1442,6 +1446,8 @@ bool CWeaponMagazined::ScopeRespawn( PIItem pIItem ) {
       auto ii = smart_cast<CInventoryItem*>( this );
       if ( io->inventory().InSlot( ii ) )
         io->SetNextItemSlot( ii->GetSlot() );
+      else
+        io->SetNextItemSlot( 0 );
 
       DestroyObject();
       sobj2->Spawn_Write( P, TRUE );

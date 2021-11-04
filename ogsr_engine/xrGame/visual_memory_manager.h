@@ -22,7 +22,7 @@ class CVisualMemoryManager {
 public:
 	typedef MemorySpace::CVisibleObject			CVisibleObject;
 	typedef MemorySpace::CNotYetVisibleObject	CNotYetVisibleObject;
-	typedef xr_vector<CVisibleObject>			VISIBLES;
+	typedef std::deque<CVisibleObject>			VISIBLES;
 	typedef xr_vector<CObject*>					RAW_VISIBLES;
 	typedef xr_vector<CNotYetVisibleObject>		NOT_YET_VISIBLES;
 
@@ -54,6 +54,7 @@ private:
 
 private:
 	u32					m_max_object_count;
+	u32 m_adaptive_max_object_count;
 	bool				m_enabled;
 	u32					m_last_update_time;
 
@@ -62,10 +63,10 @@ public:
 
 protected:
 	IC		void	fill_object				(CVisibleObject &visible_object, const CGameObject *game_object);
-			void	add_visible_object		(const CVisibleObject visible_object);
+			void	add_visible_object		(CVisibleObject visible_object);
 			float	object_visible_distance	(const CGameObject *game_object, float &object_distance) const;
 			float	object_luminocity		(const CGameObject *game_object) const;
-			float	get_visible_value		(float distance, float object_distance, float time_delta, float object_velocity, float luminocity) const;
+			float	get_visible_value( float distance, float object_distance, float time_delta, float object_velocity, float luminocity, float trans ) const;
 			float	get_object_velocity		(const CGameObject *game_object, const CNotYetVisibleObject &not_yet_visible_object) const;
 			u32		get_prev_time			(const CGameObject *game_object) const;
 
@@ -95,7 +96,7 @@ public:
 			bool	visible					(u32 level_vertex_id, float yaw, float eye_fov) const;
 
 public:
-	IC		void	set_squad_objects		(xr_vector<CVisibleObject> *squad_objects);
+	IC		void	set_squad_objects		(std::deque<CVisibleObject> *squad_objects);
 			CVisibleObject *visible_object	(const CGameObject *game_object);
 			
 public:

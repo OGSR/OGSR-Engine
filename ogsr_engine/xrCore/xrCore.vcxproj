@@ -303,6 +303,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Event.cpp" />
+    <ClCompile Include="trivial_encryptor.cpp" />
     <ClCompile Include="XML_Parser\tinyxml.cpp" />
     <ClCompile Include="XML_Parser\tinyxmlerror.cpp" />
     <ClCompile Include="XML_Parser\tinyxmlparser.cpp" />
@@ -341,6 +342,7 @@
     <ClInclude Include="stacktrace_collector.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Event.hpp" />
+    <ClInclude Include="trivial_encryptor.h" />
     <ClInclude Include="Utils\FastDelegate.hpp" />
     <ClInclude Include="Utils\imdexlib\fast_dynamic_cast.hpp" />
     <ClInclude Include="Utils\imdexlib\identity.hpp" />

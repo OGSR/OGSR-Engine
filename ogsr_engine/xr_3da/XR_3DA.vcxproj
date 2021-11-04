@@ -386,7 +386,6 @@
     <ClInclude Include="ShadersExternalData.h" />
     <ClInclude Include="SkeletonMotionDefs.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="trivial_encryptor.h" />
     <ClInclude Include="vismask.h" />
     <ClInclude Include="xrSkinXW.hpp" />
     <ClInclude Include="x_ray.h" />

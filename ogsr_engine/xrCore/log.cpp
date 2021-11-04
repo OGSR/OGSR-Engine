@@ -10,6 +10,7 @@
 static LogCallback LogCB = nullptr;
 std::vector<std::string> LogFile;
 static std::ofstream logstream;
+string_path logFName{};
 
 static void AddOne(std::string& split, bool first_line)
 {
@@ -153,8 +154,7 @@ void CreateLog(BOOL nl)
 {
 	if (!nl)
 	{
-		string_path logFName;
-		if (strstr(Core.Params, "-unique_logs")) {
+		if (!strstr(Core.Params, "-no_unique_logs")) {
 			string32 TimeBuf;
 			using namespace std::chrono;
 			const auto now = system_clock::now();

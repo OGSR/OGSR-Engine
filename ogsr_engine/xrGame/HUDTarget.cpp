@@ -10,11 +10,10 @@
 
 #include "..\xr_3da\Environment.h"
 #include "..\xr_3da\CustomHUD.h"
-#include "Entity.h"
+#include "Actor.h"
 #include "level.h"
 #include "game_cl_base.h"
 #include "..\xr_3da\IGame_Persistent.h"
-
 
 #include "InventoryOwner.h"
 #include "relation_registry.h"
@@ -26,32 +25,9 @@
 #include "inventory_item.h"
 #include "inventory.h"
 #include "monster_community.h"
+#include "HudItem.h"
 
-u32 C_ON_ENEMY		D3DCOLOR_XRGB(0xff,0,0);
-u32 C_ON_NEUTRAL	D3DCOLOR_XRGB(0xff,0xff,0x80);
-u32 C_ON_FRIEND		D3DCOLOR_XRGB(0,0xff,0);
-
-
-#define C_DEFAULT	D3DCOLOR_XRGB(0xff,0xff,0xff)
-#define C_SIZE		0.025f
-#define NEAR_LIM	0.5f
-
-#define SHOW_INFO_SPEED		0.5f
-#define HIDE_INFO_SPEED		10.f
-
-
-IC	float	recon_mindist	()		{
-	return 2.f;
-}
-IC	float	recon_maxdist	()		{
-	return 50.f;
-}
-IC	float	recon_minspeed	()		{
-	return 0.5f;
-}
-IC	float	recon_maxspeed	()		{
-	return 10.f;
-}
+constexpr float C_SIZE = 0.025f, NEAR_LIM = 0.5f, SHOW_INFO_SPEED = 0.5f, HIDE_INFO_SPEED = 10.f;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -113,26 +89,27 @@ ICF static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params)
 	return FALSE;
 }
 
-void CHUDTarget::CursorOnFrame ()
+void CHUDTarget::CursorOnFrame()
 {
-	Fvector				p1,dir;
+	CActor* Actor = smart_cast<CActor*>(Level().CurrentEntity());
+	if (!Actor)	return;
 
-	p1					= Device.vCameraPosition;
-	dir					= Device.vCameraDirection;
-	
+	Fvector p1 = Device.vCameraPosition;
+	Fvector dir = Device.vCameraDirection;
+
+	if (auto Wpn = smart_cast<CHudItem*>(Actor->inventory().ActiveItem()))
+		Actor->g_fireParams(Wpn, p1, dir, true);
+
 	// Render cursor
-	if(Level().CurrentEntity()){
-		RQ.O			= 0; 
-		RQ.range		= g_pGamePersistent->Environment().CurrentEnv->far_plane*0.99f;
-		RQ.element		= -1;
-		
-		collide::ray_defs	RD(p1, dir, RQ.range, CDB::OPT_CULL, collide::rqtBoth);
-		RQR.r_clear			();
-		VERIFY				(!fis_zero(RD.dir.square_magnitude()));
-		if(Level().ObjectSpace.RayQuery(RQR,RD, pick_trace_callback, &RQ, NULL, Level().CurrentEntity()))
-			clamp			(RQ.range,NEAR_LIM,RQ.range);
-	}
+	RQ.O = nullptr;
+	RQ.range = g_pGamePersistent->Environment().CurrentEnv->far_plane * 0.99f;
+	RQ.element = -1;
 
+	collide::ray_defs RD(p1, dir, RQ.range, CDB::OPT_CULL, collide::rqtBoth);
+	RQR.r_clear();
+	VERIFY(!fis_zero(RD.dir.square_magnitude()));
+	if (Level().ObjectSpace.RayQuery(RQR, RD, pick_trace_callback, &RQ, nullptr, Level().CurrentEntity()))
+		clamp(RQ.range, NEAR_LIM, RQ.range);
 }
 
 extern ENGINE_API BOOL g_bRendering;
@@ -141,14 +118,15 @@ void CHUDTarget::Render()
 {
 	VERIFY		(g_bRendering);
 
-	CObject*	O		= Level().CurrentEntity();
-	if (0==O)	return;
-	CEntity*	E		= smart_cast<CEntity*>(O);
-	if (0==E)	return;
+	CActor* Actor = smart_cast<CActor*>(Level().CurrentEntity());
+	if (!Actor)	return;
 
-	Fvector p1				= Device.vCameraPosition;
-	Fvector dir				= Device.vCameraDirection;
-	
+	Fvector p1 = Device.vCameraPosition;
+	Fvector dir = Device.vCameraDirection;
+
+	if (auto Wpn = smart_cast<CHudItem*>(Actor->inventory().ActiveItem()))
+		Actor->g_fireParams(Wpn, p1, dir, true);
+
 	// Render cursor
 	u32 C				= C_DEFAULT;
 	
@@ -227,25 +205,24 @@ void CHUDTarget::Render()
 		clamp(fuzzyShowInfo,0.f,1.f);
 	}
 
+	Fvector2 scr_size;
+	scr_size.set(float(Device.dwWidth), float(Device.dwHeight));
+	float size_x = scr_size.x * di_size;
+	float size_y = scr_size.y * di_size;
+
+	size_y = size_x;
+
+	float w_2 = scr_size.x / 2.0f;
+	float h_2 = scr_size.y / 2.0f;
+
+	// Convert to screen coords
+	float cx = (pt.x + 1) * w_2;
+	float cy = (pt.y + 1) * h_2;
+
 	//отрендерить кружочек или крестик
 	if(!m_bShowCrosshair){
 		// actual rendering
 		UIRender->StartPrimitive(6, IUIRender::ptTriList, UI()->m_currentPointType);
-
-		Fvector2		scr_size;
-//.		scr_size.set	(float(::Render->getTarget()->get_width()), float(::Render->getTarget()->get_height()));
-		scr_size.set	(float(Device.dwWidth) ,float(Device.dwHeight));
-		float			size_x = scr_size.x	* di_size;
-		float			size_y = scr_size.y * di_size;
-
-		size_y			= size_x;
-
-		float			w_2		= scr_size.x/2.0f;
-		float			h_2		= scr_size.y/2.0f;
-
-		// Convert to screen coords
-		float cx = (pt.x + 1)*w_2;
-		float cy = (pt.y + 1)*h_2;
 
 		//	TODO: return code back to indexed rendering since we use quads
 		//	Tri 1
@@ -263,7 +240,6 @@ void CHUDTarget::Render()
 	}else{
 		//отрендерить прицел
 		HUDCrosshair.cross_color	= C;
-		HUDCrosshair.OnRender		();
+		HUDCrosshair.OnRender(Fvector2{ cx, cy }, scr_size);
 	}
 }
-

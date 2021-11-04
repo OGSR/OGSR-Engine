@@ -264,15 +264,10 @@ void ui_core::RenderFont()
 	Font()->Render();
 }
 
-bool ui_core::is_16_9_mode()
-{
-	return (Device.dwWidth)/float(Device.dwHeight) > (UI_BASE_WIDTH/UI_BASE_HEIGHT +0.01f);
-}
-
 shared_str	ui_core::get_xml_name(LPCSTR fn)
 {
 	string_path				str;
-	if(!is_16_9_mode()){
+	if(!is_widescreen()){
 		sprintf_s(str, "%s", fn);
 		if ( NULL==strext(fn) ) strcat_s(str, ".xml");
 	}else{
@@ -300,5 +295,5 @@ shared_str	ui_core::get_xml_name(LPCSTR fn)
 
 bool ui_core::is_widescreen()
 {
-	return (Device.dwWidth) / float(Device.dwHeight) > (UI_BASE_WIDTH / UI_BASE_HEIGHT + 0.01f);
+	return float(Device.dwWidth) / float(Device.dwHeight) > (UI_BASE_WIDTH / UI_BASE_HEIGHT + 0.01f);
 }

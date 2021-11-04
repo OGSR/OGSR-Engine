@@ -1,8 +1,7 @@
 #include "stdafx.h"
 
 #include "fs_internal.h"
-
-XRCORE_API DUMMY_STUFF* g_dummy_stuff = nullptr; //Нужно для xrCompressor. Не удалять!
+#include "trivial_encryptor.h"
 
 #ifdef DEBUG
 	XRCORE_API	u32								g_file_mapped_memory = 0;
@@ -149,25 +148,29 @@ u32	IWriter::chunk_size	()					// returns size of currently opened chunk, 0 othe
 	return tell() - chunk_pos.top()-4;
 }
 
-void	IWriter::w_compressed(void* ptr, u32 count)
+void IWriter::w_compressed(void* ptr, u32 count, const bool encrypt)
 {
 	BYTE*		dest	= 0;
 	unsigned	dest_sz	= 0;
 	_compressLZ	(&dest,&dest_sz,ptr,count);
 
-	if ( g_dummy_stuff )
-          g_dummy_stuff( dest, dest_sz, dest );
+	if (encrypt)
+		g_trivial_encryptor.encode(dest, dest_sz, dest);
 
 	if (dest && dest_sz)
 		w(dest,dest_sz);
 	xr_free		(dest);
 }
 
-void	IWriter::w_chunk(u32 type, void* data, u32 size)
+void IWriter::w_chunk(u32 type, void* data, u32 size, const bool encrypt)
 {
-	open_chunk	(type);
-	if (type & CFS_CompressMark)	w_compressed(data,size);
-	else							w			(data,size);
+	open_chunk(type);
+
+	if (type & CFS_CompressMark)
+		w_compressed(data, size, encrypt);
+	else
+		w(data, size);
+
 	close_chunk	();
 }
 void 	IWriter::w_sdir	(const Fvector& D) 

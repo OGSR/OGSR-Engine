@@ -157,7 +157,7 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 			break;
 		case IRender_interface::SM_NORMAL:
 			{
-				static const bool UsePNG = !!strstr(Core.Params, "-ss_png"), UseTGA = !!strstr(Core.Params, "-ss_tga");
+				static const bool UseTGA = !!strstr(Core.Params, "-ss_tga"), UsePNG = !strstr(Core.Params, "-ss_jpg") && !UseTGA;
 				string64 t_stemp;
 				string_path buf;
 				sprintf_s(buf, sizeof(buf), "ss_%s_%s_(%s).%s", Core.UserName, timestamp(t_stemp), g_pGameLevel ? g_pGameLevel->name().c_str() : "mainmenu", UsePNG ? "png" : UseTGA ? "bmp" : "jpg");
@@ -363,7 +363,7 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 			}break;
 		case IRender_interface::SM_NORMAL:
 			{
-				static const bool UsePNG = !!strstr(Core.Params, "-ss_png"), UseTGA = !!strstr(Core.Params, "-ss_tga");
+				static const bool UseTGA = !!strstr(Core.Params, "-ss_tga"), UsePNG = !strstr(Core.Params, "-ss_jpg") && !UseTGA;
 				string64 t_stemp;
 				string_path buf;
 				sprintf_s(buf, sizeof(buf), "ss_%s_%s_(%s).%s", Core.UserName, timestamp(t_stemp), g_pGameLevel ? g_pGameLevel->name().c_str() : "mainmenu", UsePNG ? "png" : UseTGA ? "tga" : "jpg");

@@ -96,7 +96,7 @@ void GetProcessMemInfo( SProcessMemInfo& minfo ) {
 }
 
 size_t mem_usage_impl( u32* pBlocksUsed, u32* pBlocksFree ) {
-  static bool no_memory_usage = !!strstr( Core.Params, "-no_memory_usage" );
+  static bool no_memory_usage = !strstr( Core.Params, "-memory_usage" );
   if ( no_memory_usage )
     return 0;
 

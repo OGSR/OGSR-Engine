@@ -107,7 +107,7 @@ void CUIMMShniaga::Init(CUIXml& xml_doc, LPCSTR path)
 
 void CUIMMShniaga::OnDeviceReset()
 {
-	if(UI()->is_16_9_mode())
+	if(UI()->is_widescreen())
 	{
 		m_anims[0]->SetWndSize(m_wheel_size[1]);
 		m_anims[1]->SetWndSize(m_wheel_size[1]);

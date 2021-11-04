@@ -7,6 +7,7 @@ struct firedeps
 	Fvector vLastFP2{}; // fire point2
 	Fvector vLastFD{}; // fire direction
 	Fvector vLastSP{}; // shell point
+	Fvector vLastShootPoint{}; // shoot point
 
 	firedeps() {
 		m_FireParticlesXForm.identity();

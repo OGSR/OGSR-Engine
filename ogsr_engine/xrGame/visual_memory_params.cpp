@@ -29,4 +29,5 @@ void CVisionParameters::Load	(LPCSTR section, bool not_a_stalker)
 	m_luminocity_factor			= pSettings->r_float(section,"luminocity_factor");
 	m_fog_factor = READ_IF_EXISTS( pSettings, r_float, section, "fog_factor", 1.f );
 	m_fog_pow    = READ_IF_EXISTS( pSettings, r_float, section, "fog_pow",    5.f );
+	m_transparency_factor = READ_IF_EXISTS( pSettings, r_float, section, "transparency_factor", 0.f );
 }
