@@ -154,7 +154,7 @@ void CreateLog(BOOL nl)
 {
 	if (!nl)
 	{
-		if (strstr(Core.Params, "-unique_logs")) {
+		if (!strstr(Core.Params, "-no_unique_logs")) {
 			string32 TimeBuf;
 			using namespace std::chrono;
 			const auto now = system_clock::now();
