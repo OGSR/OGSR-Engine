@@ -1444,7 +1444,7 @@ bool CWeaponMagazined::ScopeRespawn( PIItem pIItem ) {
 
       auto io = smart_cast<CInventoryOwner*>( H_Parent() );
       auto ii = smart_cast<CInventoryItem*>( this );
-      if ( io->inventory().InSlot( ii ) )
+      if ( io && io->inventory().InSlot( ii ) )
         io->SetNextItemSlot( ii->GetSlot() );
       else
         io->SetNextItemSlot( 0 );
