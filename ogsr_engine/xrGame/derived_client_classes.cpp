@@ -26,9 +26,6 @@
 using namespace luabind;
 #pragma optimize("s", on)
 
-//extern LPCSTR get_lua_class_name(luabind::object O);
-//extern CGameObject *lua_togameobject(lua_State *L, int index);
-
 // ================================ ANOMALY ZONE SCRIPT EXPORT =================== //
 Fvector get_restrictor_center(CSpaceRestrictor *SR)
 {
@@ -161,35 +158,6 @@ void set_item_description(CInventoryItem *item, LPCSTR text)
 	item->m_Description = CStringTable().translate(text);
 }
 
-
-/*
-void item_to_belt(CInventory *I, lua_State *L)
-{   // 1st param: CInventory*, 2nd param: item?
-	CGameObject *obj = lua_togameobject(L, 2);
-	if (NULL == obj) return;
-	CInventoryItem *itm = smart_cast<CInventoryItem *>(obj);
-	if (I && itm)
-		I->Belt (itm);
-}
-
-void item_to_slot(CInventory *I, lua_State *L)
-{   // 1st param: CInventory*, 2nd param: item?
-	CGameObject *obj = lua_togameobject(L, 2);
-	if (NULL == obj) return;
-	CInventoryItem *itm = smart_cast<CInventoryItem *>(obj);
-	if (I && itm)
-		I->Slot(itm, !!lua_toboolean(L, 3));
-}
-
-void item_to_ruck(CInventory *I, lua_State *L)
-{   // 1st param: CInventory*, 2nd param: item?
-	CGameObject *obj = lua_togameobject(L, 2);
-	if (NULL == obj) return;
-	CInventoryItem *itm = smart_cast<CInventoryItem *>(obj);
-	if (I && itm)
-		I->Ruck(itm);
-}
-*/
 
 void get_slots(luabind::object O)
 {
