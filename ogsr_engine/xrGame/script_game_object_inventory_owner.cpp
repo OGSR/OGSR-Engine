@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "script_game_object.h"
 #include "InventoryOwner.h"
+#include "InventoryBox.h"
 #include "Pda.h"
 #include "xrMessages.h"
 #include "character_info.h"
@@ -205,15 +206,26 @@ void CScriptGameObject::ForEachInventoryItems(const luabind::functor<void> &func
 //1
 void CScriptGameObject::IterateInventory( const luabind::functor<void>& functor, const luabind::object& object)
 {
-	auto inventory_owner = smart_cast<CInventoryOwner*>(&this->object());
-	if (!inventory_owner) {
-		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject::IterateInventory non-CInventoryOwner object !!!");
-		return;
+/**
+	IterateInventory расширен: Работает как для CInventoryOwner, так и для IInventoryBox, а так же для любых классов наследующих от одного из них.
+	в числе которых тайники, контейнеры, мобы, неписи, акторы и проч.
+	Расширение метода выполнено: Zander.
+*/
+	if (auto inventory_owner = smart_cast<CInventoryOwner*>(&this->object())) {
+		for (const auto* it : inventory_owner->inventory().m_all)
+			if (!it->object().getDestroy())
+				functor(object, it->object().lua_game_object());
 	}
-
-	for (const auto* it : inventory_owner->inventory().m_all)
-		if (!it->object().getDestroy())
-			functor(object, it->object().lua_game_object());
+	else if (auto inventory_box = smart_cast<IInventoryBox*>(&this->object())) {
+		for (u32 i = 0; i < inventory_box->GetSize(); i++) {
+			auto* iit = inventory_box->GetObjectByIndex(i);
+			if (iit)
+				functor(object, iit);
+		}
+	}
+	else {
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError,"CScriptGameObject::IterateInventory invalid object !!!");
+	}
 }
 
 void CScriptGameObject::MarkItemDropped		(CScriptGameObject *item)
@@ -970,7 +982,6 @@ void CScriptGameObject::SetAdditionalMaxWalkWeight(float add_max_walk_weight)
 	outfit->m_additional_weight = add_max_walk_weight;
 }
 
-#include "InventoryBox.h"
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // получить суммарный вес инвентаря
 float CScriptGameObject::GetTotalWeight() const
