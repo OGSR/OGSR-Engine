@@ -330,10 +330,8 @@ void CUIMainIngameWnd::SetAmmoIcon (const shared_str& sect_name)
 
 	float iGridWidth = icon_params.grid_width;
 
-	// now perform only width scale for ammo, which (W)size >2
-	// all others ammo (1x1, 1x2) will be not scaled (original picture)
-	float w = (iGridWidth > 1.f ? iGridWidth : 1.f) * INV_GRID_WIDTH;
-	float h = INV_GRID_HEIGHT;//1 cell
+	float w = std::clamp(iGridWidth, 1.f, 2.f) * INV_GRID_WIDTH;
+	float h = INV_GRID_HEIGHT;
 	w *= UI()->get_current_kx();
 
 	float x = UIWeaponIcon_rect.x1;
