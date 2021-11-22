@@ -25,15 +25,8 @@ constexpr float TENDTO_SPEED_AIM = 8.f;		// (Для прицеливания)
 
 player_hud_motion* player_hud_motion_container::find_motion(const shared_str& name)
 {
-	xr_vector<player_hud_motion>::iterator it = m_anims.begin();
-	xr_vector<player_hud_motion>::iterator it_e = m_anims.end();
-	for (; it != it_e; ++it)
-	{
-		const shared_str& s = (true) ? (*it).m_alias_name : (*it).m_base_name;
-		if (s == name)
-			return &*it;
-	}
-	return nullptr;
+	auto it = m_anims.find(name);
+	return it != m_anims.end() ? &it->second : nullptr;
 }
 
 void player_hud_motion_container::load(attachable_hud_item* parent, IKinematicsAnimated* model, IKinematicsAnimated* animatedHudItem, const shared_str& sect)
@@ -48,34 +41,32 @@ void player_hud_motion_container::load(attachable_hud_item* parent, IKinematicsA
 			&& !strstr(name.c_str(), "_speed_k") && !strstr(name.c_str(), "_stop_k") && !strstr(name.c_str(), "_effector")
 			)
 		{
-			player_hud_motion* pm = &m_anims.emplace_back();
-			// base and alias name
-			pm->m_alias_name = name;
+			player_hud_motion pm;
 
 			if (parent->m_has_separated_hands)
 			{
 				if (_GetItemCount(anm.c_str()) == 1)
 				{
-					pm->m_base_name = anm;
-					pm->m_additional_name = anm;
+					pm.m_base_name = anm;
+					pm.m_additional_name = anm;
 				}
 				else
 				{
 					R_ASSERT2(_GetItemCount(anm.c_str()) == 2, anm.c_str());
 					string512 str_item;
 					_GetItem(anm.c_str(), 0, str_item);
-					pm->m_base_name = str_item;
+					pm.m_base_name = str_item;
 
 					_GetItem(anm.c_str(), 1, str_item);
-					pm->m_additional_name = str_item;
+					pm.m_additional_name = str_item;
 				}
 			}
 			else
 			{
 				string512 str_item;
 				_GetItem(anm.c_str(), 0, str_item);
-				pm->m_base_name = str_item;
-				pm->m_additional_name = str_item;
+				pm.m_base_name = str_item;
+				pm.m_additional_name = str_item;
 			}
 
 			// and load all motions for it
@@ -83,9 +74,9 @@ void player_hud_motion_container::load(attachable_hud_item* parent, IKinematicsA
 			for (u32 i = 0; i <= 8; ++i)
 			{
 				if (i == 0)
-					xr_strcpy(buff, pm->m_base_name.c_str());
+					xr_strcpy(buff, pm.m_base_name.c_str());
 				else
-					xr_sprintf(buff, "%s%d", pm->m_base_name.c_str(), i);
+					xr_sprintf(buff, "%s%d", pm.m_base_name.c_str(), i);
 
 				IKinematicsAnimated* final_model{};
 				if (model && parent->m_has_separated_hands)
@@ -98,7 +89,7 @@ void player_hud_motion_container::load(attachable_hud_item* parent, IKinematicsA
 
 					if (motion_ID.valid())
 					{
-						auto& Anim = pm->m_animations.emplace_back();
+						auto& Anim = pm.m_animations.emplace_back();
 						Anim.mid = motion_ID;
 						Anim.name = buff;
 
@@ -123,7 +114,10 @@ void player_hud_motion_container::load(attachable_hud_item* parent, IKinematicsA
 					}
 				}
 			}
-			ASSERT_FMT(pm->m_animations.size(), "[%s] motion [%s](%s) not found in section [%s]", __FUNCTION__, pm->m_base_name.c_str(), name.c_str(), sect.c_str());
+
+			ASSERT_FMT(pm.m_animations.size(), "[%s] motion [%s](%s) not found in section [%s]", __FUNCTION__, pm.m_base_name.c_str(), name.c_str(), sect.c_str());
+
+			m_anims.emplace(std::move(name), std::move(pm));
 		}
 	}
 }
