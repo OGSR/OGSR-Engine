@@ -28,6 +28,7 @@
 #include "HudItem.h"
 #include "../xr_3da/xr_input.h"
 #include "CustomDetector.h"
+#include "Flashlight.h"
 
 bool g_bAutoClearCrouch = true;
 extern int g_bHudAdjustMode;
@@ -127,6 +128,8 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	{
 		if (auto det = smart_cast<CCustomDetector*>(inventory().ItemFromSlot(DETECTOR_SLOT)))
 			det->ToggleDetector(g_player_hud->attached_item(0) != nullptr);
+		else if (auto flashlight = smart_cast<CFlashlight*>(inventory().ItemFromSlot(DETECTOR_SLOT)))
+			flashlight->ToggleDevice(g_player_hud->attached_item(0) != nullptr);
 	}
 	break;
 	case kWPN_1:

@@ -137,7 +137,7 @@
 
 #	include "torch.h"
 #	include "pda.h"
-
+#include "Flashlight.h"
 #	include "searchlight.h"
 
 #	include "HangingLamp.h"
@@ -324,6 +324,7 @@ void CObjectFactory::register_classes	()
 	// Devices
 	ADD(CTorch					,CSE_ALifeItemTorch				,CLSID_DEVICE_TORCH				,"device_torch");
 	ADD(CPda					,CSE_ALifeItemPDA				,CLSID_DEVICE_PDA				,"device_pda");
+	ADD(CFlashlight, CSE_ALifeItem, CLSID_DEVICE_FLASHLIGHT, "device_flashlight");
 
 	// objects
 	ADD(CProjector				,CSE_ALifeObjectProjector		,CLSID_OBJECT_PROJECTOR			,"projector");

@@ -166,7 +166,7 @@ constexpr auto CLSID_DEVICE_PDA               = MK_CLSID('D','_','P','D','A',' '
 // Devices
 constexpr auto CLSID_DEVICE_TORCH             = MK_CLSID('D','_','T','O','R','C','H',' ');
 constexpr auto CLSID_DEVICE_AF_MERGER         = MK_CLSID('D','_','A','F','M','E','R','G');
-
+constexpr auto CLSID_DEVICE_FLASHLIGHT        = MK_CLSID('D','_','F','L','A','L','I','T');
 // Inventory items
 constexpr auto CLSID_IITEM_BOLT               = MK_CLSID('I','I','_','B','O','L','T',' ');
 
