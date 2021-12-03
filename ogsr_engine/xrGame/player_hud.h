@@ -125,6 +125,7 @@ struct attachable_hud_item
 	bool render_item_ui_query();
 	bool need_renderable();
 	void set_bone_visible(const shared_str& bone_name, BOOL bVisibility, BOOL bSilent = FALSE);
+	void set_bone_visible(const std::vector<shared_str>& bone_names, BOOL bVisibility, BOOL bSilent = FALSE);
 	BOOL get_bone_visible(const shared_str& bone_name);
 	bool has_bone(const shared_str& bone_name);
 	void debug_draw_firedeps();

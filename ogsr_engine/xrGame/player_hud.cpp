@@ -150,6 +150,12 @@ void attachable_hud_item::set_bone_visible(const shared_str& bone_name, BOOL bVi
 		m_model->LL_SetBoneVisible(bone_id, bVisibility, TRUE);
 }
 
+void attachable_hud_item::set_bone_visible(const std::vector<shared_str>& bone_names, BOOL bVisibility, BOOL bSilent)
+{
+	for (const auto& bone_name : bone_names)
+		set_bone_visible(bone_name, bVisibility, bSilent);
+}
+
 BOOL attachable_hud_item::get_bone_visible(const shared_str& bone_name)
 {
 	u16 bone_id = m_model->LL_BoneID(bone_name);
