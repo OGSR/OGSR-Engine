@@ -148,7 +148,7 @@ void CFlashlight::OnStateSwitch(u32 S, u32 oldState)
 	{
 		g_player_hud->attach_item(this);
 		HUD_SOUND::PlaySound(sndShow, Fvector{}, this, !!GetHUDmode(), false, false);
-		PlayHUDMotion(m_bFastAnimMode ? "anm_show_fast" : "anm_show", FALSE/*TRUE*/, this, GetState());
+		PlayHUDMotion({ m_bFastAnimMode ? "anm_show_fast" : "anm_show" }, false, GetState());
 		SetPending(TRUE);
 	}break;
 	case eHiding:
@@ -156,7 +156,7 @@ void CFlashlight::OnStateSwitch(u32 S, u32 oldState)
 		if (oldState != eHiding)
 		{
 			HUD_SOUND::PlaySound(sndHide, Fvector{}, this, !!GetHUDmode(), false, false);
-			PlayHUDMotion(m_bFastAnimMode ? "anm_hide_fast" : "anm_hide", FALSE/*TRUE*/, this, GetState());
+			PlayHUDMotion({ m_bFastAnimMode ? "anm_hide_fast" : "anm_hide" }, false, GetState());
 			SetPending(TRUE);
 		}
 	}break;
@@ -172,7 +172,7 @@ void CFlashlight::OnStateSwitch(u32 S, u32 oldState)
 		{
 			HUD_SOUND::PlaySound(m_switched_on ? sndTurnOff : sndTurnOn, Fvector{}, this, !!GetHUDmode(), false, false);
 		}
-		PlayHUDMotion("anm_toggle", TRUE, this, GetState());
+		PlayHUDMotion({ "anm_toggle" }, true, GetState());
 		SetPending(TRUE);
 	}break;
 	case eSwitchOn:
@@ -180,7 +180,7 @@ void CFlashlight::OnStateSwitch(u32 S, u32 oldState)
 		CActor* pActor = smart_cast<CActor*>(H_Parent());
 		if (pActor)
 			HUD_SOUND::PlaySound(sndTurnOn, Fvector{}, this, !!GetHUDmode(), false, false);
-		PlayHUDMotion("anm_toggle", TRUE, this, GetState());
+		PlayHUDMotion({ "anm_toggle" }, true, GetState());
 		SetPending(TRUE);
 	}break;
 	case eSwitchOff:
@@ -188,12 +188,12 @@ void CFlashlight::OnStateSwitch(u32 S, u32 oldState)
 		CActor* pActor = smart_cast<CActor*>(H_Parent());
 		if (pActor)
 			HUD_SOUND::PlaySound(sndTurnOff, Fvector{}, this, !!GetHUDmode(), false, false);
-		PlayHUDMotion("anm_toggle", TRUE, this, GetState());
+		PlayHUDMotion({ "anm_toggle" }, true, GetState());
 		SetPending(TRUE);
 	}break;
 	case eIdleZoom:
 	{
-		PlayHUDMotion("anm_zoom", TRUE, NULL, GetState());
+		PlayHUDMotion({ "anm_zoom" }, true, GetState());
 		SetPending(FALSE);
 	}break;
 	}
