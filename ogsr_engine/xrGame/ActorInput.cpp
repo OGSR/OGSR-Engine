@@ -27,6 +27,7 @@
 #include "player_hud.h"
 #include "HudItem.h"
 #include "../xr_3da/xr_input.h"
+#include "CustomDetector.h"
 
 bool g_bAutoClearCrouch = true;
 extern int g_bHudAdjustMode;
@@ -122,13 +123,18 @@ void CActor::IR_OnKeyboardPress(int cmd)
 				pTorch->Switch();
 			}
 		} break;
-	case kWPN_1:	
+	case kWPN_8:
+	{
+		if (auto det = smart_cast<CCustomDetector*>(inventory().ItemFromSlot(DETECTOR_SLOT)))
+			det->ToggleDetector(g_player_hud->attached_item(0) != nullptr);
+	}
+	break;
+	case kWPN_1:
 	case kWPN_2:	
 	case kWPN_3:	
 	case kWPN_4:	
 	case kWPN_5:	
 	case kWPN_6:	
-	case kWPN_8:
 	case kWPN_RELOAD:
 		//Weapons->ActivateWeaponID	(cmd-kWPN_1);			
 		break;

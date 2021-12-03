@@ -30,6 +30,8 @@
 #include "infoportion.h"
 #include "ai/monsters/basemonster/base_monster.h"
 #include "ai/trader/ai_trader.h"
+#include "CustomDetector.h"
+#include "inventory.h"
 
 void CActor::AddEncyclopediaArticle( const CInfoPortion* info_portion, bool revert ) const {
   VERIFY( info_portion );
@@ -259,10 +261,8 @@ void CActor::RunTalkDialog(CInventoryOwner* talk_partner)
 
 void CActor::StartTalk (CInventoryOwner* talk_partner, bool)
 {
-	//обновить информацию о контакте
-	VERIFY(smart_cast<CGameObject*>(talk_partner));
-//.	CGameObject* GO = smart_cast<CGameObject*>(talk_partner);
-//.	UpdateContact(GO->ID());
+	if (auto det = smart_cast<CCustomDetector*>(inventory().ItemFromSlot(DETECTOR_SLOT)))
+		det->HideDetector(true);
 
 	CInventoryOwner::StartTalk(talk_partner);
 }

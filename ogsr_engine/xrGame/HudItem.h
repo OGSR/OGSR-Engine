@@ -136,8 +136,8 @@ public:
 	virtual void	UpdateCL			();
 	virtual void	renderable_Render	();
 
-	virtual void	Hide( bool = false ) = 0;
-	virtual void	Show( bool = false ) = 0;
+	virtual void	Hide( bool = false ) {}
+	virtual void	Show( bool = false ) {}
 
 	virtual void	UpdateHudAdditonal		(Fmatrix&) {};
 	virtual	void	UpdateXForm				() = 0;

@@ -328,30 +328,29 @@ public:
 };
 
 
-class ShExports
+class ShExports final
 {
-	Fvector2 artefacts_position[8];
-	Fvector2 anomalys_position[8];
-	Ivector2 detector_params;
+	template<typename T, u32 Size>
+	struct PositionsStorage {
+		T Positions[Size]{};
+		T& operator[](const u32& key) {
+			ASSERT_FMT(key < std::size(Positions), "Out of range! key: [%u], size: [%u]", key, std::size(Positions));
+			return Positions[key];
+		}
+	};
+
+	PositionsStorage<Fvector2, 24> artefacts_position{};
+	PositionsStorage<Fvector2, 24> anomalys_position{};
+	Ivector2 detector_params{};
 
 public:
-	ShExports()
-	{
-		for (int i = 0; i < 8; ++i)
-		{
-			artefacts_position[i].set(0.f, 0.f);
-			anomalys_position[i].set(0.f, 0.f);
-		}
-		detector_params.set(0, 0);
-	}
+	void set_artefact_position(const u32& _i, const Fvector2& _pos) { artefacts_position[_i] =_pos; };
+	void set_anomaly_position(const u32& _i, const Fvector2& _pos) { anomalys_position[_i] = _pos; };
+	void set_detector_params(const Ivector2& _pos) { detector_params = _pos; };
 
-	void set_artefact_position(u32 _i, Fvector2 _pos) { artefacts_position[_i].set(_pos); };
-	void set_anomaly_position(u32 _i, Fvector2 _pos) { anomalys_position[_i].set(_pos); };
-	void set_detector_params(Ivector2 _pos) { detector_params.set(_pos); };
-
-	Fvector2 get_artefact_position(u32 _i) { return artefacts_position[_i]; }
-	Fvector2 get_anomaly_position(u32 _i) { return anomalys_position[_i]; }
-	Ivector2 get_detector_params() { return detector_params; }
+	const Fvector2& get_artefact_position(const u32& _i) { return artefacts_position[_i]; }
+	const Fvector2& get_anomaly_position(const u32& _i) { return anomalys_position[_i]; }
+	const Ivector2& get_detector_params() const { return detector_params; }
 };
 
 ENGINE_API extern ShExports shader_exports;

@@ -2,12 +2,16 @@
 #include "models_detector_cfg.h"
 
 uniform float4x4 ogse_c_artefacts;	// view space artefacts position, xz, two pairs on a row
+uniform float4x4 ogse_c_artefacts2;	// view space artefacts position, xz, two pairs on a row
+uniform float4x4 ogse_c_artefacts3;	// view space artefacts position, xz, two pairs on a row
 uniform float4x4 ogse_c_anomalys;	// view space anomalys position, xz, two pairs on a row
+uniform float4x4 ogse_c_anomalys2;	// view space anomalys position, xz, two pairs on a row
+uniform float4x4 ogse_c_anomalys3;	// view space anomalys position, xz, two pairs on a row
 uniform float4 ogse_c_detector;
-Texture2D s_numbers;
+uniform Texture2D s_numbers;
 
 #ifdef USE_WAVE
-Texture2D s_wave;
+uniform Texture2D s_wave;
 #endif
 
 #define NUMBERS_SIZE float2(1.0000,0.0996)	// size of numbers block
@@ -35,6 +39,24 @@ float4  main  ( p_flat I ) : SV_Target
 	bright += calculate_bright(float2(ogse_c_artefacts._14, ogse_c_artefacts._24), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
 	bright += calculate_bright(float2(ogse_c_artefacts._34, ogse_c_artefacts._44), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
 
+	bright += calculate_bright(float2(ogse_c_artefacts2._11, ogse_c_artefacts2._21), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
+	bright += calculate_bright(float2(ogse_c_artefacts2._31, ogse_c_artefacts2._41), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
+	bright += calculate_bright(float2(ogse_c_artefacts2._12, ogse_c_artefacts2._22), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
+	bright += calculate_bright(float2(ogse_c_artefacts2._32, ogse_c_artefacts2._42), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
+	bright += calculate_bright(float2(ogse_c_artefacts2._13, ogse_c_artefacts2._23), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
+	bright += calculate_bright(float2(ogse_c_artefacts2._33, ogse_c_artefacts2._43), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
+	bright += calculate_bright(float2(ogse_c_artefacts2._14, ogse_c_artefacts2._24), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
+	bright += calculate_bright(float2(ogse_c_artefacts2._34, ogse_c_artefacts2._44), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
+
+	bright += calculate_bright(float2(ogse_c_artefacts3._11, ogse_c_artefacts3._21), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
+	bright += calculate_bright(float2(ogse_c_artefacts3._31, ogse_c_artefacts3._41), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
+	bright += calculate_bright(float2(ogse_c_artefacts3._12, ogse_c_artefacts3._22), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
+	bright += calculate_bright(float2(ogse_c_artefacts3._32, ogse_c_artefacts3._42), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
+	bright += calculate_bright(float2(ogse_c_artefacts3._13, ogse_c_artefacts3._23), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
+	bright += calculate_bright(float2(ogse_c_artefacts3._33, ogse_c_artefacts3._43), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
+	bright += calculate_bright(float2(ogse_c_artefacts3._14, ogse_c_artefacts3._24), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
+	bright += calculate_bright(float2(ogse_c_artefacts3._34, ogse_c_artefacts3._44), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
+
 	float4 color = lerp(float4(0,0,0,0), ID_DETECTOR_3_COLOR, saturate(bright));
 
 #ifdef USE_WAVE
@@ -53,6 +75,24 @@ float4  main  ( p_flat I ) : SV_Target
 	an_bright += calculate_bright(float2(ogse_c_anomalys._33, ogse_c_anomalys._43), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
 	an_bright += calculate_bright(float2(ogse_c_anomalys._14, ogse_c_anomalys._24), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
 	an_bright += calculate_bright(float2(ogse_c_anomalys._34, ogse_c_anomalys._44), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
+
+	an_bright += calculate_bright(float2(ogse_c_anomalys2._11, ogse_c_anomalys2._21), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
+	an_bright += calculate_bright(float2(ogse_c_anomalys2._31, ogse_c_anomalys2._41), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
+	an_bright += calculate_bright(float2(ogse_c_anomalys2._12, ogse_c_anomalys2._22), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
+	an_bright += calculate_bright(float2(ogse_c_anomalys2._32, ogse_c_anomalys2._42), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
+	an_bright += calculate_bright(float2(ogse_c_anomalys2._13, ogse_c_anomalys2._23), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
+	an_bright += calculate_bright(float2(ogse_c_anomalys2._33, ogse_c_anomalys2._43), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
+	an_bright += calculate_bright(float2(ogse_c_anomalys2._14, ogse_c_anomalys2._24), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
+	an_bright += calculate_bright(float2(ogse_c_anomalys2._34, ogse_c_anomalys2._44), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
+
+	an_bright += calculate_bright(float2(ogse_c_anomalys3._11, ogse_c_anomalys3._21), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
+	an_bright += calculate_bright(float2(ogse_c_anomalys3._31, ogse_c_anomalys3._41), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
+	an_bright += calculate_bright(float2(ogse_c_anomalys3._12, ogse_c_anomalys3._22), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
+	an_bright += calculate_bright(float2(ogse_c_anomalys3._32, ogse_c_anomalys3._42), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
+	an_bright += calculate_bright(float2(ogse_c_anomalys3._13, ogse_c_anomalys3._23), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
+	an_bright += calculate_bright(float2(ogse_c_anomalys3._33, ogse_c_anomalys3._43), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
+	an_bright += calculate_bright(float2(ogse_c_anomalys3._14, ogse_c_anomalys3._24), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
+	an_bright += calculate_bright(float2(ogse_c_anomalys3._34, ogse_c_anomalys3._44), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
 
 	color += lerp(float4(0,0,0,0), ID_DETECTOR_3_AN_COLOR, saturate(an_bright));
 #endif

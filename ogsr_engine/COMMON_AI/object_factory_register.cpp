@@ -130,7 +130,10 @@
 #	include "hairszone.h"
 #	include "amebazone.h"
 #	include "nogravityzone.h"
-#	include "simpledetector.h"
+#include "SimpleDetectorSHOC.h"
+#include "SimpleDetector.h"
+#include "EliteDetector.h"
+#include "AdvancedDetector.h"
 
 #	include "torch.h"
 #	include "pda.h"
@@ -310,8 +313,13 @@ void CObjectFactory::register_classes	()
 	ADD(CSpaceRestrictor		,CSE_ALifeSpaceRestrictor		,CLSID_SPACE_RESTRICTOR			,"space_restrictor");
 	ADD(CAmebaZone				,CSE_ALifeZoneVisual			,CLSID_Z_AMEBA					,"ameba_zone");
 	ADD(CNoGravityZone			,CSE_ALifeAnomalousZone			,CLSID_Z_NOGRAVITY				,"nogravity_zone");
+
 	// Detectors
-	ADD(CSimpleDetector			,CSE_ALifeItemDetector			,CLSID_DETECTOR_SIMPLE			,"device_detector_simple");
+	ADD(CSimpleDetectorSHOC, CSE_ALifeItemDetector, CLSID_DETECTOR_SIMPLE_SHOC, "device_detector_simple_shoc");
+	ADD(CSimpleDetector, CSE_ALifeItemDetector, CLSID_DETECTOR_SIMPLE, "device_detector_simple");
+	ADD(CAdvancedDetector, CSE_ALifeItemDetector, CLSID_DETECTOR_ADVANCED, "device_detector_advanced");
+	ADD(CEliteDetector, CSE_ALifeItemDetector, CLSID_DETECTOR_ELITE, "device_detector_elite");
+	ADD(CScientificDetector, CSE_ALifeItemDetector, CLSID_DETECTOR_SCIENTIFIC, "device_detector_scientific");
 
 	// Devices
 	ADD(CTorch					,CSE_ALifeItemTorch				,CLSID_DEVICE_TORCH				,"device_torch");

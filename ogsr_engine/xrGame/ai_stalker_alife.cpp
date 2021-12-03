@@ -192,7 +192,7 @@ void CAI_Stalker::choose_medikit				()
 	return;
 }
 
-void CAI_Stalker::choose_detector				()
+/*void CAI_Stalker::choose_detector()
 {
 	CTradeItem					*best_detector	= 0;
 	float						best_value		= -1.f;
@@ -218,7 +218,7 @@ void CAI_Stalker::choose_detector				()
 	}
 	//if (best_detector)
 	//	buy_item_virtual		(*best_detector);
-}
+}*/
 
 void CAI_Stalker::choose_equipment				()
 {
@@ -237,7 +237,7 @@ void CAI_Stalker::select_items						()
 	choose_weapon		(ALife::eWeaponPriorityTypePrimary);
 	choose_weapon		(ALife::eWeaponPriorityTypeGrenade);
 	choose_medikit		();
-	choose_detector		();
+	//choose_detector		();
 	choose_equipment	();
 }
 

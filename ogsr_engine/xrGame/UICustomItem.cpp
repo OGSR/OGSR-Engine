@@ -60,7 +60,7 @@ void CUICustomItem::Render(const Fvector2& pos, u32 color,  float x1, float y1, 
 	if (UI()->m_currentPointType != IUIRender::pttLIT)
 		R = UI()->ScreenFrustum().ClipPoly(S, D);
 	else
-		R = &S;
+		R = UI()->ScreenFrustumLIT().ClipPoly(S, D);
 
 	if (R && R->size())
 	{

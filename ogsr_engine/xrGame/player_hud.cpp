@@ -554,7 +554,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 	const motion_descr& M = anm->m_animations[rnd_idx];
 
 	IKinematicsAnimated* ka = m_model->dcast_PKinematicsAnimated();
-	u32 ret = g_player_hud->anim_play(m_attach_place_idx, M, bMixIn, md, M.speed_k, ka);
+	u32 ret = g_player_hud->anim_play(m_attach_place_idx, M, bMixIn, md, M.speed_k, m_has_separated_hands, ka);
 
 	if (ka)
 	{
@@ -722,7 +722,7 @@ void player_hud::render_hud()
 
 	bool b_r0 = (m_attached_items[0] && m_attached_items[0]->need_renderable());
 	bool b_r1 = (m_attached_items[1] && m_attached_items[1]->need_renderable());
-	bool b_has_hands = (m_attached_items[0] && m_attached_items[0]->m_has_separated_hands);
+	bool b_has_hands = (m_attached_items[0] && m_attached_items[0]->m_has_separated_hands) || (m_attached_items[1] && m_attached_items[1]->m_has_separated_hands);
 
 	if (!b_r0 && !b_r1)
 		return;
@@ -749,20 +749,18 @@ u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud
 	if (!pm)
 		return 100; // ms TEMPORARY
 	ASSERT_FMT(pm, "hudItem model [%s] has no motion with alias [%s]", hud_name.c_str(), anim_name.c_str());
-	return motion_length(pm->m_animations[0], md, pm->m_animations[0].speed_k, smart_cast<IKinematicsAnimated*>(pi->m_model), pi);
+	return motion_length(pm->m_animations[0], md, pm->m_animations[0].speed_k, pi->m_has_separated_hands, smart_cast<IKinematicsAnimated*>(pi->m_model), pi);
 }
 
-u32 player_hud::motion_length(const motion_descr& M, const CMotionDef*& md, float speed, IKinematicsAnimated* itemModel, attachable_hud_item* pi)
+u32 player_hud::motion_length(const motion_descr& M, const CMotionDef*& md, float speed, bool hasHands, IKinematicsAnimated* itemModel, attachable_hud_item* pi)
 {
-	bool hasHands;
 	if (pi)
 		hasHands = pi->m_has_separated_hands;
-	else
-		hasHands = attached_item(0) && attached_item(0)->m_has_separated_hands;
 
 	IKinematicsAnimated* model = m_model;
 	if ((!model || !hasHands) && itemModel)
 		model = itemModel;
+	//Msg("~~[%s] model->LL_GetMotionDef [%s] [%s], hasHands = [%u]", __FUNCTION__, M.name.c_str(), model->dcast_RenderVisual()->getDebugName().c_str(), hasHands);
 	md = model->LL_GetMotionDef(M.mid);
 	VERIFY(md);
 	if (md->flags & esmStopAtEnd)
@@ -820,9 +818,11 @@ void player_hud::update(const Fmatrix& cam_trans)
 		m_attached_items[1]->update(true);
 }
 
-u32 player_hud::anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CMotionDef*& md, float speed, IKinematicsAnimated* itemModel)
+u32 player_hud::anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CMotionDef*& md, float speed, bool hasHands, IKinematicsAnimated* itemModel)
 {
-	bool hasHands = (attached_item(0) && attached_item(0)->m_has_separated_hands);
+	//Msg("~~[%s] model->LL_GetMotionDef [%s] [%s] attached_item(0): [%p], hasHands = [%u]", __FUNCTION__, M.name.c_str(), itemModel ? itemModel->dcast_RenderVisual()->getDebugName().c_str() : "", attached_item(0), hasHands);
+	//Msg("~~[%s] model->LL_GetMotionDef [%s] [%s], hasHands = [%u]", __FUNCTION__, M.name.c_str(), itemModel ? itemModel->dcast_RenderVisual()->getDebugName().c_str() : "", hasHands);
+
 	if (m_model && hasHands)
 	{
 		u16 part_id = u16(-1);
@@ -842,7 +842,7 @@ u32 player_hud::anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CM
 		m_model->dcast_PKinematics()->CalculateBones_Invalidate();
 	}
 
-	return motion_length(M, md, speed, itemModel);
+	return motion_length(M, md, speed, hasHands, itemModel);
 }
 
 void player_hud::update_additional(Fmatrix& trans)
@@ -1055,7 +1055,7 @@ void player_hud::detach_item(CHudItem* item)
 
 void player_hud::calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result)
 {
-	bool hasHands = (m_attached_items[0] && m_attached_items[0]->m_has_separated_hands);
+	bool hasHands = (m_attached_items[0] && m_attached_items[0]->m_has_separated_hands) || (m_attached_items[1] && m_attached_items[1]->m_has_separated_hands);
 	if (m_model && hasHands)
 	{
 		Fmatrix ancor_m = m_model->dcast_PKinematics()->LL_GetTransform(m_ancors[attach_slot_idx]);
