@@ -1037,10 +1037,11 @@ void player_hud::detach_item_idx(u16 idx)
 			}
 		}
 	}
-	else if (idx == 0 && attached_item(1))
+	//KRodin: закомментировал этот кусок, не понятно для чего он может быть нужен.
+	/*else if (idx == 0 && attached_item(1))
 	{
 		OnMovementChanged(mcAnyMove);
-	}
+	}*/
 }
 
 void player_hud::detach_item(CHudItem* item)

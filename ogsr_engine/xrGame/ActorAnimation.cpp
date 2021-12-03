@@ -362,16 +362,8 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 	}
 	//---------------------------------------------------------------
 	if (this == Level().CurrentViewEntity())
-	{
-		if ((mstate_rl&mcSprint) != (mstate_old&mcSprint))
-		{
-			g_player_hud->OnMovementChanged(mcSprint);
-		}
-		else if ((mstate_rl&mcAnyMove) != (mstate_old&mcAnyMove))
-		{
-			g_player_hud->OnMovementChanged(mcAnyMove);
-		}
-	}
+		if (((mstate_rl & mcSprint) != (mstate_old & mcSprint)) || ((mstate_rl & mcAnyMove) != (mstate_old & mcAnyMove)) || ((mstate_rl & mcCrouch) != (mstate_old & mcCrouch)) || ((mstate_rl & mcAccel) != (mstate_old & mcAccel)))
+			g_player_hud->OnMovementChanged(static_cast<ACTOR_DEFS::EMoveCommand>(mstate_rl));
 	//-----------------------------------------------------------------------
 	// Torso
 	if(mstate_rl&mcClimb)

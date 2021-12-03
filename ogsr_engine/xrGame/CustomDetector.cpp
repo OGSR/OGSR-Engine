@@ -125,7 +125,7 @@ void CCustomDetector::OnStateSwitch(u32 S, u32 oldState)
     {
         g_player_hud->attach_item(this);
         HUD_SOUND::PlaySound(sndShow, Fvector{}, this, !!GetHUDmode(), false, false);
-        PlayHUDMotion(m_bFastAnimMode ? "anm_show_fast" : "anm_show", FALSE /*TRUE*/, this, GetState());
+        PlayHUDMotion({ m_bFastAnimMode ? "anm_show_fast" : "anm_show" }, false, GetState());
         SetPending(TRUE);
     }
     break;
@@ -134,7 +134,7 @@ void CCustomDetector::OnStateSwitch(u32 S, u32 oldState)
         if (oldState != eHiding)
         {
             HUD_SOUND::PlaySound(sndHide, Fvector{}, this, !!GetHUDmode(), false, false);
-            PlayHUDMotion(m_bFastAnimMode ? "anm_hide_fast" : "anm_hide", FALSE/*TRUE*/, this, GetState());
+            PlayHUDMotion({ m_bFastAnimMode ? "anm_hide_fast" : "anm_hide" }, false, GetState());
             SetPending(TRUE);
         }
     }
