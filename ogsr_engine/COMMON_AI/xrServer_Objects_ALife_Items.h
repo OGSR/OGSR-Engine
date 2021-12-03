@@ -129,17 +129,14 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon,CSE_ALifeItem)
 	};
 
 	//текущее состояние аддонов
-	enum EWeaponAddonState 
+	enum EWeaponAddonState : u8
 	{
-		eWeaponAddonScope = 0x01,
-		eWeaponAddonGrenadeLauncher = 0x02,
-		eWeaponAddonSilencer = 0x04,
-		eWeaponAddonGrip = 0x08,
-		eWeaponAddonMagazine = 0x10,
-		eWeaponAddonScopeMount = 0x20,
+		eWeaponAddonScope = 1 << 0,
+		eWeaponAddonGrenadeLauncher = 1 << 1,
+		eWeaponAddonSilencer = 1 << 2,
 
-		//eVisUpdatesActivated = 0x40,
-		eForcedNotexScope = 0x80
+		//KRodin: TODO: эти пять свободных флагов можно использовать для хранения какой-то полезной информации, типа установлен ли на оружие лцу, фонарик и тп.
+		//emaxflag = 1<<7,
 	};
 
 	EWeaponAddonStatus				m_scope_status;
