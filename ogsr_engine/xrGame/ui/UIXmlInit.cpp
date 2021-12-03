@@ -455,19 +455,19 @@ bool CUIXmlInit::InitDragDropListEx(CUIXml& xml_doc, const char* path, int index
 	int cell_size = xml_doc.ReadAttribInt(path, index, "cell_size", 50); // UP
 	
 	// Определяем максимально допустимый размер ячеек, при котором у нас вместится нужное количество. 
-	max_cell_size.x = (int)trunc(_max(1.f, (real_wh.x - 1.f)) / _max((float)w_cells.x, 1.0f)); // UP
-	max_cell_size.y = (int)trunc(_max(1.f, (real_wh.y - 1.f)) / _max((float)w_cells.y, 1.0f)); // UP
+	max_cell_size.x = iFloor(_max(1.f, (real_wh.x - 1.f)) / _max((float)w_cells.x, 1.0f)); // UP
+	max_cell_size.y = iFloor(_max(1.f, (real_wh.y - 1.f)) / _max((float)w_cells.y, 1.0f)); // UP
 	float safe_cell_scale = _max( 
 		float(cell_size) / _max(1.0f, float(max_cell_size.x)), 
 		float(cell_size) / _max(1.0f, float(max_cell_size.y))
 	);
 	float real_cell_size = float(cell_size) / safe_cell_scale; // UP
 	// Вычисляем размеры ячеек в координатах 1024-768
-	w_cell_sz.x = (int)round(real_cell_size * device_scale.x); // CP // cell size in grid
-	w_cell_sz.y = (int)round(real_cell_size * device_scale.y); // CP
+	w_cell_sz.x = iFloor(real_cell_size * device_scale.x); // CP // cell size in grid
+	w_cell_sz.y = iFloor(real_cell_size * device_scale.y); // CP
 	// Вычисляем количество ячеек в координатах 1024-768
-	w_cells.x = (int)round(_max(1.f, (width - 1.f)) / _max((float)w_cell_sz.x, 1.0f));  // cell count in grid
-	w_cells.y = (int)round(_max(1.f, (height - 1.f)) / _max((float)w_cell_sz.y, 1.0f));
+	w_cells.x = iFloor(_max(1.f, (width - 1.f)) / _max((float)w_cell_sz.x, 1.0f));  // cell count in grid
+	w_cells.y = iFloor(_max(1.f, (height - 1.f)) / _max((float)w_cell_sz.y, 1.0f));
 	
 	w_cell_sp.x				= xml_doc.ReadAttribInt(path, index, "cell_sp_x", 0); 
 	w_cell_sp.y				= xml_doc.ReadAttribInt(path, index, "cell_sp_y", 0);
