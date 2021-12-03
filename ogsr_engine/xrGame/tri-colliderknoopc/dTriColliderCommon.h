@@ -6,7 +6,7 @@
 #include "dTriColliderMath.h"
 
 
-extern xr_vector< flags8 >			gl_cl_tries_state	;
+extern xr_vector< Flags8 >			gl_cl_tries_state	;
 //extern xr_vector<int>::iterator		I,E,B				;
 
 

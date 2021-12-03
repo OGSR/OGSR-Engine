@@ -710,8 +710,8 @@ public:
 			void				SetDrugPsyProtection(float _prot);
 
 			// functions for CInventoryItem class
-			void				SetIIFlags						(flags16);
-			flags16				GetIIFlags						();
+			void				SetIIFlags						(Flags16);
+			Flags16				GetIIFlags						();
 			u32				GetHudItemState();
 			float				GetRadius();
 
