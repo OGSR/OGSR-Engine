@@ -370,6 +370,12 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 			state_anm = "move_fwd";
 		else if (mstate_real & mcBack && !(mstate_old & mcBack))
 			state_anm = "move_back";
+		else if (mstate_real & mcJump && !(mstate_old & mcJump))
+			state_anm = "jump";	
+		else if (mstate_real & mcLanding && !(mstate_old & mcLanding))
+			state_anm = "landing";	
+		else if (mstate_real & mcLanding2 && !(mstate_old & mcLanding2))
+			state_anm = "landing2";			
 
 		if (state_anm)
 		{ // play moving cam effect
