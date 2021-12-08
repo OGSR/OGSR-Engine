@@ -661,6 +661,7 @@ void CWeapon::net_Export( CSE_Abstract* E ) {
 void CWeapon::save(NET_Packet &output_packet)
 {
 	inherited::save	(output_packet);
+	save_data		(bMisfire,		output_packet);
 	save_data		(iAmmoElapsed,		output_packet);
 	save_data		(m_flagsAddOnState, output_packet);
 	save_data		(m_ammoType,		output_packet);
@@ -670,6 +671,15 @@ void CWeapon::save(NET_Packet &output_packet)
 void CWeapon::load(IReader &input_packet)
 {
 	inherited::load	(input_packet);
+	try {
+		load_data		(bMisfire,		input_packet);
+	}
+	catch(...) {
+		bMisifre = false;
+#ifdef DEBUG
+		Msg("Can't find misfire for this saved game!");
+#endif
+	}
 	load_data		(iAmmoElapsed,		input_packet);
 	load_data		(m_flagsAddOnState, input_packet);
 	UpdateAddonsVisibility	();
