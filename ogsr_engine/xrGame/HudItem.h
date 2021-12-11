@@ -144,10 +144,10 @@ public:
 	virtual void	UpdateHudAdditonal		(Fmatrix&) {};
 	virtual	void	UpdateXForm				() = 0;
 
-	u32				PlayHUDMotion			(const shared_str& M, const bool bMixIn, const u32 state, const bool randomAnim = true);
+	u32				PlayHUDMotion			(const char* M, const bool bMixIn, const u32 state, const bool randomAnim = true);
 	u32				PlayHUDMotion			(std::initializer_list<const char*>, const bool bMixIn, const u32 state, const bool randomAnim = true);
 	u32				PlayHUDMotion_noCB		(const shared_str& M, const bool bMixIn, const bool randomAnim = true);
-	bool			AnimationExist			(const shared_str& M) const;
+	bool			AnimationExist			(const char* M) const;
 	void			StopCurrentAnimWithoutCallback();
 
 	attachable_hud_item* HudItemData		() const;

@@ -246,7 +246,7 @@ void CHudItem::on_a_hud_attach()
 	}
 }
 
-u32 CHudItem::PlayHUDMotion(const shared_str& M, const bool bMixIn, const u32 state, const bool randomAnim)
+u32 CHudItem::PlayHUDMotion(const char* M, const bool bMixIn, const u32 state, const bool randomAnim)
 {
 	//Msg("~~[%s] Playing motion [%s] for [%s]", __FUNCTION__, M.c_str(), HudSection().c_str());
 	u32 anim_time = PlayHUDMotion_noCB(M, bMixIn, randomAnim);
@@ -370,14 +370,14 @@ bool CHudItem::TryPlayAnimIdle()
 	PlayHUDMotion({ "anim_idle", "anm_bore" }, true, GetState());
 }*/
 
-bool CHudItem::AnimationExist(const shared_str& anim_name) const
+bool CHudItem::AnimationExist(const char* anim_name) const
 {
 	if (HudItemData())
 	{
 		string256 anim_name_r;
 		bool is_16x9 = UI()->is_widescreen();
 		u16 attach_place_idx = HudItemData()->m_attach_place_idx;
-		xr_sprintf(anim_name_r, "%s%s", anim_name.c_str(), (attach_place_idx == 1 && is_16x9) ? "_16x9" : "");
+		xr_sprintf(anim_name_r, "%s%s", anim_name, (attach_place_idx == 1 && is_16x9) ? "_16x9" : "");
 		player_hud_motion* anm = HudItemData()->m_hand_motions.find_motion(anim_name_r);
 		if (anm)
 			return true;
