@@ -26,6 +26,7 @@
 #include "InventoryBox.h"
 #include "player_hud.h"
 #include "HudItem.h"
+#include "WeaponMagazined.h"
 #include "../xr_3da/xr_input.h"
 #include "CustomDetector.h"
 
@@ -171,6 +172,17 @@ void CActor::IR_OnKeyboardPress(int cmd)
 				}
 			}
 		}break;
+	case kLASER_ON:
+	{
+		if (auto wpn = smart_cast<CWeapon*>(inventory().ActiveItem()))
+			wpn->SwitchLaser(!wpn->IsLaserOn());
+	}break;
+	case kFLASHLIGHT:
+	{
+		if (auto wpn = smart_cast<CWeapon*>(inventory().ActiveItem()))
+			wpn->SwitchFlashlight(!wpn->IsFlashlightOn());
+	}break;
+
 	}
 }
 void CActor::IR_OnMouseWheel(int direction)

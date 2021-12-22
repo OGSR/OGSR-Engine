@@ -206,9 +206,13 @@ public:
 	std::vector<shared_str> m_sWpn_scope_bones;
 	shared_str m_sWpn_silencer_bone;
 	shared_str m_sWpn_launcher_bone;
+	shared_str m_sWpn_laser_bone;
+	shared_str m_sWpn_flashlight_bone;
 	std::vector<shared_str> m_sHud_wpn_scope_bones;
 	shared_str m_sHud_wpn_silencer_bone;
 	shared_str m_sHud_wpn_launcher_bone;
+	shared_str m_sHud_wpn_laser_bone;
+	shared_str m_sHud_wpn_flashlight_bone;
 
 private:
 	std::vector<shared_str> hidden_bones;
@@ -558,4 +562,58 @@ public:
 
 	virtual void OnBulletHit();
 	bool IsPartlyReloading();
+
+	virtual void processing_deactivate() override {
+		UpdateLaser();
+		UpdateFlashlight();
+		inherited::processing_deactivate();
+	}
+
+	void GetBoneOffsetPosDir(const shared_str& bone_name, Fvector& dest_pos, Fvector& dest_dir, const Fvector& offset);
+	//Функция из ганслингера для приблизительной коррекции разности фовов худа и мира. Так себе на самом деле, но более годных способов я не нашел.
+	void CorrectDirFromWorldToHud(Fvector& dir);
+
+private:
+	bool has_laser{};
+	ref_light laser_light_render;
+	CLAItem* laser_lanim{};
+	float laser_fBrightness{ 1.f };
+
+	void UpdateLaser();
+public:
+	void SwitchLaser(bool on) {
+		if (!has_laser)
+			return;
+
+		if (on)
+			m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponAddonLaserOn;
+		else
+			m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonLaserOn;
+	}
+	inline bool IsLaserOn() const {
+		return m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonLaserOn;
+	}
+
+private:
+	bool has_flashlight{};
+	ref_light flashlight_render;
+	ref_light flashlight_omni;
+	ref_glow flashlight_glow;
+	CLAItem* flashlight_lanim{};
+	float flashlight_fBrightness{ 1.f };
+
+	void UpdateFlashlight();
+public:
+	void SwitchFlashlight(bool on) {
+		if (!has_flashlight)
+			return;
+
+		if (on)
+			m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponAddonFlashlightOn;
+		else
+			m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonFlashlightOn;
+	}
+	inline bool IsFlashlightOn() const {
+		return m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonFlashlightOn;
+	}
 };

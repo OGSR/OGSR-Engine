@@ -225,6 +225,8 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
 
 		fd.vLastFD.set(0.f, 0.f, 1.f);
 		m_item_transform.transform_dir(fd.vLastFD);
+		if (auto Wpn = smart_cast<CWeapon*>(m_parent_hud_item))
+			Wpn->CorrectDirFromWorldToHud(fd.vLastFD);
 		VERIFY(_valid(fd.vLastFD));
 		VERIFY(_valid(fd.vLastFD));
 

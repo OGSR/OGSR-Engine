@@ -45,7 +45,7 @@ std::vector<_action> actions = {
 	DEF_ACTION("wpn_5",				kWPN_5)
 	DEF_ACTION("wpn_6",				kWPN_6)
 	DEF_ACTION("wpn_8",				kWPN_8)
-	DEF_ACTION("switch_scope",		kSWITCH_SCOPE) //Вот это по сути сободная кнопка, её можно для чего то использовать.
+	DEF_ACTION("laser_on",			kLASER_ON)
 	DEF_ACTION("wpn_next",			kWPN_NEXT)
 	DEF_ACTION("wpn_fire",			kWPN_FIRE)
 	DEF_ACTION("wpn_zoom",			kWPN_ZOOM)
@@ -60,7 +60,7 @@ std::vector<_action> actions = {
 	DEF_ACTION("drop",				kDROP)
 	DEF_ACTION("use",				kUSE)
 	DEF_ACTION("scores",			kSCORES)
-	DEF_ACTION("chat",				kCHAT)
+	DEF_ACTION("flashlight",		kFLASHLIGHT)
 	DEF_ACTION("chat_team",			kCHAT_TEAM)
 	DEF_ACTION("screenshot",		kSCREENSHOT)
 	DEF_ACTION("quit",				kQUIT)
