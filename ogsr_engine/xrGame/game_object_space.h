@@ -67,7 +67,6 @@ namespace GameObject {
 		eOnUpdateAddonsVisibiility,
 		eOnUpdateHUDAddonsVisibiility,
 		eOnAddonInit,
-		eOnSecondScopeSwitch,
 
 		// These specifically say actor as I intend to add callbacks for NPCs firing their weapons.
 		eOnActorWeaponStartFiring,
