@@ -151,16 +151,16 @@ void CLevel::IR_OnKeyboardPress	(int key)
 	if(	g_bDisableAllInput )	return;
 	if ( !b_ui_exist )			return;
 
+	if ( Actor() ) {
+		Actor()->callback(GameObject::eOnKeyPress)(key, get_binded_action(key));
+		if ( g_bDisableAllInput ) return;
+	}
+
 	if ( b_ui_exist && pHUD->GetUI()->IR_OnKeyboardPress(key)) return;
 
 	if( Device.Paused() )		return;
 
 	if ( game && Game().IR_OnKeyboardPress(key) ) return;
-
-	if ( Actor() ) {
-		Actor()->callback(GameObject::eOnKeyPress)(key, get_binded_action(key));
-		if ( g_bDisableAllInput ) return;
-	}
 
 	if(_curr == kQUICK_SAVE)
 	{
