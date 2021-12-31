@@ -346,9 +346,11 @@ protected:
 	virtual void			UpdatePosition			(const Fmatrix& transform);	//.
 	virtual void			UpdateXForm				();
 
-	float					m_fLR_MovingFactor; // !!!!
-	Fvector					m_strafe_offset[3][2]; //pos,rot,data/ normal,aim-GL --#SM+#--
+private:
+	float m_fLR_MovingFactor{}, m_fLookout_MovingFactor{};
+	Fvector m_strafe_offset[3][2]{}, m_lookout_offset[3][2]{};
 
+protected:
 	virtual	u8				GetCurrentHudOffsetIdx	() override;
 	virtual void			UpdateHudAdditonal		(Fmatrix&);
 	virtual bool			IsHudModeNow			();
