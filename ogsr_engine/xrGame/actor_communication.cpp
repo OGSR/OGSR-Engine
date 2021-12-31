@@ -87,16 +87,12 @@ void CActor::AddEncyclopediaArticle( const CInfoPortion* info_portion, bool reve
 
       CEncyclopediaArticle article;
       article.Load( id );
-      article_vector.push_back(
-        ARTICLE_DATA( id, Level().GetGameTime(), article.data()->articleType )
-      );
-      LPCSTR g, n;
-      int _atype = article.data()->articleType;
-      g = *( article.data()->group );
-      n = *( article.data()->name  );
-      callback( GameObject::eArticleInfo )( lua_game_object(), g, n, _atype );
+      ARTICLE_DATA::EArticleType _atype = article.data()->articleType;
+      auto& Data = article_vector.emplace_back(id, Level().GetGameTime(), _atype);
 
-      update_pda_section( article_vector.back() );
+      callback(GameObject::eArticleInfo)(lua_game_object(), article.data()->group.c_str(), article.data()->name.c_str(), _atype, article.data()->text.c_str());
+
+      update_pda_section(Data);
     }
 
   if ( !updated_pda.empty() && HUD().GetUI() ) {
