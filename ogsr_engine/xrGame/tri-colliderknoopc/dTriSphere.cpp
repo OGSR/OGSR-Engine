@@ -199,7 +199,7 @@ int dcTriListCollider::dTriSphere(const dReal* v0,const dReal* v1,const dReal* v
 	 else
 	 {
 		CDB::TRI*       T_array      = Level().ObjectSpace.GetStaticTris();
-		flags8& gl_state=gl_cl_tries_state[I-B];
+		Flags8& gl_state=gl_cl_tries_state[I-B];
 		if(gl_state.test(fl_engaged_s0)||gl_state.test(fl_engaged_s1)||gl_state.test(fl_engaged_s2))	
 			return 0;
 		if(FragmentonSphereTest(pos,radius,v0,v1,ContactNormal,Depth))

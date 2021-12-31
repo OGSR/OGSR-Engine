@@ -20,7 +20,7 @@ struct SControlJumpData : public ControlCom::IComData {
 		eUseAutoAim					= u32(1) << 8,
 	};
 	
-	flags32					flags;
+	Flags32					flags;
 
 	struct	_prepare{
 		MotionID	motion;

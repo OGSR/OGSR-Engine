@@ -323,6 +323,8 @@ void CCustomZone::Load(LPCSTR section)
 
 	m_ef_anomaly_type			= pSettings->r_u32(section,"ef_anomaly_type");
 	m_ef_weapon_type			= pSettings->r_u32(section,"ef_weapon_type");
+
+	DestroyAfterBlowout = READ_IF_EXISTS(pSettings, r_bool, section, "DestroyAfterBlowout", false);
 }
 
 BOOL CCustomZone::net_Spawn(CSE_Abstract* DC) 
@@ -592,6 +594,9 @@ void CCustomZone::shedule_Update(u32 dt)
 	  inherited::shedule_Update( dt );
 
 	UpdateOnOffState	();
+
+	if (LastBlowoutTime && (Device.dwTimeGlobal - LastBlowoutTime) > 300)
+		DestroyObject();
 }
 
 void CCustomZone::CheckForAwaking()
@@ -783,6 +788,9 @@ void CCustomZone::PlayBlowoutParticles()
 	pParticles	= CParticlesObject::Create(*m_sBlowoutParticles,TRUE);
 	pParticles->UpdateParent(XFORM(),zero_vel);
 	pParticles->Play();
+
+	if (DestroyAfterBlowout)
+		LastBlowoutTime = Device.dwTimeGlobal;
 }
 
 void CCustomZone::PlayHitParticles(CGameObject* pObject)

@@ -1,20 +1,6 @@
 #ifndef models_detector_cfg
 #define models_detector_cfg
 
-// Интерактивные детекторы
-
-// ДЕТЕКТОР "ОТКЛИК"
-#define ID_DETECTOR_1_DETECT_RADIUS float(20.0)			// радиус детектирования артефактов. Менять одновременно вместе со значением в конфиге
-#define ID_DETECTOR_1_COLOR float4(1.0,1.0,1.0,1.0)		// цвет индикации
-#define ID_DETECTOR_1_POWER float(6.0)					// яркость индикации
-
-// ДЕТЕКТОР "МЕДВЕДЬ"
-#define ID_DETECTOR_2_DETECT_RADIUS float(20.0)			// радиус детектирования артефактов. Менять одновременно вместе со значением в конфиге
-#define ID_DETECTOR_2_COLOR float4(0.1,1.0,0.0,1.0)		// цвет индикации
-#define ID_DETECTOR_2_POWER float(5.0)					// яркость индикации
-#define ID_DETECTOR_2_CENTER float2(0.2559, 0.2305)		// текстурные координаты центра экрана детектора. Менять при смене текстуры
-#define ID_DETECTOR_2_SECTOR float(0.7)					// сектор индикации на экране. Чем больше значение, тем меньше сектор. Ровно 1.0 не ставить!
-
 // ДЕТЕКТОР "ВЕЛЕС"
 #define ID_DETECTOR_3_DETECT_RADIUS float(35.0)			// радиус детектирования артефактов. Менять одновременно вместе со значением в конфиге
 #define ID_DETECTOR_3_COLOR float4(0.1,1.0,0.0,1.0)		// цвет индикации

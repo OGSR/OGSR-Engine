@@ -17,7 +17,7 @@ class CPHSkeleton :
 	PHSHELL_PAIR_VECTOR m_unsplited_shels;
 
 	shared_str			m_startup_anim;
-	flags8				m_flags;
+	Flags8				m_flags;
 
 private:
 	//Creating

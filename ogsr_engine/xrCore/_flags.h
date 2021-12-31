@@ -30,7 +30,7 @@ public:
 	IC 	BOOL	equal	(const Self& f, const T mask) 		const	{ return (flags&mask)==(f.flags&mask);}
 };
 
-typedef _flags<u8>	Flags8;		typedef _flags<u8>	flags8;		
-typedef _flags<u16>	Flags16;	typedef _flags<u16>	flags16;
-typedef _flags<u32>	Flags32;	typedef _flags<u32>	flags32;
-typedef _flags<u64>	Flags64;	typedef _flags<u64>	flags64;
+using Flags8 = _flags<u8>;
+using Flags16 = _flags<u16>;
+using Flags32 = _flags<u32>;
+using Flags64 = _flags<u64>;

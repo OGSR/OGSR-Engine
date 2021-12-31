@@ -326,56 +326,68 @@ static class cl_rain_params : public R_constant_setup
 } binder_rain_params;
 
 static class cl_artifacts : public R_constant_setup {
-	u32 marker;
-	Fmatrix result;
+	u32 marker{};
+	Fmatrix result{};
+
 	void setup(R_constant* C) override {
 		if (marker != Device.dwFrame) {
-			result._11 = shader_exports.get_artefact_position(0).x;
-			result._12 = shader_exports.get_artefact_position(0).y;
-			result._13 = shader_exports.get_artefact_position(1).x;
-			result._14 = shader_exports.get_artefact_position(1).y;
-			result._21 = shader_exports.get_artefact_position(2).x;
-			result._22 = shader_exports.get_artefact_position(2).y;
-			result._23 = shader_exports.get_artefact_position(3).x;
-			result._24 = shader_exports.get_artefact_position(3).y;
-			result._31 = shader_exports.get_artefact_position(4).x;
-			result._32 = shader_exports.get_artefact_position(4).y;
-			result._33 = shader_exports.get_artefact_position(5).x;
-			result._34 = shader_exports.get_artefact_position(5).y;
-			result._41 = shader_exports.get_artefact_position(6).x;
-			result._42 = shader_exports.get_artefact_position(6).y;
-			result._43 = shader_exports.get_artefact_position(7).x;
-			result._44 = shader_exports.get_artefact_position(7).y;
+			result._11 = shader_exports.get_artefact_position(start_val).x;
+			result._12 = shader_exports.get_artefact_position(start_val).y;
+			result._13 = shader_exports.get_artefact_position(start_val + 1).x;
+			result._14 = shader_exports.get_artefact_position(start_val + 1).y;
+			result._21 = shader_exports.get_artefact_position(start_val + 2).x;
+			result._22 = shader_exports.get_artefact_position(start_val + 2).y;
+			result._23 = shader_exports.get_artefact_position(start_val + 3).x;
+			result._24 = shader_exports.get_artefact_position(start_val + 3).y;
+			result._31 = shader_exports.get_artefact_position(start_val + 4).x;
+			result._32 = shader_exports.get_artefact_position(start_val + 4).y;
+			result._33 = shader_exports.get_artefact_position(start_val + 5).x;
+			result._34 = shader_exports.get_artefact_position(start_val + 5).y;
+			result._41 = shader_exports.get_artefact_position(start_val + 6).x;
+			result._42 = shader_exports.get_artefact_position(start_val + 6).y;
+			result._43 = shader_exports.get_artefact_position(start_val + 7).x;
+			result._44 = shader_exports.get_artefact_position(start_val + 7).y;
 		}
 		RCache.set_c(C, result);
 	}
-} binder_artifacts;
+
+	u32 start_val;
+public:
+	cl_artifacts() = delete;
+	cl_artifacts(u32 v) :start_val(v) {}
+} binder_artifacts{ 0 }, binder_artifacts2{ 8 }, binder_artifacts3{ 16 };
 
 static class cl_anomalys : public R_constant_setup {
-	u32 marker;
-	Fmatrix result;
+	u32 marker{};
+	Fmatrix result{};
+
 	void setup(R_constant* C) override {
 		if (marker != Device.dwFrame) {
-			result._11 = shader_exports.get_anomaly_position(0).x;
-			result._12 = shader_exports.get_anomaly_position(0).y;
-			result._13 = shader_exports.get_anomaly_position(1).x;
-			result._14 = shader_exports.get_anomaly_position(1).y;
-			result._21 = shader_exports.get_anomaly_position(2).x;
-			result._22 = shader_exports.get_anomaly_position(2).y;
-			result._23 = shader_exports.get_anomaly_position(3).x;
-			result._24 = shader_exports.get_anomaly_position(3).y;
-			result._31 = shader_exports.get_anomaly_position(4).x;
-			result._32 = shader_exports.get_anomaly_position(4).y;
-			result._33 = shader_exports.get_anomaly_position(5).x;
-			result._34 = shader_exports.get_anomaly_position(5).y;
-			result._41 = shader_exports.get_anomaly_position(6).x;
-			result._42 = shader_exports.get_anomaly_position(6).y;
-			result._43 = shader_exports.get_anomaly_position(7).x;
-			result._44 = shader_exports.get_anomaly_position(7).y;
+			result._11 = shader_exports.get_anomaly_position(start_val).x;
+			result._12 = shader_exports.get_anomaly_position(start_val).y;
+			result._13 = shader_exports.get_anomaly_position(start_val + 1).x;
+			result._14 = shader_exports.get_anomaly_position(start_val + 1).y;
+			result._21 = shader_exports.get_anomaly_position(start_val + 2).x;
+			result._22 = shader_exports.get_anomaly_position(start_val + 2).y;
+			result._23 = shader_exports.get_anomaly_position(start_val + 3).x;
+			result._24 = shader_exports.get_anomaly_position(start_val + 3).y;
+			result._31 = shader_exports.get_anomaly_position(start_val + 4).x;
+			result._32 = shader_exports.get_anomaly_position(start_val + 4).y;
+			result._33 = shader_exports.get_anomaly_position(start_val + 5).x;
+			result._34 = shader_exports.get_anomaly_position(start_val + 5).y;
+			result._41 = shader_exports.get_anomaly_position(start_val + 6).x;
+			result._42 = shader_exports.get_anomaly_position(start_val + 6).y;
+			result._43 = shader_exports.get_anomaly_position(start_val + 7).x;
+			result._44 = shader_exports.get_anomaly_position(start_val + 7).y;
 		}
 		RCache.set_c(C, result);
 	}
-} binder_anomalys;
+
+	u32 start_val;
+public:
+	cl_anomalys() = delete;
+	cl_anomalys(u32 v) :start_val(v) {}
+} binder_anomalys{ 0 }, binder_anomalys2{ 8 }, binder_anomalys3{ 16 };
 
 static class cl_detector : public R_constant_setup {
 	u32 marker;
@@ -484,7 +496,11 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant("ogse_c_screen", &binder_screen_params);
 
 	r_Constant("ogse_c_artefacts", &binder_artifacts);
+	r_Constant("ogse_c_artefacts2", &binder_artifacts2);
+	r_Constant("ogse_c_artefacts3", &binder_artifacts3);
 	r_Constant("ogse_c_anomalys", &binder_anomalys);
+	r_Constant("ogse_c_anomalys2", &binder_anomalys2);
+	r_Constant("ogse_c_anomalys3", &binder_anomalys3);
 	r_Constant("ogse_c_detector", &binder_detector);
 
 	// detail

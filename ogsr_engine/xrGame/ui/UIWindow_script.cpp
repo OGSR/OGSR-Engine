@@ -262,6 +262,9 @@ void CUIWindow::script_register(lua_State *L)
 				value("CHECK_BUTTON_SET",				int(CHECK_BUTTON_SET)),
 				value("CHECK_BUTTON_RESET",				int(CHECK_BUTTON_RESET)),
 				
+	// CUITrackBar
+				value("TRACKBAR_CHANGED",				int(TRACKBAR_CHANGED)),
+				
 	// CUIRadioButton
 #pragma todo("KRodin: ивент RADIOBUTTON_SET нигде не вызывается. Надо доделать по необходимости.")
 				value("RADIOBUTTON_SET",				int(RADIOBUTTON_SET)),

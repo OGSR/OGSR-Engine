@@ -53,7 +53,7 @@ void CSE_ALifeGraphPoint::script_register(lua_State *L)
 	];
 }
 
-flags32 &get_flags_ref(CSE_ALifeObject *sobj) { return sobj->m_flags; }
+Flags32 &get_flags_ref(CSE_ALifeObject *sobj) { return sobj->m_flags; }
 
 
 void cse_obj_set_position (CSE_ALifeObject *o, const Fvector &pos)

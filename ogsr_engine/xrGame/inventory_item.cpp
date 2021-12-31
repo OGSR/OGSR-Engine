@@ -703,7 +703,7 @@ void CInventoryItem::OnMoveToBelt() {
 };
 
 
-void CInventoryItem::OnMoveToRuck() {
+void CInventoryItem::OnMoveToRuck(EItemPlace prevPlace) {
   if ( smart_cast<CActor*>( object().H_Parent() ) ) {
     if ( Core.Features.test( xrCore::Feature::equipped_untradable ) ) {
       m_flags.set( FIAlwaysUntradable, FALSE );

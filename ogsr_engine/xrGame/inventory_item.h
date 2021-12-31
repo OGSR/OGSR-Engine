@@ -146,7 +146,7 @@ public:
 
 	virtual void				OnMoveToSlot		();
 	virtual void				OnMoveToBelt		();
-	virtual void				OnMoveToRuck		();
+	virtual void				OnMoveToRuck(EItemPlace prevPlace);
 	virtual void				OnDrop() {};
 
 			int					GetGridWidth		() const ;
@@ -173,6 +173,7 @@ public:
                         const char*            GetSlotsSect() { return m_slots_sect; }
                         void                    SetSlot(u8 slot); // alpet: реально это SelectSlot
                         virtual u8              GetSlot() const;
+						u8 BaseSlot() const { return m_slots.empty() ? NO_ACTIVE_SLOT : m_slots.front(); }
                         u32                     GetSlotsCount() const { return m_slots.size(); }
                         bool                    IsPlaceable (u8 min_slot, u8 max_slot);
 

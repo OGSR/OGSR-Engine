@@ -33,6 +33,7 @@
 #include "saved_game_wrapper.h"
 #include "level_graph.h"
 #include "cameralook.h"
+#include "ai_object_location.h"
 
 #ifdef DEBUG
 #	include "PHDebug.h"
@@ -834,7 +835,8 @@ public:
 			return;
 		}
 
-		Level().g_cl_Spawn(args, 0xff, M_SPAWN_OBJECT_LOCAL, Actor()->Position());
+		if (auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game))
+			tpGame->alife().spawn_item(args, Actor()->Position(), Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
 	}
 };
 //#endif // MASTER_GOLD

@@ -15,6 +15,8 @@
 #include "../game_object_space.h"
 #include "../script_callback_ex.h"
 #include "../script_game_object.h"
+#include "../CustomDetector.h"
+#include "../player_hud.h"
 
 CUICellItem* CUIInventoryWnd::CurrentItem()
 {
@@ -229,16 +231,14 @@ bool CUIInventoryWnd::ToSlot(CUICellItem* itm, bool force_place)
 	CUIDragDropListEx*	old_owner			= itm->OwnerList();
 	PIItem	iitem							= (PIItem)itm->m_pData;
 	u8 _slot								= iitem->GetSlot();
+	bool result{};
 
 	if(GetInventory()->CanPutInSlot(iitem)){
 		CUIDragDropListEx* new_owner		= GetSlotList(_slot);
 		
 		if(_slot==GRENADE_SLOT && !new_owner )return true; //fake, sorry (((
 
-#ifdef DEBUG
-		bool result =
-#endif
-		GetInventory()->Slot(iitem);
+		result = GetInventory()->Slot(iitem);
 		VERIFY								(result);
 
 		CUICellItem* i						= old_owner->RemoveItem(itm, (old_owner==new_owner) );
@@ -253,8 +253,6 @@ bool CUIInventoryWnd::ToSlot(CUICellItem* itm, bool force_place)
 		// обновляем статик веса в инвентаре
 		UpdateWeight();
 		/*************************************************** added by Ray Twitty (aka Shadows) END ***************************************************/
-		
-		return								true;
 	}else
 	{ // in case slot is busy
 		if(!force_place ||  _slot==NO_ACTIVE_SLOT || GetInventory()->m_slots[_slot].m_bPersistent) return false;
@@ -268,13 +266,21 @@ bool CUIInventoryWnd::ToSlot(CUICellItem* itm, bool force_place)
 		dont_update_belt_flag = _slot == OUTFIT_SLOT;
 
 #ifdef DEBUG
-		bool result =
+		bool _result =
 #endif
 		ToBag(slot_cell, false);
-		VERIFY								(result);
+		VERIFY								(_result);
 
-		return ToSlot						(itm, false);
+		return ToSlot(itm, false);
 	}
+
+	if (result && _slot == DETECTOR_SLOT)
+	{
+		if (auto det = smart_cast<CCustomDetector*>(iitem))
+			det->ToggleDetector(g_player_hud->attached_item(0) != nullptr);
+	}
+
+	return result;
 }
 
 bool CUIInventoryWnd::ToBag(CUICellItem* itm, bool b_use_cursor_pos)

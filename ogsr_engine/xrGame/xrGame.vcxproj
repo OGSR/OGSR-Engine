@@ -399,6 +399,7 @@
     <ClInclude Include="..\COMMON_AI\random32.h" />
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper.h" />
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper_inline.h" />
+    <ClInclude Include="AdvancedDetector.h" />
     <ClInclude Include="ai\monsters\anti_aim_ability.h" />
     <ClInclude Include="ai\monsters\group_states\group_state_attack.h" />
     <ClInclude Include="ai\monsters\group_states\group_state_attack_inline.h" />
@@ -431,6 +432,7 @@
     <ClInclude Include="ai\monsters\states\monster_state_attack_on_run.h" />
     <ClInclude Include="ai\monsters\states\monster_state_attack_on_run_inline.h" />
     <ClInclude Include="derived_client_classes.h" />
+    <ClInclude Include="EliteDetector.h" />
     <ClInclude Include="IKFoot.h" />
     <ClInclude Include="IKFoot_inl.h" />
     <ClInclude Include="ik_calculate_data.h" />
@@ -452,6 +454,7 @@
     <ClInclude Include="script_game_object_impl.h" />
     <ClInclude Include="script_rq_result.h" />
     <ClInclude Include="script_vars_storage.h" />
+    <ClInclude Include="SimpleDetectorSHOC.h" />
     <ClInclude Include="steering_behaviour.h" />
     <ClInclude Include="steering_behaviour_alignment.h" />
     <ClInclude Include="steering_behaviour_base.h" />
@@ -460,6 +463,7 @@
     <ClInclude Include="steering_behaviour_manager.h" />
     <ClInclude Include="steering_behaviour_separation.h" />
     <ClInclude Include="trajectories.h" />
+    <ClInclude Include="ui\ArtefactDetectorUI.h" />
     <ClInclude Include="ui\UIHelper.h" />
     <ClInclude Include="ui\UIIconParams.h" />
     <ClInclude Include="ui\UILoadingScreen.h" />
@@ -1656,11 +1660,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\COMMON_AI\random32.cpp" />
+    <ClCompile Include="AdvancedDetector.cpp" />
     <ClCompile Include="ai\monsters\anti_aim_ability.cpp" />
     <ClCompile Include="ai\monsters\monster_aura.cpp" />
     <ClCompile Include="damage_manager.cpp" />
     <ClCompile Include="action_base_script.cpp" />
     <ClCompile Include="derived_client_classes.cpp" />
+    <ClCompile Include="EliteDetector.cpp" />
     <ClCompile Include="IKFoot.cpp" />
     <ClCompile Include="ik_calculate_data.cpp" />
     <ClCompile Include="ik_dbg_matrix.cpp" />
@@ -1691,9 +1697,11 @@
     <ClCompile Include="hit_memory_manager.cpp" />
     <ClCompile Include="script_rq_result.cpp" />
     <ClCompile Include="script_vars_storage.cpp" />
+    <ClCompile Include="SimpleDetectorSHOC.cpp" />
     <ClCompile Include="sound_memory_manager.cpp" />
     <ClCompile Include="steering_behaviour.cpp" />
     <ClCompile Include="trajectories.cpp" />
+    <ClCompile Include="ui\ArtefactDetectorUI.cpp" />
     <ClCompile Include="ui\UIHelper.cpp" />
     <ClCompile Include="ui\UIIconParams.cpp" />
     <ClCompile Include="ui\UILoadingScreen.cpp" />

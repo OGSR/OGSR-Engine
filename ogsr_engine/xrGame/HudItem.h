@@ -127,25 +127,27 @@ public:
 
 	virtual void	PlayAnimIdle		();
 	bool			TryPlayAnimIdle		();
-	virtual bool	MovingAnimAllowedNow() { return true; }
+	virtual bool IsZoomed() const { return false; }
 	//virtual void	PlayAnimBore		();
 	virtual void	PlayAnimIdleMoving	();
+	virtual void	PlayAnimIdleMovingSlow();
 	virtual void	PlayAnimIdleSprint	();
-	void PlayAnimIdleMovingCrouch(); //AVO: new crouch idle animation
+	virtual void PlayAnimIdleMovingCrouch();
+	virtual void PlayAnimIdleMovingCrouchSlow();
 
 	virtual void	UpdateCL			();
 	virtual void	renderable_Render	();
 
-	virtual void	Hide( bool = false ) = 0;
-	virtual void	Show( bool = false ) = 0;
+	virtual void	Hide( bool = false ) {}
+	virtual void	Show( bool = false ) {}
 
 	virtual void	UpdateHudAdditonal		(Fmatrix&) {};
 	virtual	void	UpdateXForm				() = 0;
 
-	u32				PlayHUDMotion			(const shared_str& M, BOOL bMixIn, CHudItem* W, u32 state, bool randomAnim = true);
-	u32				PlayHUDMotion			(const shared_str& M, const shared_str& M2, BOOL bMixIn, CHudItem* W, u32 state, bool randomAnim = true);
-	u32				PlayHUDMotion_noCB		(const shared_str& M, BOOL bMixIn, bool randomAnim = true);
-	bool			AnimationExist			(const shared_str& M) const;
+	u32				PlayHUDMotion			(const char* M, const bool bMixIn, const u32 state, const bool randomAnim = true);
+	u32				PlayHUDMotion			(std::initializer_list<const char*>, const bool bMixIn, const u32 state, const bool randomAnim = true);
+	u32				PlayHUDMotion_noCB		(const shared_str& M, const bool bMixIn, const bool randomAnim = true);
+	bool			AnimationExist			(const char* M) const;
 	void			StopCurrentAnimWithoutCallback();
 
 	attachable_hud_item* HudItemData		() const;

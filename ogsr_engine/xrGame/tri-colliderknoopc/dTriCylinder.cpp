@@ -628,7 +628,7 @@ if(9!=code)
 CDB::TRI*       T_array      = Level().ObjectSpace.GetStaticTris();
 dVector3 norm;
 unsigned int ret;
-flags8& gl_state=gl_cl_tries_state[I-B];
+Flags8& gl_state=gl_cl_tries_state[I-B];
 if(code==0){
 	norm[0]=triAx[0]*signum;
 	norm[1]=triAx[1]*signum;

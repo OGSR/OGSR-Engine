@@ -718,46 +718,33 @@ void set_ignore_game_state_update()
 }
 
 
-void g_set_artefact_position(const u32 i, const float x, const float y, const float z)
+static void g_set_artefact_position(const u32 i, const float x, const float y, const float z)
 {
-	Fvector pos;
-	pos.set(x, y, z);
-
-	if (fis_zero(pos.x) && fis_zero(pos.y) && fis_zero(pos.z))
-	{
-		Fvector2 res;
-		shader_exports.set_artefact_position(i, res.set(0.f, 0.f));
-	}
+	if (fis_zero(x) && fis_zero(y) && fis_zero(z))
+		shader_exports.set_artefact_position(i, Fvector2{});
 	else
 	{
+		Fvector pos{ x, y, z };
 		Device.mView.transform_tiny(pos);
-		Fvector2 res;
-		shader_exports.set_artefact_position(i, res.set(pos.x, pos.z));
-	}
-
-}
-
-void g_set_anomaly_position(const u32 i, const float x, const float y, const float z)
-{
-	Fvector pos;
-	pos.set(x, y, z);
-
-	if (fis_zero(pos.x) && fis_zero(pos.y) && fis_zero(pos.z))
-	{
-		Fvector2 res;
-		shader_exports.set_anomaly_position(i, res.set(0.f, 0.f));
-	}
-	else
-	{
-		Device.mView.transform_tiny(pos);
-		Fvector2 res;
-		shader_exports.set_anomaly_position(i, res.set(pos.x, pos.z));
+		shader_exports.set_artefact_position(i, Fvector2{ pos.x, pos.z });
 	}
 }
 
-void g_set_detector_params(int _one, int _two)
+static void g_set_anomaly_position(const u32 i, const float x, const float y, const float z)
 {
-	shader_exports.set_detector_params(Ivector2().set(_one, _two));
+	if (fis_zero(x) && fis_zero(y) && fis_zero(z))
+		shader_exports.set_anomaly_position(i, Fvector2{});
+	else
+	{
+		Fvector pos{ x, y, z };
+		Device.mView.transform_tiny(pos);
+		shader_exports.set_anomaly_position(i, Fvector2{ pos.x, pos.z });
+	}
+}
+
+static void g_set_detector_params(const int _one, const int _two)
+{
+	shader_exports.set_detector_params(Ivector2{ _one, _two });
 }
 
 

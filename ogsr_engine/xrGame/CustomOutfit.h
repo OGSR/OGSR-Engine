@@ -30,7 +30,7 @@ public:
 
 
 	virtual void					OnMoveToSlot		();
-	virtual void					OnMoveToRuck		();
+	virtual void					OnMoveToRuck(EItemPlace prevPlace) override;
 	void OnDrop() override;
 
 private:

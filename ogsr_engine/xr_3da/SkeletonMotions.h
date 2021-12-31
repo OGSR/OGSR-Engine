@@ -107,32 +107,23 @@ public:
 };
 
 
-const float	fQuantizerRangeExt	= 1.5f;
 class 	ENGINE_API	CMotionDef
 {
+	float speed, power, accrue, falloff;
 public:
     u16						bone_or_part;
 	u16						motion;
-private:
-	float speed;
-public:
-	u16						power;				// quantized: 0..10
-	u16						accrue;				// quantized: 0..10
-	u16						falloff;			// quantized: 0..10
     u16						flags;
 	xr_vector<motion_marks>	marks;
-private:
-	IC float				Dequantize			(u16 V)	const	{	return  float(V)/655.35f; }
-	IC u16					Quantize			(float V) const		{	s32		t = iFloor(V*655.35f); clamp(t,0,65535); return u16(t); }
-public:
+
 	void					Load				(IReader* MP, u32 fl, u16 vers);
 	u32						mem_usage			(){ return sizeof(*this);}
 
-    ICF float				Accrue				(){return fQuantizerRangeExt*Dequantize(accrue);}
-    ICF float				Falloff				(){return fQuantizerRangeExt*Dequantize(falloff);}
-    ICF float				Speed				() const { return speed; } //{return Dequantize(speed);}
-    ICF float				Power				(){return Dequantize(power);}
-    bool					StopAtEnd			();
+	inline float Accrue() const { return accrue; }
+	inline float Falloff() const { return falloff; }
+	inline float Speed() const { return speed; }
+	inline float Power() const { return power; }
+	bool StopAtEnd() const;
 };
 
 using accel_map = string_unordered_map<shared_str, u16>;
@@ -232,7 +223,6 @@ public:
 	accel_map*			cycle			()							{	VERIFY(p_); return &p_->m_cycle;				}
 	accel_map*			fx				()							{	VERIFY(p_); return &p_->m_fx;					}
 	CPartition*			partition		()							{	VERIFY(p_); return &p_->m_partition;			}
-    MotionDefVec*		motion_defs		()							{	VERIFY(p_); return &p_->m_mdefs;				}
     CMotionDef*			motion_def		(u16 idx)					{	VERIFY(p_); return &p_->m_mdefs[idx];			}
 
 	const shared_str	&id				() const					{	VERIFY(p_); return p_->m_id;					}

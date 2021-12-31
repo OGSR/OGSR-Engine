@@ -87,7 +87,7 @@ CInventory::CInventory()
 			m_slots[i].m_bPersistent = !!pSettings->r_bool("inventory",temp);
 		sprintf_s( temp, "slot_switch_fast_%d", i + 1 );
                 m_slots[ i ].setSwitchFast( READ_IF_EXISTS( pSettings, r_bool, "inventory", temp, false ) );
-	};
+	}
 
 	m_slots[PDA_SLOT].m_bVisible				= false;
 	m_slots[OUTFIT_SLOT].m_bVisible				= false;
@@ -95,13 +95,14 @@ CInventory::CInventory()
 	m_slots[HELMET_SLOT].m_bVisible				= false;
 	m_slots[NIGHT_VISION_SLOT].m_bVisible		= false;
 	m_slots[BIODETECTOR_SLOT].m_bVisible		= false;
+	m_slots[DETECTOR_SLOT].m_bVisible = false; //KRodin: это очень важно! Слот для зп-стайл детекторов должен быть НЕ активируемым!
 
 	for (u32 i = 0; i < m_slots.size(); ++i)
 	{
 		sprintf_s(temp, "slot_visible_%d", i + 1);
 		if (pSettings->line_exist("inventory", temp))
 			m_slots[i].m_bVisible = !!pSettings->r_bool("inventory", temp);
-	};
+	}
 
 	m_bSlotsUseful								= true;
 	m_bBeltUseful								= false;
@@ -415,13 +416,14 @@ bool CInventory::Ruck(PIItem pIItem)
 	CalcTotalWeight									();
 	InvalidateState									();
 
-	m_pOwner->OnItemRuck							(pIItem, pIItem->m_eItemPlace);
+	EItemPlace prevPlace = pIItem->m_eItemPlace;
+	m_pOwner->OnItemRuck							(pIItem, prevPlace);
 	pIItem->m_eItemPlace							= eItemPlaceRuck;
 
 	if (pIItem->GetSlot() != OUTFIT_SLOT || (smart_cast<CActor*>(GetOwner()) && in_slot)) //фикс сброса визуала актора при взятии в инвентарь любого костюма
-		pIItem->OnMoveToRuck();
+		pIItem->OnMoveToRuck(prevPlace);
 	else
-		pIItem->CInventoryItem::OnMoveToRuck();
+		pIItem->CInventoryItem::OnMoveToRuck(prevPlace);
 
 	if(in_slot)
 		pIItem->object().processing_deactivate();
@@ -631,16 +633,6 @@ bool CInventory::Action(s32 cmd, u32 flags)
 					b_send_event = Activate(cmd - kWPN_1, eKeyAction);
 			}
 		}break;
-	case kWPN_8:
-	{
-		if (flags&CMD_START)
-		{
-			if ((int)m_iActiveSlot == DETECTOR_SLOT && m_slots[m_iActiveSlot].m_pIItem)
-				b_send_event = Activate(NO_ACTIVE_SLOT);
-			else
-				b_send_event = Activate(DETECTOR_SLOT, eKeyAction);
-		}
-	}break;
 	}
 
 	if(b_send_event && g_pGameLevel && OnClient() && pActor)

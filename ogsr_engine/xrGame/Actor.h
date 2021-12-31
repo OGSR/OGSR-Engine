@@ -760,6 +760,8 @@ public:
 			bool is_actor_moving();
 			
 			void RepackAmmo();
+
+			bool IsDetectorActive() const;
 private:
 	// иммунитеты от препаратов, применяемые для ослабления хита
 	float m_fDrugPsyProtectionCoeff;

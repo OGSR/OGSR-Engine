@@ -74,6 +74,7 @@ void calc_cam_diff_pos(Fmatrix item_transform, Fvector diff, Fvector& res)
 	item_transform_i.transform_dir(res, res1);
 }
 
+/* Не используется
 void calc_cam_diff_rot(Fmatrix item_transform, Fvector diff, Fvector& res)
 {
 	Fmatrix							cam_m;
@@ -108,6 +109,7 @@ void calc_cam_diff_rot(Fmatrix item_transform, Fvector diff, Fvector& res)
 
 	res.mul(180.0f / PI);
 }
+*/
 
 void attachable_hud_item::tune(Ivector values)
 {

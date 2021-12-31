@@ -181,5 +181,5 @@ void CWeaponRPG7::PlayAnimReload()
 {
 	VERIFY(GetState() == eReload);
 	// play anim with MixIn=FALSE to avoid issue with blinking rocket during reload
-	PlayHUDMotion("anim_reload", "anm_reload", FALSE, this, GetState());
+	PlayHUDMotion({ "anim_reload", "anm_reload" }, false, GetState());
 }

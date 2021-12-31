@@ -124,6 +124,18 @@ void CUITrackBar::SaveValue()
 	}
 
 	m_pSlider->SetText(buf);
+	GetMessageTarget()->SendMessage(this, TRACKBAR_CHANGED);
+}
+
+float CUITrackBar::GetTrackValue()
+{
+	if (m_b_is_float)
+	{
+		return (m_f_val);
+	}
+	else {
+		return float(m_i_val);
+	}
 }
 
 bool CUITrackBar::IsChanged()

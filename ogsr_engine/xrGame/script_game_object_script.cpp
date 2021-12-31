@@ -122,7 +122,6 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("update_addons_visibility",	int(GameObject::eOnUpdateAddonsVisibiility)),
 				value("update_hud_addons_visibility", int(GameObject::eOnUpdateHUDAddonsVisibiility)),
 				value("on_addon_init",				int(GameObject::eOnAddonInit)),
-				value("second_scope_switch",		int(GameObject::eOnSecondScopeSwitch)),
 //				value("on_hud_animation_end",		int(GameObject::eOnHudAnimationEnd)),
 				// Added by Cribbledirge Start
 				value("on_actor_weapon_start_firing", int(GameObject::eOnActorWeaponStartFiring)),

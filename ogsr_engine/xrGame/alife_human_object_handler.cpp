@@ -53,10 +53,10 @@ int	 CALifeHumanObjectHandler::choose_medikit					(ALife::OBJECT_VECTOR *objects
 	return	(-1);
 }
 
-int	 CALifeHumanObjectHandler::choose_detector					(ALife::OBJECT_VECTOR *objects)
+/*int	 CALifeHumanObjectHandler::choose_detector(ALife::OBJECT_VECTOR* objects)
 {
 	return	(-1);
-}
+}*/
 
 int	 CALifeHumanObjectHandler::choose_valuables					()
 {

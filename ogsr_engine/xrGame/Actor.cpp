@@ -64,6 +64,7 @@
 #include "InventoryBox.h"
 #include "location_manager.h"
 #include "PHCapture.h"
+#include "CustomDetector.h"
 
 // Tip for action for object we're looking at
 constexpr const char* m_sCarCharacterUseAction        = "car_character_use";
@@ -1971,4 +1972,11 @@ void CActor::RepackAmmo() {
 bool CActor::unlimited_ammo()
 {
 	return !!psActorFlags.test(AF_UNLIMITEDAMMO);
+}
+
+bool CActor::IsDetectorActive() const {
+	if (auto det = smart_cast<CCustomDetector*>(inventory().ItemFromSlot(DETECTOR_SLOT)))
+		return det->IsWorking();
+
+	return false;
 }

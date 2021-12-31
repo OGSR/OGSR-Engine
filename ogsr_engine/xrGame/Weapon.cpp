@@ -26,7 +26,7 @@
 #include "mathutils.h"
 #include "object_broker.h"
 #include "..\xr_3da\IGame_Persistent.h"
-
+#include "../xr_3da/LightAnimLibrary.h"
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 #include "script_game_object.h"
@@ -43,7 +43,7 @@ extern ENGINE_API Fvector3 w_timers;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CWeapon::CWeapon(LPCSTR name) : m_fLR_MovingFactor(0.f), m_strafe_offset{}
+CWeapon::CWeapon(LPCSTR name)
 {
 	SetState				(eHidden);
 	SetNextState			(eHidden);
@@ -94,6 +94,11 @@ CWeapon::CWeapon(LPCSTR name) : m_fLR_MovingFactor(0.f), m_strafe_offset{}
 CWeapon::~CWeapon		()
 {
 	xr_delete	(m_UIScope);
+
+	laser_light_render.destroy();
+	flashlight_render.destroy();
+	flashlight_omni.destroy();
+	flashlight_glow.destroy();
 }
 
 //void CWeapon::Hit(float P, Fvector &dir,	
@@ -403,9 +408,28 @@ void CWeapon::Load		(LPCSTR section)
 
 
 	// Кости мировой модели оружия
-	m_sWpn_scope_bone    = READ_IF_EXISTS(pSettings, r_string, section, "scope_bone", wpn_scope_def_bone);
+	if (pSettings->line_exist(section, "scope_bone"))
+	{
+		const char* S = pSettings->r_string(section, "scope_bone");
+		if (S && strlen(S))
+		{
+			const int count = _GetItemCount(S);
+			string128 _scope_bone{};
+			for (int it = 0; it < count; ++it)
+			{
+				_GetItem(S, it, _scope_bone);
+				m_sWpn_scope_bones.push_back(_scope_bone);
+			}
+		}
+		else
+			m_sWpn_scope_bones.push_back(wpn_scope_def_bone);
+	}
+	else
+		m_sWpn_scope_bones.push_back(wpn_scope_def_bone);
 	m_sWpn_silencer_bone = READ_IF_EXISTS(pSettings, r_string, section, "silencer_bone", wpn_silencer_def_bone);
 	m_sWpn_launcher_bone = READ_IF_EXISTS(pSettings, r_string, section, "launcher_bone", wpn_launcher_def_bone_shoc);
+	m_sWpn_laser_bone = READ_IF_EXISTS(pSettings, r_string, section, "laser_ray_bones", "");
+	m_sWpn_flashlight_bone = READ_IF_EXISTS(pSettings, r_string, section, "torch_cone_bones", "");
 
 	if (pSettings->line_exist(section, "hidden_bones"))
 	{
@@ -423,9 +447,28 @@ void CWeapon::Load		(LPCSTR section)
 	}
 
 	// Кости худовой модели оружия - если не прописаны, используются имена из конфига мировой модели.
-	m_sHud_wpn_scope_bone    = READ_IF_EXISTS(pSettings, r_string, hud_sect, "scope_bone", m_sWpn_scope_bone);
+	if (pSettings->line_exist(hud_sect, "scope_bone"))
+	{
+		const char* S = pSettings->r_string(hud_sect, "scope_bone");
+		if (S && strlen(S))
+		{
+			const int count = _GetItemCount(S);
+			string128 _scope_bone{};
+			for (int it = 0; it < count; ++it)
+			{
+				_GetItem(S, it, _scope_bone);
+				m_sHud_wpn_scope_bones.push_back(_scope_bone);
+			}
+		}
+		else
+			m_sHud_wpn_scope_bones = m_sWpn_scope_bones;
+	}
+	else
+		m_sHud_wpn_scope_bones = m_sWpn_scope_bones;
 	m_sHud_wpn_silencer_bone = READ_IF_EXISTS(pSettings, r_string, hud_sect, "silencer_bone", m_sWpn_silencer_bone);
 	m_sHud_wpn_launcher_bone = READ_IF_EXISTS(pSettings, r_string, hud_sect, "launcher_bone", m_sWpn_launcher_bone);
+	m_sHud_wpn_laser_bone = READ_IF_EXISTS(pSettings, r_string, hud_sect, "laser_ray_bones", m_sWpn_laser_bone);
+	m_sHud_wpn_flashlight_bone = READ_IF_EXISTS(pSettings, r_string, hud_sect, "torch_cone_bones", m_sWpn_flashlight_bone);
 
 	if (pSettings->line_exist(hud_sect, "hidden_bones"))
 	{
@@ -480,10 +523,6 @@ void CWeapon::Load		(LPCSTR section)
 				_GetItem(S, it, _addonItem);
 				ASSERT_FMT(pSettings->section_exist(_addonItem), "Section [%s] not found!", _addonItem);
 				m_highlightAddons.emplace_back(_addonItem);
-#ifdef OGSR_MOD
-				if (pSettings->line_exist(_addonItem, "real_item_section")) //KRodin: Костыль для огсе-шной системы аддонов, т.к. мне лень по конфигам лазить.
-					m_highlightAddons.emplace_back(pSettings->r_string(_addonItem, "real_item_section"));
-#endif
 			}
 		}
 	}
@@ -500,29 +539,87 @@ void CWeapon::Load		(LPCSTR section)
 
 	////////////////////////////////////////////
 	//--#SM+# Begin--
-	string16 _prefix = { "" };
-	//xr_sprintf(_prefix, "%s", UI()->is_widescreen() ? "_16x9" : ""); //KRodin: на мой взгляд это лишнее.
+	m_strafe_offset[0][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "strafe_hud_offset_pos", (Fvector{ 0.015f, 0.f, 0.f }));
+	m_strafe_offset[1][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "strafe_hud_offset_rot", (Fvector{ 0.f, 0.f, 4.5f }));
 
-	string128 val_name;
+	m_strafe_offset[0][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "strafe_aim_hud_offset_pos", (Fvector{ 0.f, 0.f, 0.f }));
+	m_strafe_offset[1][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "strafe_aim_hud_offset_rot", (Fvector{ 0.f, 0.f, 2.5f }));
 
-	// Смещение в стрейфе
-	m_strafe_offset[0][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, xr_strconcat(val_name, "strafe_hud_offset_pos", _prefix), Fvector().set(0.015f, 0.f, 0.f));
-	m_strafe_offset[1][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, xr_strconcat(val_name, "strafe_hud_offset_rot", _prefix), Fvector().set(0.f, 0.f, 4.5f));
-
-	// Поворот в стрейфе
-	m_strafe_offset[0][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, xr_strconcat(val_name, "strafe_aim_hud_offset_pos", _prefix), Fvector().set(0.005f, 0.f, 0.f));
-	m_strafe_offset[1][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, xr_strconcat(val_name, "strafe_aim_hud_offset_rot", _prefix), Fvector().set(0.f, 0.f, 2.5f));
-
-	// Параметры стрейфа
-	float fFullStrafeTime     = READ_IF_EXISTS(pSettings, r_float, section, "strafe_transition_time", 0.25f);
-	float fFullStrafeTime_aim = READ_IF_EXISTS(pSettings, r_float, section, "strafe_aim_transition_time", 0.15f);
-	bool bStrafeEnabled       = READ_IF_EXISTS(pSettings, r_bool, section, "strafe_enabled", READ_IF_EXISTS(pSettings, r_bool, "features", "default_strafe_enabled", true));
-	bool bStrafeEnabled_aim   = READ_IF_EXISTS(pSettings, r_bool, section, "strafe_aim_enabled", false);
-
-	m_strafe_offset[2][0].set(bStrafeEnabled, fFullStrafeTime, 0.f); // normal
-	m_strafe_offset[2][1].set(bStrafeEnabled_aim, fFullStrafeTime_aim, 0.f); // aim-GL
+	m_strafe_offset[2][0].set(READ_IF_EXISTS(pSettings, r_bool, section, "strafe_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "strafe_transition_time", 0.25f), 0.f); // normal
+	m_strafe_offset[2][1].set(READ_IF_EXISTS(pSettings, r_bool, section, "strafe_aim_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "strafe_aim_transition_time", 0.15f), 0.f); // aim-GL
 	//--#SM+# End--
 	////////////////////////////////////////////
+
+	////////////////////////////////////////////
+	m_lookout_offset[0][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "lookout_hud_offset_pos", (Fvector{ 0.045f, 0.f, 0.f }));
+	m_lookout_offset[1][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "lookout_hud_offset_rot", (Fvector{ 0.f, 0.f, 10.f }));
+
+	m_lookout_offset[0][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "lookout_aim_hud_offset_pos", (Fvector{ 0.f, 0.f, 0.f }));
+	m_lookout_offset[1][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "lookout_aim_hud_offset_rot", (Fvector{ 0.f, 0.f, 15.f }));
+
+	m_lookout_offset[2][0].set(READ_IF_EXISTS(pSettings, r_bool, section, "lookout_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "lookout_transition_time", 0.25f), 0.f); // normal
+	m_lookout_offset[2][1].set(READ_IF_EXISTS(pSettings, r_bool, section, "lookout_aim_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "lookout_aim_transition_time", 0.15f), 0.f); // aim-GL
+	////////////////////////////////////////////
+
+	if (!laser_light_render && pSettings->line_exist(section, "laser_light_section"))
+	{
+		has_laser = true;
+
+		const bool b_r2 = psDeviceFlags.test(rsR2) || psDeviceFlags.test(rsR3) || psDeviceFlags.test(rsR4);
+
+		const char* m_light_section = pSettings->r_string(section, "laser_light_section");
+
+		laser_lanim = LALib.FindItem(READ_IF_EXISTS(pSettings, r_string, m_light_section, "color_animator", ""));
+
+		laser_light_render = ::Render->light_create();
+		laser_light_render->set_type(IRender_Light::SPOT);
+		laser_light_render->set_shadow(true);
+
+		const Fcolor clr = READ_IF_EXISTS(pSettings, r_fcolor, m_light_section, b_r2 ? "color_r2" : "color", (Fcolor{ 1.0f, 0.0f, 0.0f, 1.0f }));
+		laser_fBrightness = clr.intensity();
+		laser_light_render->set_color(clr);
+		const float range = READ_IF_EXISTS(pSettings, r_float, m_light_section, b_r2 ? "range_r2" : "range", 100.f);
+		laser_light_render->set_range(range);
+		laser_light_render->set_cone(deg2rad(READ_IF_EXISTS(pSettings, r_float, m_light_section, "spot_angle", 1.f)));
+		laser_light_render->set_texture(READ_IF_EXISTS(pSettings, r_string, m_light_section, "spot_texture", nullptr));
+	}
+
+	if (!flashlight_render && pSettings->line_exist(section, "flashlight_section"))
+	{
+		has_flashlight = true;
+
+		const bool b_r2 = psDeviceFlags.test(rsR2) || psDeviceFlags.test(rsR3) || psDeviceFlags.test(rsR4);
+
+		const char* m_light_section = pSettings->r_string(section, "flashlight_section");
+
+		flashlight_lanim = LALib.FindItem(READ_IF_EXISTS(pSettings, r_string, m_light_section, "color_animator", ""));
+
+		flashlight_render = ::Render->light_create();
+		flashlight_render->set_type(IRender_Light::SPOT);
+		flashlight_render->set_shadow(true);
+
+		const Fcolor clr = READ_IF_EXISTS(pSettings, r_fcolor, m_light_section, b_r2 ? "color_r2" : "color", (Fcolor{ 0.6f, 0.55f, 0.55f, 1.0f }));
+		flashlight_fBrightness = clr.intensity();
+		flashlight_render->set_color(clr);
+		const float range = READ_IF_EXISTS(pSettings, r_float, m_light_section, b_r2 ? "range_r2" : "range", 50.f);
+		flashlight_render->set_range(range);
+		flashlight_render->set_cone(deg2rad(READ_IF_EXISTS(pSettings, r_float, m_light_section, "spot_angle", 60.f)));
+		flashlight_render->set_texture(READ_IF_EXISTS(pSettings, r_string, m_light_section, "spot_texture", nullptr));
+
+		flashlight_omni = ::Render->light_create();
+		flashlight_omni->set_type((IRender_Light::LT)(READ_IF_EXISTS(pSettings, r_u8, m_light_section, "omni_type", 2))); //KRodin: вообще omni это обычно поинт, но поинт светит во все стороны от себя, поэтому тут спот используется по умолчанию.
+		flashlight_omni->set_shadow(false);
+
+		const Fcolor oclr = READ_IF_EXISTS(pSettings, r_fcolor, m_light_section, b_r2 ? "omni_color_r2" : "omni_color", (Fcolor{ 1.0f , 1.0f , 1.0f , 0.0f }));
+		flashlight_omni->set_color(oclr);
+		const float orange = READ_IF_EXISTS(pSettings, r_float, m_light_section, b_r2 ? "omni_range_r2" : "omni_range", 0.25f);
+		flashlight_omni->set_range(orange);
+
+		flashlight_glow = ::Render->glow_create();
+		flashlight_glow->set_texture(READ_IF_EXISTS(pSettings, r_string, m_light_section, "glow_texture", "glow\\glow_torch_r2"));
+		flashlight_glow->set_color(clr);
+		flashlight_glow->set_radius(READ_IF_EXISTS(pSettings, r_float, m_light_section, "glow_radius", 0.3f));
+	}
 }
 
 void CWeapon::LoadFireParams		(LPCSTR section, LPCSTR prefix)
@@ -842,8 +939,161 @@ void CWeapon::UpdateCL		()
         }
         else
           m_idle_state = eIdle;
+
+	UpdateLaser();
+	UpdateFlashlight();
 }
 
+void CWeapon::GetBoneOffsetPosDir(const shared_str& bone_name, Fvector& dest_pos, Fvector& dest_dir, const Fvector& offset) {
+	const u16 bone_id = HudItemData()->m_model->LL_BoneID(bone_name);
+	ASSERT_FMT(bone_id != BI_NONE, "!![%s] bone [%s] not found in weapon [%s]", __FUNCTION__, bone_name.c_str(), cNameSect().c_str());
+	Fmatrix& fire_mat = HudItemData()->m_model->LL_GetTransform(bone_id);
+	fire_mat.transform_tiny(dest_pos, offset);
+	HudItemData()->m_item_transform.transform_tiny(dest_pos);
+	dest_pos.add(Device.vCameraPosition);
+	dest_dir.set(0.f, 0.f, 1.f);
+	HudItemData()->m_item_transform.transform_dir(dest_dir);
+}
+
+void CWeapon::CorrectDirFromWorldToHud(Fvector& dir) {
+	const auto& CamDir = Device.vCameraDirection;
+	const float Fov = Device.fFOV;
+	extern ENGINE_API float psHUD_FOV;
+	const float HudFov = psHUD_FOV < 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV;
+	static const float hud_recalc_koef = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_recalc_koef", 1.35f); //На калаше при 1.35 вроде норм смотрится, другим стволам возможно придется подбирать другие значения.
+	const float diff = hud_recalc_koef * Fov / HudFov;
+	dir.sub(CamDir);
+	dir.mul(diff);
+	dir.add(CamDir);
+	dir.normalize();
+}
+
+void CWeapon::UpdateLaser()
+{
+	if (laser_light_render)
+	{
+		auto io = smart_cast<CInventoryOwner*>(H_Parent());
+		if (!laser_light_render->get_active() && IsLaserOn() && (!H_Parent() || (io && this == io->inventory().ActiveItem()))) {
+			laser_light_render->set_active(true);
+			UpdateAddonsVisibility();
+		}
+		else if (laser_light_render->get_active() && (!IsLaserOn() || !(!H_Parent() || (io && this == io->inventory().ActiveItem())))) {
+			laser_light_render->set_active(false);
+			UpdateAddonsVisibility();
+		}
+
+		if (laser_light_render->get_active()) {
+			Fvector laser_pos = get_LastFP(), laser_dir = get_LastFD();
+
+			if (GetHUDmode()) {
+				static const shared_str laserdot_attach_bone = READ_IF_EXISTS(pSettings, r_string, cNameSect(), "laserdot_attach_bone", "");
+				if (laserdot_attach_bone.size()) {
+					static const Fvector laserdot_attach_offset{ READ_IF_EXISTS(pSettings, r_float, cNameSect(), "laserdot_attach_offset_x", 0.0f), READ_IF_EXISTS(pSettings, r_float, cNameSect(), "laserdot_attach_offset_y", 0.0f), READ_IF_EXISTS(pSettings, r_float, cNameSect(), "laserdot_attach_offset_z", 0.0f) };
+					GetBoneOffsetPosDir(laserdot_attach_bone, laser_pos, laser_dir, laserdot_attach_offset);
+					CorrectDirFromWorldToHud(laser_dir);
+				}
+			}
+			else {
+				static const Fvector laserdot_world_attach_offset{ READ_IF_EXISTS(pSettings, r_float, cNameSect(), "laserdot_world_attach_offset_x", 0.0f), READ_IF_EXISTS(pSettings, r_float, cNameSect(), "laserdot_world_attach_offset_y", 0.0f), READ_IF_EXISTS(pSettings, r_float, cNameSect(), "laserdot_world_attach_offset_z", 0.0f) };
+				XFORM().transform_tiny(laser_pos, laserdot_world_attach_offset);
+			}
+
+			Fmatrix laserXForm;
+			laserXForm.identity();
+			laserXForm.k.set(laser_dir);
+			Fvector::generate_orthonormal_basis_normalized(laserXForm.k, laserXForm.j, laserXForm.i);
+
+			laser_light_render->set_position(laser_pos);
+			laser_light_render->set_rotation(laserXForm.k, laserXForm.i);
+
+			// calc color animator
+			if (laser_lanim)
+			{
+				int frame;
+				const u32 clr = laser_lanim->CalculateBGR(Device.fTimeGlobal, frame);
+
+				Fcolor fclr{ (float)color_get_B(clr), (float)color_get_G(clr), (float)color_get_R(clr), 1.f };
+				fclr.mul_rgb(laser_fBrightness / 255.f);
+				laser_light_render->set_color(fclr);
+			}
+		}
+	}
+}
+
+void CWeapon::UpdateFlashlight()
+{
+	if (flashlight_render)
+	{
+		auto io = smart_cast<CInventoryOwner*>(H_Parent());
+		if (!flashlight_render->get_active() && IsFlashlightOn() && (!H_Parent() || (io && this == io->inventory().ActiveItem()))) {
+			flashlight_render->set_active(true);
+			flashlight_omni->set_active(true);
+			flashlight_glow->set_active(true);
+			UpdateAddonsVisibility();
+		}
+		else if (flashlight_render->get_active() && (!IsFlashlightOn() || !(!H_Parent() || (io && this == io->inventory().ActiveItem())))) {
+			flashlight_render->set_active(false);
+			flashlight_omni->set_active(false);
+			flashlight_glow->set_active(false);
+			UpdateAddonsVisibility();
+		}
+
+		if (flashlight_render->get_active()) {
+			Fvector flashlight_pos, flashlight_pos_omni, flashlight_dir, flashlight_dir_omni;
+
+			if (GetHUDmode()) {
+				static const shared_str flashlight_attach_bone = pSettings->r_string(cNameSect(), "torch_light_bone");
+
+				static const Fvector flashlight_attach_offset{ pSettings->r_float(cNameSect(), "torch_attach_offset_x"), pSettings->r_float(cNameSect(), "torch_attach_offset_y"), pSettings->r_float(cNameSect(), "torch_attach_offset_z") };
+				GetBoneOffsetPosDir(flashlight_attach_bone, flashlight_pos, flashlight_dir, flashlight_attach_offset);
+				CorrectDirFromWorldToHud(flashlight_dir);
+
+				static const Fvector flashlight_omni_attach_offset{ pSettings->r_float(cNameSect(), "torch_omni_attach_offset_x"), pSettings->r_float(cNameSect(), "torch_omni_attach_offset_y"), pSettings->r_float(cNameSect(), "torch_omni_attach_offset_z") };
+				GetBoneOffsetPosDir(flashlight_attach_bone, flashlight_pos_omni, flashlight_dir_omni, flashlight_omni_attach_offset);
+				CorrectDirFromWorldToHud(flashlight_dir_omni);
+			}
+			else {
+				flashlight_dir = get_LastFD();
+				static const Fvector flashlight_world_attach_offset{ pSettings->r_float(cNameSect(), "torch_world_attach_offset_x"), pSettings->r_float(cNameSect(), "torch_world_attach_offset_y"), pSettings->r_float(cNameSect(), "torch_world_attach_offset_z") };
+				XFORM().transform_tiny(flashlight_pos, flashlight_world_attach_offset);
+
+				flashlight_dir_omni = get_LastFD();
+				static const Fvector flashlight_omni_world_attach_offset{ pSettings->r_float(cNameSect(), "torch_omni_world_attach_offset_x"), pSettings->r_float(cNameSect(), "torch_omni_world_attach_offset_y"), pSettings->r_float(cNameSect(), "torch_omni_world_attach_offset_z") };
+				XFORM().transform_tiny(flashlight_pos_omni, flashlight_omni_world_attach_offset);
+			}
+
+			Fmatrix flashlightXForm;
+			flashlightXForm.identity();
+			flashlightXForm.k.set(flashlight_dir);
+			Fvector::generate_orthonormal_basis_normalized(flashlightXForm.k, flashlightXForm.j, flashlightXForm.i);
+			flashlight_render->set_position(flashlight_pos);
+			flashlight_render->set_rotation(flashlightXForm.k, flashlightXForm.i);
+
+			flashlight_glow->set_position(flashlight_pos);
+			flashlight_glow->set_direction(flashlightXForm.k);
+
+			Fmatrix flashlightomniXForm;
+			flashlightomniXForm.identity();
+			flashlightomniXForm.k.set(flashlight_dir_omni);
+			Fvector::generate_orthonormal_basis_normalized(flashlightomniXForm.k, flashlightomniXForm.j, flashlightomniXForm.i);
+			flashlight_omni->set_position(flashlight_pos_omni);
+			flashlight_omni->set_rotation(flashlightomniXForm.k, flashlightomniXForm.i);
+
+			// calc color animator
+			if (flashlight_lanim)
+			{
+				int frame;
+				const u32 clr = flashlight_lanim->CalculateBGR(Device.fTimeGlobal, frame);
+
+				Fcolor fclr{ (float)color_get_B(clr), (float)color_get_G(clr), (float)color_get_R(clr), 1.f };
+				fclr.mul_rgb(flashlight_fBrightness / 255.f);
+				flashlight_render->set_color(fclr);
+				flashlight_omni->set_color(fclr);
+				flashlight_glow->set_color(fclr);
+			}
+		}
+	}
+}
 
 void CWeapon::renderable_Render		()
 {
@@ -864,11 +1114,6 @@ void CWeapon::renderable_Render		()
 bool CWeapon::need_renderable() 
 {
 	return !Device.m_SecondViewport.IsSVPFrame() && !(IsZoomed() && ZoomTexture() && !IsRotatingToZoom());
-}
-
-bool CWeapon::MovingAnimAllowedNow()
-{ 
-	return !IsZoomed(); 
 }
 
 void CWeapon::signal_HideComplete()
@@ -1238,12 +1483,12 @@ void CWeapon::UpdateHUDAddonsVisibility()
 		return;
 
 	if (ScopeAttachable())
-		HudItemData()->set_bone_visible(m_sHud_wpn_scope_bone, IsScopeAttached());
+		HudItemData()->set_bone_visible(m_sHud_wpn_scope_bones, IsScopeAttached());
 
 	if (m_eScopeStatus == ALife::eAddonDisabled)
-		HudItemData()->set_bone_visible(m_sHud_wpn_scope_bone, FALSE, TRUE);
+		HudItemData()->set_bone_visible(m_sHud_wpn_scope_bones, FALSE, TRUE);
 	else if (m_eScopeStatus == ALife::eAddonPermanent)
-		HudItemData()->set_bone_visible(m_sHud_wpn_scope_bone, TRUE, TRUE);
+		HudItemData()->set_bone_visible(m_sHud_wpn_scope_bones, TRUE, TRUE);
 
 	if (SilencerAttachable())
 		HudItemData()->set_bone_visible(m_sHud_wpn_silencer_bone, IsSilencerAttached());
@@ -1264,6 +1509,12 @@ void CWeapon::UpdateHUDAddonsVisibility()
 	else if (m_eGrenadeLauncherStatus == ALife::eAddonPermanent)
 		HudItemData()->set_bone_visible(m_sHud_wpn_launcher_bone, TRUE, TRUE);
 
+	if (m_sHud_wpn_laser_bone.size() && has_laser)
+		HudItemData()->set_bone_visible(m_sHud_wpn_laser_bone, IsLaserOn(), TRUE);
+
+	if (m_sHud_wpn_flashlight_bone.size() && has_flashlight)
+		HudItemData()->set_bone_visible(m_sHud_wpn_flashlight_bone, IsFlashlightOn(), TRUE);
+
 	for (const shared_str& bone_name : hud_hidden_bones)
 		HudItemData()->set_bone_visible(bone_name, FALSE, TRUE);
 
@@ -1278,28 +1529,31 @@ void CWeapon::UpdateAddonsVisibility()
 	UpdateHUDAddonsVisibility();
 
 	///////////////////////////////////////////////////////////////////
+	u16 bone_id{};
 
-	u16 bone_id = pWeaponVisual->LL_BoneID(m_sWpn_scope_bone);
-
-	if (ScopeAttachable())
+	for (const auto& sbone : m_sWpn_scope_bones)
 	{
-		if (IsScopeAttached())
+		bone_id = pWeaponVisual->LL_BoneID(sbone);
+
+		if (ScopeAttachable())
 		{
-			if (!pWeaponVisual->LL_GetBoneVisible(bone_id))
-				pWeaponVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
+			if (IsScopeAttached())
+			{
+				if (!pWeaponVisual->LL_GetBoneVisible(bone_id))
+					pWeaponVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
+			}
+			else
+			{
+				if (pWeaponVisual->LL_GetBoneVisible(bone_id))
+					pWeaponVisual->LL_SetBoneVisible(bone_id, FALSE, TRUE);
+			}
 		}
-		else
-		{
-			if (pWeaponVisual->LL_GetBoneVisible(bone_id))
-				pWeaponVisual->LL_SetBoneVisible(bone_id, FALSE, TRUE);
-		}
+
+		if (m_eScopeStatus == CSE_ALifeItemWeapon::eAddonDisabled && bone_id != BI_NONE && pWeaponVisual->LL_GetBoneVisible(bone_id))
+			pWeaponVisual->LL_SetBoneVisible(bone_id, FALSE, TRUE);
+		else if (m_eScopeStatus == CSE_ALifeItemWeapon::eAddonPermanent && bone_id != BI_NONE && !pWeaponVisual->LL_GetBoneVisible(bone_id))
+			pWeaponVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
 	}
-
-	if (m_eScopeStatus == CSE_ALifeItemWeapon::eAddonDisabled && bone_id != BI_NONE && pWeaponVisual->LL_GetBoneVisible(bone_id))
-		pWeaponVisual->LL_SetBoneVisible(bone_id, FALSE, TRUE);
-	else if (m_eScopeStatus == CSE_ALifeItemWeapon::eAddonPermanent && bone_id != BI_NONE && !pWeaponVisual->LL_GetBoneVisible(bone_id))
-		pWeaponVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
-
 	///////////////////////////////////////////////////////////////////
 
 	bone_id = pWeaponVisual->LL_BoneID(m_sWpn_silencer_bone);
@@ -1345,6 +1599,36 @@ void CWeapon::UpdateAddonsVisibility()
 		pWeaponVisual->LL_SetBoneVisible(bone_id, FALSE, TRUE);
 	else if (m_eGrenadeLauncherStatus == CSE_ALifeItemWeapon::eAddonPermanent && bone_id != BI_NONE && !pWeaponVisual->LL_GetBoneVisible(bone_id))
 		pWeaponVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
+
+	///////////////////////////////////////////////////////////////////
+
+	if (m_sWpn_laser_bone.size() && has_laser)
+	{
+		bone_id = pWeaponVisual->LL_BoneID(m_sWpn_laser_bone);
+
+		if (bone_id != BI_NONE) {
+			const bool laser_on = IsLaserOn();
+			if (pWeaponVisual->LL_GetBoneVisible(bone_id) && !laser_on)
+				pWeaponVisual->LL_SetBoneVisible(bone_id, FALSE, TRUE);
+			else if (!pWeaponVisual->LL_GetBoneVisible(bone_id) && laser_on)
+				pWeaponVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
+		}
+	}
+
+	///////////////////////////////////////////////////////////////////
+
+	if (m_sWpn_flashlight_bone.size() && has_flashlight)
+	{
+		bone_id = pWeaponVisual->LL_BoneID(m_sWpn_flashlight_bone);
+
+		if (bone_id != BI_NONE) {
+			const bool flashlight_on = IsFlashlightOn();
+			if (pWeaponVisual->LL_GetBoneVisible(bone_id) && !flashlight_on)
+				pWeaponVisual->LL_SetBoneVisible(bone_id, FALSE, TRUE);
+			else if (!pWeaponVisual->LL_GetBoneVisible(bone_id) && flashlight_on)
+				pWeaponVisual->LL_SetBoneVisible(bone_id, TRUE, TRUE);
+		}
+	}
 
 	///////////////////////////////////////////////////////////////////
 
@@ -1433,10 +1717,8 @@ void CWeapon::OnZoomOut()
 }
 
 bool CWeapon::UseScopeTexture() {
-	return (( GetAddonsState() & CSE_ALifeItemWeapon::eForcedNotexScope ) == 0) 
-		&& !SecondVPEnabled()
-		&& m_UIScope; // только если есть текстура прицела - для простого создания коллиматоров
-};
+	return !SecondVPEnabled() && m_UIScope; // только если есть текстура прицела - для простого создания коллиматоров
+}
 
 CUIStaticItem* CWeapon::ZoomTexture()
 {
@@ -1643,135 +1925,206 @@ u8 CWeapon::GetCurrentHudOffsetIdx()
 
 
 // Обновление координат текущего худа
-void CWeapon::UpdateHudAdditonal		(Fmatrix& trans)
+void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
 {
-	auto pActor = smart_cast<const CActor*>(H_Parent());
-	if(!pActor) return;
+	Fvector summary_offset{}, summary_rotate{};
 
+	attachable_hud_item* hi = HudItemData();
 	u8 idx = GetCurrentHudOffsetIdx();
+	const bool b_aiming = idx != hud_item_measures::m_hands_offset_type_normal;
+	Fvector zr_offs = hi->m_measures.m_hands_offset[hud_item_measures::m_hands_offset_pos][idx];
+	Fvector zr_rot = hi->m_measures.m_hands_offset[hud_item_measures::m_hands_offset_rot][idx];
 
-	//============= Поворот ствола во время аима =============//
-	if(		(pActor->IsZoomAimingMode() && m_fZoomRotationFactor<=1.f) ||
-			(!pActor->IsZoomAimingMode() && m_fZoomRotationFactor>0.f))
+	//============ Поворот ствола во время аима ===========//
+	if(b_aiming)
 	{
-		attachable_hud_item* hi = HudItemData();
-		R_ASSERT(hi);
-		Fvector curr_offs, curr_rot;
-		curr_offs = hi->m_measures.m_hands_offset[hud_item_measures::m_hands_offset_pos][idx];
-		curr_rot = hi->m_measures.m_hands_offset[hud_item_measures::m_hands_offset_rot][idx];
-		curr_offs.mul(m_fZoomRotationFactor);
-		curr_rot.mul(m_fZoomRotationFactor);
-
-		Fmatrix hud_rotation;
-		hud_rotation.identity();
-		hud_rotation.rotateX(curr_rot.x);
-
-		Fmatrix hud_rotation_y;
-		hud_rotation_y.identity();
-		hud_rotation_y.rotateY(curr_rot.y);
-		hud_rotation.mulA_43(hud_rotation_y);
-
-		hud_rotation_y.identity();
-		hud_rotation_y.rotateZ(curr_rot.z);
-		hud_rotation.mulA_43(hud_rotation_y);
-
-		hud_rotation.translate_over(curr_offs);
-		trans.mulB_43(hud_rotation);
-
-		if(pActor->IsZoomAimingMode())
-		{
+		if(IsZoomed())
 			m_fZoomRotationFactor += Device.fTimeDelta/m_fZoomRotateTime;
-		}
 		else
-		{
 			m_fZoomRotationFactor -= Device.fTimeDelta/m_fZoomRotateTime;
-		}
+
 		clamp(m_fZoomRotationFactor, 0.f, 1.f);
+
+		zr_offs.mul(m_fZoomRotationFactor);
+		zr_rot.mul(m_fZoomRotationFactor);
+
+		summary_offset.add(zr_offs);
 	}
+	//====================================================//
 
-	// Боковой стрейф с оружием
-	clamp(idx, 0ui8, 1ui8);
+	auto pActor = smart_cast<const CActor*>(H_Parent());
+	const u32 iMovingState = pActor->MovingState();
+	idx = b_aiming ? 1ui8 : 0ui8;
 
-	// Рассчитываем фактор боковой ходьбы
-	float fStrafeMaxTime = /*hi->m_measures.*/m_strafe_offset[2][idx].y; // Макс. время в секундах, за которое мы наклонимся из центрального положения
-	if (fStrafeMaxTime <= EPS)
-		fStrafeMaxTime = 0.01f;
+	//============= Боковой стрейф с оружием =============//
+	{
+		const bool bEnabled = m_strafe_offset[2][idx].x;
+		if (!bEnabled)
+			goto LOOKOUT_EFFECT;
 
-	float fStepPerUpd = Device.fTimeDelta / fStrafeMaxTime; // Величина изменение фактора поворота
+		// Рассчитываем фактор боковой ходьбы
+		float fStrafeMaxTime = m_strafe_offset[2][idx].y; // Макс. время в секундах, за которое мы наклонимся из центрального положения
+		if (fStrafeMaxTime <= EPS)
+			fStrafeMaxTime = 0.01f;
 
-	u32 iMovingState = pActor->MovingState();
-	if ((iMovingState & mcLStrafe) != 0)
-	{ // Движемся влево
-		float fVal = (m_fLR_MovingFactor > 0.f ? fStepPerUpd * 3 : fStepPerUpd);
-		m_fLR_MovingFactor -= fVal;
-	}
-	else if ((iMovingState & mcRStrafe) != 0)
-	{ // Движемся вправо
-		float fVal = (m_fLR_MovingFactor < 0.f ? fStepPerUpd * 3 : fStepPerUpd);
-		m_fLR_MovingFactor += fVal;
-	}
-	else
-	{ // Двигаемся в любом другом направлении
-		if (m_fLR_MovingFactor < 0.0f)
-		{
-			m_fLR_MovingFactor += fStepPerUpd;
-			clamp(m_fLR_MovingFactor, -1.0f, 0.0f);
+		const float fStepPerUpd = Device.fTimeDelta / fStrafeMaxTime; // Величина изменение фактора поворота
+
+		if (iMovingState & mcLStrafe)
+		{ // Движемся влево
+			float fVal = (m_fLR_MovingFactor > 0.f ? fStepPerUpd * 3 : fStepPerUpd);
+			m_fLR_MovingFactor -= fVal;
+		}
+		else if (iMovingState & mcRStrafe)
+		{ // Движемся вправо
+			float fVal = (m_fLR_MovingFactor < 0.f ? fStepPerUpd * 3 : fStepPerUpd);
+			m_fLR_MovingFactor += fVal;
 		}
 		else
-		{
-			m_fLR_MovingFactor -= fStepPerUpd;
-			clamp(m_fLR_MovingFactor, 0.0f, 1.0f);
+		{ // Двигаемся в любом другом направлении
+			if (m_fLR_MovingFactor < 0.0f)
+			{
+				m_fLR_MovingFactor += fStepPerUpd;
+				clamp(m_fLR_MovingFactor, -1.0f, 0.0f);
+			}
+			else
+			{
+				m_fLR_MovingFactor -= fStepPerUpd;
+				clamp(m_fLR_MovingFactor, 0.0f, 1.0f);
+			}
 		}
-	}
 
-	clamp(m_fLR_MovingFactor, -1.0f, 1.0f); // Фактор боковой ходьбы не должен превышать эти лимиты
-
-	// Производим наклон ствола для нормального режима и аима
-	for (int _idx = 0; _idx <= 1; _idx++)
-	{
-		bool bEnabled = m_strafe_offset[2][_idx].x;
-		if (!bEnabled)
-			continue;
-
-		Fvector curr_offs, curr_rot;
+		clamp(m_fLR_MovingFactor, -1.0f, 1.0f); // Фактор боковой ходьбы не должен превышать эти лимиты
 
 		// Смещение позиции худа в стрейфе
-		curr_offs = m_strafe_offset[0][_idx]; //pos
-		curr_offs.mul(m_fLR_MovingFactor);                   // Умножаем на фактор стрейфа
+		Fvector moving_offs = m_strafe_offset[0][idx]; //pos
+		moving_offs.mul(m_fLR_MovingFactor); // Умножаем на фактор стрейфа
 
 		// Поворот худа в стрейфе
-		curr_rot = m_strafe_offset[1][_idx]; //rot
-		curr_rot.mul(-PI / 180.f);                          // Преобразуем углы в радианы
-		curr_rot.mul(m_fLR_MovingFactor);                   // Умножаем на фактор стрейфа
+		Fvector moving_rot = m_strafe_offset[1][idx]; //rot
+		moving_rot.mul(-PI / 180.f); // Преобразуем углы в радианы
+		moving_rot.mul(m_fLR_MovingFactor); // Умножаем на фактор стрейфа
 
-		if (_idx == 0)
+		if (idx == 0)
 		{ // От бедра
-			curr_offs.mul(1.f - m_fZoomRotationFactor);
-			curr_rot.mul(1.f - m_fZoomRotationFactor);
+			moving_offs.mul(1.f - m_fZoomRotationFactor);
+			moving_rot.mul(1.f - m_fZoomRotationFactor);
 		}
 		else
 		{ // Во время аима
-			curr_offs.mul(m_fZoomRotationFactor);
-			curr_rot.mul(m_fZoomRotationFactor);
+			moving_offs.mul(m_fZoomRotationFactor);
+			moving_rot.mul(m_fZoomRotationFactor);
 		}
 
+		summary_offset.add(moving_offs);
+		summary_rotate.add(moving_rot);
+	}
+	//====================================================//
+
+LOOKOUT_EFFECT:
+	//=============== Эффекты выглядываний ===============//
+	{
+		const bool bEnabled = m_lookout_offset[2][idx].x;
+		if (!bEnabled)
+			goto APPLY_EFFECTS;
+
+		float fLookoutMaxTime = m_lookout_offset[2][idx].y; // Макс. время в секундах, за которое мы наклонимся из центрального положения
+		if (fLookoutMaxTime <= EPS)
+			fLookoutMaxTime = 0.01f;
+
+		const float fStepPerUpdL = Device.fTimeDelta / fLookoutMaxTime; // Величина изменение фактора поворота
+
+		if ((iMovingState & mcLLookout) && !(iMovingState & mcRLookout))
+		{ // Выглядываем влево
+			float fVal = (m_fLookout_MovingFactor > 0.f ? fStepPerUpdL * 3 : fStepPerUpdL);
+			m_fLookout_MovingFactor -= fVal;
+		}
+		else if ((iMovingState & mcRLookout) && !(iMovingState & mcLLookout))
+		{ // Выглядываем вправо
+			float fVal = (m_fLookout_MovingFactor < 0.f ? fStepPerUpdL * 3 : fStepPerUpdL);
+			m_fLookout_MovingFactor += fVal;
+		}
+		else
+		{ // Двигаемся в любом другом направлении
+			if (m_fLookout_MovingFactor < 0.0f)
+			{
+				m_fLookout_MovingFactor += fStepPerUpdL;
+				clamp(m_fLookout_MovingFactor, -1.0f, 0.0f);
+			}
+			else
+			{
+				m_fLookout_MovingFactor -= fStepPerUpdL;
+				clamp(m_fLookout_MovingFactor, 0.0f, 1.0f);
+			}
+		}
+
+		clamp(m_fLookout_MovingFactor, -1.0f, 1.0f); // не должен превышать эти лимиты
+
+		float koef{ 1.f };
+		if ((iMovingState & mcCrouch) && (iMovingState & mcAccel))
+			koef = 0.5; // во сколько раз менять амплитуду при полном присяде
+		else if (iMovingState & mcCrouch)
+			koef = 0.75; // во сколько раз менять амплитуду при присяде
+
+		// Смещение позиции худа
+		Fvector lookout_offs = m_lookout_offset[0][idx]; //pos
+		lookout_offs.mul(koef);
+		lookout_offs.mul(m_fLookout_MovingFactor); // Умножаем на фактор наклона
+
+		// Поворот худа
+		Fvector lookout_rot = m_lookout_offset[1][idx]; //rot
+		lookout_rot.mul(koef);
+		lookout_rot.mul(-PI / 180.f); // Преобразуем углы в радианы
+		lookout_rot.mul(m_fLookout_MovingFactor); // Умножаем на фактор наклона
+
+		if (idx == 0)
+		{ // От бедра
+			lookout_offs.mul(1.f - m_fZoomRotationFactor);
+			lookout_rot.mul(1.f - m_fZoomRotationFactor);
+		}
+		else
+		{ // Во время аима
+			lookout_offs.mul(m_fZoomRotationFactor);
+			lookout_rot.mul(m_fZoomRotationFactor);
+		}
+
+		summary_offset.add(lookout_offs);
+		summary_rotate.add(lookout_rot);
+	}
+	//====================================================//
+
+APPLY_EFFECTS:
+	//================ Применение эффектов ===============//
+	{
+		// поворот с сохранением смещения by Zander
+		Fvector _angle{}, _pos{ trans.c };
+		trans.getHPB(_angle);
+		_angle.add(-summary_rotate);
+		//Msg("##[%s] summary_rotate: [%f,%f,%f]", __FUNCTION__, summary_rotate.x, summary_rotate.y, summary_rotate.z);
+		trans.setHPB(_angle.x, _angle.y, _angle.z);
+		trans.c = _pos;
+
 		Fmatrix hud_rotation;
-		Fmatrix hud_rotation_y;
-
 		hud_rotation.identity();
-		hud_rotation.rotateX(curr_rot.x);
 
-		hud_rotation_y.identity();
-		hud_rotation_y.rotateY(curr_rot.y);
-		hud_rotation.mulA_43(hud_rotation_y);
+		if (b_aiming)
+		{
+			hud_rotation.rotateX(zr_rot.x);
 
-		hud_rotation_y.identity();
-		hud_rotation_y.rotateZ(curr_rot.z);
-		hud_rotation.mulA_43(hud_rotation_y);
+			Fmatrix hud_rotation_y;
+			hud_rotation_y.identity();
+			hud_rotation_y.rotateY(zr_rot.y);
+			hud_rotation.mulA_43(hud_rotation_y);
 
-		hud_rotation.translate_over(curr_offs);
+			hud_rotation_y.identity();
+			hud_rotation_y.rotateZ(zr_rot.z);
+			hud_rotation.mulA_43(hud_rotation_y);
+			//Msg("~~[%s] zr_rot: [%f,%f,%f]", __FUNCTION__, zr_rot.x, zr_rot.y, zr_rot.z);
+		}
+		//Msg("--[%s] summary_offset: [%f,%f,%f]", __FUNCTION__, summary_offset.x, summary_offset.y, summary_offset.z);
+		hud_rotation.translate_over(summary_offset);
 		trans.mulB_43(hud_rotation);
 	}
+	//====================================================//
 }
 
 void	CWeapon::SetAmmoElapsed	(int ammo_count)

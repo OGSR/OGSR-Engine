@@ -95,167 +95,11 @@ CInventory *get_obj_inventory(CScriptGameObject *script_obj)
 }
 
 
-// alpet: получение визуала для худа оружия
-
 CSE_ALifeDynamicObject* CScriptGameObject::alife_object() const
 {
 	return object().alife_object();
 }
 
-CGameObject *client_obj(u32 id)
-{
-	CObject *obj = Level().Objects.net_Find(id);
-	return smart_cast<CGameObject*>(obj);
-}
-
-
-void lua_pushgameobject(lua_State *L, CGameObject *obj)
-{
-	using namespace luabind::detail;
-
-	obj->lua_game_object()->set_lua_state(L);
-
-	// базовые классы в иерархии должны быть добавлены последними
-	if (smart_cast<CInventoryItem*>(obj))
-	{
-		if (// наследнички CInventoryItem 
-			test_pushobject<CTorch>						(L, obj) ||						
-			test_pushobject<CArtefact>					(L, obj) ||			
-			test_pushobject<CEatableItemObject>			(L, obj) ||
-			test_pushobject<CGrenade>					(L, obj) ||
-			test_pushobject<CMissile>					(L, obj) ||
-			test_pushobject<CCustomOutfit>				(L, obj) ||
-			test_pushobject<CWeaponMagazinedWGrenade>	(L, obj) ||
-			test_pushobject<CWeaponMagazined>			(L, obj) ||
-			test_pushobject<CWeapon>					(L, obj) ||
-			test_pushobject<CInventoryItemObject>		(L, obj) ||
-			test_pushobject<CInventoryItem>				(L, obj)
-			) return;
-	}
-
-	if (smart_cast<CActor*>(obj))
-	{
-		luabind::detail::convert_to_lua<CActorObject*>(L, (CActorObject*)obj);
-		return;
-	}
-
-
-	if ( test_pushobject<CCar>						(L, obj) ||
-		 test_pushobject<CHangingLamp>				(L, obj) ||
-	 	 test_pushobject<CHelicopter>				(L, obj) ||
-		 test_pushobject<CSpaceRestrictor>			(L, obj) ||
-		 test_pushobject<CCustomZone>				(L, obj) ||
-		 test_pushobject<CEntityAlive>				(L, obj) ||
-		 test_pushobject<CEntity>					(L, obj)	 
-	   ) return;
-
-	convert_to_lua<CGameObject*> (L, obj); // for default 
-}
-
-CGameObject *lua_togameobject(lua_State *L, int index)
-{
-	using namespace luabind::detail;
-	CScriptGameObject *script_obj = NULL;
-	CGameObject *obj = NULL;
-
-	if (lua_isuserdata(L, index))
-	{
-		object_rep* rep = is_class_object(L, index);
-		if (rep && strstr(rep->crep()->name(), "game_object"))
-		{
-			script_obj = (CScriptGameObject *)rep->ptr();
-			obj = &script_obj->object();
-		}
-
-	}
-	if (lua_isnumber(L, index))
-	{
-		u32 id = lua_tointeger(L, index);
-		if (id < 0xFFFF)
-			obj = client_obj(id);
-	}
-
-	return obj;
-}
-
-bool test_in_stack(u32 *pstack, u32 pvalue)
-{
-	for (int i = 0; i < 16; i ++)
-	if (pstack[i] == pvalue)
-		return true;
-
-	return false;
-}
-
-lua_State* active_vm(CGameObject *obj = NULL) // deprecated
-{
-	lua_State *L = NULL;
-
-	if (obj)
-		L = obj->lua_game_object()->lua_state();
-		
-    if (!L) L =	ai().script_engine().lua();	 
-
-#ifdef LUAICP_COMPAT
-
-	LPCSTR member = NULL;
-	for (int i = lua_gettop(L); i > 0; i--)
-	{		
-		if (lua_type(L, i) == LUA_TSTRING)
-			member = lua_tostring(L, i); // for verify 'interface'
-
-		CGameObject *ref = lua_togameobject(L, i);
-		if (member && obj && ref == obj && strstr(member, "interface"))
-			return L;   // иногда работает при использовании iterate_inventory из вызова LuaSafeCall
-	}
-
-	lua_getfield(L, LUA_REGISTRYINDEX, "active_vm");	
-	if (lua_islightuserdata(L, -1))
-	{
-		lua_State *Lsrc = L;
-		L = (lua_State*)lua_topointer(L, -1);
-		lua_pop(Lsrc, 1);
-	}
-	else
-	{
-		Msg("!WARN: active_vm not set in LUA_REGISTRY. type(L,-1) = %d", lua_type(L, -1));
-		lua_pop(L, 1);
-	}
-		
-#endif
-	return L;
-}
-
-LPCSTR script_object_class_name(lua_State *L) // для raw-функции. Так-же см. get_lua_class_name для raw-свойства.
-{
-	using namespace luabind::detail;
-
-	static string64 class_name;
-	sprintf_s (class_name, 63, "lua_type = %d", lua_type(L, 1));
-
-	if (lua_isuserdata(L, 1))
-	{
-		object_rep* rep = is_class_object(L, 1);
-		if (rep)
-			strcpy_s(class_name, 63, rep->crep()->name());
-	}
-	
-	return class_name;
-}
-
-
-// alpet: получение произвольного объекта движка по ID  или game_object
-void dynamic_engine_object(lua_State *L)
-{	
-	using namespace luabind::detail;
-
-	CGameObject *obj = lua_togameobject(L, 1);
-
-	if (obj)	
-		lua_pushgameobject(L, obj);			
-	else
-		lua_pushnil (L);
-}
 
 u32 get_level_id(u32 gvid)
 {
@@ -361,8 +205,6 @@ void script_register_game_object4(lua_State *L)
 {
 	module(L)
 	[
-//		def("script_object_class_name",		&script_object_class_name),
-//		def("engine_object",				&dynamic_engine_object),
 		def("get_actor_obj",				&Actor),
 		def("get_level_id",				&get_level_id)
 	];

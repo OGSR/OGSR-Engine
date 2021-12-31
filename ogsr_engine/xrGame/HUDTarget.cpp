@@ -26,6 +26,7 @@
 #include "inventory.h"
 #include "monster_community.h"
 #include "HudItem.h"
+#include "Weapon.h"
 
 constexpr float C_SIZE = 0.025f, NEAR_LIM = 0.5f, SHOW_INFO_SPEED = 0.5f, HIDE_INFO_SPEED = 10.f;
 
@@ -204,6 +205,9 @@ void CHUDTarget::Render()
 		}
 		clamp(fuzzyShowInfo,0.f,1.f);
 	}
+
+	if (auto Wpn = smart_cast<CWeapon*>(Actor->inventory().ActiveItem()); Wpn && Wpn->IsLaserOn())
+		return;
 
 	Fvector2 scr_size;
 	scr_size.set(float(Device.dwWidth), float(Device.dwHeight));

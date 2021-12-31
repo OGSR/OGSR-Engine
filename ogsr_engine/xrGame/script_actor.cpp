@@ -225,10 +225,9 @@ void CScriptActor::script_register(lua_State *L)
 			.def("is_actor_climbing",					&CActor::is_actor_climbing)
 			.def("is_actor_moving",						&CActor::is_actor_moving)
 			.def( "UpdateArtefactsOnBelt", &CActor::UpdateArtefactsOnBelt )
+			.def("IsDetectorActive", &CActor::IsDetectorActive)
 			,
 			class_<CActorObject, bases<CActor, CEntityAlive>>("CActor")	// хак с наследованием нужен для переопределения свойств. Luabind не поддерживает property getters override			
-			
-// #pragma todo(" alpet : понять почему затирается свойство class_name для объекта актора. CInventoryOwner?")
 			
 		];		
 }

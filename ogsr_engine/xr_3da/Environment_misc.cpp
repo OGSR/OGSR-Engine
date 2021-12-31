@@ -787,7 +787,7 @@ void CEnvironment::load_weather_effects	()
 		auto& sections = config->sections();
 
 		env.reserve					(sections.size() + 2);
-		env.push_back				(create_descriptor("00:00:00", false));
+		env.push_back				(create_descriptor("00:00:00", nullptr));
 
 		for (const auto& pair : sections)
 		{
@@ -796,7 +796,7 @@ void CEnvironment::load_weather_effects	()
 
 		CInifile::Destroy			(config);
 
-		env.push_back				(create_descriptor("24:00:00", false));
+		env.push_back				(create_descriptor("24:00:00", nullptr));
 		env.back()->exec_time_loaded = DAY_LENGTH;
 
 	}

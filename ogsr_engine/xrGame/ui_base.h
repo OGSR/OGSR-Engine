@@ -47,6 +47,8 @@ class ui_core: public CDeviceResetNotifier
 {
 	C2DFrustum		m_2DFrustum;
 	C2DFrustum		m_2DFrustumPP;
+	C2DFrustum m_FrustumLIT;
+
 	bool			m_bPostprocess;
 
 	CFontManager*	m_pFontManager;
@@ -86,6 +88,8 @@ public:
 	float			get_current_kx					();
 
 	IUIRender::ePointType m_currentPointType;
+
+	C2DFrustum& ScreenFrustumLIT() { return m_FrustumLIT; }
 
 	static bool is_widescreen();
 };
