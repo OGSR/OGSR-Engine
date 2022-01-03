@@ -11,7 +11,7 @@
 #pragma warning(pop)
 
 int		psSoundTargets = 256; //512; //--#SM+#-- //32;
-Flags32	psSoundFlags = { ss_Hardware | ss_EAX };
+Flags32	psSoundFlags = { ss_Hardware };
 float	psSoundOcclusionScale = 0.5f;
 float	psSoundCull = 0.01f;
 float	psSoundRolloff = 0.75f;
