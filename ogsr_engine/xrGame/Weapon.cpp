@@ -877,7 +877,7 @@ void CWeapon::UpdateWeaponParams()
 			w_states.w = 0;
 		else
 			w_states.w = 1;
-		if ((w_states.y == eFire) || (w_states.y == eFire2))	//стреляем, значит оружие греется
+		if (w_states.y == static_cast<float>(eFire) || w_states.y == static_cast<float>(eFire2))	 //стреляем, значит оружие греется
 		{
 			w_timers.z = Device.fTimeGlobal - state_time_heat + previous_heating;
 		}

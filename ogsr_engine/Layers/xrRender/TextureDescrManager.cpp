@@ -171,7 +171,7 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 				xr_delete				(desc.m_spec);
 
 			desc.m_spec					= xr_new<texture_spec>();
-			desc.m_spec->m_material		= tp.material+tp.material_weight;
+			desc.m_spec->m_material = static_cast<float>(tp.material) + tp.material_weight;
 			desc.m_spec->m_use_steep_parallax = false;
 			
 			if(tp.bump_mode==STextureParams::tbmUse)
