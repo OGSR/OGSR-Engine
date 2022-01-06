@@ -461,6 +461,7 @@ _DDS_2D:
 			D3DX10_IMAGE_LOAD_INFO LoadInfo;
 #endif
 			LoadInfo.FirstMipLevel = img_loaded_lod;
+			LoadInfo.MipLevels = IMG.MipLevels;
 			LoadInfo.Width	= IMG.Width;
 			LoadInfo.Height	= IMG.Height;
 
