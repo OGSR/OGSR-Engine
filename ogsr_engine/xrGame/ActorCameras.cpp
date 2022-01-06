@@ -272,7 +272,7 @@ void CActor::cam_Update(float dt, float fFOV)
 
 	//Подобие коллизии камеры
 	float _viewport_near = VIEWPORT_NEAR;
-	if (eacFirstEye == cam_active)
+	if (eacFirstEye == cam_active && psActorFlags.test(AF_CAM_COLLISION))
 	{
 		xrXRC						xrc;
 		xrc.box_options(0);
