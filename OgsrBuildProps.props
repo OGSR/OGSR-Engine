@@ -7,7 +7,7 @@
 
     <!-- v141 is allowed -->
     <PlatformToolset Condition="'$(DefaultPlatformToolset)'=='v141'">v141</PlatformToolset>
-  
+
     <!-- v143 is allowed -->
     <PlatformToolset Condition="'$(DefaultPlatformToolset)'=='v143'">v143</PlatformToolset>
   </PropertyGroup>
@@ -22,6 +22,8 @@
       <EnableEnhancedInstructionSet Condition="'$(Platform)'=='Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
 
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard Condition="'$(PlatformToolset)'=='v143'">stdcpp20</LanguageStandard>
+
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
 
