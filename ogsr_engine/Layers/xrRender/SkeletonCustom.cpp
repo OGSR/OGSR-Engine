@@ -441,7 +441,7 @@ void CKinematics::Release		()
 
 void CKinematics::LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive)
 {
-	VERIFY				(bone_id<LL_BoneCount());      
+	R_ASSERT(bone_id < LL_BoneCount());
 	visimask.set(bone_id, !!val);
 	if (!visimask.is(bone_id)) {
 		bone_instances[bone_id].mTransform.scale(0.f,0.f,0.f);
