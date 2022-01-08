@@ -20,8 +20,8 @@ IC	CHitMemoryManager::CHitMemoryManager							(CCustomMonster *object, CAI_Stalk
 
 IC	const CHitMemoryManager::HITS &CHitMemoryManager::objects		() const
 {
-	VERIFY			(m_hits);
-	return			(*m_hits);
+	m_hits->erase(std::remove_if(m_hits->begin(), m_hits->end(), [](const auto& obj) { return obj.m_object->getDestroy(); }), m_hits->end());
+	return *m_hits;
 }
 
 #ifdef USE_SELECTED_HIT
