@@ -95,6 +95,7 @@
 #include "xrMemory.h"
                         
 #include "_stl_extensions.h"
+#include "log.h"
 #include "xrsharedmem.h"
 #include "xrstring.h"
 #include "xr_resource.h"
@@ -115,7 +116,6 @@ DEFINE_SET		(shared_str,RStringSet,RStringSetIt);
 DEFINE_VECTOR	(xr_rtoken,RTokenVec,RTokenVecIt);
                         
 #include "FS.h"
-#include "log.h"
 #include "xr_trims.h"
 #include "xr_ini.h"
 

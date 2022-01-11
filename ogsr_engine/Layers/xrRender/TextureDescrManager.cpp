@@ -125,10 +125,10 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 		xr_strcpy			(fn,(*It).name.c_str());
 		fix_texture_thm_name(fn);
 
-		R_ASSERT			(F->find_chunk(THM_CHUNK_TYPE));
+		R_ASSERT			(F->find_chunk_thm(THM_CHUNK_TYPE, fn));
 		F->r_u32			();
 		tp.Clear			();
-		tp.Load				(*F);
+		tp.Load				(*F, fn);
 		FS.r_close			(F);
 		if (
 #ifdef USE_SHOC_THM_FORMAT
