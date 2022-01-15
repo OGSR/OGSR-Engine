@@ -117,8 +117,13 @@ void player_hud_motion_container::load(attachable_hud_item* parent, IKinematicsA
 
 			if (pm.m_animations.empty())
 			{
-				Msg("! [%s] motion [%s](%s) not found in section [%s]", __FUNCTION__, pm.m_base_name.c_str(), name.c_str(), sect.c_str());
-				continue;
+				if (parent->m_has_separated_hands) {
+					FATAL("[%s] motion [%s](%s) not found in section [%s]", __FUNCTION__, pm.m_base_name.c_str(), name.c_str(), sect.c_str());
+				}
+				else {
+					Msg("! [%s] motion [%s](%s) not found in section [%s]", __FUNCTION__, pm.m_base_name.c_str(), name.c_str(), sect.c_str());
+					continue;
+				}
 			}
 
 			m_anims.emplace(std::move(name), std::move(pm));
