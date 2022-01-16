@@ -105,7 +105,7 @@ BOOL CActor::net_Spawn		(CSE_Abstract* DC)
 	{
 	  auto& news = game_news_registry->registry().objects();
 	  if ( news.size() > NewsToShow() ) {
-	    u32 s = news.size();
+	    size_t s = news.size();
 	    news.erase(
 	      news.begin(),
 	      news.begin() + ( news.size() - NewsToShow() )

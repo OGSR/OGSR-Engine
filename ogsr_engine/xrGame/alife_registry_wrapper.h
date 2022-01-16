@@ -52,15 +52,17 @@ template <typename _registry_type>
 const typename _registry_type::_data* CALifeRegistryWrapper<_registry_type>::objects_ptr	(u16 id)
 {
 //	if(NULL == ai().get_alife()) return &local_registry;
-	if(NULL == ai().get_alife()) 
+	if (NULL == ai().get_alife())
 	{
-		typename _registry_type::iterator		I = local_registry.find(id);
-		if (I == local_registry.end()) {
+		typename _registry_type::iterator I = local_registry.find(id);
+		if (I == local_registry.end())
+		{
 			typename _registry_type::_data new_registry;
-			VERIFY(local_registry.insert(std::make_pair(id, new_registry)).second);
-			return &(*local_registry.find(id)).second;
+			auto [iter, inserted] = local_registry.insert(std::make_pair(id, new_registry));
+			VERIFY(inserted);
+			return &(iter->second);
 		}
-		return			(&(*I).second);
+		return (&(*I).second);
 	}
 
 	VERIFY(0xffff != id);
@@ -73,17 +75,18 @@ template <typename _registry_type>
 typename _registry_type::_data& CALifeRegistryWrapper<_registry_type>::objects	(u16 id)
 {
 //	if(NULL == ai().get_alife()) return local_registry;
-	if(NULL == ai().get_alife()) 
+	if (NULL == ai().get_alife())
 	{
-		typename _registry_type::iterator		I = local_registry.find(id);
-		if (I == local_registry.end()) {
+		typename _registry_type::iterator I = local_registry.find(id);
+		if (I == local_registry.end())
+		{
 			typename _registry_type::_data new_registry;
-			VERIFY(local_registry.insert(std::make_pair(id, new_registry)).second);
-			return (*local_registry.find(id)).second;
-						
-		}else
-			return	((*I).second);
-
+			auto [iter, inserted] = local_registry.insert(std::make_pair(id, new_registry));
+			VERIFY(inserted);
+			return (iter->second);
+		}
+		else
+			return ((*I).second);
 	}
 
 	typename _registry_type::_data* registy_container = ai().alife().registry((_registry_type*)NULL).object(id, true);
