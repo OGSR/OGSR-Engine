@@ -140,11 +140,17 @@ void CWeapon::UpdateXForm	()
 		VERIFY			(V);
 
 		// Get matrices
-		int				boneL,boneR,boneR2;
+		int boneL = -1, boneR = -1, boneR2 = -1;
+
+		// this ugly case is possible in case of a CustomMonster, not a Stalker, nor an Actor
 		E->g_WeaponBones(boneL,boneR,boneR2);
+
+		if (boneR == -1)
+			return;
+
 		if ((HandDependence() == hd1Hand) || (GetState() == eReload) || (!E->g_Alive()))
 			boneL = boneR2;
-#pragma todo("TO ALL: serious performance problem")
+
 		// от mortan:
 		// https://www.gameru.net/forum/index.php?s=&showtopic=23443&view=findpost&p=1677678
 		V->CalculateBones_Invalidate();
