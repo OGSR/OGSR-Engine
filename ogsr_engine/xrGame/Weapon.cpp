@@ -565,6 +565,10 @@ void CWeapon::Load		(LPCSTR section)
 	{
 		has_laser = true;
 
+		laserdot_attach_bone = READ_IF_EXISTS(pSettings, r_string, section, "laserdot_attach_bone", "");
+		laserdot_attach_offset = Fvector{ READ_IF_EXISTS(pSettings, r_float, section, "laserdot_attach_offset_x", 0.0f), READ_IF_EXISTS(pSettings, r_float, section, "laserdot_attach_offset_y", 0.0f), READ_IF_EXISTS(pSettings, r_float, section, "laserdot_attach_offset_z", 0.0f) };
+		laserdot_world_attach_offset = Fvector{ READ_IF_EXISTS(pSettings, r_float, section, "laserdot_world_attach_offset_x", 0.0f), READ_IF_EXISTS(pSettings, r_float, section, "laserdot_world_attach_offset_y", 0.0f), READ_IF_EXISTS(pSettings, r_float, section, "laserdot_world_attach_offset_z", 0.0f) };
+
 		const bool b_r2 = psDeviceFlags.test(rsR2) || psDeviceFlags.test(rsR3) || psDeviceFlags.test(rsR4);
 
 		const char* m_light_section = pSettings->r_string(section, "laser_light_section");
@@ -587,6 +591,12 @@ void CWeapon::Load		(LPCSTR section)
 	if (!flashlight_render && pSettings->line_exist(section, "flashlight_section"))
 	{
 		has_flashlight = true;
+
+		flashlight_attach_bone = pSettings->r_string(section, "torch_light_bone");
+		flashlight_attach_offset = Fvector{ pSettings->r_float(section, "torch_attach_offset_x"), pSettings->r_float(section, "torch_attach_offset_y"), pSettings->r_float(section, "torch_attach_offset_z") };
+		flashlight_omni_attach_offset = Fvector{ pSettings->r_float(section, "torch_omni_attach_offset_x"), pSettings->r_float(section, "torch_omni_attach_offset_y"), pSettings->r_float(section, "torch_omni_attach_offset_z") };
+		flashlight_world_attach_offset = Fvector{ pSettings->r_float(section, "torch_world_attach_offset_x"), pSettings->r_float(section, "torch_world_attach_offset_y"), pSettings->r_float(section, "torch_world_attach_offset_z") };
+		flashlight_omni_world_attach_offset = Fvector{ pSettings->r_float(section, "torch_omni_world_attach_offset_x"), pSettings->r_float(section, "torch_omni_world_attach_offset_y"), pSettings->r_float(section, "torch_omni_world_attach_offset_z") };
 
 		const bool b_r2 = psDeviceFlags.test(rsR2) || psDeviceFlags.test(rsR3) || psDeviceFlags.test(rsR4);
 
@@ -620,6 +630,8 @@ void CWeapon::Load		(LPCSTR section)
 		flashlight_glow->set_color(clr);
 		flashlight_glow->set_radius(READ_IF_EXISTS(pSettings, r_float, m_light_section, "glow_radius", 0.3f));
 	}
+
+	hud_recalc_koef = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_recalc_koef", 1.35f); //На калаше при 1.35 вроде норм смотрится, другим стволам возможно придется подбирать другие значения.
 }
 
 void CWeapon::LoadFireParams		(LPCSTR section, LPCSTR prefix)
@@ -960,7 +972,6 @@ void CWeapon::CorrectDirFromWorldToHud(Fvector& dir) {
 	const float Fov = Device.fFOV;
 	extern ENGINE_API float psHUD_FOV;
 	const float HudFov = psHUD_FOV < 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV;
-	static const float hud_recalc_koef = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_recalc_koef", 1.35f); //На калаше при 1.35 вроде норм смотрится, другим стволам возможно придется подбирать другие значения.
 	const float diff = hud_recalc_koef * Fov / HudFov;
 	dir.sub(CamDir);
 	dir.mul(diff);
@@ -986,15 +997,12 @@ void CWeapon::UpdateLaser()
 			Fvector laser_pos = get_LastFP(), laser_dir = get_LastFD();
 
 			if (GetHUDmode()) {
-				static const shared_str laserdot_attach_bone = READ_IF_EXISTS(pSettings, r_string, cNameSect(), "laserdot_attach_bone", "");
 				if (laserdot_attach_bone.size()) {
-					static const Fvector laserdot_attach_offset{ READ_IF_EXISTS(pSettings, r_float, cNameSect(), "laserdot_attach_offset_x", 0.0f), READ_IF_EXISTS(pSettings, r_float, cNameSect(), "laserdot_attach_offset_y", 0.0f), READ_IF_EXISTS(pSettings, r_float, cNameSect(), "laserdot_attach_offset_z", 0.0f) };
 					GetBoneOffsetPosDir(laserdot_attach_bone, laser_pos, laser_dir, laserdot_attach_offset);
 					CorrectDirFromWorldToHud(laser_dir);
 				}
 			}
 			else {
-				static const Fvector laserdot_world_attach_offset{ READ_IF_EXISTS(pSettings, r_float, cNameSect(), "laserdot_world_attach_offset_x", 0.0f), READ_IF_EXISTS(pSettings, r_float, cNameSect(), "laserdot_world_attach_offset_y", 0.0f), READ_IF_EXISTS(pSettings, r_float, cNameSect(), "laserdot_world_attach_offset_z", 0.0f) };
 				XFORM().transform_tiny(laser_pos, laserdot_world_attach_offset);
 			}
 
@@ -1042,23 +1050,17 @@ void CWeapon::UpdateFlashlight()
 			Fvector flashlight_pos, flashlight_pos_omni, flashlight_dir, flashlight_dir_omni;
 
 			if (GetHUDmode()) {
-				static const shared_str flashlight_attach_bone = pSettings->r_string(cNameSect(), "torch_light_bone");
-
-				static const Fvector flashlight_attach_offset{ pSettings->r_float(cNameSect(), "torch_attach_offset_x"), pSettings->r_float(cNameSect(), "torch_attach_offset_y"), pSettings->r_float(cNameSect(), "torch_attach_offset_z") };
 				GetBoneOffsetPosDir(flashlight_attach_bone, flashlight_pos, flashlight_dir, flashlight_attach_offset);
 				CorrectDirFromWorldToHud(flashlight_dir);
 
-				static const Fvector flashlight_omni_attach_offset{ pSettings->r_float(cNameSect(), "torch_omni_attach_offset_x"), pSettings->r_float(cNameSect(), "torch_omni_attach_offset_y"), pSettings->r_float(cNameSect(), "torch_omni_attach_offset_z") };
 				GetBoneOffsetPosDir(flashlight_attach_bone, flashlight_pos_omni, flashlight_dir_omni, flashlight_omni_attach_offset);
 				CorrectDirFromWorldToHud(flashlight_dir_omni);
 			}
 			else {
 				flashlight_dir = get_LastFD();
-				static const Fvector flashlight_world_attach_offset{ pSettings->r_float(cNameSect(), "torch_world_attach_offset_x"), pSettings->r_float(cNameSect(), "torch_world_attach_offset_y"), pSettings->r_float(cNameSect(), "torch_world_attach_offset_z") };
 				XFORM().transform_tiny(flashlight_pos, flashlight_world_attach_offset);
 
 				flashlight_dir_omni = get_LastFD();
-				static const Fvector flashlight_omni_world_attach_offset{ pSettings->r_float(cNameSect(), "torch_omni_world_attach_offset_x"), pSettings->r_float(cNameSect(), "torch_omni_world_attach_offset_y"), pSettings->r_float(cNameSect(), "torch_omni_world_attach_offset_z") };
 				XFORM().transform_tiny(flashlight_pos_omni, flashlight_omni_world_attach_offset);
 			}
 
