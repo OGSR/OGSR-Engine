@@ -1,27 +1,13 @@
 #include "StdAfx.h"
 #include "player_hud.h"
+#include "physic_item.h"
+#include "actor.h"
+#include "ActorEffector.h"
 #include "HudItem.h"
 #include "ui_base.h"
-#include "Actor.h"
-#include "physic_item.h"
-#include "ActorEffector.h"
-#include "../xr_3da/IGame_Persistent.h"
-#include "Weapon.h"
-#include "Actor.h"
-#include "ActorCondition.h"
+#include "level.h"
 
-player_hud* g_player_hud = nullptr;
-
-// --#SM+# Begin--
-constexpr float PITCH_OFFSET_R = 0.0f;		// Насколько сильно ствол смещается вбок (влево) при вертикальных поворотах камеры
-constexpr float PITCH_OFFSET_N = 0.0f;		// Насколько сильно ствол поднимается\опускается при вертикальных поворотах камеры
-constexpr float PITCH_OFFSET_D = 0.02f;	// Насколько сильно ствол приближается\отдаляется при вертикальных поворотах камеры
-constexpr float PITCH_LOW_LIMIT = -PI;		// Минимальное значение pitch при использовании совместно с PITCH_OFFSET_N
-constexpr float ORIGIN_OFFSET = -0.05f;	// Фактор влияния инерции на положение ствола (чем меньше, тем масштабней инерция)
-constexpr float ORIGIN_OFFSET_AIM = -0.03f;	// (Для прицеливания)
-constexpr float TENDTO_SPEED = 5.f;		// Скорость нормализации положения ствола
-constexpr float TENDTO_SPEED_AIM = 8.f;		// (Для прицеливания)
-// --#SM+# End--
+player_hud* g_player_hud{};
 
 player_hud_motion* player_hud_motion_container::find_motion(const shared_str& name)
 {
@@ -203,14 +189,6 @@ void attachable_hud_item::update(bool bForce)
 	}
 }
 
-void attachable_hud_item::update_hud_additional(Fmatrix& trans)
-{
-	if (m_parent_hud_item)
-	{
-		m_parent_hud_item->UpdateHudAdditonal(trans);
-	}
-}
-
 void attachable_hud_item::setup_firedeps(firedeps& fd)
 {
 	update(false);
@@ -234,8 +212,8 @@ void attachable_hud_item::setup_firedeps(firedeps& fd)
 
 		fd.vLastFD.set(0.f, 0.f, 1.f);
 		m_item_transform.transform_dir(fd.vLastFD);
-		if (auto Wpn = smart_cast<CWeapon*>(m_parent_hud_item); Wpn && m_measures.useCopFirePoint)
-			Wpn->CorrectDirFromWorldToHud(fd.vLastFD);
+		if (m_measures.useCopFirePoint)
+			m_parent_hud_item->CorrectDirFromWorldToHud(fd.vLastFD);
 		VERIFY(_valid(fd.vLastFD));
 		VERIFY(_valid(fd.vLastFD));
 
@@ -513,18 +491,6 @@ void hud_item_measures::load(const shared_str& sect_name, IKinematics* K)
 	}
 
 	m_prop_flags.set(e_16x9_mode_now, is_16x9);
-
-	//Загрузка параметров инерции --#SM+# Begin--
-	m_inertion_params.m_pitch_offset_r = READ_IF_EXISTS(pSettings, r_float, sect_name, "pitch_offset_right", PITCH_OFFSET_R);
-	m_inertion_params.m_pitch_offset_n = READ_IF_EXISTS(pSettings, r_float, sect_name, "pitch_offset_up", PITCH_OFFSET_N);
-	m_inertion_params.m_pitch_offset_d = READ_IF_EXISTS(pSettings, r_float, sect_name, "pitch_offset_forward", PITCH_OFFSET_D);
-	m_inertion_params.m_pitch_low_limit = READ_IF_EXISTS(pSettings, r_float, sect_name, "pitch_offset_up_low_limit", PITCH_LOW_LIMIT);
-
-	m_inertion_params.m_origin_offset = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertion_origin_offset", ORIGIN_OFFSET);
-	m_inertion_params.m_origin_offset_aim = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertion_zoom_origin_offset", ORIGIN_OFFSET_AIM);
-	m_inertion_params.m_tendto_speed = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertion_tendto_speed", TENDTO_SPEED);
-	m_inertion_params.m_tendto_speed_aim = READ_IF_EXISTS(pSettings, r_float, sect_name, "inertion_zoom_tendto_speed", TENDTO_SPEED_AIM);
-	//--#SM+# End--
 }
 
 attachable_hud_item::~attachable_hud_item()
@@ -637,8 +603,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 player_hud::player_hud()
 {
 	m_transform.identity();
-	if (Core.Features.test(xrCore::Feature::wpn_bobbing))
-		m_bobbing = xr_new<CWeaponBobbing>();
+	m_transform_2.identity();
 }
 
 player_hud::~player_hud()
@@ -650,16 +615,14 @@ player_hud::~player_hud()
 		m_model = nullptr;
 	}
 
-	xr_vector<attachable_hud_item*>::iterator it = m_pool.begin();
-	xr_vector<attachable_hud_item*>::iterator it_e = m_pool.end();
+	auto it = m_pool.begin();
+	auto it_e = m_pool.end();
 	for (; it != it_e; ++it)
 	{
 		attachable_hud_item* a = *it;
 		xr_delete(a);
 	}
 	m_pool.clear();
-	if (m_bobbing)
-		xr_delete(m_bobbing);
 }
 
 void player_hud::load(const shared_str& player_hud_sect)
@@ -667,22 +630,39 @@ void player_hud::load(const shared_str& player_hud_sect)
 	if (player_hud_sect == m_sect_name)
 		return;
 
-	bool b_reload = (m_model != nullptr);
+	const bool b_reload = m_model != nullptr || m_model_2 != nullptr;
 	if (m_model)
 	{
 		IRenderVisual* v = m_model->dcast_RenderVisual();
 		::Render->model_Delete(v);
 		m_model = nullptr;
 	}
+	if (m_model_2)
+	{
+		IRenderVisual* v = m_model_2->dcast_RenderVisual();
+		::Render->model_Delete(v);
+		m_model_2 = nullptr;
+	}
 
 	if (!pSettings->line_exist(player_hud_sect, "visual"))
 		return;
 
 	m_sect_name = player_hud_sect;
-	const shared_str& model_name = pSettings->r_string(player_hud_sect, "visual");
-	m_model = smart_cast<IKinematicsAnimated*>(::Render->model_Create(model_name.c_str()));
+	const char* model_name = pSettings->r_string(player_hud_sect, "visual");
+	m_model = smart_cast<IKinematicsAnimated*>(::Render->model_Create(model_name));
+	const char* model_name_2 = READ_IF_EXISTS(pSettings, r_string, player_hud_sect, "visual_2", model_name);
+	m_model_2 = smart_cast<IKinematicsAnimated*>(::Render->model_Create(model_name_2));
 
-	CInifile::Sect& _sect = pSettings->r_section(player_hud_sect);
+	u16 l_arm = m_model->dcast_PKinematics()->LL_BoneID("l_clavicle");
+	ASSERT_FMT(l_arm != BI_NONE, "[%s]: bone [%s] not found in sect [%s] visual [%s]", __FUNCTION__, "l_clavicle", m_sect_name.c_str(), model_name);
+	u16 r_arm = m_model_2->dcast_PKinematics()->LL_BoneID("r_clavicle");
+	ASSERT_FMT(r_arm != BI_NONE, "[%s]: bone [%s] not found in sect [%s] visual [%s]", __FUNCTION__, "r_clavicle", m_sect_name.c_str(), model_name_2);
+
+	// hides the unused arm meshes
+	m_model->dcast_PKinematics()->LL_SetBoneVisible(l_arm, FALSE, TRUE);
+	m_model_2->dcast_PKinematics()->LL_SetBoneVisible(r_arm, FALSE, TRUE);
+
+	const auto& _sect = pSettings->r_section(player_hud_sect);
 	auto _b = _sect.Data.cbegin();
 	auto _e = _sect.Data.cend();
 	for (; _b != _e; ++_b)
@@ -699,6 +679,7 @@ void player_hud::load(const shared_str& player_hud_sect)
 	if (!b_reload)
 	{
 		m_model->PlayCycle("hand_idle_doun");
+		m_model_2->PlayCycle("hand_idle_doun");
 	}
 	else
 	{
@@ -710,6 +691,8 @@ void player_hud::load(const shared_str& player_hud_sect)
 	}
 	m_model->dcast_PKinematics()->CalculateBones_Invalidate();
 	m_model->dcast_PKinematics()->CalculateBones(TRUE);
+	m_model_2->dcast_PKinematics()->CalculateBones_Invalidate();
+	m_model_2->dcast_PKinematics()->CalculateBones(TRUE);
 }
 
 bool player_hud::render_item_ui_query()
@@ -745,10 +728,13 @@ void player_hud::render_hud()
 	if (!b_r0 && !b_r1)
 		return;
 
-	if (m_model && b_has_hands)
+	if (b_has_hands)
 	{
 		::Render->set_Transform(&m_transform);
 		::Render->add_Visual(m_model->dcast_RenderVisual());
+
+		::Render->set_Transform(&m_transform_2);
+		::Render->add_Visual(m_model_2->dcast_RenderVisual());
 	}
 
 	if (m_attached_items[0])
@@ -776,7 +762,7 @@ u32 player_hud::motion_length(const motion_descr& M, const CMotionDef*& md, floa
 		hasHands = pi->m_has_separated_hands;
 
 	IKinematicsAnimated* model = m_model;
-	if ((!model || !hasHands) && itemModel)
+	if (!hasHands && itemModel)
 		model = itemModel;
 	//Msg("~~[%s] model->LL_GetMotionDef [%s] [%s], hasHands = [%u]", __FUNCTION__, M.name.c_str(), model->dcast_RenderVisual()->getDebugName().c_str(), hasHands);
 	md = model->LL_GetMotionDef(M.mid);
@@ -791,42 +777,78 @@ u32 player_hud::motion_length(const motion_descr& M, const CMotionDef*& md, floa
 
 void player_hud::update(const Fmatrix& cam_trans)
 {
-	Fmatrix trans = cam_trans;
-	update_inertion(trans);
-	update_additional(trans);
+	//Костыли для правильной работы системы коллизии худа. Это всё плохо и надо будет как-то переделать в будущем. Здесь два апдейта худа подряд делаются для того, чтобы менеджер коллизи мог получить координаты ствола в обычном режиме, из которых уже будет делаться рейтрейс. skip_updated_frame тоже к этому относится.
+	static bool need_update_collision{};
+	need_update_collision = !need_update_collision;
+	bool need_update_collision_local = need_update_collision;
+	if (need_update_collision)
+		this->update(cam_trans);
 
-	Fvector ypr;
+	Fmatrix trans = cam_trans, trans_2 = cam_trans;
+
 	if (m_attached_items[0])
-		ypr = m_attached_items[0]->hands_attach_rot();
-	else if (m_attached_items[1])
-		ypr = m_attached_items[1]->hands_attach_rot();
+		m_attached_items[0]->m_parent_hud_item->UpdateHudAdditional(trans, need_update_collision_local);
+
+	if (m_attached_items[1])
+		m_attached_items[1]->m_parent_hud_item->UpdateHudAdditional(trans_2, need_update_collision_local);
 	else
-		ypr = Fvector().set(0.f, 0.f, 0.f);
+		trans_2 = trans;
 
-	ypr.mul(PI / 180.f);
-	m_attach_offset.setHPB(ypr.x, ypr.y, ypr.z);
+	auto attach_pos = [this](size_t part) {
+		if (m_attached_items[part])
+			return m_attached_items[part]->hands_attach_pos();
+		else if (m_attached_items[!part])
+			return m_attached_items[!part]->hands_attach_pos();
+		else
+			return Fvector{};
+	};
+	auto attach_rot = [this](size_t part) {
+		if (m_attached_items[part])
+			return m_attached_items[part]->hands_attach_rot();
+		else if (m_attached_items[!part])
+			return m_attached_items[!part]->hands_attach_rot();
+		else
+			return Fvector{};
+	};
+	Fvector m1pos = attach_pos(0);
+	Fvector m1rot = attach_rot(0);
+	Fvector m2pos = attach_pos(1);
+	Fvector m2rot = attach_rot(1);
 
-	Fvector tmp;
-	if (m_attached_items[0])
-		tmp = m_attached_items[0]->hands_attach_pos();
-	else if (m_attached_items[1])
-		tmp = m_attached_items[1]->hands_attach_pos();
-	else
-		tmp = Fvector().set(0.f, 0.f, 0.f);
+	// override hand offset for single hand animation
+	m1rot.mul(PI / 180.f);
+	m_attach_offset.setHPB(m1rot.x, m1rot.y, m1rot.z);
+	m_attach_offset.translate_over(m1pos);
 
-	m_attach_offset.translate_over(tmp);
+	m2rot.mul(PI / 180.f);
+	m_attach_offset_2.setHPB(m2rot.x, m2rot.y, m2rot.z);
+	m_attach_offset_2.translate_over(m2pos);
 
-	if (bobbing_allowed())
-		m_bobbing->Update(m_attach_offset, m_attached_items[0]);
+	if (need_update_collision_local) {
+		if (m_attached_items[0] && m_attached_items[0]->m_parent_hud_item->HudBobbingAllowed())
+			m_attached_items[0]->m_parent_hud_item->m_bobbing->Update(m_attach_offset);
+
+		if (m_attached_items[1]) {
+			if (m_attached_items[1]->m_parent_hud_item->HudBobbingAllowed())
+				m_attached_items[1]->m_parent_hud_item->m_bobbing->Update(m_attach_offset_2);
+		}
+		else
+			m_attach_offset_2 = m_attach_offset;
+	}
 
 	m_transform.mul(trans, m_attach_offset);
-	// insert inertion here
+	m_transform_2.mul(trans_2, m_attach_offset_2);
 
-	if (m_model)
+	bool hasHands = (m_attached_items[0] && m_attached_items[0]->m_has_separated_hands) || (m_attached_items[1] && m_attached_items[1]->m_has_separated_hands);
+	if (hasHands)
 	{
 		m_model->UpdateTracks();
 		m_model->dcast_PKinematics()->CalculateBones_Invalidate();
 		m_model->dcast_PKinematics()->CalculateBones(TRUE);
+
+		m_model_2->UpdateTracks();
+		m_model_2->dcast_PKinematics()->CalculateBones_Invalidate();
+		m_model_2->dcast_PKinematics()->CalculateBones(TRUE);
 	}
 
 	if (m_attached_items[0])
@@ -836,137 +858,72 @@ void player_hud::update(const Fmatrix& cam_trans)
 		m_attached_items[1]->update(true);
 }
 
-u32 player_hud::anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CMotionDef*& md, float speed, bool hasHands, IKinematicsAnimated* itemModel)
+u32 player_hud::anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CMotionDef*& md, float speed, bool hasHands, IKinematicsAnimated* itemModel, u16 override_part)
 {
 	//Msg("~~[%s] model->LL_GetMotionDef [%s] [%s] attached_item(0): [%p], hasHands = [%u]", __FUNCTION__, M.name.c_str(), itemModel ? itemModel->dcast_RenderVisual()->getDebugName().c_str() : "", attached_item(0), hasHands);
 	//Msg("~~[%s] model->LL_GetMotionDef [%s] [%s], hasHands = [%u]", __FUNCTION__, M.name.c_str(), itemModel ? itemModel->dcast_RenderVisual()->getDebugName().c_str() : "", hasHands);
 
-	if (m_model && hasHands)
+	if (hasHands)
 	{
 		u16 part_id = u16(-1);
 		if (attached_item(0) && attached_item(1))
 			part_id = m_model->partitions().part_id((part == 0) ? "right_hand" : "left_hand");
 
-		u16 pc = m_model->partitions().count();
-		for (u16 pid = 0; pid < pc; ++pid)
+		if (override_part != u16(-1))
+			part_id = override_part;
+
+		if (part_id == u16(-1))
 		{
-			if (pid == 0 || pid == part_id || part_id == u16(-1))
+			for (u8 pid = 0; pid < 3; pid++)
 			{
-				CBlend* B = m_model->PlayCycle(pid, M.mid, bMixIn);
-				R_ASSERT(B);
-				B->speed *= speed;
+				if (pid == 0 || pid == 2)
+				{
+					CBlend* B = m_model->PlayCycle(pid, M.mid, bMixIn);
+					R_ASSERT(B);
+					B->speed *= speed;
+				}
+				if (pid == 0 || pid == 1)
+				{
+					CBlend* B = m_model_2->PlayCycle(pid, M.mid, bMixIn);
+					R_ASSERT(B);
+					B->speed *= speed;
+				}
 			}
+
+			m_model->dcast_PKinematics()->CalculateBones_Invalidate();
+			m_model_2->dcast_PKinematics()->CalculateBones_Invalidate();
 		}
-		m_model->dcast_PKinematics()->CalculateBones_Invalidate();
+		else if (part_id == 0 || part_id == 2)
+		{
+			for (u8 pid = 0; pid < 3; pid++)
+			{
+				if (pid != 1)
+				{
+					CBlend* B = m_model->PlayCycle(pid, M.mid, bMixIn);
+					R_ASSERT(B);
+					B->speed *= speed;
+				}
+			}
+
+			m_model->dcast_PKinematics()->CalculateBones_Invalidate();
+		}
+		else if (part_id == 1)
+		{
+			for (u8 pid = 0; pid < 3; pid++)
+			{
+				if (pid != 2)
+				{
+					CBlend* B = m_model_2->PlayCycle(pid, M.mid, bMixIn);
+					R_ASSERT(B);
+					B->speed *= speed;
+				}
+			}
+
+			m_model_2->dcast_PKinematics()->CalculateBones_Invalidate();
+		}
 	}
 
 	return motion_length(M, md, speed, hasHands, itemModel);
-}
-
-void player_hud::update_additional(Fmatrix& trans)
-{
-	if (m_attached_items[0])
-		m_attached_items[0]->update_hud_additional(trans);
-
-	if (m_attached_items[1])
-		m_attached_items[1]->update_hud_additional(trans);
-}
-
-void player_hud::update_inertion(Fmatrix& trans)
-{
-	if (inertion_allowed())
-	{
-		attachable_hud_item* pMainHud = m_attached_items[0];
-
-		Fmatrix xform;
-		Fvector& origin = trans.c;
-		xform = trans;
-
-		static Fvector st_last_dir = { 0, 0, 0 };
-
-		// load params
-		hud_item_measures::inertion_params inertion_data;
-		if (pMainHud != nullptr)
-		{ // Загружаем параметры инерции из основного худа
-			inertion_data.m_pitch_offset_r = pMainHud->m_measures.m_inertion_params.m_pitch_offset_r;
-			inertion_data.m_pitch_offset_n = pMainHud->m_measures.m_inertion_params.m_pitch_offset_n;
-			inertion_data.m_pitch_offset_d = pMainHud->m_measures.m_inertion_params.m_pitch_offset_d;
-			inertion_data.m_pitch_low_limit = pMainHud->m_measures.m_inertion_params.m_pitch_low_limit;
-			inertion_data.m_origin_offset = pMainHud->m_measures.m_inertion_params.m_origin_offset;
-			inertion_data.m_origin_offset_aim = pMainHud->m_measures.m_inertion_params.m_origin_offset_aim;
-			inertion_data.m_tendto_speed = pMainHud->m_measures.m_inertion_params.m_tendto_speed;
-			inertion_data.m_tendto_speed_aim = pMainHud->m_measures.m_inertion_params.m_tendto_speed_aim;
-		}
-		else
-		{ // Загружаем дефолтные параметры инерции
-			inertion_data.m_pitch_offset_r = PITCH_OFFSET_R;
-			inertion_data.m_pitch_offset_n = PITCH_OFFSET_N;
-			inertion_data.m_pitch_offset_d = PITCH_OFFSET_D;
-			inertion_data.m_pitch_low_limit = PITCH_LOW_LIMIT;
-			inertion_data.m_origin_offset = ORIGIN_OFFSET;
-			inertion_data.m_origin_offset_aim = ORIGIN_OFFSET_AIM;
-			inertion_data.m_tendto_speed = TENDTO_SPEED;
-			inertion_data.m_tendto_speed_aim = TENDTO_SPEED_AIM;
-		}
-
-		// calc difference
-		Fvector diff_dir;
-		diff_dir.sub(xform.k, st_last_dir);
-
-		// clamp by PI_DIV_2
-		Fvector last;
-		last.normalize_safe(st_last_dir);
-		float dot = last.dotproduct(xform.k);
-		if (dot < EPS)
-		{
-			Fvector v0;
-			v0.crossproduct(st_last_dir, xform.k);
-			st_last_dir.crossproduct(xform.k, v0);
-			diff_dir.sub(xform.k, st_last_dir);
-		}
-
-		// tend to forward
-		float _tendto_speed, _origin_offset;
-		if (pMainHud != nullptr && pMainHud->m_parent_hud_item->GetCurrentHudOffsetIdx() > 0)
-		{ // Худ в режиме "Прицеливание"
-			float factor = pMainHud->m_parent_hud_item->GetInertionFactor();
-			_tendto_speed = inertion_data.m_tendto_speed_aim - (inertion_data.m_tendto_speed_aim - inertion_data.m_tendto_speed) * factor;
-			_origin_offset =
-				inertion_data.m_origin_offset_aim - (inertion_data.m_origin_offset_aim - inertion_data.m_origin_offset) * factor;
-		}
-		else
-		{ // Худ в режиме "От бедра"
-			_tendto_speed = inertion_data.m_tendto_speed;
-			_origin_offset = inertion_data.m_origin_offset;
-		}
-
-		// Фактор силы инерции
-		if (pMainHud != nullptr)
-		{
-			float power_factor = pMainHud->m_parent_hud_item->GetInertionPowerFactor();
-			_tendto_speed *= power_factor;
-			_origin_offset *= power_factor;
-		}
-
-		st_last_dir.mad(diff_dir, _tendto_speed * Device.fTimeDelta);
-		origin.mad(diff_dir, _origin_offset);
-
-		// pitch compensation
-		float pitch = angle_normalize_signed(xform.k.getP());
-
-		if (pMainHud != nullptr)
-			pitch *= pMainHud->m_parent_hud_item->GetInertionFactor();
-
-		// Отдаление\приближение
-		origin.mad(xform.k, -pitch * inertion_data.m_pitch_offset_d);
-
-		// Сдвиг в противоположную часть экрана
-		origin.mad(xform.i, -pitch * inertion_data.m_pitch_offset_r);
-
-		// Подьём\опускание
-		clamp(pitch, inertion_data.m_pitch_low_limit, PI);
-		origin.mad(xform.j, -pitch * inertion_data.m_pitch_offset_n);
-	}
 }
 
 attachable_hud_item* player_hud::create_hud_item(const shared_str& sect)
@@ -1019,42 +976,53 @@ void player_hud::attach_item(CHudItem* item)
 
 void player_hud::detach_item_idx(u16 idx)
 {
-	if (nullptr == attached_item(idx))
+	if (!attached_item(idx))
 		return;
+
+	const bool hasHands = attached_item(idx)->m_has_separated_hands;
 
 	m_attached_items[idx]->m_parent_hud_item->on_b_hud_detach();
 
 	m_attached_items[idx]->m_parent_hud_item = nullptr;
 	m_attached_items[idx] = nullptr;
 
-	if (idx == 1 && attached_item(0) && m_model)
+	if (hasHands)
 	{
-		u16 part_idR = m_model->partitions().part_id("right_hand");
-		u32 bc = m_model->LL_PartBlendsCount(part_idR);
-		for (u32 bidx = 0; bidx < bc; ++bidx)
+		if (idx == 1)
 		{
-			CBlend* BR = m_model->LL_PartBlend(part_idR, bidx);
-			if (!BR)
-				continue;
-
-			MotionID M = BR->motionID;
-
-			u16 pc = m_model->partitions().count();
-			for (u16 pid = 0; pid < pc; ++pid)
+			if (m_attached_items[0])
+				re_sync_anim(2);
+			else
 			{
-				if (pid != part_idR)
-				{
-					CBlend* B = m_model->PlayCycle(pid, M, TRUE); // this can destroy BR calling UpdateTracks !
-					if (BR->blend_state() != CBlend::eFREE_SLOT)
-					{
-						u16 bop = B->bone_or_part;
-						*B = *BR;
-						B->bone_or_part = bop;
-					}
-				}
+				m_model_2->PlayCycle("hand_idle_doun");
 			}
 		}
+		else if (idx == 0)
+		{
+			if (m_attached_items[1])
+			{
+				//fix for a rare case where the right hand stays visible on screen after detaching the right hand's attached item
+				player_hud_motion* pm = m_attached_items[1]->m_hand_motions.find_motion("anm_idle");
+				if (pm)
+				{
+					const motion_descr& M = pm->m_animations[0];
+					m_model->PlayCycle(0, M.mid, false);
+					m_model->PlayCycle(2, M.mid, false);
+				}
+			}
+			else
+			{
+				m_model->PlayCycle("hand_idle_doun");
+			}
+		}
+
+		if (!m_attached_items[0] && !m_attached_items[1])
+		{
+			m_model->PlayCycle("hand_idle_doun");
+			m_model_2->PlayCycle("hand_idle_doun");
+		}
 	}
+
 	//KRodin: закомментировал этот кусок, не понятно для чего он может быть нужен.
 	/*else if (idx == 0 && attached_item(1))
 	{
@@ -1074,11 +1042,12 @@ void player_hud::detach_item(CHudItem* item)
 
 void player_hud::calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result)
 {
-	bool hasHands = (m_attached_items[0] && m_attached_items[0]->m_has_separated_hands) || (m_attached_items[1] && m_attached_items[1]->m_has_separated_hands);
-	if (m_model && hasHands)
+	bool hasHands = m_attached_items[attach_slot_idx] && m_attached_items[attach_slot_idx]->m_has_separated_hands;
+	if (hasHands)
 	{
-		Fmatrix ancor_m = m_model->dcast_PKinematics()->LL_GetTransform(m_ancors[attach_slot_idx]);
-		result.mul(m_transform, ancor_m);
+		IKinematics* kin = (attach_slot_idx == 0) ? m_model->dcast_PKinematics() : m_model_2->dcast_PKinematics();
+		Fmatrix ancor_m = kin->LL_GetTransform(m_ancors[attach_slot_idx]);
+		result.mul((attach_slot_idx == 0) ? m_transform : m_transform_2, ancor_m);
 		result.mulB_43(offset);
 	}
 	else
@@ -1086,27 +1055,6 @@ void player_hud::calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmat
 		result.set(m_transform);
 		result.mulB_43(offset);
 	}
-}
-
-bool player_hud::inertion_allowed()
-{
-	attachable_hud_item* hi = m_attached_items[0];
-	if (hi)
-	{
-		bool res = (hi->m_parent_hud_item->HudInertionEnabled() && hi->m_parent_hud_item->HudInertionAllowed());
-		return res;
-	}
-	return true;
-}
-
-bool player_hud::bobbing_allowed()
-{
-	attachable_hud_item* hi = m_attached_items[0];
-	if (hi)
-	{
-		return hi->m_parent_hud_item->HudBobbingAllowed();
-	}
-	return Core.Features.test(xrCore::Feature::wpn_bobbing);
 }
 
 void player_hud::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
@@ -1134,110 +1082,47 @@ void player_hud::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
 	}
 }
 
-constexpr const char* BOBBING_SECT = "wpn_bobbing_effector";
-constexpr float SPEED_REMINDER = 5.f;
-
-CWeaponBobbing::CWeaponBobbing()
+//sync anim of other part to selected part (1 = sync to left hand anim; 2 = sync to right hand anim)
+void player_hud::re_sync_anim(u8 part)
 {
-	Load();
-}
-
-void CWeaponBobbing::Load()
-{
-	fTime = 0.f;
-	fReminderFactor = 0.f;
-	is_limping = false;
-
-	m_fAmplitudeRun = pSettings->r_float(BOBBING_SECT, "run_amplitude");
-	m_fAmplitudeWalk = pSettings->r_float(BOBBING_SECT, "walk_amplitude");
-	m_fAmplitudeLimp = pSettings->r_float(BOBBING_SECT, "limp_amplitude");
-
-	m_fSpeedRun = pSettings->r_float(BOBBING_SECT, "run_speed");
-	m_fSpeedWalk = pSettings->r_float(BOBBING_SECT, "walk_speed");
-	m_fSpeedLimp = pSettings->r_float(BOBBING_SECT, "limp_speed");
-
-	m_fCrouchFactor = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "crouch_k", 0.75f);
-	m_fZoomFactor = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_k", 1.f);
-	m_fScopeZoomFactor = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "scope_zoom_k", m_fZoomFactor);
-}
-
-void CWeaponBobbing::CheckState()
-{
-	dwMState = Actor()->get_state();
-	is_limping = Actor()->conditions().IsLimping();
-	m_bZoomMode = Actor()->IsZoomAimingMode();
-	fTime += Device.fTimeDelta;
-}
-
-void CWeaponBobbing::Update(Fmatrix& m, attachable_hud_item* hi)
-{
-	CheckState();
-	if (dwMState & ACTOR_DEFS::mcAnyMove)
+	u32 bc = part == 1 ? m_model_2->LL_PartBlendsCount(part) : m_model->LL_PartBlendsCount(part);
+	for (u32 bidx = 0; bidx < bc; ++bidx)
 	{
-		if (fReminderFactor < 1.f)
-			fReminderFactor += SPEED_REMINDER * Device.fTimeDelta;
-		else
-			fReminderFactor = 1.f;
-	}
-	else
-	{
-		if (fReminderFactor > 0.f)
-			fReminderFactor -= SPEED_REMINDER * Device.fTimeDelta;
-		else
-			fReminderFactor = 0.f;
-	}
+		CBlend* BR = part == 1 ? m_model_2->LL_PartBlend(part, bidx) : m_model->LL_PartBlend(part, bidx);
+		if (!BR)
+			continue;
 
-	if (!fsimilar(fReminderFactor, 0))
-	{
-		Fvector dangle;
-		Fmatrix R, mR;
-		float k = (dwMState & ACTOR_DEFS::mcCrouch) ? m_fCrouchFactor : 1.f;
-		float k2 = k;
+		MotionID M = BR->motionID;
 
-		if (m_bZoomMode)
+		u16 pc = m_model->partitions().count(); //same on both armatures
+		for (u16 pid = 0; pid < pc; ++pid)
 		{
-			float zoom_factor = m_fZoomFactor;
-			if (hi)
+			if (pid == 0)
 			{
-				CWeapon* wpn = smart_cast<CWeapon*>(hi->m_parent_hud_item);
-				if (wpn && wpn->IsScopeAttached() && !wpn->IsGrenadeMode())
-					zoom_factor = m_fScopeZoomFactor;
+				CBlend* B = m_model->PlayCycle(0, M, TRUE);
+				B->timeCurrent = BR->timeCurrent;
+				B->speed = BR->speed;
+				B = m_model_2->PlayCycle(0, M, TRUE);
+				B->timeCurrent = BR->timeCurrent;
+				B->speed = BR->speed;
 			}
-			k2 *= zoom_factor;
+			else if (pid != part)
+			{
+				CBlend* B = part == 1 ? m_model->PlayCycle(pid, M, TRUE) : m_model_2->PlayCycle(pid, M, TRUE);
+				B->timeCurrent = BR->timeCurrent;
+				B->speed = BR->speed;
+			}
 		}
-
-		float A, ST;
-
-		if (isActorAccelerated(dwMState, m_bZoomMode))
-		{
-			A = m_fAmplitudeRun * k2;
-			ST = m_fSpeedRun * fTime * k;
-		}
-		else if (is_limping)
-		{
-			A = m_fAmplitudeLimp * k2;
-			ST = m_fSpeedLimp * fTime * k;
-		}
-		else
-		{
-			A = m_fAmplitudeWalk * k2;
-			ST = m_fSpeedWalk * fTime * k;
-		}
-
-		float _sinA = _abs(_sin(ST) * A) * fReminderFactor;
-		float _cosA = _cos(ST) * A * fReminderFactor;
-
-		m.c.y += _sinA;
-		dangle.x = _cosA;
-		dangle.z = _cosA;
-		dangle.y = _sinA;
-
-
-		R.setHPB(dangle.x, dangle.y, dangle.z);
-
-		mR.mul(m, R);
-
-		m.k.set(mR.k);
-		m.j.set(mR.j);
 	}
+}
+
+void player_hud::GetLHandBoneOffsetPosDir(const shared_str& bone_name, Fvector& dest_pos, Fvector& dest_dir, const Fvector& offset) {
+	const u16 bone_id = m_model_2->dcast_PKinematics()->LL_BoneID(bone_name);
+	ASSERT_FMT(bone_id != BI_NONE, "!![%s] bone [%s] not found in weapon [%s]", __FUNCTION__, bone_name.c_str(), m_sect_name.c_str());
+	Fmatrix& fire_mat = m_model_2->dcast_PKinematics()->LL_GetTransform(bone_id);
+	fire_mat.transform_tiny(dest_pos, offset);
+	m_transform_2.transform_tiny(dest_pos);
+	dest_pos.add(Device.vCameraPosition);
+	dest_dir.set(0.f, 0.f, 1.f);
+	m_transform_2.transform_dir(dest_dir);
 }

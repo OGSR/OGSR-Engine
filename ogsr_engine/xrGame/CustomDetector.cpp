@@ -327,6 +327,18 @@ void CCustomDetector::TurnDetectorInternal(bool b)
 
 //void CCustomDetector::UpdateNightVisionMode(bool b_on) {}
 
+Fvector CCustomDetector::GetPositionForCollision() {
+    Fvector det_pos{}, det_dir{};
+    //Офсет подобрал через худ аждаст, это скорее всего временно, но такое решение подходит всем детекторам более-менее.
+    GetBoneOffsetPosDir("wpn_body", det_pos, det_dir, Fvector{ -0.247499f,-0.810510f,0.178999f });
+    return det_pos;
+}
+
+Fvector CCustomDetector::GetDirectionForCollision() {
+    //Пока и так нормально, в будущем мб придумаю решение получше.
+    return Device.vCameraDirection;
+}
+
 
 
 BOOL CAfList::feel_touch_contact(CObject* O)

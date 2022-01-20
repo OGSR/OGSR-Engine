@@ -43,4 +43,6 @@ protected:
 	ESoundTypes			m_eSoundClose;
 
 	bool m_opened;
+
+	virtual size_t GetWeaponTypeForCollision() const override { return Pistol; }
 };

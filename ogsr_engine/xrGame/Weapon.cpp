@@ -1,12 +1,10 @@
 // Weapon.cpp: implementation of the CWeapon class.
 //
 //////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
 
 #include "Weapon.h"
 #include "ParticlesObject.h"
-#include "HUDManager.h"
 #include "entity_alive.h"
 #include "player_hud.h"
 #include "inventory_item_impl.h"
@@ -23,12 +21,9 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
 #include "clsid_game.h"
-#include "mathutils.h"
 #include "object_broker.h"
-#include "..\xr_3da\IGame_Persistent.h"
 #include "../xr_3da/LightAnimLibrary.h"
 #include "game_object_space.h"
-#include "script_callback_ex.h"
 #include "script_game_object.h"
 
 #include "WeaponMagazinedWGrenade.h"
@@ -68,13 +63,10 @@ CWeapon::CWeapon(LPCSTR name)
 
 	m_fZoomRotationFactor	= 0.f;
 
-
 	m_pAmmo					= nullptr;
-
 
 	m_pFlameParticles2		= nullptr;
 	m_sFlameParticles2		= nullptr;
-
 
 	m_fCurrentCartirdgeDisp = 1.f;
 
@@ -87,8 +79,6 @@ CWeapon::CWeapon(LPCSTR name)
 	m_ef_weapon_type		= u32(-1);
 	m_UIScope				= nullptr;
 	m_set_next_ammoType_on_reload = u32(-1);
-
-	m_nearwall_last_hud_fov = psHUD_FOV_def;
 }
 
 CWeapon::~CWeapon		()
@@ -101,18 +91,10 @@ CWeapon::~CWeapon		()
 	flashlight_glow.destroy();
 }
 
-//void CWeapon::Hit(float P, Fvector &dir,	
-//		    CObject* who, s16 element,
-//		    Fvector position_in_object_space, 
-//		    float impulse, 
-//		    ALife::EHitType hit_type)
-void CWeapon::Hit					(SHit* pHDS)
+void CWeapon::Hit(SHit* pHDS)
 {
-//	inherited::Hit(P, dir, who, element, position_in_object_space,impulse,hit_type);
 	inherited::Hit(pHDS);
 }
-
-
 
 void CWeapon::UpdateXForm	()
 {
@@ -185,7 +167,7 @@ void CWeapon::UpdateXForm	()
 
 void CWeapon::UpdateFireDependencies_internal()
 {
-	if (Device.dwFrame != dwFP_Frame)
+	if (skip_updated_frame == Device.dwFrame || Device.dwFrame != dwFP_Frame)
 	{
 		dwFP_Frame = Device.dwFrame;
 
@@ -506,8 +488,8 @@ void CWeapon::Load		(LPCSTR section)
 	if(pSettings->line_exist(hud_sect, "zoom_hide_crosshair"))
 		m_bHideCrosshairInZoom = !!pSettings->r_bool(hud_sect, "zoom_hide_crosshair");
 
-	m_bZoomInertionAllow = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "allow_zoom_inertion", READ_IF_EXISTS(pSettings, r_bool, "features", "default_allow_zoom_inertion", true));
-	m_bScopeZoomInertionAllow = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "allow_scope_zoom_inertion", READ_IF_EXISTS(pSettings, r_bool, "features", "default_allow_scope_zoom_inertion", true));
+	m_bZoomInertionAllow = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "allow_zoom_inertion", strstr(READ_IF_EXISTS(pSettings, r_string, "mod_ver", "mod_ver", "nullptr"), "OGSR") ? true : READ_IF_EXISTS(pSettings, r_bool, "features", "default_allow_zoom_inertion", true));
+	m_bScopeZoomInertionAllow = READ_IF_EXISTS(pSettings, r_bool, hud_sect, "allow_scope_zoom_inertion", strstr(READ_IF_EXISTS(pSettings, r_string, "mod_ver", "mod_ver", "nullptr"), "OGSR") ? true : READ_IF_EXISTS(pSettings, r_bool, "features", "default_allow_scope_zoom_inertion", true));
 
 	//////////////////////////////////////////////////////////
 
@@ -532,40 +514,6 @@ void CWeapon::Load		(LPCSTR section)
 			}
 		}
 	}
-
-	m_nearwall_on = READ_IF_EXISTS(pSettings, r_bool, section, "nearwall_on", READ_IF_EXISTS(pSettings, r_bool, "features", "default_nearwall_on", true));
-	if (m_nearwall_on)
-	{
-		// Параметры изменения HUD FOV когда игрок стоит вплотную к стене
-		m_nearwall_target_hud_fov = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_target_hud_fov", 0.27f);
-		m_nearwall_dist_min = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_min", 0.5f);
-		m_nearwall_dist_max = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_max", 1.f);
-		m_nearwall_speed_mod = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_speed_mod", 10.f);
-	}
-
-	////////////////////////////////////////////
-	//--#SM+# Begin--
-	m_strafe_offset[0][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "strafe_hud_offset_pos", (Fvector{ 0.015f, 0.f, 0.f }));
-	m_strafe_offset[1][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "strafe_hud_offset_rot", (Fvector{ 0.f, 0.f, 4.5f }));
-
-	m_strafe_offset[0][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "strafe_aim_hud_offset_pos", (Fvector{ 0.f, 0.f, 0.f }));
-	m_strafe_offset[1][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "strafe_aim_hud_offset_rot", (Fvector{ 0.f, 0.f, 2.5f }));
-
-	m_strafe_offset[2][0].set(READ_IF_EXISTS(pSettings, r_bool, section, "strafe_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "strafe_transition_time", 0.25f), 0.f); // normal
-	m_strafe_offset[2][1].set(READ_IF_EXISTS(pSettings, r_bool, section, "strafe_aim_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "strafe_aim_transition_time", 0.15f), 0.f); // aim-GL
-	//--#SM+# End--
-	////////////////////////////////////////////
-
-	////////////////////////////////////////////
-	m_lookout_offset[0][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "lookout_hud_offset_pos", (Fvector{ 0.045f, 0.f, 0.f }));
-	m_lookout_offset[1][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "lookout_hud_offset_rot", (Fvector{ 0.f, 0.f, 10.f }));
-
-	m_lookout_offset[0][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "lookout_aim_hud_offset_pos", (Fvector{ 0.f, 0.f, 0.f }));
-	m_lookout_offset[1][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "lookout_aim_hud_offset_rot", (Fvector{ 0.f, 0.f, 15.f }));
-
-	m_lookout_offset[2][0].set(READ_IF_EXISTS(pSettings, r_bool, section, "lookout_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "lookout_transition_time", 0.25f), 0.f); // normal
-	m_lookout_offset[2][1].set(READ_IF_EXISTS(pSettings, r_bool, section, "lookout_aim_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "lookout_aim_transition_time", 0.15f), 0.f); // aim-GL
-	////////////////////////////////////////////
 
 	if (!laser_light_render && pSettings->line_exist(section, "laser_light_section"))
 	{
@@ -636,8 +584,6 @@ void CWeapon::Load		(LPCSTR section)
 		flashlight_glow->set_color(clr);
 		flashlight_glow->set_radius(READ_IF_EXISTS(pSettings, r_float, m_light_section, "glow_radius", 0.3f));
 	}
-
-	hud_recalc_koef = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_recalc_koef", 1.35f); //На калаше при 1.35 вроде норм смотрится, другим стволам возможно придется подбирать другие значения.
 }
 
 void CWeapon::LoadFireParams		(LPCSTR section, LPCSTR prefix)
@@ -824,8 +770,6 @@ void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 	OnZoomOut					();
 	m_fZoomRotationFactor	= 0.f;
 	UpdateXForm					();
-
-	m_nearwall_last_hud_fov = psHUD_FOV_def;
 }
 
 void CWeapon::OnH_A_Independent	()
@@ -864,8 +808,6 @@ void CWeapon::OnH_B_Chield		()
 
 	OnZoomOut					();
 	m_set_next_ammoType_on_reload	= u32(-1);
-
-	m_nearwall_last_hud_fov = psHUD_FOV_def;
 }
 
 static float state_time = 0;				// таймер нахождения оружия в текущем состоянии
@@ -960,29 +902,6 @@ void CWeapon::UpdateCL		()
 
 	UpdateLaser();
 	UpdateFlashlight();
-}
-
-void CWeapon::GetBoneOffsetPosDir(const shared_str& bone_name, Fvector& dest_pos, Fvector& dest_dir, const Fvector& offset) {
-	const u16 bone_id = HudItemData()->m_model->LL_BoneID(bone_name);
-	ASSERT_FMT(bone_id != BI_NONE, "!![%s] bone [%s] not found in weapon [%s]", __FUNCTION__, bone_name.c_str(), cNameSect().c_str());
-	Fmatrix& fire_mat = HudItemData()->m_model->LL_GetTransform(bone_id);
-	fire_mat.transform_tiny(dest_pos, offset);
-	HudItemData()->m_item_transform.transform_tiny(dest_pos);
-	dest_pos.add(Device.vCameraPosition);
-	dest_dir.set(0.f, 0.f, 1.f);
-	HudItemData()->m_item_transform.transform_dir(dest_dir);
-}
-
-void CWeapon::CorrectDirFromWorldToHud(Fvector& dir) {
-	const auto& CamDir = Device.vCameraDirection;
-	const float Fov = Device.fFOV;
-	extern ENGINE_API float psHUD_FOV;
-	const float HudFov = psHUD_FOV < 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV;
-	const float diff = hud_recalc_koef * Fov / HudFov;
-	dir.sub(CamDir);
-	dir.mul(diff);
-	dir.add(CamDir);
-	dir.normalize();
 }
 
 void CWeapon::UpdateLaser()
@@ -1312,6 +1231,7 @@ void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID)
 	
 	CSE_Abstract *D					= F_entity_Create(ammoSect);
 
+	//KRodin: GOVNOKOD DETECTED!
 	if (D->m_tClassID==CLSID_OBJECT_AMMO	||
 		D->m_tClassID==CLSID_OBJECT_A_M209	||
 		D->m_tClassID==CLSID_OBJECT_A_VOG25	||
@@ -1896,7 +1816,7 @@ bool CWeapon::ready_to_kill	() const
 }
 
 // Получить индекс текущих координат худа
-u8 CWeapon::GetCurrentHudOffsetIdx()
+u8 CWeapon::GetCurrentHudOffsetIdx() const
 {
 	const bool b_aiming = ((IsZoomed() && m_fZoomRotationFactor <= 1.f) || (!IsZoomed() && m_fZoomRotationFactor > 0.f));
 
@@ -1929,210 +1849,6 @@ u8 CWeapon::GetCurrentHudOffsetIdx()
 	}
 
 	return hud_item_measures::m_hands_offset_type_normal;
-}
-
-
-// Обновление координат текущего худа
-void CWeapon::UpdateHudAdditonal(Fmatrix& trans)
-{
-	Fvector summary_offset{}, summary_rotate{};
-
-	attachable_hud_item* hi = HudItemData();
-	u8 idx = GetCurrentHudOffsetIdx();
-	const bool b_aiming = idx != hud_item_measures::m_hands_offset_type_normal;
-	Fvector zr_offs = hi->m_measures.m_hands_offset[hud_item_measures::m_hands_offset_pos][idx];
-	Fvector zr_rot = hi->m_measures.m_hands_offset[hud_item_measures::m_hands_offset_rot][idx];
-
-	//============ Поворот ствола во время аима ===========//
-	if(b_aiming)
-	{
-		if(IsZoomed())
-			m_fZoomRotationFactor += Device.fTimeDelta/m_fZoomRotateTime;
-		else
-			m_fZoomRotationFactor -= Device.fTimeDelta/m_fZoomRotateTime;
-
-		clamp(m_fZoomRotationFactor, 0.f, 1.f);
-
-		zr_offs.mul(m_fZoomRotationFactor);
-		zr_rot.mul(m_fZoomRotationFactor);
-
-		summary_offset.add(zr_offs);
-	}
-	//====================================================//
-
-	auto pActor = smart_cast<const CActor*>(H_Parent());
-	const u32 iMovingState = pActor->MovingState();
-	idx = b_aiming ? 1ui8 : 0ui8;
-
-	//============= Боковой стрейф с оружием =============//
-	{
-		const bool bEnabled = m_strafe_offset[2][idx].x;
-		if (!bEnabled)
-			goto LOOKOUT_EFFECT;
-
-		// Рассчитываем фактор боковой ходьбы
-		float fStrafeMaxTime = m_strafe_offset[2][idx].y; // Макс. время в секундах, за которое мы наклонимся из центрального положения
-		if (fStrafeMaxTime <= EPS)
-			fStrafeMaxTime = 0.01f;
-
-		const float fStepPerUpd = Device.fTimeDelta / fStrafeMaxTime; // Величина изменение фактора поворота
-
-		if (iMovingState & mcLStrafe)
-		{ // Движемся влево
-			float fVal = (m_fLR_MovingFactor > 0.f ? fStepPerUpd * 3 : fStepPerUpd);
-			m_fLR_MovingFactor -= fVal;
-		}
-		else if (iMovingState & mcRStrafe)
-		{ // Движемся вправо
-			float fVal = (m_fLR_MovingFactor < 0.f ? fStepPerUpd * 3 : fStepPerUpd);
-			m_fLR_MovingFactor += fVal;
-		}
-		else
-		{ // Двигаемся в любом другом направлении
-			if (m_fLR_MovingFactor < 0.0f)
-			{
-				m_fLR_MovingFactor += fStepPerUpd;
-				clamp(m_fLR_MovingFactor, -1.0f, 0.0f);
-			}
-			else
-			{
-				m_fLR_MovingFactor -= fStepPerUpd;
-				clamp(m_fLR_MovingFactor, 0.0f, 1.0f);
-			}
-		}
-
-		clamp(m_fLR_MovingFactor, -1.0f, 1.0f); // Фактор боковой ходьбы не должен превышать эти лимиты
-
-		// Смещение позиции худа в стрейфе
-		Fvector moving_offs = m_strafe_offset[0][idx]; //pos
-		moving_offs.mul(m_fLR_MovingFactor); // Умножаем на фактор стрейфа
-
-		// Поворот худа в стрейфе
-		Fvector moving_rot = m_strafe_offset[1][idx]; //rot
-		moving_rot.mul(-PI / 180.f); // Преобразуем углы в радианы
-		moving_rot.mul(m_fLR_MovingFactor); // Умножаем на фактор стрейфа
-
-		if (idx == 0)
-		{ // От бедра
-			moving_offs.mul(1.f - m_fZoomRotationFactor);
-			moving_rot.mul(1.f - m_fZoomRotationFactor);
-		}
-		else
-		{ // Во время аима
-			moving_offs.mul(m_fZoomRotationFactor);
-			moving_rot.mul(m_fZoomRotationFactor);
-		}
-
-		summary_offset.add(moving_offs);
-		summary_rotate.add(moving_rot);
-	}
-	//====================================================//
-
-LOOKOUT_EFFECT:
-	//=============== Эффекты выглядываний ===============//
-	{
-		const bool bEnabled = m_lookout_offset[2][idx].x;
-		if (!bEnabled)
-			goto APPLY_EFFECTS;
-
-		float fLookoutMaxTime = m_lookout_offset[2][idx].y; // Макс. время в секундах, за которое мы наклонимся из центрального положения
-		if (fLookoutMaxTime <= EPS)
-			fLookoutMaxTime = 0.01f;
-
-		const float fStepPerUpdL = Device.fTimeDelta / fLookoutMaxTime; // Величина изменение фактора поворота
-
-		if ((iMovingState & mcLLookout) && !(iMovingState & mcRLookout))
-		{ // Выглядываем влево
-			float fVal = (m_fLookout_MovingFactor > 0.f ? fStepPerUpdL * 3 : fStepPerUpdL);
-			m_fLookout_MovingFactor -= fVal;
-		}
-		else if ((iMovingState & mcRLookout) && !(iMovingState & mcLLookout))
-		{ // Выглядываем вправо
-			float fVal = (m_fLookout_MovingFactor < 0.f ? fStepPerUpdL * 3 : fStepPerUpdL);
-			m_fLookout_MovingFactor += fVal;
-		}
-		else
-		{ // Двигаемся в любом другом направлении
-			if (m_fLookout_MovingFactor < 0.0f)
-			{
-				m_fLookout_MovingFactor += fStepPerUpdL;
-				clamp(m_fLookout_MovingFactor, -1.0f, 0.0f);
-			}
-			else
-			{
-				m_fLookout_MovingFactor -= fStepPerUpdL;
-				clamp(m_fLookout_MovingFactor, 0.0f, 1.0f);
-			}
-		}
-
-		clamp(m_fLookout_MovingFactor, -1.0f, 1.0f); // не должен превышать эти лимиты
-
-		float koef{ 1.f };
-		if ((iMovingState & mcCrouch) && (iMovingState & mcAccel))
-			koef = 0.5; // во сколько раз менять амплитуду при полном присяде
-		else if (iMovingState & mcCrouch)
-			koef = 0.75; // во сколько раз менять амплитуду при присяде
-
-		// Смещение позиции худа
-		Fvector lookout_offs = m_lookout_offset[0][idx]; //pos
-		lookout_offs.mul(koef);
-		lookout_offs.mul(m_fLookout_MovingFactor); // Умножаем на фактор наклона
-
-		// Поворот худа
-		Fvector lookout_rot = m_lookout_offset[1][idx]; //rot
-		lookout_rot.mul(koef);
-		lookout_rot.mul(-PI / 180.f); // Преобразуем углы в радианы
-		lookout_rot.mul(m_fLookout_MovingFactor); // Умножаем на фактор наклона
-
-		if (idx == 0)
-		{ // От бедра
-			lookout_offs.mul(1.f - m_fZoomRotationFactor);
-			lookout_rot.mul(1.f - m_fZoomRotationFactor);
-		}
-		else
-		{ // Во время аима
-			lookout_offs.mul(m_fZoomRotationFactor);
-			lookout_rot.mul(m_fZoomRotationFactor);
-		}
-
-		summary_offset.add(lookout_offs);
-		summary_rotate.add(lookout_rot);
-	}
-	//====================================================//
-
-APPLY_EFFECTS:
-	//================ Применение эффектов ===============//
-	{
-		// поворот с сохранением смещения by Zander
-		Fvector _angle{}, _pos{ trans.c };
-		trans.getHPB(_angle);
-		_angle.add(-summary_rotate);
-		//Msg("##[%s] summary_rotate: [%f,%f,%f]", __FUNCTION__, summary_rotate.x, summary_rotate.y, summary_rotate.z);
-		trans.setHPB(_angle.x, _angle.y, _angle.z);
-		trans.c = _pos;
-
-		Fmatrix hud_rotation;
-		hud_rotation.identity();
-
-		if (b_aiming)
-		{
-			hud_rotation.rotateX(zr_rot.x);
-
-			Fmatrix hud_rotation_y;
-			hud_rotation_y.identity();
-			hud_rotation_y.rotateY(zr_rot.y);
-			hud_rotation.mulA_43(hud_rotation_y);
-
-			hud_rotation_y.identity();
-			hud_rotation_y.rotateZ(zr_rot.z);
-			hud_rotation.mulA_43(hud_rotation_y);
-			//Msg("~~[%s] zr_rot: [%f,%f,%f]", __FUNCTION__, zr_rot.x, zr_rot.y, zr_rot.z);
-		}
-		//Msg("--[%s] summary_offset: [%f,%f,%f]", __FUNCTION__, summary_offset.x, summary_offset.y, summary_offset.z);
-		hud_rotation.translate_over(summary_offset);
-		trans.mulB_43(hud_rotation);
-	}
-	//====================================================//
 }
 
 void	CWeapon::SetAmmoElapsed	(int ammo_count)
@@ -2417,58 +2133,32 @@ bool CWeapon::IsGrenadeMode() const
 	return wpn_w_gl && wpn_w_gl->m_bGrenadeMode;
 }
 
-// Получить HUD FOV от текущего оружия игрока
-float CWeapon::GetHudFov()
-{
-	// Рассчитываем HUD FOV от бедра (с учётом упирания в стены)
-	if (m_nearwall_on && ParentIsActor() && Level().CurrentViewEntity() == H_Parent())
-	{
-		// Получаем расстояние от камеры до точки в прицеле
-		collide::rq_result& RQ = HUD().GetCurrentRayQuery();
-		float dist = RQ.range;
-
-		// Интерполируем расстояние в диапазон от 0 (min) до 1 (max)
-		clamp(dist, m_nearwall_dist_min, m_nearwall_dist_max);
-		float fDistanceMod = ((dist - m_nearwall_dist_min) / (m_nearwall_dist_max - m_nearwall_dist_min)); // 0.f ... 1.f
-
-		 // Рассчитываем базовый HUD FOV от бедра
-		float fBaseFov = psHUD_FOV_def;
-		clamp(fBaseFov, 0.0f, FLT_MAX);
-
-		// Плавно высчитываем итоговый FOV от бедра
-		float src = m_nearwall_speed_mod * Device.fTimeDelta;
-		clamp(src, 0.f, 1.f);
-
-		float fTrgFov = m_nearwall_target_hud_fov + fDistanceMod * (fBaseFov - m_nearwall_target_hud_fov);
-		m_nearwall_last_hud_fov = m_nearwall_last_hud_fov * (1 - src) + fTrgFov * src;
-	}
+float CWeapon::GetHudFov() {
+	const float last_nw_hf = inherited::GetHudFov();
 
 	if (m_fZoomRotationFactor > 0.0f)
 	{
 		if (SecondVPEnabled() && m_fSecondVPHudFov > 0.0f)
 		{
 			// В линзе зума
-			float fDiff = m_nearwall_last_hud_fov - m_fSecondVPHudFov;
+			const float fDiff = last_nw_hf - m_fSecondVPHudFov;
 			return m_fSecondVPHudFov + (fDiff * (1 - m_fZoomRotationFactor));
 		}
 		if ((m_eScopeStatus == CSE_ALifeItemWeapon::eAddonDisabled || IsScopeAttached()) && !IsGrenadeMode() && m_fZoomHudFov > 0.0f)
 		{
 			// В процессе зума
-			float fDiff = m_nearwall_last_hud_fov - m_fZoomHudFov;
+			const float fDiff = last_nw_hf - m_fZoomHudFov;
 			return m_fZoomHudFov + (fDiff * (1 - m_fZoomRotationFactor));
 		}
 	}
 
-	// От бедра	 
-	return m_nearwall_last_hud_fov;
+	return last_nw_hf;
 }
-
 
 void CWeapon::OnBulletHit() {
   if ( !fis_zero( conditionDecreasePerShotOnHit ) )
     ChangeCondition( -conditionDecreasePerShotOnHit );
 }
-
 
 bool CWeapon::IsPartlyReloading() {
   return ( m_set_next_ammoType_on_reload == u32(-1) && GetAmmoElapsed() > 0 && !IsMisfire() );

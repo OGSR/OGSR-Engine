@@ -27,6 +27,8 @@ protected:
 	virtual void	PlayReloadSound					();
 	virtual void	UpdateSounds() override;
 
+	virtual size_t GetWeaponTypeForCollision() const override { return BM_16; }
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CWeaponBM16)

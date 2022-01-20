@@ -1,6 +1,3 @@
-#ifndef __XR_WEAPON_FN2000_H__
-#define __XR_WEAPON_FN2000_H__
-
 #pragma once
 
 #include "WeaponMagazined.h"
@@ -13,16 +10,12 @@ private:
 public:
 	CWeaponFN2000	();
 	virtual			~CWeaponFN2000	();
-/*	virtual void	Load			(LPCSTR section);
-	virtual void			Fire2Start			();
-	virtual void			Fire2End			();
 
-	virtual bool Action(s32 cmd, u32 flags);*/
+protected:
+	virtual size_t GetWeaponTypeForCollision() const override { return FN2000; }
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CWeaponFN2000)
 #undef script_type_list
 #define script_type_list save_type_list(CWeaponFN2000)
-
-#endif //__XR_WEAPON_FN2000_H__

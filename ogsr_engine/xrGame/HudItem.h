@@ -57,8 +57,8 @@ public:
 class CHudItem : public CHUDState
 {
 protected: //чтоб нельзя было вызвать на прямую
-	CHudItem(void);
-	virtual ~CHudItem(void);
+	CHudItem();
+	virtual ~CHudItem() = default;
 	virtual DLL_Pure*_construct			();
 
 	Flags16			m_huditem_flags;
@@ -141,7 +141,6 @@ public:
 	virtual void	Hide( bool = false ) {}
 	virtual void	Show( bool = false ) {}
 
-	virtual void	UpdateHudAdditonal		(Fmatrix&) {};
 	virtual	void	UpdateXForm				() = 0;
 
 	u32				PlayHUDMotion			(const char* M, const bool bMixIn, const u32 state, const bool randomAnim = true);
@@ -153,7 +152,6 @@ public:
 	attachable_hud_item* HudItemData		() const;
 	virtual void	on_a_hud_attach			();
 	virtual void	on_b_hud_detach			();
-	virtual u8		GetCurrentHudOffsetIdx	() { return 0; }
 	const shared_str& HudSection			() const { return hud_sect; }
 
 	BOOL			GetHUDmode				();
@@ -161,18 +159,11 @@ public:
 	IC BOOL			IsPending				() const { return !!m_huditem_flags.test(fl_pending); }
 	IC void			RenderHud				(BOOL B) { m_huditem_flags.set(fl_renderhud, B); }
 	IC BOOL			RenderHud				() { return m_huditem_flags.test(fl_renderhud); }
-	IC bool			HudInertionEnabled		() const { return m_huditem_flags.test(fl_inertion_enable); }
-	IC bool			HudInertionAllowed		() const { return m_huditem_flags.test(fl_inertion_allow); }
-	IC bool			HudBobbingAllowed		() const { return m_huditem_flags.test(fl_bobbing_allow); }
-	IC void			EnableHudInertion		(BOOL B) { m_huditem_flags.set(fl_inertion_enable, B); }
-	IC void			AllowHudInertion		(BOOL B) { m_huditem_flags.set(fl_inertion_allow, B); }
-	IC void			AllowHudBobbing			(BOOL B) { m_huditem_flags.set(fl_bobbing_allow, B); }
+
 	virtual void	render_hud_mode			() {};
 	virtual bool	need_renderable			() { return true; };
 	virtual void	render_item_3d_ui		() {}
 	virtual bool	render_item_3d_ui_query	() { return false; }
-	virtual float	GetInertionFactor		() { return 1.f; }; //--#SM+#--
-	virtual float	GetInertionPowerFactor	() { return 1.f; }; //--#SM+#--
 	virtual bool	CheckCompatibility		(CHudItem*) { return true; }
 protected:
 	BOOL					hud_mode;
@@ -197,5 +188,112 @@ public:
 	IC CInventoryItem&		item					() const {	VERIFY(m_item);	return(*m_item);}
 
 	virtual void			on_renderable_Render	() = 0;
-};
 
+public:
+	class CWeaponBobbing
+	{
+	public:
+		CWeaponBobbing() = delete;
+		CWeaponBobbing(CHudItem* parent);
+		~CWeaponBobbing() = default;
+
+		void Update(Fmatrix& m);
+		void CheckState();
+
+	private:
+		CHudItem* parent_hud_item;
+		float	fTime;
+		Fvector	vAngleAmplitude;
+		float	fYAmplitude;
+		float	fSpeed;
+
+		u32		dwMState;
+		float	fReminderFactor;
+		bool	is_limping;
+		bool	m_bZoomMode;
+
+		float	m_fAmplitudeRun;
+		float	m_fAmplitudeWalk;
+		float	m_fAmplitudeLimp;
+
+		float	m_fSpeedRun;
+		float	m_fSpeedWalk;
+		float	m_fSpeedLimp;
+
+		float	m_fCrouchFactor;
+		float	m_fZoomFactor;
+		float	m_fScopeZoomFactor;
+	};
+	std::unique_ptr<CWeaponBobbing> m_bobbing;
+
+	virtual u8 GetCurrentHudOffsetIdx() const { return 0; }
+	virtual float GetHudFov(); // Получить HUD FOV от текущего оружия игрока
+	virtual void UpdateHudAdditional(Fmatrix&, const bool need_update_collision = false);
+	bool HudBobbingAllowed() const { return m_huditem_flags.test(fl_bobbing_allow); }
+	void AllowHudBobbing(BOOL B) { m_huditem_flags.set(fl_bobbing_allow, B); }
+	void GetBoneOffsetPosDir(const shared_str& bone_name, Fvector& dest_pos, Fvector& dest_dir, const Fvector& offset);
+	//Функция из ганслингера для приблизительной коррекции разности фовов худа и мира. Так себе на самом деле, но более годных способов я не нашел.
+	void CorrectDirFromWorldToHud(Fvector& dir);
+protected:
+	enum CollisionWeaponType : size_t {
+		CWeaponBase,
+		Pistol,
+		SniperRifle,
+		RPG,
+		RG_6,
+		Groza,
+		FN2000,
+		BM_16,
+		Bolt,
+		Detector,
+		Knife_and_other,
+		Binocular,
+		_CollisionWeaponTypesCount_
+	};
+	virtual size_t GetWeaponTypeForCollision() const { return Knife_and_other; }
+	virtual Fvector GetPositionForCollision() { return Device.vCameraPosition; }
+	virtual Fvector GetDirectionForCollision() { return Device.vCameraDirection; }
+	float m_fZoomRotationFactor{};  //от 0 до 1, показывает насколько процентов мы перемещаем HUD
+	float m_fZoomRotateTime{}; //время приближения
+	u32 skip_updated_frame{};
+	bool HudInertionAllowed() const { return m_huditem_flags.test(fl_inertion_allow); }
+	void AllowHudInertion(BOOL B) { m_huditem_flags.set(fl_inertion_allow, B); }
+private:
+	shared_str world_sect;
+	float hud_recalc_koef{};
+	void UpdateCollision(Fmatrix& trans);
+	bool CollisionAllowed() const;
+	bool m_nearwall_on{};
+	float m_nearwall_target_hud_fov{}, m_nearwall_target_aim_hud_fov{};
+	float m_nearwall_dist_max{}, m_nearwall_dist_min{};
+	float m_nearwall_last_hud_fov{};
+	float m_nearwall_speed_mod{}, m_nearwall_hud_offset_speed{};
+	Fvector m_nearwall_target_hud_offset{}, m_nearwall_target_hud_rotate{};
+	float saved_rq_range{};
+	Fvector m_nearwall_last_pos{}, m_nearwall_last_rot{};
+	u32 m_nearwall_last_call{};
+
+	float m_fLR_MovingFactor{}, m_fLookout_MovingFactor{};
+	Fvector m_strafe_offset[3][2]{}, m_lookout_offset[3][2]{};
+
+	struct inertion_params {
+		float m_pitch_offset_r;
+		float m_pitch_offset_n;
+		float m_pitch_offset_d;
+		float m_pitch_low_limit;
+		// отклонение модели от "курса" из за инерции во время движения
+		float m_origin_offset;
+		// отклонение модели от "курса" из за инерции во время движения с прицеливанием
+		float m_origin_offset_aim;
+		// скорость возврата худ модели в нужное положение
+		float m_tendto_speed;
+		// скорость возврата худ модели в нужное положение во время прицеливания
+		float m_tendto_speed_aim;
+	} inertion_data{}; //--#SM+#--
+	Fvector inert_st_last_dir{};
+	void UpdateInertion(Fmatrix& trans);
+	float GetInertionFactor() const { return 1.f; } //--#SM+#--
+	float GetInertionPowerFactor() const { return 1.f; } //--#SM+#--
+	bool HudInertionEnabled() const { return m_huditem_flags.test(fl_inertion_enable); }
+	void EnableHudInertion(BOOL B) { m_huditem_flags.set(fl_inertion_enable, B); }
+};

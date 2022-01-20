@@ -184,6 +184,10 @@ protected:
     CAfList m_artefacts;
 
     HUD_SOUND sndShow, sndHide;
+
+    virtual size_t GetWeaponTypeForCollision() const override { return Detector; }
+    virtual Fvector GetPositionForCollision() override;
+    virtual Fvector GetDirectionForCollision() override;
 };
 
 class CZoneList : public CDetectList<CCustomZone>

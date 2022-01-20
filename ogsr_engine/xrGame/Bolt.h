@@ -31,4 +31,7 @@ public:
 	virtual IDamageSource*	cast_IDamageSource			()	{return this;}
 
 	virtual bool StopSprintOnFire() { return false; }
+
+protected:
+	virtual size_t GetWeaponTypeForCollision() const override { return Bolt; }
 };

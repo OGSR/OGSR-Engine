@@ -42,8 +42,12 @@ protected:
 	//float				fHitPower_2;
 	Fvector4			fvHitPower_2;
 	float				fHitImpulse_2;
-protected:
 	virtual void		LoadFireParams					(LPCSTR section, LPCSTR prefix);
+
+	virtual size_t GetWeaponTypeForCollision() const override { return Knife_and_other; }
+	//TODO: рассчитать здесь позицию для коллизии
+	virtual Fvector GetPositionForCollision() override { return Device.vCameraPosition; }
+	virtual Fvector GetDirectionForCollision() override { return Device.vCameraDirection; }
 public:
 						CWeaponKnife(); 
 	virtual				~CWeaponKnife(); 

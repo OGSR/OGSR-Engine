@@ -50,6 +50,7 @@ public:
 protected:
 	HUD_SOUND				sndCheckout;
 	ESoundTypes				m_eSoundCheckout;
+	virtual size_t GetWeaponTypeForCollision() const override { return Knife_and_other; }
 private:
 	float					m_grenade_detonation_threshold_hit;
 	bool					m_thrown;

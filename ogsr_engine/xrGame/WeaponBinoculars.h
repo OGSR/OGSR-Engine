@@ -15,6 +15,9 @@ protected:
 	HUD_SOUND		sndZoomIn;
 	HUD_SOUND		sndZoomOut;
 
+	virtual size_t GetWeaponTypeForCollision() const override { return Binocular; }
+	virtual Fvector GetPositionForCollision() override { return Device.vCameraPosition; }
+	virtual Fvector GetDirectionForCollision() override { return Device.vCameraDirection; }
 public:
 					CWeaponBinoculars	(); 
 	virtual			~CWeaponBinoculars	();

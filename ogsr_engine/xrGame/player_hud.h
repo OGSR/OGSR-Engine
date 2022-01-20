@@ -76,23 +76,6 @@ struct hud_item_measures
 
 	void load(const shared_str& sect_name, IKinematics* K);
 
-	struct inertion_params
-	{
-		float m_pitch_offset_r;
-		float m_pitch_offset_n;
-		float m_pitch_offset_d;
-		float m_pitch_low_limit;
-		// отклонение модели от "курса" из за инерции во время движения
-		float m_origin_offset;
-		// отклонение модели от "курса" из за инерции во время движения с прицеливанием
-		float m_origin_offset_aim;
-		// скорость возврата худ модели в нужное положение
-		float m_tendto_speed;
-		// скорость возврата худ модели в нужное положение во время прицеливания
-		float m_tendto_speed_aim;
-	};
-	inertion_params m_inertion_params; //--#SM+#--	
-
 	bool useCopFirePoint{};
 };
 
@@ -118,7 +101,6 @@ struct attachable_hud_item
 
 	void load(const shared_str& sect_name);
 	void update(bool bForce);
-	void update_hud_additional(Fmatrix& trans);
 	void setup_firedeps(firedeps& fd);
 	void render();
 	void render_item_ui();
@@ -144,40 +126,6 @@ struct attachable_hud_item
 	u32 anim_play(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md, u8& rnd, bool randomAnim);
 };
 
-class CWeaponBobbing
-{
-public:
-	CWeaponBobbing();
-	~CWeaponBobbing() = default;
-
-	void Load();
-	void Update(Fmatrix& m, attachable_hud_item* hi);
-	void CheckState();
-
-private:
-	float	fTime;
-	Fvector	vAngleAmplitude;
-	float	fYAmplitude;
-	float	fSpeed;
-
-	u32		dwMState;
-	float	fReminderFactor;
-	bool	is_limping;
-	bool	m_bZoomMode;
-
-	float	m_fAmplitudeRun;
-	float	m_fAmplitudeWalk;
-	float	m_fAmplitudeLimp;
-
-	float	m_fSpeedRun;
-	float	m_fSpeedWalk;
-	float	m_fSpeedLimp;
-
-	float	m_fCrouchFactor;
-	float	m_fZoomFactor;
-	float	m_fScopeZoomFactor;
-};
-
 class player_hud
 {
 public:
@@ -189,7 +137,7 @@ public:
 	void render_hud();
 	void render_item_ui();
 	bool render_item_ui_query();
-	u32 anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CMotionDef*& md, float speed, bool hasHands, IKinematicsAnimated* itemModel = nullptr);
+	u32 anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CMotionDef*& md, float speed, bool hasHands, IKinematicsAnimated* itemModel = nullptr , u16 override_part = u16(-1));
 	const shared_str& section_name() const { return m_sect_name; }
 	attachable_hud_item* create_hud_item(const shared_str& sect);
 
@@ -209,24 +157,17 @@ public:
 	u32 motion_length(const motion_descr& M, const CMotionDef*& md, float speed, bool hasHands, IKinematicsAnimated* itemModel, attachable_hud_item* pi = nullptr);
 	u32 motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md);
 	void OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd);
-
-private:
-	void update_inertion(Fmatrix& trans);
-	void update_additional(Fmatrix& trans);
-	bool inertion_allowed();
-	bool bobbing_allowed();
+	void re_sync_anim(u8 part);
+	void GetLHandBoneOffsetPosDir(const shared_str& bone_name, Fvector& dest_pos, Fvector& dest_dir, const Fvector& offset);
 
 private:
 	shared_str m_sect_name;
-
-	Fmatrix m_attach_offset;
-
-	Fmatrix m_transform;
-	IKinematicsAnimated* m_model{};
+	Fmatrix m_attach_offset, m_attach_offset_2;
+	Fmatrix m_transform, m_transform_2;
+	IKinematicsAnimated *m_model{}, *m_model_2{};
 	xr_vector<u16> m_ancors;
 	attachable_hud_item* m_attached_items[2]{};
 	xr_vector<attachable_hud_item*> m_pool;
-	CWeaponBobbing* m_bobbing{};
 };
 
 extern player_hud* g_player_hud;

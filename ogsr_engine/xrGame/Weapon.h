@@ -23,8 +23,6 @@ class CWeaponMagazined;
 class CParticlesObject;
 class CUIStaticItem;
 
-ENGINE_API extern float psHUD_FOV_def;
-
 constexpr float def_min_zoom_k = 0.3f;
 constexpr float def_zoom_step_count = 4.0f;
 
@@ -245,8 +243,6 @@ protected:
 	bool			m_bZoomEnabled;
 	//текущий фактор приближения
 	float			m_fZoomFactor;
-	//время приближения
-	float			m_fZoomRotateTime;
 	//текстура для снайперского прицела, в режиме приближения
 	CUIStaticItem*	m_UIScope;
 	//коэффициент увеличения прицеливания
@@ -255,9 +251,6 @@ protected:
 	float			m_fScopeZoomFactor;
 	//когда режим приближения включен
 	bool			m_bZoomMode;
-	//от 0 до 1, показывает насколько процентов
-	//мы перемещаем HUD  
-	float			m_fZoomRotationFactor;
 	//коэффициент увеличения во втором вьюпорте при зуме
 	float			m_fSecondVPZoomFactor;
 	//прятать перекрестие в режиме прицеливания
@@ -346,28 +339,20 @@ protected:
 	virtual void			UpdatePosition			(const Fmatrix& transform);	//.
 	virtual void			UpdateXForm				();
 
-private:
-	float m_fLR_MovingFactor{}, m_fLookout_MovingFactor{};
-	Fvector m_strafe_offset[3][2]{}, m_lookout_offset[3][2]{};
-
-protected:
-	virtual	u8				GetCurrentHudOffsetIdx	() override;
-	virtual void			UpdateHudAdditonal		(Fmatrix&);
+	virtual	u8 GetCurrentHudOffsetIdx() const override;
 	virtual bool			IsHudModeNow			();
-
-	IC		void			UpdateFireDependencies	()			{ if (dwFP_Frame==Device.dwFrame) return; UpdateFireDependencies_internal(); };
 
 	virtual void			LoadFireParams		(LPCSTR section, LPCSTR prefix);
 public:	
-	IC		const Fvector&	get_LastFP				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastFP;	}
-	IC		const Fvector&	get_LastFP2				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastFP2;	}
-	IC		const Fvector&	get_LastFD				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastFD;	}
-	IC		const Fvector&	get_LastSP				()			{ UpdateFireDependencies(); return m_current_firedeps.vLastSP;	}
-	IC		const Fvector& get_LastShootPoint() { UpdateFireDependencies(); return m_current_firedeps.vLastShootPoint; }
+	IC		const Fvector& get_LastFP() { UpdateFireDependencies_internal(); return m_current_firedeps.vLastFP; }
+	IC		const Fvector& get_LastFP2() { UpdateFireDependencies_internal(); return m_current_firedeps.vLastFP2; }
+	IC		const Fvector& get_LastFD() { UpdateFireDependencies_internal(); return m_current_firedeps.vLastFD; }
+	IC		const Fvector& get_LastSP() { UpdateFireDependencies_internal(); return m_current_firedeps.vLastSP; }
+	IC		const Fvector& get_LastShootPoint() { UpdateFireDependencies_internal(); return m_current_firedeps.vLastShootPoint; }
 
 	virtual const Fvector&	get_CurrentFirePoint	()			{ return get_LastFP();				}
 	virtual const Fvector&	get_CurrentFirePoint2	()			{ return get_LastFP2();				}
-	virtual const Fmatrix&	get_ParticlesXFORM		()			{ UpdateFireDependencies(); return m_current_firedeps.m_FireParticlesXForm;	}
+	virtual const Fmatrix& get_ParticlesXFORM() { UpdateFireDependencies_internal(); return m_current_firedeps.m_FireParticlesXForm; }
 	virtual void			ForceUpdateFireParticles();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -533,14 +518,10 @@ protected:
 	float					m_addon_holder_range_modifier;
 	float					m_addon_holder_fov_modifier;
 
-	float m_nearwall_last_hud_fov;
-
-	float m_nearwall_target_hud_fov = 0.f;
-	float m_nearwall_dist_max = 0.f;
-	float m_nearwall_dist_min = 0.f;
-	float m_nearwall_speed_mod = 0.f;
-
-	bool m_nearwall_on = false;
+protected:
+	virtual size_t GetWeaponTypeForCollision() const override { return CWeaponBase; } 
+	virtual Fvector GetPositionForCollision() override { return get_LastShootPoint(); }
+	virtual Fvector GetDirectionForCollision() override { return get_LastFD(); }
 
 public:
 	virtual	void			modify_holder_params		(float &range, float &fov) const;
@@ -556,11 +537,11 @@ private:
 public:
 	const float				&hit_probability			() const;
 	void					UpdateWeaponParams();
-	void UpdateSecondVP(); //
+	void UpdateSecondVP();
 	float GetZRotatingFactor() const { return m_fZoomRotationFactor; } //--#SM+#--
 	float GetSecondVPFov() const; //--#SM+#--
 	bool SecondVPEnabled() const;
-	float GetHudFov();
+	float GetHudFov() override;
 
 	virtual void OnBulletHit();
 	bool IsPartlyReloading();
@@ -571,13 +552,7 @@ public:
 		inherited::processing_deactivate();
 	}
 
-	void GetBoneOffsetPosDir(const shared_str& bone_name, Fvector& dest_pos, Fvector& dest_dir, const Fvector& offset);
-	//Функция из ганслингера для приблизительной коррекции разности фовов худа и мира. Так себе на самом деле, но более годных способов я не нашел.
-	void CorrectDirFromWorldToHud(Fvector& dir);
-
 private:
-	float hud_recalc_koef{};
-
 	bool has_laser{};
 	shared_str laserdot_attach_bone;
 	Fvector laserdot_attach_offset{}, laserdot_world_attach_offset{};

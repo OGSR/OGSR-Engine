@@ -430,7 +430,7 @@ void CWeaponScript::script_register(lua_State *L)
 			.def_readwrite("zoom_rotate_time"			,			&CWeapon::m_fZoomRotateTime)
 			.def_readwrite("iron_sight_zoom_factor"		,			&CWeapon::m_fIronSightZoomFactor)
 			.def_readwrite("scope_zoom_factor"			,			&CWeapon::m_fScopeZoomFactor)
-			.def_readwrite("zoom_rotation_factor"			,			&CWeapon::m_fZoomRotationFactor)
+			.def_readonly("zoom_rotation_factor"			,			&CWeapon::m_fZoomRotationFactor)
 			// переменные для подстройки положения аддонов из скриптов:
 			
 			.def_readwrite("grenade_launcher_x"			,			&CWeapon::m_iGrenadeLauncherX)

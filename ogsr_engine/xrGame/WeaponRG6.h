@@ -21,6 +21,8 @@ protected:
 
 	virtual u8		AddCartridge			(u8 cnt);
 
+	virtual size_t GetWeaponTypeForCollision() const override { return RG_6; }
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CWeaponRG6)
