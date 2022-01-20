@@ -919,7 +919,8 @@ void CWeapon::UpdateLaser()
 		}
 
 		if (laser_light_render->get_active()) {
-			Fvector laser_pos = get_LastFP(), laser_dir = get_LastFD();
+			laser_pos = get_LastFP();
+			Fvector laser_dir = get_LastFD();
 
 			if (GetHUDmode()) {
 				if (laserdot_attach_bone.size()) {
@@ -972,7 +973,7 @@ void CWeapon::UpdateFlashlight()
 		}
 
 		if (flashlight_render->get_active()) {
-			Fvector flashlight_pos, flashlight_pos_omni, flashlight_dir, flashlight_dir_omni;
+			Fvector flashlight_pos_omni, flashlight_dir, flashlight_dir_omni;
 
 			if (GetHUDmode()) {
 				GetBoneOffsetPosDir(flashlight_attach_bone, flashlight_pos, flashlight_dir, flashlight_attach_offset);
