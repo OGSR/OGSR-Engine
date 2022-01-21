@@ -318,6 +318,60 @@ IC void iBuildGroups(CBoneData* B, U16Vec& tgt, u16 id, u16& last_id)
     	iBuildGroups	(*bone_it,tgt,id,last_id);
 }
 
+/****************** Add by Zander **********************/
+
+u32 CKinematics::RC_RChildCount	(xr_vector<u32>& d, u8 cr) const
+{
+	if (d.size() > cr) { // Do recursive
+		u32 _id = d[cr];
+		cr++;
+		if (RChildCount() > _id) {
+			CKinematics* pOrno = dynamic_cast<CKinematics*>(children[_id]);
+			if (pOrno)
+				return pOrno->RC_RChildCount( d, cr );
+			else
+				return u32(-1); // as message "your request return error"
+		}
+		else
+			return u32(-1); // as message "your request return error"
+	}
+	else  // this element last
+		return RChildCount();
+}
+bool CKinematics::RC_GetRFlag		(xr_vector<u32>& d, u8 cr, u32 id) const
+{
+	if (d.size() > cr) { // Do recursive
+		u32 _id = d[cr];
+		cr++;
+		if (RChildCount() > _id) {
+			CKinematics* pOrno = dynamic_cast<CKinematics*>(children[_id]);
+			if (pOrno)
+				return pOrno->RC_GetRFlag( d, cr, id );
+			else
+				return false;
+		}
+		else
+			return false;
+	}
+	else  // this element last
+		return GetRFlag(id);
+}
+void CKinematics::RC_SetRFlag		(xr_vector<u32>& d, u8 cr, u32 id, bool v)
+{
+	if (d.size() > cr) { // Do recursive
+		u32 _id = d[cr];
+		cr++;
+		if (RChildCount() > _id) {
+			CKinematics* pOrno = dynamic_cast<CKinematics*>(children[_id]);
+			if (pOrno)
+				return pOrno->RC_SetRFlag( d, cr, id, v );
+		}
+	}
+	else  // this element last
+		SetRFlag(id, v);
+}
+/****************** End Add ****************************/
+
 void CKinematics::LL_Validate()
 {
 	// check breakable
@@ -780,3 +834,145 @@ CSkeletonWallmark::~CSkeletonWallmark()
 		}
 }
 #endif
+
+/************************* Add by Zander *************************************************************/
+/************************* Дебаговые функции для исследования моделей. *******************************/
+Fbox& get_mesh_RC_data(FHierrarhyVisual* pHV, u16 id) {
+	if (pHV->ChildCount() > id) {
+		return pHV->children[id]->getVisData().box;
+	}
+	else {
+		return Fbox3().invalidate();
+	}
+}
+
+
+
+Fvector3 CKinematics::RC_VisBox(u32 id)
+{
+	if (ChildCount() > id) { // Do recursive
+		Fbox t;
+		t = get_mesh_RC_data(this, id);
+		Fvector3 modelSize;
+		t.getsize(modelSize);
+		return modelSize;
+	}
+	else {
+		Fvector3 v;
+		v.set(0, 0, 0);
+		return v;
+	}
+}
+Fvector3 CKinematics::RC_VisCenter(u32 id)
+{
+	if (ChildCount() > id) { // Do recursive
+		Fbox t;
+		t = get_mesh_RC_data(this, id);
+		Fvector3 modelSize;
+		t.getcenter(modelSize);
+		return modelSize;
+	}
+	else {
+		Fvector3 v;
+		v.set(0, 0, 0);
+		return v;
+	}
+}
+Fvector3 CKinematics::RC_VisBorderMin(u32 id)
+{
+	if (ChildCount() > id) { // Do recursive
+		Fbox t;
+		t = get_mesh_RC_data(this, id);
+		Fvector3 borderModelMin;
+		borderModelMin.set(t.min);
+		return borderModelMin;
+	}
+	else {
+		Fvector3 v;
+		v.set(0, 0, 0);
+		return v;
+	}
+}
+Fvector3 CKinematics::RC_VisBorderMax(u32 id)
+{
+	if (ChildCount() > id) { // Do recursive
+		Fbox t;
+		t = get_mesh_RC_data(this, id);
+		Fvector3 borderModelMax;
+		borderModelMax.set(t.max);
+		return borderModelMax;
+	}
+	else {
+		Fvector3 v;
+		v.set(0, 0, 0);
+		return v;
+	}
+}
+
+void  CKinematics::RC_Dump()
+{
+	Msg("|********** Dump shildren meshes **************|");
+	Fbox3 mBox = getVisData().box;
+	Fvector3 temp;
+	mBox.getsize(temp);
+	Msg("[core] : box[%3.3f,%3.3f,%3.3f]", temp.x, temp.y, temp.z);
+	mBox.getcenter(temp);
+	Msg("[core] : center[%3.3f,%3.3f,%3.3f]", temp.x, temp.y, temp.z);
+	temp.set(mBox.min);
+	Msg("[core] : min[%3.3f,%3.3f,%3.3f]", temp.x, temp.y, temp.z);
+	temp.set(mBox.max);
+	Msg("[core] : max[%3.3f,%3.3f,%3.3f]", temp.x, temp.y, temp.z);
+	for (u16 i = 0; i < ChildCount(); i++) {
+		temp.set(RC_VisBox(i));
+		Msg("[child %i] : box[%3.3f,%3.3f,%3.3f]", i, temp.x, temp.y, temp.z);
+		temp.set(RC_VisCenter(i));
+		Msg("[child %i] : center[%3.3f,%3.3f,%3.3f]", i, temp.x, temp.y, temp.z);
+		temp.set(RC_VisBorderMin(i));
+		Msg("[child %i] : min[%3.3f,%3.3f,%3.3f]", i, temp.x, temp.y, temp.z);
+		temp.set(RC_VisBorderMax(i));
+		Msg("[child %i] : max[%3.3f,%3.3f,%3.3f]", i, temp.x, temp.y, temp.z);
+		FHierrarhyVisual*	HV	= dynamic_cast<FHierrarhyVisual*>(children[i]);
+		if (HV && HV->ChildCount()) {
+			for (u16 j = 0; j < HV->ChildCount(); j++) {
+				Fbox FB = get_mesh_RC_data(HV, j);
+				FB.getsize(temp);
+				Msg("[child %i->%i] : box[%3.3f,%3.3f,%3.3f]", i, j, temp.x, temp.y, temp.z);
+				FB.getcenter(temp);
+				Msg("[child %i->%i] : center[%3.3f,%3.3f,%3.3f]", i, j, temp.x, temp.y, temp.z);
+				temp.set(FB.min);
+				Msg("[child %i->%i] : min[%3.3f,%3.3f,%3.3f]", i, j, temp.x, temp.y, temp.z);
+				temp.set(FB.max);
+				Msg("[child %i->%i] : max[%3.3f,%3.3f,%3.3f]", i, j, temp.x, temp.y, temp.z);
+				FHierrarhyVisual*	kHV	= dynamic_cast<FHierrarhyVisual*>(HV->children[j]);
+				if (kHV && kHV->ChildCount()) {
+					for (u16 k = 0; k < kHV->ChildCount(); k++) {
+						Fbox kFB = get_mesh_RC_data(kHV, k);
+						kFB.getsize(temp);
+						Msg("[child %i->%i->%i] : box[%3.3f,%3.3f,%3.3f]", i, j, k, temp.x, temp.y, temp.z);
+						kFB.getcenter(temp);
+						Msg("[child %i->%i->%i] : center[%3.3f,%3.3f,%3.3f]", i, j, k, temp.x, temp.y, temp.z);
+						temp.set(kFB.min);
+						Msg("[child %i->%i->%i] : min[%3.3f,%3.3f,%3.3f]", i, j, k, temp.x, temp.y, temp.z);
+						temp.set(kFB.max);
+						Msg("[child %i->%i->%i] : max[%3.3f,%3.3f,%3.3f]", i, j, k, temp.x, temp.y, temp.z);
+					}
+				}
+			}
+		}
+	}
+
+	Msg("|********** End Dump shildren meshes **********|");
+
+	Msg("|********** Dump shildren bones ***************|");
+	for (u32 i = 0; i < bones->size(); i++) {
+		CBoneData*	B = (*bones)[i];
+		Msg("Bone [%i][%s]:", i, LL_BoneName_dbg(i));
+		Msg("bind_transform[%3.3f,%3.3f,%3.3f] m2b_transform[%3.3f,%3.3f,%3.3f] center_of_mass[%3.3f,%3.3f,%3.3f]",
+			B->bind_transform.c.x, B->bind_transform.c.y, B->bind_transform.c.z,
+			B->m2b_transform.c.x, B->m2b_transform.c.y, B->m2b_transform.c.z,
+			B->center_of_mass.x, B->center_of_mass.y, B->center_of_mass.z
+		);
+	}
+	Msg("|********** End Dump shildren bones ***********|");
+}
+	/************************* End add *************************************/

@@ -1092,8 +1092,54 @@ void CGameObject::removeFeelTouch( const luabind::object& lua_object, const luab
     );
   }
 }
-
-
+	/************************* Add by Zander *******************************/
+void CGameObject::GetModelDump()
+{
+	IKinematics* K = smart_cast<IKinematics*>(Visual());
+	if (K) {
+		Msg("-WORLD Dump begin::[%s] with visual (%s)", cName().c_str(), cNameVisual().c_str());
+		K->RC_Dump();
+		Msg("-WORLD Dump [%s] end.", cName().c_str());
+	}
+	else Msg("[%s]:Kinematics visual not found", cName().c_str());
+}
+void CGameObject::ShowModelMesh(u8 id, bool state)
+{
+	IKinematics* K = smart_cast<IKinematics*>(Visual());
+	if (K) {
+		if (K->RChildCount() < u32(id)) {
+			Msg("!WARNING! %s, object:[%s], visual: [%s] - Mesh with ID[%i] not found.", __FUNCTION__, cName().c_str(), cNameVisual().c_str(), id);
+			return;
+		}
+		K->SetRFlag(id, state);
+	}
+	else Msg("[%s]:Kinematics visual not found", cName().c_str());
+}
+bool CGameObject::GetShowMesh(u8 id)
+{
+	IKinematics* K = smart_cast<IKinematics*>(Visual());
+	if (K) {
+		if (K->RChildCount() < u32(id)) {
+			Msg("!WARNING! %s, object:[%s], visual: [%s] - Mesh with ID[%i] not found.", __FUNCTION__, cName().c_str(), cNameVisual().c_str(), id);
+			return false;
+		}
+		return K->GetRFlag(id);
+	}
+	else Msg("[%s]:Kinematics visual not found", cName().c_str());
+	
+	return false;
+}
+u32 CGameObject::GetMeshCount()
+{
+	IKinematics* K = smart_cast<IKinematics*>(Visual());
+	if (K) {
+		return (K->RChildCount() + 1);
+	}
+	else Msg("[%s]:Kinematics visual not found", cName().c_str());
+	
+	return (0);
+}
+	/************************* End Add *************************************/
 void CGameObject::FeelTouchAddonsUpdate() {
   feel_touch_changed    = false;
   feel_touch_processing = true;

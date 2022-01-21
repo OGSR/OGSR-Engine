@@ -99,3 +99,19 @@ void	FHierrarhyVisual::Copy(dxRender_Visual *pSrc)
 	}
 	bDontDelete = FALSE;
 }
+	/************************* Add by Zander *******************************/
+void	FHierrarhyVisual::SetChildRFlag 	(u32 id, bool v) 
+{
+	if (id < ChildCount())
+		children[id]->setRZFlag( v );
+}
+
+bool	FHierrarhyVisual::GetChildRFlag 	(u32 id) const
+{
+	if (id < ChildCount())
+		return children[id]->getRZFlag();
+		
+	return false;
+}
+	/************************* End add *************************************/
+

@@ -283,6 +283,14 @@ public:
 	virtual float			GetHealth() const  { return -1;  } // alpet: для универсального доступа к переменным класса вроде fHealth
 	virtual void			SetHealth(float h) { }
 
+	/************************* Add by Zander *******************************/
+	// Эти функции работают с визуалом объекта.
+	virtual void 			GetModelDump		();						// Вызвать дамп модели
+	virtual void 			ShowModelMesh		(u8 id, bool state); 	// Устанавливает видимость меша по индексу
+	virtual bool 			GetShowMesh			(u8 id); 				// Возвращает видимость меша по индексу
+	virtual u32 			GetMeshCount		(); 		 			// Возвращает количество мешей модели
+	/************************* End Add *************************************/
+
 protected:
   std::vector<FeelTouchAddon*> feel_touch_addons;
   bool feel_touch_changed, feel_touch_processing;

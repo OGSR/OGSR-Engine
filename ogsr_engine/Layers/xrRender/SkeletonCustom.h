@@ -83,6 +83,23 @@ public:
 #ifdef DEBUG
 	BOOL						dbg_single_use_marker;
 #endif
+	
+	/************************* Add by Zander *******************************/
+	virtual 	void 			SetRFlag 			(u32 id, bool v) 	{ SetChildRFlag( id, v ); }
+	virtual 	bool 			GetRFlag 			(u32 id) const 		{ return GetChildRFlag( id ); }
+	virtual 	u32 			RChildCount			() const 			{ return ChildCount(); }
+	
+	virtual 	u32 			RC_RChildCount		(xr_vector<u32>& d, u8 cr) const;
+	virtual 	bool 			RC_GetRFlag			(xr_vector<u32>& d, u8 cr, u32 id) const;
+	virtual 	void 			RC_SetRFlag			(xr_vector<u32>& d, u8 cr, u32 id, bool v);
+
+	virtual		Fvector3		RC_VisBox			(u32 id);
+	virtual		Fvector3		RC_VisCenter		(u32 id);
+	virtual		Fvector3		RC_VisBorderMin		(u32 id);
+	virtual		Fvector3		RC_VisBorderMax		(u32 id);
+	virtual		void			RC_Dump				();
+	/************************* End Add *************************************/
+
 			void				Bone_Calculate		(CBoneData* bd, Fmatrix* parent);
 			void				CLBone				(const CBoneData* bd, CBoneInstance &bi, const Fmatrix *parent, u8 mask_channel = (1<<0));
 

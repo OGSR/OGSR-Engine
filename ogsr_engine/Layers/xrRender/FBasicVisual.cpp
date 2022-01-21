@@ -26,6 +26,7 @@ dxRender_Visual::dxRender_Visual		()
 {
 	Type				= 0;
 	shader				= 0;
+	renderFlag 			= true; // Add by Zander
 	vis.clear			();
 }
 

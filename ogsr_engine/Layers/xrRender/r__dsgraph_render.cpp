@@ -759,7 +759,7 @@ void	R_dsgraph_structure::r_dsgraph_render_R1_box	(IRender_Sector* _S, Fbox& BB,
 				E = pV->children.end		();
 				for (; I!=E; I++)		{
 					dxRender_Visual* T			= *I;
-					if (BB.intersect(T->vis.box))	lstVisuals.push_back(T);
+					if (BB.intersect(T->vis.box) && T->getRZFlag())	lstVisuals.push_back(T);
 				}
 			}
 			break;
@@ -773,7 +773,7 @@ void	R_dsgraph_structure::r_dsgraph_render_R1_box	(IRender_Sector* _S, Fbox& BB,
 				E = pV->children.end		();
 				for (; I!=E; I++)		{
 					dxRender_Visual* T				= *I;
-					if (BB.intersect(T->vis.box))	lstVisuals.push_back(T);
+					if (BB.intersect(T->vis.box) && T->getRZFlag())	lstVisuals.push_back(T);
 				}
 			}
 			break;

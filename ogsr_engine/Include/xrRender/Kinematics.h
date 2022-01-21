@@ -27,6 +27,26 @@ public:
 		Fvector	tri[3];
 	};
 public:
+	/************************* Add by Zander *******************************/
+	// Устанавливает видимость меша с указанным индексом
+	virtual 	void 					SetRFlag 		(u32 id, bool v) = 0;
+	// Возвращает состояние видимости для меша с указанным индексом.
+	virtual 	bool 					GetRFlag 		(u32 id) const = 0;
+	// Возвращает количество мешей в модели.
+	virtual 	u32 					RChildCount		() const = 0;
+	
+	// Функции работающие с иерархией модели
+	virtual 	u32 					RC_RChildCount	(xr_vector<u32>& d, u8 cr) const = 0;
+	virtual 	bool 					RC_GetRFlag		(xr_vector<u32>& d, u8 cr, u32 id) const = 0;
+	virtual 	void 					RC_SetRFlag		(xr_vector<u32>& d, u8 cr, u32 id, bool v) = 0;
+
+	virtual		Fvector3				RC_VisBox		(u32 id) = 0;
+	virtual		Fvector3				RC_VisCenter	(u32 id) = 0;
+	virtual		Fvector3				RC_VisBorderMin	(u32 id) = 0;
+	virtual		Fvector3				RC_VisBorderMax	(u32 id) = 0;
+	virtual		void					RC_Dump			() = 0; 			// Дамп иерархии модели, всех костей и всех мешей в лог.
+	/************************* End Add *************************************/
+	
 	virtual		void					Bone_Calculate		(CBoneData* bd, Fmatrix* parent) = 0;
 	virtual		void					Bone_GetAnimPos(Fmatrix& pos,u16 id, u8 channel_mask, bool ignore_callbacks) = 0;
 

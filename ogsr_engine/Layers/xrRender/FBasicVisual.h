@@ -47,6 +47,13 @@ public:
 	u32							Type		;				// visual's type
 	vis_data					vis			;				// visibility-data
 	ref_shader					shader		;				// pipe state, shared
+	/************************* Add by Zander *******************************/
+protected:
+	bool 						renderFlag 	; 				// if false, don`t push this to render / add by Zander
+public:
+	virtual bool 				getRZFlag() 	const 	{ return renderFlag; }
+	virtual void 				setRZFlag(bool f) 		{ renderFlag = f; 	}
+	/************************* End add *************************************/
 
 	virtual void				Render						(float LOD)		{};		// LOD - Level Of Detail  [0..1], Ignored
 	virtual void				Load						(const char* N, IReader *data, u32 dwFlags);

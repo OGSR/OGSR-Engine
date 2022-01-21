@@ -438,7 +438,10 @@ void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual)
 			FHierrarhyVisual* pV = (FHierrarhyVisual*)pVisual;
 			I = pV->children.begin	();
 			E = pV->children.end	();
-			for (; I!=E; I++)	add_leafs_Dynamic	(*I);
+			for (; I!=E; I++)	{
+					dxRender_Visual* T				= *I;
+					if (T->getRZFlag()) add_leafs_Dynamic	(*I);
+				}//add_leafs_Dynamic	(*I);
 		}
 		return;
 	case MT_SKELETON_ANIM:
@@ -462,7 +465,10 @@ void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual)
 				pV->CalculateWallmarks		();		//. bug?
 				I = pV->children.begin		();
 				E = pV->children.end		();
-				for (; I!=E; I++)	add_leafs_Dynamic	(*I);
+				for (; I!=E; I++)	{
+					dxRender_Visual* T				= *I;
+					if (T->getRZFlag()) add_leafs_Dynamic	(*I);
+				}
 			}
 		}
 		return;
@@ -504,7 +510,10 @@ void CRender::add_leafs_Static(dxRender_Visual *pVisual)
 			FHierrarhyVisual* pV	= (FHierrarhyVisual*)pVisual;
 			I = pV->children.begin	();
 			E = pV->children.end	();
-			for (; I!=E; I++)		add_leafs_Static (*I);
+			for (; I!=E; I++)	{
+					dxRender_Visual* T				= *I;
+					if (T->getRZFlag()) add_leafs_Static	(*I);
+				}	//add_leafs_Static (*I);
 		}
 		return;
 	case MT_SKELETON_ANIM:
@@ -515,7 +524,10 @@ void CRender::add_leafs_Static(dxRender_Visual *pVisual)
 			pV->CalculateBones		(TRUE);
 			I = pV->children.begin	();
 			E = pV->children.end	();
-			for (; I!=E; I++)		add_leafs_Static	(*I);
+			for (; I!=E; I++)	{
+					dxRender_Visual* T				= *I;
+					if (T->getRZFlag()) add_leafs_Static	(*I);
+				}	//add_leafs_Static	(*I);
 		}
 		return;
 	case MT_LOD:
@@ -606,9 +618,15 @@ BOOL CRender::add_Dynamic(dxRender_Visual *pVisual, u32 planes)
 			E = pV->children.end	();
 			if (fcvPartial==VIS) 
 			{
-				for (; I!=E; I++)	add_Dynamic			(*I,planes);
+				for (; I!=E; I++)	{
+					dxRender_Visual* T				= *I;
+					if (T->getRZFlag()) add_Dynamic	(*I,planes);
+				} //add_Dynamic			(*I,planes);
 			} else {
-				for (; I!=E; I++)	add_leafs_Dynamic	(*I);
+				for (; I!=E; I++){
+					dxRender_Visual* T				= *I;
+					if (T->getRZFlag()) add_leafs_Dynamic	(*I);
+				}//	add_leafs_Dynamic	(*I);
 			}
 		}
 		break;
@@ -634,7 +652,10 @@ BOOL CRender::add_Dynamic(dxRender_Visual *pVisual, u32 planes)
 				pV->CalculateWallmarks		();		//. bug?
 				I = pV->children.begin		();
 				E = pV->children.end		();
-				for (; I!=E; I++)	add_leafs_Dynamic	(*I);
+				for (; I!=E; I++) {
+					dxRender_Visual* T				= *I;
+					if (T->getRZFlag()) add_leafs_Dynamic	(*I);
+				}	//add_leafs_Dynamic	(*I);
 			}
 			/*
 			I = pV->children.begin		();
@@ -698,9 +719,15 @@ void CRender::add_Static(dxRender_Visual *pVisual, u32 planes)
 			I = pV->children.begin	();
 			E = pV->children.end		();
 			if (fcvPartial==VIS) {
-				for (; I!=E; I++)	add_Static			(*I,planes);
+				for (; I!=E; I++) {
+					dxRender_Visual* T				= *I;
+					if (T->getRZFlag()) add_Static	(*I,planes);
+				} //	add_Static			(*I,planes);
 			} else {
-				for (; I!=E; I++)	add_leafs_Static	(*I);
+				for (; I!=E; I++) {
+					dxRender_Visual* T				= *I;
+					if (T->getRZFlag()) add_leafs_Static	(*I);
+				} //	add_leafs_Static	(*I);
 			}
 		}
 		break;
@@ -713,9 +740,15 @@ void CRender::add_Static(dxRender_Visual *pVisual, u32 planes)
 			I = pV->children.begin	();
 			E = pV->children.end	();
 			if (fcvPartial==VIS) {
-				for (; I!=E; I++)	add_Static			(*I,planes);
+				for (; I!=E; I++)	{
+					dxRender_Visual* T				= *I;
+					if (T->getRZFlag()) add_Static			(*I,planes);
+				}//add_Static			(*I,planes);
 			} else {
-				for (; I!=E; I++)	add_leafs_Static	(*I);
+				for (; I!=E; I++)	{
+					dxRender_Visual* T				= *I;
+					if (T->getRZFlag()) add_leafs_Static	(*I);
+				}//add_leafs_Static	(*I);
 			}
 		}
 		break;
