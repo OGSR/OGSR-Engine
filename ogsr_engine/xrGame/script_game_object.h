@@ -395,7 +395,13 @@ public:
 			CScriptGameObject	*GetBestEnemy		();
 			const CDangerObject	*GetBestDanger		();
 			CScriptGameObject	*GetBestItem		();
-
+	/************************* Add by Zander *******************************/
+			void 				GetModelDump();
+			void 				ShowModelMesh(u8 id, bool state);
+			bool 				GetShowMesh(u8 id);
+			u32 				GetMeshCount();
+	/************************* End Add *************************************/
+	
 	_DECLARE_FUNCTION10			(GetActionCount,u32);
 	
 			const				CScriptEntityAction	*GetActionByIndex(u32 action_index = 0);

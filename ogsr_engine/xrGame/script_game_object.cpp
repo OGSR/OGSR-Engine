@@ -673,17 +673,20 @@ void CScriptGameObject::SetActorExoFactor(float _factor)
 	act->SetExoFactor(_factor);
 }
 
-
-CUIStatic* CScriptGameObject::GetCellItem() const
+void CScriptGameObject::GetModelDump()
 {
-	if (auto obj = smart_cast<CInventoryItem*>(&object() ) )
-		return (CUIStatic*)obj->m_cell_item;
-	return NULL;
+	object().GetModelDump();
+}
+void CScriptGameObject::ShowModelMesh(u8 id, bool state)
+{
+	object().ShowModelMesh(id, state);
+}
+bool CScriptGameObject::GetShowMesh(u8 id)
+{
+	return object().GetShowMesh(id);
+}
+u32 CScriptGameObject::GetMeshCount()
+{
+	return object().GetMeshCount();
 }
 
-LPCSTR CScriptGameObject::GetBoneName(u16 id) const
-{
-	if (auto K = smart_cast<IKinematics*>(object().Visual()) )
-		return K->LL_BoneName_dbg(id);
-	return 0;
-}
