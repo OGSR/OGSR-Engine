@@ -1257,8 +1257,8 @@ void CCC_RegisterCommands()
 #endif
 	// adjust mode support
 	CMD4(CCC_Integer,			"hud_adjust_mode",			&g_bHudAdjustMode,		0, 11);
-	CMD4(CCC_Float,				"hud_adjust_delta_value",	&g_bHudAdjustDeltaPos,	0.0005f, 1.f);
-	CMD4(CCC_Float,				"hud_adjust_delta_rot",		&g_bHudAdjustDeltaRot,	0.0005f, 10.f);
+	CMD4(CCC_Float,				"hud_adjust_delta_value",	&g_bHudAdjustDeltaPos,	0.00005f, 1.f);
+	CMD4(CCC_Float,				"hud_adjust_delta_rot",		&g_bHudAdjustDeltaRot,	0.00005f, 10.f);
 #ifdef DEBUG
 	CMD1(CCC_ShowAnimationStats,"ai_show_animation_stats");
 #endif // DEBUG
