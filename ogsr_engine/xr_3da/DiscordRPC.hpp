@@ -58,7 +58,7 @@ public:
 	~DiscordRPC();
 
 	void Init();
-	void Update(const char* level_name = nullptr);
+	void Update(const char* level_name_translated = nullptr, const char* level_name = nullptr);
 	void Set_active_task_text(const char* txt) {
 		active_task_text = txt;
 		Update();

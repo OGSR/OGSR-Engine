@@ -527,7 +527,7 @@ void CGamePersistent::OnFrame	()
 			load_screen_renderer.stop();
 		}
 
-		Discord.Update(CStringTable().translate(Level().name()).c_str());
+		Discord.Update(CStringTable().translate(Level().name()).c_str(), Level().name().c_str());
 	}
 
 	if( !m_pMainMenu->IsActive() )

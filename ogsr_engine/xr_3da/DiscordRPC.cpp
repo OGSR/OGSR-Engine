@@ -29,7 +29,10 @@ void DiscordRPC::Init()
 	}
 
 	DiscordEventHandlers nullHandlers{};
-	Discord_Initialize("777186147456778272", &nullHandlers, TRUE, nullptr);
+	if (strstr(READ_IF_EXISTS(pSettings, r_string, "mod_ver", "mod_ver", "nullptr"), "OGSR"))
+		Discord_Initialize("934890865237839992", &nullHandlers, TRUE, nullptr);
+	else
+		Discord_Initialize("777186147456778272", &nullHandlers, TRUE, nullptr);
 
 	start_time = time(nullptr);
 }
@@ -45,14 +48,18 @@ DiscordRPC::~DiscordRPC()
 }
 
 
-void DiscordRPC::Update(const char* level_name)
+void DiscordRPC::Update(const char* level_name_translated, const char* level_name)
 {
 	if (!m_hDiscordDLL) return;
 
 	DiscordRichPresence presenseInfo{};
 
 	presenseInfo.startTimestamp = start_time; //время с момента запуска
-	presenseInfo.largeImageKey = "main_image"; //большая картинка
+	static const bool is_ogsr_ga = !!strstr(READ_IF_EXISTS(pSettings, r_string, "mod_ver", "mod_ver", "nullptr"), "OGSR");
+	if (is_ogsr_ga && level_name_translated && level_name)
+		presenseInfo.largeImageKey = level_name; //большая картинка
+	else
+		presenseInfo.largeImageKey = "main_image"; //большая картинка
 	presenseInfo.smallImageKey = "main_image_small"; //маленькая картинка
 	presenseInfo.smallImageText = Core.GetEngineVersion(); //версия движка на маленькой картинке
 
@@ -63,8 +70,8 @@ void DiscordRPC::Update(const char* level_name)
 		presenseInfo.state = task_txt.c_str(); //Активное задание
 	}
 
-	if (level_name) 
-		current_level_name = level_name;
+	if (level_name_translated)
+		current_level_name = level_name_translated;
 
 	if (current_level_name) {
 		lname = StringToUTF8(current_level_name);
