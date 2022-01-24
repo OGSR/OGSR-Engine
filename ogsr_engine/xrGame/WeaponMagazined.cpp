@@ -56,6 +56,7 @@ CWeaponMagazined::~CWeaponMagazined()
 	HUD_SOUND::DestroySound(sndReloadPartly);
 	HUD_SOUND::DestroySound(sndFireModes);
 	HUD_SOUND::DestroySound(sndZoomChange);
+	HUD_SOUND::DestroySound(sndTactItemOn);
 	if (m_binoc_vision)
 		xr_delete(m_binoc_vision);
 }
@@ -71,6 +72,7 @@ void CWeaponMagazined::StopHUDSounds		()
 	HUD_SOUND::StopSound(sndReloadPartly);
 	HUD_SOUND::StopSound(sndFireModes);
 	HUD_SOUND::StopSound(sndZoomChange);
+	HUD_SOUND::StopSound(sndTactItemOn);
 
 	HUD_SOUND::StopSound(sndShot);
 	HUD_SOUND::StopSound(sndSilencerShot);
@@ -131,7 +133,9 @@ void CWeaponMagazined::Load	(LPCSTR section)
 		HUD_SOUND::LoadSound( section, "snd_fire_modes", sndFireModes, m_eSoundEmptyClick );
 	if ( pSettings->line_exist( section, "snd_zoom_change" ) )
 		HUD_SOUND::LoadSound( section, "snd_zoom_change", sndZoomChange, m_eSoundEmptyClick );
-	
+	if (pSettings->line_exist(section, "snd_tact_item_on"))
+		HUD_SOUND::LoadSound(section, "snd_tact_item_on", sndTactItemOn, m_eSoundEmptyClick);
+
 	m_pSndShotCurrent = &sndShot;
 		
 	//звуки и партиклы глушителя, еслит такой есть
@@ -545,6 +549,7 @@ void CWeaponMagazined::UpdateSounds	()
 	if (sndEmptyClick.playing	())	sndEmptyClick.set_position	(get_LastFP());
 	if (sndFireModes.playing	())	sndFireModes.set_position	(get_LastFP());
 	if (sndZoomChange.playing	())	sndZoomChange.set_position	(get_LastFP());
+	if (sndTactItemOn.playing()) sndTactItemOn.set_position(get_LastFP());
 }
 
 void CWeaponMagazined::state_Fire	(float dt)

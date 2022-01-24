@@ -563,14 +563,16 @@ private:
 
 	void UpdateLaser();
 public:
-	void SwitchLaser(bool on) {
+	virtual bool SwitchLaser(bool on) {
 		if (!has_laser)
-			return;
+			return false;
 
 		if (on)
 			m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponAddonLaserOn;
 		else
 			m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonLaserOn;
+
+		return true;
 	}
 	inline bool IsLaserOn() const {
 		return m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonLaserOn;
@@ -589,14 +591,16 @@ private:
 
 	void UpdateFlashlight();
 public:
-	void SwitchFlashlight(bool on) {
+	virtual bool SwitchFlashlight(bool on) {
 		if (!has_flashlight)
-			return;
+			return false;
 
 		if (on)
 			m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponAddonFlashlightOn;
 		else
 			m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonFlashlightOn;
+
+		return true;
 	}
 	inline bool IsFlashlightOn() const {
 		return m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonFlashlightOn;

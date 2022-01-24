@@ -27,6 +27,7 @@ protected:
 	bool sndReloadPartlyExist{};
 	HUD_SOUND		sndFireModes;
 	HUD_SOUND		sndZoomChange;
+	HUD_SOUND		sndTactItemOn;
 	//звук текущего выстрела
 	HUD_SOUND*		m_pSndShotCurrent;
 
@@ -171,6 +172,19 @@ public:
 
 	virtual void	save				(NET_Packet &output_packet);
 	virtual void	load				(IReader &input_packet);
+
+	bool SwitchLaser(bool on) override {
+		const bool switched = inherited::SwitchLaser(on);
+		if (switched)
+			PlaySound(sndTactItemOn, get_LastFP());
+		return switched;
+	}
+	bool SwitchFlashlight(bool on) override {
+		const bool switched = inherited::SwitchFlashlight(on);
+		if (switched)
+			PlaySound(sndTactItemOn, get_LastFP());
+		return switched;
+	}
 
 protected:
 	virtual bool	AllowFireWhileWorking() {return false;}
