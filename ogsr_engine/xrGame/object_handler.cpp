@@ -51,8 +51,14 @@ void CObjectHandler::reinit			(CAI_Stalker *object)
 	planner().setup				(object);
 	IKinematics					*kinematics = smart_cast<IKinematics*>(planner().m_object->Visual());
 	m_r_hand					= kinematics->LL_BoneID(pSettings->r_string(*planner().m_object->cNameSect(),"weapon_bone0"));
+	if (m_r_hand == BI_NONE)
+		Msg("!![%s] weapon_bone [%s] not found in npc section [%s], npc visual [%s]", __FUNCTION__, pSettings->r_string(planner().m_object->cNameSect().c_str(), "weapon_bone0"), planner().m_object->cNameSect().c_str(), planner().object().cNameVisual().c_str());
 	m_l_finger1					= kinematics->LL_BoneID(pSettings->r_string(*planner().m_object->cNameSect(),"weapon_bone1"));
+	if (m_l_finger1 == BI_NONE)
+		Msg("!![%s] weapon_bone [%s] not found in npc section [%s], npc visual [%s]", __FUNCTION__, pSettings->r_string(planner().m_object->cNameSect().c_str(), "weapon_bone1"), planner().m_object->cNameSect().c_str(), planner().object().cNameVisual().c_str());
 	m_r_finger2					= kinematics->LL_BoneID(pSettings->r_string(*planner().m_object->cNameSect(),"weapon_bone2"));
+	if (m_r_finger2 == BI_NONE)
+		Msg("!![%s] weapon_bone [%s] not found in npc section [%s], npc visual [%s]", __FUNCTION__, pSettings->r_string(planner().m_object->cNameSect().c_str(), "weapon_bone2"), planner().m_object->cNameSect().c_str(), planner().object().cNameVisual().c_str());
 	m_strap_object_id			= ALife::_OBJECT_ID(-1);
 	m_strap_bone0				= -1;
 	m_strap_bone1				= -1;
@@ -158,7 +164,7 @@ bool CObjectHandler::goal_reached	()
 void CObjectHandler::weapon_bones	(int &b0, int &b1, int &b2) const
 {
 	CWeapon						*weapon = smart_cast<CWeapon*>(inventory().ActiveItem());
-	if (!weapon || !planner().m_storage.property(ObjectHandlerSpace::eWorldPropertyStrapped)) {
+	if (!weapon || !weapon->can_be_strapped() || !planner().m_storage.property(ObjectHandlerSpace::eWorldPropertyStrapped)) {
 		if (weapon)
 			weapon->strapped_mode	(false);
 		b0						= m_r_hand;
@@ -167,12 +173,14 @@ void CObjectHandler::weapon_bones	(int &b0, int &b1, int &b2) const
 		return;
 	}
 
-	THROW3						(weapon->can_be_strapped(),"Cannot strap weapon",*weapon->cName());
-
 	if (weapon->ID() != m_strap_object_id) {
 		IKinematics				*kinematics = smart_cast<IKinematics*>(planner().m_object->Visual());
 		m_strap_bone0			= kinematics->LL_BoneID(weapon->strap_bone0());
+		if (m_strap_bone0 == BI_NONE)
+			Msg("!![%s] strap_bone [%s] not found in npc visual [%s], weapon: [%s]", __FUNCTION__, weapon->strap_bone0(), planner().object().cNameVisual().c_str(), weapon->cNameSect().c_str());
 		m_strap_bone1			= kinematics->LL_BoneID(weapon->strap_bone1());
+		if (m_strap_bone1 == BI_NONE)
+			Msg("!![%s] strap_bone [%s] not found in npc visual [%s], weapon: [%s]", __FUNCTION__, weapon->strap_bone1(), planner().object().cNameVisual().c_str(), weapon->cNameSect().c_str());
 		m_strap_object_id		= weapon->ID();
 	}
 
