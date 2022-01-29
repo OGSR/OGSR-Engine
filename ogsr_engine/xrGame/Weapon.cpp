@@ -140,16 +140,16 @@ void CWeapon::UpdateXForm	()
 		VERIFY			(V);
 
 		// Get matrices
-		int boneL = -1, boneR = -1, boneR2 = -1;
+		int boneL{ BI_NONE }, boneR{ BI_NONE }, boneR2{ BI_NONE };
 
-		// this ugly case is possible in case of a CustomMonster, not a Stalker, nor an Actor
 		E->g_WeaponBones(boneL,boneR,boneR2);
-
-		if (boneR == -1)
-			return;
 
 		if ((HandDependence() == hd1Hand) || (GetState() == eReload) || (!E->g_Alive()))
 			boneL = boneR2;
+
+		//KRodin: видимо такое случается иногда у некоторых визуалов нпс. Например если создать нпс с визуалом монстра наверно.
+		if (boneL == BI_NONE || boneR == BI_NONE)
+			return;
 
 		// от mortan:
 		// https://www.gameru.net/forum/index.php?s=&showtopic=23443&view=findpost&p=1677678
