@@ -48,6 +48,14 @@ public:
 	vis_data					vis			;				// visibility-data
 	ref_shader					shader		;				// pipe state, shared
 
+	/************************* Add by Zander *******************************/
+private:
+	bool renderFlag{ true }; // if false, don`t push this to render / add by Zander
+public:
+	inline bool getRZFlag() const { return renderFlag; }
+	inline void setRZFlag(const bool f) { renderFlag = f; }
+	/************************* End add *************************************/
+
 	virtual void				Render						(float LOD)		{};		// LOD - Level Of Detail  [0..1], Ignored
 	virtual void				Load						(const char* N, IReader *data, u32 dwFlags);
 	virtual void				Release						();						// Shared memory release

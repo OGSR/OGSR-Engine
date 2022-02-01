@@ -396,6 +396,24 @@ public:
 			const CDangerObject	*GetBestDanger		();
 			CScriptGameObject	*GetBestItem		();
 
+/************************* Add by Zander *******************************/
+	// Эти функции работают с визуалом объекта.
+	// Вызвать дамп модели
+	void GetModelDump();
+	// Устанавливает видимость меша по индексу
+	void ShowModelMesh(const u32 id, const bool state);
+	// Возвращает видимость меша по индексу
+	bool GetShowMesh(const u32 id) const;
+	// Возвращает количество мешей модели
+	u32 GetMeshCount() const;
+	// Устанавливает видимость меша по индексу для худовой модели
+	void ShowModelMeshHUD(const u32 id, const bool state);
+	// Возвращает видимость меша по индексу для худовой модели
+	bool GetShowMeshHUD(const u32 id) const;
+	// Возвращает количество мешей модели худа
+	u32 GetMeshCountHUD() const;
+	/************************* End Add *************************************/
+	
 	_DECLARE_FUNCTION10			(GetActionCount,u32);
 	
 			const				CScriptEntityAction	*GetActionByIndex(u32 action_index = 0);

@@ -2,19 +2,16 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#ifndef FHierrarhyVisualH
-#define FHierrarhyVisualH
-
 #pragma once
 
 #include "fbasicvisual.h"
 
 class  FHierrarhyVisual : public dxRender_Visual
 {
+	BOOL bDontDelete;
 public:
 	xr_vector<dxRender_Visual*>		children;
-	BOOL							bDontDelete;
-public:
+
     				FHierrarhyVisual();
 	virtual 		~FHierrarhyVisual();
 
@@ -22,5 +19,3 @@ public:
 	virtual void	Copy			(dxRender_Visual *pFrom);
 	virtual void	Release			();
 };
-
-#endif //FHierrarhyVisualH

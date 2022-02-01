@@ -684,3 +684,62 @@ LPCSTR CScriptGameObject::GetBoneName(u16 id) const
 		return K->LL_BoneName_dbg(id);
 	return 0;
 }
+
+/************************* Add by Zander *******************************/
+#include "player_hud.h"
+
+void CScriptGameObject::GetModelDump() {
+	auto K = smart_cast<IKinematics*>(object().Visual());
+	Msg("##[%s] WORLD Dump begin::[%s] with visual [%s]", __FUNCTION__, cName().c_str(), object().cNameVisual().c_str());
+	K->RC_Dump();
+	Msg("##[%s] WORLD Dump [%s] end", __FUNCTION__, cName().c_str());
+
+	auto huditem = smart_cast<const CHudItem*>(&object());
+	if (huditem && huditem->HudItemData()) {
+		Msg("##[%s] HUD Dump begin::[%s] with visual [%s]", __FUNCTION__, huditem->HudSection().c_str(), huditem->HudItemData()->m_visual_name.c_str());
+		huditem->HudItemData()->m_model->RC_Dump();
+		Msg("##[%s] HUD Dump [%s] end", __FUNCTION__, huditem->HudSection().c_str());
+	}
+}
+
+void CScriptGameObject::ShowModelMesh(const u32 id, const bool state) {
+	auto K = smart_cast<IKinematics*>(object().Visual());
+	K->SetRFlag(id, state);
+}
+
+bool CScriptGameObject::GetShowMesh(const u32 id) const {
+	auto K = smart_cast<IKinematics*>(object().Visual());
+	return K->GetRFlag(id);
+}
+
+u32 CScriptGameObject::GetMeshCount() const {
+	auto K = smart_cast<IKinematics*>(object().Visual());
+	return K->RChildCount();
+}
+
+void CScriptGameObject::ShowModelMeshHUD(const u32 id, const bool state) {
+	auto huditem = smart_cast<const CHudItem*>(&object());
+	if (huditem && huditem->HudItemData())
+		huditem->HudItemData()->m_model->SetRFlag(id, state);
+	else
+		Msg("!![%s] HUD model not found for [%s]", __FUNCTION__, cName().c_str());
+}
+
+bool CScriptGameObject::GetShowMeshHUD(const u32 id) const {
+	auto huditem = smart_cast<const CHudItem*>(&object());
+	if (huditem && huditem->HudItemData())
+		return huditem->HudItemData()->m_model->GetRFlag(id);
+
+	Msg("!![%s] HUD model not found for [%s]", __FUNCTION__, cName().c_str());
+	return false;
+}
+
+u32 CScriptGameObject::GetMeshCountHUD() const {
+	auto huditem = smart_cast<const CHudItem*>(&object());
+	if (huditem && huditem->HudItemData())
+		return huditem->HudItemData()->m_model->RChildCount();
+
+	Msg("!![%s] HUD model not found for [%s]", __FUNCTION__, cName().c_str());
+	return 0;
+}
+/************************* End Add *************************************/

@@ -414,10 +414,8 @@ void R_dsgraph_structure::r_dsgraph_insert_static	(dxRender_Visual *pVisual)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual)
 {
-	if (0==pVisual)				return;
-
-	// Visual is 100% visible - simply add it
-	xr_vector<dxRender_Visual*>::iterator I,E;	// it may be useful for 'hierrarhy' visual
+	if (!pVisual)
+		return;
 
 	switch (pVisual->Type) {
 	case MT_PARTICLE_GROUP:
@@ -434,18 +432,15 @@ void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual)
 		return;
 	case MT_HIERRARHY:
 		{
-			// Add all children, doesn't perform any tests
-			FHierrarhyVisual* pV = (FHierrarhyVisual*)pVisual;
-			I = pV->children.begin	();
-			E = pV->children.end	();
-			for (; I!=E; I++)	add_leafs_Dynamic	(*I);
+			for (dxRender_Visual* Vis : reinterpret_cast<FHierrarhyVisual*>(pVisual)->children)
+				if (Vis->getRZFlag())
+					add_leafs_Dynamic(Vis);
 		}
 		return;
 	case MT_SKELETON_ANIM:
 	case MT_SKELETON_RIGID:
 		{
-			// Add all children, doesn't perform any tests
-			CKinematics * pV			= (CKinematics*)pVisual;
+			auto pV = reinterpret_cast<CKinematics*>(pVisual);
 			BOOL	_use_lod			= FALSE	;
 			if (pV->m_lod)				
 			{
@@ -460,9 +455,10 @@ void CRender::add_leafs_Dynamic	(dxRender_Visual *pVisual)
 			} else {
 				pV->CalculateBones			(TRUE);
 				pV->CalculateWallmarks		();		//. bug?
-				I = pV->children.begin		();
-				E = pV->children.end		();
-				for (; I!=E; I++)	add_leafs_Dynamic	(*I);
+
+				for (dxRender_Visual* Vis : pV->children)
+					if (Vis->getRZFlag())
+						add_leafs_Dynamic(Vis);
 			}
 		}
 		return;
@@ -482,9 +478,6 @@ void CRender::add_leafs_Static(dxRender_Visual *pVisual)
 {
 	if (!HOM.visible(pVisual->vis))		return;
 
-	// Visual is 100% visible - simply add it
-	xr_vector<dxRender_Visual*>::iterator I,E;	// it may be usefull for 'hierrarhy' visuals
-
 	switch (pVisual->Type) {
 	case MT_PARTICLE_GROUP:
 		{
@@ -500,27 +493,25 @@ void CRender::add_leafs_Static(dxRender_Visual *pVisual)
 		return;
 	case MT_HIERRARHY:
 		{
-			// Add all children, doesn't perform any tests
-			FHierrarhyVisual* pV	= (FHierrarhyVisual*)pVisual;
-			I = pV->children.begin	();
-			E = pV->children.end	();
-			for (; I!=E; I++)		add_leafs_Static (*I);
+			for (dxRender_Visual* Vis : reinterpret_cast<FHierrarhyVisual*>(pVisual)->children)
+				if (Vis->getRZFlag())
+					add_leafs_Static(Vis);
 		}
 		return;
 	case MT_SKELETON_ANIM:
 	case MT_SKELETON_RIGID:
 		{
-			// Add all children, doesn't perform any tests
-			CKinematics * pV		= (CKinematics*)pVisual;
+			auto pV = reinterpret_cast<CKinematics*>(pVisual);
 			pV->CalculateBones		(TRUE);
-			I = pV->children.begin	();
-			E = pV->children.end	();
-			for (; I!=E; I++)		add_leafs_Static	(*I);
+
+			for (dxRender_Visual* Vis : pV->children)
+				if (Vis->getRZFlag())
+					add_leafs_Static(Vis);
 		}
 		return;
 	case MT_LOD:
 		{
-			FLOD		* pV	=		(FLOD*) pVisual;
+			auto pV = reinterpret_cast<FLOD*>(pVisual);
 			float		D;
 			float		ssa		=		CalcSSA(D,pV->vis.sphere.P,pV);
 			ssa					*=		pV->lod_factor;
@@ -538,9 +529,8 @@ void CRender::add_leafs_Static(dxRender_Visual *pVisual)
 #endif
 			{
 				// Add all children, doesn't perform any tests
-				I = pV->children.begin	();
-				E = pV->children.end	();
-				for (; I!=E; I++)	add_leafs_Static (*I);
+				for (dxRender_Visual* Vis : pV->children)
+					add_leafs_Static(Vis);
 			}
 		}
 		return;
@@ -574,7 +564,6 @@ BOOL CRender::add_Dynamic(dxRender_Visual *pVisual, u32 planes)
 	if (fcvNone==VIS) return FALSE	;
 
 	// If we get here visual is visible or partially visible
-	xr_vector<dxRender_Visual*>::iterator I,E;	// it may be usefull for 'hierrarhy' visuals
 
 	switch (pVisual->Type) {
 	case MT_PARTICLE_GROUP:
@@ -600,23 +589,24 @@ BOOL CRender::add_Dynamic(dxRender_Visual *pVisual, u32 planes)
 		break;
 	case MT_HIERRARHY:
 		{
-			// Add all children
-			FHierrarhyVisual* pV = (FHierrarhyVisual*)pVisual;
-			I = pV->children.begin	();
-			E = pV->children.end	();
 			if (fcvPartial==VIS) 
 			{
-				for (; I!=E; I++)	add_Dynamic			(*I,planes);
-			} else {
-				for (; I!=E; I++)	add_leafs_Dynamic	(*I);
+				for (dxRender_Visual* Vis : reinterpret_cast<FHierrarhyVisual*>(pVisual)->children)
+					if (Vis->getRZFlag())
+						add_Dynamic(Vis, planes);
+			}
+			else
+			{
+				for (dxRender_Visual* Vis : reinterpret_cast<FHierrarhyVisual*>(pVisual)->children)
+					if (Vis->getRZFlag())
+						add_leafs_Dynamic(Vis);
 			}
 		}
 		break;
 	case MT_SKELETON_ANIM:
 	case MT_SKELETON_RIGID:
 		{
-			// Add all children, doesn't perform any tests
-			CKinematics * pV			= (CKinematics*)pVisual;
+			auto pV = reinterpret_cast<CKinematics*>(pVisual);
 			BOOL	_use_lod			= FALSE	;
 			if (pV->m_lod)				
 			{
@@ -632,19 +622,11 @@ BOOL CRender::add_Dynamic(dxRender_Visual *pVisual, u32 planes)
 			{
 				pV->CalculateBones			(TRUE);
 				pV->CalculateWallmarks		();		//. bug?
-				I = pV->children.begin		();
-				E = pV->children.end		();
-				for (; I!=E; I++)	add_leafs_Dynamic	(*I);
+
+				for (dxRender_Visual* Vis : pV->children)
+					if (Vis->getRZFlag())
+						add_leafs_Dynamic(Vis);
 			}
-			/*
-			I = pV->children.begin		();
-			E = pV->children.end		();
-			if (fcvPartial==VIS) {
-				for (; I!=E; I++)	add_Dynamic			(*I,planes);
-			} else {
-				for (; I!=E; I++)	add_leafs_Dynamic	(*I);
-			}
-			*/
 		}
 		break;
 	default:
@@ -670,7 +652,6 @@ void CRender::add_Static(dxRender_Visual *pVisual, u32 planes)
 		return;
 
 	// If we get here visual is visible or partially visible
-	xr_vector<dxRender_Visual*>::iterator I,E;	// it may be usefull for 'hierrarhy' visuals
 
 	switch (pVisual->Type) {
 	case MT_PARTICLE_GROUP:
@@ -693,35 +674,39 @@ void CRender::add_Static(dxRender_Visual *pVisual, u32 planes)
 		break;
 	case MT_HIERRARHY:
 		{
-			// Add all children
-			FHierrarhyVisual* pV = (FHierrarhyVisual*)pVisual;
-			I = pV->children.begin	();
-			E = pV->children.end		();
 			if (fcvPartial==VIS) {
-				for (; I!=E; I++)	add_Static			(*I,planes);
-			} else {
-				for (; I!=E; I++)	add_leafs_Static	(*I);
+				for (dxRender_Visual* Vis : reinterpret_cast<FHierrarhyVisual*>(pVisual)->children)
+					if (Vis->getRZFlag())
+						add_Static(Vis, planes);
+			}
+			else {
+				for (dxRender_Visual* Vis : reinterpret_cast<FHierrarhyVisual*>(pVisual)->children)
+					if (Vis->getRZFlag())
+						add_leafs_Static(Vis);
 			}
 		}
 		break;
 	case MT_SKELETON_ANIM:
 	case MT_SKELETON_RIGID:
 		{
-			// Add all children, doesn't perform any tests
-			CKinematics * pV		= (CKinematics*)pVisual;
+			auto pV = reinterpret_cast<CKinematics*>(pVisual);
 			pV->CalculateBones		(TRUE);
-			I = pV->children.begin	();
-			E = pV->children.end	();
+
 			if (fcvPartial==VIS) {
-				for (; I!=E; I++)	add_Static			(*I,planes);
-			} else {
-				for (; I!=E; I++)	add_leafs_Static	(*I);
+				for (dxRender_Visual* Vis : pV->children)
+					if (Vis->getRZFlag())
+						add_Static(Vis, planes);
+			}
+			else {
+				for (dxRender_Visual* Vis : pV->children)
+					if (Vis->getRZFlag())
+						add_leafs_Static(Vis);
 			}
 		}
 		break;
 	case MT_LOD:
 		{
-			FLOD		* pV	= (FLOD*) pVisual;
+			auto pV = reinterpret_cast<FLOD*>(pVisual);
 			float		D;
 			float		ssa		= CalcSSA	(D,pV->vis.sphere.P,pV);
 			ssa					*= pV->lod_factor;
@@ -738,10 +723,8 @@ void CRender::add_Static(dxRender_Visual *pVisual, u32 planes)
 			if (ssa>r_ssaLOD_B)
 #endif
 			{
-				// Add all children, perform tests
-				I = pV->children.begin	();
-				E = pV->children.end	();
-				for (; I!=E; I++)	add_leafs_Static	(*I);
+				for (dxRender_Visual* Vis : pV->children)
+					add_leafs_Static(Vis);
 			}
 		}
 		break;

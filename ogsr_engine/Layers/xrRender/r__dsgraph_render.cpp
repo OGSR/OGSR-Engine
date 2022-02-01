@@ -746,46 +746,31 @@ void	R_dsgraph_structure::r_dsgraph_render_R1_box	(IRender_Sector* _S, Fbox& BB,
 	for (u32 test=0; test<lstVisuals.size(); test++)
 	{
 		dxRender_Visual*	V		= 	lstVisuals[test];
-		
-		// Visual is 100% visible - simply add it
-		xr_vector<dxRender_Visual*>::iterator I,E;	// it may be usefull for 'hierrarhy' visuals
-		
+
 		switch (V->Type) {
 		case MT_HIERRARHY:
 			{
-				// Add all children
-				FHierrarhyVisual* pV = (FHierrarhyVisual*)V;
-				I = pV->children.begin	();
-				E = pV->children.end		();
-				for (; I!=E; I++)		{
-					dxRender_Visual* T			= *I;
-					if (BB.intersect(T->vis.box))	lstVisuals.push_back(T);
-				}
+				for (dxRender_Visual* Vis : reinterpret_cast<FHierrarhyVisual*>(V)->children)
+					if (BB.intersect(Vis->vis.box) && Vis->getRZFlag())
+						lstVisuals.push_back(Vis);
 			}
 			break;
 		case MT_SKELETON_ANIM:
 		case MT_SKELETON_RIGID:
 			{
-				// Add all children	(s)
-				CKinematics * pV		= (CKinematics*)V;
+				auto pV = reinterpret_cast<CKinematics*>(V);
 				pV->CalculateBones		(TRUE);
-				I = pV->children.begin	();
-				E = pV->children.end		();
-				for (; I!=E; I++)		{
-					dxRender_Visual* T				= *I;
-					if (BB.intersect(T->vis.box))	lstVisuals.push_back(T);
-				}
+
+				for (dxRender_Visual* Vis : pV->children)
+					if (BB.intersect(Vis->vis.box) && Vis->getRZFlag())
+						lstVisuals.push_back(Vis);
 			}
 			break;
 		case MT_LOD:
 			{
-				FLOD		* pV		=	(FLOD*) V;
-				I = pV->children.begin		();
-				E = pV->children.end		();
-				for (; I!=E; I++)		{
-					dxRender_Visual* T				= *I;
-					if (BB.intersect(T->vis.box))	lstVisuals.push_back(T);
-				}
+				for (dxRender_Visual* Vis : reinterpret_cast<FLOD*>(V)->children)
+					if (BB.intersect(Vis->vis.box))
+						lstVisuals.push_back(Vis);
 			}
 			break;
 		default:

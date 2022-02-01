@@ -170,6 +170,16 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
 		//.def("set_hear_callback",			(void (CScriptGameObject::*)(const luabind::functor<void> &))(&CScriptGameObject::SetSoundCallback))
 		//.def("clear_hear_callback",		&CScriptGameObject::ClearSoundCallback)
 		
+	/************************* Add by Zander *******************************/
+		.def("dump_visual_to_log", 		&CScriptGameObject::GetModelDump)
+		.def("set_show_model_mesh", 	&CScriptGameObject::ShowModelMesh)
+		.def("get_show_model_mesh", 	&CScriptGameObject::GetShowMesh)
+		.def("get_mesh_count", 			&CScriptGameObject::GetMeshCount)
+		.def("set_show_model_mesh_hud", &CScriptGameObject::ShowModelMeshHUD)
+		.def("get_show_model_mesh_hud", &CScriptGameObject::GetShowMeshHUD)
+		.def("get_mesh_count_hud", &CScriptGameObject::GetMeshCountHUD)
+	/************************* End Add *************************************/
+
 		.def("memory_time",					&CScriptGameObject::memory_time)
 		.def("memory_position",				&CScriptGameObject::memory_position)
 		.def("best_weapon",					&CScriptGameObject::best_weapon)

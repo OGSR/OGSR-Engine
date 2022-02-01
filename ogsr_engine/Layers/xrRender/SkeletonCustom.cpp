@@ -780,3 +780,105 @@ CSkeletonWallmark::~CSkeletonWallmark()
 		}
 }
 #endif
+
+/************************* Add by Zander *************************************************************/
+/************************* Дебаговые функции для исследования моделей. *******************************/
+static Fbox& get_mesh_RC_data(FHierrarhyVisual* pHV, const u32 id) {
+	return pHV->children.at(id)->getVisData().box;
+}
+
+Fvector3 CKinematics::RC_VisBox(const u32 id) {
+	const Fbox& t = get_mesh_RC_data(this, id);
+	Fvector3 modelSize;
+	t.getsize(modelSize);
+	return modelSize;
+}
+
+Fvector3 CKinematics::RC_VisCenter(const u32 id) {
+	const Fbox& t = get_mesh_RC_data(this, id);
+	Fvector3 modelSize;
+	t.getcenter(modelSize);
+	return modelSize;
+}
+
+Fvector3 CKinematics::RC_VisBorderMin(const u32 id) {
+	const Fbox& t = get_mesh_RC_data(this, id);
+	Fvector3 borderModelMin;
+	borderModelMin.set(t.min);
+	return borderModelMin;
+}
+
+Fvector3 CKinematics::RC_VisBorderMax(const u32 id) {
+	const Fbox& t = get_mesh_RC_data(this, id);
+	Fvector3 borderModelMax;
+	borderModelMax.set(t.max);
+	return borderModelMax;
+}
+
+void  CKinematics::RC_Dump()
+{
+	Msg("|********** Dump children meshes **************|");
+	const Fbox& mBox = getVisData().box;
+	Fvector3 temp;
+	mBox.getsize(temp);
+	Msg("[core] : box[%3.3f,%3.3f,%3.3f]", temp.x, temp.y, temp.z);
+	mBox.getcenter(temp);
+	Msg("[core] : center[%3.3f,%3.3f,%3.3f]", temp.x, temp.y, temp.z);
+	temp.set(mBox.min);
+	Msg("[core] : min[%3.3f,%3.3f,%3.3f]", temp.x, temp.y, temp.z);
+	temp.set(mBox.max);
+	Msg("[core] : max[%3.3f,%3.3f,%3.3f]", temp.x, temp.y, temp.z);
+	for (u32 i = 0; i < children.size(); i++) {
+		temp.set(RC_VisBox(i));
+		Msg("[child %u] : box[%3.3f,%3.3f,%3.3f]", i, temp.x, temp.y, temp.z);
+		temp.set(RC_VisCenter(i));
+		Msg("[child %u] : center[%3.3f,%3.3f,%3.3f]", i, temp.x, temp.y, temp.z);
+		temp.set(RC_VisBorderMin(i));
+		Msg("[child %u] : min[%3.3f,%3.3f,%3.3f]", i, temp.x, temp.y, temp.z);
+		temp.set(RC_VisBorderMax(i));
+		Msg("[child %u] : max[%3.3f,%3.3f,%3.3f]", i, temp.x, temp.y, temp.z);
+		FHierrarhyVisual* HV = dynamic_cast<FHierrarhyVisual*>(children.at(i));
+		if (HV && HV->children.size()) {
+			for (u32 j = 0; j < HV->children.size(); j++) {
+				const Fbox& FB = get_mesh_RC_data(HV, j);
+				FB.getsize(temp);
+				Msg("[child %u->%u] : box[%3.3f,%3.3f,%3.3f]", i, j, temp.x, temp.y, temp.z);
+				FB.getcenter(temp);
+				Msg("[child %u->%u] : center[%3.3f,%3.3f,%3.3f]", i, j, temp.x, temp.y, temp.z);
+				temp.set(FB.min);
+				Msg("[child %u->%u] : min[%3.3f,%3.3f,%3.3f]", i, j, temp.x, temp.y, temp.z);
+				temp.set(FB.max);
+				Msg("[child %u->%u] : max[%3.3f,%3.3f,%3.3f]", i, j, temp.x, temp.y, temp.z);
+				FHierrarhyVisual* kHV = dynamic_cast<FHierrarhyVisual*>(HV->children.at(j));
+				if (kHV && kHV->children.size()) {
+					for (u32 k = 0; k < kHV->children.size(); k++) {
+						const Fbox& kFB = get_mesh_RC_data(kHV, k);
+						kFB.getsize(temp);
+						Msg("[child %u->%u->%u] : box[%3.3f,%3.3f,%3.3f]", i, j, k, temp.x, temp.y, temp.z);
+						kFB.getcenter(temp);
+						Msg("[child %u->%u->%u] : center[%3.3f,%3.3f,%3.3f]", i, j, k, temp.x, temp.y, temp.z);
+						temp.set(kFB.min);
+						Msg("[child %u->%u->%u] : min[%3.3f,%3.3f,%3.3f]", i, j, k, temp.x, temp.y, temp.z);
+						temp.set(kFB.max);
+						Msg("[child %u->%u->%u] : max[%3.3f,%3.3f,%3.3f]", i, j, k, temp.x, temp.y, temp.z);
+					}
+				}
+			}
+		}
+	}
+
+	Msg("|********** End Dump children meshes **********|");
+
+	Msg("|********** Dump children bones ***************|");
+	for (u32 i = 0; i < bones->size(); i++) {
+		CBoneData* B = (*bones)[i];
+		Msg("Bone [%u][%s]:", i, LL_BoneName_dbg(u16(i)));
+		Msg("bind_transform[%3.3f,%3.3f,%3.3f] m2b_transform[%3.3f,%3.3f,%3.3f] center_of_mass[%3.3f,%3.3f,%3.3f]",
+			B->bind_transform.c.x, B->bind_transform.c.y, B->bind_transform.c.z,
+			B->m2b_transform.c.x, B->m2b_transform.c.y, B->m2b_transform.c.z,
+			B->center_of_mass.x, B->center_of_mass.y, B->center_of_mass.z
+		);
+	}
+	Msg("|********** End Dump children bones ***********|");
+}
+/************************* End add *************************************/
