@@ -120,6 +120,7 @@ void CWeaponPistol::PlayAnimIdle()
 		if (IsRotatingFromZoom()) {
 			if (AnimationExist("anm_idle_aim_end_empty")) {
 				PlayHUDMotion("anm_idle_aim_end_empty", true, GetState());
+				PlaySound(sndAimEnd, get_LastFP());
 				return;
 			}
 		}
@@ -136,6 +137,7 @@ void CWeaponPistol::PlayAnimAim()
 		if (IsRotatingToZoom()) {
 			if (AnimationExist("anm_idle_aim_start_empty")) {
 				PlayHUDMotion("anm_idle_aim_start_empty", true, GetState());
+				PlaySound(sndAimStart, get_LastFP());
 				return;
 			}
 		}

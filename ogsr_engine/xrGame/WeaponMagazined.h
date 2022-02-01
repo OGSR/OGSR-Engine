@@ -28,6 +28,7 @@ protected:
 	HUD_SOUND		sndFireModes;
 	HUD_SOUND		sndZoomChange;
 	HUD_SOUND		sndTactItemOn;
+	HUD_SOUND		sndAimStart, sndAimEnd;
 	//звук текущего выстрела
 	HUD_SOUND*		m_pSndShotCurrent;
 

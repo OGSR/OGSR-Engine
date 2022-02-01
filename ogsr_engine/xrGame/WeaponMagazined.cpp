@@ -57,6 +57,8 @@ CWeaponMagazined::~CWeaponMagazined()
 	HUD_SOUND::DestroySound(sndFireModes);
 	HUD_SOUND::DestroySound(sndZoomChange);
 	HUD_SOUND::DestroySound(sndTactItemOn);
+	HUD_SOUND::DestroySound(sndAimStart);
+	HUD_SOUND::DestroySound(sndAimEnd);
 	if (m_binoc_vision)
 		xr_delete(m_binoc_vision);
 }
@@ -73,6 +75,8 @@ void CWeaponMagazined::StopHUDSounds		()
 	HUD_SOUND::StopSound(sndFireModes);
 	HUD_SOUND::StopSound(sndZoomChange);
 	HUD_SOUND::StopSound(sndTactItemOn);
+	HUD_SOUND::StopSound(sndAimStart);
+	HUD_SOUND::StopSound(sndAimEnd);
 
 	HUD_SOUND::StopSound(sndShot);
 	HUD_SOUND::StopSound(sndSilencerShot);
@@ -135,6 +139,11 @@ void CWeaponMagazined::Load	(LPCSTR section)
 		HUD_SOUND::LoadSound( section, "snd_zoom_change", sndZoomChange, m_eSoundEmptyClick );
 	if (pSettings->line_exist(section, "snd_tact_item_on"))
 		HUD_SOUND::LoadSound(section, "snd_tact_item_on", sndTactItemOn, m_eSoundEmptyClick);
+
+	if (pSettings->line_exist(section, "snd_aim_start"))
+		HUD_SOUND::LoadSound(section, "snd_aim_start", sndAimStart, m_eSoundShow);
+	if (pSettings->line_exist(section, "snd_aim_end"))
+		HUD_SOUND::LoadSound(section, "snd_aim_end", sndAimEnd, m_eSoundHide);
 
 	m_pSndShotCurrent = &sndShot;
 		
@@ -550,6 +559,8 @@ void CWeaponMagazined::UpdateSounds	()
 	if (sndFireModes.playing	())	sndFireModes.set_position	(get_LastFP());
 	if (sndZoomChange.playing	())	sndZoomChange.set_position	(get_LastFP());
 	if (sndTactItemOn.playing()) sndTactItemOn.set_position(get_LastFP());
+	if (sndAimStart.playing()) sndAimStart.set_position(get_LastFP());
+	if (sndAimEnd.playing()) sndAimEnd.set_position(get_LastFP());
 }
 
 void CWeaponMagazined::state_Fire	(float dt)
@@ -1223,6 +1234,7 @@ void CWeaponMagazined::PlayAnimAim()
 	if (IsRotatingToZoom()) {
 		if (AnimationExist("anm_idle_aim_start")) {
 			PlayHUDMotion("anm_idle_aim_start", true, GetState());
+			PlaySound(sndAimStart, get_LastFP());
 			return;
 		}
 	}
@@ -1248,6 +1260,7 @@ void CWeaponMagazined::PlayAnimIdle()
 		if (IsRotatingFromZoom()) {
 			if (AnimationExist("anm_idle_aim_end")) {
 				PlayHUDMotion("anm_idle_aim_end", true, GetState());
+				PlaySound(sndAimEnd, get_LastFP());
 				return;
 			}
 		}
