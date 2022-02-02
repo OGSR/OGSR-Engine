@@ -220,8 +220,7 @@ bool CTorch::torch_active					() const
 
 BOOL CTorch::net_Spawn(CSE_Abstract* DC) 
 {
-	CSE_Abstract			*e	= (CSE_Abstract*)(DC);
-	CSE_ALifeItemTorch		*torch	= smart_cast<CSE_ALifeItemTorch*>(e);
+	auto torch = smart_cast<CSE_ALifeItemTorch*>(DC);
 	R_ASSERT				(torch);
 	cNameVisual_set			(torch->get_visual());
 
@@ -250,7 +249,8 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 
 	if (b_r2)
 	{
-		bool useVolumetric = READ_IF_EXISTS(pUserData, r_bool, "torch_definition", "volumetric_enabled", false);
+		useVolumetric = READ_IF_EXISTS(pUserData, r_bool, "torch_definition", "volumetric_enabled", false);
+		useVolumetricForActor = READ_IF_EXISTS(pUserData, r_bool, "torch_definition", "volumetric_for_actor", false);
 		light_render->set_volumetric(useVolumetric);
 		if (useVolumetric)
 		{
@@ -304,6 +304,8 @@ void CTorch::OnH_A_Chield()
 {
 	inherited::OnH_A_Chield			();
 	m_focus.set						(Position());
+	if (smart_cast<CActor*>(H_Parent()) && useVolumetric)
+		light_render->set_volumetric(useVolumetricForActor);
 }
 
 void CTorch::OnH_B_Independent	(bool just_before_destroy) 
