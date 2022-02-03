@@ -5,6 +5,8 @@
 <p align="center">
   <a href="https://discord.gg/Q6QDxbNcfR"><img src="https://img.shields.io/discord/508530704674455562.svg?style=for-the-badge&label=DISCORD&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)" alt="Discord"></a>
 
+<h3 align="center"> <a href="https://discord.gg/Q6QDxbNcfR"><b>!THIS IS FOR DEVELOPERS ONLY, IF YOU'RE LOOKING FOR OGSR MOD/OGSR:GUNSLINGER, JOIN THE DISCORD ABOVE!</b></a></h3>
+
 <h3 align="center"> <a href="#english"><b>English</b></a>/<a href="#русский"><b>Русский</b></a></h3>
 
 ![Logo](https://camo.githubusercontent.com/abf193ef26e3b22a66cc0cf2a4bcb63a345d7620/68747470733a2f2f63646e2e646973636f72646170702e636f6d2f6174746163686d656e74732f3534353632383830383438313334313434302f3733303737383730323636393135323239362f6c6f676f2e706e67)
@@ -29,16 +31,17 @@
 * Set the platform to x64 and the configuration to Release, then select Build -> Build solution
 ### Thanks to: ###
 * [Im-dex](https://github.com/Im-dex)
+* [SkyLoader](https://github.com/SkyLoaderr)
+* [Shoker](https://github.com/ShokerStlk)
 * [xrOxygen](https://github.com/xrOxygen/xray-oxygen)
 * [OpenXRay](https://github.com/OpenXRay/xray-16)
-* [CoC-Xray](https://github.com/revolucas/CoC-Xray)
-* [X-Ray Engine by Alpet & KD](https://xp-dev.com/summary/210311)
 * [abramcumner](https://github.com/abramcumner)
 * [ForserX](https://github.com/ForserX)
 * [Xottab-DUTY](https://github.com/Xottab-DUTY)
-* [Shoker](https://github.com/ShokerStlk)
 * [morrey](https://github.com/morrey)
-* [SkyLoader](https://github.com/SkyLoaderr)
+* [S.T.A.L.K.E.R. Anomaly Engine](https://bitbucket.org/anomalymod/xray-monolith)
+* [X-Ray Engine by Alpet & KD](https://github.com/joye-ramone/xray_xp_dev)
+* [CoC-Xray](https://github.com/revolucas/CoC-Xray)
 
 And everyone else whose work has been used. If you are not mentioned, send a message and you will be added.
 
@@ -62,15 +65,16 @@ And everyone else whose work has been used. If you are not mentioned, send a mes
 * В студии выбираете Сборка -> Собрать решение, предварительно выставив платформу x64 и конфигурацию Release
 ### Благодарим: ###
 * [Im-dex](https://github.com/Im-dex)
+* [SkyLoader](https://github.com/SkyLoaderr)
+* [Shoker](https://github.com/ShokerStlk)
 * [xrOxygen](https://github.com/xrOxygen/xray-oxygen)
 * [OpenXRay](https://github.com/OpenXRay/xray-16)
-* [CoC-Xray](https://github.com/revolucas/CoC-Xray)
-* [X-Ray Engine by Alpet & KD](https://xp-dev.com/summary/210311)
 * [abramcumner](https://github.com/abramcumner)
 * [ForserX](https://github.com/ForserX)
 * [Xottab-DUTY](https://github.com/Xottab-DUTY)
-* [Shoker](https://github.com/ShokerStlk)
 * [morrey](https://github.com/morrey)
-* [SkyLoader](https://github.com/SkyLoaderr)
+* [S.T.A.L.K.E.R. Anomaly Engine](https://bitbucket.org/anomalymod/xray-monolith)
+* [X-Ray Engine by Alpet & KD](https://github.com/joye-ramone/xray_xp_dev)
+* [CoC-Xray](https://github.com/revolucas/CoC-Xray)
 
 И всех остальных, чьи работы я использовал. Пишите, если забыл кого-то, добавлю в список.
