@@ -167,7 +167,9 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("on_inv_box_item_drop", int(GameObject::eOnInvBoxItemDrop)),
 				value("on_inv_box_open", int(GameObject::eOnInvBoxOpen)),
 
-				value("select_pda_contact", int(GameObject::eSelectPdaContact))
+				value("select_pda_contact", int(GameObject::eSelectPdaContact)),
+
+				value("on_user_command", int(GameObject::eUserCommand))
 			],
 
 		def("buy_condition",				(void (*)(CScriptIniFile*,LPCSTR))(&::buy_condition)),

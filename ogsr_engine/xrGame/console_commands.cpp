@@ -33,6 +33,7 @@
 #include "saved_game_wrapper.h"
 #include "level_graph.h"
 #include "cameralook.h"
+#include "game_object_space.h"
 
 #ifdef DEBUG
 #	include "PHDebug.h"
@@ -1163,6 +1164,17 @@ public:
 	}
 };
 
+struct CCC_Addon_user_command : public IConsole_Command {
+	CCC_Addon_user_command(LPCSTR N) : IConsole_Command(N) {};
+
+	void Execute(LPCSTR args) override {
+		if (!g_actor || !Actor()->g_Alive()) {
+			return;
+		}
+
+		Actor()->callback(GameObject::eUserCommand)(args);
+	}
+};
 
 void CCC_RegisterCommands()
 {
@@ -1327,6 +1339,8 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask, "keypress_on_start", &psActorFlags, AF_KEYPRESS_ON_START);
 
 	CMD4(CCC_Integer, "g_cop_death_anim", &g_bCopDeathAnim, 0, 1);
+
+	CMD1(CCC_Addon_user_command, "user_command");
 
 #ifdef DEBUG
 	CMD3(CCC_Mask,		"dbg_draw_actor_alive",		&dbg_net_Draw_Flags,	(1<<0));
