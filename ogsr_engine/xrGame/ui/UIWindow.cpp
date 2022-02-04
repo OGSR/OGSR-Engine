@@ -5,7 +5,11 @@
 #include "UIWindow.h"
 #include "../UICursor.h"
 #include "../MainMenu.h"
-
+#include "../UI/UIStatic.h"
+#include "player_hud.h"
+#include "HudManager.h"
+#include "HudItem.h"
+#include "ui_base.h"
 #include "../Include/xrRender/DebugRender.h"
 
 //#define LOG_ALL_WNDS
@@ -28,7 +32,7 @@
 #endif
 
 
-xr_vector<Frect> g_wnds_rects;
+xr_vector<std::tuple<Frect, shared_str>> g_wnds_rects;
 
 BOOL g_show_wnd_rect = FALSE;
 BOOL g_show_wnd_rect2 = FALSE;
@@ -37,15 +41,16 @@ void clean_wnd_rects()
 	DRender->DestroyDebugShader(IDebugRender::dbgShaderWindow);
 }
 
-void add_rect_to_draw(Frect r)
+void add_rect_to_draw(Frect r, shared_str windowName)
 {
-	g_wnds_rects.push_back(r);
+	g_wnds_rects.push_back(std::make_tuple(r, windowName));
 }
-void draw_rect(Frect& r, u32 color)
+void draw_rect(Frect& r, u32 color, shared_str name)
 {
 	DRender->SetDebugShader(IDebugRender::dbgShaderWindow);
 
 	//.	UIRender->StartLineStrip	(5);
+
 	UIRender->StartPrimitive(5, IUIRender::ptLineStrip, UI()->m_currentPointType);
 
 	UIRender->PushPoint(r.lt.x, r.lt.y, 0, color, 0, 0);
@@ -53,24 +58,35 @@ void draw_rect(Frect& r, u32 color)
 	UIRender->PushPoint(r.rb.x, r.rb.y, 0, color, 0, 0);
 	UIRender->PushPoint(r.lt.x, r.rb.y, 0, color, 0, 0);
 	UIRender->PushPoint(r.lt.x, r.lt.y, 0, color, 0, 0);
-
 	//.	UIRender->FlushLineStrip();
 	UIRender->FlushPrimitive();
+
+	if (name != nullptr && name != "") {
+		auto static_name = name.c_str();
+		auto height = Device.dwHeight;
+		CGameFont* F = UI()->Font()->pFontArial14;
+		auto text_heiht = F->GetHeight();
+		auto x = r.lt.x - (r.lt.x >= 20 ? 20 : 0);
+		auto y = r.lt.y > height / 2 ? r.lt.y - text_heiht - 20 : r.rb.y + 20;
+		F->OutSet(x, y);
+		F->OutNext(static_name);
+		F->SetColor(0xffffffff);
+	}
 }
 
 void draw_wnds_rects()
 {
 	if(0==g_wnds_rects.size())	return;
 
-	xr_vector<Frect>::iterator it = g_wnds_rects.begin();
-	xr_vector<Frect>::iterator it_e = g_wnds_rects.end();
+	xr_vector<std::tuple<Frect, shared_str>>::iterator it = g_wnds_rects.begin();
+	xr_vector<std::tuple<Frect, shared_str>>::iterator it_e = g_wnds_rects.end();
 
 	for(;it!=it_e;++it)
 	{
-		Frect& r = *it;
+		Frect& r = std::get<0>(*it);
 		UI()->ClientToScreenScaled(r.lt, r.lt.x, r.lt.y);
 		UI()->ClientToScreenScaled(r.rb, r.rb.x, r.rb.y);
-		draw_rect				(r,color_rgba(255,0,0,255));
+		draw_rect				(r,color_rgba(255,0,0,255), std::get<1>(*it));
 	};
 
 	g_wnds_rects.clear();
@@ -173,7 +189,7 @@ void CUIWindow::Draw()
 	if(g_show_wnd_rect2){
 		Frect r;
 		GetAbsoluteRect(r);
-		add_rect_to_draw(r);
+		add_rect_to_draw(r, m_windowName);
 	}
 }
 
@@ -205,7 +221,7 @@ void CUIWindow::UpdateFocus( bool focus_lost ) {
   if ( cursor_on_window && g_show_wnd_rect ) {
     Frect r;
     GetAbsoluteRect( r );
-    add_rect_to_draw( r );
+    add_rect_to_draw( r, m_windowName);
   }
 
   // RECEIVE and LOST focus
