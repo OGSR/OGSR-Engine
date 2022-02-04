@@ -157,7 +157,7 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 			break;
 		case IRender_interface::SM_NORMAL:
 			{
-				static const bool UsePNG = !!strstr(Core.Params, "-ss_png"), UseTGA = !!strstr(Core.Params, "-ss_tga");
+				static const bool UseTGA = !!strstr(Core.Params, "-ss_tga"), UsePNG = !strstr(Core.Params, "-ss_jpg") && !UseTGA;
 				string64 t_stemp;
 				string_path buf;
 				sprintf_s(buf, sizeof(buf), "ss_%s_%s_(%s).%s", Core.UserName, timestamp(t_stemp), g_pGameLevel ? g_pGameLevel->name().c_str() : "mainmenu", UsePNG ? "png" : UseTGA ? "bmp" : "jpg");
@@ -248,7 +248,7 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 	if (FAILED(hr))
 		goto _end_;
 
-	// Image processing (gamma-correct)
+	{// Image processing (gamma-correct)
 	u32* pPixel		= (u32*)D.pBits;
 	u32* pEnd		= pPixel+(Device.dwWidth*Device.dwHeight);
 	//	IGOR: Remove inverse color correction and kill alpha
@@ -279,6 +279,7 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 			color_get_G(p),
 			color_get_B(p)
 		);
+	}
 	}
 
 	hr					= pFB->UnlockRect();
@@ -362,7 +363,7 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 			}break;
 		case IRender_interface::SM_NORMAL:
 			{
-				static const bool UsePNG = !!strstr(Core.Params, "-ss_png"), UseTGA = !!strstr(Core.Params, "-ss_tga");
+				static const bool UseTGA = !!strstr(Core.Params, "-ss_tga"), UsePNG = !strstr(Core.Params, "-ss_jpg") && !UseTGA;
 				string64 t_stemp;
 				string_path buf;
 				sprintf_s(buf, sizeof(buf), "ss_%s_%s_(%s).%s", Core.UserName, timestamp(t_stemp), g_pGameLevel ? g_pGameLevel->name().c_str() : "mainmenu", UsePNG ? "png" : UseTGA ? "tga" : "jpg");

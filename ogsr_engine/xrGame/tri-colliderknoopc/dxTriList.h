@@ -15,7 +15,7 @@ struct dcVector3{
 
 
 
-	dcVector3(){}
+	dcVector3() = default;
 
 	dcVector3(dReal x, dReal y, dReal z){
 
@@ -41,7 +41,7 @@ struct dcVector3{
 
 
 
-	~dcVector3(){}
+	~dcVector3() = default;
 
 
 

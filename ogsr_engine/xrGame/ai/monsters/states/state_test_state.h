@@ -5,6 +5,13 @@ template<typename _Object>
 class CStateMonsterTestState : public CState<_Object> {
 	typedef CState<_Object> inherited;
 	typedef CState<_Object> *state_ptr;
+	using inherited::object;
+	using inherited::prev_substate;
+	using inherited::current_substate;
+	using inherited::select_state;
+	using inherited::get_state_current;
+	using inherited::get_state;
+	using inherited::add_state;
 
 public:
 						CStateMonsterTestState	(_Object *obj);
@@ -17,6 +24,13 @@ template<typename _Object>
 class CStateMonsterTestCover : public CState<_Object> {
 	typedef CState<_Object> inherited;
 	typedef CState<_Object> *state_ptr;
+	using inherited::object;
+	using inherited::prev_substate;
+	using inherited::current_substate;
+	using inherited::select_state;
+	using inherited::get_state_current;
+	using inherited::get_state;
+	using inherited::add_state;
 
 	u32					m_last_node{};
 

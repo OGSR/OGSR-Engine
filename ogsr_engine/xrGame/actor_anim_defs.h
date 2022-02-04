@@ -90,7 +90,7 @@ struct SActorVehicleAnims
 {
 	static const int TYPES_NUMBER=2;
 	SVehicleAnimCollection m_vehicles_type_collections	[TYPES_NUMBER];
-						SActorVehicleAnims				();
+	SActorVehicleAnims() = default;
 	void				Create							(IKinematicsAnimated* K);
 };
 

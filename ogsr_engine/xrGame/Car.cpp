@@ -522,20 +522,8 @@ void	CCar::renderable_Render				( )
 		m_car_weapon->Render_internal();
 }
 
-void	CCar::net_Export			(NET_Packet& P)
-{
-	inherited::net_Export(P);
-//	P.w_u32 (Level().timeServer());
-//	P.w_u16 (0);
-}
-
-void	CCar::net_Import			(NET_Packet& P)
-{
-	inherited::net_Import(P);
-//	u32 TimeStamp = 0;
-//	P.w_u32 (TimeStamp);
-//	u16 NumItems = 0;
-//	P.w_u32 (NumItems);
+void CCar::net_Export( CSE_Abstract* E ) {
+  inherited::net_Export( E );
 }
 
 void	CCar::OnHUDDraw				(CCustomHUD* /**hud/**/)
@@ -905,7 +893,7 @@ void CCar::Init()
 		
 		m_bone_steer=pKinematics->LL_BoneID(ini->r_string("car_definition","steer"));
 		VERIFY2(fsimilar(DET(pKinematics->LL_GetTransform(m_bone_steer)),1.f,EPS_L),"BBADD MTX");
-		pKinematics->LL_GetBoneInstance(m_bone_steer).set_callback(bctPhysics,cb_Steer,this);
+		pKinematics->LL_GetBoneInstance(m_bone_steer).set_callback(bctCustom,cb_Steer,this);
 	}
 	m_steer_angle=0.f;
 	//ref_wheel.Init();
@@ -1740,6 +1728,11 @@ void CCar::OnEvent(NET_Packet& P, u16 type)
 		{
 			P.r_u16		(id);
 			CObject* O	= Level().Objects.net_Find	(id);
+
+			if (!O) {
+				Msg("! [%s] Error: No object to reject/sell [%u]", __FUNCTION__, id);
+				break;
+			}
 
 			bool just_before_destroy = !P.r_eof() && P.r_u8();
 			bool dont_create_shell = (type == GE_TRADE_SELL) || (type == GE_TRANSFER_REJECT) || just_before_destroy;

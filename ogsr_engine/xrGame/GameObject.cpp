@@ -41,8 +41,6 @@ CGameObject::CGameObject		()
 {
 	init						();
 	//-----------------------------------------
-	m_bCrPr_Activated			= false;
-	m_dwCrPr_ActivationStep		= 0;
 	m_spawn_time				= 0;
 	m_ai_location				= xr_new<CAI_ObjectLocation>();
 	m_server_flags.one			();
@@ -139,8 +137,6 @@ void CGameObject::net_Destroy	()
 		Level().SetEntity						(0);
 		Level().SetControlEntity				(0);
 	}
-
-	Level().RemoveObject_From_4CrPr(this);
 
 //.	Parent									= 0;
 
@@ -289,16 +285,8 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	VERIFY							(!fis_zero(DET(renderable.xform)));
 	CSE_ALifeObject					*O = smart_cast<CSE_ALifeObject*>(E);
 	if (O && xr_strlen(O->m_ini_string)) {
-#pragma warning(push)
-#pragma warning(disable:4238)
-		m_ini_file					= xr_new<CInifile>(
-			&IReader				(
-				(void*)(*(O->m_ini_string)),
-				O->m_ini_string.size()
-			),
-			FS.get_path("$game_config$")->m_Path
-		);
-#pragma warning(pop)
+		IReader r((void*)O->m_ini_string.c_str(), O->m_ini_string.size());
+		m_ini_file = xr_new<CInifile>(&r, FS.get_path("$game_config$")->m_Path);
 	}
 
 	m_story_id						= ALife::_STORY_ID(-1);
@@ -887,8 +875,8 @@ u32	CGameObject::ef_weapon_type			() const
 {
 	string16	temp; CLSID2TEXT(CLS_ID,temp);
 	R_ASSERT3	(false,"Invalid weapon type request, virtual function is not properly overridden!",temp);
-	return		(u32(-1));
-//	return		(u32(0));
+	Msg("!![%s] Invalid weapon type request, virtual function is not properly overridden [%s] ", __FUNCTION__, temp);
+	return u32(-1);
 }
 
 u32	CGameObject::ef_detector_type		() const

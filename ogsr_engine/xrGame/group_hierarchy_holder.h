@@ -21,9 +21,9 @@ namespace MemorySpace {
 }
 
 namespace GroupHierarchyHolder {
-	typedef xr_vector<MemorySpace::CVisibleObject>	VISIBLE_OBJECTS;
-	typedef xr_vector<MemorySpace::CSoundObject>	SOUND_OBJECTS;
-	typedef xr_vector<MemorySpace::CHitObject>		HIT_OBJECTS;
+	typedef std::deque<MemorySpace::CVisibleObject>	VISIBLE_OBJECTS;
+	typedef std::deque<MemorySpace::CSoundObject>	SOUND_OBJECTS;
+	typedef std::deque<MemorySpace::CHitObject>		HIT_OBJECTS;
 	typedef xr_vector<CEntity*>						MEMBER_REGISTRY;
 }
 

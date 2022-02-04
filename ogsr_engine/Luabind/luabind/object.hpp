@@ -30,11 +30,13 @@
 #include <luabind/detail/pcall.hpp>
 #include <luabind/detail/stack_utils.hpp>
 #include <luabind/detail/policy_cons.hpp>
+#include <luabind/detail/debug.hpp>
 
 namespace luabind
 {
 	class object;
 
+	LUABIND_API lua_State* GetFuckingLuaStateByObject(object** pObj);
 	namespace detail
 	{
 		class proxy_object;
@@ -152,9 +154,7 @@ namespace luabind
 			template<typename T>
 			proxy_object& operator=(const T& val)
 			{
-				//std::cout << "proxy assigment\n";
-				lua_State* L = m_obj->m_state;
-				m_obj->pushvalue();
+				lua_State* L = GetFuckingLuaStateByObject(&m_obj);
 				m_key.get(L);
 				detail::convert_to_lua(L, val);
 				lua_settable(L, -3);
@@ -166,10 +166,8 @@ namespace luabind
 			template<class T, class Policies>
 			void assign(const T& val, const Policies& p)
 			{
-				//std::cout << "proxy assigment\n";
-				lua_State* L = m_obj->m_state;
-				m_obj->pushvalue();
-				detail::getref(L, m_key_ref);
+				lua_State* L = GetFuckingLuaStateByObject(&m_obj);
+				detail::getref(L, m_key);
 				detail::convert_to_lua_p(L, val, p);
 				lua_settable(L, -3);
 				// pop table
@@ -269,10 +267,8 @@ namespace luabind
 			template<typename T>
 			proxy_raw_object& operator=(const T& val)
 			{
-				//std::cout << "proxy assigment\n";
-				lua_State* L = m_obj->m_state;
-				m_obj->pushvalue();
-				detail::getref(L, m_key_ref);
+				lua_State* L = GetFuckingLuaStateByObject(&m_obj);
+				detail::getref(L, m_key);
 				detail::convert_to_lua(L, val);
 				lua_rawset(L, -3);
 				// pop table
@@ -283,10 +279,8 @@ namespace luabind
 			template<typename T, typename... Policies>
 			void assign(const T& val, const policy_cons<Policies...> p)
 			{
-				//std::cout << "proxy assigment\n";
-				lua_State* L = m_obj->m_state;
-				m_obj->pushvalue();
-				detail::getref(L, m_key_ref);
+				lua_State* L = GetFuckingLuaStateByObject(&m_obj);
+				detail::getref(L, m_key);
 				detail::convert_to_lua_p(L, val, p);
 				lua_settable(L, -3);
 				// pop table
@@ -358,9 +352,7 @@ namespace luabind
 			template<typename T>
 			proxy_array_object& operator=(const T& val)
 			{
-				//std::cout << "array proxy assigment\n";
-				lua_State* L = m_obj->m_state;
-				m_obj->pushvalue();
+				lua_State* L = GetFuckingLuaStateByObject(&m_obj);
 				detail::convert_to_lua(L, val);
 				lua_rawseti(L, -2, m_key);
 
@@ -372,9 +364,7 @@ namespace luabind
 			template<typename T, typename... Policies>
 			void assign(const T& val, const policy_cons<Policies...> p)
 			{
-				//std::cout << "proxy assigment\n";
-				lua_State* L = m_obj->m_state;
-				m_obj->pushvalue();
+				lua_State* L = GetFuckingLuaStateByObject(&m_obj);
 				detail::convert_to_lua_p(L, val, p);
 				lua_rawseti(L, -2, m_key);
 				// pop table
@@ -401,23 +391,23 @@ namespace luabind
 #define LUABIND_PROXY_ARRAY_RAW_AT_BODY\
 			{\
 				pushvalue();\
-				detail::convert_to_lua(m_state, key);\
-				lua_rawget(m_state, -2);\
+				detail::convert_to_lua(m_obj->m_state, key);\
+				lua_rawget(m_obj->m_state, -2);\
 				lua_reference ref;\
-				ref.set(m_state);\
-				lua_pop(m_state, 1);\
-				return object(m_state, ref, true);\
+				ref.set(m_obj->m_state);\
+				lua_pop(m_obj->m_state, 1);\
+				return object(m_obj->m_state, ref, true);\
 			}
 
 #define LUABIND_PROXY_ARRAY_AT_BODY\
 			{\
 				pushvalue();\
-				detail::convert_to_lua(m_state, key);\
-				lua_gettable(m_state, -2);\
+				detail::convert_to_lua(m_obj->m_state, key);\
+				lua_gettable(m_obj->m_state, -2);\
 				lua_reference ref;\
-				ref.set(m_state);\
-				lua_pop(m_state, 1);\
-				return object(m_state, ref, true);\
+				ref.set(m_obj->m_state);\
+				lua_pop(m_obj->m_state, 1);\
+				return object(m_obj->m_state, ref, true);\
 			}
 
 			template<class T>
@@ -496,7 +486,7 @@ namespace luabind
 			{
 			}
 
-			~array_iterator() {}
+			~array_iterator() = default;
 
 			array_iterator& operator=(const array_iterator& rhs)
 			{
@@ -702,7 +692,6 @@ namespace luabind
 
 			raw_iterator& operator=(const raw_iterator& rhs)
 			{
-				//std::cout << "===\n";
 				m_obj = rhs.m_obj;
 				if (m_obj)
 				{
@@ -1008,10 +997,10 @@ private:
 			}
 		}
 
-		mutable lua_State* m_state;
 #pragma warning(push)
 #pragma warning(disable:4251)
 		mutable detail::lua_reference m_ref;
+		mutable lua_State* m_state;
 #pragma warning(pop)
 	};
 
@@ -1055,7 +1044,7 @@ private:
 
 			struct assign_into
 			{
-				assign_into() {}
+				assign_into() = default;
 
 				template<class T>
 				assign_into(tuple_object_ref& to, const T& val)
@@ -1074,8 +1063,8 @@ private:
 					return *this;
 				}
 
-				tuple_object_ref* target;
-				std::size_t n;
+				tuple_object_ref* target = nullptr;
+				std::size_t n = 0;
 			};
 
 			template<class T>
@@ -1253,10 +1242,13 @@ private:
 #else
 				error_callback_fun e = get_error_callback();
 				if (e) e(L);
-	
-				assert(0 && "the lua function threw an error and exceptions are disabled."
-					"if you want to handle this error use luabind::set_error_callback()");
-				std::terminate();
+                else
+                {
+
+                    assert(0 && "the lua function threw an error and exceptions are disabled."
+                        "if you want to handle this error use luabind::set_error_callback()");
+                    std::terminate();
+                }
 #endif
 			}
 		}

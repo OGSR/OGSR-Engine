@@ -7,7 +7,7 @@ struct ENGINE_API SPPInfo
 	struct SColor
 	{
 		float r, g, b;
-		SColor() {}
+		SColor() {};
 		SColor(float _r, float _g, float _b) : r(_r), g(_g), b(_b) {}
 		IC operator u32()
 		{
@@ -44,7 +44,7 @@ struct ENGINE_API SPPInfo
 	struct SDuality
 	{
 		float h, v;
-		SDuality() {}
+		SDuality() {};
 		SDuality(float _h, float _v) : h(_h), v(_v) {}
 		IC SDuality& set(float _h, float _v)
 		{
@@ -57,7 +57,7 @@ struct ENGINE_API SPPInfo
 	{
 		float intensity, grain;
 		float fps;
-		SNoise() {}
+		SNoise() {};
 		SNoise(float _i, float _g, float _f) : intensity(_i), grain(_g), fps(_f) {}
 		IC SNoise& set(float _i, float _g, float _f)
 		{
@@ -132,6 +132,7 @@ public:
 	IC float Fov() const { return m_cam_info.fFov; }
 	IC float Aspect() const { return m_cam_info.fAspect; }
 	IC void camera_Matrix(Fmatrix& M) { M.set(m_cam_info.r, m_cam_info.n, m_cam_info.d, m_cam_info.p); }
+	inline void SetVPNear(const float val) { m_cam_info.fNear = val; }
 
 	void					Update				(const Fvector& P, const Fvector& D, const Fvector& N, float fFOV_Dest, float fASPECT_Dest, float fFAR_Dest, u32 flags);
 	void					UpdateFromCamera(const CCameraBase* C);

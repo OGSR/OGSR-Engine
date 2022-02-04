@@ -34,7 +34,7 @@ class CMonsterEnemyManager {
 
 public:
 						CMonsterEnemyManager		(); 
-						~CMonsterEnemyManager		();
+						~CMonsterEnemyManager() = default;
 	void				init_external				(CBaseMonster *M);
 	void				reinit						();
 

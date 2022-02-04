@@ -29,7 +29,7 @@ public:
 
 	DLL_Pure* _construct() override
 	{
-		return			(call_member<DLL_Pure*>(this,"_construct"));
+		return			(luabind::call_member<DLL_Pure*>(this,"_construct"));
 	}
 
 	static	DLL_Pure*	_construct_static	(Base *self)
@@ -85,27 +85,6 @@ public:
 	static bool			use_static			(CGameObject *self, CGameObject* who_use)
 	{
 		return self->CGameObject::use(who_use);
-	}
-
-
-	virtual void			net_Import			(NET_Packet &packet)
-	{
-		call<void>("net_Import",&packet);
-	}
-
-	static	void			net_Import_static	(CGameObject *self, NET_Packet *packet)
-	{
-		self->CGameObject::net_Import(*packet);
-	}
-
-	virtual void			net_Export			(NET_Packet &packet)
-	{
-		call<void>("net_Export",&packet);
-	}
-
-	static	void			net_Export_static	(CGameObject *self, NET_Packet *packet)
-	{
-		self->CGameObject::net_Export(*packet);
 	}
 
 	virtual BOOL			net_Spawn			(CSE_Abstract* data)

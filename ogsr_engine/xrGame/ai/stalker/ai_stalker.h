@@ -178,8 +178,7 @@ public:
 	virtual void						LoadSounds							(LPCSTR section );
 	
 	virtual BOOL						net_Spawn							(CSE_Abstract* DC);
-	virtual void						net_Export							(NET_Packet& P);
-	virtual void						net_Import							(NET_Packet& P);
+	virtual void net_Export( CSE_Abstract* E );
 	virtual void						net_Destroy							();
 	virtual void						net_Save							(NET_Packet& P);
 	virtual	BOOL						net_SaveRelevant					();
@@ -196,7 +195,7 @@ public:
 	virtual BOOL						UsedAI_Locations					();
 
 	virtual void						g_WeaponBones						(int &L, int &R1, int &R2);
-	virtual void						g_fireParams						(const CHudItem* pHudItem, Fvector& P, Fvector& D);
+	virtual void g_fireParams(CHudItem* pHudItem, Fvector& P, Fvector& D, const bool for_cursor = false) override;
 	virtual void						HitSignal							(float P,	Fvector& vLocalDir, CObject* who, s16 element);
 	virtual void						Die									(CObject* who);
 
@@ -341,7 +340,7 @@ protected:
 			void						choose_food						();
 			void						choose_weapon					(ALife::EWeaponPriorityType weapon_priority_type);
 			void						choose_medikit					();
-			void						choose_detector					();
+			//void						choose_detector					();
 			void						choose_equipment				();
 
 			void						select_items					();

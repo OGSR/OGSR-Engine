@@ -44,7 +44,7 @@ namespace luabind
 
 namespace luabind { namespace detail
 {
-    template <size_t Counter, typename T, typename... Policies>
+    template <size_t Counter, typename T, typename ...Policies>
     int calcResult(lua_State* L, const int startIndex, const int currentIndex)
     {
         using converter_policy = typename find_conversion_policy<Counter + 1, Policies...>::type;

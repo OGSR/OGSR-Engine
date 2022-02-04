@@ -57,8 +57,8 @@ void fix_texture_name(LPSTR fn);
 template <class T>
 BOOL	reclaim		(xr_vector<T*>& vec, const T* ptr)
 {
-	xr_vector<T*>::iterator it	= vec.begin	();
-	xr_vector<T*>::iterator end	= vec.end	();
+	auto it = vec.begin();
+	auto end = vec.end();
 	for (; it!=end; it++)
 		if (*it == ptr)	{ vec.erase	(it); return TRUE; }
 		return FALSE;
@@ -189,7 +189,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 
 		VERIFY(SUCCEEDED(_hr));
 
-		CHECK_OR_EXIT			(
+		R_ASSERT(
 			!FAILED(_hr),
 			make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
 		);
@@ -283,7 +283,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 		
 		VERIFY(SUCCEEDED(_hr));
 
-		CHECK_OR_EXIT		(
+		R_ASSERT(
 			!FAILED(_hr),
 			make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
 			);
@@ -339,7 +339,7 @@ SGS*	CResourceManager::_CreateGS			(LPCSTR name)
 
 		FS.r_close				( file );
 
-		CHECK_OR_EXIT			(
+		R_ASSERT(
 			!FAILED(_hr),
 			make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
 		);

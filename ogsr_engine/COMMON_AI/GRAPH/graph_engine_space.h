@@ -120,12 +120,13 @@ namespace GraphEngineSpace {
 				_index_type,
 				_iteration_type
 			>		CBaseParameters;
-
+#ifdef DEBUG
 	typedef SFlooder<
 				_dist_type,
 				_index_type,
 				_iteration_type
 			>		CFlooder;
+#endif
 	typedef SStraightLineParams<
 				_dist_type,
 				_index_type,

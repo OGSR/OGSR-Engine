@@ -29,6 +29,7 @@ public:
 	IC CPHPositionsPairs& operator =	(const CPHPositionsPairs& right)
 	{
 		geom=right.geom;
+		return *this;
 	}
 	IC bool operator ==	(const CPHPositionsPairs& right ) const
 	{

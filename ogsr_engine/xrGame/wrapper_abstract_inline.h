@@ -8,8 +8,7 @@
 
 #pragma once
 
-//#include "script_game_object.h"
-class CScriptGameObject;
+#include "script_game_object.h"
 
 #define TEMPLATE_SPECIALIZATION \
 	template <\

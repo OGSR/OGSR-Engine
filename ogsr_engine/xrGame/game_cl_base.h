@@ -36,16 +36,12 @@ public:
 
 	WeaponUsageStatistic				*m_WeaponUsageStatistic;	
 	virtual		void				reset_ui				();
-	virtual		void				CommonMessageOut		(LPCSTR msg);
 
 private:
 				void				switch_Phase			(u32 new_phase)		{inherited::switch_Phase(new_phase);};
 protected:
 
 	virtual		void				OnSwitchPhase			(u32 old_phase, u32 new_phase);	
-
-	//for scripting enhancement
-	virtual		void				TranslateGameMessage	(u32 msg, NET_Packet& P);
 
 	virtual		shared_str			shedule_Name			() const		{ return shared_str("game_cl_GameState"); };
 	virtual		float				shedule_Scale			();
@@ -62,7 +58,6 @@ public:
 	virtual		void				net_import_state		(NET_Packet& P);
 	virtual		void				net_import_update		(NET_Packet& P);
 	virtual		void				net_import_GameTime		(NET_Packet& P);						// update GameTime only for remote clients
-	virtual		void				net_signal				(NET_Packet& P);
 
 				bool				IR_OnKeyboardPress		(int dik);
 				bool				IR_OnKeyboardRelease	(int dik);
@@ -72,7 +67,6 @@ public:
 
 	virtual		bool				OnKeyboardPress			(int key){return false;};
 	virtual		bool				OnKeyboardRelease		(int key){return false;};
-				void				OnGameMessage			(NET_Packet& P);
 
 				game_PlayerState*	GetPlayerByGameID		(u32 GameID);
 				game_PlayerState*	GetPlayerByOrderID		(u32 id);

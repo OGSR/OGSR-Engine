@@ -36,8 +36,8 @@ enum	EGameActions
 	kWPN_4,
 	kWPN_5,
 	kWPN_6,
-	kWPN_8,
-	kSWITCH_SCOPE, //Вот это по сути сободная кнопка, её можно для чего то использовать.
+	kWPN_8, //kDETECTOR
+	kLASER_ON,
 	kWPN_NEXT,
 	kWPN_FIRE,
 	kWPN_ZOOM,
@@ -52,7 +52,7 @@ enum	EGameActions
 	kDROP,
 	kUSE,
 	kSCORES,
-	kCHAT,
+	kFLASHLIGHT,
 	kCHAT_TEAM,
 	kSCREENSHOT,
 	kQUIT,

@@ -23,7 +23,7 @@ void HUD_SOUND::LoadSound(	LPCSTR section, LPCSTR line,
 		sprintf_s		(sound_line,"%s%d",line,++k);
 	}//while
 
-	R_ASSERT3				(!hud_snd.sounds.empty(), "there is no sounds for:", section);
+	ASSERT_FMT(!hud_snd.sounds.empty(), "there is no sounds [%s] for [%s]", line, section);
 }
 
 void  HUD_SOUND::LoadSound(LPCSTR section, LPCSTR line, 

@@ -138,7 +138,7 @@ public:
 	
 	// Properties
 	void								processing_activate		();				// request	to enable	UpdateCL
-	void								processing_deactivate	();				// request	to disable	UpdateCL
+	virtual void						processing_deactivate	();				// request	to disable	UpdateCL
 	bool								processing_enabled		()				{ return 0!=Props.bActiveCounter;	}
 
 	void								setVisible			(BOOL _visible);
@@ -167,9 +167,7 @@ public:
 	virtual void						UpdateCL			();									// Called each frame, so no need for dt
 	virtual BOOL						net_Spawn			(CSE_Abstract* data);
 	virtual void						net_Destroy			();
-	virtual void						net_Export			(NET_Packet& P) {};					// export to server
-	virtual void						net_Import			(NET_Packet& P) {};					// import from server
-	virtual	void						net_ImportInput		(NET_Packet& P)	{};
+	virtual void net_Export( CSE_Abstract* E ) {};					// export to server
 	virtual BOOL						net_Relevant		()				{ return FALSE; };	// relevant for export to server
 	virtual void						net_Relcase			(CObject*	 O) { };				// destroy all links to another objects
 

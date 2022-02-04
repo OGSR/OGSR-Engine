@@ -104,6 +104,7 @@ protected:
 	bool				m_bAllowTrade;
 
 	u32					m_tmp_active_slot_num;
+public:
 	u32 m_tmp_next_item_slot;
 	//////////////////////////////////////////////////////////////////////////
 	// сюжетная информация
@@ -177,7 +178,8 @@ public:
 	virtual bool			use_bolts				() const {return(true);}
 	virtual	void			spawn_supplies			();
 
-	CInventoryItem* CInventoryOwner::GetCurrentOutfit() const;
+	CInventoryItem* GetCurrentOutfit() const;
+	CInventoryItem* GetCurrentTorch() const;
 
 	//////////////////////////////////////////////////////////////////////////
 	// связь со скриптами

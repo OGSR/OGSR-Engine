@@ -87,7 +87,7 @@ CInventory::CInventory()
 			m_slots[i].m_bPersistent = !!pSettings->r_bool("inventory",temp);
 		sprintf_s( temp, "slot_switch_fast_%d", i + 1 );
                 m_slots[ i ].setSwitchFast( READ_IF_EXISTS( pSettings, r_bool, "inventory", temp, false ) );
-	};
+	}
 
 	m_slots[PDA_SLOT].m_bVisible				= false;
 	m_slots[OUTFIT_SLOT].m_bVisible				= false;
@@ -95,13 +95,14 @@ CInventory::CInventory()
 	m_slots[HELMET_SLOT].m_bVisible				= false;
 	m_slots[NIGHT_VISION_SLOT].m_bVisible		= false;
 	m_slots[BIODETECTOR_SLOT].m_bVisible		= false;
+	m_slots[DETECTOR_SLOT].m_bVisible = false; //KRodin: это очень важно! Слот для зп-стайл детекторов должен быть НЕ активируемым!
 
 	for (u32 i = 0; i < m_slots.size(); ++i)
 	{
 		sprintf_s(temp, "slot_visible_%d", i + 1);
 		if (pSettings->line_exist("inventory", temp))
 			m_slots[i].m_bVisible = !!pSettings->r_bool("inventory", temp);
-	};
+	}
 
 	m_bSlotsUseful								= true;
 	m_bBeltUseful								= false;
@@ -192,18 +193,29 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 
 		break;
 	default:
-		bool def_to_slot = true;
-		auto pActor      = smart_cast<CActor*>( m_pOwner );
-		if (Core.Features.test(xrCore::Feature::ruck_flag_preferred))
-			def_to_slot = pActor ? !pIItem->RuckDefault() : true;
+		bool force_move_to_slot{}, force_ruck_default{};
+		if (!m_pOwner->m_tmp_next_item_slot)
+		{
+			force_ruck_default = true;
+			m_pOwner->m_tmp_next_item_slot = NO_ACTIVE_SLOT;
+		}
+		else if (m_pOwner->m_tmp_next_item_slot != NO_ACTIVE_SLOT)
+		{
+			pIItem->SetSlot(m_pOwner->m_tmp_next_item_slot);
+			force_move_to_slot = true;
+			m_pOwner->m_tmp_next_item_slot = NO_ACTIVE_SLOT;
+		}
 
-		if(def_to_slot && CanPutInSlot(pIItem))
+		auto pActor = smart_cast<CActor*>(m_pOwner);
+		const bool def_to_slot = (pActor && Core.Features.test(xrCore::Feature::ruck_flag_preferred)) ? !pIItem->RuckDefault() : true;
+
+		if((!force_ruck_default && def_to_slot && CanPutInSlot(pIItem)) || force_move_to_slot)
 		{
 			if ( pActor && Device.dwPrecacheFrame )
 				bNotActivate = true;
 			result						= Slot(pIItem, bNotActivate); VERIFY(result);
 		} 
-		else if (!pIItem->RuckDefault() && CanPutInBelt(pIItem))
+		else if (!force_ruck_default && !pIItem->RuckDefault() && CanPutInBelt(pIItem))
 		{
 			result						= Belt(pIItem); VERIFY(result);
 		}
@@ -404,13 +416,14 @@ bool CInventory::Ruck(PIItem pIItem)
 	CalcTotalWeight									();
 	InvalidateState									();
 
-	m_pOwner->OnItemRuck							(pIItem, pIItem->m_eItemPlace);
+	EItemPlace prevPlace = pIItem->m_eItemPlace;
+	m_pOwner->OnItemRuck							(pIItem, prevPlace);
 	pIItem->m_eItemPlace							= eItemPlaceRuck;
 
 	if (pIItem->GetSlot() != OUTFIT_SLOT || (smart_cast<CActor*>(GetOwner()) && in_slot)) //фикс сброса визуала актора при взятии в инвентарь любого костюма
-		pIItem->OnMoveToRuck();
+		pIItem->OnMoveToRuck(prevPlace);
 	else
-		pIItem->CInventoryItem::OnMoveToRuck();
+		pIItem->CInventoryItem::OnMoveToRuck(prevPlace);
 
 	if(in_slot)
 		pIItem->object().processing_deactivate();
@@ -620,16 +633,6 @@ bool CInventory::Action(s32 cmd, u32 flags)
 					b_send_event = Activate(cmd - kWPN_1, eKeyAction);
 			}
 		}break;
-	case kWPN_8:
-	{
-		if (flags&CMD_START)
-		{
-			if ((int)m_iActiveSlot == DETECTOR_SLOT && m_slots[m_iActiveSlot].m_pIItem)
-				b_send_event = Activate(NO_ACTIVE_SLOT);
-			else
-				b_send_event = Activate(DETECTOR_SLOT, eKeyAction);
-		}
-	}break;
 	}
 
 	if(b_send_event && g_pGameLevel && OnClient() && pActor)

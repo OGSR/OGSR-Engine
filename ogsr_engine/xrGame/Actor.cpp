@@ -64,6 +64,7 @@
 #include "InventoryBox.h"
 #include "location_manager.h"
 #include "PHCapture.h"
+#include "CustomDetector.h"
 
 // Tip for action for object we're looking at
 constexpr const char* m_sCarCharacterUseAction        = "car_character_use";
@@ -88,7 +89,7 @@ static Fbox		bbCrouchBox;
 static Fvector	vFootCenter;
 static Fvector	vFootExt;
 
-Flags32 psActorFlags = { AF_3D_SCOPES | AF_KEYPRESS_ON_START };
+Flags32 psActorFlags = { AF_3D_SCOPES | AF_KEYPRESS_ON_START | AF_CAM_COLLISION };
 
 static bool updated;
 
@@ -192,7 +193,6 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 	hit_probability			= 1.f;
 	m_feel_touch_characters = 0;
 	//-----------------------------------------------------------------------------------
-	m_dwILastUpdateTime		= 0;
 
 	m_location_manager		= xr_new<CLocationManager>(this);
 
@@ -1056,32 +1056,8 @@ void CActor::shedule_Update	(u32 DT)
 	}
 	else if ( !m_holder )
 	{
-		make_Interpolation();
-	
-		if (NET.size())
-		{
-			
-//			NET_SavedAccel = NET_Last.p_accel;
-//			mstate_real = mstate_wishful = NET_Last.mstate;
-
-			g_sv_Orientate				(mstate_real,dt			);
-			g_Orientate					(mstate_real,dt			);
-			g_Physics					(NET_SavedAccel,NET_Jump,dt	);			
-			if (!m_bInInterpolation)
-				g_cl_ValidateMState			(dt,mstate_wishful);
-			g_SetAnimation				(mstate_real);
-
-			if (NET_Last.mstate & mcCrouch)
-			{
-				if (isActorAccelerated(mstate_real, IsZoomAimingMode()))
-					character_physics_support()->movement()->ActivateBox(1, true);
-				else
-					character_physics_support()->movement()->ActivateBox(2, true);
-			}
-			else 
-				character_physics_support()->movement()->ActivateBox(0, true);
-		}	
-		mstate_old = mstate_real;
+		//Этот код не должен быть взван
+		R_ASSERT(0);
 	}
 
 	if ( this == Level().CurrentViewEntity() && !m_holder )
@@ -1996,4 +1972,11 @@ void CActor::RepackAmmo() {
 bool CActor::unlimited_ammo()
 {
 	return !!psActorFlags.test(AF_UNLIMITEDAMMO);
+}
+
+bool CActor::IsDetectorActive() const {
+	if (auto det = smart_cast<CCustomDetector*>(inventory().ItemFromSlot(DETECTOR_SLOT)))
+		return det->IsWorking();
+
+	return false;
 }

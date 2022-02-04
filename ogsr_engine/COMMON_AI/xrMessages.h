@@ -15,11 +15,6 @@ enum {
 	M_SV_CONFIG_FINISHED,
 
 	M_EVENT,					// Game Event
-	M_CL_INPUT,					// Client Input Data
-	//----------- for E3 -----------------------------
-	M_CL_UPDATE,
-	M_UPDATE_OBJECTS,
-	//-------------------------------------------------
 	M_CLIENTREADY,				// Client has finished to load level and are ready to play
 	
 	M_CHANGE_LEVEL,				// changing level
@@ -29,7 +24,6 @@ enum {
 	M_SAVE_PACKET,
 
 	M_SWITCH_DISTANCE,
-	M_GAMEMESSAGE,					// Game Message
 	M_EVENT_PACK,					// Pack of M_EVENT
 
 	//-----------------------------------------------------
@@ -54,11 +48,7 @@ enum {
 	//-----------------------------------------------------
 	M_PLAYER_FIRE,
 	//-----------------------------------------------------
-	M_MOVE_PLAYERS,
-	M_MOVE_PLAYERS_RESPOND,
-	//-----------------------------------------------------
 	M_CHANGE_SELF_NAME,
-	M_REMOTE_CONTROL_AUTH,
 	M_REMOTE_CONTROL_CMD,
 };
 
@@ -117,7 +107,6 @@ enum {
 	GEG_PLAYER_ATTACH_HOLDER,
 	GEG_PLAYER_DETACH_HOLDER,
 
-	GEG_PLAYER_PLAY_HEADSHOT_PARTICLE,
 	//-------------------------------------
 	GE_HIT_STATISTIC,
 	//-------------------------------------
@@ -143,10 +132,7 @@ enum EGameMessages {  //game_cl <----> game_sv messages
 	GAME_EVENT_PLAYER_GAME_MENU_RESPOND,	
 
 	GAME_EVENT_PLAYER_CONNECTED	,
-	GAME_EVENT_PLAYER_DISCONNECTED	,
-	GAME_EVENT_PLAYER_ENTERED_GAME	,
 	
-	GAME_EVENT_PLAYER_KILLED			,//////!!!!!
 	GAME_EVENT_PLAYER_HITTED,
 
 	GAME_EVENT_PLAYER_JOIN_TEAM		,

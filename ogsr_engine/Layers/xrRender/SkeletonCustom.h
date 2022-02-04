@@ -149,8 +149,10 @@ public:
 	const char* LL_BoneName_dbg(const u16 ID) const override;
 
 				CInifile*		_BCL	LL_UserData			()						{return pUserData;}
-	ICF			CBoneInstance&	_BCL	LL_GetBoneInstance	(u16 bone_id)			{	VERIFY(bone_id<LL_BoneCount()); VERIFY(bone_instances); return bone_instances[bone_id];	}
-	ICF const	CBoneInstance&	_BCL	LL_GetBoneInstance	(u16 bone_id) const		{	VERIFY(bone_id<LL_BoneCount()); VERIFY(bone_instances); return bone_instances[bone_id];	}
+
+	ICF CBoneInstance& LL_GetBoneInstance(u16 bone_id) { R_ASSERT(bone_id < LL_BoneCount()); R_ASSERT(bone_instances); return bone_instances[bone_id]; }
+	ICF const CBoneInstance& LL_GetBoneInstance(u16 bone_id) const { R_ASSERT(bone_id < LL_BoneCount()); R_ASSERT(bone_instances); return bone_instances[bone_id]; }
+
 	CBoneData&					_BCL	LL_GetData			(u16 bone_id)
     {
     	VERIFY(bone_id<LL_BoneCount());

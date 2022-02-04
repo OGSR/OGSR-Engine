@@ -558,9 +558,7 @@ public:
 	virtual	bool			bfAssignMovement			(CScriptEntityAction *tpEntityAction);
 	virtual	bool			bfAssignObject				(CScriptEntityAction *tpEntityAction);
 
-	// Network
-	virtual void			net_Export					(NET_Packet& P);				// export to server
-	virtual void			net_Import					(NET_Packet& P);				// import from server
+	virtual void net_Export( CSE_Abstract* E );
 	virtual BOOL			net_Relevant				()	{ return getLocal(); };		// relevant for export to server
 	virtual BOOL			UsedAI_Locations			();
 	virtual	void			net_Relcase					(CObject* O );
@@ -591,7 +589,7 @@ public:
 	// Hits
 	virtual void			HitSignal					(float /**HitAmount/**/,	Fvector& /**local_dir/**/, CObject* /**who/**/, s16 /**element/**/)	{};
 	virtual void			HitImpulse					(float /**amount/**/,		Fvector& /**vWorldDir/**/, Fvector& /**vLocalDir/**/)			{};
-	virtual void			g_fireParams				(const CHudItem* /**pHudItem/**/, Fvector& /**P/**/, Fvector& /**D/**/)											{};
+	virtual void g_fireParams(CHudItem* /**pHudItem/**/, Fvector& /**P/**/, Fvector& /**D/**/, const bool for_cursor = false) override {}
 	virtual u16				Initiator					();
 	// HUD
 	virtual void			OnHUDDraw					(CCustomHUD* hud);

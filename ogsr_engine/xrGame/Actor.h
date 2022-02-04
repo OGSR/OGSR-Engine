@@ -195,9 +195,6 @@ public:
 	virtual void OnItemDrop		(CInventoryItem *inventory_item);
 	virtual void OnItemDropUpdate ();
 
-	virtual	void OnPlayHeadShotParticle (NET_Packet P);
-
-
 	virtual void						Die				(CObject* who);
 	virtual	void						Hit				(SHit* pHDS);
 	virtual	void						PHHit			(SHit& H);
@@ -442,7 +439,6 @@ public:
 	void					g_cl_CheckControls		(u32 mstate_wf, Fvector &vControlAccel, float &Jump, float dt);
 	void					g_cl_ValidateMState		(float dt, u32 mstate_wf);
 	void					g_cl_Orientate			(u32 mstate_rl, float dt);
-	void					g_sv_Orientate			(u32 mstate_rl, float dt);
 	void					g_Orientate				(u32 mstate_rl, float dt);
 	bool					g_LadderOrient			() ;
 	void					UpdateMotionIcon		(u32 mstate_rl);
@@ -506,7 +502,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 public:
 	virtual void						g_WeaponBones		(int &L, int &R1, int &R2);
-	virtual void						g_fireParams		(const CHudItem* pHudItem, Fvector& P, Fvector& D);
+	virtual void g_fireParams(CHudItem* pHudItem, Fvector& P, Fvector& D, const bool for_cursor = false) override;
 	virtual BOOL						g_State				(SEntityState& state) const;
 	virtual	float						GetWeaponAccuracy	() const;
 			bool						IsZoomAimingMode	() const {return m_bZoomAimingMode;}
@@ -554,11 +550,9 @@ protected:
 	//////////////////////////////////////////////////////////////////////////
 	// Network
 	//////////////////////////////////////////////////////////////////////////
-			void						ConvState			(u32 mstate_rl, string128 *buf);
 public:
 	virtual BOOL						net_Spawn			( CSE_Abstract* DC);
-	virtual void						net_Export			( NET_Packet& P);				// export to server
-	virtual void						net_Import			( NET_Packet& P);				// import from server
+	virtual void net_Export( CSE_Abstract* E );
 	virtual void						net_Destroy			();
 	virtual BOOL						net_Relevant		();//	{ return getSVU() | getLocal(); };		// relevant for export to server
 	virtual	void						net_Relcase			( CObject* O );					//
@@ -569,26 +563,11 @@ public:
 	virtual void						net_Save			(NET_Packet& P)																	;
 	virtual	BOOL						net_SaveRelevant	()																				;
 protected:
-	xr_deque<net_update>	NET;
 	Fvector					NET_SavedAccel;
-	net_update				NET_Last;
-	BOOL					NET_WasInterpolating;	// previous update was by interpolation or by extrapolation
-	u32						NET_Time;				// server time of last update
-
-	//---------------------------------------------
-	void					net_Import_Base				( NET_Packet& P);
-	void					net_Import_Physic			( NET_Packet& P);
-	void					net_Import_Base_proceed		( );
-	void					net_Import_Physic_proceed	( );
-	//---------------------------------------------
 	
-
 
 ////////////////////////////////////////////////////////////////////////////
 virtual	bool				can_validate_position_on_spawn	(){return false;}
-	///////////////////////////////////////////////////////
-	// апдайт с данными физики
-	xr_deque<net_update_A>	NET_A;
 	
 	//---------------------------------------------
 //	bool					m_bHasUpdate;	
@@ -605,36 +584,6 @@ virtual	bool				can_validate_position_on_spawn	(){return false;}
 	VIS_POSITION	LastPosL;
 #endif
 
-	
-	SPHNetState				LastState;
-	SPHNetState				RecalculatedState;
-	SPHNetState				PredictedState;
-	
-	InterpData				IStart;
-	InterpData				IRec;
-	InterpData				IEnd;
-	
-	bool					m_bInInterpolation;
-	bool					m_bInterpolate;
-	u32						m_dwIStartTime;
-	u32						m_dwIEndTime;
-	u32						m_dwILastUpdateTime;
-
-	//---------------------------------------------
-	DEF_DEQUE		(PH_STATES, SPHNetState);
-	PH_STATES				m_States;
-	u16						m_u16NumBones;
-	void					net_ExportDeadBody		(NET_Packet &P);
-	//---------------------------------------------
-	void					CalculateInterpolationParams();
-	//---------------------------------------------
-	virtual void			make_Interpolation ();
-#ifdef DEBUG
-	//---------------------------------------------
-	virtual void			OnRender_Network();
-	//---------------------------------------------
-#endif
-
 	//////////////////////////////////////////////////////////////////////////
 	// Actor physics
 	//////////////////////////////////////////////////////////////////////////
@@ -645,9 +594,6 @@ public:
 	void ForceTransform(const Fmatrix& m) override;
 	void ForceTransformAndDirection(const Fmatrix& m) override;
 
-	virtual void			PH_B_CrPr		(); // actions & operations before physic correction-prediction steps
-	virtual void			PH_I_CrPr		(); // actions & operations after correction before prediction steps
-	virtual void			PH_A_CrPr		(); // actions & operations after phisic correction-prediction steps
 //	virtual void			UpdatePosStack	( u32 Time0, u32 Time1 );
 	virtual void			MoveActor		(Fvector NewPos, Fvector NewDir);
 
@@ -721,7 +667,6 @@ protected:
 	bool						m_bWasHitted;
 	bool						m_bWasBackStabbed;
 
-	virtual		bool			Check_for_BackStab_Bone			(u16 element);
 public:
 	virtual void				SetHitInfo						(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir);
 
@@ -815,6 +760,8 @@ public:
 			bool is_actor_moving();
 			
 			void RepackAmmo();
+
+			bool IsDetectorActive() const;
 private:
 	// иммунитеты от препаратов, применяемые для ослабления хита
 	float m_fDrugPsyProtectionCoeff;

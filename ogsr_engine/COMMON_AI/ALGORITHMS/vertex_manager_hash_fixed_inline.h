@@ -151,15 +151,15 @@ IC	typename CHashFixedVertexManager::CGraphVertex &CHashFixedVertexManager::crea
 	vertex.index()					= vertex_id;
 	
 	u32								index = hash_index(vertex_id);
-	CGraphIndexVertex				*_vertex = m_hash[index];
-	if (!_vertex || (_vertex->m_path_id != current_path_id()) || (_vertex->m_hash != index))
-		_vertex						= 0;
+	CGraphIndexVertex				*__vertex = m_hash[index];
+	if (!__vertex || (__vertex->m_path_id != current_path_id()) || (__vertex->m_hash != index))
+		__vertex						= 0;
 
 	m_hash[index]					= index_vertex;
-	index_vertex->m_next			= _vertex;
+	index_vertex->m_next			= __vertex;
 	index_vertex->m_prev			= 0;
-	if (_vertex)
-		_vertex->m_prev				= index_vertex;
+	if (__vertex)
+		__vertex->m_prev				= index_vertex;
 	index_vertex->m_hash			= index;
 	return							(vertex);
 }

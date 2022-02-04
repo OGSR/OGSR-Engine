@@ -233,7 +233,7 @@ bool enemy_inaccessible (CBaseMonster * const object)
 	if ( xz_dist_to_vertex > 0.5f && y_dist_to_vertex > 3.f )
 		return							true;
 
-	if ( xz_dist_to_vertex > 1.2f )
+	if ( xz_dist_to_vertex >= 1.2f || y_dist_to_vertex >= 1.2f )
 		return							true;
 
 	if ( !object->Home->at_home(enemy_pos) )
@@ -862,7 +862,11 @@ void CBaseMonster::OnEvent(NET_Packet& P, u16 type)
 		{
 			P.r_u16		(id);
 			CObject* O	= Level().Objects.net_Find	(id);
-			VERIFY		(O);
+
+			if (!O) {
+				Msg("! [%s] Error: No object to reject/sell [%u]", __FUNCTION__, id);
+				break;
+			}
 
 			bool just_before_destroy	= !P.r_eof() && P.r_u8();
 			bool dont_create_shell = (type == GE_TRADE_SELL) || (type == GE_TRANSFER_REJECT) || just_before_destroy;

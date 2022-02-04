@@ -177,8 +177,8 @@ public:
     void init(const Matrix T, const Matrix S, const float a[3], const float p[3]);
 
     SRS(const Matrix T1, const Matrix S1, const float a[3], const float p[3]) { init(T1, S1, a, p); }
-    SRS() {}
-    ~SRS() {}
+    SRS() = default;
+    ~SRS() = default;
     void Tmatrix(Matrix TT) { cpmatrix(TT, T); }
     void Smatrix(Matrix SS) { cpmatrix(SS, S); }
     void SetTMatrix(const Matrix TT) { cpmatrix(T, TT); }

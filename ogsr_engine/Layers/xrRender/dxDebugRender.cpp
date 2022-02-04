@@ -19,7 +19,7 @@ void dxDebugRender::Render()
 		RCache.set_Shader(dxRenderDeviceRender::Instance().m_WireShader);
 		RCache.set_c("tfactor", float(color_get_R(color)) / 255.f, float(color_get_G(color)) / 255.f, float(color_get_B(color)) / 255.f, float(color_get_A(color)) / 255.f);
 #endif
-		RCache.dbg_Draw(D3DPT_LINELIST, &vert_vec.front(), vert_vec.size(), &ind_vec.front(), ind_vec.size() / 2);
+		RCache.dbg_Draw(D3DPT_LINELIST, &vert_vec.front(), static_cast<int>(vert_vec.size()), &ind_vec.front(), static_cast<int>(ind_vec.size() / 2));
 	}
 
 	m_line_vertices.clear(); m_line_indices.clear();
@@ -54,7 +54,7 @@ void dxDebugRender::add_lines(Fvector const* vertices, u32 const& vertex_count, 
 	auto I = ind_vec.begin() + indices_size, E = ind_vec.end();
 	const u16* J = pairs;
 	for (; I != E; ++I, ++J)
-		*I = vertices_size + *J;
+		*I = static_cast<u16>(vertices_size + *J);
 
 	vert_vec.resize(vertices_size + vertex_count);
 	auto i = vert_vec.begin() + vertices_size, e = vert_vec.end();

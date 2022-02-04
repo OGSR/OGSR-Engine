@@ -47,8 +47,8 @@ void CAbstractObjectManager::update					()
 {
 	float					result = flt_max;
 	m_selected				= 0;
-	OBJECTS::const_iterator	I = m_objects.begin();
-	OBJECTS::const_iterator	E = m_objects.end();
+	auto I = m_objects.cbegin();
+	auto E = m_objects.cend();
 	for ( ; I != E; ++I) {
 		float				value = do_evaluate(*I);
 		if (result > value) {
@@ -83,7 +83,7 @@ bool CAbstractObjectManager::add					(T *object)
 	if (!is_useful(object))
 		return				(false);
 
-	OBJECTS::const_iterator	I = std::find(m_objects.begin(),m_objects.end(),object);
+	auto I = std::find(m_objects.begin(),m_objects.end(),object);
 	if (m_objects.end() == I) {
 		m_objects.push_back	(object);
 		return				(true);

@@ -62,7 +62,14 @@ public:
 	typedef GraphEngineSpace::CWorldState CWorldState;
 	typedef _world_operator _world_operator; //Fuck this shit!
 
-protected:
+	using inherited::solve;
+	using inherited::solution;
+	using inherited::get_operator;
+	using inherited::evaluators;
+	using inherited::operators;
+	using inherited::m_evaluators;
+	using inherited::m_operators;
+
 	bool						m_initialized;
 	_action_id_type				m_current_action_id;
 

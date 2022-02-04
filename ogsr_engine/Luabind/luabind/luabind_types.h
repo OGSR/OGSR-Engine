@@ -18,9 +18,6 @@
 #include <luabind/luabind_memory_allocator.h>
 
 namespace luabind {
-	typedef void* memory_allocation_function_parameter;
-	typedef void* (__cdecl *memory_allocation_function_pointer) (memory_allocation_function_parameter parameter, void const *, size_t);
-
 	template <typename T, typename allocator = memory_allocator<T>>
 	using internal_vector = std::vector<T, allocator>;
 

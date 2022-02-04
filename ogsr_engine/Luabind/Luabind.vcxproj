@@ -172,6 +172,7 @@
     <ClCompile Include="src\luabind_memory.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="luabind\cdecl_cast.hpp" />
     <ClInclude Include="luabind\detail\calc_has_arg.hpp" />
     <ClInclude Include="luabind\detail\policy_cons.hpp" />
     <ClInclude Include="luabind\adopt_policy.hpp" />

@@ -30,6 +30,8 @@
 #include "alife_registry_wrappers.h"
 #include "alife_simulator_header.h"
 #include "holder_custom.h"
+#include "inventory.h"
+#include "torch.h"
 
 #ifndef MASTER_GOLD
 #	include "clsid_game.h"
@@ -107,6 +109,7 @@ CVisualMemoryManager::CVisualMemoryManager		(vision_client *client)
 void CVisualMemoryManager::initialize			()
 {
 	m_max_object_count	= 1;
+	m_adaptive_max_object_count = 0;
 	m_enabled			= true;
 	m_objects			= 0;
 }
@@ -145,6 +148,7 @@ void CVisualMemoryManager::reinit					()
 void CVisualMemoryManager::reload				(LPCSTR section)
 {
 	m_max_object_count			= READ_IF_EXISTS(pSettings,r_s32,section,"DynamicObjectsCount",1);
+	m_adaptive_max_object_count = READ_IF_EXISTS( pSettings, r_u32, section, "DynamicObjectsCount_adaptive", 0u );
 
 	if (m_stalker) {
 		m_free.Load		(pSettings->r_string(section,"vision_free_section"),true);
@@ -277,8 +281,17 @@ float CVisualMemoryManager::object_visible_distance(const CGameObject *game_obje
 
 float CVisualMemoryManager::object_luminocity	(const CGameObject *game_object) const
 {
-	if (game_object->CLS_ID != CLSID_OBJECT_ACTOR)
+	const auto* pActor = smart_cast<const CActor*>( game_object );
+	if ( !pActor )
 		return	(1.f);
+
+	const auto* pTorch = smart_cast<const CTorch*>( pActor->GetCurrentTorch() );
+	if ( pTorch && pTorch->torch_active() ) {
+	  float dist = m_object->Position().distance_to( game_object->Position() );
+	  if ( dist < pTorch->get_range() )
+	    return 1.f;
+	}
+
 	float		luminocity = const_cast<CGameObject*>(game_object)->ROS()->get_luminocity();
 	float		power = log(luminocity > .001f ? luminocity : .001f)*current_state().m_luminocity_factor;
 	return		(exp(power));
@@ -301,7 +314,7 @@ float CVisualMemoryManager::get_object_velocity	(const CGameObject *game_object,
 	);
 }
 
-float CVisualMemoryManager::get_visible_value	(float distance, float object_distance, float time_delta, float object_velocity, float luminocity) const
+float CVisualMemoryManager::get_visible_value( float distance, float object_distance, float time_delta, float object_velocity, float luminocity, float trans ) const
 {
 	float always_visible_distance = current_state().m_always_visible_distance;
 	if ( object_distance <= always_visible_distance )
@@ -325,6 +338,7 @@ float CVisualMemoryManager::get_visible_value	(float distance, float object_dist
 		(distance - object_distance) /
 		(distance - always_visible_distance)
 		* fog_factor
+		* trans
 	);
 }
 
@@ -384,11 +398,21 @@ bool CVisualMemoryManager::visible				(const CGameObject *game_object, float tim
 		return					(false);
 	}
 
+	float luminocity = object_luminocity( game_object );
+	float trans;
+        if ( current_state().m_transparency_factor > 0 && smart_cast<const CActor*>( game_object ) ) {
+	  trans = visible_transparency_threshold( game_object );
+	  trans = trans < 0.f ? 1.f : ( trans * current_state().m_transparency_factor );
+	  clamp( trans, 0.f, 1.f );
+	}
+	else
+	  trans = 1.f;
+
 	if (!object) {
 		CNotYetVisibleObject		new_object;
 		new_object.m_object			= game_object;
 		new_object.m_prev_time		= 0;
-		new_object.m_value			= get_visible_value(distance,object_distance,time_delta,get_object_velocity(game_object,new_object),object_luminocity(game_object));
+		new_object.m_value = get_visible_value( distance, object_distance, time_delta, get_object_velocity( game_object, new_object ), luminocity, trans );
 		clamp						(new_object.m_value,0.f,current_state().m_visibility_threshold + EPS_L);
 		new_object.m_update_time	= Device.dwTimeGlobal;
 		new_object.m_prev_time		= get_prev_time(game_object);
@@ -397,7 +421,7 @@ bool CVisualMemoryManager::visible				(const CGameObject *game_object, float tim
 	}
 
 	object->m_update_time		= Device.dwTimeGlobal;
-	object->m_value				+= get_visible_value(distance,object_distance,time_delta,get_object_velocity(game_object,*object),object_luminocity(game_object));
+	object->m_value += get_visible_value( distance, object_distance, time_delta, get_object_velocity( game_object, *object ), luminocity, trans );
 	clamp						(object->m_value,0.f,current_state().m_visibility_threshold + EPS_L);
 	object->m_prev_time			= get_prev_time(game_object);
 
@@ -411,7 +435,7 @@ void CVisualMemoryManager::add_visible_object	(const CObject *object, float time
 		return;
 #endif // MASTER_GOLD
 
-	xr_vector<CVisibleObject>::iterator	J;
+	std::deque<CVisibleObject>::iterator	J;
 	const CGameObject *game_object;
 	const CGameObject *self;
 
@@ -434,17 +458,17 @@ void CVisualMemoryManager::add_visible_object	(const CObject *object, float time
 #ifdef USE_FIRST_GAME_TIME
 		visible_object.m_first_game_time	= Level().GetGameTime();
 #endif
-#ifdef USE_FIRST_LEVEL_TIME
+#ifdef USE_LEVEL_TIME //USE_FIRST_LEVEL_TIME
 		visible_object.m_first_level_time	= Device.dwTimeGlobal;
 #endif
 
-		if (m_max_object_count <= m_objects->size()) {
-			xr_vector<CVisibleObject>::iterator	I = std::min_element(m_objects->begin(),m_objects->end(),SLevelTimePredicate<CGameObject>());
-			VERIFY				(m_objects->end() != I);
-			*I					= visible_object;
+		if ( m_objects->size() >= m_max_object_count ) {
+		  std::deque<CVisibleObject>::iterator I = std::min_element( m_objects->begin(), m_objects->end(), SLevelTimePredicate<CGameObject>() );
+		  VERIFY( m_objects->end() != I );
+		  if ( !m_adaptive_max_object_count || I->m_level_time + m_adaptive_max_object_count < Device.dwTimeGlobal )
+		    m_objects->erase( I );
 		}
-		else
-			m_objects->push_back(visible_object);
+		m_objects->push_front( visible_object );
 	}
 	else {
 		if (!fictitious)
@@ -458,7 +482,7 @@ void CVisualMemoryManager::add_visible_object	(const CObject *object, float time
 //	STOP_PROFILE
 }
 
-void CVisualMemoryManager::add_visible_object	(const CVisibleObject visible_object)
+void CVisualMemoryManager::add_visible_object	(CVisibleObject visible_object)
 {
 #ifndef MASTER_GOLD
 	if (visible_object.m_object && (visible_object.m_object->CLS_ID == CLSID_OBJECT_ACTOR) && psAI_Flags.test(aiIgnoreActor))
@@ -466,25 +490,29 @@ void CVisualMemoryManager::add_visible_object	(const CVisibleObject visible_obje
 #endif // MASTER_GOLD
 
 	VERIFY										(m_objects);
-	xr_vector<CVisibleObject>::iterator			J = std::find(m_objects->begin(),m_objects->end(),object_id(visible_object.m_object));
+	std::deque<CVisibleObject>::iterator			J = std::find(m_objects->begin(),m_objects->end(),object_id(visible_object.m_object));
 	if (m_objects->end() != J)
 		*J				= visible_object;
-	else
-		if (m_max_object_count <= m_objects->size()) {
-			xr_vector<CVisibleObject>::iterator	I = std::min_element(m_objects->begin(),m_objects->end(),SLevelTimePredicate<CGameObject>());
-			VERIFY								(m_objects->end() != I);
-			*I									= visible_object;
+	else {
+#ifdef USE_LEVEL_TIME //USE_FIRST_LEVEL_TIME
+		visible_object.m_first_level_time = Device.dwTimeGlobal;
+#endif
+		if ( m_objects->size() >= m_max_object_count ) {
+		  std::deque<CVisibleObject>::iterator I = std::min_element( m_objects->begin(), m_objects->end(), SLevelTimePredicate<CGameObject>() );
+		  VERIFY( m_objects->end() != I );
+		  if ( !m_adaptive_max_object_count || I->m_level_time + m_adaptive_max_object_count < Device.dwTimeGlobal )
+		    m_objects->erase( I );
 		}
-		else
-			m_objects->push_back(visible_object);
+		m_objects->push_front( visible_object );
+	}
 }
 
 #ifdef DEBUG
 void CVisualMemoryManager::check_visibles	() const
 {
 	squad_mask_type						mask = this->mask();
-	xr_vector<CVisibleObject>::iterator	I = m_objects->begin();
-	xr_vector<CVisibleObject>::iterator	E = m_objects->end();
+	std::deque<CVisibleObject>::iterator	I = m_objects->begin();
+	std::deque<CVisibleObject>::iterator	E = m_objects->end();
 	for ( ; I != E; ++I) {
 		if (!(*I).visible(mask))
 			continue;
@@ -613,8 +641,8 @@ void CVisualMemoryManager::update				(float time_delta)
 
 	START_PROFILE("Memory Manager/visuals/update/make_invisible")
 	{
-		xr_vector<CVisibleObject>::iterator	I = m_objects->begin();
-		xr_vector<CVisibleObject>::iterator	E = m_objects->end();
+		std::deque<CVisibleObject>::iterator	I = m_objects->begin();
+		std::deque<CVisibleObject>::iterator	E = m_objects->end();
 		for ( ; I != E; ++I)
 			if ((*I).m_level_time + current_state().m_still_visible_time < Device.dwTimeGlobal)
 				(*I).visible			(mask,false);
@@ -651,6 +679,19 @@ void CVisualMemoryManager::update				(float time_delta)
 			),
 			m_objects->end()
 		);
+	}
+
+	if ( m_adaptive_max_object_count && m_objects->size() > m_max_object_count ) {
+	  m_objects->erase(
+	    std::remove_if(
+	      m_objects->begin() + m_max_object_count,
+	      m_objects->end(),
+	      [&]( const auto& it ) -> bool {
+	        return it.m_level_time + m_adaptive_max_object_count < Device.dwTimeGlobal;
+	      }
+	    ),
+	    m_objects->end()
+	  );
 	}
 
 	// verifying if object is online
@@ -782,17 +823,18 @@ void CVisualMemoryManager::load	(IReader &packet)
 #ifdef USE_LEVEL_TIME
 		VERIFY						(Device.dwTimeGlobal >= object.m_level_time);
 		object.m_level_time			= packet.r_u32();
-		object.m_level_time			= Device.dwTimeGlobal - object.m_level_time;
+		object.m_level_time			= Device.dwTimeGlobal >= object.m_level_time ? Device.dwTimeGlobal - object.m_level_time : 0;
+		object.m_first_level_time	= Device.dwTimeGlobal;
 #endif // USE_LEVEL_TIME
 #ifdef USE_LAST_LEVEL_TIME
 		VERIFY						(Device.dwTimeGlobal >= object.m_last_level_time);
 		object.m_last_level_time	= packet.r_u32();
-		object.m_last_level_time	= Device.dwTimeGlobal - object.m_last_level_time;
+		object.m_last_level_time	= Device.dwTimeGlobal >= object.m_last_level_time ? Device.dwTimeGlobal - object.m_last_level_time : 0;
 #endif // USE_LAST_LEVEL_TIME
 #ifdef USE_FIRST_LEVEL_TIME
 		VERIFY						(Device.dwTimeGlobal >= (*I).m_first_level_time);
 		object.m_first_level_time	= packet.r_u32();
-		object.m_first_level_time	= Device.dwTimeGlobal - (*I).m_first_level_time;
+		object.m_first_level_time	= Device.dwTimeGlobal >= object.m_first_level_time ? Device.dwTimeGlobal - (*I).m_first_level_time : 0;
 #endif // USE_FIRST_LEVEL_TIME
 		object.m_visible.assign( ai().get_alife()->header().version() < 8 ? (squad_mask_type)packet.r_u32() : packet.r_u64() );
 

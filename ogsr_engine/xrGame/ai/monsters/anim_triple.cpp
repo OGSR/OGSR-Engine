@@ -2,13 +2,6 @@
 #include "anim_triple.h"
 #include "control_manager.h"
 
-char *dbg_states[] = {
-	"eStatePrepare", 
-	"eStateExecute", 
-	"eStateFinalize", 
-	"eStateNone"
-};
-
 void CAnimationTriple::reset_data()
 {
 	m_data.capture_type	= 0;

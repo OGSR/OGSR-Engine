@@ -73,9 +73,8 @@
     template<typename T>
 	inline T* CResourceManager::CreateShader(const char* name)
 	{
-		ShaderTypeTraits<T>::MapType& sh_map = GetShaderMap<ShaderTypeTraits<T>::MapType>();
-		LPSTR	N = LPSTR(name);
-		ShaderTypeTraits<T>::MapType::iterator	I = sh_map.find(N);
+		auto& sh_map = GetShaderMap<ShaderTypeTraits<T>::MapType>();
+		auto I = sh_map.find(name);
 
 		if (I!=sh_map.end())
 			return		I->second;
@@ -117,7 +116,7 @@
 
 			VERIFY(SUCCEEDED(_hr));
 
-			CHECK_OR_EXIT				(
+			R_ASSERT(
 				!FAILED(_hr),
 				make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
 			);
@@ -129,7 +128,7 @@
 	template<typename T>
 	inline void CResourceManager::DestroyShader(const T* sh)
 	{
-		ShaderTypeTraits<T>::MapType& sh_map = GetShaderMap<ShaderTypeTraits<T>::MapType>();
+		auto& sh_map = GetShaderMap<ShaderTypeTraits<T>::MapType>();
 
 		if (0==(sh->dwFlags&xr_resource_flagged::RF_REGISTERED))
 			return;

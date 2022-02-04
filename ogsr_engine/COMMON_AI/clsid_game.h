@@ -154,8 +154,11 @@ constexpr auto CLSID_SPACE_RESTRICTOR         = MK_CLSID('S','P','A','C','E','_'
 constexpr auto CLSID_SMART_ZONE               = MK_CLSID('S','M','R','T','Z','O','N','E');
 
 // Detectors
-constexpr auto CLSID_DETECTOR_SIMPLE          = MK_CLSID('D','_','S','I','M','D','E','T');
-constexpr auto CLSID_DETECTOR_VISUAL          = MK_CLSID('D','_','V','I','S','D','E','T');
+constexpr auto CLSID_DETECTOR_SIMPLE_SHOC     = MK_CLSID('D','_','S','I','M','D','E','T');
+constexpr auto CLSID_DETECTOR_SIMPLE          = MK_CLSID('D','E','T','_','S','I','M','P');
+constexpr auto CLSID_DETECTOR_ADVANCED        = MK_CLSID('D','E','T','_','A','D','V','A');
+constexpr auto CLSID_DETECTOR_ELITE           = MK_CLSID('D','E','T','_','E','L','I','T');
+constexpr auto CLSID_DETECTOR_SCIENTIFIC      = MK_CLSID('D','E','T','_','S','C','I','E');
 
 // PDA
 constexpr auto CLSID_DEVICE_PDA               = MK_CLSID('D','_','P','D','A',' ',' ',' ');

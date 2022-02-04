@@ -5,6 +5,7 @@
 template<typename _Object>
 class CStateMonsterFindEnemyRun : public CState<_Object> {
 	typedef CState<_Object> inherited;
+	using inherited::object;
 
 	Fvector				target_point;
 	u32					target_vertex{};

@@ -266,7 +266,7 @@ public:
 	void				EnableCharacter			()																		{if(m_character&&m_character->b_exist)m_character->Enable();}
 	void				SetOjectContactCallback (ObjectContactCallbackFun* callback){if(m_character)m_character->SetObjectContactCallback(callback);}
 	void				SetFootCallBack			(ObjectContactCallbackFun* callback){VERIFY(m_character);m_character->SetWheelContactCallback(callback);}
-	static BOOL CPHMovementControl::BorderTraceCallback(collide::rq_result& result, LPVOID params);
+	static BOOL BorderTraceCallback(collide::rq_result& result, LPVOID params);
 	ObjectContactCallbackFun* ObjectContactCallback(){if(m_character)return m_character->ObjectContactCallBack();else return NULL; }
 	u16					ContactBone				(){return m_character->ContactBone();}
 	const ICollisionDamageInfo	*CollisionDamageInfo ()const {VERIFY(m_character);return m_character->CollisionDamageInfo ();}

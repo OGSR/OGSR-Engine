@@ -3,6 +3,7 @@
 template<typename _Object>
 class CStateGroupPanicRun : public CState<_Object> {
 	typedef CState<_Object> inherited;
+	using inherited::object;
 
 public:
 						CStateGroupPanicRun	(_Object *obj) : inherited(obj) {}

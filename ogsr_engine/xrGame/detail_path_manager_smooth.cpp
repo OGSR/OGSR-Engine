@@ -686,7 +686,7 @@ void CDetailPathManager::build_path_via_key_points(
 	const u32				straight_line_index_negative
 )
 {
-	STrajectoryPoint					s,d,p;
+	STrajectoryPoint					s,d;
 	s 									= start;
 	xr_vector<STravelPoint>::const_iterator	I = m_key_points.begin(), B = I;
 	xr_vector<STravelPoint>::const_iterator	E = m_key_points.end();
@@ -732,7 +732,6 @@ void CDetailPathManager::build_path_via_key_points(
 		s.direction.normalize			();
 		m_path.pop_back					();
 
-		d								= p;
 		if (!m_path.empty()) {
 			if (is_negative(velocity(m_path.back().velocity).linear_velocity))
 				s.direction.mul			(-1.f);

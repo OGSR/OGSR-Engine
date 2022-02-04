@@ -119,7 +119,6 @@ void InitConsole	()
 	CORE_FEATURE_SET( autoreload_wpn,             "features" );
 	CORE_FEATURE_SET( no_progress_bar_animation,  "features" );
 	CORE_FEATURE_SET( disable_dialog_break,       "features" );
-	CORE_FEATURE_SET( use_cop_thm_format,         "features" );
 }
 
 void InitInput()
@@ -443,7 +442,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 LPCSTR _GetFontTexName (LPCSTR section)
 {
-	static char* tex_names[]={"texture800","texture","texture1600"};
+	constexpr const char* tex_names[] = { "texture800", "texture", "texture1600" };
 	int def_idx		= 1;//default 1024x768
 	int idx			= def_idx;
 

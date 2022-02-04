@@ -92,8 +92,7 @@ public:
 	virtual	void	UpdateCL		();
 	virtual BOOL	net_Spawn(CSE_Abstract* DC);
 	virtual void	net_Destroy		();
-	virtual void			net_Export			(NET_Packet& P);
-	virtual void			net_Import			(NET_Packet& P);
+	virtual void net_Export( CSE_Abstract* E );
 
 	virtual void	OnH_A_Chield		();
 
@@ -181,6 +180,12 @@ protected:
 	virtual void	PlayAnimHide		();
 	virtual void	PlayAnimReload		();
 	virtual void	PlayAnimIdle		();
+
+private:
+	string64 guns_aim_anm;
+protected:
+	const char* GetAnimAimName();
+
 	virtual void	PlayAnimAim			();
 	virtual void	PlayAnimShoot		();
 	virtual void	PlayReloadSound		();

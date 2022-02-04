@@ -685,7 +685,7 @@ void CScriptGameObject::play_hud_animation( LPCSTR anim, bool mix_in ) {
 		ai().script_engine().script_log( ScriptStorage::eLuaMessageTypeError, "CHudItem : cannot access class member play_hud_animation!" );
 		return;
 	}
-	k->PlayHUDMotion(anim, mix_in, k, k->GetState());
+	k->PlayHUDMotion({ anim }, mix_in, k->GetState());
 }
 
 void CScriptGameObject::play_hud_animation( LPCSTR anim ) {
@@ -787,7 +787,7 @@ bool CScriptGameObject::throw_target( const Fvector& position, u32 const vertex_
 void CScriptGameObject::g_fireParams( const CScriptGameObject* pHudItem, Fvector& P, Fvector& D ) {
   auto E = smart_cast<CEntity*>( &object() );
   ASSERT_FMT( E, "[%s]: %s not a CEntity", __FUNCTION__, object().cName().c_str() );
-  const auto item = smart_cast<const CHudItem*>( &(pHudItem->object()) );
+  auto item = smart_cast<CHudItem*>( &(pHudItem->object()) );
   ASSERT_FMT( item, "[%s]: %s not a CHudItem", __FUNCTION__, pHudItem->object().cName().c_str() );
   E->g_fireParams( item, P, D );
 }

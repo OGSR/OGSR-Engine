@@ -44,6 +44,18 @@
 //
 //*************************************************************************************************
 
+// LUABIND_NO_ERROR_CHECKING
+// define this to remove all error checks
+// this will improve performance and memory
+// footprint.
+// if it is defined matchers will only be called on
+// overloaded functions, functions that's
+// not overloaded will be called directly. The
+// parameters on the lua stack are assumed
+// to match those of the function.
+// exceptions will still be catched when there's
+// no error checking.
+
 //#define LUABIND_NOT_THREADSAFE
 // this define will make luabind non-thread safe. That is,
 // it will rely on a static variable. You can still have
@@ -72,6 +84,16 @@
 #	define LUABIND_INVALID_TYPE_INFO &typeid(detail::null_type)
 #	include <typeinfo>
 #endif
+
+// LUABIND_NO_EXCEPTIONS
+// this define will disable all usage of try, catch and throw in
+// luabind. This will in many cases disable runtime-errors, such
+// as invalid casts, when calling lua-functions that fails or
+// returns values that cannot be converted by the given policy.
+// Luabind requires that no function called directly or indirectly
+// by luabind throws an exception (throwing exceptions through
+// C code has undefined behavior, lua is written in C).
+// #define LUABIND_NO_EXCEPTIONS
 
 // If you're building luabind as a dll on windows with devstudio
 // you can set LUABIND_EXPORT to __declspec(dllexport)

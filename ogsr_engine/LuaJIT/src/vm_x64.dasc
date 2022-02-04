@@ -1,6 +1,6 @@
 |// Low-level VM code for x64 CPUs in LJ_GC64 mode.
 |// Bytecode interpreter, fast functions and helper functions.
-|// Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
+|// Copyright (C) 2005-2021 Mike Pall. See Copyright Notice in luajit.h
 |
 |.arch x64
 |.section code_op, code_sub
@@ -1840,7 +1840,7 @@ static void build_subroutines(BuildCtx *ctx)
   |  jmp ->fff_res
   |
   |.macro math_minmax, name, cmovop, sseop
-  |  .ffunc name
+  |  .ffunc_1 name
   |  mov RAd, 2
   |.if DUALNUM
   |  mov RB, [BASE]
@@ -2011,7 +2011,7 @@ static void build_subroutines(BuildCtx *ctx)
   |.endif
   |   mov RC, SBUF:CARG1->b
   |   mov SBUF:CARG1->L, L:RB
-  |   mov SBUF:CARG1->p, RC
+  |   mov SBUF:CARG1->w, RC
   |  mov SAVE_PC, PC
   |  call extern lj_buf_putstr_ .. name
   |  mov CARG1, rax
@@ -2509,10 +2509,10 @@ static void build_subroutines(BuildCtx *ctx)
   |  jmp <2
   |
   |9:  // Rethrow error from the right C frame.
-  |  neg RD
+  |  mov CARG2d, RDd
   |  mov CARG1, L:RB
-  |  mov CARG2, RD
-  |  call extern lj_err_throw		// (lua_State *L, int errcode)
+  |  neg CARG2d
+  |  call extern lj_err_trace		// (lua_State *L, int errcode)
   |.endif
   |
   |//-----------------------------------------------------------------------
@@ -4734,7 +4734,7 @@ static void emit_asm_debug(BuildCtx *ctx)
 	".LEFDE1:\n\n", (int)ctx->codesz - fcofs);
 #endif
 #if !LJ_NO_UNWIND
-#if (defined(__sun__) && defined(__svr4__))
+#if LJ_TARGET_SOLARIS
     fprintf(ctx->fp, "\t.section .eh_frame,\"a\",@unwind\n");
 #else
     fprintf(ctx->fp, "\t.section .eh_frame,\"a\",@progbits\n");

@@ -34,8 +34,8 @@ void simplify_texture(string_path &fn)
 template <class T>
 BOOL	reclaim		(xr_vector<T*>& vec, const T* ptr)
 {
-	xr_vector<T*>::iterator it	= vec.begin	();
-	xr_vector<T*>::iterator end	= vec.end	();
+	auto it = vec.begin();
+	auto end = vec.end();
 	for (; it!=end; it++)
 		if (*it == ptr)	{ vec.erase	(it); return TRUE; }
 		return FALSE;
@@ -185,7 +185,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		//Msg("compiling shader: [%s], c_target: [%s], c_entry: [%s]", name, c_target, c_entry);
 		HRESULT const _hr		= ::Render->shader_compile( name, (DWORD const*)data, size, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, (void*&)_vs);
 
-		CHECK_OR_EXIT			(
+		R_ASSERT(
 			!FAILED(_hr),
 			make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
 		);
@@ -252,7 +252,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 		//Msg("compiling shader: [%s], c_target: [%s], c_entry: [%s]", name, c_target, c_entry);
 		HRESULT const _hr		= ::Render->shader_compile( name, (DWORD const*)data, size, c_entry, c_target, D3DXSHADER_DEBUG | D3DXSHADER_PACKMATRIX_ROWMAJOR, (void*&)_ps);
 
-		CHECK_OR_EXIT		(
+		R_ASSERT(
 			!FAILED(_hr),
 			make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
 		);
@@ -744,7 +744,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		_RELEASE	(pErrorBuf);
 		pConstants	= NULL;
 
-		CHECK_OR_EXIT		(
+		R_ASSERT(
 			!FAILED(_hr),
 			make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
 		);
@@ -849,7 +849,7 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR name)
 		_RELEASE		(pErrorBuf);
 		pConstants		= NULL;
 
-		CHECK_OR_EXIT		(
+		R_ASSERT(
 			!FAILED(_hr),
 			make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings.")
 		);

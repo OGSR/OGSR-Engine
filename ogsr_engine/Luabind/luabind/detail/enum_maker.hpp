@@ -49,7 +49,7 @@ namespace luabind
 
 	private: 
 
-		value() {}
+		value() = default;
 	};
 
 	struct value_vector : public vector_class<value>

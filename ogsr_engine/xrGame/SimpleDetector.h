@@ -1,10 +1,18 @@
 #pragma once
-#include "customdetector.h"
+#include "CustomDetector.h"
 
-class CSimpleDetector :
-	public CCustomDetector
+class CUIArtefactDetectorSimple;
+
+class CSimpleDetector : public CCustomDetector
 {
+    typedef CCustomDetector inherited;
+
 public:
-	CSimpleDetector(void);
-	virtual ~CSimpleDetector(void);
+    CSimpleDetector();
+    virtual ~CSimpleDetector() = default;
+
+protected:
+    virtual void UpdateAf() override;
+    virtual void CreateUI() override;
+    CUIArtefactDetectorSimple& ui();
 };

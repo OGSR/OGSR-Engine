@@ -15,6 +15,7 @@
 #include "level_graph.h"
 #include "ai_space.h"
 #include "actor.h"
+#include "patrol_path_storage.h"
 
 #define	FASTMODE_DISTANCE (50.f)	//distance to camera from sphere, when zone switches to fast update sequence
 
@@ -62,7 +63,7 @@ struct SArtefactActivation{
 };
 
 
-CArtefact::CArtefact(void) 
+CArtefact::CArtefact() 
 {
 	shedule.t_min				= 20;
 	shedule.t_max				= 50;
@@ -71,9 +72,6 @@ CArtefact::CArtefact(void)
 	m_activationObj				= nullptr;
 }
 
-
-CArtefact::~CArtefact(void) 
-{}
 
 void CArtefact::Load(LPCSTR section) 
 {
@@ -103,16 +101,17 @@ void CArtefact::Load(LPCSTR section)
 		m_fThirstRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "thirst_restore_speed", 0.f);
 	}
 	m_bCanSpawnZone = !!pSettings->line_exist("artefact_spawn_zones", section);
+	m_af_rank = READ_IF_EXISTS(pSettings, r_u8, section, "af_rank", 0);
 }
 
 BOOL CArtefact::net_Spawn(CSE_Abstract* DC) 
 {
+	if (READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "can_be_controlled", false))
+		m_detectorObj = xr_new<SArtefactDetectorsSupport>(this);
+
 	BOOL result = inherited::net_Spawn(DC);
-	if (*m_sParticlesName) 
-	{Fvector dir;
-		dir.set(0,1,0);
-		CParticlesPlayer::StartParticles(m_sParticlesName,dir,ID(),-1, false);
-	}
+
+	SwitchAfParticles(true);
 
 	VERIFY(m_pTrailLight == NULL);
 	m_pTrailLight = ::Render->light_create();
@@ -134,16 +133,13 @@ BOOL CArtefact::net_Spawn(CSE_Abstract* DC)
 
 void CArtefact::net_Destroy() 
 {
-/*
-	if (*m_sParticlesName) 
-		CParticlesPlayer::StopParticles(m_sParticlesName, BI_NONE, true);
-*/
 	inherited::net_Destroy		();
 
 	StopLights					();
 	m_pTrailLight.destroy		();
 	CPHUpdateObject::Deactivate	();
 	xr_delete					(m_activationObj);
+	xr_delete(m_detectorObj);
 }
 
 void CArtefact::OnH_A_Chield() 
@@ -151,10 +147,14 @@ void CArtefact::OnH_A_Chield()
 	inherited::OnH_A_Chield		();
 
 	StopLights();
-		if (*m_sParticlesName) 
-		{	
-			CParticlesPlayer::StopParticles(m_sParticlesName, BI_NONE, true);
-		}
+
+	SwitchAfParticles(false);
+
+	if (m_detectorObj)
+	{
+		m_detectorObj->m_currPatrolPath = nullptr;
+		m_detectorObj->m_currPatrolVertex = nullptr;
+	}
 }
 
 void CArtefact::OnH_B_Independent(bool just_before_destroy) 
@@ -163,12 +163,7 @@ void CArtefact::OnH_B_Independent(bool just_before_destroy)
 	inherited::OnH_B_Independent(just_before_destroy);
 
 	StartLights();
-	if (*m_sParticlesName) 
-	{
-		Fvector dir;
-		dir.set(0,1,0);
-		CParticlesPlayer::StartParticles(m_sParticlesName,dir,ID(),-1, false);
-	}
+	SwitchAfParticles(true);
 }
 
 // called only in "fast-mode"
@@ -219,6 +214,9 @@ void CArtefact::shedule_Update		(u32 dt)
 		else													o_switch_2_slow	();
 	}
 	if (!o_fastmode)		UpdateWorkload	(dt);
+
+	if (!H_Parent() && m_detectorObj)
+		m_detectorObj->UpdateOnFrame();
 }
 
 
@@ -363,27 +361,27 @@ void CArtefact::OnStateSwitch(u32 S, u32 oldState)
 	{
 	case eShowing: 
 	{ 
-		PlayHUDMotion("anim_show", "anm_show", FALSE, this, S);
+		PlayHUDMotion({ "anim_show", "anm_show" }, false, S);
 	} break;
 	case eHiding:
 	{
 		if (oldState != eHiding)
-			PlayHUDMotion("anim_hide", "anm_hide", FALSE, this, S);
+			PlayHUDMotion({ "anim_hide", "anm_hide" }, false, S);
 	} break;
 	case eActivating:
 	{
-		PlayHUDMotion("anim_activate", "anm_activate", FALSE, this, S);
+		PlayHUDMotion({ "anim_activate", "anm_activate" }, false, S);
 	} break;
 	case eIdle:
 	{ 
 		PlayAnimIdle();
 	} break;
-	};
+	}
 }
 
 void CArtefact::PlayAnimIdle()
 { 
-	PlayHUDMotion("anim_idle", "anm_idle", FALSE, nullptr, eIdle);
+	PlayHUDMotion({ "anim_idle", "anm_idle" }, false, eIdle);
 }
 
 void CArtefact::OnAnimationEnd(u32 state)
@@ -414,18 +412,46 @@ void CArtefact::OnAnimationEnd(u32 state)
 }
 
 
-
-u16	CArtefact::bone_count_to_synchronize	() const
-{
-	return CInventoryItem::object().PHGetSyncItemsNumber();
-}
-
 void CArtefact::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count)
 {
 	str_name = NameShort();
 	str_count = "";
 	icon_sect_name = *cNameSect();
 }
+
+
+void CArtefact::FollowByPath(LPCSTR path_name, int start_idx, Fvector magic_force)
+{
+	if (m_detectorObj)
+		m_detectorObj->FollowByPath(path_name, start_idx, magic_force);
+}
+
+bool CArtefact::CanBeInvisible() { return (m_detectorObj != nullptr); }
+
+void CArtefact::SwitchVisibility(bool b)
+{
+	if (m_detectorObj)
+		m_detectorObj->SetVisible(b);
+}
+
+void CArtefact::SwitchAfParticles(bool bOn)
+{
+	if (m_sParticlesName.size() == 0)
+		return;
+
+	if (bOn)
+	{
+		Fvector dir;
+		dir.set(0, 1, 0);
+		CParticlesPlayer::StartParticles(m_sParticlesName, dir, ID(), -1, false);
+	}
+	else
+	{
+		CParticlesPlayer::StopParticles(m_sParticlesName, BI_NONE, true);
+	}
+}
+
+
 
 //---SArtefactActivation----
 SArtefactActivation::SArtefactActivation(CArtefact* af,u32 owner_id)
@@ -597,7 +623,7 @@ void SArtefactActivation::SpawnAnomaly()
 //. #endif
 }
 
-shared_str clear_brackets(LPCSTR src)
+static shared_str clear_brackets(LPCSTR src)
 {
 	if	(0==src)					return	shared_str(0);
 	
@@ -633,4 +659,111 @@ void SArtefactActivation::SStateDef::Load(LPCSTR section, LPCSTR name)
 	m_particle		= clear_brackets(	_GetItem(str,6,tmp) );
 	m_animation		= clear_brackets(	_GetItem(str,7,tmp) );
 
+}
+
+
+SArtefactDetectorsSupport::SArtefactDetectorsSupport(CArtefact* A)
+	: m_parent(A), m_currPatrolPath(NULL), m_currPatrolVertex(NULL), m_switchVisTime(0)
+{
+}
+
+SArtefactDetectorsSupport::~SArtefactDetectorsSupport() { m_sound.destroy(); }
+void SArtefactDetectorsSupport::SetVisible(bool b)
+{
+	m_switchVisTime = Device.dwTimeGlobal;
+	if (b == !!m_parent->getVisible())
+		return;
+
+	if (b)
+		m_parent->StartLights();
+	else
+		m_parent->StopLights();
+
+	if (b)
+	{
+		LPCSTR curr =
+			pSettings->r_string(m_parent->cNameSect().c_str(), (b) ? "det_show_particles" : "det_hide_particles");
+
+		IKinematics* K = smart_cast<IKinematics*>(m_parent->Visual());
+		R_ASSERT2(K, m_parent->cNameSect().c_str());
+		LPCSTR bone = pSettings->r_string(m_parent->cNameSect().c_str(), "particles_bone");
+		u16 bone_id = K->LL_BoneID(bone);
+		R_ASSERT2(bone_id != BI_NONE, bone);
+
+		m_parent->CParticlesPlayer::StartParticles(curr, bone_id, Fvector().set(0, 1, 0), m_parent->ID());
+
+		curr = pSettings->r_string(m_parent->cNameSect().c_str(), (b) ? "det_show_snd" : "det_hide_snd");
+		m_sound.create(curr, st_Effect, sg_SourceType);
+		m_sound.play_at_pos(0, m_parent->Position(), 0);
+	}
+
+	m_parent->setVisible(b);
+	m_parent->SwitchAfParticles(b);
+}
+
+void SArtefactDetectorsSupport::Blink()
+{
+	LPCSTR curr = pSettings->r_string(m_parent->cNameSect().c_str(), "det_show_particles");
+
+	IKinematics* K = smart_cast<IKinematics*>(m_parent->Visual());
+	R_ASSERT2(K, m_parent->cNameSect().c_str());
+	LPCSTR bone = pSettings->r_string(m_parent->cNameSect().c_str(), "particles_bone");
+	u16 bone_id = K->LL_BoneID(bone);
+	R_ASSERT2(bone_id != BI_NONE, bone);
+
+	m_parent->CParticlesPlayer::StartParticles(curr, bone_id, Fvector().set(0, 1, 0), m_parent->ID(), 1000, true);
+}
+
+void SArtefactDetectorsSupport::UpdateOnFrame()
+{
+	if (m_currPatrolPath && !m_parent->getVisible())
+	{
+		if (m_parent->Position().distance_to(m_destPoint) < 2.0f)
+		{
+			CPatrolPath::const_iterator b, e;
+			m_currPatrolPath->begin(m_currPatrolVertex, b, e);
+			if (b != e)
+			{
+				std::advance(b, ::Random.randI(s32(e - b)));
+				m_currPatrolVertex = m_currPatrolPath->vertex((*b).vertex_id());
+				m_destPoint = m_currPatrolVertex->data().position();
+			}
+		}
+		float cos_et = _cos(deg2rad(45.f));
+		Fvector dir;
+		dir.sub(m_destPoint, m_parent->Position()).normalize_safe();
+
+		Fvector v;
+		m_parent->PHGetLinearVell(v);
+		float cosa = v.dotproduct(dir);
+		if (v.square_magnitude() < (0.7f * 0.7f) || (cosa < cos_et))
+		{
+			Fvector power = dir;
+			power.y += 1.0f;
+			power.mul(m_path_moving_force);
+			m_parent->m_pPhysicsShell->applyGravityAccel(power);
+		}
+	}
+
+	if (m_parent->getVisible() && m_parent->GetAfRank() != 0 && m_switchVisTime + 5000 < Device.dwTimeGlobal)
+		SetVisible(false);
+
+	u32 dwDt = 2 * 3600 * 1000 / 10; // 2 hour of game time
+	if (!m_parent->getVisible() && m_switchVisTime + dwDt < Device.dwTimeGlobal)
+	{
+		m_switchVisTime = Device.dwTimeGlobal;
+		if (m_parent->Position().distance_to(Device.vCameraPosition) > 40.0f)
+			Blink();
+	}
+}
+
+void SArtefactDetectorsSupport::FollowByPath(LPCSTR path_name, int start_idx, Fvector force)
+{
+	m_currPatrolPath = ai().patrol_paths().path(path_name, true);
+	if (m_currPatrolPath)
+	{
+		m_currPatrolVertex = m_currPatrolPath->vertex(start_idx);
+		m_destPoint = m_currPatrolVertex->data().position();
+		m_path_moving_force = force;
+	}
 }

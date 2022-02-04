@@ -148,5 +148,6 @@ public:
 
 #include "graph_engine.h"
 #include "object_broker.h"
+#include "Level.h"
 
 #include "problem_solver_inline.h"

@@ -24,8 +24,6 @@ public:
 
 	void				AddIconedPdaMessage				(LPCSTR textureName, Frect originalRect, LPCSTR message, int iDelay);
 
-	void				AddLogMessage					(const shared_str& msg);
-
 	virtual void		Update();
 
 

@@ -13,12 +13,6 @@
 
 #include "lzo\lzo1x.h"
 
-#define TRIVIAL_ENCRYPTOR_ENCODER
-#define TRIVIAL_ENCRYPTOR_DECODER
-#include "trivial_encryptor.h"
-#undef TRIVIAL_ENCRYPTOR_ENCODER
-#undef TRIVIAL_ENCRYPTOR_DECODER
-
 
 constexpr u32 XRP_MAX_SIZE_DEF = 1900; // Дефолтный максимальный размер создаваемого архива в МБ. Более ~1900 выставлять не рекомендую, т.к. архивы более 2гб двиг не поддерживает.
 
@@ -35,6 +29,8 @@ static CMemoryWriter fs_desc{};
 static u32 bytesSRC{}, bytesDST{}, filesTOTAL{}, filesSKIP{}, filesVFS{}, filesALIAS{};
 static CTimer t_compress{};
 static u8* c_heap{};
+
+static string_path ARCH_NAME{};
 
 static u32 XRP_MAX_SIZE{ 1024 * 1024 * XRP_MAX_SIZE_DEF };
 
@@ -278,9 +274,14 @@ static void OpenPack(LPCSTR tgt_folder, int num)
 
 	VERIFY(0 == fs);
 
-	string_path fname;
-	const char* ext = MOD_COMPRESS ? ".xdb" : ".db_pack_#";
-	strconcat(sizeof(fname), fname, "!Ready\\", tgt_folder, ext, std::to_string(num).c_str());
+	string_path fname{};
+	if (strlen(ARCH_NAME)) {
+		xr_strconcat(fname, "!Ready\\", ARCH_NAME, num > 0 ? std::to_string(num).c_str() : "");
+	}
+	else {
+		const char* ext = MOD_COMPRESS ? ".xdb" : ".db_pack_#";
+		strconcat(sizeof(fname), fname, "!Ready\\", tgt_folder, ext, std::to_string(num).c_str());
+	}
 
 	unlink(fname);
 	fs = FS.w_open(fname);
@@ -302,16 +303,7 @@ static void ClosePack()
 	// save list
 	bytesDST = fs->tell();
 
-	DUMMY_STUFF* _dummy_stuff_tmp;
-	if (MOD_COMPRESS) {
-		_dummy_stuff_tmp = g_dummy_stuff;
-		g_dummy_stuff = nullptr;
-	}
-
-	fs->w_chunk(1 | CFS_CompressMark, fs_desc.pointer(), fs_desc.size());
-
-	if (MOD_COMPRESS)
-		g_dummy_stuff = _dummy_stuff_tmp;
+	fs->w_chunk(1 | CFS_CompressMark, fs_desc.pointer(), fs_desc.size(), !MOD_COMPRESS);
 
 	FS.w_close(fs);
 
@@ -529,9 +521,6 @@ static void ProcessLTX(LPCSTR tgt_name, LPCSTR params, BOOL bFast)
 
 int __cdecl main(int argc, char* argv[])
 {
-	g_temporary_stuff = &trivial_encryptor::decode;
-	g_dummy_stuff = &trivial_encryptor::encode;
-
 	Debug._initialize();
 
 	auto handle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -596,11 +585,19 @@ int __cdecl main(int argc, char* argv[])
 	Msg("Compressing files [%s]...", folder);
 	Log("\n");
 
-	BOOL bFast = 0 != strstr(params, "-fast");
+	{
+		BOOL bFast = 0 != strstr(params, "-fast");
+		LPCSTR p = strstr(params, "-ltx");
+		R_ASSERT2(p, "wrong params passed. -ltx option needed");
 
-	LPCSTR p = strstr(params, "-ltx");
-	R_ASSERT2(p, "wrong params passed. -ltx option needed");
-	ProcessLTX(argv[1], p + 4, bFast);
+		if (const char* filename = strstr(params, "-filename")) {
+			strcpy_s(ARCH_NAME, filename + 10);
+			if (char* end_of_fname = strchr(ARCH_NAME, ' '))
+				*end_of_fname = 0;
+		}
+
+		ProcessLTX(argv[1], p + 4, bFast);
+	}
 
 	Core._destroy();
 

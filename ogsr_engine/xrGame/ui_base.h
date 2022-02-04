@@ -25,7 +25,7 @@ public:
 struct S2DVert{
 	Fvector2	pt;
 	Fvector2	uv;
-				S2DVert		(){}
+				S2DVert() = default;
 				S2DVert		(float pX, float pY, float tU, float tV){pt.set(pX,pY);uv.set(tU,tV);}
 	void		set			(float pt_x, float pt_y, float uv_x, float uv_y){pt.set(pt_x,pt_y);uv.set(uv_x,uv_y);}
 	void		set			(const Fvector2& _pt, const Fvector2& _uv){pt.set(_pt);uv.set(_uv);}
@@ -47,6 +47,8 @@ class ui_core: public CDeviceResetNotifier
 {
 	C2DFrustum		m_2DFrustum;
 	C2DFrustum		m_2DFrustumPP;
+	C2DFrustum m_FrustumLIT;
+
 	bool			m_bPostprocess;
 
 	CFontManager*	m_pFontManager;
@@ -82,11 +84,12 @@ public:
 	void			RenderFont						();
 
 	virtual void	OnDeviceReset					();
-	static	bool	is_16_9_mode					();
 	shared_str		get_xml_name					(LPCSTR fn);
 	float			get_current_kx					();
 
 	IUIRender::ePointType m_currentPointType;
+
+	C2DFrustum& ScreenFrustumLIT() { return m_FrustumLIT; }
 
 	static bool is_widescreen();
 };

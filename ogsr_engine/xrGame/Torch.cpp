@@ -213,6 +213,11 @@ void CTorch::Switch	(bool light_on)
 	}
 }
 
+bool CTorch::torch_active					() const
+{
+	return (m_switched_on);
+}
+
 BOOL CTorch::net_Spawn(CSE_Abstract* DC) 
 {
 	CSE_Abstract			*e	= (CSE_Abstract*)(DC);
@@ -242,6 +247,26 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 	float range				= pUserData->r_float				("torch_definition",(b_r2)?"range_r2":"range");
 	light_render->set_color( m_color );
 	light_render->set_range	(range);
+
+	if (b_r2)
+	{
+		bool useVolumetric = READ_IF_EXISTS(pUserData, r_bool, "torch_definition", "volumetric_enabled", false);
+		light_render->set_volumetric(useVolumetric);
+		if (useVolumetric)
+		{
+			float volQuality = READ_IF_EXISTS(pUserData, r_float, "torch_definition", "volumetric_quality", 1.0f);
+			volQuality = std::clamp(volQuality, 0.f, 1.f);
+			light_render->set_volumetric_quality(volQuality);
+
+			float volIntensity = READ_IF_EXISTS(pUserData, r_float, "torch_definition", "volumetric_intensity", 0.15f);
+			volIntensity = std::clamp(volIntensity, 0.f, 10.f);
+			light_render->set_volumetric_intensity(volIntensity);
+
+			float volDistance = READ_IF_EXISTS(pUserData, r_float, "torch_definition", "volumetric_distance", 0.45f);
+			volDistance = std::clamp(volDistance, 0.f, 1.f);
+			light_render->set_volumetric_distance(volDistance);
+		}
+	}
 
 	Fcolor clr_o			= pUserData->r_fcolor				("torch_definition",(b_r2)?"omni_color_r2":"omni_color");
 	float range_o			= pUserData->r_float				("torch_definition",(b_r2)?"omni_range_r2":"omni_range");
@@ -459,40 +484,13 @@ void CTorch::setup_physic_shell	()
 	CPhysicsShellHolder::setup_physic_shell();
 }
 
-void CTorch::net_Export			(NET_Packet& P)
-{
-	inherited::net_Export		(P);
-//	P.w_u8						(m_switched_on ? 1 : 0);
-
-
-	BYTE F = 0;
-	F |= (m_switched_on ? eTorchActive : 0);
-	F |= (m_bNightVisionOn ? eNightVisionActive : 0);
-	const CActor *pA = smart_cast<const CActor *>(H_Parent());
-	if (pA)
-	{
-		if (pA->attached(this))
-			F |= eAttached;
-	}
-	P.w_u8(F);
-//	Msg("CTorch::net_export - NV[%d]", m_bNightVisionOn);
-}
-
-void CTorch::net_Import			(NET_Packet& P)
-{
-	inherited::net_Import		(P);
-	
-	BYTE F = P.r_u8();
-	bool new_m_switched_on				= !!(F & eTorchActive);
-	bool new_m_bNightVisionOn			= !!(F & eNightVisionActive);
-
-	if (new_m_switched_on != m_switched_on)			Switch						(new_m_switched_on);
-	if (new_m_bNightVisionOn != m_bNightVisionOn)	
-	{
-//		Msg("CTorch::net_Import - NV[%d]", new_m_bNightVisionOn);
-
-		SwitchNightVision			(new_m_bNightVisionOn);
-	}
+void CTorch::net_Export( CSE_Abstract* E ) {
+  inherited::net_Export( E );
+  CSE_ALifeItemTorch* torch = smart_cast<CSE_ALifeItemTorch*>( E );
+  torch->m_active = m_switched_on;
+  torch->m_nightvision_active = m_bNightVisionOn;
+  const CActor *pA = smart_cast<const CActor*>( H_Parent() );
+  torch->m_attached = ( pA && pA->attached( this ) );
 }
 
 bool  CTorch::can_be_attached		() const
@@ -522,4 +520,8 @@ void CTorch::renderable_Render()
 
 void CTorch::calc_m_delta_h( float range ) {
   m_delta_h = PI_DIV_2 - atan( ( range * 0.5f ) / _abs( TORCH_OFFSET.x ) );
+}
+
+float CTorch::get_range() const {
+  return light_render->get_range();
 }

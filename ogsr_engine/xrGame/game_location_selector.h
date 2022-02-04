@@ -40,6 +40,12 @@ class
 		_VertexEvaluator,
 		_vertex_id_type
 	> inherited;
+
+	using inherited::used;
+	using inherited::perform_search;
+	using inherited::m_failed;
+	using inherited::m_graph;
+	using inherited::m_restricted_object;
 private:
 	ESelectionType			m_selection_type;
 	GameGraph::_GRAPH_ID	m_previous_vertex_id{};

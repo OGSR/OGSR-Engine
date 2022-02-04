@@ -20,9 +20,6 @@
     <ClInclude Include="StdAfx.h">
       <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="trivial_encryptor.h">
-      <Filter>Main</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="xrCompress_Cfg.ltx">

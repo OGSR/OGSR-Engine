@@ -29,6 +29,7 @@ public:
 	void						PausePath			(bool val);
 	virtual void				PSI_internal_delete	();
 	virtual void				PSI_destroy			();
+	void remove_owner();
 };
 
 class CScriptParticles{
@@ -51,6 +52,8 @@ public:
 	void						StartPath			(bool looped);
 	void						StopPath			();
 	void						PausePath			(bool val);
+	int LifeTime();
+	u32 Length();
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

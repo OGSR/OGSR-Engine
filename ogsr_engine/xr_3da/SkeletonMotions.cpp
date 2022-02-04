@@ -143,7 +143,6 @@ BOOL motions_value::load		(LPCSTR N, IReader *data, vecBones* bones)
 				u32 dwFlags			= MP->r_u32		();
 				CMotionDef&	D		= m_mdefs[mot_i];
                 D.Load				(MP,dwFlags,vers);
-//.             m_mdefs.push_back	(D);
 				
 				if (dwFlags & esmFX)
 					m_fx.emplace(nm, mot_i);
@@ -324,12 +323,30 @@ void CMotionDef::Load(IReader* MP, u32 fl, u16 version)
 	// params
 	bone_or_part= MP->r_u16(); // bCycle?part_id:bone_id;
 	motion		= MP->r_u16(); // motion_id
-	speed = MP->r_float(); //Quantize(MP->r_float());
-	power		= Quantize(MP->r_float());
-	accrue		= Quantize(MP->r_float());
-	falloff		= Quantize(MP->r_float());
-	flags		= (u16)fl;
-	if (!(flags&esmFX) && (falloff>=accrue)) falloff = u16(accrue-1);
+	speed = MP->r_float();
+	power = MP->r_float();
+	accrue = MP->r_float();
+	falloff = MP->r_float();
+	flags = (u16)fl;
+	constexpr float fQuantizerRangeExt = 1.5f; //Какое-то магическое число
+/*//Dbg
+	Log("############################################################################");
+	constexpr auto Dequantize = [](u16 V) { return  float(V) / 655.35f; };
+	auto Quantize = [](float V) { s32 t = iFloor(V * 655.35f); clamp(t, 0, 65535); return u16(t); };
+	Msg("!![%s] speed: [%f], power: [%f], accrue: [%f], fallof: [%f]", __FUNCTION__, Dequantize(Quantize(speed)), Dequantize(Quantize(power)), fQuantizerRangeExt * Dequantize(Quantize(accrue)), fQuantizerRangeExt * Dequantize(Quantize(falloff)));
+	Msg("--[%s] speed: [%f], power: [%f], accrue: [%f], fallof: [%f]", __FUNCTION__, speed, power, fQuantizerRangeExt * accrue, fQuantizerRangeExt * falloff);
+	if (!(flags & esmFX) && (Quantize(falloff) >= Quantize(accrue)))
+		Msg("!![%s] fallof set to [%f]", __FUNCTION__, fQuantizerRangeExt * Dequantize(u16(Quantize(accrue) - 1)));
+*/
+	if (!(flags & esmFX) && (falloff >= accrue)) {
+		falloff = accrue /* - 0.003f*/; //KRodin: 0.003f наиболее приближённо к тому что было до этого. Разница в результате буквально в тысячных долях. При Quantize/Dequantize точность в любом случае терялась, так что это не сильно важно.
+		if (/*negative(falloff)*/ negative(accrue - 0.003f))
+			falloff = 100.f; //И вообще это были какие-то костыли от ПЫС. Если при вычитании falloff становился меньше нуля (при том что он был unsigned!!!), то после Quantize/Dequantize всегда получалось 100.
+		//Msg("--[%s] fallof set to [%f]", __FUNCTION__, fQuantizerRangeExt * falloff);
+	}
+	//Log("############################################################################");
+	accrue *= fQuantizerRangeExt;
+	falloff *= fQuantizerRangeExt;
 
 	if(version>=4)
 	{
@@ -344,7 +361,7 @@ void CMotionDef::Load(IReader* MP, u32 fl, u16 version)
 	}
 }
 
-bool CMotionDef::StopAtEnd()
+bool CMotionDef::StopAtEnd() const
 {
 	return !!(flags&esmStopAtEnd);
 }

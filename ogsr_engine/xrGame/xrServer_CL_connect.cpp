@@ -72,7 +72,6 @@ void xrServer::OnCL_Connected		(IClient* _CL)
 {
 	xrClientData*	CL				= (xrClientData*)_CL;
 	CL->net_Accepted = TRUE;
-///	Server_Client_Check(CL); 
 
 	csPlayers.Enter					();
 
@@ -91,7 +90,7 @@ void xrServer::OnCL_Connected		(IClient* _CL)
 	game->ProcessDelayedEvent		();
 }
 
-void	xrServer::SendConnectResult(IClient* CL, u8 res, u8 res1, char* ResultStr)
+void	xrServer::SendConnectResult(IClient* CL, u8 res, u8 res1, const char* ResultStr)
 {
 	NET_Packet	P;
 	P.w_begin	(M_CLIENT_CONNECT_RESULT);
@@ -118,15 +117,12 @@ void xrServer::Check_GameSpy_CDKey_Success			(IClient* CL)
 	Check_BuildVersion_Success(CL);
 };
 
-BOOL	g_SV_Disable_Auth_Check = FALSE;
-
 bool xrServer::NeedToCheckClient_BuildVersion		(IClient* CL)	
 {
 //#ifdef DEBUG
 	//return false; 
 //#else
 
-	if (g_SV_Disable_Auth_Check) return false;
 	CL->flags.bVerified = FALSE;
 	NET_Packet	P;
 	P.w_begin	(M_AUTH_CHALLENGE);

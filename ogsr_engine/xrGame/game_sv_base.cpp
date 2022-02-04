@@ -309,11 +309,6 @@ void game_sv_GameState::OnPlayerConnect			(ClientID /**id_who/**/)
 	signal_Syncronize	();
 }
 
-void game_sv_GameState::OnPlayerDisconnect		(ClientID /**id_who/**/, LPSTR, u16 )
-{
-	signal_Syncronize	();
-}
-
 static float							rpoints_Dist [TEAM_COUNT] = {1000.f, 1000.f, 1000.f, 1000.f};
 void game_sv_GameState::Create					(shared_str &options)
 {
@@ -501,11 +496,6 @@ CSE_Abstract*		game_sv_GameState::spawn_end				(CSE_Abstract* E, ClientID id)
 	return N;
 }
 
-void game_sv_GameState::GenerateGameMessage (NET_Packet &P)
-{ 
-	P.w_begin(M_GAMEMESSAGE); 
-};
-
 void game_sv_GameState::u_EventGen(NET_Packet& P, u16 type, u16 dest)
 {
 	P.w_begin	(M_EVENT);
@@ -602,19 +592,6 @@ void game_sv_GameState::OnEvent (NET_Packet &tNetPacket, u16 type, u32 time, Cli
 			OnPlayerConnect(ID);
 		}break;
 
-	case GAME_EVENT_PLAYER_DISCONNECTED:
-		{
-			ClientID ID;
-			tNetPacket.r_clientID(ID);
-			string1024 PlayerName;
-			tNetPacket.r_stringZ(PlayerName);
-			u16		GameID = tNetPacket.r_u16();
-			OnPlayerDisconnect(ID, PlayerName, GameID);
-		}break;
-
-	case GAME_EVENT_PLAYER_KILLED:
-		{
-		}break	;
 	case GAME_EVENT_ON_HIT:
 		{
 			u16		id_dest				= tNetPacket.r_u16();

@@ -233,10 +233,6 @@ void SActorMotions::Create(IKinematicsAnimated* V)
 	m_sprint.Create(V);
 }
 
-SActorVehicleAnims::SActorVehicleAnims()
-{
-	
-}
 void SActorVehicleAnims::Create(IKinematicsAnimated* V)
 {
 	for(u16 i=0;TYPES_NUMBER>i;++i) m_vehicles_type_collections[i].Create(V,i);
@@ -293,13 +289,14 @@ void CActor::g_SetSprintAnimation( u32 mstate_rl,MotionID &head,MotionID &torso,
 
 #ifdef DEBUG
 BOOL	g_ShowAnimationInfo = TRUE;
-#endif // DEBUG
-char* mov_state[] ={
+constexpr const char* mov_state[] ={
 	"idle",
 	"walk",
 	"run",
 	"sprint",
 };
+#endif
+
 void CActor::g_SetAnimation( u32 mstate_rl )
 {
 
@@ -365,16 +362,8 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 	}
 	//---------------------------------------------------------------
 	if (this == Level().CurrentViewEntity())
-	{
-		if ((mstate_rl&mcSprint) != (mstate_old&mcSprint))
-		{
-			g_player_hud->OnMovementChanged(mcSprint);
-		}
-		else if ((mstate_rl&mcAnyMove) != (mstate_old&mcAnyMove))
-		{
-			g_player_hud->OnMovementChanged(mcAnyMove);
-		}
-	}
+		if (((mstate_rl & mcSprint) != (mstate_old & mcSprint)) || ((mstate_rl & mcAnyMove) != (mstate_old & mcAnyMove)) || ((mstate_rl & mcCrouch) != (mstate_old & mcCrouch)) || ((mstate_rl & mcAccel) != (mstate_old & mcAccel)))
+			g_player_hud->OnMovementChanged(static_cast<ACTOR_DEFS::EMoveCommand>(mstate_rl));
 	//-----------------------------------------------------------------------
 	// Torso
 	if(mstate_rl&mcClimb)
@@ -594,20 +583,6 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 		if (mstate_rl&mcRLookout)	strcat(buf,"RLookout ");
 		if (m_bJumpKeyPressed)		strcat(buf,"+Jumping ");
 		HUD().Font().pFontStat->OutNext	("MSTATE:     [%s]",buf);
-/*
-		switch (m_PhysicMovementControl->Environment())
-		{
-		case CPHMovementControl::peOnGround:	strcpy(buf,"ground");			break;
-		case CPHMovementControl::peInAir:		strcpy(buf,"air");				break;
-		case CPHMovementControl::peAtWall:		strcpy(buf,"wall");				break;
-		}
-		HUD().Font().pFontStat->OutNext	(buf);
-		HUD().Font().pFontStat->OutNext	("Accel     [%3.2f, %3.2f, %3.2f]",VPUSH(NET_SavedAccel));
-		HUD().Font().pFontStat->OutNext	("V         [%3.2f, %3.2f, %3.2f]",VPUSH(m_PhysicMovementControl->GetVelocity()));
-		HUD().Font().pFontStat->OutNext	("vertex ID   %d",ai_location().level_vertex_id());
-		
-		Game().m_WeaponUsageStatistic->Draw();
-		*/
 	};
 #endif
 

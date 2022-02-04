@@ -195,7 +195,7 @@ void CWeaponMagazined::FireStart		()
 		}
 	}
 	else if ( IsMisfire() ) {
-	  if ( smart_cast<CActor*>( this->H_Parent() ) && Level().CurrentViewEntity() == H_Parent() )
+	  if ( smart_cast<CActor*>( H_Parent() ) && Level().CurrentViewEntity() == H_Parent() )
 	    HUD().GetUI()->AddInfoMessage( "gun_jammed" );
 	  OnEmptyClick();
 	  // Callbacks added by Cribbledirge.
@@ -305,7 +305,7 @@ void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 	xr_map<LPCSTR, u16>::iterator l_it;
 	for(l_it = l_ammo.begin(); l_ammo.end() != l_it; ++l_it) 
 	{
-		if ( Core.Features.test(xrCore::Feature::hard_ammo_reload) ? (!forActor && m_pCurrentInventory) : m_pCurrentInventory )
+		if ( Core.Features.test(xrCore::Feature::hard_ammo_reload) ? (!forActor && m_pCurrentInventory) : !!m_pCurrentInventory )
 		{
 			CWeaponAmmo *l_pA = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAmmo(l_it->first, forActor));
 			if (l_pA)
@@ -446,7 +446,7 @@ void CWeaponMagazined::OnStateSwitch(u32 S, u32 oldState)
 		switch2_Fire2	();
 		break;
 	case eMisfire:
-		if(smart_cast<CActor*>(this->H_Parent()) && (Level().CurrentViewEntity()==H_Parent()) )
+		if(smart_cast<CActor*>(H_Parent()) && (Level().CurrentViewEntity()==H_Parent()) )
 			HUD().GetUI()->AddInfoMessage("gun_jammed");
 		// Callbacks added by Cribbledirge.
 		StateSwitchCallback(GameObject::eOnActorWeaponJammed, GameObject::eOnNPCWeaponJammed);
@@ -640,6 +640,10 @@ void CWeaponMagazined::SetDefaults	()
 
 void CWeaponMagazined::OnShot		()
 {
+	// Если актор бежит - останавливаем его
+	if (ParentIsActor())
+		Actor()->set_state_wishful(Actor()->get_state_wishful() & (~mcSprint));
+
 	// Sound
 	PlaySound( *m_pSndShotCurrent, get_LastFP(), true );
 
@@ -1175,13 +1179,13 @@ void CWeaponMagazined::ApplySilencerKoeffs	()
 void CWeaponMagazined::PlayAnimShow()
 {
 	VERIFY(GetState()==eShowing);
-	PlayHUDMotion("anim_draw", "anm_show", false, this, GetState());
+	PlayHUDMotion({ "anim_draw", "anm_show" }, false, GetState());
 }
 
 void CWeaponMagazined::PlayAnimHide()
 {
 	VERIFY(GetState()==eHiding);
-	PlayHUDMotion("anim_holster", "anm_hide", true, this, GetState());
+	PlayHUDMotion({ "anim_holster", "anm_hide" }, true, GetState());
 }
 
 
@@ -1189,24 +1193,45 @@ void CWeaponMagazined::PlayAnimReload()
 {
 	VERIFY(GetState() == eReload);
 	if (IsPartlyReloading())
-	{
-		if (AnimationExist("anim_reload_partly") || AnimationExist("anm_reload_partly"))
-			PlayHUDMotion("anim_reload_partly", "anm_reload_partly", TRUE, nullptr, GetState());
-		else
-			PlayHUDMotion("anim_reload", "anm_reload", TRUE, nullptr, GetState());
-	}
+		PlayHUDMotion({ "anim_reload_partly", "anm_reload_partly", "anim_reload", "anm_reload" }, true, GetState());
 	else
-	{
-		if (AnimationExist("anm_reload_empty"))
-			PlayHUDMotion("anm_reload_empty", TRUE, nullptr, GetState());
-		else
-			PlayHUDMotion("anim_reload", "anm_reload", TRUE, nullptr, GetState());
+		PlayHUDMotion({ "anm_reload_empty", "anim_reload", "anm_reload" }, true, GetState());
+}
+
+const char* CWeaponMagazined::GetAnimAimName()
+{
+	if (auto pActor = smart_cast<const CActor*>(H_Parent())) {
+		if (!HudBobbingAllowed()) {
+			if (const u32 state = pActor->get_state(); state & mcAnyMove) {
+				if (IsScopeAttached()) {
+					strcpy_s(guns_aim_anm, "anm_idle_aim_scope_moving");
+					return guns_aim_anm;
+				}
+				else
+					return xr_strconcat(guns_aim_anm, "anm_idle_aim_moving", (state & mcFwd) ? "_forward" : ((state & mcBack) ? "_back" : ""), (state & mcLStrafe) ? "_left" : ((state & mcRStrafe) ? "_right" : ""));
+			}
+		}
 	}
+	return nullptr;
 }
 
 void CWeaponMagazined::PlayAnimAim()
-{ 
-	PlayHUDMotion("anim_idle_aim", "anm_idle_aim", true, nullptr, GetState());
+{
+	if (IsRotatingToZoom()) {
+		if (AnimationExist("anm_idle_aim_start")) {
+			PlayHUDMotion("anm_idle_aim_start", true, GetState());
+			return;
+		}
+	}
+
+	if (const char* guns_aim_anm = GetAnimAimName()) {
+		if (AnimationExist(guns_aim_anm)) {
+			PlayHUDMotion(guns_aim_anm, true, GetState());
+			return;
+		}
+	}
+
+	PlayHUDMotion({ "anim_idle_aim", "anm_idle_aim" }, true, GetState());
 }
 
 void CWeaponMagazined::PlayAnimIdle()
@@ -1215,17 +1240,27 @@ void CWeaponMagazined::PlayAnimIdle()
 		return;
 
 	if (IsZoomed())
-	{
 		PlayAnimAim();
-	}
-	else
+	else {
+		if (IsRotatingFromZoom()) {
+			if (AnimationExist("anm_idle_aim_end")) {
+				PlayHUDMotion("anm_idle_aim_end", true, GetState());
+				return;
+			}
+		}
+
 		inherited::PlayAnimIdle();
+	}
 }
 
 void CWeaponMagazined::PlayAnimShoot()
 {
 	VERIFY(GetState()==eFire || GetState()==eFire2);
-	PlayHUDMotion("anim_shoot", "anm_shots", false, this, GetState());
+
+	string_path guns_shoot_anm{};
+	xr_strconcat(guns_shoot_anm, "anm_shoot", (IsZoomed() && !IsRotatingToZoom()) ? (IsScopeAttached() ? "_aim_scope" : "_aim") : "", IsSilencerAttached() ? "_sil" : "");
+
+	PlayHUDMotion({ guns_shoot_anm, "anim_shoot", "anm_shots" }, false, GetState());
 }
 
 void CWeaponMagazined::OnZoomIn			()
@@ -1363,22 +1398,10 @@ void CWeaponMagazined::load(IReader &input_packet)
 	load_data		(m_iCurFireMode, input_packet);
 }
 
-void CWeaponMagazined::net_Export	(NET_Packet& P)
-{
-	inherited::net_Export (P);
-
-	P.w_u8(u8(m_iCurFireMode&0x00ff));
-}
-
-void CWeaponMagazined::net_Import	(NET_Packet& P)
-{
-	//	if (Level().IsDemoPlay())
-	//		Msg("CWeapon::net_Import [%d]", ID());
-
-	inherited::net_Import (P);
-
-	m_iCurFireMode = P.r_u8();
-	SetQueueSize(GetCurrentFireMode());
+void CWeaponMagazined::net_Export( CSE_Abstract* E ) {
+  inherited::net_Export( E );
+  CSE_ALifeItemWeaponMagazined* wpn = smart_cast<CSE_ALifeItemWeaponMagazined*>( E );
+  wpn->m_u8CurFireMode = u8( m_iCurFireMode&0x00ff );
 }
 
 void CWeaponMagazined::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count)
@@ -1448,20 +1471,16 @@ bool CWeaponMagazined::ScopeRespawn( PIItem pIItem ) {
       P.r_u16( size );
       sobj2->STATE_Read( P, size );
 
-      P.w_begin( M_UPDATE );
-      net_Export( P );
-      P.r_begin( id );
-      sobj1->UPDATE_Read( P );
-
-      P.w_begin( M_UPDATE );
-      sobj1->UPDATE_Write( P );
-      P.r_begin( id );
-      sobj2->UPDATE_Read( P );
+      net_Export( _abstract );
 
       auto io = smart_cast<CInventoryOwner*>( H_Parent() );
       auto ii = smart_cast<CInventoryItem*>( this );
-      if ( io->inventory().InSlot( ii ) )
-        io->SetNextItemSlot( ii->GetSlot() );
+	  if (io) {
+		  if (io->inventory().InSlot(ii))
+			  io->SetNextItemSlot(ii->GetSlot());
+		  else
+			  io->SetNextItemSlot(0);
+	  }
 
       DestroyObject();
       sobj2->Spawn_Write( P, TRUE );

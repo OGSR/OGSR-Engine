@@ -517,9 +517,9 @@ public:
 			bool				accessible_vertex_id	(u32 level_vertex_id);
 			u32					accessible_nearest		(const Fvector &position, Fvector &result);
 
-			const xr_vector<MemorySpace::CVisibleObject>		&memory_visible_objects	() const;
-			const xr_vector<MemorySpace::CSoundObject>			&memory_sound_objects	() const;
-			const xr_vector<MemorySpace::CHitObject>			&memory_hit_objects		() const;
+			const std::deque<MemorySpace::CVisibleObject>		&memory_visible_objects	() const;
+			const std::deque<MemorySpace::CSoundObject>			&memory_sound_objects	() const;
+			const std::deque<MemorySpace::CHitObject>			&memory_hit_objects		() const;
 			const xr_vector<MemorySpace::CNotYetVisibleObject>	&not_yet_visible_objects() const;
 			float				visibility_threshold	() const;
 			void				enable_vision			(bool value);
@@ -628,6 +628,8 @@ public:
 
 			/**************************************************** added by Cribbledirge END ****************************************************/
 
+			bool				addon_IsActorHideout() const;		// проверка что актор под каким либо укрытием
+
 			// KD
 			// functions for CInventoryOwner class
 			CScriptGameObject	*ItemOnBelt(u32 item_id) const;
@@ -708,8 +710,8 @@ public:
 			void				SetDrugPsyProtection(float _prot);
 
 			// functions for CInventoryItem class
-			void				SetIIFlags						(flags16);
-			flags16				GetIIFlags						();
+			void				SetIIFlags						(Flags16);
+			Flags16				GetIIFlags						();
 			u32				GetHudItemState();
 			float				GetRadius();
 
@@ -815,20 +817,5 @@ extern void sell_condition	(float friend_factor, float enemy_factor);
 extern void buy_condition	(CScriptIniFile *ini_file, LPCSTR section);
 extern void buy_condition	(float friend_factor, float enemy_factor);
 extern void show_condition	(CScriptIniFile *ini_file, LPCSTR section);
-
-extern void	lua_pushgameobject(lua_State *L, CGameObject *obj);
-
-template <typename T>
-IC bool test_pushobject(lua_State *L, CGameObject* obj)
-{	
-	using namespace luabind::detail;
-	T *pObj = smart_cast<T*> (obj);
-	if (pObj && get_class_rep<T>(L))
-	{		
-		convert_to_lua<T*>(L, pObj);  // обязательно конвертировать указатель, а не значение. Иначе вызов деструктора при сборке мусора!
-		return true;		
-	}
-	return false;
-}
 
 #include "script_game_object_impl.h" // alpet: исправление error LNK2019: unresolved external symbol "public: class CGameObject & __thiscall CScriptGameObject::object(void)const "

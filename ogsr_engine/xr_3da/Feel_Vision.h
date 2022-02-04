@@ -17,6 +17,7 @@ namespace Feel
 
 	class ENGINE_API Vision: private pure_relcase
 	{
+		friend class pure_relcase;
 	private:
 		xr_vector<CObject*>			seen;
 		xr_vector<CObject*>			query;

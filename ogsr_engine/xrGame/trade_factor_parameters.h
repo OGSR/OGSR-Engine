@@ -14,12 +14,8 @@
 #include <regex>
 
 class CTradeFactorParameters {
-public:
-	typedef associative_vector<shared_str,CTradeFactors>	FACTORS;
-
-private:
-	FACTORS					m_factors;
-        std::vector< std::pair<std::regex, CTradeFactors> > m_factors_re;
+	string_unordered_map<shared_str, CTradeFactors> m_factors;
+	std::vector<std::pair<std::regex, CTradeFactors>> m_factors_re;
 
 public:
 	IC						CTradeFactorParameters	();

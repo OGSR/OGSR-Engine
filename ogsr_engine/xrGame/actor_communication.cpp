@@ -30,6 +30,8 @@
 #include "infoportion.h"
 #include "ai/monsters/basemonster/base_monster.h"
 #include "ai/trader/ai_trader.h"
+#include "CustomDetector.h"
+#include "inventory.h"
 
 void CActor::AddEncyclopediaArticle( const CInfoPortion* info_portion, bool revert ) const {
   VERIFY( info_portion );
@@ -85,16 +87,12 @@ void CActor::AddEncyclopediaArticle( const CInfoPortion* info_portion, bool reve
 
       CEncyclopediaArticle article;
       article.Load( id );
-      article_vector.push_back(
-        ARTICLE_DATA( id, Level().GetGameTime(), article.data()->articleType )
-      );
-      LPCSTR g, n;
-      int _atype = article.data()->articleType;
-      g = *( article.data()->group );
-      n = *( article.data()->name  );
-      callback( GameObject::eArticleInfo )( lua_game_object(), g, n, _atype );
+      ARTICLE_DATA::EArticleType _atype = article.data()->articleType;
+      auto& Data = article_vector.emplace_back(id, Level().GetGameTime(), _atype);
 
-      update_pda_section( article_vector.back() );
+      callback(GameObject::eArticleInfo)(lua_game_object(), article.data()->group.c_str(), article.data()->name.c_str(), _atype, article.data()->text.c_str());
+
+      update_pda_section(Data);
     }
 
   if ( !updated_pda.empty() && HUD().GetUI() ) {
@@ -259,10 +257,8 @@ void CActor::RunTalkDialog(CInventoryOwner* talk_partner)
 
 void CActor::StartTalk (CInventoryOwner* talk_partner, bool)
 {
-	//обновить информацию о контакте
-	VERIFY(smart_cast<CGameObject*>(talk_partner));
-//.	CGameObject* GO = smart_cast<CGameObject*>(talk_partner);
-//.	UpdateContact(GO->ID());
+	if (auto det = smart_cast<CCustomDetector*>(inventory().ItemFromSlot(DETECTOR_SLOT)))
+		det->HideDetector(true);
 
 	CInventoryOwner::StartTalk(talk_partner);
 }

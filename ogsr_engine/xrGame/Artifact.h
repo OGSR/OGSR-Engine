@@ -4,8 +4,29 @@
 #include "hit_immunity.h"
 #include "PHObject.h"
 #include "script_export_space.h"
+#include "patrol_path.h"
 
 struct SArtefactActivation;
+
+struct SArtefactDetectorsSupport
+{
+	CArtefact* m_parent;
+	ref_sound m_sound;
+
+	Fvector m_path_moving_force;
+	u32 m_switchVisTime;
+	const CPatrolPath* m_currPatrolPath;
+	const CPatrolPath::CVertex* m_currPatrolVertex;
+	Fvector m_destPoint;
+
+	SArtefactDetectorsSupport(CArtefact* A);
+	~SArtefactDetectorsSupport();
+	void SetVisible(bool);
+	void FollowByPath(LPCSTR path_name, int start_idx, Fvector force);
+	void UpdateOnFrame();
+	void Blink();
+};
+
 
 class CArtefact :	public CHudItemObject, 
 					public CPHUpdateObject {
@@ -13,7 +34,7 @@ private:
 	typedef			CHudItemObject	inherited;
 public:
 									CArtefact						();
-	virtual							~CArtefact						();
+	virtual ~CArtefact() = default;
 
 	virtual void					Load							(LPCSTR section);
 	
@@ -54,6 +75,10 @@ protected:
 	ref_light						m_pTrailLight;
 	Fcolor							m_TrailLightColor;
 	float							m_fTrailLightRange;
+
+	SArtefactDetectorsSupport* m_detectorObj{};
+	u8 m_af_rank{};
+
 protected:
 	virtual void					UpdateLights();
 	
@@ -95,7 +120,6 @@ public:
 	virtual void					OnStateSwitch		(u32 S, u32 oldState);
 	virtual void					OnAnimationEnd		(u32 state);
 	virtual bool					IsHidden			()	const	{return GetState()==eHidden;}
-	virtual u16						bone_count_to_synchronize	() const;
 	virtual void					GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
 
 	// optimization FAST/SLOW mode
@@ -113,9 +137,14 @@ public:
 		//processing_deactivate		();
 	}
 
+	void FollowByPath(LPCSTR path_name, int start_idx, Fvector magic_force);
+	bool CanBeInvisible();
+	void SwitchVisibility(bool);
+	void SwitchAfParticles(bool bOn);
+	IC u8 GetAfRank() const { return m_af_rank; }
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CArtefact)
 #undef script_type_list
 #define script_type_list save_type_list(CArtefact)
-

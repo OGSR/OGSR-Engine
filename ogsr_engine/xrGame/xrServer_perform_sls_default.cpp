@@ -2,6 +2,11 @@
 #include "xrserver.h"
 #include "xrmessages.h"
 
+#define USE_DESIGNER_KEY
+
+#ifdef USE_DESIGNER_KEY
+#include "xrServer_Objects_ALife_Monsters.h"
+#endif
 
 void xrServer::SLS_Default	()
 {
@@ -9,6 +14,11 @@ void xrServer::SLS_Default	()
 		game->sls_default	();
 		return;
 	}
+
+#ifdef USE_DESIGNER_KEY
+	bool _designer = !!strstr(Core.Params, "-designer");
+	CSE_ALifeCreatureActor* _actor = nullptr;
+#endif
 
 	string_path				fn_spawn;
 	if (FS.exist(fn_spawn, "$level$", "level.spawn")) {
@@ -24,9 +34,42 @@ void xrServer::SLS_Default	()
 			R_ASSERT		(M_SPAWN==ID);
 			ClientID clientID;clientID.set(0);
 
-			Process_spawn(P,clientID);
-
+#ifdef USE_DESIGNER_KEY
+			CSE_Abstract* entity = Process_spawn(P, clientID);
+			if (_designer)
+			{
+				CSE_ALifeCreatureActor* actor = smart_cast<CSE_ALifeCreatureActor*>(entity);
+				if (actor)
+					_actor = actor;
+			}
+#else
+			Process_spawn(P, clientID);
+#endif
 		}
 		FS.r_close			(SP);
 	}
+
+#ifdef USE_DESIGNER_KEY
+	if (!_designer)
+		return;
+
+	if (_actor)
+		return;
+
+	_actor					= smart_cast<CSE_ALifeCreatureActor*>(entity_Create("actor"));
+	_actor->o_Position		= Fvector().set(0.f,0.f,0.f);
+	_actor->set_name_replace("designer");
+	_actor->s_flags.flags	|= M_SPAWN_OBJECT_ASPLAYER;
+	NET_Packet				packet;
+	packet.w_begin			(M_SPAWN);
+	_actor->Spawn_Write		(packet,TRUE);
+
+	u16						id;
+	packet.r_begin			(id);
+	R_ASSERT				(id == M_SPAWN);
+	ClientID				clientID;
+	clientID.set			(0);
+	Process_spawn			(packet,clientID);
+#endif
+
 }

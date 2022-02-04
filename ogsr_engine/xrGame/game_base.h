@@ -6,7 +6,6 @@
 
 #pragma pack(push,1)
 
-struct	game_PlayerState;//fw
 class	NET_Packet;
 
 struct		RPoint
@@ -70,7 +69,7 @@ struct	game_PlayerState
 public:
 					game_PlayerState		();
 					~game_PlayerState		();
-	virtual void	clear					();
+	void	clear					();
 			bool	testFlag				(u16 f) const;
 			void	setFlag					(u16 f);
 			void	resetFlag				(u16 f);
@@ -82,8 +81,8 @@ public:
 			
 			s16		frags					() const {return m_iRivalKills - m_iSelfKills - m_iTeamKills;} 
 
-	virtual void	net_Export				(NET_Packet& P, BOOL Full = FALSE);
-	virtual void	net_Import				(NET_Packet& P);
+	void	net_Export				(NET_Packet& P, BOOL Full = FALSE);
+	void	net_Import				(NET_Packet& P);
 
 	//---------------------------------------
 	

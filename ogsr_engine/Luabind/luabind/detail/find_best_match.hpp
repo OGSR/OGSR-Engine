@@ -37,7 +37,7 @@ namespace luabind { namespace detail
 	// min_match should be initialized to the currently best match value (the number of implicit casts
 	// to get a perfect match). If there are no previous matches, set min_match to std::numeric_limits<int>::max()
 
-	LUABIND_API bool find_best_match(lua_State* L, const detail::overload_rep_base* start, int num_overloads, size_t orep_size, bool& ambiguous, int& min_match, int& match_index, int num_params);
-	LUABIND_API void find_exact_match(lua_State* L, const detail::overload_rep_base* start, int num_overloads, size_t orep_size, int cmp_match, int num_params, vector_class<const overload_rep_base*>& dest);
+	LUABIND_API bool find_best_match(lua_State* L, const detail::overload_rep_base* start, size_t num_overloads, size_t orep_size, bool& ambiguous, int& min_match, int& match_index, int num_params);
+	LUABIND_API void find_exact_match(lua_State* L, const detail::overload_rep_base* start, size_t num_overloads, size_t orep_size, int cmp_match, int num_params, vector_class<const overload_rep_base*>& dest);
 
 }}

@@ -74,9 +74,8 @@ void CMovementManager::process_game_path()
 				);
 
 				Msg			("! Object masks (%d) :",m_location_manager->vertex_types().size());
-				typedef GameGraph::TERRAIN_VECTOR::const_iterator	const_iterator;
-				const_iterator	I = m_location_manager->vertex_types().begin();
-				const_iterator	E = m_location_manager->vertex_types().end();
+				auto I = m_location_manager->vertex_types().cbegin();
+				auto E = m_location_manager->vertex_types().cend();
 				for ( ; I != E; ++I)
 					Msg		("!   [%d][%d][%d][%d]",(*I).tMask[0],(*I).tMask[1],(*I).tMask[2],(*I).tMask[3]);
 				break;

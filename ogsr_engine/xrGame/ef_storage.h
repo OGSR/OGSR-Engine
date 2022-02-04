@@ -118,9 +118,9 @@ struct CEnemyFunction : public T {
 
 	virtual float	ffGetValue		()
 	{
-		if (ef_storage().non_alife().member())
-			return	(get_value(ef_storage().non_alife()));
-		return		(get_value(ef_storage().alife()));
+		if (T::ef_storage().non_alife().member())
+			return	(get_value(T::ef_storage().non_alife()));
+		return		(get_value(T::ef_storage().alife()));
 	}
 };
 

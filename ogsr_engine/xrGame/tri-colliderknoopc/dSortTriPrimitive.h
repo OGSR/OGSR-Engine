@@ -10,9 +10,9 @@
 #endif
 
 
-template<class T>
+template<class _T>
 IC int dcTriListCollider::dSortTriPrimitiveCollide (
-							  T primitive,
+							  _T primitive,
 							  dxGeom		*o1,		dxGeom			*o2,
 							  int			flags,		dContactGeom	*contact,	int skip,
 							  const Fvector&	AABB

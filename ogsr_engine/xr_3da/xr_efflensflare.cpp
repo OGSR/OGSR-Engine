@@ -400,7 +400,7 @@ void CLensFlare::OnFrame(shared_str id)
 		fVisResult += TP.vis;
 	}
 
-	fVisResult *= (1.0f/MAX_RAYS);
+	fVisResult *= (1.0f / static_cast<float>(MAX_RAYS));
 
 	//blend_lerp(fBlend,TP.vis,BLEND_DEC_SPEED,Device.fTimeDelta);
 	blend_lerp(fBlend,fVisResult,BLEND_DEC_SPEED,Device.fTimeDelta);

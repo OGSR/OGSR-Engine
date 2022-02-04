@@ -142,24 +142,9 @@ BOOL CAI_Trader::net_Spawn			(CSE_Abstract* DC)
 	return					(TRUE);
 }
 
-void CAI_Trader::net_Export		(NET_Packet& P)
+void CAI_Trader::net_Export(CSE_Abstract*)
 {
-	R_ASSERT						(Local());
-
-	//	P.w_float						(inventory().TotalWeight());
-	//	P.w_u32							(m_dwMoney);
-}
-
-void CAI_Trader::net_Import		(NET_Packet& P)
-{
-	R_ASSERT						(Remote());
-
-	float							fDummy;
-	P.r_float						(fDummy);
-	set_money						( P.r_u32(), false );
-
-	setVisible						(TRUE);
-	setEnabled						(TRUE);
+	R_ASSERT(Local());
 }
 
 void CAI_Trader::OnEvent		(NET_Packet& P, u16 type)
@@ -193,6 +178,12 @@ void CAI_Trader::OnEvent		(NET_Packet& P, u16 type)
 			{
 				P.r_u16		(id);
 				Obj = Level().Objects.net_Find	(id);
+
+				if (!Obj) {
+					Msg("! [%s] Error: No object to reject/sell [%u]", __FUNCTION__, id);
+					break;
+				}
+
 				bool just_before_destroy	= !P.r_eof() && P.r_u8();
 				bool dont_create_shell = (type == GE_TRADE_SELL) || (type == GE_TRANSFER_REJECT) || just_before_destroy;
 				Obj->SetTmpPreDestroy				(just_before_destroy);
@@ -251,7 +242,7 @@ void CAI_Trader::g_WeaponBones	(int &L, int &R1, int &R2)
 	L				= V->LL_BoneID("bip01_l_finger1");
 }
 
-void CAI_Trader::g_fireParams(const CHudItem* pHudItem, Fvector& P, Fvector& D)
+void CAI_Trader::g_fireParams(CHudItem* pHudItem, Fvector& P, Fvector& D, const bool for_cursor)
 {
 	VERIFY			(inventory().ActiveItem());
 	if (g_Alive() && inventory().ActiveItem()) {

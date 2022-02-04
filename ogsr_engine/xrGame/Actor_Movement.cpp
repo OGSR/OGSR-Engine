@@ -93,7 +93,8 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 	// Зажало-ли меня/уперся - не двигаюсь
 	if (((character_physics_support()->movement()->GetVelocityActual()<0.2f)&&(!(mstate_real&(mcFall|mcJump)))) || character_physics_support()->movement()->bSleep) 
 	{
-		mstate_real				&=~ mcAnyMove;
+#pragma todo("KRodin: этот код работает некорректно, условие срабатывает при входе-выходе из присяда. Из-за этого происходит 'дергание' анимаций оружия. Код этот не сильно важен, я думаю если актор застрянет - он все равно не будет двигаться.")
+		//mstate_real &=~ mcAnyMove;
 	}
 	if (character_physics_support()->movement()->Environment()==CPHMovementControl::peOnGround || character_physics_support()->movement()->Environment()==CPHMovementControl::peAtWall)
 	{
@@ -145,13 +146,6 @@ void CActor::g_cl_ValidateMState(float dt, u32 mstate_wf)
 		{
 			SetWeaponHideState		(INV_STATE_LADDER, bOnClimbNow );
 		};
-	/*
-	if ((mstate_real&mcSprint) != (mstate_old&mcSprint))
-	{
-		CHudItem* pHudItem = smart_cast<CHudItem*>(inventory().ActiveItem());	
-		if (pHudItem) pHudItem->OnMovementChanged(mcSprint);
-	};
-	*/
 	};
 };
 
@@ -565,30 +559,6 @@ void CActor::g_cl_Orientate	(u32 mstate_rl, float dt)
 		if (mstate_rl&mcTurn){
 			angle_lerp	(r_model_yaw,r_model_yaw_dest,PI_MUL_2,dt);
 		}
-	}
-}
-
-void CActor::g_sv_Orientate(u32 /**mstate_rl/**/, float /**dt/**/)
-{
-	// rotation
-	r_model_yaw		= NET_Last.o_model;
-
-//	r_torso.yaw		= NET_Last.o_torso.yaw;
-//	r_torso.pitch	= NET_Last.o_torso.pitch;
-//	r_torso.roll	= NET_Last.o_torso.roll;
-
-	r_torso.yaw		=	unaffected_r_torso.yaw;
-	r_torso.pitch	=	unaffected_r_torso.pitch;
-	r_torso.roll	=	unaffected_r_torso.roll;
-
-	CWeaponMagazined *pWM = smart_cast<CWeaponMagazined*>(inventory().GetActiveSlot() != NO_ACTIVE_SLOT ? 
-		inventory().ItemFromSlot(inventory().GetActiveSlot())/*inventory().m_slots[inventory().GetActiveSlot()].m_pIItem*/ : NULL);
-	if (pWM && pWM->GetCurrentFireMode() == 1/* && eacFirstEye != cam_active*/)
-	{
-		Fvector dangle = weapon_recoil_last_delta();
-		r_torso.yaw		+=	dangle.y;
-		r_torso.pitch	+=	dangle.x;
-		r_torso.roll	+=	dangle.z;
 	}
 }
 

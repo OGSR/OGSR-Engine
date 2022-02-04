@@ -26,18 +26,14 @@
 
 #include <typeinfo>
 
-#include <luabind/detail/class_registry.hpp>
-#include <luabind/detail/primitives.hpp>
-#include <luabind/detail/object_rep.hpp>
-#include <luabind/detail/typetraits.hpp>
-#include <luabind/detail/class_cache.hpp>
-#include <luabind/detail/debug.hpp>
-
-#include <luabind/detail/decorate_type.hpp>
+#include <luabind/detail/class_rep.hpp>
 #include <luabind/object.hpp>
 #include <luabind/weak_ref.hpp>
 #include <luabind/back_reference_fwd.hpp>
-#include <luabind/detail/policy_cons.hpp>
+#include <luabind/detail/typetraits.hpp>
+#include <luabind/detail/decorate_type.hpp>
+#include <luabind/detail/class_registry.hpp>
+#include <luabind/detail/class_cache.hpp>
 
 namespace luabind
 {
@@ -78,6 +74,21 @@ namespace luabind
 		using luabind::detail::by_const_pointer;
 
 		std::false_type is_user_defined(...);
+
+		inline int convert_lua_to_cpp(lua_State* L, by_value<int>, int index)
+		{
+			return (int)lua_tonumber(L, index);
+		}
+
+		inline int match_lua_to_cpp(lua_State* L, by_value<int>, int index)
+		{
+			if (lua_isnumber(L, index)) return 0; else return -1;
+		}
+
+		inline void convert_cpp_to_lua(lua_State* L, const  int& v)
+		{
+			lua_pushnumber(L, v);
+		}
 	}
 
 	namespace detail

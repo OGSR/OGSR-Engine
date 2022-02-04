@@ -107,7 +107,7 @@ void CWeaponShotgun::OnShotBoth()
 	AddShotEffector		();
 	
 	// анимация дуплета
-	PlayHUDMotion("anim_shoot_both", "anm_shots_both", false, this, GetState());
+	PlayHUDMotion({ "anim_shoot_both", "anm_shots_both" }, false, GetState());
 	
 	// Shell Drop
 	Fvector vel; 
@@ -377,21 +377,21 @@ void CWeaponShotgun::PlayAnimOpenWeapon()
 {
 	VERIFY(GetState()==eReload);
 
-	PlayHUDMotion("anim_open_weapon", "anm_open", FALSE, this, GetState());
+	PlayHUDMotion({ "anim_open_weapon", "anm_open" }, false, GetState());
 }
 
 void CWeaponShotgun::PlayAnimAddOneCartridgeWeapon()
 {
 	VERIFY(GetState()==eReload);
 
-	PlayHUDMotion("anim_add_cartridge", "anm_add_cartridge", FALSE, this, GetState());
+	PlayHUDMotion({ "anim_add_cartridge", "anm_add_cartridge" }, false, GetState());
 }
 
 void CWeaponShotgun::PlayAnimCloseWeapon()
 {
 	VERIFY(GetState()==eReload);
 
-	PlayHUDMotion("anim_close_weapon", "anm_close", FALSE, this, GetState());
+	PlayHUDMotion({ "anim_close_weapon", "anm_close" }, false, GetState());
 }
 
 bool CWeaponShotgun::HaveCartridgeInInventory( u8 cnt ) {
@@ -464,33 +464,15 @@ u8 CWeaponShotgun::AddCartridge		(u8 cnt)
 	return cnt;
 }
 
-void	CWeaponShotgun::net_Export	(NET_Packet& P)
-{
-	inherited::net_Export(P);	
-	P.w_u8(u8(m_magazine.size()));	
-	for (u32 i=0; i<m_magazine.size(); i++)
-	{
-		CCartridge& l_cartridge = *(m_magazine.begin()+i);
-		P.w_u8(l_cartridge.m_LocalAmmoType);
-	}
-}
 
-void	CWeaponShotgun::net_Import	(NET_Packet& P)
-{
-	inherited::net_Import(P);	
-	u8 AmmoCount = P.r_u8();
-	for (u32 i=0; i<AmmoCount; i++)
-	{
-		u8 LocalAmmoType = P.r_u8();
-		if (i>=m_magazine.size()) continue;
-		CCartridge& l_cartridge = *(m_magazine.begin()+i);
-		if (LocalAmmoType == l_cartridge.m_LocalAmmoType) continue;
-#ifdef DEBUG
-		Msg("! %s reload to %s", *l_cartridge.m_ammoSect, *(m_ammoTypes[LocalAmmoType]));
-#endif
-		l_cartridge.Load(*(m_ammoTypes[LocalAmmoType]), LocalAmmoType); 
-//		m_fCurrentCartirdgeDisp = m_DefaultCartridge.m_kDisp;		
-	}
+void CWeaponShotgun::net_Export( CSE_Abstract* E ) {
+  inherited::net_Export( E );
+  CSE_ALifeItemWeaponShotGun* sg = smart_cast<CSE_ALifeItemWeaponShotGun*>( E );
+  sg->m_AmmoIDs.clear();
+  for ( u32 i = 0; i < m_magazine.size(); i++ ) {
+    CCartridge& l_cartridge = *( m_magazine.begin() + i );
+    sg->m_AmmoIDs.push_back( l_cartridge.m_LocalAmmoType );
+  }
 }
 
 

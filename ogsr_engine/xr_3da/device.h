@@ -242,9 +242,6 @@ public:
 	void overdrawBegin						();
 	void overdrawEnd						();
 
-	// Mode control
-	void DumpFlags							();
-
 #pragma warning(push)
 #pragma warning(disable:4366)
 	IC CTimer_paused* GetTimerGlobal() { return &TimerGlobal; }

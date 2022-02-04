@@ -149,7 +149,11 @@ public:
 
 	IC bool					CursorOverWindow	() const					{ return m_bCursorOverWindow; }
 
+	IC bool GetCustomDraw() const { return m_bCustomDraw; }
+	IC void SetCustomDraw(bool b) { m_bCustomDraw = b; }
+
 protected:
+	bool m_bCustomDraw{};
 
 	shared_str				m_windowName;
 	//список дочерних окон

@@ -259,7 +259,7 @@ using namespace luabind::detail;
 
 
 
-void register_method(lua_State *L, char *key, int mt_index, lua_CFunction f)
+static void register_method(lua_State *L, const char *key, int mt_index, lua_CFunction f)
 {	
 	lua_pushcfunction(L, f);	
 	lua_setfield(L, mt_index, key);

@@ -33,6 +33,7 @@
 #include "saved_game_wrapper.h"
 #include "level_graph.h"
 #include "cameralook.h"
+#include "ai_object_location.h"
 #include "game_object_space.h"
 
 #ifdef DEBUG
@@ -54,9 +55,6 @@ extern	float	psSqueezeVelocity;
 
 extern	int		x_m_x;
 extern	int		x_m_z;
-extern	BOOL	net_cl_inputguaranteed	;
-extern	BOOL	net_sv_control_hit		;
-extern	int		g_dwInputUpdateDelta	;
 #ifdef DEBUG
 extern	BOOL	g_ShowAnimationInfo		;
 #endif // DEBUG
@@ -542,27 +540,6 @@ public:
 };
 
 
-
-class CCC_Net_CL_InputUpdateRate : public CCC_Integer {
-protected:
-	int		*value_blin;
-public:
-	CCC_Net_CL_InputUpdateRate(LPCSTR N, int* V, int _min=0, int _max=999) :
-	  CCC_Integer(N,V,_min,_max),
-		  value_blin(V)
-	  {};
-
-	  virtual void	Execute	(LPCSTR args)
-	  {
-		  CCC_Integer::Execute(args);
-		  if ((*value_blin > 0) && g_pGameLevel)
-		  {
-			  g_dwInputUpdateDelta = 1000/(*value_blin);
-		  };
-	  }
-};
-
-
 #ifdef DEBUG
 
 class CCC_DrawGameGraphAll : public IConsole_Command {
@@ -859,7 +836,8 @@ public:
 			return;
 		}
 
-		Level().g_cl_Spawn(args, 0xff, M_SPAWN_OBJECT_LOCAL, Actor()->Position());
+		if (auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game))
+			tpGame->alife().spawn_item(args, Actor()->Position(), Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
 	}
 };
 //#endif // MASTER_GOLD
@@ -1212,13 +1190,8 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,				"hud_info",				&psHUD_Flags,	HUD_INFO);
 	CMD3(CCC_Mask,				"hud_draw",				&psHUD_Flags,	HUD_DRAW);
 	CMD3(CCC_Mask,				"hud_crosshair_build",	&psHUD_Flags,	HUD_CROSSHAIR_BUILD); // билдокурсор
+	CMD3(CCC_Mask, "hud_crosshair_hard", &psHUD_Flags, HUD_CROSSHAIR_HARD);
 	CMD3( CCC_Mask, "hud_small_font", &psHUD_Flags, HUD_SMALL_FONT); // использовать уменьшенный размер шрифта
-
-	// hud
-	psHUD_Flags.set(HUD_CROSSHAIR,		true);
-	psHUD_Flags.set(HUD_WEAPON,			true);
-	psHUD_Flags.set(HUD_DRAW,			true);
-	psHUD_Flags.set(HUD_INFO,			true);
 
 	CMD3(CCC_Mask,				"hud_crosshair",		&psHUD_Flags,	HUD_CROSSHAIR);
 	CMD3(CCC_Mask,				"hud_crosshair_dist",	&psHUD_Flags,	HUD_CROSSHAIR_DIST);
@@ -1326,6 +1299,7 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,			"g_3d_scopes",			&psActorFlags,	AF_3D_SCOPES);
 	CMD4(CCC_Integer, "g_3d_scopes_fps_factor", &g_3dscopes_fps_factor, 2, 5);
 	CMD3(CCC_Mask,			"g_crosshair_dbg",		&psActorFlags,	AF_CROSSHAIR_DBG);
+	CMD3(CCC_Mask, "g_camera_collision", &psActorFlags, AF_CAM_COLLISION);
 	CMD1(CCC_TimeFactor,	"time_factor")	
 	CMD1(CCC_SetWeather,	"set_weather");
 //#endif // MASTER_GOLD

@@ -27,7 +27,6 @@
 #include <vector>
 #include <string>
 
-#include <luabind/detail/signature_match.hpp>
 #include <luabind/detail/overload_rep_base.hpp>
 #include <luabind/weak_ref.hpp>
 

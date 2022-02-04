@@ -159,8 +159,14 @@ void CUIWindow::Init(Frect* pRect)
 
 void CUIWindow::Draw()
 {
-	for(WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it){
-		if(!(*it)->IsShown()) continue;
+	for(WINDOW_LIST_it it = m_ChildWndList.begin(); m_ChildWndList.end() != it; ++it)
+	{
+		if (!(*it)->IsShown())
+			continue;
+
+		if ((*it)->GetCustomDraw())
+			continue;
+
 		(*it)->Draw();
 	}
 

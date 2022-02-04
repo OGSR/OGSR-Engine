@@ -50,8 +50,7 @@ public:
 	virtual				~CCustomZone					();
 
 	virtual		BOOL	net_Spawn						(CSE_Abstract* DC);
-	virtual		void	net_Import						(NET_Packet& P);
-	virtual		void	net_Export						(NET_Packet& P);
+	virtual void net_Export( CSE_Abstract* E );
 	virtual		void	Load							(LPCSTR section);
 	virtual		void	net_Destroy						();
 	
@@ -383,6 +382,9 @@ protected:
 	u32						m_ef_anomaly_type;
 	u32						m_ef_weapon_type;
 	BOOL					m_b_always_fastmode;
+
+	bool DestroyAfterBlowout{}; //Для самоудаления мин после взрыва
+	u32 LastBlowoutTime{};
 public:
 	virtual u32				ef_anomaly_type				() const;
 	virtual u32				ef_weapon_type				() const;

@@ -302,7 +302,7 @@ void CControlManagerCustom::load_jump_data(LPCSTR s1, LPCSTR s2, LPCSTR s3, LPCS
 	if (s2) {
 		m_jump->setup_data().state_prepare_in_move.motion = skel_animated->ID_Cycle_Safe(s2);
 		VERIFY(m_jump->setup_data().state_prepare_in_move.motion);
-		m_jump->setup_data().flags.or(SControlJumpData::ePrepareInMove);
+		m_jump->setup_data().flags.Or(SControlJumpData::ePrepareInMove);
 	} else m_jump->setup_data().state_prepare_in_move.motion.invalidate();
 
 	m_jump->setup_data().state_glide.motion = skel_animated->ID_Cycle_Safe(s3);
@@ -313,15 +313,15 @@ void CControlManagerCustom::load_jump_data(LPCSTR s1, LPCSTR s2, LPCSTR s3, LPCS
 		VERIFY(m_jump->setup_data().state_ground.motion);
 	} else {
 		m_jump->setup_data().state_ground.motion.invalidate();
-		m_jump->setup_data().flags.or(SControlJumpData::eGroundSkip);
+		m_jump->setup_data().flags.Or(SControlJumpData::eGroundSkip);
 	}
 
 	if (!s1 && !s2) {
-		m_jump->setup_data().flags.or(SControlJumpData::ePrepareSkip);
+		m_jump->setup_data().flags.Or(SControlJumpData::ePrepareSkip);
 	}
 	
-	m_jump->setup_data().flags.or(SControlJumpData::eGlidePlayAnimOnce);
-	m_jump->setup_data().flags.or(SControlJumpData::eGlideOnPrepareFailed);
+	m_jump->setup_data().flags.Or(SControlJumpData::eGlidePlayAnimOnce);
+	m_jump->setup_data().flags.Or(SControlJumpData::eGlideOnPrepareFailed);
 
 	m_jump->setup_data().state_prepare_in_move.velocity_mask	= vel_mask_prepare;
 	m_jump->setup_data().state_ground.velocity_mask				= vel_mask_ground;
@@ -374,7 +374,7 @@ void CControlManagerCustom::jump(const Fvector &position)
 
 	ctrl_data->target_object						= 0;
 	ctrl_data->target_position						= position;
-	ctrl_data->flags.or								(SControlJumpData::ePrepareSkip);
+	ctrl_data->flags.Or								(SControlJumpData::ePrepareSkip);
 	ctrl_data->force_factor							= -1.f;
 
 	m_man->activate		(ControlCom::eControlJump);

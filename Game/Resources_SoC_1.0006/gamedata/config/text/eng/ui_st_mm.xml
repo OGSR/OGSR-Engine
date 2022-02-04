@@ -581,6 +581,9 @@
 	<string id="ui_mm_small_font">
 		<text>Small font (requires restart)</text>
 	</string>
+	<string id="ui_mm_crosshair_hard">
+		<text>Realistic crosshair</text>
+	</string>
 	<!-- Controls menu -->
 	<string id="ui_mm_controls">
 		<text>Controls</text>

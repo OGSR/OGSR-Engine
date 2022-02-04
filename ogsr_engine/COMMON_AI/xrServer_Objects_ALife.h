@@ -97,7 +97,7 @@ public:
 	bool							m_bOnline;
 	bool							m_bDirectControl;
 	u32								m_tNodeID;
-	flags32							m_flags;
+	Flags32							m_flags;
 	ALife::_STORY_ID				m_story_id;
 	ALife::_SPAWN_STORY_ID			m_spawn_story_id;
 
@@ -540,10 +540,7 @@ class CSE_InventoryBoxAbstract {
 protected:
 	bool			m_opened;
 public:
-
-	CSE_InventoryBoxAbstract()
-	{
-	}
+	CSE_InventoryBoxAbstract() = default;
 };
 
 class CSE_InventoryBox :public CSE_ALifeDynamicObjectVisual, public CSE_InventoryBoxAbstract

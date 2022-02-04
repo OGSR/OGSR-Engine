@@ -30,7 +30,7 @@ public:
 
 
 	virtual void					OnMoveToSlot		();
-	virtual void					OnMoveToRuck		();
+	virtual void					OnMoveToRuck(EItemPlace prevPlace) override;
 	void OnDrop() override;
 
 private:
@@ -55,8 +55,7 @@ public:
 	virtual	BOOL					BonePassBullet			(int boneID);
 	const shared_str&				GetFullIconName			() const	{return m_full_icon_name;};
 
-	virtual void			net_Export			(NET_Packet& P);
-	virtual void			net_Import			(NET_Packet& P);
+	virtual void net_Export( CSE_Abstract* E );
 
 	float m_fBleedingRestoreSpeed;
 	float m_fHealthRestoreSpeed;

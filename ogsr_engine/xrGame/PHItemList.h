@@ -1,25 +1,9 @@
-#ifndef PH_ITEM_LIST_H
-#define PH_ITEM_LIST_H
-/*
-#define DECLARE_PHLIST_ITEM(class_name)			public:\
-												class CPHListItem\
-												{\
-													friend class CPHItemList<class_name>;\
-													friend class CPHItemList<class_name>::iterator;\
-													class_name* next;\
-													class_name** tome;\
-												};\
-												private:
-*/
+#pragma once
+
 #define DECLARE_PHLIST_ITEM(class_name)			friend class CPHItemList<class_name>;\
 												friend class CPHItemList<class_name>::iterator;\
 												class_name* next;\
 												class_name** tome;
-#define DECLARE_PHSTACK_ITEM(class_name)		DECLARE_PHLIST_ITEM(class_name)\
-												friend class CPHItemStack<class_name>;\
-												u16 stack_pos;
-						
-//#define TPI(item)								((T::CPHListItem*)item)	
 
 template<class T>
 		class CPHItemList
@@ -87,17 +71,4 @@ template<class T>
 			}
 	};
 
-template<class T>
-	class CPHItemStack : 
-		public CPHItemList<T>
-	{
-	public:	
-		void			push_back		(T* item)	
-		{
-			item->stack_pos=size;
-			CPHItemList<T>::push_back(item);
-		}
-	};
 #define DEFINE_PHITEM_LIST(T,N,I)		typedef CPHItemList<T>	N; typedef CPHItemList<T>::iterator I;
-#define DEFINE_PHITEM_STACK(T,N,I)		typedef CPHItemStack<T>	N; typedef CPHItemStack<T>::iterator I;
-#endif

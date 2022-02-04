@@ -1,10 +1,9 @@
 #pragma once
 
 #include "../states/state_move_to_point.h"
-#include "../states/monster_state_home_point_danger.h"
-
 #include "../ai_monster_squad.h"
-#include "../../../entity.h"
+#include "../ai_monster_squad_manager.h"
+#include "../states/monster_state_home_point_danger.h"
 #include "../../../ai_object_location.h"
 
 #define TEMPLATE_SPECIALIZATION template <\

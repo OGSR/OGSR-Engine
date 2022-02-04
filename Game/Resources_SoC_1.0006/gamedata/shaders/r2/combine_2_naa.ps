@@ -1,6 +1,7 @@
 #include "common.h"
 #include "mblur.h"
 #include "dof.h"
+#include "visor.h"
 
 struct 	v2p
 {
@@ -36,6 +37,10 @@ half4 	main		( v2p I )	: COLOR
 	half4 	bloom	= tex2D		(s_bloom, center);
 	
 			img 	= mblur		(center,tex2D(s_position,I.tc0),img.rgb);
+
+if (addon_VControl.w == 1) {
+	img    = visor_reflection(img,center);	
+}	
 
 #ifdef 	USE_DISTORT
  	half3	blurred	= bloom*def_hdr	;

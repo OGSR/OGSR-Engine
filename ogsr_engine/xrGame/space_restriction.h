@@ -12,6 +12,7 @@
 #include "space_restriction_holder.h"
 #include "space_restriction_bridge.h"
 #include "space_restriction_abstract.h"
+#include "ai_space.h"
 
 //#define USE_FREE_IN_RESTRICTIONS
 

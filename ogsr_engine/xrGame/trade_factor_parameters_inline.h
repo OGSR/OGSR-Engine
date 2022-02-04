@@ -20,22 +20,23 @@ IC	void CTradeFactorParameters::clear						()
 
 
 IC void CTradeFactorParameters::enable ( const shared_str &section, const CTradeFactors &factors ) {
-  static std::regex Reg( "^/([^/]+)/$" );
+  static const std::regex Reg( "^/([^/]+)/$" );
   std::smatch results;
   std::string str( section.c_str() );
   if ( std::regex_search( str, results, Reg ) ) {
     std::regex re( results[ 1 ].str() );
-    m_factors_re.push_back({ re, factors });
+    m_factors_re.emplace_back(std::move(re), factors);
   }
   else {
-    VERIFY( m_factors.find( section ) == m_factors.end() );
-    m_factors.insert( std::make_pair( section, factors ) );
+    if (m_factors.find(section) != m_factors.end())
+      Msg("~~[%s] duplicate of CTradeFactors for section [%s] found!", __FUNCTION__, section.c_str());
+    m_factors.emplace( section, factors );
   }
 }
 
 
 IC bool CTradeFactorParameters::enabled ( const shared_str &section ) const {
-  FACTORS::const_iterator I = m_factors.find(section);
+  auto I = m_factors.find(section);
   if ( I != m_factors.end() )
     return true;
   for ( const auto &it : m_factors_re ) {
@@ -50,7 +51,7 @@ IC bool CTradeFactorParameters::enabled ( const shared_str &section ) const {
 
 
 IC const CTradeFactors &CTradeFactorParameters::factors ( const shared_str &section ) const {
-  FACTORS::const_iterator I = m_factors.find( section );
+  auto I = m_factors.find( section );
   if ( I != m_factors.end() )
     return (*I).second;
   for ( const auto &it : m_factors_re ) {

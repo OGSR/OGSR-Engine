@@ -4,6 +4,7 @@
 template<typename _Object>
 class CStateMonsterSteal : public CState<_Object> {
 	typedef CState<_Object> inherited;
+	using inherited::object;
 
 public:
 						CStateMonsterSteal		(_Object *obj);

@@ -160,7 +160,7 @@ namespace luabind
 				template<typename... Policies>
 				Ret operator[](const policy_cons<Policies...> p)
 				{
-					typedef typename detail::find_conversion_policy<0, Policies...>::type converter_policy;
+					using converter_policy = typename detail::find_conversion_policy<0, Policies...>::type;
 					typename converter_policy::template generate_converter<Ret, Direction::lua_to_cpp>::type converter;
 
 					m_called = true;

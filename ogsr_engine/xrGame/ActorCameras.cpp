@@ -270,6 +270,37 @@ void CActor::cam_Update(float dt, float fFOV)
 	if ( m_holder )
 	  return;
 
+	//Подобие коллизии камеры
+	float _viewport_near = VIEWPORT_NEAR;
+	if (eacFirstEye == cam_active && psActorFlags.test(AF_CAM_COLLISION))
+	{
+		xrXRC						xrc;
+		xrc.box_options(0);
+		xrc.box_query(Level().ObjectSpace.GetStaticModel(), point, Fvector().set(VIEWPORT_NEAR, VIEWPORT_NEAR, VIEWPORT_NEAR));
+		u32 tri_count = xrc.r_count();
+		if (tri_count)
+		{
+			//Msg("~~[%s.1] set VIEWPORT_NEAR to 0.01!", __FUNCTION__);
+			_viewport_near = 0.01f;
+		}
+		else
+		{
+			xr_vector<ISpatial*> ISpatialResult;
+			g_SpatialSpacePhysic->q_box(ISpatialResult, 0, STYPE_PHYSIC, point, Fvector().set(VIEWPORT_NEAR, VIEWPORT_NEAR, VIEWPORT_NEAR));
+			for (u32 o_it = 0; o_it < ISpatialResult.size(); o_it++)
+			{
+				CPHShell* pCPHS = smart_cast<CPHShell*>(ISpatialResult[o_it]);
+				if (pCPHS)
+				{
+					//Msg("~~[%s.2] set VIEWPORT_NEAR to 0.01!", __FUNCTION__);
+					_viewport_near = 0.01f;
+					break;
+				}
+			}
+		}
+	}
+	//
+
 	if(eacFirstEye != cam_active)
 	{
 		cameras[eacFirstEye]->Update	(point,dangle);
@@ -291,6 +322,7 @@ void CActor::cam_Update(float dt, float fFOV)
 	{
 		Level().Cameras().UpdateFromCamera(C);
 		if(eacFirstEye == cam_active && !Level().Cameras().GetCamEffector(cefDemo)){
+			Cameras().SetVPNear(_viewport_near);
 			Cameras().ApplyDevice();
 		}
 	}
@@ -330,8 +362,6 @@ void CActor::OnRender	()
 
 	if ((dbg_net_Draw_Flags.is_any((1<<5))))
 		character_physics_support()->movement()->dbg_Draw	();
-
-	OnRender_Network();
 
 	inherited::OnRender();
 }

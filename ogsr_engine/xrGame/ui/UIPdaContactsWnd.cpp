@@ -101,12 +101,12 @@ void CUIPdaContactsWnd::AddContact(CPda* pda, u16 owner_id)
 	auto pItem = xr_new<CUIPdaContactItem>(this);
 	UIListWnd->AddWindow			(pItem, true);
 	pItem->Init						(0,0,UIListWnd->GetWidth(),85);
-#ifdef OGSR_MOD
+//#ifdef OGSR_MOD
 	CObject* pObject = Level().Objects.net_Find(owner_id);
 	pItem->InitCharacter(smart_cast<CInventoryOwner*>(pObject));
-#else
-	pItem->InitCharacter			(pda->GetOriginalOwner());
-#endif
+//#else
+//	pItem->InitCharacter			(pda->GetOriginalOwner());
+//#endif
 	pItem->m_data					= (void*)pda;
 }
 

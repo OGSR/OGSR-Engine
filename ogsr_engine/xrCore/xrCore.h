@@ -95,6 +95,7 @@
 #include "xrMemory.h"
                         
 #include "_stl_extensions.h"
+#include "log.h"
 #include "xrsharedmem.h"
 #include "xrstring.h"
 #include "xr_resource.h"
@@ -115,7 +116,6 @@ DEFINE_SET		(shared_str,RStringSet,RStringSetIt);
 DEFINE_VECTOR	(xr_rtoken,RTokenVec,RTokenVecIt);
                         
 #include "FS.h"
-#include "log.h"
 #include "xr_trims.h"
 #include "xr_ini.h"
 
@@ -202,7 +202,7 @@ public:
 	  engine_ammo_repacker       = 1ull << 29,
 	  ruck_flag_preferred        = 1ull << 30,
 	  colorize_ammo              = 1ull << 31,
-	  use_cop_thm_format         = 1ull << 32,
+	  // !Место свободно!        = 1ull << 32,
 	  colorize_untradable        = 1ull << 33,
 	  select_mode_1342           = 1ull << 34,
 	  old_outfit_slot_style      = 1ull << 35,

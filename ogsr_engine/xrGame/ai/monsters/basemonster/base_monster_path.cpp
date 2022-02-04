@@ -9,8 +9,8 @@
 #include "stdafx.h"
 #include "base_monster.h"
 #include "../corpse_cover.h"
-#include "../../../cover_manager.h"
 #include "cover_point.h"
+#include "../../../cover_manager.h"
 #include "../../../ai_space.h"
 #include "../control_direction_base.h"
 

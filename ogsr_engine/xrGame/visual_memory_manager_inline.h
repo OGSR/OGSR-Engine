@@ -10,7 +10,8 @@
 
 IC	const CVisualMemoryManager::VISIBLES &CVisualMemoryManager::objects() const
 {
-	return							(*m_objects);
+	m_objects->erase(std::remove_if(m_objects->begin(), m_objects->end(), [](const auto& obj) { return obj.m_object->getDestroy(); }), m_objects->end());
+	return *m_objects;
 }
 
 IC	const CVisualMemoryManager::RAW_VISIBLES &CVisualMemoryManager::raw_objects() const

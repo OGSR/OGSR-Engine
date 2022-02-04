@@ -12,7 +12,7 @@ struct SControlRotationJumpData : public ControlCom::IComData {
 		eRotateOnce	= u32(1) << 1,	// use only the first stage
 	};
 
-	flags32			flags;
+	Flags32			flags;
 };
 
 class CControlRotationJump : public CControl_ComCustom<SControlRotationJumpData> {

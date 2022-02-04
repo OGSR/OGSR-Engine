@@ -21,7 +21,6 @@ struct motion_descr
 
 struct player_hud_motion
 {
-	shared_str m_alias_name;
 	shared_str m_base_name;
 	shared_str m_additional_name;
 	xr_vector<motion_descr> m_animations;
@@ -29,7 +28,7 @@ struct player_hud_motion
 
 struct player_hud_motion_container
 {
-	xr_vector<player_hud_motion> m_anims;
+	string_unordered_map<shared_str, player_hud_motion> m_anims;
 	player_hud_motion* find_motion(const shared_str& name);
 	void load(attachable_hud_item* parent, IKinematicsAnimated* model, IKinematicsAnimated* animatedHudItem, const shared_str& sect);
 };
@@ -71,6 +70,7 @@ struct hud_item_measures
 	Fvector m_fire_point2_offset;
 	u16 m_shell_bone;
 	Fvector m_shell_point_offset;
+	Fvector m_shoot_point_offset{};
 
 	Fvector m_hands_attach[2]{}; // pos,rot
 
@@ -92,6 +92,8 @@ struct hud_item_measures
 		float m_tendto_speed_aim;
 	};
 	inertion_params m_inertion_params; //--#SM+#--	
+
+	bool useCopFirePoint{};
 };
 
 struct attachable_hud_item
@@ -102,7 +104,7 @@ struct attachable_hud_item
 	shared_str m_visual_name;
 	IKinematics* m_model{};
 	u16 m_attach_place_idx{};
-	hud_item_measures m_measures;
+	hud_item_measures m_measures{};
 	bool m_has_separated_hands{};
 
 	// runtime positioning
@@ -123,6 +125,7 @@ struct attachable_hud_item
 	bool render_item_ui_query();
 	bool need_renderable();
 	void set_bone_visible(const shared_str& bone_name, BOOL bVisibility, BOOL bSilent = FALSE);
+	void set_bone_visible(const std::vector<shared_str>& bone_names, BOOL bVisibility, BOOL bSilent = FALSE);
 	BOOL get_bone_visible(const shared_str& bone_name);
 	bool has_bone(const shared_str& bone_name);
 	void debug_draw_firedeps();
@@ -186,7 +189,7 @@ public:
 	void render_hud();
 	void render_item_ui();
 	bool render_item_ui_query();
-	u32 anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CMotionDef*& md, float speed, IKinematicsAnimated* itemModel = nullptr);
+	u32 anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CMotionDef*& md, float speed, bool hasHands, IKinematicsAnimated* itemModel = nullptr);
 	const shared_str& section_name() const { return m_sect_name; }
 	attachable_hud_item* create_hud_item(const shared_str& sect);
 
@@ -203,7 +206,7 @@ public:
 
 	void calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result);
 	void tune(Ivector values);
-	u32 motion_length(const motion_descr& M, const CMotionDef*& md, float speed, IKinematicsAnimated* itemModel, attachable_hud_item* pi = nullptr);
+	u32 motion_length(const motion_descr& M, const CMotionDef*& md, float speed, bool hasHands, IKinematicsAnimated* itemModel, attachable_hud_item* pi = nullptr);
 	u32 motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md);
 	void OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd);
 

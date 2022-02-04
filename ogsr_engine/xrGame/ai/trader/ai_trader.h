@@ -49,8 +49,7 @@ public:
 	virtual DLL_Pure	*_construct		();
 	virtual void		Load			( LPCSTR section );
 	virtual BOOL		net_Spawn		( CSE_Abstract* DC );
-	virtual void		net_Export		(NET_Packet& P);
-	virtual void		net_Import		(NET_Packet& P);
+	virtual void		net_Export(CSE_Abstract*);
 	virtual	void		net_Destroy		();
 
 	virtual void		save			(NET_Packet &output_packet);
@@ -64,7 +63,7 @@ public:
 	virtual	void		Hit			( SHit* pHDS );
 	virtual	void		UpdateCL		();
 
-	virtual void		g_fireParams			(const CHudItem* pHudItem, Fvector& P, Fvector& D);
+	virtual void g_fireParams(CHudItem* pHudItem, Fvector& P, Fvector& D, const bool for_cursor = false) override;
 	virtual void		g_WeaponBones			(int &L, int &R1, int &R2);
 	virtual	float		ffGetFov				()	const {return 150.f;}
 	virtual	float		ffGetRange				()	const {return 30.f;}

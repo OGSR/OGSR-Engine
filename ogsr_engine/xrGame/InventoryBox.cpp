@@ -45,13 +45,19 @@ void IInventoryBox::ProcessEvent(CGameObject *O, NET_Packet& P, u16 type)
 		{
 			u16 id;
             P.r_u16(id);
-			CObject* itm = Level().Objects.net_Find(id);  VERIFY(itm);
-			xr_vector<u16>::iterator it;
-			it = std::find(m_items.begin(),m_items.end(),id); VERIFY(it!=m_items.end());
-			m_items.erase		(it);
+			CObject* itm = Level().Objects.net_Find(id);
+			
+			auto it = std::find(m_items.begin(), m_items.end(), id);
+			if (it != m_items.end())
+				m_items.erase(it);
+			else
+				Msg("!![%s.GE_TRANSFER_REJECT] object with id [%u] not found! itm: [%p]", __FUNCTION__, id, itm);
 
 			bool just_before_destroy = !P.r_eof() && P.r_u8();
 			bool dont_create_shell = (type == GE_TRADE_SELL) || (type == GE_TRANSFER_REJECT) || just_before_destroy;
+
+			if (!itm)
+				return;
 
 			itm->H_SetParent	(NULL, dont_create_shell);
 
@@ -110,16 +116,14 @@ CScriptGameObject* IInventoryBox::GetObjectByIndex(u32 id)
 	if (id < m_items.size() )
 	{
 		u32 obj_id = u32(m_items[id]);
-		if (auto obj = smart_cast<CGameObject*>(Level().Objects.net_Find(obj_id) ) )
+		if (auto obj = smart_cast<CGameObject*>(Level().Objects.net_Find(obj_id)); obj && !obj->getDestroy())
 			return obj->lua_game_object();
 	}
-	return NULL;
+	return nullptr;
 }
 
 u32 IInventoryBox::GetSize() const
  { 
-	LPCSTR t = typeid(*this).name();
-	R_ASSERT(t);
 	return m_items.size(); 
 }
 

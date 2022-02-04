@@ -323,7 +323,7 @@ private:
   void operator= (const dBallJoint &);
 
 public:
-  dBallJoint() { }
+  dBallJoint() = default;
   dBallJoint (dWorldID world, dJointGroupID group=0)
     { _id = dJointCreateBall (world, group); }
 
@@ -347,7 +347,7 @@ class dHingeJoint : public dJoint {
   void operator = (const dHingeJoint &);
 
 public:
-  dHingeJoint() { }
+  dHingeJoint() = default;
   dHingeJoint (dWorldID world, dJointGroupID group=0)
     { _id = dJointCreateHinge (world, group); }
 
@@ -389,7 +389,7 @@ class dSliderJoint : public dJoint {
   void operator = (const dSliderJoint &);
 
 public:
-  dSliderJoint() { }
+  dSliderJoint() = default;
   dSliderJoint (dWorldID world, dJointGroupID group=0)
     { _id = dJointCreateSlider (world, group); }
 
@@ -424,7 +424,7 @@ class dUniversalJoint : public dJoint {
   void operator = (const dUniversalJoint &);
 
 public:
-  dUniversalJoint() { }
+  dUniversalJoint() = default;
   dUniversalJoint (dWorldID world, dJointGroupID group=0)
     { _id = dJointCreateUniversal (world, group); }
 
@@ -472,7 +472,7 @@ class dHinge2Joint : public dJoint {
   void operator = (const dHinge2Joint &);
 
 public:
-  dHinge2Joint() { }
+  dHinge2Joint() = default;
   dHinge2Joint (dWorldID world, dJointGroupID group=0)
     { _id = dJointCreateHinge2 (world, group); }
 
@@ -520,7 +520,7 @@ class dFixedJoint : public dJoint {
   void operator = (const dFixedJoint &);
 
 public:
-  dFixedJoint() { }
+  dFixedJoint() = default;
   dFixedJoint (dWorldID world, dJointGroupID group=0)
     { _id = dJointCreateFixed (world, group); }
 
@@ -540,7 +540,7 @@ class dContactJoint : public dJoint {
   void operator = (const dContactJoint &);
 
 public:
-  dContactJoint() { }
+  dContactJoint() = default;
   dContactJoint (dWorldID world, dJointGroupID group, dContact *contact)
     { _id = dJointCreateContact (world, group, contact); }
 
@@ -557,7 +557,7 @@ class dNullJoint : public dJoint {
   void operator = (const dNullJoint &);
 
 public:
-  dNullJoint() { }
+  dNullJoint() = default;
   dNullJoint (dWorldID world, dJointGroupID group=0)
     { _id = dJointCreateNull (world, group); }
 
@@ -574,7 +574,7 @@ class dAMotorJoint : public dJoint {
   void operator = (const dAMotorJoint &);
 
 public:
-  dAMotorJoint() { }
+  dAMotorJoint() = default;
   dAMotorJoint (dWorldID world, dJointGroupID group=0)
     { _id = dJointCreateAMotor (world, group); }
 
