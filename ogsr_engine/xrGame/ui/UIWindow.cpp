@@ -66,8 +66,8 @@ void draw_rect(Frect& r, u32 color, shared_str name)
 		auto height = Device.dwHeight;
 		CGameFont* F = UI()->Font()->pFontArial14;
 		auto text_heiht = F->GetHeight();
-		auto x = r.lt.x - (r.lt.x >= 20 ? 20 : 0);
-		auto y = r.lt.y > height / 2 ? r.lt.y - text_heiht - 20 : r.rb.y + 20;
+		auto x = r.lt.x;
+		auto y = r.lt.y > height / 2 ? r.lt.y - text_heiht - 7 : r.rb.y + 7;
 		F->OutSet(x, y);
 		F->OutNext(static_name);
 		F->SetColor(0xffffffff);
@@ -78,15 +78,12 @@ void draw_wnds_rects()
 {
 	if(0==g_wnds_rects.size())	return;
 
-	xr_vector<std::tuple<Frect, shared_str>>::iterator it = g_wnds_rects.begin();
-	xr_vector<std::tuple<Frect, shared_str>>::iterator it_e = g_wnds_rects.end();
-
-	for(;it!=it_e;++it)
+	for (auto& t : g_wnds_rects)
 	{
-		Frect& r = std::get<0>(*it);
+		Frect& r = std::get<0>(t);
 		UI()->ClientToScreenScaled(r.lt, r.lt.x, r.lt.y);
 		UI()->ClientToScreenScaled(r.rb, r.rb.x, r.rb.y);
-		draw_rect				(r,color_rgba(255,0,0,255), std::get<1>(*it));
+		draw_rect(r,color_rgba(255,0,0,255), std::get<1>(t));
 	};
 
 	g_wnds_rects.clear();

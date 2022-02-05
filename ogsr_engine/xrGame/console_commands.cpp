@@ -159,10 +159,6 @@ public:
 	}
 };
 
-
-
-
-
 #ifdef DEBUG
 class CCC_ALifePath : public IConsole_Command {
 public:
@@ -250,7 +246,6 @@ public:
 	}
 };
 
-
 class CCC_ALifeObjectsPerUpdate : public IConsole_Command {
 public:
 	CCC_ALifeObjectsPerUpdate(LPCSTR N) : IConsole_Command(N)  { };
@@ -323,7 +318,6 @@ public:
 	}
 };
 
-
 class CCC_DemoPlay : public IConsole_Command
 {
 public:
@@ -350,7 +344,6 @@ public:
 	  }
 };
 
-
 bool valid_file_name(LPCSTR file_name)
 {
 
@@ -365,8 +358,6 @@ bool valid_file_name(LPCSTR file_name)
 
 	return		(true);
 }
-
-
 #include "UIGameCustom.h"
 #include "HUDManager.h"
 class CCC_ALifeSave : public IConsole_Command {
@@ -525,7 +516,6 @@ public:
 	}
 };
 
-
 class CCC_FloatBlock : public CCC_Float {
 public:
 	CCC_FloatBlock(LPCSTR N, float* V, float _min=0, float _max=1) :
@@ -537,7 +527,6 @@ public:
 		  CCC_Float::Execute(args);
 	  }
 };
-
 
 #ifdef DEBUG
 
@@ -656,8 +645,6 @@ public:
 	}
 
 };
-
-
 
 class CCC_DebugFonts : public IConsole_Command {
 public:
@@ -843,7 +830,6 @@ public:
 
 #include "GamePersistent.h"
 
-
 class CCC_MainMenu : public IConsole_Command {
 public:
 	CCC_MainMenu(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
@@ -960,7 +946,6 @@ public:
 		m.Set(value);
 	}
 };
-
 
 void	CCC_RadioMask::Execute	(LPCSTR args)
 {
@@ -1094,7 +1079,6 @@ public:
 	}
 };
 
-
 class CCC_Net_SV_GuaranteedPacketMode : public CCC_Integer {
 protected:
 	int		*value_blin;
@@ -1109,7 +1093,6 @@ public:
 		  CCC_Integer::Execute(args);
 	  }
 };
-
 
 // Change weather immediately
 class CCC_SetWeather : public IConsole_Command
@@ -1141,6 +1124,18 @@ public:
 	}
 };
 
+class CCC_RefreshHud : public IConsole_Command
+{
+public:
+	CCC_RefreshHud(LPCSTR N) : IConsole_Command(N)
+	{
+		bEmptyArgsHandled = true;
+	}
+	void Execute(LPCSTR args) override
+	{
+		((CHUDManager *)g_hud)->OnScreenRatioChanged();
+	}
+};
 
 void CCC_RegisterCommands()
 {
@@ -1290,6 +1285,7 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask, "g_camera_collision", &psActorFlags, AF_CAM_COLLISION);
 	CMD1(CCC_TimeFactor,	"time_factor")	
 	CMD1(CCC_SetWeather,	"set_weather");
+	CMD1(CCC_RefreshHud, "refresh_hud");
 //#endif // MASTER_GOLD
 
 	CMD3(CCC_Mask,		"g_music_tracks",		&psActorFlags,	AF_MUSIC_TRACKS);
