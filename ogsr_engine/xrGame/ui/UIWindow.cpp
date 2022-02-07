@@ -5,8 +5,9 @@
 #include "UIWindow.h"
 #include "../UICursor.h"
 #include "../MainMenu.h"
-
+#include "HudManager.h"
 #include "../Include/xrRender/DebugRender.h"
+
 
 //#define LOG_ALL_WNDS
 #ifdef LOG_ALL_WNDS
@@ -28,21 +29,20 @@
 #endif
 
 
-xr_vector<Frect> g_wnds_rects;
-
+static std::vector<std::pair<shared_str, Frect>> g_wnds_rects;
 BOOL g_show_wnd_rect = FALSE;
 BOOL g_show_wnd_rect2 = FALSE;
-void clean_wnd_rects()
-{
+BOOL g_show_wnd_rect_text = FALSE;
+
+void clean_wnd_rects() {
 	DRender->DestroyDebugShader(IDebugRender::dbgShaderWindow);
 }
 
-void add_rect_to_draw(Frect r)
-{
-	g_wnds_rects.push_back(r);
+static void add_rect_to_draw(const Frect& r, const shared_str& windowName) {
+	g_wnds_rects.emplace_back(windowName, r);
 }
-void draw_rect(Frect& r, u32 color)
-{
+
+static void draw_rect(const Frect& r, const u32 color, const shared_str& name) {
 	DRender->SetDebugShader(IDebugRender::dbgShaderWindow);
 
 	//.	UIRender->StartLineStrip	(5);
@@ -56,22 +56,26 @@ void draw_rect(Frect& r, u32 color)
 
 	//.	UIRender->FlushLineStrip();
 	UIRender->FlushPrimitive();
+
+	if (g_show_wnd_rect_text && name.size()) {
+		CGameFont* F = UI()->Font()->pFontDI;
+		const float x = r.lt.x - (r.lt.x >= 20 ? 20 : 0);
+		const float y = r.lt.y > Device.dwHeight / 2 ? r.lt.y - F->GetHeight() - 20 : r.rb.y + 20;
+		F->Out(x, y, name.c_str());
+		F->SetColor(D3DCOLOR_XRGB(255, 0, 255));
+	}
 }
 
 void draw_wnds_rects()
 {
-	if(0==g_wnds_rects.size())	return;
+	if (g_wnds_rects.empty())
+		return;
 
-	xr_vector<Frect>::iterator it = g_wnds_rects.begin();
-	xr_vector<Frect>::iterator it_e = g_wnds_rects.end();
-
-	for(;it!=it_e;++it)
-	{
-		Frect& r = *it;
+	for(auto&[name, r] : g_wnds_rects) {
 		UI()->ClientToScreenScaled(r.lt, r.lt.x, r.lt.y);
 		UI()->ClientToScreenScaled(r.rb, r.rb.x, r.rb.y);
-		draw_rect				(r,color_rgba(255,0,0,255));
-	};
+		draw_rect(r, color_rgba(255, 0, 0, 255), name);
+	}
 
 	g_wnds_rects.clear();
 }
@@ -173,7 +177,7 @@ void CUIWindow::Draw()
 	if(g_show_wnd_rect2){
 		Frect r;
 		GetAbsoluteRect(r);
-		add_rect_to_draw(r);
+		add_rect_to_draw(r, m_windowName);
 	}
 }
 
@@ -205,7 +209,7 @@ void CUIWindow::UpdateFocus( bool focus_lost ) {
   if ( cursor_on_window && g_show_wnd_rect ) {
     Frect r;
     GetAbsoluteRect( r );
-    add_rect_to_draw( r );
+    add_rect_to_draw( r, m_windowName);
   }
 
   // RECEIVE and LOST focus

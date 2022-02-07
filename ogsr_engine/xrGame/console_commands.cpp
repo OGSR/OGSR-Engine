@@ -62,6 +62,7 @@ extern	BOOL	g_bDebugDumpPhysicsStep	;
 extern	ESingleGameDifficulty g_SingleGameDifficulty;
 extern	BOOL	g_show_wnd_rect			;
 extern	BOOL	g_show_wnd_rect2			;
+extern	BOOL	g_show_wnd_rect_text;
 //-----------------------------------------------------------
 extern	float	g_fTimeFactor;
 extern	BOOL	g_bCopDeathAnim;
@@ -1399,6 +1400,7 @@ void CCC_RegisterCommands()
 
 	CMD4(CCC_Integer,	"show_wnd_rect",				&g_show_wnd_rect, 0, 1);
 	CMD4(CCC_Integer,	"show_wnd_rect_all",			&g_show_wnd_rect2, 0, 1);
+	CMD4(CCC_Integer, "show_wnd_rect_names", &g_show_wnd_rect_text, 0, 1);
 
 	*g_last_saved_game	= 0;
 
