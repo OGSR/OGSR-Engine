@@ -28,6 +28,7 @@ private:
 	ref_light		light_ambient;
 	CLAItem*		lanim;
 	float			ambient_power;
+	bool			isOn = true;
 	
 	ref_glow		glow_render;
 	
