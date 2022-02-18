@@ -90,7 +90,6 @@ void InitConsole	()
 	CORE_FEATURE_SET( show_inv_item_condition,    "features" );
 	CORE_FEATURE_SET( remove_alt_keybinding,      "features" );
 	CORE_FEATURE_SET( binoc_firing,               "features" );
-	CORE_FEATURE_SET( no_mouse_wheel_switch_slot, "features" );
 	CORE_FEATURE_SET( stop_anim_playing,          "features" );
 	CORE_FEATURE_SET( corpses_collision,          "features" );
 	CORE_FEATURE_SET( more_hide_weapon,           "features" );

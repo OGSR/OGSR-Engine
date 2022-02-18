@@ -16,6 +16,7 @@ enum{
 		AF_VERTEX_DBG		=(1<<12),
 		AF_CROSSHAIR_DBG	=(1<<13),
 		AF_CAM_COLLISION = 1 << 14,
+		AF_MOUSE_WHEEL_SWITCH_SLOTS = 1 << 15,
 };
 
 enum {
