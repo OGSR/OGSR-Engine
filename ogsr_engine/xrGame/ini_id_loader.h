@@ -30,40 +30,29 @@ protected:
 	typedef xr_vector<ITEM_DATA>	T_VECTOR;
 	static	T_VECTOR*				m_pItemDataVector;
 	
-	template <u32 NUM>
-	static void						LoadItemData	(u32, LPCSTR)
+	template <bool isNum>
+	static void LoadItemData(u32 count, LPCSTR cfgRecord)
 	{
-		STATIC_CHECK(false, Specialization_for_LoadItemData_in_CIni_IdToIndex_not_found);
-		NODEFAULT;
-	}
-
-	template <>
-		static  void				LoadItemData<0>  (u32 count, LPCSTR cfgRecord)
-	{
-		for (u32 k = 0; k < count; k+= 1)
+		for (u32 k = 0; k < count; k += 1)
 		{
 			string64 buf;
-			LPCSTR id_str  = _GetItem(cfgRecord, k, buf);
+			LPCSTR id_str = _GetItem(cfgRecord, k, buf);
 			char* id_str_lwr = xr_strdup(id_str);
 			xr_strlwr(id_str_lwr);
-			ITEM_DATA item_data(T_INDEX(m_pItemDataVector->size()), T_ID(id_str));
-			m_pItemDataVector->push_back(item_data);
-			xr_free(id_str_lwr);
-		}
-	}
 
-	template <>
-		static  void				LoadItemData<1>  (u32 count, LPCSTR cfgRecord)
-	{
-		for (u32 k = 0; k < count; k+= 2)
-		{
-			string64 buf, buf1;
-			LPCSTR id_str  = _GetItem(cfgRecord, k, buf);
-			char* id_str_lwr = xr_strdup(id_str);
-			xr_strlwr(id_str_lwr);
-			LPCSTR rec1	   = _GetItem(cfgRecord, k + 1, buf1);
-			ITEM_DATA item_data(T_INDEX(m_pItemDataVector->size()), T_ID(id_str), rec1);
-			m_pItemDataVector->push_back(item_data);
+			if constexpr (!isNum)
+			{
+				ITEM_DATA item_data(T_INDEX(m_pItemDataVector->size()), T_ID(id_str));
+				m_pItemDataVector->push_back(item_data);
+			}
+			else
+			{
+				string64 buf1;
+				LPCSTR rec1 = _GetItem(cfgRecord, ++k, buf1);
+				ITEM_DATA item_data(T_INDEX(m_pItemDataVector->size()), T_ID(id_str), rec1);
+				m_pItemDataVector->push_back(item_data);
+			}
+
 			xr_free(id_str_lwr);
 		}
 	}

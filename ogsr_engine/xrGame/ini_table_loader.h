@@ -43,26 +43,14 @@ private:
 	int					table_width;
 
 	//перобразование из LPCSTR в T_ITEM
-
-	template <typename T_CONVERT_ITEM>
-        T_ITEM				convert			(LPCSTR)
-	{
-		STATIC_CHECK(false, Specialization_for_convert_in_CIni_Table_not_found);
-		NODEFAULT;
+	decltype(auto) convert(const char* str) {
+		if constexpr (std::is_same_v<T_ITEM, float>)
+			return static_cast<T_ITEM>(atof(str));
+		else {
+			static_assert(std::is_same_v<T_ITEM, int>, "Specialization for convert in CIni_Table not found.");
+			return atoi(str);
+		}
 	}
-
-	template <>
-		T_ITEM				convert<int>		(LPCSTR str)
-	{
-		return atoi(str);
-	}
-
-	template <>
-		T_ITEM				convert<float>		(LPCSTR str)
-	{
-		return (float)atof(str);
-	}
-
 };
 
 /*
@@ -121,7 +109,7 @@ typename CSIni_Table::ITEM_TABLE& CSIni_Table::table	()
 		(*m_pTable)[cur_index].resize(cur_table_width);
 		for(std::size_t j=0; j<cur_table_width; j++)
 		{
-			(*m_pTable)[cur_index][j] = convert<T_ITEM>(_GetItem(i.second.c_str(),(int)j,buffer));
+			(*m_pTable)[cur_index][j] = convert(_GetItem(i.second.c_str(),(int)j,buffer));
 		}
 	}
 

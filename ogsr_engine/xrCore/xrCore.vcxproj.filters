@@ -364,9 +364,6 @@
     <ClInclude Include="Utils\imdexlib\mpl.hpp">
       <Filter>Utils\imdexlib</Filter>
     </ClInclude>
-    <ClInclude Include="Utils\imdexlib\option.hpp">
-      <Filter>Utils\imdexlib</Filter>
-    </ClInclude>
     <ClInclude Include="Utils\imdexlib\traits.hpp">
       <Filter>Utils\imdexlib</Filter>
     </ClInclude>
