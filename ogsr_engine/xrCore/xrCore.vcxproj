@@ -348,7 +348,6 @@
     <ClInclude Include="Utils\imdexlib\identity.hpp" />
     <ClInclude Include="Utils\imdexlib\is_reference_wrapper.hpp" />
     <ClInclude Include="Utils\imdexlib\mpl.hpp" />
-    <ClInclude Include="Utils\imdexlib\option.hpp" />
     <ClInclude Include="Utils\imdexlib\traits.hpp" />
     <ClInclude Include="Utils\imdexlib\typelist.hpp" />
     <ClInclude Include="Utils\imdexlib\utility.hpp" />
