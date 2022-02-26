@@ -228,7 +228,7 @@ public:
 
 	virtual u8 GetCurrentHudOffsetIdx() const { return 0; }
 	virtual float GetHudFov(); // Получить HUD FOV от текущего оружия игрока
-	virtual void UpdateHudAdditional(Fmatrix&, const bool need_update_collision = false);
+	void UpdateHudAdditional(Fmatrix&, const bool need_update_collision = false);
 	bool HudBobbingAllowed() const { return m_huditem_flags.test(fl_bobbing_allow); }
 	void AllowHudBobbing(BOOL B) { m_huditem_flags.set(fl_bobbing_allow, B); }
 	void GetBoneOffsetPosDir(const shared_str& bone_name, Fvector& dest_pos, Fvector& dest_dir, const Fvector& offset);

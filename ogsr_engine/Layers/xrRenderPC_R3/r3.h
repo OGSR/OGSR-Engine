@@ -336,7 +336,8 @@ public:
 	virtual void					ScreenshotAsyncEnd			(CMemoryWriter& memory_writer);
 	virtual void		_BCL		OnFrame						();
 	virtual void BeforeWorldRender(); //--#SM+#-- +SecondVP+ Вызывается перед началом рендера мира и пост-эффектов
-	virtual void AfterWorldRender();  //--#SM+#-- +SecondVP+ Вызывается после рендера мира и перед UI
+	virtual void AfterWorldRender(const bool save_bb_before_ui);  //--#SM+#-- +SecondVP+ Вызывается после рендера мира и перед UI
+	void AfterUIRender() override; //После рендеринга UI. Вызывать только если нам нужно отрендерить кадр для пда.
 
 	// Render mode
 	virtual void					rmNear						();

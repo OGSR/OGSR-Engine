@@ -1296,6 +1296,9 @@ void CCC_RegisterCommands()
 
 	CMD3(CCC_Mask, "g_mouse_wheel_switch_slot", &psActorFlags, AF_MOUSE_WHEEL_SWITCH_SLOTS);
 
+	psActorFlags.set(AF_3D_PDA, TRUE);
+	CMD3(CCC_Mask, "g_3d_pda", &psActorFlags, AF_3D_PDA);
+
 	CMD1(CCC_TimeFactor,	"time_factor")	
 	CMD1(CCC_SetWeather,	"set_weather");
 //#endif // MASTER_GOLD

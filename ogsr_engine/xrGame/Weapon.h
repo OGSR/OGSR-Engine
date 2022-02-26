@@ -339,7 +339,7 @@ protected:
 	virtual void			UpdatePosition			(const Fmatrix& transform);	//.
 	virtual void			UpdateXForm				();
 
-	virtual	u8 GetCurrentHudOffsetIdx() const override;
+	u8 GetCurrentHudOffsetIdx() const override;
 	virtual bool			IsHudModeNow			();
 
 	virtual void			LoadFireParams		(LPCSTR section, LPCSTR prefix);

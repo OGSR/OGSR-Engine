@@ -658,6 +658,17 @@ void player_hud::load(const shared_str& player_hud_sect)
 	u16 r_arm = m_model_2->dcast_PKinematics()->LL_BoneID("r_clavicle");
 	ASSERT_FMT(r_arm != BI_NONE, "[%s]: bone [%s] not found in sect [%s] visual [%s]", __FUNCTION__, "r_clavicle", m_sect_name.c_str(), model_name_2);
 
+	u16 r_finger0 = m_model->dcast_PKinematics()->LL_BoneID("r_finger0");
+	ASSERT_FMT(r_finger0 != BI_NONE, "[%s]: bone [%s] not found in sect [%s] visual [%s]", __FUNCTION__, "r_finger0", m_sect_name.c_str(), model_name);
+	u16 r_finger01 = m_model->dcast_PKinematics()->LL_BoneID("r_finger01");
+	ASSERT_FMT(r_finger01 != BI_NONE, "[%s]: bone [%s] not found in sect [%s] visual [%s]", __FUNCTION__, "r_finger01", m_sect_name.c_str(), model_name);
+	u16 r_finger02 = m_model->dcast_PKinematics()->LL_BoneID("r_finger02");
+	ASSERT_FMT(r_finger02 != BI_NONE, "[%s]: bone [%s] not found in sect [%s] visual [%s]", __FUNCTION__, "r_finger02", m_sect_name.c_str(), model_name);
+
+	m_model->dcast_PKinematics()->LL_GetBoneInstance(r_finger0).set_callback(bctCustom, Thumb0Callback, this);
+	m_model->dcast_PKinematics()->LL_GetBoneInstance(r_finger01).set_callback(bctCustom, Thumb01Callback, this);
+	m_model->dcast_PKinematics()->LL_GetBoneInstance(r_finger02).set_callback(bctCustom, Thumb02Callback, this);
+
 	// hides the unused arm meshes
 	m_model->dcast_PKinematics()->LL_SetBoneVisible(l_arm, FALSE, TRUE);
 	m_model_2->dcast_PKinematics()->LL_SetBoneVisible(r_arm, FALSE, TRUE);
@@ -928,8 +939,8 @@ u32 player_hud::anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CM
 
 attachable_hud_item* player_hud::create_hud_item(const shared_str& sect)
 {
-	xr_vector<attachable_hud_item*>::iterator it = m_pool.begin();
-	xr_vector<attachable_hud_item*>::iterator it_e = m_pool.end();
+	auto it = m_pool.begin();
+	auto it_e = m_pool.end();
 	for (; it != it_e; ++it)
 	{
 		attachable_hud_item* itm = *it;
@@ -1125,4 +1136,106 @@ void player_hud::GetLHandBoneOffsetPosDir(const shared_str& bone_name, Fvector& 
 	dest_pos.add(Device.vCameraPosition);
 	dest_dir.set(0.f, 0.f, 1.f);
 	m_transform_2.transform_dir(dest_dir);
+}
+
+void player_hud::Thumb0Callback(CBoneInstance* B)
+{
+	player_hud* P = static_cast<player_hud*>(B->callback_param());
+
+	Fvector& target = P->target_thumb0rot;
+	Fvector& current = P->thumb0rot;
+
+	if (!target.similar(current))
+	{
+		Fvector diff[2];
+		diff[0] = target;
+		diff[0].sub(current);
+		diff[0].mul(Device.fTimeDelta / .1f);
+		current.add(diff[0]);
+	}
+	else
+		current.set(target);
+
+	Fmatrix rotation;
+	rotation.identity();
+	rotation.rotateX(current.x);
+
+	Fmatrix rotation_y;
+	rotation_y.identity();
+	rotation_y.rotateY(current.y);
+	rotation.mulA_43(rotation_y);
+
+	rotation_y.identity();
+	rotation_y.rotateZ(current.z);
+	rotation.mulA_43(rotation_y);
+
+	B->mTransform.mulB_43(rotation);
+}
+
+void player_hud::Thumb01Callback(CBoneInstance* B)
+{
+	player_hud* P = static_cast<player_hud*>(B->callback_param());
+
+	Fvector& target = P->target_thumb01rot;
+	Fvector& current = P->thumb01rot;
+
+	if (!target.similar(current))
+	{
+		Fvector diff[2];
+		diff[0] = target;
+		diff[0].sub(current);
+		diff[0].mul(Device.fTimeDelta / .1f);
+		current.add(diff[0]);
+	}
+	else
+		current.set(target);
+
+	Fmatrix rotation;
+	rotation.identity();
+	rotation.rotateX(current.x);
+
+	Fmatrix rotation_y;
+	rotation_y.identity();
+	rotation_y.rotateY(current.y);
+	rotation.mulA_43(rotation_y);
+
+	rotation_y.identity();
+	rotation_y.rotateZ(current.z);
+	rotation.mulA_43(rotation_y);
+
+	B->mTransform.mulB_43(rotation);
+}
+
+void player_hud::Thumb02Callback(CBoneInstance* B)
+{
+	player_hud* P = static_cast<player_hud*>(B->callback_param());
+
+	Fvector& target = P->target_thumb02rot;
+	Fvector& current = P->thumb02rot;
+
+	if (!target.similar(current))
+	{
+		Fvector diff[2];
+		diff[0] = target;
+		diff[0].sub(current);
+		diff[0].mul(Device.fTimeDelta / .1f);
+		current.add(diff[0]);
+	}
+	else
+		current.set(target);
+
+	Fmatrix rotation;
+	rotation.identity();
+	rotation.rotateX(current.x);
+
+	Fmatrix rotation_y;
+	rotation_y.identity();
+	rotation_y.rotateY(current.y);
+	rotation.mulA_43(rotation_y);
+
+	rotation_y.identity();
+	rotation_y.rotateZ(current.z);
+	rotation.mulA_43(rotation_y);
+
+	B->mTransform.mulB_43(rotation);
 }

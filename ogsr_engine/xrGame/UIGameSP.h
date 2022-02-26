@@ -46,6 +46,8 @@ public:
 	CUITalkWnd*			TalkMenu;
 	CUICarBodyWnd*		UICarBodyMenu;
 	CChangeLevelWnd*	UIChangeLevelWnd;
+
+	void ShowHidePda(const bool show);
 };
 
 

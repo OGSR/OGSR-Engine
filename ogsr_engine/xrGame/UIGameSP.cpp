@@ -11,6 +11,7 @@
 #include "object_broker.h"
 #include "GameTaskManager.h"
 #include "GameTask.h"
+#include "PDA.h"
 
 #include "ui/UIInventoryWnd.h"
 #include "ui/UITradeWnd.h"
@@ -84,8 +85,8 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
 	if( pActor && !pActor->g_Alive() )		return false;
 
 	hud_adjust_mode_keyb(dik);
-
-	switch ( get_binded_action(dik) )
+	auto bind = get_binded_action(dik);
+	switch (bind)
 	{
 	case kINVENTORY: 
 		if( !MainInputReceiver() || MainInputReceiver()==InventoryMenu){
@@ -94,25 +95,33 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
 		}break;
 
 	case kACTIVE_JOBS:
-		if( !MainInputReceiver() || MainInputReceiver()==PdaMenu){
-			PdaMenu->SetActiveSubdialog(eptQuests);
-			m_game->StartStopMenu(PdaMenu,true);
-			return true;
-		}break;
-
 	case kMAP:
-		if( !MainInputReceiver() || MainInputReceiver()==PdaMenu){
-			PdaMenu->SetActiveSubdialog(eptMap);
-			m_game->StartStopMenu(PdaMenu,true);
-			return true;
-		}break;
-
 	case kCONTACTS:
-		if( !MainInputReceiver() || MainInputReceiver()==PdaMenu){
-			PdaMenu->SetActiveSubdialog(eptContacts);
-			m_game->StartStopMenu(PdaMenu,true);
+	{
+		auto Pda = pActor->GetPDA();
+		if ((!Pda || !Pda->Is3DPDA() || !psActorFlags.test(AF_3D_PDA)) && (!MainInputReceiver() || MainInputReceiver() == PdaMenu))
+		{
+			PdaMenu->SetActiveSubdialog(bind == kACTIVE_JOBS ? eptQuests : (bind == kMAP ? eptMap : eptContacts));
+			m_game->StartStopMenu(PdaMenu, true);
 			return true;
-		}break;
+		}
+	}break;
+
+	case kWPN_FIRE:
+	case kWPN_ZOOM:
+	{
+		auto Pda = pActor->GetPDA();
+		if (Pda && Pda->Is3DPDA() && psActorFlags.test(AF_3D_PDA) && PdaMenu->IsShown() && (!MainInputReceiver() || MainInputReceiver() != PdaMenu))
+		{
+			Flags8 IRFlags{};
+			IRFlags.set(recvItem::eCrosshair, psHUD_Flags.test(HUD_CROSSHAIR_RT));
+			IRFlags.set(recvItem::eIndicators, HUD().GetUI()->GameIndicatorsShown());
+
+			HUD().GetUI()->SetMainInputReceiver(PdaMenu, false, IRFlags);
+			Pda->m_bZoomed = true;
+			return true;
+		}
+	}break;
 
 	case kSCORES:
 		{
@@ -197,6 +206,17 @@ void CUIGameSP::reset_ui()
 	UICarBodyMenu->Reset			();
 	UIChangeLevelWnd->Reset			();
 }
+
+void CUIGameSP::ShowHidePda(const bool show)
+{
+	if ((PdaMenu->IsShown() && !show) || (!PdaMenu->IsShown() && show))
+	{
+		m_game->StartStopMenu(PdaMenu, false);
+		if (show)
+			HUD().GetUI()->SetMainInputReceiver(nullptr, false);
+	}
+}
+
 
 CChangeLevelWnd::CChangeLevelWnd		()
 {

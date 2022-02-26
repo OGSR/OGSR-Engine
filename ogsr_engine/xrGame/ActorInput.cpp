@@ -470,6 +470,7 @@ constexpr u32 SlotsToCheck[] = {
 		GRENADE_SLOT	,		// 3
 		APPARATUS_SLOT	,		// 4
 		BOLT_SLOT		,		// 5
+		PDA_SLOT,
 };
 
 void	CActor::OnNextWeaponSlot()
@@ -483,16 +484,22 @@ void	CActor::OnNextWeaponSlot()
 	
 	constexpr u32 NumSlotsToCheck = sizeof(SlotsToCheck)/sizeof(u32);
 	u32 CurSlot = 0;
-	for (; CurSlot<NumSlotsToCheck; CurSlot++)
-	{
-		if (SlotsToCheck[CurSlot] == ActiveSlot) break;
-	}
-	if (CurSlot >= NumSlotsToCheck) return;
+
+	for (; CurSlot < NumSlotsToCheck; CurSlot++)
+		if (SlotsToCheck[CurSlot] == ActiveSlot)
+			break;
+
+	if (CurSlot >= NumSlotsToCheck)
+		return;
+
 	for (u32 i=CurSlot+1; i<NumSlotsToCheck; i++)
 	{
 		if (inventory().ItemFromSlot(SlotsToCheck[i]))
 		{
-			IR_OnKeyboardPress(kWPN_1+(i-KNIFE_SLOT));
+			if (SlotsToCheck[i] == PDA_SLOT)
+				IR_OnKeyboardPress(kACTIVE_JOBS);
+			else
+				IR_OnKeyboardPress(kWPN_1 + i);
 			return;
 		}
 	}
@@ -509,16 +516,22 @@ void	CActor::OnPrevWeaponSlot()
 
 	constexpr u32 NumSlotsToCheck = sizeof(SlotsToCheck)/sizeof(u32);
 	u32 CurSlot = 0;
-	for (; CurSlot<NumSlotsToCheck; CurSlot++)
-	{
-		if (SlotsToCheck[CurSlot] == ActiveSlot) break;
-	}
-	if (CurSlot >= NumSlotsToCheck) return;
+
+	for (; CurSlot < NumSlotsToCheck; CurSlot++)
+		if (SlotsToCheck[CurSlot] == ActiveSlot)
+			break;
+
+	if (CurSlot >= NumSlotsToCheck)
+		return;
+
 	for (s32 i=s32(CurSlot-1); i>=0; i--)
 	{
 		if (inventory().ItemFromSlot(SlotsToCheck[i]))
 		{
-			IR_OnKeyboardPress(kWPN_1+(i-KNIFE_SLOT));
+			if (SlotsToCheck[i] == PDA_SLOT)
+				IR_OnKeyboardPress(kACTIVE_JOBS);
+			else
+				IR_OnKeyboardPress(kWPN_1 + i);
 			return;
 		}
 	}

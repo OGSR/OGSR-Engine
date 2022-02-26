@@ -172,7 +172,7 @@ CUIDialogWnd* CDialogHolder::MainInputReceiver()
 	return NULL; 
 };
 
-void CDialogHolder::SetMainInputReceiver	(CUIDialogWnd* ir, bool _find_remove)	
+void CDialogHolder::SetMainInputReceiver(CUIDialogWnd* ir, bool _find_remove, const Flags8 flags)
 { 
 	if( MainInputReceiver() == ir ) return;
 
@@ -199,6 +199,8 @@ void CDialogHolder::SetMainInputReceiver	(CUIDialogWnd* ir, bool _find_remove)
 
 	}else{
 		m_input_receivers.emplace_back(ir);
+		if (!flags.equal(Flags8{}))
+			m_input_receivers.back().m_flags = flags;
 	}
 };
 //. #include "ai_space.h"

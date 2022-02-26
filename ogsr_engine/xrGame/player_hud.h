@@ -160,7 +160,23 @@ public:
 	void re_sync_anim(u8 part);
 	void GetLHandBoneOffsetPosDir(const shared_str& bone_name, Fvector& dest_pos, Fvector& dest_dir, const Fvector& offset);
 
+	Fvector target_thumb0rot{}, target_thumb01rot{}, target_thumb02rot{};
+	Fvector thumb0rot{}, thumb01rot{}, thumb02rot{};
+	void reset_thumb(bool bForce) {
+		if (bForce) {
+			thumb0rot.set(0.f, 0.f, 0.f);
+			thumb01rot.set(0.f, 0.f, 0.f);
+			thumb02rot.set(0.f, 0.f, 0.f);
+		}
+		target_thumb0rot.set(0.f, 0.f, 0.f);
+		target_thumb01rot.set(0.f, 0.f, 0.f);
+		target_thumb02rot.set(0.f, 0.f, 0.f);
+	}
 private:
+	static void Thumb0Callback(CBoneInstance* B);
+	static void Thumb01Callback(CBoneInstance* B);
+	static void Thumb02Callback(CBoneInstance* B);
+
 	shared_str m_sect_name;
 	Fmatrix m_attach_offset, m_attach_offset_2;
 	Fmatrix m_transform, m_transform_2;

@@ -67,10 +67,29 @@ public:
 	virtual void 			Update				();
 	virtual void 			Show				();
 	virtual void 			Hide				();
-	virtual bool			OnMouse				(float x, float y, EUIMessages mouse_action) {CUIDialogWnd::OnMouse(x,y,mouse_action);return true;} //always true because StopAnyMove() == false
-	
+	virtual bool OnMouse(float x, float y, EUIMessages mouse_action) override;
+	void MouseMovement(float x, float y);
+	virtual bool OnKeyboard(int dik, EUIMessages keyboard_action) override;
+
 	void					SetActiveSubdialog	(EPdaTabs section);
 	virtual bool			StopAnyMove			() { return false; }
 
-			void			PdaContentsChanged	( pda_section::part type, bool = true );
+	void	 PdaContentsChanged(pda_section::part type, bool = true);
+
+	Fvector2 last_cursor_pos{};
+	bool bButtonL{}, bButtonR{};
+	Fvector target_joystickrot{}, joystickrot{};
+	float target_buttonpress{}, buttonpress{};
+
+	void ResetJoystick(bool bForce)
+	{
+		if (bForce)
+		{
+			joystickrot.set(0.f, 0.f, 0.f);
+			buttonpress = 0.f;
+		}
+
+		target_joystickrot.set(0.f, 0.f, 0.f);
+		target_buttonpress = 0.f;
+	}
 };

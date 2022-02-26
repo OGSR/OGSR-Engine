@@ -13,8 +13,10 @@ public:
 
 class recvItem{
 public:
-	enum{	eCrosshair		= (1<<0),
-			eIndicators		= (1<<1),};
+	enum {
+		eCrosshair = 1 << 0,
+		eIndicators = 1 << 1
+	};
 	recvItem		(CUIDialogWnd*);
 	CUIDialogWnd*	m_item;
 	Flags8			m_flags;
@@ -29,7 +31,8 @@ class CDialogHolder :public ISheduled,public pureFrame
 
 	void					StartMenu						(CUIDialogWnd* pDialog, bool bDoHideIndicators);
 	void					StopMenu						(CUIDialogWnd* pDialog);
-	void					SetMainInputReceiver			(CUIDialogWnd* ir, bool _find_remove);
+public:
+	void SetMainInputReceiver(CUIDialogWnd* ir, bool _find_remove, const Flags8 flags = {});
 protected:
 	void					DoRenderDialogs					();
 	void					CleanInternals					();

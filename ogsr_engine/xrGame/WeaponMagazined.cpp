@@ -341,7 +341,6 @@ void CWeaponMagazined::ReloadMagazine()
 	
 	//переменная блокирует использование
 	//только разных типов патронов
-//	static bool l_lockType = false;
 	if (!m_bLockType) {
 		m_pAmmo		= NULL;
 	}
@@ -620,8 +619,7 @@ void CWeaponMagazined::state_Fire	(float dt)
 		OnShot			();
 		// Do Weapon Callback.  (Cribbledirge)
 		StateSwitchCallback(GameObject::eOnActorWeaponFire, GameObject::eOnNPCWeaponFire);
-		static int i = 0;
-		if (i||m_iShotNum>m_iShootEffectorStart)
+		if (m_iShotNum>m_iShootEffectorStart)
 			FireTrace		(p1,d);
 		else
 			FireTrace		(m_vStartPos, m_vStartDir);

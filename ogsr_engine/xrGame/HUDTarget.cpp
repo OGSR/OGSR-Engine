@@ -27,6 +27,7 @@
 #include "monster_community.h"
 #include "HudItem.h"
 #include "Weapon.h"
+#include "PDA.h"
 
 constexpr float C_SIZE = 0.025f, NEAR_LIM = 0.5f, SHOW_INFO_SPEED = 0.5f, HIDE_INFO_SPEED = 10.f;
 
@@ -121,6 +122,9 @@ void CHUDTarget::Render()
 
 	CActor* Actor = smart_cast<CActor*>(Level().CurrentEntity());
 	if (!Actor)	return;
+
+	if (smart_cast<CPda*>(Actor->inventory().ActiveItem()))
+		return;
 
 	Fvector p1 = Device.vCameraPosition;
 	Fvector dir = Device.vCameraDirection;

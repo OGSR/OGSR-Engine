@@ -285,8 +285,9 @@ public:
 	virtual void					Calculate				()											= 0;
 	virtual void					Render					()											= 0;
 	virtual void BeforeWorldRender() = 0; //--#SM+#-- Перед рендерингом мира
-	virtual void AfterWorldRender() = 0; //--#SM+#-- После рендеринга мира (до UI)
-	
+	virtual void AfterWorldRender(const bool save_bb_before_ui) = 0; //--#SM+#-- После рендеринга мира (до UI)
+	virtual void AfterUIRender() = 0; //После рендеринга UI. Вызывать только если нам нужно отрендерить кадр для пда.
+
 	virtual void					Screenshot				(ScreenshotMode mode=SM_NORMAL, LPCSTR name = 0) = 0;
 	virtual	void					Screenshot				(ScreenshotMode mode, CMemoryWriter& memory_writer) = 0;
 	virtual void					ScreenshotAsyncBegin	() = 0;
@@ -342,15 +343,18 @@ class ShExports final
 	PositionsStorage<Fvector2, 24> artefacts_position{};
 	PositionsStorage<Fvector2, 24> anomalys_position{};
 	Ivector2 detector_params{};
+	Fvector pda_params{};
 
 public:
 	void set_artefact_position(const u32& _i, const Fvector2& _pos) { artefacts_position[_i] =_pos; };
 	void set_anomaly_position(const u32& _i, const Fvector2& _pos) { anomalys_position[_i] = _pos; };
 	void set_detector_params(const Ivector2& _pos) { detector_params = _pos; };
+	void set_pda_params(const Fvector& _pos) { pda_params = _pos; };
 
 	const Fvector2& get_artefact_position(const u32& _i) { return artefacts_position[_i]; }
 	const Fvector2& get_anomaly_position(const u32& _i) { return anomalys_position[_i]; }
 	const Ivector2& get_detector_params() const { return detector_params; }
+	const Fvector& get_pda_params() const { return pda_params; }
 };
 
 ENGINE_API extern ShExports shader_exports;

@@ -30,6 +30,11 @@ void CUICursor::InitInternal()
 
 void CUICursor::OnRender()
 {
+	static u32 last_frame{};
+	if (last_frame == Device.dwFrame)
+		return;
+	last_frame = Device.dwFrame;
+
 	if (!IsVisible()) return;
 
 #ifdef DEBUG

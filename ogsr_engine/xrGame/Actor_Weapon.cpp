@@ -106,12 +106,6 @@ void CActor::SetWeaponHideState( u32 State, bool bSet, bool now )
 		this->inventory().SetSlotsBlocked( State, bSet, now );
 }
 
-static	u16 BestWeaponSlots [] = {
-	SECOND_WEAPON_SLOT		,		// 2
-	FIRST_WEAPON_SLOT		,		// 1
-	GRENADE_SLOT	,		// 3
-	KNIFE_SLOT		,		// 0
-};
 
 #define ENEMY_HIT_SPOT	"mp_hit_sector_location"
 BOOL	g_bShowHitSectors	= TRUE;

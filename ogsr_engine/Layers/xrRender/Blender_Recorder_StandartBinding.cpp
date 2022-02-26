@@ -415,7 +415,6 @@ static class cl_blend_mode : public R_constant_setup //--#SM+#--
 	virtual void setup(R_constant* C) { RCache.set_c(C, g_pGamePersistent->m_pGShaderConstants.m_blender_mode); }
 } binder_blend_mode;
 
-
 static class cl_ogsr_game_time : public R_constant_setup
 {
 	void setup(R_constant* C) override
@@ -427,7 +426,6 @@ static class cl_ogsr_game_time : public R_constant_setup
 	}
 } binder_ogsr_game_time;
 
-
 static class cl_addon_VControl : public R_constant_setup
 {
 	void setup(R_constant* C) override {
@@ -437,6 +435,15 @@ static class cl_addon_VControl : public R_constant_setup
 			RCache.set_c(C, 0.f, 0.f, 0.f, 0.f);
 	}
 } binder_addon_VControl;
+
+static class cl_pda_params : public R_constant_setup
+{
+	void setup(R_constant* C) override {
+		const auto& P = shader_exports.get_pda_params();
+		RCache.set_c(C, P.x, P.y, 0.f, P.z);
+	}
+} binder_pda_params;
+
 
 // Standart constant-binding
 void	CBlender_Compile::SetMapping	()
@@ -519,6 +526,8 @@ void	CBlender_Compile::SetMapping	()
 	r_Constant("ogsr_game_time", &binder_ogsr_game_time);
 	
 	r_Constant("addon_VControl", &binder_addon_VControl);
+
+	r_Constant("m_affects", &binder_pda_params);
 
 	// other common
 	for (const auto& [name, s] : DEV->v_constant_setup)

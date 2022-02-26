@@ -18,10 +18,12 @@
 #include "clsid_game.h"
 #include "CustomOutfit.h"
 #include "HudItem.h"
+#include "PDA.h"
 
 #include "UIGameSP.h"
 #include "HudManager.h"
 #include "ui/UIInventoryWnd.h"
+#include "ui/UIPDAWnd.h"
 
 using namespace InventoryUtilities;
 
@@ -627,12 +629,32 @@ bool CInventory::Action(s32 cmd, u32 flags)
        {
 			if(flags&CMD_START)
 			{
-                if((int)m_iActiveSlot == cmd - kWPN_1 && m_slots[m_iActiveSlot].m_pIItem )
+                if(GetActiveSlot() == cmd - kWPN_1 && ActiveItem())
 					b_send_event = Activate(NO_ACTIVE_SLOT);
 				else				
 					b_send_event = Activate(cmd - kWPN_1, eKeyAction);
 			}
 		}break;
+	case kACTIVE_JOBS:
+	case kMAP:
+	case kCONTACTS:
+	{
+		if (flags & CMD_START)
+		{
+			auto Pda = m_pOwner->GetPDA();
+			if (!Pda || !Pda->Is3DPDA() || !psActorFlags.test(AF_3D_PDA))
+				break;
+
+			if (GetActiveSlot() == PDA_SLOT && ActiveItem())
+				b_send_event = Activate(NO_ACTIVE_SLOT);
+			else {
+				auto pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+				pGameSP->PdaMenu->SetActiveSubdialog(cmd == kACTIVE_JOBS ? eptQuests : (cmd == kMAP ? eptMap : eptContacts));
+				b_send_event = Activate(PDA_SLOT, eKeyAction);
+			}
+		}
+	}
+	break;
 	}
 
 	if(b_send_event && g_pGameLevel && OnClient() && pActor)

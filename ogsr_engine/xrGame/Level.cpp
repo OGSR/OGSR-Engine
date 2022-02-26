@@ -42,12 +42,18 @@
 #include "Actor_Flags.h"
 #include "level_changer.h"
 #include "player_hud.h"
+#include "Actor.h"
+#include "PDA.h"
 
 #ifdef DEBUG
 #	include "level_debug.h"
 #	include "ai/stalker/ai_stalker.h"
 #	include "physicobject.h"
 #endif
+
+#include "UIGameSP.h"
+#include "ui/UIPDAWnd.h"
+#include "ui/UIBtnHint.h"
 
 CPHWorld	*ph_world			= 0;
 
@@ -448,11 +454,32 @@ void CLevel::OnRender()
 	BulletManager().Render();
 	//Device.Statistic->TEST1.End();
 
-	Render->AfterWorldRender(); //--#SM+#-- +SecondVP+
+	auto pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+	auto pActor = smart_cast<CActor*>(Level().CurrentEntity());
+	CPda* Pda = pActor ? pActor->GetPDA() : nullptr;
+	const bool need_pda_render = Pda && Pda->Is3DPDA() && psActorFlags.test(AF_3D_PDA) && pGameSP->PdaMenu->IsShown();
+	Render->AfterWorldRender(need_pda_render);
 
-	//отрисовать интерфейc пользователя
+	if (need_pda_render) {
+		HUD().RenderUI();
+		if (g_btnHint)
+			g_btnHint->OnRender();
+		GetUICursor()->OnRender();
+		draw_wnds_rects();
+
+		Fvector2 cursor_pos = GetUICursor()->GetCursorPosition();
+		Fvector2 cursor_pos_dif{ cursor_pos };
+		cursor_pos_dif.sub(pGameSP->PdaMenu->last_cursor_pos);
+		pGameSP->PdaMenu->last_cursor_pos.set(cursor_pos);
+		pGameSP->PdaMenu->MouseMovement(cursor_pos_dif.x, cursor_pos_dif.y);
+
+		Render->AfterUIRender();
+	}
+
 	HUD().RenderUI();
-
+	if (g_btnHint)
+		g_btnHint->OnRender();
+	GetUICursor()->OnRender();
 	draw_wnds_rects();
 
 #ifndef DEBUG

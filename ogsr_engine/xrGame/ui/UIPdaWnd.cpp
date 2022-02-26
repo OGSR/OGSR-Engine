@@ -28,6 +28,9 @@
 #include "UITabButton.h"
 #include "../actor.h"
 #include "UIPdaSpot.h"
+#include "player_hud.h"
+#include "../../xr_3da/XR_IOConsole.h"
+#include "inventory.h"
 
 #define		PDA_XML					"pda.xml"
 u32			g_pda_info_state		= 0;
@@ -45,7 +48,10 @@ CUIPdaWnd::CUIPdaWnd()
 	UIEventsWnd				= NULL;
 	m_updatedSectionImage	= NULL;
 	m_oldSectionImage		= NULL;
-	Init					();
+
+	last_cursor_pos.set(UI_BASE_WIDTH / 2.f, UI_BASE_HEIGHT / 2.f);
+
+	Init();
 }
 
 CUIPdaWnd::~CUIPdaWnd()
@@ -150,6 +156,66 @@ void CUIPdaWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 	}
 }
 
+bool CUIPdaWnd::OnMouse(float x, float y, EUIMessages mouse_action)
+{
+	switch (mouse_action)
+	{
+	case WINDOW_LBUTTON_DOWN:
+	case WINDOW_RBUTTON_DOWN:
+	case WINDOW_LBUTTON_UP:
+	case WINDOW_RBUTTON_UP:
+	{
+		CPda* pda = Actor()->GetPDA();
+		if (pda)
+		{
+			if (pda->IsPending())
+				return true;
+
+			if (mouse_action == WINDOW_LBUTTON_DOWN)
+				bButtonL = true;
+			else if (mouse_action == WINDOW_RBUTTON_DOWN)
+				bButtonR = true;
+			else if (mouse_action == WINDOW_LBUTTON_UP)
+				bButtonL = false;
+			else if (mouse_action == WINDOW_RBUTTON_UP)
+				bButtonR = false;
+		}
+		break;
+	}
+	}
+	CUIDialogWnd::OnMouse(x, y, mouse_action);
+	return true; //always true because StopAnyMove() == false
+}
+
+void CUIPdaWnd::MouseMovement(float x, float y)
+{
+	CPda* pda = Actor()->GetPDA();
+	if (!pda) return;
+
+	x *= .1f;
+	y *= .1f;
+	clamp(x, -.15f, .15f);
+	clamp(y, -.15f, .15f);
+
+	if (_abs(x) < .05f)
+		x = 0.f;
+
+	if (_abs(y) < .05f)
+		y = 0.f;
+
+	bool buttonpressed = (bButtonL || bButtonR);
+
+	target_buttonpress = (buttonpressed ? -.0015f : 0.f);
+	target_joystickrot.set(x * -.75f, 0.f, y * .75f);
+
+	x += y * pda->m_thumb_rot[0];
+	y += x * pda->m_thumb_rot[1];
+
+	g_player_hud->target_thumb0rot.set(y * .15f, y * -.05f, (x * -.15f) + (buttonpressed ? .002f : 0.f));
+	g_player_hud->target_thumb01rot.set(0.f, 0.f, (x * -.25f) + (buttonpressed ? .01f : 0.f));
+	g_player_hud->target_thumb02rot.set(0.f, 0.f, (x * .75f) + (buttonpressed ? .025f : 0.f));
+}
+
 void CUIPdaWnd::Show()
 {
 	if (Core.Features.test(xrCore::Feature::more_hide_weapon))
@@ -250,6 +316,11 @@ void CUIPdaWnd::SetActiveSubdialog(EPdaTabs section)
 
 void CUIPdaWnd::Draw()
 {
+	static u32 last_frame{};
+	if (last_frame == Device.dwFrame)
+		return;
+	last_frame = Device.dwFrame;
+
 	inherited::Draw									();
 	DrawUpdatedSections								();
 }
@@ -400,4 +471,32 @@ void RearrangeTabButtons(CUITabControl* pTab, xr_vector<Fvector2>& vec_sign_plac
 		pos.x					+= btn_text_len+3.0f;
 	}
 
+}
+bool CUIPdaWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
+{
+	if (WINDOW_KEY_PRESSED == keyboard_action && IsShown())
+	{
+		if (psActorFlags.test(AF_3D_PDA))
+		{
+			CPda* pda = Actor()->GetPDA();
+			if (pda && pda->Is3DPDA())
+			{
+				EGameActions action = get_binded_action(dik);
+
+				if (action == kQUIT) // "Hack" to make Esc key open main menu instead of simply hiding the PDA UI
+				{
+					if (pda->GetState() == CPda::eHiding || pda->GetState() == CPda::eHidden)
+					{
+						Console->Execute("main_menu");
+						return false;
+					}
+					else
+						Actor()->inventory().Activate(NO_ACTIVE_SLOT);
+
+					return true;
+				}
+			}
+		}
+	}
+	return inherited::OnKeyboard(dik, keyboard_action);
 }

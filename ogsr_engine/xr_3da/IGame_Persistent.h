@@ -108,5 +108,5 @@ public:
 };
 
 extern ENGINE_API	IGame_Persistent*	g_pGamePersistent;
-extern bool IsMainMenuActive();
+ENGINE_API extern bool IsMainMenuActive();
 
