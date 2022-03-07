@@ -340,6 +340,16 @@ void CHudItem::on_a_hud_attach()
 
 u32 CHudItem::PlayHUDMotion(const char* M, const bool bMixIn, const u32 state, const bool randomAnim)
 {
+	auto Det = g_player_hud->attached_item(1);
+	if (Det && Det->m_parent_hud_item != this && (smart_cast<CWeapon*>(this) || smart_cast<CMissile*>(this)) && Det->m_parent_hud_item->GetState() == eIdle) {
+		if (strstr(M, "anm_") && !strstr(M, "idle")) { //с айдловыми анимациями слишком много багов
+			string128 det_anm_name;
+			xr_strconcat(det_anm_name, "anm_lefthand_", Det->m_parent_hud_item->world_sect.c_str(), "_wpn_", M + 4);
+			if (Det->m_parent_hud_item->AnimationExist(det_anm_name))
+				Det->m_parent_hud_item->PlayHUDMotion(det_anm_name, true, Det->m_parent_hud_item->GetState());
+		}
+	}
+
 	//Msg("~~[%s] Playing motion [%s] for [%s]", __FUNCTION__, M.c_str(), HudSection().c_str());
 	u32 anim_time = PlayHUDMotion_noCB(M, bMixIn, randomAnim);
 	if (anim_time > 0)

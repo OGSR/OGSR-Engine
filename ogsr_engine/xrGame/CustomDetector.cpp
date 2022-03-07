@@ -167,6 +167,9 @@ void CCustomDetector::OnAnimationEnd(u32 state)
         g_player_hud->detach_item(this);
     }
     break;
+    case eIdle:
+        SwitchState(eIdle);
+        break;
     }
 }
 
