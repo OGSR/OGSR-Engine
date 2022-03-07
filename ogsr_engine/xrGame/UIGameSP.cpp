@@ -90,8 +90,11 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
 	{
 	case kINVENTORY: 
 		if( !MainInputReceiver() || MainInputReceiver()==InventoryMenu){
-			m_game->StartStopMenu(InventoryMenu,true);
-			return true;
+			auto Pda = pActor->GetPDA();
+			if (!Pda || !Pda->Is3DPDA() || !psActorFlags.test(AF_3D_PDA) || !PdaMenu->IsShown()) {
+				m_game->StartStopMenu(InventoryMenu, true);
+				return true;
+			}
 		}break;
 
 	case kACTIVE_JOBS:

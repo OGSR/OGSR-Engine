@@ -649,6 +649,8 @@ bool CInventory::Action(s32 cmd, u32 flags)
 				b_send_event = Activate(NO_ACTIVE_SLOT);
 			else {
 				auto pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+				if (pGameSP->InventoryMenu->IsShown())
+					break;
 				pGameSP->PdaMenu->SetActiveSubdialog(cmd == kACTIVE_JOBS ? eptQuests : (cmd == kMAP ? eptMap : eptContacts));
 				b_send_event = Activate(PDA_SLOT, eKeyAction);
 			}

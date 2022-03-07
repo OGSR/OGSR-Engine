@@ -29,6 +29,10 @@
 #include "WeaponMagazined.h"
 #include "../xr_3da/xr_input.h"
 #include "CustomDetector.h"
+#include "WeaponKnife.h"
+#include "Missile.h"
+#include "PDA.h"
+#include "ui/UIPDAWnd.h"
 
 bool g_bAutoClearCrouch = true;
 extern int g_bHudAdjustMode;
@@ -387,6 +391,10 @@ bool CActor::use_Holder				(CHolderCustom* holder)
 
 extern bool g_bDisableAllInput;
 void CActor::ActorUse() {
+	auto pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+	if (auto Pda = GetPDA(); Pda && Pda->Is3DPDA() && psActorFlags.test(AF_3D_PDA) && pGameSP->PdaMenu->IsShown())
+		return;
+
   if ( g_bDisableAllInput || HUD().GetUI()->MainInputReceiver() ) return;
 
   if ( m_holder ) {
