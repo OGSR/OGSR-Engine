@@ -2,6 +2,8 @@
 #include "WeaponKnife.h"
 #include "Entity.h"
 #include "Actor.h"
+#include "torch.h"
+#include "inventory.h"
 #include "level.h"
 #include "xr_level_controller.h"
 #include "../xr_3da/gamemtllib.h"
@@ -25,6 +27,7 @@ CWeaponKnife::CWeaponKnife() : CWeapon("KNIFE")
 CWeaponKnife::~CWeaponKnife()
 {
 	HUD_SOUND::DestroySound(m_sndShot);
+	HUD_SOUND::DestroySound(sndItemOn);
 }
 
 void CWeaponKnife::Load	(LPCSTR section)
@@ -36,6 +39,9 @@ void CWeaponKnife::Load	(LPCSTR section)
 
 	HUD_SOUND::LoadSound(section,"snd_shoot"		, m_sndShot		, ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING)		);
 	
+	if (pSettings->line_exist(section,"snd_item_on"))
+		HUD_SOUND::LoadSound(section,"snd_item_on",sndItemOn);
+
 	knife_material_idx =  GMLib.GetMaterialIdx(KNIFE_MATERIAL_NAME);
 }
 
@@ -61,6 +67,25 @@ void CWeaponKnife::OnStateSwitch(u32 S, u32 oldState)
 		{
 			switch2_Attacking	(S);
 		}break;
+	case eDeviceSwitch:
+	{
+		SetPending(TRUE);
+		PlayAnimDeviceSwitch();
+	}
+	break;
+	}
+}
+
+void CWeaponKnife::PlayAnimDeviceSwitch()
+{
+	PlaySound(sndItemOn, Position());
+
+	if (AnimationExist("anm_headlamp_on"))
+		PlayHUDMotion("anm_headlamp_on", true, GetState());
+	else
+	{
+		DeviceUpdate();
+		SwitchState(eIdle);
 	}
 }
 
@@ -199,6 +224,7 @@ void CWeaponKnife::OnAnimationEnd(u32 state)
 			}
 		}break;
 	case eShowing:
+	case eDeviceSwitch:
 	case eIdle:	
 		SwitchState(eIdle);
 		break;	
@@ -222,8 +248,6 @@ void CWeaponKnife::switch2_Attacking	(u32 state)
 	m_attackMotionMarksAvailable = !m_current_motion_def->marks.empty();
 	m_attackStart = true;
 	SetPending(TRUE);
-
-	StateSwitchCallback(GameObject::eOnActorWeaponFire, GameObject::eOnNPCWeaponFire);
 }
 
 void CWeaponKnife::switch2_Idle()
@@ -278,8 +302,53 @@ bool CWeaponKnife::Action(s32 cmd, u32 flags)
 			if(flags&CMD_START) Fire2Start();
 			else Fire2End();
 			return true;
+		case kTORCH:
+		{
+			auto pActorTorch = smart_cast<CActor*>(H_Parent())->inventory().ItemFromSlot(TORCH_SLOT);
+			if ((flags & CMD_START) && pActorTorch && GetState() == eIdle)
+			{
+				HeadLampSwitch = true;
+				SwitchState(eDeviceSwitch);
+				return true;
+			}
+		}break;
+		case kNIGHT_VISION:
+		{
+			auto pActorNv = smart_cast<CActor*>(H_Parent())->inventory().ItemFromSlot(NIGHT_VISION_SLOT);
+			if ((flags & CMD_START) && pActorNv && GetState() == eIdle)
+			{
+				NightVisionSwitch = true;
+				SwitchState(eDeviceSwitch);
+				return true;
+			}
+		}break;
 	}
 	return false;
+}
+
+void CWeaponKnife::DeviceUpdate()
+{
+	if (auto pA = smart_cast<CActor*>(H_Parent()))
+	{
+		if (HeadLampSwitch)
+		{
+			auto pActorTorch = smart_cast<CTorch*>(pA->inventory().ItemFromSlot(TORCH_SLOT));
+			pActorTorch->Switch();
+			HeadLampSwitch = false;
+		}
+		else if (NightVisionSwitch)
+		{
+			if (auto pActorTorch = smart_cast<CTorch*>(pA->inventory().ItemFromSlot(TORCH_SLOT)))
+				pActorTorch->SwitchNightVision();
+			NightVisionSwitch = false;
+		}
+	}
+}
+
+void CWeaponKnife::UpdateCL()
+{
+	inherited::UpdateCL();
+	TimeLockAnimation();
 }
 
 void CWeaponKnife::LoadFireParams(LPCSTR section, LPCSTR prefix)

@@ -143,7 +143,7 @@ void CWeaponPistol::PlayAnimAim()
 		}
 
 		if (const char* guns_aim_anm = GetAnimAimName()) {
-			string64 guns_aim_anm_full;
+			string128 guns_aim_anm_full;
 			xr_strconcat(guns_aim_anm_full, guns_aim_anm, "_empty");
 			if (AnimationExist(guns_aim_anm_full)) {
 				PlayHUDMotion(guns_aim_anm_full, true, GetState());
@@ -182,9 +182,7 @@ void CWeaponPistol::PlayAnimHide()
 
 void CWeaponPistol::PlayAnimShoot()
 {
-	VERIFY(GetState() == eFire || GetState() == eFire2);
-
-	string_path guns_shoot_anm{};
+	string128 guns_shoot_anm;
 	xr_strconcat(guns_shoot_anm, "anm_shoot", (this->IsZoomed() && !this->IsRotatingToZoom()) ? "_aim" : "", iAmmoElapsed == 1 ? "_last" : "", this->IsSilencerAttached() ? "_sil" : "");
 	if (AnimationExist(guns_shoot_anm)) {
 		PlayHUDMotion(guns_shoot_anm, false, GetState());

@@ -137,6 +137,7 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemWeapon,CSE_ALifeItem)
 
 		eWeaponAddonLaserOn = 1 << 3,
 		eWeaponAddonFlashlightOn = 1 << 4,
+		eWeaponMisfire = 1 << 5,
 
 		//KRodin: TODO: эти пять свободных флагов можно использовать для хранения какой-то полезной информации, типа установлен ли на оружие лцу, фонарик и тп.
 		//emaxflag = 1<<7,

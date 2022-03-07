@@ -79,7 +79,7 @@ void player_hud_motion_container::load(attachable_hud_item* parent, IKinematicsA
 						Anim.mid = motion_ID;
 						Anim.name = buff;
 
-						string_path speed_param;
+						string128 speed_param;
 						xr_strconcat(speed_param, name.c_str(), "_speed_k");
 						if (pSettings->line_exist(sect, speed_param)) {
 							const float k = pSettings->r_float(sect, speed_param);
@@ -87,7 +87,7 @@ void player_hud_motion_container::load(attachable_hud_item* parent, IKinematicsA
 								Anim.speed_k = k;
 						}
 
-						string_path stop_param;
+						string128 stop_param;
 						xr_strconcat(stop_param, name.c_str(), "_stop_k");
 						if (pSettings->line_exist(sect, stop_param)) {
 							const float k = pSettings->r_float(sect, stop_param);
@@ -95,7 +95,7 @@ void player_hud_motion_container::load(attachable_hud_item* parent, IKinematicsA
 								Anim.stop_k = k;
 						}
 
-						string_path eff_param;
+						string128 eff_param;
 						Anim.eff_name = READ_IF_EXISTS(pSettings, r_string, sect, xr_strconcat(eff_param, name.c_str(), "_effector"), nullptr);
 					}
 				}

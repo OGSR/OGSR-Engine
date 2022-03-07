@@ -21,12 +21,22 @@ class CHUDState
 public:
 	enum EHudStates
 	{
-		eIdle = 0,
+		eIdle,
 		eShowing,
 		eHiding,
 		eHidden,
 		eBore,
-		eLastBaseState = eBore,
+		eFire,
+		eFire2,
+		eReload,
+		eMisfire,
+		eMagEmpty,
+		eSwitch,
+		eDeviceSwitch,
+		eThrowStart,
+		eReady,
+		eThrow,
+		eThrowEnd,
 	};
 
 private:
@@ -134,6 +144,7 @@ public:
 	virtual void	PlayAnimIdleSprint	();
 	virtual void PlayAnimIdleMovingCrouch();
 	virtual void PlayAnimIdleMovingCrouchSlow();
+	virtual void PlayAnimDeviceSwitch() {};
 
 	virtual void	UpdateCL			();
 	virtual void	renderable_Render	();
@@ -258,6 +269,8 @@ protected:
 	u32 skip_updated_frame{};
 	bool HudInertionAllowed() const { return m_huditem_flags.test(fl_inertion_allow); }
 	void AllowHudInertion(BOOL B) { m_huditem_flags.set(fl_inertion_allow, B); }
+	void TimeLockAnimation();
+	virtual void DeviceUpdate() {};
 private:
 	shared_str world_sect;
 	float hud_recalc_koef{};

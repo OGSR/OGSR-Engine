@@ -427,7 +427,8 @@ bool CWeaponShotgun::HaveCartridgeInInventory( u8 cnt ) {
 
 u8 CWeaponShotgun::AddCartridge		(u8 cnt)
 {
-	if(IsMisfire())	bMisfire = false;
+	if(IsMisfire())
+		SwitchMisfire(false);
 
 	if(m_set_next_ammoType_on_reload != u32(-1)){
 		m_ammoType						= m_set_next_ammoType_on_reload;
@@ -489,14 +490,18 @@ void CWeaponShotgun::TryReload() {
 
 
 void CWeaponShotgun::ReloadMagazine() {
-  m_dwAmmoCurrentCalcFrame = 0;	
-  if ( IsMisfire() ) bMisfire = false;
-  if ( !m_pCurrentInventory ) return;
+	m_dwAmmoCurrentCalcFrame = 0;
 
-  u8 cnt = AddCartridge( 1 );
-  while ( cnt == 0 ) {
-    cnt = AddCartridge( 1 );
-  }
+	if (IsMisfire())
+		SwitchMisfire(false);
+	else {
+		if (!m_pCurrentInventory)
+			return;
+
+		u8 cnt = AddCartridge(1);
+		while (cnt == 0)
+			cnt = AddCartridge(1);
+	}
 }
 
 

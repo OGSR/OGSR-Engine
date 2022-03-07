@@ -9,13 +9,6 @@ class CMissile : public CHudItemObject
 	friend class CWeaponScript;
 	typedef CHudItemObject inherited;
 public:
-	enum EMissileStates
-	{
-		eThrowStart = eLastBaseState + 1,
-		eReady,
-		eThrow,
-		eThrowEnd,
-	};
 							CMissile					();
 	virtual					~CMissile					();
 
@@ -39,7 +32,9 @@ public:
 
 	virtual void 			OnAnimationEnd				(u32 state);
 	virtual void			OnMotionMark				(u32 state, const motion_marks& M);
-
+protected:
+	virtual void DeviceUpdate() override;
+public:
 	virtual void 			Show( bool = false );
 	virtual void 			Hide( bool = false );
 
@@ -51,6 +46,7 @@ public:
 	virtual void 			State						(u32 state, u32 oldState);
 	virtual void 			OnStateSwitch				(u32 S, u32 oldState);
 	virtual void			PlayAnimIdle				();
+	virtual void PlayAnimDeviceSwitch() override;
 	virtual void			GetBriefInfo				(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
 
 protected:
@@ -67,6 +63,8 @@ protected:
 protected:
 	bool					m_throw;
 	
+	bool HeadLampSwitch{}, NightVisionSwitch{};
+
 	//время уничтожения
 	u32						m_dwDestroyTime;
 	u32						m_dwDestroyTimeMax;
@@ -92,6 +90,7 @@ protected:
 
 	//звук анимации "играния"
 	HUD_SOUND				sndPlaying;
+	HUD_SOUND				sndItemOn;
 
 	bool					m_throwMotionMarksAvailable;
 protected:

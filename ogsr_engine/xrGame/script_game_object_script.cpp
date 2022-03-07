@@ -122,25 +122,6 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("update_addons_visibility",	int(GameObject::eOnUpdateAddonsVisibiility)),
 				value("update_hud_addons_visibility", int(GameObject::eOnUpdateHUDAddonsVisibiility)),
 				value("on_addon_init",				int(GameObject::eOnAddonInit)),
-//				value("on_hud_animation_end",		int(GameObject::eOnHudAnimationEnd)),
-				// Added by Cribbledirge Start
-				value("on_actor_weapon_start_firing", int(GameObject::eOnActorWeaponStartFiring)),
-				value("on_actor_weapon_fire", int(GameObject::eOnActorWeaponFire)),
-				value("on_actor_weapon_reload", int(GameObject::eOnActorWeaponReload)),
-				value("on_actor_weapon_jammed", int(GameObject::eOnActorWeaponJammed)),
-				value("on_actor_weapon_empty", int(GameObject::eOnActorWeaponEmpty)),
-				value("on_actor_weapon_zoom_in", int(GameObject::eOnActorWeaponZoomIn)),
-				value("on_actor_weapon_zoom_out", int(GameObject::eOnActorWeaponZoomOut)),
-				value("on_actor_weapon_switch_gl", int(GameObject::eOnActorWeaponSwitchGL)),
-				
-				// NPC Callbacks.
-				value("on_npc_weapon_start_firing", int(GameObject::eOnNPCWeaponStartFiring)),
-				value("on_npc_weapon_fire", int(GameObject::eOnNPCWeaponFire)),
-				value("on_npc_weapon_jammed", int(GameObject::eOnNPCWeaponJammed)),
-				value("on_npc_weapon_reload", int(GameObject::eOnNPCWeaponReload)),
-				value("on_npc_weapon_empty", int(GameObject::eOnNPCWeaponEmpty)),
-				value("on_npc_weapon_switch_gl", int(GameObject::eOnNPCWeaponSwitchGL)),
-				// Cribbledirge End
 
 				value("on_cell_item_focus", int(GameObject::eCellItemFocus)),
 				value("on_cell_item_select", int(GameObject::eCellItemSelect)),

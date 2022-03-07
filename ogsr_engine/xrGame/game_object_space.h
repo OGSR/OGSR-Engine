@@ -62,27 +62,9 @@ namespace GameObject {
 		eOnBeforeUseItem,
 		entity_alive_before_hit,
 
-//		eOnHudAnimationEnd,
-
 		eOnUpdateAddonsVisibiility,
 		eOnUpdateHUDAddonsVisibiility,
 		eOnAddonInit,
-
-		// These specifically say actor as I intend to add callbacks for NPCs firing their weapons.
-		eOnActorWeaponStartFiring,
-		eOnActorWeaponFire,
-		eOnActorWeaponJammed,
-		eOnActorWeaponEmpty,
-		eOnActorWeaponReload,
-		eOnActorWeaponSwitchGL,
-
-		// NPC Weapon Callbacks.
-		eOnNPCWeaponStartFiring,
-		eOnNPCWeaponFire,
-		eOnNPCWeaponJammed,
-		eOnNPCWeaponEmpty,
-		eOnNPCWeaponReload,
-		eOnNPCWeaponSwitchGL,
 
 		// Called when the player zooms their weapon in or out.
 		eOnActorWeaponZoomIn,

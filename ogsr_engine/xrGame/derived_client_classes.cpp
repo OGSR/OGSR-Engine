@@ -448,7 +448,6 @@ void CWeaponScript::script_register(lua_State *L)
             .property("silencer_name", &get_silencer_name, &set_silencer_name)
             .property("grenade_launcher_name", &get_grenade_launcher_name, &set_grenade_launcher_name)
 
-			.def_readonly("misfire"						,			&CWeapon::bMisfire)
 			.def_readonly("zoom_mode"					,			&CWeapon::m_bZoomMode)
 
 			.def_readwrite("scope_inertion_factor"		,			&CWeapon::m_fScopeInertionFactor)

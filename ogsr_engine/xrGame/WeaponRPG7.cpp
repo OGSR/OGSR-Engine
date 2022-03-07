@@ -107,8 +107,6 @@ void CWeaponRPG7::switch2_Fire	()
 	m_bFireSingleShot = true;
 	bWorking = false;
 
-	StateSwitchCallback(GameObject::eOnActorWeaponStartFiring, GameObject::eOnNPCWeaponStartFiring);
-
 	if (GetState() == eFire && getRocketCount()) 
 	{
 		Fvector p1, d; 

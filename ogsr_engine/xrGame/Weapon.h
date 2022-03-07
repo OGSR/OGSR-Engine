@@ -84,9 +84,6 @@ public:
 	virtual void			OnActiveItem		();
 	virtual void			OnHiddenItem		();
 
-	// Callback function added by Cribbledirge.
-	virtual IC void	StateSwitchCallback(GameObject::ECallbackType actor_type, GameObject::ECallbackType npc_type);
-
 //////////////////////////////////////////////////////////////////////////
 //  Network
 //////////////////////////////////////////////////////////////////////////
@@ -114,14 +111,6 @@ public:
 //  Weapon state
 //////////////////////////////////////////////////////////////////////////
 public:
-	enum EWeaponStates {
-		eFire = eLastBaseState + 1,
-		eFire2,
-		eReload,
-		eMisfire,
-		eMagEmpty,
-		eSwitch,
-	};
 	enum EWeaponSubStates{
 		eSubstateReloadBegin		=0,
 		eSubstateReloadInProcess,
@@ -139,7 +128,6 @@ public:
 	BOOL					IsUpdating			();
 
 
-	BOOL					IsMisfire			() const;
 	BOOL					CheckForMisfire		();
 
 	bool					IsTriStateReload	() const		{ return m_bTriStateReload;}
@@ -150,9 +138,7 @@ protected:
 	u8						m_sub_state;
 	u8						m_idle_state;
 	// Weapon fires now
-	bool					bWorking2;
-	// a misfire happens, you'll need to rearm weapon
-	bool					bMisfire;				
+	bool					bWorking2;			
 
 //////////////////////////////////////////////////////////////////////////
 //  Weapon Addons
@@ -372,7 +358,9 @@ protected:
 	virtual void			Fire2End			();
 	virtual void			Reload				();
 			void			StopShooting		();
-    
+  
+	virtual void Misfire() {}
+	virtual void DeviceSwitch();
 
 	// обработка визуализации выстрела
 	virtual void			OnShot				(){};
@@ -544,7 +532,9 @@ public:
 	float GetHudFov() override;
 
 	virtual void OnBulletHit();
-	bool IsPartlyReloading();
+	virtual bool IsPartlyReloading() const {
+		return m_set_next_ammoType_on_reload == u32(-1) && GetAmmoElapsed() > 0 && !IsMisfire();
+	}
 
 	virtual void processing_deactivate() override {
 		UpdateLaser();
@@ -553,8 +543,9 @@ public:
 	}
 
 	Fvector laserdot_attach_offset{}, laser_pos{};
-private:
+protected:
 	bool has_laser{};
+private:
 	shared_str laserdot_attach_bone;
 	Fvector laserdot_world_attach_offset{};
 	ref_light laser_light_render;
@@ -563,7 +554,7 @@ private:
 
 	void UpdateLaser();
 public:
-	virtual bool SwitchLaser(bool on) {
+	bool SwitchLaser(bool on) {
 		if (!has_laser)
 			return false;
 
@@ -579,8 +570,9 @@ public:
 	}
 
 	Fvector flashlight_attach_offset{}, flashlight_pos{};
-private:
+protected:
 	bool has_flashlight{};
+private:
 	shared_str flashlight_attach_bone;
 	Fvector flashlight_omni_attach_offset{}, flashlight_world_attach_offset{}, flashlight_omni_world_attach_offset{};
 	ref_light flashlight_render;
@@ -591,7 +583,7 @@ private:
 
 	void UpdateFlashlight();
 public:
-	virtual bool SwitchFlashlight(bool on) {
+	bool SwitchFlashlight(bool on) {
 		if (!has_flashlight)
 			return false;
 
@@ -605,4 +597,15 @@ public:
 	inline bool IsFlashlightOn() const {
 		return m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponAddonFlashlightOn;
 	}
+
+	void SwitchMisfire(bool on) {
+		if (on)
+			m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponMisfire;
+		else
+			m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponMisfire;
+	}
+	inline bool IsMisfire() const {
+		return m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponMisfire;
+	}
+
 };

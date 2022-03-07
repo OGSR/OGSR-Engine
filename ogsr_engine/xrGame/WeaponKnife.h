@@ -8,10 +8,12 @@ private:
 	typedef CWeapon inherited;
 protected:
 	HUD_SOUND			m_sndShot;
+	HUD_SOUND			sndItemOn;
 
 	bool				m_attackStart;
 	bool				m_attackMotionMarksAvailable;
 
+	bool HeadLampSwitch{}, NightVisionSwitch{};
 protected:
 
 	virtual void		switch2_Idle				();
@@ -23,6 +25,10 @@ protected:
 	virtual void		OnMotionMark				(u32 state, const motion_marks& M);
 	virtual void		OnAnimationEnd				(u32 state);
 	virtual void		OnStateSwitch				(u32 S, u32 oldState);
+
+	virtual void DeviceUpdate() override;
+	virtual void UpdateCL() override;
+	virtual void PlayAnimDeviceSwitch() override;
 
 	void				state_Attacking				(float dt);
 

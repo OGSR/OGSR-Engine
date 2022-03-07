@@ -22,8 +22,6 @@ void CWeaponCustomPistol::switch2_Fire()
 		bWorking = true;
 		m_iShotNum = 0;
 		m_bStopedAfterQueueFired = false;
-
-		StateSwitchCallback(GameObject::eOnActorWeaponStartFiring, GameObject::eOnNPCWeaponStartFiring);
 	}
 	else 
 	{

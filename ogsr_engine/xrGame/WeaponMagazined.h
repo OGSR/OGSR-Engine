@@ -23,12 +23,12 @@ protected:
 	HUD_SOUND		sndHide;
 	HUD_SOUND		sndShot;
 	HUD_SOUND		sndEmptyClick;
-	HUD_SOUND		sndReload, sndReloadPartly;
-	bool sndReloadPartlyExist{};
+	HUD_SOUND		sndReload, sndReloadPartly, sndReloadJammed, sndReloadJammedLast;
 	HUD_SOUND		sndFireModes;
 	HUD_SOUND		sndZoomChange;
 	HUD_SOUND		sndTactItemOn;
 	HUD_SOUND		sndAimStart, sndAimEnd;
+	HUD_SOUND		sndItemOn;
 	//звук текущего выстрела
 	HUD_SOUND*		m_pSndShotCurrent;
 
@@ -76,8 +76,6 @@ protected:
 			void	ApplySilencerKoeffs	();
 
 	virtual void	state_Fire		(float dt);
-	virtual void	state_MagEmpty	(float dt);
-	virtual void	state_Misfire	(float dt);
 public:
 					CWeaponMagazined	(LPCSTR name="AK74",ESoundTypes eSoundType=SOUND_TYPE_WEAPON_SUBMACHINEGUN);
 	virtual			~CWeaponMagazined	();
@@ -89,7 +87,11 @@ public:
 	virtual void	FireStart		();
 	virtual void	FireEnd			();
 	virtual void	Reload			();
-	
+	virtual void Misfire() override;
+	virtual void DeviceSwitch() override;
+protected:
+	virtual void DeviceUpdate() override;
+public:
 
 	virtual	void	UpdateCL		();
 	virtual BOOL	net_Spawn(CSE_Abstract* DC);
@@ -174,19 +176,6 @@ public:
 	virtual void	save				(NET_Packet &output_packet);
 	virtual void	load				(IReader &input_packet);
 
-	bool SwitchLaser(bool on) override {
-		const bool switched = inherited::SwitchLaser(on);
-		if (switched)
-			PlaySound(sndTactItemOn, get_LastFP());
-		return switched;
-	}
-	bool SwitchFlashlight(bool on) override {
-		const bool switched = inherited::SwitchFlashlight(on);
-		if (switched)
-			PlaySound(sndTactItemOn, get_LastFP());
-		return switched;
-	}
-
 protected:
 	virtual bool	AllowFireWhileWorking() {return false;}
 
@@ -196,13 +185,17 @@ protected:
 	virtual void	PlayAnimReload		();
 	virtual void	PlayAnimIdle		();
 
+	bool LaserSwitch{}, TorchSwitch{}, HeadLampSwitch{}, NightVisionSwitch{};
 private:
-	string64 guns_aim_anm;
+	string128 guns_aim_anm;
 protected:
-	const char* GetAnimAimName();
+	virtual const char* GetAnimAimName();
 
 	virtual void	PlayAnimAim			();
 	virtual void	PlayAnimShoot		();
+	virtual void PlayAnimFakeShoot();
+	virtual void PlayAnimDeviceSwitch() override;
+	virtual void PlayAnimCheckMisfire();
 	virtual void	PlayReloadSound		();
 
 	virtual	int		ShotsFired			() { return m_iShotNum; }

@@ -117,17 +117,17 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	case kCAM_2:	cam_Set			(eacLookAt);				break;
 	case kCAM_3:	cam_Set			(eacFreeLook);				break;
 	case kNIGHT_VISION: {
-			CTorch* pTorch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
-			if (pTorch) {
-				pTorch->SwitchNightVision();
-			}
-		} break;
-	case kTORCH: { 
-			CTorch* pTorch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
-			if (pTorch) {
-				pTorch->Switch();
-			}
-		} break;
+		auto act_it = inventory().ActiveItem();
+		auto pTorch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
+		if (pTorch && !smart_cast<CWeaponMagazined*>(act_it) && !smart_cast<CWeaponKnife*>(act_it) && !smart_cast<CMissile*>(act_it))
+			pTorch->SwitchNightVision();
+	} break;
+	case kTORCH: {
+		auto act_it = inventory().ActiveItem();
+		auto pTorch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
+		if (pTorch && !smart_cast<CWeaponMagazined*>(act_it) && !smart_cast<CWeaponKnife*>(act_it) && !smart_cast<CMissile*>(act_it))
+			pTorch->Switch();
+	} break;
 	case kWPN_8:
 	{
 		if (auto det = smart_cast<CCustomDetector*>(inventory().ItemFromSlot(DETECTOR_SLOT)))
@@ -167,17 +167,6 @@ void CActor::IR_OnKeyboardPress(int cmd)
 				}
 			}
 		}break;
-	case kLASER_ON:
-	{
-		if (auto wpn = smart_cast<CWeapon*>(inventory().ActiveItem()))
-			wpn->SwitchLaser(!wpn->IsLaserOn());
-	}break;
-	case kFLASHLIGHT:
-	{
-		if (auto wpn = smart_cast<CWeapon*>(inventory().ActiveItem()))
-			wpn->SwitchFlashlight(!wpn->IsFlashlightOn());
-	}break;
-
 	}
 }
 void CActor::IR_OnMouseWheel(int direction)

@@ -17,6 +17,7 @@
 #include "HUDManager.h"
 #include "Weapon.h"
 #include "ActorCondition.h"
+#include "Missile.h"
 
 ENGINE_API extern float psHUD_FOV_def;
 
@@ -412,7 +413,8 @@ void CHudItem::PlayAnimIdle()
 	if (TryPlayAnimIdle())
 		return;
 
-	PlayHUDMotion({ "anim_idle", "anm_idle" }, true, GetState());
+	auto wpn = smart_cast<CWeapon*>(this);
+	PlayHUDMotion({ (wpn && wpn->IsMisfire()) ? "anm_idle_jammed" : ((wpn && wpn->GetAmmoElapsed() == 0) ? "anm_idle_empty" : "nullptr"), "anim_idle", "anm_idle" }, true, GetState());
 }
 
 bool CHudItem::TryPlayAnimIdle()
@@ -486,28 +488,33 @@ bool CHudItem::AnimationExist(const char* anim_name) const
 }
 
 void CHudItem::PlayAnimIdleMoving()
-{ 
-	PlayHUDMotion({ "anm_idle_moving", "anm_idle", "anim_idle_moving", "anim_idle" }, true, GetState());
+{
+	auto wpn = smart_cast<CWeapon*>(this);
+	PlayHUDMotion({ (wpn && wpn->IsMisfire()) ? "anm_idle_moving_jammed" : ((wpn && wpn->GetAmmoElapsed() == 0) ? "anm_idle_moving_empty" : "nullptr"), "anm_idle_moving", "anm_idle", "anim_idle_moving", "anim_idle" }, true, GetState());
 }
 
 void CHudItem::PlayAnimIdleMovingSlow()
 {
-	PlayHUDMotion({ "anm_idle_moving_slow", "anm_idle_moving", "anm_idle", "anim_idle_moving", "anim_idle" }, true, GetState());
+	auto wpn = smart_cast<CWeapon*>(this);
+	PlayHUDMotion({ (wpn && wpn->IsMisfire()) ? "anm_idle_moving_slow_jammed" : ((wpn && wpn->GetAmmoElapsed() == 0) ? "anm_idle_moving_slow_empty" : "nullptr"), "anm_idle_moving_slow", "anm_idle_moving_slow", "anm_idle", "anim_idle_moving", "anim_idle" }, true, GetState());
 }
 
 void CHudItem::PlayAnimIdleMovingCrouch()
 {
-	PlayHUDMotion({ "anm_idle_moving_crouch", "anm_idle_moving", "anm_idle", "anim_idle_moving", "anim_idle" }, true, GetState());
+	auto wpn = smart_cast<CWeapon*>(this);
+	PlayHUDMotion({ (wpn && wpn->IsMisfire()) ? "anm_idle_moving_crouch_jammed" : ((wpn && wpn->GetAmmoElapsed() == 0) ? "anm_idle_moving_crouch_empty" : "nullptr"), "anm_idle_moving_crouch", "anm_idle_moving", "anm_idle", "anim_idle_moving", "anim_idle" }, true, GetState());
 }
 
 void CHudItem::PlayAnimIdleMovingCrouchSlow()
 {
-	PlayHUDMotion({ "anm_idle_moving_crouch_slow", "anm_idle_moving_crouch", "anm_idle_moving", "anm_idle", "anim_idle_moving", "anim_idle" }, true, GetState());
+	auto wpn = smart_cast<CWeapon*>(this);
+	PlayHUDMotion({ (wpn && wpn->IsMisfire()) ? "anm_idle_moving_crouch_slow_jammed" : ((wpn && wpn->GetAmmoElapsed() == 0) ? "anm_idle_moving_crouch_slow_empty" : "nullptr"), "anm_idle_moving_crouch_slow", "anm_idle_moving_crouch", "anm_idle_moving", "anm_idle", "anim_idle_moving", "anim_idle" }, true, GetState());
 }
 
 void CHudItem::PlayAnimIdleSprint()
 {
-	PlayHUDMotion({ "anm_idle_sprint", "anm_idle", "anim_idle_sprint", "anim_idle" }, true, GetState());
+	auto wpn = smart_cast<CWeapon*>(this);
+	PlayHUDMotion({ (wpn && wpn->IsMisfire()) ? "anm_idle_sprint_jammed" : ((wpn && wpn->GetAmmoElapsed() == 0) ? "anm_idle_sprint_empty" : "nullptr"), "anm_idle_sprint", "anm_idle", "anim_idle_sprint", "anim_idle" }, true, GetState());
 }
 
 void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
@@ -1127,4 +1134,17 @@ void CHudItem::CorrectDirFromWorldToHud(Fvector& dir) {
 	dir.mul(diff);
 	dir.add(CamDir);
 	dir.normalize();
+}
+
+void CHudItem::TimeLockAnimation()
+{
+	if (GetState() != eDeviceSwitch)
+		return;
+
+	string128 anm_time_param;
+	xr_strconcat(anm_time_param, "lock_time_end_", m_current_motion.c_str());
+	const float time = READ_IF_EXISTS(pSettings, r_float, HudSection(), anm_time_param, 0) * 1000.f; // Читаем с конфига время анимации (например, lock_time_end_anm_reload)
+	const float current_time = Device.dwTimeGlobal - m_dwMotionStartTm;
+	if (time && current_time >= time)
+		DeviceUpdate();
 }

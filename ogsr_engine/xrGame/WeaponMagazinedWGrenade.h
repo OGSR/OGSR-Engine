@@ -80,11 +80,11 @@ public:
 	u32						m_ammoType2;
 	int						iMagazineSize2{};
 	xr_vector<CCartridge>	m_magazine2;
-	bool					m_bGrenadeMode;
+	bool					m_bGrenadeMode{};
 
 	CCartridge				m_DefaultCartridge2;
 
-	int						iAmmoElapsed2;
+	int						iAmmoElapsed2{};
 
 	virtual void UpdateGrenadeVisibility(bool visibility);
 
@@ -92,5 +92,12 @@ public:
 	shared_str grenade_bone_name;
 
 	IC int GetAmmoElapsed2() const { return int(m_magazine2.size()); }
-	virtual float Weight () const;		
+	virtual float Weight () const;
+
+	bool IsPartlyReloading() const override {
+		if (m_bGrenadeMode)
+			return m_set_next_ammoType_on_reload == u32(-1) && iAmmoElapsed2 > 0 && !IsMisfire();
+		else
+			return inherited::IsPartlyReloading();
+	}
 };

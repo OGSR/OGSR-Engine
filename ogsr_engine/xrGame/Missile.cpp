@@ -2,6 +2,7 @@
 #include "missile.h"
 #include "PhysicsShell.h"
 #include "actor.h"
+#include "torch.h"
 #include "../xr_3da/camerabase.h"
 #include "xrserver_objects_alife.h"
 #include "ActorEffector.h"
@@ -45,6 +46,7 @@ CMissile::CMissile(void)
 CMissile::~CMissile(void) 
 {
 	HUD_SOUND::DestroySound(sndPlaying);
+	HUD_SOUND::DestroySound(sndItemOn);
 }
 
 void CMissile::reinit		()
@@ -77,6 +79,9 @@ void CMissile::Load(LPCSTR section)
 
 	if (pSettings->line_exist(section,"snd_playing"))
 		HUD_SOUND::LoadSound(section,"snd_playing",sndPlaying);
+	
+	if (pSettings->line_exist(section,"snd_item_on"))
+		HUD_SOUND::LoadSound(section,"snd_item_on",sndItemOn);
 
 	m_ef_weapon_type	= READ_IF_EXISTS(pSettings,r_u32,section,"ef_weapon_type",u32(-1));
 }
@@ -178,9 +183,30 @@ void CMissile::OnH_B_Independent(bool just_before_destroy)
 
 extern int g_bHudAdjustMode;
 
+void CMissile::DeviceUpdate()
+{
+	if (auto pA = smart_cast<CActor*>(H_Parent()))
+	{
+		if (HeadLampSwitch)
+		{
+			auto pActorTorch = smart_cast<CTorch*>(pA->inventory().ItemFromSlot(TORCH_SLOT));
+			pActorTorch->Switch();
+			HeadLampSwitch = false;
+		}
+		else if (NightVisionSwitch)
+		{
+			if (auto pActorTorch = smart_cast<CTorch*>(pA->inventory().ItemFromSlot(TORCH_SLOT)))
+				pActorTorch->SwitchNightVision();
+			NightVisionSwitch = false;
+		}
+	}
+}
+
 void CMissile::UpdateCL() 
 {
 	inherited::UpdateCL();
+
+	TimeLockAnimation();
 
 	if (!Core.Features.test(xrCore::Feature::stop_anim_playing))
 	{
@@ -304,6 +330,12 @@ void CMissile::State(u32 state, u32 oldState)
 		PlayHUDMotion({ "anim_playing", "anm_bore" }, true, GetState());
 	} 
 	break;
+	case eDeviceSwitch:
+	{
+		SetPending(TRUE);
+		PlayAnimDeviceSwitch();
+	}
+	break;
 	}
 }
 
@@ -313,6 +345,19 @@ void CMissile::PlayAnimIdle()
 		return;
 
 	PlayHUDMotion({ "anim_idle", "anm_idle" }, true, GetState(), false);
+}
+
+void CMissile::PlayAnimDeviceSwitch()
+{
+	PlaySound(sndItemOn, Position());
+
+	if (AnimationExist("anm_headlamp_on"))
+		PlayHUDMotion("anm_headlamp_on", true, GetState());
+	else
+	{
+		DeviceUpdate();
+		SwitchState(eIdle);
+	}
 }
 
 void CMissile::OnStateSwitch(u32 S, u32 oldState)
@@ -361,15 +406,12 @@ void CMissile::OnAnimationEnd(u32 state)
 	}
 	break;
 	case eThrowEnd:
-	{ 
 		SwitchState(eShowing);
-	}
-	break;
+		break;
 	case eBore:
-	{
+	case eDeviceSwitch:
 		SwitchState(eIdle);
-	}
-	break;
+		break;
 	default: 
 		inherited::OnAnimationEnd(state);
 	}
@@ -600,6 +642,26 @@ bool CMissile::Action(s32 cmd, u32 flags)
 			}
 			return true;
 		}break;
+	case kTORCH:
+	{
+		auto pActorTorch = smart_cast<CActor*>(H_Parent())->inventory().ItemFromSlot(TORCH_SLOT);
+		if ((flags & CMD_START) && pActorTorch && GetState() == eIdle)
+		{
+			HeadLampSwitch = true;
+			SwitchState(eDeviceSwitch);
+		}
+		return true;
+	}break;
+	case kNIGHT_VISION:
+	{
+		auto pActorNv = smart_cast<CActor*>(H_Parent())->inventory().ItemFromSlot(NIGHT_VISION_SLOT);
+		if ((flags & CMD_START) && pActorNv && GetState() == eIdle)
+		{
+			NightVisionSwitch = true;
+			SwitchState(eDeviceSwitch);
+		}
+		return true;
+	}break;
 	}
 	return false;
 }
