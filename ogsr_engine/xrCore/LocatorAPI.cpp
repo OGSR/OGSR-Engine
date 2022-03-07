@@ -259,14 +259,14 @@ static IReader* open_chunk(void* ptr, const u32 ID, const char* archiveName, con
 				unsigned dest_sz{};
 
 				if (shouldDecrypt)
-					g_trivial_encryptor.decode(src_data, dwSize, src_data); // Try russian key first
+					g_trivial_encryptor.decode(src_data, dwSize, src_data); // Try WW key first
 
 				bool result = _decompressLZ(&dest, &dest_sz, src_data, dwSize, archiveSize);
 
-				if (!result && shouldDecrypt)// Let's try to decode with WW key
+				if (!result && shouldDecrypt)// Let's try to decode with Rus key
 				{
 					g_trivial_encryptor.encode(src_data, dwSize, src_data); // rollback
-					g_trivial_encryptor.decode(src_data, dwSize, src_data, trivial_encryptor::key_flag::worldwide);
+					g_trivial_encryptor.decode(src_data, dwSize, src_data, trivial_encryptor::key_flag::russian);
 					result = _decompressLZ(&dest, &dest_sz, src_data, dwSize, archiveSize);
 				}
 
@@ -633,15 +633,6 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 			FS_Path* P			= xr_new<FS_Path>((p_it!=pathes.end())?p_it->second->m_Path:root,lp_add,lp_def,lp_capt,fl);
 			bNoRecurse			= !(fl&FS_Path::flRecurse);
 #ifdef RESTRICT_GAMEDATA
-#if __has_include("..\build_config_overrides\trivial_encryptor_ovr.h")
-#error Something strange...
-#endif
-			bool restricted = false;
-			if ( ( xr_strcmp( id, "$game_config$" ) == 0 || xr_strcmp( id, "$game_scripts$" ) == 0 ) )
-				restricted = !Core.ParamFlags.test( xrCore::ParamFlag::dbg );
-			if ( !restricted )
-				Recurse( P->m_Path, true );
-#elif __has_include("..\build_config_overrides\trivial_encryptor_ovr.h")
 			if (!strcmp(id, "$app_data_root$") || !strcmp(id, "$game_saves$") || !strcmp(id, "$logs$") || !strcmp(id, "$screenshots$"))
 				Recurse(P->m_Path);
 #else
@@ -658,7 +649,7 @@ void CLocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 		R_ASSERT		(path_exist("$app_data_root$"));
 	};
 		
-#if !__has_include("..\build_config_overrides\trivial_encryptor_ovr.h")
+#ifndef RESTRICT_GAMEDATA
 	if (!m_Flags.is(flTargetFolderOnly))
 		ProcessExternalArch();
 #endif

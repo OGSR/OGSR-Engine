@@ -30,12 +30,12 @@ public:
 };
 
 trivial_encryptor::trivial_encryptor()
-#ifdef TE_CUSTOM_OVR
-    : m_key_russian({ M_TABLE_ITERATIONS, M_TABLE_SEED, M_ENCRYPT_SEED }),
-#else
     : m_key_russian({ 2048, 20091958, 20031955 }),
-#endif
+#ifdef TE_CUSTOM_OVR
+    m_key_worldwide({ M_TABLE_ITERATIONS, M_TABLE_SEED, M_ENCRYPT_SEED })
+#else
     m_key_worldwide({ 1024, 6011979, 24031979 })
+#endif
 {
     initialize(key_flag::worldwide);
 }
