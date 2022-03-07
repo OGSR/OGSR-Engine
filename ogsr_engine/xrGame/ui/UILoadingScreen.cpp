@@ -33,7 +33,7 @@ void UILoadingScreen::Initialize()
 
 	const auto loadBackground = [&]
 	{
-		CUIXmlInit::InitWindow(uiXml, "background", 0, this);
+		UIHelper::CreateStatic(uiXml, "background", this, false);
 	};
 
 	const auto node = uiXml.NavigateToNodeWithAttribute("loading_progress", "under_background", "0");
