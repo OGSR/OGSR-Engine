@@ -36,8 +36,6 @@ CHudItem::CHudItem()
 	m_current_motion_def = nullptr;
 	m_started_rnd_anim_idx = u8(-1);
 	m_dwStateTime		= 0;
-
-	m_nearwall_last_hud_fov = psHUD_FOV_def;
 }
 
 DLL_Pure *CHudItem::_construct	()
@@ -104,6 +102,9 @@ void CHudItem::Load(LPCSTR section)
 		m_nearwall_target_aim_hud_fov = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_target_aim_hud_fov", std::get<5>(CollisionParams));
 		m_nearwall_speed_mod = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_speed_mod", 10.f);
 	}
+
+	m_base_fov = READ_IF_EXISTS(pSettings, r_float, section, "hud_fov", psHUD_FOV_def);
+	m_nearwall_last_hud_fov = m_base_fov;
 
 	////////////////////////////////////////////
 	m_strafe_offset[0][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "strafe_hud_offset_pos", (Fvector{ 0.015f, 0.f, 0.f }));
@@ -230,7 +231,7 @@ void CHudItem::OnStateSwitch(u32 S, u32 oldState)
 		SetNextState(S);
 
 	if (S == eHidden)
-		m_nearwall_last_hud_fov = psHUD_FOV_def;
+		m_nearwall_last_hud_fov = m_base_fov;
 }
 
 bool CHudItem::Activate( bool now )
@@ -299,7 +300,7 @@ void CHudItem::OnH_B_Chield()
 {
 	StopCurrentAnimWithoutCallback();
 
-	m_nearwall_last_hud_fov = psHUD_FOV_def;
+	m_nearwall_last_hud_fov = m_base_fov;
 }
 
 void CHudItem::OnH_B_Independent(bool just_before_destroy)
@@ -307,7 +308,7 @@ void CHudItem::OnH_B_Independent(bool just_before_destroy)
 	StopHUDSounds();
 	UpdateXForm();
 
-	m_nearwall_last_hud_fov = psHUD_FOV_def;
+	m_nearwall_last_hud_fov = m_base_fov;
 }
 
 void CHudItem::OnH_A_Independent()
@@ -1007,15 +1008,11 @@ float CHudItem::GetHudFov() {
 		clamp(dist, m_nearwall_dist_min, m_nearwall_dist_max);
 		const float fDistanceMod = ((dist - m_nearwall_dist_min) / (m_nearwall_dist_max - m_nearwall_dist_min)); // 0.f ... 1.f
 
-		 // Рассчитываем базовый HUD FOV от бедра
-		float fBaseFov = psHUD_FOV_def;
-		clamp(fBaseFov, 0.0f, FLT_MAX);
-
 		// Плавно высчитываем итоговый FOV от бедра
 		float src = m_nearwall_speed_mod * Device.fTimeDelta;
 		clamp(src, 0.f, 1.f);
 
-		const float fTrgFov = (IsZoomed() ? m_nearwall_target_aim_hud_fov : m_nearwall_target_hud_fov) + fDistanceMod * (fBaseFov - (IsZoomed() ? m_nearwall_target_aim_hud_fov : m_nearwall_target_hud_fov));
+		const float fTrgFov = (IsZoomed() ? m_nearwall_target_aim_hud_fov : m_nearwall_target_hud_fov) + fDistanceMod * (m_base_fov - (IsZoomed() ? m_nearwall_target_aim_hud_fov : m_nearwall_target_hud_fov));
 		m_nearwall_last_hud_fov = m_nearwall_last_hud_fov * (1 - src) + fTrgFov * src;
 	}
  

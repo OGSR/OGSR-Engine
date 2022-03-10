@@ -290,6 +290,8 @@ private:
 	float m_fLR_MovingFactor{}, m_fLookout_MovingFactor{};
 	Fvector m_strafe_offset[3][2]{}, m_lookout_offset[3][2]{};
 
+	float m_base_fov{};
+
 	struct inertion_params {
 		float m_pitch_offset_r;
 		float m_pitch_offset_n;
