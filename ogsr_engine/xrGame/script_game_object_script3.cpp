@@ -133,10 +133,9 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 
 		.def("give_info_portion",			&CScriptGameObject::GiveInfoPortion)
 		.def("disable_info_portion",		&CScriptGameObject::DisableInfoPortion)
-		.def("give_game_news",				(bool (CScriptGameObject::*)(LPCSTR,LPCSTR,Frect,int,int))(&CScriptGameObject::GiveGameNews))
+		.def("give_game_news",				&GiveGameNews)
 
-		.def("give_talk_message",			(void (CScriptGameObject::*)(LPCSTR,LPCSTR,Frect,LPCSTR))(&CScriptGameObject::AddIconedTalkMessage))
-		
+		.def("give_talk_message",			&AddIconedTalkMessage)
 
 		.def("has_info",					&CScriptGameObject::HasInfo)
 		.def("dont_has_info",				&CScriptGameObject::DontHasInfo)
