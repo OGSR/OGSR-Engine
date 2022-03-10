@@ -245,6 +245,7 @@ public:
 	void GetBoneOffsetPosDir(const shared_str& bone_name, Fvector& dest_pos, Fvector& dest_dir, const Fvector& offset);
 	//Функция из ганслингера для приблизительной коррекции разности фовов худа и мира. Так себе на самом деле, но более годных способов я не нашел.
 	void CorrectDirFromWorldToHud(Fvector& dir);
+	u32 GetLastHudFov() const { return m_nearwall_last_hud_fov; }
 protected:
 	enum CollisionWeaponType : size_t {
 		CWeaponBase,
