@@ -83,6 +83,6 @@ public:
 	float m_thumb_rot[2]{};
 
 protected:
-	u8 GetCurrentHudOffsetIdx() const override { return m_bZoomed ? 1 : 0; }
+	u8 GetCurrentHudOffsetIdx() const override { return (m_bZoomed || m_fZoomRotationFactor != 0.f) ? 1 : 0; }
 	bool IsZoomed() const override { return m_bZoomed; }
 };
