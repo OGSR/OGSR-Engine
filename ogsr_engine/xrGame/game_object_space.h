@@ -79,7 +79,6 @@ namespace GameObject {
 		ePostSave,
 
 		eUIMapClick,
-		eUIMapSpotClick,
 
 		eUIPickUpItemShowing,
 		eUIGroupItems,

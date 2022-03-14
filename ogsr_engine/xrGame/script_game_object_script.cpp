@@ -130,7 +130,6 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("on_before_save", int(GameObject::eBeforeSave)),
 				value("on_after_save", int(GameObject::ePostSave)),
 				value("on_level_map_click", int(GameObject::eUIMapClick) ),
-				value("on_map_spot_click", int(GameObject::eUIMapSpotClick) ),
 				value("on_pickup_item_showing", int(GameObject::eUIPickUpItemShowing) ),
 				value("on_group_items", int(GameObject::eUIGroupItems) ),
 				value("on_weapon_shell_drop", int(GameObject::eOnWpnShellDrop) ),
