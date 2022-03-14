@@ -161,28 +161,35 @@ bool CUIPdaWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 	switch (mouse_action)
 	{
 	case WINDOW_LBUTTON_DOWN:
-	case WINDOW_RBUTTON_DOWN:
+	//case WINDOW_RBUTTON_DOWN:
 	case WINDOW_LBUTTON_UP:
-	case WINDOW_RBUTTON_UP:
+	//case WINDOW_RBUTTON_UP:
 	{
-		CPda* pda = Actor()->GetPDA();
-		if (pda)
+		if (auto pda = Actor()->GetPDA())
 		{
 			if (pda->IsPending())
 				return true;
 
 			if (mouse_action == WINDOW_LBUTTON_DOWN)
 				bButtonL = true;
-			else if (mouse_action == WINDOW_RBUTTON_DOWN)
-				bButtonR = true;
+			//else if (mouse_action == WINDOW_RBUTTON_DOWN)
+			//	bButtonR = true;
 			else if (mouse_action == WINDOW_LBUTTON_UP)
 				bButtonL = false;
-			else if (mouse_action == WINDOW_RBUTTON_UP)
-				bButtonR = false;
+			//else if (mouse_action == WINDOW_RBUTTON_UP)
+			//	bButtonR = false;
 		}
 		break;
 	}
+	case WINDOW_RBUTTON_DOWN:
+		if (auto pda = Actor()->GetPDA()) {
+			pda->m_bZoomed = false;
+			HUD().GetUI()->SetMainInputReceiver(nullptr, false);
+			return true;
+		}
+		break;
 	}
+
 	CUIDialogWnd::OnMouse(x, y, mouse_action);
 	return true; //always true because StopAnyMove() == false
 }
@@ -485,15 +492,19 @@ bool CUIPdaWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 
 				if (action == kQUIT) // "Hack" to make Esc key open main menu instead of simply hiding the PDA UI
 				{
-					if (pda->GetState() == CPda::eHiding || pda->GetState() == CPda::eHidden)
-					{
+					if (pda->GetState() == CPda::eHiding || pda->GetState() == CPda::eHidden) {
 						Console->Execute("main_menu");
 						return false;
 					}
-					else
+					else if (pda->m_bZoomed) {
+						pda->m_bZoomed = false;
+						HUD().GetUI()->SetMainInputReceiver(nullptr, false);
+						return true;
+					}
+					else {
 						Actor()->inventory().Activate(NO_ACTIVE_SLOT);
-
-					return true;
+						return true;
+					}
 				}
 			}
 		}

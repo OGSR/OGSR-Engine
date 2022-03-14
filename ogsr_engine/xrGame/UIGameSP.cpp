@@ -215,7 +215,7 @@ void CUIGameSP::ShowHidePda(const bool show)
 	if ((PdaMenu->IsShown() && !show) || (!PdaMenu->IsShown() && show))
 	{
 		m_game->StartStopMenu(PdaMenu, false);
-		if (show)
+		if (show || MainInputReceiver() == PdaMenu)
 			HUD().GetUI()->SetMainInputReceiver(nullptr, false);
 	}
 }
