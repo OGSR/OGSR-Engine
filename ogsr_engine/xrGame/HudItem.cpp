@@ -18,6 +18,7 @@
 #include "Weapon.h"
 #include "ActorCondition.h"
 #include "Missile.h"
+#include "../xr_3da/x_ray.h"
 
 ENGINE_API extern float psHUD_FOV_def;
 
@@ -69,7 +70,7 @@ void CHudItem::Load(LPCSTR section)
 
 	m_animation_slot	= pSettings->r_u32(section,"animation_slot");
 
-	m_nearwall_on = READ_IF_EXISTS(pSettings, r_bool, section, "nearwall_on", strstr(READ_IF_EXISTS(pSettings, r_string, "mod_ver", "mod_ver", "nullptr"), "OGSR") ? true : READ_IF_EXISTS(pSettings, r_bool, "features", "default_nearwall_on", true));
+	m_nearwall_on = READ_IF_EXISTS(pSettings, r_bool, section, "nearwall_on", IS_OGSR_GA ? true : READ_IF_EXISTS(pSettings, r_bool, "features", "default_nearwall_on", true));
 
 	if (m_nearwall_on)
 	{

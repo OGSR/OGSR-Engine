@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "DiscordRPC.hpp"
+#include "../xr_3da/x_ray.h"
 
 constexpr const char* DISCORD_LIBRARY_DLL{ "discord-rpc.dll" };
 
@@ -29,7 +30,7 @@ void DiscordRPC::Init()
 	}
 
 	DiscordEventHandlers nullHandlers{};
-	if (strstr(READ_IF_EXISTS(pSettings, r_string, "mod_ver", "mod_ver", "nullptr"), "OGSR"))
+	if (IS_OGSR_GA)
 		Discord_Initialize("934890865237839992", &nullHandlers, TRUE, nullptr);
 	else
 		Discord_Initialize("777186147456778272", &nullHandlers, TRUE, nullptr);
@@ -55,8 +56,8 @@ void DiscordRPC::Update(const char* level_name_translated, const char* level_nam
 	DiscordRichPresence presenseInfo{};
 
 	presenseInfo.startTimestamp = start_time; //время с момента запуска
-	static const bool is_ogsr_ga = !!strstr(READ_IF_EXISTS(pSettings, r_string, "mod_ver", "mod_ver", "nullptr"), "OGSR");
-	if (is_ogsr_ga && level_name_translated && level_name)
+
+	if (IS_OGSR_GA && level_name_translated && level_name)
 		presenseInfo.largeImageKey = level_name; //большая картинка
 	else
 		presenseInfo.largeImageKey = "main_image"; //большая картинка

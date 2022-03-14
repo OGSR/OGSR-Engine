@@ -42,6 +42,7 @@
 #endif // DEBUG
 
 #include "hudmanager.h"
+#include "../xr_3da/x_ray.h"
 
 string_path		g_last_saved_game;
 
@@ -1180,8 +1181,7 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,				"hud_draw",				&psHUD_Flags,	HUD_DRAW);
 	CMD3(CCC_Mask,				"hud_crosshair_build",	&psHUD_Flags,	HUD_CROSSHAIR_BUILD); // билдокурсор
 
-	const bool is_ogsr_ga = strstr(READ_IF_EXISTS(pSettings, r_string, "mod_ver", "mod_ver", "nullptr"), "OGSR");
-	if (is_ogsr_ga)
+	if (IS_OGSR_GA)
 		psHUD_Flags.set(HUD_CROSSHAIR_HARD, TRUE);
 	else
 		CMD3(CCC_Mask, "hud_crosshair_hard", &psHUD_Flags, HUD_CROSSHAIR_HARD);
@@ -1191,7 +1191,7 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,				"hud_crosshair",		&psHUD_Flags,	HUD_CROSSHAIR);
 	CMD3(CCC_Mask,				"hud_crosshair_dist",	&psHUD_Flags,	HUD_CROSSHAIR_DIST);
 
-	if (is_ogsr_ga)
+	if (IS_OGSR_GA)
 		psHUD_FOV_def = 0.65f;
 	else
 		CMD4(CCC_Float, "hud_fov", &psHUD_FOV_def, 0.1f, 1.0f);

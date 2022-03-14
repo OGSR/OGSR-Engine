@@ -60,3 +60,4 @@ public:
 };
 
 extern ENGINE_API	CApplication*	pApp;
+extern ENGINE_API bool IS_OGSR_GA;
