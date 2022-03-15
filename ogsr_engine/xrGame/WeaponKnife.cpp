@@ -12,6 +12,7 @@
 #include "game_cl_single.h"
 #include "game_object_space.h"
 #include "Level_Bullet_Manager.h"
+#include "../xr_3da/x_ray.h"
 
 #define KNIFE_MATERIAL_NAME "objects\\knife"
 
@@ -314,7 +315,7 @@ bool CWeaponKnife::Action(s32 cmd, u32 flags)
 		}break;
 		case kNIGHT_VISION:
 		{
-			auto pActorNv = smart_cast<CActor*>(H_Parent())->inventory().ItemFromSlot(NIGHT_VISION_SLOT);
+			auto pActorNv = smart_cast<CActor*>(H_Parent())->inventory().ItemFromSlot(IS_OGSR_GA ? NIGHT_VISION_SLOT : TORCH_SLOT);
 			if ((flags & CMD_START) && pActorNv && GetState() == eIdle)
 			{
 				NightVisionSwitch = true;

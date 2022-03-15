@@ -21,6 +21,7 @@
 
 #include "ui/UIProgressShape.h"
 #include "ui/UIXmlInit.h"
+#include "../xr_3da/x_ray.h"
 
 CUIProgressShape* g_MissileForceShape = NULL;
 
@@ -654,7 +655,7 @@ bool CMissile::Action(s32 cmd, u32 flags)
 	}break;
 	case kNIGHT_VISION:
 	{
-		auto pActorNv = smart_cast<CActor*>(H_Parent())->inventory().ItemFromSlot(NIGHT_VISION_SLOT);
+		auto pActorNv = smart_cast<CActor*>(H_Parent())->inventory().ItemFromSlot(IS_OGSR_GA ? NIGHT_VISION_SLOT : TORCH_SLOT);
 		if ((flags & CMD_START) && pActorNv && GetState() == eIdle)
 		{
 			NightVisionSwitch = true;
