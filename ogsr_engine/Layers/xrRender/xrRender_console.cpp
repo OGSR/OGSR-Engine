@@ -16,7 +16,7 @@ constexpr xr_token SmapSizeToken[] = {
   { nullptr, 0 }
 };
 
-u32 ps_r_pp_aa_mode = 0;
+u32 ps_r_pp_aa_mode = SMAA;
 constexpr xr_token pp_aa_mode_token[] = {
 	{ "st_opt_off", NO_AA },
 	{ "st_opt_smaa", SMAA },
