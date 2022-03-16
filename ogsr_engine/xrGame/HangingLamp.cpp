@@ -93,8 +93,9 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
 //	CInifile* pUserData		= K->LL_UserData(); 
 //	R_ASSERT3				(pUserData,"Empty HangingLamp user data!",lamp->get_visual());
 	xr_delete(collidable.model);
+	IKinematics* K = nullptr;
 	if (Visual()){
-		IKinematics* K		= smart_cast<IKinematics*>(Visual());
+		K					= smart_cast<IKinematics*>(Visual());
 		R_ASSERT			(Visual()&&smart_cast<IKinematics*>(Visual()));
 		light_bone			= K->LL_BoneID	(*lamp->light_main_bone);	VERIFY(light_bone!=BI_NONE);
 		ambient_bone		= K->LL_BoneID	(*lamp->light_ambient_bone);VERIFY(ambient_bone!=BI_NONE);
@@ -142,16 +143,20 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
 	lanim					= LALib.FindItem(*lamp->color_animator);
 
 	CPHSkeleton::Spawn(e);
-	if (smart_cast<IKinematicsAnimated*>(Visual()))	smart_cast<IKinematicsAnimated*>	(Visual())->PlayCycle("idle");
-	if (smart_cast<IKinematics*>(Visual())){
-		smart_cast<IKinematics*>			(Visual())->CalculateBones_Invalidate	();
-		smart_cast<IKinematics*>			(Visual())->CalculateBones();
+
+	if (K) {
+		IKinematicsAnimated* KA = smart_cast<IKinematicsAnimated*>(Visual());
+		if (KA) KA->PlayCycle("idle");
+
+		K->CalculateBones_Invalidate	();
+		K->CalculateBones();
 		//.intepolate_pos
 	}
 	if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPhysic)&&!Visual())
 		Msg("! WARNING: lamp, obj name [%s],flag physics set, but has no visual",*cName());
 //.	if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPhysic)&&Visual()&&!guid_physic_bone)	fHealth=0.f;
-	if (Alive())			TurnOn	();
+	if (Alive() && isOn)
+		TurnOn	();
 	else{
 		processing_activate		();	// temporal enable
 		TurnOff					();	// -> and here is disable :)
@@ -257,10 +262,11 @@ void CHangingLamp::UpdateCL	()
 
 void CHangingLamp::TurnOn	()
 {
-	light_render->set_active						(true);
+	isOn = true;
+	if (light_render) light_render->set_active		(true);
 	if (glow_render)	glow_render->set_active		(true);
 	if (light_ambient)	light_ambient->set_active	(true);
-	if (Visual()){
+	if (Visual() && (light_bone != BI_NONE)){
 		IKinematics* K				= smart_cast<IKinematics*>(Visual());
 		K->LL_SetBoneVisible		(light_bone, TRUE, TRUE);
 		K->CalculateBones_Invalidate();
@@ -271,10 +277,11 @@ void CHangingLamp::TurnOn	()
 
 void CHangingLamp::TurnOff	()
 {
-	light_render->set_active						(false);
+	isOn = false;
+	if (light_render) light_render->set_active		(false);
 	if (glow_render)	glow_render->set_active		(false);
 	if (light_ambient)	light_ambient->set_active	(false);
-	if (Visual())		smart_cast<IKinematics*>(Visual())->LL_SetBoneVisible(light_bone, FALSE, TRUE);
+	if (Visual() && (light_bone != BI_NONE))		smart_cast<IKinematics*>(Visual())->LL_SetBoneVisible(light_bone, FALSE, TRUE);
 	processing_deactivate	();
 		
 }
