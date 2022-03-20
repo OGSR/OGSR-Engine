@@ -9,8 +9,12 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
+#if defined(USE_DX10) || defined(USE_DX11)
 int rsDVB_Size = 4096; //Fixed: (bytes_need<=mSize) && vl_Count
-int		rsDIB_Size			= 512;
+#else
+int rsDVB_Size = 16384; //Fixed: (bytes_need<=mSize) && vl_Count
+#endif
+int rsDIB_Size = 512;
 
 void _VertexStream::Create	()
 {
