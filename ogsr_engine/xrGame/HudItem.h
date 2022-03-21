@@ -22,6 +22,8 @@ public:
 	enum EHudStates
 	{
 		eIdle,
+		eSprintStart,
+		eSprintEnd,
 		eShowing,
 		eHiding,
 		eHidden,
@@ -89,7 +91,7 @@ protected: //чтоб нельзя было вызвать на прямую
 	u32				m_startedMotionState;
 	u8				m_started_rnd_anim_idx;
 	bool			m_bStopAtEndAnimIsRunning;
-
+	bool            SprintType{};
 	u32				m_dwStateTime;
 public:
 	virtual void	Load				(LPCSTR section);
@@ -131,7 +133,7 @@ public:
 	virtual void	OnActiveItem		() {};
 	virtual void	OnHiddenItem		() {};
 
-	virtual void	OnAnimationEnd		(u32 state) {};
+	virtual void	OnAnimationEnd(u32 state);
 	virtual void	OnMotionMark		(u32 state, const motion_marks&) {};
 	virtual void	OnMovementChanged	(ACTOR_DEFS::EMoveCommand cmd);
 
@@ -142,6 +144,8 @@ public:
 	virtual void	PlayAnimIdleMoving	();
 	virtual void	PlayAnimIdleMovingSlow();
 	virtual void	PlayAnimIdleSprint	();
+	virtual void    PlayAnimSprintStart();
+	virtual void    PlayAnimSprintEnd();
 	virtual void PlayAnimIdleMovingCrouch();
 	virtual void PlayAnimIdleMovingCrouchSlow();
 	virtual void PlayAnimDeviceSwitch() {};

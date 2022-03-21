@@ -231,8 +231,16 @@ void CHudItem::OnStateSwitch(u32 S, u32 oldState)
 	if (object().Remote())
 		SetNextState(S);
 
-	if (S == eHidden)
+	if (S == eHidden) {
 		m_nearwall_last_hud_fov = m_base_fov;
+		SprintType = false;
+	}
+	else if (S == eSprintStart)
+		PlayAnimSprintStart();
+	else if (S == eSprintEnd)
+		PlayAnimSprintEnd();
+	else if (S != eIdle)
+		SprintType = false;
 }
 
 bool CHudItem::Activate( bool now )
@@ -426,7 +434,33 @@ void CHudItem::PlayAnimIdle()
 		return;
 
 	auto wpn = smart_cast<CWeapon*>(this);
-	PlayHUDMotion({ (wpn && wpn->IsMisfire()) ? "anm_idle_jammed" : ((wpn && wpn->GetAmmoElapsed() == 0) ? "anm_idle_empty" : "nullptr"), "anim_idle", "anm_idle" }, true, GetState());
+	PlayHUDMotion({ (wpn && wpn->IsMisfire()) ? "anm_idle_jammed" : ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ? "anm_idle_empty" : "nullptr"), "anim_idle", "anm_idle" }, true, GetState());
+}
+
+void CHudItem::PlayAnimSprintStart()
+{
+	auto wpn = smart_cast<CWeapon*>(this);
+	string128 guns_sprint_start_anm;
+	xr_strconcat(guns_sprint_start_anm, "anm_idle_sprint_start", (wpn && wpn->IsMisfire()) ? "_jammed" : ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ? "_empty" : ""), (wpn && wpn->IsGrenadeLauncherAttached()) ? (wpn && wpn->IsGrenadeMode() ? "_g" : "_w_gl") : "");
+	if (AnimationExist(guns_sprint_start_anm))
+		PlayHUDMotion(guns_sprint_start_anm, true, GetState());
+	else {
+		SprintType = true;
+		SwitchState(eIdle);
+	}
+}
+
+void CHudItem::PlayAnimSprintEnd()
+{
+	auto wpn = smart_cast<CWeapon*>(this);
+	string128 guns_sprint_end_anm;
+	xr_strconcat(guns_sprint_end_anm, "anm_idle_sprint_end", (wpn && wpn->IsMisfire()) ? "_jammed" : ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ? "_empty" : ""), (wpn && wpn->IsGrenadeLauncherAttached()) ? (wpn && wpn->IsGrenadeMode() ? "_g" : "_w_gl") : "");
+	if (AnimationExist(guns_sprint_end_anm))
+		PlayHUDMotion(guns_sprint_end_anm, true, GetState());
+	else {
+		SprintType = false;
+		SwitchState(eIdle);
+	}
 }
 
 bool CHudItem::TryPlayAnimIdle()
@@ -438,11 +472,21 @@ bool CHudItem::TryPlayAnimIdle()
 			const u32 State = pActor->get_state();
 			if (State & mcSprint)
 			{
+				if (!SprintType)
+				{
+					SwitchState(eSprintStart);
+					return true;
+				}
 				PlayAnimIdleSprint();
 				return true;
 			}
 			else if (!HudBobbingAllowed())
 			{
+				if (SprintType)
+				{
+					SwitchState(eSprintEnd);
+					return true;
+				}
 				if (State & mcAnyMove)
 				{
 					if (!(State & mcCrouch))
@@ -1155,4 +1199,18 @@ void CHudItem::TimeLockAnimation()
 	const float current_time = Device.dwTimeGlobal - m_dwMotionStartTm;
 	if (time && current_time >= time)
 		DeviceUpdate();
+}
+
+void CHudItem::OnAnimationEnd(u32 state) {
+	switch (state)
+	{
+	case eSprintStart:
+		SprintType = true;
+		SwitchState(eIdle);
+		break;
+	case eSprintEnd:
+		SprintType = false;
+		SwitchState(eIdle);
+		break;
+	}
 }

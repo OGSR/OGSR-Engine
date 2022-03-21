@@ -134,6 +134,34 @@ void CWeaponBM16::PlayAnimIdleSprint()
 	}
 }
 
+void CWeaponBM16::PlayAnimSprintStart()
+{
+	const std::string size = std::to_string(m_magazine.size());
+	const char* anm_name = IsMisfire() ? "anm_idle_sprint_start_jammed_" : "anm_idle_sprint_start_";
+	const std::string result = anm_name + size;
+
+	if (AnimationExist(result.c_str()))
+		PlayHUDMotion(result.c_str(), true, GetState());
+	else {
+		SprintType = true;
+		SwitchState(eIdle);
+	}
+}
+
+void CWeaponBM16::PlayAnimSprintEnd()
+{
+	const std::string size = std::to_string(m_magazine.size());
+	const char* anm_name = IsMisfire() ? "anm_idle_sprint_end_jammed_" : "anm_idle_sprint_end_";
+	const std::string result = anm_name + size;
+
+	if (AnimationExist(result.c_str()))
+		PlayHUDMotion(result.c_str(), true, GetState());
+	else {
+		SprintType = false;
+		SwitchState(eIdle);
+	}
+}
+
 const char* CWeaponBM16::GetAnimAimName()
 {
 	if (auto pActor = smart_cast<const CActor*>(H_Parent())) {

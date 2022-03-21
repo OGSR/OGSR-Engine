@@ -717,9 +717,21 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle()
 			{
 				const u32 State = pActor->get_state();
 				if (State & mcSprint)
+				{
+					if (!SprintType)
+					{
+						SwitchState(eSprintStart);
+						return;
+					}
 					act_state = AnimStateSprint;
+				}
 				else if (!HudBobbingAllowed())
 				{
+					if (SprintType)
+					{
+						SwitchState(eSprintEnd);
+						return;
+					}
 					if (State & mcAnyMove)
 					{
 						if (!(State & mcCrouch)) {

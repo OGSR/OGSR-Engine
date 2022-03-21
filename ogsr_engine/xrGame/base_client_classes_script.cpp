@@ -159,6 +159,8 @@ void CObjectScript::script_register		(lua_State *L)
 			.enum_("weapon_states")
 			[
 				value("eIdle", int(CHudItem::EHudStates::eIdle)),
+				value("eSprintStart", int(CHudItem::EHudStates::eSprintStart)),
+				value("eSprintEnd", int(CHudItem::EHudStates::eSprintEnd)),
 				value("eShowing", int(CHudItem::EHudStates::eShowing)),
 				value("eHiding", int(CHudItem::EHudStates::eHiding)),
 				value("eHidden", int(CHudItem::EHudStates::eHidden)),

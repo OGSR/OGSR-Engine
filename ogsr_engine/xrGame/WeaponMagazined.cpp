@@ -580,6 +580,8 @@ void CWeaponMagazined::UpdateCL			()
 		case eReload:
 		case eMisfire:
 		case eDeviceSwitch:
+		case eSprintStart:
+		case eSprintEnd:
 		case eIdle:
 			fTime			-=	dt;
 			if (fTime<0)	
