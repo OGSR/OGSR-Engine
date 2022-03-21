@@ -229,6 +229,7 @@ void CWeaponKnife::OnAnimationEnd(u32 state)
 	case eIdle:	
 		SwitchState(eIdle);
 		break;	
+	default: inherited::OnAnimationEnd(state);
 	}
 }
 

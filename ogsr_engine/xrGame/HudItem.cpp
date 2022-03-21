@@ -502,31 +502,31 @@ bool CHudItem::AnimationExist(const char* anim_name) const
 void CHudItem::PlayAnimIdleMoving()
 {
 	auto wpn = smart_cast<CWeapon*>(this);
-	PlayHUDMotion({ (wpn && wpn->IsMisfire()) ? "anm_idle_moving_jammed" : ((wpn && wpn->GetAmmoElapsed() == 0) ? "anm_idle_moving_empty" : "nullptr"), "anm_idle_moving", "anm_idle", "anim_idle_moving", "anim_idle" }, true, GetState());
+	PlayHUDMotion({ (wpn && wpn->IsMisfire()) ? "anm_idle_moving_jammed" : ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ? "anm_idle_moving_empty" : "nullptr"), "anm_idle_moving", "anm_idle", "anim_idle_moving", "anim_idle" }, true, GetState());
 }
 
 void CHudItem::PlayAnimIdleMovingSlow()
 {
 	auto wpn = smart_cast<CWeapon*>(this);
-	PlayHUDMotion({ (wpn && wpn->IsMisfire()) ? "anm_idle_moving_slow_jammed" : ((wpn && wpn->GetAmmoElapsed() == 0) ? "anm_idle_moving_slow_empty" : "nullptr"), "anm_idle_moving_slow", "anm_idle_moving_slow", "anm_idle", "anim_idle_moving", "anim_idle" }, true, GetState());
+	PlayHUDMotion({ (wpn && wpn->IsMisfire()) ? "anm_idle_moving_slow_jammed" : ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ? "anm_idle_moving_slow_empty" : "nullptr"), "anm_idle_moving_slow", "anm_idle_moving_slow", "anm_idle", "anim_idle_moving", "anim_idle" }, true, GetState());
 }
 
 void CHudItem::PlayAnimIdleMovingCrouch()
 {
 	auto wpn = smart_cast<CWeapon*>(this);
-	PlayHUDMotion({ (wpn && wpn->IsMisfire()) ? "anm_idle_moving_crouch_jammed" : ((wpn && wpn->GetAmmoElapsed() == 0) ? "anm_idle_moving_crouch_empty" : "nullptr"), "anm_idle_moving_crouch", "anm_idle_moving", "anm_idle", "anim_idle_moving", "anim_idle" }, true, GetState());
+	PlayHUDMotion({ (wpn && wpn->IsMisfire()) ? "anm_idle_moving_crouch_jammed" : ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ? "anm_idle_moving_crouch_empty" : "nullptr"), "anm_idle_moving_crouch", "anm_idle_moving", "anm_idle", "anim_idle_moving", "anim_idle" }, true, GetState());
 }
 
 void CHudItem::PlayAnimIdleMovingCrouchSlow()
 {
 	auto wpn = smart_cast<CWeapon*>(this);
-	PlayHUDMotion({ (wpn && wpn->IsMisfire()) ? "anm_idle_moving_crouch_slow_jammed" : ((wpn && wpn->GetAmmoElapsed() == 0) ? "anm_idle_moving_crouch_slow_empty" : "nullptr"), "anm_idle_moving_crouch_slow", "anm_idle_moving_crouch", "anm_idle_moving", "anm_idle", "anim_idle_moving", "anim_idle" }, true, GetState());
+	PlayHUDMotion({ (wpn && wpn->IsMisfire()) ? "anm_idle_moving_crouch_slow_jammed" : ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ? "anm_idle_moving_crouch_slow_empty" : "nullptr"), "anm_idle_moving_crouch_slow", "anm_idle_moving_crouch", "anm_idle_moving", "anm_idle", "anim_idle_moving", "anim_idle" }, true, GetState());
 }
 
 void CHudItem::PlayAnimIdleSprint()
 {
 	auto wpn = smart_cast<CWeapon*>(this);
-	PlayHUDMotion({ (wpn && wpn->IsMisfire()) ? "anm_idle_sprint_jammed" : ((wpn && wpn->GetAmmoElapsed() == 0) ? "anm_idle_sprint_empty" : "nullptr"), "anm_idle_sprint", "anm_idle", "anim_idle_sprint", "anim_idle" }, true, GetState());
+	PlayHUDMotion({ (wpn && wpn->IsMisfire()) ? "anm_idle_sprint_jammed" : ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ? "anm_idle_sprint_empty" : "nullptr"), "anm_idle_sprint", "anm_idle", "anim_idle_sprint", "anim_idle" }, true, GetState());
 }
 
 void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)

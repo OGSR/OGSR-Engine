@@ -443,6 +443,7 @@ protected:
 
 public:
 	IC int					GetAmmoElapsed		()	const		{	return /*int(m_magazine.size())*/iAmmoElapsed;}
+	virtual int GetAmmoElapsed2() const { return 0; }
 	IC int					GetAmmoMagSize		()	const		{	return iMagazineSize;						}
 	int						GetAmmoCurrent		(bool use_item_to_spawn = false)  const;
 	IC void					SetAmmoMagSize		(int _size) { iMagazineSize = _size; }

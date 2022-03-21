@@ -378,7 +378,6 @@ void CPda::OnAnimationEnd(u32 state)
 	if (!this_is_3d_pda)
 		return;
 
-	inherited::OnAnimationEnd(state);
 	switch (state)
 	{
 	case eShowing:
@@ -394,6 +393,7 @@ void CPda::OnAnimationEnd(u32 state)
 		g_player_hud->detach_item(this);
 	}
 	break;
+	default: inherited::OnAnimationEnd(state);
 	}
 }
 

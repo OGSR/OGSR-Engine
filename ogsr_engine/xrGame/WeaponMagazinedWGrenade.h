@@ -91,7 +91,7 @@ public:
 	//название косточки для гранаты подствольника в HUD
 	shared_str grenade_bone_name;
 
-	IC int GetAmmoElapsed2() const { return int(m_magazine2.size()); }
+	int GetAmmoElapsed2() const override { return iAmmoElapsed2; }
 	virtual float Weight () const;
 
 	bool IsPartlyReloading() const override {

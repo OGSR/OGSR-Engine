@@ -769,6 +769,7 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		case eIdle:		switch2_Idle();			break;  // Keep showing idle
 		case eMisfire:  SwitchState(eIdle);     break;	// End of misfire animation
 		case eDeviceSwitch:SwitchState(eIdle);  break;	// End of device switch animation
+		default: inherited::OnAnimationEnd(state);
 	}
 }
 
@@ -1381,7 +1382,7 @@ void CWeaponMagazined::PlayAnimShoot()
 	string128 guns_shoot_anm;
 	xr_strconcat(guns_shoot_anm, "anm_shoot", (IsZoomed() && !IsRotatingToZoom()) ? (IsScopeAttached() ? "_aim_scope" : "_aim") : "", IsSilencerAttached() ? "_sil" : "");
 
-	PlayHUDMotion({ guns_shoot_anm, "anim_shoot", "anm_shots" }, false, GetState());
+	PlayHUDMotion({ guns_shoot_anm, "anim_shoot", "anm_shots" }, true, GetState());
 }
 
 void CWeaponMagazined::PlayAnimFakeShoot()
@@ -1390,7 +1391,7 @@ void CWeaponMagazined::PlayAnimFakeShoot()
 	string128 guns_fakeshoot_anm;
 	xr_strconcat(guns_fakeshoot_anm, "anm_fakeshoot", (IsZoomed() && !IsRotatingToZoom()) ? (IsMisfire() ? "_aim_jammed" : "_aim") : ((IsGrenadeMode() && IsMisfire()) ? "_jammed" : ""), ((iAmmoElapsed == 0 && !IsGrenadeMode()) || (pg && pg->iAmmoElapsed2 == 0 && IsGrenadeMode())) ? "_empty" : "", IsGrenadeLauncherAttached() ? (!IsGrenadeMode() ? "_w_gl" : "_g") : "");
 	if (AnimationExist(guns_fakeshoot_anm))
-		PlayHUDMotion(guns_fakeshoot_anm, false, GetState());
+		PlayHUDMotion(guns_fakeshoot_anm, true, GetState());
 }
 
 void CWeaponMagazined::PlayAnimCheckMisfire()
@@ -1398,7 +1399,7 @@ void CWeaponMagazined::PlayAnimCheckMisfire()
 	string128 guns_fakeshoot_anm;
 	xr_strconcat(guns_fakeshoot_anm, "anm_fakeshoot", IsMisfire() ? "_jammed"  : "", IsGrenadeLauncherAttached() ? (!IsGrenadeMode() ? "_w_gl" : "_g") : "");
 	if (AnimationExist(guns_fakeshoot_anm))
-		PlayHUDMotion( guns_fakeshoot_anm, false, GetState());
+		PlayHUDMotion( guns_fakeshoot_anm, true, GetState());
 	else
 		SwitchState(eIdle);
 }

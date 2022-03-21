@@ -128,9 +128,9 @@ void CWeaponBM16::PlayAnimIdleSprint()
 {
 	switch (m_magazine.size())
 	{
-	case 0: PlayHUDMotion({ IsMisfire() ? "anim_idle_sprint_jammed" : "nullptr", "anim_idle_sprint", "anim_idle", "anm_idle_sprint_0" }, true, GetState()); break;
-	case 1: PlayHUDMotion({ IsMisfire() ? "anim_idle_sprint_jammed_1" : "nullptr", "anim_idle_sprint_1", "anim_idle_sprint", "anim_idle_1", "anm_idle_sprint_1" }, true, GetState()); break;
-	case 2: PlayHUDMotion({ IsMisfire() ? "anim_idle_sprint_jammed_2" : "nullptr", "anim_idle_sprint_2", "anim_idle_sprint", "anim_idle_2", "anm_idle_sprint_2" }, true, GetState()); break;
+	case 0: PlayHUDMotion({ IsMisfire() ? "anm_idle_sprint_jammed_0" : "nullptr", "anim_idle_sprint", "anim_idle", "anm_idle_sprint_0" }, true, GetState()); break;
+	case 1: PlayHUDMotion({ IsMisfire() ? "anm_idle_sprint_jammed_1" : "nullptr", "anim_idle_sprint_1", "anim_idle_sprint", "anim_idle_1", "anm_idle_sprint_1" }, true, GetState()); break;
+	case 2: PlayHUDMotion({ IsMisfire() ? "anm_idle_sprint_jammed_2" : "nullptr", "anim_idle_sprint_2", "anim_idle_sprint", "anim_idle_2", "anm_idle_sprint_2" }, true, GetState()); break;
 	}
 }
 

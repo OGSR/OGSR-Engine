@@ -150,7 +150,6 @@ void CCustomDetector::OnStateSwitch(u32 S, u32 oldState)
 
 void CCustomDetector::OnAnimationEnd(u32 state)
 {
-    inherited::OnAnimationEnd(state);
     switch (state)
     {
     case eShowing:
@@ -170,6 +169,7 @@ void CCustomDetector::OnAnimationEnd(u32 state)
     case eIdle:
         SwitchState(eIdle);
         break;
+    default: inherited::OnAnimationEnd(state);
     }
 }
 

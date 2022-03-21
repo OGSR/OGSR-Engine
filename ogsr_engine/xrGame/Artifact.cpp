@@ -408,7 +408,8 @@ void CArtefact::OnAnimationEnd(u32 state)
 				u_EventSend		(P);	
 			}
 		}break;
-	};
+	default: inherited::OnAnimationEnd(state);
+	}
 }
 
 
