@@ -1625,7 +1625,7 @@ void CWeapon::OnZoomOut()
 	m_fZoomFactor = Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system) ? 1.f : g_fov;
 
 	if ( m_bZoomMode ) {
-
+		SprintType = false;
 		m_bZoomMode = false;
 
 		CActor* pActor = smart_cast<CActor*>(H_Parent());
