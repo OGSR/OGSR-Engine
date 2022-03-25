@@ -9,7 +9,7 @@
 
 XRCORE_API xrCore Core;
 
-XRCORE_API ThreadPool* TTAPI = new ThreadPool();
+//XRCORE_API ThreadPool* TTAPI = new ThreadPool();
 
 //indicate that we reach WinMain, and all static variables are initialized
 XRCORE_API bool gModulesLoaded = false;
