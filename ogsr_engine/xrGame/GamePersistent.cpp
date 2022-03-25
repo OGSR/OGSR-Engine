@@ -151,7 +151,7 @@ void CGamePersistent::OnAppEnd	()
 
 void CGamePersistent::PreStart(LPCSTR op)
 {
-	pApp->SetLoadingScreen(new UILoadingScreen());
+	pApp->SetLoadingScreen(xr_new<UILoadingScreen>());
 	IGame_Persistent::PreStart(op);
 }
 

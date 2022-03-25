@@ -336,7 +336,7 @@ void game_sv_Single::restart_simulator			(LPCSTR saved_game_name)
 	strcpy_s(g_pGamePersistent->m_game_params.m_game_or_spawn,saved_game_name);
 	strcpy_s(g_pGamePersistent->m_game_params.m_new_or_load,"load");
 
-	pApp->SetLoadingScreen(new UILoadingScreen());
+	pApp->SetLoadingScreen(xr_new<UILoadingScreen>());
 	pApp->LoadBegin			();
 	m_alife_simulator		= xr_new<CALifeSimulator>(&server(),&options);
 	if(!psActorFlags.test(AF_KEYPRESS_ON_START))
