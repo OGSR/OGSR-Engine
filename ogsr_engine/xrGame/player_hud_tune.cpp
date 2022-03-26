@@ -322,6 +322,9 @@ void hud_draw_adjust_mode() {
 }
 
 void hud_adjust_mode_keyb(int dik) {
+	if (!g_bHudAdjustMode) //Включать этот режим только через консоль
+		return;
+
 	if (pInput->iGetAsyncKeyState(DIK_LSHIFT)) {
 		int mode{};
 		for (const auto& [key, str] : ADJUST_MODES_DB) {
