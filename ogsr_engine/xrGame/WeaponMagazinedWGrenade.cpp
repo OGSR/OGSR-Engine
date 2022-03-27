@@ -787,7 +787,7 @@ void CWeaponMagazinedWGrenade::PlayAnimShoot()
 	}
 	else if (IsGrenadeLauncherAttached()) {
 		string128 guns_shoot_anm;
-		xr_strconcat(guns_shoot_anm, "anm_shoot", (IsZoomed() && !IsRotatingToZoom()) ? (IsScopeAttached() ? "_aim_scope" : "_aim") : "", IsMisfire() ? "_jammed" : "", IsSilencerAttached() ? "_sil" : "", "_w_gl");
+		xr_strconcat(guns_shoot_anm, "anm_shoot", (IsZoomed() && !IsRotatingToZoom()) ? (IsScopeAttached() ? "_aim_scope" : "_aim") : "", IsMisfire() ? "_jammed" : (iAmmoElapsed == 1 ? "_last" : ""), IsSilencerAttached() ? "_sil" : "", "_w_gl");
 		PlayHUDMotion({ guns_shoot_anm, "anim_shoot_gl", "anm_shots_w_gl" }, false, GetState());
 	}
 	else
