@@ -585,7 +585,11 @@ void CApplication::LoadEnd		()
 
 void CApplication::SetLoadingScreen(ILoadingScreen* newScreen)
 {
-	R_ASSERT(!loadingScreen, "! Trying to create new loading screen, but there is already one..");
+	if (loadingScreen) {
+		Log("! Trying to create new loading screen, but there is already one..");
+		xr_delete(newScreen);
+		return;
+	}
 
 	loadingScreen = newScreen;
 }
