@@ -36,7 +36,7 @@ class CPHShell: public CPhysicsShell,public CPHObject {
 #endif
 
 protected:
-	dSpaceID			    m_space;
+	dSpaceID m_space{};
 public:
 	Fmatrix					m_object_in_root;
 	CPHShell								();							

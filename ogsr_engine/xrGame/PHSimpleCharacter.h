@@ -56,7 +56,7 @@ protected:
 	dGeomID m_shell_transform;
 	dGeomID m_cap_transform;
 
-	dSpaceID m_space;
+	dSpaceID m_space{};
 	
 	dReal m_radius;
 	dReal m_cyl_hight;
