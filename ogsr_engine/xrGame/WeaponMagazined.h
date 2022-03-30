@@ -186,6 +186,8 @@ protected:
 	virtual void	PlayAnimIdle		();
 
 	bool LaserSwitch{}, TorchSwitch{}, HeadLampSwitch{}, NightVisionSwitch{};
+	bool CartridgeInTheChamberEnabled{};
+	u32 CartridgeInTheChamber{};
 private:
 	string128 guns_aim_anm;
 protected:

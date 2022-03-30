@@ -199,6 +199,8 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	m_fire_zoomout_time = READ_IF_EXISTS( pSettings, r_u32, section, "fire_zoomout_time", u32(-1) );
 
 	m_str_count_tmpl = READ_IF_EXISTS( pSettings, r_string, "features", "wpn_magazined_str_count_tmpl", "{AE}/{AC}" );
+
+	CartridgeInTheChamberEnabled = READ_IF_EXISTS(pSettings, r_bool, section, "CartridgeInTheChamberEnabled", false);
 }
 
 void CWeaponMagazined::FireStart		()
@@ -422,7 +424,7 @@ void CWeaponMagazined::ReloadMagazine()
 	if (m_DefaultCartridge.m_LocalAmmoType != m_ammoType)
 		m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));
 	CCartridge l_cartridge = m_DefaultCartridge;
-	while(iAmmoElapsed < iMagazineSize)
+	while(iAmmoElapsed < (iMagazineSize + CartridgeInTheChamber))
 	{
 		if (!unlimited_ammo())
 		{
@@ -865,6 +867,11 @@ void CWeaponMagazined::PlayReloadSound()
 void CWeaponMagazined::switch2_Reload()
 {
 	CWeapon::FireEnd();
+
+	if (iAmmoElapsed > 0 && CartridgeInTheChamberEnabled)
+		CartridgeInTheChamber = 1;
+	else
+		CartridgeInTheChamber = 0;
 
 	PlayReloadSound	();
 	PlayAnimReload	();
