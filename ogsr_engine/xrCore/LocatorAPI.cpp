@@ -270,7 +270,7 @@ static IReader* open_chunk(void* ptr, const u32 ID, const char* archiveName, con
 					result = _decompressLZ(&dest, &dest_sz, src_data, dwSize, archiveSize);
 				}
 
-				ASSERT_FMT(result, "[%s] Can't decompress archive [%s]", __FUNCTION__, archiveName);
+				CHECK_OR_EXIT(result, make_string("[%s] Can't decompress archive [%s]", __FUNCTION__, archiveName));
 
 				xr_free			(src_data);
 				return xr_new<CTempReader>(dest,dest_sz,0);
