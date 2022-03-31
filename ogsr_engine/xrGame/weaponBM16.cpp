@@ -53,7 +53,7 @@ void CWeaponBM16::PlayAnimFakeShoot()
 	string128 guns_fakeshoot_anm;
 	xr_strconcat(guns_fakeshoot_anm, "anm_fakeshoot", (IsZoomed() && !IsRotatingToZoom()) ? (IsMisfire() ? "_aim_jammed_" : "_aim_") : "_", std::to_string(m_magazine.size()).c_str());
 	if (AnimationExist(guns_fakeshoot_anm))
-		PlayHUDMotion(guns_fakeshoot_anm, false, GetState());
+		PlayHUDMotion(guns_fakeshoot_anm, true, GetState());
 }
 
 void CWeaponBM16::PlayAnimShow()
@@ -236,7 +236,7 @@ void CWeaponBM16::PlayAnimCheckMisfire()
 	string128 guns_fakeshoot_anm;
 	xr_strconcat(guns_fakeshoot_anm, "anm_fakeshoot", IsMisfire() ? "_jammed_" : "_", std::to_string(m_magazine.size()).c_str());
 	if (AnimationExist(guns_fakeshoot_anm))
-		PlayHUDMotion(guns_fakeshoot_anm, false, GetState());
+		PlayHUDMotion(guns_fakeshoot_anm, true, GetState());
 	else
 		SwitchState(eIdle);
 }

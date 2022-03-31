@@ -134,7 +134,7 @@ void CCustomDetector::OnStateSwitch(u32 S, u32 oldState)
         if (oldState != eHiding)
         {
             HUD_SOUND::PlaySound(sndHide, Fvector{}, this, !!GetHUDmode(), false, false);
-            PlayHUDMotion({ m_bFastAnimMode ? "anm_hide_fast" : "anm_hide" }, false, GetState());
+            PlayHUDMotion({ m_bFastAnimMode ? "anm_hide_fast" : "anm_hide" }, true, GetState());
             SetPending(TRUE);
         }
     }
