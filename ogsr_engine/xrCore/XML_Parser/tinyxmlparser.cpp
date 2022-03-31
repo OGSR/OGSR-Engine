@@ -1082,6 +1082,8 @@ const char* TiXmlElement::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
     TIXML_STRING endTag ("</");
 	endTag += value;
 
+	static const bool skip_errors = pSettings->line_exist("features", "skip_shoc_xml_errors") && pSettings->r_bool("features", "skip_shoc_xml_errors");
+
 	// Check for and read attributes. Also look for an empty
 	// tag or an end tag.
 	while ( p && *p )
@@ -1112,7 +1114,8 @@ const char* TiXmlElement::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 			++p;
 			p = ReadValue( p, data, encoding );		// Note this is an Element method, and will set the error if one happens.
             if (!p || !*p) {
-                if (document) document->SetError(TIXML_ERROR_READING_END_TAG, p, data, encoding);
+				if (!skip_errors && document)
+					document->SetError(TIXML_ERROR_READING_END_TAG, p, data, encoding);
                 return 0;
             }
 
@@ -1120,13 +1123,19 @@ const char* TiXmlElement::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 			if ( StringEqual( p, endTag.c_str(), false, encoding ) )
 			{
 				p += endTag.length();
+				const char* old_p = p;
 				p = SkipWhiteSpace( p, encoding );
 				if ( p && *p && *p == '>' ) {
 					++p;
 					return p;
 				}
-				if ( document ) document->SetError( TIXML_ERROR_READING_END_TAG, p, data, encoding );
-				return 0;
+
+				if (!skip_errors && document) {
+					document->SetError(TIXML_ERROR_READING_END_TAG, p, data, encoding);
+					return 0;
+				}
+				else
+					return old_p;
 			}
 			else
 			{
@@ -1163,7 +1172,10 @@ const char* TiXmlElement::Parse( const char* p, TiXmlParsingData* data, TiXmlEnc
 			#endif
 			if ( node )
 			{
-				if ( document ) document->SetError( TIXML_ERROR_PARSING_ELEMENT, pErr, data, encoding );
+				if (!skip_errors && document)
+					document->SetError( TIXML_ERROR_PARSING_ELEMENT, pErr, data, encoding );
+				else
+					node->SetValue(attrib->Value());
 				xr_delete(attrib);
 				return 0;
 			}
