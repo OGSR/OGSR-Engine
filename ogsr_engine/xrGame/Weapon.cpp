@@ -717,13 +717,6 @@ void CWeapon::OnEvent(NET_Packet& P, u16 type)
 {
 	switch (type)
 	{
-	case GE_ADDON_CHANGE:
-		{
-			P.r_u8					(m_flagsAddOnState);
-			InitAddons();
-			UpdateAddonsVisibility();
-		}break;
-
 	case GE_WPN_STATE_CHANGE:
 		{
 			u8				state;
