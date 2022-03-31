@@ -252,7 +252,7 @@ bool CWeaponShotgun::Action			(s32 cmd, u32 flags)
 
 	if(inherited::Action(cmd, flags)) return true;
 
-	if(	m_bTriStateReload && GetState()==eReload &&
+	if(	m_bTriStateReload && GetState()==eReload && !IsMisfire() &&
 		( cmd == kWPN_FIRE || cmd == kWPN_NEXT ) && flags&CMD_START &&
 		(m_sub_state==eSubstateReloadInProcess	|| m_sub_state == eSubstateReloadBegin) )//остановить перезагрузку
 	{
@@ -287,7 +287,7 @@ void CWeaponShotgun::OnAnimationEnd(u32 state)
 
 	switch(m_sub_state){
 		case eSubstateReloadBegin:{
-			m_sub_state = eSubstateReloadInProcess;
+			m_sub_state = IsMisfire() ? eSubstateReloadEnd : eSubstateReloadInProcess;
 			SwitchState(eReload);
 		}break;
 
@@ -299,6 +299,11 @@ void CWeaponShotgun::OnAnimationEnd(u32 state)
 		}break;
 
 		case eSubstateReloadEnd:{
+			if (IsMisfire()) {
+				SwitchMisfire(false);
+				if (GetAmmoElapsed() > 0) //xrKrodin: хз, надо ли удалять заклинивший патрон в данном случае. Надо подумать над этим.
+					SetAmmoElapsed(GetAmmoElapsed() - 1);
+			}
 			m_sub_state = eSubstateReloadBegin;
 			SwitchState(eIdle);
 		}break;
@@ -318,9 +323,10 @@ void CWeaponShotgun::Reload()
 
 void CWeaponShotgun::TriStateReload()
 {
-	if( !HaveCartridgeInInventory(1) )return;
-	m_sub_state			= eSubstateReloadBegin;
-	SwitchState			(eReload);
+	if (HaveCartridgeInInventory(1) || IsMisfire()) {
+		m_sub_state = eSubstateReloadBegin;
+		SwitchState(eReload);
+	}
 }
 
 void CWeaponShotgun::OnStateSwitch	(u32 S, u32 oldState)
@@ -339,8 +345,8 @@ void CWeaponShotgun::OnStateSwitch	(u32 S, u32 oldState)
 	switch (m_sub_state)
 	{
 	case eSubstateReloadBegin:
-		if( HaveCartridgeInInventory(1) )
-			switch2_StartReload	();
+		if (HaveCartridgeInInventory(1) || IsMisfire())
+			switch2_StartReload();
 		break;
 	case eSubstateReloadInProcess:
 		if( HaveCartridgeInInventory(1) )
@@ -427,9 +433,6 @@ bool CWeaponShotgun::HaveCartridgeInInventory( u8 cnt ) {
 
 u8 CWeaponShotgun::AddCartridge		(u8 cnt)
 {
-	if(IsMisfire())
-		SwitchMisfire(false);
-
 	if(m_set_next_ammoType_on_reload != u32(-1)){
 		m_ammoType						= m_set_next_ammoType_on_reload;
 		m_set_next_ammoType_on_reload	= u32(-1);
@@ -489,7 +492,7 @@ void CWeaponShotgun::TryReload() {
 }
 
 
-void CWeaponShotgun::ReloadMagazine() {
+void CWeaponShotgun::ReloadMagazine() { //Используется только при отключенном tri_state_reload
 	m_dwAmmoCurrentCalcFrame = 0;
 
 	if (IsMisfire())
