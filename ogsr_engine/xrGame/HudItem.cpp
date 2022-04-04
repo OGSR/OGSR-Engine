@@ -466,7 +466,7 @@ void CHudItem::PlayAnimSprintEnd()
 
 bool CHudItem::TryPlayAnimIdle()
 {
-	if (!IsZoomed())
+	if (!IsZoomed() || !smart_cast<CWeapon*>(this))
 	{
 		if (auto pActor = smart_cast<CActor*>(object().H_Parent()))
 		{
