@@ -1245,6 +1245,14 @@ HRESULT	CRender::shader_compile			(
 	sh_name[len] = '0'; ++len;
 #endif
 
+	if (ps_r2_ls_flags_ext.test(R2FLAGEXT_TERRAIN_PARALLAX))
+	{
+		defines[def_it].Name = "TERRAIN_PARALLAX_ENABNLED";
+		defines[def_it].Definition = "1";
+		def_it++;
+	}
+	sh_name[len] = '0' + char(ps_r2_ls_flags_ext.test(R2FLAGEXT_TERRAIN_PARALLAX)); ++len;
+
 	// add a #define for DX10_1 MSAA support
    if( o.dx10_msaa )
    {

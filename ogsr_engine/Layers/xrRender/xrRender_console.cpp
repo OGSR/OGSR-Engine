@@ -890,6 +890,8 @@ void		xrRender_initconsole	()
 	CMD4(CCC_Float, "r_sslr_blur", &ps_ext_SSLR_blur, 0.0f, 5.f);
 #endif
 
+	CMD3(CCC_Mask, "r_terrain_parallax_enable", &ps_r2_ls_flags_ext, R2FLAGEXT_TERRAIN_PARALLAX);
+
 	CMD3(CCC_Mask,		"r2_sun",				&ps_r2_ls_flags,			R2FLAG_SUN		);
 	CMD3(CCC_Mask,		"r2_sun_details",		&ps_r2_ls_flags,			R2FLAG_SUN_DETAILS);
 	CMD3(CCC_Mask,		"r2_sun_focus",			&ps_r2_ls_flags,			R2FLAG_SUN_FOCUS);

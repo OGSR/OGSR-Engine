@@ -1364,6 +1364,13 @@ HRESULT	CRender::shader_compile			(
 	}
 	sh_name[len] = '0' + char(ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR)); ++len;
 
+	if (ps_r2_ls_flags_ext.test(R2FLAGEXT_TERRAIN_PARALLAX))
+	{
+		defines[def_it].Name = "TERRAIN_PARALLAX_ENABNLED";
+		defines[def_it].Definition = "1";
+		def_it++;
+	}
+	sh_name[len] = '0' + char(ps_r2_ls_flags_ext.test(R2FLAGEXT_TERRAIN_PARALLAX)); ++len;
 
 	//Be carefull!!!!! this should be at the end to correctly generate
 	//compiled shader name;

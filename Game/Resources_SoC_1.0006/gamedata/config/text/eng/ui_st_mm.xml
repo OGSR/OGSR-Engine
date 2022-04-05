@@ -239,6 +239,9 @@
 	<string id="ui_mm_r2_steep_parallax">
 		<text>Steep parallax</text>
 	</string>	
+	<string id="ui_mm_terrain_parallax">
+		<text>Parallax on terrain</text>
+	</string>	
 	<string id="ui_mm_dof">
 		<text>Depth of field</text>
 	</string>
