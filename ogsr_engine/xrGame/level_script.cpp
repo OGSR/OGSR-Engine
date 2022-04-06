@@ -928,6 +928,16 @@ void iterate_nearest(const Fvector& pos, float radius, luabind::functor<bool> fu
     }
 }
 
+float is_ray_intersect_sphere(Fvector pos, Fvector dir, Fvector C, float R)
+{
+    Fsphere sphere;
+    sphere.P = C;
+    sphere.R = R;
+    dir.normalize_safe();
+    float dist;
+    return sphere.intersect_ray(pos, dir, dist) == Fsphere::rpNone ? -1.0f : dist;
+}
+
 
 #pragma optimize("s", on)
 void CLevel::script_register(lua_State* L)
@@ -1046,7 +1056,7 @@ void CLevel::script_register(lua_State* L)
             def("enable_vertex", &enable_vertex), def("is_accessible_vertex_id", &is_accessible_vertex_id), def("iterate_vertices_inside", &iterate_vertices_inside),
             def("iterate_vertices_border", &iterate_vertices_border), def("get_character_community_team", &get_character_community_team),
 
-            def("get_effector_bobbing", &get_effector_bobbing),
+            def("get_effector_bobbing", &get_effector_bobbing), def("is_ray_intersect_sphere", &is_ray_intersect_sphere),
 
             //--#SM+# Begin --
             def("set_blender_mode_main", &set_blender_mode_main), def("get_blender_mode_main", &get_blender_mode_main), def("set_shader_params", &set_shader_params),
