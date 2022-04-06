@@ -46,20 +46,16 @@ public:
 			void				enable					(bool value);
 
 public:
-#ifdef DEBUG
-	static CAttachableItem		*m_dbgItem;
-	static Fvector				get_angle_offset		()	{VERIFY(m_dbgItem);Fvector v; m_dbgItem->m_offset.getHPB(v); return v;};
-	static Fvector				get_pos_offset			()	{VERIFY(m_dbgItem);return m_dbgItem->m_offset.c;};
-	static	void				set_angle_offset		(Fvector val){Fvector c = get_pos_offset(); m_dbgItem->m_offset.setHPB(VPUSH(val));m_dbgItem->m_offset.c=c; }
+	static CAttachableItem* m_dbgItem;
+	virtual Fvector get_angle_offset() const { Fvector v; m_dbgItem->m_offset.getHPB(v); return v; }
+	virtual Fvector get_pos_offset() const { return m_dbgItem->m_offset.c; }
+	virtual	void set_angle_offset(Fvector val) { Fvector c = get_pos_offset(); m_dbgItem->m_offset.setHPB(VPUSH(val)); m_dbgItem->m_offset.c = c; }
 
-	static	void				rot_dx					(float val){Fvector v = get_angle_offset(); v.x +=val;set_angle_offset(v);}	
-	static	void				rot_dy					(float val){Fvector v = get_angle_offset(); v.y +=val;set_angle_offset(v);}	
-	static	void				rot_dz					(float val){Fvector v = get_angle_offset(); v.z +=val;set_angle_offset(v);}	
+	virtual	void rot(int axis, float val) { Fvector v = get_angle_offset(); v[axis] += val; set_angle_offset(v); }
+	virtual void mov(int axis, float val) { Fvector c = get_pos_offset(); c[axis] += val; m_dbgItem->m_offset.c = c; }
 
-	static	void				mov_dx					(float val){Fvector c = get_pos_offset(); c.x +=val; m_dbgItem->m_offset.c=c;}	
-	static	void				mov_dy					(float val){Fvector c = get_pos_offset(); c.y +=val; m_dbgItem->m_offset.c=c;}	
-	static	void				mov_dz					(float val){Fvector c = get_pos_offset(); c.z +=val; m_dbgItem->m_offset.c=c;}	
-#endif
+	virtual void SaveAttachableParams();
+	virtual void ParseCurrentItem(CGameFont* F);
 };
 
 #include "attachable_item_inline.h"

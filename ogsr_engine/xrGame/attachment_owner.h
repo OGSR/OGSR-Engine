@@ -37,7 +37,7 @@ public:
 
 	CAttachableItem*		attachedItem		(CLASS_ID clsid)		const;
 	CAttachableItem*		attachedItem		(u16 id)				const;
-	CAttachableItem*		attachedItem		(shared_str& section)	const;
+	CAttachableItem*		attachedItem		(const shared_str& section)	const;
 };
 
 #include "attachment_owner_inline.h"

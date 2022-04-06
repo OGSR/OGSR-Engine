@@ -11,10 +11,10 @@
 #include "attachable_item.h"
 #include "inventoryowner.h"
 #include "inventory.h"
+#include "../xr_3da/xr_input.h"
+#include "HUDManager.h"
 
-#ifdef DEBUG
-	CAttachableItem*	CAttachableItem::m_dbgItem = NULL;
-#endif
+CAttachableItem* CAttachableItem::m_dbgItem{};
 
 IC	CPhysicsShellHolder &CAttachableItem::object	() const
 {
@@ -29,8 +29,10 @@ DLL_Pure *CAttachableItem::_construct	()
 	return				(&item().object());
 }
 
-CAttachableItem::~CAttachableItem		()
+CAttachableItem::~CAttachableItem()
 {
+	if (CAttachableItem::m_dbgItem == this)
+		CAttachableItem::m_dbgItem = nullptr;
 }
 
 void CAttachableItem::reload			(LPCSTR section)
@@ -127,4 +129,89 @@ void CAttachableItem::afterDetach		()
 {
 	VERIFY							(m_valid);
 	object().processing_deactivate	();
+}
+
+
+extern float adj_delta_pos, adj_delta_rot;
+
+void CAttachableItem::ParseCurrentItem(CGameFont* F)
+{
+}
+
+void CAttachableItem::SaveAttachableParams()
+{
+	Msg("!![%s] It's not implemented now", __FUNCTION__);
+}
+
+bool attach_adjust_mode_keyb(int dik)
+{
+	if (!CAttachableItem::m_dbgItem) return false;
+
+	if (pInput->iGetAsyncKeyState(DIK_LSHIFT) && pInput->iGetAsyncKeyState(DIK_RETURN)) {
+		CAttachableItem::m_dbgItem->SaveAttachableParams();
+		return true;
+	}
+
+	const bool b_move = pInput->iGetAsyncKeyState(DIK_LSHIFT);
+	const bool b_rot = pInput->iGetAsyncKeyState(DIK_LMENU);
+
+	if (!b_move && !b_rot) return false;
+
+	const int axis = pInput->iGetAsyncKeyState(DIK_Z) ? 0 : (pInput->iGetAsyncKeyState(DIK_X) ? 1 : (pInput->iGetAsyncKeyState(DIK_C) ? 2 : -1));
+
+	if (axis == -1)
+		return false;
+
+	if (dik == DIK_PGUP) {
+		if (b_move)
+			CAttachableItem::m_dbgItem->mov(axis, adj_delta_pos);
+		else
+			CAttachableItem::m_dbgItem->rot(axis, adj_delta_rot);
+		return true;
+	}
+	else if (dik == DIK_PGDN) {
+		if (b_move)
+			CAttachableItem::m_dbgItem->mov(axis, -adj_delta_pos);
+		else
+			CAttachableItem::m_dbgItem->rot(axis, -adj_delta_rot);
+		return true;
+	}
+
+	return false;
+}
+
+void attach_draw_adjust_mode()
+{
+	if (!CAttachableItem::m_dbgItem) return;
+
+	string1024 _text;
+
+	CGameFont* F = UI()->Font()->pFontDI;
+	F->SetAligment(CGameFont::alCenter);
+	F->OutSetI(0.f, -0.8f);
+	F->SetColor(D3DCOLOR_XRGB(125, 0, 0));
+	sprintf_s(_text, "Adjusting attachable item [%s]", CAttachableItem::m_dbgItem->object().cNameSect().c_str());
+	F->OutNext(_text);
+
+	CAttachableItem::m_dbgItem->ParseCurrentItem(F);
+
+	sprintf_s(_text, "move step  [%3.3f] rotate step  [%3.3f]", adj_delta_pos, adj_delta_rot);
+	F->OutNext(_text);
+
+	F->OutNext("HOLD LShift to move. ALT to rotate");
+	F->OutNext("HOLD [Z]-x axis [X]-y axis [C]-z axis");
+
+	F->OutNext("PageUP/PageDown - move.");
+	F->OutSkip();
+
+	F->OutNext("Console commands: adjust_delta_pos, adjust_delta_rot");
+	F->OutSkip();
+
+	const Fvector _pos = CAttachableItem::m_dbgItem->get_pos_offset();
+	sprintf_s(_text, "attach_position_offset IS [%3.3f][%3.3f][%3.3f]", _pos.x, _pos.y, _pos.z);
+	F->OutNext(_text);
+
+	const Fvector _ang = CAttachableItem::m_dbgItem->get_angle_offset();
+	sprintf_s(_text, "attach_angle_offset IS [%3.3f][%3.3f][%3.3f]", _ang.x, _ang.y, _ang.z);
+	F->OutNext(_text);
 }

@@ -609,4 +609,39 @@ public:
 		return m_flagsAddOnState & CSE_ALifeItemWeapon::eWeaponMisfire;
 	}
 
+
+	Fvector get_angle_offset() const override
+	{
+		Fvector v;
+		m_strapped_mode ? m_StrapOffset.getHPB(v) : m_Offset.getHPB(v);
+		return v;
+	}
+	Fvector get_pos_offset() const override
+	{
+		return m_strapped_mode ? m_StrapOffset.c : m_Offset.c;
+	}
+	void set_angle_offset(Fvector val) override
+	{
+		Fvector c = get_pos_offset();
+		Fmatrix& mat = m_strapped_mode ? m_StrapOffset : m_Offset;
+		mat.setHPB(VPUSH(val));
+		mat.c = c;
+	}
+	void rot(int axis, float val) override
+	{
+		Fvector v = get_angle_offset();
+		v[axis] += val;
+		set_angle_offset(v);
+	}
+	void mov(int axis, float val) override
+	{
+		Fvector c = get_pos_offset();
+		c[axis] += val;
+		if (m_strapped_mode)
+			m_StrapOffset.c = c;
+		else
+			m_Offset.c = c;
+	}
+	void SaveAttachableParams() override;
+	void ParseCurrentItem(CGameFont* F) override;
 };

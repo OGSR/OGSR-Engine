@@ -188,7 +188,7 @@ CAttachableItem* CAttachmentOwner::attachedItem			(u16 id) const
 	return NULL;
 }
 
-CAttachableItem* CAttachmentOwner::attachedItem			(shared_str& section) const
+CAttachableItem* CAttachmentOwner::attachedItem(const shared_str& section) const
 {
 	xr_vector<CAttachableItem*>::const_iterator	I = m_attached_objects.begin();
 	xr_vector<CAttachableItem*>::const_iterator	E = m_attached_objects.end();
