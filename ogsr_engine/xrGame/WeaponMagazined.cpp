@@ -1499,21 +1499,23 @@ bool CWeaponMagazined::SwitchMode()
 	return true;
 }
 
-void	CWeaponMagazined::OnNextFireMode		()
+void	CWeaponMagazined::OnNextFireMode()
 {
-	if (!m_bHasDifferentFireModes) return;
+	if (m_aFireModes.size() < 2)
+		return;
 	m_iCurFireMode = (m_iCurFireMode+1+m_aFireModes.size()) % m_aFireModes.size();
 	SetQueueSize(GetCurrentFireMode());
 	PlaySound( sndFireModes, get_LastFP() );
-};
+}
 
-void	CWeaponMagazined::OnPrevFireMode		()
+void	CWeaponMagazined::OnPrevFireMode()
 {
-	if (!m_bHasDifferentFireModes) return;
+	if (m_aFireModes.size() < 2)
+		return;
 	m_iCurFireMode = (m_iCurFireMode-1+m_aFireModes.size()) % m_aFireModes.size();
 	SetQueueSize(GetCurrentFireMode());	
 	PlaySound( sndFireModes, get_LastFP() );
-};
+}
 
 void	CWeaponMagazined::OnH_A_Chield		()
 {
