@@ -87,8 +87,8 @@ public:
 	void			open_chunk	(u32 type);
 	void			close_chunk	();
 	u32				chunk_size	();					// returns size of currently opened chunk, 0 otherwise
-	void			w_compressed(void* ptr, u32 count, const bool encrypt = false);
-	void			w_chunk(u32 type, void* data, u32 size, const bool encrypt = false);
+	void			w_compressed(void* ptr, u32 count, const bool encrypt = false, const bool is_ww = false);
+	void			w_chunk(u32 type, void* data, u32 size, const bool encrypt = false, const bool is_ww = false);
 	virtual bool	valid		()									{return true;}
 	virtual int		flush		()	{return 0;}	//RvP
 };

@@ -148,26 +148,26 @@ u32	IWriter::chunk_size	()					// returns size of currently opened chunk, 0 othe
 	return tell() - chunk_pos.top()-4;
 }
 
-void IWriter::w_compressed(void* ptr, u32 count, const bool encrypt)
+void IWriter::w_compressed(void* ptr, u32 count, const bool encrypt, const bool is_ww)
 {
 	BYTE*		dest	= 0;
 	unsigned	dest_sz	= 0;
 	_compressLZ	(&dest,&dest_sz,ptr,count);
 
 	if (encrypt)
-		g_trivial_encryptor.encode(dest, dest_sz, dest);
+		g_trivial_encryptor.encode(dest, dest_sz, dest, is_ww ? trivial_encryptor::key_flag::worldwide : trivial_encryptor::key_flag::russian);
 
 	if (dest && dest_sz)
 		w(dest,dest_sz);
 	xr_free		(dest);
 }
 
-void IWriter::w_chunk(u32 type, void* data, u32 size, const bool encrypt)
+void IWriter::w_chunk(u32 type, void* data, u32 size, const bool encrypt, const bool is_ww)
 {
 	open_chunk(type);
 
 	if (type & CFS_CompressMark)
-		w_compressed(data, size, encrypt);
+		w_compressed(data, size, encrypt, is_ww);
 	else
 		w(data, size);
 

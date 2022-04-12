@@ -21,7 +21,7 @@ constexpr std::array<const char*, 3> NoCompress{ //Расширения файл
 };
 
 
-static bool bStoreFiles{}, MOD_COMPRESS{};
+static bool bStoreFiles{}, MOD_COMPRESS{}, IS_WW{};
 
 static IWriter* fs{};
 static CMemoryWriter fs_desc{};
@@ -303,7 +303,7 @@ static void ClosePack()
 	// save list
 	bytesDST = fs->tell();
 
-	fs->w_chunk(1 | CFS_CompressMark, fs_desc.pointer(), fs_desc.size(), !MOD_COMPRESS);
+	fs->w_chunk(1 | CFS_CompressMark, fs_desc.pointer(), fs_desc.size(), !MOD_COMPRESS, IS_WW);
 
 	FS.w_close(fs);
 
@@ -586,7 +586,8 @@ int __cdecl main(int argc, char* argv[])
 	Log("\n");
 
 	{
-		BOOL bFast = 0 != strstr(params, "-fast");
+		BOOL bFast = !!strstr(params, "-fast");
+		IS_WW = !!strstr(params, "-WW");
 		LPCSTR p = strstr(params, "-ltx");
 		R_ASSERT2(p, "wrong params passed. -ltx option needed");
 
