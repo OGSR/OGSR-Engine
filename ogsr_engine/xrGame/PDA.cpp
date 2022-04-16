@@ -509,6 +509,8 @@ void CPda::OnActiveItem()
 
 	auto pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
 	pGameSP->ShowHidePda(true);
+
+	m_fZoomRotationFactor = 0.f;
 }
 
 void CPda::OnHiddenItem()
@@ -517,8 +519,6 @@ void CPda::OnHiddenItem()
 		return;
 
 	SwitchState(eHiding);
-
-	m_fZoomRotationFactor = 0.f;
 
 	if (!psActorFlags.test(AF_3D_PDA))
 		return;
