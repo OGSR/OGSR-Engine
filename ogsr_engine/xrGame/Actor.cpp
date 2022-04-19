@@ -918,6 +918,15 @@ void CActor::UpdateCL	()
 		trans.c.sub(Device.vCameraPosition);
 		g_player_hud->update(trans);
 	}
+
+	{
+		float outfit_cond{ -1.f }, wpn_cond{ -1.f };
+		if (auto outfit = inventory().ItemFromSlot(OUTFIT_SLOT))
+			outfit_cond = outfit->GetCondition();
+		if (auto wpn = inventory().ActiveItem())
+			wpn_cond = wpn->GetCondition();
+		shader_exports.set_actor_params(Fvector{ this->GetHealth(), outfit_cond, wpn_cond });
+	}
 }
 
 #if defined(OGSR_MOD) || defined(DSH_MOD)
