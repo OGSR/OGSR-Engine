@@ -27,11 +27,7 @@ bool CScriptPropertyEvaluatorWrapper::evaluate		()
 	__try {
 		return luabind::call_member<bool>(this,"evaluate");
 	}
-#ifdef OGSR_MOD
-	__except ( EXCEPTION_EXECUTE_HANDLER ) {
-#else
 	__except ( ExceptStackTrace( "[CScriptPropertyEvaluatorWrapper::evaluate] stack_trace:\n" ) ) {
-#endif
 		Msg( "!![CScriptPropertyEvaluatorWrapper::evaluate] Fatal Error in object [%s], evaluator: [%s]", m_object->cName().c_str(), m_evaluator_name );
 	}
 	return false;
