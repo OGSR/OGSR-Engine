@@ -606,8 +606,8 @@ void CWeapon::LoadFireParams		(LPCSTR section, LPCSTR prefix)
 BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 {
 	BOOL bResult					= inherited::net_Spawn(DC);
-	CSE_Abstract					*e	= (CSE_Abstract*)(DC);
-	CSE_ALifeItemWeapon			    *E	= smart_cast<CSE_ALifeItemWeapon*>(e);
+
+	auto E = smart_cast<CSE_ALifeItemWeapon*>(DC);
 
 	//iAmmoCurrent					= E->a_current;
 	iAmmoElapsed					= E->a_elapsed;
@@ -632,7 +632,7 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 		// нож автоматически заряжается двумя патронами, хотя
 		// размер магазина у него 0. Что бы зря не ругаться, проверим
 		// что в конфиге размер магазина не нулевой.
-		if ( iMagazineSize && iAmmoElapsed > iMagazineSize ) {
+		if ( iMagazineSize && iAmmoElapsed > (iMagazineSize + 1) ) {
 		  Msg( "! [%s]: %s: wrong iAmmoElapsed[%u/%u]", __FUNCTION__, cName().c_str(), iAmmoElapsed, iMagazineSize );
 		  iAmmoElapsed = iMagazineSize;
 		  auto se_obj = alife_object();
