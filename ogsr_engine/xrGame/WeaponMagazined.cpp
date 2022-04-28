@@ -356,8 +356,8 @@ void CWeaponMagazined::ReloadMagazine()
 	if (IsMisfire() && !IsGrenadeMode())
 	{
 		SwitchMisfire(false);
-		int ammo_count = GetAmmoElapsed() - 1;
-		SetAmmoElapsed(ammo_count);
+		if (GetAmmoElapsed() > 0)
+			SetAmmoElapsed(GetAmmoElapsed() - 1);
 		return;
 	}
 
