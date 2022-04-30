@@ -1015,3 +1015,10 @@ CAgentManager& CAI_Stalker::agent_manager() const
 {
 	return Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).agent_manager();
 }
+
+bool CAI_Stalker::CanPutInSlot(PIItem item, u32 slot) {
+	if (smart_cast<CArtefact*>(item))
+		return false;
+
+	return slot != OUTFIT_SLOT;
+}
