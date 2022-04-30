@@ -31,12 +31,15 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 	P.r_u16		(destination);
 
 	CSE_Abstract*	receiver	= game->get_entity_from_eid	(destination);
-	if (receiver)	
+	if (receiver)
 	{
-		R_ASSERT(receiver->owner);
-		receiver->OnEvent						(P,type,timestamp,sender);
+		if (!receiver->owner) {
+			Msg("!![%s] Cnt't find owner for receiver with id [%u]. May be it already destroyed.", __FUNCTION__, destination);
+			return;
+		}
 
-	};
+		receiver->OnEvent(P, type, timestamp, sender);
+	}
 
 	switch		(type)
 	{
