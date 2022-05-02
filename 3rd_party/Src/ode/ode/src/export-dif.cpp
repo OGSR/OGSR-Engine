@@ -38,7 +38,7 @@
 #include "joint.h"
 #include "collision_kernel.h"
 
-#ifdef _DEBUG
+#if 0//def _DEBUG
 
 //***************************************************************************
 // utility

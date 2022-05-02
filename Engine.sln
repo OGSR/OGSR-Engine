@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30128.74
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32414.318
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libvorbis_static", "3rd_party\Src\Xiph\libvorbis\win32\VS2010\libvorbis\libvorbis_static.vcxproj", "{0F3163C6-FAE6-4FBD-BF88-037EB0420DAF}"
 EndProject
@@ -124,8 +124,8 @@ Global
 		{1B71D5DF-C005-4B3F-822A-345255173F0B}.Release|x64.Build.0 = Release|x64
 		{1B71D5DF-C005-4B3F-822A-345255173F0B}.Release|x86.ActiveCfg = Release|Win32
 		{1B71D5DF-C005-4B3F-822A-345255173F0B}.Release|x86.Build.0 = Release|Win32
-		{1BF75FEB-87DD-486C-880B-227987D191C2}.Debug|x64.ActiveCfg = Release|x64
-		{1BF75FEB-87DD-486C-880B-227987D191C2}.Debug|x64.Build.0 = Release|x64
+		{1BF75FEB-87DD-486C-880B-227987D191C2}.Debug|x64.ActiveCfg = DEBUG|x64
+		{1BF75FEB-87DD-486C-880B-227987D191C2}.Debug|x64.Build.0 = DEBUG|x64
 		{1BF75FEB-87DD-486C-880B-227987D191C2}.Debug|x86.ActiveCfg = Release|Win32
 		{1BF75FEB-87DD-486C-880B-227987D191C2}.Debug|x86.Build.0 = Release|Win32
 		{1BF75FEB-87DD-486C-880B-227987D191C2}.Release|x64.ActiveCfg = Release|x64

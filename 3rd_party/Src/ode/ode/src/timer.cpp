@@ -316,7 +316,7 @@ void dTimerEnd()
 //****************************************************************************
 // print report
 
-static void fprintDoubleWithPrefix (FILE *f, double a, char *fmt)
+static void fprintDoubleWithPrefix (FILE *f, double a, const char *fmt)
 {
   if (a >= 0.999999) {
     fprintf (f,fmt,a);
@@ -339,7 +339,7 @@ static void fprintDoubleWithPrefix (FILE *f, double a, char *fmt)
   fprintf (f,"n");
 }
 
-#ifdef _DEBUG
+#if 0//def _DEBUG
 void dTimerReport (FILE *fout, int average)
 {
   int i;

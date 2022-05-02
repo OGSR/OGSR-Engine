@@ -1362,7 +1362,7 @@ void dSolveLCP (int n, dReal *A, dReal *x, dReal *b,
 
 //***************************************************************************
 // accuracy and timing test
-#ifdef _DEBUG
+#if 0//def _DEBUG
 extern "C" void dTestSolveLCP()
 {
   int n = 100;
