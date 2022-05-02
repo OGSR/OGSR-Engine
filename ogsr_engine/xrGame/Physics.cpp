@@ -97,7 +97,7 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup,
 	const int RS = 800 + 10;
 	const int N = RS;
 
-	static dContact contacts[RS];
+	static dContact contacts[RS]{};
 	int	collided_contacts = 0;
 	// get the contacts up to a maximum of N contacts
 	int n;

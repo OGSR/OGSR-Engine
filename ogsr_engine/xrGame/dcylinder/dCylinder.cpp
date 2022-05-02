@@ -14,7 +14,11 @@ int dCylinderClassUser = -1;
 
 #define NUMC_MASK (0xffff)
 
-#define CONTACT(p,skip) ((dContactGeom*) (((char*)p) + (skip)))
+inline dContactGeom* CONTACT(dContactGeom* ptr, const int stride) {
+	const size_t count = stride / sizeof(dContact);
+	dContact* contact = (dContact*)(uintptr_t(ptr) - uintptr_t(offsetof(dContact, geom)));
+	return &(contact[count]).geom;
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////circleIntersection//////////////////////////////////////////////////
