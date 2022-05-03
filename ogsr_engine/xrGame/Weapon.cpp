@@ -1737,10 +1737,13 @@ void CWeapon::reload			(LPCSTR section)
 
 void CWeapon::create_physic_shell()
 {
-	//CPhysicsShellHolder::create_physic_shell();
 	//xrKrodin: Временный? "фикс" для оружия из ганслингера, валяющегося на земле. По непонятным причинам (много костей или хз от чего ещё) в некоторых случаях при рассчетах физики происходят краши в ode которые исправить невозможно.
-	m_pPhysicsShell = P_build_SimpleShell(this, 0.3f, false);
-	m_pPhysicsShell->SetMaterial(smart_cast<IKinematics*>(Visual())->LL_GetData(smart_cast<IKinematics*>(Visual())->LL_GetBoneRoot()).game_mtl_idx);
+	if (IS_OGSR_GA) {
+		m_pPhysicsShell = P_build_SimpleShell(this, 0.3f, false);
+		m_pPhysicsShell->SetMaterial(smart_cast<IKinematics*>(Visual())->LL_GetData(smart_cast<IKinematics*>(Visual())->LL_GetBoneRoot()).game_mtl_idx);
+	}
+	else
+		CPhysicsShellHolder::create_physic_shell();
 }
 
 void CWeapon::activate_physic_shell()
