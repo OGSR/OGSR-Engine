@@ -182,7 +182,7 @@ bool CUIPdaWnd::OnMouse(float x, float y, EUIMessages mouse_action)
 		break;
 	}
 	case WINDOW_RBUTTON_DOWN:
-		if (auto pda = Actor()->GetPDA()) {
+		if (auto pda = Actor()->GetPDA(); pda && pda->Is3DPDA() && psActorFlags.test(AF_3D_PDA)) {
 			pda->m_bZoomed = false;
 			HUD().GetUI()->SetMainInputReceiver(nullptr, false);
 			return true;
