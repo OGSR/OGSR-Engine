@@ -29,9 +29,8 @@ CHudItem::CHudItem()
 	RenderHud			(TRUE);
 	EnableHudInertion	(TRUE);
 	AllowHudInertion	(TRUE);
-	AllowHudBobbing(Core.Features.test(xrCore::Feature::wpn_bobbing));
-	if (Core.Features.test(xrCore::Feature::wpn_bobbing))
-		m_bobbing = std::make_unique<CWeaponBobbing>(this);
+
+	m_bobbing = std::make_unique<CWeaponBobbing>(this);
 
 	m_bStopAtEndAnimIsRunning = false;
 	m_current_motion_def = nullptr;
@@ -299,6 +298,8 @@ void CHudItem::UpdateCL()
 			}
 		}
 	}
+
+	AllowHudBobbing(Core.Features.test(xrCore::Feature::wpn_bobbing) || Actor()->PsyAuraAffect);
 }
 
 void CHudItem::OnH_A_Chield()
@@ -1073,13 +1074,14 @@ CHudItem::CWeaponBobbing::CWeaponBobbing(CHudItem* parent) : parent_hud_item(par
 	fReminderFactor = 0.f;
 	is_limping = false;
 
-	m_fAmplitudeRun = pSettings->r_float(BOBBING_SECT, "run_amplitude");
-	m_fAmplitudeWalk = pSettings->r_float(BOBBING_SECT, "walk_amplitude");
-	m_fAmplitudeLimp = pSettings->r_float(BOBBING_SECT, "limp_amplitude");
+	m_fAmplitudeController = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "controller_amplitude", 0.002f);
+	m_fAmplitudeRun = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "run_amplitude", 0.0075f);
+	m_fAmplitudeWalk = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "walk_amplitude", 0.005f);
+	m_fAmplitudeLimp = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "limp_amplitude", 0.011f);
 
-	m_fSpeedRun = pSettings->r_float(BOBBING_SECT, "run_speed");
-	m_fSpeedWalk = pSettings->r_float(BOBBING_SECT, "walk_speed");
-	m_fSpeedLimp = pSettings->r_float(BOBBING_SECT, "limp_speed");
+	m_fSpeedRun = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "run_speed", 6.74f);
+	m_fSpeedWalk = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "walk_speed", 6.26f);
+	m_fSpeedLimp = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "limp_speed", 4.6f);
 
 	m_fCrouchFactor = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "crouch_k", 0.75f);
 	m_fZoomFactor = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "zoom_k", 1.f);
@@ -1097,7 +1099,12 @@ void CHudItem::CWeaponBobbing::CheckState()
 void CHudItem::CWeaponBobbing::Update(Fmatrix& m)
 {
 	CheckState();
-	if (dwMState & ACTOR_DEFS::mcAnyMove)
+
+	// mmccxvii: Тряска рук при воздействии контролера
+	const bool ControllerCondition = Actor()->PsyAuraAffect;
+
+	if ((dwMState & ACTOR_DEFS::mcAnyMove) || ControllerCondition)
+
 	{
 		if (fReminderFactor < 1.f)
 			fReminderFactor += SPEED_REMINDER * Device.fTimeDelta;
@@ -1132,7 +1139,13 @@ void CHudItem::CWeaponBobbing::Update(Fmatrix& m)
 
 		float A, ST;
 
-		if (isActorAccelerated(dwMState, m_bZoomMode))
+		// mmccxvii: Тряска рук при воздействии контролера
+		if (ControllerCondition)
+		{
+			A = m_fAmplitudeController * k;
+			ST = m_fSpeedRun * 10 * fTime * k;
+		}
+		else if (isActorAccelerated(dwMState, m_bZoomMode))
 		{
 			A = m_fAmplitudeRun * k2;
 			ST = m_fSpeedRun * fTime * k;
@@ -1149,6 +1162,11 @@ void CHudItem::CWeaponBobbing::Update(Fmatrix& m)
 		}
 
 		float _sinA = _abs(_sin(ST) * A) * fReminderFactor;
+
+		// mmccxvii: Тряска рук при воздействии контролера
+		if (ControllerCondition)
+			_sinA *= ::Random.randF(-1.0f, 1.0f);
+
 		float _cosA = _cos(ST) * A * fReminderFactor;
 
 		m.c.y += _sinA;

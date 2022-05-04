@@ -22,7 +22,8 @@ namespace detail
 monster_aura::monster_aura (CBaseMonster* const object, pcstr const name) 
 						: m_object(object), m_pp_effector_name(NULL), m_pp_index(0)
 {
-	xr_strcpy							(m_name, sizeof(m_name), name); 
+	strcpy_s(m_name, name);
+	this_is_psy_aura = !!strstr(name, "psy");
 	m_detect_snd_time	=	0.0f;
 	m_enabled			=	false;
 	m_enable_for_dead	=	false;
@@ -123,6 +124,9 @@ void   monster_aura::remove_pp_effector ()
 
 		m_sound.stop					();
 		m_detect_sound.stop				();
+
+		if (this_is_psy_aura)
+			Actor()->PsyAuraAffect = false;
 	}
 }
 
@@ -196,13 +200,17 @@ void   monster_aura::update_schedule ()
 		if ( !m_pp_index )
 		{
 			m_pp_index				=	Actor()->Cameras().RequestPPEffectorId();
-			AddEffector					(Actor(), m_pp_index, m_pp_effector_name, 
-				fastdelegate::MakeDelegate(this, &monster_aura::get_post_process_factor));
+			AddEffector(Actor(), m_pp_index, m_pp_effector_name, fastdelegate::MakeDelegate(this, &monster_aura::get_post_process_factor));
+
 		}
+		if (this_is_psy_aura)
+			Actor()->PsyAuraAffect = true;
 	}
 	else if ( m_pp_index != 0 )
 	{
 		RemoveEffector					(Actor(), m_pp_index);
 		m_pp_index					=	0;
+		if (this_is_psy_aura)
+			Actor()->PsyAuraAffect = false;
 	}
 }

@@ -92,6 +92,7 @@ protected: //чтоб нельзя было вызвать на прямую
 	u8				m_started_rnd_anim_idx;
 	bool			m_bStopAtEndAnimIsRunning;
 	bool            SprintType{};
+	bool            BobbingEnable{};
 	u32				m_dwStateTime;
 public:
 	virtual void	Load				(LPCSTR section);
@@ -227,6 +228,7 @@ public:
 		bool	is_limping;
 		bool	m_bZoomMode;
 
+		float	m_fAmplitudeController;
 		float	m_fAmplitudeRun;
 		float	m_fAmplitudeWalk;
 		float	m_fAmplitudeLimp;

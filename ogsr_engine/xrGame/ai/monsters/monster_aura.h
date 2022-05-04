@@ -8,7 +8,8 @@ class monster_aura
 private:
 	CBaseMonster*		m_object;
 
-	char				m_name[64];
+	char m_name[64]{};
+	bool this_is_psy_aura{};
 	float				m_linear_factor{};
 	float				m_quadratic_factor{};
 	float				m_max_power{};
