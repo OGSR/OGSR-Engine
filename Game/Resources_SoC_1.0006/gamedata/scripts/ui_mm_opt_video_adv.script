@@ -45,7 +45,7 @@ local adv_vid_opt_params = {
 	{ "r__smap_size",          "list",  1, hint_colors.red   , "video_settings_name_59", "video_settings_desc_59", only_2_and_more_mode  },
 --	{ "r2_sun_near",           "track", 0, hint_colors.red   , "video_settings_name_22", "video_settings_desc_22", only_2_and_more_mode  }, --теперь эта команда ни на что не влияет, т.ч. выключаю.
 --	{ "r2_sun_far",            "track", 0, hint_colors.yellow, "video_settings_name_58", "video_settings_desc_58", only_2_and_more_mode  }, --теперь эта команда ни на что не влияет, т.ч. выключаю.
-	{ "npc_torch",             "check", 0, hint_colors.green , "video_settings_name_14", "video_settings_desc_14" },
+--	{ "npc_torch",             "check", 0, hint_colors.red   , "video_settings_name_14", "video_settings_desc_14", only_25_and_more_mode },
 	{ "r1_detail_textures",    "check", 0, hint_colors.green , "", ""                                            , only_1_mode },
 	{ "r2_detail_bump",        "check", 0, hint_colors.yellow, "video_settings_name_44", "video_settings_desc_44", only_2_and_more_mode },
 	{ "r2_steep_parallax",     "check", 0, hint_colors.red   , "video_settings_name_39", "video_settings_desc_39", only_25_and_more_mode },

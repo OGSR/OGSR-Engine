@@ -73,18 +73,6 @@ CTorch::~CTorch(void)
 	HUD_SOUND::DestroySound	(m_NightVisionBrokenSnd);
 }
 
-inline bool CTorch::can_use_dynamic_lights	()
-{
-	if (!H_Parent())
-		return				(true);
-
-	CInventoryOwner			*owner = smart_cast<CInventoryOwner*>(H_Parent());
-	if (!owner)
-		return				(true);
-
-	return					(owner->can_use_dynamic_lights());
-}
-
 void CTorch::Load(LPCSTR section) 
 {
 	inherited::Load			(section);
@@ -198,13 +186,10 @@ void CTorch::Switch()
 
 void CTorch::Switch	(bool light_on)
 {
-	m_switched_on			= light_on;
-	if (can_use_dynamic_lights())
-	{
-		light_render->set_active(light_on);
-		light_omni->set_active(light_on);
-	}
-	glow_render->set_active					(light_on);
+	m_switched_on = light_on;
+	light_render->set_active(light_on);
+	light_omni->set_active(light_on);
+	glow_render->set_active(light_on);
 
 	if (*light_trace_bone) 
 	{
@@ -306,8 +291,6 @@ void CTorch::OnH_A_Chield()
 {
 	inherited::OnH_A_Chield			();
 	m_focus.set						(Position());
-	if (smart_cast<CActor*>(H_Parent()) && useVolumetric)
-		light_render->set_volumetric(useVolumetricForActor);
 }
 
 void CTorch::OnH_B_Independent	(bool just_before_destroy) 
@@ -332,6 +315,13 @@ void CTorch::UpdateCL()
 	UpdateSwitchNightVision		();
 
 	if (!m_switched_on)			return;
+
+	if (useVolumetric) {
+		if (smart_cast<CActor*>(H_Parent()))
+			light_render->set_volumetric(useVolumetricForActor);
+		else
+			light_render->set_volumetric(psActorFlags.test(AF_AI_VOLUMETRIC_LIGHTS));
+	}
 
 	CBoneInstance			&BI = smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(guid_bone);
 	Fmatrix					M;
@@ -406,25 +396,22 @@ void CTorch::UpdateCL()
 			glow_render->set_direction	(dir);
 
 		}// if(actor)
-		else 
+		else
 		{
-			if (can_use_dynamic_lights()) 
-			{
-				light_render->set_position	(M.c);
-				light_render->set_rotation	(M.k,M.i);
+			light_render->set_position(M.c);
+			light_render->set_rotation(M.k, M.i);
 
-				Fvector offset				= M.c; 
-				offset.mad					(M.i,OMNI_OFFSET.x);
-				offset.mad					(M.j,OMNI_OFFSET.y);
-				offset.mad					(M.k,OMNI_OFFSET.z);
-				light_omni->set_position	(M.c);
-				light_omni->set_rotation	(M.k,M.i);
-			}//if (can_use_dynamic_lights()) 
+			Fvector offset = M.c;
+			offset.mad(M.i, OMNI_OFFSET.x);
+			offset.mad(M.j, OMNI_OFFSET.y);
+			offset.mad(M.k, OMNI_OFFSET.z);
+			light_omni->set_position(M.c);
+			light_omni->set_rotation(M.k, M.i);
 
-			glow_render->set_position	(M.c);
-			glow_render->set_direction	(M.k);
+			glow_render->set_position(M.c);
+			glow_render->set_direction(M.k);
 		}
-	}//if(HParent())
+	}
 	else 
 	{
 #pragma todo("KRodin: переделать под новый рендер!")
@@ -464,12 +451,10 @@ void CTorch::UpdateCL()
 	Fcolor					fclr;
 	fclr.set( (float)color_get_B( clr ) / 255.f, (float)color_get_G( clr ) / 255.f, (float)color_get_R( clr ) / 255.f, 1.f );
 	fclr.mul_rgb( fBrightness );
-	if (can_use_dynamic_lights())
-	{
-		light_render->set_color	(fclr);
-		light_omni->set_color	(fclr);
-	}
-	glow_render->set_color		(fclr);
+
+	light_render->set_color	(fclr);
+	light_omni->set_color	(fclr);
+	glow_render->set_color(fclr);
 }
 
 

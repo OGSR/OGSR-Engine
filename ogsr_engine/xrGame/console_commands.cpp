@@ -94,11 +94,6 @@ extern LPSTR	dbg_stalker_death_anim;
 extern BOOL		b_death_anim_velocity;
 #endif
 int g_AI_inactive_time = 0;
-Flags32 g_uCommonFlags;
-
-enum E_COMMON_FLAGS{
-	flAiUseTorchDynamicLights = 1
-};
 
 extern int g_dof_zoom_far;
 extern int g_dof_zoom_near;
@@ -1474,12 +1469,7 @@ void CCC_RegisterCommands()
 	CMD4(CCC_TimeFactorSingle,	"time_factor_single", &g_fTimeFactor, 0.f,flt_max);
 #endif // MASTER_GOLD
 
-
-	g_uCommonFlags.zero();
-	g_uCommonFlags.set(flAiUseTorchDynamicLights, TRUE);
-
-	CMD3(CCC_Mask,		"ai_use_torch_dynamic_lights",	&g_uCommonFlags, flAiUseTorchDynamicLights);
-
+	CMD3(CCC_Mask, "ai_use_torch_dynamic_lights", &psActorFlags, AF_AI_VOLUMETRIC_LIGHTS);
 
 #ifndef MASTER_GOLD
 	CMD4(CCC_Vector3,		"psp_cam_offset",				&CCameraLook2::m_cam_offset, Fvector().set(-1000,-1000,-1000),Fvector().set(1000,1000,1000));

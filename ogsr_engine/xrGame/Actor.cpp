@@ -89,7 +89,7 @@ static Fbox		bbCrouchBox;
 static Fvector	vFootCenter;
 static Fvector	vFootExt;
 
-Flags32 psActorFlags = { AF_3D_SCOPES | AF_KEYPRESS_ON_START | AF_CAM_COLLISION };
+Flags32 psActorFlags = { AF_3D_SCOPES | AF_KEYPRESS_ON_START | AF_CAM_COLLISION | AF_AI_VOLUMETRIC_LIGHTS };
 
 static bool updated;
 
@@ -936,8 +936,6 @@ void CActor::shedule_Update	(u32 DT)
 {
 	setSVU(OnServer());
 
-	if (IsFocused())
-	{
 		BOOL bHudView = HUDview();
 		if (bHudView)
 		{
@@ -968,7 +966,6 @@ void CActor::shedule_Update	(u32 DT)
 			g_player_hud->detach_all_items();
 			// Msg("---No hud view found, all items detached.");
 		}
-	}
 
 	//обновление инвентаря
 	if ( !updated )

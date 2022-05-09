@@ -76,9 +76,6 @@ public:
 			bool					weapon_strapped		(CWeapon *weapon) const;
 			bool					weapon_unstrapped	() const;
 			bool					weapon_unstrapped	(CWeapon *weapon) const;
-
-public:
-	virtual bool					can_use_dynamic_lights	();
 };
 
 #include "object_handler_inline.h"
