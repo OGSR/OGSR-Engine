@@ -285,7 +285,8 @@ bool CWeaponMagazined::TryReload()
             }
     }
 
-    SwitchState(eIdle);
+    if (GetState() != eIdle)
+        SwitchState(eIdle);
 
     return false;
 }
