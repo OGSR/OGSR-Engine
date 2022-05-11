@@ -868,7 +868,7 @@ void CWeaponMagazined::switch2_Reload()
 {
 	CWeapon::FireEnd();
 
-	if (iAmmoElapsed > 0 && CartridgeInTheChamberEnabled)
+	if (iAmmoElapsed > 0 && CartridgeInTheChamberEnabled && !IsGrenadeMode())
 		CartridgeInTheChamber = 1;
 	else
 		CartridgeInTheChamber = 0;
