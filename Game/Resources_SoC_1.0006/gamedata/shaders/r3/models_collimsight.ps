@@ -1,0 +1,30 @@
+#include "common.h"
+
+uniform float4 m_affects;
+
+struct v2p
+{
+ 	float2 tc0: TEXCOORD0; // base
+//	float2 tc1: TEXCOORD1; // lmap
+  	float4 c0: COLOR0; // sun
+};
+
+// https://stackoverflow.com/a/10625698
+float random(float2 p)
+{
+	float2 K1 = float2(
+		23.14069263277926f, // e^pi (Gelfond's constant)
+		2.665144142690225f // 2^sqrt(2) (Gelfondâ€“Schneider constant)
+	);
+	return frac( cos( dot(p, K1) ) * 12345.6789f );
+}
+
+
+float4 main(v2p I) : SV_Target
+{
+	float4 t_base = s_base.Sample( smp_base, I.tc0 );
+
+	// Коллиматоры глючат при выбросе
+	float mig = 1.0f - (m_affects.x * 2.f);
+	return float4(t_base.r, t_base.g, t_base.b, random(timers.xz) > mig ? 0.f : t_base.a * I.c0.a);
+}

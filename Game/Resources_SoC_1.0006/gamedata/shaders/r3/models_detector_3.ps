@@ -1,5 +1,5 @@
 #include "common.h"
-#include "models_detector_cfg.h"
+#include "common\models_detector_cfg.h"
 
 uniform float4x4 ogse_c_artefacts;	// view space artefacts position, xz, two pairs on a row
 uniform float4x4 ogse_c_artefacts2;	// view space artefacts position, xz, two pairs on a row
@@ -9,14 +9,11 @@ uniform float4x4 ogse_c_anomalys2;	// view space anomalys position, xz, two pair
 uniform float4x4 ogse_c_anomalys3;	// view space anomalys position, xz, two pairs on a row
 uniform float4 ogse_c_detector;
 uniform Texture2D s_numbers;
-
-#ifdef USE_WAVE
-uniform Texture2D s_wave;
-#endif
+uniform float4 m_affects;
 
 #define NUMBERS_SIZE float2(1.0000,0.0996)	// size of numbers block
 
-float calculate_bright	(float2 pos, float2 tc, float dot_radius)
+float calculate_bright(float2 pos, float2 tc, float dot_radius)
 {
 	float res;
 	float2 art_tc;
@@ -28,8 +25,18 @@ float calculate_bright	(float2 pos, float2 tc, float dot_radius)
 	return res;
 }
 
-float4  main  ( p_flat I ) : SV_Target
+float get_noise(float2 co)
 {
+	return (frac(sin(dot(co.xy ,float2(12.9898,78.233))) * 43758.5453))*0.5;
+}
+
+float4 main(p_flat I) : SV_Target
+{
+	//Искажение экрана при выбросе
+	float problems = cos( ( frac( timers.z * 4 ) - 0.5 ) * 3.1416 )*2 - 0.8;
+	float AMPL = 0.3;
+	I.tcdh.y -= ( m_affects.x > 0.15 && I.tcdh.x > problems-AMPL && I.tcdh.x < problems+AMPL) ? cos(4.71*(I.tcdh.x-problems)/AMPL) * sin( frac(timers.z)*6.2831*90 )  * (m_affects.x/10) * (AMPL-abs(I.tcdh.x-problems))/AMPL : 0;
+
 	float bright = calculate_bright(float2(ogse_c_artefacts._11, ogse_c_artefacts._21), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
 	bright += calculate_bright(float2(ogse_c_artefacts._31, ogse_c_artefacts._41), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
 	bright += calculate_bright(float2(ogse_c_artefacts._12, ogse_c_artefacts._22), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
@@ -58,13 +65,6 @@ float4  main  ( p_flat I ) : SV_Target
 	bright += calculate_bright(float2(ogse_c_artefacts3._34, ogse_c_artefacts3._44), I.tcdh.xy, ID_DETECTOR_3_DOT_RADIUS);
 
 	float4 color = lerp(float4(0,0,0,0), ID_DETECTOR_3_COLOR, saturate(bright));
-
-#ifdef USE_WAVE
-	float wave = s_wave.Sample(smp_linear, float2(I.tcdh.y + timers.x*0.3, I.tcdh.x)*3).x;
-
-	//color += wave * ID_DETECTOR_3_DOT_COLOR;
-	color += wave * ID_DETECTOR_3_COLOR;
-#endif
 
 #ifdef USE_ANOMALY_DETECTION
 	float an_bright = calculate_bright(float2(ogse_c_anomalys._11, ogse_c_anomalys._21), I.tcdh.xy, ID_DETECTOR_3_AN_DOT_RADIUS);
@@ -109,5 +109,14 @@ float4  main  ( p_flat I ) : SV_Target
 	float4 up_color = s_numbers.Sample(smp_linear, num_tc).aaaa*ID_DETECTOR_3_NUM_COLOR;
 	color = lerp(color, up_color, ogse_c_detector.x);
 
-	return saturate(color)*ID_DETECTOR_3_POWER;
+	// Шум при выбросе
+	float noise	= get_noise(I.tcdh.xy * timers.z) *  m_affects.x * m_affects.x * 20;		
+	color.r += noise;
+	color.g += noise;
+	color.b += noise;
+
+	//отключение экрана
+	color = (m_affects.x > 0.41) ? 0 : color;
+
+	return any(color) ? (saturate(color) * ID_DETECTOR_3_POWER) : (float4(1.0f, 1.0f, 1.0f, 0.0f) * 1.0f);
 }

@@ -1,5 +1,5 @@
 function normal   (shader, t_base, t_second, t_detail)
-	shader:begin	("model_def_lplanes","models_lense_scope")
+	shader:begin	("model_def_lplanes", "models_zoom_gauss")
       : fog    		(false)
       : zb     		(true,false)
       : blend   	(true,blend.srcalpha,blend.one)

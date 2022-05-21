@@ -11,6 +11,5 @@
 #define ID_DETECTOR_3_AN_COLOR float4(1.0,0.0,0.0,1.0)	// цвет индикации аномалий
 #define ID_DETECTOR_3_AN_DOT_RADIUS float(0.02)			// радиус точки аномалии на экране
 #define ID_DETECTOR_3_NUM_COLOR float4(1.0,0.0,0.0,1.0)	// цвет индикации цифр на экране
-//#define USE_WAVE //Недоделанный эффект волны? Надо к нему сделать текстуру ogse\\detector_wave
 
 #endif

@@ -6,7 +6,7 @@
 	</background>
 
 	<spot_name_edit x="20" y="55" width="700" height="180">
-		<text font="letterica18" r="240" g="217" b="182"/>
+		<text font="letterica25" r="240" g="217" b="182"/>
 		<texture>ui_stroketextbox</texture>
 	</spot_name_edit>
 
