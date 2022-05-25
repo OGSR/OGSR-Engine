@@ -29,9 +29,6 @@ public:
 	virtual void StopHUDSounds();
 
 	virtual void	UpdateSounds		();
-	virtual void	PlayAnimOpenWeapon	();
-	virtual void	PlayAnimAddOneCartridgeWeapon();
-	void			PlayAnimCloseWeapon	();
 
 	virtual	void	UpdateCL();
 
@@ -61,6 +58,7 @@ protected:
 	HUD_SOUND		m_sndAddCartridge;
 	HUD_SOUND		m_sndClose;
 
+	bool is_reload_empty{};
 	bool			m_stop_triStateReload;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION

@@ -288,6 +288,7 @@ void CWeaponShotgun::OnAnimationEnd(u32 state)
 	switch(m_sub_state){
 		case eSubstateReloadBegin:{
 			m_sub_state = IsMisfire() ? eSubstateReloadEnd : eSubstateReloadInProcess;
+			is_reload_empty = iAmmoElapsed == 0;
 			SwitchState(eReload);
 		}break;
 
@@ -360,44 +361,23 @@ void CWeaponShotgun::OnStateSwitch	(u32 S, u32 oldState)
 
 void CWeaponShotgun::switch2_StartReload()
 {
-	PlaySound			(m_sndOpen,get_LastFP());
-	PlayAnimOpenWeapon	();
+	PlaySound(m_sndOpen, get_LastFP());
+	PlayHUDMotion({ "anim_open_weapon", "anm_open" }, true, GetState());
 	SetPending(TRUE);
 }
 
-void CWeaponShotgun::switch2_AddCartgidge	()
+void CWeaponShotgun::switch2_AddCartgidge()
 {
-	PlaySound	(m_sndAddCartridge,get_LastFP());
-	PlayAnimAddOneCartridgeWeapon();
+	PlaySound(m_sndAddCartridge, get_LastFP());
+	PlayHUDMotion({ iAmmoElapsed == 0 ? "anm_add_cartridge_empty" : "nullptr", "anim_add_cartridge", "anm_add_cartridge" }, true, GetState());
 	SetPending(TRUE);
 }
 
 void CWeaponShotgun::switch2_EndReload	()
 {
-	PlaySound			(m_sndClose,get_LastFP());
-	PlayAnimCloseWeapon	();
+	PlayHUDMotion({ IsMisfire() ? "anm_close_jammed" : (is_reload_empty ? "anm_close_empty" : "nullptr"), "anim_close_weapon", "anm_close" }, true, GetState());
+	PlaySound(m_sndClose, get_LastFP());
 	SetPending(TRUE);
-}
-
-void CWeaponShotgun::PlayAnimOpenWeapon()
-{
-	VERIFY(GetState()==eReload);
-
-	PlayHUDMotion({ "anim_open_weapon", "anm_open" }, true, GetState());
-}
-
-void CWeaponShotgun::PlayAnimAddOneCartridgeWeapon()
-{
-	VERIFY(GetState()==eReload);
-
-	PlayHUDMotion({ "anim_add_cartridge", "anm_add_cartridge" }, true, GetState());
-}
-
-void CWeaponShotgun::PlayAnimCloseWeapon()
-{
-	VERIFY(GetState()==eReload);
-
-	PlayHUDMotion({ "anim_close_weapon", "anm_close" }, true, GetState());
 }
 
 bool CWeaponShotgun::HaveCartridgeInInventory( u8 cnt ) {
