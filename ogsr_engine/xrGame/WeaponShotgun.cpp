@@ -23,7 +23,7 @@ CWeaponShotgun::~CWeaponShotgun(void)
 	HUD_SOUND::DestroySound(m_sndOpen);
 	HUD_SOUND::DestroySound(m_sndAddCartridge);
 	HUD_SOUND::DestroySound(m_sndClose);
-
+	HUD_SOUND::DestroySound(m_sndCloseEmpty);
 }
 
 void CWeaponShotgun::net_Destroy()
@@ -48,6 +48,7 @@ void CWeaponShotgun::Load	(LPCSTR section)
 		HUD_SOUND::LoadSound(section, "snd_open_weapon", m_sndOpen, m_eSoundOpen);
 		HUD_SOUND::LoadSound(section, "snd_add_cartridge", m_sndAddCartridge, m_eSoundAddCartridge);
 		HUD_SOUND::LoadSound(section, "snd_close_weapon", m_sndClose, m_eSoundClose);
+		HUD_SOUND::LoadSound(section, "snd_close_weapon_empty", m_sndCloseEmpty, m_eSoundClose);
 	}
 }
 
@@ -216,6 +217,7 @@ void CWeaponShotgun::UpdateSounds	()
 	if (m_sndOpen.playing())         m_sndOpen.set_position         (get_LastFP());
 	if (m_sndAddCartridge.playing()) m_sndAddCartridge.set_position (get_LastFP());
 	if (m_sndClose.playing())        m_sndClose.set_position        (get_LastFP());
+	if (m_sndCloseEmpty.playing()) m_sndCloseEmpty.set_position(get_LastFP());
 }
 
 #ifdef DUPLET_STATE_SWITCH
@@ -376,7 +378,7 @@ void CWeaponShotgun::switch2_AddCartgidge()
 void CWeaponShotgun::switch2_EndReload	()
 {
 	PlayHUDMotion({ IsMisfire() ? "anm_close_jammed" : (is_reload_empty ? "anm_close_empty" : "nullptr"), "anim_close_weapon", "anm_close" }, true, GetState());
-	PlaySound(m_sndClose, get_LastFP());
+	PlaySound( ( ( IsMisfire() || is_reload_empty ) && !m_sndCloseEmpty.sounds.empty() ) ? m_sndCloseEmpty : m_sndClose, get_LastFP() );
 	SetPending(TRUE);
 }
 
@@ -492,5 +494,7 @@ void CWeaponShotgun::StopHUDSounds() {
   HUD_SOUND::StopSound( m_sndOpen );
   HUD_SOUND::StopSound( m_sndAddCartridge );
   HUD_SOUND::StopSound( m_sndClose );
+  HUD_SOUND::StopSound(m_sndCloseEmpty);
+
   inherited::StopHUDSounds();
 }
