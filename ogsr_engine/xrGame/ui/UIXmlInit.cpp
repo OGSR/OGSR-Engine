@@ -229,7 +229,11 @@ bool CUIXmlInit::InitStatic(CUIXml& xml_doc, LPCSTR path,
 	bool bComplexMode = xml_doc.ReadAttribInt(path, index, "complex_mode",0)?true:false;
 	if(bComplexMode)
 		pWnd->SetTextComplexMode(bComplexMode);
-	
+
+	int color_alpha = xml_doc.ReadAttribInt( path, index, "color_alpha", 255 );
+	if ( color_alpha < 255 )
+	  pWnd->SetColor( subst_alpha( pWnd->GetColor(), color_alpha ) );
+
 	return true;
 }
 
