@@ -10,6 +10,8 @@
 #include <sstream>
 #include <iterator>
 #include <array> //для std::array
+#include <filesystem>
+namespace stdfs = std::filesystem;
 
 #include "lzo\lzo1x.h"
 
@@ -384,6 +386,10 @@ static void ProcessFolder(xr_vector<char*>& list, LPCSTR path)
 
 static bool IsFolderAccepted(CInifile& ltx, LPCSTR path, BOOL& recurse)
 {
+	string_path dir_name;
+	FS.update_path(dir_name, "$target_folder$", path);
+	if (!stdfs::exists(dir_name) || !stdfs::is_directory(dir_name) || stdfs::is_empty(dir_name))
+		return false;
 
 	//--Код ниже не проверен, работает ли он вообще. У нас не юзается.
 	// exclude folders
