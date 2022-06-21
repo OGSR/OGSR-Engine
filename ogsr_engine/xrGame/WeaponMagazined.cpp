@@ -654,7 +654,11 @@ void CWeaponMagazined::state_Fire	(float dt)
 	p1.set(get_LastFP());
 	d.set(get_LastFD());
 
-	if (!H_Parent()) return;
+	auto Parent = H_Parent();
+	if (!Parent) return;
+
+	auto ParentEnt = smart_cast<CEntity*>(Parent);
+	if (!ParentEnt) return; //Такое иногда бывает. Не понятно почему, но бывает. Например был случай когда пыталось стрелять оружие лежащее в ящике.
 
 #ifdef DEBUG
 	CInventoryOwner* io = smart_cast<CInventoryOwner*>(H_Parent());
@@ -668,12 +672,13 @@ void CWeaponMagazined::state_Fire	(float dt)
 	}
 #endif
 
-	smart_cast<CEntity*>	(H_Parent())->g_fireParams	(this, p1,d);
+	ParentEnt->g_fireParams(this, p1, d);
+
 	if (m_iShotNum == 0)
 	{
 		m_vStartPos = p1;
 		m_vStartDir = d;
-	};
+	}
 		
 	VERIFY(!m_magazine.empty());
 //	Msg("%d && %d && (%d || %d) && (%d || %d)", !m_magazine.empty(), fTime<=0, IsWorking(), m_bFireSingleShot, m_iQueueSize < 0, m_iShotNum < m_iQueueSize);
