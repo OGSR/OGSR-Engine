@@ -177,6 +177,8 @@ void CWeaponMagazinedWGrenade::switch2_Reload()
 {
 	if (m_bGrenadeMode)
 	{
+		CartridgeInTheChamber = 0; //Это очень важно!
+
 		PlaySound(sndReloadG, get_LastFP2());
 
 		PlayHUDMotion({ IsMisfire() ? "anm_reload_jammed_g" : (iAmmoElapsed2 == 0 ? "anm_reload_empty_g" : "nullptr"), "anim_reload_g", "anm_reload_g" }, true, GetState());
