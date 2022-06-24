@@ -3,8 +3,8 @@
 #include "CameraEffector.h"
 #include "GamePersistent.h"
 
-#define FALL_SPEED 3.5f
-#define FALL_MAXDIST 0.15f
+#define FALL_SPEED 2.f
+#define FALL_MAXDIST 0.3f
 
 CEffectorFall::CEffectorFall(float power, float life_time) : CEffectorCam(eCEFall, life_time)
 {
