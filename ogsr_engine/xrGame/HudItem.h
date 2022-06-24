@@ -293,8 +293,8 @@ private:
 	Fvector m_nearwall_last_pos{}, m_nearwall_last_rot{};
 	u32 m_nearwall_last_call{};
 
-	float m_fLR_MovingFactor{}, m_fLookout_MovingFactor{};
-	Fvector m_strafe_offset[3][2]{}, m_lookout_offset[3][2]{};
+	float m_fLR_MovingFactor{}, m_fLookout_MovingFactor{}, m_fJump_MovingFactor{};
+	Fvector m_strafe_offset[3][2]{}, m_lookout_offset[3][2]{}, m_jump_offset[3][2]{};
 
 	float m_base_fov{};
 

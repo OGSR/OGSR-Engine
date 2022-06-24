@@ -610,7 +610,7 @@ bool	CActor::CanJump(float weight)
 	bool can_Jump = /*!IsLimping() &&*/
 		!character_physics_support()->movement()->PHCapture() && ((mstate_real&mcJump) == 0) && (m_fJumpTime <= 0.f)
 		&& ( !m_hit_slowmo_jump || ( fis_zero( hit_slowmo ) && m_time_lock_accel < Device.dwTimeGlobal ) )
-		&& !m_bJumpKeyPressed && !m_bZoomAimingMode // && ((mstate_real&mcCrouch)==0);
+		&& !m_bJumpKeyPressed // && ((mstate_real&mcCrouch)==0);
 		&& !conditions().IsCantJump(weight);
 
 	return can_Jump;
