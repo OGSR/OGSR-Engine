@@ -927,7 +927,7 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
 		{
 		if ( !Core.Features.test(xrCore::Feature::lock_reload_in_sprint) || ( !ParentIsActor() || !(g_actor->get_state() & mcSprint) ) )
 			if(flags&CMD_START) 
-				if(iAmmoElapsed < iMagazineSize || IsMisfire()) 
+				if(iAmmoElapsed < iMagazineSize || (IsMisfire() && !IsGrenadeMode())) 
 					Reload();
 		} 
 		return true;
