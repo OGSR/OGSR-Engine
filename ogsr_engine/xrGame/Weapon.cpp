@@ -26,7 +26,6 @@
 #include "game_object_space.h"
 #include "script_game_object.h"
 
-#include "WeaponMagazinedWGrenade.h"
 #include "GamePersistent.h"
 #include "../xr_3da/x_ray.h"
 
@@ -2103,12 +2102,6 @@ float CWeapon::GetSecondVPFov() const
 		fov_factor = m_fRTZoomFactor;
 	}
 	return atanf(tanf(g_fov * (0.5f * PI / 180)) / fov_factor) / (0.5f * PI / 180);
-}
-
-bool CWeapon::IsGrenadeMode() const
-{
-	const auto wpn_w_gl = smart_cast<const CWeaponMagazinedWGrenade*>(this);
-	return wpn_w_gl && wpn_w_gl->m_bGrenadeMode;
 }
 
 float CWeapon::GetHudFov() {

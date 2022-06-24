@@ -18,7 +18,6 @@
 #include "string_table.h"
 #include "WeaponBinoculars.h"
 #include "WeaponBinocularsVision.h"
-#include "WeaponMagazinedWGrenade.h"
 #include "ai_object_location.h"
 
 #include "game_object_space.h"
@@ -1401,9 +1400,9 @@ void CWeaponMagazined::PlayAnimShoot()
 
 void CWeaponMagazined::PlayAnimFakeShoot()
 {
-	auto pg = smart_cast<CWeaponMagazinedWGrenade*>(this);
+	auto wpn = smart_cast<CWeapon*>(this);
 	string128 guns_fakeshoot_anm;
-	xr_strconcat(guns_fakeshoot_anm, "anm_fakeshoot", (IsZoomed() && !IsRotatingToZoom()) ? (IsMisfire() ? "_aim_jammed" : "_aim") : ((IsGrenadeMode() && IsMisfire()) ? "_jammed" : ""), ((iAmmoElapsed == 0 && !IsGrenadeMode()) || (pg && pg->iAmmoElapsed2 == 0 && IsGrenadeMode())) ? "_empty" : "", IsGrenadeLauncherAttached() ? (!IsGrenadeMode() ? "_w_gl" : "_g") : "");
+	xr_strconcat(guns_fakeshoot_anm, "anm_fakeshoot", (IsZoomed() && !IsRotatingToZoom()) ? (IsMisfire() ? "_aim_jammed" : "_aim") : ((IsGrenadeMode() && IsMisfire()) ? "_jammed" : ""), ((iAmmoElapsed == 0 && !IsGrenadeMode()) || (wpn && wpn->GetAmmoElapsed2() == 0 && IsGrenadeMode())) ? "_empty" : "", IsGrenadeLauncherAttached() ? (!IsGrenadeMode() ? "_w_gl" : "_g") : "");
 	if (AnimationExist(guns_fakeshoot_anm))
 		PlayHUDMotion(guns_fakeshoot_anm, true, GetState());
 }
@@ -1422,9 +1421,9 @@ void CWeaponMagazined::PlayAnimDeviceSwitch()
 {
 	PlaySound((HeadLampSwitch || NightVisionSwitch) ? sndItemOn : sndTactItemOn, get_LastFP());
 
-	auto pg = smart_cast<CWeaponMagazinedWGrenade*>(this);
+	auto wpn = smart_cast<CWeapon*>(this);
 	string128 guns_device_anm;
-	xr_strconcat(guns_device_anm, LaserSwitch ? "anm_laser_on" : (TorchSwitch ? "anm_torch_on" : ((HeadLampSwitch || NightVisionSwitch) ? "anm_headlamp_on" : "")), IsMisfire() ? "_jammed" : ((iAmmoElapsed == 0 && !IsGrenadeMode()) || (pg && pg->iAmmoElapsed2 == 0 && IsGrenadeMode())) ? "_empty" : "", (IsGrenadeLauncherAttached()) ? (!IsGrenadeMode() ? "_w_gl" : "_g") : "");
+	xr_strconcat(guns_device_anm, LaserSwitch ? "anm_laser_on" : (TorchSwitch ? "anm_torch_on" : ((HeadLampSwitch || NightVisionSwitch) ? "anm_headlamp_on" : "")), IsMisfire() ? "_jammed" : ((iAmmoElapsed == 0 && !IsGrenadeMode()) || (wpn && wpn->GetAmmoElapsed2() == 0 && IsGrenadeMode())) ? "_empty" : "", (IsGrenadeLauncherAttached()) ? (!IsGrenadeMode() ? "_w_gl" : "_g") : "");
 	if (AnimationExist(guns_device_anm))
 		PlayHUDMotion(guns_device_anm, true, GetState());
 	else

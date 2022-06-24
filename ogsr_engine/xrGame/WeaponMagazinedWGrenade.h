@@ -92,6 +92,7 @@ public:
 	shared_str grenade_bone_name;
 
 	int GetAmmoElapsed2() const override { return iAmmoElapsed2; }
+	bool IsGrenadeMode() const override { return m_bGrenadeMode; }
 	virtual float Weight () const;
 
 	bool IsPartlyReloading() const override {

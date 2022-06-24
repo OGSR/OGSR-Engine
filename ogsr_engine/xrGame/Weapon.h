@@ -153,7 +153,7 @@ public:
 			bool IsScopeAttached			() const;
 			bool IsSilencerAttached			() const;
 
-	bool			IsGrenadeMode() const;
+	virtual bool IsGrenadeMode() const { return false; }
 
 	virtual bool GrenadeLauncherAttachable() const;
 	virtual bool ScopeAttachable() const;
