@@ -5,13 +5,13 @@
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
 
     <!-- Default is v142 -->
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
 
     <!-- v141 is allowed -->
     <PlatformToolset Condition="'$(DefaultPlatformToolset)'=='v141'">v141</PlatformToolset>
 
     <!-- v143 is allowed -->
-    <PlatformToolset Condition="'$(DefaultPlatformToolset)'=='v143'">v143</PlatformToolset>
+    <!--PlatformToolset Condition="'$(DefaultPlatformToolset)'=='v143'">v143</PlatformToolset-->
 
     <!--CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir-->
   </PropertyGroup>
