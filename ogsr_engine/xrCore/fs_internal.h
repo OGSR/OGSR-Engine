@@ -6,8 +6,6 @@
 #include <sys\stat.h>
 #include <share.h>
 
-void*			FileDownload	(LPCSTR fn, u32* pdwSize=NULL);
-
 class CFileWriter : public IWriter
 {
 private:
@@ -77,12 +75,7 @@ public:
 				CPackReader(void* _base, void* _data, int _size) : IReader(_data,_size){base_address=_base;}
 	virtual		~CPackReader();
 };
-class CFileReader : public IReader
-{
-public:
-				CFileReader(const char *name);
-	virtual		~CFileReader();
-};
+
 class CVirtualFileReader : public IReader
 {
 private:

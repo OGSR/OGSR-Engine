@@ -68,29 +68,6 @@ void VerifyPath(const std::string_view path) //Проверяет путь до 
 	(void)e;
 }
 
-void*  FileDownload(LPCSTR fn, u32* pdwSize)
-{
-	int		hFile;
-	u32		size;
-	void*	buf;
-
-	hFile	= _open(fn,O_RDONLY|O_BINARY|O_SEQUENTIAL,_S_IREAD);
-	if (hFile<=0)	{
-		Sleep	(1);
-		hFile	= _open(fn,O_RDONLY|O_BINARY|O_SEQUENTIAL,_S_IREAD);
-	}
-	R_ASSERT2(hFile>0,fn);
-	size	= _filelength(hFile);
-
-	buf		= Memory.mem_alloc	(size);
-	int r_bytes	= _read	(hFile,buf,size);
-	R_ASSERT3(r_bytes==(int)size,"Can't read file data:",fn);
-	_close	(hFile);
-	if (pdwSize) *pdwSize = size;
-	return buf;
-}
-
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -254,7 +231,6 @@ void	IReader::r	(void *p,int cnt)
 	advance				(cnt);
 #ifdef DEBUG
 	BOOL	bShow		= FALSE		;
-	if (dynamic_cast<CFileReader*>(this))			bShow = TRUE;
 	if (dynamic_cast<CVirtualFileReader*>(this))	bShow = TRUE;
 	if (bShow)			{
   		FS.dwOpenCounter	++		;
@@ -333,16 +309,6 @@ CPackReader::~CPackReader()
 	UnmapViewOfFile	(base_address);
 };
 //---------------------------------------------------
-// file stream
-CFileReader::CFileReader(const char *name)
-{
-    data	= (char *)FileDownload(name,(u32 *)&Size);
-    Pos		= 0;
-};
-CFileReader::~CFileReader()
-{	xr_free(data);	};
-//---------------------------------------------------
-
 
 CVirtualFileReader::CVirtualFileReader(const char *cFileName) 
 {

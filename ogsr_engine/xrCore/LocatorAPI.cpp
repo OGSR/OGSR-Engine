@@ -862,11 +862,6 @@ int CLocatorAPI::file_list(FS_FileSet& dest, LPCSTR path, u32 flags, LPCSTR mask
 
 void CLocatorAPI::file_from_cache_impl	(IReader *&R, LPSTR fname, const file &desc)
 {
-	if (desc.size_real<16*1024) {
-		R						= xr_new<CFileReader>(fname);
-		return;
-	}
-
 	R							= xr_new<CVirtualFileReader>(fname);
 }
 
