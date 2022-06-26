@@ -1,0 +1,27 @@
+#include "common.h"
+uniform float4 m_hud_params;
+uniform float4 screen_res;
+
+float resize(float input, float factor, float offset)
+{
+	return (input - 0.5f + offset) / factor + 0.5f - offset;
+}
+
+struct v2p
+{
+	float2 tc0:TEXCOORD0;
+	float4 pos2d:TEXCOORD1;
+};
+
+float4 main	(v2p I): COLOR
+{
+	float3 ss_pixel = I.pos2d;
+	float factor = screen_res.y / 2160.f;
+	float factor_i = 2160.f / screen_res.y;
+	factor = factor * (1.f / (m_hud_params.z / .45f)) * .14f;
+	
+	ss_pixel.x = resize(ss_pixel.x, factor * (factor_i * .9f), 0);
+	ss_pixel.y = resize(ss_pixel.y, factor * (factor_i * 1.4f), 0);
+	
+	return tex2D(s_base, ss_pixel) * m_hud_params.x;
+}
