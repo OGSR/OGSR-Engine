@@ -165,7 +165,7 @@ void CWeaponBM16::PlayAnimSprintEnd()
 const char* CWeaponBM16::GetAnimAimName()
 {
 	if (auto pActor = smart_cast<const CActor*>(H_Parent())) {
-		if (!HudBobbingAllowed()) {
+		if (AnmIdleMovingAllowed()) {
 			if (const u32 state = pActor->get_state(); state & mcAnyMove) {
 				if (IsScopeAttached())
 					return xr_strconcat(guns_bm_aim_anm, "anm_idle_aim_scope_moving", IsMisfire() ? "_jammed_" : "_");

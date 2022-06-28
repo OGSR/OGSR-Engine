@@ -1334,7 +1334,7 @@ void CWeaponMagazined::PlayAnimReload()
 const char* CWeaponMagazined::GetAnimAimName()
 {
 	if (auto pActor = smart_cast<const CActor*>(H_Parent())) {
-		if (!HudBobbingAllowed()) {
+		if (AnmIdleMovingAllowed()) {
 			if (const u32 state = pActor->get_state(); state & mcAnyMove) {
 				if (IsScopeAttached())
 					return xr_strconcat(guns_aim_anm, "anm_idle_aim_scope_moving", IsMisfire() ? "_jammed" : (iAmmoElapsed == 0 ? "_empty" : ""));

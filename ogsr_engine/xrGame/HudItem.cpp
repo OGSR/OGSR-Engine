@@ -62,7 +62,7 @@ void CHudItem::Load(LPCSTR section)
 			EnableHudInertion(pSettings->r_bool(hud_sect, "allow_inertion"));
 
 		if (pSettings->line_exist(hud_sect, "allow_bobbing"))
-			AllowHudBobbing(pSettings->r_bool(hud_sect, "allow_bobbing"));
+			allow_bobbing = pSettings->r_bool(hud_sect, "allow_bobbing");
 
 		hud_recalc_koef = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_recalc_koef", 1.35f); //На калаше при 1.35 вроде норм смотрится, другим стволам возможно придется подбирать другие значения.
 	}
@@ -310,7 +310,7 @@ void CHudItem::UpdateCL()
 		}
 	}
 
-	AllowHudBobbing(Core.Features.test(xrCore::Feature::wpn_bobbing) || Actor()->PsyAuraAffect);
+	AllowHudBobbing((Core.Features.test(xrCore::Feature::wpn_bobbing) && allow_bobbing) || Actor()->PsyAuraAffect);
 }
 
 void CHudItem::OnH_A_Chield()
@@ -493,7 +493,7 @@ bool CHudItem::TryPlayAnimIdle()
 				PlayAnimIdleSprint();
 				return true;
 			}
-			else if (!HudBobbingAllowed())
+			else if (AnmIdleMovingAllowed())
 			{
 				if (SprintType)
 				{
@@ -1312,3 +1312,5 @@ void CHudItem::OnAnimationEnd(u32 state) {
 		break;
 	}
 }
+
+bool CHudItem::AnmIdleMovingAllowed() const { return !HudBobbingAllowed() || Actor()->PsyAuraAffect; }

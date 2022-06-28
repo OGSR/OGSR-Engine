@@ -722,7 +722,7 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle()
 					}
 					act_state = AnimStateSprint;
 				}
-				else if (!HudBobbingAllowed())
+				else if (AnmIdleMovingAllowed())
 				{
 					if (SprintType)
 					{

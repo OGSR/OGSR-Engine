@@ -247,6 +247,7 @@ public:
 	virtual float GetHudFov(); // Получить HUD FOV от текущего оружия игрока
 	void UpdateHudAdditional(Fmatrix&, const bool need_update_collision = false);
 	bool HudBobbingAllowed() const { return m_huditem_flags.test(fl_bobbing_allow); }
+	bool AnmIdleMovingAllowed() const;
 	void AllowHudBobbing(BOOL B) { m_huditem_flags.set(fl_bobbing_allow, B); }
 	void GetBoneOffsetPosDir(const shared_str& bone_name, Fvector& dest_pos, Fvector& dest_dir, const Fvector& offset);
 	//Функция из ганслингера для приблизительной коррекции разности фовов худа и мира. Так себе на самом деле, но более годных способов я не нашел.
@@ -297,6 +298,8 @@ private:
 	Fvector m_strafe_offset[3][2]{}, m_lookout_offset[3][2]{}, m_jump_offset[3][2]{};
 
 	float m_base_fov{};
+
+	bool allow_bobbing{ true };
 
 	struct inertion_params {
 		float m_pitch_offset_r;
