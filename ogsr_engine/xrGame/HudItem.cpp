@@ -493,33 +493,30 @@ bool CHudItem::TryPlayAnimIdle()
 				PlayAnimIdleSprint();
 				return true;
 			}
-			else if (AnmIdleMovingAllowed())
+			else if (SprintType)
 			{
-				if (SprintType)
+				SwitchState(eSprintEnd);
+				return true;
+			}
+			else if ((State & mcAnyMove) && AnmIdleMovingAllowed())
+			{
+				if (!(State & mcCrouch))
 				{
-					SwitchState(eSprintEnd);
+					if (State & mcAccel) //Ходьба медленная (SHIFT)
+						PlayAnimIdleMovingSlow();
+					else
+						PlayAnimIdleMoving();
 					return true;
 				}
-				if (State & mcAnyMove)
+				else if (State & mcAccel) //Ходьба в присяде (CTRL+SHIFT)
 				{
-					if (!(State & mcCrouch))
-					{
-						if (State & mcAccel) //Ходьба медленная (SHIFT)
-							PlayAnimIdleMovingSlow();
-						else
-							PlayAnimIdleMoving();
-						return true;
-					}
-					else if(State & mcAccel) //Ходьба в присяде (CTRL+SHIFT)
-					{
-						PlayAnimIdleMovingCrouchSlow();
-						return true;
-					}
-					else
-					{
-						PlayAnimIdleMovingCrouch();
-						return true;
-					}
+					PlayAnimIdleMovingCrouchSlow();
+					return true;
+				}
+				else
+				{
+					PlayAnimIdleMovingCrouch();
+					return true;
 				}
 			}
 		}
@@ -1153,7 +1150,7 @@ CHudItem::CWeaponBobbing::CWeaponBobbing(CHudItem* parent) : parent_hud_item(par
 	fReminderFactor = 0.f;
 	is_limping = false;
 
-	m_fAmplitudeController = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "controller_amplitude", 0.002f);
+	m_fAmplitudeController = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "controller_amplitude", 0.003f);
 	m_fAmplitudeRun = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "run_amplitude", 0.0075f);
 	m_fAmplitudeWalk = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "walk_amplitude", 0.005f);
 	m_fAmplitudeLimp = READ_IF_EXISTS(pSettings, r_float, BOBBING_SECT, "limp_amplitude", 0.011f);

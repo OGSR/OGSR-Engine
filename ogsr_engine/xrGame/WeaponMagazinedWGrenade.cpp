@@ -722,25 +722,23 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle()
 					}
 					act_state = AnimStateSprint;
 				}
-				else if (AnmIdleMovingAllowed())
+				else if (SprintType)
 				{
-					if (SprintType)
-					{
-						SwitchState(eSprintEnd);
-						return;
-					}
-					if (State & mcAnyMove)
-					{
-						if (!(State & mcCrouch)) {
-							if (State & mcAccel) //Ходьба медленная (SHIFT)
-								act_state = AnimStateMovingSlow;
-							else
-								act_state = AnimStateMoving;
-						} else if (State & mcAccel) //Ходьба в присяде (CTRL+SHIFT)
-							act_state = AnimStateMovingCrouchSlow;
+					SwitchState(eSprintEnd);
+					return;
+				}
+				else if ((State & mcAnyMove) && AnmIdleMovingAllowed())
+				{
+					if (!(State & mcCrouch)) {
+						if (State & mcAccel) //Ходьба медленная (SHIFT)
+							act_state = AnimStateMovingSlow;
 						else
-							act_state = AnimStateMovingCrouch;
+							act_state = AnimStateMoving;
 					}
+					else if (State & mcAccel) //Ходьба в присяде (CTRL+SHIFT)
+						act_state = AnimStateMovingCrouchSlow;
+					else
+						act_state = AnimStateMovingCrouch;
 				}
 			}
 
