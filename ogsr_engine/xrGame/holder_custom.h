@@ -12,8 +12,8 @@ class CActor;
 class CHolderCustom
 {
 private:
-	CGameObject*			m_owner;
-	CActor*					m_ownerActor;
+	CGameObject* m_owner{};
+	CActor* m_ownerActor{};
 public:
 	CGameObject*			Owner				(){return m_owner;}
 	CGameObject*			Owner() const { return m_owner; }

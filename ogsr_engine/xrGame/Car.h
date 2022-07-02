@@ -402,7 +402,7 @@ private:
 	xr_map	  <u16,SDoor>	m_doors;
 	xr_vector <SDoor*>		m_doors_update;
 	xr_vector <Fvector>		m_gear_ratious;
-	xr_vector <Fmatrix>		m_sits_transforms;// m_sits_transforms[0] - driver_place
+	Fmatrix m_sits_transforms;  //driver_place
 	float					m_current_gear_ratio;
 
 	/////////////////////////////////////////////////////////////
@@ -534,7 +534,7 @@ public:
 	void					GetVelocity					(Fvector& vel)	{m_pPhysicsShell->get_LinearVel(vel);}
 	void					cam_Update					(float dt, float fov);
 	void					detach_Actor				();
-	bool					attach_Actor				(CGameObject* actor);
+	bool					attach_Actor				(CGameObject* actor) override;
 	bool					is_Door						(u16 id,xr_map<u16,SDoor>::iterator& i);
 	bool					is_Door						(u16 id);
 	bool					DoorOpen					(u16 id);

@@ -218,7 +218,7 @@ void CCar::SpawnInitPhysics	(CSE_Abstract	*D)
 	SetDefaultNetState				(so);
 	CPHUpdateObject::Activate       ();
 
-	m_pPhysicsShell->applyImpulse(Fvector().set(0,-1.f,0), 0.1);// хит по физ. оболочке, чтобы не висела в воздухе
+	//m_pPhysicsShell->applyImpulse(Fvector().set(0,-1.f,0), 0.1);// хит по физ. оболочке, чтобы не висела в воздухе //Исправлено лучше в CreateSkeleton
 }
 
 void	CCar::net_Destroy()
@@ -499,7 +499,7 @@ void CCar::UpdateCL				( )
 		
 		if(m_pPhysicsShell->isEnabled())
 		{
-			Owner()->XFORM().mul_43	(XFORM(),m_sits_transforms[0]);
+			Owner()->XFORM().mul_43(XFORM(), m_sits_transforms);
 		}
 
 		if(HUD().GetUI())//
@@ -646,7 +646,7 @@ void CCar::detach_Actor()
 
 bool CCar::attach_Actor(CGameObject* actor)
 {
-	if(Owner()||CPHDestroyable::Destroyed()) return false;
+	if (CPHDestroyable::Destroyed()) return false;
 	CHolderCustom::attach_Actor(actor);
 
 	IKinematics* K	= smart_cast<IKinematics*>(Visual());
@@ -656,27 +656,18 @@ bool CCar::attach_Actor(CGameObject* actor)
 		id=K->LL_BoneID(ini->r_string("car_definition","driver_place"));
 	else
 	{
-#pragma todo( "KRodin: Этот код выдаст ошибку, т.к. в начале функции если есть Owner() происходит выход из функции. Что здесь предполагалось делать?" )
 		Owner()->setVisible(0);
 		id=K->LL_GetBoneRoot();
 	}
 	CBoneInstance& instance=K->LL_GetBoneInstance				(u16(id));
-	m_sits_transforms.push_back(instance.mTransform);
+	m_sits_transforms.set(instance.mTransform);
+	actor->XFORM().mul_43(XFORM(), m_sits_transforms);
+
 	OnCameraChange(ectFirst);
 	PPhysicsShell()->Enable();
 	PPhysicsShell()->add_ObjectContactCallback(ActorObstacleCallback);
-//	VisualUpdate();
 	processing_activate();
-	ReleaseHandBreak();
-//	HUD().GetUI()->UIMainIngameWnd->CarPanel().Show(true);
-//	HUD().GetUI()->UIMainIngameWnd->CarPanel().SetCarHealth(fEntityHealth/100.f);
-	//HUD().GetUI()->UIMainIngameWnd.ShowBattery(true);
-	//CBoneData&	bone_data=K->LL_GetData(id);
-	//Fmatrix driver_pos_tranform;
-	//driver_pos_tranform.setHPB(bone_data.bind_hpb.x,bone_data.bind_hpb.y,bone_data.bind_hpb.z);
-	//driver_pos_tranform.c.set(bone_data.bind_translate);
-	//m_sits_transforms.push_back(driver_pos_tranform);
-	//H_SetParent(actor);
+	ReleaseBreaks();
 
 	return true;
 }
@@ -867,6 +858,8 @@ void CCar::CreateSkeleton(CSE_Abstract	*po)
 	m_pPhysicsShell->Activate(true);
 	m_pPhysicsShell->SetAirResistance(0.f,0.f);
 	m_pPhysicsShell->SetPrefereExactIntegration();
+
+	m_pPhysicsShell->Enable(); //Чтобы машины не висели в воздухе после спавна.
 
 	ApplySpawnIniToPhysicShell(&po->spawn_ini(),m_pPhysicsShell,false);
 	ApplySpawnIniToPhysicShell(smart_cast<IKinematics*>(Visual())->LL_UserData(),m_pPhysicsShell,false);
