@@ -276,7 +276,7 @@ public:
 		if (pA && pA->active_cam() == eacLookAt)
 			return false;
 
-		return (m_bHideCrosshairInZoom || ZoomTexture()) && !psActorFlags.test(AF_CROSSHAIR_DBG);
+		return m_bHideCrosshairInZoom || ZoomTexture();
 	}
 
 	virtual void			OnZoomChanged		() {}

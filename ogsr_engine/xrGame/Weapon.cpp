@@ -2007,7 +2007,7 @@ void CWeapon::Show(bool now)
 
 bool CWeapon::show_crosshair()
 {
-	return ! ( IsZoomed() && ZoomHideCrosshair() );
+	return psActorFlags.test(AF_CROSSHAIR_DBG) || !(IsZoomed() && ZoomHideCrosshair());
 }
 
 bool CWeapon::show_indicators()
