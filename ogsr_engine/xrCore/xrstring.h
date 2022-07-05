@@ -99,7 +99,7 @@ IC void	xr_strlwr		(shared_str& src)									{ if (*src){LPSTR lp=xr_strdup(*src
 
 
 struct string_hash {
-	using transparent_key_equal = std::equal_to<>; //Будет использоваться в C++20
+	using is_transparent = void; // https://www.cppstories.com/2021/heterogeneous-access-cpp20/
 	using hash_type = std::hash<std::string_view>;
 	[[nodiscard]] decltype(auto) operator()(std::string_view txt)   const noexcept { return hash_type{}(txt); }
 	[[nodiscard]] decltype(auto) operator()(const std::string& txt) const noexcept { return hash_type{}(txt); }
@@ -108,4 +108,4 @@ struct string_hash {
 };
 
 template<typename Key, typename Value>
-using string_unordered_map = std::unordered_map<Key, Value, string_hash, string_hash::transparent_key_equal>; //TODO: Убрать четвёртый аргумент шаблона в С++20!
+using string_unordered_map = std::unordered_map<Key, Value, string_hash, std::equal_to<>>;

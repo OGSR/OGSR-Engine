@@ -22,8 +22,6 @@ class XRCORE_API CInifile {
   };
   using Root = string_unordered_map<shared_str, Sect*>;
 
-  static_assert(std::is_same_v<Root::key_equal, string_hash::transparent_key_equal>, "Invalid key_equal"); //Нужная проверка в будущем, не убирать!
-
   // factorisation
   static CInifile* Create  ( LPCSTR, BOOL = TRUE );
   static void      Destroy ( CInifile* );
