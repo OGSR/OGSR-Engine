@@ -394,14 +394,14 @@ u32 CHudItem::PlayHUDMotion(std::initializer_list<const char*> Ms, const bool bM
 	for (const auto* M : Ms)
 		if (AnimationExist(M))
 			return PlayHUDMotion(M, bMixIn, state, randomAnim);
-
+	/*
 	std::string dbg_anim_name;
 	for (const auto* M : Ms) {
 		dbg_anim_name += M;
 		dbg_anim_name += ", ";
 	}
-	//Msg("~~[%s] Motions [%s] not found for [%s]", __FUNCTION__, dbg_anim_name.c_str(), HudSection().c_str());
-
+	Msg("~~[%s] Motions [%s] not found for [%s]", __FUNCTION__, dbg_anim_name.c_str(), HudSection().c_str());
+	*/
 	return 0;
 }
 
