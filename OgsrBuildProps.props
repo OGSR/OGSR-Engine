@@ -4,14 +4,7 @@
   <PropertyGroup>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
 
-    <!-- Default is v142 -->
-    <PlatformToolset>v142</PlatformToolset>
-
-    <!-- v141 is allowed -->
-    <PlatformToolset Condition="'$(DefaultPlatformToolset)'=='v141'">v141</PlatformToolset>
-
-    <!-- v143 is allowed -->
-    <PlatformToolset Condition="'$(DefaultPlatformToolset)'=='v143'">v143</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
 
     <!--CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir-->
   </PropertyGroup>
@@ -25,8 +18,7 @@
     <ClCompile>
       <EnableEnhancedInstructionSet Condition="'$(Platform)'=='Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
 
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <LanguageStandard Condition="'$(PlatformToolset)'=='v143'">stdcpp20</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
 
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
