@@ -2,10 +2,21 @@
 
 uniform float4 m_hud_params;
 uniform float4 screen_res;
+uniform float4 m_affects;
 
 float resize(float input, float factor, float offset)
 {
-	return (input - 0.5 + offset) / factor + 0.5 - offset;
+	return (input - 0.5f + offset) / factor + 0.5f - offset;
+}
+
+// https://stackoverflow.com/a/10625698
+float random(float2 p)
+{
+	float2 K1 = float2(
+		23.14069263277926f, // e^pi (Gelfond's constant)
+		2.665144142690225f // 2^sqrt(2) (Gelfondâ€“Schneider constant)
+	);
+	return frac( cos( dot(p, K1) ) * 12345.6789f );
 }
 
 float4 main	(p_flat I, float4 pos2d: SV_Position, float2 tc0: TEXCOORD0): SV_Target
@@ -13,11 +24,16 @@ float4 main	(p_flat I, float4 pos2d: SV_Position, float2 tc0: TEXCOORD0): SV_Tar
 	float factor = screen_res.y / 2160.0;
 	factor = factor * (1.0 / (m_hud_params.z / 0.45)) * 0.75;
 	float size = 512.0 * factor;
-	
+
 	pos2d.x = pos2d.x - (screen_res.x - size) / 2.0;
 	pos2d.y = pos2d.y - (screen_res.y - size) / 2.0;
 	pos2d.x = resize(pos2d.x, factor, 0);
 	pos2d.y = resize(pos2d.y, factor, 0);
-	
-	return s_base.Load(pos2d.xyz) * m_hud_params.x;
+
+	// Коллиматоры глючат при выбросе
+	float mig = 1.0f - (m_affects.x * 2.f);
+
+	float4 final = s_base.Load(pos2d.xyz) * m_hud_params.x;
+
+	return float4(final.r, final.g, final.b, random(timers.xz) > mig ? 0.f : final.a);
 }

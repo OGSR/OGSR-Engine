@@ -1,10 +1,22 @@
 #include "common.h"
+
 uniform float4 m_hud_params;
 uniform float4 screen_res;
+uniform float4 m_affects;
 
 float resize(float input, float factor, float offset)
 {
 	return (input - 0.5f + offset) / factor + 0.5f - offset;
+}
+
+// https://stackoverflow.com/a/10625698
+float random(float2 p)
+{
+	float2 K1 = float2(
+		23.14069263277926f, // e^pi (Gelfond's constant)
+		2.665144142690225f // 2^sqrt(2) (Gelfondâ€“Schneider constant)
+	);
+	return frac( cos( dot(p, K1) ) * 12345.6789f );
 }
 
 struct v2p
@@ -19,9 +31,14 @@ float4 main	(v2p I): COLOR
 	float factor = screen_res.y / 2160.f;
 	float factor_i = 2160.f / screen_res.y;
 	factor = factor * (1.f / (m_hud_params.z / .45f)) * .14f;
-	
+
 	ss_pixel.x = resize(ss_pixel.x, factor * (factor_i * .9f), 0);
 	ss_pixel.y = resize(ss_pixel.y, factor * (factor_i * 1.4f), 0);
-	
-	return tex2D(s_base, ss_pixel) * m_hud_params.x;
+
+	// Коллиматоры глючат при выбросе
+	float mig = 1.0f - (m_affects.x * 2.f);
+
+	float4 final = tex2D(s_base, ss_pixel) * m_hud_params.x;
+
+	return float4(final.r, final.g, final.b, random(timers.xz) > mig ? 0.f : final.a);
 }
