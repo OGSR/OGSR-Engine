@@ -100,6 +100,7 @@ CSE_Abstract::CSE_Abstract					(LPCSTR caSection)
 			IReader				*reader = FS.r_open(file_name);
 			VERIFY				(reader);
 			{
+#pragma todo("Тут бессмысленное создание буфера, чтобы избавиться от него, надо поменять тип m_ini_string на std::string")
 				int				size = reader->length()*sizeof(char);
 				LPSTR			temp = (LPSTR)_alloca(size + 1);
 				CopyMemory		(temp,reader->pointer(),size);

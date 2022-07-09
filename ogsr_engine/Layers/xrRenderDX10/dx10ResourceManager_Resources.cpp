@@ -170,11 +170,7 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		IReader* file = FS.r_open(cname);
 		R_ASSERT2(file, cname);
 
-		u32	const size			= file->length();
-		char* const data		= (LPSTR)_alloca(size + 1);
-		CopyMemory				( data, file->pointer(), size );
-		data[size]				= 0;
-		FS.r_close				( file );
+		const std::string_view strbuf{ reinterpret_cast<const char*>(file->pointer()), static_cast<size_t>(file->length()) };
 
 		// Select target
 		LPCSTR						c_target	= "vs_2_0";
@@ -182,10 +178,12 @@ SVS*	CResourceManager::_CreateVS		(LPCSTR _name)
 		if (HW.Caps.geometry_major>=2)	c_target="vs_2_0";
 		else 							c_target="vs_1_1";
 
-		if (strstr(data, "main_vs_1_1"))	{ c_target = "vs_1_1"; c_entry = "main_vs_1_1";	}
-		if (strstr(data, "main_vs_2_0"))	{ c_target = "vs_2_0"; c_entry = "main_vs_2_0";	}
+		if (strbuf.find("main_vs_2_0") != decltype(strbuf)::npos) { c_target = "vs_2_0"; c_entry = "main_vs_2_0"; }
+		else if (strbuf.find("main_vs_1_1") != decltype(strbuf)::npos) { c_target = "vs_1_1"; c_entry = "main_vs_1_1"; }
 
-		HRESULT	const _hr		= ::Render->shader_compile(name,(DWORD const*)data,size, c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_vs );
+		HRESULT	const _hr = ::Render->shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_vs);
+
+		FS.r_close(file);
 
 		VERIFY(SUCCEEDED(_hr));
 
@@ -264,23 +262,21 @@ SPS*	CResourceManager::_CreatePS			(LPCSTR _name)
 		IReader* file = FS.r_open(cname);
 		R_ASSERT2(file, cname);
 
-		u32	const size			= file->length();
-		char* const data		= (LPSTR)_alloca(size + 1);
-		CopyMemory				( data, file->pointer(), size );
-		data[size]				= 0;
-		FS.r_close				( file );
+		const std::string_view strbuf{ reinterpret_cast<const char*>(file->pointer()), static_cast<size_t>(file->length()) };
 
 		// Select target
 		LPCSTR						c_target	= "ps_2_0";
 		LPCSTR						c_entry		= "main";
-		if (strstr(data,"main_ps_1_1"))			{ c_target = "ps_1_1"; c_entry = "main_ps_1_1";	}
-		if (strstr(data,"main_ps_1_2"))			{ c_target = "ps_1_2"; c_entry = "main_ps_1_2";	}
-		if (strstr(data,"main_ps_1_3"))			{ c_target = "ps_1_3"; c_entry = "main_ps_1_3";	}
-		if (strstr(data,"main_ps_1_4"))			{ c_target = "ps_1_4"; c_entry = "main_ps_1_4";	}
-		if (strstr(data,"main_ps_2_0"))			{ c_target = "ps_2_0"; c_entry = "main_ps_2_0";	}
+		if (strbuf.find("main_ps_2_0") != decltype(strbuf)::npos) { c_target = "ps_2_0"; c_entry = "main_ps_2_0"; }
+		else if (strbuf.find("main_ps_1_4") != decltype(strbuf)::npos) { c_target = "ps_1_4"; c_entry = "main_ps_1_4"; }
+		else if (strbuf.find("main_ps_1_3") != decltype(strbuf)::npos) { c_target = "ps_1_3"; c_entry = "main_ps_1_3"; }
+		else if (strbuf.find("main_ps_1_2") != decltype(strbuf)::npos) { c_target = "ps_1_2"; c_entry = "main_ps_1_2"; }
+		else if (strbuf.find("main_ps_1_1") != decltype(strbuf)::npos) { c_target = "ps_1_1"; c_entry = "main_ps_1_1"; }
 
-		HRESULT	const _hr		= ::Render->shader_compile(name,(DWORD const*)data,size, c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_ps );
+		HRESULT	const _hr = ::Render->shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_ps);
 		
+		FS.r_close(file);
+
 		VERIFY(SUCCEEDED(_hr));
 
 		R_ASSERT(
