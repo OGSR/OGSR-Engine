@@ -25,9 +25,9 @@ _out main( v2p I )
 	float3	s0		= s_sky0.Sample( smp_rtlinear, I.tc0 );
 	float3	s1		= s_sky1.Sample( smp_rtlinear, I.tc1 );
 	float3	sky		= I.factor*lerp( s0, s1, I.factor.w );
-#ifdef USE_COP_WEATHER_CONFIGS
-	sky *= 0.33f;
-#endif
+
+	if (m_actor_params.a > 0.0f)
+		sky *= 0.33f;
 
 	// final tone-mapping
 	_out			o;

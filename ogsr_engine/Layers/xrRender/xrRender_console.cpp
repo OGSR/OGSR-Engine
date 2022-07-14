@@ -211,11 +211,7 @@ float		ps_r2_ls_bloom_kernel_scale	= .7f;				// r2-only	// gauss
 float		ps_r2_ls_dsm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_psm_kernel			= .7f;				// r2-only
 float		ps_r2_ls_ssm_kernel			= .7f;				// r2-only
-#ifdef USE_COP_WEATHER_CONFIGS
 float		ps_r2_ls_bloom_threshold	= .00001f;				// r2-only
-#else
-float		ps_r2_ls_bloom_threshold = 1.f;				// r2-only
-#endif
 float		ps_r2_mblur					= .0f;				// .5f
 int			ps_r2_GI_depth				= 1;				// 1..5
 int			ps_r2_GI_photons			= 16;				// 8..64
@@ -287,12 +283,7 @@ float		dm_current_fade = 47.5;	//float(2*dm_current_size)-.5f;
 float		ps_current_detail_density = 0.6;
 float		ps_current_detail_scale = 1.f;
 
-
-#ifdef USE_COP_WEATHER_CONFIGS
 float ps_r2_gloss_factor = 4.0f;
-#else
-float ps_r2_gloss_factor = 1.0f;
-#endif
 
 // textures 
 int psTextureLOD = 0;
@@ -754,6 +745,11 @@ public:
 //-----------------------------------------------------------------------
 void		xrRender_initconsole	()
 {
+	if (!FS.path_exist("$game_weathers$")) {
+		ps_r2_ls_bloom_threshold = 1.0f;
+		ps_r2_gloss_factor = 1.0f;
+	}
+
 	CMD3(CCC_Preset,	"_preset",				&ps_Preset,	qpreset_token	);
 
 	CMD4(CCC_Integer,	"rs_skeleton_update",	&psSkeletonUpdate,	2,		128	);

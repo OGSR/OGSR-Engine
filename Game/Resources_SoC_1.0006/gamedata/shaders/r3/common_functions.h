@@ -12,26 +12,27 @@ float Contrast(float Input, float ContrastPower)
      return Output;
 }
 
+uniform float4 m_actor_params;
+
 void tonemap( out float4 low, out float4 high, float3 rgb, float scale)
 {
 	rgb		=	rgb*scale;
 
-#ifdef USE_COP_WEATHER_CONFIGS
+	if (m_actor_params.a > 0.0f)
+	{
+		const float fWhiteIntensity = 1.7;
 
-	const float fWhiteIntensity = 1.7;
+		const float fWhiteIntensitySQR = fWhiteIntensity*fWhiteIntensity;
 
-	const float fWhiteIntensitySQR = fWhiteIntensity*fWhiteIntensity;
+		low		=	( (rgb*(1+rgb/fWhiteIntensitySQR)) / (rgb+1) ).xyzz;
 
-	low		=	( (rgb*(1+rgb/fWhiteIntensitySQR)) / (rgb+1) ).xyzz;
-
-	high	=	rgb.xyzz/def_hdr;	// 8x dynamic range
-
-#else
-
-	low		=	rgb.xyzz;
-	high	=	low/def_hdr;	// 8x dynamic range
-
-#endif
+		high	=	rgb.xyzz/def_hdr;	// 8x dynamic range
+	}
+	else
+	{
+		low		=	rgb.xyzz;
+		high	=	low/def_hdr;	// 8x dynamic range
+	}
 }
 
 float4 combine_bloom( float3  low, float4 high)	

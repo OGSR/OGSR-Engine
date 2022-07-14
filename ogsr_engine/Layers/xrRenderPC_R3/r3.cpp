@@ -1232,15 +1232,6 @@ HRESULT	CRender::shader_compile			(
 	}
 	sh_name[len]='0'+char(o.dx10_minmax_sm!=0); ++len;
 
-#ifdef USE_COP_WEATHER_CONFIGS
-	defines[def_it].Name = "USE_COP_WEATHER_CONFIGS";
-	defines[def_it].Definition = "1";
-	def_it++;
-	sh_name[len] = '1'; ++len;
-#else
-	sh_name[len] = '0'; ++len;
-#endif
-
 	if (ps_r2_ls_flags_ext.test(R2FLAGEXT_TERRAIN_PARALLAX))
 	{
 		defines[def_it].Name = "TERRAIN_PARALLAX_ENABNLED";

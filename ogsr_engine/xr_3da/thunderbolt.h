@@ -42,15 +42,14 @@ struct SThunderboltDesc
 public:
 								SThunderboltDesc		();
 	INGAME_EDITOR_VIRTUAL	    ~SThunderboltDesc		();
-#ifdef USE_COP_WEATHER_CONFIGS
-						  void	load					(CInifile& pIni, shared_str const& sect);
-	INGAME_EDITOR_VIRTUAL void	create_top_gradient		(CInifile& pIni, shared_str const& sect);
-	INGAME_EDITOR_VIRTUAL void	create_center_gradient	(CInifile& pIni, shared_str const& sect);
-#else
-	void	load(CInifile* pIni, shared_str const& sect);
-	INGAME_EDITOR_VIRTUAL void	create_top_gradient(CInifile* pIni, shared_str const& sect);
-	INGAME_EDITOR_VIRTUAL void	create_center_gradient(CInifile* pIni, shared_str const& sect);
-#endif
+
+	void	load(CInifile& pIni, shared_str const& sect);
+	INGAME_EDITOR_VIRTUAL void	create_top_gradient(CInifile& pIni, shared_str const& sect);
+	INGAME_EDITOR_VIRTUAL void	create_center_gradient(CInifile& pIni, shared_str const& sect);
+
+	void	load_shoc(CInifile* pIni, shared_str const& sect);
+	INGAME_EDITOR_VIRTUAL void create_top_gradient_shoc(CInifile* pIni, shared_str const& sect);
+	INGAME_EDITOR_VIRTUAL void create_center_gradient_shoc(CInifile* pIni, shared_str const& sect);
 };
 
 #undef INGAME_EDITOR_VIRTUAL
@@ -61,14 +60,11 @@ struct SThunderboltCollection
 	DescVec			  			palette;
 	shared_str					section;
 public:
-								SThunderboltCollection	();
-								~SThunderboltCollection	();
-#ifdef USE_COP_WEATHER_CONFIGS
-						void	load					(CInifile* pIni, CInifile* thunderbolts, LPCSTR sect);
-#else
-								void	load(CInifile* pIni, LPCSTR sect);
-#endif
-	SThunderboltDesc*			GetRandomDesc			(){VERIFY(palette.size()>0); return palette[Random.randI(palette.size())];}
+	SThunderboltCollection	();
+	~SThunderboltCollection	();
+	void load(CInifile* pIni, CInifile* thunderbolts, LPCSTR sect);
+	void load_shoc(CInifile* pIni, LPCSTR sect);
+	SThunderboltDesc* GetRandomDesc() { return palette.at(Random.randI(palette.size())); }
 };
 
 #define THUNDERBOLT_CACHE_SIZE	8
@@ -124,9 +120,6 @@ public:
 	void						OnFrame				(shared_str id,float period, float duration);
 	void						Render				();
 
-#ifdef USE_COP_WEATHER_CONFIGS
-	shared_str 					AppendDef			(CEnvironment& environment, CInifile* pIni, CInifile* thunderbolts, LPCSTR sect);
-#else
-	shared_str 					AppendDef(CEnvironment& environment, CInifile* pIni, LPCSTR sect);
-#endif
+	shared_str AppendDef(CEnvironment& environment, CInifile* pIni, CInifile* thunderbolts, LPCSTR sect);
+	shared_str AppendDef_shoc(CEnvironment& environment, CInifile* pIni, LPCSTR sect);
 };

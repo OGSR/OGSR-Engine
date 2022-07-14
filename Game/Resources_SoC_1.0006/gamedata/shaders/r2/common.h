@@ -235,12 +235,15 @@ uniform sampler2D       s_tonemap;              // actually MidleGray / exp(Lw +
 #define def_hdr_clip	half(0.75h)        		//
 
 //////////////////////////////////////////////////////////////////////////////////////////
+uniform float4 m_actor_params;
+
 #define	LUMINANCE_VECTOR                 half3(0.3f, 0.38f, 0.22f)
 void        tonemap              (out half4 low, out half4 high, half3 rgb, half scale)
 {
         rgb     =      	rgb*scale       ;
 
-#ifdef USE_COP_WEATHER_CONFIGS
+	if (m_actor_params.a > 0.0f)
+	{
 
 		const float fWhiteIntensity = 1.7;
 
@@ -256,12 +259,13 @@ void        tonemap              (out half4 low, out half4 high, half3 rgb, half
         high	=       half4       	(rgb/def_hdr,   0 )	;		// 8x dynamic range
 #endif
 
-#else
+	}
+	else
+	{
+		low		=	rgb.xyzz;
+		high	=	low/def_hdr;	// 8x dynamic range
+	}
 
-	low		=	rgb.xyzz;
-	high	=	low/def_hdr;	// 8x dynamic range
-
-#endif
 }
 half4		combine_bloom        (half3  low, half4 high)	{
         return        half4(low + high*high.a, 1.h);

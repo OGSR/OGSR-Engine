@@ -984,15 +984,6 @@ HRESULT	CRender::shader_compile			(
 		sh_name[len]='0'; ++len;
 	}
 
-#ifdef USE_COP_WEATHER_CONFIGS
-	defines[def_it].Name = "USE_COP_WEATHER_CONFIGS";
-	defines[def_it].Definition = "1";
-	def_it++;
-	sh_name[len] = '1'; ++len;
-#else
-	sh_name[len] = '0'; ++len;
-#endif
-
 	// finish
 	defines[def_it].Name			=	0;
 	defines[def_it].Definition		=	0;

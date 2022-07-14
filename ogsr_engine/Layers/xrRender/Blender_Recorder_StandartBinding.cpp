@@ -402,7 +402,7 @@ static class cl_actor_params final : public R_constant_setup
 {
 	void setup(R_constant* C) override {
 		const auto& P = shader_exports.get_actor_params();
-		RCache.set_c(C, P.x, P.y, P.z, 0.f);
+		RCache.set_c(C, P.x, P.y, P.z, g_pGamePersistent->Environment().USED_COP_WEATHER ? 1.0f : 0.0f);
 	}
 } binder_actor_params;
 

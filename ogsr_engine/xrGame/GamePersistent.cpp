@@ -46,12 +46,6 @@ CGamePersistent::CGamePersistent(void)
 	ambient_effect_wind_out_time = 0.f;
 	ambient_effect_wind_on = false;
 
-#ifdef USE_COP_WEATHER_CONFIGS
-	ZeroMemory(ambient_sound_next_time, sizeof(ambient_sound_next_time));
-#else
-	ambient_sound_next_time = 0;
-#endif
-
 	m_pUI_core					= NULL;
 	m_pMainMenu					= NULL;
 	m_intro						= NULL;
@@ -200,9 +194,11 @@ void CGamePersistent::OnGameEnd	()
 }
 
 
-#ifdef USE_COP_WEATHER_CONFIGS
 void CGamePersistent::WeathersUpdate()
 {
+	if (g_pGamePersistent->Environment().USED_COP_WEATHER)
+	{
+
 	if (g_pGameLevel && !g_dedicated_server)
 	{
 		CActor* actor = smart_cast<CActor*>(Level().CurrentViewEntity());
@@ -250,7 +246,7 @@ void CGamePersistent::WeathersUpdate()
 #endif // DEBUG
 
 						VERIFY(snd._handle());
-						u32 _length_ms = iFloor(snd.get_length_sec()*1000.0f);
+						u32 _length_ms = iFloor(snd.get_length_sec() * 1000.0f);
 						ambient_sound_next_time[idx] = Device.dwTimeGlobal + _length_ms + ch.get_rnd_sound_time();
 						//					Msg("- Playing ambient sound channel [%s] file[%s]",ch.m_load_section.c_str(),snd._handle()->file_name());
 					}
@@ -306,9 +302,9 @@ void CGamePersistent::WeathersUpdate()
 					Environment().wind_blast_stop_time.set(0.f, eff->wind_blast_direction.x, eff->wind_blast_direction.y, eff->wind_blast_direction.z);
 				}
 			}
-			else if ( !ambient_particles && Device.dwTimeGlobal > ambient_effect_next_time ) {
+			else if (!ambient_particles && Device.dwTimeGlobal > ambient_effect_next_time) {
 				CEnvAmbient::SEffect* eff = env_amb->get_rnd_effect();
-				if ( eff )
+				if (eff)
 					ambient_effect_next_time = Device.dwTimeGlobal + env_amb->get_rnd_effect_time();
 			}
 		}
@@ -371,10 +367,11 @@ void CGamePersistent::WeathersUpdate()
 		if (ambient_particles && !ambient_particles->IsPlaying())
 			CParticlesObject::Destroy(ambient_particles);
 	}
-}
-#else
-void CGamePersistent::WeathersUpdate()
-{
+
+	}
+	else
+	{
+
 	if (g_pGameLevel && !g_dedicated_server)
 	{
 		CActor* actor = smart_cast<CActor*>(Level().CurrentViewEntity());
@@ -391,10 +388,10 @@ void CGamePersistent::WeathersUpdate()
 		// start sound
 		if (env_amb)
 		{
-			if (Device.dwTimeGlobal > ambient_sound_next_time)
+			if (Device.dwTimeGlobal > ambient_sound_next_time_shoc)
 			{
 				ref_sound* snd = env_amb->get_rnd_sound();
-				ambient_sound_next_time = Device.dwTimeGlobal + env_amb->get_rnd_sound_time();
+				ambient_sound_next_time_shoc = Device.dwTimeGlobal + env_amb->get_rnd_sound_time();
 				if (snd)
 				{
 					Fvector	pos;
@@ -413,7 +410,7 @@ void CGamePersistent::WeathersUpdate()
 				CEnvAmbient::SEffect* eff = env_amb->get_rnd_effect();
 				if (eff) {
 					Environment().wind_gust_factor = eff->wind_gust_factor;
-					ambient_effect_next_time = Device.dwTimeGlobal + env_amb->get_rnd_effect_time();
+					ambient_effect_next_time = Device.dwTimeGlobal + env_amb->get_rnd_effect_time_shoc();
 					ambient_effect_stop_time = Device.dwTimeGlobal + eff->life_time;
 					ambient_particles = CParticlesObject::Create(eff->particles.c_str(), FALSE, false);
 					Fvector pos; pos.add(Device.vCameraPosition, eff->offset);
@@ -421,10 +418,10 @@ void CGamePersistent::WeathersUpdate()
 					if (eff->sound._handle())		eff->sound.play_at_pos(0, pos);
 				}
 			}
-			else if ( !ambient_particles && Device.dwTimeGlobal > ambient_effect_next_time ) {
+			else if (!ambient_particles && Device.dwTimeGlobal > ambient_effect_next_time) {
 				CEnvAmbient::SEffect* eff = env_amb->get_rnd_effect();
-				if ( eff )
-					ambient_effect_next_time = Device.dwTimeGlobal + env_amb->get_rnd_effect_time();
+				if (eff)
+					ambient_effect_next_time = Device.dwTimeGlobal + env_amb->get_rnd_effect_time_shoc();
 			}
 		}
 		// stop if time exceed or indoor
@@ -436,8 +433,10 @@ void CGamePersistent::WeathersUpdate()
 		if (ambient_particles && !ambient_particles->IsPlaying())
 			CParticlesObject::Destroy(ambient_particles);
 	}
+
+	}
 }
-#endif
+
 
 #include "UI/UIGameTutorial.h"
 

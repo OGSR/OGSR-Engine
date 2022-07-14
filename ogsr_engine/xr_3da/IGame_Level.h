@@ -55,6 +55,7 @@ protected:
 	u32							Sounds_Random_dwNextTime{};
 	BOOL						Sounds_Random_Enabled{};
 	CCameraManager*				m_pCameras;
+	std::string on_change_weather_callback;
 
 	// temporary
 	xr_vector<ISpatial*>		snd_ER;
@@ -110,6 +111,7 @@ public:
 	//ref_shader					LL_CreateShader			(int S, int T, int M, int C);
 	void						LL_CheckTextures		();
 	virtual void				SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTimeFactor) = 0;
+	virtual void OnChangeCurrentWeather(const char* sect) = 0;
 
 	virtual void OnDestroyObject(u16 id) = 0;
 

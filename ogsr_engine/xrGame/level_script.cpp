@@ -109,9 +109,9 @@ u32 get_weather_last_shift	()
 void set_weather	(LPCSTR weather_name, bool forced)
 {
 	//KRodin: ТЧ погоду всегда надо обновлять форсировано, иначе она почему-то не всегда корректно обновляется. А для ЗП погоды так делать нельзя - будут очень резкие переходы!
-#ifndef USE_COP_WEATHER_CONFIGS
-	forced = true;
-#endif
+	if (!g_pGamePersistent->Environment().USED_COP_WEATHER)
+		forced = true;
+
 	g_pGamePersistent->Environment().SetWeather(weather_name, forced);
 }
 
@@ -972,16 +972,12 @@ void CLevel::script_register(lua_State *L)
           .def_readwrite( "fog_distance", &CEnvDescriptor::fog_distance )
           .def_readwrite( "far_plane",   &CEnvDescriptor::far_plane)
           .def_readwrite( "sun_dir",     &CEnvDescriptor::sun_dir )
-#ifndef USE_COP_WEATHER_CONFIGS
-          .def("load", (void(CEnvDescriptor::*) (float, LPCSTR, CEnvironment&)) &CEnvDescriptor::load)
-#endif
+          .def("load", (void(CEnvDescriptor::*) (float, LPCSTR, CEnvironment&)) &CEnvDescriptor::load_shoc)
           .def( "set_env_ambient", &CEnvDescriptor::setEnvAmbient ),
 	class_<CEnvironment>( "CEnvironment" )
           .def( "current",           current_environment )
-#ifndef USE_COP_WEATHER_CONFIGS
           .def( "ForceReselectEnvs", &CEnvironment::ForceReselectEnvs )
           .def( "getCurrentWeather", &CEnvironment::getCurrentWeather )
-#endif
 	,
 
 	class_<CPHCall>( "CPHCall" )
