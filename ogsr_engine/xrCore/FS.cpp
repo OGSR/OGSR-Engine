@@ -316,7 +316,8 @@ CVirtualFileReader::CVirtualFileReader(const char *cFileName)
 	hSrcFile		= CreateFile(cFileName, GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
 	R_ASSERT3		(hSrcFile!=INVALID_HANDLE_VALUE,cFileName,Debug.error2string(GetLastError()));
 	Size			= (int)GetFileSize(hSrcFile, NULL);
-	R_ASSERT3		(Size,cFileName,Debug.error2string(GetLastError()));
+	if (Size == 0)
+		Msg("~~[%s] Found empty file: [%s]", __FUNCTION__, cFileName);
 
 	hSrcMap			= CreateFileMapping (hSrcFile, 0, PAGE_READONLY, 0, 0, 0);
 	R_ASSERT3		(hSrcMap!=INVALID_HANDLE_VALUE,cFileName,Debug.error2string(GetLastError()));
