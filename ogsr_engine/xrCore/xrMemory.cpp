@@ -8,11 +8,11 @@
 
 // Additional 16 bytes of memory almost like in original xr_aligned_offset_malloc
 // But for DEBUG we don't need this if we want to find memory problems
-#ifdef DEBUG
-static constexpr size_t reserved = 0;
-#else
-static constexpr size_t reserved = 16;
-#endif
+//#ifdef DEBUG
+constexpr size_t reserved = 0;
+//#else
+//constexpr size_t reserved = 16;
+//#endif
 
 
 xrMemory Memory;
