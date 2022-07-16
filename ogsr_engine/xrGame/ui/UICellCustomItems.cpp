@@ -30,7 +30,6 @@ bool CUIInventoryCellItem::EqualTo(CUICellItem* itm)
 	CUIInventoryCellItem* ci = smart_cast<CUIInventoryCellItem*>(itm);
 	if(!itm)				return false;
 
-	// Real Wolf: Колбек на группировку и само регулирование группировкой предметов. 12.08.2014.
 	auto item1 = (CInventoryItem*)m_pData;
 	auto item2 = (CInventoryItem*)itm->m_pData;
 
@@ -339,14 +338,17 @@ void CUIWeaponCellItem::InitAllAddons(CUIStatic* s_silencer, CUIStatic* s_scope,
 
 	if (s_silencer) {
 		params.Load(*object()->GetSilencerName());
+		params.set_shader( s_silencer );
 		InitAddon(s_silencer, params, m_addon_offset[eSilencer], b_vertical);
 	}
 	if (s_scope) {
 		params.Load(*object()->GetScopeName());
+		params.set_shader( s_scope );
 		InitAddon(s_scope, params, m_addon_offset[eScope], b_vertical);
 	}
 	if (s_launcher) {
 		params.Load(*object()->GetGrenadeLauncherName());
+		params.set_shader( s_launcher );
 		InitAddon(s_launcher, params, m_addon_offset[eLauncher], b_vertical);
 	}
 }
@@ -354,7 +356,6 @@ void CUIWeaponCellItem::InitAllAddons(CUIStatic* s_silencer, CUIStatic* s_scope,
 void CUIWeaponCellItem::InitAddon(CUIStatic* s, CIconParams &params, Fvector2 addon_offset, bool b_rotate)
 {
 	
-		Frect					tex_rect;
 		Fvector2				base_scale;
 		Fvector2				inventory_size;
 		Fvector2				expected_size;
@@ -368,12 +369,12 @@ void CUIWeaponCellItem::InitAddon(CUIStatic* s, CIconParams &params, Fvector2 ad
 		if (Heading())
 		{   // h = 250, w = 80, i.x = 300, i.y = 100	
 			if (1 == method)
-			{   // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ height & width.
+			{
 				expected_size.x = m_cell_size.y * m_grid_size.x;
 				expected_size.y = m_cell_size.x * m_grid_size.y;
 			}
 			if (2 == method)
-			{   // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ height & width + пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+			{
 				expected_size.x = m_cell_size.y * m_grid_size.y;
 				expected_size.y = m_cell_size.x * m_grid_size.x;
 			}
@@ -393,18 +394,11 @@ void CUIWeaponCellItem::InitAddon(CUIStatic* s, CIconParams &params, Fvector2 ad
 			base_scale.y = expected_size.y / inventory_size.y;
 		}
 
-		Fvector2				cell_size;
-		Frect rect = params.original_rect();
+		Fvector2 cell_size;
+		cell_size.x = params.grid_width  * INV_GRID_WIDTHF;
+		cell_size.y = params.grid_height * INV_GRID_HEIGHTF;
+		cell_size.mul( base_scale );
 
-		cell_size.x				= rect.width(); // это допущение, что ячейки инвентаря 50х50 всегда? )
-		cell_size.y				= rect.height();
-
-		tex_rect.x1				= rect.x1;
-		tex_rect.y1				= rect.y1;
-
-		tex_rect.rb.add			(tex_rect.lt,cell_size);
-
-		cell_size.mul			(base_scale);
 		if (b_rotate)
 		{
 			s->SetWndSize(Fvector2().set(cell_size.y, cell_size.x));
@@ -420,7 +414,6 @@ void CUIWeaponCellItem::InitAddon(CUIStatic* s, CIconParams &params, Fvector2 ad
 			addon_offset.mul(base_scale);
 		}
 		s->SetWndPos			(addon_offset);
-		s->SetOriginalRect		(tex_rect);
 		s->SetStretchTexture	(true);
 
 		s->EnableHeading(b_rotate);
