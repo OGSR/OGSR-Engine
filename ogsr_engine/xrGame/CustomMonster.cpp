@@ -1133,3 +1133,15 @@ void CCustomMonster::destroy_anim_mov_ctrl	()
 	NET_Last.o_model				= movement().m_body.current.yaw;
 	NET_Last.o_torso.pitch			= movement().m_body.current.pitch;
 }
+
+void CCustomMonster::ForceTransform(const Fmatrix& m)
+{
+	if (!g_Alive())				return;
+	XFORM().set(m);
+
+	if (character_physics_support()->movement()->CharacterExist())
+		character_physics_support()->movement()->EnableCharacter();
+
+	character_physics_support()->set_movement_position(m.c);
+	character_physics_support()->movement()->SetVelocity(0, 0, 0);
+}

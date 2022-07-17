@@ -320,6 +320,7 @@ public:
 
 	bool		m_visible_for_zones;
 	virtual bool	IsVisibleForZones() { return m_visible_for_zones; }
+	void ForceTransform(const Fmatrix& m) override;
 
 	// -----------------------------------------------------------------------------
 	// Anomaly Detector
