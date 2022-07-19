@@ -85,6 +85,12 @@ void	IGame_Level::SoundEvent_Dispatch	( )
 	}
 }
 
+// Lain: added
+void IGame_Level::SoundEvent_OnDestDestroy(Feel::Sound* obj)
+{
+	snd_Events.erase(std::remove_if(snd_Events.begin(), snd_Events.end(), [obj](const _esound_delegate& d) { return d.dest == obj; }), snd_Events.end());
+}
+
 void __stdcall _sound_event		(ref_sound_data_ptr S, float range)
 {
 	if ( g_pGameLevel && S && S->feedback )	g_pGameLevel->SoundEvent_Register	(S,range);

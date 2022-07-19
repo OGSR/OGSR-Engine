@@ -99,6 +99,10 @@ CCustomMonster::~CCustomMonster	()
 	xr_delete					(m_movement_manager);
 	xr_delete					(m_sound_player);
 
+	// Lain: added (asking GameLevel to forget about self)
+	if (g_pGameLevel)
+		g_pGameLevel->SoundEvent_OnDestDestroy(this);
+
 #ifdef DEBUG
 	Msg							("dumping client spawn manager stuff for object with id %d",ID());
 		Level().client_spawn_manager().dump	(ID());
