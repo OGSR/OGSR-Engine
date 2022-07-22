@@ -6,6 +6,7 @@
 #include "stdafx.h"
 
 #include "HudSound.h"
+#include "../xr_3da/x_ray.h"
 
 void HUD_SOUND::LoadSound(	LPCSTR section, LPCSTR line, 
 							HUD_SOUND& hud_snd, int type)
@@ -97,38 +98,34 @@ void HUD_SOUND::PlaySound	(	HUD_SOUND&		hud_snd,
 {
 	if (hud_snd.sounds.empty())	return;
 
-	//hud_snd.m_activeSnd			= NULL;
 	if ( !overlap )
 	  StopSound( hud_snd );
 
-	u32 flags = b_hud_mode?sm_2D:0;
+	u32 flags = (!IS_OGSR_GA && b_hud_mode) ? sm_2D : 0;
 	if(looped)
 		flags |= sm_Looped;
 
 	hud_snd.m_activeSnd = &hud_snd.sounds[ Random.randI(hud_snd.sounds.size()) ];
-	float   freq = hud_snd.m_activeSnd->freq;
-	Fvector pos  = ( flags & sm_2D ) ? Fvector().set( 0, 0, 0 ) : position;
-	float   vol  = hud_snd.m_activeSnd->volume;
+	//float freq = hud_snd.m_activeSnd->freq;
+	Fvector pos = (flags & sm_2D) ? Fvector{} : position;
 
-        if ( overlap ) {
-	  hud_snd.m_activeSnd->snd.play_no_feedback( const_cast<CObject*>(parent), flags, hud_snd.m_activeSnd->delay, &pos, &vol, &freq );
-        }
-        else {
-	  hud_snd.m_activeSnd->snd.play_at_pos	(const_cast<CObject*>(parent),
-									pos,
-									flags,
-									/*0.f*/hud_snd.m_activeSnd->delay);
-	  hud_snd.m_activeSnd->snd.set_volume( vol );
-	  hud_snd.m_activeSnd->snd.set_frequency( freq );
-        }
+	static const float hud_vol = READ_IF_EXISTS(pSettings, r_float, "hud_sound", "hud_sound_vol_k", 1.0f);
+	float vol  = hud_snd.m_activeSnd->volume * (b_hud_mode ? hud_vol : 1.0f);
+
+	if (overlap) {
+		hud_snd.m_activeSnd->snd.play_no_feedback(const_cast<CObject*>(parent), flags, hud_snd.m_activeSnd->delay, &pos, &vol/*, &freq*/);
+	}
+	else {
+		hud_snd.m_activeSnd->snd.play_at_pos(const_cast<CObject*>(parent), pos, flags, hud_snd.m_activeSnd->delay);
+		hud_snd.m_activeSnd->snd.set_volume(vol);
+		//hud_snd.m_activeSnd->snd.set_frequency(freq);
+	}
 }
 
 void HUD_SOUND::StopSound	(HUD_SOUND& hud_snd)
 {
-	xr_vector<SSnd>::iterator it = hud_snd.sounds.begin();
-	for(;it!=hud_snd.sounds.end();++it){
-//.		VERIFY2					((*it).snd._handle(),"Trying to stop non-existant or destroyed sound");
-		(*it).snd.stop		();
-	}
-	hud_snd.m_activeSnd		= NULL;
+	for (auto& sound : hud_snd.sounds)
+		sound.snd.stop();
+
+	hud_snd.m_activeSnd = nullptr;
 }
