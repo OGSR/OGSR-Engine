@@ -94,11 +94,11 @@ constexpr xr_token qmsaa_token[] = {
 	{ 0,							0												}
 };
 
-u32			ps_r3_msaa_atest		=	0;			//	=	0;
+u32			ps_r3_msaa_atest		=	1;			//	=	0;
 constexpr xr_token qmsaa__atest_token[] = {
 	{ "st_opt_off",					0												},
 	{ "st_opt_atest_msaa_dx10_0",	1												},
-	{ "st_opt_atest_msaa_dx10_1",	2												},
+	//{ "st_opt_atest_msaa_dx10_1",	2												},
 	{ 0,							0												}
 };
 
