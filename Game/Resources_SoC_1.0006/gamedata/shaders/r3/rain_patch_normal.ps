@@ -29,6 +29,8 @@ float3	GetWaterNMap( Texture2D s_texture, float2 tc)
 	float4 water = s_texture.Sample( smp_base, tc);
 	water.xyz = (water.xzy-0.5)*2;
 
+	water.xyz *= 0.3;
+
 	water.y = 0;
 
 	return water.xyz;
@@ -73,6 +75,7 @@ float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1 ) : SV_Target
 
 	_N.xyz = normalize(_N.xyz);
 
+	_P.xyz += _N.xyz * 0.15f;
 	float4 PS = mul( m_shadow,  _P );
 
 	float3 WorldP	= mul( m_sunmask, _P );
@@ -80,7 +83,7 @@ float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1 ) : SV_Target
 
 	// Read rain projection with some jetter. Also adding pixel normal 
 	// factor to jitter to make rain strips more realistic.
-	float s		= shadow_rain(PS, WorldP.xz - WorldN.xz);
+	float s		= shadow_hw(PS) * saturate(gbd.hemi * 10.0f);	
 
 	//	Apply distance falloff
 	// Using fixed fallof factors according to float16 depth coordinate precision.
@@ -96,19 +99,19 @@ float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1 ) : SV_Target
 
 	float3 waterSplash = GetNVNMap( s_water, WorldP.xz, timers.x*3.0 );
 
-	float fAngleFactor = 1 - fIsUp;
-
-	fAngleFactor = 0.1*ceil(10*fAngleFactor);
-
-	//	Just slow down effect.
-	fAngleFactor *= 0.3;//0.5;
-
 	float WeaponAttenuation = smoothstep( 0.8, 0.9, length( _P.xyz ));
 	float ApplyNormalCoeff = s * WeaponAttenuation;
 
 	float3 water = waterSplash*(fIsUp*ApplyNormalCoeff);
 
-	if (RainDensity.y > 0) {
+	//if (RainDensity.y > 0) { //Вроде теперь в помещениях вода не течёт, так что эта опция не особо нужна. TODO: Выкинуть её из движка.
+		float fAngleFactor = 1 - fIsUp;
+
+		fAngleFactor = 0.1*ceil(10*fAngleFactor);
+
+		// Just slow down effect.
+		fAngleFactor *= 0.5;
+
 		float fIsX = WorldN.x;
 		float fIsZ = WorldN.z;
 
@@ -119,7 +122,7 @@ float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1 ) : SV_Target
 
 		water += waterFallX.yxz*(abs(fIsX)*ApplyNormalCoeff);
 		water += waterFallZ.zxy*(abs(fIsZ)*ApplyNormalCoeff);
-	}
+	//}
 
 	//	Translate NM to view space
 	water.xyz = mul( m_V, water.xyz );
@@ -128,7 +131,7 @@ float4 main ( float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1 ) : SV_Target
 
 	_N = normalize(_N);
 
-	s *= dot(D.xyz, float3(0.05, 0.05, 0.05));
+	s *= dot(D.xyz, float3(0.33, 0.33, 0.33));
 
 	return float4(_N,s);
 }
