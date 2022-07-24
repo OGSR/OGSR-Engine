@@ -4,7 +4,7 @@
 #ifndef USE_MSAA
 Texture2D 							s_vollight;
 #else
-Texture2DMS<float4, MSAA_SAMPLES>	s_vollight;
+TEXTURE2DMS(float4, MSAA_SAMPLES) s_vollight;
 #endif
 
 struct	_input      

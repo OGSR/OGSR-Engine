@@ -27,7 +27,7 @@ uniform float4 rain_params; //x = raindensity
 #ifndef USE_MSAA
 Texture2D s_distort;
 #else
-Texture2DMS<float4, MSAA_SAMPLES> s_distort;
+TEXTURE2DMS(float4, MSAA_SAMPLES) s_distort;
 #endif
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel

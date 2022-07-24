@@ -1,6 +1,12 @@
 #ifndef	common_defines_h_included
 #define	common_defines_h_included
 
+#if defined(SM_5) || defined(SM_4_1)
+    #define TEXTURE2DMS(a, b) Texture2DMS<a>
+#else
+    #define TEXTURE2DMS(a, b) Texture2DMS<a, b>
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // Defines                                		//
 #define def_gloss       float(2.f /255.f)

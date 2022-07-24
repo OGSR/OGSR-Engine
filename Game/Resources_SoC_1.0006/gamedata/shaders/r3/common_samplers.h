@@ -11,7 +11,7 @@ sampler 	smp_base;		//	Use D3DTADDRESS_WRAP,	D3DTEXF_ANISOTROPIC, 	D3DTEXF_LINEA
 
 Texture2D 	s_base;		//	smp_base
 #ifdef USE_MSAA
-Texture2DMS<float4, MSAA_SAMPLES>	s_generic;	//	smp_generic
+TEXTURE2DMS(float4, MSAA_SAMPLES) s_generic;	//	smp_generic
 #else
 Texture2D   s_generic;
 #endif
@@ -42,8 +42,8 @@ sampler 	smp_material;
 
 //uniform sampler2D       s_depth;                //
 #ifdef USE_MSAA
-Texture2DMS<float4, MSAA_SAMPLES>	s_position;	//	smp_nofilter or Load
-Texture2DMS<float4, MSAA_SAMPLES>	s_normal;	//	smp_nofilter or Load
+TEXTURE2DMS(float4, MSAA_SAMPLES) s_position;	//	smp_nofilter or Load
+TEXTURE2DMS(float4, MSAA_SAMPLES) s_normal;	//	smp_nofilter or Load
 #else
 Texture2D	s_position;	//	smp_nofilter or Load
 Texture2D	s_normal;	//	smp_nofilter or Load
@@ -56,8 +56,8 @@ Texture3D	s_material;	//	smp_material
 //////////////////////////////////////////////////////////////////////////////////////////
 // Combine phase                                //
 #ifdef USE_MSAA
-Texture2DMS<float4, MSAA_SAMPLES>	s_diffuse;	// rgb.a = diffuse.gloss
-Texture2DMS<float4, MSAA_SAMPLES>	s_accumulator;      	// rgb.a = diffuse.specular
+TEXTURE2DMS(float4, MSAA_SAMPLES) s_diffuse;	// rgb.a = diffuse.gloss
+TEXTURE2DMS(float4, MSAA_SAMPLES) s_accumulator;      	// rgb.a = diffuse.specular
 #else
 Texture2D	s_diffuse;	// rgb.a = diffuse.gloss
 Texture2D	s_accumulator;      	// rgb.a = diffuse.specular

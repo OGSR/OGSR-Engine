@@ -284,9 +284,6 @@ void					CRender::create					()
 		o.ssao_opt_data = true;
 	}
 
-	o.dx10_sm4_1		= ps_r2_ls_flags.test((u32)R3FLAG_USE_DX10_1);
-	o.dx10_sm4_1		= o.dx10_sm4_1 && ( HW.pDevice1 != 0 );
-
 	//	MSAA option dependencies
 
 	o.dx10_msaa			= !!ps_r3_msaa;
@@ -294,10 +291,8 @@ void					CRender::create					()
 
 	o.dx10_msaa_opt		= ps_r2_ls_flags.test(R3FLAG_MSAA_OPT);
 	o.dx10_msaa_opt		= o.dx10_msaa_opt && o.dx10_msaa && ( HW.pDevice1 != 0 );
-
-	//o.dx10_msaa_hybrid	= ps_r2_ls_flags.test(R3FLAG_MSAA_HYBRID);
-	o.dx10_msaa_hybrid	= ps_r2_ls_flags.test((u32)R3FLAG_USE_DX10_1);
-	o.dx10_msaa_hybrid	&= !o.dx10_msaa_opt && o.dx10_msaa && ( HW.pDevice1 != 0) ;
+	o.dx10_sm4_1		= o.dx10_msaa_opt;
+	o.dx10_msaa_hybrid	= o.dx10_msaa_opt;
 
 	//	Allow alpha test MSAA for DX10.0
 
@@ -1255,17 +1250,27 @@ HRESULT	CRender::shader_compile			(
 	   defines[def_it].Definition	= samples;	
 	   def_it						++;
 
-		static char def[ 256 ];
-		if( m_MSAASample < 0 )
-			def[0]= '0';
-		else
-			def[0]= '0' + char(m_MSAASample);
+	   if (o.dx10_msaa_opt) {
+		   static char def[256];
+		   def[0] = '0';
+		   def[1] = 0;
+		   defines[def_it].Name = "ISAMPLE";
+		   defines[def_it].Definition = def;
+		   def_it++;
+		   sh_name[len] = '0'; ++len;
+	   }
+	   else {
+		   static char def[256];
+		   if (m_MSAASample < 0)
+			   def[0] = '0';
+		   else
+			   def[0] = '0' + char(m_MSAASample);
 
-		def[1] = 0;
-		defines[def_it].Name		=	"ISAMPLE";
-		defines[def_it].Definition	=	def;
-		def_it						++	;
-
+		   def[1] = 0;
+		   defines[def_it].Name = "ISAMPLE";
+		   defines[def_it].Definition = def;
+		   def_it++;
+	   }
 
 	   if( o.dx10_msaa_opt )
 	   {

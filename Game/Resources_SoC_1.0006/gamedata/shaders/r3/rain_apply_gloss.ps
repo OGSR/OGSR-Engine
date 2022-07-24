@@ -9,7 +9,7 @@
 #ifndef USE_MSAA
 Texture2D	s_patched_normal;
 #else
-Texture2DMS< float4, MSAA_SAMPLES >	s_patched_normal;
+TEXTURE2DMS(float4, MSAA_SAMPLES) s_patched_normal;
 #endif
 
 #ifdef MSAA_OPTIMIZATION
