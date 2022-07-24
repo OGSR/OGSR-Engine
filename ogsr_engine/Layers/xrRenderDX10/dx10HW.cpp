@@ -35,6 +35,11 @@ CHW::CHW() :
 {
 	Device.seqAppActivate.Add(this);
 	Device.seqAppDeactivate.Add(this);
+
+	DEVMODE dmi{};
+	EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &dmi);
+	psCurrentVidMode[0] = dmi.dmPelsWidth;
+	psCurrentVidMode[1] = dmi.dmPelsHeight;
 }
 
 CHW::~CHW()
