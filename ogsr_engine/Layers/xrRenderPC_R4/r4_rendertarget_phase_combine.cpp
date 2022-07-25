@@ -236,6 +236,11 @@ void	CRenderTarget::phase_combine	()
 		//RCache.set_Geometry			(g_combine_VP		);
 		RCache.set_Geometry			(g_combine		);
 
+		Fmatrix m_inv_v;
+		m_inv_v.invert(Device.mView);
+		RCache.set_c("m_inv_v", m_inv_v);
+		RCache.set_c("SSLR_params", ps_ext_SSLR_L, 1.f, 1.f, 1.f);
+
 		RCache.set_c				("m_v2w",			m_v2w	);
 		RCache.set_c				("L_ambient",		ambclr	);
 
@@ -371,9 +376,6 @@ void	CRenderTarget::phase_combine	()
    // Postprocess anti-aliasing
    if (ps_r_pp_aa_mode)
 	   PhaseAA();
-
-   if (ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR))
-	   phase_SSLR();
 
    // Rain droplets on screen
    if (ps_r2_ls_flags_ext.test(R2FLAGEXT_RAIN_DROPS))

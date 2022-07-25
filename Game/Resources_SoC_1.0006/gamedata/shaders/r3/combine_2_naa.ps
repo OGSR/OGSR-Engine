@@ -18,12 +18,6 @@ struct 	v2p
 //////////////////////////////////////////////////////////////////////////////////////////
 #define EPSDEPTH 0.001
 
-#ifdef SSLR_ENABLED
-Texture2D s_SSLR;
-Texture2D s_wetness;
-uniform float4 rain_params; //x = raindensity
-#endif
-
 #ifndef USE_MSAA
 Texture2D s_distort;
 #else
@@ -102,12 +96,6 @@ if (addon_VControl.w == 1) {
 #ifdef 	USE_DISTORT
  	float3	blurred	= bloom*def_hdr	;
 			img		= lerp	(img,blurred,distort.z);
-#endif
-
-#ifdef SSLR_ENABLED
-	float3 SSLR  = s_SSLR.Sample(smp_rtlinear, center);
-	float wet = s_wetness.Sample(smp_rtlinear, center).r;
-	img = lerp(img, SSLR, wet * rain_params.x);
 #endif
 
  	res.Color += combine_bloom( img, bloom );

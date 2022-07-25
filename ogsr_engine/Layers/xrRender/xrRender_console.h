@@ -144,7 +144,6 @@ extern ECORE_API float ps_r2_visor_refl_radius;
 
 #if RENDER==R_R4
 extern ECORE_API float ps_ext_SSLR_L;
-extern ECORE_API float ps_ext_SSLR_blur;
 #endif
 
 // textures

@@ -33,7 +33,7 @@ local adv_vid_opt_params = {
 	{ "aniso",                 "track", 0, hint_colors.yellow, "video_settings_name_8" , "video_settings_desc_8"  },
 	--
 	{ "aa",                    "list",  0, hint_colors.green , "video_settings_name_19", "video_settings_desc_19", only_2a_and_more_mode },
-	{ "msaa",                  "list",  1, hint_colors.red   , "", ""                                            , only_3_mode  }, --мсаа норм работает только на р3, пока.
+	{ "msaa",                  "list",  1, hint_colors.red   , "", ""                                            , only_3_and_more_mode    },
 	{ "ssample",               "track", 0, hint_colors.green , "", ""                                            , only_1_mode  },
 	--
 	{ "detail_density",        "track", 0, hint_colors.red   , "video_settings_name_4" , "video_settings_desc_4"  },

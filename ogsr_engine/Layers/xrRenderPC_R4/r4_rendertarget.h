@@ -372,9 +372,5 @@ private:
 	ref_shader s_ssss_mrmnwar;
 	ref_shader s_ssss_ogse;
 
-	void phase_SSLR();
-	ref_shader s_SSLR;
-	ref_rt rt_SSLR_0;
-	ref_rt rt_SSLR_1;
 	ref_rt rt_Wetness;
 };

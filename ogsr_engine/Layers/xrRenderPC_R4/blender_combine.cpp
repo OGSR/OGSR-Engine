@@ -41,6 +41,7 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_dx10Texture		("sky_s1",			r2_T_sky1			);
 		C.r_dx10Texture		("s_occ",			r2_RT_ssao_temp		);
 		C.r_dx10Texture		("s_half_depth",	r2_RT_half_depth	);
+		C.r_dx10Texture("s_wetness", r2_RT_Wetness);
 
 		jitter(C);
 
@@ -65,8 +66,6 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_dx10Texture		("s_image",			r2_RT_generic0);
 		C.r_dx10Texture		("s_bloom",			r2_RT_bloom1);
 		C.r_dx10Texture		("s_distort",		r2_RT_generic1);
-		C.r_dx10Texture("s_SSLR", r2_RT_SSLR0);
-		C.r_dx10Texture("s_wetness", r2_RT_Wetness);
 
 		C.r_dx10Sampler		("smp_nofilter");
 		C.r_dx10Sampler		("smp_rtlinear");
@@ -88,8 +87,6 @@ void	CBlender_combine::Compile(CBlender_Compile& C)
 		C.r_dx10Texture		("s_image",			r2_RT_generic0);
 		C.r_dx10Texture		("s_bloom",			r2_RT_bloom1);
 		C.r_dx10Texture		("s_distort",		r2_RT_generic1);
-		C.r_dx10Texture("s_SSLR", r2_RT_SSLR0);
-		C.r_dx10Texture("s_wetness", r2_RT_Wetness);
 
 		C.r_dx10Sampler		("smp_nofilter");
 		C.r_dx10Sampler		("smp_rtlinear");
@@ -144,6 +141,7 @@ void	CBlender_combine_msaa::Compile(CBlender_Compile& C)
       C.r_dx10Texture		("env_s1",			r2_T_envs1			);
       C.r_dx10Texture		("sky_s0",			r2_T_sky0			);
       C.r_dx10Texture		("sky_s1",			r2_T_sky1			);
+	  C.r_dx10Texture("s_wetness", r2_RT_Wetness);
 
       jitter(C);
 

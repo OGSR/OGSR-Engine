@@ -63,8 +63,6 @@
 #define		r2_RT_SunShaftsMaskSmoothed		"$user$SunShaftsMaskSmoothed"
 #define		r2_RT_SunShaftsPass0			"$user$SunShaftsPass0"
 
-#define r2_RT_SSLR0 "$user$SSLR0"
-#define r2_RT_SSLR1 "$user$SSLR1"
 #define r2_RT_Wetness "$user$wetness"
 
 #define		JITTER(a) r2_jitter #a

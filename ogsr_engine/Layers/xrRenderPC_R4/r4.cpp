@@ -299,8 +299,7 @@ void					CRender::create					()
 
 	//	MSAA option dependencies
 
-#pragma todo("MSAA на R4 как известно, не работает правильно, поэтому выключен. Если вдруг когда-то пофиксится, сделать чтоб он не конфликтовал с SSLR.")
-	o.dx10_msaa = 0; //!!ps_r3_msaa;
+	o.dx10_msaa = !!ps_r3_msaa;
 	o.dx10_msaa_samples = (1 << ps_r3_msaa);
 
 	o.dx10_msaa_opt		= ps_r2_ls_flags.test(R3FLAG_MSAA_OPT);
