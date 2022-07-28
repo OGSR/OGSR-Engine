@@ -323,7 +323,7 @@ CVirtualFileReader::CVirtualFileReader(const char *cFileName)
 	R_ASSERT3		(hSrcMap!=INVALID_HANDLE_VALUE,cFileName,Debug.error2string(GetLastError()));
 
 	data			= (char*)MapViewOfFile (hSrcMap, FILE_MAP_READ, 0, 0, 0);
-	R_ASSERT3		(data,cFileName,Debug.error2string(GetLastError()));
+	R_ASSERT3		(!Size || data,cFileName,Debug.error2string(GetLastError()));
 
 #ifdef DEBUG
 	register_file_mapping	(data,Size,cFileName);
