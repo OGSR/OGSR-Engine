@@ -139,8 +139,8 @@ float get_str_width(CGameFont*pFont, char ch)
 	return ll;
 }
 
-void CUILines::ParseText(){
-	if ( !fsimilar(m_oldWidth, m_wndSize.x) )
+void CUILines::ParseText() {
+	if (!fsimilar(m_oldWidth, m_wndSize.x))
 	{
 		uFlags.set(flNeedReparse, TRUE);
 		m_oldWidth = m_wndSize.x;
@@ -148,13 +148,13 @@ void CUILines::ParseText(){
 	if (!uFlags.test(flComplexMode) || !uFlags.test(flNeedReparse))
 		return;
 
-	if(NULL == m_pFont)
+	if (NULL == m_pFont)
 		return;
 
 	Reset();
 	if (!m_text.empty() && NULL == m_pFont)
 		R_ASSERT2(false, "can't parse text without font");
-		
+
 
 	CUILine* line = NULL;
 	if (uFlags.test(flColoringMode))
@@ -171,137 +171,140 @@ void CUILines::ParseText(){
 	BOOL bNewLines = FALSE;
 
 	if (uFlags.test(flRecognizeNewLine))
-		if ( m_pFont->IsMultibyte() ) {
-			CUILine *ptmp_line = xr_new<CUILine>();
+		if (m_pFont->IsMultibyte()) {
+			CUILine* ptmp_line = xr_new<CUILine>();
 			int vsz = line->m_subLines.size();
-			VERIFY( vsz );
-			for ( int i = 0 ; i < vsz ; i++ ) {
-				char *pszTemp = NULL;
+			VERIFY(vsz);
+			for (int i = 0; i < vsz; i++) {
+				char* pszTemp = NULL;
 				const u32 tcolor = line->m_subLines[i].m_color;
-				char szTempLine[ MAX_MB_CHARS ] , *pszSearch = NULL;
-				VERIFY( strlen( line->m_subLines[i].m_text.c_str() ) < MAX_MB_CHARS );
-				strcpy_s( szTempLine , line->m_subLines[i].m_text.c_str() );
+				char szTempLine[MAX_MB_CHARS], * pszSearch = NULL;
+				VERIFY(strlen(line->m_subLines[i].m_text.c_str()) < MAX_MB_CHARS);
+				strcpy_s(szTempLine, line->m_subLines[i].m_text.c_str());
 				pszSearch = szTempLine;
-				while ( ( pszTemp = strstr( pszSearch , "\\n" ) ) != NULL ) {
+				while ((pszTemp = strstr(pszSearch, "\\n")) != NULL) {
 					bNewLines = TRUE;
 					*pszTemp = '\0';
-					ptmp_line->AddSubLine( pszSearch , tcolor );
+					ptmp_line->AddSubLine(pszSearch, tcolor);
 					pszSearch = pszTemp + 2;
 				}
-				ptmp_line->AddSubLine( pszSearch , tcolor );			
+				ptmp_line->AddSubLine(pszSearch, tcolor);
 			}
 			line->Clear();
-			xr_free( line );
-			line=ptmp_line;
-		} 
+			xr_free(line);
+			line = ptmp_line;
+		}
 		else
 			line->ProcessNewLines(m_iCursorPos); // process "\n"
 
-	if ( m_pFont->IsMultibyte() ) {
+	if (m_pFont->IsMultibyte()) {
 		#define UBUFFER_SIZE 100
-        u16	aMarkers[ UBUFFER_SIZE ];
+		u16	aMarkers[UBUFFER_SIZE];
 		CUILine tmp_line;
-		char szTempLine[ MAX_MB_CHARS ];
+		char szTempLine[MAX_MB_CHARS];
 		float fTargetWidth = 1.0f;
-		UI()->ClientToScreenScaledWidth( fTargetWidth );
-		VERIFY( ( m_wndSize.x > 0 ) && ( fTargetWidth > 0 ) );
+		UI()->ClientToScreenScaledWidth(fTargetWidth);
+		VERIFY((m_wndSize.x > 0) && (fTargetWidth > 0));
 		fTargetWidth = m_wndSize.x / fTargetWidth;
 		int vsz = line->m_subLines.size();
-		VERIFY( vsz );
-		if ( ( vsz > 1 ) && ( ! bNewLines ) ) { // only colored line, pizdets
-			for ( int i = 0 ; i < vsz ; i++ ) {
-				const char *pszText = line->m_subLines[i].m_text.c_str();
+		VERIFY(vsz);
+		if ((vsz > 1) && (!bNewLines)) { // only colored line, pizdets
+			for (int i = 0; i < vsz; i++) {
+				const char* pszText = line->m_subLines[i].m_text.c_str();
 				const u32 tcolor = line->m_subLines[i].m_color;
-				VERIFY( pszText );
-				tmp_line.AddSubLine( pszText , tcolor );
+				VERIFY(pszText);
+				tmp_line.AddSubLine(pszText, tcolor);
 			}
-			m_lines.push_back( tmp_line );
+			m_lines.push_back(tmp_line);
 			tmp_line.Clear();
-		} else {
-			for ( int i = 0 ; i < vsz ; i++ ) {
-				const char *pszText = line->m_subLines[i].m_text.c_str();
+		}
+		else {
+			for (int i = 0; i < vsz; i++) {
+				const char* pszText = line->m_subLines[i].m_text.c_str();
 				const u32 tcolor = line->m_subLines[i].m_color;
-				u16 uFrom = 0 , uPartLen = 0;
-				VERIFY( pszText );
-				u16 nMarkers = m_pFont->SplitByWidth( aMarkers , UBUFFER_SIZE , fTargetWidth , pszText );
-				for ( u16 j = 0 ; j < nMarkers ; j ++ ) {
-					uPartLen = aMarkers[ j ] - uFrom;
-					VERIFY( ( uPartLen > 0 ) && ( uPartLen < MAX_MB_CHARS ) );
-					strncpy_s( szTempLine , pszText + uFrom , uPartLen );
-					szTempLine[ uPartLen ] = '\0';
-					tmp_line.AddSubLine( szTempLine , tcolor );
-					m_lines.push_back( tmp_line );
+				u16 uFrom = 0, uPartLen = 0;
+				VERIFY(pszText);
+				u16 nMarkers = m_pFont->SplitByWidth(aMarkers, UBUFFER_SIZE, fTargetWidth, pszText);
+				for (u16 j = 0; j < nMarkers; j++) {
+					uPartLen = aMarkers[j] - uFrom;
+					VERIFY((uPartLen > 0) && (uPartLen < MAX_MB_CHARS));
+					strncpy_s(szTempLine, pszText + uFrom, uPartLen);
+					szTempLine[uPartLen] = '\0';
+					tmp_line.AddSubLine(szTempLine, tcolor);
+					m_lines.push_back(tmp_line);
 					tmp_line.Clear();
 					uFrom += uPartLen;
 				}
-				strncpy_s( szTempLine , pszText + uFrom , MAX_MB_CHARS );
-				tmp_line.AddSubLine( szTempLine , tcolor );
-				m_lines.push_back( tmp_line );
+				strncpy_s(szTempLine, pszText + uFrom, MAX_MB_CHARS);
+				tmp_line.AddSubLine(szTempLine, tcolor);
+				m_lines.push_back(tmp_line);
 				tmp_line.Clear();
 			}
 		}
-	} else
+	}
+	else
 	{
-		float max_width							= m_wndSize.x;
-		u32 sbl_cnt								= line->m_subLines.size();
+		float max_width = m_wndSize.x;
+		u32 sbl_cnt = line->m_subLines.size();
 		CUILine									tmp_line;
 		string4096								buff;
-		float curr_width						= 0.0f;
-		bool bnew_line							= false;
-		float __eps								= get_str_width(m_pFont,'w');//hack -(
-		for(u32 sbl_idx=0; sbl_idx<sbl_cnt; ++sbl_idx)
+		float curr_width = 0.0f;
+		bool bnew_line = false;
+		float __eps = get_str_width(m_pFont, 'w');//hack -(
+		for (u32 sbl_idx = 0; sbl_idx < sbl_cnt; ++sbl_idx)
 		{
-			bool b_last_subl					= (sbl_idx==sbl_cnt-1);
-			CUISubLine& sbl						= line->m_subLines[sbl_idx];
-//.			Msg("%s",sbl.m_text.c_str());
-			u32 sub_len							= (u32)sbl.m_text.length();
-			u32 curr_w_pos						= 0;
-			
-			u32 last_space_idx					= 0;
-			for(u32 idx=0; idx<sub_len; ++idx)
+			bool b_last_subl = (sbl_idx == sbl_cnt - 1);
+			CUISubLine& sbl = line->m_subLines[sbl_idx];
+			//.			Msg("%s",sbl.m_text.c_str());
+			u32 sub_len = (u32)sbl.m_text.length();
+			u32 curr_w_pos = 0;
+
+			u32 last_space_idx = 0;
+			for (u32 idx = 0; idx < sub_len; ++idx)
 			{
-				bool b_last_ch	= (idx==sub_len-1);
-				
-				if(iswspace(sbl.m_text[idx]))
+				bool b_last_ch = (idx == sub_len - 1);
+
+				if (iswspace(sbl.m_text[idx]))
 					last_space_idx = idx;
 
-				float w1		= get_str_width(m_pFont, sbl.m_text[idx]);
-				bool bOver		= (curr_width+w1+__eps > max_width);
+				float w1 = get_str_width(m_pFont, sbl.m_text[idx]);
+				bool bOver = (curr_width + w1 + __eps > max_width);
 
-				if(bOver || b_last_ch)
+				if (bOver || b_last_ch)
 				{
-					if(last_space_idx && !b_last_ch)
+					if (last_space_idx && !b_last_ch)
 					{
 						idx = last_space_idx;
 						last_space_idx = 0;
 					}
 
 					strncpy_s(buff, sbl.m_text.c_str() + curr_w_pos, idx - curr_w_pos + 1);
-//.					Msg					("-%s",buff);
-					tmp_line.AddSubLine	(buff , sbl.m_color);
-					curr_w_pos			= idx+1;
-				}else
-					curr_width			+= w1;
+					//.					Msg					("-%s",buff);
+					tmp_line.AddSubLine(buff, sbl.m_color);
+					curr_w_pos = idx + 1;
+				}
+				else
+					curr_width += w1;
 
-				if(bOver || (b_last_ch&&sbl.m_last_in_line) )
+				if (bOver || (b_last_ch && sbl.m_last_in_line))
 				{
-					m_lines.push_back	(tmp_line);
-					tmp_line.Clear		();
-					curr_width			= 0.0f;
-					bnew_line			= false;
+					m_lines.push_back(tmp_line);
+					tmp_line.Clear();
+					curr_width = 0.0f;
+					bnew_line = false;
 				}
 			}
-			if(b_last_subl && !tmp_line.IsEmpty())
+			if (b_last_subl && !tmp_line.IsEmpty())
 			{
-				m_lines.push_back	(tmp_line);
-				tmp_line.Clear		();
-				curr_width			= 0.0f;
-				bnew_line			= false;
+				m_lines.push_back(tmp_line);
+				tmp_line.Clear();
+				curr_width = 0.0f;
+				bnew_line = false;
 			}
 		}
 	}
-//.		while (line->GetSize() > 0 )
-//.			m_lines.push_back(*line->CutByLength(m_pFont, m_wndSize.x, uFlags.test(flCutWordsMode)));
+	//.		while (line->GetSize() > 0 )
+	//.			m_lines.push_back(*line->CutByLength(m_pFont, m_wndSize.x, uFlags.test(flCutWordsMode)));
 
 	xr_delete(line);
 	uFlags.set(flNeedReparse, FALSE);
@@ -315,9 +318,10 @@ float CUILines::GetVisibleHeight()
 
 	if (uFlags.test(flComplexMode))
 	{
-		if(uFlags.test(flNeedReparse))
-			ParseText	();
-		return (_curr_h + m_interval)*m_lines.size() - m_interval;
+		if (uFlags.test(flNeedReparse))
+			ParseText();
+
+		return (_curr_h + m_interval) * m_lines.size() - m_interval;
 	}
 	else
 		return _curr_h;
@@ -375,7 +379,9 @@ void CUILines::Draw(float x, float y){
 			int sz = (int)m_text.size();
 			for (int i = 0; i < sz; i++)
 				passText[i] = '*';
+
 			passText[sz] = 0;
+
 			m_pFont->SetAligment((CGameFont::EAligment)m_eTextAlign);
 			m_pFont->Out(text_pos.x, text_pos.y, "%s", passText);
 		}
@@ -390,8 +396,10 @@ void CUILines::Draw(float x, float y){
 			ParseText();
 
 		Fvector2 pos;
+
 		// get vertical indent
 		pos.y			= y + GetVIndentByAlign();
+
 		float height	= m_pFont->CurrentHeight_();
 		UI()->ClientToScreenScaledHeight(height);
 
@@ -401,6 +409,7 @@ void CUILines::Draw(float x, float y){
 		for (int i=0; i<(int)size; i++)
 		{
 			pos.x = x + GetIndentByAlign();
+
 			m_lines[i].Draw(m_pFont, pos.x, pos.y);
 
 			pos.y += height + m_interval;
@@ -418,10 +427,11 @@ void CUILines::Draw(float x, float y){
 }
 
 void CUILines::DrawCursor(float x, float y) {
-	Fvector2 outXY;
 
 	float _h = m_pFont->CurrentHeight_();
 	UI()->ClientToScreenScaledHeight(_h);
+
+	Fvector2 outXY;
 	outXY.y = y + (_h + m_interval) * m_cursor_pos.y;
 
 	float _w_tmp = 0;
@@ -464,11 +474,11 @@ void CUILines::DrawCursor(float x, float y) {
 	}
 
 	UI()->ClientToScreenScaledWidth(_w_tmp);
-	outXY.x = x + _w_tmp;
+	outXY.x = x + _w_tmp * m_pFont->GetWidthScale();
 
 	UI()->ClientToScreenScaled(outXY);
 
-	m_pFont->Out(outXY.x, outXY.y, "_");
+	m_pFont->Out(outXY.x , outXY.y, "_");
 }
 
 void CUILines::Draw(){
@@ -513,16 +523,29 @@ float CUILines::GetIndentByAlign()const
 
 float CUILines::GetVIndentByAlign()
 {
-	switch(m_eVTextAlign) {
-	case valTop: 
-		return 0;
+	float r = 0;
+
+	switch (m_eVTextAlign) {
+	case valTop:
+	{
+		float delta_h = m_pFont->ScaleHeightDelta();
+		UI()->ClientToScreenScaledHeight(delta_h);
+		return delta_h * -1;
+	}
 	case valCenter:
-		return (m_wndSize.y - GetVisibleHeight())/2;
+		r =(m_wndSize.y - GetVisibleHeight()) / 2;
+		break;
 	case valBotton:
-		return m_wndSize.y - GetVisibleHeight();
+		r = m_wndSize.y - GetVisibleHeight();
+		break;
 	default:
 		NODEFAULT;
 	}
+
+	//UI()->ClientToScreenScaledHeight(r);
+
+	return r;
+
 #ifdef DEBUG
 	return 0;
 #endif

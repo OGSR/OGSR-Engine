@@ -39,6 +39,8 @@ protected:
 	float					fXStep;
 	float					fYStep;
 	float					fTCHeight;
+	float					fXScale{};
+	float					fYScale{};
 	xr_vector<String>		strings;
 
 	IFontRender				*pFontRender;
@@ -53,7 +55,6 @@ public:
 		fsGradient			= (1<<0),
 		fsDeviceIndependent	= (1<<1),
 		fsValid 			= (1<<2),
-
 		fsMultibyte			= (1<<3),
 
 		fsForceDWORD		= u32(-1)
@@ -81,10 +82,11 @@ public:
 
 	float					SizeOf_			( LPCSTR s );
 	float					SizeOf_			( const wide_char *wsStr );
-
 	float					SizeOf_			( const char cChar );  // only ANSII 
 
 	float					CurrentHeight_	();
+
+	float					ScaleHeightDelta() { return (fCurrentHeight * vInterval.y * GetHegihtScale() - fCurrentHeight * vInterval.y) / 2; };
 
 	void					OutSetI			(float x, float y);
 	void					OutSet			(float x, float y);
@@ -107,9 +109,14 @@ public:
 
 	IC	void				Clear			()  { strings.clear(); };
 
-#ifdef DEBUG
+	float GetWidthScale();
+	float GetHegihtScale();
+
+	void SetWidthScale(float f) { fXScale = f; }
+	void SetHegihtScale(float f) { fYScale = f; }
+
 	shared_str				m_font_name;
-#endif
+
 };
 
 #endif // _XR_GAMEFONT_H_

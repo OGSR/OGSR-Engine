@@ -43,41 +43,43 @@ void CFontManager::InitializeFonts()
 
   InitializeFont(pFontMedium, "hud_font_medium");
   InitializeFont(pFontDI, "hud_font_di", CGameFont::fsGradient | CGameFont::fsDeviceIndependent);
+  InitializeFont(pFontStat, "stat_font", CGameFont::fsDeviceIndependent);
 
   InitializeFont(pFontArial14, "ui_font_arial_14");
   InitializeFont(pFontArial21, "ui_font_arial_21");
+
   InitializeFont(pFontGraffiti19Russian, "ui_font_graffiti19_russian");
   InitializeFont(pFontGraffiti22Russian, "ui_font_graffiti22_russian");
+
   InitializeFont(pFontLetterica16Russian, "ui_font_letterica16_russian");
   InitializeFont(pFontLetterica18Russian, "ui_font_letterica18_russian");
+
   InitializeFont(pFontGraffiti32Russian, "ui_font_graff_32");
   InitializeFont(pFontGraffiti40Russian, "ui_font_graff_40");
   InitializeFont(pFontGraffiti50Russian, "ui_font_graff_50");
+
   InitializeFont(pFontLetterica25, "ui_font_letter_25");
-
-  InitializeFont(pFontStat, "stat_font", CGameFont::fsDeviceIndependent);
-
 }
 
-LPCSTR CFontManager::GetFontTexName (LPCSTR section)
+LPCSTR CFontManager::GetFontTexName(LPCSTR section)
 {
 	constexpr const char* tex_names[] = { "texture800","texture","texture1600" };
-	int def_idx		= 1;//default 1024x768
-	int idx			= def_idx;
+	int def_idx = 1;//default 1024x768
+	int idx = def_idx;
 
 	u32 h = Device.dwHeight;
 
-	if(h<=600)		idx = 0;
-	else if(h<1024)	idx = 1;
-	else 			idx = 2;
-	if ( psHUD_Flags.test( HUD_SMALL_FONT ) && idx > 0 ) idx--;
+	if (h <= 600)		idx = 0;
+	else if (h < 1024)	idx = 1;
+	else 				idx = 2;
+	if (psHUD_Flags.test(HUD_SMALL_FONT) && idx > 0) idx--;
 
-  while (idx >= 0) {
-    if (pSettings->line_exist(section, tex_names[idx]))
-      return pSettings->r_string(section, tex_names[idx]);
-    --idx;
-  }
-  return pSettings->r_string(section, tex_names[def_idx]);
+	while (idx >= 0) {
+		if (pSettings->line_exist(section, tex_names[idx]))
+			return pSettings->r_string(section, tex_names[idx]);
+		--idx;
+	}
+	return pSettings->r_string(section, tex_names[def_idx]);
 }
 
 void CFontManager::InitializeFont(CGameFont*& F, LPCSTR section, u32 flags)
@@ -86,21 +88,29 @@ void CFontManager::InitializeFont(CGameFont*& F, LPCSTR section, u32 flags)
 	R_ASSERT(font_tex_name);
 
 	const char* sh_name = READ_IF_EXISTS(pSettings, r_string, section, "shader", "font");
-	if(!F)
-		F = xr_new<CGameFont> (sh_name, font_tex_name, flags);
+	if (!F)
+		F = xr_new<CGameFont>(sh_name, font_tex_name, flags);
 	else
 		F->Initialize(sh_name, font_tex_name);
 
-#ifdef DEBUG
 	F->m_font_name = section;
-#endif
-	if (pSettings->line_exist(section,"size")){
-		float sz = pSettings->r_float(section,"size");
-		if (flags&CGameFont::fsDeviceIndependent)	F->SetHeightI(sz);
-		else										F->SetHeight(sz);
+
+	if (flags & CGameFont::fsDeviceIndependent)
+	{
+		// может стоит вынести в конфиг шрифта еще ?
+		F->SetWidthScale(1.f);
+		F->SetHegihtScale(1.f);
 	}
-	if (pSettings->line_exist(section,"interval"))
-	F->SetInterval(pSettings->r_fvector2(section,"interval"));
+
+	if (pSettings->line_exist(section, "size")) {
+		float sz = pSettings->r_float(section, "size");
+		if (flags & CGameFont::fsDeviceIndependent)		
+			F->SetHeightI(sz);
+		else										
+			F->SetHeight(sz);
+	}
+	if (pSettings->line_exist(section, "interval"))
+		F->SetInterval(pSettings->r_fvector2(section, "interval"));
 }
 
 CGameFont* CFontManager::InitializeCustomFont(LPCSTR section, u32 flags)

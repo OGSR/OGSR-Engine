@@ -133,8 +133,12 @@ void CConsole::OnRender	()
 	BOOL			bGame;
 
 	if (!bVisible) return;
-	if (0==pFont)
-		pFont		= xr_new<CGameFont>	("hud_font_di",CGameFont::fsDeviceIndependent);
+	if (0 == pFont)
+	{
+		pFont = xr_new<CGameFont>("hud_font_di", CGameFont::fsDeviceIndependent);
+		pFont->SetWidthScale(1.f);
+		pFont->SetHegihtScale(1.f);
+	}
 
 	bGame	=false;	
 	if ( (g_pGameLevel && g_pGameLevel->bReady)||

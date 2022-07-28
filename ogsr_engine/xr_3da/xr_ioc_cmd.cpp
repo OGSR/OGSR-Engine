@@ -618,6 +618,9 @@ extern int			rsDIB_Size;
 
 extern int			g_ErrorLineCount;
 
+extern float g_fontWidthScale;
+extern float g_fontHegihtScale;
+
 void CCC_Register()
 {
 	// General
@@ -747,5 +750,8 @@ void CCC_Register()
 	extern BOOL debug_destroy;
 	CMD4(CCC_Integer, "debug_destroy", &debug_destroy, FALSE, TRUE );
 #endif
+
+	CMD4(CCC_Float, "g_font_scale_x", &g_fontWidthScale, 0.2f, 5.0f);
+	CMD4(CCC_Float, "g_font_scale_y", &g_fontHegihtScale, 0.2f, 5.0f);
 };
  
