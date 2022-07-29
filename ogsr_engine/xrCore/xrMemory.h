@@ -43,15 +43,6 @@ IC void xr_free( T*& P ) {
 #define xr_realloc Memory.mem_realloc
 
 
-[[nodiscard]] void* operator new(size_t size);
-void operator delete(void* p) noexcept;
-void operator delete(void* p, size_t) noexcept;
-
-[[nodiscard]] void* operator new[](size_t size);
-void operator delete[](void* p) noexcept;
-void operator delete[](void* p, size_t) noexcept;
-
-
 template <typename T, typename... Args>
 T* xr_new( Args&&... args ) {
   T* ptr = static_cast<T*>( Memory.mem_alloc( sizeof( T ) ) );
