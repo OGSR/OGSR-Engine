@@ -353,7 +353,7 @@ outloop:
 	if (converted[0]==' ')	strcpy_s(editor,&(converted[1]));
 	else					strcpy_s(editor,converted);
 	if (editor[0]==0)		return;
-	if (RecordCommands)		Msg(">%s",editor);
+	if (RecordCommands)		Msg("> %s",editor);
 	
 	// split into cmd/params
 	editor[j++  ]	=	' ';

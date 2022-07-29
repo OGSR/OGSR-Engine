@@ -497,7 +497,7 @@ public:
 	virtual void Execute(LPCSTR args) {
 		Log("- --- Action list start ---");
 		for (const auto& pbinding : g_key_bindings)
-			Msg("-%s", pbinding.m_action->action_name);
+			Msg("- %s", pbinding.m_action->action_name);
 		Log("- --- Action list end   ---");
 	}
 };
