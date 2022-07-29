@@ -76,7 +76,7 @@ void CScriptIniFile::script_register(lua_State *L)
 		def("game_ini",   [] { return reinterpret_cast<CScriptIniFile*>(pGameIni);  }),
 		def("create_ini_file", [](const char* ini_string) {
 			IReader reader((void*)ini_string, strlen(ini_string));
-			return static_cast<CScriptIniFile*>( new CInifile( &reader, FS.get_path("$game_config$")->m_Path ) );
+			return static_cast<CScriptIniFile*>( xr_new<CInifile>( &reader, FS.get_path("$game_config$")->m_Path ) );
 		}, adopt<result>())
 	];
 }

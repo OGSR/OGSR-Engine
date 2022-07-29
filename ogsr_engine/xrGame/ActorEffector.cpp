@@ -145,12 +145,12 @@ CEffectorController::~CEffectorController() { R_ASSERT(!m_ce && !m_pe); }
 CAnimatorCamEffector::CAnimatorCamEffector()
 {
 	m_bCyclic = true;
-	m_objectAnimator = new CObjectAnimator();
+	m_objectAnimator = xr_new<CObjectAnimator>();
 	m_bAbsolutePositioning = false;
 	m_fov = -1.0f;
 }
 
-CAnimatorCamEffector::~CAnimatorCamEffector() { delete m_objectAnimator; }
+CAnimatorCamEffector::~CAnimatorCamEffector() { xr_delete(m_objectAnimator); }
 void CAnimatorCamEffector::Start(LPCSTR fn)
 {
 	m_objectAnimator->Load(fn);
