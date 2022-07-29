@@ -11,7 +11,7 @@ class CUIArtefactPanel : public CUIWindow
 {
 public:
 	CUIArtefactPanel() = default;
-	~CUIArtefactPanel() { m_vRects.clear_and_free(); }
+	~CUIArtefactPanel() = default;
 
 	virtual void InitIcons		(const TIItemContainer& artefacts);
 	virtual void Draw			();

@@ -50,7 +50,7 @@ IC	void CProblemSolverAbstract::clear()
 {
 	for (auto& it : m_operators)
 		delete_data(it.m_operator);
-	m_operators.clear_and_free();
+	m_operators.clear();
 
 	for (auto& pair : m_evaluators)
 		delete_data(pair.second);

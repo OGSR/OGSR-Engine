@@ -53,31 +53,27 @@ struct xr_allocator {
 // string(char)
 using xr_string = std::basic_string<char, std::char_traits<char>, xalloc<char>>;
 
-// vector
-template	<typename T, typename allocator = xalloc<T> >
-class xr_vector : public std::vector<T,allocator> {
-private:
-	typedef std::vector<T,allocator>	inherited;
+template <typename T, typename allocator = xalloc<T>>
+using xr_vector = std::vector<T, allocator>;
 
-public:
-	typedef allocator					allocator_type;
+template <typename T>
+void clear_and_reserve(xr_vector<T>& vec)
+{
+	if (vec.capacity() <= (vec.size() + vec.size() / 4))
+		vec.clear();
+	else {
+		const size_t old = vec.size();
+		vec.clear();
+		vec.reserve(old);
+	}
+}
 
-public:
-			xr_vector			()									: inherited	()					{}
-			xr_vector			(size_t _count, const T& _value)	: inherited	(_count,_value)		{}
-	explicit xr_vector			(size_t _count)						: inherited (_count)			{}
-	u32		size				() const							{ return (u32)inherited::size();} 
+template <typename T, typename allocator = xalloc<T>>
+using xr_vector = std::vector<T, allocator>;
 
-	void	clear_and_free		()									{ inherited::clear();			}
-	void	clear_not_free		()									{ inherited::clear(); }
-	void	clear_and_reserve	()									{ if (inherited::capacity() <= (size()+size()/4) ) clear_not_free(); else { u32 old=size(); clear_and_free(); inherited::reserve(old); } }
-};
-
-// deque
 template <typename T, typename allocator = xalloc<T>>
 using xr_deque = std::deque<T, allocator>;
 
-// stack
 template <typename T, class C = xr_deque<T>>
 using xr_stack = std::stack<T, C>;
 
@@ -95,6 +91,7 @@ using xr_map = std::map<K, V, P, allocator>;
 
 template <typename K, class V, class P = std::less<K>, typename allocator = xalloc<std::pair<const K, V>>>
 using xr_multimap = std::multimap<K, V, P, allocator>;
+
 
 #define mk_pair std::make_pair //TODO: Везде заменить, а это убрать.
 

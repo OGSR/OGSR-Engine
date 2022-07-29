@@ -54,7 +54,7 @@ void xrServer::Perform_connect_spawn(CSE_Abstract* E, xrClientData* CL, NET_Pack
 
 void xrServer::SendConnectionData(IClient* _CL)
 {
-	g_perform_spawn_ids.clear_not_free();
+	g_perform_spawn_ids.clear();
 	xrClientData*	CL				= (xrClientData*)_CL;
 	NET_Packet		P;
 	u32			mode				= net_flags(TRUE,TRUE);

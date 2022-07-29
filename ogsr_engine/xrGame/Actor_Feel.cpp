@@ -162,7 +162,7 @@ void	CActor::PickupModeUpdate_COD	()
 	frustum.CreateFromMatrix(Device.mFullTransform,FRUSTUM_P_LRTB|FRUSTUM_P_FAR);
 
 	//---------------------------------------------------------------------------
-	ISpatialResult.clear_not_free	();
+	ISpatialResult.clear	();
 	g_SpatialSpace->q_frustum(ISpatialResult, 0, STYPE_COLLIDEABLE, frustum);
 	//---------------------------------------------------------------------------
 

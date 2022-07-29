@@ -59,7 +59,7 @@ void	ISpatial_DB::q_box			(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fve
 {
 	cs.Enter			();
 	q_result			= &R;
-	q_result->clear_not_free		();
+	q_result->clear		();
 	if (_o & O_ONLYFIRST)			{ walker<true>	W(this,_mask,_center,_size);	W.walk(m_root,m_center,m_bounds); } 
 	else							{ walker<false>	W(this,_mask,_center,_size);	W.walk(m_root,m_center,m_bounds); } 
 	cs.Leave			();

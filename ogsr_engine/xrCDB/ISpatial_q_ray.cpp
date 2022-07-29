@@ -274,7 +274,7 @@ void	ISpatial_DB::q_ray	(xr_vector<ISpatial*>& R, u32 _o, u32 _mask_and, const F
 {
 	cs.Enter						();
 	q_result						= &R;
-	q_result->clear_not_free		();
+	q_result->clear		();
 	if (CPU::ID.hasSSE())	{
 		if (_o & O_ONLYFIRST)
 		{

@@ -349,7 +349,7 @@ outloop:
 	if (converted[0]==' ')	strcpy_s(editor,&(converted[1]));
 	else					strcpy_s(editor,converted);
 	if (editor[0]==0)		return;
-	if (RecordCommands)		Log(">",editor);
+	if (RecordCommands)		Msg(">%s",editor);
 	
 	// split into cmd/params
 	editor[j++  ]	=	' ';
@@ -387,7 +387,7 @@ outloop:
 		}
 	}
 	else 
-		Log("! Unknown command: ",first_word);
+		Msg("! Unknown command: [%s]", first_word);
 	editor[0]=0;
 }
 

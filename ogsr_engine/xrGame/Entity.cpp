@@ -110,7 +110,7 @@ float CEntity::CalcCondition(float hit)
 void	CEntity::Hit		(SHit* pHDS)
 {
 
-	if (bDebug)				Log("Process HIT: ", *cName());
+	if (bDebug) Msg("Process HIT: [%s]", cName().c_str());
 
 	// *** process hit calculations
 	// Calc impulse

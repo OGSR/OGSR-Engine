@@ -16,7 +16,7 @@ public:
 	
 	static			void DestroySingleton	()	{
 		if(!_self) return;
-		Log			("DestroySingleton::RefCounter:",_refcount);
+		Msg("DestroySingleton::RefCounter: [%d]", _refcount);
 		VERIFY(_on_self_delete == false); 
 		VERIFY(_refcount == 0);
 		xr_delete(_self);

@@ -134,7 +134,7 @@ CInifile::CInifile( LPCSTR szFileName, BOOL ReadOnly, BOOL bLoad, BOOL SaveAtEnd
 CInifile::~CInifile() {
   if ( !bReadOnly && bSaveAtEnd ) {
     if ( !save_as() )
-      Log( "!Can't save inifile:", fName );
+      Msg( "!Can't save inifile: [%s]", fName );
   }
   xr_free( fName );
   for ( auto &I : DATA ) xr_delete( I.second );

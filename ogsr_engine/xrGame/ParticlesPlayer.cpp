@@ -303,6 +303,6 @@ void CParticlesPlayer::DestroyParticles() {
 	for (auto& b_info : m_Bones) {
 		for (auto& p_info : b_info.particles)
 			CParticlesObject::Destroy(p_info.ps);
-		b_info.particles.clear_and_free();
+		b_info.particles.clear();
 	}
 }

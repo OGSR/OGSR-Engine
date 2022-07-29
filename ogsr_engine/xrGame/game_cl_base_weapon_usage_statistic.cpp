@@ -56,11 +56,6 @@ Weapon_Statistic::Weapon_Statistic(LPCSTR Name)
 	m_dwNumCompleted = 0;
 	ZeroMemory(m_Basket, sizeof(m_Basket));
 };
-Weapon_Statistic::~Weapon_Statistic()
-{
-	m_Hits.clear_and_free();
-	ZeroMemory(m_Basket, sizeof(m_Basket));
-};
 
 void Weapon_Statistic::net_save(NET_Packet* P)
 {
@@ -111,10 +106,6 @@ Player_Statistic::Player_Statistic(LPCSTR Name)
 	m_dwCurrentTeam			= 0;
 }
 
-Player_Statistic::~Player_Statistic()
-{
-	aWeaponStats.clear_and_free();
-};
 
 void Player_Statistic::net_save(NET_Packet* P)
 {
@@ -161,14 +152,6 @@ void WeaponUsageStatistic::Clear()
 
 	m_dwLastUpdateTime			= Level().timeServer();
 	mFileName[0]				= 0;
-};
-
-WeaponUsageStatistic::~WeaponUsageStatistic()
-{
-	ActiveBullets.clear_and_free	();
-	aPlayersStatistic.clear_and_free();
-	m_Requests.clear_and_free		();
-	m_dwLastRequestSenderID			= 0;
 };
 
 bool WeaponUsageStatistic::GetPlayer(LPCSTR PlayerName, PLAYERS_STATS_it& pPlayerI)

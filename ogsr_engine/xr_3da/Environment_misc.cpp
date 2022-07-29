@@ -577,7 +577,7 @@ CEnvAmbient* CEnvironment::AppendEnvAmb		(const shared_str& sect)
 
 void	CEnvironment::mods_load			()
 {
-	Modifiers.clear_and_free			();
+	Modifiers.clear			();
 	string_path							path;
 	if (FS.exist(path,"$level$","level.env_mod"))	
 	{
@@ -608,7 +608,7 @@ void	CEnvironment::mods_load			()
 
 void	CEnvironment::mods_unload		()
 {
-	Modifiers.clear_and_free			();
+	Modifiers.clear			();
 }
 
 void    CEnvironment::load_level_specific_ambients ()

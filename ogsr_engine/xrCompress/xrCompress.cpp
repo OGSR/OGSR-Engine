@@ -348,7 +348,7 @@ static void CompressList(LPCSTR in_name, xr_vector<char*>* list, xr_vector<char*
 		u32 count = 0;
 		for (char* it : *list) {
 			count++;
-			sprintf(caption, "Compress files: %d/%d - %d%%", count, list->size(), (count * 100) / list->size());
+			sprintf(caption, "Compress files: %u/%zu - %zu%%", count, list->size(), (count * 100) / list->size());
 			SetWindowText(GetConsoleWindow(), caption);
 			if (fs->tell() > XRP_MAX_SIZE) {
 				ClosePack();
@@ -532,11 +532,11 @@ static void ProcessLTX(LPCSTR tgt_name, LPCSTR params, BOOL bFast)
 	// free
 	for (char* it : list)
 		xr_free(it);
-	list.clear_and_free();
+	list.clear();
 
 	for (char* it : fl_list)
 		xr_free(it);
-	fl_list.clear_and_free();
+	fl_list.clear();
 
 	exclude_exts.clear();
 	exclude_files.clear();

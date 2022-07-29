@@ -116,7 +116,7 @@ bool CLevel::net_start1				()
 
 			if (id<0) {
 				pApp->LoadEnd				();
-				Log							("Can't find level: ",l_name);
+				Msg("Can't find level: [%s]", l_name);
 				net_start_result_total		= FALSE;
 				return true;
 			}

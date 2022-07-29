@@ -55,7 +55,7 @@ CDemoPlay::CDemoPlay(const char *name, float ms, u32 cycles, float life_time) : 
 		m_count			= seq.size();
 		CopyMemory	(&*seq.begin(),fs->pointer(),sz);
 		FS.r_close		(fs);
-		Log				("~ Total key-frames: ",m_count);
+		Msg("~ Total key-frames: [%d]", m_count);
 	}
 	stat_started		= FALSE;
 	Device.PreCache(50, false, false);

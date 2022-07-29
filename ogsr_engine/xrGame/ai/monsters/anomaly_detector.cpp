@@ -62,7 +62,7 @@ void CAnomalyDetector::update_schedule()
 	m_object->movement().restrictions().add_restrictions(temp_out_restrictors,temp_in_restrictors);
 
 	// remove old restrictions
-	temp_in_restrictors.clear_and_free();
+	temp_in_restrictors.clear();
 	for ( ANOMALY_INFO_VEC_IT it = m_storage.begin(); it != m_storage.end(); it++ ) {
 	  if ( it->time_registered + m_time_to_rememeber < time() && !it->ignored ) {
 	    temp_in_restrictors.push_back( it->id );

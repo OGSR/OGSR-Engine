@@ -122,7 +122,7 @@ void	CObjectList::SingleUpdate	(CObject* O)
 void clear_crow_vec	(xr_vector<CObject*>& o)
 {
 	for (u32 _it=0; _it<o.size(); _it++)	o[_it]->IAmNotACrowAnyMore();
-	o.clear_not_free();
+	o.clear();
 }
 
 void CObjectList::Update		(bool bForce)

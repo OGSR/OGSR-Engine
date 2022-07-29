@@ -794,7 +794,7 @@ static HRESULT create_shader				(
 		_result			= HW.pDevice->CreatePixelShader(buffer, buffer_size, &sps_result->ps);
 #endif // #ifdef USE_DX11
 		if ( !SUCCEEDED(_result) ) {
-			Log			("! PS: ", file_name);
+			Msg("! PS: [%s]", file_name);
 			Msg			("! CreatePixelShader hr == 0x%08x", _result);
 			return		E_FAIL;
 		}
@@ -818,7 +818,7 @@ static HRESULT create_shader				(
 		}
 		else
 		{
-			Log	("! PS: ", file_name);
+			Msg("! PS: [%s]", file_name);
 			Msg	("! D3DReflectShader hr == 0x%08x", _result);
 		}
 	}
@@ -831,7 +831,7 @@ static HRESULT create_shader				(
 #endif // #ifdef USE_DX11
 
 		if ( !SUCCEEDED(_result) ) {
-			Log			("! VS: ", file_name);
+			Msg("! VS: [%s]", file_name);
 			Msg			("! CreatePixelShader hr == 0x%08x", _result);
 			return		E_FAIL;
 		}
@@ -866,7 +866,7 @@ static HRESULT create_shader				(
 		}
 		else
 		{
-			Log			("! VS: ", file_name);
+			Msg("! VS: [%s]", file_name);
 			Msg			("! D3DXFindShaderComment hr == 0x%08x", _result);
 		}
 	}
@@ -878,7 +878,7 @@ static HRESULT create_shader				(
 		_result			= HW.pDevice->CreateGeometryShader(buffer, buffer_size, &sgs_result->gs);
 #endif // #ifdef USE_DX11
 		if ( !SUCCEEDED(_result) ) {
-			Log			("! GS: ", file_name);
+			Msg("! GS: [%s]", file_name);
 			Msg			("! CreateGeometryShaderhr == 0x%08x", _result);
 			return		E_FAIL;
 		}
@@ -902,7 +902,7 @@ static HRESULT create_shader				(
 		}
 		else
 		{
-			Log	("! PS: ", file_name);
+			Msg("! PS: [%s]", file_name);
 			Msg	("! D3DReflectShader hr == 0x%08x", _result);
 		}
 	}

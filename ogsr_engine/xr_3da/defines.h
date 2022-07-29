@@ -6,8 +6,8 @@
 	#define bDebug 0
 #endif
 
-#define _RELEASE(x)			{ if(x) { (x)->Release();       (x)=NULL; } }
-#define _SHOW_REF(msg, x)   { if(x) { x->AddRef(); Log(msg,u32(x->Release()));}}
+#define _RELEASE(x) { if(x) { x->Release(); x = nullptr; } }
+#define _SHOW_REF(unused_arg, x) { if(x) { x->AddRef(); Msg( "[" __FUNCTION__ "] refCount of [" #x "]: [%u]", x->Release() ); } }
 
 // psDeviceFlags
 enum {

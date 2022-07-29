@@ -111,22 +111,10 @@ BOOL Shader::equal	(Shader* S)
 
 void STextureList::clear()
 {
-	iterator it			= begin();
-	iterator it_e		= end();
-	for(;it!=it_e; ++it)
-		(*it).second.destroy();
+	for (auto& it : *this)
+		it.second.destroy();
 
-	erase(begin(),end());
-}
-
-void STextureList::clear_not_free()
-{
-	iterator it			= begin();
-	iterator it_e		= end();
-	for(;it!=it_e; ++it)
-		(*it).second.destroy();
-
-	erase(begin(),end());
+	__super::clear();
 }
 
 u32 STextureList::find_texture_stage(const shared_str &TexName) const

@@ -366,7 +366,7 @@ void CRenderDevice::Run			()
 
 			for (const auto& Func : device.seqParallel)
 				Func();
-			device.seqParallel.clear_and_free();
+			device.seqParallel.clear();
 			device.seqFrameMT.Process(rp_Frame);
 
 #ifdef SHOW_SECOND_THREAD_STATS

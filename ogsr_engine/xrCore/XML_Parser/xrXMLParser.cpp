@@ -437,7 +437,7 @@ XML_NODE* CXml::SearchForAttribute(XML_NODE* start_node, LPCSTR tag_name, LPCSTR
 
 LPCSTR CXml::CheckUniqueAttrib (XML_NODE* start_node, LPCSTR tag_name, LPCSTR attrib_name)
 {
-	m_AttribValues.clear_not_free	();
+	m_AttribValues.clear	();
 
 	int tags_num					= GetNodesNum(start_node, tag_name);
 

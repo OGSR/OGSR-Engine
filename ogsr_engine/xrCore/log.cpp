@@ -99,35 +99,7 @@ void __cdecl Msg(const char *format, ...)
 }
 
 
-// Это всё не нужно на самом деле, от них бы избавиться...
 /////////////////////////////////////////////////////////////////////////////////////////////
-void Log(const char *msg, const char *dop) { //Надо убрать
-	char buf[1024];
-	if (dop)
-		std::snprintf(buf,sizeof(buf),"%s %s",msg,dop);
-	else
-		std::snprintf(buf,sizeof(buf),"%s",msg);
-	Log(buf);
-}
-
-void Log(const char *msg, u32 dop) { //Надо убрать
-	char buf[1024];
-	std::snprintf(buf,sizeof(buf),"%s %d",msg,dop);
-	Log(buf);
-}
-
-void Log(const char *msg, int dop) {
-	char buf[1024];
-	std::snprintf(buf, sizeof(buf),"%s %d",msg,dop);
-	Log(buf);
-}
-
-void Log(const char *msg, float dop) {
-	char buf[1024];
-	std::snprintf(buf, sizeof(buf),"%s %f",msg,dop);
-	Log(buf);
-}
-
 void Log(const char *msg, const Fvector &dop) {
 	char buf[1024];
 	std::snprintf(buf,sizeof(buf),"%s (%f,%f,%f)",msg,dop.x,dop.y,dop.z);

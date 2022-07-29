@@ -67,7 +67,7 @@ struct Weapon_Statistic
 	
 
 	Weapon_Statistic(LPCSTR Name);
-	~Weapon_Statistic();
+	~Weapon_Statistic() = default;
 
 	void			net_save			(NET_Packet* P);
 	void			net_load			(NET_Packet* P);
@@ -102,7 +102,7 @@ struct Player_Statistic
 	u32				m_dwCurMoneyRoundDelta{};
 
 	Player_Statistic(LPCSTR Name);
-	~Player_Statistic();
+	~Player_Statistic() = default;
 
 	WEAPON_STATS_it	FindPlayersWeapon	(LPCSTR WeaponName);
 
@@ -140,7 +140,7 @@ struct Bullet_Check_Array
 	bool			operator	==		(u32 ID){return	ID == SenderID;}
 	bool			operator	!=		(u32 ID){return	ID != SenderID;}
 	Bullet_Check_Array(u32 ID) : SenderID(ID) {Requests.clear(); NumTrue = 0; NumFalse = 0;};
-	~Bullet_Check_Array () {Requests.clear_and_free();};
+	~Bullet_Check_Array() = default;
 };	
 
 DEF_VECTOR(BChA, Bullet_Check_Array);
@@ -163,7 +163,7 @@ struct WeaponUsageStatistic {
 	u32				m_dwUpdateTimeDelta;
 	//-----------------------------------------------
 	WeaponUsageStatistic();
-	~WeaponUsageStatistic();
+	~WeaponUsageStatistic() = default;
 
 	void				Clear			();
 

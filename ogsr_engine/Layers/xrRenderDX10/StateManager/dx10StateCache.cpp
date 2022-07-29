@@ -41,7 +41,7 @@ dx10StateCache<IDeviceState, StateDecs>
 		_RELEASE(m_StateArray[i].m_pState);
 	}
 
-	m_StateArray.clear_not_free();
+	m_StateArray.clear();
 }
 
 template <>

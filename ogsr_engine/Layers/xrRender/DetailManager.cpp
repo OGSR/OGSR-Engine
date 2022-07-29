@@ -239,7 +239,7 @@ void CDetailManager::UpdateVisibleM()
 	// Clean up
 	for (auto& vec : m_visibles)
 		for (auto& vis : vec)
-			vis.clear_not_free();
+			vis.clear();
 
 	Fvector EYE = RDEVICE.vCameraPosition_saved;
 
@@ -315,9 +315,9 @@ void CDetailManager::UpdateVisibleM()
 						SlotPart&			sp	= S.G		[sp_id];
 						if (sp.id==DetailSlot::ID_Empty)	continue;
 
-						sp.r_items[0].clear_not_free();
-						sp.r_items[1].clear_not_free();
-						sp.r_items[2].clear_not_free();
+						sp.r_items[0].clear();
+						sp.r_items[1].clear();
+						sp.r_items[2].clear();
 
 						float				R		= objects	[sp.id]->bv_sphere.R;
 						float				Rq_drcp	= R*R*dist_sq_rcp;	// reordered expression for 'ssa' calc
