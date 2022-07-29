@@ -107,5 +107,5 @@ struct string_hash {
 	[[nodiscard]] decltype(auto) operator()(const shared_str& txt)  const noexcept { return hash_type{}(txt.c_str() ? txt.c_str() : ""); }
 };
 
-template<typename Key, typename Value>
-using string_unordered_map = std::unordered_map<Key, Value, string_hash, std::equal_to<>>;
+template<typename Key, typename Value, class _Alloc = xalloc<std::pair<const Key, Value>>>
+using string_unordered_map = std::unordered_map<Key, Value, string_hash, std::equal_to<>, _Alloc>;
