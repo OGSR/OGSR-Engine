@@ -45,7 +45,7 @@ struct	ALIAS {
 };
 static xr_multimap<u32, ALIAS>	aliases;
 
-static std::vector<std::string> exclude_exts, exclude_files;
+static xr_vector<xr_string> exclude_exts, exclude_files;
 
 
 static bool testSKIP(LPCSTR path)
@@ -53,7 +53,7 @@ static bool testSKIP(LPCSTR path)
 	string_path p_name, p_ext;
 	_splitpath(path, nullptr, nullptr, p_name, p_ext);
 
-	std::string fname_ext{ p_name };
+	xr_string fname_ext{ p_name };
 	fname_ext += p_ext;
 	for (const auto& it : exclude_files)
 		if (PatternMatch(fname_ext.c_str(), it.c_str()))
@@ -439,10 +439,10 @@ static void ProcessLTX(LPCSTR tgt_name, LPCSTR params, BOOL bFast)
 
 	if (ltx.line_exist("options", "exclude_exts"))
 	{
-		std::string input(ltx.r_string("options", "exclude_exts"));
+		xr_string input(ltx.r_string("options", "exclude_exts"));
 		std::replace(input.begin(), input.end(), ',', ' ');
 		std::istringstream iss(input);
-		using it = std::istream_iterator<std::string>;
+		using it = std::istream_iterator<xr_string>;
 		std::copy(it(iss), it(), std::back_inserter(exclude_exts));
 		//for (const auto& str : exclude_exts)
 		//	Msg("--Found exclude: [%s]", str.c_str());
@@ -450,10 +450,10 @@ static void ProcessLTX(LPCSTR tgt_name, LPCSTR params, BOOL bFast)
 
 	if (ltx.line_exist("options", "exclude_files"))
 	{
-		std::string input(ltx.r_string("options", "exclude_files"));
+		xr_string input(ltx.r_string("options", "exclude_files"));
 		std::replace(input.begin(), input.end(), ',', ' ');
 		std::istringstream iss(input);
-		using it = std::istream_iterator<std::string>;
+		using it = std::istream_iterator<xr_string>;
 		std::copy(it(iss), it(), std::back_inserter(exclude_files));
 		//for (const auto& str : exclude_files)
 		//	Msg("--Found exclude file: [%s]", str.c_str());

@@ -1614,7 +1614,7 @@ void CWeaponMagazined::net_Relcase(CObject *object)
 
 
 bool CWeaponMagazined::ScopeRespawn( PIItem pIItem ) {
-  std::string scope_respawn = "scope_respawn";
+  xr_string scope_respawn = "scope_respawn";
   if ( ScopeAttachable() && IsScopeAttached() ) {
     scope_respawn += "_";
     if ( smart_cast<CScope*>( pIItem ) )

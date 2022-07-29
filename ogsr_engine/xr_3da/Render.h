@@ -325,7 +325,7 @@ class IResourceManager
 public:
 	virtual ~IResourceManager() = default;
 
-	virtual std::vector<ITexture*> FindTexture(const char* Name) const = 0;
+	virtual xr_vector<ITexture*> FindTexture(const char* Name) const = 0;
 };
 
 

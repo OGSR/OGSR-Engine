@@ -665,11 +665,11 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
 	Update_LastTime 	= 0;
 
 	// Load animation
-	std::vector<std::string> omfs;
+	xr_vector<xr_string> omfs;
 	if ( pUserData && pUserData->section_exist( "omf_override" ) ) {
 	  LPCSTR nm, val;
 	  for ( u32 i = 0; pUserData->r_line( "omf_override", i ,&nm, &val ); ++i ) {
-	    std::string s = nm;
+	    xr_string s = nm;
 	    s += ".omf";
 	    omfs.push_back( s );
 	  }

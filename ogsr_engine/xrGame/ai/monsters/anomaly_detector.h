@@ -16,7 +16,7 @@ public:
 	bool					m_forced;
 
 private:
-	std::vector<CLASS_ID> m_ignore_clsids;
+	xr_vector<CLASS_ID> m_ignore_clsids;
         struct SAnomalyInfo {
           u16  id;
           bool ignored;
@@ -32,7 +32,7 @@ private:
 		}
 	};
 
-	using ANOMALY_INFO_VEC = std::vector<SAnomalyInfo>;
+	using ANOMALY_INFO_VEC = xr_vector<SAnomalyInfo>;
 	using ANOMALY_INFO_VEC_IT = ANOMALY_INFO_VEC::iterator;
 	ANOMALY_INFO_VEC m_storage;
 

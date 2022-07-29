@@ -131,7 +131,7 @@ public:
 																				else
 																					return  m_pParentWnd->GetFont();}
 
-	using WINDOW_LIST = std::list<CUIWindow*>;
+	using WINDOW_LIST = xr_list<CUIWindow*>;
 	using WINDOW_LIST_it = WINDOW_LIST::iterator;
 
 	WINDOW_LIST&			GetChildWndList		()							{return m_ChildWndList; }

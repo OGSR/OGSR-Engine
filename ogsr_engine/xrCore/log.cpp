@@ -8,11 +8,11 @@
 #include <array> //для std::array
 
 static LogCallback LogCB = nullptr;
-std::vector<std::string> LogFile;
+xr_vector<xr_string> LogFile;
 static std::ofstream logstream;
 string_path logFName{};
 
-static void AddOne(std::string& split, bool first_line)
+static void AddOne(xr_string& split, bool first_line)
 {
 	static std::recursive_mutex logCS;
 	std::scoped_lock<decltype(logCS)> lock(logCS);
@@ -69,7 +69,7 @@ void Log(std::stringstream&& ss)
 	const char& color_s = str.front();
 	const bool have_color = std::find(color_codes.begin(), color_codes.end(), color_s) != color_codes.end(); //Ищем в начале строки цветовой код
 
-	for (std::string item; std::getline(ss, item);) //Разбиваем текст по "\n"
+	for (xr_string item; std::getline(ss, item);) //Разбиваем текст по "\n"
 	{
 		if (not_first_line && have_color)
 		{

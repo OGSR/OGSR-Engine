@@ -22,7 +22,7 @@ IC	void CTradeFactorParameters::clear						()
 IC void CTradeFactorParameters::enable ( const shared_str &section, const CTradeFactors &factors ) {
   static const std::regex Reg( "^/([^/]+)/$" );
   std::smatch results;
-  std::string str( section.c_str() );
+  const xr_string str( section.c_str() );
   if ( std::regex_search( str, results, Reg ) ) {
     std::regex re( results[ 1 ].str() );
     m_factors_re.emplace_back(std::move(re), factors);
@@ -41,7 +41,7 @@ IC bool CTradeFactorParameters::enabled ( const shared_str &section ) const {
     return true;
   for ( const auto &it : m_factors_re ) {
     std::smatch results;
-    std::string str( section.c_str() );
+    const xr_string str( section.c_str() );
     if ( std::regex_search( str, results, it.first ) ) {
       return true;
     }
@@ -56,7 +56,7 @@ IC const CTradeFactors &CTradeFactorParameters::factors ( const shared_str &sect
     return (*I).second;
   for ( const auto &it : m_factors_re ) {
     std::smatch results;
-    std::string str( section.c_str() );
+    const xr_string str( section.c_str() );
     if ( std::regex_search( str, results, it.first ) ) {
       return it.second;
     }

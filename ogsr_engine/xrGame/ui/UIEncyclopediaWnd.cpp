@@ -266,7 +266,7 @@ void CUIEncyclopediaWnd::UpdateArticles() {
         if ( need_sort ) {
           UIIdxList->RemoveAll();
 
-          std::vector< std::vector<CEncyclopediaArticle*> > groups;
+		  xr_vector< xr_vector<CEncyclopediaArticle*> > groups;
           for ( auto& a : m_ArticlesDB ) {
             bool found = false;
             for ( auto& g : groups ) {
@@ -296,7 +296,7 @@ void CUIEncyclopediaWnd::UpdateArticles() {
               );
           }
 
-          std::vector<CEncyclopediaArticle> m_ArticlesDB_new;
+		  xr_vector<CEncyclopediaArticle> m_ArticlesDB_new;
           for ( auto& g : groups )
             for ( const auto* a : g )
               m_ArticlesDB_new.push_back( *a );

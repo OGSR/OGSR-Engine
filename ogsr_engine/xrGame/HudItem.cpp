@@ -394,7 +394,7 @@ u32 CHudItem::PlayHUDMotion(std::initializer_list<const char*> Ms, const bool bM
 		if (AnimationExist(M))
 			return PlayHUDMotion(M, bMixIn, state, randomAnim);
 	/*
-	std::string dbg_anim_name;
+	xr_string dbg_anim_name;
 	for (const auto* M : Ms) {
 		dbg_anim_name += M;
 		dbg_anim_name += ", ";

@@ -22,7 +22,7 @@ IC	void CTradeBoolParameters::clear			()
 IC void CTradeBoolParameters::disable ( const shared_str &section ) {
   static std::regex Reg( "^/([^/]+)/$" );
   std::smatch results;
-  std::string str( section.c_str() );
+  const xr_string str( section.c_str() );
   if ( std::regex_search( str, results, Reg ) ) {
     std::regex re( results[ 1 ].str() );
     m_sections_re.emplace_back( std::move(re) );
@@ -40,7 +40,7 @@ IC bool CTradeBoolParameters::disabled ( const shared_str &section ) const {
     return true;
   for ( const auto &re : m_sections_re ) {
     std::smatch results;
-    std::string str( section.c_str() );
+    const xr_string str( section.c_str() );
     if ( std::regex_search( str, results, re ) ) {
       return true;
     }

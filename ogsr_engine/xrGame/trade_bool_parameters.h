@@ -16,7 +16,7 @@ public:
 
 private:
 	SECTIONS	m_sections;
-        std::vector<std::regex> m_sections_re;
+	xr_vector<std::regex> m_sections_re;
 
 public:
 	IC			CTradeBoolParameters	();

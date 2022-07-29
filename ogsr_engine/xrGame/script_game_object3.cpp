@@ -56,7 +56,7 @@ const CCoverPoint *CScriptGameObject::best_cover	(const Fvector &position, const
 const CCoverPoint *CScriptGameObject::best_cover( const Fvector &position, const Fvector &enemy_position, float radius, float min_enemy_distance, float max_enemy_distance, const luabind::functor<bool>& callback ) {
   CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
   ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
-  std::vector<const CCoverPoint*> covers;
+  xr_vector<const CCoverPoint*> covers;
   stalker->m_ce_best->setup(
     enemy_position, min_enemy_distance, max_enemy_distance, 0.f,
     [&]( auto point ) -> bool {
@@ -84,7 +84,7 @@ const CCoverPoint *CScriptGameObject::safe_cover	(const Fvector &position, float
 const CCoverPoint *CScriptGameObject::safe_cover( const Fvector &position, float radius, float min_distance, const luabind::functor<bool>& callback ) {
   CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
   ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
-  std::vector<const CCoverPoint*> covers;
+  xr_vector<const CCoverPoint*> covers;
   stalker->m_ce_safe->setup(
     min_distance,
     [&]( auto point ) -> bool {
@@ -111,7 +111,7 @@ const CCoverPoint *CScriptGameObject::ambush_cover( const Fvector &position, con
 const CCoverPoint *CScriptGameObject::ambush_cover( const Fvector &position, const Fvector &enemy_position, float radius, float min_distance, const luabind::functor<bool>& callback ) {
   CAI_Stalker *stalker = smart_cast<CAI_Stalker*>(&object());
   ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
-  std::vector<const CCoverPoint*> covers;
+  xr_vector<const CCoverPoint*> covers;
   stalker->m_ce_ambush->setup(
     position, enemy_position, min_distance,
     [&]( auto point ) -> bool {
@@ -127,7 +127,7 @@ const CCoverPoint *CScriptGameObject::ambush_cover( const Fvector &position, con
   return nullptr;
 }
 
-const std::deque<MemorySpace::CVisibleObject>	&CScriptGameObject::memory_visible_objects	() const
+const xr_deque<MemorySpace::CVisibleObject>	&CScriptGameObject::memory_visible_objects	() const
 {
 	CCustomMonster	*monster = smart_cast<CCustomMonster*>(&object());
 	if (!monster) {
@@ -137,7 +137,7 @@ const std::deque<MemorySpace::CVisibleObject>	&CScriptGameObject::memory_visible
 	return			(monster->memory().visual().objects());
 }
 
-const std::deque<MemorySpace::CSoundObject>	&CScriptGameObject::memory_sound_objects	() const
+const xr_deque<MemorySpace::CSoundObject>	&CScriptGameObject::memory_sound_objects	() const
 {
 	CCustomMonster	*monster = smart_cast<CCustomMonster*>(&object());
 	if (!monster) {
@@ -147,7 +147,7 @@ const std::deque<MemorySpace::CSoundObject>	&CScriptGameObject::memory_sound_obj
 	return			(monster->memory().sound().objects());
 }
 
-const std::deque<MemorySpace::CHitObject>		&CScriptGameObject::memory_hit_objects		() const
+const xr_deque<MemorySpace::CHitObject>		&CScriptGameObject::memory_hit_objects		() const
 {
 	CCustomMonster	*monster = smart_cast<CCustomMonster*>(&object());
 	if (!monster) {
@@ -1153,7 +1153,7 @@ const CCoverPoint *CScriptGameObject::angle_cover( const Fvector &position, floa
 const CCoverPoint *CScriptGameObject::angle_cover( const Fvector &position, float radius, const Fvector &enemy_position, float min_enemy_distance, float max_enemy_distance, u32 enemy_vertex_id, const luabind::functor<bool>& callback ) {
   CAI_Stalker *stalker = smart_cast<CAI_Stalker*>( &object() );
   ASSERT_FMT( stalker, "[%s]: %s not a CAI_Stalker", __FUNCTION__, object().cName().c_str() );
-  std::vector<const CCoverPoint*> covers;
+  xr_vector<const CCoverPoint*> covers;
   stalker->m_ce_angle->setup(
     enemy_position, min_enemy_distance, max_enemy_distance, enemy_vertex_id,
     [&]( auto point ) -> bool {

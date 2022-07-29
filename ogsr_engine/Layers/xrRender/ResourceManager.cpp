@@ -436,7 +436,7 @@ BOOL	CResourceManager::_GetDetailTexture(LPCSTR Name,LPCSTR& T, R_constant_setup
 	}
 }*/
 
-std::vector<ITexture*> CResourceManager::FindTexture(const char* Name) const
+xr_vector<ITexture*> CResourceManager::FindTexture(const char* Name) const
 {
 	R_ASSERT(Name && strlen(Name));
 
@@ -446,7 +446,7 @@ std::vector<ITexture*> CResourceManager::FindTexture(const char* Name) const
 
 	char* ch = strchr(filename, '*');
 
-	std::vector<ITexture*> res;
+	xr_vector<ITexture*> res;
 
 	if (!ch) // no wildcard?
 	{

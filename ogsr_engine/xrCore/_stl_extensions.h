@@ -69,9 +69,6 @@ void clear_and_reserve(xr_vector<T>& vec)
 }
 
 template <typename T, typename allocator = xalloc<T>>
-using xr_vector = std::vector<T, allocator>;
-
-template <typename T, typename allocator = xalloc<T>>
 using xr_deque = std::deque<T, allocator>;
 
 template <typename T, class C = xr_deque<T>>
@@ -91,6 +88,9 @@ using xr_map = std::map<K, V, P, allocator>;
 
 template <typename K, class V, class P = std::less<K>, typename allocator = xalloc<std::pair<const K, V>>>
 using xr_multimap = std::multimap<K, V, P, allocator>;
+
+template <typename K, typename V, class _Hasher = std::hash<K>, class _Keyeq = std::equal_to<K>, class _Alloc = xalloc<std::pair<const K, V>>>
+using xr_unordered_map = std::unordered_map<K, V, _Hasher, _Keyeq, _Alloc>;
 
 
 #define mk_pair std::make_pair //TODO: Везде заменить, а это убрать.

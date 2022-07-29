@@ -237,7 +237,7 @@ IC	void CRestrictedObject::remove_object_restriction(ALife::_OBJECT_ID id, const
 template<typename P, const bool value, typename StrType>
 static void construct_restriction_string(StrType& temp_restrictions, const xr_vector<ALife::_OBJECT_ID>& restrictions, const shared_str& current_restrictions, const P& p, CRestrictedObject* RObj)
 {
-	std::vector<std::string> cur_restrs;
+	xr_vector<xr_string> cur_restrs;
 	const int cnt = _GetItemCount(current_restrictions.c_str());
 	for (int i = 0; i < cnt; ++i) {
 		string256 tmp;
@@ -245,14 +245,14 @@ static void construct_restriction_string(StrType& temp_restrictions, const xr_ve
 		cur_restrs.emplace_back(std::move(tmp));
 	}
 
-	std::vector<std::string> new_restrs;
+	xr_vector<xr_string> new_restrs;
 
 	for (const auto& id : restrictions) {
 		const auto* object = Level().Objects.net_Find(id);
 		if (!object)
 			continue;
 
-		std::string s{ object->cName().c_str() };
+		xr_string s{ object->cName().c_str() };
 		if ((std::find(cur_restrs.begin(), cur_restrs.end(), s) != cur_restrs.end()) == value)
 			continue;
 
@@ -263,7 +263,7 @@ static void construct_restriction_string(StrType& temp_restrictions, const xr_ve
 	}
 
 	if (!new_restrs.empty()) {
-		std::string s;
+		xr_string s;
 		for (const auto& it : new_restrs) {
 			if (!s.empty()) s += ",";
 			s += it;

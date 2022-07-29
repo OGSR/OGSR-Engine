@@ -37,7 +37,7 @@ void CActor::AddEncyclopediaArticle( const CInfoPortion* info_portion, bool reve
   VERIFY( info_portion );
   auto& article_vector = encyclopedia_registry->registry().objects();
 
-  std::vector<pda_section::part> updated_pda;
+  xr_vector<pda_section::part> updated_pda;
   auto update_pda_section = [ &updated_pda ]( const auto& data ) {
     pda_section::part p = pda_section::encyclopedia;
     switch ( data.article_type ) {

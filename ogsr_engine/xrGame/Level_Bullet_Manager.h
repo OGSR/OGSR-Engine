@@ -90,7 +90,7 @@ private:
 	collide::rq_results		m_rq_results;
 
 private:
-	using BulletVec = std::vector<SBullet>;
+	using BulletVec = xr_vector<SBullet>;
 	using _hit = std::pair<float,float>;
 
 	friend	CLevel;
@@ -113,12 +113,12 @@ private:
 		u16					tgt_material;
 	};
 protected:
-	std::vector<ref_sound>	m_WhineSounds;
+	xr_vector<ref_sound> m_WhineSounds;
 	RStringVec				m_ExplodeParticles	;
 
 	BulletVec				m_Bullets			;	// working set, locked
 	BulletVec				m_BulletsRendered	;	// copy for rendering
-	std::vector<_event>		m_Events			;	
+	xr_vector<_event> m_Events;
 
 	//остаток времени, который не был учтен на предыдущем кадре
 	u32						m_dwTimeRemainder;

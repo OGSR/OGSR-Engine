@@ -44,7 +44,7 @@ private:
 
 protected:
 	template <typename T>
-			void				update						(const std::deque<T> &objects, bool add_enemies);
+			void				update						(const xr_deque<T> &objects, bool add_enemies);
 
 public:
 								CMemoryManager				(CEntityAlive *entity_alive, CSound_UserDataVisitor *visitor);
@@ -65,7 +65,7 @@ public:
 
 public:
 	template <typename T, typename _predicate>
-	IC		void				fill_enemies				(const std::deque<T> &objects, const _predicate &predicate) const;
+	IC		void				fill_enemies				(const xr_deque<T> &objects, const _predicate &predicate) const;
 	template <typename _predicate>
 	IC		void				fill_enemies				(const _predicate &predicate) const;
 

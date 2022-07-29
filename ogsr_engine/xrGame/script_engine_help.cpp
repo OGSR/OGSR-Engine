@@ -138,7 +138,7 @@ luabind::internal_string member_to_string(luabind::object const& e, LPCSTR funct
 			detail::stack_pop p2(L, 1);
 			detail::method_rep* m = static_cast<detail::method_rep*>(lua_touserdata(L, -1));
 
-			for (std::vector<detail::overload_rep>::const_iterator i = m->overloads().begin();
+			for (auto i = m->overloads().begin();
 				i != m->overloads().end(); ++i)
 			{
 				luabind::internal_string str;
@@ -216,8 +216,8 @@ void print_class(lua_State *L, luabind::detail::class_rep *crep)
 
 	{
 		const luabind::internal_vector<luabind::detail::construct_rep::overload_t> &constructors = crep->constructors().overloads;
-		std::vector<luabind::detail::construct_rep::overload_t>::const_iterator	I = constructors.begin();
-		std::vector<luabind::detail::construct_rep::overload_t>::const_iterator	E = constructors.end();
+		auto I = constructors.cbegin();
+		auto E = constructors.cend();
 		for (; I != E; ++I) {
 			luabind::internal_string S;
 			(*I).get_signature(L, S);
@@ -282,8 +282,8 @@ void print_free_functions(lua_State *L, const luabind::object &object, LPCSTR he
 							FastMsg("\n%snamespace %s {", indent.c_str(), header);
 						++count;
 						rep = static_cast<luabind::detail::free_functions::function_rep*>(lua_touserdata(L, -1));
-						std::vector<luabind::detail::free_functions::overload_rep>::const_iterator	i = rep->overloads().begin();
-						std::vector<luabind::detail::free_functions::overload_rep>::const_iterator	e = rep->overloads().end();
+						auto i = rep->overloads().cbegin();
+						auto e = rep->overloads().cend();
 						for (; i != e; ++i) {
 							luabind::internal_string S;
 							(*i).get_signature(L, S);

@@ -22,7 +22,7 @@ class CVisualMemoryManager {
 public:
 	typedef MemorySpace::CVisibleObject			CVisibleObject;
 	typedef MemorySpace::CNotYetVisibleObject	CNotYetVisibleObject;
-	typedef std::deque<CVisibleObject>			VISIBLES;
+	typedef xr_deque<CVisibleObject>			VISIBLES;
 	typedef xr_vector<CObject*>					RAW_VISIBLES;
 	typedef xr_vector<CNotYetVisibleObject>		NOT_YET_VISIBLES;
 
@@ -96,7 +96,7 @@ public:
 			bool	visible					(u32 level_vertex_id, float yaw, float eye_fov) const;
 
 public:
-	IC		void	set_squad_objects		(std::deque<CVisibleObject> *squad_objects);
+	IC		void	set_squad_objects		(xr_deque<CVisibleObject> *squad_objects);
 			CVisibleObject *visible_object	(const CGameObject *game_object);
 			
 public:

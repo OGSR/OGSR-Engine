@@ -25,7 +25,7 @@ class CAI_Stalker;
 class CHitMemoryManager {
 public:
 	typedef MemorySpace::CHitObject					CHitObject;
-	typedef std::deque<CHitObject>					HITS;
+	typedef xr_deque<CHitObject>					HITS;
 
 private:
 	struct CDelayedHitObject {

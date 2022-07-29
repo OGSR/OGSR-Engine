@@ -93,7 +93,7 @@ protected:
 	shared_str              m_ambients_config_filename;
 
 	shared_str			section;
-	std::vector<SEffect> effects;
+	xr_vector<SEffect> effects;
 	xr_vector<ref_sound>sounds;
 	Fvector2			sound_dist;
 	Ivector2			sound_period;

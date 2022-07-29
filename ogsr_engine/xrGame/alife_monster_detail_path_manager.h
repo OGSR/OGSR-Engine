@@ -43,7 +43,7 @@ private:
 	// on this vector during path following
 	// we just repeatedly remove the last 
 	// vertex, and this operation is 
-	// efficiently implemented in std::vector
+	// efficiently implemented in xr_vector
 
 private:
 			void		actualize						();

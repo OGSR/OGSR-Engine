@@ -98,7 +98,9 @@ void CEntityCondition::LoadCondition(LPCSTR entity_section)
 	float fHealthHitPart = READ_IF_EXISTS( pSettings, r_float, section, "health_hit_part", 1.f );
 	for ( int hit_type = 0; hit_type < (int)ALife::eHitTypeMax; ++hit_type ) {
 	  LPCSTR hit_name = ALife::g_cafHitType2String( (ALife::EHitType)hit_type );
-	  std::string s( std::string( "health_" ) + std::string( hit_name ) + std::string( "_hit_part" ) );
+	  xr_string s("health_");
+	  s += hit_name;
+	  s += "_hit_part";
 	  m_fHealthHitPart[ hit_type ] = READ_IF_EXISTS( pSettings, r_float, section, s.c_str(), fHealthHitPart );
 	}
 

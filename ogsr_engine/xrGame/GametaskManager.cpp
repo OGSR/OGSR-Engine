@@ -358,7 +358,7 @@ SGameTaskObjective* CGameTaskManager::ActiveObjective()
 
 
 void CGameTaskManager::cleanup() {
-  std::vector<shared_str> articles;
+  xr_vector<shared_str> articles;
   GameTasks().erase(
     std::remove_if(
       GameTasks().begin(),

@@ -35,7 +35,7 @@ private:
 	SPAWN_IDS								m_temp0;
 	SPAWN_IDS								m_temp1;
 
-	std::unordered_map<ALife::_SPAWN_STORY_ID, ALife::_SPAWN_ID> m_spawn_story_ids;
+	xr_unordered_map<ALife::_SPAWN_STORY_ID, ALife::_SPAWN_ID> m_spawn_story_ids;
 	string_unordered_map<shared_str, ALife::_SPAWN_ID> m_spawn_ids_by_name;
 
 protected:

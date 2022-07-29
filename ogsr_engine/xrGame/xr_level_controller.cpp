@@ -8,7 +8,7 @@
 
 #define DEF_ACTION( a1, a2 ) { a1, a2, #a2 },
 
-std::vector<_action> actions = {
+xr_vector<_action> actions = {
 	DEF_ACTION("left",				kLEFT)
 	DEF_ACTION("right",				kRIGHT)
 	DEF_ACTION("up",				kUP)
@@ -102,7 +102,7 @@ std::vector<_action> actions = {
 	DEF_ACTION("artefact",			kARTEFACT)
 };
 
-std::vector<_binding> g_key_bindings;
+xr_vector<_binding> g_key_bindings;
 
 _keyboard keyboards[] = {
 	{ "kESCAPE",	 	DIK_ESCAPE		},	{ "k1",				DIK_1			},

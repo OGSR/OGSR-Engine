@@ -26,7 +26,7 @@ class CAI_Stalker;
 class CSoundMemoryManager {
 public:
 	typedef MemorySpace::CSoundObject					CSoundObject;
-	typedef std::deque<CSoundObject>						SOUNDS;
+	typedef xr_deque<CSoundObject>						SOUNDS;
 	typedef xr_map<ESoundTypes,u32>						PRIORITIES;
 
 private:

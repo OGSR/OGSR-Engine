@@ -9,7 +9,7 @@
 #pragma once
 
 template <typename T, typename _predicate>
-IC	void CMemoryManager::fill_enemies	(const std::deque<T> &objects, const _predicate &predicate) const
+IC	void CMemoryManager::fill_enemies	(const xr_deque<T> &objects, const _predicate &predicate) const
 {
 	auto I = objects.cbegin();
 	auto E = objects.cend();

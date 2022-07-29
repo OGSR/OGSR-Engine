@@ -284,7 +284,7 @@ public:
 	virtual void			SetHealth(float h) { }
 
 protected:
-  std::vector<FeelTouchAddon*> feel_touch_addons;
+  xr_vector<FeelTouchAddon*> feel_touch_addons;
   bool feel_touch_changed, feel_touch_processing;
   void FeelTouchAddonsUpdate();
   void FeelTouchAddonsRelcase( CObject* );

@@ -29,7 +29,7 @@
 #endif
 
 
-static std::vector<std::pair<shared_str, Frect>> g_wnds_rects;
+static xr_vector<std::pair<shared_str, Frect>> g_wnds_rects;
 BOOL g_show_wnd_rect = FALSE;
 BOOL g_show_wnd_rect2 = FALSE;
 BOOL g_show_wnd_rect_text = FALSE;

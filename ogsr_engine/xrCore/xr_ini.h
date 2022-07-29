@@ -9,7 +9,7 @@ class XRCORE_API CInifile {
   struct XRCORE_API Sect {
     shared_str Name;
     string_unordered_map<shared_str, shared_str> Data;
-    std::vector<Item> Unordered;
+    xr_vector<Item> Unordered;
     BOOL line_exist ( LPCSTR, LPCSTR* = nullptr );
     u32 line_count();
 

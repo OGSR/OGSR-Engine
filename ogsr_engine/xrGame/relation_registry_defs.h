@@ -34,7 +34,7 @@ struct RELATION_DATA : public IPureSerializeObject<IReader,IWriter>
 
 	//личные отношения
 	PERSONAL_RELATION_MAP personal; 
-	std::vector<u16> reverse_personal;
+	xr_vector<u16> reverse_personal;
 	//отношения с группировками
 	COMMUNITY_RELATION_MAP communities;
 };

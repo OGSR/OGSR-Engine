@@ -12,5 +12,5 @@ using LogCallback = std::function<void(const char*)>;
 void	XRCORE_API				SetLogCB	(LogCallback cb);
 void 							CreateLog	(BOOL no_log = FALSE);
 
-extern XRCORE_API std::vector<std::string> LogFile;
+extern XRCORE_API xr_vector<xr_string> LogFile;
 extern XRCORE_API string_path logFName;

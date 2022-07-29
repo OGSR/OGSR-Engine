@@ -122,7 +122,7 @@ LPCSTR			id_to_action_name		(EGameActions _id);
 EGameActions	action_name_to_id		(LPCSTR _name);
 _action*		action_name_to_ptr		(LPCSTR _name);
 
-extern std::vector<_action>		actions;
+extern xr_vector<_action>		actions;
 
 struct _binding
 {
@@ -130,7 +130,7 @@ struct _binding
 	_keyboard*		m_keyboard[2];
 };
 
-extern std::vector<_binding> g_key_bindings;
+extern xr_vector<_binding> g_key_bindings;
 
 bool				is_binded			(EGameActions action_id, int dik);
 int					get_action_dik		(EGameActions action_id);

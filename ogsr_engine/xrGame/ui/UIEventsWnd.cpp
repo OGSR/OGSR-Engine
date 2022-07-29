@@ -123,7 +123,7 @@ void CUIEventsWnd::ReloadList(bool bClearOnly)
 	if(!g_actor)				return;
 
 	GameTasks& tasks = Actor()->GameTaskManager().GameTasks();
-	std::vector<CGameTask*> game_tasks;
+	xr_vector<CGameTask*> game_tasks;
 	for ( const auto& it : tasks ) {
 	  CGameTask* task = it.game_task;
 	  R_ASSERT( task );

@@ -22,7 +22,7 @@ constexpr LPCSTR ratingField			= "rating_names";
 constexpr LPCSTR reputationgField		= "reputation_names";
 constexpr LPCSTR goodwillField			= "goodwill_names";
 
-std::map<size_t, std::unique_ptr<ui_shader>> g_EquipmentIconsShaders;
+static xr_unordered_map<size_t, ui_shader> g_EquipmentIconsShaders;
 
 typedef				std::pair<CHARACTER_RANK_VALUE, shared_str>	CharInfoStringID;
 DEF_MAP				(CharInfoStrings, CHARACTER_RANK_VALUE, shared_str);
@@ -171,12 +171,10 @@ ui_shader& InventoryUtilities::GetEquipmentIconsShader(size_t icon_group)
 			itoa(icon_group, file + strlen(file), 10);
 		}
 
-		auto Shader = std::make_unique<ui_shader>();
-		(*Shader)->create("hud\\default", file);
-		g_EquipmentIconsShaders[icon_group] = std::move(Shader);
+		g_EquipmentIconsShaders[icon_group]->create("hud\\default", file);
 	}
 
-	return *g_EquipmentIconsShaders[icon_group];
+	return g_EquipmentIconsShaders.at(icon_group);
 }
 
 

@@ -140,7 +140,7 @@ public:
 	xr_deque<CSE_Abstract*>		game_spawn_queue;
 	xrServer*					Server;
 	GlobalFeelTouch				m_feel_deny;
-	std::vector<u16> m_just_destroyed;
+	xr_vector<u16> m_just_destroyed;
 
 private:
 	// preload sounds registry

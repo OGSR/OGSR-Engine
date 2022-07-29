@@ -19,9 +19,9 @@ public:
 	typedef MemorySpace::CHitObject			CHitObject;
 
 public:
-	typedef std::deque<CVisibleObject>		VISIBLES;
-	typedef std::deque<CSoundObject>		SOUNDS;
-	typedef std::deque<CHitObject>			HITS;
+	typedef xr_deque<CVisibleObject>		VISIBLES;
+	typedef xr_deque<CSoundObject>		SOUNDS;
+	typedef xr_deque<CHitObject>			HITS;
 	typedef MemorySpace::squad_mask_type	squad_mask_type;
 
 

@@ -339,7 +339,7 @@ void CAgentEnemyManager::permutate_enemies		()
 }
 
 template <typename T>
-IC	void CAgentEnemyManager::setup_mask			(std::deque<T> &objects, CMemberEnemy &enemy, const squad_mask_type &non_combat_members)
+IC	void CAgentEnemyManager::setup_mask(xr_deque<T> &objects, CMemberEnemy &enemy, const squad_mask_type &non_combat_members)
 {
 	auto I = std::find(objects.begin(),objects.end(),enemy.m_object->ID());
 	if (I != objects.end()) {

@@ -212,7 +212,7 @@ public:
 
 void CEngineAPI::CreateRendererList()
 {
-	std::vector<std::string> RendererTokens;
+	xr_vector<xr_string> RendererTokens;
 
 #ifdef EXCLUDE_R1
 	size_t i = 2;

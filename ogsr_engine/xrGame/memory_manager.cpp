@@ -157,7 +157,7 @@ void CMemoryManager::enable			(const CObject *object, bool enable)
 }
 
 template <typename T>
-void CMemoryManager::update			(const std::deque<T> &objects, bool add_enemies)
+void CMemoryManager::update			(const xr_deque<T> &objects, bool add_enemies)
 {
 	squad_mask_type					mask = m_stalker ? m_stalker->agent_manager().member().mask(m_stalker) : 0;
 	auto I = objects.cbegin();
@@ -203,7 +203,7 @@ CMemoryInfo CMemoryManager::memory(const CObject *object) const
 	squad_mask_type					mask = m_stalker ? m_stalker->agent_manager().member().mask(m_stalker) : squad_mask_type(-1);
 
 	{
-		std::deque<CVisibleObject>::const_iterator	I = std::find(visual().objects().begin(),visual().objects().end(),object_id(object));
+		auto I = std::find(visual().objects().begin(),visual().objects().end(),object_id(object));
 		if (visual().objects().end() != I) {
 			(CMemoryObject<CGameObject>&)result	= (CMemoryObject<CGameObject>&)(*I);
 			result.visible						((*I).visible(mask));
@@ -214,7 +214,7 @@ CMemoryInfo CMemoryManager::memory(const CObject *object) const
 	}
 
 	{
-		std::deque<CSoundObject>::const_iterator	I = std::find(sound().objects().begin(),sound().objects().end(),object_id(object));
+		auto I = std::find(sound().objects().begin(),sound().objects().end(),object_id(object));
 		if ((sound().objects().end() != I) && (level_time < (*I).m_level_time)) {
 			(CMemoryObject<CGameObject>&)result = (CMemoryObject<CGameObject>&)(*I);
 			result.m_sound_info						= true;
@@ -224,7 +224,7 @@ CMemoryInfo CMemoryManager::memory(const CObject *object) const
 	}
 	
 	{
-		std::deque<CHitObject>::const_iterator	I = std::find(hit().objects().begin(),hit().objects().end(),object_id(object));
+		auto I = std::find(hit().objects().begin(),hit().objects().end(),object_id(object));
 		if ((hit().objects().end() != I) && (level_time < (*I).m_level_time)) {
 			(CMemoryObject<CGameObject>&)result = (CMemoryObject<CGameObject>&)(*I);
 			result.m_object							= game_object;
@@ -245,19 +245,19 @@ u32 CMemoryManager::memory_time(const CObject *object) const
 	VERIFY(smart_cast<const CGameObject*>(object));
 
 	{
-		std::deque<CVisibleObject>::const_iterator	I = std::find(visual().objects().begin(),visual().objects().end(),object_id(object));
+		auto I = std::find(visual().objects().begin(),visual().objects().end(),object_id(object));
 		if (visual().objects().end() != I)
 			result		= (*I).m_level_time;
 	}
 
 	{
-		std::deque<CSoundObject>::const_iterator	I = std::find(sound().objects().begin(),sound().objects().end(),object_id(object));
+		auto I = std::find(sound().objects().begin(),sound().objects().end(),object_id(object));
 		if ((sound().objects().end() != I) && (result < (*I).m_level_time))
 			result		= (*I).m_level_time;
 	}
 	
 	{
-		std::deque<CHitObject>::const_iterator	I = std::find(hit().objects().begin(),hit().objects().end(),object_id(object));
+		auto I = std::find(hit().objects().begin(),hit().objects().end(),object_id(object));
 		if ((hit().objects().end() != I) && (result < (*I).m_level_time))
 			result		= (*I).m_level_time;
 	}
@@ -275,7 +275,7 @@ Fvector CMemoryManager::memory_position	(const CObject *object) const
 	VERIFY(smart_cast<const CGameObject*>(object));
 
 	{
-		std::deque<CVisibleObject>::const_iterator	I = std::find(visual().objects().begin(),visual().objects().end(),object_id(object));
+		auto I = std::find(visual().objects().begin(),visual().objects().end(),object_id(object));
 		if (visual().objects().end() != I) {
 			time		= (*I).m_level_time;
 			result		= (*I).m_object_params.m_position;
@@ -283,7 +283,7 @@ Fvector CMemoryManager::memory_position	(const CObject *object) const
 	}
 
 	{
-		std::deque<CSoundObject>::const_iterator	I = std::find(sound().objects().begin(),sound().objects().end(),object_id(object));
+		auto I = std::find(sound().objects().begin(),sound().objects().end(),object_id(object));
 		if ((sound().objects().end() != I) && (time < (*I).m_level_time)) {
 			time		= (*I).m_level_time;
 			result		= (*I).m_object_params.m_position;
@@ -291,7 +291,7 @@ Fvector CMemoryManager::memory_position	(const CObject *object) const
 	}
 	
 	{
-		std::deque<CHitObject>::const_iterator	I = std::find(hit().objects().begin(),hit().objects().end(),object_id(object));
+		auto I = std::find(hit().objects().begin(),hit().objects().end(),object_id(object));
 		if ((hit().objects().end() != I) && (time < (*I).m_level_time)) {
 			time		= (*I).m_level_time;
 			result		= (*I).m_object_params.m_position;

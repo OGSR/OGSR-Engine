@@ -58,7 +58,7 @@ protected:
 	CUIStatic*			UIArticleHeader;
 
 	// Хранилище статей
-	std::vector<CEncyclopediaArticle> m_ArticlesDB;
+	xr_vector<CEncyclopediaArticle> m_ArticlesDB;
 
 	CGameFont*				m_pTreeRootFont;
 	u32						m_uTreeRootColor;

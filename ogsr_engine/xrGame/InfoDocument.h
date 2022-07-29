@@ -31,7 +31,7 @@ public:
 
 protected:
 	//индекс информации, содержащейся в документе
-	std::vector<std::string> m_Info;
+	xr_vector<xr_string> m_Info;
 };
 
 add_to_type_list(CInfoDocument)
