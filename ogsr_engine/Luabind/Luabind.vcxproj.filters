@@ -188,9 +188,6 @@
     <ClInclude Include="luabind\detail\overload_rep_base.hpp">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="luabind\detail\overload_rep_impl.hpp">
-      <Filter>Include</Filter>
-    </ClInclude>
     <ClInclude Include="luabind\detail\pcall.hpp">
       <Filter>Include</Filter>
     </ClInclude>

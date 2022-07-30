@@ -25,8 +25,6 @@
 #include <luabind/detail/object_rep.hpp>
 #include <luabind/detail/method_rep.hpp>
 
-#include <luabind/detail/overload_rep_impl.hpp>
-
 //#define TEST_GARBAGE_COLLECTOR
 
 #ifdef TEST_GARBAGE_COLLECTOR

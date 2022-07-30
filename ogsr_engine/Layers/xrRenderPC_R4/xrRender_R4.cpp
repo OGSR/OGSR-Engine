@@ -5,6 +5,21 @@
 #include "../xrRender/dxUIRender.h"
 #include "../xrRender/dxDebugRender.h"
 
+
+#ifdef XRRENDER_STATIC
+
+void AttachRender()
+{
+	::Render		= &RImplementation;
+	::RenderFactory	= &RenderFactoryImpl;
+	::DU			= &DUImpl;
+	UIRender		= &UIRenderImpl;
+	DRender			= &DebugRenderImpl;
+	xrRender_initconsole();
+}
+
+#else
+
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        DWORD  ul_reason_for_call, 
                        LPVOID lpReserved
@@ -56,3 +71,5 @@ bool _declspec(dllexport) SupportsDX11Rendering()
 		return true;
 	*/
 }
+
+#endif

@@ -67,6 +67,13 @@ void CEngineAPI::Initialize()
 	CCC_LoadCFG_custom pTmp("renderer ");
 	pTmp.Execute(Console->ConfigFile);
 
+#ifdef XRRENDER_STATIC
+	void AttachRender();
+	AttachRender();
+	g_current_renderer = 4;
+	psDeviceFlags.set(rsR4, TRUE);
+#else
+
 #ifndef EXCLUDE_R1
 	constexpr LPCSTR r1_name = "xrRender_R1.dll";
 #endif
@@ -148,6 +155,7 @@ void CEngineAPI::Initialize()
 		g_current_renderer = 1;
 	}
 #endif
+#endif
 
 	Device.ConnectToRender();
 
@@ -170,8 +178,12 @@ void CEngineAPI::Initialize()
 
 void CEngineAPI::Destroy()
 {
+#ifndef XRGAME_STATIC
 	if (hGame)				{ FreeLibrary(hGame);	hGame	= 0; }
+#endif
+#ifndef XRRENDER_STATIC
 	if (hRender)			{ FreeLibrary(hRender); hRender = 0; }
+#endif
 	pCreate					= 0;
 	pDestroy				= 0;
 	Engine.Event._destroy	();
@@ -179,6 +191,8 @@ void CEngineAPI::Destroy()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#ifndef XRRENDER_STATIC
 
 extern "C" {
 	typedef bool SupportsAdvancedRendering();
@@ -210,8 +224,12 @@ public:
 	}
 };
 
+#endif
+
 void CEngineAPI::CreateRendererList()
 {
+#ifndef XRRENDER_STATIC
+
 	xr_vector<xr_string> RendererTokens;
 
 #ifdef EXCLUDE_R1
@@ -281,4 +299,13 @@ void CEngineAPI::CreateRendererList()
 		vid_quality_token[i].name = xr_strdup(RendererTokens[i].c_str());
 		Msg("--  [%s]", RendererTokens[i].c_str());
 	}
+#else
+	vid_quality_token = xr_alloc<xr_token>(2);
+
+	vid_quality_token[1].id = -1;
+	vid_quality_token[1].name = nullptr;
+
+	vid_quality_token[0].id = 0;
+	vid_quality_token[0].name = xr_strdup("renderer_r4");
+#endif
 }

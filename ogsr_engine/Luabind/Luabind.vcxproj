@@ -233,7 +233,6 @@
     <ClInclude Include="luabind\detail\other.hpp" />
     <ClInclude Include="luabind\detail\overload_rep.hpp" />
     <ClInclude Include="luabind\detail\overload_rep_base.hpp" />
-    <ClInclude Include="luabind\detail\overload_rep_impl.hpp" />
     <ClInclude Include="luabind\detail\pcall.hpp" />
     <ClInclude Include="luabind\detail\pointee_sizeof.hpp" />
     <ClInclude Include="luabind\detail\pointee_typeid.hpp" />

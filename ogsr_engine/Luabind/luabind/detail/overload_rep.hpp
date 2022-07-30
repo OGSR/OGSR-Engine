@@ -81,7 +81,13 @@ namespace luabind { namespace detail
 		void set_fun_static(T&& fun) 
 		{ call_fun_static = std::forward<T>(fun); }
 
-		int call(lua_State* L, bool force_static_call) const;
+		inline int call(lua_State* L, bool force_static_call) const
+		{
+			if (force_static_call)
+				return call_fun_static(L);
+			else
+				return call_fun(L);
+		}
 
 		bool has_static() const { return static_cast<bool>(call_fun_static); }
 

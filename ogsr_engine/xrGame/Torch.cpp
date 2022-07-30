@@ -28,7 +28,7 @@ static const float		OPTIMIZATION_DISTANCE		= 100.f;
 
 static bool stalker_use_dynamic_lights	= false;
 
-ENGINE_API int g_current_renderer;
+extern ENGINE_API int g_current_renderer;
 
 CTorch::CTorch(void) 
 {

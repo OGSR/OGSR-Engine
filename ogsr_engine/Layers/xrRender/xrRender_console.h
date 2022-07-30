@@ -222,7 +222,10 @@ enum
 };
 
 extern void						xrRender_initconsole	();
-extern BOOL						xrRender_test_hw		();
+
+#ifndef XRRENDER_STATIC
+extern BOOL xrRender_test_hw();
+#endif
 
 // Postprocess anti-aliasing types
 enum

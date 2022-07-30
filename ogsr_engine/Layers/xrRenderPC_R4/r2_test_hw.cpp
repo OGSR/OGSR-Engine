@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#ifndef XRRENDER_STATIC
+
 LRESULT CALLBACK WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
 	return DefWindowProc( hWnd, message, wParam, lParam );
@@ -115,3 +117,5 @@ BOOL	xrRender_test_hw		()
 
 	return	TestDX11Present();//SUCCEEDED(hr);
 }
+
+#endif

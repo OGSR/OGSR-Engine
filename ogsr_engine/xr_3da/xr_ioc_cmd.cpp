@@ -465,9 +465,13 @@ public:
 #endif
 */
 
+#ifdef XRRENDER_STATIC
+ENGINE_API BOOL r2_sun_static = FALSE;
+ENGINE_API BOOL r2_advanced_pp = TRUE;	//	advanced post process and effects
+#else
 ENGINE_API BOOL r2_sun_static = TRUE;
 ENGINE_API BOOL r2_advanced_pp = FALSE;	//	advanced post process and effects
-
+#endif
 
 #ifdef EXCLUDE_R1
 u32 renderer_value = 1;
@@ -488,6 +492,8 @@ public:
 		tokens					= vid_quality_token;
 
 		inherited::Execute		(args);
+
+#ifndef XRRENDER_STATIC
 		Msg("--[%s] Executing renderer: [%s], renderer_value: [%u]", __FUNCTION__, args, renderer_value);
 #ifdef EXCLUDE_R1
 		//	0..2 - r2
@@ -511,6 +517,7 @@ public:
 		r2_sun_static	= (renderer_value<2);
 
 		r2_advanced_pp  = (renderer_value>=3);
+#endif
 #endif
 	}
 
