@@ -28,6 +28,7 @@ void UIRegistrator::script_register(lua_State *L)
 
 		class_<CMainMenu, CDialogHolder>("CMainMenu")
 			.def("GetGSVer",				&CMainMenu::GetGSVer)
+			.def("PlaySound",				&CMainMenu::PlaySound)
 	],
 	module(L,"main_menu")
 	[

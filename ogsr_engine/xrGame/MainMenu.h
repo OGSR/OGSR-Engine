@@ -39,6 +39,9 @@ class CMainMenu :
 
 	xr_vector<CUIWindow*>		m_pp_draw_wnds;
 
+private:
+	ref_sound CurrentSound;
+
 public:
 	enum	EErrorDlg 
 	{
@@ -98,6 +101,8 @@ public:
 	void			SetNeedVidRestart				();
 	virtual void	OnDeviceReset					();
 	LPCSTR			GetGSVer						();
+
+	void			PlaySound(LPCSTR Path);
 };
 
 extern CMainMenu*	MainMenu();

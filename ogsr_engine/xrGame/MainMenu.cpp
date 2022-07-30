@@ -62,6 +62,7 @@ CMainMenu::~CMainMenu()
 	xr_delete(m_startDialog);
 	g_pGamePersistent->m_pMainMenu = NULL;
 	delete_data(m_pMB_ErrDlgs);
+	CurrentSound.destroy();
 }
 
 void CMainMenu::ReadTextureInfo()
@@ -462,4 +463,11 @@ void CMainMenu::OnDeviceReset()
 LPCSTR CMainMenu::GetGSVer()
 {
 	return Core.GetEngineVersion();
+}
+
+void CMainMenu::PlaySound(LPCSTR path)
+{
+	CurrentSound.destroy();
+	CurrentSound.create(path, st_Music, sg_SourceType);
+	CurrentSound.play(nullptr, sm_2D);
 }
