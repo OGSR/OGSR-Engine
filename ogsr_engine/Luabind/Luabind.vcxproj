@@ -25,14 +25,14 @@
     <ProjectName>Luabind</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <Import Project="..\Engine_properties.props" />
+  <Import Project="..\Engine_lib_properties.props" />
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)'=='Debug'">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Label="Configuration" Condition="'$(Configuration)'=='Release'">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
@@ -54,7 +54,7 @@
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <PreprocessorDefinitions>_SECURE_SCL=0;_HAS_ITERATOR_DEBUGGING=0;LUABIND_BUILDING;NDEBUG;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>XRCORE_STATIC;_SECURE_SCL=0;_HAS_ITERATOR_DEBUGGING=0;LUABIND_STATIC;NDEBUG;</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir);..\LuaJIT\src;..\xrCore;</AdditionalIncludeDirectories>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -102,7 +102,7 @@
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
-      <PreprocessorDefinitions>_SECURE_SCL=0;_HAS_ITERATOR_DEBUGGING=0;LUABIND_BUILDING;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>XRCORE_STATIC;_SECURE_SCL=0;_HAS_ITERATOR_DEBUGGING=0;LUABIND_STATIC;</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir);..\LuaJIT\src;..\xrCore;</AdditionalIncludeDirectories>
       <StringPooling>false</StringPooling>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
