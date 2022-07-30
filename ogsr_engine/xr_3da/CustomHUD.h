@@ -17,7 +17,6 @@ enum HUD_Flags: u32 {
 	HUD_CROSSHAIR_RT2 = 1 << 9,
 	HUD_DRAW_RT = 1 << 10,
 	HUD_CROSSHAIR_BUILD = 1 << 11, // старый стиль курсора
-	HUD_SMALL_FONT = 1 << 12, // использовать уменьшенный шрифт
 };
 
 class CUI;
