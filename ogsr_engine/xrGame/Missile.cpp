@@ -263,7 +263,7 @@ void CMissile::State(u32 state, u32 oldState)
 	case eShowing:
 	{
 		SetPending(TRUE);
-		PlayHUDMotion({ "anim_show", "anm_show" }, false, GetState(), false);
+		PlayHUDMotion({ "anim_show", "anm_show" }, false, GetState());
 	}
 	break;
 	case eIdle:
@@ -279,7 +279,7 @@ void CMissile::State(u32 state, u32 oldState)
 			if (oldState != eHiding)
 			{
 				SetPending(TRUE);
-				PlayHUDMotion({ "anim_hide", "anm_hide" }, true, GetState(), false);
+				PlayHUDMotion({ "anim_hide", "anm_hide" }, true, GetState());
 			}
 		}
 	}
@@ -345,7 +345,7 @@ void CMissile::PlayAnimIdle()
 	if (TryPlayAnimIdle())
 		return;
 
-	PlayHUDMotion({ "anim_idle", "anm_idle" }, true, GetState(), false);
+	PlayHUDMotion({ "anim_idle", "anm_idle" }, true, GetState());
 }
 
 void CMissile::PlayAnimDeviceSwitch()
