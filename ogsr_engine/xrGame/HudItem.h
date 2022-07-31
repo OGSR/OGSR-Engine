@@ -166,6 +166,7 @@ public:
 	void			StopCurrentAnimWithoutCallback();
 
 	attachable_hud_item* HudItemData		() const;
+	bool used_cop_fire_point() const;
 	virtual void	on_a_hud_attach			();
 	virtual void	on_b_hud_detach			();
 	const shared_str& HudSection			() const { return hud_sect; }

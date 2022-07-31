@@ -608,6 +608,10 @@ attachable_hud_item* CHudItem::HudItemData() const
 	return nullptr;
 }
 
+bool CHudItem::used_cop_fire_point() const {
+	auto hd = HudItemData();
+	return hd && hd->m_measures.useCopFirePoint;
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
@@ -624,7 +628,7 @@ attachable_hud_item* CHudItem::HudItemData() const
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool CHudItem::CollisionAllowed() const { //Если выкл реалистичный прицел или у ствола ТЧ-стайл фейр поинт или ствол в режиме зума - коллизия работать не будет.
-	return m_nearwall_on && psHUD_Flags.test(HUD_CROSSHAIR_HARD) && HudItemData() && HudItemData()->m_measures.useCopFirePoint && m_fZoomRotationFactor < 1.0f;
+	return m_nearwall_on && psHUD_Flags.test(HUD_CROSSHAIR_HARD) && used_cop_fire_point() && m_fZoomRotationFactor < 1.0f;
 }
 
 void CHudItem::UpdateCollision(Fmatrix& trans) {

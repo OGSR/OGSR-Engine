@@ -185,19 +185,19 @@ void CWeaponPistol::PlayAnimShoot()
 	string128 guns_shoot_anm;
 	xr_strconcat(guns_shoot_anm, "anm_shoot", (this->IsZoomed() && !this->IsRotatingToZoom()) ? "_aim" : "", iAmmoElapsed == 1 ? "_last" : "", this->IsSilencerAttached() ? "_sil" : "");
 	if (AnimationExist(guns_shoot_anm)) {
-		PlayHUDMotion(guns_shoot_anm, false, GetState());
+		PlayHUDMotion(guns_shoot_anm, used_cop_fire_point(), GetState());
 		m_opened = iAmmoElapsed <= 1;
 		return;
 	}
 
 	if (iAmmoElapsed > 1)
 	{
-		PlayHUDMotion({ "anim_shoot", "anm_shots" }, false, GetState());
+		PlayHUDMotion({ "anim_shoot", "anm_shots" }, used_cop_fire_point(), GetState());
 		m_opened = false;
 	}
 	else
 	{
-		PlayHUDMotion({ "anim_shot_last", "anm_shot_l" }, false, GetState());
+		PlayHUDMotion({ "anim_shot_last", "anm_shot_l" }, used_cop_fire_point(), GetState());
 		m_opened = true;
 	}
 }
