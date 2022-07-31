@@ -64,15 +64,16 @@ extern "C" {
 
 void CEngineAPI::Initialize()
 {
-	CCC_LoadCFG_custom pTmp("renderer ");
-	pTmp.Execute(Console->ConfigFile);
-
 #ifdef XRRENDER_STATIC
 	void AttachRender();
 	AttachRender();
 	g_current_renderer = 4;
 	psDeviceFlags.set(rsR4, TRUE);
+	Console->Execute("renderer renderer_r4");
 #else
+
+	CCC_LoadCFG_custom pTmp("renderer ");
+	pTmp.Execute(Console->ConfigFile);
 
 #ifndef EXCLUDE_R1
 	constexpr LPCSTR r1_name = "xrRender_R1.dll";
