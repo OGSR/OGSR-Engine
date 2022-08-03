@@ -8,7 +8,7 @@ struct SCallbackInfo;
 class CUIDialogWndEx :public CUIDialogWnd, public DLL_Pure
 {
 typedef CUIDialogWnd				inherited;
-typedef xr_vector<SCallbackInfo*>	CALLBACKS;
+typedef xr_vector<SCallbackInfo>	CALLBACKS;
 typedef CALLBACKS::iterator			CALLBACK_IT;
 
 private:
@@ -22,7 +22,7 @@ public:
 			void				Register			(CUIWindow* pChild);
 			void				Register			(CUIWindow* pChild, LPCSTR name);
 								CUIDialogWndEx		();
-	virtual						~CUIDialogWndEx		();
+			virtual	 ~CUIDialogWndEx() = default;
 			void				AddCallback			(LPCSTR control_id, s16 event, const luabind::functor<void> &lua_function);
 			void				AddCallback			(LPCSTR control_id, s16 event, const luabind::functor<void> &functor, const luabind::object &object);
 			void				ClearCallbacks();

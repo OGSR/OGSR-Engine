@@ -9,15 +9,10 @@ struct event_comparer{
 	s16					event;
 
 	event_comparer(shared_str n, s16 e):name(n),event(e){}
-	bool operator ()(SCallbackInfo* i){
-		return( (i->m_controlName==name) && (i->m_event==event) );
+	bool operator ()(SCallbackInfo& i){
+		return( (i.m_controlName==name) && (i.m_event==event) );
 	}
 };
-
-CUIWndCallback::~CUIWndCallback()
-{
-	delete_data(m_callbacks);
-}
 
 void CUIWndCallback::Register			(CUIWindow* pChild)
 {
@@ -33,16 +28,15 @@ void CUIWndCallback::OnEvent(CUIWindow* pWnd, s16 msg, void* pData)
 	if(it==m_callbacks.end())
 		return ;
 
-	(*it)->m_callback();
+	(*it).m_callback();
 	
-	if ((*it)->m_cpp_callback)	
-		(*it)->m_cpp_callback(pWnd, pData);
+	if ((*it).m_cpp_callback)	
+		(*it).m_cpp_callback(pWnd, pData);
 }
 
 SCallbackInfo*	CUIWndCallback::NewCallback ()
 {
-	m_callbacks.push_back( xr_new<SCallbackInfo>() );
-	return m_callbacks.back();
+	return &m_callbacks.emplace_back();
 }
 
 void CUIWndCallback::AddCallback(LPCSTR control_id, s16 event, const void_function &f)

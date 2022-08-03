@@ -1,6 +1,7 @@
 #pragma once
 
-struct SCallbackInfo;
+#include "../callback_info.h"
+
 class CUIWindow;
 
 class CUIWndCallback
@@ -8,7 +9,7 @@ class CUIWndCallback
 public:
 	using void_function = fastdelegate::FastDelegate<void(CUIWindow*, void*)>;
 private:
-	typedef xr_vector<SCallbackInfo*>	CALLBACKS;
+	typedef xr_vector<SCallbackInfo>	CALLBACKS;
 	typedef CALLBACKS::iterator			CALLBACK_IT;
 private:
 			CALLBACKS			m_callbacks;
@@ -16,7 +17,7 @@ private:
 
 
 public:
-	virtual						~CUIWndCallback		();
+	virtual ~CUIWndCallback() = default;
 	virtual void				OnEvent				(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 			void				Register			(CUIWindow* pChild);
 			void				AddCallback			(LPCSTR control_id, s16 event, const void_function &f);
