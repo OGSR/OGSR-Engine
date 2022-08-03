@@ -53,16 +53,6 @@ bool CPHCall::isNeedRemove() {
 }
 
 
-void delete_call(CPHCall* &call)
-{
-	try{
-		xr_delete(call);
-	}
-	catch(...)
-	{
-		call = nullptr;
-	}
-}
 /////////////////////////////////////////////////////////////////////////////////
 CPHCommander::~CPHCommander()
 {
@@ -70,31 +60,28 @@ CPHCommander::~CPHCommander()
 }
 void CPHCommander::clear	()
 {
-	while (m_calls.size())	{
-		remove_call(m_calls.end()-1);
-	}
+	for (auto call : m_calls)
+		xr_delete(call);
+
+	m_calls.clear();
 }
 
 
 void CPHCommander::update() {
-  for( size_t i = 0; i < m_calls.size(); i++ ) {
-    if ( !m_calls[ i ]->isNeedRemove() ) {
-      if ( m_calls[ i ]->isPaused() ) continue;
-      try {
-        m_calls[ i ]->check();
-      }
-      catch( ... ) {
-        remove_call( m_calls.begin() + i );
-        i--;
-        continue;
-      }
-    }
-    if ( m_calls[ i ]->isNeedRemove() || m_calls[ i ]->obsolete() ) {
-      remove_call( m_calls.begin() + i );
-      i--;
-      continue;
-    }
-  }
+	m_calls.erase(std::remove_if(m_calls.begin(), m_calls.end(), [](CPHCall* call)
+		{
+			if (!call->isNeedRemove()) {
+				if (call->isPaused())
+					return false;
+				else
+					call->check();
+			}
+			if (call->isNeedRemove() || call->obsolete()) {
+				xr_delete(call);
+				return true;
+			}
+			return false;
+		}), m_calls.end());
 }
 
 
@@ -102,12 +89,6 @@ CPHCall* CPHCommander::add_call(CPHCondition* condition,CPHAction* action)
 {
 	m_calls.push_back(xr_new<CPHCall>(condition, action));
 	return m_calls.back();
-}
-
-void CPHCommander::remove_call(PHCALL_I i)
-{
-	delete_call(*i);
-	m_calls.erase(i);
 }
 
 

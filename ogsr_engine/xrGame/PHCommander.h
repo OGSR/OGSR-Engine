@@ -78,7 +78,6 @@ public:
 	CPHCall*			add_call_unique				(CPHCondition* condition,CPHReqComparerV* cmp_condition,CPHAction* action,CPHReqComparerV* cmp_action);
 	CPHCall*			add_call					(CPHCondition* condition,CPHAction* action)						;
 
-	void				remove_call					(PHCALL_I i)													;
 	bool				has_call					(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)	;	
 	PHCALL_I			find_call					(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)	;				
 	void				remove_call					(CPHReqComparerV* cmp_condition,CPHReqComparerV* cmp_action)	;
