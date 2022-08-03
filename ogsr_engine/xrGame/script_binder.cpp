@@ -33,12 +33,12 @@ void CScriptBinder::init			()
 
 void CScriptBinder::clear			()
 {
-	try {
+	//try {
 		xr_delete			(m_object);
-	}
-	catch(...) {
-		m_object			= 0;
-	}
+	//}
+	//catch(...) {
+	//	m_object			= 0;
+	//}
 	init					();
 }
 
