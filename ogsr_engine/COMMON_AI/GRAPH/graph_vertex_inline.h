@@ -38,11 +38,11 @@ IC	CSGraphVertex::~CVertex				()
 	while (!m_vertices.empty())
 		m_vertices.back()->remove_edge(vertex_id());
 
-	try {
+	//try {
 		delete_data			(m_data);
-	}
-	catch(...) {
-	}
+	//}
+	//catch(...) {
+	//}
 }
 
 TEMPLATE_SPECIALIZATION
