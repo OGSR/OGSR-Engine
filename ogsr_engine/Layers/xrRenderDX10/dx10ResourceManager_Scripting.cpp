@@ -125,38 +125,10 @@ module('{0}', package.seeall, function(m) this = m end); \
 
 static const char* get_lua_traceback(lua_State *L)
 {
-#if LUAJIT_VERSION_NUM < 20000
-	static char buffer[32768]; // global buffer
-	int top = lua_gettop(L);
-	// alpet: Lua traceback added
-	lua_getfield(L, LUA_GLOBALSINDEX, "debug");
-	lua_getfield(L, -1, "traceback");
-	lua_pushstring(L, "\t");
-	lua_pushinteger(L, 1);
-
-	const char *traceback = "cannot get Lua traceback ";
-	strcpy_s(buffer, 32767, traceback);
-	__try
-	{
-		if (0 == lua_pcall(L, 2, 1, 0))
-		{
-			traceback = lua_tostring(L, -1);
-			strcpy_s(buffer, 32767, traceback);
-			lua_pop(L, 1);
-}
-	}
-	__except (EXCEPTION_EXECUTE_HANDLER)
-	{
-		Msg("!#EXCEPTION(get_lua_traceback): buffer = %s ", buffer);
-	}
-	lua_settop(L, top);
-	return buffer;
-#else
 	luaL_traceback(L, L, nullptr, 0);
 	auto tb = lua_tostring(L, -1);
 	lua_pop(L, 1);
 	return tb;
-#endif
 }
 
 bool print_output(const char* caScriptFileName, int errorCode)
