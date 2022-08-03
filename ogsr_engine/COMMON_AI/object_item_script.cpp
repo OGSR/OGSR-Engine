@@ -15,16 +15,16 @@
 ObjectFactory::CLIENT_BASE_CLASS *CObjectItemScript::client_object	() const
 {
 	ObjectFactory::CLIENT_SCRIPT_BASE_CLASS	*object;
-	try {
+	//try {
 #ifdef LUABIND_09
 		object = luabind::object_cast<ObjectFactory::CLIENT_SCRIPT_BASE_CLASS*>(m_client_creator(),luabind::adopt(luabind::result));
 #else
 		object = luabind::object_cast<ObjectFactory::CLIENT_SCRIPT_BASE_CLASS*>(m_client_creator(), luabind::adopt<luabind::result>());
 #endif
-	}
-	catch(...) {
-		return	(0);
-	}
+	//}
+	//catch(...) {
+	//	return	(0);
+	//}
 	R_ASSERT	(object);
 	return		(object->_construct());
 }
@@ -36,34 +36,34 @@ ObjectFactory::SERVER_BASE_CLASS *CObjectItemScript::server_object	(LPCSTR secti
 	typedef ObjectFactory::SERVER_BASE_CLASS			SERVER_BASE_CLASS;
 	SERVER_SCRIPT_BASE_CLASS	*object;
 
-	try {
+	//try {
 		luabind::object	*instance = 0;
-		try {
+		//try {
 			instance	= xr_new<luabind::object>((luabind::object)(m_server_creator(section)));
-		}
-		catch(std::exception& e) {
-			Msg			("Exception [%s] raised while creating server object from section [%s]", e.what(),section);
-			return		(0);
-		}
-		catch(...) {
-			Msg			("Exception raised while creating server object from section [%s]",section);
-			return		(0);
-		}
+		//}
+		//catch(std::exception& e) {
+		//	Msg			("Exception [%s] raised while creating server object from section [%s]", e.what(),section);
+		//	return		(0);
+		//}
+		//catch(...) {
+		//	Msg			("Exception raised while creating server object from section [%s]",section);
+		//	return		(0);
+		//}
 #ifdef LUABIND_09
 		object = luabind::object_cast<ObjectFactory::SERVER_SCRIPT_BASE_CLASS*>(*instance,luabind::adopt(luabind::result));
 #else
 		object = luabind::object_cast<ObjectFactory::SERVER_SCRIPT_BASE_CLASS*>(*instance, luabind::adopt<luabind::result>());
 #endif
 		xr_delete		(instance);
-	}
-	catch(std::exception& e) {
-		Msg				("Exception [%s] raised while casting and adopting script server object from section [%s]", e.what(),section);
-		return			(0);
-	}
-	catch(...) {
-		Msg				("Exception raised while creating script server object from section [%s]", section);
-		return			(0);
-	}
+	//}
+	//catch(std::exception& e) {
+	//	Msg				("Exception [%s] raised while casting and adopting script server object from section [%s]", e.what(),section);
+	//	return			(0);
+	//}
+	//catch(...) {
+	//	Msg				("Exception raised while creating script server object from section [%s]", section);
+	//	return			(0);
+	//}
 
 	R_ASSERT			(object);
 	SERVER_BASE_CLASS	*o = object->init();
