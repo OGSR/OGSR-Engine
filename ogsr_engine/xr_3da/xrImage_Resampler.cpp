@@ -237,23 +237,15 @@ void	imf_Process	(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, 
 	CLIST	*contrib= 0;			/* array of contribution lists */
 
 	/* create intermediate image to hold horizontal zoom */
-	try	{
 		tmp		= new_image	(dst.xsize, src.ysize);
 		xscale	= float	(dst.xsize) / float(src.xsize);
 		yscale	= float	(dst.ysize) / float(src.ysize);
-	} catch (...) {
-		Msg		("imf_Process::1");
-	};
 
 	/* pre-calculate filter contributions for a row */
-	try	{
 		contrib = (CLIST *)	xr_malloc	(dst.xsize*sizeof(CLIST));
 		ZeroMemory(contrib,dst.xsize*sizeof(CLIST));
-	} catch (...) {
-		Msg		("imf_Process::2");
-	};
-	if(xscale < 1.0) {
-		try	{
+
+		if(xscale < 1.0) {
 			width	= fwidth / xscale;
 			fscale	= 1.0f / xscale;
 			for(i = 0; i < dst.xsize; ++i)
@@ -280,11 +272,7 @@ void	imf_Process	(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, 
 					contrib[i].p[k].weight	= weight;
 				}
 			}
-		} catch (...) {
-			Msg		("imf_Process::3 (xscale<1.0)");
-		};
 	} else {
-		try	{
 			for(i = 0; i < dst.xsize; ++i)
 			{
 				contrib[i].n	= 0;
@@ -309,17 +297,12 @@ void	imf_Process	(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, 
 					contrib[i].p[k].weight	= weight;
 				}
 			}
-		} catch (...) {
-			Msg		("imf_Process::3 (xscale>1.0)");
-		};
 	}
 
 	/* apply filter to zoom horizontally from src to tmp */
-	try	{
 		raster	= (Pixel *)xr_malloc(src.xsize*sizeof(Pixel));
 		ZeroMemory(raster,src.xsize*sizeof(Pixel));
-	} catch (...) {	Msg		("imf_Process::4");	};
-	try	{
+
 		for	(k = 0; k < tmp->ysize; ++k)
 		{
 			get_row	(raster, &src, k);
@@ -340,21 +323,16 @@ void	imf_Process	(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, 
 			}
 		}
 		xr_free(raster);
-	} catch (...) {	Msg		("imf_Process::5");	};
 
 	/* xr_free the memory allocated for horizontal filter weights */
-	try	{
 		for(i = 0; i < tmp->xsize; ++i) xr_free(contrib[i].p);
 		xr_free(contrib);
-	} catch (...) {	Msg		("imf_Process::6");	};
 
 	/* pre-calculate filter contributions for a column */
-	try	{
 		contrib = (CLIST *)xr_malloc(dst.ysize*sizeof(CLIST));
 		ZeroMemory(contrib,dst.ysize*sizeof(CLIST));
-	} catch (...) {	Msg		("imf_Process::7");	};
-	if(yscale < 1.0) {
-		try	{
+
+		if(yscale < 1.0) {
 			width	= fwidth / yscale;
 			fscale	= 1.0f / yscale;
 			for	(i = 0; i < dst.ysize; ++i)
@@ -381,9 +359,7 @@ void	imf_Process	(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, 
 					contrib[i].p[k].weight	= weight;
 				}
 			}
-		} catch (...) {	Msg		("imf_Process::8 (yscale<1.0)");	};
 	} else {
-		try	{
 			for(i = 0; i < dst.ysize; ++i)
 			{
 				contrib[i].n	= 0;
@@ -407,15 +383,12 @@ void	imf_Process	(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, 
 					contrib[i].p[k].weight	= weight;
 				}
 			}
-		} catch (...) {	Msg		("imf_Process::8 (yscale>1.0)");	};
 	}
 
 	/* apply filter to zoom vertically from tmp to dst */
-	try	{
 		raster = (Pixel *)xr_malloc(tmp->ysize*sizeof(Pixel));
 		ZeroMemory(raster,tmp->ysize*sizeof(Pixel));
-	} catch (...) {	Msg		("imf_Process::9");	};
-	try	{
+
 		for(k = 0; k < dst.xsize; ++k)
 		{
 			get_column	(raster, tmp, k);
@@ -437,13 +410,10 @@ void	imf_Process	(u32* dstI, u32 dstW, u32 dstH, u32* srcI, u32 srcW, u32 srcH, 
 
 		}
 		xr_free(raster);
-	} catch (...) {	Msg		("imf_Process::A");	};
 
 	/* xr_free the memory allocated for vertical filter weights */
-	try	{
 		for	(i = 0; i < dst.ysize; ++i) xr_free(contrib[i].p);
 		xr_free(contrib);
-	} catch (...) {	Msg		("imf_Process::B");	};
 
 	free_image(tmp);
 }
