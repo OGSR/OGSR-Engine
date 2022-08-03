@@ -47,29 +47,21 @@ public:
 	void				collect_all_garbage();
 
 	template <typename TResult>
-	IC		bool				functor(const char* function_to_call, luabind::functor<TResult> &lua_function);
+	IC bool functor(const char* function_to_call, luabind::functor<TResult> &lua_function) {
+		luabind::object object;
+		if (!function_object(function_to_call, object))
+			return false;
+		//try {
+			lua_function = luabind::object_cast<luabind::functor<TResult>>(object);
+		//}
+		//catch (...) {
+		//	return false;
+		//}
+		return true;
+	}
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CScriptEngine)
 #undef script_type_list
 #define script_type_list save_type_list(CScriptEngine)
-
-template <typename TResult>
-IC bool CScriptEngine::functor(const char* function_to_call, luabind::functor<TResult> &lua_function)
-{
-	luabind::object object;
-	if (!function_object(function_to_call, object))
-		return false;
-	try {
-#ifdef LUABIND_09
-		lua_function = luabind::functor<TResult>(object);
-#else
-		lua_function = luabind::object_cast<luabind::functor<TResult>>(object);
-#endif
-	}
-	catch (...) {
-		return false;
-	}
-	return true;
-}
