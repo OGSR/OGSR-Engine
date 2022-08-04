@@ -149,9 +149,10 @@ public:
 
     //
     void register_archieve(LPCSTR path);
-    void auth_generate(xr_vector<xr_string>& ignore, xr_vector<xr_string>& important);
+    
+    /*void auth_generate(xr_vector<xr_string>& ignore, xr_vector<xr_string>& important);
     u64 auth_get();
-    void auth_runtime(void*);
+    void auth_runtime(void*);*/
 
     // editor functions
     void rescan_pathes();

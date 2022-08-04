@@ -142,7 +142,7 @@ void xrServer::OnBuildVersionRespond(IClient* CL, NET_Packet& P)
 {
     u16 Type;
     P.r_begin(Type);
-    u64 _our = FS.auth_get();
+    u64 _our = 0;
     u64 _him = P.r_u64();
 
 #ifdef DEBUG

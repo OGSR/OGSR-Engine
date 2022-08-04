@@ -367,7 +367,7 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
     hdr->close();
 }
 
-void CLocatorAPI::ProcessOne(const char* path, const _finddata_t& F)
+void CLocatorAPI::ProcessOne(LPCSTR path, const _finddata_t& F)
 {
     string_path N;
     strcpy_s(N, path);
@@ -1240,7 +1240,10 @@ FS_Path* CLocatorAPI::get_path(LPCSTR path)
     return P->second;
 }
 
-LPCSTR CLocatorAPI::update_path(string_path& dest, LPCSTR initial, LPCSTR src) { return get_path(initial)->_update(dest, src); }
+LPCSTR CLocatorAPI::update_path(string_path& dest, LPCSTR initial, LPCSTR src) 
+{
+    return get_path(initial)->_update(dest, src); 
+}
 
 u32 CLocatorAPI::get_file_age(LPCSTR nm)
 {
