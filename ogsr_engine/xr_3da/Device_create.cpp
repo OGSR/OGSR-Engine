@@ -103,12 +103,11 @@ void CRenderDevice::_Create	(LPCSTR shName)
     ::Render->create			();
     Statistic->OnDeviceCreate	();
 
-#ifndef DEDICATED_SERVER
+
     m_WireShader.create			("editor\\wire");
     m_SelectionShader.create	("editor\\selection");
 
     DU.OnDeviceCreate			();
-#endif
 
     dwFrame						= 0;
 }
@@ -133,11 +132,6 @@ void CRenderDevice::Create	()
     if (b_is_Ready)		return;		// prevent double call
     Statistic			= xr_new<CStats>();
     Log					("Starting RENDER device...");
-
-#ifdef _EDITOR
-    psCurrentVidMode[0]	= dwWidth;
-    psCurrentVidMode[1] = dwHeight;
-#endif
 
     HW.CreateDevice		(m_hWnd);
     dwWidth				= HW.DevPP.BackBufferWidth	;
@@ -182,17 +176,9 @@ void CRenderDevice::Create()
     SetupGPU(m_pRender);
     Log("Starting RENDER device...");
 
-#ifdef _EDITOR
-    psCurrentVidMode[0] = dwWidth;
-    psCurrentVidMode[1] = dwHeight;
-#endif // #ifdef _EDITOR
-
     fFOV = 90.f;
     fASPECT = 1.f;
     m_pRender->Create(m_hWnd, dwWidth, dwHeight, fWidth_2, fHeight_2,
-#ifdef INGAME_EDITOR
-                      editor() ? false :
-#endif // #ifdef INGAME_EDITOR
                                  true);
 
     string_path fname;

@@ -5,13 +5,9 @@
 #include "igame_persistent.h"
 #include "environment.h"
 
-#ifdef _EDITOR
-#include "ui_toolscustom.h"
-#else
 #include "render.h"
 #include "igame_level.h"
 #include "xr_object.h"
-#endif
 
 //	Warning: duplicated in dxRainRender
 static const int max_desired_items = 2500;
@@ -95,15 +91,11 @@ void CEffect_Rain::Born(Item& dest, float radius)
 BOOL CEffect_Rain::RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt)
 {
     BOOL bRes = TRUE;
-#ifdef _EDITOR
-    Tools->RayPick(s, d, range);
-#else
     collide::rq_result RQ;
     CObject* E = g_pGameLevel->CurrentViewEntity();
     bRes = g_pGameLevel->ObjectSpace.RayPick(s, d, range, tgt, RQ, E);
     if (bRes)
         range = RQ.range;
-#endif
     return bRes;
 }
 
@@ -126,19 +118,13 @@ void CEffect_Rain::RenewItem(Item& dest, float height, BOOL bHit)
 
 void CEffect_Rain::OnFrame()
 {
-#ifndef _EDITOR
     if (!g_pGameLevel)
         return;
-#endif
-
-#ifdef DEDICATED_SERVER
-    return;
-#endif
 
     // Parse states
     float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
     static float hemi_factor = 0.f;
-#ifndef _EDITOR
+
     CObject* E = g_pGameLevel->CurrentViewEntity();
     if (E && E->renderable_ROS())
     {
@@ -155,7 +141,6 @@ void CEffect_Rain::OnFrame()
         clamp(t, 0.001f, 1.0f);
         hemi_factor = hemi_factor * (1.0f - t) + f * t;
     }
-#endif
 
     switch (state)
     {
@@ -199,10 +184,8 @@ void CEffect_Rain::OnFrame()
 //#include "xr_input.h"
 void CEffect_Rain::Render()
 {
-#ifndef _EDITOR
     if (!g_pGameLevel)
         return;
-#endif
 
     m_pRender->Render(*this);
 

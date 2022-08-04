@@ -338,11 +338,6 @@ public:
     void OnDeviceCreate();
     void OnDeviceDestroy();
 
-    // editor-related
-#ifdef INGAME_EDITOR
-    float GetGameTime() { return fGameTime; }
-#endif // #ifdef INGAME_EDITOR
-
     CEnvDescriptor* getCurrentWeather(size_t idx) const { return CurrentWeather->at(idx); };
     void ForceReselectEnvs();
 

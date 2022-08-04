@@ -100,11 +100,7 @@ class ENGINE_API motion_marks
 {
 public:
     typedef std::pair<float, float> interval;
-#ifdef _EDITOR
-public:
-#else
 private:
-#endif
     typedef xr_vector<interval> STORAGE;
     typedef STORAGE::iterator ITERATOR;
     typedef STORAGE::const_iterator C_ITERATOR;
@@ -115,9 +111,6 @@ public:
     shared_str name;
     void Load(IReader*);
 
-#ifdef _EDITOR
-    void Save(IWriter*);
-#endif
     bool is_empty() const { return intervals.empty(); }
     const interval* pick_mark(float const& t) const;
     bool is_mark_between(float const& t0, float const& t1) const;

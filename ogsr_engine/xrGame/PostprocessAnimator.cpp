@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "postprocessanimator.h"
-#ifndef _PP_EDITOR_
 #include "ActorEffector.h"
-#endif
 
 // postprocess value LOAD method implementation
 void CPostProcessValue::load(IReader& pReader) { m_Value.Load_2(pReader); }
@@ -31,9 +29,7 @@ void CPostProcessColor::save(IWriter& pWriter)
 CPostprocessAnimator::CPostprocessAnimator() { Create(); }
 
 CPostprocessAnimator::CPostprocessAnimator(int id, bool cyclic)
-#ifndef _PP_EDITOR_
     : CEffectorPP((EEffectorPPType)id, 100000, true), m_bCyclic(cyclic)
-#endif
 {
     Create();
 }
@@ -57,15 +53,11 @@ void CPostprocessAnimator::Clear()
 void CPostprocessAnimator::Load(LPCSTR name)
 {
     m_Name = name;
-#ifndef _PP_EDITOR_
+
     string_path full_path;
     if (!FS.exist(full_path, "$level$", name))
         if (!FS.exist(full_path, "$game_anims$", name))
             Debug.fatal(DEBUG_INFO, "Can't find motion file '%s'.", name);
-#else /*_PP_EDITOR_*/
-    string_path full_path;
-    strcpy(full_path, name);
-#endif /*_PP_EDITOR_*/
 
     LPCSTR ext = strext(full_path);
     if (ext)
@@ -118,10 +110,9 @@ void CPostprocessAnimator::Load(LPCSTR name)
     }
 
     f_length = GetLength();
-#ifndef _PP_EDITOR_
+
     if (!m_bCyclic)
         fLifeTime = f_length;
-#endif
 }
 
 void CPostprocessAnimator::Stop(float sp)
@@ -165,7 +156,6 @@ void CPostprocessAnimator::SetCurrentFactor(float f)
     VERIFY(_valid(m_dest_factor));
 };
 
-#ifndef _PP_EDITOR_
 BOOL CPostprocessAnimator::Process(SPPInfo& PPInfo)
 {
     if (m_bCyclic)
@@ -226,25 +216,6 @@ BOOL CPostprocessAnimator::Process(SPPInfo& PPInfo)
 
     return TRUE;
 }
-#else
-BOOL CPostprocessAnimator::Process(float dt, SPPInfo& PPInfo)
-{
-    Update(dt);
-
-    // if(m_bStop)
-    //		m_factor			-=	dt*m_stop_speed;
-
-    clamp(m_factor, 0.001f, 1.0f);
-
-    PPInfo = m_EffectorParams;
-    //	PPInfo.lerp				(pp_identity, m_EffectorParams, m_factor);
-
-    //	if(fsimilar(m_factor,0.001f,EPS_S))
-    //		return FALSE;
-
-    return TRUE;
-}
-#endif /*_PP_EDITOR_*/
 
 void CPostprocessAnimator::Create()
 {
@@ -279,151 +250,6 @@ void CPostprocessAnimator::Create()
     VERIFY(m_Params[10]);
 }
 
-#ifdef _PP_EDITOR_
-CPostProcessParam* CPostprocessAnimator::GetParam(pp_params param)
-{
-    VERIFY(param >= pp_base_color && param <= pp_noise_f);
-    return m_Params[param];
-}
-void CPostprocessAnimator::Save(LPCSTR name)
-{
-    IWriter* W = FS.w_open(name);
-    VERIFY(W);
-    W->w_u32(POSTPROCESS_FILE_VERSION);
-    m_Params[0]->save(*W);
-    m_Params[1]->save(*W);
-    m_Params[2]->save(*W);
-    m_Params[3]->save(*W);
-    m_Params[4]->save(*W);
-    m_Params[5]->save(*W);
-    m_Params[6]->save(*W);
-    m_Params[7]->save(*W);
-    m_Params[8]->save(*W);
-    m_Params[9]->save(*W);
-    m_Params[10]->save(*W);
-
-    W->w_stringZ(m_EffectorParams.cm_tex1);
-    FS.w_close(W);
-}
-//-----------------------------------------------------------------------
-void CPostprocessAnimator::ResetParam(pp_params param)
-{
-    xr_delete(m_Params[param]);
-    switch (param)
-    {
-    case pp_base_color:
-        m_Params[0] = xr_new<CPostProcessColor>(&m_EffectorParams.color_base); // base color
-        break;
-    case pp_add_color:
-        m_Params[1] = xr_new<CPostProcessColor>(&m_EffectorParams.color_add); // add color
-        break;
-    case pp_gray_color:
-        m_Params[2] = xr_new<CPostProcessColor>(&m_EffectorParams.color_gray); // gray color
-        break;
-    case pp_gray_value:
-        m_Params[3] = xr_new<CPostProcessValue>(&m_EffectorParams.gray); // gray value
-        break;
-    case pp_blur:
-        m_Params[4] = xr_new<CPostProcessValue>(&m_EffectorParams.blur); // blur value
-        break;
-    case pp_dual_h:
-        m_Params[5] = xr_new<CPostProcessValue>(&m_EffectorParams.duality.h); // duality horizontal
-        break;
-    case pp_dual_v:
-        m_Params[6] = xr_new<CPostProcessValue>(&m_EffectorParams.duality.v); // duality vertical
-        break;
-    case pp_noise_i:
-        m_Params[7] = xr_new<CPostProcessValue>(&m_EffectorParams.noise.intensity); // noise intensity
-        break;
-    case pp_noise_g:
-        m_Params[8] = xr_new<CPostProcessValue>(&m_EffectorParams.noise.grain); // noise granularity
-        break;
-    case pp_noise_f:
-        m_Params[9] = xr_new<CPostProcessValue>(&m_EffectorParams.noise.fps); // noise fps
-        break;
-    case pp_cm_influence: m_Params[10] = xr_new<CPostProcessValue>(&m_EffectorParams.cm_influence); break;
-    }
-    VERIFY(m_Params[param]);
-}
-
-void CPostProcessColor::add_value(float time, float value, float t, float c, float b, int index)
-{
-    KeyIt i;
-    if (0 == index)
-    {
-        m_Red.InsertKey(time, value);
-        i = m_Red.FindKey(time, 0.01f);
-    }
-    else if (1 == index)
-    {
-        m_Green.InsertKey(time, value);
-        i = m_Green.FindKey(time, 0.01f);
-    }
-    else
-    {
-        m_Blue.InsertKey(time, value);
-        i = m_Blue.FindKey(time, 0.01f);
-    }
-    (*i)->tension = t;
-    (*i)->continuity = c;
-    (*i)->bias = b;
-}
-void CPostProcessColor::update_value(float time, float value, float t, float c, float b, int index)
-{
-    KeyIt i;
-    if (0 == index)
-        i = m_Red.FindKey(time, 0.01f);
-    else if (1 == index)
-        i = m_Green.FindKey(time, 0.01f);
-    else
-        i = m_Blue.FindKey(time, 0.01f);
-    (*i)->value = value;
-    (*i)->tension = t;
-    (*i)->continuity = c;
-    (*i)->bias = b;
-}
-void CPostProcessColor::get_value(float time, float& value, float& t, float& c, float& b, int index)
-{
-    KeyIt i;
-    if (0 == index)
-        i = m_Red.FindKey(time, 0.01f);
-    else if (1 == index)
-        i = m_Green.FindKey(time, 0.01f);
-    else
-        i = m_Blue.FindKey(time, 0.01f);
-    value = (*i)->value;
-    t = (*i)->tension;
-    c = (*i)->continuity;
-    b = (*i)->bias;
-}
-
-void CPostProcessValue::add_value(float time, float value, float t, float c, float b, int index)
-{
-    m_Value.InsertKey(time, value);
-    KeyIt i = m_Value.FindKey(time, 0.01f);
-    (*i)->tension = t;
-    (*i)->continuity = c;
-    (*i)->bias = b;
-}
-void CPostProcessValue::update_value(float time, float value, float t, float c, float b, int index)
-{
-    KeyIt i = m_Value.FindKey(time, 0.01f);
-    (*i)->value = value;
-    (*i)->tension = t;
-    (*i)->continuity = c;
-    (*i)->bias = b;
-}
-void CPostProcessValue::get_value(float time, float& value, float& t, float& c, float& b, int index)
-{
-    KeyIt i = m_Value.FindKey(time, 0.01f);
-    value = (*i)->value;
-    t = (*i)->tension;
-    c = (*i)->continuity;
-    b = (*i)->bias;
-}
-#endif /*_PP_EDITOR_*/
-
-#ifndef _PP_EDITOR_
 BOOL CPostprocessAnimatorLerp::Process(SPPInfo& PPInfo)
 {
     if (!m_bStop)
@@ -447,5 +273,3 @@ CPostprocessAnimatorControlled::CPostprocessAnimatorControlled(CEffectorControll
 CPostprocessAnimatorControlled::~CPostprocessAnimatorControlled() { m_controller->SetPP(NULL); }
 
 BOOL CPostprocessAnimatorControlled::Valid() { return m_controller->Valid(); }
-
-#endif

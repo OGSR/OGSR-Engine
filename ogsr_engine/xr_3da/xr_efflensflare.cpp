@@ -13,13 +13,8 @@
 
 #include "../COMMON_AI/object_broker.h"
 
-#ifdef _EDITOR
-#include "ui_toolscustom.h"
-#include "ui_main.h"
-#else
 #include "xr_object.h"
 #include "igame_level.h"
-#endif
 
 #define FAR_DIST g_pGamePersistent->Environment().CurrentEnv->far_plane
 
@@ -178,14 +173,12 @@ CLensFlare::CLensFlare()
     m_State = lfsNone;
     m_StateBlend = 0.f;
 
-#ifndef _EDITOR
     for (int i = 0; i < MAX_RAYS; ++i)
     {
         m_ray_cache[i].verts[0].set(0, 0, 0);
         m_ray_cache[i].verts[1].set(0, 0, 0);
         m_ray_cache[i].verts[2].set(0, 0, 0);
     }
-#endif
 
     OnDeviceCreate();
 }
@@ -196,7 +189,6 @@ CLensFlare::~CLensFlare()
     delete_data(m_Palette);
 }
 
-#ifndef _EDITOR
 struct STranspParam
 {
     Fvector P;
@@ -238,7 +230,6 @@ IC BOOL material_callback(collide::rq_result& result, LPVOID params)
     fp->vis *= vis;
     return (fp->vis > fp->vis_threshold);
 }
-#endif
 
 IC void blend_lerp(float& cur, float tgt, float speed, float dt)
 {
@@ -275,10 +266,8 @@ void CLensFlare::OnFrame(shared_str id)
 {
     if (dwFrame == Device.dwFrame)
         return;
-#ifndef _EDITOR
     if (!g_pGameLevel)
         return;
-#endif
     dwFrame = Device.dwFrame;
 
     R_ASSERT(_valid(g_pGamePersistent->Environment().CurrentEnv->sun_dir));
@@ -381,14 +370,6 @@ void CLensFlare::OnFrame(shared_str id)
     vecY.crossproduct(vecX, vecDir);
     R_ASSERT(_valid(vecY));
 
-#ifdef _EDITOR
-    float dist = UI->ZFar();
-    if (Tools->RayPick(Device.m_Camera.GetPosition(), vSunDir, dist))
-        fBlend = fBlend - BLEND_DEC_SPEED * Device.fTimeDelta;
-    else
-        fBlend = fBlend + BLEND_INC_SPEED * Device.fTimeDelta;
-#else
-
     //	Side vectors to bend normal.
     Fvector vecSx;
     Fvector vecSy;
@@ -490,7 +471,7 @@ void CLensFlare::OnFrame(shared_str id)
     }
     blend_lerp(fBlend,TP.vis,BLEND_DEC_SPEED,Device.fTimeDelta);
 */
-#endif
+
     clamp(fBlend, 0.0f, 1.0f);
 
     // gradient

@@ -79,9 +79,7 @@ public:
 
 private:
     collide::rq_results r_dest;
-#ifndef _EDITOR
     collide::ray_cache m_ray_cache[MAX_RAYS];
-#endif
 
 protected:
     float fBlend;

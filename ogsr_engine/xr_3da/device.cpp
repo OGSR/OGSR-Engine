@@ -13,11 +13,6 @@
 //#define INCLUDE_FROM_ENGINE
 //#include "../xrCore/FS_impl.h"
 
-#ifdef INGAME_EDITOR
-#include "../include/editor/ide.hpp"
-#include "engine_impl.hpp"
-#endif // #ifdef INGAME_EDITOR
-
 //#include "xrSash.h"
 #include "igame_persistent.h"
 
@@ -36,7 +31,6 @@ BOOL g_bLoaded = FALSE;
 
 BOOL CRenderDevice::Begin()
 {
-#ifndef DEDICATED_SERVER
 
     /*
     HW.Validate		();
@@ -87,7 +81,7 @@ BOOL CRenderDevice::Begin()
 
     FPU::m24r();
     g_bRendering = TRUE;
-#endif
+
     return TRUE;
 }
 
@@ -95,11 +89,7 @@ void CRenderDevice::Clear() { m_pRender->Clear(); }
 
 void CRenderDevice::End(void)
 {
-#ifndef DEDICATED_SERVER
 
-#ifdef INGAME_EDITOR
-    bool load_finished = false;
-#endif // #ifdef INGAME_EDITOR
     if (dwPrecacheFrame)
     {
         ::Sound->set_master_volume(0.f);
@@ -108,9 +98,6 @@ void CRenderDevice::End(void)
             m_pRender->ClearTarget();
         if (0 == dwPrecacheFrame)
         {
-#ifdef INGAME_EDITOR
-            load_finished = true;
-#endif // #ifdef INGAME_EDITOR
        // Gamma.Update		();
             m_pRender->updateGamma();
 
@@ -124,9 +111,6 @@ void CRenderDevice::End(void)
             Msg("* MEMORY USAGE: %d K", Memory.mem_usage() / 1024);
             Msg("* End of synchronization A[%d] R[%d]", b_is_Active, b_is_Ready);
 
-#ifdef FIND_CHUNK_BENCHMARK_ENABLE
-            g_find_chunk_counter.flush();
-#endif // FIND_CHUNK_BENCHMARK_ENABLE
         }
     }
 
@@ -144,11 +128,7 @@ void CRenderDevice::End(void)
     // HRESULT _hr		= HW.pDevice->Present( NULL, NULL, NULL, NULL );
     // if				(D3DERR_DEVICELOST==_hr)	return;			// we will handle this later
     // R_ASSERT2		(SUCCEEDED(_hr),	"Presentation failed. Driver upgrade needed?");
-#ifdef INGAME_EDITOR
-    if (load_finished && m_editor)
-        m_editor->on_load_finished();
-#endif // #ifdef INGAME_EDITOR
-#endif
+
 }
 
 #include "igame_level.h"
@@ -156,9 +136,6 @@ void CRenderDevice::PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_use
 {
     if (m_pRender->GetForceGPU_REF())
         amount = 0;
-#ifdef DEDICATED_SERVER
-    amount = 0;
-#endif
     // Msg			("* PCACHE: start for %d...",amount);
     dwPrecacheFrame = dwPrecacheTotal = amount;
     /*if (amount && !precache_light && g_pGameLevel && g_loading_events.empty()) {
@@ -289,25 +266,8 @@ void CRenderDevice::on_idle()
         Sleep(1);
 }
 
-#ifdef INGAME_EDITOR
-void CRenderDevice::message_loop_editor()
-{
-    m_editor->run();
-    m_editor_finalize(m_editor);
-    xr_delete(m_engine);
-}
-#endif // #ifdef INGAME_EDITOR
-
 void CRenderDevice::message_loop()
 {
-#ifdef INGAME_EDITOR
-    if (editor())
-    {
-        message_loop_editor();
-        return;
-    }
-#endif // #ifdef INGAME_EDITOR
-
     MSG msg;
     PeekMessage(&msg, NULL, 0U, 0U, PM_NOREMOVE);
     while (msg.message != WM_QUIT)
@@ -467,15 +427,11 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 //	Msg("pause [%s] timer=[%s] sound=[%s] reason=%s",bOn?"ON":"OFF", bTimer?"ON":"OFF", bSound?"ON":"OFF", reason);
 #endif // DEBUG
 
-#ifndef DEDICATED_SERVER
 
     if (bOn)
     {
         if (!Paused())
             bShowPauseString =
-#ifdef INGAME_EDITOR
-                editor() ? FALSE :
-#endif // #ifdef INGAME_EDITOR
 #ifdef DEBUG
                 !xr_strcmp(reason, "li_pause_key_no_clip") ? FALSE :
 #endif // DEBUG
@@ -524,7 +480,6 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
         }
     }
 
-#endif
 }
 
 BOOL CRenderDevice::Paused() { return g_pauseMngr.Paused(); };

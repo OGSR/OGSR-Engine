@@ -7,16 +7,12 @@
 
 CGameMtlLibrary GMLib;
 // CSound_manager_interface*	Sound = NULL;
-#ifdef _EDITOR
-CGameMtlLibrary* PGMLib = NULL;
-#endif
 CGameMtlLibrary::CGameMtlLibrary()
 {
     material_index = 0;
     material_pair_index = 0;
-#ifndef _EDITOR
     material_count = 0;
-#endif
+
     PGMLib = &GMLib;
 }
 
@@ -118,7 +114,6 @@ void CGameMtlLibrary::Load()
         OBJ->close();
     }
 
-#ifndef _EDITOR
     material_count = (u32)materials.size();
     material_pairs_rt.resize(material_count * material_count, 0);
     for (GameMtlPairIt p_it = material_pairs.begin(); material_pairs.end() != p_it; ++p_it)
@@ -129,7 +124,6 @@ void CGameMtlLibrary::Load()
         material_pairs_rt[idx0] = S;
         material_pairs_rt[idx1] = S;
     }
-#endif
 
     /*
         for (GameMtlPairIt p_it=material_pairs.begin(); material_pairs.end() != p_it; ++p_it){

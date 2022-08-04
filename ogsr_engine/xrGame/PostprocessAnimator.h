@@ -2,17 +2,12 @@
 #define __ppanimator_included__
 #pragma once
 
-#ifndef _PP_EDITOR_
 #include "..\xr_3da\envelope.h"
 #include "..\xr_3da\EffectorPP.h"
 #include "..\xr_3da\cameramanager.h"
 
 class CEffectorController;
-#else
-#include "envelope.h"
-#include "EffectorPP.h"
-#include "CameraManager.h"
-#endif /*_PP_EDITOR_*/
+
 
 #define POSTPROCESS_PARAMS_COUNT 11
 #define POSTPROCESS_FILE_VERSION 0x0002
@@ -46,12 +41,6 @@ public:
     virtual void save(IWriter& pWriter) = 0;
     virtual float get_length() = 0;
     virtual size_t get_keys_count() = 0;
-#ifdef _PP_EDITOR_
-    virtual void add_value(float time, float value, float t, float c, float b, int index = 0) = 0;
-    virtual void update_value(float time, float value, float t, float c, float b, int index = 0) = 0;
-    virtual void get_value(float time, float& value, float& t, float& c, float& b, int index = 0) = 0;
-    virtual float get_key_time(size_t index) = 0;
-#endif /*_PP_EDITOR_*/
 };
 
 class CPostProcessValue : public CPostProcessParam
@@ -71,16 +60,6 @@ public:
         return m_Value.GetLength(&mn, &mx);
     }
     virtual size_t get_keys_count() { return m_Value.keys.size(); }
-#ifdef _PP_EDITOR_
-    virtual void add_value(float time, float value, float t, float c, float b, int index = 0);
-    virtual void update_value(float time, float value, float t, float c, float b, int index = 0);
-    virtual void get_value(float time, float& value, float& t, float& c, float& b, int index = 0);
-    virtual float get_key_time(size_t index)
-    {
-        VERIFY(index < get_keys_count());
-        return m_Value.keys[index]->time;
-    }
-#endif /*_PP_EDITOR_*/
 };
 
 class CPostProcessColor : public CPostProcessParam
@@ -109,23 +88,11 @@ public:
         return mn > b ? mn : b;
     }
     virtual size_t get_keys_count() { return m_Red.keys.size(); }
-#ifdef _PP_EDITOR_
-    virtual void add_value(float time, float value, float t, float c, float b, int index = 0);
-    virtual void update_value(float time, float value, float t, float c, float b, int index = 0);
-    virtual void get_value(float time, float& value, float& t, float& c, float& b, int index = 0);
-    virtual float get_key_time(size_t index)
-    {
-        VERIFY(index < get_keys_count());
-        return m_Red.keys[index]->time;
-    }
-#endif /*_PP_EDITOR_*/
 };
 
-#ifndef _PP_EDITOR_
+
 class CPostprocessAnimator : public CEffectorPP
-#else
-class CPostprocessAnimator
-#endif
+
 {
 protected:
     CPostProcessParam* m_Params[POSTPROCESS_PARAMS_COUNT];
@@ -154,20 +121,10 @@ public:
     void SetCyclic(bool b) { m_bCyclic = b; }
     float GetLength();
     virtual BOOL Valid();
-#ifndef _PP_EDITOR_
     virtual BOOL Process(SPPInfo& PPInfo);
-#else
-    virtual BOOL Process(float dt, SPPInfo& PPInfo);
-#endif /*_PP_EDITOR_*/
     void Create();
-#ifdef _PP_EDITOR_
-    CPostProcessParam* GetParam(pp_params param);
-    void ResetParam(pp_params param);
-    void Save(LPCSTR name);
-#endif /*_PP_EDITOR_*/
 };
 
-#ifndef _PP_EDITOR_
 class CPostprocessAnimatorLerp : public CPostprocessAnimator
 {
 protected:
@@ -198,7 +155,4 @@ public:
     CPostprocessAnimatorControlled(CEffectorController* c);
     virtual BOOL Valid();
 };
-
-#endif
-
 #endif /*__ppanimator_included__*/
