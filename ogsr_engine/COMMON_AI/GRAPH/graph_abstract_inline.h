@@ -8,304 +8,264 @@
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _data_type,\
-	typename _edge_weight_type,\
-	typename _vertex_id_type\
->
+#define TEMPLATE_SPECIALIZATION template <typename _data_type, typename _edge_weight_type, typename _vertex_id_type>
 
-#define CAbstractGraph CGraphAbstract<\
-	_data_type,\
-	_edge_weight_type,\
-	_vertex_id_type\
->
+#define CAbstractGraph CGraphAbstract<_data_type, _edge_weight_type, _vertex_id_type>
 
 TEMPLATE_SPECIALIZATION
-IC	CAbstractGraph::CGraphAbstract	()
+IC CAbstractGraph::CGraphAbstract() { m_edge_count = 0; }
+
+TEMPLATE_SPECIALIZATION
+IC CAbstractGraph::~CGraphAbstract() { clear(); }
+
+TEMPLATE_SPECIALIZATION
+IC void CAbstractGraph::add_vertex(const _data_type& data, const _vertex_id_type& vertex_id)
 {
-	m_edge_count				= 0;
+    VERIFY(!vertex(vertex_id));
+    m_vertices.insert(std::make_pair(vertex_id, xr_new<CVertex>(data, vertex_id, &m_edge_count)));
 }
 
 TEMPLATE_SPECIALIZATION
-IC	CAbstractGraph::~CGraphAbstract	()
+IC void CAbstractGraph::remove_vertex(const _vertex_id_type& vertex_id)
 {
-	clear						();
+    vertex_iterator I = m_vertices.find(vertex_id);
+    VERIFY(m_vertices.end() != I);
+    auto v = *I;
+    delete_data(v);
+    m_vertices.erase(I);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CAbstractGraph::add_vertex			(const _data_type &data, const _vertex_id_type &vertex_id)
+IC void CAbstractGraph::add_edge(const _vertex_id_type& vertex_id0, const _vertex_id_type& vertex_id1, const _edge_weight_type& edge_weight)
 {
-	VERIFY						(!vertex(vertex_id));
-	m_vertices.insert			(std::make_pair(vertex_id,xr_new<CVertex>(data,vertex_id,&m_edge_count)));
+    CVertex* _vertex0 = vertex(vertex_id0);
+    VERIFY(_vertex0);
+    CVertex* _vertex1 = vertex(vertex_id1);
+    VERIFY(_vertex1);
+    _vertex0->add_edge(_vertex1, edge_weight);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CAbstractGraph::remove_vertex		(const _vertex_id_type &vertex_id)
+IC void CAbstractGraph::add_edge(const _vertex_id_type& vertex_id0, const _vertex_id_type& vertex_id1, const _edge_weight_type& edge_weight0, const _edge_weight_type& edge_weight1)
 {
-	vertex_iterator				I = m_vertices.find(vertex_id);
-	VERIFY						(m_vertices.end() != I);
-	auto v = *I;
-	delete_data					(v);
-	m_vertices.erase			(I);
+    add_edge(vertex_id0, vertex_id1, edge_weight0);
+    add_edge(vertex_id1, vertex_id0, edge_weight1);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CAbstractGraph::add_edge			(const _vertex_id_type &vertex_id0, const _vertex_id_type &vertex_id1, const _edge_weight_type &edge_weight)
+IC void CAbstractGraph::remove_edge(const _vertex_id_type& vertex_id0, const _vertex_id_type& vertex_id1)
 {
-	CVertex						*_vertex0 = vertex(vertex_id0);
-	VERIFY						(_vertex0);
-	CVertex						*_vertex1 = vertex(vertex_id1);
-	VERIFY						(_vertex1);
-	_vertex0->add_edge			(_vertex1,edge_weight);
+    CVertex* _vertex = vertex(vertex_id0);
+    VERIFY(_vertex);
+    VERIFY(vertex(vertex_id1));
+    _vertex->remove_edge(vertex_id1);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CAbstractGraph::add_edge			(const _vertex_id_type &vertex_id0, const _vertex_id_type &vertex_id1, const _edge_weight_type &edge_weight0, const _edge_weight_type &edge_weight1)
+IC u32 CAbstractGraph::vertex_count() const { return (m_vertices.size()); }
+
+TEMPLATE_SPECIALIZATION
+IC u32 CAbstractGraph::edge_count() const { return (m_edge_count); }
+
+TEMPLATE_SPECIALIZATION
+IC bool CAbstractGraph::empty() const { return (m_vertices.empty()); }
+
+TEMPLATE_SPECIALIZATION
+IC void CAbstractGraph::clear()
 {
-	add_edge					(vertex_id0,vertex_id1,edge_weight0);
-	add_edge					(vertex_id1,vertex_id0,edge_weight1);
+    while (!vertices().empty())
+        remove_vertex(vertices().begin()->first);
+    VERIFY(!m_edge_count);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CAbstractGraph::remove_edge		(const _vertex_id_type &vertex_id0, const _vertex_id_type &vertex_id1)
+IC const typename CAbstractGraph::CVertex* CAbstractGraph::vertex(const _vertex_id_type& vertex_id) const
 {
-	CVertex						*_vertex = vertex(vertex_id0);
-	VERIFY						(_vertex);
-	VERIFY						(vertex(vertex_id1));
-	_vertex->remove_edge		(vertex_id1);
+    const_vertex_iterator I = vertices().find(vertex_id);
+    if (vertices().end() == I)
+        return (0);
+    return ((*I).second);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	u32 CAbstractGraph::vertex_count		() const
+IC typename CAbstractGraph::CVertex* CAbstractGraph::vertex(const _vertex_id_type& vertex_id)
 {
-	return						(m_vertices.size());
+    vertex_iterator I = m_vertices.find(vertex_id);
+    if (m_vertices.end() == I)
+        return (0);
+    return ((*I).second);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	u32 CAbstractGraph::edge_count			() const
+IC const typename CAbstractGraph::CEdge* CAbstractGraph::edge(const _vertex_id_type& vertex_id0, const _vertex_id_type& vertex_id1) const
 {
-	return						(m_edge_count);
+    const CVertex* _vertex = vertex(vertex_id0);
+    if (!_vertex)
+        return (0);
+    return (_vertex->edge(vertex_id1));
 }
 
 TEMPLATE_SPECIALIZATION
-IC	bool CAbstractGraph::empty				() const
+IC typename CAbstractGraph::CEdge* CAbstractGraph::edge(const _vertex_id_type& vertex_id0, const _vertex_id_type& vertex_id1)
 {
-	return						(m_vertices.empty());
+    CVertex* _vertex = vertex(vertex_id0);
+    if (!_vertex)
+        return (0);
+    return (_vertex->edge(vertex_id1));
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CAbstractGraph::clear				()
+IC const typename CAbstractGraph::VERTICES& CAbstractGraph::vertices() const { return (m_vertices); }
+
+TEMPLATE_SPECIALIZATION
+IC typename CAbstractGraph::VERTICES& CAbstractGraph::vertices() { return (m_vertices); }
+
+TEMPLATE_SPECIALIZATION
+IC const CAbstractGraph& CAbstractGraph::header() const { return (*this); }
+
+TEMPLATE_SPECIALIZATION
+IC bool CAbstractGraph::operator==(const CGraphAbstract& obj) const
 {
-	while (!vertices().empty())
-		remove_vertex			(vertices().begin()->first);
-	VERIFY						(!m_edge_count);
+    if (vertex_count() != obj.vertex_count())
+        return (false);
+
+    if (edge_count() != obj.edge_count())
+        return (false);
+
+    return (equal(vertices(), obj.vertices()));
 }
 
 TEMPLATE_SPECIALIZATION
-IC	const typename CAbstractGraph::CVertex *CAbstractGraph::vertex	(const _vertex_id_type &vertex_id) const
+IC const _edge_weight_type CAbstractGraph::get_edge_weight(const _vertex_id_type vertex_index0, const _vertex_id_type vertex_index1, const_iterator i) const
 {
-	const_vertex_iterator		I = vertices().find(vertex_id);
-	if (vertices().end() == I)
-		return					(0);
-	return						((*I).second);
+    VERIFY(edge(vertex_index0, vertex_index1));
+    return ((*i).weight());
 }
 
 TEMPLATE_SPECIALIZATION
-IC	typename CAbstractGraph::CVertex *CAbstractGraph::vertex		(const _vertex_id_type &vertex_id)
-{
-	vertex_iterator				I = m_vertices.find(vertex_id);
-	if (m_vertices.end() ==	I)
-		return					(0);
-	return						((*I).second);
-}
+IC bool CAbstractGraph::is_accessible(const _vertex_id_type vertex_index) const { return (true); }
 
 TEMPLATE_SPECIALIZATION
-IC	const typename CAbstractGraph::CEdge *CAbstractGraph::edge		(const _vertex_id_type &vertex_id0, const _vertex_id_type &vertex_id1) const
-{
-	const CVertex				*_vertex = vertex(vertex_id0);
-	if (!_vertex)
-		return					(0);
-	return						(_vertex->edge(vertex_id1));
-}
+IC const typename CAbstractGraph::CVertex* CAbstractGraph::value(const _vertex_id_type vertex_index, const_iterator i) const { return ((*i).vertex()); }
 
 TEMPLATE_SPECIALIZATION
-IC	typename CAbstractGraph::CEdge *CAbstractGraph::edge			(const _vertex_id_type &vertex_id0, const _vertex_id_type &vertex_id1)
+IC void CAbstractGraph::begin(const CVertex* vertex, const_iterator& b, const_iterator& e) const
 {
-	CVertex						*_vertex = vertex(vertex_id0);
-	if (!_vertex)
-		return					(0);
-	return						(_vertex->edge(vertex_id1));
-}
-
-TEMPLATE_SPECIALIZATION
-IC	const typename CAbstractGraph::VERTICES &CAbstractGraph::vertices	() const
-{
-	return						(m_vertices);
-}
-
-TEMPLATE_SPECIALIZATION
-IC	typename CAbstractGraph::VERTICES &CAbstractGraph::vertices			()
-{
-	return						(m_vertices);
-}
-
-TEMPLATE_SPECIALIZATION
-IC	const CAbstractGraph &CAbstractGraph::header						() const
-{
-	return						(*this);
-}
-
-TEMPLATE_SPECIALIZATION
-IC	bool CAbstractGraph::operator==		(const CGraphAbstract &obj) const
-{
-	if (vertex_count() != obj.vertex_count())
-		return					(false);
-
-	if (edge_count() != obj.edge_count())
-		return					(false);
-
-	return						(equal(vertices(),obj.vertices()));
-}
-
-TEMPLATE_SPECIALIZATION
-IC	const _edge_weight_type CAbstractGraph::get_edge_weight(const _vertex_id_type vertex_index0, const _vertex_id_type vertex_index1, const_iterator i) const
-{
-	VERIFY						(edge(vertex_index0,vertex_index1));
-	return						((*i).weight());
-}
-
-TEMPLATE_SPECIALIZATION
-IC	bool CAbstractGraph::is_accessible	(const _vertex_id_type vertex_index) const
-{
-	return						(true);
-}
-
-TEMPLATE_SPECIALIZATION
-IC	const typename CAbstractGraph::CVertex *CAbstractGraph::value	(const _vertex_id_type vertex_index, const_iterator i) const
-{
-	return						((*i).vertex());
-}
-
-TEMPLATE_SPECIALIZATION
-IC	void CAbstractGraph::begin	(const CVertex *vertex, const_iterator &b, const_iterator &e) const
-{
-	VERIFY						(vertex);
-	b							= vertex->edges().begin();
-	e							= vertex->edges().end();
+    VERIFY(vertex);
+    b = vertex->edges().begin();
+    e = vertex->edges().end();
 }
 
 #undef TEMPLATE_SPECIALIZATION
 #undef CAbstractGraph
 
-#define TEMPLATE_SPECIALIZATION template <\
-	typename _data_type,\
-	typename _edge_weight_type,\
-	typename _vertex_id_type\
->
+#define TEMPLATE_SPECIALIZATION template <typename _data_type, typename _edge_weight_type, typename _vertex_id_type>
 
-#define CAbstractGraph CGraphAbstractSerialize<\
-	_data_type,\
-	_edge_weight_type,\
-	_vertex_id_type\
->
+#define CAbstractGraph CGraphAbstractSerialize<_data_type, _edge_weight_type, _vertex_id_type>
 
 TEMPLATE_SPECIALIZATION
-IC	void CAbstractGraph::save			(IWriter &stream)
+IC void CAbstractGraph::save(IWriter& stream)
 {
-	stream.open_chunk			(0);
-	stream.w_u32				((u32)vertices().size());
-	stream.close_chunk			();
-	
-	stream.open_chunk			(1);
-	auto I = vertices().cbegin();
-	auto E = vertices().cend();
-	for (u32 i = 0; I != E; ++I, ++i) {
-		stream.open_chunk		(i);
-		{
-			stream.open_chunk	(0);
-			save_data			((*I).second->vertex_id(),stream);
-			stream.close_chunk	();
+    stream.open_chunk(0);
+    stream.w_u32((u32)vertices().size());
+    stream.close_chunk();
 
-			stream.open_chunk	(1);
-			save_data			((*I).second->data(),stream);
-			stream.close_chunk	();
-		}
-		stream.close_chunk		();
-	}
-	stream.close_chunk			();
+    stream.open_chunk(1);
+    auto I = vertices().cbegin();
+    auto E = vertices().cend();
+    for (u32 i = 0; I != E; ++I, ++i)
+    {
+        stream.open_chunk(i);
+        {
+            stream.open_chunk(0);
+            save_data((*I).second->vertex_id(), stream);
+            stream.close_chunk();
 
-	stream.open_chunk			(2);
-	{
-		auto I = vertices().cbegin();
-		auto E = vertices().cend();
-		for ( ; I != E; ++I) {
-			if ((*I).second->edges().empty())
-				continue;
+            stream.open_chunk(1);
+            save_data((*I).second->data(), stream);
+            stream.close_chunk();
+        }
+        stream.close_chunk();
+    }
+    stream.close_chunk();
 
-			save_data			((*I).second->vertex_id(),stream);
+    stream.open_chunk(2);
+    {
+        auto I = vertices().cbegin();
+        auto E = vertices().cend();
+        for (; I != E; ++I)
+        {
+            if ((*I).second->edges().empty())
+                continue;
 
-			stream.w_u32		((u32)(*I).second->edges().size());
-			auto i = (*I).second->edges().cbegin();
-			auto e = (*I).second->edges().cend();
-			for ( ; i != e; ++i) {
-				save_data		((*i).vertex_id(),stream);
-				save_data		((*i).weight(),stream);
-			}
-		}
-	}
-	stream.close_chunk			();
+            save_data((*I).second->vertex_id(), stream);
+
+            stream.w_u32((u32)(*I).second->edges().size());
+            auto i = (*I).second->edges().cbegin();
+            auto e = (*I).second->edges().cend();
+            for (; i != e; ++i)
+            {
+                save_data((*i).vertex_id(), stream);
+                save_data((*i).weight(), stream);
+            }
+        }
+    }
+    stream.close_chunk();
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CAbstractGraph::load			(IReader &stream)
+IC void CAbstractGraph::load(IReader& stream)
 {
-	clear						();
+    clear();
 
-	u32							id;
-	_data_type					data;
-	_vertex_id_type				vertex_id;
-	IReader						*chunk0, *chunk1, *chunk2;
+    u32 id;
+    _data_type data;
+    _vertex_id_type vertex_id;
+    IReader *chunk0, *chunk1, *chunk2;
 
-	chunk0						= stream.open_chunk(0);
-	chunk0->r_u32				();
-	chunk0->close				();
+    chunk0 = stream.open_chunk(0);
+    chunk0->r_u32();
+    chunk0->close();
 
-	chunk0						= stream.open_chunk(1);
+    chunk0 = stream.open_chunk(1);
 
-	for (chunk1 = chunk0->open_chunk_iterator(id); chunk1; chunk1 = chunk0->open_chunk_iterator(id,chunk1)) {
-		chunk2					= chunk1->open_chunk(0);
-		load_data				(vertex_id,*chunk2);
-		chunk2->close			();
+    for (chunk1 = chunk0->open_chunk_iterator(id); chunk1; chunk1 = chunk0->open_chunk_iterator(id, chunk1))
+    {
+        chunk2 = chunk1->open_chunk(0);
+        load_data(vertex_id, *chunk2);
+        chunk2->close();
 
-		chunk2					= chunk1->open_chunk(1);
-		load_data				(data,*chunk2);
-		chunk2->close			();
+        chunk2 = chunk1->open_chunk(1);
+        load_data(data, *chunk2);
+        chunk2->close();
 
-		add_vertex				(data,vertex_id);
-	}
-	chunk0->close				();
+        add_vertex(data, vertex_id);
+    }
+    chunk0->close();
 
-	chunk0						= stream.open_chunk(2);
-	if (!chunk0)
-		return;
+    chunk0 = stream.open_chunk(2);
+    if (!chunk0)
+        return;
 
-	while (!chunk0->eof()) {
-		_vertex_id_type			vertex_id0;
-		load_data				(vertex_id0,*chunk0);
-		
-		u32						n = chunk0->r_u32();
-		VERIFY					(n);
-		for (u32 i=0; i<n; ++i) {
-			_vertex_id_type		vertex_id1;
-			load_data			(vertex_id1,*chunk0);
-			
-			_edge_weight_type	edge_weight;
-			load_data			(edge_weight,*chunk0);
+    while (!chunk0->eof())
+    {
+        _vertex_id_type vertex_id0;
+        load_data(vertex_id0, *chunk0);
 
-			add_edge			(vertex_id0,vertex_id1,edge_weight);
-		}
-	}
-	chunk0->close				();
+        u32 n = chunk0->r_u32();
+        VERIFY(n);
+        for (u32 i = 0; i < n; ++i)
+        {
+            _vertex_id_type vertex_id1;
+            load_data(vertex_id1, *chunk0);
+
+            _edge_weight_type edge_weight;
+            load_data(edge_weight, *chunk0);
+
+            add_edge(vertex_id0, vertex_id1, edge_weight);
+        }
+    }
+    chunk0->close();
 }
 
 #undef TEMPLATE_SPECIALIZATION

@@ -13,9 +13,7 @@
 #include "PHDebug.h"
 #endif
 
-CIKFoot::CIKFoot()
-    : m_K(nullptr), m_bind_b2_to_b3(Fidentity), m_foot_width(0),
-      m_ref_bone(u16(-1)), m_foot_bone_id(BI_NONE), m_toe_bone_id(BI_NONE) {}
+CIKFoot::CIKFoot() : m_K(nullptr), m_bind_b2_to_b3(Fidentity), m_foot_width(0), m_ref_bone(u16(-1)), m_foot_bone_id(BI_NONE), m_toe_bone_id(BI_NONE) {}
 
 void CIKFoot::Create(IKinematics* K, LPCSTR section, u16 bones[4])
 {
@@ -24,12 +22,12 @@ void CIKFoot::Create(IKinematics* K, LPCSTR section, u16 bones[4])
 
     /// defaults
     m_ref_bone = 2;
-    //if (m_ref_bone == 2) //Эти условия бессмысленны из-за строки выше.
+    // if (m_ref_bone == 2) //Эти условия бессмысленны из-за строки выше.
     //{
-        m_foot_normal.v.set(1, 0, 0); // 2
-        m_foot_normal.bone = 2;
-        m_foot_direction.v.set(0, 0, 1); // 2
-        m_foot_direction.bone = 2;
+    m_foot_normal.v.set(1, 0, 0); // 2
+    m_foot_normal.bone = 2;
+    m_foot_direction.v.set(0, 0, 1); // 2
+    m_foot_direction.bone = 2;
     /*}
     else
     {
@@ -67,8 +65,7 @@ struct envc : public SEnumVerticesCallback
     envc(envc&) = delete;
     envc& operator=(envc&) = delete;
 
-    envc(const Fmatrix& _i_bind_transform, const Fvector& _ax, Fvector& _pos)
-        : SEnumVerticesCallback(), i_bind_transform(_i_bind_transform), ax(_ax), pos(_pos)
+    envc(const Fmatrix& _i_bind_transform, const Fvector& _ax, Fvector& _pos) : SEnumVerticesCallback(), i_bind_transform(_i_bind_transform), ax(_ax), pos(_pos)
     {
         start_pos.set(0, 0, 0);
     }
@@ -156,15 +153,11 @@ Fmatrix& CIKFoot::foot_to_ref_bone_transform(Fmatrix& m) const
         m.set(Fidentity);
         return m;
     }
-    m.mul_43(
-        Fmatrix().invert(Kinematics()->LL_GetTransform(m_foot_bone_id)), Kinematics()->LL_GetTransform(m_toe_bone_id));
+    m.mul_43(Fmatrix().invert(Kinematics()->LL_GetTransform(m_foot_bone_id)), Kinematics()->LL_GetTransform(m_toe_bone_id));
     return m;
 }
 
-Fmatrix& CIKFoot::ref_bone_to_foot_transform(Fmatrix& m) const
-{
-    return m.invert(Fmatrix().set(foot_to_ref_bone_transform(m)));
-}
+Fmatrix& CIKFoot::ref_bone_to_foot_transform(Fmatrix& m) const { return m.invert(Fmatrix().set(foot_to_ref_bone_transform(m))); }
 
 Fmatrix& CIKFoot::foot_to_ref_bone(Fmatrix& ref_bone, const Fmatrix& foot) const
 {
@@ -207,8 +200,8 @@ Fmatrix& CIKFoot::ref_bone_to_foot(Fmatrix& foot, const Fmatrix& ref_bone) const
 
 Fmatrix& CIKFoot::ref_bone_to_foot(Fmatrix& m) const { return ref_bone_to_foot(m, Fmatrix().set(m)); }
 int ik_allign_free_foot = 0;
-ik_goal_matrix::e_collide_state CIKFoot::CollideFoot(float angle, float& out_angle, const Fvector& global_toe,
-    const Fvector& foot_normal, const Fvector& global_bone_pos, const Fplane& p, const Fvector& ax) const
+ik_goal_matrix::e_collide_state CIKFoot::CollideFoot(float angle, float& out_angle, const Fvector& global_toe, const Fvector& foot_normal, const Fvector& global_bone_pos,
+                                                     const Fplane& p, const Fvector& ax) const
 {
     float dfoot_tri = -p.d - p.n.dotproduct(global_bone_pos); // dist from foot bone pos to tri plain
     Fvector axp;
@@ -237,8 +230,7 @@ ik_goal_matrix::e_collide_state CIKFoot::CollideFoot(float angle, float& out_ang
 
 static const float min_dot = 0.9f; // M_SQRT1_2;//M_SQRT1_2;
 
-bool CIKFoot::make_shift(
-    Fmatrix& xm, const Fvector& cl_point, bool collide, const Fplane& p, const Fvector& pick_dir) const
+bool CIKFoot::make_shift(Fmatrix& xm, const Fvector& cl_point, bool collide, const Fplane& p, const Fvector& pick_dir) const
 {
     Fvector shift = pick_dir;
 
@@ -269,14 +261,12 @@ bool CIKFoot::make_shift(
     return true;
 }
 
-bool CIKFoot::GetFootStepMatrix(
-    ik_goal_matrix& m, const SCalculateData& cd, const SIKCollideData& cld, bool collide, bool rotate) const
+bool CIKFoot::GetFootStepMatrix(ik_goal_matrix& m, const SCalculateData& cd, const SIKCollideData& cld, bool collide, bool rotate) const
 {
     return GetFootStepMatrix(m, cd.state.anim_pos, cld, collide, rotate);
 }
 
-ik_goal_matrix::e_collide_state CIKFoot::rotate(
-    Fmatrix& xm, const Fplane& p, const Fvector& foot_normal, const Fvector& global_point, bool collide) const
+ik_goal_matrix::e_collide_state CIKFoot::rotate(Fmatrix& xm, const Fplane& p, const Fvector& foot_normal, const Fvector& global_point, bool collide) const
 {
     Fvector ax;
     ax.crossproduct(p.n, foot_normal);
@@ -302,8 +292,7 @@ ik_goal_matrix::e_collide_state CIKFoot::rotate(
     return cl_state;
 }
 
-bool CIKFoot::GetFootStepMatrix(ik_goal_matrix& m, const Fmatrix& g_anim, const SIKCollideData& cld, bool collide,
-    bool rotation, bool b_make_shift /*=true*/) const
+bool CIKFoot::GetFootStepMatrix(ik_goal_matrix& m, const Fmatrix& g_anim, const SIKCollideData& cld, bool collide, bool rotation, bool b_make_shift /*=true*/) const
 {
     const Fmatrix global_anim = g_anim;
     Fvector local_point;
@@ -390,11 +379,7 @@ u16 CIKFoot::get_ref_bone(const Fmatrix& foot_transform, const Fmatrix& toe_tran
     else
         return 2;
 }
-void CIKFoot::set_ref_bone()
-{
-    set_ref_bone(
-        get_ref_bone(Kinematics()->LL_GetTransform(m_foot_bone_id), Kinematics()->LL_GetTransform(m_toe_bone_id)));
-}
+void CIKFoot::set_ref_bone() { set_ref_bone(get_ref_bone(Kinematics()->LL_GetTransform(m_foot_bone_id), Kinematics()->LL_GetTransform(m_toe_bone_id))); }
 void CIKFoot::SetFootGeom(ik_foot_geom& fg, const Fmatrix& ref_bone, const Fmatrix& object_matrix) const
 {
     Fmatrix gl_bone;
@@ -406,7 +391,8 @@ void CIKFoot::SetFootGeom(ik_foot_geom& fg, const Fmatrix& ref_bone, const Fmatr
 
     Fvector heel;
     Fvector pos_hill;
-#pragma todo("KRodin: в строке ниже происходит какая-то черная магия, на которую естественно ругается PVS, я не представляю как это работает, и как должно работать, и что будет, если этот код изменить. Может быть поставить просто Fmatrix{} вместо foot?")
+#pragma todo( \
+    "KRodin: в строке ниже происходит какая-то черная магия, на которую естественно ругается PVS, я не представляю как это работает, и как должно работать, и что будет, если этот код изменить. Может быть поставить просто Fmatrix{} вместо foot?")
     Fmatrix foot = (Fmatrix().mul_43(object_matrix, ref_bone_to_foot(foot, ref_bone)));
     foot.transform_tiny(pos_hill, HeelPosition(heel));
     const Fvector v_m = Fvector().add(pos_toe, pos_hill).mul(0.5f);
@@ -423,8 +409,7 @@ void CIKFoot::SetFootGeom(ik_foot_geom& fg, const Fmatrix& ref_bone, const Fmatr
 
     fg.set(pos_toe, pos_hill, Fvector().add(v_m, v_side));
 }
-void CIKFoot::Collide(SIKCollideData& cld, ik_foot_collider& collider, const Fmatrix& ref_bone,
-    const Fmatrix& object_matrix, CGameObject* O, bool foot_step) const
+void CIKFoot::Collide(SIKCollideData& cld, ik_foot_collider& collider, const Fmatrix& ref_bone, const Fmatrix& object_matrix, CGameObject* O, bool foot_step) const
 {
     VERIFY(O->Visual()->dcast_PKinematics() == Kinematics());
 

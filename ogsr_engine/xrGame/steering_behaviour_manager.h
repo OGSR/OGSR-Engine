@@ -9,24 +9,25 @@
 #include "smart_cover_detail.h"
 
 class CAI_Rat;
-private debug::make_final<manager>
+private
+debug::make_final<manager>
 {
 public:
-					manager			(CAI_Rat const *object);
-                    manager(const& manager) = delete;
-                    const& operator= (const manager&) = delete;
-					~manager		();
-			void	add				(base *behaviour, float const &factor);
-			void	remove			(base *behaviour);
-			Fvector	new_position	(float const &time_delta);
+    manager(CAI_Rat const* object);
+    manager(const& manager) = delete;
+    const& operator=(const manager&) = delete;
+    ~manager();
+    void add(base * behaviour, float const& factor);
+    void remove(base * behaviour);
+    Fvector new_position(float const& time_delta);
 
 private:
-			void	clear			();
+    void clear();
 
 private:
-	typedef xr_map<base*,float>		Behaviours;
+    typedef xr_map<base*, float> Behaviours;
 
 private:
-	Behaviours		m_behaviours;
+    Behaviours m_behaviours;
 };
 } // namespace steering_behaviour

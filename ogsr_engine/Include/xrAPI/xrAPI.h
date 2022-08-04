@@ -9,14 +9,13 @@ class IRenderFactory;
 extern XRCORE_API IRenderFactory* RenderFactory;
 
 class CDUInterface;
-extern XRCORE_API CDUInterface*	DU;
+extern XRCORE_API CDUInterface* DU;
 
 struct xr_token;
-extern XRCORE_API xr_token*	vid_mode_token;
+extern XRCORE_API xr_token* vid_mode_token;
 
 class IUIRender;
 extern XRCORE_API IUIRender* UIRender;
-
 
 class CGameMtlLibrary;
 extern XRCORE_API CGameMtlLibrary* PGMLib;

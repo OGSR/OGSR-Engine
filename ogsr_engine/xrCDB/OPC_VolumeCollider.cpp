@@ -23,13 +23,12 @@
  *	\author		Pierre Terdiman
  *	\version	1.2
  *	\date		June, 2, 2001
-*/
+ */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Precompiled Header
 #include "stdafx.h"
-
 
 using namespace Opcode;
 
@@ -38,29 +37,22 @@ using namespace Opcode;
  *	Constructor.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-VolumeCollider::VolumeCollider() :
-	mTouchedPrimitives	(null),
+VolumeCollider::VolumeCollider()
+    : mTouchedPrimitives(null),
 #ifdef OPC_USE_CALLBACKS
-	mUserData			(0),
-	mObjCallback		(null),
+      mUserData(0), mObjCallback(null),
 #else
-	mFaces				(null),
-	mVerts				(null),
+      mFaces(null), mVerts(null),
 #endif
-	mNbVolumeBVTests	(0),
-	mNbVolumePrimTests	(0)
-{
-}
+      mNbVolumeBVTests(0), mNbVolumePrimTests(0)
+{}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  *	Destructor.
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-VolumeCollider::~VolumeCollider()
-{
-	mTouchedPrimitives = null;
-}
+VolumeCollider::~VolumeCollider() { mTouchedPrimitives = null; }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
@@ -71,43 +63,51 @@ VolumeCollider::~VolumeCollider()
 const char* VolumeCollider::ValidateSettings()
 {
 #ifdef OPC_USE_CALLBACKS
-	if(!mObjCallback)		return "Object callback must be defined! Call: SetCallback().";
+    if (!mObjCallback)
+        return "Object callback must be defined! Call: SetCallback().";
 #else
-	if(!mFaces || !mVerts)	return "Object pointers must be defined! Call: SetPointers().";
+    if (!mFaces || !mVerts)
+        return "Object pointers must be defined! Call: SetPointers().";
 #endif
-	return null;
+    return null;
 }
 
 // Pretty dumb way to dump - to do better
 
-#define IMPLEMENT_NOLEAFDUMP(type)											\
-void VolumeCollider::_Dump(const type* node)								\
-{																			\
-	if(node->HasLeaf())		mTouchedPrimitives->Add(node->GetPrimitive());	\
-	else					_Dump(node->GetPos());							\
-																			\
-	if(ContactFound()) return;												\
-																			\
-	if(node->HasLeaf2())	mTouchedPrimitives->Add(node->GetPrimitive2());	\
-	else					_Dump(node->GetNeg());							\
-}
+#define IMPLEMENT_NOLEAFDUMP(type) \
+    void VolumeCollider::_Dump(const type* node) \
+    { \
+        if (node->HasLeaf()) \
+            mTouchedPrimitives->Add(node->GetPrimitive()); \
+        else \
+            _Dump(node->GetPos()); \
+\
+        if (ContactFound()) \
+            return; \
+\
+        if (node->HasLeaf2()) \
+            mTouchedPrimitives->Add(node->GetPrimitive2()); \
+        else \
+            _Dump(node->GetNeg()); \
+    }
 
-#define IMPLEMENT_LEAFDUMP(type)						\
-void VolumeCollider::_Dump(const type* node)			\
-{														\
-	if(node->IsLeaf())									\
-	{													\
-		mTouchedPrimitives->Add(node->GetPrimitive());	\
-	}													\
-	else												\
-	{													\
-		_Dump(node->GetPos());							\
-														\
-		if(ContactFound()) return;						\
-														\
-		_Dump(node->GetNeg());							\
-	}													\
-}
+#define IMPLEMENT_LEAFDUMP(type) \
+    void VolumeCollider::_Dump(const type* node) \
+    { \
+        if (node->IsLeaf()) \
+        { \
+            mTouchedPrimitives->Add(node->GetPrimitive()); \
+        } \
+        else \
+        { \
+            _Dump(node->GetPos()); \
+\
+            if (ContactFound()) \
+                return; \
+\
+            _Dump(node->GetNeg()); \
+        } \
+    }
 
 IMPLEMENT_NOLEAFDUMP(AABBNoLeafNode)
 IMPLEMENT_NOLEAFDUMP(AABBQuantizedNoLeafNode)

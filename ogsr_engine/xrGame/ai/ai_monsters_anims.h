@@ -15,48 +15,55 @@
 
 using ANIM_VECTOR = xr_vector<MotionID>;
 
-class CAniVector {
+class CAniVector
+{
 public:
-	ANIM_VECTOR		A;
+    ANIM_VECTOR A;
 
-			void	Load	(IKinematicsAnimated *tpKinematics, LPCSTR caBaseName);
+    void Load(IKinematicsAnimated* tpKinematics, LPCSTR caBaseName);
 };
 
-template <LPCSTR caBaseNames[]> class CAniFVector {
+template <LPCSTR caBaseNames[]>
+class CAniFVector
+{
 public:
-	ANIM_VECTOR		A;
+    ANIM_VECTOR A;
 
-	IC	void		Load(IKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
-	{
-		A.clear			();
-		string256		S;
+    IC void Load(IKinematicsAnimated* tpKinematics, LPCSTR caBaseName)
+    {
+        A.clear();
+        string256 S;
         int j = 0;
-		for (; caBaseNames[j]; ++j);
-		A.resize		(j);
-		for (int i=0; i<j; ++i) 
-		{
-			xr_strconcat(S,caBaseName,caBaseNames[i]);
-			A[i]		= tpKinematics->ID_Cycle_Safe(S);
+        for (; caBaseNames[j]; ++j)
+            ;
+        A.resize(j);
+        for (int i = 0; i < j; ++i)
+        {
+            xr_strconcat(S, caBaseName, caBaseNames[i]);
+            A[i] = tpKinematics->ID_Cycle_Safe(S);
 #ifdef DEBUG
-			if (A[i] && psAI_Flags.test(aiAnimation))
-				Msg		("* Loaded animation %s",S);
+            if (A[i] && psAI_Flags.test(aiAnimation))
+                Msg("* Loaded animation %s", S);
 #endif
-		}
-	}
+        }
+    }
 };
 
-template <class TYPE_NAME, LPCSTR caBaseNames[]> class CAniCollection {
+template <class TYPE_NAME, LPCSTR caBaseNames[]>
+class CAniCollection
+{
 public:
-	xr_vector<TYPE_NAME>	A;
+    xr_vector<TYPE_NAME> A;
 
-	IC	void		Load(IKinematicsAnimated *tpKinematics, LPCSTR caBaseName)
-	{
-		A.clear		();
-		string256	S;
+    IC void Load(IKinematicsAnimated* tpKinematics, LPCSTR caBaseName)
+    {
+        A.clear();
+        string256 S;
         int j = 0;
-		for (; caBaseNames[j]; ++j);
-		A.resize	(j);
-		for (int i=0; i<j; ++i)
-			A[i].Load	(tpKinematics, xr_strconcat(S,caBaseName,caBaseNames[i]));
-	}
+        for (; caBaseNames[j]; ++j)
+            ;
+        A.resize(j);
+        for (int i = 0; i < j; ++i)
+            A[i].Load(tpKinematics, xr_strconcat(S, caBaseName, caBaseNames[i]));
+    }
 };

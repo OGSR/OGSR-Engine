@@ -6,8 +6,7 @@
 #include "xrPhysics/MathUtils.h"
 #include "PHDebug.h"
 
-void object_shift::dbg_draw(
-    const Fmatrix& current_pos, const extrapolation::points& predict, const Fvector& start) const
+void object_shift::dbg_draw(const Fmatrix& current_pos, const extrapolation::points& predict, const Fvector& start) const
 {
     Fvector p0;
     current_pos.transform_tiny(p0, start);
@@ -41,8 +40,7 @@ void object_shift::dbg_draw(
 
     float start_shift = current + delta_shift(time_passed);
     float end_shift = current + delta_shift(time_passed + time);
-    DBG_DrawLine(Fvector().add(p0, Fvector().set(0, start_shift, 0)), Fvector().add(p1, Fvector().set(0, end_shift, 0)),
-        color_xrgb(255, 0, 0));
+    DBG_DrawLine(Fvector().add(p0, Fvector().set(0, start_shift, 0)), Fvector().add(p1, Fvector().set(0, end_shift, 0)), color_xrgb(255, 0, 0));
 }
 #endif
 
@@ -165,8 +163,7 @@ void object_shift::set_taget(float taget_, float time)
     // accel = - aaccel * time;
 
     float x0, x1;
-    if ((x > half_shift_restrict_up || x < -half_shift_restrict_down) &&
-        square_equation(aaccel / 2.f, accel, speed, x0, x1))
+    if ((x > half_shift_restrict_up || x < -half_shift_restrict_down) && square_equation(aaccel / 2.f, accel, speed, x0, x1))
     {
         float max_shift0 = _abs(delta_shift(x0));
         float max_shift1 = _abs(delta_shift(x1));

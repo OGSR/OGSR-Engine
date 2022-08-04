@@ -11,24 +11,26 @@
 
 class CAI_Rat;
 
-namespace steering_behaviour {
+namespace steering_behaviour
+{
 
-class base {
+class base
+{
 public:
-						base		(CAI_Rat const *object);
+    base(CAI_Rat const* object);
 
     base(const base& other) = delete;
     base& operator=(const base& other) = delete;
-	virtual				~base		() {}
-	virtual	Fvector		direction	() = 0;
+    virtual ~base() {}
+    virtual Fvector direction() = 0;
 
 public:
-	IC		void		enabled		(bool const &value);
-	IC		bool const	&enabled	() const;
+    IC void enabled(bool const& value);
+    IC bool const& enabled() const;
 
 private:
-	CAI_Rat const		*m_object;
-	bool				m_enabled;
+    CAI_Rat const* m_object;
+    bool m_enabled;
 };
 
 } // namespace steering_behaviour

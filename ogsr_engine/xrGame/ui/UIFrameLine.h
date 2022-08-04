@@ -16,41 +16,54 @@
 
 #include "../UIStaticItem.h"
 
-class CUIFrameLine: public CUICustomItem
+class CUIFrameLine : public CUICustomItem
 {
-	friend class CUIFrameLineWnd;
-	enum
-	{
-		flFirst = 0,	// Left or top
-		flSecond,		// Right or bottom
-		flBack,			// Center texture
-		flMax
-	};
+    friend class CUIFrameLineWnd;
+    enum
+    {
+        flFirst = 0, // Left or top
+        flSecond, // Right or bottom
+        flBack, // Center texture
+        flMax
+    };
 
-	// Drawing elements
-	CUIStaticItem	elements[flMax];
+    // Drawing elements
+    CUIStaticItem elements[flMax];
 
-	enum
-	{
-		flValidSize = 1
-	};
+    enum
+    {
+        flValidSize = 1
+    };
 
 protected:
-	float		iSize;
-	Fvector2	iPos;
-	u8			uFlags;
-	bool		bHorizontalOrientation;
+    float iSize;
+    Fvector2 iPos;
+    u8 uFlags;
+    bool bHorizontalOrientation;
 
-	void		UpdateSize		();
+    void UpdateSize();
+
 public:
-				CUIFrameLine	();
-	void		Init			(LPCSTR base_name, float x, float y, float size, bool horizontal, DWORD align);
-	void		InitTexture		(const char* texture);
-	void		SetColor		(u32 cl);
-	IC void		SetPos			(float left, float top)		{ iPos.set(left,top);	uFlags &=~ flValidSize; }
-	IC void		SetSize			(float size)				{ iSize = size;			uFlags &=~ flValidSize; }
-	IC void		SetOrientation	(bool bIsHorizontal)	{ bHorizontalOrientation = bIsHorizontal; uFlags &=~ flValidSize; }
-	void		Render			();
+    CUIFrameLine();
+    void Init(LPCSTR base_name, float x, float y, float size, bool horizontal, DWORD align);
+    void InitTexture(const char* texture);
+    void SetColor(u32 cl);
+    IC void SetPos(float left, float top)
+    {
+        iPos.set(left, top);
+        uFlags &= ~flValidSize;
+    }
+    IC void SetSize(float size)
+    {
+        iSize = size;
+        uFlags &= ~flValidSize;
+    }
+    IC void SetOrientation(bool bIsHorizontal)
+    {
+        bHorizontalOrientation = bIsHorizontal;
+        uFlags &= ~flValidSize;
+    }
+    void Render();
 };
 
-#endif	// UI_FRAME_LINE_H_
+#endif // UI_FRAME_LINE_H_

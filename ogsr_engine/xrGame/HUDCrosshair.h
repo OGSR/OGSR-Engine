@@ -1,5 +1,5 @@
 // HUDCrosshair.h:  крестик прицела, отображающий текущую дисперсию
-// 
+//
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -8,27 +8,28 @@
 
 #define HUD_CURSOR_SECTION "hud_cursor"
 
-class CHUDCrosshair	
+class CHUDCrosshair
 {
 private:
-	float			cross_length_perc;
-	float			min_radius_perc;
-	float			max_radius_perc;
+    float cross_length_perc;
+    float min_radius_perc;
+    float max_radius_perc;
 
-	//текущий радиус прицела
-	float			radius;
-	float			target_radius;
-	float			radius_speed_perc; 
+    //текущий радиус прицела
+    float radius;
+    float target_radius;
+    float radius_speed_perc;
 
-	ui_shader		hShader;
+    ui_shader hShader;
+
 public:
-	u32				cross_color;
+    u32 cross_color;
 
-					CHUDCrosshair	();
-					~CHUDCrosshair	();
+    CHUDCrosshair();
+    ~CHUDCrosshair();
 
-	void OnRender(const Fvector2& center, const Fvector2& scr_size);
-			void	SetDispersion	(float disp);
+    void OnRender(const Fvector2& center, const Fvector2& scr_size);
+    void SetDispersion(float disp);
 
-			void	Load			();
+    void Load();
 };

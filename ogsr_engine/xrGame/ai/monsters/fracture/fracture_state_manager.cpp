@@ -16,48 +16,55 @@
 
 #include "../../../entitycondition.h"
 
-CStateManagerFracture::CStateManagerFracture(CFracture *obj) : inherited(obj)
+CStateManagerFracture::CStateManagerFracture(CFracture* obj) : inherited(obj)
 {
-	add_state(eStateRest,					xr_new<CStateMonsterRest<CFracture> >				(obj));
-	add_state(eStateAttack,					xr_new<CStateMonsterAttack<CFracture> >				(obj));
-	add_state(eStateEat,					xr_new<CStateMonsterEat<CFracture> >				(obj));
-	add_state(eStateHearDangerousSound,		xr_new<CStateMonsterHearDangerousSound<CFracture> >	(obj));
-	add_state(eStatePanic,					xr_new<CStateMonsterPanic<CFracture> >				(obj));
-	add_state(eStateHitted,					xr_new<CStateMonsterHitted<CFracture> >				(obj));
+    add_state(eStateRest, xr_new<CStateMonsterRest<CFracture>>(obj));
+    add_state(eStateAttack, xr_new<CStateMonsterAttack<CFracture>>(obj));
+    add_state(eStateEat, xr_new<CStateMonsterEat<CFracture>>(obj));
+    add_state(eStateHearDangerousSound, xr_new<CStateMonsterHearDangerousSound<CFracture>>(obj));
+    add_state(eStatePanic, xr_new<CStateMonsterPanic<CFracture>>(obj));
+    add_state(eStateHitted, xr_new<CStateMonsterHitted<CFracture>>(obj));
 }
 
-CStateManagerFracture::~CStateManagerFracture()
-{
-}
+CStateManagerFracture::~CStateManagerFracture() {}
 
 void CStateManagerFracture::execute()
 {
-	u32 state_id = u32(-1);
-	const CEntityAlive* enemy	= object->EnemyMan.get_enemy();
+    u32 state_id = u32(-1);
+    const CEntityAlive* enemy = object->EnemyMan.get_enemy();
 
-	if (enemy) {
-		switch (object->EnemyMan.get_danger_type()) {
-				case eStrong:	state_id = eStatePanic; break;
-				case eWeak:		state_id = eStateAttack; break;
-		}
-	} else if (object->HitMemory.is_hit()) {
-		state_id = eStateHitted;
-	} else if (object->hear_interesting_sound || object->hear_dangerous_sound) {
-		state_id = eStateHearDangerousSound;
-	} else {
-		if (can_eat()) state_id = eStateEat;
-		else {
-			// Rest & Idle states here 
-			state_id = eStateRest;
-		}
-	}
+    if (enemy)
+    {
+        switch (object->EnemyMan.get_danger_type())
+        {
+        case eStrong: state_id = eStatePanic; break;
+        case eWeak: state_id = eStateAttack; break;
+        }
+    }
+    else if (object->HitMemory.is_hit())
+    {
+        state_id = eStateHitted;
+    }
+    else if (object->hear_interesting_sound || object->hear_dangerous_sound)
+    {
+        state_id = eStateHearDangerousSound;
+    }
+    else
+    {
+        if (can_eat())
+            state_id = eStateEat;
+        else
+        {
+            // Rest & Idle states here
+            state_id = eStateRest;
+        }
+    }
 
-	// установить текущее состояние
-	select_state(state_id); 
+    // установить текущее состояние
+    select_state(state_id);
 
-	// выполнить текущее состояние
-	get_state_current()->execute();
+    // выполнить текущее состояние
+    get_state_current()->execute();
 
-	prev_substate = current_substate;
+    prev_substate = current_substate;
 }
-

@@ -16,7 +16,6 @@ ITEM_INFO::~ITEM_INFO()
         CParticlesObject::Destroy(pParticle);
 }
 
-
 bool CCustomDetector::CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate)
 {
     if (itm == nullptr)
@@ -54,8 +53,7 @@ bool CCustomDetector::CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate
     {
         CWeapon* W = smart_cast<CWeapon*>(itm);
         if (W)
-            bres = bres && (W->GetState() != CHUDState::eBore) && (W->GetState() != CWeapon::eReload) &&
-            (W->GetState() != CWeapon::eSwitch) && !W->IsZoomed();
+            bres = bres && (W->GetState() != CHUDState::eBore) && (W->GetState() != CWeapon::eReload) && (W->GetState() != CWeapon::eSwitch) && !W->IsZoomed();
     }
     return bres;
 }
@@ -121,26 +119,23 @@ void CCustomDetector::OnStateSwitch(u32 S, u32 oldState)
 
     switch (S)
     {
-    case eShowing:
-    {
+    case eShowing: {
         g_player_hud->attach_item(this);
         HUD_SOUND::PlaySound(sndShow, Fvector{}, this, !!GetHUDmode(), false, false);
-        PlayHUDMotion({ m_bFastAnimMode ? "anm_show_fast" : "anm_show" }, false, GetState());
+        PlayHUDMotion({m_bFastAnimMode ? "anm_show_fast" : "anm_show"}, false, GetState());
         SetPending(TRUE);
     }
     break;
-    case eHiding:
-    {
+    case eHiding: {
         if (oldState != eHiding)
         {
             HUD_SOUND::PlaySound(sndHide, Fvector{}, this, !!GetHUDmode(), false, false);
-            PlayHUDMotion({ m_bFastAnimMode ? "anm_hide_fast" : "anm_hide" }, true, GetState());
+            PlayHUDMotion({m_bFastAnimMode ? "anm_hide_fast" : "anm_hide"}, true, GetState());
             SetPending(TRUE);
         }
     }
     break;
-    case eIdle:
-    {
+    case eIdle: {
         PlayAnimIdle();
         SetPending(FALSE);
     }
@@ -152,23 +147,19 @@ void CCustomDetector::OnAnimationEnd(u32 state)
 {
     switch (state)
     {
-    case eShowing:
-    {
+    case eShowing: {
         SwitchState(eIdle);
         if (m_fDecayRate > 0.f)
             this->SetCondition(-m_fDecayRate);
     }
     break;
-    case eHiding:
-    {
+    case eHiding: {
         SwitchState(eHidden);
         TurnDetectorInternal(false);
         g_player_hud->detach_item(this);
     }
     break;
-    case eIdle:
-        SwitchState(eIdle);
-        break;
+    case eIdle: SwitchState(eIdle); break;
     default: inherited::OnAnimationEnd(state);
     }
 }
@@ -202,7 +193,7 @@ void CCustomDetector::Load(LPCSTR section)
 
     m_fAfDetectRadius = READ_IF_EXISTS(pSettings, r_float, section, "af_radius", 30.0f);
     m_fAfVisRadius = READ_IF_EXISTS(pSettings, r_float, section, "af_vis_radius", 2.0f);
-    m_fDecayRate = READ_IF_EXISTS(pSettings, r_float, section, "decay_rate", 0.f); //Alundaio
+    m_fDecayRate = READ_IF_EXISTS(pSettings, r_float, section, "decay_rate", 0.f); // Alundaio
     m_artefacts.load(section, "af");
 
     HUD_SOUND::LoadSound(section, "snd_draw", sndShow, SOUND_TYPE_ITEM_TAKING);
@@ -325,24 +316,24 @@ void CCustomDetector::TurnDetectorInternal(bool b)
     if (b && !m_ui)
         CreateUI();
 
-    //UpdateNightVisionMode(b);
+    // UpdateNightVisionMode(b);
 }
 
-//void CCustomDetector::UpdateNightVisionMode(bool b_on) {}
+// void CCustomDetector::UpdateNightVisionMode(bool b_on) {}
 
-Fvector CCustomDetector::GetPositionForCollision() {
+Fvector CCustomDetector::GetPositionForCollision()
+{
     Fvector det_pos{}, det_dir{};
     //Офсет подобрал через худ аждаст, это скорее всего временно, но такое решение подходит всем детекторам более-менее.
-    GetBoneOffsetPosDir("wpn_body", det_pos, det_dir, Fvector{ -0.247499f,-0.810510f,0.178999f });
+    GetBoneOffsetPosDir("wpn_body", det_pos, det_dir, Fvector{-0.247499f, -0.810510f, 0.178999f});
     return det_pos;
 }
 
-Fvector CCustomDetector::GetDirectionForCollision() {
+Fvector CCustomDetector::GetDirectionForCollision()
+{
     //Пока и так нормально, в будущем мб придумаю решение получше.
     return Device.vCameraDirection;
 }
-
-
 
 BOOL CAfList::feel_touch_contact(CObject* O)
 {
@@ -357,8 +348,6 @@ BOOL CAfList::feel_touch_contact(CObject* O)
 
     return res;
 }
-
-
 
 BOOL CZoneList::feel_touch_contact(CObject* O)
 {

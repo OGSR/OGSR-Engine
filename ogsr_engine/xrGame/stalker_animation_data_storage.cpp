@@ -12,51 +12,50 @@
 #include "object_broker.h"
 #include "..\Include/xrRender/KinematicsAnimated.h"
 
-CStalkerAnimationDataStorage	*g_stalker_animation_data_storage = 0;
+CStalkerAnimationDataStorage* g_stalker_animation_data_storage = 0;
 
-class data_predicate {
+class data_predicate
+{
 private:
-	IKinematicsAnimated			*m_object;
+    IKinematicsAnimated* m_object;
 
 public:
-	IC			data_predicate	(IKinematicsAnimated *skeleton_animated)
-	{
-		VERIFY				(skeleton_animated);
-		m_object			= skeleton_animated;
-	}
+    IC data_predicate(IKinematicsAnimated* skeleton_animated)
+    {
+        VERIFY(skeleton_animated);
+        m_object = skeleton_animated;
+    }
 
-	IC	bool	operator()		(const CStalkerAnimationDataStorage::OBJECT &object) const
-	{
-		if (m_object->LL_MotionsSlotCount() != object.first->LL_MotionsSlotCount())
-			return			(false);
+    IC bool operator()(const CStalkerAnimationDataStorage::OBJECT& object) const
+    {
+        if (m_object->LL_MotionsSlotCount() != object.first->LL_MotionsSlotCount())
+            return (false);
 
-		for (u16 i=0, n=m_object->LL_MotionsSlotCount(); i<n; ++i)
-			if (!(m_object->LL_MotionsSlot(i) == object.first->LL_MotionsSlot(i)))
-				return		(false);
+        for (u16 i = 0, n = m_object->LL_MotionsSlotCount(); i < n; ++i)
+            if (!(m_object->LL_MotionsSlot(i) == object.first->LL_MotionsSlot(i)))
+                return (false);
 
-		return				(true);
-	}
+        return (true);
+    }
 };
 
-CStalkerAnimationDataStorage::~CStalkerAnimationDataStorage	()
+CStalkerAnimationDataStorage::~CStalkerAnimationDataStorage() { clear(); }
+
+void CStalkerAnimationDataStorage::clear()
 {
-	clear					();
+    while (!m_objects.empty())
+    {
+        xr_delete(m_objects.back().second);
+        m_objects.pop_back();
+    }
 }
 
-void CStalkerAnimationDataStorage::clear					()
+const CStalkerAnimationData* CStalkerAnimationDataStorage::object(IKinematicsAnimated* skeleton_animated)
 {
-	while (!m_objects.empty()) {
-		xr_delete			(m_objects.back().second);
-		m_objects.pop_back	();
-	}
-}
+    OBJECTS::const_iterator I = std::find_if(m_objects.begin(), m_objects.end(), data_predicate(skeleton_animated));
+    if (I != m_objects.end())
+        return ((*I).second);
 
-const CStalkerAnimationData *CStalkerAnimationDataStorage::object	(IKinematicsAnimated *skeleton_animated)
-{
-	OBJECTS::const_iterator	I = std::find_if(m_objects.begin(),m_objects.end(),data_predicate(skeleton_animated));
-	if (I != m_objects.end())
-		return				((*I).second);
-
-	m_objects.push_back		(std::make_pair(skeleton_animated,xr_new<CStalkerAnimationData>(skeleton_animated)));
-	return					(m_objects.back().second);
+    m_objects.push_back(std::make_pair(skeleton_animated, xr_new<CStalkerAnimationData>(skeleton_animated)));
+    return (m_objects.back().second);
 }

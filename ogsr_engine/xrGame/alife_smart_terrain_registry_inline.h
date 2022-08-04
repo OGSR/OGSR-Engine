@@ -8,14 +8,11 @@
 
 #pragma once
 
-IC	const CALifeSmartTerrainRegistry::OBJECTS &CALifeSmartTerrainRegistry::objects	() const
-{
-	return					(m_objects);
-}
+IC const CALifeSmartTerrainRegistry::OBJECTS& CALifeSmartTerrainRegistry::objects() const { return (m_objects); }
 
-IC	CSE_ALifeSmartZone *CALifeSmartTerrainRegistry::object							(const ALife::_OBJECT_ID &id) const
+IC CSE_ALifeSmartZone* CALifeSmartTerrainRegistry::object(const ALife::_OBJECT_ID& id) const
 {
-	OBJECTS::const_iterator	I = objects().find(id);
-	VERIFY					(I != objects().end());
-	return					((*I).second);
+    OBJECTS::const_iterator I = objects().find(id);
+    VERIFY(I != objects().end());
+    return ((*I).second);
 }

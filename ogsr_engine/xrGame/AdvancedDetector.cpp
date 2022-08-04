@@ -84,8 +84,6 @@ void CAdvancedDetector::UpdateAf()
     ui().SetValue(_diff, dir_to_artefact);
 }
 
-
-
 void CUIArtefactDetectorAdv::construct(CAdvancedDetector* p)
 {
     m_parent = p;

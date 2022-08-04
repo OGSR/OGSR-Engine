@@ -97,11 +97,9 @@ public:
     void get_R1psi(AngleIntList psi[]);
 
     Limb() {}
-    void init(const Matrix T, const Matrix S, int s1_euler, int s2_euler, const float proj_axis[3],
-        const float pos_axis[3], const float min[7], const float max[7]);
+    void init(const Matrix T, const Matrix S, int s1_euler, int s2_euler, const float proj_axis[3], const float pos_axis[3], const float min[7], const float max[7]);
 
-    Limb(const Matrix T, const Matrix S, int s1_euler, int s2_euler, const float proj_axis[3], const float pos_axis[3],
-        const float Min[7], const float Max[7])
+    Limb(const Matrix T, const Matrix S, int s1_euler, int s2_euler, const float proj_axis[3], const float pos_axis[3], const float Min[7], const float Max[7])
     {
         init(T, S, s1_euler, s2_euler, proj_axis, pos_axis, Min, Max);
     }
@@ -112,10 +110,7 @@ public:
     int SetGoalPos(const float g[3], const Matrix E, int limits_on);
     int SetGoal(const Matrix G, int limits_on);
     float Length() const { return solver.Length(); }
-    void SetAimGoal(const float goal[3], const float axis[3], float flex_angle)
-    {
-        solver.SetAimGoal(goal, axis, flex_angle);
-    }
+    void SetAimGoal(const float goal[3], const float axis[3], float flex_angle) { solver.SetAimGoal(goal, axis, flex_angle); }
 
     int SolveAim(float x[3], float psi_angle);
 

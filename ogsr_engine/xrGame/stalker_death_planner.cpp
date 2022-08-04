@@ -16,43 +16,38 @@
 
 using namespace StalkerDecisionSpace;
 
-CStalkerDeathPlanner::CStalkerDeathPlanner	(CAI_Stalker *object, LPCSTR action_name) :
-	inherited								(object,action_name)
+CStalkerDeathPlanner::CStalkerDeathPlanner(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+
+CStalkerDeathPlanner::~CStalkerDeathPlanner() {}
+
+void CStalkerDeathPlanner::setup(CAI_Stalker* object, CPropertyStorage* storage)
 {
+    inherited::setup(object, storage);
+
+    CScriptActionPlanner::m_storage.set_property(eWorldPropertyDead, false);
+
+    clear();
+    add_evaluators();
+    add_actions();
 }
 
-CStalkerDeathPlanner::~CStalkerDeathPlanner	()
+void CStalkerDeathPlanner::add_evaluators()
 {
+    add_evaluator(eWorldPropertyAlreadyDead, xr_new<CStalkerPropertyEvaluatorConst>(false, "resurrecting"));
+    add_evaluator(eWorldPropertyDead, xr_new<CStalkerPropertyEvaluatorMember>((CPropertyStorage*)0, eWorldPropertyDead, true, true, "completely dead"));
 }
 
-void CStalkerDeathPlanner::setup			(CAI_Stalker *object, CPropertyStorage *storage)
+void CStalkerDeathPlanner::add_actions()
 {
-	inherited::setup		(object,storage);
+    CStalkerActionBase* action;
 
-	CScriptActionPlanner::m_storage.set_property	(eWorldPropertyDead,false);
+    action = xr_new<CStalkerActionDead>(m_object, "dying");
+    add_condition(action, eWorldPropertyDead, false);
+    add_effect(action, eWorldPropertyDead, true);
+    add_operator(eWorldOperatorDying, action);
 
-	clear					();
-	add_evaluators			();
-	add_actions				();
-}
-
-void CStalkerDeathPlanner::add_evaluators	()
-{
-	add_evaluator			(eWorldPropertyAlreadyDead		,xr_new<CStalkerPropertyEvaluatorConst>				(false,"resurrecting"));
-	add_evaluator			(eWorldPropertyDead				,xr_new<CStalkerPropertyEvaluatorMember>			((CPropertyStorage*)0,eWorldPropertyDead,true,true,"completely dead"));
-}
-
-void CStalkerDeathPlanner::add_actions		()
-{
-	CStalkerActionBase		*action;
-
-	action					= xr_new<CStalkerActionDead>		(m_object,"dying");
-	add_condition			(action,eWorldPropertyDead,			false);
-	add_effect				(action,eWorldPropertyDead,			true);
-	add_operator			(eWorldOperatorDying,				action);
-
-	action					= xr_new<CStalkerActionAlreadyDead>		(m_object,"dead");
-	add_condition			(action,eWorldPropertyDead,			true);
-	add_effect				(action,eWorldPropertyAlreadyDead,	true);
-	add_operator			(eWorldOperatorDead,				action);
+    action = xr_new<CStalkerActionAlreadyDead>(m_object, "dead");
+    add_condition(action, eWorldPropertyDead, true);
+    add_effect(action, eWorldPropertyAlreadyDead, true);
+    add_operator(eWorldOperatorDead, action);
 }

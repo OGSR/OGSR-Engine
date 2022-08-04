@@ -8,14 +8,11 @@
 
 #pragma once
 
-IC	CLocationManager::CLocationManager								(CGameObject *object)
+IC CLocationManager::CLocationManager(CGameObject* object)
 {
-	VERIFY							(object);
-	m_object						= object;
-	m_vertex_types.clear			();
+    VERIFY(object);
+    m_object = object;
+    m_vertex_types.clear();
 }
 
-IC	const GameGraph::TERRAIN_VECTOR	&CLocationManager::vertex_types	() const
-{
-	return					(m_vertex_types);
-}
+IC const GameGraph::TERRAIN_VECTOR& CLocationManager::vertex_types() const { return (m_vertex_types); }

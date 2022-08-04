@@ -7,41 +7,43 @@ class CUIFrameWindow;
 class CUIStatic;
 class CBinocularsVision;
 
-class CWeaponBinoculars: public CWeaponCustomPistol
+class CWeaponBinoculars : public CWeaponCustomPistol
 {
 private:
-	typedef CWeaponCustomPistol inherited;
+    typedef CWeaponCustomPistol inherited;
+
 protected:
-	HUD_SOUND		sndZoomIn;
-	HUD_SOUND		sndZoomOut;
+    HUD_SOUND sndZoomIn;
+    HUD_SOUND sndZoomOut;
 
-	virtual size_t GetWeaponTypeForCollision() const override { return Binocular; }
-	virtual Fvector GetPositionForCollision() override { return Device.vCameraPosition; }
-	virtual Fvector GetDirectionForCollision() override { return Device.vCameraDirection; }
+    virtual size_t GetWeaponTypeForCollision() const override { return Binocular; }
+    virtual Fvector GetPositionForCollision() override { return Device.vCameraPosition; }
+    virtual Fvector GetDirectionForCollision() override { return Device.vCameraDirection; }
+
 public:
-					CWeaponBinoculars	(); 
-	virtual			~CWeaponBinoculars	();
+    CWeaponBinoculars();
+    virtual ~CWeaponBinoculars();
 
-	void			Load				(LPCSTR section);
+    void Load(LPCSTR section);
 
-	virtual void	OnZoomIn			();
-	virtual void	OnZoomOut			();
-	virtual void	net_Destroy			();
-	virtual BOOL	net_Spawn			(CSE_Abstract* DC);
+    virtual void OnZoomIn();
+    virtual void OnZoomOut();
+    virtual void net_Destroy();
+    virtual BOOL net_Spawn(CSE_Abstract* DC);
 
-	virtual void	save				(NET_Packet &output_packet);
-	virtual void	load				(IReader &input_packet);
+    virtual void save(NET_Packet& output_packet);
+    virtual void load(IReader& input_packet);
 
-	virtual bool	Action				(s32 cmd, u32 flags);
-	virtual void	UpdateCL			();
-	virtual void	OnDrawUI			();
-	virtual bool	use_crosshair		()	const {return false;}
-	virtual void	GetBriefInfo		(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
-	virtual void	net_Relcase			(CObject *object);
-	float			GetZoomFactor		()				{return m_fRTZoomFactor;}
-	void			SetZoomFactor		(float _zoom)	{ m_fRTZoomFactor = _zoom; }
+    virtual bool Action(s32 cmd, u32 flags);
+    virtual void UpdateCL();
+    virtual void OnDrawUI();
+    virtual bool use_crosshair() const { return false; }
+    virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
+    virtual void net_Relcase(CObject* object);
+    float GetZoomFactor() { return m_fRTZoomFactor; }
+    void SetZoomFactor(float _zoom) { m_fRTZoomFactor = _zoom; }
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CWeaponBinoculars)
 #undef script_type_list

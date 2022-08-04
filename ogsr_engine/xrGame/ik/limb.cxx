@@ -46,8 +46,7 @@ enum
 // the Euler extraction routines for the two spherical joints,
 // the projection axis, and the min and max joint limits
 //
-void Limb::init(const Matrix T, const Matrix S, int s1, int s2, const float* proj_axis, const float* pos_axis,
-    const float* mmin, const float* mmax)
+void Limb::init(const Matrix T, const Matrix S, int s1, int s2, const float* proj_axis, const float* pos_axis, const float* mmin, const float* mmax)
 {
     euler1 = short(s1);
     euler2 = short(s2);
@@ -480,8 +479,7 @@ inline int find_min(int n, float d[])
 //
 // 0 means that all intervals are empty.
 //
-int choose_largest_range(float& swivel_angle, const AngleIntList* f11, const AngleIntList* f12,
-    const AngleIntList* f21 = 0, const AngleIntList* f22 = 0)
+int choose_largest_range(float& swivel_angle, const AngleIntList* f11, const AngleIntList* f12, const AngleIntList* f21 = 0, const AngleIntList* f22 = 0)
 {
     const float unioneps = .05f;
     AngleIntList temp, all;
@@ -571,8 +569,7 @@ int update_closest_boundary(AngleInt& a, float v, float& dist, float& boundary)
     return 0;
 }
 
-int inspect_range(
-    const AngleIntList& f, float swivel_angle, int index, float& new_angle, int& new_index, float& distance)
+int inspect_range(const AngleIntList& f, float swivel_angle, int index, float& new_angle, int& new_index, float& distance)
 {
     AngleIntListIterator a;
     AngleInt* ap;
@@ -604,8 +601,7 @@ int inspect_range(
 // 0 means that all intervals are empty.
 //
 
-int choose_closest_range(float& swivel_angle, const AngleIntList* f11, const AngleIntList* f12,
-    const AngleIntList* f21 = 0, const AngleIntList* f22 = 0)
+int choose_closest_range(float& swivel_angle, const AngleIntList* f11, const AngleIntList* f12, const AngleIntList* f21 = 0, const AngleIntList* f22 = 0)
 {
     int i = 0;
     float d = 2 * M_PI;
@@ -709,8 +705,8 @@ int Limb::try_swivel_angle(int solvea, float swivel_angle, float x[])
     else
     {
         solve_aux(swivel_angle, x);
-        if (jt_limits[0].InRange(x[0]) && jt_limits[1].InRange(x[1]) && jt_limits[2].InRange(x[2]) &&
-            jt_limits[4].InRange(x[4]) && jt_limits[5].InRange(x[5]) && jt_limits[6].InRange(x[6]))
+        if (jt_limits[0].InRange(x[0]) && jt_limits[1].InRange(x[1]) && jt_limits[2].InRange(x[2]) && jt_limits[4].InRange(x[4]) && jt_limits[5].InRange(x[5]) &&
+            jt_limits[6].InRange(x[6]))
             return 1;
     }
 

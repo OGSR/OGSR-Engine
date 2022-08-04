@@ -5,10 +5,6 @@
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-CWeaponHPSA::CWeaponHPSA() : CWeaponPistol("HPSA")
-{
-}
+CWeaponHPSA::CWeaponHPSA() : CWeaponPistol("HPSA") {}
 
-CWeaponHPSA::~CWeaponHPSA()
-{
-}
+CWeaponHPSA::~CWeaponHPSA() {}

@@ -19,18 +19,18 @@ IC bool btwIsPow2(u32 v) { return btwLowestBitMask(v) == v; }
 
 IC int btwPow2_Ceil(int v)
 {
-	int i = btwLowestBitMask(v);
-	while (i < v)
-		i <<= 1;
-	return i;
+    int i = btwLowestBitMask(v);
+    while (i < v)
+        i <<= 1;
+    return i;
 }
 IC u32 btwPow2_Ceil(u32 v)
 {
-	u32 i = btwLowestBitMask(v);
-	while (i < v)
-		i <<= 1;
-	return i;
+    u32 i = btwLowestBitMask(v);
+    while (i < v)
+        i <<= 1;
+    return i;
 }
 
 #define iFloor(x) int(std::floor(x))
-#define iCeil(x)  int(std::ceil(x))
+#define iCeil(x) int(std::ceil(x))

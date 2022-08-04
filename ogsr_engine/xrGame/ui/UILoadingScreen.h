@@ -15,30 +15,30 @@
 
 class UILoadingScreen : public ILoadingScreen, public CUIWindow
 {
-	std::recursive_mutex loadingLock;
+    std::recursive_mutex loadingLock;
 
-	CUIProgressBar* loadingProgress;
-	CUIStatic* loadingProgressPercent;
-	CUIStatic* loadingLogo;
+    CUIProgressBar* loadingProgress;
+    CUIStatic* loadingProgressPercent;
+    CUIStatic* loadingLogo;
 
-	CUIStatic* loadingStage;
-	CUIStatic* loadingHeader;
-	CUIStatic* loadingTipNumber;
-	CUIStatic* loadingTip;
+    CUIStatic* loadingStage;
+    CUIStatic* loadingHeader;
+    CUIStatic* loadingTipNumber;
+    CUIStatic* loadingTip;
 
 public:
-	UILoadingScreen();
+    UILoadingScreen();
 
-	void Initialize() override;
+    void Initialize() override;
 
-	void Show(bool status) override;
-	bool IsShown() override;
+    void Show(bool status) override;
+    bool IsShown() override;
 
-	void Update(const int stagesCompleted, const int stagesTotal) override;
-	void ForceDrop() override;
-	void ForceFinish() override;
+    void Update(const int stagesCompleted, const int stagesTotal) override;
+    void ForceDrop() override;
+    void ForceFinish() override;
 
-	void SetLevelLogo(const char* name) override;
-	void SetStageTitle(const char* title) override;
-	void SetStageTip(const char* header, const char* tipNumber, const char* tip) override;
+    void SetLevelLogo(const char* name) override;
+    void SetStageTitle(const char* title) override;
+    void SetStageTip(const char* header, const char* tipNumber, const char* tip) override;
 };

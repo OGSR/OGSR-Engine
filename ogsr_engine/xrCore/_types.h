@@ -19,7 +19,6 @@ using f64 = double;
 using pstr = char*;
 using pcstr = const char*;
 
-
 // Type limits
 template <typename T>
 constexpr auto type_max = std::numeric_limits<T>::max();
@@ -57,7 +56,6 @@ constexpr double dbl_max = type_max<double>;
 constexpr double dbl_min = type_min<double>;
 constexpr double dbl_zero = type_zero<double>;
 constexpr double dbl_eps = type_epsilon<double>;
-
 
 constexpr int max_path = 260; //_MAX_PATH
 

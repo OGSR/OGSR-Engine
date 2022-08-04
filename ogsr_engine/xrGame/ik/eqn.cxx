@@ -89,10 +89,7 @@ static int solve_trig1_aux(float c, float a2b2, float atan2ba, float theta[2])
  *  Also sort the answers in increasing order.
  */
 
-static int solve_trig1(float a, float b, float c, float theta[2])
-{
-    return solve_trig1_aux(c, a * a + b * b, atan2(b, a), theta);
-}
+static int solve_trig1(float a, float b, float c, float theta[2]) { return solve_trig1_aux(c, a * a + b * b, atan2(b, a), theta); }
 
 #if 0
 int consistency_check(double a, double b, double c, 

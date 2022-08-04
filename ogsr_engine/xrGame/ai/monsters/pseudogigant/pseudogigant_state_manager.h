@@ -3,12 +3,13 @@
 
 class CPseudoGigant;
 
-class CStateManagerGigant : public CMonsterStateManager<CPseudoGigant> {
-	typedef CMonsterStateManager<CPseudoGigant> inherited;
-	using inherited::add_state;
-public:
+class CStateManagerGigant : public CMonsterStateManager<CPseudoGigant>
+{
+    typedef CMonsterStateManager<CPseudoGigant> inherited;
+    using inherited::add_state;
 
-					CStateManagerGigant	(CPseudoGigant *monster); 
-	virtual void	execute				();
-	virtual void	remove_links		(CObject* object) { inherited::remove_links(object);}
+public:
+    CStateManagerGigant(CPseudoGigant* monster);
+    virtual void execute();
+    virtual void remove_links(CObject* object) { inherited::remove_links(object); }
 };

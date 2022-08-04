@@ -8,15 +8,20 @@
 
 #pragma once
 
-class CScriptValue {public: virtual ~CScriptValue(){}};
+class CScriptValue
+{
+public:
+    virtual ~CScriptValue() {}
+};
 
-class CScriptValueContainer {
+class CScriptValueContainer
+{
 protected:
-	xr_vector<CScriptValue*>				m_values;
+    xr_vector<CScriptValue*> m_values;
 
 public:
-	virtual			~CScriptValueContainer	();
-	IC		void	assign					();
-	IC		void	clear					();
-	IC		void	add						(CScriptValue *value);
+    virtual ~CScriptValueContainer();
+    IC void assign();
+    IC void clear();
+    IC void add(CScriptValue* value);
 };

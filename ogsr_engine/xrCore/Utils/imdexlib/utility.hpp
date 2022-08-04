@@ -1,10 +1,12 @@
 #pragma once
 
-namespace imdexlib {
+namespace imdexlib
+{
 
-class in_place {};
+class in_place
+{};
 
 template <typename...>
 constexpr bool false_v = false;
 
-} // imdexlib namespace
+} // namespace imdexlib

@@ -16,18 +16,20 @@ template <typename T>
 struct CLinearRegistryType;
 
 template <typename... Ts>
-struct CLinearRegistryType<imdexlib::typelist<Ts...>> : Ts... {};
+struct CLinearRegistryType<imdexlib::typelist<Ts...>> : Ts...
+{};
 
-class CALifeRegistryContainer : public CLinearRegistryType<registry_type_list> {
-	using TYPE_LIST = registry_type_list;
+class CALifeRegistryContainer : public CLinearRegistryType<registry_type_list>
+{
+    using TYPE_LIST = registry_type_list;
 
 public:
-	template <typename T>
-	IC		T		&operator()	(const T*);
-	template <typename T>
-	IC		const T &operator()	(const T*) const;
-	virtual	void	load		(IReader &file_stream);
-	virtual void	save		(IWriter &memory_stream);
+    template <typename T>
+    IC T& operator()(const T*);
+    template <typename T>
+    IC const T& operator()(const T*) const;
+    virtual void load(IReader& file_stream);
+    virtual void save(IWriter& memory_stream);
 };
 
 #include "alife_registry_container_inline.h"

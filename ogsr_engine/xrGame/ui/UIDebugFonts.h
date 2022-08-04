@@ -13,16 +13,18 @@
 #include "UIListWnd.h"
 #include "UIDialogWnd.h"
 
-class CUIDebugFonts : public CUIDialogWnd {
+class CUIDebugFonts : public CUIDialogWnd
+{
 public:
-	CUIDebugFonts();
-	virtual ~CUIDebugFonts();
+    CUIDebugFonts();
+    virtual ~CUIDebugFonts();
 
-	virtual void Init(float x, float y, float width, float height);
-	virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
-			void FillUpList();
+    virtual void Init(float x, float y, float width, float height);
+    virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
+    void FillUpList();
+
 protected:
-	CUIStatic  m_background;
+    CUIStatic m_background;
 };
 
 #endif

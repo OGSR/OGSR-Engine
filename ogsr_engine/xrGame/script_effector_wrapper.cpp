@@ -9,16 +9,8 @@
 #include "stdafx.h"
 #include "script_effector_wrapper.h"
 
-CScriptEffectorWrapper::~CScriptEffectorWrapper	()
-{
-}
+CScriptEffectorWrapper::~CScriptEffectorWrapper() {}
 
-bool CScriptEffectorWrapper::process		(SPPInfo *pp)
-{
-	return		(luabind::call_member<bool>(this,"process",pp));
-}
+bool CScriptEffectorWrapper::process(SPPInfo* pp) { return (luabind::call_member<bool>(this, "process", pp)); }
 
-bool CScriptEffectorWrapper::process_static	(CScriptEffector *tpLuaEffector, SPPInfo *pp)
-{
-	return		(!!tpLuaEffector->CScriptEffector::process(pp));
-}
+bool CScriptEffectorWrapper::process_static(CScriptEffector* tpLuaEffector, SPPInfo* pp) { return (!!tpLuaEffector->CScriptEffector::process(pp)); }

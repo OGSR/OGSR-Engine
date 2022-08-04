@@ -8,7 +8,4 @@
 
 #pragma once
 
-IC	CALifeOnlineOfflineGroupBrain::CALifeOnlineOfflineGroupBrain	(CSE_ALifeOnlineOfflineGroup *object)
-{
-	m_object	= object;
-}
+IC CALifeOnlineOfflineGroupBrain::CALifeOnlineOfflineGroupBrain(CSE_ALifeOnlineOfflineGroup* object) { m_object = object; }

@@ -10,20 +10,22 @@
 
 #include "script_export_space.h"
 
-class CScriptRTokenList {
+class CScriptRTokenList
+{
 public:
-	typedef xr_vector<shared_str> RTOKEN_LIST;
+    typedef xr_vector<shared_str> RTOKEN_LIST;
+
 protected:
-	RTOKEN_LIST			m_values;
+    RTOKEN_LIST m_values;
 
 public:
-	IC		void		add		(LPCSTR value);
-	IC		void		remove	(u32 index);
-	IC		LPCSTR		get		(u32 index);
-	IC		u32			size	();
-	IC		void		clear	();
-	IC		RTOKEN_LIST	&tokens	();
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+    IC void add(LPCSTR value);
+    IC void remove(u32 index);
+    IC LPCSTR get(u32 index);
+    IC u32 size();
+    IC void clear();
+    IC RTOKEN_LIST& tokens();
+    DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CScriptRTokenList)
 #undef script_type_list

@@ -3,18 +3,18 @@
 #include "weaponmagazinedwgrenade.h"
 #include "script_export_space.h"
 
-class CWeaponGroza :
-	public CWeaponMagazinedWGrenade
+class CWeaponGroza : public CWeaponMagazinedWGrenade
 {
-	typedef CWeaponMagazinedWGrenade inherited;
+    typedef CWeaponMagazinedWGrenade inherited;
+
 public:
-	CWeaponGroza(void);
-	virtual ~CWeaponGroza(void);
+    CWeaponGroza(void);
+    virtual ~CWeaponGroza(void);
 
 protected:
-	virtual size_t GetWeaponTypeForCollision() const override { return Groza; }
+    virtual size_t GetWeaponTypeForCollision() const override { return Groza; }
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CWeaponGroza)
 #undef script_type_list

@@ -31,77 +31,74 @@
 using namespace StalkerSpace;
 using namespace StalkerDecisionSpace;
 
-CStalkerDangerPlanner::CStalkerDangerPlanner	(CAI_Stalker *object, LPCSTR action_name) :
-	inherited									(object,action_name)
+CStalkerDangerPlanner::CStalkerDangerPlanner(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+
+void CStalkerDangerPlanner::setup(CAI_Stalker* object, CPropertyStorage* storage)
 {
+    inherited::setup(object, storage);
+
+    clear();
+    add_evaluators();
+    add_actions();
 }
 
-void CStalkerDangerPlanner::setup				(CAI_Stalker *object, CPropertyStorage *storage)
+void CStalkerDangerPlanner::finalize()
 {
-	inherited::setup		(object,storage);
+    inherited::finalize();
 
-	clear					();
-	add_evaluators			();
-	add_actions				();
+    if (!object().g_Alive())
+        return;
+
+    if (object().memory().enemy().selected())
+        object().memory().danger().time_line(Device.dwTimeGlobal);
+
+    //	object().sound().remove_active_sounds		(u32(-1));
 }
 
-void CStalkerDangerPlanner::finalize			()
+void CStalkerDangerPlanner::update()
 {
-	inherited::finalize		();
-
-	if (!object().g_Alive())
-		return;
-
-	if (object().memory().enemy().selected())
-		object().memory().danger().time_line	(Device.dwTimeGlobal);
-
-//	object().sound().remove_active_sounds		(u32(-1));
+    inherited::update();
+    object().react_on_grenades();
+    object().react_on_member_death();
 }
 
-void CStalkerDangerPlanner::update			()
+void CStalkerDangerPlanner::initialize()
 {
-	inherited::update				();
-	object().react_on_grenades		();
-	object().react_on_member_death	();
+    inherited::initialize();
+    object().sound().remove_active_sounds(u32(eStalkerSoundMaskNoHumming));
+    object().agent_manager().member().member(m_object).cover(0);
 }
 
-void CStalkerDangerPlanner::initialize		()
+void CStalkerDangerPlanner::add_evaluators()
 {
-	inherited::initialize						();
-	object().sound().remove_active_sounds		(u32(eStalkerSoundMaskNoHumming));
-	object().agent_manager().member().member(m_object).cover(0);
+    add_evaluator(eWorldPropertyDanger, xr_new<CStalkerPropertyEvaluatorDangers>(m_object, "danger"));
+    add_evaluator(eWorldPropertyDangerUnknown, xr_new<CStalkerPropertyEvaluatorDangerUnknown>(m_object, "danger unknown"));
+    add_evaluator(eWorldPropertyDangerInDirection, xr_new<CStalkerPropertyEvaluatorDangerInDirection>(m_object, "danger in direction"));
+    add_evaluator(eWorldPropertyDangerGrenade, xr_new<CStalkerPropertyEvaluatorDangerWithGrenade>(m_object, "danger with grenade"));
+    add_evaluator(eWorldPropertyDangerBySound, xr_new<CStalkerPropertyEvaluatorDangerBySound>(m_object, "danger by sound"));
 }
 
-void CStalkerDangerPlanner::add_evaluators		()
+void CStalkerDangerPlanner::add_actions()
 {
-	add_evaluator			(eWorldPropertyDanger				,xr_new<CStalkerPropertyEvaluatorDangers>			(m_object,"danger"));
-	add_evaluator			(eWorldPropertyDangerUnknown		,xr_new<CStalkerPropertyEvaluatorDangerUnknown>		(m_object,"danger unknown"));
-	add_evaluator			(eWorldPropertyDangerInDirection	,xr_new<CStalkerPropertyEvaluatorDangerInDirection>	(m_object,"danger in direction"));
-	add_evaluator			(eWorldPropertyDangerGrenade		,xr_new<CStalkerPropertyEvaluatorDangerWithGrenade>	(m_object,"danger with grenade"));
-	add_evaluator			(eWorldPropertyDangerBySound		,xr_new<CStalkerPropertyEvaluatorDangerBySound>		(m_object,"danger by sound"));
-}
+    CActionPlannerActionScript<CAI_Stalker>* action;
 
-void CStalkerDangerPlanner::add_actions			()
-{
-	CActionPlannerActionScript<CAI_Stalker>		*action;
+    action = xr_new<CStalkerDangerUnknownPlanner>(m_object, "danger unknown planner");
+    add_condition(action, eWorldPropertyDangerUnknown, true);
+    add_effect(action, eWorldPropertyDanger, false);
+    add_operator(eWorldOperatorDangerUnknownPlanner, action);
 
-	action					= xr_new<CStalkerDangerUnknownPlanner>	(m_object,"danger unknown planner");
-	add_condition			(action,eWorldPropertyDangerUnknown,true);
-	add_effect				(action,eWorldPropertyDanger,		false);
-	add_operator			(eWorldOperatorDangerUnknownPlanner,		action);
+    action = xr_new<CStalkerDangerInDirectionPlanner>(m_object, "danger in direction planner");
+    add_condition(action, eWorldPropertyDangerInDirection, true);
+    add_effect(action, eWorldPropertyDanger, false);
+    add_operator(eWorldOperatorDangerInDirectionPlanner, action);
 
-	action					= xr_new<CStalkerDangerInDirectionPlanner>(m_object,"danger in direction planner");
-	add_condition			(action,eWorldPropertyDangerInDirection,true);
-	add_effect				(action,eWorldPropertyDanger,		false);
-	add_operator			(eWorldOperatorDangerInDirectionPlanner,	action);
+    action = xr_new<CStalkerDangerGrenadePlanner>(m_object, "danger grenade planner");
+    add_condition(action, eWorldPropertyDangerGrenade, true);
+    add_effect(action, eWorldPropertyDanger, false);
+    add_operator(eWorldOperatorDangerGrenadePlanner, action);
 
-	action					= xr_new<CStalkerDangerGrenadePlanner>(m_object,"danger grenade planner");
-	add_condition			(action,eWorldPropertyDangerGrenade,true);
-	add_effect				(action,eWorldPropertyDanger,		false);
-	add_operator			(eWorldOperatorDangerGrenadePlanner,		action);
-
-	action					= xr_new<CStalkerDangerBySoundPlanner>(m_object,"danger by sound planner");
-	add_condition			(action,eWorldPropertyDangerBySound,true);
-	add_effect				(action,eWorldPropertyDanger,		false);
-	add_operator			(eWorldOperatorDangerBySoundPlanner,		action);
+    action = xr_new<CStalkerDangerBySoundPlanner>(m_object, "danger by sound planner");
+    add_condition(action, eWorldPropertyDangerBySound, true);
+    add_effect(action, eWorldPropertyDanger, false);
+    add_operator(eWorldOperatorDangerBySoundPlanner, action);
 }

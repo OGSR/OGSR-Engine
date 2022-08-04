@@ -35,6 +35,7 @@ private:
     IC const ik_goal_matrix& goal() const { return state.goal; }
     IC const ik_goal_matrix& blend_to() const { return state.blend_to; }
     IC const Fvector& pick() const { return state.pick; }
+
 public:
     Fmatrix& anim_pos(Fmatrix& m) const;
     ik_goal_matrix& goal(ik_goal_matrix& m) const;
@@ -50,8 +51,7 @@ public:
     IC void get_calculate_state(calculate_state& s) const
     {
         s.calc_time = Device.dwTimeGlobal;
-        s.blending = valide() &&
-            (state.blending || state.foot_step != s.foot_step); // prev_state.state !=calculate_state::not_definite &&
+        s.blending = valide() && (state.blending || state.foot_step != s.foot_step); // prev_state.state !=calculate_state::not_definite &&
 
         s.collide_pos = state.collide_pos;
         Fmatrix cl_pos = state.collide_pos.get();

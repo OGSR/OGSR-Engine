@@ -13,31 +13,32 @@
 #include "object_type_traits.h"
 
 template <typename List, typename Handler>
-void process(Handler&& handler) {
-	imdexlib::ts_apply<imdexlib::ts_reverse_t<List>>([&](auto item) {
-		handler(item);
-	});
+void process(Handler&& handler)
+{
+    imdexlib::ts_apply<imdexlib::ts_reverse_t<List>>([&](auto item) { handler(item); });
 }
 
-void CALifeRegistryContainer::load(IReader &file_stream)
+void CALifeRegistryContainer::load(IReader& file_stream)
 {
-	R_ASSERT2(file_stream.find_chunk(REGISTRY_CHUNK_DATA), "Can't find chunk REGISTRY_CHUNK_DATA!");
-	process<TYPE_LIST>([&](auto item) {
-		using type = typename decltype(item)::type;
-		if constexpr (object_type_traits::is_base_and_derived_v<IPureLoadableObject<IReader>, type>) {
-			this->type::load(file_stream);
-		}
-	});
+    R_ASSERT2(file_stream.find_chunk(REGISTRY_CHUNK_DATA), "Can't find chunk REGISTRY_CHUNK_DATA!");
+    process<TYPE_LIST>([&](auto item) {
+        using type = typename decltype(item)::type;
+        if constexpr (object_type_traits::is_base_and_derived_v<IPureLoadableObject<IReader>, type>)
+        {
+            this->type::load(file_stream);
+        }
+    });
 }
 
-void CALifeRegistryContainer::save(IWriter &memory_stream)
+void CALifeRegistryContainer::save(IWriter& memory_stream)
 {
-	memory_stream.open_chunk(REGISTRY_CHUNK_DATA);
-	process<TYPE_LIST>([&](auto item) {
-		using type = typename decltype(item)::type;
-		if constexpr (object_type_traits::is_base_and_derived_v<IPureSavableObject<IWriter>, type>) {
-			this->type::save(memory_stream);
-		}
-	});
-	memory_stream.close_chunk();
+    memory_stream.open_chunk(REGISTRY_CHUNK_DATA);
+    process<TYPE_LIST>([&](auto item) {
+        using type = typename decltype(item)::type;
+        if constexpr (object_type_traits::is_base_and_derived_v<IPureSavableObject<IWriter>, type>)
+        {
+            this->type::save(memory_stream);
+        }
+    });
+    memory_stream.close_chunk();
 }

@@ -8,409 +8,420 @@
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template<\
-	typename _world_property,\
-	typename _edge_value_type\
->
+#define TEMPLATE_SPECIALIZATION template <typename _world_property, typename _edge_value_type>
 
-#define CAbstractOperator COperatorAbstract<_world_property,_edge_value_type>
+#define CAbstractOperator COperatorAbstract<_world_property, _edge_value_type>
 
 TEMPLATE_SPECIALIZATION
-IC	CAbstractOperator::COperatorAbstract	()
+IC CAbstractOperator::COperatorAbstract()
 {
-	m_actuality			= 0;
-	m_weight_actual		= true;
-	m_min_weight		= 0;
+    m_actuality = 0;
+    m_weight_actual = true;
+    m_min_weight = 0;
 }
 
 TEMPLATE_SPECIALIZATION
-IC	CAbstractOperator::COperatorAbstract	(const CSConditionState &conditions, const CSConditionState &effects)
+IC CAbstractOperator::COperatorAbstract(const CSConditionState& conditions, const CSConditionState& effects)
 {
-	m_conditions		= conditions;
-	m_effects			= effects;
-	m_actuality			= 0;
-	m_weight_actual		= false;
-	m_min_weight		= 0;
+    m_conditions = conditions;
+    m_effects = effects;
+    m_actuality = 0;
+    m_weight_actual = false;
+    m_min_weight = 0;
 }
 
 TEMPLATE_SPECIALIZATION
-CAbstractOperator::~COperatorAbstract	()
+CAbstractOperator::~COperatorAbstract() {}
+
+TEMPLATE_SPECIALIZATION
+void CAbstractOperator::Load(LPCSTR section) {}
+
+TEMPLATE_SPECIALIZATION
+void CAbstractOperator::setup(bool* actuality)
 {
+    VERIFY(actuality);
+    m_actuality = actuality;
+    *m_actuality = false;
 }
 
 TEMPLATE_SPECIALIZATION
-void CAbstractOperator::Load						(LPCSTR section)
+IC void CAbstractOperator::actual(bool value)
 {
+    if (!m_actuality)
+        return;
+
+    *m_actuality = *m_actuality && value;
 }
 
 TEMPLATE_SPECIALIZATION
-void CAbstractOperator::setup						(bool *actuality)
+IC const typename CAbstractOperator::CSConditionState& CAbstractOperator::conditions() const { return (m_conditions); }
+
+TEMPLATE_SPECIALIZATION
+IC const typename CAbstractOperator::CSConditionState& CAbstractOperator::effects() const { return (m_effects); }
+
+TEMPLATE_SPECIALIZATION
+IC void CAbstractOperator::add_condition(const COperatorCondition& condition)
 {
-	VERIFY				(actuality);
-	m_actuality			= actuality;
-	*m_actuality		= false;
+    actual(false);
+    m_conditions.add_condition(condition);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CAbstractOperator::actual					(bool value)
+IC void CAbstractOperator::remove_condition(const typename COperatorCondition::_condition_type& condition)
 {
-	if (!m_actuality)
-		return;
-
-	*m_actuality		= *m_actuality && value;
+    actual(false);
+    m_conditions.remove_condition(condition);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	const typename CAbstractOperator::CSConditionState	&CAbstractOperator::conditions	() const
+IC void CAbstractOperator::add_effect(const COperatorCondition& effect)
 {
-	return				(m_conditions);
+    actual(false);
+    m_effects.add_condition(effect);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	const typename CAbstractOperator::CSConditionState	&CAbstractOperator::effects		() const
+IC void CAbstractOperator::remove_effect(const typename COperatorCondition::_condition_type& effect)
 {
-	return				(m_effects);
+    actual(false);
+    m_effects.remove_condition(effect);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CAbstractOperator::add_condition	(const COperatorCondition &condition)
+IC bool CAbstractOperator::applicable_reverse(const CSConditionState& condition, const CSConditionState& start, const CSConditionState& self_condition) const
 {
-	actual						(false);
-	m_conditions.add_condition	(condition);
+    auto i = self_condition.conditions().cbegin();
+    auto e = self_condition.conditions().cend();
+    auto I = condition.conditions().cbegin();
+    auto E = condition.conditions().cend();
+    auto J = start.conditions().cbegin();
+    auto EE = start.conditions().cend();
+    for (; (I != E) && (i != e);)
+        if ((*I).condition() < (*i).condition())
+            ++I;
+        else if ((*I).condition() > (*i).condition())
+        {
+            while ((J != EE) && ((*J).condition() < (*i).condition()))
+                ++J;
+            if ((J != EE) && ((*J).condition() == (*i).condition()))
+            {
+                if ((*J).value() != (*i).value())
+                    return (false);
+                ++J;
+            }
+            ++i;
+        }
+        else
+        {
+            if ((*I).value() != (*i).value())
+                return (false);
+            ++I;
+            ++i;
+        }
+
+    if (i == e)
+        return (true);
+
+    for (; (J != EE) && (i != e);)
+        if ((*J).condition() < (*i).condition())
+            ++J;
+        else if ((*J).condition() > (*i).condition())
+            ++i;
+        else
+        {
+            if ((*J).value() != (*i).value())
+                return (false);
+            ++J;
+            ++i;
+        }
+    return (true);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CAbstractOperator::remove_condition(const typename COperatorCondition::_condition_type &condition)
+IC bool CAbstractOperator::apply_reverse(const CSConditionState& condition, const CSConditionState& start, CSConditionState& result, const CSConditionState& self_condition) const
 {
-	actual						(false);
-	m_conditions.remove_condition(condition);
-}
+    result.clear();
+    bool changed = false;
+    auto i = self_condition.conditions().cbegin();
+    auto e = self_condition.conditions().cend();
+    auto I = condition.conditions().cbegin();
+    auto E = condition.conditions().cend();
+    auto J = start.conditions().cbegin();
+    auto EE = start.conditions().cend();
+    for (; (I != E) && (i != e);)
+        if ((*I).condition() < (*i).condition())
+        {
+            while ((J != EE) && ((*J).condition() < (*I).condition()))
+                ++J;
+            if ((J != EE) && ((*J).condition() == (*I).condition()))
+            {
+                VERIFY((*J).value() == (*I).value());
+                changed = true;
+                ++J;
+            }
+            else
+                result.add_condition_back(*I);
+            ++I;
+        }
+        else if ((*I).condition() > (*i).condition())
+        {
+            result.add_condition_back(*i);
+            ++i;
+        }
+        else
+        {
+            if ((*I).value() != (*i).value())
+                changed = true;
+            result.add_condition_back(*i);
+            ++I;
+            ++i;
+        }
 
-TEMPLATE_SPECIALIZATION
-IC	void CAbstractOperator::add_effect		(const COperatorCondition &effect)
-{
-	actual						(false);
-	m_effects.add_condition		(effect);
-}
+    if (I == E)
+    {
+        if (!changed)
+            return (false);
+        for (; (i != e); ++i)
+            result.add_condition_back(*i);
+        return (true);
+    }
 
-TEMPLATE_SPECIALIZATION
-IC	void CAbstractOperator::remove_effect	(const typename COperatorCondition::_condition_type &effect)
-{
-	actual						(false);
-	m_effects.remove_condition	(effect);
-}
+    for (; (J != EE) && (I != E);)
+        if ((*J).condition() < (*I).condition())
+            ++J;
+        else if ((*J).condition() > (*I).condition())
+        {
+            result.add_condition_back(*I);
+            ++I;
+        }
+        else
+        {
+            VERIFY((*J).value() == (*I).value());
+            changed = true;
+            ++J;
+            ++I;
+        }
 
-TEMPLATE_SPECIALIZATION
-IC	bool CAbstractOperator::applicable_reverse	(const CSConditionState &condition, const CSConditionState &start, const CSConditionState &self_condition) const
-{
-	auto i = self_condition.conditions().cbegin();
-	auto e = self_condition.conditions().cend();
-	auto I = condition.conditions().cbegin();
-	auto E = condition.conditions().cend();
-	auto J = start.conditions().cbegin();
-	auto EE = start.conditions().cend();
-	for ( ; (I != E) && (i != e); )
-		if ((*I).condition() < (*i).condition())
-			++I;
-		else
-			if ((*I).condition() > (*i).condition()) {
-				while ((J != EE) && ((*J).condition() < (*i).condition()))
-					++J;
-				if ((J != EE) && ((*J).condition() == (*i).condition())) {
-					if ((*J).value() != (*i).value())
-						return	(false);
-					++J;
-				}
-				++i;
-			}
-			else {
-				if ((*I).value() != (*i).value())
-					return	(false);
-				++I;
-				++i;
-			}
+    if (!changed)
+        return (false);
 
-	if (i == e)
-		return				(true);
+    if ((J == EE) && (I != E))
+        for (; (I != E); ++I)
+            result.add_condition_back(*I);
 
-	for ( ; (J != EE) && (i != e); )
-		if ((*J).condition() < (*i).condition())
-			++J;
-		else
-			if ((*J).condition() > (*i).condition())
-				++i;
-			else {
-				if ((*J).value() != (*i).value())
-					return	(false);
-				++J;
-				++i;
-			}
-	return					(true);
-}
-
-TEMPLATE_SPECIALIZATION
-IC	bool CAbstractOperator::apply_reverse	(const CSConditionState &condition, const CSConditionState &start, CSConditionState &result, const CSConditionState &self_condition) const
-{
-	result.clear			();
-	bool					changed = false;
-	auto i = self_condition.conditions().cbegin();
-	auto e = self_condition.conditions().cend();
-	auto I = condition.conditions().cbegin();
-	auto E = condition.conditions().cend();
-	auto J = start.conditions().cbegin();
-	auto EE = start.conditions().cend();
-	for ( ; (I != E) && (i != e); )
-		if ((*I).condition() < (*i).condition()) {
-			while ((J != EE) && ((*J).condition() < (*I).condition()))
-				++J;
-			if ((J != EE) && ((*J).condition() == (*I).condition())) {
-				VERIFY		((*J).value() == (*I).value());
-				changed		= true;
-				++J;
-			}
-			else
-				result.add_condition_back(*I);
-			++I;
-		}
-		else
-			if ((*I).condition() > (*i).condition()) {
-				result.add_condition_back(*i);
-				++i;
-			}
-			else {
-				if ((*I).value() != (*i).value())
-					changed	= true;
-				result.add_condition_back(*i);
-				++I;
-				++i;
-			}
-
-	if (I == E) {
-		if (!changed)
-			return			(false);
-		for ( ; (i != e); ++i)
-			result.add_condition_back(*i);
-		return				(true);
-	}
-
-	for ( ; (J != EE) && (I != E); )
-		if ((*J).condition() < (*I).condition())
-			++J;
-		else
-			if ((*J).condition() > (*I).condition()) {
-				result.add_condition_back(*I);
-				++I;
-			}
-			else {
-				VERIFY		((*J).value() == (*I).value());
-				changed		= true;
-				++J;
-				++I;
-			}
-
-	if (!changed)
-		return				(false);
-
-	if ((J == EE) && (I != E))
-		for ( ; (I != E); ++I)
-			result.add_condition_back(*I);
-
-	return					(true);
+    return (true);
 }
 
 TEMPLATE_SPECIALIZATION
 template <typename T>
-IC	bool CAbstractOperator::applicable	(const CSConditionState &current, const CSConditionState &start, const CSConditionState &conditions,T &problem_solver) const
+IC bool CAbstractOperator::applicable(const CSConditionState& current, const CSConditionState& start, const CSConditionState& conditions, T& problem_solver) const
 {
-	auto I = current.conditions().cbegin();
-	auto E = current.conditions().cend();
-	auto i = conditions.conditions().cbegin();
-	auto e = conditions.conditions().cend();
-	auto II = start.conditions().cbegin();
-	auto EE = start.conditions().cend();
-	for ( ; (I != E) && (i != e); ) {
-		if ((*I).condition() < (*i).condition())
-			++I;
-		else
-			if ((*I).condition() > (*i).condition()) {
-				for ( ; (II != EE) && ((*II).condition() < (*i).condition()); )
-					++II;
-				if ((II == EE) || ((*II).condition() > (*i).condition()))
-					problem_solver.evaluate_condition(II,EE,(*i).condition());
-				if ((*II).value() != (*i).value())
-					return	(false);
-				++II;
-				++i;
-			}
-			else {
-				if ((*I).value() != (*i).value())
-					return	(false);
-				++I;
-				++i;
-			}
-	}
+    auto I = current.conditions().cbegin();
+    auto E = current.conditions().cend();
+    auto i = conditions.conditions().cbegin();
+    auto e = conditions.conditions().cend();
+    auto II = start.conditions().cbegin();
+    auto EE = start.conditions().cend();
+    for (; (I != E) && (i != e);)
+    {
+        if ((*I).condition() < (*i).condition())
+            ++I;
+        else if ((*I).condition() > (*i).condition())
+        {
+            for (; (II != EE) && ((*II).condition() < (*i).condition());)
+                ++II;
+            if ((II == EE) || ((*II).condition() > (*i).condition()))
+                problem_solver.evaluate_condition(II, EE, (*i).condition());
+            if ((*II).value() != (*i).value())
+                return (false);
+            ++II;
+            ++i;
+        }
+        else
+        {
+            if ((*I).value() != (*i).value())
+                return (false);
+            ++I;
+            ++i;
+        }
+    }
 
-	if (I == E) {
-		I = II;
-		E = EE;
-	}
-	else
-		return	(true);
+    if (I == E)
+    {
+        I = II;
+        E = EE;
+    }
+    else
+        return (true);
 
-	for ( ; i != e; ) {
-		if ((I == E) || ((*I).condition() > (*i).condition()))
-			problem_solver.evaluate_condition(I,E,(*i).condition());
+    for (; i != e;)
+    {
+        if ((I == E) || ((*I).condition() > (*i).condition()))
+            problem_solver.evaluate_condition(I, E, (*i).condition());
 
-		if ((*I).condition() < (*i).condition())
-			++I;
-		else {
-			VERIFY	((*I).condition() == (*i).condition());
-			if ((*I).value() != (*i).value())
-				return	(false);
-			++I;
-			++i;
-		}
-	}
-	
-	return		(true);
+        if ((*I).condition() < (*i).condition())
+            ++I;
+        else
+        {
+            VERIFY((*I).condition() == (*i).condition());
+            if ((*I).value() != (*i).value())
+                return (false);
+            ++I;
+            ++i;
+        }
+    }
+
+    return (true);
 }
 
 TEMPLATE_SPECIALIZATION
 template <typename T>
-IC	const typename CAbstractOperator::CSConditionState &CAbstractOperator::apply	(const CSConditionState &current, const CSConditionState &effects, CSConditionState &result, CSConditionState &start,T &problem_solver) const
+IC const typename CAbstractOperator::CSConditionState& CAbstractOperator::apply(const CSConditionState& current, const CSConditionState& effects, CSConditionState& result,
+                                                                                CSConditionState& start, T& problem_solver) const
 {
-	result.clear			();
-	auto I = current.conditions().cbegin();
-	auto E = current.conditions().cend();
-	auto i = effects.conditions().cbegin();
-	auto e = effects.conditions().cend();
-	auto II = start.conditions().cbegin();
-	auto EE = start.conditions().cend();
-	for ( ; (I != E) && (i != e); ) {
-		if ((*I).condition() < (*i).condition()) {
-			result.add_condition_back(*I);
-			++I;
-		}
-		else
-			if ((*I).condition() > (*i).condition()) {
-				for ( ; (II != EE) && ((*II).condition() < (*i).condition()); )
-					++II;
-				if ((II == EE) || ((*II).condition() > (*i).condition()))
-					problem_solver.evaluate_condition(II,EE,(*i).condition());
-				if ((*II).value() != (*i).value())
-					result.add_condition_back(*i);
-				++II;
-				++i;
-			}
-			else {
-				if ((*I).value() == (*i).value())
-					result.add_condition_back(*i);
-				++I;
-				++i;
-			}
-	}
-	if (I == E) {
-		I = II;
-		E = EE;
-	}
-	else {
-		for ( ; I != E; ++I)
-			result.add_condition_back(*I);
-		return	(result);
-	}
+    result.clear();
+    auto I = current.conditions().cbegin();
+    auto E = current.conditions().cend();
+    auto i = effects.conditions().cbegin();
+    auto e = effects.conditions().cend();
+    auto II = start.conditions().cbegin();
+    auto EE = start.conditions().cend();
+    for (; (I != E) && (i != e);)
+    {
+        if ((*I).condition() < (*i).condition())
+        {
+            result.add_condition_back(*I);
+            ++I;
+        }
+        else if ((*I).condition() > (*i).condition())
+        {
+            for (; (II != EE) && ((*II).condition() < (*i).condition());)
+                ++II;
+            if ((II == EE) || ((*II).condition() > (*i).condition()))
+                problem_solver.evaluate_condition(II, EE, (*i).condition());
+            if ((*II).value() != (*i).value())
+                result.add_condition_back(*i);
+            ++II;
+            ++i;
+        }
+        else
+        {
+            if ((*I).value() == (*i).value())
+                result.add_condition_back(*i);
+            ++I;
+            ++i;
+        }
+    }
+    if (I == E)
+    {
+        I = II;
+        E = EE;
+    }
+    else
+    {
+        for (; I != E; ++I)
+            result.add_condition_back(*I);
+        return (result);
+    }
 
-	for ( ; i != e; ) {
-		if ((I == E) || ((*I).condition() > (*i).condition()))
-			problem_solver.evaluate_condition(I,E,(*i).condition());
+    for (; i != e;)
+    {
+        if ((I == E) || ((*I).condition() > (*i).condition()))
+            problem_solver.evaluate_condition(I, E, (*i).condition());
 
-		if ((*I).condition() < (*i).condition())
-			++I;
-		else {
-			VERIFY	((*I).condition() == (*i).condition());
-			if ((*I).value() != (*i).value())
-				result.add_condition_back(*i);
-			++I;
-			++i;
-		}
-	}
+        if ((*I).condition() < (*i).condition())
+            ++I;
+        else
+        {
+            VERIFY((*I).condition() == (*i).condition());
+            if ((*I).value() != (*i).value())
+                result.add_condition_back(*i);
+            ++I;
+            ++i;
+        }
+    }
 
-	return		(result);
+    return (result);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	const typename CAbstractOperator::CSConditionState &CAbstractOperator::apply	(const CSConditionState &condition, const CSConditionState &self_condition, CSConditionState &result) const
+IC const typename CAbstractOperator::CSConditionState& CAbstractOperator::apply(const CSConditionState& condition, const CSConditionState& self_condition,
+                                                                                CSConditionState& result) const
 {
-	result.clear			();
-	auto i = self_condition.conditions().cbegin();
-	auto e = self_condition.conditions().cend();
-	auto I = condition.conditions().cbegin();
-	auto E = condition.conditions().cend();
-	for ( ; (I != E) && (i != e); )
-		if ((*I).condition() < (*i).condition()) {
-			result.add_condition_back(*I);
-			++I;
-		}
-		else
-			if ((*I).condition() > (*i).condition()) {
-				result.add_condition_back(*i);
-				++i;
-			}
-			else {
-				VERIFY			((*I).condition() == (*i).condition());
-				result.add_condition_back(*i);
-				++I;
-				++i;
-			}
+    result.clear();
+    auto i = self_condition.conditions().cbegin();
+    auto e = self_condition.conditions().cend();
+    auto I = condition.conditions().cbegin();
+    auto E = condition.conditions().cend();
+    for (; (I != E) && (i != e);)
+        if ((*I).condition() < (*i).condition())
+        {
+            result.add_condition_back(*I);
+            ++I;
+        }
+        else if ((*I).condition() > (*i).condition())
+        {
+            result.add_condition_back(*i);
+            ++i;
+        }
+        else
+        {
+            VERIFY((*I).condition() == (*i).condition());
+            result.add_condition_back(*i);
+            ++I;
+            ++i;
+        }
 
-	if (i == e) {
-		for ( ; I != E; ++I)
-			result.add_condition_back(*I);
-	}
-	else {
-		for ( ; i != e; ++i)
-			result.add_condition_back(*i);
-	}
+    if (i == e)
+    {
+        for (; I != E; ++I)
+            result.add_condition_back(*I);
+    }
+    else
+    {
+        for (; i != e; ++i)
+            result.add_condition_back(*i);
+    }
 
-	return					(result);
+    return (result);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	typename CAbstractOperator::_edge_value_type CAbstractOperator::weight	(const CSConditionState &condition0, const CSConditionState &condition1) const
-{
-	return					(min_weight());
-}
+IC typename CAbstractOperator::_edge_value_type CAbstractOperator::weight(const CSConditionState& condition0, const CSConditionState& condition1) const { return (min_weight()); }
 
 TEMPLATE_SPECIALIZATION
-IC	typename CAbstractOperator::_edge_value_type CAbstractOperator::min_weight	() const
+IC typename CAbstractOperator::_edge_value_type CAbstractOperator::min_weight() const
 {
-	if (m_weight_actual)
-		return				(m_min_weight);
+    if (m_weight_actual)
+        return (m_min_weight);
 
-	m_min_weight			= 0;
-	auto I = conditions().conditions().cbegin();
-	auto E = conditions().conditions().cend();
-	auto i = effects().conditions().cbegin();
-	auto e = effects().conditions().cend();
-	for ( ; (i != e) && (I != E); ) {
-		if ((*I).condition() < (*i).condition())
-			++I;
-		else
-			if ((*I).condition() > (*i).condition()) {
-				++m_min_weight;
-				++i;
-			}
-			else {
-				if ((*I).value() != (*i).value())
-					++m_min_weight;
-				++I;
-				++i;
-			}
-	}
-	if (i != e)
-		m_min_weight		= m_min_weight + _edge_value_type(e - i);
+    m_min_weight = 0;
+    auto I = conditions().conditions().cbegin();
+    auto E = conditions().conditions().cend();
+    auto i = effects().conditions().cbegin();
+    auto e = effects().conditions().cend();
+    for (; (i != e) && (I != E);)
+    {
+        if ((*I).condition() < (*i).condition())
+            ++I;
+        else if ((*I).condition() > (*i).condition())
+        {
+            ++m_min_weight;
+            ++i;
+        }
+        else
+        {
+            if ((*I).value() != (*i).value())
+                ++m_min_weight;
+            ++I;
+            ++i;
+        }
+    }
+    if (i != e)
+        m_min_weight = m_min_weight + _edge_value_type(e - i);
 
-	m_weight_actual			= true;
-	return					(m_min_weight);
+    m_weight_actual = true;
+    return (m_min_weight);
 }
 
 #undef TEMPLATE_SPECIALIZATION

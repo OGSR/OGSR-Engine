@@ -34,8 +34,7 @@ public:
     inline buffer_vector(void* buffer, size_type const& max_count, size_type const& count, value_type const& value);
     inline buffer_vector(void* buffer, size_type const& max_count, self_type const& other);
     template <typename input_iterator>
-    inline buffer_vector(
-        void* buffer, size_type const& max_count, input_iterator const& begin, input_iterator const& last);
+    inline buffer_vector(void* buffer, size_type const& max_count, input_iterator const& begin, input_iterator const& last);
     inline ~buffer_vector();
 
     inline self_type& operator=(self_type const& other);

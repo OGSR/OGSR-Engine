@@ -5,63 +5,69 @@ class CInventory;
 class CInventoryItem;
 class CEntity;
 
-class CTrade 
+class CTrade
 {
-	xr_vector<CObject*>	m_nearest;
+    xr_vector<CObject*> m_nearest;
 
-	bool	TradeState;					// режим торговли. true - включен
-	u32		m_dwLastTradeTime;			
+    bool TradeState; // режим торговли. true - включен
+    u32 m_dwLastTradeTime;
 
-	typedef enum tagTraderType {
-		TT_NONE,
-		TT_TRADER,
-		TT_STALKER,
-		TT_ACTOR,
-	} EOwnerType;
+    typedef enum tagTraderType
+    {
+        TT_NONE,
+        TT_TRADER,
+        TT_STALKER,
+        TT_ACTOR,
+    } EOwnerType;
 
-	struct SInventoryOwner {
-		EOwnerType		type;
-		CEntity			*base;
-		CInventoryOwner	*inv_owner;
+    struct SInventoryOwner
+    {
+        EOwnerType type;
+        CEntity* base;
+        CInventoryOwner* inv_owner;
 
-		void Set (EOwnerType t, CEntity	*b, CInventoryOwner *io) { type = t; base = b; inv_owner = io;}
-	};
+        void Set(EOwnerType t, CEntity* b, CInventoryOwner* io)
+        {
+            type = t;
+            base = b;
+            inv_owner = io;
+        }
+    };
 
-	//если нужно провести синхронизацию с сервером для торговцев
-	bool	m_bNeedToUpdateArtefactTasks;
+    //если нужно провести синхронизацию с сервером для торговцев
+    bool m_bNeedToUpdateArtefactTasks;
 
 public:
-	void TradeCB			(bool bStart);
-	SInventoryOwner			pThis;
-	SInventoryOwner			pPartner;
+    void TradeCB(bool bStart);
+    SInventoryOwner pThis;
+    SInventoryOwner pPartner;
 
 public:
-	
-							CTrade					(CInventoryOwner	*p_io);
-							~CTrade					();
+    CTrade(CInventoryOwner* p_io);
+    ~CTrade();
 
-	bool					CanTrade				();
-	
-	void					StartTrade				(CInventoryOwner* pInvOwner);
-	void					StartTrade				();
-	void					StopTrade				();
-	bool					IsInTradeState			() {return TradeState;}
+    bool CanTrade();
 
-	void					OnPerformTrade			(u32 money_get, u32 money_put);
+    void StartTrade(CInventoryOwner* pInvOwner);
+    void StartTrade();
+    void StopTrade();
+    bool IsInTradeState() { return TradeState; }
 
-	void					TransferItem( CInventoryItem*, bool, bool = true );
+    void OnPerformTrade(u32 money_get, u32 money_put);
 
-	CInventoryOwner*		GetPartner				();	
-	CTrade*					GetPartnerTrade			();
-	CInventory*				GetPartnerInventory		();
+    void TransferItem(CInventoryItem*, bool, bool = true);
 
-	u32						GetItemPrice			(CInventoryItem* pItem, bool b_buying);
+    CInventoryOwner* GetPartner();
+    CTrade* GetPartnerTrade();
+    CInventory* GetPartnerInventory();
 
-	void					UpdateTrade				();
+    u32 GetItemPrice(CInventoryItem* pItem, bool b_buying);
 
-	bool					SetPartner(CEntity *p);
-	void					RemovePartner();
+    void UpdateTrade();
+
+    bool SetPartner(CEntity* p);
+    void RemovePartner();
+
 private:
-
-	CInventory&				GetTradeInv				(SInventoryOwner owner);
+    CInventory& GetTradeInv(SInventoryOwner owner);
 };

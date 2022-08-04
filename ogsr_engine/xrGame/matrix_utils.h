@@ -76,16 +76,10 @@ IC bool cmp_matrix(const Fmatrix& m0, const Fmatrix& m1, float tl, float ta)
     return l && a;
 }
 
-IC void angular_diff(Fvector& aw, const Fmatrix& diff, float dt)
-{
-    aw.set((diff._32 - diff._23) / 2.f / dt, (diff._13 - diff._31) / 2.f / dt, (diff._21 - diff._12) / 2.f / dt);
-}
+IC void angular_diff(Fvector& aw, const Fmatrix& diff, float dt) { aw.set((diff._32 - diff._23) / 2.f / dt, (diff._13 - diff._31) / 2.f / dt, (diff._21 - diff._12) / 2.f / dt); }
 
 IC void linear_diff(Fvector& lv, const Fvector& diff, float dt) { lv.mul(diff, (1.f / dt)); }
-IC void linear_diff(Fvector& lv, const Fvector& mc1, const Fvector& mc0, float dt)
-{
-    linear_diff(lv, Fvector().sub(mc1, mc0), dt);
-}
+IC void linear_diff(Fvector& lv, const Fvector& mc1, const Fvector& mc0, float dt) { linear_diff(lv, Fvector().sub(mc1, mc0), dt); }
 
 IC void matrix_diff(Fvector& lv, Fvector& aw, const Fmatrix& diff, float dt)
 {
@@ -93,7 +87,4 @@ IC void matrix_diff(Fvector& lv, Fvector& aw, const Fmatrix& diff, float dt)
     linear_diff(lv, diff.c, dt);
 }
 
-IC void matrix_diff(Fvector& lv, Fvector& aw, const Fmatrix& m0, const Fmatrix& m1, float dt)
-{
-    matrix_diff(lv, aw, Fmatrix().mul_43(Fmatrix().invert(m0), m1), dt);
-}
+IC void matrix_diff(Fvector& lv, Fvector& aw, const Fmatrix& m0, const Fmatrix& m1, float dt) { matrix_diff(lv, aw, Fmatrix().mul_43(Fmatrix().invert(m0), m1), dt); }

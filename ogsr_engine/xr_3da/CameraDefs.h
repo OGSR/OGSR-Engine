@@ -2,64 +2,65 @@
 
 struct ENGINE_API SBaseEffector
 {
-	fastdelegate::FastDelegate<void()> m_on_b_remove_callback;
-	virtual ~SBaseEffector() = default;
+    fastdelegate::FastDelegate<void()> m_on_b_remove_callback;
+    virtual ~SBaseEffector() = default;
 };
 
 struct ENGINE_API SCamEffectorInfo
 {
-	Fvector p;
-	Fvector d;
-	Fvector n;
-	Fvector r;
-	float fFov;
-	float fNear;
-	float fFar;
-	float fAspect;
-	float offsetX; // Required for Nvidia Ansel
-	float offsetY; // Required for Nvidia Ansel
-	bool dont_apply;
-	bool affected_on_hud;
-	SCamEffectorInfo();
-	SCamEffectorInfo& operator=(const SCamEffectorInfo& other)
-	{
-		p = other.p;
-		d = other.d;
-		n = other.n;
-		r = other.r;
-		fFov = other.fFov;
-		fNear = other.fNear;
-		fFar = other.fFar;
-		fAspect = other.fAspect;
-		offsetX = other.offsetX;
-		offsetY = other.offsetY;
-		dont_apply = other.dont_apply;
-		affected_on_hud = other.affected_on_hud;
-		return *this;
-	}
+    Fvector p;
+    Fvector d;
+    Fvector n;
+    Fvector r;
+    float fFov;
+    float fNear;
+    float fFar;
+    float fAspect;
+    float offsetX; // Required for Nvidia Ansel
+    float offsetY; // Required for Nvidia Ansel
+    bool dont_apply;
+    bool affected_on_hud;
+    SCamEffectorInfo();
+    SCamEffectorInfo& operator=(const SCamEffectorInfo& other)
+    {
+        p = other.p;
+        d = other.d;
+        n = other.n;
+        r = other.r;
+        fFov = other.fFov;
+        fNear = other.fNear;
+        fFar = other.fFar;
+        fAspect = other.fAspect;
+        offsetX = other.offsetX;
+        offsetY = other.offsetY;
+        dont_apply = other.dont_apply;
+        affected_on_hud = other.affected_on_hud;
+        return *this;
+    }
 };
 
-
-enum ECameraStyle       {
-	csCamDebug,
-	csFirstEye,
-	csLookAt,
+enum ECameraStyle
+{
+    csCamDebug,
+    csFirstEye,
+    csLookAt,
     csMax,
-	csFixed,
-	cs_forcedword = u32(-1)
+    csFixed,
+    cs_forcedword = u32(-1)
 };
 
-enum ECamEffectorType		{
-	cefDemo		=0,
-	cefNext
+enum ECamEffectorType
+{
+    cefDemo = 0,
+    cefNext
 };
 
-enum EEffectorPPType	{
-	ppeNext		=0,
+enum EEffectorPPType
+{
+    ppeNext = 0,
 };
 
 // refs
 class ENGINE_API CCameraBase;
 class ENGINE_API CEffectorCam;
 class ENGINE_API CEffectorPP;
-

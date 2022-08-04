@@ -53,7 +53,7 @@ public:
     float time_to_footstep() const { return state_predict.time_to_footstep; }
     float footstep_shift() const { return state_predict.footstep_shift; }
     void step_predict(CGameObject* O, const CBlend* b, ik_limb_state_predict& state,
-        const extrapolation::points& object_pose_extrapolation); // const;
+                      const extrapolation::points& object_pose_extrapolation); // const;
     bool foot_step() const { return sv_state.foot_step(); }
     u16 foot_matrix_predict(Fmatrix& foot, Fmatrix& toe, float time, IKinematicsAnimated* K) const;
 #ifdef DEBUG
@@ -71,8 +71,7 @@ private:
     void SetNewGoal(const SIKCollideData& cld, SCalculateData& cd);
     void SetNewStepGoal(const SIKCollideData& cld, SCalculateData& cd);
     void Blending(SCalculateData& cd);
-    bool blend_collide(
-        ik_goal_matrix& m, const SCalculateData& cd, const ik_goal_matrix& m0, const ik_goal_matrix& m1) const;
+    bool blend_collide(ik_goal_matrix& m, const SCalculateData& cd, const ik_goal_matrix& m0, const ik_goal_matrix& m1) const;
     bool SetGoalToLimb(const SCalculateData& cd);
     void CalculateBones(SCalculateData& cd);
     Matrix& Goal(Matrix& gl, const Fmatrix& xm, const SCalculateData& cd);

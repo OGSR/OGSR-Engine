@@ -355,8 +355,7 @@ inline float mytan(float v)
     return tan(v);
 }
 
-void ComplexJtLimit::init(int jt_type, float a1, float b1, float c1, float a2, float b2, float c2, float a3, float b3,
-    float c3, float low, float high)
+void ComplexJtLimit::init(int jt_type, float a1, float b1, float c1, float a2, float b2, float c2, float a3, float b3, float c3, float low, float high)
 {
     sin_eq.Reset(a1, b1, c1);
     cos_eq.Reset(a2, b2, c2);
@@ -615,8 +614,7 @@ void ComplexJtLimit::clip(float low, float high, int family, int n, const float 
     }
 }
 
-void ComplexJtLimit::store_intersections(int n, const float* s, float low, float high, float tan_l, float tan_h,
-    int& n1, float* f1, int& n2, float* f2) const
+void ComplexJtLimit::store_intersections(int n, const float* s, float low, float high, float tan_l, float tan_h, int& n1, float* f1, int& n2, float* f2) const
 {
     int m1, m2;
 

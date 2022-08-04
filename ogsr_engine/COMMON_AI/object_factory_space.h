@@ -10,10 +10,11 @@
 
 class CSE_Abstract;
 
-namespace ObjectFactory {
-	typedef DLL_Pure			CLIENT_BASE_CLASS;
-	typedef CSE_Abstract		SERVER_BASE_CLASS;
+namespace ObjectFactory
+{
+typedef DLL_Pure CLIENT_BASE_CLASS;
+typedef CSE_Abstract SERVER_BASE_CLASS;
 
-	typedef DLL_Pure			CLIENT_SCRIPT_BASE_CLASS;
-	typedef CSE_Abstract		SERVER_SCRIPT_BASE_CLASS;
-};
+typedef DLL_Pure CLIENT_SCRIPT_BASE_CLASS;
+typedef CSE_Abstract SERVER_SCRIPT_BASE_CLASS;
+}; // namespace ObjectFactory

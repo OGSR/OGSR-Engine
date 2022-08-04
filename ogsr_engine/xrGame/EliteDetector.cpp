@@ -124,8 +124,9 @@ void CUIArtefactDetectorElite::construct(CEliteDetector* p)
         }
         uiXml.SetLocalRoot(pStoredRoot);
     }
-    else {
-        //R_ASSERT3(xml_result, "xml file not found", "ui_detector_artefact.xml");
+    else
+    {
+        // R_ASSERT3(xml_result, "xml file not found", "ui_detector_artefact.xml");
         Msg("!![%s] xml file [ui_detector_artefact.xml] not found!", __FUNCTION__);
     }
 
@@ -216,7 +217,7 @@ void CUIArtefactDetectorElite::RegisterItemToDraw(const Fvector& p, const shared
     auto it = m_palette.find(palette_idx);
     if (it == m_palette.end())
     {
-        //Msg("! RegisterItemToDraw. static not found for [%s]", palette_idx.c_str());
+        // Msg("! RegisterItemToDraw. static not found for [%s]", palette_idx.c_str());
         return;
     }
     CUIStatic* S = m_palette[palette_idx];

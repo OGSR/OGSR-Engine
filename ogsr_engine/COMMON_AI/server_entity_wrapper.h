@@ -12,18 +12,19 @@
 
 class CSE_Abstract;
 
-class CServerEntityWrapper : public IPureSerializeObject<IReader,IWriter> {
+class CServerEntityWrapper : public IPureSerializeObject<IReader, IWriter>
+{
 private:
-	CSE_Abstract			*m_object;
+    CSE_Abstract* m_object;
 
 public:
-	IC						CServerEntityWrapper	(CSE_Abstract *object = 0);
-	virtual					~CServerEntityWrapper	();	
-	virtual	void			save					(IWriter &stream);
-	virtual	void			load					(IReader &stream);
-			void			save_update				(IWriter &stream);
-			void			load_update				(IReader &stream);
-	IC		CSE_Abstract	&object					() const;
+    IC CServerEntityWrapper(CSE_Abstract* object = 0);
+    virtual ~CServerEntityWrapper();
+    virtual void save(IWriter& stream);
+    virtual void load(IReader& stream);
+    void save_update(IWriter& stream);
+    void load_update(IReader& stream);
+    IC CSE_Abstract& object() const;
 };
 
 #include "server_entity_wrapper_inline.h"

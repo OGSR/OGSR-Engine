@@ -14,28 +14,19 @@
 
 using namespace luabind;
 
-xrTime CSavedGameWrapper__game_time		(const CSavedGameWrapper *self)
-{
-	return			(xrTime(self->game_time()));
-}
+xrTime CSavedGameWrapper__game_time(const CSavedGameWrapper* self) { return (xrTime(self->game_time())); }
 
-LPCSTR CSavedGameWrapper__level_name	(const CSavedGameWrapper *self)
-{
-	return			(*ai().game_graph().header().level(self->level_id()).name());
-}
+LPCSTR CSavedGameWrapper__level_name(const CSavedGameWrapper* self) { return (*ai().game_graph().header().level(self->level_id()).name()); }
 
-#pragma optimize("s",on)
-void CSavedGameWrapper::script_register	(lua_State *L)
+#pragma optimize("s", on)
+void CSavedGameWrapper::script_register(lua_State* L)
 {
-	module(L)
-	[
-		class_<CSavedGameWrapper>("CSavedGameWrapper")
-			.def(constructor<LPCSTR>())
-			.def("game_time",		&CSavedGameWrapper__game_time)
-			.def("level_name",		&CSavedGameWrapper__level_name)
-			.def("level_id",		&CSavedGameWrapper::level_id)
-			.def("actor_health",	&CSavedGameWrapper::actor_health),
+    module(L)[class_<CSavedGameWrapper>("CSavedGameWrapper")
+                  .def(constructor<LPCSTR>())
+                  .def("game_time", &CSavedGameWrapper__game_time)
+                  .def("level_name", &CSavedGameWrapper__level_name)
+                  .def("level_id", &CSavedGameWrapper::level_id)
+                  .def("actor_health", &CSavedGameWrapper::actor_health),
 
-		def("valid_saved_game",		(bool (*)(LPCSTR))(&valid_saved_game))
-	];
+              def("valid_saved_game", (bool (*)(LPCSTR))(&valid_saved_game))];
 }

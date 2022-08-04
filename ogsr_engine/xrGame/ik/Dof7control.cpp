@@ -155,8 +155,7 @@ static int solve_R_angle(const float g[3], const float s[3], const float t[3], c
 // Returns radius of circle
 //
 
-float get_circle_equation(const float ee[3], const float axis[3], const float pos_axis[3], float upper_len,
-    float lower_len, float c[3], float u[3], float v[3], float n[3])
+float get_circle_equation(const float ee[3], const float axis[3], const float pos_axis[3], float upper_len, float lower_len, float c[3], float u[3], float v[3], float n[3])
 {
     float wn = norm((float*)ee);
     float radius;
@@ -290,10 +289,7 @@ int SRS::SetGoalPos(const float eee[3], const Matrix E, float& rangle)
     return 1;
 }
 
-void SRS::EvaluateCircle(const float p[3])
-{
-    radius = get_circle_equation(p, proj_axis, pos_axis, upper_len, lower_len, c, u, v, n);
-}
+void SRS::EvaluateCircle(const float p[3]) { radius = get_circle_equation(p, proj_axis, pos_axis, upper_len, lower_len, c, u, v, n); }
 
 //
 // Given the goal matrix and the projection axis, find the position
@@ -619,8 +615,8 @@ int SRS::R1R2Psi(Matrix C, Matrix s, Matrix o, Matrix c2, Matrix s2, Matrix o2)
 // Rewrite all this stuff
 //
 
-static void get_aim_circle_equation(const float g[3], const float a[3], const float ta[3], const float tb[3],
-    const float proj_axis[3], float theta4, float center[3], float u[3], float v[3], float& radius)
+static void get_aim_circle_equation(const float g[3], const float a[3], const float ta[3], const float tb[3], const float proj_axis[3], float theta4, float center[3], float u[3],
+                                    float v[3], float& radius)
 {
     float L1 = DOT(ta, ta);
     float L2 = DOT(tb, tb);

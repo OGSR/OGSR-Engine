@@ -43,10 +43,8 @@ constexpr IVektor gpos_vector = {1, 0, 0};
 
 IC bool null_frame() { return !!Device.Paused(); }
 IC const Fmatrix& cvm(const Matrix& IM) { return *((Fmatrix*)(&IM)); }
-constexpr string256 ik_bones[4] = {"bip01_l_thigh,bip01_l_calf,bip01_l_foot,bip01_l_toe0",
-    "bip01_r_thigh,bip01_r_calf,bip01_r_foot,bip01_r_toe0",
-    "bip01_l_upperarm,bip01_l_forearm,bip01_l_hand,bip01_l_finger0",
-    "bip01_r_upperarm,bip01_r_forearm,bip01_r_hand,bip01_r_finger0"};
+constexpr string256 ik_bones[4] = {"bip01_l_thigh,bip01_l_calf,bip01_l_foot,bip01_l_toe0", "bip01_r_thigh,bip01_r_calf,bip01_r_foot,bip01_r_toe0",
+                                   "bip01_l_upperarm,bip01_l_forearm,bip01_l_hand,bip01_l_finger0", "bip01_r_upperarm,bip01_r_forearm,bip01_r_hand,bip01_r_finger0"};
 
 IC Fmatrix& SCalculateData::goal(Fmatrix& g) const
 {
@@ -59,8 +57,7 @@ CIKLimb::CIKLimb() { Invalidate(); }
 CIKLimb::CIKLimb(const CIKLimb& l)
     : m_limb(l.m_limb), m_K(l.m_K), m_foot(l.m_foot),
 
-      m_id(l.m_id), m_collide(l.m_collide), collide_data(l.collide_data), anim_state(l.anim_state),
-      collider(l.collider), state_predict(l.state_predict)
+      m_id(l.m_id), m_collide(l.m_collide), collide_data(l.collide_data), anim_state(l.anim_state), collider(l.collider), state_predict(l.state_predict)
 {
     m_bones[0] = l.m_bones[0];
     m_bones[1] = l.m_bones[1];
@@ -152,8 +149,7 @@ Fmatrix& CIKLimb::transform(Fmatrix& m, u16 bone0, u16 bone1) const
 {
     VERIFY(bone0 < 4);
     VERIFY(bone1 < 4);
-    m.mul_43(
-        Fmatrix().invert(Kinematics()->LL_GetTransform(m_bones[bone0])), Kinematics()->LL_GetTransform(m_bones[bone1]));
+    m.mul_43(Fmatrix().invert(Kinematics()->LL_GetTransform(m_bones[bone0])), Kinematics()->LL_GetTransform(m_bones[bone1]));
     return m;
 }
 
@@ -283,7 +279,7 @@ u16 get_ik_bone(IKinematics* K, LPCSTR S, u16 i)
 
     if (BI_NONE == bone)
         Msg("!![%s]ik bone: [%s] does not found in visual: [%s]", __FUNCTION__, sbone, smart_cast<IRenderVisual*>(K)->getDebugName().c_str());
-  
+
     return bone;
 }
 
@@ -489,11 +485,9 @@ void CIKLimb::SetNewGoal(const SIKCollideData& cld, SCalculateData& cd)
     if (!cd.do_collide)
         return;
     get_blend_speed_limits(cd.l, cd.a, cd, sv_state);
-    cd.state.foot_step =
-        m_foot.GetFootStepMatrix(cd.state.goal, cd, cld, true, !!ik_allign_free_foot) && cd.state.foot_step;
+    cd.state.foot_step = m_foot.GetFootStepMatrix(cd.state.goal, cd, cld, true, !!ik_allign_free_foot) && cd.state.foot_step;
 
-    VERIFY2(fsimilar(1.f, DET(cd.state.goal.get()), det_tolerance),
-        dump_string("cd.state.goal", cd.state.goal.get()).c_str());
+    VERIFY2(fsimilar(1.f, DET(cd.state.goal.get()), det_tolerance), dump_string("cd.state.goal", cd.state.goal.get()).c_str());
 
     cd.state.blend_to = cd.state.goal;
     sv_state.get_calculate_state(cd.state);
@@ -522,18 +516,11 @@ void CIKLimb::SetNewGoal(const SIKCollideData& cld, SCalculateData& cd)
 
 static const float linear_tolerance = 0.0000001f, angualar_tolerance = 0.00005f;
 
-IC bool clamp_change(Fmatrix& m, const Fmatrix& start, float ml, float ma)
-{
-    return clamp_change(m, start, ml, ma, linear_tolerance, angualar_tolerance);
-}
+IC bool clamp_change(Fmatrix& m, const Fmatrix& start, float ml, float ma) { return clamp_change(m, start, ml, ma, linear_tolerance, angualar_tolerance); }
 
-void cmp_matrix(bool& eq_linear, bool& eq_angular, const Fmatrix& m0, const Fmatrix& m1)
-{
-    cmp_matrix(eq_linear, eq_angular, m0, m1, linear_tolerance, angualar_tolerance);
-}
+void cmp_matrix(bool& eq_linear, bool& eq_angular, const Fmatrix& m0, const Fmatrix& m1) { cmp_matrix(eq_linear, eq_angular, m0, m1, linear_tolerance, angualar_tolerance); }
 
-bool CIKLimb::blend_collide(
-    ik_goal_matrix& m, const SCalculateData& cd, const ik_goal_matrix& m0, const ik_goal_matrix& m1) const
+bool CIKLimb::blend_collide(ik_goal_matrix& m, const SCalculateData& cd, const ik_goal_matrix& m0, const ik_goal_matrix& m1) const
 {
     Fmatrix fm = m1.get();
     bool ret = clamp_change(fm, m0.get(), cd.l, cd.a);
@@ -547,8 +534,7 @@ bool CIKLimb::blend_collide(
         m_foot.ToePosition(l_toe);
         Fvector v;
         fm.transform_tiny(v, l_toe);
-        DBG_DrawPoint(v, 0.1, color_xrgb(0, (ik_goal_matrix::cl_free == m0.collide_state()) * 255,
-                                  (ik_goal_matrix::cl_aligned == m0.collide_state()) * 255));
+        DBG_DrawPoint(v, 0.1, color_xrgb(0, (ik_goal_matrix::cl_free == m0.collide_state()) * 255, (ik_goal_matrix::cl_aligned == m0.collide_state()) * 255));
     }
 #endif
     return ret;
@@ -678,8 +664,7 @@ void CIKLimb::Blending(SCalculateData& cd)
         VERIFY(fsimilar(1.f, DET(diff), det_tolerance));
 
         Fmatrix blend = Fidentity; // cd.state.blend_to;
-        cd.state.blending =
-            !clamp_change(blend, diff, cd.l, cd.a, linear_tolerance, angualar_tolerance); // 0.01f //0.005f
+        cd.state.blending = !clamp_change(blend, diff, cd.l, cd.a, linear_tolerance, angualar_tolerance); // 0.01f //0.005f
 
         VERIFY(fsimilar(1.f, DET(blend), det_tolerance));
         VERIFY(fsimilar(1.f, DET(cd.state.blend_to.get()), det_tolerance));
@@ -697,8 +682,7 @@ void CIKLimb::Blending(SCalculateData& cd)
         {
             Fmatrix blend = cd.state.blend_to.get();
             ik_goal_matrix m;
-            cd.state.blending = !clamp_change(
-                blend, sv_state.goal(m).get(), cd.l, cd.a, linear_tolerance, angualar_tolerance); // 0.01f //0.005f
+            cd.state.blending = !clamp_change(blend, sv_state.goal(m).get(), cd.l, cd.a, linear_tolerance, angualar_tolerance); // 0.01f //0.005f
             cd.state.goal.set(blend, cd.state.blend_to.collide_state());
         }
         else
@@ -755,10 +739,8 @@ void CIKLimb::SetNewStepGoal(const SIKCollideData& cld, SCalculateData& cd)
         const ik_goal_matrix foot = tmp;
         const Fmatrix cl_pos = cd.state.collide_pos.get();
         //||
-        if (!clamp_change(Fmatrix().set(cl_pos), foot.get(), unstuck_tolerance_linear, unstuck_tolerance_angular,
-                unstuck_tolerance_linear, unstuck_tolerance_angular) ||
-            (Device.dwTimeGlobal > cd.state.unstuck_time &&
-                !clamp_change(Fmatrix().set(cl_pos), foot.get(), 10.f * EPS_L, EPS_L, 10.f * EPS_L, EPS_L)))
+        if (!clamp_change(Fmatrix().set(cl_pos), foot.get(), unstuck_tolerance_linear, unstuck_tolerance_angular, unstuck_tolerance_linear, unstuck_tolerance_angular) ||
+            (Device.dwTimeGlobal > cd.state.unstuck_time && !clamp_change(Fmatrix().set(cl_pos), foot.get(), 10.f * EPS_L, EPS_L, 10.f * EPS_L, EPS_L)))
         {
             new_foot_matrix(foot, cd);
             // cd.state.collide_pos = foot;//.set( foot, ik_goal_matrix::cl_aligned );
@@ -963,10 +945,8 @@ struct ssaved_callback
     ssaved_callback& operator=(ssaved_callback&) = delete;
 
     ssaved_callback(CBoneInstance& bi)
-        : _bi(bi), callback(bi.callback()), callback_param(bi.callback_param()),
-          callback_overwrite(bi.callback_overwrite()), callback_type(bi.callback_type())
-    {
-    }
+        : _bi(bi), callback(bi.callback()), callback_param(bi.callback_param()), callback_overwrite(bi.callback_overwrite()), callback_type(bi.callback_type())
+    {}
     void restore() { _bi.set_callback(callback_type, callback, callback_param, callback_overwrite); }
     const BoneCallback callback;
     void* callback_param;
@@ -1020,7 +1000,7 @@ u16 CIKLimb::foot_matrix_predict(Fmatrix& foot, Fmatrix& toe, float time, IKinem
     return ref_b;
 }
 void CIKLimb::step_predict(CGameObject* O, const CBlend* b, ik_limb_state_predict& state,
-    const extrapolation::points& object_pose_extrapolation) // const
+                           const extrapolation::points& object_pose_extrapolation) // const
 {
     if (!b)
         return;

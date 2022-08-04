@@ -196,7 +196,7 @@ void vecmult0(float y[], float x[], Matrix M)
  * y = x * M, with y[3] = 0
  */
 {
-     int i, j;
+    int i, j;
     float Y[3];
 
     for (i = 0; i < 3; i++)
@@ -367,7 +367,7 @@ void rotation_axis_to_matrix(float axis[3], float angle, Matrix R)
     cos_a = _cos(angle);
     sin_a = _sin(angle);
 
-// Assume axis is normalized
+    // Assume axis is normalized
 
 #if 0
     // float normal[3];

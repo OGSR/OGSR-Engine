@@ -4,53 +4,47 @@
 #include "../object_broker.h"
 #include "../callback_info.h"
 
-struct event_comparer{
-	shared_str			name;
-	s16					event;
+struct event_comparer
+{
+    shared_str name;
+    s16 event;
 
-	event_comparer(shared_str n, s16 e):name(n),event(e){}
-	bool operator ()(SCallbackInfo& i){
-		return( (i.m_controlName==name) && (i.m_event==event) );
-	}
+    event_comparer(shared_str n, s16 e) : name(n), event(e) {}
+    bool operator()(SCallbackInfo& i) { return ((i.m_controlName == name) && (i.m_event == event)); }
 };
 
-void CUIWndCallback::Register			(CUIWindow* pChild)
-{
-	pChild->SetMessageTarget( smart_cast<CUIWindow*>(this) );
-}
+void CUIWndCallback::Register(CUIWindow* pChild) { pChild->SetMessageTarget(smart_cast<CUIWindow*>(this)); }
 
 void CUIWndCallback::OnEvent(CUIWindow* pWnd, s16 msg, void* pData)
 {
-	if(!pWnd) return;
-	event_comparer ec(pWnd->WindowName(),msg);
+    if (!pWnd)
+        return;
+    event_comparer ec(pWnd->WindowName(), msg);
 
-	CALLBACK_IT it = std::find_if(m_callbacks.begin(),m_callbacks.end(),ec);
-	if(it==m_callbacks.end())
-		return ;
+    CALLBACK_IT it = std::find_if(m_callbacks.begin(), m_callbacks.end(), ec);
+    if (it == m_callbacks.end())
+        return;
 
-	(*it).m_callback();
-	
-	if ((*it).m_cpp_callback)	
-		(*it).m_cpp_callback(pWnd, pData);
+    (*it).m_callback();
+
+    if ((*it).m_cpp_callback)
+        (*it).m_cpp_callback(pWnd, pData);
 }
 
-SCallbackInfo*	CUIWndCallback::NewCallback ()
+SCallbackInfo* CUIWndCallback::NewCallback() { return &m_callbacks.emplace_back(); }
+
+void CUIWndCallback::AddCallback(LPCSTR control_id, s16 event, const void_function& f)
 {
-	return &m_callbacks.emplace_back();
+    SCallbackInfo* c = NewCallback();
+    c->m_cpp_callback = f;
+    c->m_controlName = control_id;
+    c->m_event = event;
 }
 
-void CUIWndCallback::AddCallback(LPCSTR control_id, s16 event, const void_function &f)
+void CUIWndCallback::AddCallback(const shared_str& control_id, s16 event, const void_function& f)
 {
-	SCallbackInfo* c	= NewCallback ();
-	c->m_cpp_callback	= f;
-	c->m_controlName	= control_id;
-	c->m_event			= event;
-}
-
-void CUIWndCallback::AddCallback(const shared_str& control_id, s16 event, const void_function &f)
-{
-	SCallbackInfo* c	= NewCallback ();
-	c->m_cpp_callback	= f;
-	c->m_controlName	= control_id;
-	c->m_event			= event;
+    SCallbackInfo* c = NewCallback();
+    c->m_cpp_callback = f;
+    c->m_controlName = control_id;
+    c->m_event = event;
 }

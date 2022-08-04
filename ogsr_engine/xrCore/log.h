@@ -1,16 +1,16 @@
 #pragma once
 
-#define VPUSH(a) a.x,a.y,a.z
+#define VPUSH(a) a.x, a.y, a.z
 
-void 	XRCORE_API	__cdecl	Msg		(const char* format, ...);
-void 	XRCORE_API		Log			(std::stringstream&& msg);
-void 	XRCORE_API		Log			(const char* msg);
-void 	XRCORE_API		Log			(const char* msg, const Fvector& dop);
-void 	XRCORE_API		Log			(const char* msg, const Fmatrix& dop);
+void XRCORE_API __cdecl Msg(const char* format, ...);
+void XRCORE_API Log(std::stringstream&& msg);
+void XRCORE_API Log(const char* msg);
+void XRCORE_API Log(const char* msg, const Fvector& dop);
+void XRCORE_API Log(const char* msg, const Fmatrix& dop);
 
 using LogCallback = std::function<void(const char*)>;
-void	XRCORE_API				SetLogCB	(LogCallback cb);
-void 							CreateLog	(BOOL no_log = FALSE);
+void XRCORE_API SetLogCB(LogCallback cb);
+void CreateLog(BOOL no_log = FALSE);
 
 extern XRCORE_API xr_vector<xr_string> LogFile;
 extern XRCORE_API string_path logFName;

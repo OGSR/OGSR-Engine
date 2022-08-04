@@ -27,8 +27,7 @@ Fmatrix& ik_limb_state::to_ref_bone(Fmatrix& m) const
 
     Fmatrix tobone = state.b2tob3;
     if (state.ref_bone == 2 && limb->ref_bone() == 3)
-    {
-    }
+    {}
     else if (state.ref_bone == 3 && limb->ref_bone() == 2)
         tobone.invert();
     else

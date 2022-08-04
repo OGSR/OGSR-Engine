@@ -22,9 +22,7 @@ constexpr Fplane invalide_plane{-FLT_MAX, -FLT_MAX, -FLT_MAX, -FLT_MAX};
 
 struct ik_pick_result
 {
-    ik_pick_result(ik_foot_geom::e_collide_point _point)
-        : p(invalide_plane), position(Fvector().set(-FLT_MAX, -FLT_MAX, -FLT_MAX)),
-          point(_point), range(0)
+    ik_pick_result(ik_foot_geom::e_collide_point _point) : p(invalide_plane), position(Fvector().set(-FLT_MAX, -FLT_MAX, -FLT_MAX)), point(_point), range(0)
     {
         triangle[0] = Fvector().set(-FLT_MAX, -FLT_MAX, -FLT_MAX);
         triangle[1] = Fvector().set(-FLT_MAX, -FLT_MAX, -FLT_MAX);
@@ -42,8 +40,7 @@ bool ignore_tri(CDB::TRI& tri)
 {
     SGameMtl* material = GMLib.GetMaterialByIdx(tri.material);
 
-    return (material->Flags.test(SGameMtl::flPassable) && !material->Flags.test(SGameMtl::flActorObstacle)) ||
-        material->Flags.test(SGameMtl::flClimable); // ||
+    return (material->Flags.test(SGameMtl::flPassable) && !material->Flags.test(SGameMtl::flActorObstacle)) || material->Flags.test(SGameMtl::flClimable); // ||
     // material->Flags.test( SGameMtl::flActorObstacle );
 }
 
@@ -57,8 +54,7 @@ bool ignore_static_tri(int tri)
 IC bool ignore_object(CObject* O)
 {
     VERIFY(O);
-    if (static_cast<CGameObject*>(O)
-            ->cast_entity_alive() /*&& static_cast<CGameObject*>( O )->cast_entity_alive()->g_Alive() */)
+    if (static_cast<CGameObject*>(O)->cast_entity_alive() /*&& static_cast<CGameObject*>( O )->cast_entity_alive()->g_Alive() */)
         return true;
     return false;
 }
@@ -85,8 +81,7 @@ IC void tri_plane(const CDB::TRI& tri, Fplane& p)
     tri_plane(pVerts[tri.verts[0]], pVerts[tri.verts[1]], pVerts[tri.verts[2]], p);
 }
 
-IC bool get_plane_static(ik_pick_result& r, Fvector& next_pos, float& next_range, const collide::rq_result& R,
-    float pick_dist, const Fvector& pos, const Fvector& pick_v)
+IC bool get_plane_static(ik_pick_result& r, Fvector& next_pos, float& next_range, const collide::rq_result& R, float pick_dist, const Fvector& pos, const Fvector& pick_v)
 {
     VERIFY(Level().ObjectSpace.GetStaticModel()->get_tris_count() > R.element);
     CDB::TRI* tri = Level().ObjectSpace.GetStaticTris() + R.element;
@@ -121,8 +116,7 @@ IC bool get_plane_static(ik_pick_result& r, Fvector& next_pos, float& next_range
     return true;
 }
 
-IC bool get_plane_dynamic(ik_pick_result& r, Fvector& next_pos, float& next_range, const collide::rq_result R,
-    float pick_dist, const Fvector& pos, const Fvector& pick_v)
+IC bool get_plane_dynamic(ik_pick_result& r, Fvector& next_pos, float& next_range, const collide::rq_result R, float pick_dist, const Fvector& pos, const Fvector& pick_v)
 {
     next_pos.add(pos, Fvector().mul(pick_v, R.range + EPS_L));
     next_range = pick_dist - R.range - EPS_L;
@@ -159,8 +153,7 @@ IC bool get_plane_dynamic(ik_pick_result& r, Fvector& next_pos, float& next_rang
 }
 
 static const float reach_dist = 1.5f;
-IC bool get_plane(ik_pick_result& r, Fvector& next_pos, float& next_range, const collide::rq_result R, float pick_dist,
-    const Fvector& pos, const Fvector& pick_v)
+IC bool get_plane(ik_pick_result& r, Fvector& next_pos, float& next_range, const collide::rq_result R, float pick_dist, const Fvector& pos, const Fvector& pick_v)
 {
     if (!R.O)
         return get_plane_static(r, next_pos, next_range, R, pick_dist, pos, pick_v);
@@ -244,8 +237,7 @@ void ik_foot_collider::collide(SIKCollideData& cld, const ik_foot_geom& foot_geo
     const Fvector pos_side = Fvector().sub(foot_geom.pos_side(), Fvector().mul(side_pick_v, collide_dist));
     ik_pick_query q_side(ik_foot_geom::side, pos_side, side_pick_v, pick_dist);
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    if (previous_toe_query.is_equal(q_toe) && previous_heel_query.is_equal(q_heel) &&
-        previous_side_query.is_equal(q_side))
+    if (previous_toe_query.is_equal(q_toe) && previous_heel_query.is_equal(q_heel) && previous_side_query.is_equal(q_side))
     {
         cld = previous_data;
         return;
@@ -261,7 +253,7 @@ void ik_foot_collider::collide(SIKCollideData& cld, const ik_foot_geom& foot_geo
     cld.collided = Pick(r_toe, q_toe, O);
     cld.m_plane = r_toe.p;
     cld.m_collide_point = ik_foot_geom::toe;
-//////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
 
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(phDbgDrawIKCollision))
@@ -278,10 +270,8 @@ void ik_foot_collider::collide(SIKCollideData& cld, const ik_foot_geom& foot_geo
     ik_pick_result r_side(ik_foot_geom::side);
     bool side_collided = Pick(r_side, q_side, O);
 
-    bool toe_heel_compatible =
-        cld.collided && heel_collided && Fvector().sub(r_heel.position, r_toe.position).magnitude() < foot_length;
-    bool toe_side_compatible =
-        cld.collided && side_collided && Fvector().sub(r_side.position, r_toe.position).magnitude() < foot_length;
+    bool toe_heel_compatible = cld.collided && heel_collided && Fvector().sub(r_heel.position, r_toe.position).magnitude() < foot_length;
+    bool toe_side_compatible = cld.collided && side_collided && Fvector().sub(r_side.position, r_toe.position).magnitude() < foot_length;
 
     /*
         if( hill_collided )

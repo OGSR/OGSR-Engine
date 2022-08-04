@@ -8,23 +8,10 @@
 
 #pragma once
 
-IC	CCoverPoint::CCoverPoint				(const Fvector &point, u32 level_vertex_id) :
-	m_position			(point),
-	m_level_vertex_id	(level_vertex_id)
-{
-}
+IC CCoverPoint::CCoverPoint(const Fvector& point, u32 level_vertex_id) : m_position(point), m_level_vertex_id(level_vertex_id) {}
 
-IC	const Fvector &CCoverPoint::position	() const
-{
-	return				(m_position);
-}
+IC const Fvector& CCoverPoint::position() const { return (m_position); }
 
-IC	u32	CCoverPoint::level_vertex_id		() const
-{
-	return				(m_level_vertex_id);
-}
+IC u32 CCoverPoint::level_vertex_id() const { return (m_level_vertex_id); }
 
-IC	bool CCoverPoint::operator==			(const CCoverPoint &point) const
-{
-	return				(!!position().similar(point.position()));
-}
+IC bool CCoverPoint::operator==(const CCoverPoint& point) const { return (!!position().similar(point.position())); }

@@ -48,12 +48,11 @@ struct calculate_state
     int count;
 #endif
     calculate_state()
-        : ref_bone(u16(-1)), calc_time(0), unstuck_time(u32(-1)), foot_step(false), idle(false), blending(false),
-          anim_pos(Fidentity), b2tob3(Fidentity), speed_blend_l(0), speed_blend_a(0), pick(Fvector().set(0, -1, 0))
+        : ref_bone(u16(-1)), calc_time(0), unstuck_time(u32(-1)), foot_step(false), idle(false), blending(false), anim_pos(Fidentity), b2tob3(Fidentity), speed_blend_l(0),
+          speed_blend_a(0), pick(Fvector().set(0, -1, 0))
 #ifdef DEBUG
           ,
           count(-1)
 #endif
-    {
-    }
+    {}
 };

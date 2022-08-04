@@ -5,31 +5,31 @@
 class dxDebugRender : public IDebugRender
 {
 public:
-	dxDebugRender() = default;
+    dxDebugRender() = default;
 
-	virtual void	Render				();
-	virtual void	add_lines			(Fvector const *vertices, u32 const &vertex_count, u16 const *pairs, u32 const &pair_count, u32 const &color);
+    virtual void Render();
+    virtual void add_lines(Fvector const* vertices, u32 const& vertex_count, u16 const* pairs, u32 const& pair_count, u32 const& color);
 
-	// routed to RCache
-	virtual void	NextSceneMode		();
-	virtual void	ZEnable				(bool bEnable);
-	virtual void	OnFrameEnd			();
-	virtual void	SetShader			(const debug_shader &shader);
-	virtual void	CacheSetXformWorld	(const Fmatrix& M);
-	virtual void	CacheSetCullMode	(CullMode);
-	virtual void	SetAmbient			(u32 colour);
+    // routed to RCache
+    virtual void NextSceneMode();
+    virtual void ZEnable(bool bEnable);
+    virtual void OnFrameEnd();
+    virtual void SetShader(const debug_shader& shader);
+    virtual void CacheSetXformWorld(const Fmatrix& M);
+    virtual void CacheSetCullMode(CullMode);
+    virtual void SetAmbient(u32 colour);
 
-	// Shaders
-	virtual void	SetDebugShader		(dbgShaderHandle shdHandle);
-	virtual void	DestroyDebugShader	(dbgShaderHandle shdHandle);
+    // Shaders
+    virtual void SetDebugShader(dbgShaderHandle shdHandle);
+    virtual void DestroyDebugShader(dbgShaderHandle shdHandle);
 
-	virtual void	dbg_DrawTRI			(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C);
+    virtual void dbg_DrawTRI(Fmatrix& T, Fvector& p1, Fvector& p2, Fvector& p3, u32 C);
 
 private:
-	xr_unordered_map<u32, xr_vector<FVF::L>> m_line_vertices;
-	xr_unordered_map<u32, xr_vector<u16>> m_line_indices;
+    xr_unordered_map<u32, xr_vector<FVF::L>> m_line_vertices;
+    xr_unordered_map<u32, xr_vector<u16>> m_line_indices;
 
-	ref_shader		m_dbgShaders[dbgShaderCount];
+    ref_shader m_dbgShaders[dbgShaderCount];
 };
 
 extern dxDebugRender DebugRenderImpl;

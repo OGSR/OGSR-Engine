@@ -6,16 +6,17 @@
 
 #include "fbasicvisual.h"
 
-class  FHierrarhyVisual : public dxRender_Visual
+class FHierrarhyVisual : public dxRender_Visual
 {
-	BOOL bDontDelete;
+    BOOL bDontDelete;
+
 public:
-	xr_vector<dxRender_Visual*>		children;
+    xr_vector<dxRender_Visual*> children;
 
-    				FHierrarhyVisual();
-	virtual 		~FHierrarhyVisual();
+    FHierrarhyVisual();
+    virtual ~FHierrarhyVisual();
 
-	virtual void	Load			(const char* N, IReader *data, u32 dwFlags);
-	virtual void	Copy			(dxRender_Visual *pFrom);
-	virtual void	Release			();
+    virtual void Load(const char* N, IReader* data, u32 dwFlags);
+    virtual void Copy(dxRender_Visual* pFrom);
+    virtual void Release();
 };

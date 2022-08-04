@@ -7,17 +7,8 @@
 #include "DummyArtifact.h"
 #include "PhysicsShell.h"
 
+CDummyArtefact::CDummyArtefact(void) {}
 
-CDummyArtefact::CDummyArtefact(void) 
-{
-}
+CDummyArtefact::~CDummyArtefact(void) {}
 
-CDummyArtefact::~CDummyArtefact(void) 
-{
-}
-
-void CDummyArtefact::Load(LPCSTR section) 
-{
-	inherited::Load(section);
-}
-
+void CDummyArtefact::Load(LPCSTR section) { inherited::Load(section); }

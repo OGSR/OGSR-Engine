@@ -18,96 +18,95 @@
 #include "bloodsucker_vampire.h"
 #include "bloodsucker_predator.h"
 
-
-CStateManagerBloodsucker::CStateManagerBloodsucker(CAI_Bloodsucker *monster) : inherited(monster)
+CStateManagerBloodsucker::CStateManagerBloodsucker(CAI_Bloodsucker* monster) : inherited(monster)
 {
-	add_state(eStateRest,				xr_new<CStateMonsterRest<CAI_Bloodsucker> >					(monster));
-	add_state(eStatePanic,				xr_new<CStateMonsterPanic<CAI_Bloodsucker> >				(monster));
-	
-	add_state(eStateAttack,				xr_new<CStateMonsterAttack<CAI_Bloodsucker> >						(monster));
-	//add_state(eStateAttack,				xr_new<CBloodsuckerStateAttack<CAI_Bloodsucker> >			(monster));
+    add_state(eStateRest, xr_new<CStateMonsterRest<CAI_Bloodsucker>>(monster));
+    add_state(eStatePanic, xr_new<CStateMonsterPanic<CAI_Bloodsucker>>(monster));
 
-	add_state(eStateEat,				xr_new<CStateMonsterEat<CAI_Bloodsucker> >					(monster));
-	add_state(eStateHearInterestingSound,	xr_new<CStateMonsterHearInterestingSound<CAI_Bloodsucker> >	(monster));
-	add_state(eStateHearDangerousSound,	xr_new<CStateMonsterHearDangerousSound<CAI_Bloodsucker> >	(monster));
-	add_state(eStateHitted,				xr_new<CStateMonsterHitted<CAI_Bloodsucker> >				(monster));
-	add_state(eStateVampire_Execute,	xr_new<CStateBloodsuckerVampireExecute<CAI_Bloodsucker> >	(monster));
+    add_state(eStateAttack, xr_new<CStateMonsterAttack<CAI_Bloodsucker>>(monster));
+    // add_state(eStateAttack,				xr_new<CBloodsuckerStateAttack<CAI_Bloodsucker> >			(monster));
+
+    add_state(eStateEat, xr_new<CStateMonsterEat<CAI_Bloodsucker>>(monster));
+    add_state(eStateHearInterestingSound, xr_new<CStateMonsterHearInterestingSound<CAI_Bloodsucker>>(monster));
+    add_state(eStateHearDangerousSound, xr_new<CStateMonsterHearDangerousSound<CAI_Bloodsucker>>(monster));
+    add_state(eStateHitted, xr_new<CStateMonsterHitted<CAI_Bloodsucker>>(monster));
+    add_state(eStateVampire_Execute, xr_new<CStateBloodsuckerVampireExecute<CAI_Bloodsucker>>(monster));
 }
 
-void CStateManagerBloodsucker::update ()
-{
-	inherited::update();
-}
+void CStateManagerBloodsucker::update() { inherited::update(); }
 
 bool CStateManagerBloodsucker::check_vampire()
 {
-	if ( prev_substate != eStateVampire_Execute )
-	{
-		if (get_state(eStateVampire_Execute)->check_start_conditions())	return true;
-	} 
-	else
-	{
-		if (!get_state(eStateVampire_Execute)->check_completion())		return true;
-	}
-	return false;
+    if (prev_substate != eStateVampire_Execute)
+    {
+        if (get_state(eStateVampire_Execute)->check_start_conditions())
+            return true;
+    }
+    else
+    {
+        if (!get_state(eStateVampire_Execute)->check_completion())
+            return true;
+    }
+    return false;
 }
 
-void CStateManagerBloodsucker::execute ()
+void CStateManagerBloodsucker::execute()
 {
-	u32 state_id = u32(-1);
+    u32 state_id = u32(-1);
 
-	const CEntityAlive* enemy = object->EnemyMan.get_enemy();
-	
-	if ( enemy ) 
-	{
-		 if ( check_vampire() ) 
-		 {
-			state_id = eStateVampire_Execute;
-		 } 
-		 else 
-		 {
-			switch ( object->EnemyMan.get_danger_type() )
-			{
-				case eStrong: state_id = eStatePanic; break;
-				case eWeak:	  state_id = eStateAttack; break;
-			}
-		}
-	} 
-	else if ( object->HitMemory.is_hit() ) 
-	{
-		state_id = eStateHitted;
-	} 
-	else if ( object->hear_interesting_sound )
-	{
-		state_id = eStateHearInterestingSound;
-	} 
-	else if ( object->hear_dangerous_sound )
-	{
-		state_id = eStateHearDangerousSound;
-	} 
-	else 
-	{
-		if ( can_eat() ) state_id = eStateEat;
-		else			 state_id = eStateRest;
-	}
+    const CEntityAlive* enemy = object->EnemyMan.get_enemy();
 
-	// check if start interesting sound state
-// 	if ( (prev_substate != eStateHearInterestingSound) && (state_id == eStateHearInterestingSound) )
-// 	{
-// 		object->start_invisible_predator();
-// 	} 
-// 	else
-// 	// check if stop interesting sound state
-// 	if ( (prev_substate == eStateHearInterestingSound) && (state_id != eStateHearInterestingSound) ) 
-// 	{
-// 		object->stop_invisible_predator();
-// 	}
+    if (enemy)
+    {
+        if (check_vampire())
+        {
+            state_id = eStateVampire_Execute;
+        }
+        else
+        {
+            switch (object->EnemyMan.get_danger_type())
+            {
+            case eStrong: state_id = eStatePanic; break;
+            case eWeak: state_id = eStateAttack; break;
+            }
+        }
+    }
+    else if (object->HitMemory.is_hit())
+    {
+        state_id = eStateHitted;
+    }
+    else if (object->hear_interesting_sound)
+    {
+        state_id = eStateHearInterestingSound;
+    }
+    else if (object->hear_dangerous_sound)
+    {
+        state_id = eStateHearDangerousSound;
+    }
+    else
+    {
+        if (can_eat())
+            state_id = eStateEat;
+        else
+            state_id = eStateRest;
+    }
 
-	select_state(state_id); 
+    // check if start interesting sound state
+    // 	if ( (prev_substate != eStateHearInterestingSound) && (state_id == eStateHearInterestingSound) )
+    // 	{
+    // 		object->start_invisible_predator();
+    // 	}
+    // 	else
+    // 	// check if stop interesting sound state
+    // 	if ( (prev_substate == eStateHearInterestingSound) && (state_id != eStateHearInterestingSound) )
+    // 	{
+    // 		object->stop_invisible_predator();
+    // 	}
 
-	// выполнить текущее состояние
-	get_state_current()->execute();
+    select_state(state_id);
 
-	prev_substate = current_substate;
+    // выполнить текущее состояние
+    get_state_current()->execute();
+
+    prev_substate = current_substate;
 }
-

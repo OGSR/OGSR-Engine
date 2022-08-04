@@ -12,27 +12,24 @@
 #include "script_export_space.h"
 #include "script_engine_export.h"
 
-#pragma optimize("s",on)
+#pragma optimize("s", on)
 template <typename TList>
 struct Register
 {
-	static void _Register(lua_State *L)
-	{
-		imdexlib::ts_apply<imdexlib::ts_reverse_t<TList>>([&](const auto type) {
-			registerOne(L, type);
-		});
-	}
+    static void _Register(lua_State* L)
+    {
+        imdexlib::ts_apply<imdexlib::ts_reverse_t<TList>>([&](const auto type) { registerOne(L, type); });
+    }
+
 private:
-	template <typename T>
-	static void registerOne(lua_State* L, imdexlib::identity<T>) {
+    template <typename T>
+    static void registerOne(lua_State* L, imdexlib::identity<T>)
+    {
 #ifdef DEBUG
-		Msg("Exporting [%s]", typeid(T).name());
+        Msg("Exporting [%s]", typeid(T).name());
 #endif
-		T::script_register(L);
-	}
+        T::script_register(L);
+    }
 };
 
-void export_classes	(lua_State *L)
-{
-	Register<script_type_list>::_Register(L);
-}
+void export_classes(lua_State* L) { Register<script_type_list>::_Register(L); }

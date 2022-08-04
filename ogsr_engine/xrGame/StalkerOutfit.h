@@ -3,20 +3,21 @@
 // StalkerOutfit - защитный костюм сталкера
 ///////////////////////////////////////////////////////////////
 
-
 #pragma once
 
 #include "customoutfit.h"
 #include "script_export_space.h"
 
-class CStalkerOutfit : public CCustomOutfit {
+class CStalkerOutfit : public CCustomOutfit
+{
 private:
-    typedef	CCustomOutfit inherited;
-public:
-	CStalkerOutfit(void);
-	virtual ~CStalkerOutfit(void);
+    typedef CCustomOutfit inherited;
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+public:
+    CStalkerOutfit(void);
+    virtual ~CStalkerOutfit(void);
+
+    DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CStalkerOutfit)
 #undef script_type_list

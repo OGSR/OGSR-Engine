@@ -8,15 +8,16 @@
 
 #pragma once
 
-namespace ScriptEntity {
-	enum EActionType {
-		eActionTypeMovement = u32(0),
-		eActionTypeWatch,
-		eActionTypeAnimation,
-		eActionTypeSound,
-		eActionTypeParticle,
-		eActionTypeObject,
-		eActionTypeCount
-	};
+namespace ScriptEntity
+{
+enum EActionType
+{
+    eActionTypeMovement = u32(0),
+    eActionTypeWatch,
+    eActionTypeAnimation,
+    eActionTypeSound,
+    eActionTypeParticle,
+    eActionTypeObject,
+    eActionTypeCount
 };
-
+};

@@ -1,12 +1,12 @@
 #pragma once
 
-#pragma warning(disable:4995)
-#pragma warning(disable:4577)
+#pragma warning(disable : 4995)
+#pragma warning(disable : 4577)
 #include "../xr_3da/stdafx.h"
-#pragma warning(default:4995)
-#pragma warning( 4 : 4018 )
-#pragma warning( 4 : 4244 )
-#pragma warning(disable:4505)
+#pragma warning(default : 4995)
+#pragma warning(4 : 4018)
+#pragma warning(4 : 4244)
+#pragma warning(disable : 4505)
 
 #include "..\xr_3da\ai_script_space.h" //KRodin: пусть луа для рендера и скриптов инитится в одном месте.
 
@@ -23,5 +23,5 @@
 
 #include "../xrCore/_vector3d_ext.h"
 
-#define D3DCOLOR_RGBA(r,g,b,a) (color_argb(a,r,g,b))
-#define D3DCOLOR_XRGB(r,g,b)   (color_argb(0xff,r,g,b))
+#define D3DCOLOR_RGBA(r, g, b, a) (color_argb(a, r, g, b))
+#define D3DCOLOR_XRGB(r, g, b) (color_argb(0xff, r, g, b))

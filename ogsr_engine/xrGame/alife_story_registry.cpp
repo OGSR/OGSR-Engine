@@ -12,24 +12,26 @@
 #include "ai_space.h"
 #include "game_graph.h"
 
-CALifeStoryRegistry::~CALifeStoryRegistry	()
-{
-}
+CALifeStoryRegistry::~CALifeStoryRegistry() {}
 
-void CALifeStoryRegistry::add				(ALife::_STORY_ID id, CSE_ALifeDynamicObject *object, bool no_assert)
+void CALifeStoryRegistry::add(ALife::_STORY_ID id, CSE_ALifeDynamicObject* object, bool no_assert)
 {
-	if (id == INVALID_STORY_ID)
-		return;
+    if (id == INVALID_STORY_ID)
+        return;
 
 #ifdef DEBUG
-	Msg("Adding Story item ID [%u], Object [%s] at level [%s]",id, object->name_replace(), *ai().game_graph().header().level(ai().game_graph().vertex(object->m_tGraphID)->level_id()).name());
+    Msg("Adding Story item ID [%u], Object [%s] at level [%s]", id, object->name_replace(),
+        *ai().game_graph().header().level(ai().game_graph().vertex(object->m_tGraphID)->level_id()).name());
 #endif
 
-	ALife::STORY_P_PAIR_IT	I = m_objects.find(id);
-	if (I != m_objects.end()) {
-		ASSERT_FMT(no_assert, "Trying add story id [%u] for Object [%s] at level [%s], but this story id is already using in object [%s] at level [%s]", id, object->name_replace(), *ai().game_graph().header().level(ai().game_graph().vertex(object->m_tGraphID)->level_id()).name(), I->second->name_replace(), *ai().game_graph().header().level(ai().game_graph().vertex(I->second->m_tGraphID)->level_id()).name());
-		return;
-	}
+    ALife::STORY_P_PAIR_IT I = m_objects.find(id);
+    if (I != m_objects.end())
+    {
+        ASSERT_FMT(no_assert, "Trying add story id [%u] for Object [%s] at level [%s], but this story id is already using in object [%s] at level [%s]", id, object->name_replace(),
+                   *ai().game_graph().header().level(ai().game_graph().vertex(object->m_tGraphID)->level_id()).name(), I->second->name_replace(),
+                   *ai().game_graph().header().level(ai().game_graph().vertex(I->second->m_tGraphID)->level_id()).name());
+        return;
+    }
 
-	m_objects.insert		(std::make_pair(id,object));
+    m_objects.insert(std::make_pair(id, object));
 }

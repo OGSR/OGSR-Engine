@@ -1,13 +1,14 @@
 #pragma once
 
 template <typename T>
-class PointerAllocator {
+class PointerAllocator
+{
 public:
     using size_type = size_t;
     using difference_type = ptrdiff_t;
-    using pointer = T * ;
+    using pointer = T*;
     using const_pointer = const T*;
-    using reference = T & ;
+    using reference = T&;
     using const_reference = const T&;
     using value_type = T;
 
@@ -18,15 +19,17 @@ public:
     PointerAllocator(const PointerAllocator<T>&) = default;
 
     template <class Other>
-    PointerAllocator(const PointerAllocator<Other>&) {}
+    PointerAllocator(const PointerAllocator<Other>&)
+    {}
 
     template <class Other>
-    PointerAllocator& operator=(const PointerAllocator<Other>&) {
+    PointerAllocator& operator=(const PointerAllocator<Other>&)
+    {
         return *this;
     }
 #pragma warning(push)
-#pragma warning(disable: 4267)
-    pointer allocate(const size_type n, const void* p = nullptr) const 
+#pragma warning(disable : 4267)
+    pointer allocate(const size_type n, const void* p = nullptr) const
     {
         size_t MemoryRequired = sizeof(T) * n;
         return (pointer)malloc(MemoryRequired);
@@ -41,7 +44,6 @@ public:
 
     void destroy(pointer p) { p->~T(); }
 };
-
 
 void RegisterPointer(void* ptr);
 void UnregisterPointer(void* ptr);

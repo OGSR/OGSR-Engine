@@ -16,133 +16,123 @@
 
 #define FLAME_TIME 0.05f
 
-
 float _nrand(float sigma)
 {
 #define ONE_OVER_SIGMA_EXP (1.0f / 0.7975f)
 
-	if(sigma == 0) return 0;
+    if (sigma == 0)
+        return 0;
 
-	float y;
-	do{
-		y = -logf(Random.randF());
-	}while(Random.randF() > expf(-_sqr(y - 1.0f)*0.5f));
-	if(rand() & 0x1)	return y * sigma * ONE_OVER_SIGMA_EXP;
-	else				return -y * sigma * ONE_OVER_SIGMA_EXP;
+    float y;
+    do
+    {
+        y = -logf(Random.randF());
+    } while (Random.randF() > expf(-_sqr(y - 1.0f) * 0.5f));
+    if (rand() & 0x1)
+        return y * sigma * ONE_OVER_SIGMA_EXP;
+    else
+        return -y * sigma * ONE_OVER_SIGMA_EXP;
 }
 
 void random_dir(Fvector& tgt_dir, const Fvector& src_dir, float dispersion)
 {
-	float sigma			= dispersion/3.f;
-	float alpha			= clampr		(_nrand(sigma),-dispersion,dispersion);
-	float theta			= Random.randF	(0,PI);
-	float r 			= tan			(alpha);
-	Fvector 			U,V,T;
-	Fvector::generate_orthonormal_basis	(src_dir,U,V);
-	U.mul				(r*_sin(theta));
-	V.mul				(r*_cos(theta));
-	T.add				(U,V);
-	tgt_dir.add			(src_dir,T).normalize();
+    float sigma = dispersion / 3.f;
+    float alpha = clampr(_nrand(sigma), -dispersion, dispersion);
+    float theta = Random.randF(0, PI);
+    float r = tan(alpha);
+    Fvector U, V, T;
+    Fvector::generate_orthonormal_basis(src_dir, U, V);
+    U.mul(r * _sin(theta));
+    V.mul(r * _cos(theta));
+    T.add(U, V);
+    tgt_dir.add(src_dir, T).normalize();
 }
 
-float CWeapon::GetWeaponDeterioration	()
+float CWeapon::GetWeaponDeterioration() { return conditionDecreasePerShot; };
+
+void CWeapon::FireTrace(const Fvector& P, const Fvector& D)
 {
-	return conditionDecreasePerShot;
-};
+    VERIFY(m_magazine.size());
 
-void CWeapon::FireTrace		(const Fvector& P, const Fvector& D)
+    CCartridge& l_cartridge = m_magazine.back();
+    //	Msg("ammo - %s", l_cartridge.m_ammoSect.c_str());
+    VERIFY(u16(-1) != l_cartridge.bullet_material_idx);
+    //-------------------------------------------------------------
+#pragma todo("KRodin: мне кажется, или здесь должно быть && вместо & ? Надо б посмотреть, работает ли оно вообще.")
+    l_cartridge.m_flags.set(CCartridge::cfTracer, (m_bHasTracers & !!l_cartridge.m_flags.test(CCartridge::cfTracer)));
+    if (m_u8TracerColorID != u8(-1))
+        l_cartridge.m_u8ColorID = m_u8TracerColorID;
+    //-------------------------------------------------------------
+    //повысить изношенность оружия с учетом влияния конкретного патрона
+    //	float Deterioration = GetWeaponDeterioration();
+    //	Msg("Deterioration = %f", Deterioration);
+    if (Core.Features.test(xrCore::Feature::npc_simplified_shooting))
+    {
+        CActor* actor = smart_cast<CActor*>(H_Parent());
+        if (actor)
+            ChangeCondition(-GetWeaponDeterioration() * l_cartridge.m_impair);
+    }
+    else
+        ChangeCondition(-GetWeaponDeterioration() * l_cartridge.m_impair);
+
+    float fire_disp = GetFireDispersion(true);
+
+    bool SendHit = SendHitAllowed(H_Parent());
+    //выстерлить пулю (с учетом возможной стрельбы дробью)
+    for (int i = 0; i < l_cartridge.m_buckShot; ++i)
+    {
+        FireBullet(P, D, fire_disp, l_cartridge, H_Parent()->ID(), ID(), SendHit);
+    }
+
+    StartShotParticles();
+
+    if (m_bLightShotEnabled)
+        Light_Start();
+
+    // Ammo
+    m_magazine.pop_back();
+    --iAmmoElapsed;
+
+    //проверить не произошла ли осечка
+    // CheckForMisfire();
+
+    VERIFY((u32)iAmmoElapsed == m_magazine.size());
+}
+
+void CWeapon::Fire2Start() { bWorking2 = true; }
+void CWeapon::Fire2End()
 {
-	VERIFY		(m_magazine.size());
+    //принудительно останавливать зацикленные партиклы
+    if (m_pFlameParticles2 && m_pFlameParticles2->IsLooped())
+        StopFlameParticles2();
 
-	CCartridge &l_cartridge = m_magazine.back();
-//	Msg("ammo - %s", l_cartridge.m_ammoSect.c_str());
-	VERIFY		(u16(-1) != l_cartridge.bullet_material_idx);
-	//-------------------------------------------------------------
-#pragma todo( "KRodin: мне кажется, или здесь должно быть && вместо & ? Надо б посмотреть, работает ли оно вообще." )
-	l_cartridge.m_flags.set(CCartridge::cfTracer, (m_bHasTracers & !!l_cartridge.m_flags.test(CCartridge::cfTracer)));
-	if (m_u8TracerColorID != u8(-1))
-		l_cartridge.m_u8ColorID	= m_u8TracerColorID;
-	//-------------------------------------------------------------
-	//повысить изношенность оружия с учетом влияния конкретного патрона
-//	float Deterioration = GetWeaponDeterioration();
-//	Msg("Deterioration = %f", Deterioration);
-	if ( Core.Features.test( xrCore::Feature::npc_simplified_shooting ) ) {
-	  CActor *actor = smart_cast<CActor*>( H_Parent() );
-	  if ( actor )
-	    ChangeCondition( -GetWeaponDeterioration() * l_cartridge.m_impair );
-	}
-	else
-	  ChangeCondition( -GetWeaponDeterioration() * l_cartridge.m_impair );
-
-	
-	float fire_disp				= GetFireDispersion(true);
-
-	bool SendHit = SendHitAllowed(H_Parent());
-	//выстерлить пулю (с учетом возможной стрельбы дробью)
-	for(int i = 0; i < l_cartridge.m_buckShot; ++i) 
-	{
-		FireBullet(P, D, fire_disp, l_cartridge, H_Parent()->ID(), ID(), SendHit);
-	}
-
-	StartShotParticles		();
-	
-	if(m_bLightShotEnabled) 
-		Light_Start			();
-
-	
-	// Ammo
-	m_magazine.pop_back	();
-	--iAmmoElapsed;
-
-	//проверить не произошла ли осечка
-	//CheckForMisfire();
-
-	VERIFY((u32)iAmmoElapsed == m_magazine.size());
+    bWorking2 = false;
 }
 
-void CWeapon::Fire2Start()				
-{ 
-	bWorking2=true;	
-}
-void CWeapon::Fire2End	()
-{ 
-	//принудительно останавливать зацикленные партиклы
-	if(m_pFlameParticles2 && m_pFlameParticles2->IsLooped()) 
-		StopFlameParticles2	();
-
-	bWorking2=false;
-}
-
-void CWeapon::StopShooting		()
+void CWeapon::StopShooting()
 {
-	//m_bPending = true;
+    // m_bPending = true;
 
-	//принудительно останавливать зацикленные партиклы
-	if(m_pFlameParticles && m_pFlameParticles->IsLooped())
-		StopFlameParticles	();	
+    //принудительно останавливать зацикленные партиклы
+    if (m_pFlameParticles && m_pFlameParticles->IsLooped())
+        StopFlameParticles();
 
-	SwitchState(eIdle);
+    SwitchState(eIdle);
 
-	bWorking = false;
-	//if(IsWorking()) FireEnd();
+    bWorking = false;
+    // if(IsWorking()) FireEnd();
 }
 
-void CWeapon::FireEnd				() 
+void CWeapon::FireEnd()
 {
-	CShootingObject::FireEnd();
-	ClearShotEffector();
+    CShootingObject::FireEnd();
+    ClearShotEffector();
 }
 
-
-void CWeapon::StartFlameParticles2	()
+void CWeapon::StartFlameParticles2() { CShootingObject::StartParticles(m_pFlameParticles2, *m_sFlameParticles2, get_LastFP2()); }
+void CWeapon::StopFlameParticles2() { CShootingObject::StopParticles(m_pFlameParticles2); }
+void CWeapon::UpdateFlameParticles2()
 {
-	CShootingObject::StartParticles (m_pFlameParticles2, *m_sFlameParticles2, get_LastFP2());
-}
-void CWeapon::StopFlameParticles2	()
-{
-	CShootingObject::StopParticles (m_pFlameParticles2);
-}
-void CWeapon::UpdateFlameParticles2	()
-{
-	if (m_pFlameParticles2)			CShootingObject::UpdateParticles (m_pFlameParticles2, get_LastFP2());
+    if (m_pFlameParticles2)
+        CShootingObject::UpdateParticles(m_pFlameParticles2, get_LastFP2());
 }

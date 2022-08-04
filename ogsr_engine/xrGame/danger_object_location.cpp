@@ -10,17 +10,8 @@
 #include "danger_object_location.h"
 #include "gameobject.h"
 
-const Fvector &CDangerObjectLocation::position	() const
-{
-	return		(m_object->Position());
-}
+const Fvector& CDangerObjectLocation::position() const { return (m_object->Position()); }
 
-bool CDangerObjectLocation::useful				() const
-{
-	return		(true);
-}
+bool CDangerObjectLocation::useful() const { return (true); }
 
-bool CDangerObjectLocation::operator==			(const CObject *object) const
-{
-	return		(m_object->ID() == object->ID());
-}
+bool CDangerObjectLocation::operator==(const CObject* object) const { return (m_object->ID() == object->ID()); }

@@ -3,37 +3,38 @@
 
 class CBaseMonster;
 
-class CMonsterHitMemory {
-	CBaseMonster			*monster;
-	TTime					time_memory;
+class CMonsterHitMemory
+{
+    CBaseMonster* monster;
+    TTime time_memory;
 
-	MONSTER_HIT_VECTOR		m_hits;
+    MONSTER_HIT_VECTOR m_hits;
 
 public:
-						CMonsterHitMemory		();
-						~CMonsterHitMemory		();
+    CMonsterHitMemory();
+    ~CMonsterHitMemory();
 
-	void				init_external			(CBaseMonster *M, TTime mem_time);
-	void				update					();
+    void init_external(CBaseMonster* M, TTime mem_time);
+    void update();
 
-	// -----------------------------------------------------
-	bool				is_hit					() {return !m_hits.empty();}
-	bool				is_hit					(CObject *pO);
+    // -----------------------------------------------------
+    bool is_hit() { return !m_hits.empty(); }
+    bool is_hit(CObject* pO);
 
-	// Lain: added
-	int                 get_num_hits            () {return u32(m_hits.size()); }
+    // Lain: added
+    int get_num_hits() { return u32(m_hits.size()); }
 
-	void				add_hit					(CObject *who, EHitSide side);
-	
-	Fvector				get_last_hit_dir		();
-	TTime				get_last_hit_time		();
-	CObject				*get_last_hit_object	();
-	Fvector				get_last_hit_position	();
-	
-	void				clear					() {m_hits.clear();}
+    void add_hit(CObject* who, EHitSide side);
 
-	void				remove_hit_info			(const CObject *obj);
+    Fvector get_last_hit_dir();
+    TTime get_last_hit_time();
+    CObject* get_last_hit_object();
+    Fvector get_last_hit_position();
+
+    void clear() { m_hits.clear(); }
+
+    void remove_hit_info(const CObject* obj);
 
 private:
-	void				remove_non_actual		();
+    void remove_non_actual();
 };

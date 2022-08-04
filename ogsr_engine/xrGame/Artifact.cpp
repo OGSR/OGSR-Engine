@@ -17,754 +17,758 @@
 #include "actor.h"
 #include "patrol_path_storage.h"
 
-#define	FASTMODE_DISTANCE (50.f)	//distance to camera from sphere, when zone switches to fast update sequence
+#define FASTMODE_DISTANCE (50.f) // distance to camera from sphere, when zone switches to fast update sequence
 
-#define CHOOSE_MAX(x,inst_x,y,inst_y,z,inst_z)\
-	if(x>y)\
-		if(x>z){inst_x;}\
-		else{inst_z;}\
-	else\
-		if(y>z){inst_y;}\
-		else{inst_z;}
+#define CHOOSE_MAX(x, inst_x, y, inst_y, z, inst_z) \
+    if (x > y) \
+        if (x > z) \
+        { \
+            inst_x; \
+        } \
+        else \
+        { \
+            inst_z; \
+        } \
+    else if (y > z) \
+    { \
+        inst_y; \
+    } \
+    else \
+    { \
+        inst_z; \
+    }
 
-struct SArtefactActivation{
-	enum EActivationStates		{eNone=0, eStarting, eFlying, eBeforeSpawn, eSpawnZone, eMax};
-	struct SStateDef{
-		float		m_time;
-		shared_str	m_snd;
-		Fcolor		m_light_color;
-		float		m_light_range{};
-		shared_str	m_particle;
-		shared_str	m_animation;
-		
-					SStateDef	():m_time(0.0f){};
-		void		Load		(LPCSTR section, LPCSTR name);
-	};
+struct SArtefactActivation
+{
+    enum EActivationStates
+    {
+        eNone = 0,
+        eStarting,
+        eFlying,
+        eBeforeSpawn,
+        eSpawnZone,
+        eMax
+    };
+    struct SStateDef
+    {
+        float m_time;
+        shared_str m_snd;
+        Fcolor m_light_color;
+        float m_light_range{};
+        shared_str m_particle;
+        shared_str m_animation;
 
-	SArtefactActivation			(CArtefact* af, u32 owner_id);
-	~SArtefactActivation		();
-	CArtefact*					m_af;
-	svector<SStateDef,eMax>		m_activation_states;
-	EActivationStates			m_cur_activation_state;
-	float						m_cur_state_time;
+        SStateDef() : m_time(0.0f){};
+        void Load(LPCSTR section, LPCSTR name);
+    };
 
-	ref_light					m_light;
-	ref_sound					m_snd;
-	
-	u32							m_owner_id;
+    SArtefactActivation(CArtefact* af, u32 owner_id);
+    ~SArtefactActivation();
+    CArtefact* m_af;
+    svector<SStateDef, eMax> m_activation_states;
+    EActivationStates m_cur_activation_state;
+    float m_cur_state_time;
 
-	void						UpdateActivation				();
-	void						Load							();
-	void						Start							();
-	void						ChangeEffects					();
-	void						UpdateEffects					();
-	void						SpawnAnomaly					();
-	void						PhDataUpdate					(dReal step);
+    ref_light m_light;
+    ref_sound m_snd;
+
+    u32 m_owner_id;
+
+    void UpdateActivation();
+    void Load();
+    void Start();
+    void ChangeEffects();
+    void UpdateEffects();
+    void SpawnAnomaly();
+    void PhDataUpdate(dReal step);
 };
 
-
-CArtefact::CArtefact() 
+CArtefact::CArtefact()
 {
-	shedule.t_min				= 20;
-	shedule.t_max				= 50;
-	m_sParticlesName			= nullptr;
-	m_pTrailLight				= nullptr;
-	m_activationObj				= nullptr;
+    shedule.t_min = 20;
+    shedule.t_max = 50;
+    m_sParticlesName = nullptr;
+    m_pTrailLight = nullptr;
+    m_activationObj = nullptr;
 }
 
-
-void CArtefact::Load(LPCSTR section) 
+void CArtefact::Load(LPCSTR section)
 {
-	inherited::Load			(section);
+    inherited::Load(section);
 
+    if (pSettings->line_exist(section, "particles"))
+        m_sParticlesName = pSettings->r_string(section, "particles");
 
-	if (pSettings->line_exist(section, "particles"))
-		m_sParticlesName	= pSettings->r_string(section, "particles");
+    m_bLightsEnabled = !!pSettings->r_bool(section, "lights_enabled");
+    if (m_bLightsEnabled)
+    {
+        sscanf(pSettings->r_string(section, "trail_light_color"), "%f,%f,%f", &m_TrailLightColor.r, &m_TrailLightColor.g, &m_TrailLightColor.b);
+        m_fTrailLightRange = pSettings->r_float(section, "trail_light_range");
+    }
 
-	m_bLightsEnabled		= !!pSettings->r_bool(section, "lights_enabled");
-	if(m_bLightsEnabled){
-		sscanf(pSettings->r_string(section,"trail_light_color"), "%f,%f,%f", 
-			&m_TrailLightColor.r, &m_TrailLightColor.g, &m_TrailLightColor.b);
-		m_fTrailLightRange	= pSettings->r_float(section,"trail_light_range");
-	}
-
-
-	{
-		m_fHealthRestoreSpeed = pSettings->r_float		(section,"health_restore_speed"		);
-		m_fSatietyRestoreSpeed = pSettings->r_float		(section,"satiety_restore_speed"	);
-		m_fPowerRestoreSpeed = pSettings->r_float		(section,"power_restore_speed"		);
-		m_fBleedingRestoreSpeed = pSettings->r_float	(section,"bleeding_restore_speed"	);
-		if(pSettings->section_exist(/**cNameSect(), */pSettings->r_string(section,"hit_absorbation_sect")))
-			m_ArtefactHitImmunities.LoadImmunities(pSettings->r_string(section,"hit_absorbation_sect"),pSettings);
-		m_additional_weight  = READ_IF_EXISTS( pSettings, r_float, section, "additional_inventory_weight",  0.f );
-		m_additional_weight2 = READ_IF_EXISTS( pSettings, r_float, section, "additional_inventory_weight2", 0.f );
-		m_fThirstRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "thirst_restore_speed", 0.f);
-	}
-	m_bCanSpawnZone = !!pSettings->line_exist("artefact_spawn_zones", section);
-	m_af_rank = READ_IF_EXISTS(pSettings, r_u8, section, "af_rank", 0);
+    {
+        m_fHealthRestoreSpeed = pSettings->r_float(section, "health_restore_speed");
+        m_fSatietyRestoreSpeed = pSettings->r_float(section, "satiety_restore_speed");
+        m_fPowerRestoreSpeed = pSettings->r_float(section, "power_restore_speed");
+        m_fBleedingRestoreSpeed = pSettings->r_float(section, "bleeding_restore_speed");
+        if (pSettings->section_exist(/**cNameSect(), */ pSettings->r_string(section, "hit_absorbation_sect")))
+            m_ArtefactHitImmunities.LoadImmunities(pSettings->r_string(section, "hit_absorbation_sect"), pSettings);
+        m_additional_weight = READ_IF_EXISTS(pSettings, r_float, section, "additional_inventory_weight", 0.f);
+        m_additional_weight2 = READ_IF_EXISTS(pSettings, r_float, section, "additional_inventory_weight2", 0.f);
+        m_fThirstRestoreSpeed = READ_IF_EXISTS(pSettings, r_float, section, "thirst_restore_speed", 0.f);
+    }
+    m_bCanSpawnZone = !!pSettings->line_exist("artefact_spawn_zones", section);
+    m_af_rank = READ_IF_EXISTS(pSettings, r_u8, section, "af_rank", 0);
 }
 
-BOOL CArtefact::net_Spawn(CSE_Abstract* DC) 
+BOOL CArtefact::net_Spawn(CSE_Abstract* DC)
 {
-	if (READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "can_be_controlled", false))
-		m_detectorObj = xr_new<SArtefactDetectorsSupport>(this);
+    if (READ_IF_EXISTS(pSettings, r_bool, cNameSect(), "can_be_controlled", false))
+        m_detectorObj = xr_new<SArtefactDetectorsSupport>(this);
 
-	BOOL result = inherited::net_Spawn(DC);
+    BOOL result = inherited::net_Spawn(DC);
 
-	SwitchAfParticles(true);
+    SwitchAfParticles(true);
 
-	VERIFY(m_pTrailLight == NULL);
-	m_pTrailLight = ::Render->light_create();
-	m_pTrailLight->set_shadow(true);
+    VERIFY(m_pTrailLight == NULL);
+    m_pTrailLight = ::Render->light_create();
+    m_pTrailLight->set_shadow(true);
 
-	StartLights();
-	/////////////////////////////////////////
-	m_CarringBoneID = u16(-1);
-	/////////////////////////////////////////
-	IKinematicsAnimated	*K=smart_cast<IKinematicsAnimated*>(Visual());
-	if(K)K->PlayCycle("idle");
-	
-	o_fastmode					= FALSE	;		// start initially with fast-mode enabled
-	o_render_frame				= 0		;
-	SetState					(eHidden);
+    StartLights();
+    /////////////////////////////////////////
+    m_CarringBoneID = u16(-1);
+    /////////////////////////////////////////
+    IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(Visual());
+    if (K)
+        K->PlayCycle("idle");
 
-	return result;	
+    o_fastmode = FALSE; // start initially with fast-mode enabled
+    o_render_frame = 0;
+    SetState(eHidden);
+
+    return result;
 }
 
-void CArtefact::net_Destroy() 
+void CArtefact::net_Destroy()
 {
-	inherited::net_Destroy		();
+    inherited::net_Destroy();
 
-	StopLights					();
-	m_pTrailLight.destroy		();
-	CPHUpdateObject::Deactivate	();
-	xr_delete					(m_activationObj);
-	xr_delete(m_detectorObj);
+    StopLights();
+    m_pTrailLight.destroy();
+    CPHUpdateObject::Deactivate();
+    xr_delete(m_activationObj);
+    xr_delete(m_detectorObj);
 }
 
-void CArtefact::OnH_A_Chield() 
+void CArtefact::OnH_A_Chield()
 {
-	inherited::OnH_A_Chield		();
+    inherited::OnH_A_Chield();
 
-	StopLights();
+    StopLights();
 
-	SwitchAfParticles(false);
+    SwitchAfParticles(false);
 
-	if (m_detectorObj)
-	{
-		m_detectorObj->m_currPatrolPath = nullptr;
-		m_detectorObj->m_currPatrolVertex = nullptr;
-	}
+    if (m_detectorObj)
+    {
+        m_detectorObj->m_currPatrolPath = nullptr;
+        m_detectorObj->m_currPatrolVertex = nullptr;
+    }
 }
 
-void CArtefact::OnH_B_Independent(bool just_before_destroy) 
+void CArtefact::OnH_B_Independent(bool just_before_destroy)
 {
-	VERIFY(!ph_world->Processing());
-	inherited::OnH_B_Independent(just_before_destroy);
+    VERIFY(!ph_world->Processing());
+    inherited::OnH_B_Independent(just_before_destroy);
 
-	StartLights();
-	SwitchAfParticles(true);
+    StartLights();
+    SwitchAfParticles(true);
 }
 
 // called only in "fast-mode"
-void CArtefact::UpdateCL		() 
+void CArtefact::UpdateCL()
 {
-	inherited::UpdateCL			();
-	
-	if (o_fastmode || m_activationObj)
-		UpdateWorkload			(Device.dwTimeDelta);
+    inherited::UpdateCL();
+
+    if (o_fastmode || m_activationObj)
+        UpdateWorkload(Device.dwTimeDelta);
 }
 
-void CArtefact::UpdateWorkload		(u32 dt) 
+void CArtefact::UpdateWorkload(u32 dt)
 {
-	VERIFY(!ph_world->Processing());
-	// particles - velocity
-	Fvector vel = {0, 0, 0};
-	if (H_Parent()) 
-	{
-		CPhysicsShellHolder* pPhysicsShellHolder = smart_cast<CPhysicsShellHolder*>(H_Parent());
-		if(pPhysicsShellHolder) pPhysicsShellHolder->PHGetLinearVell(vel);
-	}
-	CParticlesPlayer::SetParentVel	(vel);
+    VERIFY(!ph_world->Processing());
+    // particles - velocity
+    Fvector vel = {0, 0, 0};
+    if (H_Parent())
+    {
+        CPhysicsShellHolder* pPhysicsShellHolder = smart_cast<CPhysicsShellHolder*>(H_Parent());
+        if (pPhysicsShellHolder)
+            pPhysicsShellHolder->PHGetLinearVell(vel);
+    }
+    CParticlesPlayer::SetParentVel(vel);
 
-	// 
-	UpdateLights					();
-	if(m_activationObj)	{
-		CPHUpdateObject::Activate			();
-		m_activationObj->UpdateActivation	();
-		return	;
-	}
+    //
+    UpdateLights();
+    if (m_activationObj)
+    {
+        CPHUpdateObject::Activate();
+        m_activationObj->UpdateActivation();
+        return;
+    }
 
-	// custom-logic
-	UpdateCLChild					();
+    // custom-logic
+    UpdateCLChild();
 }
 
-void CArtefact::shedule_Update		(u32 dt) 
+void CArtefact::shedule_Update(u32 dt)
 {
-	inherited::shedule_Update		(dt);
+    inherited::shedule_Update(dt);
 
-	//////////////////////////////////////////////////////////////////////////
-	// check "fast-mode" border
-	if (H_Parent())			o_switch_2_slow	();
-	else					{
-		Fvector	center;			Center(center);
-		BOOL	rendering		= (Device.dwFrame==o_render_frame);
-		float	cam_distance	= Device.vCameraPosition.distance_to(center)-Radius();
-		if (rendering || (cam_distance < FASTMODE_DISTANCE))	o_switch_2_fast	();
-		else													o_switch_2_slow	();
-	}
-	if (!o_fastmode)		UpdateWorkload	(dt);
+    //////////////////////////////////////////////////////////////////////////
+    // check "fast-mode" border
+    if (H_Parent())
+        o_switch_2_slow();
+    else
+    {
+        Fvector center;
+        Center(center);
+        BOOL rendering = (Device.dwFrame == o_render_frame);
+        float cam_distance = Device.vCameraPosition.distance_to(center) - Radius();
+        if (rendering || (cam_distance < FASTMODE_DISTANCE))
+            o_switch_2_fast();
+        else
+            o_switch_2_slow();
+    }
+    if (!o_fastmode)
+        UpdateWorkload(dt);
 
-	if (!H_Parent() && m_detectorObj)
-		m_detectorObj->UpdateOnFrame();
+    if (!H_Parent() && m_detectorObj)
+        m_detectorObj->UpdateOnFrame();
 }
 
-
-void CArtefact::create_physic_shell	()
+void CArtefact::create_physic_shell()
 {
-	///create_box2sphere_physic_shell	();
-	m_pPhysicsShell=P_build_Shell(this,false);
-	m_pPhysicsShell->Deactivate();
+    /// create_box2sphere_physic_shell	();
+    m_pPhysicsShell = P_build_Shell(this, false);
+    m_pPhysicsShell->Deactivate();
 }
 
 void CArtefact::StartLights()
 {
-	VERIFY(!ph_world->Processing());
-	if(!m_bLightsEnabled) return;
+    VERIFY(!ph_world->Processing());
+    if (!m_bLightsEnabled)
+        return;
 
-	//включить световую подсветку от двигателя
-	m_pTrailLight->set_color(m_TrailLightColor.r, 
-		m_TrailLightColor.g, 
-		m_TrailLightColor.b);
+    //включить световую подсветку от двигателя
+    m_pTrailLight->set_color(m_TrailLightColor.r, m_TrailLightColor.g, m_TrailLightColor.b);
 
-	m_pTrailLight->set_range(m_fTrailLightRange);
-	m_pTrailLight->set_position(Position()); 
-	m_pTrailLight->set_active(true);
+    m_pTrailLight->set_range(m_fTrailLightRange);
+    m_pTrailLight->set_position(Position());
+    m_pTrailLight->set_active(true);
 }
 
 void CArtefact::StopLights()
 {
-	VERIFY(!ph_world->Processing());
-	if(!m_bLightsEnabled) return;
-	m_pTrailLight->set_active(false);
+    VERIFY(!ph_world->Processing());
+    if (!m_bLightsEnabled)
+        return;
+    m_pTrailLight->set_active(false);
 }
 
 void CArtefact::UpdateLights()
 {
-	VERIFY(!ph_world->Processing());
-	if(!m_bLightsEnabled || !m_pTrailLight->get_active()) return;
-	m_pTrailLight->set_position(Position());
+    VERIFY(!ph_world->Processing());
+    if (!m_bLightsEnabled || !m_pTrailLight->get_active())
+        return;
+    m_pTrailLight->set_position(Position());
 }
 
-void CArtefact::ActivateArtefact	()
+void CArtefact::ActivateArtefact()
 {
-	VERIFY(m_bCanSpawnZone);
-	VERIFY( H_Parent() );
-	m_activationObj = xr_new<SArtefactActivation>(this,H_Parent()->ID());
-	m_activationObj->Start();
-
+    VERIFY(m_bCanSpawnZone);
+    VERIFY(H_Parent());
+    m_activationObj = xr_new<SArtefactActivation>(this, H_Parent()->ID());
+    m_activationObj->Start();
 }
 
-void CArtefact::PhDataUpdate	(dReal step)
+void CArtefact::PhDataUpdate(dReal step)
 {
-	if(m_activationObj)
-		m_activationObj->PhDataUpdate			(step);
+    if (m_activationObj)
+        m_activationObj->PhDataUpdate(step);
 }
 
 bool CArtefact::CanTake() const
 {
-	if(!inherited::CanTake())return false;
-	return (m_activationObj==NULL);
+    if (!inherited::CanTake())
+        return false;
+    return (m_activationObj == NULL);
 }
 
-void CArtefact::Hide( bool now )
-{
-	SwitchState(eHiding);
-}
+void CArtefact::Hide(bool now) { SwitchState(eHiding); }
 
-void CArtefact::Show( bool now )
-{
-	SwitchState(eShowing);
-}
+void CArtefact::Show(bool now) { SwitchState(eShowing); }
 #include "inventoryOwner.h"
 #include "Entity_alive.h"
 void CArtefact::UpdateXForm()
 {
-	if (Device.dwFrame!=dwXF_Frame)
-	{
-		dwXF_Frame			= Device.dwFrame;
+    if (Device.dwFrame != dwXF_Frame)
+    {
+        dwXF_Frame = Device.dwFrame;
 
-		if (0==H_Parent())	return;
+        if (0 == H_Parent())
+            return;
 
-		// Get access to entity and its visual
-		CEntityAlive*		E		= smart_cast<CEntityAlive*>(H_Parent());
-        
-		if(!E)				return	;
+        // Get access to entity and its visual
+        CEntityAlive* E = smart_cast<CEntityAlive*>(H_Parent());
 
-		const CInventoryOwner	*parent = smart_cast<const CInventoryOwner*>(E);
-		if (parent && parent->use_simplified_visual())
-			return;
+        if (!E)
+            return;
 
-		VERIFY				(E);
-		IKinematics*		V		= smart_cast<IKinematics*>	(E->Visual());
-		VERIFY				(V);
+        const CInventoryOwner* parent = smart_cast<const CInventoryOwner*>(E);
+        if (parent && parent->use_simplified_visual())
+            return;
 
-		// Get matrices
-		int					boneL,boneR,boneR2;
-		E->g_WeaponBones	(boneL,boneR,boneR2);
+        VERIFY(E);
+        IKinematics* V = smart_cast<IKinematics*>(E->Visual());
+        VERIFY(V);
 
-		boneL = boneR2;
+        // Get matrices
+        int boneL, boneR, boneR2;
+        E->g_WeaponBones(boneL, boneR, boneR2);
 
-		V->CalculateBones	();
-		Fmatrix& mL			= V->LL_GetTransform(u16(boneL));
-		Fmatrix& mR			= V->LL_GetTransform(u16(boneR));
+        boneL = boneR2;
 
-		// Calculate
-		Fmatrix				mRes;
-		Fvector				R,D,N;
-		D.sub				(mL.c,mR.c);	D.normalize_safe();
-		R.crossproduct		(mR.j,D);		R.normalize_safe();
-		N.crossproduct		(D,R);			N.normalize_safe();
-		mRes.set			(R,N,D,mR.c);
-		mRes.mulA_43		(E->XFORM());
-//		UpdatePosition		(mRes);
-		XFORM().mul			(mRes,offset());
-	}
+        V->CalculateBones();
+        Fmatrix& mL = V->LL_GetTransform(u16(boneL));
+        Fmatrix& mR = V->LL_GetTransform(u16(boneR));
+
+        // Calculate
+        Fmatrix mRes;
+        Fvector R, D, N;
+        D.sub(mL.c, mR.c);
+        D.normalize_safe();
+        R.crossproduct(mR.j, D);
+        R.normalize_safe();
+        N.crossproduct(D, R);
+        N.normalize_safe();
+        mRes.set(R, N, D, mR.c);
+        mRes.mulA_43(E->XFORM());
+        //		UpdatePosition		(mRes);
+        XFORM().mul(mRes, offset());
+    }
 }
 #include "xr_level_controller.h"
-bool CArtefact::Action(s32 cmd, u32 flags) 
+bool CArtefact::Action(s32 cmd, u32 flags)
 {
-	switch (cmd)
-	{
-	case kWPN_FIRE:
-		{
-			if (flags&CMD_START && m_bCanSpawnZone){
-				SwitchState(eActivating);
-				return true;
-			}
-			if (flags&CMD_STOP && m_bCanSpawnZone && GetState()==eActivating)
-			{
-				SwitchState(eIdle);
-				return true;
-			}
-		}break;
-	default:
-		break;
-	}
-	return inherited::Action(cmd,flags);
+    switch (cmd)
+    {
+    case kWPN_FIRE: {
+        if (flags & CMD_START && m_bCanSpawnZone)
+        {
+            SwitchState(eActivating);
+            return true;
+        }
+        if (flags & CMD_STOP && m_bCanSpawnZone && GetState() == eActivating)
+        {
+            SwitchState(eIdle);
+            return true;
+        }
+    }
+    break;
+    default: break;
+    }
+    return inherited::Action(cmd, flags);
 }
 
 void CArtefact::OnStateSwitch(u32 S, u32 oldState)
 {
-	inherited::OnStateSwitch(S, oldState);
-	switch (S)
-	{
-	case eShowing: 
-	{ 
-		PlayHUDMotion({ "anim_show", "anm_show" }, false, S);
-	} break;
-	case eHiding:
-	{
-		if (oldState != eHiding)
-			PlayHUDMotion({ "anim_hide", "anm_hide" }, true, S);
-	} break;
-	case eActivating:
-	{
-		PlayHUDMotion({ "anim_activate", "anm_activate" }, true, S);
-	} break;
-	case eIdle:
-	{ 
-		PlayAnimIdle();
-	} break;
-	}
+    inherited::OnStateSwitch(S, oldState);
+    switch (S)
+    {
+    case eShowing: {
+        PlayHUDMotion({"anim_show", "anm_show"}, false, S);
+    }
+    break;
+    case eHiding: {
+        if (oldState != eHiding)
+            PlayHUDMotion({"anim_hide", "anm_hide"}, true, S);
+    }
+    break;
+    case eActivating: {
+        PlayHUDMotion({"anim_activate", "anm_activate"}, true, S);
+    }
+    break;
+    case eIdle: {
+        PlayAnimIdle();
+    }
+    break;
+    }
 }
 
-void CArtefact::PlayAnimIdle()
-{ 
-	PlayHUDMotion({ "anim_idle", "anm_idle" }, true, eIdle);
-}
+void CArtefact::PlayAnimIdle() { PlayHUDMotion({"anim_idle", "anm_idle"}, true, eIdle); }
 
 void CArtefact::OnAnimationEnd(u32 state)
 {
-	switch (state)
-	{
-	case eHiding:
-		{
-			SwitchState(eHidden);
-//.			if(m_pCurrentInventory->GetNextActiveSlot()!=NO_ACTIVE_SLOT)
-//.				m_pCurrentInventory->Activate(m_pCurrentInventory->GetPrevActiveSlot());
-		}break;
-	case eShowing:
-		{
-			SwitchState(eIdle);
-		}break;
-	case eActivating:
-		{
-			if(Local()){
-				SwitchState		(eHiding);
-				NET_Packet		P;
-				u_EventGen		(P, GEG_PLAYER_ACTIVATEARTEFACT, H_Parent()->ID());
-				P.w_u16			(ID());
-				u_EventSend		(P);	
-			}
-		}break;
-	default: inherited::OnAnimationEnd(state);
-	}
+    switch (state)
+    {
+    case eHiding: {
+        SwitchState(eHidden);
+        //.			if(m_pCurrentInventory->GetNextActiveSlot()!=NO_ACTIVE_SLOT)
+        //.				m_pCurrentInventory->Activate(m_pCurrentInventory->GetPrevActiveSlot());
+    }
+    break;
+    case eShowing: {
+        SwitchState(eIdle);
+    }
+    break;
+    case eActivating: {
+        if (Local())
+        {
+            SwitchState(eHiding);
+            NET_Packet P;
+            u_EventGen(P, GEG_PLAYER_ACTIVATEARTEFACT, H_Parent()->ID());
+            P.w_u16(ID());
+            u_EventSend(P);
+        }
+    }
+    break;
+    default: inherited::OnAnimationEnd(state);
+    }
 }
-
 
 void CArtefact::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count)
 {
-	str_name = NameShort();
-	str_count = "";
-	icon_sect_name = *cNameSect();
+    str_name = NameShort();
+    str_count = "";
+    icon_sect_name = *cNameSect();
 }
-
 
 void CArtefact::FollowByPath(LPCSTR path_name, int start_idx, Fvector magic_force)
 {
-	if (m_detectorObj)
-		m_detectorObj->FollowByPath(path_name, start_idx, magic_force);
+    if (m_detectorObj)
+        m_detectorObj->FollowByPath(path_name, start_idx, magic_force);
 }
 
 bool CArtefact::CanBeInvisible() { return (m_detectorObj != nullptr); }
 
 void CArtefact::SwitchVisibility(bool b)
 {
-	if (m_detectorObj)
-		m_detectorObj->SetVisible(b);
+    if (m_detectorObj)
+        m_detectorObj->SetVisible(b);
 }
 
 void CArtefact::SwitchAfParticles(bool bOn)
 {
-	if (m_sParticlesName.size() == 0)
-		return;
+    if (m_sParticlesName.size() == 0)
+        return;
 
-	if (bOn)
-	{
-		Fvector dir;
-		dir.set(0, 1, 0);
-		CParticlesPlayer::StartParticles(m_sParticlesName, dir, ID(), -1, false);
-	}
-	else
-	{
-		CParticlesPlayer::StopParticles(m_sParticlesName, BI_NONE, true);
-	}
+    if (bOn)
+    {
+        Fvector dir;
+        dir.set(0, 1, 0);
+        CParticlesPlayer::StartParticles(m_sParticlesName, dir, ID(), -1, false);
+    }
+    else
+    {
+        CParticlesPlayer::StopParticles(m_sParticlesName, BI_NONE, true);
+    }
 }
-
-
 
 //---SArtefactActivation----
-SArtefactActivation::SArtefactActivation(CArtefact* af,u32 owner_id)
+SArtefactActivation::SArtefactActivation(CArtefact* af, u32 owner_id)
 {
-	m_af			= af;
-	Load			();
-	m_light			= ::Render->light_create();
-	m_light->set_shadow(true);
-	m_owner_id		= owner_id;
+    m_af = af;
+    Load();
+    m_light = ::Render->light_create();
+    m_light->set_shadow(true);
+    m_owner_id = owner_id;
 }
-SArtefactActivation::~SArtefactActivation()
-{
-	m_light.destroy();
-
-}
+SArtefactActivation::~SArtefactActivation() { m_light.destroy(); }
 
 void SArtefactActivation::Load()
 {
-	for(int i=0; i<(int)eMax; ++i)
-		m_activation_states.push_back(SStateDef());
+    for (int i = 0; i < (int)eMax; ++i)
+        m_activation_states.push_back(SStateDef());
 
-	LPCSTR activation_seq = pSettings->r_string(*m_af->cNameSect(),"artefact_activation_seq");
+    LPCSTR activation_seq = pSettings->r_string(*m_af->cNameSect(), "artefact_activation_seq");
 
-
-	m_activation_states[(int)eStarting].Load(activation_seq,	"starting");
-	m_activation_states[(int)eFlying].Load(activation_seq,		"flying");
-	m_activation_states[(int)eBeforeSpawn].Load(activation_seq,	"idle_before_spawning");
-	m_activation_states[(int)eSpawnZone].Load(activation_seq,	"spawning");
-
+    m_activation_states[(int)eStarting].Load(activation_seq, "starting");
+    m_activation_states[(int)eFlying].Load(activation_seq, "flying");
+    m_activation_states[(int)eBeforeSpawn].Load(activation_seq, "idle_before_spawning");
+    m_activation_states[(int)eSpawnZone].Load(activation_seq, "spawning");
 }
 
 void SArtefactActivation::Start()
 {
-	VERIFY(!ph_world->Processing());
-	m_af->StopLights				();
-	m_cur_activation_state			= eStarting;
-	m_cur_state_time				= 0.0f;
-	
-	m_af->processing_activate();
+    VERIFY(!ph_world->Processing());
+    m_af->StopLights();
+    m_cur_activation_state = eStarting;
+    m_cur_state_time = 0.0f;
 
-	NET_Packet						P;
-	CGameObject::u_EventGen			(P,GE_OWNERSHIP_REJECT, m_af->H_Parent()->ID());
-	P.w_u16							(m_af->ID());
-	if (OnServer())
-		CGameObject::u_EventSend		(P);
-	m_light->set_active				(true);
-	ChangeEffects					();
+    m_af->processing_activate();
+
+    NET_Packet P;
+    CGameObject::u_EventGen(P, GE_OWNERSHIP_REJECT, m_af->H_Parent()->ID());
+    P.w_u16(m_af->ID());
+    if (OnServer())
+        CGameObject::u_EventSend(P);
+    m_light->set_active(true);
+    ChangeEffects();
 }
 
 void SArtefactActivation::UpdateActivation()
 {
-	VERIFY(!ph_world->Processing());
-	m_cur_state_time				+=	Device.fTimeDelta;
-	if(m_cur_state_time				>=	m_activation_states[int(m_cur_activation_state)].m_time){
-		m_cur_activation_state		=	(EActivationStates)(int)(m_cur_activation_state+1);
-		
-		if(m_cur_activation_state == eMax){
-			m_cur_activation_state = eNone;
+    VERIFY(!ph_world->Processing());
+    m_cur_state_time += Device.fTimeDelta;
+    if (m_cur_state_time >= m_activation_states[int(m_cur_activation_state)].m_time)
+    {
+        m_cur_activation_state = (EActivationStates)(int)(m_cur_activation_state + 1);
 
-			m_af->processing_deactivate			();
-			m_af->CPHUpdateObject::Deactivate	();
-			m_af->DestroyObject();
-		}
+        if (m_cur_activation_state == eMax)
+        {
+            m_cur_activation_state = eNone;
 
-		m_cur_state_time	= 0.0f;
-		ChangeEffects				();
+            m_af->processing_deactivate();
+            m_af->CPHUpdateObject::Deactivate();
+            m_af->DestroyObject();
+        }
 
+        m_cur_state_time = 0.0f;
+        ChangeEffects();
 
-	if(m_cur_activation_state==eSpawnZone && OnServer())
-		SpawnAnomaly	();
-
-	}
-	UpdateEffects				();
-
+        if (m_cur_activation_state == eSpawnZone && OnServer())
+            SpawnAnomaly();
+    }
+    UpdateEffects();
 }
 
 void SArtefactActivation::PhDataUpdate(dReal step)
 {
-	if (m_cur_activation_state==eFlying) {
-		Fvector dir	= {0, -1.f, 0};
-		if(Level().ObjectSpace.RayTest(m_af->Position(), dir, 1.0f, collide::rqtBoth,NULL,m_af) ){
-			dir.y = ph_world->Gravity()*1.1f; 
-			m_af->m_pPhysicsShell->applyGravityAccel(dir);
-		}
-	}
-
+    if (m_cur_activation_state == eFlying)
+    {
+        Fvector dir = {0, -1.f, 0};
+        if (Level().ObjectSpace.RayTest(m_af->Position(), dir, 1.0f, collide::rqtBoth, NULL, m_af))
+        {
+            dir.y = ph_world->Gravity() * 1.1f;
+            m_af->m_pPhysicsShell->applyGravityAccel(dir);
+        }
+    }
 }
 void SArtefactActivation::ChangeEffects()
 {
-	VERIFY(!ph_world->Processing());
-	SStateDef& state_def = m_activation_states[(int)m_cur_activation_state];
-	
-	if(m_snd._feedback())
-		m_snd.stop();
-	
-	if(state_def.m_snd.size()){
-		m_snd.create			(*state_def.m_snd,st_Effect,sg_SourceType);
-		m_snd.play_at_pos		(m_af,	m_af->Position());
-	};
+    VERIFY(!ph_world->Processing());
+    SStateDef& state_def = m_activation_states[(int)m_cur_activation_state];
 
-	m_light->set_range		(	state_def.m_light_range);
-	m_light->set_color		(	state_def.m_light_color.r,
-								state_def.m_light_color.g,
-								state_def.m_light_color.b);
-	
-	if(state_def.m_particle.size()){
-		Fvector dir;
-		dir.set(0,1,0);
+    if (m_snd._feedback())
+        m_snd.stop();
 
-		m_af->CParticlesPlayer::StartParticles(	state_def.m_particle,
-												dir,
-												m_af->ID(),
-												iFloor(state_def.m_time*1000) );
-	};
-	if(state_def.m_animation.size()){
-		IKinematicsAnimated	*K=smart_cast<IKinematicsAnimated*>(m_af->Visual());
-		if(K)K->PlayCycle(*state_def.m_animation);
-	}
+    if (state_def.m_snd.size())
+    {
+        m_snd.create(*state_def.m_snd, st_Effect, sg_SourceType);
+        m_snd.play_at_pos(m_af, m_af->Position());
+    };
 
+    m_light->set_range(state_def.m_light_range);
+    m_light->set_color(state_def.m_light_color.r, state_def.m_light_color.g, state_def.m_light_color.b);
+
+    if (state_def.m_particle.size())
+    {
+        Fvector dir;
+        dir.set(0, 1, 0);
+
+        m_af->CParticlesPlayer::StartParticles(state_def.m_particle, dir, m_af->ID(), iFloor(state_def.m_time * 1000));
+    };
+    if (state_def.m_animation.size())
+    {
+        IKinematicsAnimated* K = smart_cast<IKinematicsAnimated*>(m_af->Visual());
+        if (K)
+            K->PlayCycle(*state_def.m_animation);
+    }
 }
 
 void SArtefactActivation::UpdateEffects()
 {
-	VERIFY(!ph_world->Processing());
-	if(m_snd._feedback())
-		m_snd.set_position( m_af->Position() );
-	
-	m_light->set_position(m_af->Position());
+    VERIFY(!ph_world->Processing());
+    if (m_snd._feedback())
+        m_snd.set_position(m_af->Position());
+
+    m_light->set_position(m_af->Position());
 }
 
 void SArtefactActivation::SpawnAnomaly()
 {
-	VERIFY(!ph_world->Processing());
-	string128 tmp;
-	LPCSTR str			= pSettings->r_string("artefact_spawn_zones",*m_af->cNameSect());
-	VERIFY3(_GetItemCount(str) >= 3,"Bad record format in artefact_spawn_zones",str);
-	float zone_radius	= (float)atof(_GetItem(str,1,tmp));
-	u8 restrictor_type = RestrictionSpace::eRestrictorTypeNone;
-	if ( _GetItemCount( str ) > 3 && atoi( _GetItem( str, 3, tmp ) ) != 0 ) {
-	  restrictor_type = RestrictionSpace::eDefaultRestrictorTypeNone;
-  }
-	LPCSTR zone_sect	= _GetItem(str,0,tmp); //must be last call of _GetItem... (LPCSTR !!!)
+    VERIFY(!ph_world->Processing());
+    string128 tmp;
+    LPCSTR str = pSettings->r_string("artefact_spawn_zones", *m_af->cNameSect());
+    VERIFY3(_GetItemCount(str) >= 3, "Bad record format in artefact_spawn_zones", str);
+    float zone_radius = (float)atof(_GetItem(str, 1, tmp));
+    u8 restrictor_type = RestrictionSpace::eRestrictorTypeNone;
+    if (_GetItemCount(str) > 3 && atoi(_GetItem(str, 3, tmp)) != 0)
+    {
+        restrictor_type = RestrictionSpace::eDefaultRestrictorTypeNone;
+    }
+    LPCSTR zone_sect = _GetItem(str, 0, tmp); // must be last call of _GetItem... (LPCSTR !!!)
 
-		Fvector pos;
-		m_af->Center(pos);
-		u32 lvid = m_af->UsedAI_Locations() ? m_af->ai_location().level_vertex_id() : ai().level_graph().vertex(pos);
-		CSE_Abstract		*object = Level().spawn_item(	zone_sect,
-															pos,
-															lvid,
-															0xffff,
-															true
-		);
-		CSE_ALifeAnomalousZone*		AlifeZone = smart_cast<CSE_ALifeAnomalousZone*>(object);
-		VERIFY(AlifeZone);
-		CShapeData::shape_def		_shape;
-		_shape.data.sphere.P.set	(0.0f,0.0f,0.0f);
-		_shape.data.sphere.R		= zone_radius;
-		_shape.type					= CShapeData::cfSphere;
-		AlifeZone->assign_shapes	(&_shape,1);
-		AlifeZone->m_owner_id		= m_owner_id;
-		AlifeZone->m_space_restrictor_type	= restrictor_type;
+    Fvector pos;
+    m_af->Center(pos);
+    u32 lvid = m_af->UsedAI_Locations() ? m_af->ai_location().level_vertex_id() : ai().level_graph().vertex(pos);
+    CSE_Abstract* object = Level().spawn_item(zone_sect, pos, lvid, 0xffff, true);
+    CSE_ALifeAnomalousZone* AlifeZone = smart_cast<CSE_ALifeAnomalousZone*>(object);
+    VERIFY(AlifeZone);
+    CShapeData::shape_def _shape;
+    _shape.data.sphere.P.set(0.0f, 0.0f, 0.0f);
+    _shape.data.sphere.R = zone_radius;
+    _shape.type = CShapeData::cfSphere;
+    AlifeZone->assign_shapes(&_shape, 1);
+    AlifeZone->m_owner_id = m_owner_id;
+    AlifeZone->m_space_restrictor_type = restrictor_type;
 
-		NET_Packet					P;
-		object->Spawn_Write			(P,TRUE);
-		Level().Send				(P,net_flags(TRUE));
-		F_entity_Destroy			(object);
-//. #ifdef DEBUG
-		Msg("artefact [%s] spawned a zone [%s] at [%f]", *m_af->cName(), zone_sect, Device.fTimeGlobal);
-//. #endif
+    NET_Packet P;
+    object->Spawn_Write(P, TRUE);
+    Level().Send(P, net_flags(TRUE));
+    F_entity_Destroy(object);
+    //. #ifdef DEBUG
+    Msg("artefact [%s] spawned a zone [%s] at [%f]", *m_af->cName(), zone_sect, Device.fTimeGlobal);
+    //. #endif
 }
 
 static shared_str clear_brackets(LPCSTR src)
 {
-	if	(0==src)					return	shared_str(0);
-	
-	if( NULL == strchr(src,'"') )	return	shared_str(src);
+    if (0 == src)
+        return shared_str(0);
 
-	string512						_original;	
-	strcpy_s						(_original,src);
-	u32			_len				= xr_strlen(_original);
-	if	(0==_len)					return	shared_str("");
-	if	('"'==_original[_len-1])	_original[_len-1]=0;					// skip end
-	if	('"'==_original[0])			return	shared_str(&_original[0] + 1);	// skip begin
-	return									shared_str(_original);
+    if (NULL == strchr(src, '"'))
+        return shared_str(src);
 
+    string512 _original;
+    strcpy_s(_original, src);
+    u32 _len = xr_strlen(_original);
+    if (0 == _len)
+        return shared_str("");
+    if ('"' == _original[_len - 1])
+        _original[_len - 1] = 0; // skip end
+    if ('"' == _original[0])
+        return shared_str(&_original[0] + 1); // skip begin
+    return shared_str(_original);
 }
 void SArtefactActivation::SStateDef::Load(LPCSTR section, LPCSTR name)
 {
-	LPCSTR str = pSettings->r_string(section,name);
-	VERIFY(_GetItemCount(str)==8);
+    LPCSTR str = pSettings->r_string(section, name);
+    VERIFY(_GetItemCount(str) == 8);
 
+    string128 tmp;
 
-	string128 tmp;
+    m_time = (float)atof(_GetItem(str, 0, tmp));
 
-	m_time			= (float)atof(		_GetItem(str,0,tmp) );
-	
-	m_snd			= clear_brackets(	_GetItem(str,1,tmp) )	;
+    m_snd = clear_brackets(_GetItem(str, 1, tmp));
 
-	m_light_color.r = (float)atof(		_GetItem(str,2,tmp) );
-	m_light_color.g = (float)atof(		_GetItem(str,3,tmp) );
-	m_light_color.b = (float)atof(		_GetItem(str,4,tmp) );
+    m_light_color.r = (float)atof(_GetItem(str, 2, tmp));
+    m_light_color.g = (float)atof(_GetItem(str, 3, tmp));
+    m_light_color.b = (float)atof(_GetItem(str, 4, tmp));
 
-	m_light_range	= (float)atof(		_GetItem(str,5,tmp) );
+    m_light_range = (float)atof(_GetItem(str, 5, tmp));
 
-	m_particle		= clear_brackets(	_GetItem(str,6,tmp) );
-	m_animation		= clear_brackets(	_GetItem(str,7,tmp) );
-
+    m_particle = clear_brackets(_GetItem(str, 6, tmp));
+    m_animation = clear_brackets(_GetItem(str, 7, tmp));
 }
 
-
-SArtefactDetectorsSupport::SArtefactDetectorsSupport(CArtefact* A)
-	: m_parent(A), m_currPatrolPath(NULL), m_currPatrolVertex(NULL), m_switchVisTime(0)
-{
-}
+SArtefactDetectorsSupport::SArtefactDetectorsSupport(CArtefact* A) : m_parent(A), m_currPatrolPath(NULL), m_currPatrolVertex(NULL), m_switchVisTime(0) {}
 
 SArtefactDetectorsSupport::~SArtefactDetectorsSupport() { m_sound.destroy(); }
 void SArtefactDetectorsSupport::SetVisible(bool b)
 {
-	m_switchVisTime = Device.dwTimeGlobal;
-	if (b == !!m_parent->getVisible())
-		return;
+    m_switchVisTime = Device.dwTimeGlobal;
+    if (b == !!m_parent->getVisible())
+        return;
 
-	if (b)
-		m_parent->StartLights();
-	else
-		m_parent->StopLights();
+    if (b)
+        m_parent->StartLights();
+    else
+        m_parent->StopLights();
 
-	if (b)
-	{
-		LPCSTR curr =
-			pSettings->r_string(m_parent->cNameSect().c_str(), (b) ? "det_show_particles" : "det_hide_particles");
+    if (b)
+    {
+        LPCSTR curr = pSettings->r_string(m_parent->cNameSect().c_str(), (b) ? "det_show_particles" : "det_hide_particles");
 
-		IKinematics* K = smart_cast<IKinematics*>(m_parent->Visual());
-		R_ASSERT2(K, m_parent->cNameSect().c_str());
-		LPCSTR bone = pSettings->r_string(m_parent->cNameSect().c_str(), "particles_bone");
-		u16 bone_id = K->LL_BoneID(bone);
-		R_ASSERT2(bone_id != BI_NONE, bone);
+        IKinematics* K = smart_cast<IKinematics*>(m_parent->Visual());
+        R_ASSERT2(K, m_parent->cNameSect().c_str());
+        LPCSTR bone = pSettings->r_string(m_parent->cNameSect().c_str(), "particles_bone");
+        u16 bone_id = K->LL_BoneID(bone);
+        R_ASSERT2(bone_id != BI_NONE, bone);
 
-		m_parent->CParticlesPlayer::StartParticles(curr, bone_id, Fvector().set(0, 1, 0), m_parent->ID());
+        m_parent->CParticlesPlayer::StartParticles(curr, bone_id, Fvector().set(0, 1, 0), m_parent->ID());
 
-		curr = pSettings->r_string(m_parent->cNameSect().c_str(), (b) ? "det_show_snd" : "det_hide_snd");
-		m_sound.create(curr, st_Effect, sg_SourceType);
-		m_sound.play_at_pos(0, m_parent->Position(), 0);
-	}
+        curr = pSettings->r_string(m_parent->cNameSect().c_str(), (b) ? "det_show_snd" : "det_hide_snd");
+        m_sound.create(curr, st_Effect, sg_SourceType);
+        m_sound.play_at_pos(0, m_parent->Position(), 0);
+    }
 
-	m_parent->setVisible(b);
-	m_parent->SwitchAfParticles(b);
+    m_parent->setVisible(b);
+    m_parent->SwitchAfParticles(b);
 }
 
 void SArtefactDetectorsSupport::Blink()
 {
-	LPCSTR curr = pSettings->r_string(m_parent->cNameSect().c_str(), "det_show_particles");
+    LPCSTR curr = pSettings->r_string(m_parent->cNameSect().c_str(), "det_show_particles");
 
-	IKinematics* K = smart_cast<IKinematics*>(m_parent->Visual());
-	R_ASSERT2(K, m_parent->cNameSect().c_str());
-	LPCSTR bone = pSettings->r_string(m_parent->cNameSect().c_str(), "particles_bone");
-	u16 bone_id = K->LL_BoneID(bone);
-	R_ASSERT2(bone_id != BI_NONE, bone);
+    IKinematics* K = smart_cast<IKinematics*>(m_parent->Visual());
+    R_ASSERT2(K, m_parent->cNameSect().c_str());
+    LPCSTR bone = pSettings->r_string(m_parent->cNameSect().c_str(), "particles_bone");
+    u16 bone_id = K->LL_BoneID(bone);
+    R_ASSERT2(bone_id != BI_NONE, bone);
 
-	m_parent->CParticlesPlayer::StartParticles(curr, bone_id, Fvector().set(0, 1, 0), m_parent->ID(), 1000, true);
+    m_parent->CParticlesPlayer::StartParticles(curr, bone_id, Fvector().set(0, 1, 0), m_parent->ID(), 1000, true);
 }
 
 void SArtefactDetectorsSupport::UpdateOnFrame()
 {
-	if (m_currPatrolPath && !m_parent->getVisible())
-	{
-		if (m_parent->Position().distance_to(m_destPoint) < 2.0f)
-		{
-			CPatrolPath::const_iterator b, e;
-			m_currPatrolPath->begin(m_currPatrolVertex, b, e);
-			if (b != e)
-			{
-				std::advance(b, ::Random.randI(s32(e - b)));
-				m_currPatrolVertex = m_currPatrolPath->vertex((*b).vertex_id());
-				m_destPoint = m_currPatrolVertex->data().position();
-			}
-		}
-		float cos_et = _cos(deg2rad(45.f));
-		Fvector dir;
-		dir.sub(m_destPoint, m_parent->Position()).normalize_safe();
+    if (m_currPatrolPath && !m_parent->getVisible())
+    {
+        if (m_parent->Position().distance_to(m_destPoint) < 2.0f)
+        {
+            CPatrolPath::const_iterator b, e;
+            m_currPatrolPath->begin(m_currPatrolVertex, b, e);
+            if (b != e)
+            {
+                std::advance(b, ::Random.randI(s32(e - b)));
+                m_currPatrolVertex = m_currPatrolPath->vertex((*b).vertex_id());
+                m_destPoint = m_currPatrolVertex->data().position();
+            }
+        }
+        float cos_et = _cos(deg2rad(45.f));
+        Fvector dir;
+        dir.sub(m_destPoint, m_parent->Position()).normalize_safe();
 
-		Fvector v;
-		m_parent->PHGetLinearVell(v);
-		float cosa = v.dotproduct(dir);
-		if (v.square_magnitude() < (0.7f * 0.7f) || (cosa < cos_et))
-		{
-			Fvector power = dir;
-			power.y += 1.0f;
-			power.mul(m_path_moving_force);
-			m_parent->m_pPhysicsShell->applyGravityAccel(power);
-		}
-	}
+        Fvector v;
+        m_parent->PHGetLinearVell(v);
+        float cosa = v.dotproduct(dir);
+        if (v.square_magnitude() < (0.7f * 0.7f) || (cosa < cos_et))
+        {
+            Fvector power = dir;
+            power.y += 1.0f;
+            power.mul(m_path_moving_force);
+            m_parent->m_pPhysicsShell->applyGravityAccel(power);
+        }
+    }
 
-	if (m_parent->getVisible() && m_parent->GetAfRank() != 0 && m_switchVisTime + 5000 < Device.dwTimeGlobal)
-		SetVisible(false);
+    if (m_parent->getVisible() && m_parent->GetAfRank() != 0 && m_switchVisTime + 5000 < Device.dwTimeGlobal)
+        SetVisible(false);
 
-	u32 dwDt = 2 * 3600 * 1000 / 10; // 2 hour of game time
-	if (!m_parent->getVisible() && m_switchVisTime + dwDt < Device.dwTimeGlobal)
-	{
-		m_switchVisTime = Device.dwTimeGlobal;
-		if (m_parent->Position().distance_to(Device.vCameraPosition) > 40.0f)
-			Blink();
-	}
+    u32 dwDt = 2 * 3600 * 1000 / 10; // 2 hour of game time
+    if (!m_parent->getVisible() && m_switchVisTime + dwDt < Device.dwTimeGlobal)
+    {
+        m_switchVisTime = Device.dwTimeGlobal;
+        if (m_parent->Position().distance_to(Device.vCameraPosition) > 40.0f)
+            Blink();
+    }
 }
 
 void SArtefactDetectorsSupport::FollowByPath(LPCSTR path_name, int start_idx, Fvector force)
 {
-	m_currPatrolPath = ai().patrol_paths().path(path_name, true);
-	if (m_currPatrolPath)
-	{
-		m_currPatrolVertex = m_currPatrolPath->vertex(start_idx);
-		m_destPoint = m_currPatrolVertex->data().position();
-		m_path_moving_force = force;
-	}
+    m_currPatrolPath = ai().patrol_paths().path(path_name, true);
+    if (m_currPatrolPath)
+    {
+        m_currPatrolVertex = m_currPatrolPath->vertex(start_idx);
+        m_destPoint = m_currPatrolVertex->data().position();
+        m_path_moving_force = force;
+    }
 }

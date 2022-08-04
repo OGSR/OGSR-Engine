@@ -18,67 +18,60 @@
 
 using namespace StalkerDecisionSpace;
 
-CStalkerDangerUnknownPlanner::CStalkerDangerUnknownPlanner	(CAI_Stalker *object, LPCSTR action_name) :
-	inherited				(object,action_name)
+CStalkerDangerUnknownPlanner::CStalkerDangerUnknownPlanner(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+
+void CStalkerDangerUnknownPlanner::setup(CAI_Stalker* object, CPropertyStorage* storage)
 {
+    inherited::setup(object, storage);
+    clear();
+    add_evaluators();
+    add_actions();
 }
 
-void CStalkerDangerUnknownPlanner::setup					(CAI_Stalker *object, CPropertyStorage *storage)
+void CStalkerDangerUnknownPlanner::initialize()
 {
-	inherited::setup		(object,storage);
-	clear					();
-	add_evaluators			();
-	add_actions				();
+    inherited::initialize();
+
+    object().agent_manager().member().member(&object()).cover(0);
+
+    CScriptActionPlanner::m_storage.set_property(eWorldPropertyCoverReached, false);
+    CScriptActionPlanner::m_storage.set_property(eWorldPropertyLookedAround, false);
 }
 
-void CStalkerDangerUnknownPlanner::initialize				()
-{
-	inherited::initialize	();
-	
-	object().agent_manager().member().member(&object()).cover(0);
+void CStalkerDangerUnknownPlanner::update() { inherited::update(); }
 
-	CScriptActionPlanner::m_storage.set_property(eWorldPropertyCoverReached,false);
-	CScriptActionPlanner::m_storage.set_property(eWorldPropertyLookedAround,false);
+void CStalkerDangerUnknownPlanner::finalize() { inherited::finalize(); }
+
+void CStalkerDangerUnknownPlanner::add_evaluators()
+{
+    add_evaluator(eWorldPropertyDanger, xr_new<CStalkerPropertyEvaluatorDangers>(m_object, "danger"));
+    add_evaluator(eWorldPropertyCoverActual, xr_new<CStalkerPropertyEvaluatorDangerUnknownCoverActual>(m_object, "danger unknown : cover actual"));
+    add_evaluator(eWorldPropertyCoverReached,
+                  xr_new<CStalkerPropertyEvaluatorMember>((CPropertyStorage*)0, eWorldPropertyCoverReached, true, true, "danger unknown : cover reached"));
+    add_evaluator(eWorldPropertyLookedAround,
+                  xr_new<CStalkerPropertyEvaluatorMember>((CPropertyStorage*)0, eWorldPropertyLookedAround, true, true, "danger unknown : looked around"));
 }
 
-void CStalkerDangerUnknownPlanner::update					()
+void CStalkerDangerUnknownPlanner::add_actions()
 {
-	inherited::update		();
-}
+    CStalkerActionBase* action;
 
-void CStalkerDangerUnknownPlanner::finalize					()
-{
-	inherited::finalize		();
-}
+    action = xr_new<CStalkerActionDangerUnknownTakeCover>(m_object, "take cover");
+    add_effect(action, eWorldPropertyCoverActual, true);
+    add_effect(action, eWorldPropertyCoverReached, true);
+    add_operator(eWorldOperatorDangerUnknownTakeCover, action);
 
-void CStalkerDangerUnknownPlanner::add_evaluators			()
-{
-	add_evaluator			(eWorldPropertyDanger			,xr_new<CStalkerPropertyEvaluatorDangers>					(m_object,"danger"));
-	add_evaluator			(eWorldPropertyCoverActual		,xr_new<CStalkerPropertyEvaluatorDangerUnknownCoverActual>	(m_object,"danger unknown : cover actual"));
-	add_evaluator			(eWorldPropertyCoverReached		,xr_new<CStalkerPropertyEvaluatorMember>					((CPropertyStorage*)0,eWorldPropertyCoverReached,true,true,"danger unknown : cover reached"));
-	add_evaluator			(eWorldPropertyLookedAround		,xr_new<CStalkerPropertyEvaluatorMember>					((CPropertyStorage*)0,eWorldPropertyLookedAround,true,true,"danger unknown : looked around"));
-}
+    action = xr_new<CStalkerActionDangerUnknownLookAround>(m_object, "look around");
+    add_condition(action, eWorldPropertyCoverActual, true);
+    add_condition(action, eWorldPropertyCoverReached, true);
+    add_condition(action, eWorldPropertyLookedAround, false);
+    add_effect(action, eWorldPropertyLookedAround, true);
+    add_operator(eWorldOperatorDangerUnknownLookAround, action);
 
-void CStalkerDangerUnknownPlanner::add_actions				()
-{
-	CStalkerActionBase		*action;
-
-	action					= xr_new<CStalkerActionDangerUnknownTakeCover>	(m_object,"take cover");
-	add_effect				(action,eWorldPropertyCoverActual,		true);
-	add_effect				(action,eWorldPropertyCoverReached,		true);
-	add_operator			(eWorldOperatorDangerUnknownTakeCover,	action);
-
-	action					= xr_new<CStalkerActionDangerUnknownLookAround>	(m_object,"look around");
-	add_condition			(action,eWorldPropertyCoverActual,		true);
-	add_condition			(action,eWorldPropertyCoverReached,		true);
-	add_condition			(action,eWorldPropertyLookedAround,		false);
-	add_effect				(action,eWorldPropertyLookedAround,		true);
-	add_operator			(eWorldOperatorDangerUnknownLookAround,	action);
-
-	action					= xr_new<CStalkerActionDangerUnknownSearch>	(m_object,"search");
-	add_condition			(action,eWorldPropertyCoverActual,		true);
-	add_condition			(action,eWorldPropertyCoverReached,		true);
-	add_condition			(action,eWorldPropertyLookedAround,		true);
-	add_effect				(action,eWorldPropertyDanger,			false);
-	add_operator			(eWorldOperatorDangerUnknownSearchEnemy,action);
+    action = xr_new<CStalkerActionDangerUnknownSearch>(m_object, "search");
+    add_condition(action, eWorldPropertyCoverActual, true);
+    add_condition(action, eWorldPropertyCoverReached, true);
+    add_condition(action, eWorldPropertyLookedAround, true);
+    add_effect(action, eWorldPropertyDanger, false);
+    add_operator(eWorldOperatorDangerUnknownSearchEnemy, action);
 }

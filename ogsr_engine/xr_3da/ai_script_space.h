@@ -1,15 +1,15 @@
-//KRodin: В этом файле подключается Luabind. Только здесь и больше нигде.
+// KRodin: В этом файле подключается Luabind. Только здесь и больше нигде.
 #pragma once
 
-#pragma comment( lib, "Luabind.lib"	)
+#pragma comment(lib, "Luabind.lib")
 
 //#define LUABIND_09 //Может пригодится в будущем.
 
 #pragma warning(push)
 
-#pragma warning(disable:4459) // declaration of 'x' hides global declaration
-#pragma warning(disable:4913) // user defined binary operator 'x' exists but no overload could convert all operands
-#pragma warning(disable:4297) // function assumed not to throw exception but does
+#pragma warning(disable : 4459) // declaration of 'x' hides global declaration
+#pragma warning(disable : 4913) // user defined binary operator 'x' exists but no overload could convert all operands
+#pragma warning(disable : 4297) // function assumed not to throw exception but does
 
 #include <lua.hpp>
 #include <luabind/luabind.hpp>

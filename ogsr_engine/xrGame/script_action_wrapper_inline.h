@@ -8,8 +8,4 @@
 
 #pragma once
 
-IC	CScriptActionWrapper::CScriptActionWrapper	(CScriptGameObject *object, LPCSTR action_name) : 
-	CScriptActionBase					(object,action_name)
-{
-}
-
+IC CScriptActionWrapper::CScriptActionWrapper(CScriptGameObject* object, LPCSTR action_name) : CScriptActionBase(object, action_name) {}

@@ -12,108 +12,101 @@
 #include "WeaponMagazined.h"
 
 // alpet : в этом файле при добавлении экспортеров с зависимостями наследования, необходимо соблюдать порядок - сначала экспортируются базовые классы
-// NOTE  : требуется именно класс вместо структуры, чтобы объявить его френдом 
+// NOTE  : требуется именно класс вместо структуры, чтобы объявить его френдом
 
 class CAnomalyZoneScript
 {
-	static void	 set_zone_state(CCustomZone *obj, u32 new_state);
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+    static void set_zone_state(CCustomZone* obj, u32 new_state);
+    DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CAnomalyZoneScript)
 #undef script_type_list
 #define script_type_list save_type_list(CAnomalyZoneScript)
 
-
-class CInventoryScript
+    class CInventoryScript
 {
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CInventoryScript)
 #undef script_type_list
 #define script_type_list save_type_list(CInventoryScript)
 
-
-
-class	CEatableItemScript 
+    class CEatableItemScript
 {
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CEatableItemScript)
 #undef script_type_list
 #define script_type_list save_type_list(CEatableItemScript)
 
-
-class	CEntityScript
+    class CEntityScript
 {
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CEntityScript)
 #undef script_type_list
 #define script_type_list save_type_list(CEntityScript)
 
-class	CMonsterScript
+    class CMonsterScript
 {
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CMonsterScript)
 #undef script_type_list
 #define script_type_list save_type_list(CMonsterScript)
 
-
-class   COutfitScript
+    class COutfitScript
 {
 protected:
-	template <ALife::EHitType idx> 
-	static	float get_protection(CCustomOutfit *O)
-	{	
-		// u32 idx = sizeof(T) - 1;
-		return O->m_HitTypeProtection[idx]; 
-	}
+    template <ALife::EHitType idx>
+    static float get_protection(CCustomOutfit* O)
+    {
+        // u32 idx = sizeof(T) - 1;
+        return O->m_HitTypeProtection[idx];
+    }
 
-	template <ALife::EHitType idx> 
-	static	void set_protection(CCustomOutfit *O, float value)
-	{	
-		// u32 idx = sizeof(T) - 1;
-		O->m_HitTypeProtection[idx] = value; 
-	}
+    template <ALife::EHitType idx>
+    static void set_protection(CCustomOutfit* O, float value)
+    {
+        // u32 idx = sizeof(T) - 1;
+        O->m_HitTypeProtection[idx] = value;
+    }
 
-
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 add_to_type_list(COutfitScript)
 #undef script_type_list
 #define script_type_list save_type_list(COutfitScript)
 
-
-class	CWeaponScript
+    class CWeaponScript
 {
 public:
-	static SRotation&					FireDeviation				(CWeapon *wpn);
- 	static luabind::object				get_fire_modes				(CWeaponMagazined *wpn);
-	static void							set_fire_modes				(CWeaponMagazined *wpn, luabind::object const& t);
- 	static luabind::object				get_hit_power				(CWeapon *wpn);
-	static void							set_hit_power				(CWeapon *wpn, luabind::object const& t);
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+    static SRotation& FireDeviation(CWeapon* wpn);
+    static luabind::object get_fire_modes(CWeaponMagazined* wpn);
+    static void set_fire_modes(CWeaponMagazined* wpn, luabind::object const& t);
+    static luabind::object get_hit_power(CWeapon* wpn);
+    static void set_hit_power(CWeapon* wpn, luabind::object const& t);
+    DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CWeaponScript)
 #undef script_type_list
 #define script_type_list save_type_list(CWeaponScript)
 
-class CCustomMonsterScript
+    class CCustomMonsterScript
 {
 public:
-	u32 GetDestVertexId(CCustomMonster *monster)
-	{
-		u32 vertex = 0;
-		if (monster->m_movement_manager != NULL)
-		{
-			vertex = monster->m_movement_manager->level_dest_vertex_id();
-		}
-		return vertex;
-	}
+    u32 GetDestVertexId(CCustomMonster* monster)
+    {
+        u32 vertex = 0;
+        if (monster->m_movement_manager != NULL)
+        {
+            vertex = monster->m_movement_manager->level_dest_vertex_id();
+        }
+        return vertex;
+    }
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CCustomMonsterScript)
 #undef script_type_list

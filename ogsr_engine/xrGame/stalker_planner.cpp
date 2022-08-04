@@ -25,176 +25,170 @@
 
 using namespace StalkerDecisionSpace;
 
-CStalkerPlanner::CStalkerPlanner	()
+CStalkerPlanner::CStalkerPlanner()
 {
-	m_active			= true;
-	m_affect_cover			= false;
+    m_active = true;
+    m_affect_cover = false;
 }
 
-CStalkerPlanner::~CStalkerPlanner	()
-{
-}
+CStalkerPlanner::~CStalkerPlanner() {}
 
 #ifdef LOG_ACTION
-LPCSTR CStalkerPlanner::action2string	(const _action_id_type &action_id)
-{
-	return					(inherited::action2string(action_id));
-}
+LPCSTR CStalkerPlanner::action2string(const _action_id_type& action_id) { return (inherited::action2string(action_id)); }
 
-LPCSTR CStalkerPlanner::property2string	(const _condition_type &property_id)
-{
-	return					(inherited::property2string(property_id));
-}
+LPCSTR CStalkerPlanner::property2string(const _condition_type& property_id) { return (inherited::property2string(property_id)); }
 
-LPCSTR CStalkerPlanner::object_name		() const
+LPCSTR CStalkerPlanner::object_name() const
 {
-	VERIFY					(m_object);
-	return					(*m_object->cName());
+    VERIFY(m_object);
+    return (*m_object->cName());
 }
 #endif
 
-void CStalkerPlanner::setup			(CAI_Stalker *object)
+void CStalkerPlanner::setup(CAI_Stalker* object)
 {
 #ifdef LOG_ACTION
-	set_use_log					(!!psAI_Flags.test(aiGOAP));
+    set_use_log(!!psAI_Flags.test(aiGOAP));
 #endif
-	
-	inherited::setup			(object);
 
-	clear						();
-	add_evaluators				();
-	add_actions					();
+    inherited::setup(object);
 
-	m_alive_goal.clear			();
-	m_alive_goal.add_condition	(CWorldProperty(eWorldPropertyPuzzleSolved,true));
+    clear();
+    add_evaluators();
+    add_actions();
 
-	m_dead_goal.clear			();
-	m_dead_goal.add_condition	(CWorldProperty(eWorldPropertyAlreadyDead,true));
+    m_alive_goal.clear();
+    m_alive_goal.add_condition(CWorldProperty(eWorldPropertyPuzzleSolved, true));
 
-	m_affect_cover				= false;
-	m_active				= true;
+    m_dead_goal.clear();
+    m_dead_goal.add_condition(CWorldProperty(eWorldPropertyAlreadyDead, true));
+
+    m_affect_cover = false;
+    m_active = true;
 }
 
-void CStalkerPlanner::update			(u32 time_delta)
+void CStalkerPlanner::update(u32 time_delta)
 {
-	if ( !active() )
-	  return;
+    if (!active())
+        return;
 
 #ifdef LOG_ACTION
-	if ((psAI_Flags.test(aiGOAP) && !m_use_log) || (!psAI_Flags.test(aiGOAP) && m_use_log))
-		set_use_log			(!!psAI_Flags.test(aiGOAP));
+    if ((psAI_Flags.test(aiGOAP) && !m_use_log) || (!psAI_Flags.test(aiGOAP) && m_use_log))
+        set_use_log(!!psAI_Flags.test(aiGOAP));
 #endif
-	
-	if (m_object->g_Alive())
-		set_target_state	(m_alive_goal);
-	else
-		set_target_state	(m_dead_goal);
 
-	inherited::update		();
+    if (m_object->g_Alive())
+        set_target_state(m_alive_goal);
+    else
+        set_target_state(m_dead_goal);
+
+    inherited::update();
 
 #ifdef GOAP_DEBUG
-	if (m_failed) {
-		{
-			Msg			("%d",evaluators().size());
-			EVALUATORS::const_iterator	I = evaluators().begin();
-			EVALUATORS::const_iterator	E = evaluators().end();
-			for ( ; I != E; ++I)
-				Msg		("%d,%d",(*I).first,(*I).second->evaluate() ? 1 : 0);
-		}
-		{
-			Msg			("%d",target_state().conditions().size());
-			xr_vector<COperatorCondition>::const_iterator	I = target_state().conditions().begin();
-			xr_vector<COperatorCondition>::const_iterator	E = target_state().conditions().end();
-			for ( ; I != E; ++I)
-				Msg		("%d,%d",(*I).condition(),(*I).value() ? 1 : 0);
-		}
-		{
-			Msg			("%d",operators().size());
-			const_iterator	I = operators().begin();
-			const_iterator	E = operators().end();
-			for ( ; I != E; ++I) {
-				Msg		("%d,%d",(*I).m_operator_id,(*I).m_operator->weight(target_state(),target_state()));
-				{
-					Msg		("%d",(*I).m_operator->conditions().conditions().size());
-					xr_vector<COperatorCondition>::const_iterator	i = (*I).m_operator->conditions().conditions().begin();
-					xr_vector<COperatorCondition>::const_iterator	e = (*I).m_operator->conditions().conditions().end();
-					for ( ; i != e; ++i)
-						Msg	("%d,%d",(*i).condition(),(*i).value() ? 1 : 0);
-				}
-				{
-					Msg		("%d",(*I).m_operator->effects().conditions().size());
-					xr_vector<COperatorCondition>::const_iterator	i = (*I).m_operator->effects().conditions().begin();
-					xr_vector<COperatorCondition>::const_iterator	e = (*I).m_operator->effects().conditions().end();
-					for ( ; i != e; ++i)
-						Msg	("%d,%d",(*i).condition(),(*i).value() ? 1 : 0);
-				}
-			}
-		}
-	}
+    if (m_failed)
+    {
+        {
+            Msg("%d", evaluators().size());
+            EVALUATORS::const_iterator I = evaluators().begin();
+            EVALUATORS::const_iterator E = evaluators().end();
+            for (; I != E; ++I)
+                Msg("%d,%d", (*I).first, (*I).second->evaluate() ? 1 : 0);
+        }
+        {
+            Msg("%d", target_state().conditions().size());
+            xr_vector<COperatorCondition>::const_iterator I = target_state().conditions().begin();
+            xr_vector<COperatorCondition>::const_iterator E = target_state().conditions().end();
+            for (; I != E; ++I)
+                Msg("%d,%d", (*I).condition(), (*I).value() ? 1 : 0);
+        }
+        {
+            Msg("%d", operators().size());
+            const_iterator I = operators().begin();
+            const_iterator E = operators().end();
+            for (; I != E; ++I)
+            {
+                Msg("%d,%d", (*I).m_operator_id, (*I).m_operator->weight(target_state(), target_state()));
+                {
+                    Msg("%d", (*I).m_operator->conditions().conditions().size());
+                    xr_vector<COperatorCondition>::const_iterator i = (*I).m_operator->conditions().conditions().begin();
+                    xr_vector<COperatorCondition>::const_iterator e = (*I).m_operator->conditions().conditions().end();
+                    for (; i != e; ++i)
+                        Msg("%d,%d", (*i).condition(), (*i).value() ? 1 : 0);
+                }
+                {
+                    Msg("%d", (*I).m_operator->effects().conditions().size());
+                    xr_vector<COperatorCondition>::const_iterator i = (*I).m_operator->effects().conditions().begin();
+                    xr_vector<COperatorCondition>::const_iterator e = (*I).m_operator->effects().conditions().end();
+                    for (; i != e; ++i)
+                        Msg("%d,%d", (*i).condition(), (*i).value() ? 1 : 0);
+                }
+            }
+        }
+    }
 #endif
 }
 
-void CStalkerPlanner::add_evaluators		()
+void CStalkerPlanner::add_evaluators()
 {
-	add_evaluator			(eWorldPropertyAlreadyDead		,xr_new<CStalkerPropertyEvaluatorConst>				(false,"is_already_dead"));
-	add_evaluator			(eWorldPropertyPuzzleSolved		,xr_new<CStalkerPropertyEvaluatorConst>				(false,"is_zone_puzzle_solved"));
-	add_evaluator			(eWorldPropertyAlive			,xr_new<CStalkerPropertyEvaluatorAlive>				(m_object,"is_alive"));
-	add_evaluator			(eWorldPropertyEnemy			,xr_new<CStalkerPropertyEvaluatorEnemies>			(m_object,"is_there_enemies",CStalkerCombatPlanner::POST_COMBAT_WAIT_INTERVAL));
-	add_evaluator			(eWorldPropertyDanger			,xr_new<CStalkerPropertyEvaluatorDangers>			(m_object,"is_there_danger"));
-	add_evaluator			(eWorldPropertyAnomaly			,xr_new<CStalkerPropertyEvaluatorAnomaly>			(m_object,"is_there_anomalies"));
-	add_evaluator			(eWorldPropertyItems			,xr_new<CStalkerPropertyEvaluatorItems>				(m_object,"is_there_items_to_pick_up"));
+    add_evaluator(eWorldPropertyAlreadyDead, xr_new<CStalkerPropertyEvaluatorConst>(false, "is_already_dead"));
+    add_evaluator(eWorldPropertyPuzzleSolved, xr_new<CStalkerPropertyEvaluatorConst>(false, "is_zone_puzzle_solved"));
+    add_evaluator(eWorldPropertyAlive, xr_new<CStalkerPropertyEvaluatorAlive>(m_object, "is_alive"));
+    add_evaluator(eWorldPropertyEnemy, xr_new<CStalkerPropertyEvaluatorEnemies>(m_object, "is_there_enemies", CStalkerCombatPlanner::POST_COMBAT_WAIT_INTERVAL));
+    add_evaluator(eWorldPropertyDanger, xr_new<CStalkerPropertyEvaluatorDangers>(m_object, "is_there_danger"));
+    add_evaluator(eWorldPropertyAnomaly, xr_new<CStalkerPropertyEvaluatorAnomaly>(m_object, "is_there_anomalies"));
+    add_evaluator(eWorldPropertyItems, xr_new<CStalkerPropertyEvaluatorItems>(m_object, "is_there_items_to_pick_up"));
 }
 
-void CStalkerPlanner::add_actions			()
+void CStalkerPlanner::add_actions()
 {
-	CActionPlannerAction	*planner;
+    CActionPlannerAction* planner;
 
-	planner					= xr_new<CStalkerDeathPlanner>(m_object,"death_planner");
-	add_condition			(planner,eWorldPropertyAlive,			false);
-	add_condition			(planner,eWorldPropertyAlreadyDead,		false);
-	add_effect				(planner,eWorldPropertyAlreadyDead,		true);
-	add_operator			(eWorldOperatorDeathPlanner,planner);
+    planner = xr_new<CStalkerDeathPlanner>(m_object, "death_planner");
+    add_condition(planner, eWorldPropertyAlive, false);
+    add_condition(planner, eWorldPropertyAlreadyDead, false);
+    add_effect(planner, eWorldPropertyAlreadyDead, true);
+    add_operator(eWorldOperatorDeathPlanner, planner);
 
-	planner					= xr_new<CStalkerALifePlanner>(m_object,"alife_planner");
-	add_condition			(planner,eWorldPropertyAlive,			true);
-	add_condition			(planner,eWorldPropertyEnemy,			false);
-	add_condition			(planner,eWorldPropertyAnomaly,			false);
-	add_condition			(planner,eWorldPropertyDanger,			false);
-	add_condition			(planner,eWorldPropertyItems,			false);
-	add_condition			(planner,eWorldPropertyPuzzleSolved,	false);
-	add_effect				(planner,eWorldPropertyPuzzleSolved,	true);
-	add_operator			(eWorldOperatorALifePlanner,planner);
+    planner = xr_new<CStalkerALifePlanner>(m_object, "alife_planner");
+    add_condition(planner, eWorldPropertyAlive, true);
+    add_condition(planner, eWorldPropertyEnemy, false);
+    add_condition(planner, eWorldPropertyAnomaly, false);
+    add_condition(planner, eWorldPropertyDanger, false);
+    add_condition(planner, eWorldPropertyItems, false);
+    add_condition(planner, eWorldPropertyPuzzleSolved, false);
+    add_effect(planner, eWorldPropertyPuzzleSolved, true);
+    add_operator(eWorldOperatorALifePlanner, planner);
 
-	planner					= xr_new<CStalkerCombatPlanner>(m_object,"combat_planner");
-//	planner					= xr_new<CStalkerCombatPlannerNew>(m_object,"combat_planner_new");
-	add_condition			(planner,eWorldPropertyAlive,			true);
-	add_condition			(planner,eWorldPropertyAnomaly,			false);
-	add_condition			(planner,eWorldPropertyEnemy,			true);
-	add_effect				(planner,eWorldPropertyEnemy,			false);
-	add_operator			(eWorldOperatorCombatPlanner,planner);
+    planner = xr_new<CStalkerCombatPlanner>(m_object, "combat_planner");
+    //	planner					= xr_new<CStalkerCombatPlannerNew>(m_object,"combat_planner_new");
+    add_condition(planner, eWorldPropertyAlive, true);
+    add_condition(planner, eWorldPropertyAnomaly, false);
+    add_condition(planner, eWorldPropertyEnemy, true);
+    add_effect(planner, eWorldPropertyEnemy, false);
+    add_operator(eWorldOperatorCombatPlanner, planner);
 
-	planner					= xr_new<CStalkerDangerPlanner>(m_object,"danger_planner");
-	add_condition			(planner,eWorldPropertyAlive,			true);
-	add_condition			(planner,eWorldPropertyEnemy,			false);
-	add_condition			(planner,eWorldPropertyAnomaly,			false);
-	add_condition			(planner,eWorldPropertyDanger,			true);
-	add_effect				(planner,eWorldPropertyDanger,			false);
-	add_operator			(eWorldOperatorDangerPlanner,planner);
+    planner = xr_new<CStalkerDangerPlanner>(m_object, "danger_planner");
+    add_condition(planner, eWorldPropertyAlive, true);
+    add_condition(planner, eWorldPropertyEnemy, false);
+    add_condition(planner, eWorldPropertyAnomaly, false);
+    add_condition(planner, eWorldPropertyDanger, true);
+    add_effect(planner, eWorldPropertyDanger, false);
+    add_operator(eWorldOperatorDangerPlanner, planner);
 
-	planner					= xr_new<CStalkerAnomalyPlanner>(m_object,"anomaly_planner");
-	add_condition			(planner,eWorldPropertyAlive,		true);
-	add_condition			(planner,eWorldPropertyAnomaly,		true);
-	add_effect				(planner,eWorldPropertyAnomaly,		false);
-	add_operator			(eWorldOperatorAnomalyPlanner,planner);
+    planner = xr_new<CStalkerAnomalyPlanner>(m_object, "anomaly_planner");
+    add_condition(planner, eWorldPropertyAlive, true);
+    add_condition(planner, eWorldPropertyAnomaly, true);
+    add_effect(planner, eWorldPropertyAnomaly, false);
+    add_operator(eWorldOperatorAnomalyPlanner, planner);
 
-	CStalkerActionBase		*action;
+    CStalkerActionBase* action;
 
-	action					= xr_new<CStalkerActionGatherItems>	(m_object,"gather_items");
-	add_condition			(action,eWorldPropertyAlive,		true);
-	add_condition			(action,eWorldPropertyEnemy,		false);
-	add_condition			(action,eWorldPropertyAnomaly,		false);
-	add_condition			(action,eWorldPropertyDanger,		false);
-	add_condition			(action,eWorldPropertyItems,		true);
-	add_effect				(action,eWorldPropertyItems,		false);
-	add_operator			(eWorldOperatorGatherItems,			action);
+    action = xr_new<CStalkerActionGatherItems>(m_object, "gather_items");
+    add_condition(action, eWorldPropertyAlive, true);
+    add_condition(action, eWorldPropertyEnemy, false);
+    add_condition(action, eWorldPropertyAnomaly, false);
+    add_condition(action, eWorldPropertyDanger, false);
+    add_condition(action, eWorldPropertyItems, true);
+    add_effect(action, eWorldPropertyItems, false);
+    add_operator(eWorldOperatorGatherItems, action);
 }

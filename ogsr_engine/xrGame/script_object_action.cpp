@@ -10,12 +10,10 @@
 #include "script_object_action.h"
 #include "script_game_object.h"
 
-CScriptObjectAction::~CScriptObjectAction	()
-{
-}
+CScriptObjectAction::~CScriptObjectAction() {}
 
-void CScriptObjectAction::SetObject			(CScriptGameObject *tpLuaGameObject)
+void CScriptObjectAction::SetObject(CScriptGameObject* tpLuaGameObject)
 {
-	m_tpObject			= tpLuaGameObject->operator CObject*();
-	m_bCompleted		= false;
+    m_tpObject = tpLuaGameObject->operator CObject*();
+    m_bCompleted = false;
 }

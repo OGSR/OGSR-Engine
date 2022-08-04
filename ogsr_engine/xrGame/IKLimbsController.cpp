@@ -12,9 +12,11 @@
 
 CIKLimbsController::CIKLimbsController()
 #ifdef DEBUG
-    : m_legs_blend(nullptr), m_object(nullptr), anim_name(nullptr), anim_set_name(nullptr) {}
+    : m_legs_blend(nullptr), m_object(nullptr), anim_name(nullptr), anim_set_name(nullptr)
+{}
 #else
-    : m_legs_blend(nullptr), m_object(nullptr) {}
+    : m_legs_blend(nullptr), m_object(nullptr)
+{}
 #endif
 
 void CIKLimbsController::Create(CGameObject* O)
@@ -50,8 +52,7 @@ void CIKLimbsController::LimbSetup()
 
 void CIKLimbsController::LimbCalculate(SCalculateData& cd)
 {
-    cd.do_collide = m_legs_blend &&
-        !cd.m_limb->KinematicsAnimated()->LL_GetMotionDef(m_legs_blend->motionID)->marks.empty(); // m_legs_blend->;
+    cd.do_collide = m_legs_blend && !cd.m_limb->KinematicsAnimated()->LL_GetMotionDef(m_legs_blend->motionID)->marks.empty(); // m_legs_blend->;
     cd.m_limb->ApplyState(cd);
 }
 
@@ -299,8 +300,8 @@ void CIKLimbsController::Destroy(CGameObject* O)
 
 void _stdcall CIKLimbsController::IKVisualCallback(IKinematics* K)
 {
-// if (Device.Paused())
-//	return;
+    // if (Device.Paused())
+    //	return;
 
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(phDbgIKOff))

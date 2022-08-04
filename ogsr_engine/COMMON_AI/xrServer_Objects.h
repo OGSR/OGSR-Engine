@@ -13,7 +13,7 @@
 #include "phnetstate.h"
 
 #pragma warning(push)
-#pragma warning(disable:4005)
+#pragma warning(disable : 4005)
 
 //------------------------------------------------------------------------------
 // Version history
@@ -58,7 +58,7 @@
 // 43 - CSE_ALifeObjectHangingLamp		appended glow_texture and glow_radius
 // 44 - xrSE_ALifeObjectHangingLamp		appended with property 'fixed bones'
 // 45 - xrSE_ALifeObjectHangingLamp		appended with property 'health'
-// 46 - xrSE_ALifeObjectSearchLight		appended with property 'guid_bone', 
+// 46 - xrSE_ALifeObjectSearchLight		appended with property 'guid_bone',
 //										appended with property 'rotation_bone'
 // 47 - CSE_ALifeItemWeapon				appended with ammo type index
 // 48 - CSE_ALifeObjectSearchlight		appended with property 'cone_bone'
@@ -81,10 +81,10 @@
 // 65 - CSE_ALifeObjectPhysic			startup_anim moved to CSE_AlifePHSkeletonObject
 // 66 - CSE_ALifeObjectPhysic			CSE_ALifeCar - heritage changed
 // 67 - CSE_ALifeCustomZone				new class appended, heritage changed
-// 68 - CSE_ALifeHumanStalker,				
+// 68 - CSE_ALifeHumanStalker,
 //		CSE_ALifeMonsterBase			new class appended, heritage changed
 // 69 -	object broker changed from this version
-//		CSE_ALifeObjectHangingLamp,				
+//		CSE_ALifeObjectHangingLamp,
 //		CSE_ALifeHelicopter				heritage changed
 // 70 -	CSE_Abstract					appended with m_script_version, script version support
 // 71 -	CSE_Abstract					appended with m_client_data, ability to save/load client data
@@ -151,81 +151,81 @@
 // 117 - CSE_ALifeLevelChanger			appended with property m_bSilentMode
 // 118 - CALifeHumanBrain				removed property m_tpKnownCustomers, sad but true
 //------------------------------------------------------------------------------
-#define SPAWN_VERSION	u16(118)
+#define SPAWN_VERSION u16(118)
 
-SERVER_ENTITY_DECLARE_BEGIN2(CSE_Shape,ISE_Shape,CShapeData)
+SERVER_ENTITY_DECLARE_BEGIN2(CSE_Shape, ISE_Shape, CShapeData)
 public:
-	void							cform_read		(NET_Packet& P);
-	void							cform_write		(NET_Packet& P);
-									CSE_Shape		();
-	virtual							~CSE_Shape		();
-	virtual ISE_Shape*  __stdcall	shape			() = 0;
-	virtual void __stdcall			assign_shapes	(CShapeData::shape_def* shapes, u32 cnt);
-};
+void cform_read(NET_Packet& P);
+void cform_write(NET_Packet& P);
+CSE_Shape();
+virtual ~CSE_Shape();
+virtual ISE_Shape* __stdcall shape() = 0;
+virtual void __stdcall assign_shapes(CShapeData::shape_def* shapes, u32 cnt);
+}
+;
 add_to_type_list(CSE_Shape)
 #define script_type_list save_type_list(CSE_Shape)
 
-SERVER_ENTITY_DECLARE_BEGIN(CSE_Spectator,CSE_Abstract)
-									CSE_Spectator	(LPCSTR caSection);
-	virtual							~CSE_Spectator	();
-	virtual u8						g_team			();
+    SERVER_ENTITY_DECLARE_BEGIN(CSE_Spectator, CSE_Abstract) CSE_Spectator(LPCSTR caSection);
+virtual ~CSE_Spectator();
+virtual u8 g_team();
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_Spectator)
 #define script_type_list save_type_list(CSE_Spectator)
 
-SERVER_ENTITY_DECLARE_BEGIN(CSE_Temporary,CSE_Abstract)
-	u32								m_tNodeID;
-									CSE_Temporary	(LPCSTR caSection);
-	virtual							~CSE_Temporary	();
+    SERVER_ENTITY_DECLARE_BEGIN(CSE_Temporary, CSE_Abstract) u32 m_tNodeID;
+CSE_Temporary(LPCSTR caSection);
+virtual ~CSE_Temporary();
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_Temporary)
 #define script_type_list save_type_list(CSE_Temporary)
 
-SERVER_ENTITY_DECLARE_BEGIN0(CSE_PHSkeleton)
-								CSE_PHSkeleton(LPCSTR caSection);
-virtual							~CSE_PHSkeleton();
+    SERVER_ENTITY_DECLARE_BEGIN0(CSE_PHSkeleton) CSE_PHSkeleton(LPCSTR caSection);
+virtual ~CSE_PHSkeleton();
 
-enum{
-	flActive					= (1<<0),
-	flSpawnCopy					= (1<<1),
-	flSavedData					= (1<<2),
-	flNotSave					= (1<<3)
+enum
+{
+    flActive = (1 << 0),
+    flSpawnCopy = (1 << 1),
+    flSavedData = (1 << 2),
+    flNotSave = (1 << 3)
 };
-	Flags8							_flags;
-	SPHBonesData					saved_bones;
-	u16								source_id;//for break only
-	virtual	void					load					(NET_Packet &tNetPacket);
-	virtual bool					need_save				() const{return(!_flags.test(flNotSave));}
-	virtual	void					set_sorce_id			(u16 si){source_id=si;}
-	virtual u16						get_source_id			(){return source_id;}
-	virtual CSE_Abstract			*cast_abstract			() {return 0;}
+Flags8 _flags;
+SPHBonesData saved_bones;
+u16 source_id; // for break only
+virtual void load(NET_Packet& tNetPacket);
+virtual bool need_save() const { return (!_flags.test(flNotSave)); }
+virtual void set_sorce_id(u16 si) { source_id = si; }
+virtual u16 get_source_id() { return source_id; }
+virtual CSE_Abstract* cast_abstract() { return 0; }
+
 protected:
-	virtual void					data_load				(NET_Packet &tNetPacket);
-	virtual void					data_save				(NET_Packet &tNetPacket);
+virtual void data_load(NET_Packet& tNetPacket);
+virtual void data_save(NET_Packet& tNetPacket);
+
 public:
 SERVER_ENTITY_DECLARE_END
-		add_to_type_list(CSE_PHSkeleton)
+add_to_type_list(CSE_PHSkeleton)
 #define script_type_list save_type_list(CSE_PHSkeleton)
 
-SERVER_ENTITY_DECLARE_BEGIN2(CSE_AbstractVisual,CSE_Abstract,CSE_Visual)
-	typedef CSE_Abstract			inherited1;
-	typedef CSE_Visual				inherited2;
+    SERVER_ENTITY_DECLARE_BEGIN2(CSE_AbstractVisual, CSE_Abstract, CSE_Visual) typedef CSE_Abstract inherited1;
+typedef CSE_Visual inherited2;
 
-	CSE_AbstractVisual										(LPCSTR caSection);
-	virtual	~CSE_AbstractVisual								();
-	virtual CSE_Visual* __stdcall	visual					();
-	LPCSTR							getStartupAnimation		();
+CSE_AbstractVisual(LPCSTR caSection);
+virtual ~CSE_AbstractVisual();
+virtual CSE_Visual* __stdcall visual();
+LPCSTR getStartupAnimation();
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_AbstractVisual)
 #define script_type_list save_type_list(CSE_AbstractVisual)
 
-extern CSE_Abstract	*F_entity_Create	(LPCSTR caSection);
+    extern CSE_Abstract* F_entity_Create(LPCSTR caSection);
 
 /**
 SERVER_ENTITY_DECLARE_BEGIN(CSE_SpawnGroup,CSE_Abstract)
 public:
-									CSE_SpawnGroup	(LPCSTR caSection);
-	virtual							~CSE_SpawnGroup	();
+                                    CSE_SpawnGroup	(LPCSTR caSection);
+    virtual							~CSE_SpawnGroup	();
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_SpawnGroup)
 #define script_type_list save_type_list(CSE_SpawnGroup)

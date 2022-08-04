@@ -8,17 +8,8 @@
 
 #pragma once
 
-IC	bool CDangerLocation::operator==	(const Fvector &position) const
-{
-	return		(!!this->position().similar(position));
-}
+IC bool CDangerLocation::operator==(const Fvector& position) const { return (!!this->position().similar(position)); }
 
-IC	bool CDangerLocation::operator==	(const CObject *object) const
-{
-	return		(false);
-}
+IC bool CDangerLocation::operator==(const CObject* object) const { return (false); }
 
-IC	const CDangerLocation::flags &CDangerLocation::mask	() const
-{
-	return		(m_mask);
-}
+IC const CDangerLocation::flags& CDangerLocation::mask() const { return (m_mask); }

@@ -23,266 +23,238 @@
 
 using namespace StalkerSpace;
 
-CStalkerActionCombatBase::CStalkerActionCombatBase	(CAI_Stalker *object, LPCSTR action_name) :
-	inherited	(object,action_name)
+CStalkerActionCombatBase::CStalkerActionCombatBase(CAI_Stalker* object, LPCSTR action_name) : inherited(object, action_name) {}
+
+void CStalkerActionCombatBase::initialize()
 {
+    inherited::initialize();
+    object().sound().remove_active_sounds(u32(eStalkerSoundMaskNoHumming));
 }
 
-void CStalkerActionCombatBase::initialize			()
+void CStalkerActionCombatBase::finalize()
 {
-	inherited::initialize		();
-	object().sound().remove_active_sounds	(u32(eStalkerSoundMaskNoHumming));
+    inherited::finalize();
+
+    if (!object().g_Alive())
+        return;
+
+    object().sound().set_sound_mask(0);
 }
 
-void CStalkerActionCombatBase::finalize				()
+bool CStalkerActionCombatBase::fire_make_sense() const { return (object().fire_make_sense()); }
+
+void CStalkerActionCombatBase::fire()
 {
-	inherited::finalize			();
+    if (!object().can_fire_to_enemy(object().memory().enemy().selected()))
+    {
+        aim_ready();
+        return;
+    }
 
-	if (!object().g_Alive())
-		return;
-
-	object().sound().set_sound_mask	(0);
+    u32 min_queue_size, max_queue_size, min_queue_interval, max_queue_interval;
+    Fvector enemy_position = object().memory().enemy().selected()->Position();
+    Fvector object_position = object().Position();
+    float distance = enemy_position.distance_to(object_position);
+    select_queue_params(distance, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
+    object().CObjectHandler::set_goal(eObjectActionFire1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
 }
 
-bool CStalkerActionCombatBase::fire_make_sense		() const
+void CStalkerActionCombatBase::aim_ready()
 {
-	return					(object().fire_make_sense());
+    u32 min_queue_size, max_queue_size, min_queue_interval, max_queue_interval;
+    float distance = object().memory().enemy().selected()->Position().distance_to(object().Position());
+    select_queue_params(distance, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
+    object().CObjectHandler::set_goal(eObjectActionAimReady1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
 }
 
-void CStalkerActionCombatBase::fire					()
+void CStalkerActionCombatBase::aim_ready_force_full()
 {
-	if ( !object().can_fire_to_enemy( object().memory().enemy().selected() ) ) {
-		aim_ready						();
-		return;
-	}
-
-	u32									min_queue_size, max_queue_size, min_queue_interval, max_queue_interval;
-	Fvector								enemy_position = object().memory().enemy().selected()->Position();
-	Fvector								object_position = object().Position();
-	float								distance = enemy_position.distance_to(object_position);
-	select_queue_params					(distance,min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
-	object().CObjectHandler::set_goal	(eObjectActionFire1,object().best_weapon(),min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
+    u32 min_queue_size, max_queue_size, min_queue_interval, max_queue_interval;
+    float distance = object().memory().enemy().selected()->Position().distance_to(object().Position());
+    select_queue_params(distance, min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
+    object().CObjectHandler::set_goal(eObjectActionAimForceFull1, object().best_weapon(), min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
 }
 
-void CStalkerActionCombatBase::aim_ready			()
+void CStalkerActionCombatBase::select_queue_params(const float& distance, u32& min_queue_size, u32& max_queue_size, u32& min_queue_interval, u32& max_queue_interval) const
 {
-	u32									min_queue_size, max_queue_size, min_queue_interval, max_queue_interval;
-	float								distance = object().memory().enemy().selected()->Position().distance_to(object().Position());
-	select_queue_params					(distance,min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
-	object().CObjectHandler::set_goal	(eObjectActionAimReady1,object().best_weapon(),min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
+    /**/
+    int weapon_type = 6;
+    if (object().best_weapon())
+        weapon_type = object().best_weapon()->object().ef_weapon_type();
+
+    switch (weapon_type)
+    {
+    // pistols
+    case 5: {
+        if (distance > 30.f)
+        {
+            min_queue_size = 1;
+            max_queue_size = 1;
+            min_queue_interval = 1000;
+            max_queue_interval = 1250;
+        }
+        else if (distance > 15.f)
+        {
+            min_queue_size = 2;
+            max_queue_size = 4;
+            min_queue_interval = 750;
+            max_queue_interval = 1000;
+        }
+        else
+        {
+            min_queue_size = 3;
+            max_queue_size = 5;
+            min_queue_interval = 500;
+            max_queue_interval = 750;
+        }
+
+        break;
+    }
+    // shotguns
+    case 7: {
+        if (distance > 30.f)
+        {
+            min_queue_size = 1;
+            max_queue_size = 1;
+            min_queue_interval = 1250;
+            max_queue_interval = 1500;
+        }
+        else if (distance > 15.f)
+        {
+            min_queue_size = 1;
+            max_queue_size = 1;
+            min_queue_interval = 750;
+            max_queue_interval = 1250;
+        }
+        else
+        {
+            min_queue_size = 1;
+            max_queue_size = 1;
+            min_queue_interval = 500;
+            max_queue_interval = 1000;
+        }
+
+        break;
+    }
+    // sniper rifles
+    case 8: {
+        if (distance > 30.f)
+        {
+            min_queue_size = 1;
+            max_queue_size = 1;
+            min_queue_interval = 3000;
+            max_queue_interval = 4000;
+        }
+        else if (distance > 15.f)
+        {
+            min_queue_size = 1;
+            max_queue_size = 1;
+            min_queue_interval = 3000;
+            max_queue_interval = 4000;
+        }
+        else
+        {
+            min_queue_size = 1;
+            max_queue_size = 1;
+            min_queue_interval = 3000;
+            max_queue_interval = 4000;
+        }
+
+        break;
+    }
+    default: {
+        if (distance > 30.f)
+        {
+            min_queue_size = object().min_queue_size_far();
+            max_queue_size = object().max_queue_size_far();
+            min_queue_interval = object().min_queue_interval_far();
+            max_queue_interval = object().max_queue_interval_far();
+        }
+        else if (distance > 15.f)
+        {
+            min_queue_size = object().min_queue_size_medium();
+            max_queue_size = object().max_queue_size_medium();
+            min_queue_interval = object().min_queue_interval_medium();
+            max_queue_interval = object().max_queue_interval_medium();
+        }
+        else
+        {
+            min_queue_size = object().min_queue_size_close();
+            max_queue_size = object().max_queue_size_close();
+            min_queue_interval = object().min_queue_interval_close();
+            max_queue_interval = object().max_queue_interval_close();
+        }
+    }
+    }
+    /**
+    if (distance > 30.f) {
+        min_queue_size					= object().min_queue_size_far();
+        max_queue_size					= object().max_queue_size_far();
+        min_queue_interval				= object().min_queue_interval_far();
+        max_queue_interval				= object().max_queue_interval_far();
+    }
+    else
+        if (distance > 15.f) {
+            min_queue_size				= object().min_queue_size_medium();
+            max_queue_size				= object().max_queue_size_medium();
+            min_queue_interval			= object().min_queue_interval_medium();
+            max_queue_interval			= object().max_queue_interval_medium();
+        }
+        else {
+            min_queue_size				= object().min_queue_size_close();
+            max_queue_size				= object().max_queue_size_close();
+            min_queue_interval			= object().min_queue_interval_close();
+            max_queue_interval			= object().max_queue_interval_close();
+        }
+    /**/
 }
 
-void CStalkerActionCombatBase::aim_ready_force_full	()
+void CStalkerActionCombatBase::play_panic_sound(u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time, u32 id)
 {
-	u32									min_queue_size, max_queue_size, min_queue_interval, max_queue_interval;
-	float								distance = object().memory().enemy().selected()->Position().distance_to(object().Position());
-	select_queue_params					(distance,min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
-	object().CObjectHandler::set_goal	(eObjectActionAimForceFull1,object().best_weapon(),min_queue_size, max_queue_size, min_queue_interval, max_queue_interval);
+    object().sound().play(object().memory().enemy().selected()->human_being() ? eStalkerSoundPanicHuman : eStalkerSoundPanicMonster, max_start_time, min_start_time, max_stop_time,
+                          min_stop_time, id);
 }
 
-void CStalkerActionCombatBase::select_queue_params	(const float &distance, u32 &min_queue_size, u32 &max_queue_size, u32 &min_queue_interval, u32 &max_queue_interval) const
+void CStalkerActionCombatBase::play_attack_sound(u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time, u32 id)
 {
-	/**/
-	int									weapon_type = 6;
-	if (object().best_weapon())
-		weapon_type						= object().best_weapon()->object().ef_weapon_type();
+    if (!object().memory().enemy().selected()->human_being())
+        return;
 
-	switch (weapon_type) {
-		// pistols
-		case 5 : {
-			if (distance > 30.f) {
-				min_queue_size					= 1;
-				max_queue_size					= 1;
-				min_queue_interval				= 1000;
-				max_queue_interval				= 1250;
-			}
-			else
-				if (distance > 15.f) {
-					min_queue_size				= 2;
-					max_queue_size				= 4;
-					min_queue_interval			= 750;
-					max_queue_interval			= 1000;
-				}
-				else {
-					min_queue_size				= 3;
-					max_queue_size				= 5;
-					min_queue_interval			= 500;
-					max_queue_interval			= 750;
-				}
+    if (!object().agent_manager().member().can_cry_noninfo_phrase())
+        return;
 
-			break;
-		}
-		// shotguns
-		case 7 : {
-			if (distance > 30.f) {
-				min_queue_size					= 1;
-				max_queue_size					= 1;
-				min_queue_interval				= 1250;
-				max_queue_interval				= 1500;
-			}
-			else
-				if (distance > 15.f) {
-					min_queue_size				= 1;
-					max_queue_size				= 1;
-					min_queue_interval			= 750;
-					max_queue_interval			= 1250;
-				}
-				else {
-					min_queue_size				= 1;
-					max_queue_size				= 1;
-					min_queue_interval			= 500;
-					max_queue_interval			= 1000;
-				}
-
-			break;
-		}
-		// sniper rifles
-		case 8 : {
-			if (distance > 30.f) {
-				min_queue_size					= 1;
-				max_queue_size					= 1;
-				min_queue_interval				= 3000;
-				max_queue_interval				= 4000;
-			}
-			else
-				if (distance > 15.f) {
-					min_queue_size				= 1;
-					max_queue_size				= 1;
-					min_queue_interval			= 3000;
-					max_queue_interval			= 4000;
-				}
-				else {
-					min_queue_size				= 1;
-					max_queue_size				= 1;
-					min_queue_interval			= 3000;
-					max_queue_interval			= 4000;
-				}
-
-			break;
-		}
-		default : {
-			if (distance > 30.f) {
-				min_queue_size					= object().min_queue_size_far();
-				max_queue_size					= object().max_queue_size_far();
-				min_queue_interval				= object().min_queue_interval_far();
-				max_queue_interval				= object().max_queue_interval_far();
-			}
-			else
-				if (distance > 15.f) {
-					min_queue_size				= object().min_queue_size_medium();
-					max_queue_size				= object().max_queue_size_medium();
-					min_queue_interval			= object().min_queue_interval_medium();
-					max_queue_interval			= object().max_queue_interval_medium();
-				}
-				else {
-					min_queue_size				= object().min_queue_size_close();
-					max_queue_size				= object().max_queue_size_close();
-					min_queue_interval			= object().min_queue_interval_close();
-					max_queue_interval			= object().max_queue_interval_close();
-				}
-		}
-	}
-	/**
-	if (distance > 30.f) {
-		min_queue_size					= object().min_queue_size_far();
-		max_queue_size					= object().max_queue_size_far();
-		min_queue_interval				= object().min_queue_interval_far();
-		max_queue_interval				= object().max_queue_interval_far();
-	}
-	else
-		if (distance > 15.f) {
-			min_queue_size				= object().min_queue_size_medium();
-			max_queue_size				= object().max_queue_size_medium();
-			min_queue_interval			= object().min_queue_interval_medium();
-			max_queue_interval			= object().max_queue_interval_medium();
-		}
-		else {
-			min_queue_size				= object().min_queue_size_close();
-			max_queue_size				= object().max_queue_size_close();
-			min_queue_interval			= object().min_queue_interval_close();
-			max_queue_interval			= object().max_queue_interval_close();
-		}
-	/**/
-}
-
-void CStalkerActionCombatBase::play_panic_sound		(u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time, u32 id)
-{
-	object().sound().play	(
-		object().memory().enemy().selected()->human_being() ?
-		eStalkerSoundPanicHuman :
-		eStalkerSoundPanicMonster,
-		max_start_time,
-		min_start_time,
-		max_stop_time,
-		min_stop_time,
-		id
-	);
-}
-
-void CStalkerActionCombatBase::play_attack_sound	(u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time, u32 id)
-{
-	if (!object().memory().enemy().selected()->human_being())
-		return;
-
-	if (!object().agent_manager().member().can_cry_noninfo_phrase())
-		return;
-
-	u32						sound_type = eStalkerSoundAttackNoAllies;
+    u32 sound_type = eStalkerSoundAttackNoAllies;
 #ifdef DEBUG
-	if (object().agent_manager().member().combat_members().empty())
-		Msg					(
-			"! I am in combat, but there is no combat members at all (including me), npc[%s],team[%d],squad[%d],group[%d]",
-			*object().cName(),
-			object().g_Team(),
-			object().g_Squad(),
-			object().g_Group()
-		);
+    if (object().agent_manager().member().combat_members().empty())
+        Msg("! I am in combat, but there is no combat members at all (including me), npc[%s],team[%d],squad[%d],group[%d]", *object().cName(), object().g_Team(),
+            object().g_Squad(), object().g_Group());
 #endif // DEBUG
 
-	if (object().agent_manager().member().combat_members().size() > 1) {
-		if (object().agent_manager().enemy().enemies().size() > 1)
-			sound_type		= eStalkerSoundAttackAlliesSeveralEnemies;
-		else
-			sound_type		= eStalkerSoundAttackAlliesSingleEnemy;
-	}
-	else
-		sound_type			= eStalkerSoundAttackNoAllies;
+    if (object().agent_manager().member().combat_members().size() > 1)
+    {
+        if (object().agent_manager().enemy().enemies().size() > 1)
+            sound_type = eStalkerSoundAttackAlliesSeveralEnemies;
+        else
+            sound_type = eStalkerSoundAttackAlliesSingleEnemy;
+    }
+    else
+        sound_type = eStalkerSoundAttackNoAllies;
 
-	object().sound().play	(
-		sound_type,
-		max_start_time,
-		min_start_time,
-		max_stop_time,
-		min_stop_time,
-		id
-	);
+    object().sound().play(sound_type, max_start_time, min_start_time, max_stop_time, min_stop_time, id);
 }
 
-void CStalkerActionCombatBase::play_start_search_sound	(u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time, u32 id)
+void CStalkerActionCombatBase::play_start_search_sound(u32 max_start_time, u32 min_start_time, u32 max_stop_time, u32 min_stop_time, u32 id)
 {
-	if (!object().agent_manager().member().can_cry_noninfo_phrase())
-		return;
+    if (!object().agent_manager().member().can_cry_noninfo_phrase())
+        return;
 
 #ifdef DEBUG
-	if (object().agent_manager().member().combat_members().empty())
-		Msg					("! I am in combat, but there is no combat members at all (including me), npc[%s],team[%d],squad[%d],group[%d]",
-			*object().cName(),
-			object().g_Team(),
-			object().g_Squad(),
-			object().g_Group()
-		);
+    if (object().agent_manager().member().combat_members().empty())
+        Msg("! I am in combat, but there is no combat members at all (including me), npc[%s],team[%d],squad[%d],group[%d]", *object().cName(), object().g_Team(),
+            object().g_Squad(), object().g_Group());
 #endif // DEBUG
 
-	bool					search_with_allies = object().agent_manager().member().combat_members().size() > 1;
+    bool search_with_allies = object().agent_manager().member().combat_members().size() > 1;
 
-	object().sound().play	(
-		search_with_allies ?
-		eStalkerSoundSearch1WithAllies :
-		eStalkerSoundSearch1NoAllies,
-		max_start_time,
-		min_start_time,
-		max_stop_time,
-		min_stop_time,
-		id
-	);
+    object().sound().play(search_with_allies ? eStalkerSoundSearch1WithAllies : eStalkerSoundSearch1NoAllies, max_start_time, min_start_time, max_stop_time, min_stop_time, id);
 }

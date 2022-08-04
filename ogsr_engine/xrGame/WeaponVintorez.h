@@ -3,15 +3,15 @@
 #include "weaponmagazined.h"
 #include "script_export_space.h"
 
-class CWeaponVintorez :
-	public CWeaponMagazined
+class CWeaponVintorez : public CWeaponMagazined
 {
-	typedef CWeaponMagazined inherited;
-public:
-	CWeaponVintorez(void);
-	virtual ~CWeaponVintorez(void);
+    typedef CWeaponMagazined inherited;
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+public:
+    CWeaponVintorez(void);
+    virtual ~CWeaponVintorez(void);
+
+    DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CWeaponVintorez)
 #undef script_type_list

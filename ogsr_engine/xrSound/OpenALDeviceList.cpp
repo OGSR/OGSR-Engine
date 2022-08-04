@@ -26,14 +26,14 @@
 #include "OpenALDeviceList.h"
 
 #pragma warning(push)
-#pragma warning(disable:4995)
+#pragma warning(disable : 4995)
 #include <objbase.h>
 #pragma warning(pop)
 
 ALDeviceList::ALDeviceList()
 {
-	snd_device_id = u32(-1);
-	Enumerate();
+    snd_device_id = u32(-1);
+    Enumerate();
 }
 
 /*
@@ -41,186 +41,174 @@ ALDeviceList::ALDeviceList()
  */
 ALDeviceList::~ALDeviceList()
 {
-	for (int i = 0; snd_devices_token[i].name; i++)
-	{
-		xr_free(snd_devices_token[i].name);
-	}
-	xr_free(snd_devices_token);
-	snd_devices_token = NULL;
+    for (int i = 0; snd_devices_token[i].name; i++)
+    {
+        xr_free(snd_devices_token[i].name);
+    }
+    xr_free(snd_devices_token);
+    snd_devices_token = NULL;
 }
-
 
 void ALDeviceList::Enumerate()
 {
-	char				*devices;
-	int					major, minor, index;
-	LPCSTR				actualDeviceName;
+    char* devices;
+    int major, minor, index;
+    LPCSTR actualDeviceName;
 
-	Msg("SOUND: OpenAL: enumerate devices...");
-	// have a set of vectors storing the device list, selection status, spec version #, and XRAM support status
-	// -- empty all the lists and reserve space for 10 devices
-	m_devices.clear();
+    Msg("SOUND: OpenAL: enumerate devices...");
+    // have a set of vectors storing the device list, selection status, spec version #, and XRAM support status
+    // -- empty all the lists and reserve space for 10 devices
+    m_devices.clear();
 
-	CoUninitialize();
-	// grab function pointers for 1.0-API functions, and if successful proceed to enumerate all devices
-	if (alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT"))
-	{
-		Msg("SOUND: OpenAL: EnumerationExtension Present");
+    CoUninitialize();
+    // grab function pointers for 1.0-API functions, and if successful proceed to enumerate all devices
+    if (alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT"))
+    {
+        Msg("SOUND: OpenAL: EnumerationExtension Present");
 
-		devices = (char *)alcGetString(NULL, ALC_DEVICE_SPECIFIER);
-		Msg("devices %s", devices);
-		xr_strcpy(m_defaultDeviceName, (char *)alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER));
-		Msg("SOUND: OpenAL: system  default SndDevice name is %s", m_defaultDeviceName);
+        devices = (char*)alcGetString(NULL, ALC_DEVICE_SPECIFIER);
+        Msg("devices %s", devices);
+        xr_strcpy(m_defaultDeviceName, (char*)alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER));
+        Msg("SOUND: OpenAL: system  default SndDevice name is %s", m_defaultDeviceName);
 
-		index = 0;
-		// go through device list (each device terminated with a single NULL, list terminated with double NULL)
-		while (*devices != NULL)
-		{
-			ALCdevice *device = alcOpenDevice(devices);
-			if (device)
-			{
-				ALCcontext *context = alcCreateContext(device, NULL);
-				if (context)
-				{
-					alcMakeContextCurrent(context);
-					// if new actual device name isn't already in the list, then add it...
-					actualDeviceName = alcGetString(device, ALC_DEVICE_SPECIFIER);
+        index = 0;
+        // go through device list (each device terminated with a single NULL, list terminated with double NULL)
+        while (*devices != NULL)
+        {
+            ALCdevice* device = alcOpenDevice(devices);
+            if (device)
+            {
+                ALCcontext* context = alcCreateContext(device, NULL);
+                if (context)
+                {
+                    alcMakeContextCurrent(context);
+                    // if new actual device name isn't already in the list, then add it...
+                    actualDeviceName = alcGetString(device, ALC_DEVICE_SPECIFIER);
 
-					if ((actualDeviceName != NULL) && xr_strlen(actualDeviceName) > 0)
-					{
-						alcGetIntegerv(device, ALC_MAJOR_VERSION, sizeof(int), &major);
-						alcGetIntegerv(device, ALC_MINOR_VERSION, sizeof(int), &minor);
-						m_devices.emplace_back(actualDeviceName, minor, major);
+                    if ((actualDeviceName != NULL) && xr_strlen(actualDeviceName) > 0)
+                    {
+                        alcGetIntegerv(device, ALC_MAJOR_VERSION, sizeof(int), &major);
+                        alcGetIntegerv(device, ALC_MINOR_VERSION, sizeof(int), &minor);
+                        m_devices.emplace_back(actualDeviceName, minor, major);
 
-						if (!stricmp(m_devices.back().name, AL_SOFT))
-						{
-							m_devices.back().props.efx = alcIsExtensionPresent(alcGetContextsDevice(alcGetCurrentContext()), "ALC_EXT_EFX");
-							m_devices.back().props.xram = alcIsExtensionPresent(alcGetContextsDevice(alcGetCurrentContext()), "EAX_RAM");
-						}
-						else
-						{
-							if (alIsExtensionPresent("EAX2.0"))
-								m_devices.back().props.eax = 2;
-							if (alIsExtensionPresent("EAX3.0"))
-								m_devices.back().props.eax = 3;
-							if (alIsExtensionPresent("EAX4.0"))
-								m_devices.back().props.eax = 4;
-							if (alIsExtensionPresent("EAX5.0"))
-								m_devices.back().props.eax = 5;
+                        if (!stricmp(m_devices.back().name, AL_SOFT))
+                        {
+                            m_devices.back().props.efx = alcIsExtensionPresent(alcGetContextsDevice(alcGetCurrentContext()), "ALC_EXT_EFX");
+                            m_devices.back().props.xram = alcIsExtensionPresent(alcGetContextsDevice(alcGetCurrentContext()), "EAX_RAM");
+                        }
+                        else
+                        {
+                            if (alIsExtensionPresent("EAX2.0"))
+                                m_devices.back().props.eax = 2;
+                            if (alIsExtensionPresent("EAX3.0"))
+                                m_devices.back().props.eax = 3;
+                            if (alIsExtensionPresent("EAX4.0"))
+                                m_devices.back().props.eax = 4;
+                            if (alIsExtensionPresent("EAX5.0"))
+                                m_devices.back().props.eax = 5;
 
-							m_devices.back().props.xram = alIsExtensionPresent("EAX-RAM");
-						}
+                            m_devices.back().props.xram = alIsExtensionPresent("EAX-RAM");
+                        }
 
-						// KD: disable unwanted eax flag to force eax on all devices
-						m_devices.back().props.eax_unwanted = 0; // ((0 == xr_strcmp(actualDeviceName, AL_GENERIC_HARDWARE)) || (0 == xr_strcmp(actualDeviceName, AL_GENERIC_SOFTWARE)));
-						++index;
-					}
-					alcDestroyContext(context);
-				}
-				else
-				{
-					Msg("SOUND: OpenAL: cant create context for %s", device);
-				}
-				alcCloseDevice(device);
-			}
-			else
-			{
-				Msg("SOUND: OpenAL: cant open device %s", devices);
-			}
+                        // KD: disable unwanted eax flag to force eax on all devices
+                        m_devices.back().props.eax_unwanted =
+                            0; // ((0 == xr_strcmp(actualDeviceName, AL_GENERIC_HARDWARE)) || (0 == xr_strcmp(actualDeviceName, AL_GENERIC_SOFTWARE)));
+                        ++index;
+                    }
+                    alcDestroyContext(context);
+                }
+                else
+                {
+                    Msg("SOUND: OpenAL: cant create context for %s", device);
+                }
+                alcCloseDevice(device);
+            }
+            else
+            {
+                Msg("SOUND: OpenAL: cant open device %s", devices);
+            }
 
-			devices += xr_strlen(devices) + 1;
-		}
-	}
-	else
-		Msg("SOUND: OpenAL: EnumerationExtension NOT Present");
+            devices += xr_strlen(devices) + 1;
+        }
+    }
+    else
+        Msg("SOUND: OpenAL: EnumerationExtension NOT Present");
 
-	//make token
-	u32 _cnt = GetNumDevices();
-	snd_devices_token = xr_alloc<xr_token>(_cnt + 1);
-	snd_devices_token[_cnt].id = -1;
-	snd_devices_token[_cnt].name = NULL;
-	for (u32 i = 0; i < _cnt; ++i)
-	{
-		snd_devices_token[i].id = i;
-		snd_devices_token[i].name = xr_strdup(m_devices[i].name);
-	}
-	//--
+    // make token
+    u32 _cnt = GetNumDevices();
+    snd_devices_token = xr_alloc<xr_token>(_cnt + 1);
+    snd_devices_token[_cnt].id = -1;
+    snd_devices_token[_cnt].name = NULL;
+    for (u32 i = 0; i < _cnt; ++i)
+    {
+        snd_devices_token[i].id = i;
+        snd_devices_token[i].name = xr_strdup(m_devices[i].name);
+    }
+    //--
 
-	if (0 != GetNumDevices())
-		Msg("SOUND: OpenAL: All available devices:");
+    if (0 != GetNumDevices())
+        Msg("SOUND: OpenAL: All available devices:");
 
+    int majorVersion, minorVersion;
 
-	int majorVersion, minorVersion;
-
-
-	for (u32 j = 0; j < GetNumDevices(); j++)
-	{
-		GetDeviceVersion(j, &majorVersion, &minorVersion);
-		Msg("%d. %s, Spec Version %d.%d %s eax[%d] efx[%s] xram[%s]",
-			j + 1,
-			GetDeviceName(j),
-			majorVersion,
-			minorVersion,
-			(stricmp(GetDeviceName(j), m_defaultDeviceName) == 0) ? "(default)" : "",
-			GetDeviceDesc(j).props.eax,
-			GetDeviceDesc(j).props.efx ? "yes" : "no",
-			GetDeviceDesc(j).props.xram ? "yes" : "no"
-		);
-	}
-	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+    for (u32 j = 0; j < GetNumDevices(); j++)
+    {
+        GetDeviceVersion(j, &majorVersion, &minorVersion);
+        Msg("%d. %s, Spec Version %d.%d %s eax[%d] efx[%s] xram[%s]", j + 1, GetDeviceName(j), majorVersion, minorVersion,
+            (stricmp(GetDeviceName(j), m_defaultDeviceName) == 0) ? "(default)" : "", GetDeviceDesc(j).props.eax, GetDeviceDesc(j).props.efx ? "yes" : "no",
+            GetDeviceDesc(j).props.xram ? "yes" : "no");
+    }
+    CoInitializeEx(NULL, COINIT_MULTITHREADED);
 }
 
-LPCSTR ALDeviceList::GetDeviceName(u32 index)
-{
-	return snd_devices_token[index].name;
-}
+LPCSTR ALDeviceList::GetDeviceName(u32 index) { return snd_devices_token[index].name; }
 
 void ALDeviceList::SelectBestDevice()
 {
-	int best_majorVersion = -1;
-	int best_minorVersion = -1;
-	int majorVersion;
-	int minorVersion;
+    int best_majorVersion = -1;
+    int best_minorVersion = -1;
+    int majorVersion;
+    int minorVersion;
 
-	if (snd_device_id == u32(-1))
-	{
-		//select best
-		u32 new_device_id = snd_device_id;
-		for (u32 i = 0; i < GetNumDevices(); ++i)
-		{
-			if (stricmp(m_defaultDeviceName, GetDeviceName(i)) != 0)
-				continue;
+    if (snd_device_id == u32(-1))
+    {
+        // select best
+        u32 new_device_id = snd_device_id;
+        for (u32 i = 0; i < GetNumDevices(); ++i)
+        {
+            if (stricmp(m_defaultDeviceName, GetDeviceName(i)) != 0)
+                continue;
 
-			GetDeviceVersion(i, &majorVersion, &minorVersion);
-			if ((majorVersion > best_majorVersion) ||
-				(majorVersion == best_majorVersion && minorVersion > best_minorVersion))
-			{
-				best_majorVersion = majorVersion;
-				best_minorVersion = minorVersion;
-				new_device_id = i;
-			}
-		}
-		if (new_device_id == u32(-1))
-		{
-			R_ASSERT(GetNumDevices() != 0);
-			new_device_id = 0; //first
-		};
-		snd_device_id = new_device_id;
-	}
-	if (GetNumDevices() == 0)
-		Msg("SOUND: Can't select device. List empty");
-	else {
-		Msg("SOUND: Selected device is %s", GetDeviceName(snd_device_id));
-		IS_OpenAL_Soft = !stricmp(GetDeviceName(snd_device_id), AL_SOFT);
-	}
+            GetDeviceVersion(i, &majorVersion, &minorVersion);
+            if ((majorVersion > best_majorVersion) || (majorVersion == best_majorVersion && minorVersion > best_minorVersion))
+            {
+                best_majorVersion = majorVersion;
+                best_minorVersion = minorVersion;
+                new_device_id = i;
+            }
+        }
+        if (new_device_id == u32(-1))
+        {
+            R_ASSERT(GetNumDevices() != 0);
+            new_device_id = 0; // first
+        };
+        snd_device_id = new_device_id;
+    }
+    if (GetNumDevices() == 0)
+        Msg("SOUND: Can't select device. List empty");
+    else
+    {
+        Msg("SOUND: Selected device is %s", GetDeviceName(snd_device_id));
+        IS_OpenAL_Soft = !stricmp(GetDeviceName(snd_device_id), AL_SOFT);
+    }
 }
 
 /*
  * Returns the major and minor version numbers for a device at a specified index in the complete list
  */
-void ALDeviceList::GetDeviceVersion(u32 index, int *major, int *minor)
+void ALDeviceList::GetDeviceVersion(u32 index, int* major, int* minor)
 {
-	*major = m_devices[index].major_ver;
-	*minor = m_devices[index].minor_ver;
-	return;
+    *major = m_devices[index].major_ver;
+    *minor = m_devices[index].minor_ver;
+    return;
 }

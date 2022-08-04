@@ -44,8 +44,7 @@ float time_to_next_mark(const CBlend& b, const motion_marks& marks)
 bool blend_in(const CBlend& b, const motion_marks& marks) { return NULL != marks.pick_mark(blend_time(b)); }
 IC bool b_is_blending(const CBlend* current_blend, const CBlend* b)
 {
-    return current_blend && current_blend->blend_state() != CBlend::eFREE_SLOT && current_blend != b &&
-        b->blendAmount < b->blendPower - EPS_L;
+    return current_blend && current_blend->blend_state() != CBlend::eFREE_SLOT && current_blend != b && b->blendAmount < b->blendPower - EPS_L;
 }
 
 void ik_anim_state::update(IKinematicsAnimated* K, const CBlend* b, u16 i)

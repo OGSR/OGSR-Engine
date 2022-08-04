@@ -10,27 +10,25 @@
 #include "alife_smart_terrain_registry.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 
-CALifeSmartTerrainRegistry::~CALifeSmartTerrainRegistry	()
+CALifeSmartTerrainRegistry::~CALifeSmartTerrainRegistry() {}
+
+void CALifeSmartTerrainRegistry::add(CSE_ALifeDynamicObject* object)
 {
+    CSE_ALifeSmartZone* zone = smart_cast<CSE_ALifeSmartZone*>(object);
+    if (!zone)
+        return;
+
+    VERIFY(objects().find(object->ID) == objects().end());
+    m_objects.insert(std::make_pair(object->ID, zone));
 }
 
-void CALifeSmartTerrainRegistry::add					(CSE_ALifeDynamicObject *object)
+void CALifeSmartTerrainRegistry::remove(CSE_ALifeDynamicObject* object)
 {
-	CSE_ALifeSmartZone		*zone = smart_cast<CSE_ALifeSmartZone*>(object);
-	if (!zone)
-		return;
+    CSE_ALifeSmartZone* zone = smart_cast<CSE_ALifeSmartZone*>(object);
+    if (!zone)
+        return;
 
-	VERIFY(objects().find(object->ID) == objects().end());
-	m_objects.insert		(std::make_pair(object->ID,zone));
-}
-
-void CALifeSmartTerrainRegistry::remove					(CSE_ALifeDynamicObject *object)
-{
-	CSE_ALifeSmartZone		*zone = smart_cast<CSE_ALifeSmartZone*>(object);
-	if (!zone)
-		return;
-
-	OBJECTS::iterator		I = m_objects.find(object->ID);
-	VERIFY					(I != m_objects.end());
-	m_objects.erase			(I);
+    OBJECTS::iterator I = m_objects.find(object->ID);
+    VERIFY(I != m_objects.end());
+    m_objects.erase(I);
 }

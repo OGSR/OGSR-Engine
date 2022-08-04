@@ -9,145 +9,137 @@
 
 #pragma comment(lib, "dbghelp.lib")
 
-
 constexpr u16 MaxFuncNameLength = 4096, maxFramesCount = 512;
-
 
 bool symEngineInitialized = false;
 
 bool InitializeSymbolEngine()
 {
-	if (!symEngineInitialized)
-	{
-		DWORD dwOptions = SymGetOptions();
-		SymSetOptions(dwOptions | SYMOPT_DEFERRED_LOADS | SYMOPT_LOAD_LINES | SYMOPT_UNDNAME);
+    if (!symEngineInitialized)
+    {
+        DWORD dwOptions = SymGetOptions();
+        SymSetOptions(dwOptions | SYMOPT_DEFERRED_LOADS | SYMOPT_LOAD_LINES | SYMOPT_UNDNAME);
 
-		if (SymInitialize(GetCurrentProcess(), nullptr, TRUE))
-			symEngineInitialized = true;
-	}
+        if (SymInitialize(GetCurrentProcess(), nullptr, TRUE))
+            symEngineInitialized = true;
+    }
 
-	return symEngineInitialized;
+    return symEngineInitialized;
 }
 
 void DeinitializeSymbolEngine()
 {
-	if (symEngineInitialized)
-	{
-		SymCleanup(GetCurrentProcess());
+    if (symEngineInitialized)
+    {
+        SymCleanup(GetCurrentProcess());
 
-		symEngineInitialized = false;
-	}
+        symEngineInitialized = false;
+    }
 }
 
-
 #ifdef _M_X64
-#	define MACHINE_TYPE IMAGE_FILE_MACHINE_AMD64
+#define MACHINE_TYPE IMAGE_FILE_MACHINE_AMD64
 #else
-#	define MACHINE_TYPE IMAGE_FILE_MACHINE_I386
+#define MACHINE_TYPE IMAGE_FILE_MACHINE_I386
 #endif
 
 std::stringstream BuildStackTrace(const char* header, PCONTEXT threadCtx)
 {
-	static std::mutex dbghelpMutex;
-	std::scoped_lock<decltype(dbghelpMutex)> lock(dbghelpMutex);
+    static std::mutex dbghelpMutex;
+    std::scoped_lock<decltype(dbghelpMutex)> lock(dbghelpMutex);
 
-	std::stringstream traceResult;
-	traceResult << header;
+    std::stringstream traceResult;
+    traceResult << header;
 
+    if (!InitializeSymbolEngine())
+    {
+        const auto LastErr = GetLastError();
+        traceResult << "[" << __FUNCTION__ << "] InitializeSymbolEngine failed with error: [" << LastErr << "], descr: [" << Debug.error2string(LastErr) << "]";
+        return traceResult;
+    }
 
-	if (!InitializeSymbolEngine())
-	{
-		const auto LastErr = GetLastError();
-		traceResult << "[" << __FUNCTION__ << "] InitializeSymbolEngine failed with error: [" << LastErr << "], descr: [" << Debug.error2string(LastErr) << "]";
-		return traceResult;
-	}
-
-
-	STACKFRAME stackFrame = { 0 };
+    STACKFRAME stackFrame = {0};
 #ifdef _M_X64
-	stackFrame.AddrPC.Mode = AddrModeFlat;
-	stackFrame.AddrPC.Offset = threadCtx->Rip;
-	stackFrame.AddrStack.Mode = AddrModeFlat;
-	stackFrame.AddrStack.Offset = threadCtx->Rsp;
-	stackFrame.AddrFrame.Mode = AddrModeFlat;
-	stackFrame.AddrFrame.Offset = threadCtx->Rbp;
+    stackFrame.AddrPC.Mode = AddrModeFlat;
+    stackFrame.AddrPC.Offset = threadCtx->Rip;
+    stackFrame.AddrStack.Mode = AddrModeFlat;
+    stackFrame.AddrStack.Offset = threadCtx->Rsp;
+    stackFrame.AddrFrame.Mode = AddrModeFlat;
+    stackFrame.AddrFrame.Offset = threadCtx->Rbp;
 #else
-	stackFrame.AddrPC.Mode = AddrModeFlat;
-	stackFrame.AddrPC.Offset = threadCtx->Eip;
-	stackFrame.AddrStack.Mode = AddrModeFlat;
-	stackFrame.AddrStack.Offset = threadCtx->Esp;
-	stackFrame.AddrFrame.Mode = AddrModeFlat;
-	stackFrame.AddrFrame.Offset = threadCtx->Ebp;
+    stackFrame.AddrPC.Mode = AddrModeFlat;
+    stackFrame.AddrPC.Offset = threadCtx->Eip;
+    stackFrame.AddrStack.Mode = AddrModeFlat;
+    stackFrame.AddrStack.Offset = threadCtx->Esp;
+    stackFrame.AddrFrame.Mode = AddrModeFlat;
+    stackFrame.AddrFrame.Offset = threadCtx->Ebp;
 #endif
-	auto lpstackFrame = reinterpret_cast<LPSTACKFRAME>(&stackFrame);
+    auto lpstackFrame = reinterpret_cast<LPSTACKFRAME>(&stackFrame);
 
+    u16 count_frames = 0;
+    while (count_frames++ <= maxFramesCount)
+    {
+        BOOL result = StackWalk(MACHINE_TYPE, GetCurrentProcess(), GetCurrentThread(), lpstackFrame, threadCtx, nullptr, SymFunctionTableAccess, SymGetModuleBase, nullptr);
 
-	u16 count_frames = 0;
-	while (count_frames++ <= maxFramesCount) {
-		BOOL result = StackWalk(MACHINE_TYPE, GetCurrentProcess(), GetCurrentThread(), lpstackFrame, threadCtx, nullptr, SymFunctionTableAccess, SymGetModuleBase, nullptr);
+        if (!result || lpstackFrame->AddrPC.Offset == 0)
+            break;
 
-		if (!result || lpstackFrame->AddrPC.Offset == 0)
-			break;
+        // Module name
+        IMAGEHLP_MODULE moduleInfo = {0};
+        moduleInfo.SizeOfStruct = sizeof(moduleInfo);
 
-		// Module name
-		IMAGEHLP_MODULE moduleInfo = { 0 };
-		moduleInfo.SizeOfStruct = sizeof(moduleInfo);
+        result = SymGetModuleInfo(GetCurrentProcess(), lpstackFrame->AddrPC.Offset, &moduleInfo);
 
-		result = SymGetModuleInfo(GetCurrentProcess(), lpstackFrame->AddrPC.Offset, &moduleInfo);
+        if (result)
+            traceResult << "Module: [" << moduleInfo.ImageName << "]";
 
-		if (result)
-			traceResult << "Module: [" << moduleInfo.ImageName << "]";
+        // Address
+        traceResult << ", AddrPC.Offset: [" << reinterpret_cast<const void*>(lpstackFrame->AddrPC.Offset) << "]";
 
-		// Address
-		traceResult << ", AddrPC.Offset: [" << reinterpret_cast<const void*>(lpstackFrame->AddrPC.Offset) << "]";
+        // Function info
+        BYTE arrSymBuffer[MaxFuncNameLength] = {0};
+        auto functionInfo = reinterpret_cast<PIMAGEHLP_SYMBOL>(&arrSymBuffer);
+        functionInfo->SizeOfStruct = sizeof(*functionInfo);
+        functionInfo->MaxNameLength = sizeof(arrSymBuffer) - offsetof(IMAGEHLP_SYMBOL, Name);
+        DWORD_PTR dwFunctionOffset = 0;
 
-		// Function info
-		BYTE arrSymBuffer[MaxFuncNameLength] = { 0 };
-		auto functionInfo = reinterpret_cast<PIMAGEHLP_SYMBOL>(&arrSymBuffer);
-		functionInfo->SizeOfStruct = sizeof(*functionInfo);
-		functionInfo->MaxNameLength = sizeof(arrSymBuffer) - offsetof(IMAGEHLP_SYMBOL, Name);
-		DWORD_PTR dwFunctionOffset = 0;
+        result = SymGetSymFromAddr(GetCurrentProcess(), lpstackFrame->AddrPC.Offset, &dwFunctionOffset, functionInfo);
 
-		result = SymGetSymFromAddr(GetCurrentProcess(), lpstackFrame->AddrPC.Offset, &dwFunctionOffset, functionInfo);
+        if (result)
+        {
+            traceResult << ", Fun: [" << functionInfo->Name << "()]";
+            if (dwFunctionOffset)
+                traceResult << " + [" << dwFunctionOffset << " byte(s)]";
+        }
 
-		if (result)
-		{
-			traceResult << ", Fun: [" << functionInfo->Name << "()]";
-			if (dwFunctionOffset)
-				traceResult << " + [" << dwFunctionOffset << " byte(s)]";
-		}
+        // Source info
+        DWORD dwLineOffset = 0;
+        IMAGEHLP_LINE sourceInfo = {0};
+        sourceInfo.SizeOfStruct = sizeof(sourceInfo);
 
-		// Source info
-		DWORD dwLineOffset = 0;
-		IMAGEHLP_LINE sourceInfo = { 0 };
-		sourceInfo.SizeOfStruct = sizeof(sourceInfo);
+        result = SymGetLineFromAddr(GetCurrentProcess(), lpstackFrame->AddrPC.Offset, &dwLineOffset, &sourceInfo);
 
-		result = SymGetLineFromAddr(GetCurrentProcess(), lpstackFrame->AddrPC.Offset, &dwLineOffset, &sourceInfo);
+        if (result)
+        {
+            traceResult << ", File-->Line: [" << sourceInfo.FileName << "-->" << sourceInfo.LineNumber << "]";
+            if (dwLineOffset)
+                traceResult << " + [" << dwLineOffset << " byte(s)]";
+        }
 
-		if (result)
-		{
-			traceResult << ", File-->Line: [" << sourceInfo.FileName << "-->" << sourceInfo.LineNumber << "]";
-			if (dwLineOffset)
-				traceResult << " + [" << dwLineOffset << " byte(s)]";
-		}
+        traceResult << "\n";
+    }
 
-		traceResult << "\n";
-	}
+    DeinitializeSymbolEngine();
 
-
-	DeinitializeSymbolEngine();
-
-
-	return traceResult;
+    return traceResult;
 }
-
 
 std::stringstream BuildStackTrace(const char* header)
 {
-	CONTEXT currentThreadCtx = { 0 };
+    CONTEXT currentThreadCtx = {0};
 
-	RtlCaptureContext(&currentThreadCtx); // GetThreadContext cann't be used on the current thread 
-	currentThreadCtx.ContextFlags = CONTEXT_FULL;
+    RtlCaptureContext(&currentThreadCtx); // GetThreadContext cann't be used on the current thread
+    currentThreadCtx.ContextFlags = CONTEXT_FULL;
 
-	return BuildStackTrace(header, &currentThreadCtx);
+    return BuildStackTrace(header, &currentThreadCtx);
 }

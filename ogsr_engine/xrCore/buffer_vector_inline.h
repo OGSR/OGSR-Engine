@@ -12,14 +12,10 @@
 #define buffer_vector_specialized buffer_vector<T>
 
 TEMPLATE_SPECIALIZATION
-inline buffer_vector_specialized::buffer_vector(void* buffer, size_type const& max_count)
-    : m_begin((T*)buffer), m_end((T*)buffer), m_max_end((T*)buffer + max_count)
-{
-}
+inline buffer_vector_specialized::buffer_vector(void* buffer, size_type const& max_count) : m_begin((T*)buffer), m_end((T*)buffer), m_max_end((T*)buffer + max_count) {}
 
 TEMPLATE_SPECIALIZATION
-inline buffer_vector_specialized::buffer_vector(
-    void* buffer, size_type const& max_count, size_type const& count, value_type const& value)
+inline buffer_vector_specialized::buffer_vector(void* buffer, size_type const& max_count, size_type const& count, value_type const& value)
     : m_begin((T*)buffer), m_end((T*)buffer), m_max_end((T*)buffer + max_count)
 {
     assign(count, value);
@@ -34,8 +30,7 @@ inline buffer_vector_specialized::buffer_vector(void* buffer, size_type const& m
 
 TEMPLATE_SPECIALIZATION
 template <typename input_iterator>
-inline buffer_vector_specialized::buffer_vector(
-    void* buffer, size_type const& max_count, input_iterator const& begin, input_iterator const& end)
+inline buffer_vector_specialized::buffer_vector(void* buffer, size_type const& max_count, input_iterator const& begin, input_iterator const& end)
     : m_begin((T*)buffer), m_end((T*)buffer), m_max_end((T*)buffer + max_count)
 {
     assign(begin, end);
@@ -232,8 +227,7 @@ inline typename buffer_vector_specialized::reference buffer_vector_specialized::
 }
 
 TEMPLATE_SPECIALIZATION
-inline typename buffer_vector_specialized::const_reference buffer_vector_specialized::operator[](
-    size_type const& index) const
+inline typename buffer_vector_specialized::const_reference buffer_vector_specialized::operator[](size_type const& index) const
 {
     VERIFY(index < size());
     return (m_begin[index]);
@@ -276,48 +270,27 @@ inline typename buffer_vector_specialized::iterator buffer_vector_specialized::e
 TEMPLATE_SPECIALIZATION
 inline typename buffer_vector_specialized::const_iterator buffer_vector_specialized::end() const { return (m_end); }
 TEMPLATE_SPECIALIZATION
-inline typename buffer_vector_specialized::reverse_iterator buffer_vector_specialized::rbegin()
-{
-    return (reverse_iterator(end()));
-}
+inline typename buffer_vector_specialized::reverse_iterator buffer_vector_specialized::rbegin() { return (reverse_iterator(end())); }
 
 TEMPLATE_SPECIALIZATION
-inline typename buffer_vector_specialized::const_reverse_iterator buffer_vector_specialized::rbegin() const
-{
-    return (const_reverse_iterator(end()));
-}
+inline typename buffer_vector_specialized::const_reverse_iterator buffer_vector_specialized::rbegin() const { return (const_reverse_iterator(end())); }
 
 TEMPLATE_SPECIALIZATION
-inline typename buffer_vector_specialized::reverse_iterator buffer_vector_specialized::rend()
-{
-    return (reverse_iterator(begin()));
-}
+inline typename buffer_vector_specialized::reverse_iterator buffer_vector_specialized::rend() { return (reverse_iterator(begin())); }
 
 TEMPLATE_SPECIALIZATION
-inline typename buffer_vector_specialized::const_reverse_iterator buffer_vector_specialized::rend() const
-{
-    return (const_reverse_iterator(begin()));
-}
+inline typename buffer_vector_specialized::const_reverse_iterator buffer_vector_specialized::rend() const { return (const_reverse_iterator(begin())); }
 
 TEMPLATE_SPECIALIZATION
 inline bool buffer_vector_specialized::empty() const { return (m_begin == m_end); }
 TEMPLATE_SPECIALIZATION
-inline typename buffer_vector_specialized::size_type buffer_vector_specialized::size() const
-{
-    return (m_end - m_begin);
-}
+inline typename buffer_vector_specialized::size_type buffer_vector_specialized::size() const { return (m_end - m_begin); }
 
 TEMPLATE_SPECIALIZATION
-inline typename buffer_vector_specialized::size_type buffer_vector_specialized::capacity() const
-{
-    return (m_max_end - m_begin);
-}
+inline typename buffer_vector_specialized::size_type buffer_vector_specialized::capacity() const { return (m_max_end - m_begin); }
 
 TEMPLATE_SPECIALIZATION
-inline typename buffer_vector_specialized::size_type buffer_vector_specialized::max_size() const
-{
-    return (m_max_end - m_begin);
-}
+inline typename buffer_vector_specialized::size_type buffer_vector_specialized::max_size() const { return (m_max_end - m_begin); }
 
 TEMPLATE_SPECIALIZATION
 inline void buffer_vector_specialized::construct(pointer p) { new (p) T(); }

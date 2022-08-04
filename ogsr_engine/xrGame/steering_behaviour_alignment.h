@@ -14,21 +14,20 @@
 
 class CAI_Rat;
 
-namespace steering_behaviour {
+namespace steering_behaviour
+{
 
-class alignment : 
-	public base,
-	private debug::make_final<alignment>
+class alignment : public base, private debug::make_final<alignment>
 {
 public:
-						alignment	(CAI_Rat const *object);
+    alignment(CAI_Rat const* object);
 
     alignment(const alignment& other) = delete;
     alignment& operator=(const alignment& other) = delete;
-	virtual	Fvector		direction	();
+    virtual Fvector direction();
 
 private:
-	typedef base		inherited;
+    typedef base inherited;
 };
 
 } // namespace steering_behaviour

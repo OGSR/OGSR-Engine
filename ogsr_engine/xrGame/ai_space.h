@@ -18,59 +18,60 @@ class CCoverManager;
 class CScriptEngine;
 class CPatrolPathStorage;
 
-class CAI_Space {
+class CAI_Space
+{
 private:
-	friend class CALifeSimulator;
-	friend class CALifeGraphRegistry;
-	friend class CALifeSpawnRegistry;
-	friend class CALifeSpawnRegistry;
-	friend class CLevel;
+    friend class CALifeSimulator;
+    friend class CALifeGraphRegistry;
+    friend class CALifeSpawnRegistry;
+    friend class CALifeSpawnRegistry;
+    friend class CLevel;
 
 private:
-	CGameGraph							*m_game_graph;
-	CGameLevelCrossTable				*m_cross_table;
-	CLevelGraph							*m_level_graph;
-	CGraphEngine						*m_graph_engine;
-	CEF_Storage							*m_ef_storage;
-	CALifeSimulator						*m_alife_simulator;
-	CCoverManager						*m_cover_manager;
-	CScriptEngine						*m_script_engine;
-	CPatrolPathStorage					*m_patrol_path_storage;
+    CGameGraph* m_game_graph;
+    CGameLevelCrossTable* m_cross_table;
+    CLevelGraph* m_level_graph;
+    CGraphEngine* m_graph_engine;
+    CEF_Storage* m_ef_storage;
+    CALifeSimulator* m_alife_simulator;
+    CCoverManager* m_cover_manager;
+    CScriptEngine* m_script_engine;
+    CPatrolPathStorage* m_patrol_path_storage;
 
 private:
-			void						load					(LPCSTR level_name);
-			void						unload					(bool reload = false);
-			void						patrol_path_storage_raw	(IReader &stream);
-			void						patrol_path_storage		(IReader &stream);
-			void						patrol_path_storage_ini	(CInifile &way_inifile);
-			void						set_alife				(CALifeSimulator *alife_simulator);
+    void load(LPCSTR level_name);
+    void unload(bool reload = false);
+    void patrol_path_storage_raw(IReader& stream);
+    void patrol_path_storage(IReader& stream);
+    void patrol_path_storage_ini(CInifile& way_inifile);
+    void set_alife(CALifeSimulator* alife_simulator);
 
 public:
-										CAI_Space				();
-	virtual								~CAI_Space				();
-			void						init					();
-	IC		CGameGraph					&game_graph				() const;
-	IC		CGameGraph					*get_game_graph			() const;
-	IC		CLevelGraph					&level_graph			() const;
-	IC		const CLevelGraph			*get_level_graph		() const;
-	IC		const CGameLevelCrossTable	&cross_table			() const;
-	IC		const CGameLevelCrossTable	*get_cross_table		() const;
-	IC		const CPatrolPathStorage	&patrol_paths			() const;
-	IC		CPatrolPathStorage		&patrol_paths_raw();
-	IC		CEF_Storage					&ef_storage				() const;
-	IC		CGraphEngine				&graph_engine			() const;
-	IC		const CALifeSimulator		&alife					() const;
-	IC		const CALifeSimulator		*get_alife				() const;
-	IC		const CCoverManager			&cover_manager			() const;
-	IC		CScriptEngine				&script_engine			() const;
+    CAI_Space();
+    virtual ~CAI_Space();
+    void init();
+    IC CGameGraph& game_graph() const;
+    IC CGameGraph* get_game_graph() const;
+    IC CLevelGraph& level_graph() const;
+    IC const CLevelGraph* get_level_graph() const;
+    IC const CGameLevelCrossTable& cross_table() const;
+    IC const CGameLevelCrossTable* get_cross_table() const;
+    IC const CPatrolPathStorage& patrol_paths() const;
+    IC CPatrolPathStorage& patrol_paths_raw();
+    IC CEF_Storage& ef_storage() const;
+    IC CGraphEngine& graph_engine() const;
+    IC const CALifeSimulator& alife() const;
+    IC const CALifeSimulator* get_alife() const;
+    IC const CCoverManager& cover_manager() const;
+    IC CScriptEngine& script_engine() const;
 
 #ifdef DEBUG
-			void						validate				(const u32			level_id) const;
+    void validate(const u32 level_id) const;
 #endif
 };
 
-IC	CAI_Space	&ai	();
+IC CAI_Space& ai();
 
-extern CAI_Space *g_ai_space;
+extern CAI_Space* g_ai_space;
 
 #include "ai_space_inline.h"

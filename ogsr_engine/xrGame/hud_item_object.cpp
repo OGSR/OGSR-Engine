@@ -9,110 +9,82 @@
 #include "stdafx.h"
 #include "hud_item_object.h"
 
-CHudItemObject::CHudItemObject			()
+CHudItemObject::CHudItemObject() {}
+
+CHudItemObject::~CHudItemObject() {}
+
+DLL_Pure* CHudItemObject::_construct()
 {
+    CInventoryItemObject::_construct();
+    CHudItem::_construct();
+    return (this);
 }
 
-CHudItemObject::~CHudItemObject			()
+void CHudItemObject::Load(LPCSTR section)
 {
+    CInventoryItemObject::Load(section);
+    CHudItem::Load(section);
 }
 
-DLL_Pure *CHudItemObject::_construct	()
+bool CHudItemObject::Action(s32 cmd, u32 flags)
 {
-	CInventoryItemObject::_construct();
-	CHudItem::_construct		();
-	return						(this);
+    if (CInventoryItemObject::Action(cmd, flags))
+        return (true);
+    return (CHudItem::Action(cmd, flags));
 }
 
-void CHudItemObject::Load				(LPCSTR section)
+void CHudItemObject::SwitchState(u32 S) { CHudItem::SwitchState(S); }
+
+void CHudItemObject::OnStateSwitch(u32 S, u32 oldState) { CHudItem::OnStateSwitch(S, oldState); }
+
+void CHudItemObject::OnEvent(NET_Packet& P, u16 type)
 {
-	CInventoryItemObject::Load	(section);
-	CHudItem::Load				(section);
+    CInventoryItemObject::OnEvent(P, type);
+    CHudItem::OnEvent(P, type);
 }
 
-bool CHudItemObject::Action				(s32 cmd, u32 flags)
+void CHudItemObject::OnH_A_Chield()
 {
-	if (CInventoryItemObject::Action(cmd, flags))
-		return					(true);
-	return						(CHudItem::Action(cmd,flags));
+    CHudItem::OnH_A_Chield();
+    CInventoryItemObject::OnH_A_Chield();
 }
 
-void CHudItemObject::SwitchState		(u32 S)
+void CHudItemObject::OnH_B_Chield()
 {
-	CHudItem::SwitchState		(S);
+    CInventoryItemObject::OnH_B_Chield();
+    CHudItem::OnH_B_Chield();
 }
 
-void CHudItemObject::OnStateSwitch(u32 S, u32 oldState)
+void CHudItemObject::OnH_B_Independent(bool just_before_destroy)
 {
-	CHudItem::OnStateSwitch(S, oldState);
+    CHudItem::OnH_B_Independent(just_before_destroy);
+    CInventoryItemObject::OnH_B_Independent(just_before_destroy);
 }
 
-void CHudItemObject::OnEvent			(NET_Packet& P, u16 type)
+void CHudItemObject::OnH_A_Independent()
 {
-	CInventoryItemObject::OnEvent(P,type);
-	CHudItem::OnEvent			(P,type);
+    CHudItem::OnH_A_Independent();
+    CInventoryItemObject::OnH_A_Independent();
 }
 
-void CHudItemObject::OnH_A_Chield		()
+BOOL CHudItemObject::net_Spawn(CSE_Abstract* DC) { return (CInventoryItemObject::net_Spawn(DC) && CHudItem::net_Spawn(DC)); }
+
+void CHudItemObject::net_Destroy()
 {
-	CHudItem::OnH_A_Chield				();
-	CInventoryItemObject::OnH_A_Chield	();
+    CHudItem::net_Destroy();
+    CInventoryItemObject::net_Destroy();
 }
 
-void CHudItemObject::OnH_B_Chield		()
+bool CHudItemObject::Activate(bool now) { return CHudItem::Activate(now); }
+
+void CHudItemObject::Deactivate(bool now) { CHudItem::Deactivate(now); }
+
+void CHudItemObject::UpdateCL()
 {
-	CInventoryItemObject::OnH_B_Chield	();
-	CHudItem::OnH_B_Chield				();
+    CInventoryItemObject::UpdateCL();
+    CHudItem::UpdateCL();
 }
 
-void CHudItemObject::OnH_B_Independent	(bool just_before_destroy)
-{
-	CHudItem::OnH_B_Independent				(just_before_destroy);
-	CInventoryItemObject::OnH_B_Independent	(just_before_destroy);
-}
+void CHudItemObject::renderable_Render() { CHudItem::renderable_Render(); }
 
-void CHudItemObject::OnH_A_Independent	()
-{
-	CHudItem::OnH_A_Independent				();
-	CInventoryItemObject::OnH_A_Independent	();
-}
-
-BOOL CHudItemObject::net_Spawn			(CSE_Abstract* DC)
-{
-	return						(
-		CInventoryItemObject::net_Spawn(DC) &&
-		CHudItem::net_Spawn(DC)
-	);
-}
-
-void CHudItemObject::net_Destroy		()
-{
-	CHudItem::net_Destroy		();
-	CInventoryItemObject::net_Destroy	();
-}
-
-bool CHudItemObject::Activate( bool now )
-{
-  return CHudItem::Activate( now );
-}
-
-void CHudItemObject::Deactivate( bool now )
-{
-  CHudItem::Deactivate( now );
-}
-
-void CHudItemObject::UpdateCL			()
-{
-	CInventoryItemObject::UpdateCL	();
-	CHudItem::UpdateCL				();
-}
-
-void CHudItemObject::renderable_Render	()
-{
-	CHudItem::renderable_Render	();
-}
-
-void CHudItemObject::on_renderable_Render()
-{
-	CInventoryItemObject::renderable_Render();
-}
+void CHudItemObject::on_renderable_Render() { CInventoryItemObject::renderable_Render(); }

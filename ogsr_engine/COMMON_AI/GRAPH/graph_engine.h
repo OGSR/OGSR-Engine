@@ -25,116 +25,43 @@
 
 using namespace GraphEngineSpace;
 
-class CGraphEngine {
+class CGraphEngine
+{
 public:
-	typedef CDataStorageBinaryHeap							CSolverPriorityQueue;
-	typedef CDataStorageBucketList<u32,u32,8*1024,false>	CPriorityQueue;
-	
-	typedef CVertexManagerFixed<u32,u32,8>					CVertexManager;
+    typedef CDataStorageBinaryHeap CSolverPriorityQueue;
+    typedef CDataStorageBucketList<u32, u32, 8 * 1024, false> CPriorityQueue;
 
-	typedef CVertexManagerHashFixed<
-				u32,
-				_solver_index_type,
-				256,
-				8*1024
-			>												CSolverVertexManager;
-	typedef CVertexAllocatorFixed<64*1024>					CVertexAllocator;
-	typedef CVertexAllocatorFixed<8*1024>					CSolverVertexAllocator;
+    typedef CVertexManagerFixed<u32, u32, 8> CVertexManager;
 
-	typedef CAStar<
-		_dist_type,
-		CPriorityQueue,
-		CVertexManager,
-		CVertexAllocator
-	>														CAlgorithm;
-	
-	typedef CAStar<
-		_solver_dist_type,
-		CSolverPriorityQueue,
-		CSolverVertexManager,
-		CSolverVertexAllocator,
-		true,
-		CEdgePath<
-			_solver_edge_type,
-			true
-		>
-	>														CSolverAlgorithm;
+    typedef CVertexManagerHashFixed<u32, _solver_index_type, 256, 8 * 1024> CSolverVertexManager;
+    typedef CVertexAllocatorFixed<64 * 1024> CVertexAllocator;
+    typedef CVertexAllocatorFixed<8 * 1024> CSolverVertexAllocator;
 
-	CAlgorithm				*m_algorithm;
-	CSolverAlgorithm		*m_solver_algorithm;
+    typedef CAStar<_dist_type, CPriorityQueue, CVertexManager, CVertexAllocator> CAlgorithm;
+
+    typedef CAStar<_solver_dist_type, CSolverPriorityQueue, CSolverVertexManager, CSolverVertexAllocator, true, CEdgePath<_solver_edge_type, true>> CSolverAlgorithm;
+
+    CAlgorithm* m_algorithm;
+    CSolverAlgorithm* m_solver_algorithm;
 
 public:
+    IC CGraphEngine(u32 max_vertex_count);
+    virtual ~CGraphEngine();
+    IC const CSolverAlgorithm& solver_algorithm() const;
 
-	IC				CGraphEngine			(u32 max_vertex_count);
-	virtual			~CGraphEngine			();
-	IC		const CSolverAlgorithm &solver_algorithm() const;
+    template <typename _Graph, typename _Parameters>
+    IC bool search(const _Graph& graph, const _index_type& start_node, const _index_type& dest_node, xr_vector<_index_type>* node_path, const _Parameters& parameters);
 
-	template <
-		typename _Graph,
-		typename _Parameters
-	>
-	IC		bool	search					(
-				const _Graph			&graph, 
-				const _index_type		&start_node, 
-				const _index_type		&dest_node, 
-				xr_vector<_index_type>	*node_path,
-				const _Parameters		&parameters
-			);
+    template <typename _Graph, typename _Parameters>
+    IC bool search(const _Graph& graph, const _index_type& start_node, const _index_type& dest_node, xr_vector<_index_type>* node_path, _Parameters& parameters);
 
-	template <
-		typename _Graph,
-		typename _Parameters
-	>
-	IC		bool	search					(
-				const _Graph			&graph, 
-				const _index_type		&start_node, 
-				const _index_type		&dest_node, 
-				xr_vector<_index_type>	*node_path,
-				_Parameters				&parameters
-			);
+    template <typename _Graph, typename _Parameters, typename _PathManager>
+    IC bool search(const _Graph& graph, const _index_type& start_node, const _index_type& dest_node, xr_vector<_index_type>* node_path, const _Parameters& parameters,
+                   _PathManager& path_manager);
 
-	template <
-		typename _Graph,
-		typename _Parameters,
-		typename _PathManager
-	>
-	IC		bool	search					(
-				const _Graph			&graph, 
-				const _index_type		&start_node, 
-				const _index_type		&dest_node, 
-				xr_vector<_index_type>	*node_path,
-				const _Parameters		&parameters,
-				_PathManager			&path_manager
-			);
-
-	template <
-		typename T1,
-		typename T2,
-		typename T3,
-		typename T4,
-		typename T5,
-		bool	 T6,
-		typename T7,
-		typename T8,
-		typename _Parameters
-	>
-	IC		bool	search					(
-		const CProblemSolver<
-			T1,
-			T2,
-			T3,
-			T4,
-			T5,
-			T6,
-			T7,
-			T8
-		>								&graph, 
-		const _solver_index_type		&start_node,
-		const _solver_index_type		&dest_node,
-		xr_vector<_solver_edge_type>	*node_path,
-		const _Parameters				&parameters
-	);
+    template <typename T1, typename T2, typename T3, typename T4, typename T5, bool T6, typename T7, typename T8, typename _Parameters>
+    IC bool search(const CProblemSolver<T1, T2, T3, T4, T5, T6, T7, T8>& graph, const _solver_index_type& start_node, const _solver_index_type& dest_node,
+                   xr_vector<_solver_edge_type>* node_path, const _Parameters& parameters);
 };
-
 
 #include "graph_engine_inline.h"

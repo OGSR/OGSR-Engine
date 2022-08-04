@@ -8,32 +8,26 @@
 
 #pragma once
 
-IC	CRestrictedObject::CRestrictedObject		(CCustomMonster *object)
+IC CRestrictedObject::CRestrictedObject(CCustomMonster* object)
 {
-	VERIFY				(object);
-	m_object			= object;
+    VERIFY(object);
+    m_object = object;
 }
 
-IC	bool CRestrictedObject::applied				() const
+IC bool CRestrictedObject::applied() const { return (m_applied); }
+
+IC CCustomMonster& CRestrictedObject::object() const
 {
-	return				(m_applied);
+    VERIFY(m_object);
+    return (*m_object);
 }
 
-IC	CCustomMonster &CRestrictedObject::object	() const
-{
-	VERIFY				(m_object);
-	return				(*m_object);
-}
-
-IC	bool CRestrictedObject::actual				() const
-{
-	return				(m_actual);
-}
+IC bool CRestrictedObject::actual() const { return (m_actual); }
 
 #ifdef DEBUG
-IC	void CRestrictedObject::initialize			()
+IC void CRestrictedObject::initialize()
 {
-	if (m_applied)
-		remove_border	();
+    if (m_applied)
+        remove_border();
 }
 #endif

@@ -10,46 +10,43 @@
 
 #include "CharacterPhysicsSupport.h"
 
-IC	CStalkerAnimationManager::EBodyState CStalkerAnimationManager::body_state	() const
+IC CStalkerAnimationManager::EBodyState CStalkerAnimationManager::body_state() const { return (object().movement().body_state()); }
+
+IC bool CStalkerAnimationManager::standing() const
 {
-	return					(object().movement().body_state());
+    CAI_Stalker& obj = object();
+    CStalkerMovementManager& movement = obj.movement();
+
+    if (movement.speed(obj.character_physics_support()->movement()) < EPS_L)
+        return (true);
+
+    if (eMovementTypeStand == movement.movement_type())
+        return (true);
+
+    return (false);
 }
 
-IC	bool CStalkerAnimationManager::standing										() const
+IC void CStalkerAnimationManager::fill_object_info()
 {
-	CAI_Stalker				&obj = object();
-	CStalkerMovementManager	&movement = obj.movement();
-	
-	if (movement.speed(obj.character_physics_support()->movement()) < EPS_L)
-		return				(true);
-
-	if (eMovementTypeStand == movement.movement_type())
-		return				(true);
-
-	return					(false);
+    CInventoryItem* item = object().inventory().ActiveItem();
+    VERIFY(item);
+    m_weapon = smart_cast<CWeapon*>(item);
+    m_missile = smart_cast<CMissile*>(item);
 }
 
-IC	void CStalkerAnimationManager::fill_object_info								()
+IC bool CStalkerAnimationManager::strapped() const
 {
-	CInventoryItem			*item = object().inventory().ActiveItem();
-	VERIFY					(item);
-	m_weapon				= smart_cast<CWeapon*>	(item);
-	m_missile				= smart_cast<CMissile*>	(item);
+    VERIFY(m_weapon);
+    return (object().CObjectHandler::weapon_strapped(m_weapon));
 }
 
-IC	bool CStalkerAnimationManager::strapped										() const
+IC u32 CStalkerAnimationManager::object_slot() const
 {
-	VERIFY					(m_weapon);
-	return					(object().CObjectHandler::weapon_strapped(m_weapon));
-}
+    if (m_weapon)
+        return (m_weapon->animation_slot());
 
-IC	u32 CStalkerAnimationManager::object_slot									() const
-{
-	if (m_weapon)
-		return				(m_weapon->animation_slot());
+    if (m_missile)
+        return (m_missile->animation_slot());
 
-	if (m_missile)
-		return				(m_missile->animation_slot());
-
-    return					(0);
+    return (0);
 }

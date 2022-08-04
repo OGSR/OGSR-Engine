@@ -11,56 +11,58 @@
 #include "script_storage.h"
 #include "script_export_space.h"
 
-class CScriptEngine : public CScriptStorage {
+class CScriptEngine : public CScriptStorage
+{
 private:
-	bool						m_reload_modules;
+    bool m_reload_modules;
 
 protected:
-	int							m_stack_level;
+    int m_stack_level;
 
 private:
-	string128					m_last_no_file;
-	u32						m_last_no_file_cnt;
-	u32							m_last_no_file_length;
+    string128 m_last_no_file;
+    u32 m_last_no_file_cnt;
+    u32 m_last_no_file_length;
 
-	bool				no_file_exists(const char* file_name, u32 string_length);
-	void				add_no_file(const char* file_name, u32 string_length);
+    bool no_file_exists(const char* file_name, u32 string_length);
+    void add_no_file(const char* file_name, u32 string_length);
 
 public:
-	CScriptEngine();
-	virtual						~CScriptEngine() = default;
-	void init();
-	virtual	void				unload();
-	static	int					lua_panic(lua_State *L);
+    CScriptEngine();
+    virtual ~CScriptEngine() = default;
+    void init();
+    virtual void unload();
+    static int lua_panic(lua_State* L);
 #ifdef LUABIND_NO_EXCEPTIONS
-	static	void				lua_error(lua_State *L);
+    static void lua_error(lua_State* L);
 #endif
-	static	int					lua_pcall_failed(lua_State *L);
-	void				setup_auto_load();
-	bool				process_file_if_exists(const char* file_name, bool warn_if_not_exist);
-	bool				process_file(const char* file_name);
-	bool				process_file(const char* file_name, bool reload_modules);
-	bool				function_object(const char* function_to_call, luabind::object &object, int type = LUA_TFUNCTION);
-	void				register_script_classes();
-	void				parse_script_namespace(const char *name, char *ns, u32 nsSize, char *func, u32 funcSize);
+    static int lua_pcall_failed(lua_State* L);
+    void setup_auto_load();
+    bool process_file_if_exists(const char* file_name, bool warn_if_not_exist);
+    bool process_file(const char* file_name);
+    bool process_file(const char* file_name, bool reload_modules);
+    bool function_object(const char* function_to_call, luabind::object& object, int type = LUA_TFUNCTION);
+    void register_script_classes();
+    void parse_script_namespace(const char* name, char* ns, u32 nsSize, char* func, u32 funcSize);
 
-	void				collect_all_garbage();
+    void collect_all_garbage();
 
-	template <typename TResult>
-	IC bool functor(const char* function_to_call, luabind::functor<TResult> &lua_function) {
-		luabind::object object;
-		if (!function_object(function_to_call, object))
-			return false;
-		//try {
-			lua_function = luabind::object_cast<luabind::functor<TResult>>(object);
-		//}
-		//catch (...) {
-		//	return false;
-		//}
-		return true;
-	}
+    template <typename TResult>
+    IC bool functor(const char* function_to_call, luabind::functor<TResult>& lua_function)
+    {
+        luabind::object object;
+        if (!function_object(function_to_call, object))
+            return false;
+        // try {
+        lua_function = luabind::object_cast<luabind::functor<TResult>>(object);
+        //}
+        // catch (...) {
+        //	return false;
+        //}
+        return true;
+    }
 
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+    DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CScriptEngine)
 #undef script_type_list

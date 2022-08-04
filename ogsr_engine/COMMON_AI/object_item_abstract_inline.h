@@ -11,20 +11,10 @@
 
 #pragma once
 
-IC	CObjectItemAbstract::CObjectItemAbstract	(const CLASS_ID &clsid, LPCSTR script_clsid) :
-	m_clsid				(clsid),
-	m_script_clsid		(script_clsid)
-{
-}
+IC CObjectItemAbstract::CObjectItemAbstract(const CLASS_ID& clsid, LPCSTR script_clsid) : m_clsid(clsid), m_script_clsid(script_clsid) {}
 
-IC	const CLASS_ID &CObjectItemAbstract::clsid	() const
-{
-	return				(m_clsid);
-}
+IC const CLASS_ID& CObjectItemAbstract::clsid() const { return (m_clsid); }
 
-IC	shared_str	CObjectItemAbstract::script_clsid	() const
-{
-	return				(m_script_clsid);
-}
+IC shared_str CObjectItemAbstract::script_clsid() const { return (m_script_clsid); }
 
 #endif

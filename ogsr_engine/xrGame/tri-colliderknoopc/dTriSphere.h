@@ -3,7 +3,4 @@
 #include "TriPrimitiveCollideClassDef.h"
 #include "../MathUtils.h"
 
-
-
-
 #endif

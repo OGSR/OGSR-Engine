@@ -24,815 +24,678 @@
 // CObjectActionCommand
 //////////////////////////////////////////////////////////////////////////
 
-CObjectActionCommand::CObjectActionCommand(CInventoryItem *item, CAI_Stalker *owner, CPropertyStorage *storage, u32 command, LPCSTR action_name) :
-	inherited			(item,owner,storage,action_name),
-	m_command			(command)
-{
-}
+CObjectActionCommand::CObjectActionCommand(CInventoryItem* item, CAI_Stalker* owner, CPropertyStorage* storage, u32 command, LPCSTR action_name)
+    : inherited(item, owner, storage, action_name), m_command(command)
+{}
 
-void CObjectActionCommand::initialize	()
+void CObjectActionCommand::initialize()
 {
-	inherited::initialize();
-	object().inventory().Action(m_command,CMD_START);
+    inherited::initialize();
+    object().inventory().Action(m_command, CMD_START);
 }
 
 //////////////////////////////////////////////////////////////////////////
 // CObjectActionShow
 //////////////////////////////////////////////////////////////////////////
 
-CObjectActionShow::CObjectActionShow	(CInventoryItem *item, CAI_Stalker *owner, CPropertyStorage *storage, LPCSTR action_name) :
-	inherited		(item,owner,storage,action_name)
+CObjectActionShow::CObjectActionShow(CInventoryItem* item, CAI_Stalker* owner, CPropertyStorage* storage, LPCSTR action_name) : inherited(item, owner, storage, action_name)
 {
-	m_weapon						= smart_cast<CWeapon*>(item);
+    m_weapon = smart_cast<CWeapon*>(item);
 }
 
-void CObjectActionShow::initialize		()
+void CObjectActionShow::initialize()
 {
-	inherited::initialize			();
-	
-	VERIFY							(m_item);
-	if (object().inventory().m_slots[m_item->GetSlot()].m_pIItem)
-		object().inventory().Ruck	(object().inventory().m_slots[m_item->GetSlot()].m_pIItem);
+    inherited::initialize();
 
-//.	object().inventory().SetActiveSlot(NO_ACTIVE_SLOT);
-	object().inventory().Slot		(m_item);
-/*
-	bool							result = object().inventory().Activate	(m_item->GetSlot());
-	VERIFY							(result);
-*/
-	if (!m_weapon)
-		return;
+    VERIFY(m_item);
+    if (object().inventory().m_slots[m_item->GetSlot()].m_pIItem)
+        object().inventory().Ruck(object().inventory().m_slots[m_item->GetSlot()].m_pIItem);
+
+    //.	object().inventory().SetActiveSlot(NO_ACTIVE_SLOT);
+    object().inventory().Slot(m_item);
+    /*
+        bool							result = object().inventory().Activate	(m_item->GetSlot());
+        VERIFY							(result);
+    */
+    if (!m_weapon)
+        return;
 }
 
-void CObjectActionShow::execute		()
+void CObjectActionShow::execute()
 {
-	inherited::execute				();
-	VERIFY							(m_item);
-	if (!object().inventory().ActiveItem() || (object().inventory().ActiveItem()->object().ID() != m_item->object().ID())) {
-		CHudItem					*hud_item = smart_cast<CHudItem*>(object().inventory().ActiveItem());
-		if (!hud_item){
-			object().inventory().Slot		(m_item);
-			return;
-		}
-		if (!hud_item->IsPending()) {
-			if (object().inventory().m_slots[m_item->GetSlot()].m_pIItem)
-				object().inventory().Ruck	(object().inventory().m_slots[m_item->GetSlot()].m_pIItem);
-//.			object().inventory().SetActiveSlot(NO_ACTIVE_SLOT);
-			object().inventory().Slot		(m_item);
-		}
-	}
+    inherited::execute();
+    VERIFY(m_item);
+    if (!object().inventory().ActiveItem() || (object().inventory().ActiveItem()->object().ID() != m_item->object().ID()))
+    {
+        CHudItem* hud_item = smart_cast<CHudItem*>(object().inventory().ActiveItem());
+        if (!hud_item)
+        {
+            object().inventory().Slot(m_item);
+            return;
+        }
+        if (!hud_item->IsPending())
+        {
+            if (object().inventory().m_slots[m_item->GetSlot()].m_pIItem)
+                object().inventory().Ruck(object().inventory().m_slots[m_item->GetSlot()].m_pIItem);
+            //.			object().inventory().SetActiveSlot(NO_ACTIVE_SLOT);
+            object().inventory().Slot(m_item);
+        }
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////
 // CObjectActionHide
 //////////////////////////////////////////////////////////////////////////
 
-CObjectActionHide::CObjectActionHide	(CInventoryItem *item, CAI_Stalker *owner, CPropertyStorage *storage, LPCSTR action_name) :
-	inherited		(item,owner,storage,action_name)
-{
-}
+CObjectActionHide::CObjectActionHide(CInventoryItem* item, CAI_Stalker* owner, CPropertyStorage* storage, LPCSTR action_name) : inherited(item, owner, storage, action_name) {}
 
-void CObjectActionHide::execute		()
+void CObjectActionHide::execute()
 {
-	inherited::execute				();
-	VERIFY							(m_item);
-	object().inventory().Activate	(NO_ACTIVE_SLOT);
-	set_property					(ObjectHandlerSpace::eWorldPropertyUseEnough,false);
+    inherited::execute();
+    VERIFY(m_item);
+    object().inventory().Activate(NO_ACTIVE_SLOT);
+    set_property(ObjectHandlerSpace::eWorldPropertyUseEnough, false);
 }
 
 // to prevent several recharges
-static bool try_advance_ammo		(CWeapon const& weapon)
+static bool try_advance_ammo(CWeapon const& weapon)
 {
-	VERIFY				(weapon.m_pCurrentInventory);
-	CInventory&			inventory = *weapon.m_pCurrentInventory;
-	for(u8 i = 0; i < u8(weapon.m_ammoTypes.size()); ++i) 
-	{
-		LPCSTR l_ammoType = weapon.m_ammoTypes[i].c_str();
+    VERIFY(weapon.m_pCurrentInventory);
+    CInventory& inventory = *weapon.m_pCurrentInventory;
+    for (u8 i = 0; i < u8(weapon.m_ammoTypes.size()); ++i)
+    {
+        LPCSTR l_ammoType = weapon.m_ammoTypes[i].c_str();
 
-		for(TIItemContainer::iterator l_it = inventory.m_belt.begin(); inventory.m_belt.end() != l_it; ++l_it) 
-		{
-			CWeaponAmmo *l_pAmmo = smart_cast<CWeaponAmmo*>(*l_it);
-			
-			if(l_pAmmo && !xr_strcmp(l_pAmmo->cNameSect(), l_ammoType)) 
-			{
-				if (l_pAmmo->m_boxCurr < l_pAmmo->m_boxSize) {
-					l_pAmmo->m_boxCurr	= l_pAmmo->m_boxSize;
-					return				(true);
-				}
-			}
-		}
+        for (TIItemContainer::iterator l_it = inventory.m_belt.begin(); inventory.m_belt.end() != l_it; ++l_it)
+        {
+            CWeaponAmmo* l_pAmmo = smart_cast<CWeaponAmmo*>(*l_it);
 
-		for(TIItemContainer::iterator l_it = inventory.m_ruck.begin(); inventory.m_ruck.end() != l_it; ++l_it) 
-		{
-			CWeaponAmmo *l_pAmmo = smart_cast<CWeaponAmmo*>(*l_it);
-			if(l_pAmmo && !xr_strcmp(l_pAmmo->cNameSect(), l_ammoType)) 
-			{
-				if (l_pAmmo->m_boxCurr < l_pAmmo->m_boxSize) {
-					l_pAmmo->m_boxCurr	= l_pAmmo->m_boxSize;
-					return				(true);
-				}
-			}
-		}
-	}
+            if (l_pAmmo && !xr_strcmp(l_pAmmo->cNameSect(), l_ammoType))
+            {
+                if (l_pAmmo->m_boxCurr < l_pAmmo->m_boxSize)
+                {
+                    l_pAmmo->m_boxCurr = l_pAmmo->m_boxSize;
+                    return (true);
+                }
+            }
+        }
 
-	return								(false);
+        for (TIItemContainer::iterator l_it = inventory.m_ruck.begin(); inventory.m_ruck.end() != l_it; ++l_it)
+        {
+            CWeaponAmmo* l_pAmmo = smart_cast<CWeaponAmmo*>(*l_it);
+            if (l_pAmmo && !xr_strcmp(l_pAmmo->cNameSect(), l_ammoType))
+            {
+                if (l_pAmmo->m_boxCurr < l_pAmmo->m_boxSize)
+                {
+                    l_pAmmo->m_boxCurr = l_pAmmo->m_boxSize;
+                    return (true);
+                }
+            }
+        }
+    }
+
+    return (false);
 }
 
 //////////////////////////////////////////////////////////////////////////
 // CObjectActionReload
 //////////////////////////////////////////////////////////////////////////
 
-CObjectActionReload::CObjectActionReload	(CInventoryItem *item, CAI_Stalker *owner, CPropertyStorage *storage, _condition_type type, LPCSTR action_name) :
-	inherited		(item,owner,storage,action_name),
-	m_type			(type)
+CObjectActionReload::CObjectActionReload(CInventoryItem* item, CAI_Stalker* owner, CPropertyStorage* storage, _condition_type type, LPCSTR action_name)
+    : inherited(item, owner, storage, action_name), m_type(type)
+{}
+
+void CObjectActionReload::initialize()
 {
+    inherited::initialize();
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
+    if (object().infinite_ammo())
+    {
+        CWeapon* weapon = smart_cast<CWeapon*>(&m_item->object());
+        VERIFY(weapon);
+        try_advance_ammo(*weapon);
+    }
+
+    object().inventory().Action(kWPN_RELOAD, CMD_START);
 }
 
-void CObjectActionReload::initialize		()
+void CObjectActionReload::execute()
 {
-	inherited::initialize		();
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
-	if (object().infinite_ammo()) {
-		CWeapon*				weapon = smart_cast<CWeapon*>(&m_item->object());
-		VERIFY					(weapon);
-		try_advance_ammo		(*weapon);
-	}
+    inherited::execute();
 
-	object().inventory().Action	(kWPN_RELOAD,	CMD_START);
-}
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
-void CObjectActionReload::execute			()
-{
-	inherited::execute			();
-	
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
-	
-	CWeapon						*weapon = smart_cast<CWeapon*>(object().inventory().ActiveItem());
-	VERIFY						(weapon);
-	if (weapon->IsPending())
-		return;
-	
-	if (weapon->GetAmmoElapsed()) {
-		VERIFY					(weapon->GetAmmoCurrent() >= weapon->GetAmmoElapsed());
-		if (weapon->GetAmmoCurrent() == weapon->GetAmmoElapsed())
-			return;
+    CWeapon* weapon = smart_cast<CWeapon*>(object().inventory().ActiveItem());
+    VERIFY(weapon);
+    if (weapon->IsPending())
+        return;
 
-		VERIFY					(weapon->GetAmmoMagSize() >= weapon->GetAmmoElapsed());
-		if (weapon->GetAmmoMagSize() == weapon->GetAmmoElapsed())
-			return;
-	}
+    if (weapon->GetAmmoElapsed())
+    {
+        VERIFY(weapon->GetAmmoCurrent() >= weapon->GetAmmoElapsed());
+        if (weapon->GetAmmoCurrent() == weapon->GetAmmoElapsed())
+            return;
 
-	object().inventory().Action	(kWPN_RELOAD,CMD_START);
+        VERIFY(weapon->GetAmmoMagSize() >= weapon->GetAmmoElapsed());
+        if (weapon->GetAmmoMagSize() == weapon->GetAmmoElapsed())
+            return;
+    }
+
+    object().inventory().Action(kWPN_RELOAD, CMD_START);
 }
 
 //////////////////////////////////////////////////////////////////////////
 // CObjectActionFire
 //////////////////////////////////////////////////////////////////////////
 
-CObjectActionFire::CObjectActionFire	(CInventoryItem *item, CAI_Stalker *owner, CPropertyStorage *storage, _condition_type type, LPCSTR action_name) :
-	inherited		(item,owner,storage,action_name),
-	m_type			(type)
+CObjectActionFire::CObjectActionFire(CInventoryItem* item, CAI_Stalker* owner, CPropertyStorage* storage, _condition_type type, LPCSTR action_name)
+    : inherited(item, owner, storage, action_name), m_type(type)
+{}
+
+void CObjectActionFire::initialize()
 {
+    inherited::inherited::initialize();
+
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
+
+    if (!m_object->can_kill_member())
+        object().inventory().Action(kWPN_FIRE, CMD_START);
+    else
+        object().inventory().Action(kWPN_FIRE, CMD_STOP);
 }
 
-void CObjectActionFire::initialize		()
+void CObjectActionFire::execute()
 {
-	inherited::inherited::initialize	();
+    inherited::execute();
 
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
-	if (!m_object->can_kill_member())
-		object().inventory().Action	(kWPN_FIRE,	CMD_START);
-	else
-		object().inventory().Action	(kWPN_FIRE,	CMD_STOP);
+    if (!m_object->can_kill_member())
+    {
+        CWeapon* weapon = smart_cast<CWeapon*>(object().inventory().ActiveItem());
+        if (!weapon || (weapon->GetState() != CWeapon::eFire))
+            object().inventory().Action(kWPN_FIRE, CMD_START);
+    }
+    else
+        object().inventory().Action(kWPN_FIRE, CMD_STOP);
 }
 
-void CObjectActionFire::execute			()
+void CObjectActionFire::finalize()
 {
-	inherited::execute					();
-
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
-
-	if (!m_object->can_kill_member()) {
-		CWeapon					*weapon = smart_cast<CWeapon*>(object().inventory().ActiveItem());
-		if (!weapon || (weapon->GetState() != CWeapon::eFire))
-			object().inventory().Action	(kWPN_FIRE,	CMD_START);
-	}
-	else
-		object().inventory().Action	(kWPN_FIRE,	CMD_STOP);
-}
-
-void CObjectActionFire::finalize		()
-{
-	inherited::finalize					();
-	object().inventory().Action		(kWPN_FIRE,	CMD_STOP);
+    inherited::finalize();
+    object().inventory().Action(kWPN_FIRE, CMD_STOP);
 }
 
 //////////////////////////////////////////////////////////////////////////
 // CObjectActionStrapping
 //////////////////////////////////////////////////////////////////////////
 
-CObjectActionStrapping::CObjectActionStrapping	(CInventoryItem *item, CAI_Stalker *owner, CPropertyStorage *storage, LPCSTR action_name) :
-	inherited		(item,owner,storage,action_name)
+CObjectActionStrapping::CObjectActionStrapping(CInventoryItem* item, CAI_Stalker* owner, CPropertyStorage* storage, LPCSTR action_name)
+    : inherited(item, owner, storage, action_name)
 {
-	m_callback_removed			= true;
+    m_callback_removed = true;
 }
 
-CObjectActionStrapping::~CObjectActionStrapping	()
+CObjectActionStrapping::~CObjectActionStrapping()
 {
-	if (m_callback_removed) {
-		VERIFY					(
-			!object().animation().torso().callback(
-				fastdelegate::MakeDelegate(
-					this,
-					&CObjectActionStrapping::on_animation_end
-				)
-			)
-		);
-		return;
-	}
+    if (m_callback_removed)
+    {
+        VERIFY(!object().animation().torso().callback(fastdelegate::MakeDelegate(this, &CObjectActionStrapping::on_animation_end)));
+        return;
+    }
 
-	object().animation().torso().remove_callback(
-		fastdelegate::MakeDelegate(
-			this,
-			&CObjectActionStrapping::on_animation_end
-		)
-	);
+    object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionStrapping::on_animation_end));
 }
 
-void CObjectActionStrapping::on_animation_end	()
+void CObjectActionStrapping::on_animation_end()
 {
-	VERIFY						(!m_callback_removed);
+    VERIFY(!m_callback_removed);
 
-	m_storage->set_property		(ObjectHandlerSpace::eWorldPropertyStrapped,true);
+    m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped, true);
 
-	object().animation().torso().remove_callback(
-		fastdelegate::MakeDelegate(
-			this,
-			&CObjectActionStrapping::on_animation_end
-		)
-	);
+    object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionStrapping::on_animation_end));
 
-	m_callback_removed			= true;
+    m_callback_removed = true;
 
-//	Msg							("[[%6d][%s]][%s] removing callback on callabck CObjectActionStrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
+    //	Msg							("[[%6d][%s]][%s] removing callback on callabck CObjectActionStrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
 }
 
-void CObjectActionStrapping::initialize			()
+void CObjectActionStrapping::initialize()
 {
-	inherited::initialize				();
+    inherited::initialize();
 
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
-	m_callback_removed			= false;
+    m_callback_removed = false;
 
-	m_storage->set_property		(ObjectHandlerSpace::eWorldPropertyStrapped2Idle,true);
-	
-	object().animation().torso().add_callback	(
-		fastdelegate::MakeDelegate(
-			this,
-			&CObjectActionStrapping::on_animation_end
-		)
-	);
+    m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped2Idle, true);
 
-//	Msg							("[%6d][%s] adding callback CObjectActionStrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
+    object().animation().torso().add_callback(fastdelegate::MakeDelegate(this, &CObjectActionStrapping::on_animation_end));
+
+    //	Msg							("[%6d][%s] adding callback CObjectActionStrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
 }
 
-void CObjectActionStrapping::execute			()
+void CObjectActionStrapping::execute()
 {
-	inherited::execute();
+    inherited::execute();
 
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 }
 
-void CObjectActionStrapping::finalize		()
+void CObjectActionStrapping::finalize()
 {
-	inherited::finalize					();
+    inherited::finalize();
 
-	if (!m_callback_removed) {
-//		Msg						("[%6d][%s] removing callback from ::finalize CObjectActionStrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
+    if (!m_callback_removed)
+    {
+        //		Msg						("[%6d][%s] removing callback from ::finalize CObjectActionStrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
 
-		object().animation().torso().remove_callback	(
-			fastdelegate::MakeDelegate(
-				this,
-				&CObjectActionStrapping::on_animation_end
-			)
-		);
+        object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionStrapping::on_animation_end));
 
-		m_callback_removed		= true;
-	}
-	else {
-		VERIFY					(
-			!object().animation().torso().callback(
-				fastdelegate::MakeDelegate(
-					this,
-					&CObjectActionStrapping::on_animation_end
-				)
-			)
-		);
-//		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize CObjectActionStrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
-	}
+        m_callback_removed = true;
+    }
+    else
+    {
+        VERIFY(!object().animation().torso().callback(fastdelegate::MakeDelegate(this, &CObjectActionStrapping::on_animation_end)));
+        //		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize
+        //CObjectActionStrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////
 // CObjectActionStrappingToIdle
 //////////////////////////////////////////////////////////////////////////
 
-CObjectActionStrappingToIdle::CObjectActionStrappingToIdle	(CInventoryItem *item, CAI_Stalker *owner, CPropertyStorage *storage, LPCSTR action_name) :
-	inherited		(item,owner,storage,action_name)
+CObjectActionStrappingToIdle::CObjectActionStrappingToIdle(CInventoryItem* item, CAI_Stalker* owner, CPropertyStorage* storage, LPCSTR action_name)
+    : inherited(item, owner, storage, action_name)
 {
-	m_callback_removed			= true;
+    m_callback_removed = true;
 }
 
-CObjectActionStrappingToIdle::~CObjectActionStrappingToIdle	()
+CObjectActionStrappingToIdle::~CObjectActionStrappingToIdle()
 {
-	if (m_callback_removed) {
-		VERIFY					(
-			!object().animation().torso().callback(
-				fastdelegate::MakeDelegate(
-					this,
-					&CObjectActionStrappingToIdle::on_animation_end
-				)
-			)
-		);
-		return;
-	}
+    if (m_callback_removed)
+    {
+        VERIFY(!object().animation().torso().callback(fastdelegate::MakeDelegate(this, &CObjectActionStrappingToIdle::on_animation_end)));
+        return;
+    }
 
-	object().animation().torso().remove_callback(
-		fastdelegate::MakeDelegate(
-			this,
-			&CObjectActionStrappingToIdle::on_animation_end
-		)
-	);
+    object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionStrappingToIdle::on_animation_end));
 }
 
-void CObjectActionStrappingToIdle::on_animation_end	()
+void CObjectActionStrappingToIdle::on_animation_end()
 {
-	VERIFY						(!m_callback_removed);
+    VERIFY(!m_callback_removed);
 
-	m_storage->set_property		(ObjectHandlerSpace::eWorldPropertyStrapped2Idle,false);
+    m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped2Idle, false);
 
-	object().animation().torso().remove_callback(
-		fastdelegate::MakeDelegate(
-			this,
-			&CObjectActionStrappingToIdle::on_animation_end
-		)
-	);
+    object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionStrappingToIdle::on_animation_end));
 
-	m_callback_removed			= true;
+    m_callback_removed = true;
 
-//	Msg							("[%6d][%s] removing callback on callabck CObjectActionStrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
+    //	Msg							("[%6d][%s] removing callback on callabck CObjectActionStrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
 }
 
-void CObjectActionStrappingToIdle::initialize		()
+void CObjectActionStrappingToIdle::initialize()
 {
-	inherited::initialize				();
+    inherited::initialize();
 
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
-	m_callback_removed			= false;
+    m_callback_removed = false;
 
-	object().animation().torso().add_callback	(
-		fastdelegate::MakeDelegate(
-			this,
-			&CObjectActionStrappingToIdle::on_animation_end
-		)
-	);
+    object().animation().torso().add_callback(fastdelegate::MakeDelegate(this, &CObjectActionStrappingToIdle::on_animation_end));
 
-//	Msg							("[%6d][%s] adding callback CObjectActionStrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
+    //	Msg							("[%6d][%s] adding callback CObjectActionStrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
 }
 
-void CObjectActionStrappingToIdle::execute			()
+void CObjectActionStrappingToIdle::execute()
 {
-	inherited::execute();
+    inherited::execute();
 
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 }
 
-void CObjectActionStrappingToIdle::finalize		()
+void CObjectActionStrappingToIdle::finalize()
 {
-	inherited::finalize					();
+    inherited::finalize();
 
-	if (!m_callback_removed) {
-		object().animation().torso().remove_callback	(
-			fastdelegate::MakeDelegate(
-				this,
-				&CObjectActionStrappingToIdle::on_animation_end
-			)
-		);
+    if (!m_callback_removed)
+    {
+        object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionStrappingToIdle::on_animation_end));
 
-		m_callback_removed		= true;
-//		Msg						("[%6d][%s] removing callback from ::finalize CObjectActionStrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
-	}
-	else {
-		VERIFY					(
-			!object().animation().torso().callback(
-				fastdelegate::MakeDelegate(
-					this,
-					&CObjectActionStrappingToIdle::on_animation_end
-				)
-			)
-		);
-//		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize CObjectActionStrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
-	}
+        m_callback_removed = true;
+        //		Msg						("[%6d][%s] removing callback from ::finalize CObjectActionStrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
+    }
+    else
+    {
+        VERIFY(!object().animation().torso().callback(fastdelegate::MakeDelegate(this, &CObjectActionStrappingToIdle::on_animation_end)));
+        //		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize
+        //CObjectActionStrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////
 // CObjectActionUnstrapping
 //////////////////////////////////////////////////////////////////////////
 
-CObjectActionUnstrapping::CObjectActionUnstrapping	(CInventoryItem *item, CAI_Stalker *owner, CPropertyStorage *storage, LPCSTR action_name) :
-	inherited		(item,owner,storage,action_name)
+CObjectActionUnstrapping::CObjectActionUnstrapping(CInventoryItem* item, CAI_Stalker* owner, CPropertyStorage* storage, LPCSTR action_name)
+    : inherited(item, owner, storage, action_name)
 {
-	m_callback_removed			= true;
+    m_callback_removed = true;
 }
 
-CObjectActionUnstrapping::~CObjectActionUnstrapping	()
+CObjectActionUnstrapping::~CObjectActionUnstrapping()
 {
-	if (m_callback_removed) {
-		VERIFY					(
-			!object().animation().torso().callback(
-				fastdelegate::MakeDelegate(
-					this,
-					&CObjectActionUnstrapping::on_animation_end
-				)
-			)
-		);
-		return;
-	}
+    if (m_callback_removed)
+    {
+        VERIFY(!object().animation().torso().callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrapping::on_animation_end)));
+        return;
+    }
 
-	object().animation().torso().remove_callback(
-		fastdelegate::MakeDelegate(
-			this,
-			&CObjectActionUnstrapping::on_animation_end
-		)
-	);
+    object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrapping::on_animation_end));
 }
 
-void CObjectActionUnstrapping::on_animation_end	()
+void CObjectActionUnstrapping::on_animation_end()
 {
-	VERIFY						(!m_callback_removed);
+    VERIFY(!m_callback_removed);
 
-	m_storage->set_property		(ObjectHandlerSpace::eWorldPropertyStrapped,false);
+    m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped, false);
 
-	object().animation().torso().remove_callback(
-		fastdelegate::MakeDelegate(
-			this,
-			&CObjectActionUnstrapping::on_animation_end
-		)
-	);
+    object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrapping::on_animation_end));
 
-	m_callback_removed			= true;
+    m_callback_removed = true;
 
-//	Msg							("[%6d][%s] removing callback on callabck CObjectActionUnstrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
+    //	Msg							("[%6d][%s] removing callback on callabck CObjectActionUnstrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
 }
 
-void CObjectActionUnstrapping::initialize		()
+void CObjectActionUnstrapping::initialize()
 {
-	inherited::initialize();
+    inherited::initialize();
 
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
-	m_callback_removed			= false;
+    m_callback_removed = false;
 
-	m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped2Idle,true);
+    m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped2Idle, true);
 
-	object().animation().torso().add_callback	(
-		fastdelegate::MakeDelegate(
-			this,
-			&CObjectActionUnstrapping::on_animation_end
-		)
-	);
+    object().animation().torso().add_callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrapping::on_animation_end));
 
-//	Msg							("[%6d][%s] adding callback CObjectActionUnstrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
+    //	Msg							("[%6d][%s] adding callback CObjectActionUnstrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
 }
 
-void CObjectActionUnstrapping::execute			()
+void CObjectActionUnstrapping::execute()
 {
-	inherited::execute();
+    inherited::execute();
 
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 }
 
-void CObjectActionUnstrapping::finalize		()
+void CObjectActionUnstrapping::finalize()
 {
-	inherited::finalize					();
+    inherited::finalize();
 
-	if (!m_callback_removed) {
-		object().animation().torso().remove_callback	(
-			fastdelegate::MakeDelegate(
-				this,
-				&CObjectActionUnstrapping::on_animation_end
-			)
-		);
+    if (!m_callback_removed)
+    {
+        object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrapping::on_animation_end));
 
-		m_callback_removed		= true;
-//		Msg						("[%6d][%s] removing callback from ::finalize CObjectActionUnstrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
-	}
-	else {
-		VERIFY					(
-			!object().animation().torso().callback(
-				fastdelegate::MakeDelegate(
-					this,
-					&CObjectActionUnstrapping::on_animation_end
-				)
-			)
-		);
-//		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize CObjectActionUnstrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
-	}
+        m_callback_removed = true;
+        //		Msg						("[%6d][%s] removing callback from ::finalize CObjectActionUnstrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
+    }
+    else
+    {
+        VERIFY(!object().animation().torso().callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrapping::on_animation_end)));
+        //		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize
+        //CObjectActionUnstrapping::on_animation_end",Device.dwTimeGlobal,*object().cName());
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////
 // CObjectActionUnstrappingToIdle
 //////////////////////////////////////////////////////////////////////////
 
-CObjectActionUnstrappingToIdle::CObjectActionUnstrappingToIdle	(CInventoryItem *item, CAI_Stalker *owner, CPropertyStorage *storage, LPCSTR action_name) :
-	inherited		(item,owner,storage,action_name)
+CObjectActionUnstrappingToIdle::CObjectActionUnstrappingToIdle(CInventoryItem* item, CAI_Stalker* owner, CPropertyStorage* storage, LPCSTR action_name)
+    : inherited(item, owner, storage, action_name)
 {
-	m_callback_removed			= true;
+    m_callback_removed = true;
 }
 
-CObjectActionUnstrappingToIdle::~CObjectActionUnstrappingToIdle	()
+CObjectActionUnstrappingToIdle::~CObjectActionUnstrappingToIdle()
 {
-	if (m_callback_removed) {
-		VERIFY					(
-			!object().animation().torso().callback(
-				fastdelegate::MakeDelegate(
-					this,
-					&CObjectActionUnstrappingToIdle::on_animation_end
-				)
-			)
-		);
-		return;
-	}
+    if (m_callback_removed)
+    {
+        VERIFY(!object().animation().torso().callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrappingToIdle::on_animation_end)));
+        return;
+    }
 
-	object().animation().torso().remove_callback(
-		fastdelegate::MakeDelegate(
-			this,
-			&CObjectActionUnstrappingToIdle::on_animation_end
-		)
-	);
+    object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrappingToIdle::on_animation_end));
 }
 
-void CObjectActionUnstrappingToIdle::on_animation_end	()
+void CObjectActionUnstrappingToIdle::on_animation_end()
 {
-	VERIFY						(!m_callback_removed);
+    VERIFY(!m_callback_removed);
 
-	m_storage->set_property		(ObjectHandlerSpace::eWorldPropertyStrapped2Idle,false);
+    m_storage->set_property(ObjectHandlerSpace::eWorldPropertyStrapped2Idle, false);
 
-	object().animation().torso().remove_callback(
-		fastdelegate::MakeDelegate(
-			this,
-			&CObjectActionUnstrappingToIdle::on_animation_end
-		)
-	);
+    object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrappingToIdle::on_animation_end));
 
-	m_callback_removed			= true;
+    m_callback_removed = true;
 
-//	Msg							("[%6d][%s] removing callback on callabck CObjectActionUnstrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
+    //	Msg							("[%6d][%s] removing callback on callabck CObjectActionUnstrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
 }
 
-void CObjectActionUnstrappingToIdle::initialize		()
+void CObjectActionUnstrappingToIdle::initialize()
 {
-	inherited::initialize				();
+    inherited::initialize();
 
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
-	m_callback_removed			= false;
+    m_callback_removed = false;
 
-	object().animation().torso().add_callback	(
-		fastdelegate::MakeDelegate(
-			this,
-			&CObjectActionUnstrappingToIdle::on_animation_end
-		)
-	);
+    object().animation().torso().add_callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrappingToIdle::on_animation_end));
 
-//	Msg							("[%6d][%s] adding callback CObjectActionUnstrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
+    //	Msg							("[%6d][%s] adding callback CObjectActionUnstrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
 }
 
-void CObjectActionUnstrappingToIdle::execute			()
+void CObjectActionUnstrappingToIdle::execute()
 {
-	inherited::execute();
+    inherited::execute();
 
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 }
 
-void CObjectActionUnstrappingToIdle::finalize		()
+void CObjectActionUnstrappingToIdle::finalize()
 {
-	inherited::finalize					();
+    inherited::finalize();
 
-	if (!m_callback_removed) {
-		object().animation().torso().remove_callback	(
-			fastdelegate::MakeDelegate(
-				this,
-				&CObjectActionUnstrappingToIdle::on_animation_end
-			)
-		);
+    if (!m_callback_removed)
+    {
+        object().animation().torso().remove_callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrappingToIdle::on_animation_end));
 
-		m_callback_removed		= true;
-//		Msg						("[%6d][%s] removing callback from ::finalize CObjectActionUnstrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
-	}
-	else {
-		VERIFY					(
-			!object().animation().torso().callback(
-				fastdelegate::MakeDelegate(
-					this,
-					&CObjectActionUnstrappingToIdle::on_animation_end
-				)
-			)
-		);
-//		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize CObjectActionUnstrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
-	}
+        m_callback_removed = true;
+        //		Msg						("[%6d][%s] removing callback from ::finalize CObjectActionUnstrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
+    }
+    else
+    {
+        VERIFY(!object().animation().torso().callback(fastdelegate::MakeDelegate(this, &CObjectActionUnstrappingToIdle::on_animation_end)));
+        //		Msg						("[%6d][%s] callback is already removed, do nothing on ::finalize
+        //CObjectActionUnstrappingToIdle::on_animation_end",Device.dwTimeGlobal,*object().cName());
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////
 // CObjectActionQueueWait
 //////////////////////////////////////////////////////////////////////////
 
-CObjectActionQueueWait::CObjectActionQueueWait	(CInventoryItem *item, CAI_Stalker *owner, CPropertyStorage *storage, _condition_type type, LPCSTR action_name) :
-	inherited				(item,owner,storage,action_name),
-	m_type					(type)
+CObjectActionQueueWait::CObjectActionQueueWait(CInventoryItem* item, CAI_Stalker* owner, CPropertyStorage* storage, _condition_type type, LPCSTR action_name)
+    : inherited(item, owner, storage, action_name), m_type(type)
 {
-	m_magazined		= smart_cast<CWeaponMagazined*>(item);
+    m_magazined = smart_cast<CWeaponMagazined*>(item);
 }
 
-void CObjectActionQueueWait::initialize		()
+void CObjectActionQueueWait::initialize()
 {
-	inherited::inherited::initialize	();
+    inherited::inherited::initialize();
 
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 }
 
-void CObjectActionQueueWait::execute			()
+void CObjectActionQueueWait::execute()
 {
-	inherited::execute		();
+    inherited::execute();
 
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
-	if (completed())
-		m_magazined->StopedAfterQueueFired(false);
+    if (completed())
+        m_magazined->StopedAfterQueueFired(false);
 }
 
-void CObjectActionQueueWait::finalize		()
+void CObjectActionQueueWait::finalize()
 {
-	inherited::finalize		();
-	
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
+    inherited::finalize();
 
-	if (!completed())
-		m_magazined->StopedAfterQueueFired(false);
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
+
+    if (!completed())
+        m_magazined->StopedAfterQueueFired(false);
 }
 
 //////////////////////////////////////////////////////////////////////////
 // CObjectActionSwitch
 //////////////////////////////////////////////////////////////////////////
 
-CObjectActionSwitch::CObjectActionSwitch	(CInventoryItem *item, CAI_Stalker *owner, CPropertyStorage *storage, _condition_type type, LPCSTR action_name) :
-	inherited		(item,owner,storage,action_name),
-	m_type			(type)
+CObjectActionSwitch::CObjectActionSwitch(CInventoryItem* item, CAI_Stalker* owner, CPropertyStorage* storage, _condition_type type, LPCSTR action_name)
+    : inherited(item, owner, storage, action_name), m_type(type)
+{}
+
+void CObjectActionSwitch::initialize()
 {
+    inherited::initialize();
+
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 }
 
-void CObjectActionSwitch::initialize		()
+void CObjectActionSwitch::execute()
 {
-	inherited::initialize	();
+    inherited::execute();
 
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 }
 
-void CObjectActionSwitch::execute			()
-{
-	inherited::execute		();
-
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
-}
-
-void CObjectActionSwitch::finalize		()
-{
-	inherited::finalize		();
-}
+void CObjectActionSwitch::finalize() { inherited::finalize(); }
 
 //////////////////////////////////////////////////////////////////////////
 // CObjectActionDrop
 //////////////////////////////////////////////////////////////////////////
 
-CObjectActionDrop::CObjectActionDrop	(CInventoryItem *item, CAI_Stalker *owner, CPropertyStorage *storage, LPCSTR action_name) :
-	inherited		(item,owner,storage,action_name)
-{
-}
+CObjectActionDrop::CObjectActionDrop(CInventoryItem* item, CAI_Stalker* owner, CPropertyStorage* storage, LPCSTR action_name) : inherited(item, owner, storage, action_name) {}
 
-void CObjectActionDrop::initialize		()
+void CObjectActionDrop::initialize()
 {
-	inherited::initialize	();
-	if (!m_item || !m_item->object().H_Parent() || (m_object->ID() != m_item->object().H_Parent()->ID()))
-		return;
+    inherited::initialize();
+    if (!m_item || !m_item->object().H_Parent() || (m_object->ID() != m_item->object().H_Parent()->ID()))
+        return;
 
-	NET_Packet				P;
-	m_object->u_EventGen	(P,GE_OWNERSHIP_REJECT,m_object->ID());
-	P.w_u16					(u16(m_item->object().ID()));
-	m_object->u_EventSend	(P);
+    NET_Packet P;
+    m_object->u_EventGen(P, GE_OWNERSHIP_REJECT, m_object->ID());
+    P.w_u16(u16(m_item->object().ID()));
+    m_object->u_EventSend(P);
 }
 
 //////////////////////////////////////////////////////////////////////////
 // CObjectActionThreaten
 //////////////////////////////////////////////////////////////////////////
 
-CObjectActionThreaten::CObjectActionThreaten	(CAI_Stalker *item, CAI_Stalker *owner, CPropertyStorage *storage, LPCSTR action_name) :
-	inherited				(item,owner,storage,action_name)
-{
-}
+CObjectActionThreaten::CObjectActionThreaten(CAI_Stalker* item, CAI_Stalker* owner, CPropertyStorage* storage, LPCSTR action_name) : inherited(item, owner, storage, action_name) {}
 
-void CObjectActionThreaten::execute			()
+void CObjectActionThreaten::execute()
 {
-	inherited::execute		();
-	if (completed())
-		object().inventory().Action(kWPN_FIRE,	CMD_STOP);
+    inherited::execute();
+    if (completed())
+        object().inventory().Action(kWPN_FIRE, CMD_STOP);
 }
 
 //////////////////////////////////////////////////////////////////////////
 // CObjectActionAim
 //////////////////////////////////////////////////////////////////////////
 
-CObjectActionAim::CObjectActionAim			(CInventoryItem *item, CAI_Stalker *owner, CPropertyStorage *storage, _condition_type condition_id, _value_type value, LPCSTR action_name) :
-	inherited							(item,owner,storage,condition_id,value,action_name)
+CObjectActionAim::CObjectActionAim(CInventoryItem* item, CAI_Stalker* owner, CPropertyStorage* storage, _condition_type condition_id, _value_type value, LPCSTR action_name)
+    : inherited(item, owner, storage, condition_id, value, action_name)
 {
-	m_weapon					= smart_cast<CWeaponMagazined*>(m_item);
-//	VERIFY						(m_weapon);
+    m_weapon = smart_cast<CWeaponMagazined*>(m_item);
+    //	VERIFY						(m_weapon);
 }
 
-void CObjectActionAim::initialize			()
+void CObjectActionAim::initialize()
 {
-	inherited::inherited::initialize	();
+    inherited::inherited::initialize();
 
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 }
 
-void CObjectActionAim::execute				()
+void CObjectActionAim::execute()
 {
-	inherited::execute					();
+    inherited::execute();
 
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
-	if (m_weapon && completed())
-		m_weapon->StopedAfterQueueFired(false);
+    if (m_weapon && completed())
+        m_weapon->StopedAfterQueueFired(false);
 }
 
 //////////////////////////////////////////////////////////////////////////
 // CObjectActionIdle
 //////////////////////////////////////////////////////////////////////////
 
-CObjectActionIdle::CObjectActionIdle(CInventoryItem *item, CAI_Stalker *owner, CPropertyStorage *storage, LPCSTR action_name) :
-	inherited			(item,owner,storage,action_name)
+CObjectActionIdle::CObjectActionIdle(CInventoryItem* item, CAI_Stalker* owner, CPropertyStorage* storage, LPCSTR action_name) : inherited(item, owner, storage, action_name) {}
+
+void CObjectActionIdle::initialize()
 {
-}
+    inherited::initialize();
 
-void CObjectActionIdle::initialize	()
-{
-	inherited::initialize();
+    VERIFY(m_item);
+    VERIFY(object().inventory().ActiveItem());
+    VERIFY(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
 
-	VERIFY						(m_item);
-	VERIFY						(object().inventory().ActiveItem());
-	VERIFY						(object().inventory().ActiveItem()->object().ID() == m_item->object().ID());
-
-	if (m_storage->property(ObjectHandlerSpace::eWorldPropertyUseEnough))
-		object().CObjectHandler::set_goal(MonsterSpace::eObjectActionActivate,object().inventory().ActiveItem());
-	m_storage->set_property	(ObjectHandlerSpace::eWorldPropertyUseEnough,false);
+    if (m_storage->property(ObjectHandlerSpace::eWorldPropertyUseEnough))
+        object().CObjectHandler::set_goal(MonsterSpace::eObjectActionActivate, object().inventory().ActiveItem());
+    m_storage->set_property(ObjectHandlerSpace::eWorldPropertyUseEnough, false);
 }

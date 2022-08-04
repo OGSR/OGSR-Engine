@@ -230,19 +230,16 @@ private:
 #else
     void clip(float low, float high, int family, int n, const float p[], AngleIntList& f) const;
 
-    void store_intersections(int n, const float* s, float low, float high, float tan_l, float tan_h, int& n1, float* f1,
-        int& n2, float* f2) const;
+    void store_intersections(int n, const float* s, float low, float high, float tan_l, float tan_h, int& n1, float* f1, int& n2, float* f2) const;
 #endif
 
     // Used by Solve and Solve2
     int solve_aux(float v, float tan_v, float* solns) const;
 
 public:
-    void init(int jt_type, float a1, float b1, float c1, float a2, float b2, float c2, float a3, float b3, float c3,
-        float low, float high);
+    void init(int jt_type, float a1, float b1, float c1, float a2, float b2, float c2, float a3, float b3, float c3, float low, float high);
 
-    ComplexJtLimit(int jt_type, float a1, float b1, float c1, float a2, float b2, float c2, float a3, float b3,
-        float c3, float low, float high)
+    ComplexJtLimit(int jt_type, float a1, float b1, float c1, float a2, float b2, float c2, float a3, float b3, float c3, float low, float high)
     {
         init(jt_type, a1, b1, c1, a2, b2, c2, a3, b3, c3, low, high);
     }

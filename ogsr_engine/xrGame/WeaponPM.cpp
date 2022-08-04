@@ -6,22 +6,13 @@
 //////////////////////////////////////////////////////////////////////
 CWeaponPM::CWeaponPM() : CWeaponPistol("PM")
 {
-	m_weight = .5f;
-	SetSlot( FIRST_WEAPON_SLOT );
+    m_weight = .5f;
+    SetSlot(FIRST_WEAPON_SLOT);
 }
 
-CWeaponPM::~CWeaponPM()
-{
-}
+CWeaponPM::~CWeaponPM() {}
 
 using namespace luabind;
 
-#pragma optimize("s",on)
-void CWeaponPM::script_register	(lua_State *L)
-{
-	module(L)
-	[
-		class_<CWeaponPM,CGameObject>("CWeaponPM")
-			.def(constructor<>())
-	];
-}
+#pragma optimize("s", on)
+void CWeaponPM::script_register(lua_State* L) { module(L)[class_<CWeaponPM, CGameObject>("CWeaponPM").def(constructor<>())]; }

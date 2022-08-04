@@ -10,42 +10,40 @@
 #include "alife_group_registry.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 
-CALifeGroupRegistry::~CALifeGroupRegistry					()
+CALifeGroupRegistry::~CALifeGroupRegistry() {}
+
+void CALifeGroupRegistry::add(CSE_ALifeDynamicObject* object)
 {
+    CSE_ALifeOnlineOfflineGroup* group = smart_cast<CSE_ALifeOnlineOfflineGroup*>(object);
+    if (!group)
+        return;
+
+    VERIFY(objects().find(group->ID) == objects().end());
+    m_objects.insert(std::make_pair(group->ID, group));
 }
 
-void CALifeGroupRegistry::add								(CSE_ALifeDynamicObject *object)
+void CALifeGroupRegistry::remove(CSE_ALifeDynamicObject* object)
 {
-	CSE_ALifeOnlineOfflineGroup			*group = smart_cast<CSE_ALifeOnlineOfflineGroup*>(object);
-	if (!group)
-		return;
+    CSE_ALifeOnlineOfflineGroup* group = smart_cast<CSE_ALifeOnlineOfflineGroup*>(object);
+    if (!group)
+        return;
 
-	VERIFY(objects().find(group->ID) == objects().end());
-	m_objects.insert					(std::make_pair(group->ID,group));
+    OBJECTS::iterator I = m_objects.find(group->ID);
+    VERIFY(I != m_objects.end());
+    m_objects.erase(I);
 }
 
-void CALifeGroupRegistry::remove							(CSE_ALifeDynamicObject *object)
+CALifeGroupRegistry::OBJECT& CALifeGroupRegistry::object(const ALife::_OBJECT_ID& id) const
 {
-	CSE_ALifeOnlineOfflineGroup			*group = smart_cast<CSE_ALifeOnlineOfflineGroup*>(object);
-	if (!group)
-		return;
-
-	OBJECTS::iterator					I = m_objects.find(group->ID);
-	VERIFY								(I != m_objects.end());
-	m_objects.erase						(I);
+    OBJECTS::const_iterator I = objects().find(id);
+    VERIFY(I != objects().end());
+    return (*(*I).second);
 }
 
-CALifeGroupRegistry::OBJECT &CALifeGroupRegistry::object	(const ALife::_OBJECT_ID &id) const
+void CALifeGroupRegistry::on_after_game_load()
 {
-	OBJECTS::const_iterator				I = objects().find(id);
-	VERIFY								(I != objects().end());
-	return								(*(*I).second);
-}
-
-void CALifeGroupRegistry::on_after_game_load				()
-{
-	OBJECTS::iterator					I = m_objects.begin();
-	OBJECTS::iterator					E = m_objects.end();
-	for ( ; I != E; ++I)
-		(*I).second->on_after_game_load	();
+    OBJECTS::iterator I = m_objects.begin();
+    OBJECTS::iterator E = m_objects.end();
+    for (; I != E; ++I)
+        (*I).second->on_after_game_load();
 }

@@ -107,9 +107,9 @@ struct EulerTableEntry
     matrix_entry complex_jt2_index1;
     matrix_entry complex_jt2_index2;
 } EulerTable[] = {{SinJtLimit, 1, {2, 1, -1}, 0, {0, 1, 1}, {1, 1, 1}, 2, {2, 0, 1}, {2, 2, 1}},
-    {SinJtLimit, 1, {1, 2, 1}, 0, {0, 2, -1}, {2, 2, 1}, 2, {1, 0, -1}, {1, 1, 1}},
-    {SinJtLimit, 1, {1, 2, -1}, 0, {0, 2, -1}, {2, 2, 1}, 2, {1, 0, 1}, {1, 1, 1}},
-    {SinJtLimit, 1, {2, 1, 1}, 0, {0, 1, -1}, {1, 1, 1}, 2, {2, 0, 1}, {2, 2, 1}}};
+                  {SinJtLimit, 1, {1, 2, 1}, 0, {0, 2, -1}, {2, 2, 1}, 2, {1, 0, -1}, {1, 1, 1}},
+                  {SinJtLimit, 1, {1, 2, -1}, 0, {0, 2, -1}, {2, 2, 1}, 2, {1, 0, 1}, {1, 1, 1}},
+                  {SinJtLimit, 1, {2, 1, 1}, 0, {0, 1, -1}, {1, 1, 1}, 2, {2, 0, 1}, {2, 2, 1}}};
 
 void euler_extract(const EulerTableEntry& E, const Matrix R, float vals[3], int family)
 {
@@ -282,8 +282,7 @@ void EulerEval(int euler_type, const float t[3], Matrix R)
     hmatmult(R, R, r);
 }
 
-inline void get_psi_parameters(
-    const Matrix c, const Matrix s, const Matrix o, const matrix_entry& m, float& alpha, float& beta, float& gamma)
+inline void get_psi_parameters(const Matrix c, const Matrix s, const Matrix o, const matrix_entry& m, float& alpha, float& beta, float& gamma)
 {
     if (m.sign == 1)
     {
@@ -303,9 +302,7 @@ inline void get_psi_parameters(
 // Create one simple joint limit and two complex joint limits
 // based on the euler convention
 //
-EulerPsiSolver::EulerPsiSolver(
-    int etype, const Matrix c, const Matrix s, const Matrix o, const float low[3], const float high[3])
-    : euler_type(etype)
+EulerPsiSolver::EulerPsiSolver(int etype, const Matrix c, const Matrix s, const Matrix o, const float low[3], const float high[3]) : euler_type(etype)
 {
     EulerTableEntry* e = euler_entry(euler_type);
 

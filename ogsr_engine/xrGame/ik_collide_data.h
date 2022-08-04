@@ -23,14 +23,11 @@ public:
         test.min.set(-FLT_MAX / 2.f, -FLT_MAX / 2.f, -FLT_MAX / 2.f);
         return test.contains(pos_toe()) && test.contains(pos_heel()) && test.contains(pos_side());
     }
-    ik_foot_geom()
-        : _toe(Fvector().set(-FLT_MAX, -FLT_MAX, -FLT_MAX)), _heel(Fvector().set(-FLT_MAX, -FLT_MAX, -FLT_MAX)),
-          _side(Fvector().set(-FLT_MAX, -FLT_MAX, -FLT_MAX))
-    {
-    }
+    ik_foot_geom() : _toe(Fvector().set(-FLT_MAX, -FLT_MAX, -FLT_MAX)), _heel(Fvector().set(-FLT_MAX, -FLT_MAX, -FLT_MAX)), _side(Fvector().set(-FLT_MAX, -FLT_MAX, -FLT_MAX)) {}
     IC const Fvector& pos_toe() const { return _toe; }
     IC const Fvector& pos_heel() const { return _heel; }
     IC const Fvector& pos_side() const { return _side; }
+
 private:
     Fvector _toe;
     Fvector _heel;

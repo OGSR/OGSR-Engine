@@ -8,108 +8,106 @@
 #include "ai_space.h"
 #include "alife_simulator.h"
 
-
 template <typename _registry_type>
 class CALifeRegistryWrapper
 {
 public:
-	IC				CALifeRegistryWrapper	() {holder_id = 0xffff;}
-	virtual			~CALifeRegistryWrapper	() {delete_data(local_registry);}
+    IC CALifeRegistryWrapper() { holder_id = 0xffff; }
+    virtual ~CALifeRegistryWrapper() { delete_data(local_registry); }
 
-	IC	void		init					(u16 id) {holder_id = id;}
-	
-	typename _registry_type::_data&			objects					();
-	const typename _registry_type::_data*	objects_ptr				();
+    IC void init(u16 id) { holder_id = id; }
 
-	typename _registry_type::_data&			objects					(u16 id);
-	const typename _registry_type::_data*	objects_ptr				(u16 id);
+    typename _registry_type::_data& objects();
+    const typename _registry_type::_data* objects_ptr();
 
-	IC const typename _registry_type::OBJECT_REGISTRY& get_registry_objects() const;
-	IC typename _registry_type::OBJECT_REGISTRY& get_registry_objects();
+    typename _registry_type::_data& objects(u16 id);
+    const typename _registry_type::_data* objects_ptr(u16 id);
+
+    IC const typename _registry_type::OBJECT_REGISTRY& get_registry_objects() const;
+    IC typename _registry_type::OBJECT_REGISTRY& get_registry_objects();
 
 private:
-	//id - владельца реестра
-	u16	holder_id;
+    // id - владельца реестра
+    u16 holder_id;
 
-	//реестр на случай, если нет ALife (для отладки)
-//	typename _registry_type::_data	local_registry;
-	typename _registry_type::OBJECT_REGISTRY local_registry;
-};
-
-
-template <typename _registry_type>
-IC const typename _registry_type::OBJECT_REGISTRY& CALifeRegistryWrapper<_registry_type>::get_registry_objects() const {
-  return ai().alife().registry( ( _registry_type* ) NULL ).objects();
+    //реестр на случай, если нет ALife (для отладки)
+    //	typename _registry_type::_data	local_registry;
+    typename _registry_type::OBJECT_REGISTRY local_registry;
 };
 
 template <typename _registry_type>
-IC typename _registry_type::OBJECT_REGISTRY& CALifeRegistryWrapper<_registry_type>::get_registry_objects() {
-  return ai().alife().registry( ( _registry_type* ) NULL ).objects();
+IC const typename _registry_type::OBJECT_REGISTRY& CALifeRegistryWrapper<_registry_type>::get_registry_objects() const
+{
+    return ai().alife().registry((_registry_type*)NULL).objects();
 };
 
+template <typename _registry_type>
+IC typename _registry_type::OBJECT_REGISTRY& CALifeRegistryWrapper<_registry_type>::get_registry_objects()
+{
+    return ai().alife().registry((_registry_type*)NULL).objects();
+};
 
 template <typename _registry_type>
-const typename _registry_type::_data* CALifeRegistryWrapper<_registry_type>::objects_ptr	(u16 id)
+const typename _registry_type::_data* CALifeRegistryWrapper<_registry_type>::objects_ptr(u16 id)
 {
-//	if(NULL == ai().get_alife()) return &local_registry;
-	if (NULL == ai().get_alife())
-	{
-		typename _registry_type::iterator I = local_registry.find(id);
-		if (I == local_registry.end())
-		{
-			typename _registry_type::_data new_registry;
-			auto [iter, inserted] = local_registry.insert(std::make_pair(id, new_registry));
-			VERIFY(inserted);
-			return &(iter->second);
-		}
-		return (&(*I).second);
-	}
+    //	if(NULL == ai().get_alife()) return &local_registry;
+    if (NULL == ai().get_alife())
+    {
+        typename _registry_type::iterator I = local_registry.find(id);
+        if (I == local_registry.end())
+        {
+            typename _registry_type::_data new_registry;
+            auto [iter, inserted] = local_registry.insert(std::make_pair(id, new_registry));
+            VERIFY(inserted);
+            return &(iter->second);
+        }
+        return (&(*I).second);
+    }
 
-	VERIFY(0xffff != id);
+    VERIFY(0xffff != id);
 
-	typename _registry_type::_data* registy_container = ai().alife().registry((_registry_type*)NULL).object(id, true);
-	return registy_container;
+    typename _registry_type::_data* registy_container = ai().alife().registry((_registry_type*)NULL).object(id, true);
+    return registy_container;
 }
 
 template <typename _registry_type>
-typename _registry_type::_data& CALifeRegistryWrapper<_registry_type>::objects	(u16 id)
+typename _registry_type::_data& CALifeRegistryWrapper<_registry_type>::objects(u16 id)
 {
-//	if(NULL == ai().get_alife()) return local_registry;
-	if (NULL == ai().get_alife())
-	{
-		typename _registry_type::iterator I = local_registry.find(id);
-		if (I == local_registry.end())
-		{
-			typename _registry_type::_data new_registry;
-			auto [iter, inserted] = local_registry.insert(std::make_pair(id, new_registry));
-			VERIFY(inserted);
-			return (iter->second);
-		}
-		else
-			return ((*I).second);
-	}
+    //	if(NULL == ai().get_alife()) return local_registry;
+    if (NULL == ai().get_alife())
+    {
+        typename _registry_type::iterator I = local_registry.find(id);
+        if (I == local_registry.end())
+        {
+            typename _registry_type::_data new_registry;
+            auto [iter, inserted] = local_registry.insert(std::make_pair(id, new_registry));
+            VERIFY(inserted);
+            return (iter->second);
+        }
+        else
+            return ((*I).second);
+    }
 
-	typename _registry_type::_data* registy_container = ai().alife().registry((_registry_type*)NULL).object(id, true);
+    typename _registry_type::_data* registy_container = ai().alife().registry((_registry_type*)NULL).object(id, true);
 
-	if(!registy_container)	
-	{
-		typename _registry_type::_data new_registry;
-		ai().alife().registry((_registry_type*)NULL).add(id, new_registry, false);
-		registy_container = ai().alife().registry((_registry_type*)NULL).object(id, true);
-		VERIFY(registy_container);
-	}
-	return *registy_container;
-}
-
-
-template <typename _registry_type>
-const typename _registry_type::_data* CALifeRegistryWrapper<_registry_type>::objects_ptr	()
-{
-	return objects_ptr(holder_id);
+    if (!registy_container)
+    {
+        typename _registry_type::_data new_registry;
+        ai().alife().registry((_registry_type*)NULL).add(id, new_registry, false);
+        registy_container = ai().alife().registry((_registry_type*)NULL).object(id, true);
+        VERIFY(registy_container);
+    }
+    return *registy_container;
 }
 
 template <typename _registry_type>
-typename _registry_type::_data& CALifeRegistryWrapper<_registry_type>::objects	()
+const typename _registry_type::_data* CALifeRegistryWrapper<_registry_type>::objects_ptr()
 {
-	return objects(holder_id);
+    return objects_ptr(holder_id);
+}
+
+template <typename _registry_type>
+typename _registry_type::_data& CALifeRegistryWrapper<_registry_type>::objects()
+{
+    return objects(holder_id);
 }

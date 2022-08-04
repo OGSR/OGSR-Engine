@@ -10,10 +10,11 @@
 
 #include "action_planner.h"
 
-class CScriptActionPlannerWrapper : public CScriptActionPlanner, public luabind::wrap_base {
+class CScriptActionPlannerWrapper : public CScriptActionPlanner, public luabind::wrap_base
+{
 public:
-	virtual void		setup						(CScriptGameObject *object);
-	static	void		setup_static				(CScriptActionPlanner *planner, CScriptGameObject *object);
-	virtual void		update						();
-	static	void		update_static				(CScriptActionPlanner *planner);
+    virtual void setup(CScriptGameObject* object);
+    static void setup_static(CScriptActionPlanner* planner, CScriptGameObject* object);
+    virtual void update();
+    static void update_static(CScriptActionPlanner* planner);
 };

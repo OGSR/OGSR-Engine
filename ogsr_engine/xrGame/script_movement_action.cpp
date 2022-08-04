@@ -14,109 +14,109 @@
 #include "patrol_path_params.h"
 #include "ai_monster_space.h"
 
-CScriptMovementAction::CScriptMovementAction		(MonsterSpace::EScriptMonsterMoveAction tAct, CPatrolPathParams &tPatrolPathParams, float dist_to_end, MonsterSpace::EScriptMonsterSpeedParam speed_param)
-{																																			
-	m_tMoveAction			= tAct;
-	SetPatrolPath			(tPatrolPathParams.m_path,tPatrolPathParams.m_path_name);															
-	SetPatrolStart			(tPatrolPathParams.m_tPatrolPathStart);																				
-	SetPatrolStop			(tPatrolPathParams.m_tPatrolPathStop);																				
-	SetPatrolRandom			(tPatrolPathParams.m_bRandom);																						
-	m_tSpeedParam			= speed_param;
-	m_previous_patrol_point = tPatrolPathParams.m_previous_index;
-	m_fDistToEnd			= dist_to_end;
-}						
-
-CScriptMovementAction::CScriptMovementAction		(MonsterSpace::EBodyState tBodyState, MonsterSpace::EMovementType tMovementType, DetailPathManager::EDetailPathType tPathType, const CPatrolPathParams &tPatrolPathParams, float fSpeed)
+CScriptMovementAction::CScriptMovementAction(MonsterSpace::EScriptMonsterMoveAction tAct, CPatrolPathParams& tPatrolPathParams, float dist_to_end,
+                                             MonsterSpace::EScriptMonsterSpeedParam speed_param)
 {
-	SetBodyState		(tBodyState);
-	SetMovementType		(tMovementType);
-	SetPathType			(tPathType);
-	SetPatrolPath		(tPatrolPathParams.m_path,tPatrolPathParams.m_path_name);
-	SetPatrolStart		(tPatrolPathParams.m_tPatrolPathStart);
-	SetPatrolStop		(tPatrolPathParams.m_tPatrolPathStop);
-	SetPatrolRandom		(tPatrolPathParams.m_bRandom);
-	SetSpeed			(fSpeed);
+    m_tMoveAction = tAct;
+    SetPatrolPath(tPatrolPathParams.m_path, tPatrolPathParams.m_path_name);
+    SetPatrolStart(tPatrolPathParams.m_tPatrolPathStart);
+    SetPatrolStop(tPatrolPathParams.m_tPatrolPathStop);
+    SetPatrolRandom(tPatrolPathParams.m_bRandom);
+    m_tSpeedParam = speed_param;
+    m_previous_patrol_point = tPatrolPathParams.m_previous_index;
+    m_fDistToEnd = dist_to_end;
 }
 
-CScriptMovementAction::CScriptMovementAction		()
+CScriptMovementAction::CScriptMovementAction(MonsterSpace::EBodyState tBodyState, MonsterSpace::EMovementType tMovementType, DetailPathManager::EDetailPathType tPathType,
+                                             const CPatrolPathParams& tPatrolPathParams, float fSpeed)
 {
-	SetInputKeys		(eInputKeyNone);
-	SetBodyState		(MonsterSpace::eBodyStateStand);
-	SetMovementType		(MonsterSpace::eMovementTypeStand);
-	SetPathType			(DetailPathManager::eDetailPathTypeSmooth);
-	SetPatrolPath		(0,"");
-	SetPatrolStart		(PatrolPathManager::ePatrolStartTypeNearest);
-	SetPatrolStop		(PatrolPathManager::ePatrolRouteTypeContinue);
-	SetPatrolRandom		(true);
-	SetSpeed			(0);
-	SetObjectToGo		(0);
-	SetPosition			(Fvector().set(0,0,0));
-	m_tGoalType			= eGoalTypeDummy;
-	m_bCompleted		= true;
+    SetBodyState(tBodyState);
+    SetMovementType(tMovementType);
+    SetPathType(tPathType);
+    SetPatrolPath(tPatrolPathParams.m_path, tPatrolPathParams.m_path_name);
+    SetPatrolStart(tPatrolPathParams.m_tPatrolPathStart);
+    SetPatrolStop(tPatrolPathParams.m_tPatrolPathStop);
+    SetPatrolRandom(tPatrolPathParams.m_bRandom);
+    SetSpeed(fSpeed);
 }
 
-CScriptMovementAction::CScriptMovementAction		(const Fvector &tPosition, float fSpeed)
+CScriptMovementAction::CScriptMovementAction()
 {
-	SetBodyState		(MonsterSpace::eBodyStateStand);
-	SetMovementType		(MonsterSpace::eMovementTypeStand);
-	SetPathType			(DetailPathManager::eDetailPathTypeSmooth);
-	SetPosition			(tPosition);
-	SetSpeed			(fSpeed);
-	m_tGoalType			= eGoalTypeNoPathPosition;
+    SetInputKeys(eInputKeyNone);
+    SetBodyState(MonsterSpace::eBodyStateStand);
+    SetMovementType(MonsterSpace::eMovementTypeStand);
+    SetPathType(DetailPathManager::eDetailPathTypeSmooth);
+    SetPatrolPath(0, "");
+    SetPatrolStart(PatrolPathManager::ePatrolStartTypeNearest);
+    SetPatrolStop(PatrolPathManager::ePatrolRouteTypeContinue);
+    SetPatrolRandom(true);
+    SetSpeed(0);
+    SetObjectToGo(0);
+    SetPosition(Fvector().set(0, 0, 0));
+    m_tGoalType = eGoalTypeDummy;
+    m_bCompleted = true;
 }
 
-CScriptMovementAction::CScriptMovementAction		(MonsterSpace::EScriptMonsterMoveAction tAct, Fvector &tPosition, float	dist_to_end)
-{																																			
-	MonsterSpace::EScriptMonsterSpeedParam speed_param = MonsterSpace::eSP_Default;
-	m_tMoveAction		= tAct;
-	SetPosition			(tPosition);																										
-	m_tSpeedParam		= speed_param;
-	m_fDistToEnd		= dist_to_end;
-}						
-
-CScriptMovementAction::CScriptMovementAction		(MonsterSpace::EScriptMonsterMoveAction tAct, u32 node_id, Fvector &tPosition, float dist_to_end)
-{																																			
-	m_tMoveAction			= tAct;
-	m_tDestinationPosition	= tPosition;
-	m_tGoalType				= eGoalTypePathNodePosition;
-	m_tSpeedParam			= MonsterSpace::eSP_Default;
-	m_fDistToEnd			= dist_to_end;
-	m_tNodeID				= node_id;
-	m_bCompleted			= false;
-}						
-
-CScriptMovementAction::CScriptMovementAction		(MonsterSpace::EScriptMonsterMoveAction tAct, CPatrolPathParams &tPatrolPathParams, float dist_to_end)
-{																																			
-	MonsterSpace::EScriptMonsterSpeedParam speed_param = MonsterSpace::eSP_Default;
-	m_tMoveAction			= tAct;
-	SetPatrolPath			(tPatrolPathParams.m_path,tPatrolPathParams.m_path_name);															
-	SetPatrolStart			(tPatrolPathParams.m_tPatrolPathStart);																				
-	SetPatrolStop			(tPatrolPathParams.m_tPatrolPathStop);																				
-	SetPatrolRandom			(tPatrolPathParams.m_bRandom);																						
-	m_tSpeedParam			= speed_param;
-	m_previous_patrol_point = tPatrolPathParams.m_previous_index;
-	m_fDistToEnd			= dist_to_end;
-}						
-
-CScriptMovementAction::CScriptMovementAction		(MonsterSpace::EScriptMonsterMoveAction tAct, CScriptGameObject *tpObjectToGo, float dist_to_end)
+CScriptMovementAction::CScriptMovementAction(const Fvector& tPosition, float fSpeed)
 {
-	MonsterSpace::EScriptMonsterSpeedParam speed_param = MonsterSpace::eSP_Default;
-	m_tMoveAction		= tAct;
-	SetObjectToGo		(tpObjectToGo);
-	m_tSpeedParam		= speed_param;
-	m_fDistToEnd		= dist_to_end;
+    SetBodyState(MonsterSpace::eBodyStateStand);
+    SetMovementType(MonsterSpace::eMovementTypeStand);
+    SetPathType(DetailPathManager::eDetailPathTypeSmooth);
+    SetPosition(tPosition);
+    SetSpeed(fSpeed);
+    m_tGoalType = eGoalTypeNoPathPosition;
 }
 
-CScriptMovementAction::~CScriptMovementAction	()
+CScriptMovementAction::CScriptMovementAction(MonsterSpace::EScriptMonsterMoveAction tAct, Fvector& tPosition, float dist_to_end)
 {
+    MonsterSpace::EScriptMonsterSpeedParam speed_param = MonsterSpace::eSP_Default;
+    m_tMoveAction = tAct;
+    SetPosition(tPosition);
+    m_tSpeedParam = speed_param;
+    m_fDistToEnd = dist_to_end;
 }
 
-void CScriptMovementAction::SetObjectToGo		(CScriptGameObject *tpObjectToGo)
+CScriptMovementAction::CScriptMovementAction(MonsterSpace::EScriptMonsterMoveAction tAct, u32 node_id, Fvector& tPosition, float dist_to_end)
 {
-	if (tpObjectToGo)
-		m_tpObjectToGo	= tpObjectToGo->operator CObject*();
-	else
-		m_tpObjectToGo	= 0;
-	m_tGoalType			= eGoalTypeObject;
-	m_bCompleted		= false;
+    m_tMoveAction = tAct;
+    m_tDestinationPosition = tPosition;
+    m_tGoalType = eGoalTypePathNodePosition;
+    m_tSpeedParam = MonsterSpace::eSP_Default;
+    m_fDistToEnd = dist_to_end;
+    m_tNodeID = node_id;
+    m_bCompleted = false;
+}
+
+CScriptMovementAction::CScriptMovementAction(MonsterSpace::EScriptMonsterMoveAction tAct, CPatrolPathParams& tPatrolPathParams, float dist_to_end)
+{
+    MonsterSpace::EScriptMonsterSpeedParam speed_param = MonsterSpace::eSP_Default;
+    m_tMoveAction = tAct;
+    SetPatrolPath(tPatrolPathParams.m_path, tPatrolPathParams.m_path_name);
+    SetPatrolStart(tPatrolPathParams.m_tPatrolPathStart);
+    SetPatrolStop(tPatrolPathParams.m_tPatrolPathStop);
+    SetPatrolRandom(tPatrolPathParams.m_bRandom);
+    m_tSpeedParam = speed_param;
+    m_previous_patrol_point = tPatrolPathParams.m_previous_index;
+    m_fDistToEnd = dist_to_end;
+}
+
+CScriptMovementAction::CScriptMovementAction(MonsterSpace::EScriptMonsterMoveAction tAct, CScriptGameObject* tpObjectToGo, float dist_to_end)
+{
+    MonsterSpace::EScriptMonsterSpeedParam speed_param = MonsterSpace::eSP_Default;
+    m_tMoveAction = tAct;
+    SetObjectToGo(tpObjectToGo);
+    m_tSpeedParam = speed_param;
+    m_fDistToEnd = dist_to_end;
+}
+
+CScriptMovementAction::~CScriptMovementAction() {}
+
+void CScriptMovementAction::SetObjectToGo(CScriptGameObject* tpObjectToGo)
+{
+    if (tpObjectToGo)
+        m_tpObjectToGo = tpObjectToGo->operator CObject*();
+    else
+        m_tpObjectToGo = 0;
+    m_tGoalType = eGoalTypeObject;
+    m_bCompleted = false;
 }

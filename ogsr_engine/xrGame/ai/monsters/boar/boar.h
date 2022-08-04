@@ -4,36 +4,34 @@
 #include "../controlled_entity.h"
 #include "script_export_space.h"
 
-class CAI_Boar : public CBaseMonster,
-				 public CControlledEntity<CAI_Boar> {
-
-	typedef		CBaseMonster	inherited;
-	typedef		CControlledEntity<CAI_Boar>	CControlled;
+class CAI_Boar : public CBaseMonster, public CControlledEntity<CAI_Boar>
+{
+    typedef CBaseMonster inherited;
+    typedef CControlledEntity<CAI_Boar> CControlled;
 
 public:
-					CAI_Boar			();
-	virtual			~CAI_Boar			();	
+    CAI_Boar();
+    virtual ~CAI_Boar();
 
-	virtual void	Load				(LPCSTR section);
-	virtual BOOL	net_Spawn			(CSE_Abstract* DC);
-	virtual void	reinit				();
+    virtual void Load(LPCSTR section);
+    virtual BOOL net_Spawn(CSE_Abstract* DC);
+    virtual void reinit();
 
-	virtual void	UpdateCL			();
+    virtual void UpdateCL();
 
-IC	virtual bool	CanExecRotationJump	() {return true;}
-	virtual void	CheckSpecParams(u32 spec_params) override {};
+    IC virtual bool CanExecRotationJump() { return true; }
+    virtual void CheckSpecParams(u32 spec_params) override{};
 
-	// look at enemy
-	static void	_BCL	BoneCallback	(CBoneInstance *B);
-	
-			float	_velocity;
-			float	_cur_delta, _target_delta;
-			bool	look_at_enemy;
-	
-IC	virtual bool	ability_can_drag	() {return true;}
-	
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+    // look at enemy
+    static void _BCL BoneCallback(CBoneInstance* B);
 
+    float _velocity;
+    float _cur_delta, _target_delta;
+    bool look_at_enemy;
+
+    IC virtual bool ability_can_drag() { return true; }
+
+    DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 add_to_type_list(CAI_Boar)

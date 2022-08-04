@@ -10,24 +10,24 @@ class CUIXml;
 struct SLuaWpnParams;
 class CPhysicsShellHolder;
 
-class CUIWpnParams : public CUIWindow 
+class CUIWpnParams : public CUIWindow
 {
 public:
-								CUIWpnParams			();
-	virtual						~CUIWpnParams			();
+    CUIWpnParams();
+    virtual ~CUIWpnParams();
 
-	void 						InitFromXml				(CUIXml& xml_doc);
-	void 						SetInfo					(CPhysicsShellHolder &obj/*const shared_str& wpn_section*/);
-	bool 						Check					(CPhysicsShellHolder &obj/*const shared_str& wpn_section*/);
+    void InitFromXml(CUIXml& xml_doc);
+    void SetInfo(CPhysicsShellHolder& obj /*const shared_str& wpn_section*/);
+    bool Check(CPhysicsShellHolder& obj /*const shared_str& wpn_section*/);
 
 protected:
-	CUIProgressBar				m_progressAccuracy;
-	CUIProgressBar				m_progressHandling;
-	CUIProgressBar				m_progressDamage;
-	CUIProgressBar				m_progressRPM;
+    CUIProgressBar m_progressAccuracy;
+    CUIProgressBar m_progressHandling;
+    CUIProgressBar m_progressDamage;
+    CUIProgressBar m_progressRPM;
 
-	CUIStatic					m_textAccuracy;
-	CUIStatic					m_textHandling;
-	CUIStatic					m_textDamage;
-	CUIStatic					m_textRPM;
+    CUIStatic m_textAccuracy;
+    CUIStatic m_textHandling;
+    CUIStatic m_textDamage;
+    CUIStatic m_textRPM;
 };

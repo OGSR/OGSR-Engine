@@ -10,19 +10,20 @@
 
 #include <regex>
 
-class CTradeBoolParameters {
+class CTradeBoolParameters
+{
 public:
-	typedef xr_vector<shared_str>	SECTIONS;
+    typedef xr_vector<shared_str> SECTIONS;
 
 private:
-	SECTIONS	m_sections;
-	xr_vector<std::regex> m_sections_re;
+    SECTIONS m_sections;
+    xr_vector<std::regex> m_sections_re;
 
 public:
-	IC			CTradeBoolParameters	();
-	IC	void	clear					();
-	IC	void	disable					(const shared_str &section);
-	IC	bool	disabled				(const shared_str &section) const;
+    IC CTradeBoolParameters();
+    IC void clear();
+    IC void disable(const shared_str& section);
+    IC bool disabled(const shared_str& section) const;
 };
 
 #include "trade_bool_parameters_inline.h"

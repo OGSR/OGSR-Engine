@@ -11,53 +11,50 @@
 #include "movement_manager.h"
 #include "detail_path_manager.h"
 
-class CDetailPathBuilder {
+class CDetailPathBuilder
+{
 private:
-	typedef CMovementManager::CLevelPathManager CLevelPathManager;
-	typedef CLevelPathManager::PATH				PATH;
+    typedef CMovementManager::CLevelPathManager CLevelPathManager;
+    typedef CLevelPathManager::PATH PATH;
+
 private:
-	CMovementManager		*m_object;
-	const PATH				*m_level_path;
-	u32						m_path_vertex_index;
+    CMovementManager* m_object;
+    const PATH* m_level_path;
+    u32 m_path_vertex_index;
 
 public:
-	IC						CDetailPathBuilder	(CMovementManager *object)
-	{
-		VERIFY				(object);
-		m_object			= object;
-	}
-	
-	IC		void			setup			(const PATH &level_path, const u32 &path_vertex_index)
-	{
-		m_object->m_wait_for_distributed_computation	= true;
-		m_level_path		= &level_path;
-		m_path_vertex_index	= path_vertex_index;
-		Device.seqParallel.push_back(fastdelegate::MakeDelegate(this, &CDetailPathBuilder::process));
-	}
+    IC CDetailPathBuilder(CMovementManager* object)
+    {
+        VERIFY(object);
+        m_object = object;
+    }
 
-	void process()
-	{
-		m_object->m_wait_for_distributed_computation	= false;
-		m_object->detail().build_path	(*m_level_path,m_path_vertex_index);
+    IC void setup(const PATH& level_path, const u32& path_vertex_index)
+    {
+        m_object->m_wait_for_distributed_computation = true;
+        m_level_path = &level_path;
+        m_path_vertex_index = path_vertex_index;
+        Device.seqParallel.push_back(fastdelegate::MakeDelegate(this, &CDetailPathBuilder::process));
+    }
 
-		m_object->on_build_path			();
+    void process()
+    {
+        m_object->m_wait_for_distributed_computation = false;
+        m_object->detail().build_path(*m_level_path, m_path_vertex_index);
 
-		if (m_object->detail().failed())
-			m_object->m_path_state		= CMovementManager::ePathStateBuildLevelPath;
-		else
-			m_object->m_path_state		= CMovementManager::ePathStatePathVerification;
-	}
+        m_object->on_build_path();
 
-	IC		void			remove			()
-	{
-		if (m_object->m_wait_for_distributed_computation)
-			m_object->m_wait_for_distributed_computation	= false;
+        if (m_object->detail().failed())
+            m_object->m_path_state = CMovementManager::ePathStateBuildLevelPath;
+        else
+            m_object->m_path_state = CMovementManager::ePathStatePathVerification;
+    }
 
-		Device.remove_from_seq_parallel	(
-			fastdelegate::MakeDelegate(
-				this,
-				&CDetailPathBuilder::process
-			)
-		);
-	}
+    IC void remove()
+    {
+        if (m_object->m_wait_for_distributed_computation)
+            m_object->m_wait_for_distributed_computation = false;
+
+        Device.remove_from_seq_parallel(fastdelegate::MakeDelegate(this, &CDetailPathBuilder::process));
+    }
 };

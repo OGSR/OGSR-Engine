@@ -8,36 +8,24 @@
 
 #pragma once
 
-IC	void	CScriptRTokenList::add		(LPCSTR value)
+IC void CScriptRTokenList::add(LPCSTR value) { m_values.emplace_back(value); }
+
+IC void CScriptRTokenList::remove(u32 index)
 {
-	m_values.emplace_back(value);
+    if (index >= size())
+        return;
+    m_values.erase(m_values.begin() + index);
 }
 
-IC	void	CScriptRTokenList::remove	(u32 index)
+IC LPCSTR CScriptRTokenList::get(u32 index)
 {
-	if (index >= size())
-		return;
-	m_values.erase	(m_values.begin() + index);
+    if (index >= size())
+        return (0);
+    return (*m_values[index]);
 }
 
-IC	LPCSTR	CScriptRTokenList::get		(u32 index)
-{
-	if (index >= size())
-		return	(0);
-	return		(*m_values[index]);
-}
+IC u32 CScriptRTokenList::size() { return (u32(m_values.size())); }
 
-IC	u32		CScriptRTokenList::size		()
-{
-	return			(u32(m_values.size()));
-}
+IC void CScriptRTokenList::clear() { m_values.clear(); }
 
-IC	void	CScriptRTokenList::clear	()
-{
-	m_values.clear	();
-}
-
-IC	CScriptRTokenList::RTOKEN_LIST	&CScriptRTokenList::tokens	()
-{
-	return			(m_values);
-}
+IC CScriptRTokenList::RTOKEN_LIST& CScriptRTokenList::tokens() { return (m_values); }

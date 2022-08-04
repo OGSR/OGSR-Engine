@@ -11,20 +11,17 @@
 #include "object_broker.h"
 #include "stalker_velocity_collection.h"
 
-CStalkerVelocityHolder	*g_stalker_velocity_holder = 0;
+CStalkerVelocityHolder* g_stalker_velocity_holder = 0;
 
-CStalkerVelocityHolder::~CStalkerVelocityHolder									()
+CStalkerVelocityHolder::~CStalkerVelocityHolder() { delete_data(m_collections); }
+
+const CStalkerVelocityHolder::COLLECTION& CStalkerVelocityHolder::collection(const shared_str& section)
 {
-	delete_data					(m_collections);
-}
+    COLLECTIONS::const_iterator I = m_collections.find(section);
+    if (I != m_collections.end())
+        return (*(*I).second);
 
-const CStalkerVelocityHolder::COLLECTION &CStalkerVelocityHolder::collection	(const shared_str &section)
-{
-	COLLECTIONS::const_iterator	I = m_collections.find(section);
-	if (I != m_collections.end())
-		return					(*(*I).second);
-
-	COLLECTION					*collection = xr_new<COLLECTION>(section);
-	m_collections.insert		(std::make_pair(section,collection));
-	return						(*collection);
+    COLLECTION* collection = xr_new<COLLECTION>(section);
+    m_collections.insert(std::make_pair(section, collection));
+    return (*collection);
 }

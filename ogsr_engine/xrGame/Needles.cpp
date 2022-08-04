@@ -12,11 +12,6 @@
 #include "Needles.h"
 #include "PhysicsShell.h"
 
+CNeedles::CNeedles(void) {}
 
-CNeedles::CNeedles(void) 
-{
-}
-
-CNeedles::~CNeedles(void) 
-{
-}
+CNeedles::~CNeedles(void) {}

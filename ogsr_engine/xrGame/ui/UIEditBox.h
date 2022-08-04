@@ -1,5 +1,5 @@
 // CUIEditBox.h: ввод строки с клавиатуры
-// 
+//
 //////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -15,23 +15,25 @@ class game_cl_GameState;
 
 //////////////////////////////////////////////////////////////////////////
 
-class CUIEditBox : public CUIMultiTextureOwner, public CUIOptionsItem, public CUICustomEdit{
+class CUIEditBox : public CUIMultiTextureOwner, public CUIOptionsItem, public CUICustomEdit
+{
 public:
-					CUIEditBox		();
-	virtual			~CUIEditBox		();
+    CUIEditBox();
+    virtual ~CUIEditBox();
 
-	virtual void	Init(float x, float y, float width, float heigt);
+    virtual void Init(float x, float y, float width, float heigt);
 
-	// CUIOptionsItem
-	virtual void	SetCurrentValue();
-	virtual void	SaveValue();
-	virtual bool	IsChanged();
+    // CUIOptionsItem
+    virtual void SetCurrentValue();
+    virtual void SaveValue();
+    virtual bool IsChanged();
 
-	// CUIMultiTextureOwner
-	virtual void	InitTexture(const char* texture);
+    // CUIMultiTextureOwner
+    virtual void InitTexture(const char* texture);
+
 protected:
-	CUIFrameLineWnd	m_frameLine;
-	DECLARE_SCRIPT_REGISTER_FUNCTION
+    CUIFrameLineWnd m_frameLine;
+    DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 add_to_type_list(CUIEditBox)

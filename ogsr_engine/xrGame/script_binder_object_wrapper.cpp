@@ -12,101 +12,51 @@
 #include "xrServer_Objects_ALife.h"
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
 
-CScriptBinderObjectWrapper::CScriptBinderObjectWrapper	(CScriptGameObject *object) :
-	CScriptBinderObject	(object)
+CScriptBinderObjectWrapper::CScriptBinderObjectWrapper(CScriptGameObject* object) : CScriptBinderObject(object) {}
+
+CScriptBinderObjectWrapper::~CScriptBinderObjectWrapper() {}
+
+void CScriptBinderObjectWrapper::reinit() { luabind::call_member<void>(this, "reinit"); }
+
+void CScriptBinderObjectWrapper::reinit_static(CScriptBinderObject* script_binder_object) { script_binder_object->CScriptBinderObject::reinit(); }
+
+void CScriptBinderObjectWrapper::reload(LPCSTR section) { luabind::call_member<void>(this, "reload", section); }
+
+void CScriptBinderObjectWrapper::reload_static(CScriptBinderObject* script_binder_object, LPCSTR section) { script_binder_object->CScriptBinderObject::reload(section); }
+
+bool CScriptBinderObjectWrapper::net_Spawn(SpawnType DC) { return (luabind::call_member<bool>(this, "net_spawn", DC)); }
+
+bool CScriptBinderObjectWrapper::net_Spawn_static(CScriptBinderObject* script_binder_object, SpawnType DC) { return (script_binder_object->CScriptBinderObject::net_Spawn(DC)); }
+
+void CScriptBinderObjectWrapper::net_Destroy() { luabind::call_member<void>(this, "net_destroy"); }
+
+void CScriptBinderObjectWrapper::net_Destroy_static(CScriptBinderObject* script_binder_object) { script_binder_object->CScriptBinderObject::net_Destroy(); }
+
+void CScriptBinderObjectWrapper::shedule_Update(u32 time_delta) { luabind::call_member<void>(this, "update", time_delta); }
+
+void CScriptBinderObjectWrapper::shedule_Update_static(CScriptBinderObject* script_binder_object, u32 time_delta)
 {
+    script_binder_object->CScriptBinderObject::shedule_Update(time_delta);
 }
 
-CScriptBinderObjectWrapper::~CScriptBinderObjectWrapper ()
+void CScriptBinderObjectWrapper::save(NET_Packet* output_packet) { luabind::call_member<void>(this, "save", output_packet); }
+
+void CScriptBinderObjectWrapper::save_static(CScriptBinderObject* script_binder_object, NET_Packet* output_packet)
 {
+    script_binder_object->CScriptBinderObject::save(output_packet);
 }
 
-void CScriptBinderObjectWrapper::reinit					()
-{
-	luabind::call_member<void>		(this,"reinit");
-}
+void CScriptBinderObjectWrapper::load(IReader* input_packet) { luabind::call_member<void>(this, "load", input_packet); }
 
-void CScriptBinderObjectWrapper::reinit_static			(CScriptBinderObject *script_binder_object)
-{
-	script_binder_object->CScriptBinderObject::reinit	();
-}
+void CScriptBinderObjectWrapper::load_static(CScriptBinderObject* script_binder_object, IReader* input_packet) { script_binder_object->CScriptBinderObject::load(input_packet); }
 
-void CScriptBinderObjectWrapper::reload					(LPCSTR section)
-{
-	luabind::call_member<void>		(this,"reload",section);
-}
+bool CScriptBinderObjectWrapper::net_SaveRelevant() { return (luabind::call_member<bool>(this, "net_save_relevant")); }
 
-void CScriptBinderObjectWrapper::reload_static			(CScriptBinderObject *script_binder_object, LPCSTR section)
-{
-	script_binder_object->CScriptBinderObject::reload	(section);
-}
+bool CScriptBinderObjectWrapper::net_SaveRelevant_static(CScriptBinderObject* script_binder_object) { return (script_binder_object->CScriptBinderObject::net_SaveRelevant()); }
 
-bool CScriptBinderObjectWrapper::net_Spawn				(SpawnType DC)
-{
-	return							(luabind::call_member<bool>(this,"net_spawn",DC));
-}
+void CScriptBinderObjectWrapper::net_Relcase(CScriptGameObject* object) { luabind::call_member<void>(this, "net_Relcase", object); }
 
-bool CScriptBinderObjectWrapper::net_Spawn_static		(CScriptBinderObject *script_binder_object, SpawnType DC)
+void CScriptBinderObjectWrapper::net_Relcase_static(CScriptBinderObject* script_binder_object, CScriptGameObject* object)
 {
-	return							(script_binder_object->CScriptBinderObject::net_Spawn(DC));
-}
-
-void CScriptBinderObjectWrapper::net_Destroy			()
-{
-	luabind::call_member<void>		(this,"net_destroy");
-}
-
-void CScriptBinderObjectWrapper::net_Destroy_static		(CScriptBinderObject *script_binder_object)
-{
-	script_binder_object->CScriptBinderObject::net_Destroy();
-}
-
-void CScriptBinderObjectWrapper::shedule_Update			(u32 time_delta)
-{
-	luabind::call_member<void>		(this,"update",time_delta);
-}
-
-void CScriptBinderObjectWrapper::shedule_Update_static	(CScriptBinderObject *script_binder_object, u32 time_delta)
-{
-	script_binder_object->CScriptBinderObject::shedule_Update	(time_delta);
-}
-
-void CScriptBinderObjectWrapper::save					(NET_Packet *output_packet)
-{
-	luabind::call_member<void>		(this,"save",output_packet);
-}
-
-void CScriptBinderObjectWrapper::save_static			(CScriptBinderObject *script_binder_object, NET_Packet *output_packet)
-{
-	script_binder_object->CScriptBinderObject::save		(output_packet);
-}
-
-void CScriptBinderObjectWrapper::load					(IReader *input_packet)
-{
-	luabind::call_member<void>		(this,"load",input_packet);
-}
-
-void CScriptBinderObjectWrapper::load_static			(CScriptBinderObject *script_binder_object, IReader *input_packet)
-{
-	script_binder_object->CScriptBinderObject::load		(input_packet);
-}
-
-bool CScriptBinderObjectWrapper::net_SaveRelevant		()
-{
-	return							(luabind::call_member<bool>(this,"net_save_relevant"));
-}
-
-bool CScriptBinderObjectWrapper::net_SaveRelevant_static(CScriptBinderObject *script_binder_object)
-{
-	return							(script_binder_object->CScriptBinderObject::net_SaveRelevant());
-}
-
-void CScriptBinderObjectWrapper::net_Relcase			(CScriptGameObject *object)
-{
-	luabind::call_member<void>		(this,"net_Relcase",object);
-}
-
-void CScriptBinderObjectWrapper::net_Relcase_static		(CScriptBinderObject *script_binder_object, CScriptGameObject *object)
-{
-	script_binder_object->CScriptBinderObject::net_Relcase	(object);
+    script_binder_object->CScriptBinderObject::net_Relcase(object);
 }

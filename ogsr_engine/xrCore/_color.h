@@ -1,47 +1,25 @@
 #pragma once
 
 // maps unsigned 8 bits/channel to D3DCOLOR
-constexpr u32 color_argb(u32 a, u32 r, u32 g, u32 b) noexcept {
-	return ((a & 0xff) << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
+constexpr u32 color_argb(u32 a, u32 r, u32 g, u32 b) noexcept { return ((a & 0xff) << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff); }
+constexpr u32 color_rgba(u32 r, u32 g, u32 b, u32 a) noexcept { return color_argb(a, r, g, b); }
+ICF u32 color_argb_f(f32 a, f32 r, f32 g, f32 b) noexcept
+{
+    s32 _r = clampr(iFloor(r * 255.f), 0, 255);
+    s32 _g = clampr(iFloor(g * 255.f), 0, 255);
+    s32 _b = clampr(iFloor(b * 255.f), 0, 255);
+    s32 _a = clampr(iFloor(a * 255.f), 0, 255);
+    return color_argb(_a, _r, _g, _b);
 }
-constexpr u32 color_rgba(u32 r, u32 g, u32 b, u32 a) noexcept {
-	return color_argb(a, r, g, b);
-}
-ICF u32 color_argb_f(f32 a, f32 r, f32 g, f32 b) noexcept {
-	s32	 _r = clampr(iFloor(r*255.f), 0, 255);
-	s32	 _g = clampr(iFloor(g*255.f), 0, 255);
-	s32	 _b = clampr(iFloor(b*255.f), 0, 255);
-	s32	 _a = clampr(iFloor(a*255.f), 0, 255);
-	return color_argb(_a, _r, _g, _b);
-}
-ICF u32 color_rgba_f(f32 r, f32 g, f32 b, f32 a) noexcept {
-	return color_argb_f(a, r, g, b);
-}
-constexpr u32 color_xrgb(u32 r, u32 g, u32 b) noexcept {
-	return color_argb(0xff, r, g, b);
-}
-constexpr u32 color_get_R(u32 rgba) noexcept {
-	return (((rgba) >> 16) & 0xff);
-}
-constexpr u32 color_get_G(u32 rgba) noexcept {
-	return (((rgba) >> 8) & 0xff);
-}
-constexpr u32 color_get_B(u32 rgba) noexcept {
-	return ((rgba) & 0xff);
-}
-constexpr u32 color_get_A(u32 rgba) noexcept {
-	return ((rgba) >> 24);
-}
-constexpr u32 subst_alpha(u32 rgba, u32 a) noexcept {
-	return (rgba &~ color_rgba(0, 0, 0, 0xff)) | color_rgba(0, 0, 0, a);
-}
-constexpr u32 bgr2rgb(u32 bgr) noexcept {
-	return color_rgba(color_get_B(bgr), color_get_G(bgr), color_get_R(bgr), 0);
-}
-constexpr u32 rgb2bgr(u32 rgb) noexcept {
-	return bgr2rgb(rgb);
-}
-
+ICF u32 color_rgba_f(f32 r, f32 g, f32 b, f32 a) noexcept { return color_argb_f(a, r, g, b); }
+constexpr u32 color_xrgb(u32 r, u32 g, u32 b) noexcept { return color_argb(0xff, r, g, b); }
+constexpr u32 color_get_R(u32 rgba) noexcept { return (((rgba) >> 16) & 0xff); }
+constexpr u32 color_get_G(u32 rgba) noexcept { return (((rgba) >> 8) & 0xff); }
+constexpr u32 color_get_B(u32 rgba) noexcept { return ((rgba)&0xff); }
+constexpr u32 color_get_A(u32 rgba) noexcept { return ((rgba) >> 24); }
+constexpr u32 subst_alpha(u32 rgba, u32 a) noexcept { return (rgba & ~color_rgba(0, 0, 0, 0xff)) | color_rgba(0, 0, 0, a); }
+constexpr u32 bgr2rgb(u32 bgr) noexcept { return color_rgba(color_get_B(bgr), color_get_G(bgr), color_get_R(bgr), 0); }
+constexpr u32 rgb2bgr(u32 rgb) noexcept { return bgr2rgb(rgb); }
 
 struct Fcolor
 {
@@ -49,8 +27,7 @@ struct Fcolor
 
     Fcolor() noexcept = default;
 
-    Fcolor(float _r, float _g, float _b, float _a) noexcept
-        : r(_r), g(_g), b(_b), a(_a) {}
+    Fcolor(float _r, float _g, float _b, float _a) noexcept : r(_r), g(_g), b(_b), a(_a) {}
 
     Fcolor(u32 dw) noexcept
     {
@@ -143,30 +120,111 @@ struct Fcolor
         b = grey + s * (in.b - grey);
         return *this;
     }
-    Fcolor& modulate(Fcolor& in)               noexcept { r *= in.r; g *= in.g; b *= in.b; a *= in.a; return *this; }
-    Fcolor& modulate(const Fcolor& in1, const Fcolor& in2) noexcept { r = in1.r * in2.r; g = in1.g * in2.g; b = in1.b * in2.b; a = in1.a * in2.a; return *this; }
-    Fcolor& negative(const Fcolor& in)         noexcept { r = 1.0f - in.r; g = 1.0f - in.g; b = 1.0f - in.b; a = 1.0f - in.a; return *this; }
-    Fcolor& negative()                         noexcept { r = 1.0f - r; g = 1.0f - g; b = 1.0f - b; a = 1.0f - a; return *this; }
-    Fcolor& sub_rgb(float s)                   noexcept { r -= s; g -= s; b -= s; return *this; }
-    Fcolor& add_rgb(float s)                   noexcept { r += s; g += s; b += s; return *this; }
-    Fcolor& add_rgba(float s)                  noexcept { r += s; g += s; b += s; a += s; return *this; }
-    Fcolor& mul_rgba(float s)                  noexcept { r *= s; g *= s; b *= s; a *= s; return *this; }
-    Fcolor& mul_rgb(float s)                   noexcept { r *= s; g *= s; b *= s; return *this; }
-    Fcolor& mul_rgba(const Fcolor& c, float s) noexcept { r = c.r * s; g = c.g * s; b = c.b * s; a = c.a * s; return *this; }
-    Fcolor& mul_rgb(const Fcolor& c, float s)  noexcept { r = c.r * s; g = c.g * s; b = c.b * s; return *this; }
+    Fcolor& modulate(Fcolor& in) noexcept
+    {
+        r *= in.r;
+        g *= in.g;
+        b *= in.b;
+        a *= in.a;
+        return *this;
+    }
+    Fcolor& modulate(const Fcolor& in1, const Fcolor& in2) noexcept
+    {
+        r = in1.r * in2.r;
+        g = in1.g * in2.g;
+        b = in1.b * in2.b;
+        a = in1.a * in2.a;
+        return *this;
+    }
+    Fcolor& negative(const Fcolor& in) noexcept
+    {
+        r = 1.0f - in.r;
+        g = 1.0f - in.g;
+        b = 1.0f - in.b;
+        a = 1.0f - in.a;
+        return *this;
+    }
+    Fcolor& negative() noexcept
+    {
+        r = 1.0f - r;
+        g = 1.0f - g;
+        b = 1.0f - b;
+        a = 1.0f - a;
+        return *this;
+    }
+    Fcolor& sub_rgb(float s) noexcept
+    {
+        r -= s;
+        g -= s;
+        b -= s;
+        return *this;
+    }
+    Fcolor& add_rgb(float s) noexcept
+    {
+        r += s;
+        g += s;
+        b += s;
+        return *this;
+    }
+    Fcolor& add_rgba(float s) noexcept
+    {
+        r += s;
+        g += s;
+        b += s;
+        a += s;
+        return *this;
+    }
+    Fcolor& mul_rgba(float s) noexcept
+    {
+        r *= s;
+        g *= s;
+        b *= s;
+        a *= s;
+        return *this;
+    }
+    Fcolor& mul_rgb(float s) noexcept
+    {
+        r *= s;
+        g *= s;
+        b *= s;
+        return *this;
+    }
+    Fcolor& mul_rgba(const Fcolor& c, float s) noexcept
+    {
+        r = c.r * s;
+        g = c.g * s;
+        b = c.b * s;
+        a = c.a * s;
+        return *this;
+    }
+    Fcolor& mul_rgb(const Fcolor& c, float s) noexcept
+    {
+        r = c.r * s;
+        g = c.g * s;
+        b = c.b * s;
+        return *this;
+    }
 
     // SQ magnitude
     float magnitude_sqr_rgb() const noexcept { return r * r + g * g + b * b; }
     // magnitude
-    float magnitude_rgb()     const noexcept { return _sqrt(magnitude_sqr_rgb()); }
+    float magnitude_rgb() const noexcept { return _sqrt(magnitude_sqr_rgb()); }
     float intensity() const noexcept
     {
         // XXX: Use the component percentages from adjust_saturation()?
         return (r + g + b) / 3.f;
     }
     // Normalize
-    Fcolor& normalize_rgb()                noexcept { VERIFY(magnitude_sqr_rgb() > EPS_S); return mul_rgb(1.f / magnitude_rgb()); }
-    Fcolor& normalize_rgb(const Fcolor& c) noexcept { VERIFY(c.magnitude_sqr_rgb() > EPS_S); return mul_rgb(c, 1.f / c.magnitude_rgb()); }
+    Fcolor& normalize_rgb() noexcept
+    {
+        VERIFY(magnitude_sqr_rgb() > EPS_S);
+        return mul_rgb(1.f / magnitude_rgb());
+    }
+    Fcolor& normalize_rgb(const Fcolor& c) noexcept
+    {
+        VERIFY(c.magnitude_sqr_rgb() > EPS_S);
+        return mul_rgb(c, 1.f / c.magnitude_rgb());
+    }
     Fcolor& lerp(const Fcolor& c1, const Fcolor& c2, float t) noexcept
     {
         float invt = 1.f - t;

@@ -8,199 +8,188 @@
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template<typename _world_property>
+#define TEMPLATE_SPECIALIZATION template <typename _world_property>
 #define CConditionStateAbstract CConditionState<_world_property>
 
 TEMPLATE_SPECIALIZATION
-IC	CConditionStateAbstract::CConditionState	()
+IC CConditionStateAbstract::CConditionState()
 {
-//	m_conditions.reserve	(32);
-	m_hash					= 0;
+    //	m_conditions.reserve	(32);
+    m_hash = 0;
 }
 
 TEMPLATE_SPECIALIZATION
-CConditionStateAbstract::~CConditionState	()
+CConditionStateAbstract::~CConditionState() {}
+
+TEMPLATE_SPECIALIZATION
+IC const xr_vector<typename CConditionStateAbstract::COperatorCondition>& CConditionStateAbstract::conditions() const { return (m_conditions); }
+
+TEMPLATE_SPECIALIZATION
+IC void CConditionStateAbstract::add_condition_back(const COperatorCondition& condition)
 {
+    THROW(m_conditions.empty() || (m_conditions.back().condition() < condition.condition()));
+    m_conditions.push_back(condition);
+    m_hash ^= condition.hash_value();
 }
 
 TEMPLATE_SPECIALIZATION
-IC	const xr_vector<typename CConditionStateAbstract::COperatorCondition> &CConditionStateAbstract::conditions	() const
+IC void CConditionStateAbstract::add_condition(const COperatorCondition& condition)
 {
-	return					(m_conditions);
+    auto I = std::lower_bound(m_conditions.begin(), m_conditions.end(), condition);
+    THROW((I == m_conditions.end()) || ((*I).condition() != condition.condition()));
+    m_conditions.insert(I, condition);
+    m_hash ^= condition.hash_value();
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CConditionStateAbstract::add_condition_back	(const COperatorCondition &condition)
+IC void CConditionStateAbstract::remove_condition(const typename COperatorCondition::_condition_type& condition)
 {
-	THROW					(m_conditions.empty() || (m_conditions.back().condition() < condition.condition()));
-	m_conditions.push_back	(condition);
-	m_hash					^= condition.hash_value();
+    auto I = std::lower_bound(m_conditions.begin(), m_conditions.end(), COperatorCondition(condition, COperatorCondition::_value_type(0)));
+    THROW((I != m_conditions.end()) && ((*I).condition() == condition));
+    m_hash ^= (*I).hash_value();
+    m_conditions.erase(I);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CConditionStateAbstract::add_condition	(const COperatorCondition &condition)
+IC void CConditionStateAbstract::add_condition(typename xr_vector<COperatorCondition>::const_iterator& J, const COperatorCondition& condition)
 {
-	auto I = std::lower_bound(m_conditions.begin(),m_conditions.end(),condition);
-	THROW					((I == m_conditions.end()) || ((*I).condition() != condition.condition()));
-	m_conditions.insert		(I,condition);
-	m_hash					^= condition.hash_value();
+    m_conditions.insert(m_conditions.begin() + (J - m_conditions.begin()), condition);
+    m_hash ^= condition.hash_value();
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CConditionStateAbstract::remove_condition	(const typename COperatorCondition::_condition_type &condition)
+IC void CConditionStateAbstract::clear()
 {
-	auto I = std::lower_bound(m_conditions.begin(),m_conditions.end(),COperatorCondition(condition,COperatorCondition::_value_type(0)));
-	THROW					((I != m_conditions.end()) && ((*I).condition() == condition));
-	m_hash					^= (*I).hash_value();
-	m_conditions.erase		(I);
+    m_conditions.clear();
+    m_hash = 0;
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CConditionStateAbstract::add_condition	(typename xr_vector<COperatorCondition>::const_iterator &J, const COperatorCondition &condition)
+IC u8 CConditionStateAbstract::weight(const CConditionState& condition) const
 {
-	m_conditions.insert		(m_conditions.begin() + (J - m_conditions.begin()),condition);
-	m_hash					^= condition.hash_value();
+    u8 result = 0;
+    auto I = conditions().cbegin();
+    auto E = conditions().cend();
+    auto i = condition.conditions().cbegin();
+    auto e = condition.conditions().cend();
+    for (; (I != E) && (i != e);)
+        if ((*I).condition() < (*i).condition())
+            ++I;
+        else if ((*I).condition() > (*i).condition())
+            ++i;
+        else
+        {
+            if ((*I).value() != (*i).value())
+                ++result;
+            ++I;
+            ++i;
+        }
+    return (result);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	void CConditionStateAbstract::clear	()
+IC bool CConditionStateAbstract::operator<(const CConditionState& condition) const
 {
-	m_conditions.clear		();
-	m_hash					= 0;
+    auto I = conditions().cbegin();
+    auto E = conditions().cend();
+    auto i = condition.conditions().cbegin();
+    auto e = condition.conditions().cend();
+    for (; (I != E) && (i != e); ++I, ++i)
+        if (*I < *i)
+            return (true);
+        else if (*i < *I)
+            return (false);
+    if (I == E)
+        if (i == e)
+            return (false);
+        else
+            return (true);
+    else
+        return (false);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	u8	CConditionStateAbstract::weight		(const CConditionState &condition) const
+IC bool CConditionStateAbstract::operator==(const CConditionState& condition)
 {
-	u8						result = 0;
-	auto I = conditions().cbegin();
-	auto E = conditions().cend();
-	auto i = condition.conditions().cbegin();
-	auto e = condition.conditions().cend();
-	for ( ; (I != E) && (i != e); )
-		if ((*I).condition() < (*i).condition())
-			++I;
-		else
-			if ((*I).condition() > (*i).condition())
-				++i;
-			else {
-				if ((*I).value() != (*i).value())
-					++result;
-				++I;
-				++i;
-			}
-	return					(result);
+    if (hash_value() != condition.hash_value())
+        return (false);
+    auto I = conditions().cbegin();
+    auto E = conditions().cend();
+    auto i = condition.conditions().cbegin();
+    auto e = condition.conditions().cend();
+    for (; (I != E) && (i != e); ++I, ++i)
+        if (!(*I == *i))
+            return (false);
+    if ((I == E) && (i == e))
+        return (true);
+    return (false);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	bool CConditionStateAbstract::operator<	(const CConditionState &condition) const
+IC CConditionState<_world_property>& CConditionStateAbstract::operator-=(const CConditionState& condition)
 {
-	auto I = conditions().cbegin();
-	auto E = conditions().cend();
-	auto i = condition.conditions().cbegin();
-	auto e = condition.conditions().cend();
-	for ( ; (I != E) && (i != e); ++I, ++i)
-		if (*I < *i)
-			return			(true);
-		else
-			if (*i < *I)
-				return		(false);
-	if (I == E)
-		if (i == e)
-			return			(false);
-		else
-			return			(true);
-	else
-		return				(false);
+    m_hash = 0;
+    xr_vector<COperatorCondition> temp;
+    auto I = conditions().cbegin();
+    auto E = conditions().cend();
+    auto i = condition.conditions().cbegin();
+    auto e = condition.conditions().cend();
+    for (; (I != E) && (i != e);)
+        if ((*I).condition() < (*i).condition())
+            ++I;
+        else if ((*I).condition() > (*i).condition())
+            ++i;
+        else
+        {
+            if ((*I).value() != (*i).value())
+            {
+                temp.push_back(*I);
+                m_hash ^= (*I).hash_value();
+            }
+            ++I;
+            ++i;
+        }
+    m_conditions = temp;
+    return (*this);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	bool CConditionStateAbstract::operator==	(const CConditionState &condition)
+IC bool CConditionStateAbstract::includes(const CConditionState& condition) const
 {
-	if (hash_value() != condition.hash_value())
-		return				(false);
-	auto I = conditions().cbegin();
-	auto E = conditions().cend();
-	auto i = condition.conditions().cbegin();
-	auto e = condition.conditions().cend();
-	for ( ; (I != E) && (i != e); ++I, ++i)
-		if (!(*I == *i))
-			return			(false);
-	if ((I == E) && (i == e))
-		return				(true);
-	return					(false);
+    auto I = conditions().cbegin();
+    auto E = conditions().cend();
+    auto i = condition.conditions().cbegin();
+    auto e = condition.conditions().cend();
+    for (; (I != E) && (i != e);)
+        if ((*I).condition() < (*i).condition())
+            ++I;
+        else if ((*I).condition() > (*i).condition())
+            return (false);
+        else if ((*I).value() != (*i).value())
+            return (false);
+        else
+        {
+            ++I;
+            ++i;
+        }
+    return (i == e);
 }
 
 TEMPLATE_SPECIALIZATION
-IC	CConditionState<_world_property> &CConditionStateAbstract::operator-=(const CConditionState &condition)
-{
-	m_hash							= 0;
-	xr_vector<COperatorCondition>	temp;
-	auto I = conditions().cbegin();
-	auto E = conditions().cend();
-	auto i = condition.conditions().cbegin();
-	auto e = condition.conditions().cend();
-	for ( ; (I != E) && (i != e); )
-		if ((*I).condition() < (*i).condition())
-			++I;
-		else
-			if ((*I).condition() > (*i).condition())
-				++i;
-			else {
-				if ((*I).value() != (*i).value()) {
-					temp.push_back	(*I);
-					m_hash			^= (*I).hash_value();
-				}
-				++I;
-				++i;
-			}
-	m_conditions				= temp;
-	return						(*this);
-}
+IC CConditionStateAbstract::operator u32() const { return (hash_value()); }
 
 TEMPLATE_SPECIALIZATION
-IC	bool CConditionStateAbstract::includes(const CConditionState &condition) const
-{
-	auto I = conditions().cbegin();
-	auto E = conditions().cend();
-	auto i = condition.conditions().cbegin();
-	auto e = condition.conditions().cend();
-	for ( ; (I != E) && (i != e); )
-		if ((*I).condition() < (*i).condition())
-			++I;
-		else
-			if ((*I).condition() > (*i).condition())
-				return			(false);
-			else
-				if ((*I).value() != (*i).value())
-					return		(false);
-				else {
-					++I;
-					++i;
-				}
-	return						(i == e);
-}
+IC u32 CConditionStateAbstract::hash_value() const { return (m_hash); }
 
 TEMPLATE_SPECIALIZATION
-IC	CConditionStateAbstract::operator u32		() const
+IC const typename CConditionStateAbstract::COperatorCondition*
+CConditionStateAbstract::property(const typename CConditionStateAbstract::COperatorCondition::_condition_type& condition) const
 {
-	return					(hash_value());
-}
-
-TEMPLATE_SPECIALIZATION
-IC	u32	CConditionStateAbstract::hash_value		() const
-{
-	return					(m_hash);
-}
-
-TEMPLATE_SPECIALIZATION
-IC	const typename CConditionStateAbstract::COperatorCondition *CConditionStateAbstract::property (const typename CConditionStateAbstract::COperatorCondition::_condition_type &condition) const
-{
-	auto I = std::lower_bound(conditions().begin(),conditions().end(),COperatorCondition(condition,COperatorCondition::_value_type(0)));
-	if (I == m_conditions.end())
-		return				(0);
-	else
-		return				(&*I);
+    auto I = std::lower_bound(conditions().begin(), conditions().end(), COperatorCondition(condition, COperatorCondition::_value_type(0)));
+    if (I == m_conditions.end())
+        return (0);
+    else
+        return (&*I);
 }
 
 #undef TEMPLATE_SPECIALIZATION

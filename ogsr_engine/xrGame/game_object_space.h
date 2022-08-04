@@ -1,103 +1,105 @@
 #pragma once
 
-namespace GameObject {
-	enum ECallbackType {
-		eTradeStart = u32(0),
-		eTradeStop,
-		eTradeSellBuyItem,
-		eTradePerformTradeOperation,
+namespace GameObject
+{
+enum ECallbackType
+{
+    eTradeStart = u32(0),
+    eTradeStop,
+    eTradeSellBuyItem,
+    eTradePerformTradeOperation,
 
-		eZoneEnter,
-		eZoneExit,
-		eExitLevelBorder,
-		eEnterLevelBorder,
-		eDeath,
+    eZoneEnter,
+    eZoneExit,
+    eExitLevelBorder,
+    eEnterLevelBorder,
+    eDeath,
 
-		ePatrolPathInPoint,
+    ePatrolPathInPoint,
 
-//		eInventoryPda,
-		eInventoryInfo,
-		eArticleInfo,
-		eTaskStateChange,
-		eMapLocationAdded,
+    //		eInventoryPda,
+    eInventoryInfo,
+    eArticleInfo,
+    eTaskStateChange,
+    eMapLocationAdded,
 
-		eUseObject,
+    eUseObject,
 
-		eHit,
+    eHit,
 
-		eSound,
+    eSound,
 
-		eActionTypeMovement,
-		eActionTypeWatch,
-		eActionTypeAnimation,
-		eActionTypeSound,
-		eActionTypeParticle,
-		eActionTypeObject,
+    eActionTypeMovement,
+    eActionTypeWatch,
+    eActionTypeAnimation,
+    eActionTypeSound,
+    eActionTypeParticle,
+    eActionTypeObject,
 
-//		eActorSleep,
+    //		eActorSleep,
 
-		eHelicopterOnPoint,
-		eHelicopterOnHit,
+    eHelicopterOnPoint,
+    eHelicopterOnHit,
 
-		eOnItemTake,
-		eOnItemDrop,
+    eOnItemTake,
+    eOnItemDrop,
 
-		eScriptAnimation,
-		
-		eTraderGlobalAnimationRequest,
-		eTraderHeadAnimationRequest,
-		eTraderSoundEnd,
+    eScriptAnimation,
 
-		eInvBoxItemTake,
-		eInvBoxItemPlace,
+    eTraderGlobalAnimationRequest,
+    eTraderHeadAnimationRequest,
+    eTraderSoundEnd,
 
-		eOnKeyPress,
-		eOnKeyRelease,
-		eOnKeyHold,
-		eOnMouseWheel,
-		eOnMouseMove,
-		eOnItemToBelt,
-		eOnItemToRuck,
-		eOnItemToSlot,
-		eOnBeforeUseItem,
-		entity_alive_before_hit,
+    eInvBoxItemTake,
+    eInvBoxItemPlace,
 
-		eOnUpdateAddonsVisibiility,
-		eOnUpdateHUDAddonsVisibiility,
-		eOnAddonInit,
+    eOnKeyPress,
+    eOnKeyRelease,
+    eOnKeyHold,
+    eOnMouseWheel,
+    eOnMouseMove,
+    eOnItemToBelt,
+    eOnItemToRuck,
+    eOnItemToSlot,
+    eOnBeforeUseItem,
+    entity_alive_before_hit,
 
-		// Called when the player zooms their weapon in or out.
-		eOnActorWeaponZoomIn,
-		eOnActorWeaponZoomOut,
+    eOnUpdateAddonsVisibiility,
+    eOnUpdateHUDAddonsVisibiility,
+    eOnAddonInit,
 
-		eCellItemFocus,
-		eCellItemFocusLost,
-		eCellItemSelect,
-		eOnCellItemMouse,
+    // Called when the player zooms their weapon in or out.
+    eOnActorWeaponZoomIn,
+    eOnActorWeaponZoomOut,
 
-		eBeforeSave,
-		ePostSave,
+    eCellItemFocus,
+    eCellItemFocusLost,
+    eCellItemSelect,
+    eOnCellItemMouse,
 
-		eUIMapClick,
+    eBeforeSave,
+    ePostSave,
 
-		eUIPickUpItemShowing,
-		eUIGroupItems,
-		eOnWpnShellDrop,
-		eOnThrowGrenade,
-		eOnGoodwillChange,
-		eUpdateArtefactsOnBelt,
-		eLevelChangerAction,
+    eUIMapClick,
 
-		eAttachVehicle,
-		eDetachVehicle,
-		eUseVehicle,
+    eUIPickUpItemShowing,
+    eUIGroupItems,
+    eOnWpnShellDrop,
+    eOnThrowGrenade,
+    eOnGoodwillChange,
+    eUpdateArtefactsOnBelt,
+    eLevelChangerAction,
 
-		eOnInvBoxItemTake,
-		eOnInvBoxItemDrop,
-		eOnInvBoxOpen,
-		
-		eSelectPdaContact,
+    eAttachVehicle,
+    eDetachVehicle,
+    eUseVehicle,
 
-		eDummy = u32(-1),
-	};
+    eOnInvBoxItemTake,
+    eOnInvBoxItemDrop,
+    eOnInvBoxOpen,
+
+    eSelectPdaContact,
+
+    eDummy = u32(-1),
+};
 };

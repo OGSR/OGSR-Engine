@@ -11,15 +11,9 @@
 
 #define Base steering_behaviour::base
 
-void Base::enabled			(bool const &value)
-{
-	m_enabled	= value;
-}
+void Base::enabled(bool const& value) { m_enabled = value; }
 
-bool const &Base::enabled	() const
-{
-	return		(m_enabled);
-}
+bool const& Base::enabled() const { return (m_enabled); }
 
 #undef Base
 

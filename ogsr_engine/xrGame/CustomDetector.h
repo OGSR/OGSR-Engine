@@ -168,11 +168,12 @@ public:
     float m_fAfDetectRadius;
     virtual bool CheckCompatibility(CHudItem* itm) override;
 
-    virtual u32 ef_detector_type() const  override { return 1; }
+    virtual u32 ef_detector_type() const override { return 1; }
+
 protected:
     bool CheckCompatibilityInt(CHudItem* itm, u16* slot_to_activate);
     void TurnDetectorInternal(bool b);
-    //void UpdateNightVisionMode(bool b_off);
+    // void UpdateNightVisionMode(bool b_off);
     void UpdateVisibility();
     virtual void UpfateWork();
     virtual void UpdateAf() {}
@@ -180,7 +181,7 @@ protected:
 
     bool m_bWorking;
     float m_fAfVisRadius;
-    float m_fDecayRate; //Alundaio
+    float m_fDecayRate; // Alundaio
     CAfList m_artefacts;
 
     HUD_SOUND sndShow, sndHide;

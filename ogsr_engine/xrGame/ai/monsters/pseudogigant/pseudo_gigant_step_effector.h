@@ -3,14 +3,14 @@
 
 class CPseudogigantStepEffector : public CEffectorCam
 {
-	typedef CEffectorCam inherited;
+    typedef CEffectorCam inherited;
 
-	float total;
-	float max_amp;
-	float period_number;
-	float power;
+    float total;
+    float max_amp;
+    float period_number;
+    float power;
 
 public:
-	CPseudogigantStepEffector(float time, float amp, float periods, float power);
-	virtual BOOL ProcessCam(SCamEffectorInfo& info);
+    CPseudogigantStepEffector(float time, float amp, float periods, float power);
+    virtual BOOL ProcessCam(SCamEffectorInfo& info);
 };
