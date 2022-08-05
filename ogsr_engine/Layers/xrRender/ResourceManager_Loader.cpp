@@ -49,17 +49,48 @@ void CResourceManager::OnDeviceDestroy(BOOL)
 #endif
 }
 
-void CResourceManager::OnDeviceCreate(IReader* F)
+void CResourceManager::OnDeviceCreate()
 {
     if (!RDEVICE.b_is_Ready)
         return;
-
-    string256 name;
 
 #ifndef _EDITOR
     // scripting
     LS_Load();
 #endif
+
+    FS_FileSet flist;
+    FS.file_list(flist, _game_data_, FS_ListFiles | FS_RootOnly, "*shaders*.xr");
+    Msg("[%s] count of *shaders*.xr files: [%u]", __FUNCTION__, flist.size());
+
+    for (const auto& file : flist)
+    {
+        string_path fname;
+        FS.update_path(fname, "$game_data$", file.name.c_str());
+
+        //Msg("Loading shader file: [%s]", fname);
+
+        LoadSharedFile(fname);
+    }
+
+    m_textures_description.Load();
+}
+
+void CResourceManager::LoadSharedFile(LPCSTR fname)
+{
+    // Check if file is compressed already
+    string32 ID = "shENGINE";
+    string32 id;
+    IReader* F = FS.r_open(fname);
+    R_ASSERT2(F, fname);
+    F->r(&id, 8);
+    if (0 == strncmp(id, ID, 8))
+    {
+        FATAL("Unsupported blender library. Compressed?");
+    }
+    
+    string256 name;
+
     IReader* fs = 0;
     // Load constants
     fs = F->open_chunk(0);
@@ -68,7 +99,7 @@ void CResourceManager::OnDeviceCreate(IReader* F)
         while (!fs->eof())
         {
             fs->r_stringZ(name, sizeof(name));
-            CConstant* C = _CreateConstant(name);
+            CConstant* C = _CreateConstant(name); // create or return
             C->Load(fs);
         }
         fs->close();
@@ -81,7 +112,7 @@ void CResourceManager::OnDeviceCreate(IReader* F)
         while (!fs->eof())
         {
             fs->r_stringZ(name, sizeof(name));
-            CMatrix* M = _CreateMatrix(name);
+            CMatrix* M = _CreateMatrix(name); // create or return
             M->Load(fs);
         }
         fs->close();
@@ -121,8 +152,10 @@ void CResourceManager::OnDeviceCreate(IReader* F)
                 chunk->seek(0);
                 B->Load(*chunk, desc.version);
 
-                std::pair<map_BlenderIt, bool> I = m_blenders.insert(mk_pair(xr_strdup(desc.cName), B));
-                R_ASSERT2(I.second, "shader.xr - found duplicate name!!!");
+                //Msg("Loading shader: [%s]", desc.cName);
+
+                std::pair<map_BlenderIt, bool> I = m_blenders.insert_or_assign(xr_strdup(desc.cName), B);
+                R_ASSERT2(I.second, "CResourceManager::LoadSharedFile - found shader name [%s]", desc.cName);
             }
             chunk->close();
             chunk_id += 1;
@@ -130,27 +163,6 @@ void CResourceManager::OnDeviceCreate(IReader* F)
         fs->close();
     }
 
-    m_textures_description.Load();
-}
-
-void CResourceManager::OnDeviceCreate(LPCSTR shName)
-{
-#ifdef _EDITOR
-    if (!FS.exist(shName))
-        return;
-#endif
-
-    // Check if file is compressed already
-    string32 ID = "shENGINE";
-    string32 id;
-    IReader* F = FS.r_open(shName);
-    R_ASSERT2(F, shName);
-    F->r(&id, 8);
-    if (0 == strncmp(id, ID, 8))
-    {
-        FATAL("Unsupported blender library. Compressed?");
-    }
-    OnDeviceCreate(F);
     FS.r_close(F);
 }
 

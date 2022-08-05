@@ -123,7 +123,7 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
     // Signal everyone - device created
     RCache.OnDeviceCreate();
     m_Gamma.Update();
-    Resources->OnDeviceCreate(shName);
+    Resources->OnDeviceCreate();
     ::Render->create();
     Device.Statistic->OnDeviceCreate();
 

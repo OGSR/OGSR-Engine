@@ -197,9 +197,10 @@ public:
     CResourceManager() : bDeferredLoad(TRUE) {}
     ~CResourceManager();
 
-    void OnDeviceCreate(IReader* F);
-    void OnDeviceCreate(LPCSTR name);
+    void OnDeviceCreate();
     void OnDeviceDestroy(BOOL bKeepTextures);
+
+    void LoadSharedFile(LPCSTR name);
 
     void reset_begin();
     void reset_end();

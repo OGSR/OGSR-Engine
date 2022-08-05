@@ -89,8 +89,7 @@ BOOL CPGDef::Load(IReader& F)
 }
 
 BOOL CPGDef::Load2(CInifile& ini)
-{
-    //.	u16 version						= ini.r_u16("_group", "version");
+{    
     m_Flags.assign(ini.r_u32("_group", "flags"));
 
     m_Effects.resize(ini.r_u32("_group", "effects_count"));

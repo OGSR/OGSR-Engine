@@ -119,6 +119,7 @@ void CRenderDevice::_Create(LPCSTR shName)
 
     // after creation
     b_is_Ready = TRUE;
+
     _SetupStates();
 
     m_pRender->OnDeviceCreate(shName);
@@ -162,6 +163,7 @@ void CRenderDevice::Create()
 {
     if (b_is_Ready)
         return; // prevent double call
+
     Statistic = xr_new<CStats>();
 
 #ifdef DEBUG
@@ -173,18 +175,16 @@ void CRenderDevice::Create()
 
     if (!m_pRender)
         m_pRender = RenderFactory->CreateRenderDeviceRender();
+
     SetupGPU(m_pRender);
     Log("Starting RENDER device...");
 
     fFOV = 90.f;
     fASPECT = 1.f;
-    m_pRender->Create(m_hWnd, dwWidth, dwHeight, fWidth_2, fHeight_2,
-                                 true);
+    m_pRender->Create(m_hWnd, dwWidth, dwHeight, fWidth_2, fHeight_2, true);
 
     string_path fname;
-    FS.update_path(fname, "$game_data$", "shaders.xr");
-
-    //////////////////////////////////////////////////////////////////////////
+    FS.update_path(fname, "$game_data$", "shaders.xr");    
     _Create(fname);
 
     PreCache(0, false, false);
