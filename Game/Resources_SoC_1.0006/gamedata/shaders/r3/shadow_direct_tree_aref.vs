@@ -1,2 +1,2 @@
-#define	USE_AREF
+#define USE_AREF
 #include "shadow_direct_tree.vs"

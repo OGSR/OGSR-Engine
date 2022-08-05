@@ -30,12 +30,12 @@ float3 visor_reflection(float3 image, float2 tc)
         {
             float N = 1.h - p / 0.8f + 0.15f * (i / (y - 1.0f)) * p;
             float2 m = (center - tc) * -N + center;
-            final += s_image.SampleLevel(smp_rtlinear, m,0);
+            final += s_image.SampleLevel(smp_rtlinear, m, 0);
         }
         final /= y;
         final *= 1.h - saturate((x - t - 0.05f) * 5.2f);
-	}
+    }
 
-	image = (image + addon_VControl.x * final) / (1.f + addon_VControl.x);	
-	return image;
-} 
+    image = (image + addon_VControl.x * final) / (1.f + addon_VControl.x);
+    return image;
+}

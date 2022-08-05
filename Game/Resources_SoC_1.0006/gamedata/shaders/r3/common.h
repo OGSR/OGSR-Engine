@@ -1,5 +1,5 @@
-#ifndef        COMMON_H
-#define        COMMON_H
+#ifndef COMMON_H
+#define COMMON_H
 
 #include "shared\common.h"
 
@@ -13,10 +13,10 @@
 // #define USE_SUPER_SPECULAR
 #define USE_SUNMASK
 
-#ifdef        USE_R2_STATIC_SUN
-#  define xmaterial float(1.0h/4.h)
+#ifdef USE_R2_STATIC_SUN
+#define xmaterial float(1.0h / 4.h)
 #else
-#  define xmaterial float(L_material.w)
+#define xmaterial float(L_material.w)
 #endif
 
 /*
@@ -99,7 +99,15 @@ struct  				p_screen                {
 float3	v_hemi_wrap     (float3 n, float w)                	{        return L_hemi_color*(w + (1-w)*n.y);                   }
 float3	v_sun_wrap      (float3 n, float w)                	{        return L_sun_color*(w+(1-w)*dot(n,-L_sun_dir_w));      }
 */
-#define FXPS technique _render{pass _code{PixelShader=compile ps_3_0 main();}}
-#define FXVS technique _render{pass _code{VertexShader=compile vs_3_0 main();}}
+#define FXPS \
+    technique _render \
+    { \
+        pass _code { PixelShader = compile ps_3_0 main(); } \
+    }
+#define FXVS \
+    technique _render \
+    { \
+        pass _code { VertexShader = compile vs_3_0 main(); } \
+    }
 
 #endif

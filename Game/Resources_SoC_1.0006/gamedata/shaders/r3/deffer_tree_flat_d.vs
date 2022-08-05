@@ -1,2 +1,2 @@
-#define	USE_TDETAIL
+#define USE_TDETAIL
 #include "deffer_tree_flat.vs"

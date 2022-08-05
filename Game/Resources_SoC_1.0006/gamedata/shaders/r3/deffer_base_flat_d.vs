@@ -1,3 +1,3 @@
-#define	USE_TDETAIL
+#define USE_TDETAIL
 
-#include	"deffer_base_flat.vs"
+#include "deffer_base_flat.vs"
