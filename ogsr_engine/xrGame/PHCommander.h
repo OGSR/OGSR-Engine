@@ -66,7 +66,7 @@ public:
     void setPause(u32 ms);
 };
 
-DEFINE_VECTOR(CPHCall*, PHCALL_STORAGE, PHCALL_I);
+DEFINE_VECTOR(std::unique_ptr<CPHCall>, PHCALL_STORAGE, PHCALL_I);
 class CPHCommander
 {
     PHCALL_STORAGE m_calls;
