@@ -51,6 +51,7 @@ void CUIZoneMap::Init()
 
     m_clipFrame.AttachChild(&m_center);
     m_center.SetWndPos(m_clipFrame.GetWidth() / 2, m_clipFrame.GetHeight() / 2);
+    m_fScale = 1.f;
 }
 
 void CUIZoneMap::Render()
@@ -84,9 +85,23 @@ void CUIZoneMap::UpdateRadar(Fvector pos)
     }
 }
 
-bool CUIZoneMap::ZoomIn() { return true; }
+bool CUIZoneMap::ZoomIn() 
+{
+    m_fScale = m_fScale + m_fScale * 0.25f;
+    clamp(m_fScale, 0.5f, 2.f);
+    ApplyZoom();  
+    
+    return true; 
+}
 
-bool CUIZoneMap::ZoomOut() { return true; }
+bool CUIZoneMap::ZoomOut() 
+{ 
+    m_fScale = m_fScale - m_fScale * 0.25f;
+    clamp(m_fScale, 0.5f, 2.f);
+    ApplyZoom();
+
+    return true; 
+}
 
 void CUIZoneMap::SetupCurrentMap()
 {
@@ -112,9 +127,14 @@ void CUIZoneMap::SetupCurrentMap()
     m_clipFrame.GetAbsoluteRect(r);
     m_activeMap->SetClipRect(r);
 
+    ApplyZoom();
+}
+
+void CUIZoneMap::ApplyZoom() 
+{
     Fvector2 wnd_size;
     float zoom_factor = float(m_clipFrame.GetWndRect().width()) / 100.0f;
-    wnd_size.x = m_activeMap->BoundRect().width() * zoom_factor;
-    wnd_size.y = m_activeMap->BoundRect().height() * zoom_factor;
+    wnd_size.x = m_activeMap->BoundRect().width() * zoom_factor * m_fScale;
+    wnd_size.y = m_activeMap->BoundRect().height() * zoom_factor * m_fScale;
     m_activeMap->SetWndSize(wnd_size);
 }

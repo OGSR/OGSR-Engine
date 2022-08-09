@@ -33,6 +33,8 @@ public:
     bool ZoomIn();
     bool ZoomOut();
 
+    void ApplyZoom();
+
     CUIStatic& Background() { return m_background; };
     CUIStatic& ClipFrame() { return m_clipFrame; }; // alpet: для экспорта в скрипты
     CUIStatic& Compass() { return m_compass; }; // alpet: для экспорта в скрипты
