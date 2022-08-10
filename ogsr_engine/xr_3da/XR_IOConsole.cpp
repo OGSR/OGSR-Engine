@@ -248,18 +248,21 @@ void CConsole::OnPressKey(int dik, BOOL bHold)
             scroll_delta = 0;
         break;
     case DIK_TAB: {
-        LPCSTR radmin_cmd_name = "ra ";
-        bool b_ra = (editor == strstr(editor, radmin_cmd_name));
-        int offset = (b_ra) ? xr_strlen(radmin_cmd_name) : 0;
-        vecCMD_IT I = Commands.lower_bound(editor + offset);
+        auto I = Commands.lower_bound(editor);
+        if (bShift)
+        {
+            --I;
+            --I;
+        }
         if (I != Commands.end())
         {
             IConsole_Command& O = *(I->second);
-            strcpy_s(editor + offset, sizeof(editor) - offset, O.Name());
-            strcat(editor + offset, " ");
+            strcpy_s(editor, sizeof(editor), O.Name());
+            strcat(editor, " ");
         }
     }
-    break;
+    break
+        ;
     case DIK_UP:
         cmd_delta--;
         SelectCommand();
