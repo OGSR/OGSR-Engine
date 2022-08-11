@@ -179,8 +179,6 @@ extern float phTimefactor;
 
 void CLevel::Send(NET_Packet& P, u32 dwFlags, u32 dwTimeout)
 {
-    if (IsDemoPlay() && m_bDemoStarted)
-        return;
     // optimize the case when server located in our memory
     ClientID _clid;
     _clid.set(1);
@@ -294,26 +292,6 @@ void CLevel::OnConnectResult(NET_Packet* P)
         m_bConnectResult = false;
 
     m_sConnectResult = ResultStr;
-
-    if (IsDemoSave())
-    {
-        //		P->r_stringZ(m_sDemoHeader.LevelName);
-        //		P->r_stringZ(m_sDemoHeader.GameType);
-        m_sDemoHeader.bServerClient = P->r_u8();
-        P->r_stringZ(m_sDemoHeader.ServerOptions);
-        //-----------------------------------------
-        FILE* fTDemo = fopen(m_sDemoName, "ab");
-        if (fTDemo)
-        {
-            fwrite(&m_sDemoHeader.bServerClient, 32, 1, fTDemo); //-V512
-
-            DWORD OptLen = m_sDemoHeader.ServerOptions.size();
-            fwrite(&OptLen, 4, 1, fTDemo);
-            fwrite(*m_sDemoHeader.ServerOptions, OptLen, 1, fTDemo);
-            fclose(fTDemo);
-        };
-        //-----------------------------------------
-    };
 };
 
 void CLevel::ClearAllObjects()

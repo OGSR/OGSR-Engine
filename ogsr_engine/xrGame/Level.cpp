@@ -120,10 +120,6 @@ CLevel::CLevel()
     m_dwRealPing = 0;
 
     //---------------------------------------------------------
-    m_sDemoName[0] = 0;
-    m_bDemoSaveMode = FALSE;
-    m_dwStoredDemoDataSize = 0;
-    m_pStoredDemoData = NULL;
 
     //	if ( !strstr( Core.Params, "-tdemo " ) && !strstr(Core.Params,"-tdemof "))
     //	{
@@ -236,8 +232,6 @@ CLevel::~CLevel()
     xr_delete(m_map_manager);
     //	xr_delete					(m_pFogOfWarMngr);
     //-----------------------------------------------------------
-    Demo_Clear();
-    m_aDemoData.clear();
 
     // here we clean default trade params
     // because they should be new for each saved/loaded game
@@ -719,10 +713,7 @@ void CLevel::GetGameTimeForShaders(u32& hours, u32& minutes, u32& seconds, u32& 
 bool CLevel::IsServer()
 {
     //	return (!!Server);
-    if (IsDemoPlay())
-    {
-        return IsServerDemo();
-    };
+
     if (!Server)
         return false;
     return (Server->client_Count() != 0);
@@ -731,10 +722,7 @@ bool CLevel::IsServer()
 bool CLevel::IsClient()
 {
     //	return (!Server);
-    if (IsDemoPlay())
-    {
-        return IsClientDemo();
-    };
+
     if (!Server)
         return true;
     return (Server->client_Count() == 0);

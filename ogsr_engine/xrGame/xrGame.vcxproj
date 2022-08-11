@@ -1162,7 +1162,6 @@
     <ClInclude Include="EffectorZoomInertion.h" />
     <ClInclude Include="GamePersistent.h" />
     <ClInclude Include="Level.h" />
-    <ClInclude Include="Level_network_Demo.h" />
     <ClInclude Include="Level_Bullet_Manager.h" />
     <ClInclude Include="Tracer.h" />
     <ClInclude Include="seniority_hierarchy_holder.h" />
@@ -2110,7 +2109,6 @@
     <ClCompile Include="Level_input.cpp" />
     <ClCompile Include="Level_load.cpp" />
     <ClCompile Include="Level_network.cpp" />
-    <ClCompile Include="Level_network_Demo.cpp" />
     <ClCompile Include="Level_network_messages.cpp" />
     <ClCompile Include="Level_network_spawn.cpp" />
     <ClCompile Include="Level_network_start_client.cpp" />

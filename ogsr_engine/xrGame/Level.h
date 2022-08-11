@@ -53,7 +53,6 @@ public:
 
 class CLevel : public IGame_Level, public IPureClient
 {
-#include "Level_network_Demo.h"
     void ClearAllObjects();
 
 private:

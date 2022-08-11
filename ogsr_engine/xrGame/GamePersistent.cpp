@@ -727,7 +727,7 @@ void CGamePersistent::LoadTitle(const char* str)
     Discord.Update(tittle);
 }
 
-bool CGamePersistent::CanBePaused() { return (g_pGamePersistent->GameType() == GAME_SINGLE) || (g_pGameLevel && Level().IsDemoPlay()); }
+bool CGamePersistent::CanBePaused() { return (g_pGamePersistent->GameType() == GAME_SINGLE); }
 
 bool CGamePersistent::OnKeyboardPress(int dik)
 {

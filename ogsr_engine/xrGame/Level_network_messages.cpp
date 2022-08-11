@@ -19,9 +19,6 @@
 
 void CLevel::ClientReceive()
 {
-    Demo_StartFrame();
-
-    Demo_Update();
 
     m_dwRPC = 0;
     m_dwRPS = 0;
@@ -196,49 +193,6 @@ void CLevel::ClientReceive()
 
 void CLevel::OnMessage(void* data, u32 size)
 {
-    DemoCS.Enter();
-
-    if (IsDemoPlay())
-    {
-        if (m_bDemoStarted)
-        {
-            DemoCS.Leave();
-            return;
-        }
-
-        if (!m_aDemoData.empty() && net_IsSyncronised())
-        {
-            //			NET_Packet *P = &(m_aDemoData.front());
-            DemoDataStruct* P = &(m_aDemoData.front());
-            m_bDemoStarted = TRUE;
-            Msg("! ------------- Demo Started ------------");
-            m_dwCurDemoFrame = P->m_dwFrame;
-            DemoCS.Leave();
-            return;
-        }
-    };
-
-    if (IsDemoSave() && net_IsSyncronised())
-    {
-        Demo_StoreData(data, size, DATA_CLIENT_PACKET);
-    }
-
     IPureClient::OnMessage(data, size);
 
-    DemoCS.Leave();
 };
-
-NET_Packet* CLevel::net_msg_Retreive()
-{
-    NET_Packet* P = NULL;
-
-    DemoCS.Enter();
-
-    P = IPureClient::net_msg_Retreive();
-    if (!P)
-        Demo_EndFrame();
-
-    DemoCS.Leave();
-
-    return P;
-}

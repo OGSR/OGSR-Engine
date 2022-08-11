@@ -296,10 +296,6 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
 
     // Net params
     setLocal(E->s_flags.is(M_SPAWN_OBJECT_LOCAL));
-    if (Level().IsDemoPlay() && OnClient())
-    {
-        setLocal(FALSE);
-    };
 
     setReady(TRUE);
     g_pGameLevel->Objects.net_Register(this);
