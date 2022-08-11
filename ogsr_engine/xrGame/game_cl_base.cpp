@@ -266,11 +266,6 @@ void game_cl_GameState::SendPickUpEvent(u16 ID_who, u16 ID_what)
 void game_cl_GameState::set_type_name(LPCSTR s)
 {
     m_game_type_name = s;
-    if (OnClient())
-    {
-        strcpy_s(g_pGamePersistent->m_game_params.m_game_type, *m_game_type_name);
-        g_pGamePersistent->OnGameStart();
-    }
 }
 
 void game_cl_GameState::reset_ui()

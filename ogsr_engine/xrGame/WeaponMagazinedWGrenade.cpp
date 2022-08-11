@@ -399,7 +399,7 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
         pGrenade->SetInitiator(H_Parent()->ID());
         pGrenade->SetRealGrenadeName(m_ammoTypes[m_ammoType]);
 
-        if (Local() && OnServer())
+        if (Local())
         {
             NET_Packet P;
             u_EventGen(P, GE_LAUNCH_ROCKET, ID());
@@ -525,8 +525,7 @@ bool CWeaponMagazinedWGrenade::Attach(PIItem pIItem, bool b_send_event)
         if (b_send_event)
         {
             //.			pIItem->Drop();
-            if (OnServer())
-                pIItem->object().DestroyObject();
+            pIItem->object().DestroyObject();
         }
         InitAddons();
         UpdateAddonsVisibility();

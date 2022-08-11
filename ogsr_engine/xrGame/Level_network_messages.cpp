@@ -69,8 +69,6 @@ void CLevel::ClientReceive()
         break;
         case M_UPDATE: {
             game->net_import_update(*P);
-
-            R_ASSERT(OnServer(), "Something strange!");
         }
         break;
         case M_SV_CONFIG_NEW_CLIENT: InitializeClientGame(*P); break;
@@ -143,14 +141,6 @@ void CLevel::ClientReceive()
         break;
         case M_CHANGE_LEVEL_GAME: {
             Msg("- M_CHANGE_LEVEL_GAME Received");
-
-            if (OnClient())
-            {
-                Engine.Event.Defer("KERNEL:disconnect");
-                Engine.Event.Defer("KERNEL:start", m_caServerOptions.size() ? size_t(xr_strdup(*m_caServerOptions)) : 0,
-                                   m_caClientOptions.size() ? size_t(xr_strdup(*m_caClientOptions)) : 0);
-            }
-            else
             {
                 const char* m_SO = m_caServerOptions.c_str();
                 //					const char* m_CO = m_caClientOptions.c_str();

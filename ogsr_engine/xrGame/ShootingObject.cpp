@@ -395,9 +395,8 @@ void CShootingObject::RenderLight()
 bool CShootingObject::SendHitAllowed(CObject* pUser)
 {
     if (Game().IsServerControlHits())
-        return OnServer();
+        return true;
 
-    if (OnServer())
     {
         if (pUser->CLS_ID == CLSID_OBJECT_ACTOR)
         {
@@ -407,17 +406,6 @@ bool CShootingObject::SendHitAllowed(CObject* pUser)
             }
         }
         return true;
-    }
-    else
-    {
-        if (pUser->CLS_ID == CLSID_OBJECT_ACTOR)
-        {
-            if (Level().CurrentControlEntity() == pUser)
-            {
-                return true;
-            }
-        }
-        return false;
     }
 };
 

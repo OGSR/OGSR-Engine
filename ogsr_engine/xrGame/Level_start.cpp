@@ -176,11 +176,6 @@ bool CLevel::net_start5()
         NET_Packet NP;
         NP.w_begin(M_CLIENTREADY);
         Send(NP, net_flags(TRUE, TRUE));
-
-        if (OnClient() && Server)
-        {
-            Server->SLS_Clear();
-        };
     };
     return true;
 }

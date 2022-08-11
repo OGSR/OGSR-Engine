@@ -26,7 +26,6 @@ void CLevel::remove_objects()
 
     Game().reset_ui();
 
-    if (OnServer())
     {
         VERIFY(Server);
         Server->SLS_Clear();
@@ -45,8 +44,6 @@ void CLevel::remove_objects()
         Sleep(100);
     }
 
-    if (OnClient())
-        ClearAllObjects();
 
     BulletManager().Clear();
     ph_commander().clear();
@@ -120,7 +117,6 @@ void CLevel::net_Stop()
 
 void CLevel::ClientSend()
 {
-    ASSERT_FMT(!OnClient(), "");
     for (u32 i = 0; i < Objects.o_count(); i++)
     {
         CObject* O = Objects.o_get_by_iterator(i);
@@ -195,7 +191,7 @@ void CLevel::net_Update()
         Device.Statistic->netClient2.End();
     }
     // If server - perform server-update
-    if (Server && OnServer())
+    if (Server)
     {
         Device.Statistic->netServer.Begin();
         Server->Update();

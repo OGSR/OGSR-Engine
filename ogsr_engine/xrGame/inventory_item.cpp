@@ -314,8 +314,6 @@ void CInventoryItem::OnEvent(NET_Packet& P, u16 type)
 //объекте, поэтому функция должна быть переопределена
 bool CInventoryItem::Detach(const char* item_section_name, bool b_spawn_item)
 {
-    if (OnClient())
-        return true;
     if (b_spawn_item)
     {
         CSE_Abstract* D = F_entity_Create(item_section_name);

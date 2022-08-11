@@ -138,7 +138,6 @@ void CWeaponRPG7::switch2_Fire()
         pGrenade->SetInitiator(H_Parent()->ID());
         pGrenade->SetRealGrenadeName(m_ammoTypes[m_ammoType]);
 
-        if (OnServer())
         {
             NET_Packet P;
             u_EventGen(P, GE_LAUNCH_ROCKET, ID());

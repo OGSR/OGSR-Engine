@@ -62,7 +62,6 @@ void CPHDestroyable::GenSpawnReplace(u16 ref_id, LPCSTR section, shared_str visu
     D->s_name = section; //*cNameSect()
     D->ID_Parent = u16(-1);
     InitServerObject(D);
-    if (OnServer())
     {
         NET_Packet P;
         D->Spawn_Write(P, TRUE);

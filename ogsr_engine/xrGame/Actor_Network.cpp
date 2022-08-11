@@ -65,7 +65,7 @@ BOOL CActor::net_Spawn(CSE_Abstract* DC)
     // force actor to be local on server client
     CSE_Abstract* e = (CSE_Abstract*)(DC);
     CSE_ALifeCreatureActor* E = smart_cast<CSE_ALifeCreatureActor*>(e);
-    if (OnServer())
+
     {
         E->s_flags.set(M_SPAWN_OBJECT_LOCAL, TRUE);
     }
@@ -311,15 +311,8 @@ void CActor::net_Relcase(CObject* O)
 
 BOOL CActor::net_Relevant() // relevant for export to server
 {
-    if (OnServer())
-    {
-        return getSVU() | getLocal();
-    }
-    else
-    {
-        return Local() & g_Alive();
-    };
-};
+    return getSVU() | getLocal();
+}
 
 void CActor::SetCallbacks()
 {

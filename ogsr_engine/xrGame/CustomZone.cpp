@@ -1169,7 +1169,6 @@ void CCustomZone::OnStateSwitch(EZoneState new_state)
 
 void CCustomZone::SwitchZoneState(EZoneState new_state)
 {
-    if (OnServer())
     {
         // !!! Just single entry for given state !!!
         NET_Packet P;
@@ -1399,7 +1398,6 @@ u32 CCustomZone::ef_weapon_type() const
 
 void CCustomZone::CreateHit(u16 id_to, u16 id_from, const Fvector& hit_dir, float hit_power, s16 bone_id, const Fvector& pos_in_bone, float hit_impulse, ALife::EHitType hit_type)
 {
-    if (OnServer())
     {
         if (m_owner_id != u32(-1))
             id_from = (u16)m_owner_id;

@@ -568,37 +568,6 @@ bool CInventory::Action(s32 cmd, u32 flags)
         };
     };
 
-    if (g_pGameLevel && OnClient() && pActor)
-    {
-        switch (cmd)
-        {
-        case kUSE: {
-        }
-        break;
-
-        case kDROP:
-
-        {
-            SendActionEvent(cmd, flags);
-            return true;
-        }
-        break;
-
-        case kWPN_NEXT:
-        case kWPN_RELOAD:
-        case kWPN_FIRE:
-        case kWPN_FUNC:
-        case kWPN_FIREMODE_NEXT:
-        case kWPN_FIREMODE_PREV:
-        case kWPN_ZOOM:
-        case kTORCH:
-        case kNIGHT_VISION: {
-            SendActionEvent(cmd, flags);
-        }
-        break;
-        }
-    }
-
     if (m_iActiveSlot < m_slots.size() && m_slots[m_iActiveSlot].m_pIItem && m_slots[m_iActiveSlot].m_pIItem->Action(cmd, flags))
         return true;
     bool b_send_event = false;
@@ -642,9 +611,6 @@ bool CInventory::Action(s32 cmd, u32 flags)
     }
     break;
     }
-
-    if (b_send_event && g_pGameLevel && OnClient() && pActor)
-        SendActionEvent(cmd, flags);
 
     return false;
 }
@@ -712,13 +678,11 @@ void CInventory::UpdateDropItem(PIItem pIItem)
     if (pIItem->GetDropManual())
     {
         pIItem->SetDropManual(FALSE);
-        if (OnServer())
-        {
-            NET_Packet P;
-            pIItem->object().u_EventGen(P, GE_OWNERSHIP_REJECT, pIItem->object().H_Parent()->ID());
-            P.w_u16(u16(pIItem->object().ID()));
-            pIItem->object().u_EventSend(P);
-        }
+
+        NET_Packet P;
+        pIItem->object().u_EventGen(P, GE_OWNERSHIP_REJECT, pIItem->object().H_Parent()->ID());
+        P.w_u16(u16(pIItem->object().ID()));
+        pIItem->object().u_EventSend(P);
     } // dropManual
 }
 

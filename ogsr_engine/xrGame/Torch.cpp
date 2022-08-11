@@ -90,8 +90,6 @@ void CTorch::Load(LPCSTR section)
 
 void CTorch::SwitchNightVision()
 {
-    if (OnClient())
-        return;
     SwitchNightVision(!m_bNightVisionOn);
 }
 
@@ -173,8 +171,6 @@ void CTorch::UpdateSwitchNightVision()
 {
     if (!m_bNightVisionEnabled)
         return;
-    if (OnClient())
-        return;
 
     auto* pA = smart_cast<CActor*>(H_Parent());
     if (pA && m_bNightVisionOn && !pA->Cameras().GetPPEffector((EEffectorPPType)effNightvision))
@@ -183,8 +179,6 @@ void CTorch::UpdateSwitchNightVision()
 
 void CTorch::Switch()
 {
-    if (OnClient())
-        return;
     bool bActive = !m_switched_on;
     Switch(bActive);
 }

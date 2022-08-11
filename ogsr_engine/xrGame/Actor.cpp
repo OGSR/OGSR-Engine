@@ -662,7 +662,6 @@ void CActor::Die(CObject* who)
 {
     inherited::Die(who);
 
-    if (OnServer())
     {
         xr_vector<CInventorySlot>::iterator I = inventory().m_slots.begin();
         xr_vector<CInventorySlot>::iterator E = inventory().m_slots.end();
@@ -929,9 +928,10 @@ void CActor::UpdateCL()
 constexpr u32 TASKS_UPDATE_TIME = 1u;
 
 float NET_Jump = 0;
+
 void CActor::shedule_Update(u32 DT)
 {
-    setSVU(OnServer());
+    setSVU(TRUE);
 
     BOOL bHudView = HUDview();
     if (bHudView)
@@ -1390,8 +1390,6 @@ bool CActor::use_bolts() const { return CInventoryOwner::use_bolts(); };
 void CActor::OnItemTake(CInventoryItem* inventory_item)
 {
     CInventoryOwner::OnItemTake(inventory_item);
-    if (OnClient())
-        return;
 }
 
 void CActor::OnItemDrop(CInventoryItem* inventory_item)

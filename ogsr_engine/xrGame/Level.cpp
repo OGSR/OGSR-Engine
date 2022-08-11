@@ -710,23 +710,25 @@ void CLevel::GetGameTimeForShaders(u32& hours, u32& minutes, u32& seconds, u32& 
     split_time(GetGameTime(), unused, unused, unused, hours, minutes, seconds, milliseconds);
 }
 
-bool CLevel::IsServer()
-{
-    //	return (!!Server);
-
-    if (!Server)
-        return false;
-    return (Server->client_Count() != 0);
-}
-
-bool CLevel::IsClient()
-{
-    //	return (!Server);
-
-    if (!Server)
-        return true;
-    return (Server->client_Count() == 0);
-}
+//bool CLevel::IsServer() // always false
+//{
+//    //if (!Server)
+//    //    return false;
+//
+//    bool r = !Server ? false : (Server->client_Count() != 0);
+//    Msg("IsServer = %d", r ? 1 : 0);
+//    return r;
+//}
+//
+//bool CLevel::IsClient() // always false
+//{
+//    //if (!Server)
+//    //    return true;
+//
+//    bool r = !Server ? true : (Server->client_Count() == 0);
+//    Msg("IsClient = %d", r ? 1 : 0);
+//    return r;
+//}
 
 void CLevel::OnSessionTerminate(LPCSTR reason) { MainMenu()->OnSessionTerminate(reason); }
 

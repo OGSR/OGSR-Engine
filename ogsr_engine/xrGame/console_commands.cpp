@@ -238,9 +238,6 @@ public:
             Msg("Invalid time factor! (%.4f)", id1);
         else
         {
-            if (!OnServer())
-                return;
-
             Level().Server->game->SetGameTimeFactor(id1);
         }
     }

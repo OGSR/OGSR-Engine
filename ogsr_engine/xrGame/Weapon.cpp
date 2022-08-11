@@ -741,17 +741,12 @@ void CWeapon::OnEvent(NET_Packet& P, u16 type)
         u8 state;
         P.r_u8(state);
         P.r_u8(m_sub_state);
-        //			u8 NewAmmoType =
-        P.r_u8();
-        u8 AmmoElapsed = P.r_u8();
         u8 NextAmmo = P.r_u8();
         if (NextAmmo == u8(-1))
             m_set_next_ammoType_on_reload = u32(-1);
         else
             m_set_next_ammoType_on_reload = u8(NextAmmo);
 
-        if (OnClient())
-            SetAmmoElapsed(int(AmmoElapsed));
         OnStateSwitch(u32(state), GetState());
     }
     break;
@@ -1124,7 +1119,7 @@ bool CWeapon::Action(s32 cmd, u32 flags)
     }
         return true;
     case kWPN_NEXT: {
-        if (IsPending() || OnClient())
+        if (IsPending())
         {
             return false;
         }
@@ -1146,8 +1141,8 @@ bool CWeapon::Action(s32 cmd, u32 flags)
             if (l_newType != m_ammoType)
             {
                 m_set_next_ammoType_on_reload = l_newType;
-                if (OnServer())
-                    Reload();
+
+                Reload();
             }
         }
     }
@@ -1261,8 +1256,6 @@ void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID)
 {
     if (!m_ammoTypes.size())
         return;
-    if (OnClient())
-        return;
 
     if (!ammoSect)
         ammoSect = m_ammoTypes.front().c_str();
@@ -1375,9 +1368,6 @@ float CWeapon::GetConditionMisfireProbability() const
 
 BOOL CWeapon::CheckForMisfire()
 {
-    if (OnClient())
-        return FALSE;
-
     if (!smart_cast<CActor*>(H_Parent())) // KRodin: НПС не нужны осечки.
         return FALSE;
 
@@ -1683,20 +1673,15 @@ CUIStaticItem* CWeapon::ZoomTexture()
 
 void CWeapon::SwitchState(u32 S)
 {
-    if (OnClient())
-        return;
-
     SetNextState(S); // Very-very important line of code!!! :)
     if (CHudItem::object().Local() && !CHudItem::object().getDestroy() /* && (S!=NEXT_STATE)*/
-        && m_pCurrentInventory && OnServer())
+        && m_pCurrentInventory)
     {
         // !!! Just single entry for given state !!!
         NET_Packet P;
         CHudItem::object().u_EventGen(P, GE_WPN_STATE_CHANGE, CHudItem::object().ID());
         P.w_u8(u8(S));
         P.w_u8(u8(m_sub_state));
-        P.w_u8(u8(m_ammoType & 0xff));
-        P.w_u8(u8(iAmmoElapsed & 0xff));
         P.w_u8(u8(m_set_next_ammoType_on_reload & 0xff));
         CHudItem::object().u_EventSend(P, net_flags(TRUE, TRUE, FALSE, TRUE));
     }

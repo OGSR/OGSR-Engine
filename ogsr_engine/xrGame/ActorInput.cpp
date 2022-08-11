@@ -70,7 +70,6 @@ void CActor::IR_OnKeyboardPress(int cmd)
             mstate_wishful &= ~mcSprint;
         }
         //-----------------------------
-        if (OnServer())
         {
             NET_Packet P;
             P.w_begin(M_PLAYER_FIRE);

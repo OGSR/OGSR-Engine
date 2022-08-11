@@ -450,7 +450,7 @@ void CWeaponMagazined::ReloadMagazine()
     VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
     //выкинуть коробку патронов, если она пустая
-    if (m_pAmmo && !m_pAmmo->m_boxCurr && OnServer())
+    if (m_pAmmo && !m_pAmmo->m_boxCurr)
         m_pAmmo->SetDropManual(TRUE);
 
     if (Core.Features.test(xrCore::Feature::hard_ammo_reload) && ParentIsActor() && m_pAmmo)
@@ -842,9 +842,6 @@ void CWeaponMagazined::switch2_Fire()
     m_bFireSingleShot = true;
     m_iShotNum = 0;
 
-    if ((OnClient()) && !IsWorking())
-        FireStart();
-
     /*	if(SingleShotMode())
         {
             m_bFireSingleShot = true;
@@ -1066,7 +1063,7 @@ bool CWeaponMagazined::Attach(PIItem pIItem, bool b_send_event)
 
     if (result)
     {
-        if (b_send_event && OnServer())
+        if (b_send_event)
         {
             //уничтожить подсоединенную вещь из инвентаря
             //.			pIItem->Drop					();

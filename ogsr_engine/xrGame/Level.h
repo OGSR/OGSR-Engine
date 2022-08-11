@@ -288,8 +288,8 @@ public:
     IC CBulletManager& BulletManager() { return *m_pBulletManager; }
 
     // by Mad Max
-    bool IsServer();
-    bool IsClient();
+    //bool IsServer();
+    //bool IsClient();
     CSE_Abstract* spawn_item(LPCSTR section, const Fvector& position, u32 level_vertex_id, u16 parent_id, bool return_item = false);
 
 protected:
@@ -364,8 +364,8 @@ IC CPHCommander& CLevel::ph_commander_scripts()
     return *m_ph_commander_scripts;
 }
 // by Mad Max
-IC bool OnServer() { return Level().IsServer(); }
-IC bool OnClient() { return Level().IsClient(); }
+//IC bool OnServer() { return Level().IsServer(); }
+//IC bool OnClient() { return Level().IsClient(); }
 
 class CPHWorld;
 extern CPHWorld* ph_world;
