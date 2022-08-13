@@ -267,33 +267,34 @@ void CUIMainIngameWnd::Init()
     m_artefactPanel->InitFromXML(uiXml, "artefact_panel", 0);
     this->AttachChild(m_artefactPanel);
 
-    AttachChild(&UIStaticDiskIO);
-    UIStaticDiskIO.SetWndRect(1000, 750, 16, 16);
-    UIStaticDiskIO.GetUIStaticItem().SetRect(0, 0, 16, 16);
-    UIStaticDiskIO.InitTexture("ui\\ui_disk_io");
-    UIStaticDiskIO.SetOriginalRect(0, 0, 32, 32);
-    UIStaticDiskIO.SetStretchTexture(TRUE);
+    //AttachChild(&UIStaticDiskIO);
+    //UIStaticDiskIO.SetWndRect(1000, 750, 16, 16);
+    //UIStaticDiskIO.GetUIStaticItem().SetRect(0, 0, 16, 16);
+    //UIStaticDiskIO.InitTexture("ui\\ui_disk_io");
+    //UIStaticDiskIO.SetOriginalRect(0, 0, 32, 32);
+    //UIStaticDiskIO.SetStretchTexture(TRUE);
 
     HUD_SOUND::LoadSound("maingame_ui", "snd_new_contact", m_contactSnd, SOUND_TYPE_IDLE);
 }
 
 float UIStaticDiskIO_start_time = 0.0f;
+
 void CUIMainIngameWnd::Draw()
 {
     // show IO icon
-    bool IOActive = (FS.dwOpenCounter > 0);
-    if (IOActive)
-        UIStaticDiskIO_start_time = Device.fTimeGlobal;
+    //bool IOActive = (FS.dwOpenCounter > 0);
+    //if (IOActive)
+    //    UIStaticDiskIO_start_time = Device.fTimeGlobal;
 
-    if ((UIStaticDiskIO_start_time + 1.0f) < Device.fTimeGlobal)
-        UIStaticDiskIO.Show(false);
-    else
-    {
-        u32 alpha = clampr(iFloor(255.f * (1.f - (Device.fTimeGlobal - UIStaticDiskIO_start_time) / 1.f)), 0, 255);
-        UIStaticDiskIO.Show(true);
-        UIStaticDiskIO.SetColor(color_rgba(255, 255, 255, alpha));
-    }
-    FS.dwOpenCounter = 0;
+    //if ((UIStaticDiskIO_start_time + 1.0f) < Device.fTimeGlobal)
+    //    UIStaticDiskIO.Show(false);
+    //else
+    //{
+    //    u32 alpha = clampr(iFloor(255.f * (1.f - (Device.fTimeGlobal - UIStaticDiskIO_start_time) / 1.f)), 0, 255);
+    //    UIStaticDiskIO.Show(true);
+    //    UIStaticDiskIO.SetColor(color_rgba(255, 255, 255, alpha));
+    //}
+    //FS.dwOpenCounter = 0;
 
     if (!m_pActor)
         return;

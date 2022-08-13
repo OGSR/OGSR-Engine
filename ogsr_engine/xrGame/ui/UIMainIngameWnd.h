@@ -39,7 +39,7 @@ public:
     bool OnKeyboardPress(int dik);
 
 protected:
-    CUIStatic UIStaticDiskIO;
+    //CUIStatic UIStaticDiskIO;
     CUIStatic UIStaticHealth;
     CUIStatic UIStaticArmor;
     CUIStatic UIStaticQuickHelp;
@@ -56,6 +56,7 @@ protected:
     CUIStatic UIWeaponBack;
     CUIStatic UIWeaponSignAmmo;
     CUIStatic UIWeaponIcon;
+
     Frect UIWeaponIcon_rect;
 
 public:
