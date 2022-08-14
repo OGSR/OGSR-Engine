@@ -38,8 +38,6 @@ class ENGINE_API CDemoRecord : public CEffectorCam, public IInputReceiver, publi
     float m_fAngSpeed2;
     float m_fAngSpeed3;
 
-    bool m_b_redirect_input_to_level;
-
     std::unique_ptr<CGameFont> pFontSystem;
 
     void MakeCubeMapFace(Fvector& D, Fvector& N);
@@ -74,6 +72,7 @@ public:
 
     Fvector m_HPB;
     Fvector m_Position;
+    bool m_b_redirect_input_to_level;
 
     // static void SetGlobalPosition(const Fvector& p) { g_position.p.set(p), g_position.set_position = true; }
     // static void GetGlobalPosition(Fvector& p) { p.set(g_position.p); }

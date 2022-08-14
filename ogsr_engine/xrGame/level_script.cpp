@@ -818,6 +818,12 @@ void demo_record_set_HPB(Fvector p)
     demo->m_HPB = p;
 }
 
+void demo_record_set_direct_input(bool f)
+{
+    CDemoRecord* demo = (CDemoRecord*)g_pGameLevel->Cameras().GetCamEffector(cefDemo);
+    demo->m_b_redirect_input_to_level = f;
+}
+
 CEffectorBobbing* get_effector_bobbing() { return Actor()->GetEffectorBobbing(); }
 
 #pragma optimize("s", on)
@@ -891,6 +897,7 @@ void CLevel::script_register(lua_State* L)
             def("demo_record_start", &demo_record_start), def("demo_record_stop", &demo_record_stop),
             def("demo_record_get_position", &demo_record_get_position), def("demo_record_set_position", &demo_record_set_position),
             def("demo_record_get_HPB", &demo_record_get_HPB), def("demo_record_set_HPB", &demo_record_set_HPB),
+            def("demo_record_set_direct_input", &demo_record_set_direct_input),
 
             def("add_complex_effector", &add_complex_effector), def("remove_complex_effector", &remove_complex_effector),
 
