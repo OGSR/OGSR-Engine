@@ -781,6 +781,43 @@ int get_character_community_team(LPCSTR comm)
     return community.team();
 }
 
+#include "../xr_3da/fdemorecord.h"
+
+void demo_record_start()
+{ 
+    string_path fn{};
+    g_pGameLevel->Cameras().AddCamEffector(xr_new<CDemoRecord>(fn));
+}
+
+void demo_record_stop() 
+{
+    g_pGameLevel->Cameras().RemoveCamEffector(cefDemo);
+}
+
+Fvector demo_record_get_position()
+{ 
+    CDemoRecord* demo = (CDemoRecord*)g_pGameLevel->Cameras().GetCamEffector(cefDemo); 
+    return demo->m_Position;
+}
+
+void demo_record_set_position(Fvector p)
+{
+    CDemoRecord* demo = (CDemoRecord*)g_pGameLevel->Cameras().GetCamEffector(cefDemo);
+    demo->m_Position = p;
+}
+
+Fvector demo_record_get_HPB()
+{
+    CDemoRecord* demo = (CDemoRecord*)g_pGameLevel->Cameras().GetCamEffector(cefDemo);
+    return demo->m_HPB;
+}
+
+void demo_record_set_HPB(Fvector p)
+{
+    CDemoRecord* demo = (CDemoRecord*)g_pGameLevel->Cameras().GetCamEffector(cefDemo);
+    demo->m_HPB = p;
+}
+
 CEffectorBobbing* get_effector_bobbing() { return Actor()->GetEffectorBobbing(); }
 
 #pragma optimize("s", on)
@@ -850,6 +887,10 @@ void CLevel::script_register(lua_State* L)
             def("set_snd_volume", &set_snd_volume), def("add_cam_effector", &add_cam_effector), def("add_cam_effector2", &add_cam_effector2),
             def("remove_cam_effector", &remove_cam_effector), def("add_pp_effector", &add_pp_effector), def("set_pp_effector_factor", &set_pp_effector_factor),
             def("set_pp_effector_factor", &set_pp_effector_factor2), def("remove_pp_effector", &remove_pp_effector),
+
+            def("demo_record_start", &demo_record_start), def("demo_record_stop", &demo_record_stop),
+            def("demo_record_get_position", &demo_record_get_position), def("demo_record_set_position", &demo_record_set_position),
+            def("demo_record_get_HPB", &demo_record_get_HPB), def("demo_record_set_HPB", &demo_record_set_HPB),
 
             def("add_complex_effector", &add_complex_effector), def("remove_complex_effector", &remove_complex_effector),
 

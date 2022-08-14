@@ -99,11 +99,15 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
     m_iLMScreenshotFragment = -1;
 
     m_b_redirect_input_to_level = false;
-    _unlink(name);
-    file = FS.w_open(name);
-    if (file)
+
+    if (name && name[0]) // что б можно было demo_record без файла использовать
     {
-        g_position.set_position = false;
+        _unlink(name);
+        file = FS.w_open(name);
+    }
+    //if (file)
+    {
+        //g_position.set_position = false;
         IR_Capture(); // capture input
         m_Camera.invert(Device.mView);
 
@@ -143,17 +147,18 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
         m_fAngSpeed2 = pSettings->r_float("demo_record", "ang_speed2");
         m_fAngSpeed3 = pSettings->r_float("demo_record", "ang_speed3");
     }
-    else
-    {
-        fLifeTime = -1;
-    }
+    //else
+    //{
+    //    fLifeTime = -1;
+    //}
 }
 
 CDemoRecord::~CDemoRecord()
 {
+    IR_Release(); // release input
+
     if (file)
     {
-        IR_Release(); // release input
         FS.w_close(file);
     }
 
@@ -272,12 +277,13 @@ void CDemoRecord::MakeCubeMapFace(Fvector& D, Fvector& N)
 BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 {
     info.dont_apply = false;
-    if (!file)
-        return TRUE;
+    //if (!file)
+    //    return TRUE;
 
     if (m_bMakeScreenshot)
     {
         MakeScreenshotFace();
+
         // update camera
         info.n.set(m_Camera.j);
         info.d.set(m_Camera.k);
@@ -286,11 +292,13 @@ BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
     else if (m_bMakeLevelMap)
     {
         MakeLevelMapProcess();
+
         info.dont_apply = true;
     }
     else if (m_bMakeCubeMap)
     {
         MakeCubeMapFace(info.d, info.n);
+
         info.p.set(m_Camera.c);
         info.fAspect = 1.f;
     }
@@ -347,16 +355,22 @@ BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
         m_vT.mul(m_vVelocity, Device.fTimeDelta * speed);
         m_vR.mul(m_vAngularVelocity, Device.fTimeDelta * ang_speed);
 
+        // m_vR.x Up\Down
+        // m_vR.y Left\Right
+        // m_vR.z Rotate Left\Rotate Right
+
         m_HPB.x -= m_vR.y;
         m_HPB.y -= m_vR.x;
         m_HPB.z += m_vR.z;
-        if (g_position.set_position)
-        {
-            m_Position.set(g_position.p);
-            g_position.set_position = false;
-        }
-        else
-            g_position.p.set(m_Position);
+
+        //if (g_position.set_position)
+        //{
+        //    m_Position.set(g_position.p);
+        //    g_position.set_position = false;
+        //}
+        //else
+        //    g_position.p.set(m_Position);
+
         // move
         Fvector vmove;
 
@@ -394,7 +408,10 @@ BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 void CDemoRecord::IR_OnKeyboardPress(int dik)
 {
     if (dik == DIK_MULTIPLY)
+    {
         m_b_redirect_input_to_level = !m_b_redirect_input_to_level;
+        return;
+    }
 
     if (m_b_redirect_input_to_level)
     {
@@ -446,23 +463,34 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
     case DIK_D:
     case DIK_NUMPAD3:
     case DIK_RIGHT: vT_delta.x += 1.0f; break; // Slide Right
-    case DIK_S: vT_delta.y -= 1.0f; break; // Slide Down
-    case DIK_W:
-        vT_delta.y += 1.0f;
-        break; // Slide Up
+
+    case DIK_S: vT_delta.z -= 1.0f; break; // Move Backward
+    case DIK_W: vT_delta.z += 1.0f; break; // Move Forward
+
     // rotate
     case DIK_NUMPAD2: vR_delta.x -= 1.0f; break; // Pitch Down
     case DIK_NUMPAD8: vR_delta.x += 1.0f; break; // Pitch Up
+
     case DIK_E:
     case DIK_NUMPAD6: vR_delta.y += 1.0f; break; // Turn Left
     case DIK_Q:
     case DIK_NUMPAD4: vR_delta.y -= 1.0f; break; // Turn Right
-    case DIK_NUMPAD9: vR_delta.z -= 2.0f; break; // Turn Right
-    case DIK_NUMPAD7: vR_delta.z += 2.0f; break; // Turn Right
+
+    case DIK_NUMPAD9: vR_delta.z -= 2.0f; break; // Rotate Right
+    case DIK_NUMPAD7: vR_delta.z += 2.0f; break; // Rotate Left
     }
 
     update_whith_timescale(m_vT, vT_delta);
     update_whith_timescale(m_vR, vR_delta);
+}
+
+void CDemoRecord::IR_OnKeyboardRelease(int dik) 
+{
+    if (m_b_redirect_input_to_level)
+    {
+        g_pGameLevel->IR_OnKeyboardRelease(dik);
+        return;
+    }
 }
 
 void CDemoRecord::IR_OnMouseMove(int dx, int dy)
@@ -496,18 +524,37 @@ void CDemoRecord::IR_OnMouseHold(int btn)
 
     switch (btn)
     {
-    case 0: vT_delta.z += 1.0f; break; // Move Backward
-    case 1: vT_delta.z -= 1.0f; break; // Move Forward
+    case 0: vT_delta.y += 1.0f; break; // Slide Down
+    case 1: vT_delta.y -= 1.0f; break; // Slide Up
     }
     update_whith_timescale(m_vT, vT_delta);
 }
 
+void CDemoRecord::IR_OnMousePress(int btn) 
+{
+    if (m_b_redirect_input_to_level)
+    {
+        g_pGameLevel->IR_OnMousePress(btn);
+        return;
+    }
+}
+
+void CDemoRecord::IR_OnMouseRelease(int btn) 
+{
+    if (m_b_redirect_input_to_level)
+    {
+        g_pGameLevel->IR_OnMouseRelease(btn);
+        return;
+    }
+}
+
+
 void CDemoRecord::RecordKey()
 {
     Fmatrix g_matView;
-
     g_matView.invert(m_Camera);
-    file->w(&g_matView, sizeof(Fmatrix));
+    if (file)
+        file->w(&g_matView, sizeof(Fmatrix));
     iCount++;
 }
 

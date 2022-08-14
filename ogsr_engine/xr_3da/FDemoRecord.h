@@ -5,16 +5,17 @@
 
 class ENGINE_API CDemoRecord : public CEffectorCam, public IInputReceiver, public pureRender
 {
-    struct force_position
-    {
-        bool set_position;
-        Fvector p;
-    } g_position{};
+    //struct force_position
+    //{
+    //    bool set_position;
+    //    Fvector p;
+    //} g_position{};
 
     int iCount;
-    IWriter* file;
-    Fvector m_HPB;
-    Fvector m_Position;
+    IWriter* file{};
+
+
+
     Fmatrix m_Camera;
     u32 m_Stage;
 
@@ -55,14 +56,24 @@ public:
 
     void IR_OnKeyboardPress(int dik) override;
     void IR_OnKeyboardHold(int dik) override;
+    void IR_OnKeyboardRelease(int dik) override;
+
+    void IR_OnMousePress(int btn) override;
+    void IR_OnMouseRelease(int btn) override;
+
     void IR_OnMouseMove(int dx, int dy) override;
     void IR_OnMouseHold(int btn) override;
+
     BOOL ProcessCam(SCamEffectorInfo& info) override;
+
     void OnRender() override
     {
         if (pFontSystem)
             pFontSystem->OnRender();
     }
+
+    Fvector m_HPB;
+    Fvector m_Position;
 
     // static void SetGlobalPosition(const Fvector& p) { g_position.p.set(p), g_position.set_position = true; }
     // static void GetGlobalPosition(Fvector& p) { p.set(g_position.p); }
