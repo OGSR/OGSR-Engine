@@ -35,6 +35,12 @@ void start_tutorial(LPCSTR name)
         g_tutorial->m_pStoredInputReceiver = g_tutorial2->m_pStoredInputReceiver;
 }
 
+void stop_tutorial()
+{
+    if (g_tutorial)
+        g_tutorial->Stop();
+}
+
 LPCSTR translate_string(LPCSTR str) { return *CStringTable().translate(str); }
 
 bool has_active_tutotial() { return (g_tutorial != NULL); }
@@ -78,7 +84,8 @@ void game_sv_GameState::script_register(lua_State* L)
                    //	def("get_surge_time",	Game::get_surge_time),
                    //	def("get_object_by_name",Game::get_object_by_name),
 
-                   def("start_tutorial", &start_tutorial), def("has_active_tutorial", &has_active_tutotial), def("translate_string", &translate_string)
+                   def("start_tutorial", &start_tutorial), def("stop_tutorial", &stop_tutorial), def("has_active_tutorial", &has_active_tutotial),
+                   def("translate_string", &translate_string)
 
     ];
 
