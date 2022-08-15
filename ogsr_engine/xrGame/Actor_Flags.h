@@ -20,6 +20,7 @@ enum
     AF_MOUSE_WHEEL_SWITCH_SLOTS = 1 << 15,
     AF_3D_PDA = 1 << 16,
     AF_AI_VOLUMETRIC_LIGHTS = 1 << 17,
+    AF_EFFECTS_ON_DEMORECORD = 1 << 18,
 };
 
 enum

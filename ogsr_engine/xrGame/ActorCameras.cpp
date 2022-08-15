@@ -143,6 +143,7 @@ float cam_HeightInterpolationSpeed = 8.f;
 #include "physics.h"
 #include "PHActivationShape.h"
 #include "debug_renderer.h"
+
 void CActor::cam_Update(float dt, float fFOV)
 {
     /* перенесено ниже
@@ -331,25 +332,29 @@ void CActor::cam_Update(float dt, float fFOV)
         cameras[eacFirstEye]->f_fov = fFOV;
     }
 
-    if (psActorFlags.test(AF_PSP))
+    //if (psActorFlags.test(AF_PSP)) // всегда true
     {
         Cameras().UpdateFromCamera(C);
     }
-    else
-    {
-        Cameras().UpdateFromCamera(cameras[eacFirstEye]);
-    }
+    //else
+    //{
+    //    Cameras().UpdateFromCamera(cameras[eacFirstEye]);
+    //}
 
     fCurAVelocity = vPrevCamDir.sub(cameras[eacFirstEye]->vDirection).magnitude() / Device.fTimeDelta;
     vPrevCamDir = cameras[eacFirstEye]->vDirection;
 
     if (Level().CurrentEntity() == this)
     {
-        Level().Cameras().UpdateFromCamera(C);
-        if (eacFirstEye == cam_active && !Level().Cameras().GetCamEffector(cefDemo))
+        Level().Cameras().UpdateFromCamera(C); // Level().Cameras() работает в режиме m_bAutoApply
+
+        bool demo = !!Level().Cameras().GetCamEffector(cefDemo); // в режиме демо рекорда камер ГГ должна устанавливать только эффекты
+
+        /* if (eacFirstEye == cam_active && !Level().Cameras().GetCamEffector(cefDemo)) */
+        if (!demo || psActorFlags.test(AF_EFFECTS_ON_DEMORECORD))
         {
             Cameras().SetVPNear(_viewport_near);
-            Cameras().ApplyDevice();
+            Cameras().ApplyDevice(demo);   
         }
     }
 }

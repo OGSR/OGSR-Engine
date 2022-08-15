@@ -438,15 +438,18 @@ void CCameraManager::UpdatePPEffectors()
     pp_affected.validate("after applying pp");
 }
 
-void CCameraManager::ApplyDevice()
+void CCameraManager::ApplyDevice(bool effectOnly)
 {
-    // Device params
-    Device.mView.build_camera_dir(m_cam_info.p, m_cam_info.d, m_cam_info.n);
+    if (!effectOnly)
+    {
+        // Device params
+        Device.mView.build_camera_dir(m_cam_info.p, m_cam_info.d, m_cam_info.n);
 
-    Device.vCameraPosition.set(m_cam_info.p);
-    Device.vCameraDirection.set(m_cam_info.d);
-    Device.vCameraTop.set(m_cam_info.n);
-    Device.vCameraRight.set(m_cam_info.r);
+        Device.vCameraPosition.set(m_cam_info.p);
+        Device.vCameraDirection.set(m_cam_info.d);
+        Device.vCameraTop.set(m_cam_info.n);
+        Device.vCameraRight.set(m_cam_info.r);
+    }
 
     // projection
     Device.fFOV = m_cam_info.fFov;

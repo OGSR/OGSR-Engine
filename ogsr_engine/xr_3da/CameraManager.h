@@ -135,7 +135,7 @@ public:
 
     void Update(const Fvector& P, const Fvector& D, const Fvector& N, float fFOV_Dest, float fASPECT_Dest, float fFAR_Dest, u32 flags);
     void UpdateFromCamera(const CCameraBase* C);
-    void ApplyDevice();
+    void ApplyDevice(bool effectOnly = false);
     static void ResetPP();
 
     CCameraManager(bool bApplyOnUpdate);
