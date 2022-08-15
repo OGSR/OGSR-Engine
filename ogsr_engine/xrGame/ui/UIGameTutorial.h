@@ -107,6 +107,13 @@ public:
     string64 m_pda_section;
     Fvector2 m_desired_cursor_pos;
     int m_continue_dik_guard;
+    struct SActionItem
+    {
+        EGameActions m_action;
+        shared_str m_functor;
+        bool m_bfinalize;
+    };
+    xr_vector<SActionItem> m_actions;
 
 public:
     CUISequenceSimpleItem(CUISequencer* owner) : CUISequenceItem(owner) {}

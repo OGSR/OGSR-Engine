@@ -84,6 +84,17 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
     m_flags.set(etiCanBeStopped, (m_continue_dik_guard == -1));
     m_flags.set(etiGrabInput, 1 == xml->ReadInt("grab_input", 0, 1));
 
+    int actions_count = xml->GetNodesNum(0, 0, "action");
+    m_actions.resize(actions_count);
+    for (int idx = 0; idx < actions_count; ++idx)
+    {
+        auto& itm = m_actions[idx];
+        LPCSTR str = xml->ReadAttrib("action", idx, "id");
+        itm.m_action = action_name_to_id(str);
+        itm.m_bfinalize = !!xml->ReadAttribInt("action", idx, "finalize", FALSE);
+        itm.m_functor = xml->Read(xml->GetLocalRoot(), "action", idx, "");
+    }
+
     // ui-components
     m_UIWindow = xr_new<CUIWindow>();
     m_UIWindow->SetAutoDelete(false);
@@ -274,5 +285,24 @@ void CUISequenceSimpleItem::OnKeyboardPress(int dik)
 
         if (m_continue_dik_guard == 9999 || dik == m_continue_dik_guard)
             m_flags.set(etiCanBeStopped, TRUE); // match key
+    }
+
+    for (const auto& itm : m_actions)
+    {
+        if (is_binded(itm.m_action, dik))
+        {
+            luabind::functor<void> functor_to_call;
+            const bool functor_exists = ai().script_engine().functor(itm.m_functor.c_str(), functor_to_call);
+            ASSERT_FMT_DBG(functor_exists, "!![%s] Cannot find script function described in tutorial item [%s]", __FUNCTION__, itm.m_functor.c_str());
+            if (functor_exists)
+                functor_to_call();
+
+            if (itm.m_bfinalize)
+            {
+                m_flags.set(etiCanBeStopped, TRUE);
+                m_stop_lua_functions.clear();
+                Stop();
+            }
+        }
     }
 }
