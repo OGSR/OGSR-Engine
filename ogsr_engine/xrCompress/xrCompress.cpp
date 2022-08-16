@@ -41,7 +41,7 @@ struct ALIAS
     u32 c_size_real;
     u32 c_size_compressed;
 };
-static xr_multimap<u32, ALIAS> aliases;
+static xr_vector<ALIAS> aliases;
 
 static xr_vector<xr_string> exclude_exts, exclude_files;
 
@@ -78,41 +78,9 @@ static bool testVFS(LPCSTR path)
     return false;
 }
 
-static bool testEqual(LPCSTR path, IReader* base)
-{
-    bool res = false;
-
-    IReader* test = FS.r_open(path);
-
-    if (test->length() == base->length())
-        if (0 == memcmp(test->pointer(), base->pointer(), base->length()))
-            res = true;
-
-    FS.r_close(test);
-
-    return res;
-}
-
-static ALIAS* testALIAS(IReader* base, u32 crc, u32& a_tests)
-{
-    auto I = aliases.lower_bound(base->length());
-
-    while (I != aliases.end() && (I->first == base->length()))
-    {
-        if (I->second.crc == crc)
-        {
-            a_tests++;
-            if (testEqual(I->second.path, base))
-                return &I->second;
-        }
-        I++;
-    }
-    return nullptr;
-}
-
 static void write_file_header(LPCSTR file_name, const u32& crc, const u32& ptr, const u32& size_real, const u32& size_compressed)
 {
-    u32 file_name_size = (xr_strlen(file_name) + 0) * sizeof(char);
+    u32 file_name_size = xr_strlen(file_name);
     u32 buffer_size = file_name_size + 4 * sizeof(u32);
     VERIFY(buffer_size <= 65535);
     u32 full_buffer_size = buffer_size + sizeof(u16);
@@ -168,17 +136,16 @@ static void Compress(LPCSTR path, LPCSTR base, BOOL bFast)
     }
     bytesSRC += src->length();
 
-    u32 c_crc32 = crc32(src->pointer(), src->length());
+    const size_t c_crc32 = crc32(src->pointer(), src->length());
     // Msg("CRC32 for [%s] pointer: [%x], length: [%d] is: [%u]", fn, src->pointer(), src->length(), c_crc32);
 
     size_t c_ptr = 0;
     u32 c_size_real = 0;
     u32 c_size_compressed = 0;
-    u32 a_tests = 0;
 
-    ALIAS* A = testALIAS(src, c_crc32, a_tests);
+    auto A = std::find_if(aliases.begin(), aliases.end(), [c_crc32](auto& Alias) { return Alias.crc == c_crc32; });
 
-    if (A)
+    if (A != aliases.end())
     {
         filesALIAS++;
         Msg("~~[%s] - ALIAS (%s)", path, A->path);
@@ -252,22 +219,19 @@ static void Compress(LPCSTR path, LPCSTR base, BOOL bFast)
                 Msg("!![%s] - EMPTY FILE", path);
             }
         }
-    }
 
-    // Write description
-    write_file_header(path, c_crc32, (u32)c_ptr, c_size_real, c_size_compressed);
-
-    if (0 == A)
-    {
         // Register for future aliasing
-        ALIAS R;
+        auto& R = aliases.emplace_back();
         R.path = xr_strdup(fn);
-        R.crc = c_crc32;
+        R.crc = static_cast<u32>(c_crc32);
         R.c_ptr = c_ptr;
         R.c_size_real = c_size_real;
         R.c_size_compressed = c_size_compressed;
-        aliases.emplace(R.c_size_real, R);
+        //Msg("--[%s] Added alias [%s], crc: [%u], [%u][%u][%u]", __FUNCTION__, aliases.back().path, aliases.back().crc, aliases.back().c_ptr, aliases.back().c_size_real, aliases.back().c_size_compressed);
     }
+
+    // Write description
+    write_file_header(path, static_cast<u32>(c_crc32), (u32)c_ptr, c_size_real, c_size_compressed);
 
     FS.r_close(src);
 }
@@ -320,7 +284,7 @@ static void ClosePack()
     Log("\n");
 
     for (auto& it : aliases)
-        xr_free(it.second.path);
+        xr_free(it.path);
     aliases.clear();
 }
 
