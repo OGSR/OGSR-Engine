@@ -222,13 +222,13 @@ bool CScriptEngine::process_file_if_exists(const char* file_name, bool warn_if_n
         if (!LookupScript(S, file_name))
         {
             if (warn_if_not_exist)
-                Msg("[CScriptEngine::process_file_if_exists] Variable %s not found; No script by this name exists, either.", file_name);
+                MsgDbg("[CScriptEngine::process_file_if_exists] Variable %s not found; No script by this name exists, either.", file_name);
             else
             {
-                Log("-------------------------");
-                Msg("[CScriptEngine::process_file_if_exists] WARNING: Access to nonexistent variable or loading nonexistent script '%s'", file_name);
-                print_stack();
-                Log("-------------------------");
+                LogDbg("-------------------------");
+                MsgDbg("[CScriptEngine::process_file_if_exists] WARNING: Access to nonexistent variable or loading nonexistent script '%s'", file_name);
+                FuncDbg(print_stack());
+                LogDbg("-------------------------");
                 add_no_file(file_name);
             }
             return false;
