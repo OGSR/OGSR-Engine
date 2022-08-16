@@ -93,7 +93,7 @@ void CALifeStorageManager::load	(void *buffer, const u32 &buffer_size, LPCSTR fi
 	header().load				(source);
 	time_manager().load			(source);
 	spawns().load				(source,file_name);
-
+	graph().on_load				();
 	objects().load				(source);
 
 	VERIFY						(can_register_objects());
