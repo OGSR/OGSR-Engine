@@ -20,12 +20,9 @@ protected:
     int m_stack_level;
 
 private:
-    string128 m_last_no_file;
-    u32 m_last_no_file_cnt;
-    u32 m_last_no_file_length;
-
-    bool no_file_exists(const char* file_name, u32 string_length);
-    void add_no_file(const char* file_name, u32 string_length);
+    string_unordered_map<shared_str, bool> no_files;
+    inline bool no_file_exists(const char* file_name) const { return no_files.contains(file_name); }
+    inline void add_no_file(const char* file_name) { no_files.emplace(file_name, true); }
 
 public:
     CScriptEngine();

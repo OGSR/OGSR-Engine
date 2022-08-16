@@ -456,11 +456,7 @@ bool CLocatorAPI::Recurse(const char* path, const bool log_if_found)
         Msg("--Found FS dir: [%s]", path);
 
     string1024 full_path;
-#ifdef LOAD_SCRIPTS_SUBDIRS
-    if (0)
-#else
     if (m_Flags.test(flNeedCheck))
-#endif
     {
         strcpy_s(full_path, path);
         strcat_s(full_path, sFile.name);
