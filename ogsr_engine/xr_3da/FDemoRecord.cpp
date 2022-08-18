@@ -464,8 +464,8 @@ void CDemoRecord::IR_OnKeyboardHold(int dik)
     case DIK_NUMPAD3:
     case DIK_RIGHT: vT_delta.x += 1.0f; break; // Slide Right
 
-    case DIK_S: vT_delta.z -= 1.0f; break; // Move Backward
-    case DIK_W: vT_delta.z += 1.0f; break; // Move Forward
+    case DIK_S: vT_delta.y -= 1.0f; break; // Slide Up
+    case DIK_W: vT_delta.y += 1.0f; break; // Slide Down
 
     // rotate
     case DIK_NUMPAD2: vR_delta.x -= 1.0f; break; // Pitch Down
@@ -524,8 +524,8 @@ void CDemoRecord::IR_OnMouseHold(int btn)
 
     switch (btn)
     {
-    case 0: vT_delta.y += 1.0f; break; // Slide Down
-    case 1: vT_delta.y -= 1.0f; break; // Slide Up
+    case 0: vT_delta.z += 1.0f; break; // Move Forward
+    case 1: vT_delta.z -= 1.0f; break; // Move Backward
     }
     update_whith_timescale(m_vT, vT_delta);
 }
