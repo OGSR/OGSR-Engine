@@ -179,12 +179,11 @@ void CUIMapWnd::Init(LPCSTR xml_name, LPCSTR start_from)
     m_currentZoom = m_GlobalMap->GetCurrentZoom();
 
     // initialize local maps
-    xr_string sect_name("level_maps_single");
+    constexpr const char* sect_name = "level_maps_single";
 
-    if (gameLtx.section_exist(sect_name.c_str()))
+    if (gameLtx.section_exist(sect_name))
     {
-        CInifile::Sect& S = gameLtx.r_section(sect_name.c_str());
-        for (const auto& it : S.Data)
+        for (const auto& it : gameLtx.r_section(sect_name).Ordered_Data)
         {
             shared_str map_name = it.first;
             xr_strlwr(map_name);
