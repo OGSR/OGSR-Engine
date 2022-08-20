@@ -1063,9 +1063,17 @@ u32 CScriptGameObject::CalcItemPrice(CScriptGameObject* item, bool b_buying) con
         return 0;
     }
 
-    inventory_owner->GetTrade()->SetPartner(Actor());
+    bool set_partner = false;
+    if (inventory_owner->GetTrade()->pPartner.base != Actor())
+    {
+        inventory_owner->GetTrade()->SetPartner(Actor());
+        set_partner = true;
+    }
     const u32 item_price = inventory_owner->GetTrade()->GetItemPrice(inventory_item, b_buying);
-    inventory_owner->GetTrade()->RemovePartner();
+    if (set_partner)
+    {
+        inventory_owner->GetTrade()->RemovePartner();
+    }
     return item_price;
 }
 
