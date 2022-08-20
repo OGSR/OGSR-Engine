@@ -18,7 +18,7 @@ template <typename _dist_type, template <typename _T> class T1>
 struct _Vertex
 {
     template <typename T2>
-    struct _vertex : public T1<T2>
+    struct __vertex : public T1<T2>
     {
         typedef _dist_type _dist_type;
 
@@ -44,11 +44,11 @@ template <typename _dist_type, typename _priority_queue, typename _vertex_manage
           class _data_storage_constructor = CDataStorageConstructor,
           typename _iteration_type = u32>
 class CAStar
-    : public CDijkstra<_dist_type, _priority_queue, _vertex_manager, _vertex_allocator, euclidian_heuristics, _data_storage_base, AStar::_Vertex<_dist_type, _vertex>::_vertex,
+    : public CDijkstra<_dist_type, _priority_queue, _vertex_manager, _vertex_allocator, euclidian_heuristics, _data_storage_base, AStar::_Vertex<_dist_type, _vertex>::__vertex,
                        _builder_allocator_constructor, _manager_builder_allocator_constructor, _data_storage_constructor, _iteration_type>
 {
 protected:
-    typedef CDijkstra<_dist_type, _priority_queue, _vertex_manager, _vertex_allocator, euclidian_heuristics, _data_storage_base, AStar::_Vertex<_dist_type, _vertex>::_vertex,
+    typedef CDijkstra<_dist_type, _priority_queue, _vertex_manager, _vertex_allocator, euclidian_heuristics, _data_storage_base, AStar::_Vertex<_dist_type, _vertex>::__vertex,
                       _builder_allocator_constructor, _manager_builder_allocator_constructor, _data_storage_constructor, _iteration_type>
         inherited;
     typedef typename inherited::CGraphVertex CGraphVertex;

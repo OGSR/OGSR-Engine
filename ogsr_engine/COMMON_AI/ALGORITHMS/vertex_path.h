@@ -15,7 +15,7 @@ struct CVertexPath
     template <template <typename _T> class T1>
     struct DataStoragePath
     {
-        struct _vertex : public T1<_vertex>
+        struct __vertex : public T1<__vertex>
         {};
     };
 #pragma pack(pop)
@@ -24,7 +24,7 @@ struct CVertexPath
     class CDataStorage
     {
     public:
-        typedef typename DataStoragePath<_vertex>::_vertex CGraphVertex;
+        typedef typename DataStoragePath<_vertex>::__vertex CGraphVertex;
         typedef typename CGraphVertex::_index_type _index_type;
 
     public:

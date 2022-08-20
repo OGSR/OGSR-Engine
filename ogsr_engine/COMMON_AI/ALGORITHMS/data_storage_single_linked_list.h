@@ -15,7 +15,7 @@ struct CDataStorageSingleLinkedList
     struct SingleLinkedList
     {
         template <typename T2>
-        struct _vertex : public T1<T2>
+        struct __vertex : public T1<T2>
         {
             T2* _next;
 
@@ -24,10 +24,10 @@ struct CDataStorageSingleLinkedList
     };
 
     template <typename _data_storage, template <typename _T> class _vertex = CEmptyClassTemplate>
-    class CDataStorage : public _data_storage::template CDataStorage<SingleLinkedList<_vertex>::_vertex>
+    class CDataStorage : public _data_storage::template CDataStorage<typename SingleLinkedList<_vertex>::__vertex>
     {
     public:
-        typedef typename _data_storage::template CDataStorage<SingleLinkedList<_vertex>::_vertex> inherited;
+        typedef typename _data_storage::template CDataStorage<typename SingleLinkedList<_vertex>::__vertex> inherited;
         typedef typename inherited::CGraphVertex CGraphVertex;
         typedef typename CGraphVertex::_dist_type _dist_type;
         typedef typename CGraphVertex::_index_type _index_type;

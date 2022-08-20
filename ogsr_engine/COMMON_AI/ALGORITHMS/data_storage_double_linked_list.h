@@ -17,7 +17,7 @@ struct CDataStorageDoubleLinkedList
     struct DoubleLinkedList
     {
         template <typename T2>
-        struct _vertex : public T1<T2>
+        struct __vertex : public T1<T2>
         {
             T2* _prev;
 
@@ -26,10 +26,10 @@ struct CDataStorageDoubleLinkedList
     };
 
     template <typename _data_storage, template <typename _T> class _vertex = CEmptyClassTemplate>
-    class CDataStorage : public CDataStorageSingleLinkedList<sorted>::CDataStorage<_data_storage, DoubleLinkedList<_vertex>::_vertex>
+    class CDataStorage : public CDataStorageSingleLinkedList<sorted>::CDataStorage<_data_storage, DoubleLinkedList<_vertex>::__vertex>
     {
     public:
-        typedef typename CDataStorageSingleLinkedList<sorted>::CDataStorage<_data_storage, DoubleLinkedList<_vertex>::_vertex> inherited;
+        typedef typename CDataStorageSingleLinkedList<sorted>::CDataStorage<_data_storage, DoubleLinkedList<_vertex>::__vertex> inherited;
         typedef typename inherited::inherited inherited_base;
         typedef typename inherited::CGraphVertex CGraphVertex;
         typedef typename CGraphVertex::_dist_type _dist_type;

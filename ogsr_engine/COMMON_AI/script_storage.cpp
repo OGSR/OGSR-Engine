@@ -10,6 +10,7 @@
 #include "script_storage.h"
 #include "script_engine.h"
 #include "ai_space.h"
+#include <format>
 
 // KRodin: this не убирать ни в коем случае! Он нужен для того, чтобы классы luabind'а регистрировались внутри модуля в котором находятся, а не в _G
 // см. luabind/src/create_class.cpp
