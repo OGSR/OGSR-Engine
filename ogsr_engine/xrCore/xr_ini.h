@@ -11,7 +11,7 @@ public:
     {
         shared_str Name;
         string_unordered_map<shared_str, shared_str> Data;
-        xr_vector<Item> Unordered;
+        xr_vector<Item> Ordered_Data;
         BOOL line_exist(LPCSTR, LPCSTR* = nullptr);
         u32 line_count();
 

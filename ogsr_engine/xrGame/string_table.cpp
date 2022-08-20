@@ -38,7 +38,7 @@ void CStringTable::Init()
     if (pSettings->section_exist("string_table_files"))
     {
         CInifile::Sect& files = pSettings->r_section("string_table_files");
-        for (const auto& i : files.Unordered)
+        for (const auto& i : files.Ordered_Data)
             Load(i.first.c_str());
     }
 }

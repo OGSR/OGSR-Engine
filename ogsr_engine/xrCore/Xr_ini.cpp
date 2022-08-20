@@ -165,8 +165,8 @@ static void insert_item(CInifile::Sect* tgt, const CInifile::Item& I)
     if (sect_it != tgt->Data.end() && sect_it->first.equal(I.first))
     {
         sect_it->second = I.second;
-        auto found = std::find_if(tgt->Unordered.begin(), tgt->Unordered.end(), [&](const auto& it) { return xr_strcmp(*it.first, *I.first) == 0; });
-        if (found != tgt->Unordered.end())
+        auto found = std::find_if(tgt->Ordered_Data.begin(), tgt->Ordered_Data.end(), [&](const auto& it) { return xr_strcmp(*it.first, *I.first) == 0; });
+        if (found != tgt->Ordered_Data.end())
         {
             found->second = I.second;
         }
@@ -174,7 +174,7 @@ static void insert_item(CInifile::Sect* tgt, const CInifile::Item& I)
     else
     {
         tgt->Data.emplace(I.first, I.second);
-        tgt->Unordered.push_back(I);
+        tgt->Ordered_Data.push_back(I);
     }
 }
 
@@ -313,7 +313,7 @@ bool CInifile::save_as(LPCSTR new_fname)
         {
             sprintf_s(temp, "[%s]", r_it.first.c_str());
             F->w_string(temp);
-            for (const auto& I : r_it.second->Unordered)
+            for (const auto& I : r_it.second->Ordered_Data)
             {
                 if (*I.first)
                 {
@@ -552,9 +552,9 @@ int CInifile::r_token(LPCSTR S, LPCSTR L, const xr_token* token_list)
 BOOL CInifile::r_line(LPCSTR S, int L, const char** N, const char** V)
 {
     Sect& SS = r_section(S);
-    if (L >= (int)SS.Unordered.size() || L < 0)
+    if (L >= (int)SS.Ordered_Data.size() || L < 0)
         return FALSE;
-    const auto& I = SS.Unordered.at(L);
+    const auto& I = SS.Ordered_Data.at(L);
     *N = I.first.c_str();
     *V = I.second.c_str();
     return TRUE;
@@ -711,9 +711,9 @@ void CInifile::remove_line(LPCSTR S, LPCSTR L)
         auto A = data.Data.find(L);
         R_ASSERT(A != data.Data.end());
         data.Data.erase(A);
-        auto found = std::find_if(data.Unordered.begin(), data.Unordered.end(), [&](const auto& it) { return xr_strcmp(*it.first, L) == 0; });
-        R_ASSERT(found != data.Unordered.end());
-        data.Unordered.erase(found);
+        auto found = std::find_if(data.Ordered_Data.begin(), data.Ordered_Data.end(), [&](const auto& it) { return xr_strcmp(*it.first, L) == 0; });
+        R_ASSERT(found != data.Ordered_Data.end());
+        data.Ordered_Data.erase(found);
     }
 }
 
@@ -742,7 +742,7 @@ std::string CInifile::get_as_string()
             str << "\r\n";
         first_sect = false;
         str << "[" << r_it.first.c_str() << "]\r\n";
-        for (const auto& I : r_it.second->Unordered)
+        for (const auto& I : r_it.second->Ordered_Data)
         {
             if (I.first.c_str())
             {
