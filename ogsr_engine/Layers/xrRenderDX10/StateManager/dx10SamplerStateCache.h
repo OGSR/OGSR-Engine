@@ -44,8 +44,8 @@ private:
 
     struct StateRecord
     {
-        u32 m_crc;
-        IDeviceState* m_pState;
+        u32 m_crc{};
+        IDeviceState* m_pState{};
     };
 
 private:
