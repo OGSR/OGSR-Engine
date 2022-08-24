@@ -42,6 +42,7 @@
 * [S.T.A.L.K.E.R. Anomaly Engine](https://bitbucket.org/anomalymod/xray-monolith)
 * [X-Ray Engine by Alpet & KD](https://github.com/joye-ramone/xray_xp_dev)
 * [CoC-Xray](https://github.com/revolucas/CoC-Xray)
+* [IX-Ray](https://github.com/ixray-team/ixray-1.6-stcop)
 
 And everyone else whose work has been used. If you are not mentioned, send a message and you will be added.
 
@@ -76,5 +77,6 @@ And everyone else whose work has been used. If you are not mentioned, send a mes
 * [S.T.A.L.K.E.R. Anomaly Engine](https://bitbucket.org/anomalymod/xray-monolith)
 * [X-Ray Engine by Alpet & KD](https://github.com/joye-ramone/xray_xp_dev)
 * [CoC-Xray](https://github.com/revolucas/CoC-Xray)
+* [IX-Ray](https://github.com/ixray-team/ixray-1.6-stcop)
 
 И всех остальных, чьи работы я использовал. Пишите, если забыл кого-то, добавлю в список.
