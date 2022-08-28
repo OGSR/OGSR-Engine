@@ -26,7 +26,7 @@
 ### [Write here](https://github.com/OGSR/OGSR-Engine/discussions) your suggestions, questions and everything else ###
 
 ### Compilation guide: ###
-* Latest version of Visual Studio 2017 or 2019 or 2022 required
+* Latest version of Visual Studio 2022 required
 * Open Engine.sln
 * Set the platform to x64 and the configuration to Release, then select Build -> Build solution
 ### Thanks to: ###
@@ -61,7 +61,7 @@ And everyone else whose work has been used. If you are not mentioned, send a mes
 ### Предложения, вопросы и тп можно писать [сюда](https://github.com/OGSR/OGSR-Engine/discussions) ###
 
 ### Инструкции по сборке: ###
-* Требуется актуальная версия Visual Studio 2017 или 2019 или 2022
+* Требуется актуальная версия Visual Studio 2022
 * Открываете Engine.sln
 * В студии выбираете Сборка -> Собрать решение, предварительно выставив платформу x64 и конфигурацию Release
 ### Благодарим: ###
