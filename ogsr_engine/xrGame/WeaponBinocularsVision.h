@@ -24,15 +24,12 @@ struct SBinocVisibleObj
     void create_default(u32 color);
     void Draw();
     void Update();
-    bool operator<(const SBinocVisibleObj& other) const { return m_flags.test(flVisObjNotValid) < other.m_flags.test(flVisObjNotValid); } // move non-actual to tail
 };
 
 class CWeaponMagazined;
 class CBinocularsVision
 {
-    typedef xr_vector<SBinocVisibleObj*> VIS_OBJECTS;
-    typedef VIS_OBJECTS::iterator VIS_OBJECTS_IT;
-    VIS_OBJECTS m_active_objects;
+    xr_vector<std::unique_ptr<SBinocVisibleObj>> m_active_objects;
 
 public:
     CBinocularsVision(CWeaponMagazined* parent);

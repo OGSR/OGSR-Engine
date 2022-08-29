@@ -18,13 +18,6 @@
 
 #define RECT_SIZE 16
 
-struct FindVisObjByObject
-{
-    const CObject* O;
-    FindVisObjByObject(const CObject* o) : O(o) {}
-    bool operator()(const SBinocVisibleObj* vis) { return (O == vis->m_object); }
-};
-
 void SBinocVisibleObj::create_default(u32 color)
 {
     m_lt.Init("ui\\ui_enemy_frame", 0, 0, RECT_SIZE, RECT_SIZE);
@@ -155,7 +148,6 @@ CBinocularsVision::CBinocularsVision(CWeaponMagazined* parent)
 CBinocularsVision::~CBinocularsVision()
 {
     m_snd_found.destroy();
-    delete_data(m_active_objects);
 }
 
 void CBinocularsVision::Update()
@@ -170,9 +162,8 @@ void CBinocularsVision::Update()
 
     const CVisualMemoryManager::VISIBLES& vVisibles = pActor->memory().visual().objects();
 
-    VIS_OBJECTS_IT it = m_active_objects.begin();
-    for (; it != m_active_objects.end(); ++it)
-        (*it)->m_flags.set(flVisObjNotValid, TRUE);
+    for (auto& vis : m_active_objects)
+        vis->m_flags.set(flVisObjNotValid, TRUE);
 
     CVisualMemoryManager::VISIBLES::const_iterator v_it = vVisibles.begin();
     for (; v_it != vVisibles.end(); ++v_it)
@@ -190,9 +181,7 @@ void CBinocularsVision::Update()
         if (!EA || !EA->g_Alive())
             continue;
 
-        FindVisObjByObject f(object_);
-        VIS_OBJECTS_IT found;
-        found = std::find_if(m_active_objects.begin(), m_active_objects.end(), f);
+        auto found = std::find_if(m_active_objects.begin(), m_active_objects.end(), [object_](const auto& vis) { return (object_ == vis->m_object); });
 
         if (found != m_active_objects.end())
         {
@@ -200,8 +189,7 @@ void CBinocularsVision::Update()
         }
         else
         {
-            m_active_objects.push_back(xr_new<SBinocVisibleObj>());
-            SBinocVisibleObj* new_vis_obj = m_active_objects.back();
+            auto& new_vis_obj = m_active_objects.emplace_back(std::make_unique<SBinocVisibleObj>());
             new_vis_obj->m_flags.set(flVisObjNotValid, FALSE);
             new_vis_obj->m_object = object_;
             new_vis_obj->create_default(m_frame_color.get());
@@ -211,17 +199,18 @@ void CBinocularsVision::Update()
                 m_snd_found.play_at_pos(0, Fvector().set(0, 0, 0), sm_2D);
         }
     }
-    std::sort(m_active_objects.begin(), m_active_objects.end());
 
-    while (m_active_objects.size() && m_active_objects.back()->m_flags.test(flVisObjNotValid))
-    {
-        xr_delete(m_active_objects.back());
-        m_active_objects.pop_back();
-    }
-
-    it = m_active_objects.begin();
-    for (; it != m_active_objects.end(); ++it)
-        (*it)->Update();
+    m_active_objects.erase(std::remove_if(m_active_objects.begin(), m_active_objects.end(),
+                                          [](auto& vis) {
+                                              if (vis->m_flags.test(flVisObjNotValid))
+                                                  return true;
+                                              else
+                                              {
+                                                  vis->Update();
+                                                  return false;
+                                              }
+                                          }),
+                           m_active_objects.end());
 }
 
 void CBinocularsVision::Draw()
@@ -231,8 +220,8 @@ void CBinocularsVision::Draw()
     if (Device.m_SecondViewport.IsSVPActive())
         return;
 
-    for (auto* it : m_active_objects)
-        it->Draw();
+    for (auto& vis : m_active_objects)
+        vis->Draw();
 }
 
 void CBinocularsVision::Load(const shared_str& section)
@@ -246,11 +235,6 @@ void CBinocularsVision::Load(const shared_str& section)
 
 void CBinocularsVision::remove_links(CObject* object)
 {
-#pragma todo("KRodin: во-первых, тут утечка, во-вторых, удалять принято через ремове_иф, в третьих - нечего вообще в m_active_objects хранить указатели.")
-
-    VIS_OBJECTS::iterator I = std::find_if(m_active_objects.begin(), m_active_objects.end(), FindVisObjByObject(object));
-    if (I == m_active_objects.end())
-        return;
-
-    m_active_objects.erase(I);
+    m_active_objects.erase(std::remove_if(m_active_objects.begin(), m_active_objects.end(), [object](const auto& vis) { return (object == vis->m_object); }),
+                           m_active_objects.end());
 }
