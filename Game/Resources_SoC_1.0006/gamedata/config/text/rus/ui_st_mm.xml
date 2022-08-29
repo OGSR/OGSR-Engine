@@ -590,6 +590,19 @@
 	<string id="ui_mm_crosshair_hard">
 		<text>Реалистичный прицел</text>
 	</string>
+	<string id="ui_mm_aim_toggle">
+		<text>Прицеливание нажатием\удерживанием</text>
+	</string>
+	<string id="ui_mm_switch_slot">
+		<text>Переключение слота колесиком мыши</text>
+	</string>
+	<string id="ui_mm_font_scale_x">
+		<text>Ширина шрифтов</text>
+	</string>
+	<string id="ui_mm_font_scale_y">
+		<text>Высота шрифтов</text>
+	</string>
+
 	<!-- Окно "Управление" -->
 	<string id="ui_mm_controls">
 		<text>Управление</text>

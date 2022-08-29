@@ -103,7 +103,7 @@
 		<cap_resolution x="20" y="80" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_resolution</text>
 		</cap_resolution>
-		<list_resolution x="194" y="75" width="261" height="21" always_show_scroll="1">
+		<list_resolution x="194" y="75" width="261" height="21" list_length="13" always_show_scroll="1">
 			<options_item entry="vid_mode" group="mm_opt_video"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
@@ -699,25 +699,39 @@
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_ambient</text>
 		</check_ambient>
 
-		<check_ammunition_on_belt x="20" y="230" width="243" height="21">
-			<options_item entry="g_ammunition_on_belt" group="mm_opt_gameplay"/>
-			<text font="letterica16" r="215" g="195" b="170">ui_mm_ammunition_on_belt</text>
-		</check_ammunition_on_belt>
-
-		<check_build_crosshair x="20" y="255" width="243" height="21">
+		<check_build_crosshair x="20" y="230" width="243" height="21">
 			<options_item entry="hud_crosshair_build" group="mm_opt_gameplay"/>
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_build_crosshair</text>
 		</check_build_crosshair>
 
-		<check_small_font x="20" y="280" width="243" height="21">
-			<options_item entry="hud_small_font" group="mm_opt_gameplay"/>
-			<text font="letterica16" r="215" g="195" b="170">ui_mm_small_font</text>
-		</check_small_font>
-
-		<check_crosshair_hard x="20" y="305" width="243" height="21">
+		<check_crosshair_hard x="20" y="255" width="243" height="21">
 			<options_item entry="hud_crosshair_hard" group="mm_opt_gameplay"/>
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_crosshair_hard</text>
 		</check_crosshair_hard>
+
+		<check_aim_toggle x="20" y="280" width="243" height="21">
+			<options_item entry="wpn_aim_toggle" group="mm_opt_gameplay"/>
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_aim_toggle</text>
+		</check_aim_toggle>
+		
+		<check_switch_slot x="20" y="305" width="243" height="21">
+			<options_item entry="g_mouse_wheel_switch_slot" group="mm_opt_gameplay"/>
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_switch_slot</text>
+		</check_switch_slot>
+
+		<cap_font_scale_x x="195" y="55" width="143" height="21">
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_font_scale_x</text>
+		</cap_font_scale_x>
+		<track_font_scale_x x="280" y="50" width="175" height="21" invert="0" step="0.01" min="0.5" max="2">
+			<options_item entry="g_font_scale_x" group="mm_opt_gameplay"/>
+		</track_font_scale_x>
+
+		<cap_font_scale_y x="195" y="80" width="143" height="21">
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_font_scale_y</text>
+		</cap_font_scale_y>
+		<track_font_scale_y x="280" y="75" width="175" height="21" invert="0" step="0.01" min="0.5" max="2">
+			<options_item entry="g_font_scale_y" group="mm_opt_gameplay"/>
+		</track_font_scale_y>
 
 	</tab_gameplay>
 	<tab_controls>

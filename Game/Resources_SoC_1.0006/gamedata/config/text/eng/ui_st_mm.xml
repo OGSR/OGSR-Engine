@@ -590,6 +590,19 @@
 	<string id="ui_mm_crosshair_hard">
 		<text>Realistic crosshair</text>
 	</string>
+	<string id="ui_mm_aim_toggle">
+		<text>Aiming by pressing/holding</text>
+	</string>	
+	<string id="ui_mm_switch_slot">
+		<text>Switching the slot using the mouse wheel</text>
+	</string>
+	<string id="ui_mm_font_scale_x">
+		<text>Fonts width</text>
+	</string>
+	<string id="ui_mm_font_scale_y">
+		<text>Fonts height</text>
+	</string>
+
 	<!-- Controls menu -->
 	<string id="ui_mm_controls">
 		<text>Controls</text>
