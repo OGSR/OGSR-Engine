@@ -242,6 +242,9 @@
 	<string id="ui_mm_terrain_parallax">
 		<text>Parallax on terrain</text>
 	</string>	
+	<string id="ui_mm_mt_texload">
+		<text>Multi-threaded texture loading</text>
+	</string>	
 	<string id="ui_mm_dof">
 		<text>Depth of field</text>
 	</string>
@@ -782,7 +785,7 @@
 		<text>Shadow map resolution (r__smap_size)</text>
 	</string>
 	<string id="video_settings_name_60">
-		<text>Многопоточная загрузка текстур - rs_mt_texload</text>
+		<text>Multi-threaded texture loading - r_mt_texload</text>
 	</string>
 	<string id="video_settings_name_61">
 		<text>Field of view (fov)</text>

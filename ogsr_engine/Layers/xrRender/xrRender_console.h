@@ -219,6 +219,7 @@ enum
     R2FLAG_VISOR_REFL = 1 << 16,
     R2FLAG_VISOR_REFL_CONTROL = 1 << 17,
     R2FLAGEXT_TERRAIN_PARALLAX = 1 << 18,
+    R2FLAGEXT_MT_TEXLOAD = 1 << 19,
 };
 
 extern void xrRender_initconsole();

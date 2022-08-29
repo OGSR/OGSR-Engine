@@ -597,6 +597,13 @@
 			<options_item entry="r_terrain_parallax_enable" group="mm_opt_video_adv"/>
 		</check_terrain_parallax>
 
+		<cap_mt_texload x="5" y="5" width="143" height="21">
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_mt_texload</text>
+		</cap_mt_texload>
+		<check_mt_texload x="249" y="0" width="30" height="21">
+			<options_item entry="r_mt_texload" group="mm_opt_video_adv"/>
+		</check_mt_texload>
+
 		<btn_to_simply x="342" y="325" width="111" height="29">
 			<text align="c" font="letterica16" r="227" g="199" b="178">ui_mm_simply</text>
 			<texture>ui_button_ordinary</texture>

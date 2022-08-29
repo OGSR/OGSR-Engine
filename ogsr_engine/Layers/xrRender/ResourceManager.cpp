@@ -371,10 +371,14 @@ void CResourceManager::DeferredUpload()
     if (!RDEVICE.b_is_Ready)
         return;
 
-    Msg("CResourceManager::DeferredUpload MT -> START, size = [%u]", m_textures.size());
+    Msg("CResourceManager::DeferredUpload [%s] -> START, size = [%u]", ps_r2_ls_flags_ext.test(R2FLAGEXT_MT_TEXLOAD) ? "MT" : "NO MT", m_textures.size());
 
     // Теперь многопоточная загрузка текстур даёт очень существенный прирост скорости, проверено.
-    std::for_each(std::execution::par_unseq, m_textures.begin(), m_textures.end(), [](auto& pair) { pair.second->Load(); });
+    if (ps_r2_ls_flags_ext.test(R2FLAGEXT_MT_TEXLOAD))
+        std::for_each(std::execution::par_unseq, m_textures.begin(), m_textures.end(), [](auto& pair) { pair.second->Load(); });
+    else
+        for (auto& pair : m_textures)
+            pair.second->Load();
 
     Msg("CResourceManager::DeferredUpload -> END");
 }
