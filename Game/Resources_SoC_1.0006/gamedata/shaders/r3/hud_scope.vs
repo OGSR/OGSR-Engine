@@ -1,7 +1,5 @@
 #include "common.h"
 
-uniform float4 screen_res; // x - width, y - height, z - 1/width, w - 1/height
-
 v2p_TL main(v_TL_positiont v)
 {
     v2p_TL O;

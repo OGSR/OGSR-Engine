@@ -30,7 +30,6 @@
 #include "shadow.h"
 
 float4 sun_shafts_intensity;
-uniform float4 screen_res;
 
 #ifdef MSAA_OPTIMIZATION
 //#ifdef GBUFFER_OPTIMIZATION
@@ -112,6 +111,10 @@ float4 main(v2p_volume I) : SV_Target
     //	Map saturation to 0.2..1
     fSturation = 0.80 * fSturation + 0.20;
 
+    float fog = saturate(length(P.xyz) * fog_params.w + fog_params.x);
+    float skyblend = fog * fog;
+
+    res = lerp(res, max_density, skyblend);
     res *= fSturation;
 
     return res * Ldynamic_color;

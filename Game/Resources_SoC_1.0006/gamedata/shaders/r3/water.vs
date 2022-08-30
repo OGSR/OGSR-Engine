@@ -28,6 +28,7 @@ struct vf
 #endif //	USE_SOFT_WATER
 #endif //	NEED_SOFT_WATER
     float4 c0 : COLOR0;
+    float4 c1 : COLOR1;
     float fog : FOG;
     float4 hpos : SV_Position;
 };
@@ -84,7 +85,10 @@ vf main(v_vert v)
     o.fog = saturate(calc_fogging(v.P));
     // o.fog		*= o.fog;
 
-    o.c0 = float4(L_final, 1);
+    float scale = s_tonemap.Load(int3(0, 0, 0)).x;
+    float h = .5f + .5f * N.y;
+    o.c0 = float4(h.xxx * v.N.w, scale);
+    o.c1 = float4(L_final, 1.h);
 
 //	Igor: for additional depth dest
 #ifdef USE_SOFT_WATER

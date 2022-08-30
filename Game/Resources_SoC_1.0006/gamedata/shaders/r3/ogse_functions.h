@@ -11,7 +11,7 @@ float normalize_depth(float depth) { return (saturate(depth / FARPLANE)); }
 // global constants
 uniform float4 ogse_c_screen; // x - fFOV, y - fAspect, z - Zf/(Zf-Zn), w - Zn*tan(fFov/2)
 
-half is_sky(float depth) { return step(abs(depth - SKY_DEPTH), SKY_EPS); }
+float is_sky(float depth) { return step(depth, SKY_EPS); }
 half is_not_sky(float depth) { return step(SKY_EPS, abs(depth - SKY_DEPTH)); }
 
 float4 proj_to_screen(float4 proj)

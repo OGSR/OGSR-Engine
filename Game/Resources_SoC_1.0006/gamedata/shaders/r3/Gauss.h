@@ -1,8 +1,6 @@
 #ifndef GAUSSBLUR_H_INCLUDED
 #define GAUSSBLUR_H_INCLUDED
 
-uniform float4 screen_res; // Screen resolution (x-Width,y-Height, zw - 1/resolution)
-
 float4 Gauss(Texture2D t2d, float2 texCoord, int factor, bool optimize)
 {
     float4 outColor = 0.f;

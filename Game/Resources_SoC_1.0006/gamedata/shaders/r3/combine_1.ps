@@ -1,6 +1,5 @@
 #include "common.h"
 
-//#define USE_SUPER_SPECULAR
 //#define USE_ORIGINAL_SSAO
 //#define HBAO_WORLD_JITTER
 
@@ -8,8 +7,6 @@
 #include "hmodel.h"
 
 uniform Texture2D s_half_depth;
-
-//#include "ssao_blur.ps"
 
 #ifdef HDAO
 #define USE_HDAO 1
@@ -102,21 +99,6 @@ _out main(_input I, uint iSample : SV_SAMPLEINDEX)
 #else
     float4 L = s_accumulator.Load(int3(I.tc0 * pos_decompression_params2.xy, 0), ISAMPLE);
 #endif
-#endif
-
-#ifdef USE_SUPER_SPECULAR
-    {
-        float ds = dot(D.rgb, 1.h / 3.h);
-        D.w = max(D.w, ds * ds / 8.h);
-    }
-#endif
-
-#ifdef FORCE_GLOSS
-    D.w = FORCE_GLOSS;
-#endif
-
-#ifdef USE_GAMMA_22
-    D.rgb = (D.rgb * D.rgb); // pow(2.2)
 #endif
 
     // static sun

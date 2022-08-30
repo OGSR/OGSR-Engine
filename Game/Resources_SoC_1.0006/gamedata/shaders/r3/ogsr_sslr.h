@@ -7,7 +7,6 @@
 
 uniform float4 SSLR_params; // x - L
 uniform float4x4 m_inv_v; 
-uniform float4 screen_res;
 
 
 float3 calc_envmap(float3 vreflect)

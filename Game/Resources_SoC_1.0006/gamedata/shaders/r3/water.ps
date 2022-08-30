@@ -20,7 +20,8 @@ struct vf
     float4 tctexgen : TEXCOORD7;
 #endif
 #endif
-    float4 c0 : COLOR0;
+    float4 c0 : COLOR0; // .w - tonemap scale
+    float4 c1 : COLOR1;
     float fog : FOG;
     float4 hpos : SV_Position;
 };
@@ -40,12 +41,34 @@ float4 main(vf I) : SV_Target
 {
     float4 base = s_base.Sample(smp_base, I.tbase);
 
-    if (rain_params.x >= 0.05f)
-        base += ripples(I.tbase, 15.f) * rain_params.x;
-
     float3 n0 = s_nmap.Sample(smp_base, I.tnorm0.xy);
     float3 n1 = s_nmap.Sample(smp_base, I.tnorm0.zw);
     float3 Navg = n0 + n1 - 1;
+
+    float lmap = pow(saturate(I.c0.x * 4), 25);
+
+#ifdef USE_SOFT_WATER
+#ifdef NEED_SOFT_WATER
+    float2 PosTc = I.tctexgen.xy / I.tctexgen.z;
+#ifdef GBUFFER_OPTIMIZATION
+    gbuffer_data gbd = gbuffer_load_data(PosTc, pos2d);
+#else
+    gbuffer_data gbd = gbuffer_load_data(PosTc);
+#endif
+    float3 _P = gbd.P;
+
+#ifdef NEED_SPLASHES
+    if (rain_params.x > 0)
+    {
+        float3 splashes = calc_rain_splashes(I.tbase * 0.5f);
+        float clearing_pos = smoothstep(5.h, 20.h, length(_P.xyz));
+        float fade = (1.h - saturate(clearing_pos * clearing_pos));
+        Navg += splashes * fade * lmap * 1.75f * rain_params.x;
+    }
+#endif
+
+#endif // USE_SOFT_WATER
+#endif // NEED_SOFT_WATER
 
     float3 Nw = mul(float3x3(I.M1, I.M2, I.M3), Navg);
     Nw = normalize(Nw);
@@ -57,46 +80,33 @@ float4 main(vf I) : SV_Target
     float power = pow(fresnel, 9);
 
     float3 env = calc_envmap(vreflect);
-    float3 c_reflection = {0.f, 0.f, 0.f};
-    // float current_time = (ogsr_game_time.x * 60 ) + ogsr_game_time.y;
+    float3 c_reflection = env;
 
-    // if (current_time > REFLS_DISABLE_TIME_START || current_time < REFLS_DISABLE_TIME_STOP)
-    //{
-    //	c_reflection = env;
-    // }
-    // else
-    //{
+#ifdef NEED_MOONROAD
+    const float sun_light_vibrance = 0.35f;
+    float3 sun_light = L_sun_color.rgb;
+    sun_light = lerp(sun_light, dot(sun_light, 0.33f), sun_light_vibrance);
+
+    float3 half_vec = normalize(v2point + L_sun_dir_w);
+    float specular = pow(abs(dot(half_vec, Nw)), 64.0f);
+    c_reflection *= 1.h + specular * 4.0f * sun_light * lmap;
+#endif
+
     float4 refl = compute_ssr(I.position_w.xyz, Nw.xyz);
     refl.xyz *= 1.6;
-    c_reflection = lerp(env.xyz, refl.xyz, refl.www);
-    //}
-
-    base.rgb *= I.c0.xyz;
+    c_reflection = lerp(c_reflection, refl.xyz, refl.www);
 
     float3 final = lerp(c_reflection, base.rgb, base.a);
-
-    final += specular_phong(v2point, Nw.xyz, L_sun_dir_w) * 4.f;
-
-    final *= I.c0 * 2;
+    final *= dot(I.c1.xyz, 0.33f) * 2.f;
 
 #ifdef NEED_SOFT_WATER
-
     float alpha = 0.55h + 0.25h * power; // 1=full env, 0=no env
-
 #ifdef USE_SOFT_WATER
-    float2 PosTc = I.tctexgen.xy / I.tctexgen.z;
-#ifdef GBUFFER_OPTIMIZATION
-    gbuffer_data gbd = gbuffer_load_data(PosTc, pos2d);
-#else
-    gbuffer_data gbd = gbuffer_load_data(PosTc);
-#endif
-    float4 _P = float4(gbd.P, gbd.mtl);
-
     //	Igor: additional depth test
     float waterDepth = _P.z - I.tctexgen.z;
 
     //	water fog
-    float fog_exp_intens = -4.0h;
+    const float fog_exp_intens = -4.0h;
     float fog = 1 - exp(fog_exp_intens * waterDepth);
     float3 Fc = float3(0.1h, 0.1h, 0.1h) * water_intensity.r;
     final = lerp(Fc, final, alpha);
