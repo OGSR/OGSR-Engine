@@ -133,6 +133,7 @@ void CLevelChanger::feel_touch_new(CObject* tpObject)
         Level().Send(p, net_flags(TRUE));
         return;
     }
+
     ChangeLevel();
 
     m_entrance_time = Device.fTimeGlobal;
@@ -171,6 +172,7 @@ void CLevelChanger::update_actor_invitation()
 {
     if (m_SilentMode)
         return;
+
     xr_vector<CObject*>::iterator it = feel_touch.begin();
     xr_vector<CObject*>::iterator it_e = feel_touch.end();
 
@@ -202,7 +204,6 @@ void CLevelChanger::ChangeLevel()
     }
 }
 
-#include "hudmanager.h"
 #include "Debug_Renderer.h"
 
 void CLevelChanger::OnRender()

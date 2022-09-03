@@ -14,6 +14,9 @@
 #include "level_graph.h"
 #include "clsid_game.h"
 
+#include "HudManager.h"
+#include "UIGameSP.h"
+
 void CLevel::ClientReceive()
 {
     Demo_StartFrame();
@@ -97,6 +100,15 @@ void CLevel::ClientReceive()
                     }
                 }
             }
+
+            {
+                // костыль для автозакрытия любого диалога в случае смены уровня
+                if (HUD().GetUI()->MainInputReceiver())
+                {
+                    HUD().GetUI()->StartStopMenu(HUD().GetUI()->MainInputReceiver(), true);
+                }
+            }
+
             Engine.Event.Defer("KERNEL:disconnect");
             Engine.Event.Defer("KERNEL:start", size_t(xr_strdup(*m_caServerOptions)), size_t(xr_strdup(*m_caClientOptions)));
         }
