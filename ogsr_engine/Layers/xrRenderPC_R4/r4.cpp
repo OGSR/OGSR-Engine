@@ -592,6 +592,8 @@ IRenderVisual* CRender::model_CreateParticles(LPCSTR name)
 }
 void CRender::models_Prefetch() { Models->Prefetch(); }
 void CRender::models_Clear(BOOL b_complete) { Models->ClearPool(b_complete); }
+void CRender::models_savePrefetch() { Models->save_vis_prefetch(); }
+void CRender::models_begin_prefetch1(bool val) { Models->begin_prefetch1(val); }
 
 ref_shader CRender::getShader(int id)
 {

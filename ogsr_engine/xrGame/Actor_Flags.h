@@ -23,16 +23,16 @@ enum
     AF_EFFECTS_ON_DEMORECORD = 1 << 18,
 };
 
-enum
-{
-    CF_KEY_PRESS = (1 << 0),
-    CF_KEY_HOLD = (1 << 1),
-    CF_KEY_RELEASE = (1 << 2),
-    CF_MOUSE_MOVE = (1 << 3),
-    CF_MOUSE_WHEEL_ROT = (1 << 4),
-};
+//enum
+//{
+//    CF_KEY_PRESS = (1 << 0),
+//    CF_KEY_HOLD = (1 << 1),
+//    CF_KEY_RELEASE = (1 << 2),
+//    CF_MOUSE_MOVE = (1 << 3),
+//    CF_MOUSE_WHEEL_ROT = (1 << 4),
+//};
 
 extern Flags32 psActorFlags;
-extern Flags32 psCallbackFlags;
+//extern Flags32 psCallbackFlags;
 
 extern BOOL GodMode();

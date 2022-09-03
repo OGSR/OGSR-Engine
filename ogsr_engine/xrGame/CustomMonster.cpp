@@ -107,7 +107,8 @@ CCustomMonster::~CCustomMonster()
     Msg("dumping client spawn manager stuff for object with id %d", ID());
     Level().client_spawn_manager().dump(ID());
 #endif // DEBUG
-    Level().client_spawn_manager().clear(ID());
+	if ( g_pGameLevel )
+	  Level().client_spawn_manager().clear(ID());
 }
 
 void CCustomMonster::Load(LPCSTR section)

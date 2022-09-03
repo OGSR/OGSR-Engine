@@ -160,6 +160,7 @@ public:
     virtual ~CObject();
 
     virtual void Load(LPCSTR section);
+    virtual void reload(LPCSTR section) {};
 
     // Update
     virtual void shedule_Update(u32 dt); // Called by sheduler

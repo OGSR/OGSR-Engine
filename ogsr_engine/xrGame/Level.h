@@ -198,6 +198,7 @@ public:
     void cl_Process_Spawn(NET_Packet& P);
     void ProcessGameEvents();
     void ProcessGameSpawns();
+    void ProcessGameSpawnsDestroy(u16 dest, u16 type, NET_Packet& P);
 
     // Input
     virtual void IR_OnKeyboardPress(int btn);

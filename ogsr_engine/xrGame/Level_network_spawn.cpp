@@ -39,6 +39,30 @@ void CLevel::cl_Process_Spawn(NET_Packet& P)
         return;
     }
 
+    if (Device.dwPrecacheFrame == 0)
+    {
+        CSE_ALifeMonsterAbstract* monster = smart_cast<CSE_ALifeMonsterAbstract*>(E);
+        CSE_ALifeTraderAbstract* trader = smart_cast<CSE_ALifeTraderAbstract*>(E);
+        bool postpone = ((trader || monster) && !is_removing_objects()) ? true : false;
+        if (!(monster || trader))
+        {
+            for (const auto& it : game_spawn_queue)
+            {
+                if (E->ID_Parent == it->ID)
+                {
+                    postpone = true;
+                    break;
+                }
+            }
+        }
+        if (postpone)
+        {
+            //Msg( "* [%s]: delay spawn ID[%d] ID_Parent[%d] name_replace[%s]", __FUNCTION__, E->ID, E->ID_Parent, E->name_replace() );
+            game_spawn_queue.push_back(E);
+            return;
+        }
+    }
+
     /*
     game_spawn_queue.push_back(E);
     if (g_bDebugEvents)		ProcessGameSpawns();
@@ -181,16 +205,72 @@ CSE_Abstract* CLevel::spawn_item(LPCSTR section, const Fvector& position, u32 le
         return (abstract);
 }
 
+
 void CLevel::ProcessGameSpawns()
 {
+    CSE_Abstract* trader = nullptr;
     while (!game_spawn_queue.empty())
     {
         CSE_Abstract* E = game_spawn_queue.front();
-
-        g_sv_Spawn(E);
-
-        F_entity_Destroy(E);
-
         game_spawn_queue.pop_front();
+        //Msg( "* [%s]: delayed spawn dwFrame[%u] ID[%d] ID_Parent[%d] name_replace[%s]", __FUNCTION__, Device.dwFrame, E->ID, E->ID_Parent, E->name_replace() );
+        g_sv_Spawn(E);
+        if (smart_cast<CSE_ALifeMonsterAbstract*>(E) || smart_cast<CSE_ALifeTraderAbstract*>(E))
+        {
+            trader = E;
+            break;
+        }
+        F_entity_Destroy(E);
     }
+
+    if (trader)
+    {
+        for (auto& E : game_spawn_queue)
+        {
+            if (E->ID_Parent == trader->ID)
+            {
+                // Msg( "* [%s]: delayed spawn dwFrame[%u] trader[%d] ID[%d] ID_Parent[%d] name_replace[%s]", __FUNCTION__, Device.dwFrame, trader->ID, E->ID, E->ID_Parent,
+                // E->name_replace() );
+                g_sv_Spawn(E);
+            }
+        }
+        game_spawn_queue.erase(std::remove_if(game_spawn_queue.begin(), game_spawn_queue.end(), [&](auto& E) { return E->ID_Parent == trader->ID; }), game_spawn_queue.end());
+        F_entity_Destroy(trader);
+    }
+}
+
+void CLevel::ProcessGameSpawnsDestroy(u16 dest, u16 type, NET_Packet& P)
+{
+    if (type != GE_DESTROY && type != GE_DESTROY_REJECT)
+        return;
+
+    if (type == GE_DESTROY_REJECT)
+    {
+        u32 pos = P.r_tell();
+        dest = P.r_u16();
+        P.r_seek(pos);
+    }
+
+    game_spawn_queue.erase(std::remove_if(game_spawn_queue.begin(), game_spawn_queue.end(),
+                                          [&](auto& E) {
+                                              if (type == GE_DESTROY)
+                                              {
+                                                  if (E->ID == dest || E->ID_Parent == dest)
+                                                  {
+                                                      // Msg( "* [CLevel::ProcessGameSpawnsDestroy]: delayed spawn GE_DESTROY dest[%d] ID[%d] ID_Parent[%d] name_replace[%s]", dest,
+                                                      // E->ID, E->ID_Parent, E->name_replace() );
+                                                      F_entity_Destroy(E);
+                                                      return true;
+                                                  }
+                                              }
+                                              else if (E->ID == dest)
+                                              { // type == GE_DESTROY_REJECT
+                                                  // Msg( "* [CLevel::ProcessGameSpawnsDestroy]: delayed spawn GE_DESTROY_REJECT dest[%d] ID[%d] ID_Parent[%d] name_replace[%s]",
+                                                  // dest, E->ID, E->ID_Parent, E->name_replace() );
+                                                  F_entity_Destroy(E);
+                                                  return true;
+                                              }
+                                              return false;
+                                          }),
+                           game_spawn_queue.end());
 }

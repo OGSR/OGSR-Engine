@@ -13,6 +13,8 @@ ENGINE_API IGame_Persistent* g_pGamePersistent = NULL;
 
 ENGINE_API bool IsMainMenuActive() { return g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive(); }
 
+ENGINE_API BOOL g_prefetch;
+
 IGame_Persistent::IGame_Persistent()
 {
     Device.seqAppStart.Add(this);
@@ -92,34 +94,33 @@ void IGame_Persistent::Disconnect()
     if (g_hud)
         g_hud->OnDisconnected();
 
-    // Kill object - save memory
-    ObjectPool.clear();
-    Render->models_Clear(TRUE); // У нас вызывается ещё и в CLevel::remove_objects() Если что - убрать оттуда, пусть будет тут.
+    if (!g_prefetch) // очистка при выходе из игры в главное меню
+    {
+        ObjectPool.clear();
+    }
 }
 
 void IGame_Persistent::OnGameStart()
 {
-    // KRodin: префетчинг выключен ввиду своей бесполезности и прожорливости.
-    /*
-        LoadTitle								("st_prefetching_objects");
-        if (strstr(Core.Params,"-noprefetch"))	return;
+    LoadTitle("st_prefetching_objects");
 
-        // prefetch game objects & models
-        float	p_time		=			1000.f*Device.GetTimerGlobal()->GetElapsed_sec();
-        u32	mem_0			=			Memory.mem_usage()	;
+    if (!g_prefetch)
+        return;
 
-        Log				("Loading objects...");
-        ObjectPool.prefetch					();
-        Log				("Loading models...");
-        Render->models_Prefetch				();
-        Device.Resources->DeferredUpload	();
+    // prefetch game objects & models
+    float p_time = 1000.f * Device.GetTimerGlobal()->GetElapsed_sec();
+    u32 mem_0 = Memory.mem_usage();
 
-        p_time				=			1000.f*Device.GetTimerGlobal()->GetElapsed_sec() - p_time;
-        u32		p_mem		=			Memory.mem_usage() - mem_0	;
+    Log("Loading objects...");
+    ObjectPool.prefetch();
+    Log("Loading models...");
+    Render->models_Prefetch();
 
-        Msg					("* [prefetch] time:    %d ms",	iFloor(p_time));
-        Msg					("* [prefetch] memory:  %dKb",	p_mem/1024);
-    */
+    p_time = 1000.f * Device.GetTimerGlobal()->GetElapsed_sec() - p_time;
+    u32 p_mem = Memory.mem_usage() - mem_0;
+
+    Msg("* [prefetch] time:    %d ms", iFloor(p_time));
+    Msg("* [prefetch] memory:  %dKb", p_mem / 1024);
 }
 
 void IGame_Persistent::OnGameEnd()
@@ -201,6 +202,9 @@ void IGame_Persistent::destroy_particles(const bool& all_particles)
         }
     }
 }
+
+void IGame_Persistent::models_savePrefetch() { Render->models_savePrefetch(); }
+
 
 void IGame_Persistent::GrassBendersUpdate(const u16 id, size_t& data_idx, u32& data_frame, const Fvector& position)
 {

@@ -14,6 +14,7 @@
 #include "../Include/xrRender/RenderDeviceRender.h"
 #include "xr_object.h"
 #include "SkeletonMotions.h"
+#include "IGame_Persistent.h"
 
 xr_token* vid_quality_token = nullptr;
 
@@ -770,4 +771,6 @@ void CCC_Register()
 
     CMD4(CCC_Float, "rain_puddles_drying", &puddles_drying, 0.1f, 20.0f);
     CMD4(CCC_Float, "rain_puddles_wetting", &puddles_wetting, 0.1f, 20.0f);
+
+    CMD4(CCC_Integer, "g_prefetch", &g_prefetch, 0, 1);
 };

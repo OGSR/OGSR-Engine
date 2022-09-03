@@ -239,7 +239,8 @@ void CAI_Stalker::LoadSounds(LPCSTR section)
 
 void CAI_Stalker::reload(LPCSTR section)
 {
-    brain().setup(this);
+	if ( Ready() )
+	  brain().setup( this );
 
     CCustomMonster::reload(section);
     if (!already_dead())

@@ -300,9 +300,9 @@ void CEntity::reinit() { inherited::reinit(); }
 
 void CEntity::reload(LPCSTR section)
 {
-    inherited::reload(section);
-    if (!use_simplified_visual())
-        CDamageManager::reload(section, "damage", pSettings);
+	inherited::reload			(section);
+	if ( Ready() && !use_simplified_visual() )
+		CDamageManager::reload	(section,"damage",pSettings);
 }
 
 void CEntity::set_death_time()
