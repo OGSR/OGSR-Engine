@@ -90,7 +90,7 @@ void HUD_SOUND::PlaySound(HUD_SOUND& hud_snd, const Fvector& position, const COb
     if (!overlap)
         StopSound(hud_snd);
 
-    u32 flags = (!IS_OGSR_GA && b_hud_mode) ? sm_2D : 0;
+    u32 flags = b_hud_mode ? sm_2D : 0;
     if (looped)
         flags |= sm_Looped;
 
