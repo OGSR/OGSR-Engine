@@ -85,6 +85,13 @@ void CLevel::ClientReceive()
         case M_RELOAD_GAME:
         case M_LOAD_GAME:
         case M_CHANGE_LEVEL: {
+
+            // костыль для автозакрытия любого диалога в случае смены уровня
+            if (HUD().GetUI()->MainInputReceiver())
+            {
+                HUD().GetUI()->StartStopMenu(HUD().GetUI()->MainInputReceiver(), true);
+            }
+
             if (m_type == M_LOAD_GAME)
             {
                 string256 saved_name;
@@ -98,14 +105,6 @@ void CLevel::ClientReceive()
 
                         break;
                     }
-                }
-            }
-
-            {
-                // костыль для автозакрытия любого диалога в случае смены уровня
-                if (HUD().GetUI()->MainInputReceiver())
-                {
-                    HUD().GetUI()->StartStopMenu(HUD().GetUI()->MainInputReceiver(), true);
                 }
             }
 
