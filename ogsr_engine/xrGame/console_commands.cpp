@@ -503,6 +503,8 @@ public:
         if (MainMenu()->IsActive())
             MainMenu()->Activate(false);
 
+        Console->Hide();
+
         if (Device.Paused())
             Device.Pause(FALSE, TRUE, TRUE, "CCC_ALifeLoadFrom");
 
