@@ -263,8 +263,8 @@ void CLevel::ProcessGameSpawnsDestroy(u16 dest, u16 type, NET_Packet& P)
                                                       return true;
                                                   }
                                               }
-                                              else if (E->ID == dest)
-                                              { // type == GE_DESTROY_REJECT
+                                              else if (E->ID == dest) // type == GE_DESTROY_REJECT
+                                              { 
                                                   // Msg( "* [CLevel::ProcessGameSpawnsDestroy]: delayed spawn GE_DESTROY_REJECT dest[%d] ID[%d] ID_Parent[%d] name_replace[%s]",
                                                   // dest, E->ID, E->ID_Parent, E->name_replace() );
                                                   F_entity_Destroy(E);
