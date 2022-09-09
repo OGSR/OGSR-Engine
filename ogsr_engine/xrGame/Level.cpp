@@ -374,7 +374,8 @@ void CLevel::ProcessGameEvents()
         }
     }
 
-    Device.seqParallel.push_back(fastdelegate::MakeDelegate(this, &CLevel::ProcessGameSpawns));
+    if (!is_removing_objects())
+        Device.seqParallel.push_back(fastdelegate::MakeDelegate(this, &CLevel::ProcessGameSpawns));
 }
 
 void CLevel::OnFrame()
