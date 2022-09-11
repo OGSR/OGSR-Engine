@@ -375,12 +375,10 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
 
     // Title window
     logoWindow = CreateDialog(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDD_STARTUP), nullptr, logDlgProc);
-    HWND logoInsertPos = HWND_TOPMOST;
-    if (IsDebuggerPresent())
-    {
-        logoInsertPos = HWND_NOTOPMOST;
-    }
-    SetWindowPos(logoWindow, logoInsertPos, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+    HWND logoInsertPos = IsDebuggerPresent() ? HWND_NOTOPMOST : HWND_TOPMOST;
+
+    // mmccxvii: захардкорил размер битмапа, чтобы не было бага, связанного с увеличенным масштабом интерфейса винды
+    SetWindowPos(logoWindow, logoInsertPos, 0, 0, 798, 530, SWP_NOMOVE | SWP_SHOWWINDOW);
 
     LPCSTR fsgame_ltx_name = "-fsltx ";
     string_path fsgame = "";
