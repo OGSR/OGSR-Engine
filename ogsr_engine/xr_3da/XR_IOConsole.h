@@ -75,6 +75,7 @@ public:
 
     void Save();
     void Execute(LPCSTR cmd);
+    void Execute(LPCSTR cmd, LPCSTR arg);
     void ExecuteScript(LPCSTR name);
     void ExecuteCommand(bool = false);
 

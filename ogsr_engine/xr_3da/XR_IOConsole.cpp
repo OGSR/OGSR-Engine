@@ -517,6 +517,21 @@ void CConsole::Execute(LPCSTR cmd)
     ExecuteCommand();
     RecordCommands = true;
 }
+
+void CConsole::Execute(LPCSTR cmd, LPCSTR arg)
+{
+    auto C = GetCommand(cmd);
+    if (C)
+    {
+        if (arg[0] == 0 && !C->bEmptyArgsHandled)
+            Msg("! [%s]: command '%s' requires arg", __FUNCTION__, cmd);
+        else
+            C->Execute(arg);
+    }
+    else
+        Msg("! [%s]: unknown command '%s'", __FUNCTION__, cmd);
+}
+
 void CConsole::ExecuteScript(LPCSTR N)
 {
     string_path cmd;
