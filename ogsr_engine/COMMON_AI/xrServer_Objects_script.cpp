@@ -114,6 +114,7 @@ void CSE_Visual::script_register(lua_State* L)
     module(L)[class_<CSE_Visual>("cse_visual")
               //			.def(		constructor<>())
               //			.def(		constructor<LPCSTR>())
+                  .def_readwrite("visual_name", &CSE_Visual::visual_name)
     ];
 }
 
