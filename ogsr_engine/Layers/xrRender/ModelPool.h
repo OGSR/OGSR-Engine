@@ -53,6 +53,11 @@ private:
     void refresh_prefetch(LPCSTR low_name);
     void process_vis_prefetch();
 
+    CInifile* vis_prefetch_ini = nullptr;
+
+    bool now_prefetch1 = false;
+    bool now_prefetch2 = false;
+
 public:
     CModelPool();
     virtual ~CModelPool();

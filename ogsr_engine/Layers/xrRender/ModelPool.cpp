@@ -17,10 +17,6 @@
 #include "ParticleGroup.h"
 #include "ParticleEffect.h"
 
-CInifile* vis_prefetch = nullptr;
-bool now_prefetch1 = false;
-bool now_prefetch2 = false;
-
 dxRender_Visual* CModelPool::Instance_Create(u32 type)
 {
     dxRender_Visual* V = NULL;
@@ -169,8 +165,8 @@ void CModelPool::Destroy()
     // cleanup motions container
     g_pMotionsContainer->clean(false);
 
-    if (vis_prefetch)
-        vis_prefetch->save_as();
+    if (vis_prefetch_ini)
+        vis_prefetch_ini->save_as();
 
     m_prefetched.clear();
 }
@@ -182,20 +178,17 @@ CModelPool::CModelPool()
     bAllowChildrenDuplicate = TRUE;
     g_pMotionsContainer = xr_new<motions_container>();
 
-    if (!vis_prefetch)
-    {
-        string_path fname;
-        FS.update_path(fname, "$app_data_root$", "vis_prefetch.ltx");
-        vis_prefetch = xr_new<CInifile>(fname, FALSE);
-        process_vis_prefetch();
-    }
+    string_path fname;
+    FS.update_path(fname, "$app_data_root$", "vis_prefetch.ltx");
+    vis_prefetch_ini = xr_new<CInifile>(fname, FALSE);
+    process_vis_prefetch();
 }
 
 CModelPool::~CModelPool()
 {
     Destroy();
     xr_delete(g_pMotionsContainer);
-    xr_delete(vis_prefetch);
+    xr_delete(vis_prefetch_ini);
 }
 
 dxRender_Visual* CModelPool::Instance_Find(LPCSTR N)
@@ -270,14 +263,15 @@ void CModelPool::refresh_prefetch(LPCSTR low_name)
         return;
 
     if (now_prefetch1)
+    {
         m_prefetched.emplace(s, true);
-
-    else if (vis_prefetch)
+    }
+    else if (vis_prefetch_ini)
     {
         shared_str fname;
         bool is_global = !!FS.exist("$game_meshes$", *fname.sprintf("%s.ogf", low_name));
         if (is_global)
-            vis_prefetch->w_float("prefetch", low_name, 1.f);
+            vis_prefetch_ini->w_float("prefetch", low_name, 1.f);
     }
 }
 
@@ -429,14 +423,14 @@ void CModelPool::Prefetch()
     }
     begin_prefetch1(false);
 
-    if (!vis_prefetch || !vis_prefetch->section_exist("prefetch"))
+    if (!vis_prefetch_ini || !vis_prefetch_ini->section_exist("prefetch"))
     {
         Msg("[%s] models prefetching time (%zi): [%.2f s.]", __FUNCTION__, cnt, timer.GetElapsed_sec());
         return;
     }
 
     now_prefetch2 = true;
-    sect = vis_prefetch->r_section("prefetch");
+    sect = vis_prefetch_ini->r_section("prefetch");
     for (const auto& it : sect.Data)
     {
         const shared_str& low_name = it.first;
@@ -464,10 +458,10 @@ void CModelPool::ClearPool(BOOL b_complete)
 {
     for (auto& I : Pool)
     {
-        if (!b_complete && vis_prefetch)
+        if (!b_complete && vis_prefetch_ini)
         {
             std::string s(I.first.c_str());
-            if (m_prefetched.find(s) == m_prefetched.end() && !vis_prefetch->line_exist("prefetch", I.first.c_str()))
+            if (m_prefetched.find(s) == m_prefetched.end() && !vis_prefetch_ini->line_exist("prefetch", I.first.c_str()))
                 b_complete = TRUE;
         }
         Discard(I.second, b_complete);
@@ -584,18 +578,18 @@ void CModelPool::memory_stats(u32& vb_mem_video, u32& vb_mem_system, u32& ib_mem
 
 void CModelPool::save_vis_prefetch()
 {
-    if (vis_prefetch)
+    if (vis_prefetch_ini)
     {
         process_vis_prefetch();
-        vis_prefetch->save_as();
+        vis_prefetch_ini->save_as();
     }
 }
 
 void CModelPool::process_vis_prefetch()
 {
-    if (!vis_prefetch->section_exist("prefetch"))
+    if (!vis_prefetch_ini->section_exist("prefetch"))
         return;
-    auto& sect = vis_prefetch->r_section("prefetch");
+    auto& sect = vis_prefetch_ini->r_section("prefetch");
     std::vector<std::string> expired;
     for (auto& it : sect.Data)
     {
@@ -604,10 +598,10 @@ void CModelPool::process_vis_prefetch()
         float rnd = Random.randF() - 0.5f;
         float val = need + rnd * 0.1f;
         if (val > 0.1f)
-            vis_prefetch->w_float("prefetch", it.first.c_str(), val);
+            vis_prefetch_ini->w_float("prefetch", it.first.c_str(), val);
         else
             expired.emplace_back(it.first.c_str());
     }
     for (const auto& s : expired)
-        vis_prefetch->remove_line("prefetch", s.c_str());
+        vis_prefetch_ini->remove_line("prefetch", s.c_str());
 }
