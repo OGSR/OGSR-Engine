@@ -358,8 +358,15 @@ void CBurer::UpdateGraviObject()
     for (u32 i = 0; i < m_nearest.size(); i++)
     {
         CPhysicsShellHolder* obj = smart_cast<CPhysicsShellHolder*>(m_nearest[i]);
-        if (!obj || !obj->m_pPhysicsShell)
-            continue;
+        if (
+		  !obj ||
+		  !obj->m_pPhysicsShell ||
+		  (obj->spawn_ini() && obj->spawn_ini()->section_exist( "ph_heavy" )) || 
+          (pSettings->line_exist( obj->cNameSect().c_str(), "ph_heavy" ) && pSettings->r_bool( obj->cNameSect().c_str(), "ph_heavy" )) ||
+		  (pSettings->line_exist( obj->cNameSect().c_str(), "quest_item" ) && pSettings->r_bool( obj->cNameSect().c_str(), "quest_item" )) ||
+		  obj->hasFixedBones() ||
+		  !obj->m_pPhysicsShell->get_ApplyByGravity()
+		) continue;
 
         Fvector dir;
         dir.sub(obj->Position(), m_gravi_object.cur_pos);
