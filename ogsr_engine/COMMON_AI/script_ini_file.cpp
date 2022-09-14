@@ -12,9 +12,8 @@
 #include "ai_space.h"
 #include "object_factory.h"
 
+CScriptIniFile::CScriptIniFile(LPCSTR szFileName, bool updatePath) : inherited(updatePath ? update(szFileName) : szFileName, TRUE, TRUE, TRUE) {}
 CScriptIniFile::CScriptIniFile(IReader* F, LPCSTR path) : inherited(F, path) {}
-
-CScriptIniFile::CScriptIniFile(LPCSTR szFileName, BOOL ReadOnly, BOOL bLoadAtStart, BOOL SaveAtEnd) : inherited(update(szFileName), ReadOnly, bLoadAtStart, SaveAtEnd) {}
 
 CScriptIniFile::~CScriptIniFile() {}
 
