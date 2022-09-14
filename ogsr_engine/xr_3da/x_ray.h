@@ -38,7 +38,7 @@ public:
     // Loading
     void LoadBegin();
     void LoadEnd();
-    void LoadTitleInt(LPCSTR str1, LPCSTR str2, LPCSTR str3); // 100 советов по выживанию в Зоне
+    void LoadTitleInt(); // 100 советов по выживанию в Зоне
     void LoadStage();
     void LoadDraw();
     void LoadForceFinish();

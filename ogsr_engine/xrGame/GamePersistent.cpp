@@ -727,6 +727,11 @@ void CGamePersistent::LoadTitle(const char* str)
     Discord.Update(tittle);
 }
 
+void CGamePersistent::SetTip() 
+{
+    pApp->LoadTitleInt();
+}
+
 bool CGamePersistent::CanBePaused() { return (g_pGamePersistent->GameType() == GAME_SINGLE); }
 
 bool CGamePersistent::OnKeyboardPress(int dik)

@@ -13,9 +13,10 @@
 #include "UIHelper.h"
 #include "xrUIXmlParser.h"
 #include "UIXmlInit.h"
+#include "string_table.h"
 
 UILoadingScreen::UILoadingScreen()
-    : loadingProgress(nullptr), loadingProgressPercent(nullptr), loadingLogo(nullptr), loadingStage(nullptr), loadingHeader(nullptr), loadingTipNumber(nullptr), loadingTip(nullptr)
+    : loadingProgress(nullptr), loadingProgressPercent(nullptr), loadingLogo(nullptr), loadingStage(nullptr), loadingHeader(nullptr), loadingTipNumber(nullptr), loadingTip(nullptr), maxTip(100)
 {
     UILoadingScreen::Initialize();
 }
@@ -44,9 +45,13 @@ void UILoadingScreen::Initialize()
     loadingLogo = UIHelper::CreateStatic(uiXml, "loading_logo", this, false);
     loadingProgressPercent = UIHelper::CreateStatic(uiXml, "loading_progress_percent", this, false);
     loadingStage = UIHelper::CreateStatic(uiXml, "loading_stage", this, false);
+
     loadingHeader = UIHelper::CreateStatic(uiXml, "loading_header", this, false);
+
     loadingTipNumber = UIHelper::CreateStatic(uiXml, "loading_tip_number", this, false);
     loadingTip = UIHelper::CreateStatic(uiXml, "loading_tip", this, false);
+
+    maxTip = uiXml.ReadAttribInt("loading_tip", 0, "number_of_tips", maxTip);
 }
 
 void UILoadingScreen::Update(const int stagesCompleted, const int stagesTotal)
@@ -120,13 +125,29 @@ void UILoadingScreen::SetStageTitle(const char* title)
     loadingStage->SetText(title);
 }
 
-void UILoadingScreen::SetStageTip(const char* header, const char* tipNumber, const char* tip)
+void UILoadingScreen::SetStageTip()
 {
     std::scoped_lock<decltype(loadingLock)> lock(loadingLock);
 
-    loadingHeader->SetText(header);
-    loadingTipNumber->SetText(tipNumber);
-    loadingTip->SetText(tip);
+    u8 tip_num = Random.randI(1, maxTip);
+
+    string512 buff;
+
+    if (loadingHeader)
+    {
+        loadingHeader->SetText(CStringTable().translate("ls_header").c_str());
+    }
+    if (loadingTipNumber)
+    {
+        xr_sprintf(buff, "%s%d:", CStringTable().translate("ls_tip_number").c_str(), tip_num);
+        shared_str tipNumber = buff;
+        loadingTipNumber->SetText(tipNumber.c_str());
+    }
+    if (loadingTip)
+    {
+        xr_sprintf(buff, "ls_tip_%d", tip_num);
+        loadingTip->SetText(CStringTable().translate(buff).c_str());
+    }
 }
 
 void UILoadingScreen::Show(bool status) { CUIWindow::Show(status); }

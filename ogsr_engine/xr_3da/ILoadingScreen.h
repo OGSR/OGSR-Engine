@@ -24,5 +24,5 @@ public:
 
     virtual void SetLevelLogo(const char* name) = 0;
     virtual void SetStageTitle(const char* title) = 0;
-    virtual void SetStageTip(const char* header, const char* tipNumber, const char* tip) = 0;
+    virtual void SetStageTip() = 0;
 };
