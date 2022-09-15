@@ -786,7 +786,7 @@ static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params)
 static float GetDofZoomDist()
 {
     collide::rq_result& RQ = HUD().GetCurrentRayQuery();
-    if (!RQ.O)
+    if (!RQ.O && RQ.valid())
     {
         CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + RQ.element;
         if (T->material < GMLib.CountMaterial())
