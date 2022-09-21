@@ -9,12 +9,11 @@ private:
     using MotionVec = xr_vector<COMotion*>;
 
 protected:
-    bool bLoop;
 
     shared_str m_Name;
 
     Fmatrix m_XFORM;
-    SAnimParams m_MParam;
+
     MotionVec m_Motions;
     float m_Speed;
 
@@ -26,6 +25,9 @@ protected:
 public:
     CObjectAnimator();
     virtual ~CObjectAnimator();
+
+    bool bLoop;
+    SAnimParams m_MParam;
 
     void Clear();
     void Load(LPCSTR name);

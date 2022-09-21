@@ -15,6 +15,7 @@
 #include "UI/UIGameTutorial.h"
 #include "string_table.h"
 #include "object_broker.h"
+#include "player_hud.h"
 
 using namespace luabind;
 
@@ -40,6 +41,25 @@ void stop_tutorial()
     if (g_tutorial)
         g_tutorial->Stop();
 }
+
+u32 PlayHudMotion(u8 hand, LPCSTR hud_section, LPCSTR anm_name, bool bMixIn = true, float speed = 1.f)
+{
+    return g_player_hud->script_anim_play(hand, hud_section, anm_name, bMixIn, speed);
+}
+
+void StopHudMotion() { g_player_hud->script_anim_stop(); }
+
+float MotionLength(LPCSTR hud_section, LPCSTR anm_name, float speed) { return g_player_hud->motion_length_script(hud_section, anm_name, speed); }
+
+bool AllowHudMotion() { return g_player_hud->allow_script_anim(); }
+
+void PlayBlendAnm(LPCSTR name, u8 part, float speed, float power, bool bLooped, bool no_restart) { g_player_hud->PlayBlendAnm(name, part, speed, power, bLooped, no_restart); }
+
+void StopBlendAnm(LPCSTR name, bool bForce) { g_player_hud->StopBlendAnm(name, bForce); }
+
+void StopAllBlendAnms(bool bForce) { g_player_hud->StopAllBlendAnms(bForce); }
+
+float SetBlendAnmTime(LPCSTR name, float time) { return g_player_hud->SetBlendAnmTime(name, time); }
 
 LPCSTR translate_string(LPCSTR str) { return *CStringTable().translate(str); }
 
@@ -79,13 +99,19 @@ void game_sv_GameState::script_register(lua_State* L)
                        .def("dateToString", &xrTime::dateToString)
                        .def("timeToString", &xrTime::timeToString),
 
+
                    // declarations
                    def("time", &get_time), def("get_game_time", &get_time_struct),
                    //	def("get_surge_time",	Game::get_surge_time),
                    //	def("get_object_by_name",Game::get_object_by_name),
 
                    def("start_tutorial", &start_tutorial), def("stop_tutorial", &stop_tutorial), def("has_active_tutorial", &has_active_tutotial),
-                   def("translate_string", &translate_string)
+                   def("translate_string", &translate_string),
+                   def("play_hud_motion", PlayHudMotion), def("stop_hud_motion", StopHudMotion), def("get_motion_length", MotionLength),
+                   def("hud_motion_allowed", AllowHudMotion),
+                   def("play_hud_anm", PlayBlendAnm), def("stop_hud_anm", StopBlendAnm), def("stop_all_hud_anms", StopAllBlendAnms),
+                   def("set_hud_anm_time", SetBlendAnmTime)
+
 
     ];
 

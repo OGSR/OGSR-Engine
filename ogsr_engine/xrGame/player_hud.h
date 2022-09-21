@@ -1,8 +1,10 @@
 #pragma once
 #include "firedeps.h"
 
+#include "../xr_3da/ObjectAnimator.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
+
 #include "actor_defs.h"
 
 class player_hud;
@@ -30,7 +32,13 @@ struct player_hud_motion_container
 {
     string_unordered_map<shared_str, player_hud_motion> m_anims;
     player_hud_motion* find_motion(const shared_str& name);
-    void load(attachable_hud_item* parent, IKinematicsAnimated* model, IKinematicsAnimated* animatedHudItem, const shared_str& sect);
+    void load(bool has_separated_hands, IKinematicsAnimated* model, IKinematicsAnimated* animatedHudItem, const shared_str& sect);
+};
+
+struct hand_motions
+{
+    shared_str section;
+    player_hud_motion_container pm;
 };
 
 struct hud_item_measures
@@ -80,6 +88,56 @@ struct hud_item_measures
     void load(const shared_str& sect_name, IKinematics* K);
 
     bool useCopFirePoint{};
+};
+
+struct script_layer
+{
+    shared_str m_name;
+    CObjectAnimator* anm;
+    float blend_amount;
+    float m_power;
+    bool active;
+    Fmatrix blend;
+    u8 m_part;
+
+    script_layer(LPCSTR name, u8 part, float speed = 1.f, float power = 1.f, bool looped = true)
+    {
+        m_name = name;
+        m_part = part;
+        m_power = power;
+        blend.identity();
+        anm = xr_new<CObjectAnimator>();
+        anm->Load(name);
+        anm->Play(looped);
+        anm->Speed() = speed;
+        blend_amount = 0.f;
+        active = true;
+    }
+
+    bool IsPlaying() { return anm->IsPlaying(); }
+
+    void Stop(bool bForce)
+    {
+        if (bForce)
+        {
+            anm->Stop();
+            blend_amount = 0.f;
+            blend.identity();
+        }
+
+        active = false;
+    }
+
+    const Fmatrix& XFORM()
+    {
+        blend.set(anm->XFORM());
+        blend.mul(blend_amount * m_power);
+        blend.m[0][0] = 1.f;
+        blend.m[1][1] = 1.f;
+        blend.m[2][2] = 1.f;
+
+        return blend;
+    }
 };
 
 struct attachable_hud_item
@@ -134,7 +192,7 @@ class player_hud
 public:
     player_hud();
     ~player_hud();
-    void load(const shared_str& model_name);
+    void load(const shared_str& model_name, bool force = false);
     void load_default() { load("actor_hud_05"); };
     void update(const Fmatrix& trans);
     void render_hud();
@@ -142,6 +200,7 @@ public:
     bool render_item_ui_query();
     u32 anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CMotionDef*& md, float speed, bool hasHands, IKinematicsAnimated* itemModel = nullptr,
                   u16 override_part = u16(-1));
+
     const shared_str& section_name() const { return m_sect_name; }
     attachable_hud_item* create_hud_item(const shared_str& sect);
 
@@ -158,6 +217,7 @@ public:
 
     void calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result);
     void tune(const Ivector& values);
+    u32 motion_length(const motion_descr& M, const CMotionDef*& md, float speed);
     u32 motion_length(const motion_descr& M, const CMotionDef*& md, float speed, bool hasHands, IKinematicsAnimated* itemModel, attachable_hud_item* pi = nullptr);
     u32 motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md);
     void OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd);
@@ -178,6 +238,42 @@ public:
         target_thumb01rot.set(0.f, 0.f, 0.f);
         target_thumb02rot.set(0.f, 0.f, 0.f);
     }
+
+    void load_script(LPCSTR section);
+    void reset_model_script()
+    {
+        script_override_arms = false;
+        load(m_sect_name, true);
+    };
+
+    u32 script_anim_play(u8 hand, LPCSTR itm_name, LPCSTR anm_name, bool bMixIn = true, float speed = 1.f);
+    void script_anim_stop();
+    u32 motion_length_script(LPCSTR section, LPCSTR anm_name, float speed);
+    bool allow_script_anim();
+
+    u8 script_anim_part;
+    Fvector script_anim_offset[2];
+    u32 script_anim_end;
+    float script_anim_offset_factor;
+    bool m_bStopAtEndAnimIsRunning;
+    bool script_anim_item_attached;
+    bool script_override_arms;
+    IKinematicsAnimated* script_anim_item_model;
+    xr_vector<script_layer*> m_script_layers;
+
+    Fvector item_pos[2];
+    Fmatrix m_item_pos;
+    u8 m_attach_idx;
+
+    xr_vector<hand_motions*> m_hand_motions;
+    player_hud_motion_container* get_hand_motions(LPCSTR section);
+
+	void PlayBlendAnm(LPCSTR name, u8 part = 0, float speed = 1.f, float power = 1.f, bool bLooped = true, bool no_restart = false);
+    void StopBlendAnm(LPCSTR name, bool bForce = false);
+    void StopAllBlendAnms(bool bForce);
+    float SetBlendAnmTime(LPCSTR name, float time);
+
+    void update_script_item();
 
 private:
     static void Thumb0Callback(CBoneInstance* B);
