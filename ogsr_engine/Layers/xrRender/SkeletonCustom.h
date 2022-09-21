@@ -174,13 +174,17 @@ public:
 
     ICF CBoneInstance& LL_GetBoneInstance(u16 bone_id)
     {
-        R_ASSERT(bone_id < LL_BoneCount());
+        //Msg("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id);
+
+        R_ASSERT(bone_id < LL_BoneCount(), make_string("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id));
         R_ASSERT(bone_instances);
         return bone_instances[bone_id];
     }
     ICF const CBoneInstance& LL_GetBoneInstance(u16 bone_id) const
     {
-        R_ASSERT(bone_id < LL_BoneCount());
+        //Msg("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id);
+
+        R_ASSERT(bone_id < LL_BoneCount(), make_string("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id));
         R_ASSERT(bone_instances);
         return bone_instances[bone_id];
     }
