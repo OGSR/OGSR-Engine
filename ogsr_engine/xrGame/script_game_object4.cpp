@@ -714,18 +714,18 @@ float CScriptGameObject::GetRadius()
     return k->Radius();
 }
 
-void CScriptGameObject::play_hud_animation(LPCSTR anim, bool mix_in)
+u32 CScriptGameObject::play_hud_animation(LPCSTR anim, bool mix_in, u32 state, float speed)
 {
     CHudItem* k = smart_cast<CHudItem*>(&object());
     if (!k)
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CHudItem : cannot access class member play_hud_animation!");
-        return;
+        return 0;
     }
-    k->PlayHUDMotion({anim}, mix_in, k->GetState());
+    return k->PlayHUDMotion(anim, mix_in, state != -1 ? state : k->GetState(), speed);
 }
 
-void CScriptGameObject::play_hud_animation(LPCSTR anim) { play_hud_animation(anim, true); }
+u32 CScriptGameObject::play_hud_animation(LPCSTR anim) { return play_hud_animation(anim, true, -1, 1.f); }
 
 void CScriptGameObject::addFeelTouch(float radius, const luabind::object& lua_object, const luabind::functor<void>& new_delete)
 {

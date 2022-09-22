@@ -511,7 +511,7 @@ void attachable_hud_item::load(const shared_str& sect_name)
     m_measures.load(sect_name, m_model);
 }
 
-u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, const CMotionDef*& md, u8& rnd_idx, bool randomAnim)
+u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, const CMotionDef*& md, u8& rnd_idx, bool randomAnim, float speed)
 {
     R_ASSERT(strstr(anm_name_b.c_str(), "anm_") == anm_name_b.c_str() || strstr(anm_name_b.c_str(), "anim_") == anm_name_b.c_str());
     string256 anim_name_r;
@@ -524,10 +524,14 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
 
     if (randomAnim)
         rnd_idx = (u8)Random.randI(anm->m_animations.size());
+
     const motion_descr& M = anm->m_animations[rnd_idx];
 
+    if (speed == 1.f)
+        speed = M.speed_k;
+
     IKinematicsAnimated* ka = m_model->dcast_PKinematicsAnimated();
-    u32 ret = g_player_hud->anim_play(m_attach_place_idx, M, bMixIn, md, M.speed_k, m_has_separated_hands, ka);
+    u32 ret = g_player_hud->anim_play(m_attach_place_idx, M, bMixIn, md, speed, m_has_separated_hands, ka);
 
     if (ka)
     {
@@ -558,7 +562,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
         {
             CBlend* B = ka->PlayCycle(pid, M2, bMixIn);
             R_ASSERT(B);
-            B->speed *= M.speed_k;
+            B->speed *= speed;
         }
 
         m_model->CalculateBones_Invalidate();
@@ -769,14 +773,14 @@ void player_hud::render_hud()
 
 #include "../xr_3da/motion.h"
 
-u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md)
+u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md, float speed)
 {
     attachable_hud_item* pi = create_hud_item(hud_name);
     player_hud_motion* pm = pi->m_hand_motions.find_motion(anim_name);
     if (!pm)
         return 100; // ms TEMPORARY
     ASSERT_FMT(pm, "hudItem model [%s] has no motion with alias [%s]", hud_name.c_str(), anim_name.c_str());
-    return motion_length(pm->m_animations[0], md, pm->m_animations[0].speed_k, pi->m_has_separated_hands, smart_cast<IKinematicsAnimated*>(pi->m_model), pi);
+    return motion_length(pm->m_animations[0], md, speed == 1.f ? pm->m_animations[0].speed_k : speed, pi->m_has_separated_hands, smart_cast<IKinematicsAnimated*>(pi->m_model), pi);
 }
 
 u32 player_hud::motion_length(const motion_descr& M, const CMotionDef*& md, float speed, bool hasHands, IKinematicsAnimated* itemModel, attachable_hud_item* pi)

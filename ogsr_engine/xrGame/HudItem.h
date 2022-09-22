@@ -160,9 +160,10 @@ public:
 
     virtual void UpdateXForm() = 0;
 
-    u32 PlayHUDMotion(const char* M, const bool bMixIn, const u32 state, const bool randomAnim = true);
-    u32 PlayHUDMotion(std::initializer_list<const char*>, const bool bMixIn, const u32 state, const bool randomAnim = true);
-    u32 PlayHUDMotion_noCB(const shared_str& M, const bool bMixIn, const bool randomAnim = true);
+    u32 PlayHUDMotion(std::initializer_list<const char*>, const bool bMixIn, const u32 state, const bool randomAnim = true, float speed = 1.f);
+    u32 PlayHUDMotion(const char* M, const bool bMixIn, const u32 state, const bool randomAnim = true, float speed = 1.f);
+    u32 PlayHUDMotion_noCB(const shared_str& M, const bool bMixIn, const bool randomAnim = true, float speed = 1.f);
+
     bool AnimationExist(const char* M) const;
     void StopCurrentAnimWithoutCallback();
 

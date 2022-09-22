@@ -184,7 +184,7 @@ struct attachable_hud_item
     // props
     u32 m_upd_firedeps_frame;
     void tune(const Ivector& values);
-    u32 anim_play(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md, u8& rnd, bool randomAnim);
+    u32 anim_play(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md, u8& rnd, bool randomAnim, float speed = 1.f);
 };
 
 class player_hud
@@ -219,7 +219,7 @@ public:
     void tune(const Ivector& values);
     u32 motion_length(const motion_descr& M, const CMotionDef*& md, float speed);
     u32 motion_length(const motion_descr& M, const CMotionDef*& md, float speed, bool hasHands, IKinematicsAnimated* itemModel, attachable_hud_item* pi = nullptr);
-    u32 motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md);
+    u32 motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md, float speed = 1.f);
     void OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd);
     void re_sync_anim(u8 part);
     void GetLHandBoneOffsetPosDir(const shared_str& bone_name, Fvector& dest_pos, Fvector& dest_dir, const Fvector& offset);

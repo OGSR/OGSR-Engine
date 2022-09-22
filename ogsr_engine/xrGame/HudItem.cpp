@@ -350,15 +350,17 @@ void CHudItem::on_a_hud_attach()
     }
 }
 
-u32 CHudItem::PlayHUDMotion(const char* M, const bool bMixIn, const u32 state, const bool randomAnim)
+u32 CHudItem::PlayHUDMotion(const char* M, const bool bMixIn, const u32 state, const bool randomAnim, float speed)
 {
     auto Wpn = g_player_hud->attached_item(0);
     auto Det = g_player_hud->attached_item(1);
+
     if (Det && Det->m_parent_hud_item != this && Wpn && Wpn->m_parent_hud_item == this && (smart_cast<CWeapon*>(this) || smart_cast<CMissile*>(this)) &&
         Det->m_parent_hud_item->GetState() == eIdle)
     {
         if (strstr(M, "anm_") && !strstr(M, "idle"))
-        { //с айдловыми анимациями слишком много багов
+        { 
+            //с айдловыми анимациями слишком много багов
             string128 det_anm_name;
             xr_strconcat(det_anm_name, "anm_lefthand_", Det->m_parent_hud_item->world_sect.c_str(), "_wpn_", M + 4);
             if (Det->m_parent_hud_item->AnimationExist(det_anm_name))
@@ -367,7 +369,7 @@ u32 CHudItem::PlayHUDMotion(const char* M, const bool bMixIn, const u32 state, c
     }
 
     // Msg("~~[%s] Playing motion [%s] for [%s]", __FUNCTION__, M.c_str(), HudSection().c_str());
-    u32 anim_time = PlayHUDMotion_noCB(M, bMixIn, randomAnim);
+    u32 anim_time = PlayHUDMotion_noCB(M, bMixIn, randomAnim, speed);
     if (anim_time > 0)
     {
         m_bStopAtEndAnimIsRunning = true;
@@ -382,11 +384,11 @@ u32 CHudItem::PlayHUDMotion(const char* M, const bool bMixIn, const u32 state, c
     return anim_time;
 }
 
-u32 CHudItem::PlayHUDMotion(std::initializer_list<const char*> Ms, const bool bMixIn, const u32 state, const bool randomAnim)
+u32 CHudItem::PlayHUDMotion(std::initializer_list<const char*> Ms, const bool bMixIn, const u32 state, const bool randomAnim, float speed)
 {
     for (const auto* M : Ms)
         if (AnimationExist(M))
-            return PlayHUDMotion(M, bMixIn, state, randomAnim);
+            return PlayHUDMotion(M, bMixIn, state, randomAnim, speed);
     /*
     xr_string dbg_anim_name;
     for (const auto* M : Ms) {
@@ -398,18 +400,18 @@ u32 CHudItem::PlayHUDMotion(std::initializer_list<const char*> Ms, const bool bM
     return 0;
 }
 
-u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, const bool bMixIn, const bool randomAnim)
+u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, const bool bMixIn, const bool randomAnim, float speed)
 {
     m_current_motion = motion_name;
     m_started_rnd_anim_idx = 0;
 
     if (HudItemData())
     {
-        return HudItemData()->anim_play(motion_name, bMixIn, m_current_motion_def, m_started_rnd_anim_idx, randomAnim);
+        return HudItemData()->anim_play(motion_name, bMixIn, m_current_motion_def, m_started_rnd_anim_idx, randomAnim, speed);
     }
     else
     {
-        return g_player_hud->motion_length(motion_name, HudSection(), m_current_motion_def);
+        return g_player_hud->motion_length(motion_name, HudSection(), m_current_motion_def, speed);
     }
 }
 

@@ -419,8 +419,8 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 
         .def("get_hud_item_state", &CScriptGameObject::GetHudItemState)
         .def("radius", &CScriptGameObject::GetRadius)
-        .def("play_hud_animation", (void(CScriptGameObject::*)(LPCSTR))(&CScriptGameObject::play_hud_animation))
-        .def("play_hud_animation", (void(CScriptGameObject::*)(LPCSTR, bool))(&CScriptGameObject::play_hud_animation))
+        .def("play_hud_motion", (u32(CScriptGameObject::*)(LPCSTR))(&CScriptGameObject::play_hud_animation))
+        .def("play_hud_motion", (u32(CScriptGameObject::*)(LPCSTR, bool, u32, float))(&CScriptGameObject::play_hud_animation))
 
         .def("add_feel_touch",
              (void(CScriptGameObject::*)(float, const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>&))(&CScriptGameObject::addFeelTouch))

@@ -792,8 +792,8 @@ public:
     // alpet: visual functions for CWeapon descedants
     _DECLARE_FUNCTION10(alife_object, CSE_ALifeDynamicObject*);
 
-    void play_hud_animation(LPCSTR anim, bool mix_in);
-    void play_hud_animation(LPCSTR anim);
+    u32 play_hud_animation(LPCSTR anim, bool mix_in, u32 state, float speed);
+    u32 play_hud_animation(LPCSTR anim);
 
     void addFeelTouch(float, const luabind::object&, const luabind::functor<void>&);
     void addFeelTouch(float, const luabind::object&, const luabind::functor<void>&, const luabind::functor<bool>&);
