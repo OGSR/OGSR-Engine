@@ -256,9 +256,9 @@ public:
     u32 script_anim_end;
     float script_anim_offset_factor;
     bool m_bStopAtEndAnimIsRunning;
-    bool script_anim_item_attached;
+    bool script_anim_item_attached{};
     bool script_override_arms;
-    IKinematicsAnimated* script_anim_item_model;
+    IKinematicsAnimated* script_anim_item_model{};
     xr_vector<script_layer*> m_script_layers;
 
     Fvector item_pos[2];
