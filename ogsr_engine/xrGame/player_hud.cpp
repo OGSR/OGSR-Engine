@@ -780,7 +780,7 @@ u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud
     if (!pm)
         return 100; // ms TEMPORARY
     ASSERT_FMT(pm, "hudItem model [%s] has no motion with alias [%s]", hud_name.c_str(), anim_name.c_str());
-    return motion_length(pm->m_animations[0], md, speed == 1.f ? pm->m_animations[0].speed_k : speed, pi->m_has_separated_hands ? smart_cast<IKinematicsAnimated*>(pi->m_model) : m_model);
+    return motion_length(pm->m_animations[0], md, speed == 1.f ? pm->m_animations[0].speed_k : speed, pi->m_has_separated_hands ? m_model : smart_cast<IKinematicsAnimated*>(pi->m_model));
 }
 
 u32 player_hud::motion_length(const motion_descr& M, const CMotionDef*& md, float speed, IKinematicsAnimated* itemModel)
@@ -1044,7 +1044,7 @@ u32 player_hud::anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CM
         }
     }
 
-    return motion_length(M, md, speed, hasHands ? itemModel : m_model);
+    return motion_length(M, md, speed, hasHands ? m_model : itemModel);
 }
 
 attachable_hud_item* player_hud::create_hud_item(const shared_str& sect)
