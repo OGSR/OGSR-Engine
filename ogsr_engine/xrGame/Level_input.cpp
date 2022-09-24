@@ -70,7 +70,9 @@ void CLevel::IR_OnMouseWheel(int direction)
 static int mouse_button_2_key[] = {MOUSE_1, MOUSE_2, MOUSE_3};
 
 void CLevel::IR_OnMousePress(int btn) { IR_OnKeyboardPress(mouse_button_2_key[btn]); }
+
 void CLevel::IR_OnMouseRelease(int btn) { IR_OnKeyboardRelease(mouse_button_2_key[btn]); }
+
 void CLevel::IR_OnMouseHold(int btn) { IR_OnKeyboardHold(mouse_button_2_key[btn]); }
 
 void CLevel::IR_OnMouseMove(int dx, int dy)
@@ -121,6 +123,7 @@ public:
 
 // Обработка нажатия клавиш
 extern bool g_block_pause;
+extern bool g_block_all_except_movement;
 
 void CLevel::IR_OnKeyboardPress(int key)
 {
@@ -133,6 +136,13 @@ void CLevel::IR_OnKeyboardPress(int key)
     //.	if (DIK_F11 == key)		vtune.disable();
 
     EGameActions _curr = get_binded_action(key);
+
+    if (g_block_all_except_movement)
+    {
+        if (!(_curr < kCAM_1 || _curr == kPAUSE || _curr == kSCREENSHOT || _curr == kQUIT || _curr == kCONSOLE))
+            return;
+    }
+
     switch (_curr)
     {
     case kSCREENSHOT:

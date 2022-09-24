@@ -427,6 +427,7 @@ CEnvironment* environment() { return g_pGamePersistent->pEnvironment; }
 CEnvDescriptor* current_environment(CEnvironment* self) { return self->CurrentEnv; }
 
 extern bool g_bDisableAllInput;
+
 void disable_input()
 {
     g_bDisableAllInput = true;
@@ -434,6 +435,12 @@ void disable_input()
         Actor()->PickupModeOff();
 }
 void enable_input() { g_bDisableAllInput = false; }
+
+bool g_block_all_except_movement{};
+
+void block_all_except_movement(bool b) { g_block_all_except_movement = b; }
+
+bool only_movement_allowed() { return g_block_all_except_movement; }
 
 void spawn_phantom(const Fvector& position) { Level().spawn_item("m_phantom", position, u32(-1), u16(-1), false); }
 
@@ -884,8 +891,15 @@ void CLevel::script_register(lua_State* L)
             def("add_call", ((CPHCall * (*)(const luabind::object&, LPCSTR, LPCSTR)) & add_call)),
             def("remove_call", ((void (*)(const luabind::functor<bool>&, const luabind::functor<void>&)) & remove_call)),
             def("remove_call", ((void (*)(const luabind::object&, const luabind::functor<bool>&, const luabind::functor<void>&)) & remove_call)),
-            def("remove_call", ((void (*)(const luabind::object&, LPCSTR, LPCSTR)) & remove_call)), def("remove_calls_for_object", &remove_calls_for_object),
-            def("present", &is_level_present), def("disable_input", &disable_input), def("enable_input", &enable_input), def("spawn_phantom", &spawn_phantom),
+            def("remove_call", ((void (*)(const luabind::object&, LPCSTR, LPCSTR)) & remove_call)), def("remove_calls_for_object", remove_calls_for_object),
+
+            def("present", is_level_present),
+
+            def("disable_input", disable_input), def("enable_input", enable_input), 
+
+            def("only_allow_movekeys", block_all_except_movement), def("only_movekeys_allowed", only_movement_allowed),
+
+            def("spawn_phantom", spawn_phantom),
 
             def("get_bounding_volume", &get_bounding_volume),
 
