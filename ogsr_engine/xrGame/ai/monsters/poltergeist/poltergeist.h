@@ -67,6 +67,8 @@ public:
 
     virtual void Die(CObject* who);
 
+    void OnDie();
+
     virtual CMovementManager* create_movement_manager();
 
     virtual void ForceFinalAnimation();

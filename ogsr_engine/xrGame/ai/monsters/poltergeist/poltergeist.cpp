@@ -345,9 +345,15 @@ BOOL CPoltergeist::net_Spawn(CSE_Abstract* DC)
     VERIFY(character_physics_support());
     VERIFY(character_physics_support()->movement());
     character_physics_support()->movement()->DestroyCharacter();
-    // спаунится нивидимым
-    setVisible(false);
-    ability()->on_hide();
+
+    if (g_Alive())
+    {
+        // спаунится нивидимым
+        setVisible(false);
+        ability()->on_hide();
+    }
+    else
+        OnDie();
 
     return (TRUE);
 }
@@ -360,7 +366,7 @@ void CPoltergeist::net_Destroy()
     ability()->on_destroy();
 }
 
-void CPoltergeist::Die(CObject* who)
+void CPoltergeist::OnDie() 
 {
     if ((m_tele || m_dead_always_visible) && state_invisible)
     {
@@ -377,9 +383,15 @@ void CPoltergeist::Die(CObject* who)
             Position() = m_current_position;
     }
 
-    inherited::Die(who);
     Energy::disable();
+    CTelekinesis::deactivate();
     ability()->on_die();
+}
+
+void CPoltergeist::Die(CObject* who)
+{
+    inherited::Die(who);
+    OnDie();
 }
 
 void CPoltergeist::Hit(SHit* pHDS)
