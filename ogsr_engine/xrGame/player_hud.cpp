@@ -780,18 +780,15 @@ u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud
     if (!pm)
         return 100; // ms TEMPORARY
     ASSERT_FMT(pm, "hudItem model [%s] has no motion with alias [%s]", hud_name.c_str(), anim_name.c_str());
-    return motion_length(pm->m_animations[0], md, speed == 1.f ? pm->m_animations[0].speed_k : speed, pi->m_has_separated_hands, smart_cast<IKinematicsAnimated*>(pi->m_model), pi);
+    return motion_length(pm->m_animations[0], md, speed == 1.f ? pm->m_animations[0].speed_k : speed, pi->m_has_separated_hands ? smart_cast<IKinematicsAnimated*>(pi->m_model) : m_model);
 }
 
-u32 player_hud::motion_length(const motion_descr& M, const CMotionDef*& md, float speed, bool hasHands, IKinematicsAnimated* itemModel, attachable_hud_item* pi)
+u32 player_hud::motion_length(const motion_descr& M, const CMotionDef*& md, float speed, IKinematicsAnimated* itemModel)
 {
-    if (pi)
-        hasHands = pi->m_has_separated_hands;
+    IKinematicsAnimated* model = itemModel;
 
-    IKinematicsAnimated* model = m_model;
-    if (!hasHands && itemModel)
-        model = itemModel;
     // Msg("~~[%s] model->LL_GetMotionDef [%s] [%s], hasHands = [%u]", __FUNCTION__, M.name.c_str(), model->dcast_RenderVisual()->getDebugName().c_str(), hasHands);
+
     md = model->LL_GetMotionDef(M.mid);
     VERIFY(md);
     if (md->flags & esmStopAtEnd)
@@ -1047,7 +1044,7 @@ u32 player_hud::anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CM
         }
     }
 
-    return motion_length(M, md, speed, hasHands, itemModel);
+    return motion_length(M, md, speed, hasHands ? itemModel : m_model);
 }
 
 attachable_hud_item* player_hud::create_hud_item(const shared_str& sect)
@@ -1492,7 +1489,7 @@ u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, b
     }
 
     const CMotionDef* md;
-    u32 length = motion_length(M, md, speed);
+    u32 length = motion_length(M, md, speed, m_model);
 
     if (length > 0)
     {
@@ -1540,20 +1537,8 @@ u32 player_hud::motion_length_script(LPCSTR hud_section, LPCSTR anm_name, float 
         return 0;
     }
 
-    const CMotionDef* temp;
-    return motion_length(phm->m_animations[0], temp, speed);
-}
-
-u32 player_hud::motion_length(const motion_descr& M, const CMotionDef*& md, float speed)
-{
-    md = m_model->LL_GetMotionDef(M.mid);
-    VERIFY(md);
-    if (md->flags & esmStopAtEnd)
-    {
-        CMotion* motion = m_model->LL_GetRootMotion(M.mid);
-        return iFloor(0.5f + 1000.f * motion->GetLength() / (md->Speed() * speed) * M.stop_k);
-    }
-    return 0;
+    const CMotionDef* md;
+    return motion_length(phm->m_animations[0], md, speed, m_model);
 }
 
 void player_hud::update_script_item()

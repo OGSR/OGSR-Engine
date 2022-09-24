@@ -217,9 +217,10 @@ public:
 
     void calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result);
     void tune(const Ivector& values);
-    u32 motion_length(const motion_descr& M, const CMotionDef*& md, float speed);
-    u32 motion_length(const motion_descr& M, const CMotionDef*& md, float speed, bool hasHands, IKinematicsAnimated* itemModel, attachable_hud_item* pi = nullptr);
+
+    u32 motion_length(const motion_descr& M, const CMotionDef*& md, float speed, IKinematicsAnimated* itemModel);
     u32 motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md, float speed = 1.f);
+
     void OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd);
     void re_sync_anim(u8 part);
     void GetLHandBoneOffsetPosDir(const shared_str& bone_name, Fvector& dest_pos, Fvector& dest_dir, const Fvector& offset);
