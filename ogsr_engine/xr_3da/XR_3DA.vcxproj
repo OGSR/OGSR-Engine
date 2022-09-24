@@ -439,7 +439,6 @@
     <ClInclude Include="PS_instance.h" />
     <ClInclude Include="LightAnimLibrary.h" />
     <ClInclude Include="GameFont.h" />
-    <ClInclude Include="MbHelpers.h" />
     <ClInclude Include="device.h" />
     <ClInclude Include="StatGraph.h" />
     <ClInclude Include="Stats.h" />
@@ -522,7 +521,6 @@
     <ClCompile Include="PS_instance.cpp" />
     <ClCompile Include="LightAnimLibrary.cpp" />
     <ClCompile Include="GameFont.cpp" />
-    <ClCompile Include="MbHelpers.cpp" />
     <ClCompile Include="device.cpp" />
     <ClCompile Include="Device_create.cpp" />
     <ClCompile Include="Device_destroy.cpp" />

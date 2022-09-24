@@ -21,15 +21,6 @@ CUIEditKeyBind::~CUIEditKeyBind() { delete_data(m_pAnimation); }
 
 u32 cut_string_by_length(CGameFont* pFont, LPCSTR src, LPSTR dst, u32 dst_size, float length)
 {
-    if (pFont->IsMultibyte())
-    {
-        u16 nPos = pFont->GetCutLengthPos(length, src);
-        VERIFY(nPos < dst_size);
-        strncpy(dst, src, nPos);
-        dst[nPos] = '\0';
-        return nPos;
-    }
-    else
     {
         float text_len = pFont->SizeOf_(src);
         UI()->ClientToScreenScaledWidth(text_len);

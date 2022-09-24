@@ -42,13 +42,13 @@ void dxFontRender::OnRender(CGameFont& owner)
         // calculate first-fit
         int count = 1;
 
-        int length = owner.smart_strlen(owner.strings[i].string);
+        int length = xr_strlen(owner.strings[i].string);
 
         while ((i + count) < owner.strings.size())
         {
-            int L = owner.smart_strlen(owner.strings[i + count].string);
+            int L = xr_strlen(owner.strings[i + count].string);
 
-            if ((L + length) < MAX_MB_CHARS)
+            if ((L + length) < 4096) // MAX_MB_CHARS ??
             {
                 count++;
                 length += L;
@@ -67,11 +67,8 @@ void dxFontRender::OnRender(CGameFont& owner)
         for (; i < last; i++)
         {
             CGameFont::String& PS = owner.strings[i];
-            wide_char wsStr[MAX_MB_CHARS];
 
-            int len = owner.IsMultibyte() ? mbhMulti2Wide(wsStr, NULL, MAX_MB_CHARS, PS.string) :
-
-                                            xr_strlen(PS.string);
+            int len = xr_strlen(PS.string);
 
             if (len)
             {
@@ -84,7 +81,7 @@ void dxFontRender::OnRender(CGameFont& owner)
                 float fSize = 0;
 
                 if (PS.align)
-                    fSize = owner.IsMultibyte() ? owner.SizeOf_(wsStr) : owner.SizeOf_(PS.string);
+                    fSize = owner.SizeOf_(PS.string);
 
                 switch (PS.align)
                 {
@@ -120,7 +117,7 @@ void dxFontRender::OnRender(CGameFont& owner)
                 {
                     Fvector l;
 
-                    l = owner.IsMultibyte() ? owner.GetCharTC(wsStr[1 + j]) : owner.GetCharTC((u16)(u8)PS.string[j]);
+                    l = owner.GetCharTC((u16)(u8)PS.string[j]);
 
                     float scw = l.z * g_current_font_scale.x * owner.GetWidthScale();
 
@@ -149,13 +146,6 @@ void dxFontRender::OnRender(CGameFont& owner)
                     }
 
                     X += scw * owner.vInterval.x;
-
-                    if (owner.IsMultibyte())
-                    {
-                        X -= 2;
-                        if (IsNeedSpaceCharacter(wsStr[1 + j]))
-                            X += owner.fXStep;
-                    }
                 }
             }
         }

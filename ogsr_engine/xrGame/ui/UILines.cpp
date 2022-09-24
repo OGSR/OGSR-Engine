@@ -154,142 +154,54 @@ void CUILines::ParseText()
         line->AddSubLine(&subline);
     }
 
-    BOOL bNewLines = FALSE;
-
     if (uFlags.test(flRecognizeNewLine))
-        if (m_pFont->IsMultibyte())
-        {
-            CUILine* ptmp_line = xr_new<CUILine>();
-            int vsz = line->m_subLines.size();
-            VERIFY(vsz);
-            for (int i = 0; i < vsz; i++)
-            {
-                char* pszTemp = NULL;
-                const u32 tcolor = line->m_subLines[i].m_color;
-                char szTempLine[MAX_MB_CHARS], *pszSearch = NULL;
-                VERIFY(strlen(line->m_subLines[i].m_text.c_str()) < MAX_MB_CHARS);
-                strcpy_s(szTempLine, line->m_subLines[i].m_text.c_str());
-                pszSearch = szTempLine;
-                while ((pszTemp = strstr(pszSearch, "\\n")) != NULL)
-                {
-                    bNewLines = TRUE;
-                    *pszTemp = '\0';
-                    ptmp_line->AddSubLine(pszSearch, tcolor);
-                    pszSearch = pszTemp + 2;
-                }
-                ptmp_line->AddSubLine(pszSearch, tcolor);
-            }
-            line->Clear();
-            xr_free(line);
-            line = ptmp_line;
-        }
-        else
-            line->ProcessNewLines(m_iCursorPos); // process "\n"
-
-    if (m_pFont->IsMultibyte())
     {
-#define UBUFFER_SIZE 100
-        u16 aMarkers[UBUFFER_SIZE];
-        CUILine tmp_line;
-        char szTempLine[MAX_MB_CHARS];
-        float fTargetWidth = 1.0f;
-        UI()->ClientToScreenScaledWidth(fTargetWidth);
-        VERIFY((m_wndSize.x > 0) && (fTargetWidth > 0));
-        fTargetWidth = m_wndSize.x / fTargetWidth;
-        int vsz = line->m_subLines.size();
-        VERIFY(vsz);
-        if ((vsz > 1) && (!bNewLines))
-        { // only colored line, pizdets
-            for (int i = 0; i < vsz; i++)
-            {
-                const char* pszText = line->m_subLines[i].m_text.c_str();
-                const u32 tcolor = line->m_subLines[i].m_color;
-                VERIFY(pszText);
-                tmp_line.AddSubLine(pszText, tcolor);
-            }
-            m_lines.push_back(tmp_line);
-            tmp_line.Clear();
-        }
-        else
-        {
-            for (int i = 0; i < vsz; i++)
-            {
-                const char* pszText = line->m_subLines[i].m_text.c_str();
-                const u32 tcolor = line->m_subLines[i].m_color;
-                u16 uFrom = 0, uPartLen = 0;
-                VERIFY(pszText);
-                u16 nMarkers = m_pFont->SplitByWidth(aMarkers, UBUFFER_SIZE, fTargetWidth, pszText);
-                for (u16 j = 0; j < nMarkers; j++)
-                {
-                    uPartLen = aMarkers[j] - uFrom;
-                    VERIFY((uPartLen > 0) && (uPartLen < MAX_MB_CHARS));
-                    strncpy_s(szTempLine, pszText + uFrom, uPartLen);
-                    szTempLine[uPartLen] = '\0';
-                    tmp_line.AddSubLine(szTempLine, tcolor);
-                    m_lines.push_back(tmp_line);
-                    tmp_line.Clear();
-                    uFrom += uPartLen;
-                }
-                strncpy_s(szTempLine, pszText + uFrom, MAX_MB_CHARS);
-                tmp_line.AddSubLine(szTempLine, tcolor);
-                m_lines.push_back(tmp_line);
-                tmp_line.Clear();
-            }
-        }
+        line->ProcessNewLines(m_iCursorPos); // process "\n"
     }
-    else
+       
+    float max_width = m_wndSize.x;
+    u32 sbl_cnt = line->m_subLines.size();
+    CUILine tmp_line;
+    string4096 buff;
+    float curr_width = 0.0f;
+    bool bnew_line = false;
+    float __eps = get_str_width(m_pFont, 'w'); // hack -(
+    for (u32 sbl_idx = 0; sbl_idx < sbl_cnt; ++sbl_idx)
     {
-        float max_width = m_wndSize.x;
-        u32 sbl_cnt = line->m_subLines.size();
-        CUILine tmp_line;
-        string4096 buff;
-        float curr_width = 0.0f;
-        bool bnew_line = false;
-        float __eps = get_str_width(m_pFont, 'w'); // hack -(
-        for (u32 sbl_idx = 0; sbl_idx < sbl_cnt; ++sbl_idx)
+        bool b_last_subl = (sbl_idx == sbl_cnt - 1);
+        CUISubLine& sbl = line->m_subLines[sbl_idx];
+        //.			Msg("%s",sbl.m_text.c_str());
+        u32 sub_len = (u32)sbl.m_text.length();
+        u32 curr_w_pos = 0;
+
+        u32 last_space_idx = 0;
+        for (u32 idx = 0; idx < sub_len; ++idx)
         {
-            bool b_last_subl = (sbl_idx == sbl_cnt - 1);
-            CUISubLine& sbl = line->m_subLines[sbl_idx];
-            //.			Msg("%s",sbl.m_text.c_str());
-            u32 sub_len = (u32)sbl.m_text.length();
-            u32 curr_w_pos = 0;
+            bool b_last_ch = (idx == sub_len - 1);
 
-            u32 last_space_idx = 0;
-            for (u32 idx = 0; idx < sub_len; ++idx)
+            if (iswspace(sbl.m_text[idx]))
+                last_space_idx = idx;
+
+            float w1 = get_str_width(m_pFont, sbl.m_text[idx]);
+            bool bOver = (curr_width + w1 + __eps > max_width);
+
+            if (bOver || b_last_ch)
             {
-                bool b_last_ch = (idx == sub_len - 1);
-
-                if (iswspace(sbl.m_text[idx]))
-                    last_space_idx = idx;
-
-                float w1 = get_str_width(m_pFont, sbl.m_text[idx]);
-                bool bOver = (curr_width + w1 + __eps > max_width);
-
-                if (bOver || b_last_ch)
+                if (last_space_idx && !b_last_ch)
                 {
-                    if (last_space_idx && !b_last_ch)
-                    {
-                        idx = last_space_idx;
-                        last_space_idx = 0;
-                    }
-
-                    strncpy_s(buff, sbl.m_text.c_str() + curr_w_pos, idx - curr_w_pos + 1);
-                    //.					Msg					("-%s",buff);
-                    tmp_line.AddSubLine(buff, sbl.m_color);
-                    curr_w_pos = idx + 1;
+                    idx = last_space_idx;
+                    last_space_idx = 0;
                 }
-                else
-                    curr_width += w1;
 
-                if (bOver || (b_last_ch && sbl.m_last_in_line))
-                {
-                    m_lines.push_back(tmp_line);
-                    tmp_line.Clear();
-                    curr_width = 0.0f;
-                    bnew_line = false;
-                }
+                strncpy_s(buff, sbl.m_text.c_str() + curr_w_pos, idx - curr_w_pos + 1);
+                //.					Msg					("-%s",buff);
+                tmp_line.AddSubLine(buff, sbl.m_color);
+                curr_w_pos = idx + 1;
             }
-            if (b_last_subl && !tmp_line.IsEmpty())
+            else
+                curr_width += w1;
+
+            if (bOver || (b_last_ch && sbl.m_last_in_line))
             {
                 m_lines.push_back(tmp_line);
                 tmp_line.Clear();
@@ -297,7 +209,15 @@ void CUILines::ParseText()
                 bnew_line = false;
             }
         }
+        if (b_last_subl && !tmp_line.IsEmpty())
+        {
+            m_lines.push_back(tmp_line);
+            tmp_line.Clear();
+            curr_width = 0.0f;
+            bnew_line = false;
+        }
     }
+    
     //.		while (line->GetSize() > 0 )
     //.			m_lines.push_back(*line->CutByLength(m_pFont, m_wndSize.x, uFlags.test(flCutWordsMode)));
 
