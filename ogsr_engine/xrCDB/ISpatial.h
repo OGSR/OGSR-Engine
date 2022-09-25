@@ -66,15 +66,13 @@ class XRCDB_API ISpatial
 public:
     struct _spatial
     {
-        u32 type;
-        Fsphere sphere;
-        Fvector node_center; // Cached node center for TBV optimization
-        float node_radius; // Cached node bounds for TBV optimization
-        ISpatial_NODE* node_ptr; // Cached parent node for "empty-members" optimization
-        IRender_Sector* sector;
-        ISpatial_DB* space; // allow different spaces
-
-        _spatial() : type(0) {} // safe way to enhure type is zero before any contstructors takes place
+        u32 type{};
+        Fsphere sphere{};
+        Fvector node_center{}; // Cached node center for TBV optimization
+        float node_radius{}; // Cached node bounds for TBV optimization
+        ISpatial_NODE* node_ptr{}; // Cached parent node for "empty-members" optimization
+        IRender_Sector* sector{};
+        ISpatial_DB* space{}; // allow different spaces
     } spatial;
 
 public:

@@ -87,17 +87,25 @@ void CRender::render_lights(light_Package& LP)
 
         // generate spot shadowmap
         Target->phase_smap_spot_clear();
-        xr_vector<light*>& source = LP.v_shadowed;
-        light* L = source.back();
-        u16 sid = L->vis.smap_ID;
-        while (true)
+
+        auto& source = LP.v_shadowed;
+        const u16 sid = source.back()->vis.smap_ID;
+
+        while (!source.empty())
         {
-            if (source.empty())
-                break;
-            L = source.back();
+            light* L = source.back();
+       
             if (L->vis.smap_ID != sid)
                 break;
+
             source.pop_back();
+
+            if (!L->spatial.sector)
+            {
+                Msg("!![%s] L->spatial.sector not found in Light [%p]", __FUNCTION__, L);
+                continue;
+            }
+
             Lights_LastFrame.push_back(L);
 
             // render

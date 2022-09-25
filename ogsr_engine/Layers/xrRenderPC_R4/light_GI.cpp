@@ -45,7 +45,7 @@ void light::gi_generate()
             continue;
         LI.S = spatial.sector; //. BUG
 
-        indirect.push_back(LI);
+        indirect.push_back(std::move(LI));
     }
 
     // sort & clip
