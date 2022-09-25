@@ -64,7 +64,8 @@ extern ESingleGameDifficulty g_SingleGameDifficulty;
 extern BOOL g_show_wnd_rect;
 extern BOOL g_show_wnd_rect2;
 extern BOOL g_show_wnd_rect_text;
-//-----------------------------------------------------------
+extern BOOL g_console_show_always;
+    //-----------------------------------------------------------
 extern float g_fTimeFactor;
 extern BOOL g_bCopDeathAnim;
 extern int g_bHudAdjustMode;
@@ -417,6 +418,7 @@ bool valid_file_name(LPCSTR file_name)
 
 #include "UIGameCustom.h"
 #include "HUDManager.h"
+
 class CCC_ALifeSave : public IConsole_Command
 {
 public:
@@ -1536,6 +1538,8 @@ void CCC_RegisterCommands()
     CMD4(CCC_Integer, "show_wnd_rect", &g_show_wnd_rect, 0, 1);
     CMD4(CCC_Integer, "show_wnd_rect_all", &g_show_wnd_rect2, 0, 1);
     CMD4(CCC_Integer, "show_wnd_rect_names", &g_show_wnd_rect_text, 0, 1);
+    CMD4(CCC_Integer, "g_console_show_always", &g_console_show_always, 0, 1);
+
 
     *g_last_saved_game = 0;
 
