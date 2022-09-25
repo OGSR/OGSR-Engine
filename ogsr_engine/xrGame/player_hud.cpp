@@ -9,6 +9,24 @@
 
 player_hud* g_player_hud{};
 
+
+// Рассчитать стартовую секунду анимации --#SM+#--
+float CalculateMotionStartSeconds(float fStartFromTime, float fMotionLength)
+{
+    R_ASSERT(fStartFromTime >= -1.0f);
+
+    //if (fStartFromTime >= 0.0f)
+    //{ 
+    //    // Выставляем время в точных значениях
+    //    clamp(fStartFromTime, 0.0f, fMotionLength);
+    //    return abs(fStartFromTime);
+    //}
+    //else
+    {   // Выставляем время в процентных значениях (от всей длины анимации)
+        return (abs(fStartFromTime) * fMotionLength);
+    }
+}
+
 player_hud_motion* player_hud_motion_container::find_motion(const shared_str& name)
 {
     auto it = m_anims.find(name);
@@ -22,8 +40,8 @@ void player_hud_motion_container::load(bool has_separated_hands, IKinematicsAnim
 
     for (const auto& [name, anm] : pSettings->r_section(sect).Data)
     {
-        if ((strstr(name.c_str(), "anm_") == name.c_str() || strstr(name.c_str(), "anim_") == name.c_str()) && !strstr(name.c_str(), "_speed_k") &&
-            !strstr(name.c_str(), "_stop_k") && !strstr(name.c_str(), "_effector"))
+        if ((strstr(name.c_str(), "anm_") == name.c_str() || strstr(name.c_str(), "anim_") == name.c_str()) 
+            && !strstr(name.c_str(), "_speed_k") && !strstr(name.c_str(), "_start_k") && !strstr(name.c_str(), "_stop_k") && !strstr(name.c_str(), "_effector"))
         {
             player_hud_motion pm;
 
@@ -82,7 +100,7 @@ void player_hud_motion_container::load(bool has_separated_hands, IKinematicsAnim
                         if (pSettings->line_exist(sect, speed_param))
                         {
                             const float k = pSettings->r_float(sect, speed_param);
-                            if (!fsimilar(k, 1.f))
+                            if (!fsimilar(k, 1.f) && k > 0.001f)
                                 Anim.speed_k = k;
                         }
 
@@ -91,8 +109,17 @@ void player_hud_motion_container::load(bool has_separated_hands, IKinematicsAnim
                         if (pSettings->line_exist(sect, stop_param))
                         {
                             const float k = pSettings->r_float(sect, stop_param);
-                            if (k < 1.f)
+                            if (k < 1.f && k > 0.001f)
                                 Anim.stop_k = k;
+                        }
+
+                        string128 start_param;
+                        xr_strconcat(start_param, name.c_str(), "_start_k");
+                        if (pSettings->line_exist(sect, start_param))
+                        {
+                            const float k = pSettings->r_float(sect, start_param);
+                            if (k < 1.f && k > 0.001f)
+                                Anim.start_k = k;
                         }
 
                         string128 eff_param;
@@ -563,6 +590,7 @@ u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, co
             CBlend* B = ka->PlayCycle(pid, M2, bMixIn);
             R_ASSERT(B);
             B->speed *= speed;
+            B->timeCurrent = CalculateMotionStartSeconds(M.start_k, B->timeTotal);
         }
 
         m_model->CalculateBones_Invalidate();
@@ -780,10 +808,10 @@ u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud
     if (!pm)
         return 100; // ms TEMPORARY
     ASSERT_FMT(pm, "hudItem model [%s] has no motion with alias [%s]", hud_name.c_str(), anim_name.c_str());
-    return motion_length(pm->m_animations[0], md, speed == 1.f ? pm->m_animations[0].speed_k : speed, pi->m_has_separated_hands ? m_model : smart_cast<IKinematicsAnimated*>(pi->m_model));
+    return motion_length(pm->m_animations[0], md, pi->m_has_separated_hands ? m_model : smart_cast<IKinematicsAnimated*>(pi->m_model), speed == 1.f ? pm->m_animations[0].speed_k : speed);
 }
 
-u32 player_hud::motion_length(const motion_descr& M, const CMotionDef*& md, float speed, IKinematicsAnimated* itemModel)
+u32 player_hud::motion_length(const motion_descr& M, const CMotionDef*& md, IKinematicsAnimated* itemModel, float speed)
 {
     IKinematicsAnimated* model = itemModel;
 
@@ -794,7 +822,10 @@ u32 player_hud::motion_length(const motion_descr& M, const CMotionDef*& md, floa
     if (md->flags & esmStopAtEnd)
     {
         CMotion* motion = model->LL_GetRootMotion(M.mid);
-        return iFloor(0.5f + 1000.f * motion->GetLength() / (md->Speed() * speed) * M.stop_k);
+
+        auto fStartFromTime = CalculateMotionStartSeconds(M.start_k, motion->GetLength());
+
+        return iFloor(0.5f + 1000.f * (motion->GetLength() - fStartFromTime) / (md->Speed() * speed) * M.stop_k);
     }
     return 0;
 }
@@ -1002,12 +1033,14 @@ u32 player_hud::anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CM
                     CBlend* B = m_model->PlayCycle(pid, M.mid, bMixIn);
                     R_ASSERT(B);
                     B->speed *= speed;
+                    B->timeCurrent = CalculateMotionStartSeconds(M.start_k, B->timeTotal);
                 }
                 if (pid == 0 || pid == 1)
                 {
                     CBlend* B = m_model_2->PlayCycle(pid, M.mid, bMixIn);
                     R_ASSERT(B);
                     B->speed *= speed;
+                    B->timeCurrent = CalculateMotionStartSeconds(M.start_k, B->timeTotal);
                 }
             }
 
@@ -1023,6 +1056,7 @@ u32 player_hud::anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CM
                     CBlend* B = m_model->PlayCycle(pid, M.mid, bMixIn);
                     R_ASSERT(B);
                     B->speed *= speed;
+                    B->timeCurrent = CalculateMotionStartSeconds(M.start_k, B->timeTotal);
                 }
             }
 
@@ -1037,6 +1071,7 @@ u32 player_hud::anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CM
                     CBlend* B = m_model_2->PlayCycle(pid, M.mid, bMixIn);
                     R_ASSERT(B);
                     B->speed *= speed;
+                    B->timeCurrent = CalculateMotionStartSeconds(M.start_k, B->timeTotal);
                 }
             }
 
@@ -1044,7 +1079,7 @@ u32 player_hud::anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CM
         }
     }
 
-    return motion_length(M, md, speed, hasHands ? m_model : itemModel);
+    return motion_length(M, md, hasHands ? m_model : itemModel, speed);
 }
 
 attachable_hud_item* player_hud::create_hud_item(const shared_str& sect)
@@ -1375,7 +1410,7 @@ u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, b
 {
     if (!pSettings->section_exist(hud_section))
     {
-        Msg("!script motion section [%s] does not exist", hud_section);
+        Msg("! script motion section [%s] does not exist", hud_section);
         m_bStopAtEndAnimIsRunning = true;
         script_anim_end = Device.dwTimeGlobal;
 
@@ -1423,7 +1458,7 @@ u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, b
 
     if (!phm)
     {
-        Msg("!script motion [%s] not found in section [%s]", anm_name, hud_section);
+        Msg("! script motion [%s] not found in section [%s]", anm_name, hud_section);
         m_bStopAtEndAnimIsRunning = true;
         script_anim_end = Device.dwTimeGlobal;
 
@@ -1457,6 +1492,7 @@ u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, b
             CBlend* B = script_anim_item_model->PlayCycle(pid, M2, bMixIn);
             R_ASSERT(B);
             B->speed *= speed;
+            B->timeCurrent = CalculateMotionStartSeconds(M.start_k, B->timeTotal);
         }
 
         script_anim_item_model->dcast_PKinematics()->CalculateBones_Invalidate();
@@ -1466,30 +1502,38 @@ u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, b
     {
         CBlend* B = m_model->PlayCycle(0, M.mid, bMixIn);
         B->speed *= speed;
+        B->timeCurrent = CalculateMotionStartSeconds(M.start_k, B->timeTotal);
         B = m_model->PlayCycle(2, M.mid, bMixIn);
         B->speed *= speed;
+        B->timeCurrent = CalculateMotionStartSeconds(M.start_k, B->timeTotal);
     }
     else if (hand == 1) // left hand
     {
         CBlend* B = m_model_2->PlayCycle(0, M.mid, bMixIn);
         B->speed *= speed;
+        B->timeCurrent = CalculateMotionStartSeconds(M.start_k, B->timeTotal);
         B = m_model_2->PlayCycle(1, M.mid, bMixIn);
         B->speed *= speed;
+        B->timeCurrent = CalculateMotionStartSeconds(M.start_k, B->timeTotal);
     }
     else if (hand == 2) // both hands
     {
         CBlend* B = m_model->PlayCycle(0, M.mid, bMixIn);
         B->speed *= speed;
+        B->timeCurrent = CalculateMotionStartSeconds(M.start_k, B->timeTotal);
         B = m_model_2->PlayCycle(0, M.mid, bMixIn);
         B->speed *= speed;
+        B->timeCurrent = CalculateMotionStartSeconds(M.start_k, B->timeTotal);
         B = m_model->PlayCycle(2, M.mid, bMixIn);
         B->speed *= speed;
+        B->timeCurrent = CalculateMotionStartSeconds(M.start_k, B->timeTotal);
         B = m_model_2->PlayCycle(1, M.mid, bMixIn);
         B->speed *= speed;
+        B->timeCurrent = CalculateMotionStartSeconds(M.start_k, B->timeTotal);
     }
 
     const CMotionDef* md;
-    u32 length = motion_length(M, md, speed, m_model);
+    u32 length = motion_length(M, md, m_model, speed);
 
     if (length > 0)
     {
@@ -1522,7 +1566,7 @@ u32 player_hud::motion_length_script(LPCSTR hud_section, LPCSTR anm_name, float 
 {
     if (!pSettings->section_exist(hud_section))
     {
-        Msg("!script motion section [%s] does not exist", hud_section);
+        Msg("! script motion section [%s] does not exist", hud_section);
         return 0;
     }
 
@@ -1533,12 +1577,12 @@ u32 player_hud::motion_length_script(LPCSTR hud_section, LPCSTR anm_name, float 
     player_hud_motion* phm = pm->find_motion(anm_name);
     if (!phm)
     {
-        Msg("!script motion [%s] not found in section [%s]", anm_name, hud_section);
+        Msg("! script motion [%s] not found in section [%s]", anm_name, hud_section);
         return 0;
     }
 
     const CMotionDef* md;
-    return motion_length(phm->m_animations[0], md, speed, m_model);
+    return motion_length(phm->m_animations[0], md, m_model, speed);
 }
 
 void player_hud::update_script_item()

@@ -17,6 +17,7 @@ struct motion_descr
     MotionID mid;
     shared_str name;
     float speed_k{1.0f};
+    float start_k{0.0f};
     float stop_k{1.0f};
     const char* eff_name{};
 };
@@ -218,7 +219,7 @@ public:
     void calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result);
     void tune(const Ivector& values);
 
-    u32 motion_length(const motion_descr& M, const CMotionDef*& md, float speed, IKinematicsAnimated* itemModel);
+    u32 motion_length(const motion_descr& M, const CMotionDef*& md, IKinematicsAnimated* itemModel, float speed);
     u32 motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md, float speed = 1.f);
 
     void OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd);
