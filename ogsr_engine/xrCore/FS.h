@@ -277,7 +277,7 @@ public:
         u32 dwSize, dwType;
 
         rewind();
-        while (!eof())
+        while (impl().elapsed() >= sizeof(u32) * 2)
         {
             dwType = r_u32();
             dwSize = r_u32();
