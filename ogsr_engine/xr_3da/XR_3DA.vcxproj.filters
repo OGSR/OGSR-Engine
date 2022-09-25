@@ -325,6 +325,18 @@
     <ClInclude Include="DiscordRPC.hpp">
       <Filter>Discord</Filter>
     </ClInclude>
+    <ClInclude Include="line_edit_control.h">
+      <Filter>Engine\Console</Filter>
+    </ClInclude>
+    <ClInclude Include="line_editor.h">
+      <Filter>Engine\Console</Filter>
+    </ClInclude>
+    <ClInclude Include="edit_actions.h">
+      <Filter>Engine\Console</Filter>
+    </ClInclude>
+    <ClInclude Include="os_clipboard.h">
+      <Filter>Engine\Console</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">
@@ -534,6 +546,27 @@
     <ClCompile Include="GameMtlLib.cpp" />
     <ClCompile Include="DiscordRPC.cpp">
       <Filter>Discord</Filter>
+    </ClCompile>
+    <ClCompile Include="line_edit_control.cpp">
+      <Filter>Engine\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="line_editor.cpp">
+      <Filter>Engine\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="edit_actions.cpp">
+      <Filter>Engine\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="os_clipboard.cpp">
+      <Filter>Engine\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="XR_IOConsole_callback.cpp">
+      <Filter>Engine\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="XR_IOConsole_control.cpp">
+      <Filter>Engine\Console</Filter>
+    </ClCompile>
+    <ClCompile Include="XR_IOConsole_get.cpp">
+      <Filter>Engine\Console</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -47,7 +47,35 @@ static void AddOne(xr_string& split, bool first_line)
     if (!logstream.is_open())
         insert_time();
 
-    LogFile.push_back(split); //Вывод в консоль
+    static xr_string last_str;
+    static int items_count;
+
+    //LogFile.push_back(split); //Вывод в консоль
+
+    if (last_str == split)
+    {
+        xr_string tmp = split.c_str();
+
+        if (items_count == 0)
+            items_count = 2;
+        else
+            items_count++;
+
+        tmp += " [";
+        tmp += std::to_string(items_count).c_str();
+        tmp += "]";
+
+        LogFile.erase(LogFile.end() - 1);
+        LogFile.push_back(tmp);
+    }
+    else
+    {
+        // DUMP_PHASE;
+        LogFile.push_back(split);
+        last_str = split;
+        items_count = 0;
+    }
+
 
     if (logstream.is_open())
     {
@@ -116,6 +144,14 @@ void Log(const char* msg, const Fmatrix& dop)
                   dop.k.x, dop.k.y, dop.k.z, dop._34_, dop.c.x, dop.c.y, dop.c.z, dop._44_);
     Log(buf);
 }
+
+void Log(const char* msg, const char* dop)
+{
+    char buf[1024];
+    std::snprintf(buf, sizeof(buf), "%s %s", msg, dop);
+    Log(buf);
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 void SetLogCB(LogCallback cb) { LogCB = cb; }

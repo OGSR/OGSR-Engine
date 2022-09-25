@@ -218,7 +218,7 @@ void Startup()
     if (!g_bBenchmark)
         destroyConsole();
     else
-        Console->Reset();
+        Console->OnScreenResolutionChanged(); // Console->Reset();
 
     destroySound();
 

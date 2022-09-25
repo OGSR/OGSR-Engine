@@ -10,21 +10,21 @@ CConsole* console() { return Console; }
 int get_console_integer(CConsole* c, LPCSTR cmd)
 {
     int val = 0, min = 0, max = 0;
-    c->GetInteger(cmd, val, min, max);
+    val = c->GetInteger(cmd, min, max);
     return val;
 }
 
 float get_console_float(CConsole* c, LPCSTR cmd)
 {
     float val = 0, min = 0, max = 0;
-    c->GetFloat(cmd, val, min, max);
+    val = c->GetFloat(cmd, min, max);
     return val;
 }
 
 bool get_console_bool(CConsole* c, LPCSTR cmd)
 {
     BOOL val;
-    val = c->GetBool(cmd, val);
+    val = c->GetBool(cmd);
     return !!val;
 }
 

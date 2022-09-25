@@ -100,6 +100,38 @@ extern int g_dof_zoom_near;
 
 ENGINE_API extern int g_3dscopes_fps_factor;
 
+void get_files_list(xr_vector<shared_str>& files, LPCSTR dir, LPCSTR file_ext)
+{
+    VERIFY(dir && file_ext);
+    files.clear();
+
+    FS_Path* P = FS.get_path(dir);
+    P->m_Flags.set(FS_Path::flNeedRescan, TRUE);
+    FS.m_Flags.set(CLocatorAPI::flNeedCheck, TRUE);
+    FS.rescan_pathes();
+
+    string_path fext;
+    xr_strconcat(fext, "*", file_ext);
+
+    FS_FileSet files_set;
+    FS.file_list(files_set, dir, FS_ListFiles, fext);
+    u32 len_str_ext = xr_strlen(file_ext);
+
+    FS_FileSetIt itb = files_set.begin();
+    FS_FileSetIt ite = files_set.end();
+
+    for (; itb != ite; ++itb)
+    {
+        LPCSTR fn_ext = (*itb).name.c_str();
+        VERIFY(xr_strlen(fn_ext) > len_str_ext);
+        string_path fn;
+        strncpy_s(fn, sizeof(fn), fn_ext, xr_strlen(fn_ext) - len_str_ext);
+        files.push_back(fn);
+    }
+    FS.m_Flags.set(CLocatorAPI::flNeedCheck, FALSE);
+}
+
+
 class CCC_MemStats : public IConsole_Command
 {
 public:
@@ -513,6 +545,8 @@ public:
         net_packet.w_stringZ(saved_game);
         Level().Send(net_packet, net_flags(TRUE));
     }
+
+    virtual void fill_tips(vecTips& tips, u32 mode) { get_files_list(tips, "$game_saves$", SAVE_EXTENSION); }
 };
 
 class CCC_LoadLastSave : public IConsole_Command
@@ -829,6 +863,22 @@ struct CCC_JumpToLevel : public IConsole_Command
                 return;
             }
         Msg("! There is no level \"%s\" in the game graph!", level);
+    }
+
+    virtual void fill_tips(vecTips& tips, u32 mode)
+    {
+        if (!ai().get_alife())
+        {
+            Msg("! ALife simulator is needed to perform specified command!");
+            return;
+        }
+
+        GameGraph::LEVEL_MAP::const_iterator itb = ai().game_graph().header().levels().begin();
+        GameGraph::LEVEL_MAP::const_iterator ite = ai().game_graph().header().levels().end();
+        for (; itb != ite; ++itb)
+        {
+            tips.push_back((*itb).second.name());
+        }
     }
 };
 

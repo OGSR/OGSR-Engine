@@ -5,6 +5,7 @@
 void XRCORE_API __cdecl Msg(const char* format, ...);
 void XRCORE_API Log(std::stringstream&& msg);
 void XRCORE_API Log(const char* msg);
+void XRCORE_API Log(const char* msg, const char* dop);
 void XRCORE_API Log(const char* msg, const Fvector& dop);
 void XRCORE_API Log(const char* msg, const Fmatrix& dop);
 

@@ -95,7 +95,7 @@ public:
     BENCH_SEC_SCRAMBLEVTBL2
 
     virtual void fill_tips(vecTips& tips, u32 mode) { add_LRU_to_tips(tips); }
-    //			vecLRU&	LRU				() { return m_LRU; }
+
     virtual void add_to_LRU(shared_str const& arg);
     void add_LRU_to_tips(vecTips& tips);
 
@@ -129,7 +129,11 @@ public:
     virtual void fill_tips(vecTips& tips, u32 mode)
     {
         TStatus str;
-        xr_sprintf(str, sizeof(str), "%s  (current)  [on/off]", value->test(mask) ? "on" : "off");
+        xr_sprintf(str, sizeof(str), "on%s", value->test(mask) ? " (current)" : "");
+        tips.push_back(str);
+
+        str;
+        xr_sprintf(str, sizeof(str), "off%s", !value->test(mask) ? " (current)" : "");
         tips.push_back(str);
     }
 };
@@ -156,7 +160,11 @@ public:
     virtual void fill_tips(vecTips& tips, u32 mode)
     {
         TStatus str;
-        xr_sprintf(str, sizeof(str), "%s  (current)  [on/off]", value->test(mask) ? "on" : "off");
+        xr_sprintf(str, sizeof(str), "on%s", value->test(mask) ? " (current)" : "");
+        tips.push_back(str);
+
+        str;
+        xr_sprintf(str, sizeof(str), "off%s", !value->test(mask) ? " (current)" : "");
         tips.push_back(str);
     }
 };
