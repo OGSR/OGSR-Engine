@@ -489,7 +489,7 @@ namespace text_editor
 			break;
 		}
 
-		if (m_repeat_mode && m_last_key_time > 5.0f * g_console_sensitive)
+		if (m_repeat_mode && m_last_key_time > 3.0f * g_console_sensitive)
 		{
 			float buf_time = m_rep_time;
 			m_hold_mode = true;
