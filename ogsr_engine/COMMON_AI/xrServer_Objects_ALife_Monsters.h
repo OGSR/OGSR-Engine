@@ -201,6 +201,7 @@ virtual u8 g_team();
 virtual u8 g_squad();
 virtual u8 g_group();
 IC float g_Health() const { return fHealth; }
+IC void s_Health(float v) { fHealth = v; }
 IC bool g_Alive() const { return (g_Health() > 0.f); }
 virtual bool used_ai_locations() const;
 virtual bool can_switch_online() const;
