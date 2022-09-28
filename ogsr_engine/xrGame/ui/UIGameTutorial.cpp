@@ -120,12 +120,12 @@ void CUISequencer::Start(LPCSTR tutor_name)
 
 void CUISequencer::Destroy()
 {
+    m_bActive = false;
     Device.seqFrame.Remove(this);
     Device.seqRender.Remove(this);
     delete_data(m_items);
     delete_data(m_UIWindow);
     IR_Release();
-    m_bActive = false;
     m_pStoredInputReceiver = NULL;
 }
 
@@ -209,54 +209,57 @@ bool CUISequencer::GrabInput()
 
 void CUISequencer::IR_OnMousePress(int btn)
 {
-    if (!GrabInput() && m_pStoredInputReceiver)
+    if (m_bActive && !GrabInput() && m_pStoredInputReceiver)
         m_pStoredInputReceiver->IR_OnMousePress(btn);
 }
 
 void CUISequencer::IR_OnMouseRelease(int btn)
 {
-    if (!GrabInput() && m_pStoredInputReceiver)
+    if (m_bActive && !GrabInput() && m_pStoredInputReceiver)
         m_pStoredInputReceiver->IR_OnMouseRelease(btn);
 }
 
 void CUISequencer::IR_OnMouseHold(int btn)
 {
-    if (!GrabInput() && m_pStoredInputReceiver)
+    if (m_bActive && !GrabInput() && m_pStoredInputReceiver)
         m_pStoredInputReceiver->IR_OnMouseHold(btn);
 }
 
 void CUISequencer::IR_OnMouseMove(int x, int y)
 {
-    if (!GrabInput() && m_pStoredInputReceiver)
+    if (m_bActive && !GrabInput() && m_pStoredInputReceiver)
         m_pStoredInputReceiver->IR_OnMouseMove(x, y);
 }
 
 void CUISequencer::IR_OnMouseStop(int x, int y)
 {
-    if (!GrabInput() && m_pStoredInputReceiver)
+    if (m_bActive && !GrabInput() && m_pStoredInputReceiver)
         m_pStoredInputReceiver->IR_OnMouseStop(x, y);
 }
 
 void CUISequencer::IR_OnKeyboardRelease(int dik)
 {
-    if (!GrabInput() && m_pStoredInputReceiver)
+    if (m_bActive && !GrabInput() && m_pStoredInputReceiver)
         m_pStoredInputReceiver->IR_OnKeyboardRelease(dik);
 }
 
 void CUISequencer::IR_OnKeyboardHold(int dik)
 {
-    if (!GrabInput() && m_pStoredInputReceiver)
+    if (m_bActive && !GrabInput() && m_pStoredInputReceiver)
         m_pStoredInputReceiver->IR_OnKeyboardHold(dik);
 }
 
 void CUISequencer::IR_OnMouseWheel(int direction)
 {
-    if (!GrabInput() && m_pStoredInputReceiver)
+    if (m_bActive && !GrabInput() && m_pStoredInputReceiver)
         m_pStoredInputReceiver->IR_OnMouseWheel(direction);
 }
 
 void CUISequencer::IR_OnKeyboardPress(int dik)
 {
+    if (!m_bActive)
+        return;
+
     if (m_items.size())
         m_items.front()->OnKeyboardPress(dik);
 
@@ -276,8 +279,12 @@ void CUISequencer::IR_OnKeyboardPress(int dik)
 
 void CUISequencer::IR_OnActivate()
 {
+    if (!m_bActive)
+        return;
+
     if (!pInput)
         return;
+
     int i;
     for (i = 0; i < CInput::COUNT_KB_BUTTONS; i++)
     {
