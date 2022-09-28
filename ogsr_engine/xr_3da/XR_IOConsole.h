@@ -127,8 +127,10 @@ public:
 	void Hide();
 
 	void Execute(LPCSTR cmd);
+    void Execute(LPCSTR cmd, LPCSTR arg);
+
 	void ExecuteScript(LPCSTR str);
-	void ExecuteCommand(LPCSTR cmd, bool record_cmd = true);
+    void ExecuteCommand(LPCSTR cmd, bool record_cmd = true, bool allow_disabled = false);
 	void SelectCommand();
 
 	bool GetBool(LPCSTR cmd) const;

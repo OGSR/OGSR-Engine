@@ -566,7 +566,7 @@ void CConsole::DrawRect(Frect const& r, u32 color)
 	UIRender->PushPoint(r.x1, r.y2, 0.0f, color, 0.0f, 1.0f);
 }
 
-void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd)
+void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabled)
 {
 	u32 str_size = xr_strlen(cmd_str);
 
@@ -582,6 +582,7 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd)
 	{
 		return;
 	}
+
 	if (record_cmd)
 	{
 		scroll_delta = 0;
@@ -599,6 +600,7 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd)
 			m_last_cmd = edt;
 		}
 	}
+
 	text_editor::split_cmd(first, last, edt);
 
 	// search
@@ -606,7 +608,7 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd)
 	if (it != Commands.end())
 	{
 		IConsole_Command* cc = it->second;
-		if (cc && cc->bEnabled)
+        if (cc && (cc->bEnabled || allow_disabled))
 		{
 			if (cc->bLowerCaseArgs)
 			{
@@ -715,8 +717,19 @@ void CConsole::SelectCommand()
 }
 
 void CConsole::Execute(LPCSTR cmd)
+{ 
+	ExecuteCommand(cmd, false, true); 
+}
+
+void CConsole::Execute(LPCSTR cmd, LPCSTR arg)
 {
-	ExecuteCommand(cmd, false);
+    string1024 full_cmd;
+
+	strcpy(full_cmd, cmd);
+    strcat(full_cmd, " ");
+    strcat(full_cmd, arg);
+
+    ExecuteCommand(full_cmd, false, true);
 }
 
 void CConsole::ExecuteScript(LPCSTR str)
