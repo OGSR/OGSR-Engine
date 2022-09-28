@@ -239,7 +239,7 @@ void CInifile::Load(IReader* F, LPCSTR path)
                     xr_string tmp;
                     _GetItem(inherited_names, k, tmp);
                     Sect& inherited = r_section(tmp.c_str());
-                    for (auto& it : inherited.Data)
+                    for (auto& it : inherited.Ordered_Data)
                     {
                         Item I = {it.first, it.second};
                         insert_item(Current, I);
