@@ -16,17 +16,25 @@ struct motion_descr
 {
     MotionID mid;
     shared_str name;
+    const char* eff_name{};
+};
+
+struct motion_params
+{
     float speed_k{1.0f};
     float start_k{0.0f};
     float stop_k{1.0f};
-    const char* eff_name{};
 };
 
 struct player_hud_motion
 {
+    motion_params params{};
+
     shared_str m_base_name;
     shared_str m_additional_name;
+
     xr_vector<motion_descr> m_animations;
+    xr_vector<motion_descr> m_additional_animations;
 };
 
 struct player_hud_motion_container
@@ -185,7 +193,7 @@ struct attachable_hud_item
     // props
     u32 m_upd_firedeps_frame;
     void tune(const Ivector& values);
-    u32 anim_play(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md, u8& rnd, bool randomAnim, float speed = 1.f);
+    u32 anim_play(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md, bool randomAnim, float speed = 1.f);
 };
 
 class player_hud
@@ -199,8 +207,8 @@ public:
     void render_hud();
     void render_item_ui();
     bool render_item_ui_query();
-    u32 anim_play(u16 part, const motion_descr& M, BOOL bMixIn, const CMotionDef*& md, float speed, bool hasHands, IKinematicsAnimated* itemModel = nullptr,
-                  u16 override_part = u16(-1));
+
+    u32 anim_play(u16 part, const motion_params& P, const motion_descr& M, BOOL bMixIn, const CMotionDef*& md, float speed, bool hasHands, IKinematicsAnimated* itemModel = nullptr);
 
     const shared_str& section_name() const { return m_sect_name; }
     attachable_hud_item* create_hud_item(const shared_str& sect);
@@ -219,7 +227,7 @@ public:
     void calc_transform(u16 attach_slot_idx, const Fmatrix& offset, Fmatrix& result);
     void tune(const Ivector& values);
 
-    u32 motion_length(const motion_descr& M, const CMotionDef*& md, IKinematicsAnimated* itemModel, float speed);
+    u32 motion_length(const motion_params& P, const motion_descr& M, const CMotionDef*& md, IKinematicsAnimated* itemModel, float speed);
     u32 motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md, float speed = 1.f);
 
     void OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd);

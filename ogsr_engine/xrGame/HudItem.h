@@ -90,7 +90,7 @@ protected: //чтоб нельзя было вызвать на прямую
     u32 m_dwMotionStartTm;
     u32 m_dwMotionEndTm;
     u32 m_startedMotionState;
-    u8 m_started_rnd_anim_idx;
+
     bool m_bStopAtEndAnimIsRunning;
     bool SprintType{};
     bool BobbingEnable{};

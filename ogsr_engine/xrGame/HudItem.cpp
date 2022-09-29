@@ -34,7 +34,7 @@ CHudItem::CHudItem()
 
     m_bStopAtEndAnimIsRunning = false;
     m_current_motion_def = nullptr;
-    m_started_rnd_anim_idx = u8(-1);
+    
     m_dwStateTime = 0;
 }
 
@@ -403,11 +403,10 @@ u32 CHudItem::PlayHUDMotion(std::initializer_list<const char*> Ms, const bool bM
 u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, const bool bMixIn, const bool randomAnim, float speed)
 {
     m_current_motion = motion_name;
-    m_started_rnd_anim_idx = 0;
 
     if (HudItemData())
     {
-        return HudItemData()->anim_play(motion_name, bMixIn, m_current_motion_def, m_started_rnd_anim_idx, randomAnim, speed);
+        return HudItemData()->anim_play(motion_name, bMixIn, m_current_motion_def, randomAnim, speed);
     }
     else
     {
