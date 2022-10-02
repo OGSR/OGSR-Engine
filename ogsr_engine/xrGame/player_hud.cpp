@@ -239,6 +239,11 @@ void attachable_hud_item::update(bool bForce)
     }
 }
 
+player_hud_motion* attachable_hud_item::find_motion(const shared_str& name)
+{ 
+    return m_hand_motions.find_motion(name); 
+}
+
 void attachable_hud_item::setup_firedeps(firedeps& fd)
 {
     update(false);
@@ -563,6 +568,9 @@ void attachable_hud_item::load(const shared_str& sect_name)
 
     m_attach_place_idx = READ_IF_EXISTS(pSettings, r_u16, sect_name, "attach_place_idx", 0);
     m_measures.load(sect_name, m_model);
+
+    IKinematicsAnimated* animatedHudItem = smart_cast<IKinematicsAnimated*>(m_model);
+    m_hand_motions.load(m_has_separated_hands, m_parent->Model(), animatedHudItem, sect_name);
 }
 
 u32 attachable_hud_item::anim_play(const shared_str& anm_name_b, BOOL bMixIn, const CMotionDef*& md, bool randomAnim, float speed)
@@ -850,7 +858,7 @@ void player_hud::render_hud()
 u32 player_hud::motion_length(const shared_str& anim_name, const shared_str& hud_name, const CMotionDef*& md, float speed)
 {
     attachable_hud_item* pi = create_hud_item(hud_name);
-    player_hud_motion* pm = pi->m_hand_motions.find_motion(anim_name);
+    player_hud_motion* pm = pi->find_motion(anim_name);
     if (!pm)
         return 100; // ms TEMPORARY
     ASSERT_FMT(pm, "hudItem model [%s] has no motion with alias [%s]", hud_name.c_str(), anim_name.c_str());
@@ -1138,8 +1146,6 @@ attachable_hud_item* player_hud::create_hud_item(const shared_str& sect)
     }
     attachable_hud_item* res = xr_new<attachable_hud_item>(this);
     res->load(sect);
-    IKinematicsAnimated* animatedHudItem = smart_cast<IKinematicsAnimated*>(res->m_model);
-    res->m_hand_motions.load(res->m_has_separated_hands, m_model, animatedHudItem, sect);
     m_pool.push_back(res);
 
     return res;
@@ -1202,7 +1208,7 @@ void player_hud::detach_item_idx(u16 idx)
             if (m_attached_items[1])
             {
                 // fix for a rare case where the right hand stays visible on screen after detaching the right hand's attached item
-                player_hud_motion* pm = m_attached_items[1]->m_hand_motions.find_motion("anm_idle");
+                player_hud_motion* pm = m_attached_items[1]->find_motion("anm_idle");
                 if (pm)
                 {
                     const motion_descr& M = pm->m_animations[0];

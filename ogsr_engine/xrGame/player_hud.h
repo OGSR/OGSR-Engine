@@ -16,7 +16,9 @@ struct motion_descr
 {
     MotionID mid;
     shared_str name;
+
     const char* eff_name{};
+    const char* prefix{};
 };
 
 struct motion_params
@@ -151,7 +153,12 @@ struct script_layer
 
 struct attachable_hud_item
 {
-    player_hud* m_parent;
+private:
+    player_hud_motion_container m_hand_motions;
+
+public:
+    
+    player_hud* m_parent{};
     CHudItem* m_parent_hud_item{};
     shared_str m_sect_name;
     shared_str m_visual_name;
@@ -164,7 +171,8 @@ struct attachable_hud_item
     Fmatrix m_attach_offset;
     Fmatrix m_item_transform;
 
-    player_hud_motion_container m_hand_motions;
+    // props
+    u32 m_upd_firedeps_frame;
 
     attachable_hud_item(player_hud* pparent) : m_parent(pparent), m_upd_firedeps_frame(u32(-1)) {}
     ~attachable_hud_item();
@@ -182,6 +190,8 @@ struct attachable_hud_item
     bool has_bone(const shared_str& bone_name);
     void debug_draw_firedeps();
 
+    player_hud_motion* find_motion(const shared_str& name);
+
     // hands bind position
     Fvector& hands_attach_pos();
     Fvector& hands_attach_rot();
@@ -190,10 +200,9 @@ struct attachable_hud_item
     Fvector& hands_offset_pos();
     Fvector& hands_offset_rot();
 
-    // props
-    u32 m_upd_firedeps_frame;
-    void tune(const Ivector& values);
     u32 anim_play(const shared_str& anim_name, BOOL bMixIn, const CMotionDef*& md, bool randomAnim, float speed = 1.f);
+
+    void tune(const Ivector& values);
 };
 
 class player_hud
@@ -284,6 +293,8 @@ public:
     float SetBlendAnmTime(LPCSTR name, float time);
 
     void update_script_item();
+
+    IKinematicsAnimated* Model() { return m_model; }
 
 private:
     static void Thumb0Callback(CBoneInstance* B);
