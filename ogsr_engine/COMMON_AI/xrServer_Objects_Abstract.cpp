@@ -37,7 +37,7 @@ CSE_Visual::CSE_Visual(LPCSTR name)
 
 CSE_Visual::~CSE_Visual() {}
 
-void CSE_Visual::set_visual(LPCSTR name, bool load)
+void CSE_Visual::set_visual(LPCSTR name)
 {
     string_path tmp;
     strcpy_s(tmp, name);

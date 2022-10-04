@@ -53,7 +53,7 @@ virtual ~CSE_Visual();
 void visual_read(NET_Packet& P, u16 version);
 void visual_write(NET_Packet& P);
 
-void set_visual(LPCSTR name, bool load = true);
+void set_visual(LPCSTR name);
 LPCSTR get_visual() const { return *visual_name; };
 
 virtual CSE_Visual* __stdcall visual() = 0;
