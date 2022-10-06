@@ -195,9 +195,7 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
 
         FS.r_close(file);
 
-        VERIFY(SUCCEEDED(_hr));
-
-        R_ASSERT(!FAILED(_hr), make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings."));
+        ASSERT_FMT(!FAILED(_hr), "Can't compile shader [%s]", name);
 
         return _vs;
     }
@@ -316,9 +314,7 @@ SPS* CResourceManager::_CreatePS(LPCSTR _name)
 
         FS.r_close(file);
 
-        VERIFY(SUCCEEDED(_hr));
-
-        R_ASSERT(!FAILED(_hr), make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings."));
+        ASSERT_FMT(!FAILED(_hr), "Can't compile shader [%s]", name);
 
         return _ps;
     }
@@ -371,11 +367,9 @@ SGS* CResourceManager::_CreateGS(LPCSTR name)
 
         HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_gs);
 
-        VERIFY(SUCCEEDED(_hr));
-
         FS.r_close(file);
 
-        R_ASSERT(!FAILED(_hr), make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings."));
+        ASSERT_FMT(!FAILED(_hr), "Can't compile shader [%s]", name);
 
         return _gs;
     }

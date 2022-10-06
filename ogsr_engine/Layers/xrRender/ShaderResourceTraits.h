@@ -123,9 +123,7 @@ inline T* CResourceManager::CreateShader(const char* name)
 
         FS.r_close(file);
 
-        VERIFY(SUCCEEDED(_hr));
-
-        R_ASSERT(!FAILED(_hr), make_string("Your video card doesn't meet game requirements.\n\nTry to lower game settings."));
+        ASSERT_FMT(!FAILED(_hr), "Can't compile shader [%s]", name);
 
         return sh;
     }
