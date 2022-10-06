@@ -153,6 +153,13 @@ void player_hud_motion_container::load(bool has_separated_hands, IKinematicsAnim
                         }
                     }
                 }
+
+                if (pm.m_additional_animations.empty())
+                {
+                    Msg("additional motion [%s](%s) not found in section [%s], will use main!", pm.m_additional_name.c_str(), name.c_str(), sect.c_str());
+
+                    pm.m_additional_name = pm.m_base_name;
+                }
             }
 
             if (pm.m_animations.empty())
