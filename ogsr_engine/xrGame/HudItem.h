@@ -225,7 +225,7 @@ public:
         CWeaponBobbing(CHudItem* parent);
         ~CWeaponBobbing() = default;
 
-        void Update(Fmatrix& m);
+        void Update(Fmatrix& m, Fmatrix& m2);
         void CheckState();
 
     private:

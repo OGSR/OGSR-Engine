@@ -832,7 +832,7 @@ void player_hud::render_hud()
     bool b_has_hands =
         (m_attached_items[0] && m_attached_items[0]->m_has_separated_hands) || (m_attached_items[1] && m_attached_items[1]->m_has_separated_hands) || script_anim_item_model;
 
-    if (b_has_hands)
+    if (b_has_hands || script_anim_part != u8(-1))
     {
         ::Render->set_Transform(&m_transform);
         ::Render->add_Visual(m_model->dcast_RenderVisual());
@@ -903,7 +903,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 
     Fmatrix trans = cam_trans;
     Fmatrix trans_b = cam_trans;
-
+    
     auto attach_pos = [this](size_t part) {
         if (m_attached_items[part])
             return m_attached_items[part]->hands_attach_pos();
@@ -937,34 +937,36 @@ void player_hud::update(const Fmatrix& cam_trans)
     else
         trans_2 = trans;
 
-    // override hand offset for single hand animation
-    if (script_anim_part == 2 || (script_anim_part && !m_attached_items[0] && !m_attached_items[1]))
     {
-        m1pos = script_anim_offset[0];
-        m2pos = script_anim_offset[0];
-        m1rot = script_anim_offset[1];
-        m2rot = script_anim_offset[1];
-
-        trans = trans_b;
-        trans_2 = trans_b;
-    }
-    else if (script_anim_offset_factor != 0.f)
-    {
-        Fvector& hand_pos = script_anim_part == 0 ? m1pos : m2pos;
-        Fvector& hand_rot = script_anim_part == 0 ? m1rot : m2rot;
-
-        hand_pos.lerp(script_anim_part == 0 ? m1pos : m2pos, script_anim_offset[0], script_anim_offset_factor);
-        hand_rot.lerp(script_anim_part == 0 ? m1rot : m2rot, script_anim_offset[1], script_anim_offset_factor);
-
-        if (script_anim_part == 0)
+        // override hand offset for single hand animation
+        if (script_anim_part == 2 || (script_anim_part && !m_attached_items[0] && !m_attached_items[1]))
         {
-            trans_b.inertion(trans, script_anim_offset_factor);
+            m1pos = script_anim_offset[0];
+            m2pos = script_anim_offset[0];
+            m1rot = script_anim_offset[1];
+            m2rot = script_anim_offset[1];
+
             trans = trans_b;
-        }
-        else
-        {
-            trans_b.inertion(trans_2, script_anim_offset_factor);
             trans_2 = trans_b;
+        }
+        else if (script_anim_offset_factor != 0.f)
+        {
+            Fvector& hand_pos = script_anim_part == 0 ? m1pos : m2pos;
+            Fvector& hand_rot = script_anim_part == 0 ? m1rot : m2rot;
+
+            hand_pos.lerp(script_anim_part == 0 ? m1pos : m2pos, script_anim_offset[0], script_anim_offset_factor);
+            hand_rot.lerp(script_anim_part == 0 ? m1rot : m2rot, script_anim_offset[1], script_anim_offset_factor);
+
+            if (script_anim_part == 0)
+            {
+                trans_b.inertion(trans, script_anim_offset_factor);
+                trans = trans_b;
+            }
+            else
+            {
+                trans_b.inertion(trans_2, script_anim_offset_factor);
+                trans_2 = trans_b;
+            }
         }
     }
 
@@ -980,15 +982,10 @@ void player_hud::update(const Fmatrix& cam_trans)
     if (need_update_collision_local)
     {
         if (m_attached_items[0] && m_attached_items[0]->m_parent_hud_item->HudBobbingAllowed())
-            m_attached_items[0]->m_parent_hud_item->m_bobbing->Update(m_attach_offset);
-
-        if (m_attached_items[1])
         {
-            if (m_attached_items[1]->m_parent_hud_item->HudBobbingAllowed())
-                m_attached_items[1]->m_parent_hud_item->m_bobbing->Update(m_attach_offset_2);
+            // m_bobbing привазан к айтему только что б получить zoom factor. Зумится может только основной предмет в руках потому можно считать только по нему
+            m_attached_items[0]->m_parent_hud_item->m_bobbing->Update(m_attach_offset, m_attach_offset_2);
         }
-        else
-            m_attach_offset_2 = m_attach_offset;
     }
 
     m_transform.mul(trans, m_attach_offset);
@@ -1049,18 +1046,20 @@ void player_hud::update(const Fmatrix& cam_trans)
     if (script_anim_item_attached && script_anim_item_model)
         update_script_item();
 
-    // single hand offset smoothing + syncing back to other hand animation on end
-    if (script_anim_part != u8(-1))
     {
-        script_anim_offset_factor += Device.fTimeDelta * 2.5f;
+        // single hand offset smoothing + syncing back to other hand animation on end
+        if (script_anim_part != u8(-1))
+        {
+            script_anim_offset_factor += Device.fTimeDelta * 2.5f;
 
-        if (m_bStopAtEndAnimIsRunning && Device.dwTimeGlobal >= script_anim_end)
-            script_anim_stop();
+            if (m_bStopAtEndAnimIsRunning && Device.dwTimeGlobal >= script_anim_end)
+                script_anim_stop();
+        }
+        else
+            script_anim_offset_factor -= Device.fTimeDelta * 5.f;
+
+        clamp(script_anim_offset_factor, 0.f, 1.f);
     }
-    else
-        script_anim_offset_factor -= Device.fTimeDelta * 5.f;
-
-    clamp(script_anim_offset_factor, 0.f, 1.f);
 }
 
 u32 player_hud::anim_play(u16 part, const motion_params& P, const motion_descr& M, BOOL bMixIn, const CMotionDef*& md, float speed, bool hasHands, IKinematicsAnimated* itemModel)
@@ -1526,13 +1525,32 @@ u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, b
 
     if (script_anim_item_model)
     {
-        shared_str item_anm_name;
-        if (phm->m_base_name != phm->m_additional_name)
-            item_anm_name = phm->m_additional_name;
-        else
-            item_anm_name = M.name;
+        MotionID M2;
 
-        MotionID M2 = script_anim_item_model->ID_Cycle_Safe(item_anm_name);
+        if (phm->m_base_name != phm->m_additional_name)
+        {
+            u8 rnd_idx2 = 0;
+
+            if (false) // randomAnim
+                rnd_idx2 = (u8)Random.randI(phm->m_additional_animations.size());
+
+            motion_descr& additional = phm->m_additional_animations[rnd_idx2];
+
+            if (bDebug)
+                Msg("playing item animation [%s]", additional.name.c_str());
+
+            M2 = script_anim_item_model->ID_Cycle_Safe(additional.name);
+        }
+        else
+        {
+            shared_str item_anm_name = M.name;
+
+            if (bDebug)
+                Msg("playing item animation [%s]", item_anm_name.c_str());
+
+            M2 = script_anim_item_model->ID_Cycle_Safe(item_anm_name);
+        }
+
         if (!M2.valid())
             M2 = script_anim_item_model->ID_Cycle_Safe("idle");
 

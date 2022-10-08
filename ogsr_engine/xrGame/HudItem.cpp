@@ -1235,7 +1235,7 @@ void CHudItem::CWeaponBobbing::CheckState()
     fTime += Device.fTimeDelta;
 }
 
-void CHudItem::CWeaponBobbing::Update(Fmatrix& m)
+void CHudItem::CWeaponBobbing::Update(Fmatrix& m, Fmatrix& m2)
 {
     CheckState();
 
@@ -1260,8 +1260,6 @@ void CHudItem::CWeaponBobbing::Update(Fmatrix& m)
 
     if (!fsimilar(fReminderFactor, 0))
     {
-        Fvector dangle;
-        Fmatrix R, mR;
         float k = (dwMState & ACTOR_DEFS::mcCrouch) ? m_fCrouchFactor : 1.f;
         float k2 = k;
 
@@ -1308,17 +1306,30 @@ void CHudItem::CWeaponBobbing::Update(Fmatrix& m)
 
         float _cosA = _cos(ST) * A * fReminderFactor;
 
-        m.c.y += _sinA;
+        // применяем к матрице положения рук
+
+        Fvector dangle;
+        Fmatrix R, mR;
+
         dangle.x = _cosA;
         dangle.z = _cosA;
         dangle.y = _sinA;
 
         R.setHPB(dangle.x, dangle.y, dangle.z);
 
+        m.c.y += _sinA;
+
         mR.mul(m, R);
 
         m.k.set(mR.k);
         m.j.set(mR.j);
+
+        m2.c.y += _sinA;
+
+        mR.mul(m2, R);
+
+        m2.k.set(mR.k);
+        m2.j.set(mR.j);
     }
 }
 
