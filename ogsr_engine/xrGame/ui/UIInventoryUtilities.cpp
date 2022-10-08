@@ -3,6 +3,7 @@
 #include "../WeaponAmmo.h"
 #include "../UIStaticItem.h"
 #include "UIStatic.h"
+#include "xrServer_Objects_ALife.h"
 #include "../eatable_item.h"
 #include "../Level.h"
 #include "../HUDManager.h"
@@ -52,23 +53,31 @@ bool InventoryUtilities::GreaterRoomInRuck(PIItem item1, PIItem item2)
             return true;
 
         if (r1.y == r2.y)
-        {
-            if (!xr_strcmp(item1->object().cNameSect(), item2->object().cNameSect()))
+        { 
+            //if (!xr_strcmp(item1->object().cNameSect(), item2->object().cNameSect()))
+            if (item1->object().alife_object()->m_tClassID == item2->object().alife_object()->m_tClassID)
             {
                 const auto* ammo1 = smart_cast<CWeaponAmmo*>(item1);
                 const auto* ammo2 = smart_cast<CWeaponAmmo*>(item2);
+
                 if (ammo1 && ammo2)
                 {
                     if (ammo1->m_boxCurr == ammo2->m_boxCurr)
-                        return (item1->object().ID() < item2->object().ID());
+                        // return (item1->object().ID() < item2->object().ID());
+                        return xr_strcmp(item1->Name(), item2->Name()) < 0;
+
                     return (ammo1->m_boxCurr > ammo2->m_boxCurr);
                 }
+
                 if (fsimilar(item1->GetCondition(), item2->GetCondition(), 0.01f))
-                    return (item1->object().ID() < item2->object().ID());
+                    //return (item1->object().ID() < item2->object().ID());
+                    return xr_strcmp(item1->Name(), item2->Name()) < 0;
+
                 return (item1->GetCondition() > item2->GetCondition());
             }
             else
-                return xr_strcmp(item1->object().cNameSect(), item2->object().cNameSect()) < 0;
+                //return xr_strcmp(item1->object().cNameSect(), item2->object().cNameSect()) < 0;
+                return item1->object().alife_object()->m_tClassID < item2->object().alife_object()->m_tClassID;
         }
 
         return false;
