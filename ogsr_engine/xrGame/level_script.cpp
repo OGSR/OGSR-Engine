@@ -437,10 +437,15 @@ void disable_input()
 void enable_input() { g_bDisableAllInput = false; }
 
 bool g_block_all_except_movement{};
+bool g_actor_allow_ladder{true};
 
 void block_all_except_movement(bool b) { g_block_all_except_movement = b; }
 
 bool only_movement_allowed() { return g_block_all_except_movement; }
+
+void set_actor_allow_ladder(bool b) { g_actor_allow_ladder = b; }
+
+bool actor_ladder_allowed() { return g_actor_allow_ladder; }
 
 void spawn_phantom(const Fvector& position) { Level().spawn_item("m_phantom", position, u32(-1), u16(-1), false); }
 
@@ -898,6 +903,8 @@ void CLevel::script_register(lua_State* L)
             def("disable_input", disable_input), def("enable_input", enable_input), 
 
             def("only_allow_movekeys", block_all_except_movement), def("only_movekeys_allowed", only_movement_allowed),
+
+            def("set_actor_allow_ladder", set_actor_allow_ladder), def("actor_ladder_allowed", actor_ladder_allowed),
 
             def("spawn_phantom", spawn_phantom),
 
