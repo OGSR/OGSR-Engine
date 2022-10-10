@@ -42,9 +42,9 @@ void stop_tutorial()
         g_tutorial->Stop();
 }
 
-u32 PlayHudMotion(u8 hand, LPCSTR hud_section, LPCSTR anm_name, bool bMixIn = true, float speed = 1.f)
+u32 PlayHudMotion(u8 hand, LPCSTR hud_section, LPCSTR anm_name, bool bMixIn = true, float speed = 1.f, bool bOverride_item = false)
 {
-    return g_player_hud->script_anim_play(hand, hud_section, anm_name, bMixIn, speed);
+    return g_player_hud->script_anim_play(hand, hud_section, anm_name, bMixIn, speed, bOverride_item);
 }
 
 void StopHudMotion() { g_player_hud->script_anim_stop(); }

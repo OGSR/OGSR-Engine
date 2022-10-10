@@ -691,6 +691,7 @@ player_hud::player_hud()
     script_anim_offset_factor = 0.f;
     m_item_pos.identity();
     script_override_arms = false;
+    script_override_item = false;
 }
 
 player_hud::~player_hud()
@@ -841,7 +842,7 @@ void player_hud::render_hud()
         ::Render->add_Visual(m_model_2->dcast_RenderVisual());
     }
 
-    //if (!script_anim_item_model) можно скрывать предметы в руках во время скриптовой анимаии, но выглядит кривовато
+    if (!script_override_item) // можно скрывать предметы в руках во время скриптовой анимаии, но выглядит кривовато
     {
         if (m_attached_items[0])
             m_attached_items[0]->render();
@@ -1008,24 +1009,27 @@ void player_hud::update(const Fmatrix& cam_trans)
         if (!anm || !anm->anm || (!anm->active && anm->blend_amount == 0.f))
             continue;
 
-        if (anm->active)
-            anm->blend_amount += Device.fTimeDelta / .4f;
-        else
-            anm->blend_amount -= Device.fTimeDelta / .4f;
-
-        clamp(anm->blend_amount, 0.f, 1.f);
-
-        if (anm->blend_amount > 0.f)
+        if (need_update_collision_local)
         {
-            if (anm->anm->bLoop || anm->anm->m_MParam.t < anm->anm->m_MParam.max_t)
-                anm->anm->Update(Device.fTimeDelta);
+            if (anm->active)
+                anm->blend_amount += Device.fTimeDelta / .4f;
             else
-                anm->Stop(false);
-        }
-        else
-        {
-            anm->Stop(true);
-            continue;
+                anm->blend_amount -= Device.fTimeDelta / .4f;
+
+            clamp(anm->blend_amount, 0.f, 1.f);
+
+            if (anm->blend_amount > 0.f)
+            {
+                if (anm->anm->bLoop || anm->anm->m_MParam.t < anm->anm->m_MParam.max_t)
+                    anm->anm->Update(Device.fTimeDelta);
+                else
+                    anm->Stop(false);
+            }
+            else
+            {
+                anm->Stop(true);
+                continue;
+            }
         }
 
         Fmatrix blend = anm->XFORM();
@@ -1050,12 +1054,13 @@ void player_hud::update(const Fmatrix& cam_trans)
         // single hand offset smoothing + syncing back to other hand animation on end
         if (script_anim_part != u8(-1))
         {
-            script_anim_offset_factor += Device.fTimeDelta * 2.5f;
+            if (need_update_collision_local)
+                script_anim_offset_factor += Device.fTimeDelta * 2.5f;
 
             if (m_bStopAtEndAnimIsRunning && Device.dwTimeGlobal >= script_anim_end)
                 script_anim_stop();
         }
-        else
+        else if (need_update_collision_local)
             script_anim_offset_factor -= Device.fTimeDelta * 5.f;
 
         clamp(script_anim_offset_factor, 0.f, 1.f);
@@ -1462,7 +1467,7 @@ void player_hud::load_script(LPCSTR section)
     script_override_arms = true;
 }
 
-u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, bool bMixIn, float speed)
+u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, bool bMixIn, float speed, bool bOverride_item)
 {
     if (!pSettings->section_exist(hud_section))
     {
@@ -1612,6 +1617,8 @@ u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, b
 
     if (length > 0)
     {
+        script_override_item = bOverride_item;
+
         m_bStopAtEndAnimIsRunning = true;
         script_anim_end = Device.dwTimeGlobal + length;
     }
@@ -1628,6 +1635,7 @@ void player_hud::script_anim_stop()
     u8 part = script_anim_part;
     script_anim_part = u8(-1);
     script_anim_item_model = nullptr;
+    script_override_item = false;
 
     //updateMovementLayerState();
 

@@ -265,7 +265,7 @@ public:
         load(m_sect_name, true);
     };
 
-    u32 script_anim_play(u8 hand, LPCSTR itm_name, LPCSTR anm_name, bool bMixIn = true, float speed = 1.f);
+    u32 script_anim_play(u8 hand, LPCSTR itm_name, LPCSTR anm_name, bool bMixIn = true, float speed = 1.f, bool bOverride_item = false);
     void script_anim_stop();
     u32 motion_length_script(LPCSTR section, LPCSTR anm_name, float speed);
     bool allow_script_anim();
@@ -277,6 +277,7 @@ public:
     bool m_bStopAtEndAnimIsRunning;
     bool script_anim_item_attached{};
     bool script_override_arms;
+    bool script_override_item;
     IKinematicsAnimated* script_anim_item_model{};
     xr_vector<script_layer*> m_script_layers;
 
