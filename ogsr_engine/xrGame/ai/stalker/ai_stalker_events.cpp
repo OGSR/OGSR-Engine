@@ -101,13 +101,28 @@ void CAI_Stalker::OnEvent(NET_Packet& P, u16 type)
 
 void CAI_Stalker::feel_touch_new(CObject* O)
 {
-    CPropertyStorage& storage = brain().CStalkerPlanner::m_storage;
+    auto& eu = brain().evaluators();
 
-    const _solver_value_type& propertyItems = storage.property(StalkerDecisionSpace::eWorldPropertyItems);
-    const _solver_value_type& propertyFoundItemToKill = storage.property(StalkerDecisionSpace::eWorldPropertyFoundItemToKill);
-    const _solver_value_type& propertyItemToKill = storage.property(StalkerDecisionSpace::eWorldPropertyItemToKill);
+    bool propertyItems = true;
+    bool propertyFoundItemToKill = true;
 
-    if (!propertyItems && !(propertyFoundItemToKill && !propertyItemToKill))
+    const auto ePropertyItems = eu.find(StalkerDecisionSpace::eWorldPropertyItems);
+
+    if (ePropertyItems != eu.end())
+    {
+        propertyItems = (*ePropertyItems).second->evaluate();
+    }
+
+    auto ePropertyFoundItemToKill = eu.find(StalkerDecisionSpace::eWorldPropertyFoundItemToKill);
+    auto ePropertyItemToKill = eu.find(StalkerDecisionSpace::eWorldPropertyItemToKill);
+
+    if (ePropertyFoundItemToKill != eu.end() && 
+        ePropertyItemToKill != eu.end())
+    {
+        propertyFoundItemToKill = (*ePropertyFoundItemToKill).second->evaluate() && !(*ePropertyItemToKill).second->evaluate();
+    }
+
+    if (!propertyItems && !propertyFoundItemToKill) // !(propertyFoundItemToKill && !propertyItemToKill)
         return;
 
     if (!g_Alive())
