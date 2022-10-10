@@ -1514,7 +1514,7 @@ u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, b
     script_anim_offset[1] = rrot;
     script_anim_part = hand;
 
-    player_hud_motion_container* pm = get_hand_motions(hud_section);
+    player_hud_motion_container* pm = get_hand_motions(hud_section, script_anim_item_model);
     player_hud_motion* phm = pm->find_motion(anm_name);
 
     if (!phm)
@@ -1653,7 +1653,14 @@ u32 player_hud::motion_length_script(LPCSTR hud_section, LPCSTR anm_name, float 
         return 0;
     }
 
-    player_hud_motion_container* pm = get_hand_motions(hud_section);
+    IKinematicsAnimated* animatedHudItem = NULL;
+
+    if (pSettings->line_exist(hud_section, "item_visual"))
+    {
+        animatedHudItem = ::Render->model_Create(pSettings->r_string(hud_section, "item_visual"))->dcast_PKinematicsAnimated();
+    }
+
+    player_hud_motion_container* pm = get_hand_motions(hud_section, animatedHudItem);
     if (!pm)
         return 0;
 
@@ -1753,7 +1760,7 @@ float player_hud::SetBlendAnmTime(LPCSTR name, float time)
 }
 
 
-player_hud_motion_container* player_hud::get_hand_motions(LPCSTR section)
+player_hud_motion_container* player_hud::get_hand_motions(LPCSTR section, IKinematicsAnimated* animatedHudItem)
 {
     for (hand_motions* phm : m_hand_motions)
     {
@@ -1763,7 +1770,7 @@ player_hud_motion_container* player_hud::get_hand_motions(LPCSTR section)
 
     hand_motions* res = xr_new<hand_motions>();
     res->section = section;
-    res->pm.load(true, m_model, nullptr, section);
+    res->pm.load(true, m_model, animatedHudItem, section);
     m_hand_motions.push_back(res);
 
     return &res->pm;
