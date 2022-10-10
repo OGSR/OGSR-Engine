@@ -152,6 +152,8 @@ public:
     virtual void PlayAnimIdleMovingCrouchSlow();
     virtual void PlayAnimDeviceSwitch(){};
 
+    virtual bool NeedBlendAnm();
+
     virtual void UpdateCL();
     virtual void renderable_Render();
 

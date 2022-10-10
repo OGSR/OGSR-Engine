@@ -101,6 +101,85 @@ struct hud_item_measures
     bool useCopFirePoint{};
 };
 
+enum eMovementLayers
+{
+    eAimWalk = 0,
+    eAimCrouch,
+    eCrouch,
+    eWalk,
+    eRun,
+    eSprint,
+    move_anms_end
+};
+
+struct movement_layer
+{
+    CObjectAnimator* anm;
+    float blend_amount[2];
+    bool active;
+    float m_power;
+    Fmatrix blend;
+    u8 m_part;
+
+    movement_layer()
+    {
+        blend.identity();
+        anm = xr_new<CObjectAnimator>();
+        blend_amount[0] = 0.f;
+        blend_amount[1] = 0.f;
+        active = false;
+        m_power = 1.f;
+    }
+
+    void Load(LPCSTR name)
+    {
+        if (xr_strcmp(name, anm->Name()))
+            anm->Load(name);
+    }
+
+    void Play(bool bLoop = true)
+    {
+        if (!anm->Name())
+            return;
+
+        if (IsPlaying())
+        {
+            active = true;
+            return;
+        }
+
+        anm->Play(bLoop);
+        active = true;
+    }
+
+    bool IsPlaying() { return anm->IsPlaying(); }
+
+    void Stop(bool bForce)
+    {
+        if (bForce)
+        {
+            anm->Stop();
+            blend_amount[0] = 0.f;
+            blend_amount[1] = 0.f;
+            blend.identity();
+        }
+
+        active = false;
+    }
+
+    const Fmatrix& XFORM(u8 part)
+    {
+        blend.set(anm->XFORM());
+        blend.mul(blend_amount[part] * m_power);
+        blend.m[0][0] = 1.f;
+        blend.m[1][1] = 1.f;
+        blend.m[2][2] = 1.f;
+
+        return blend;
+    }
+};
+
+
 struct script_layer
 {
     shared_str m_name;
@@ -280,6 +359,11 @@ public:
     bool script_override_item;
     IKinematicsAnimated* script_anim_item_model{};
     xr_vector<script_layer*> m_script_layers;
+
+    // Movement animation layers: 0 = aim_walk, 1 = aim_crouch, 2 = crouch, 3 = walk, 4 = run, 5 = sprint
+    xr_vector<movement_layer*> m_movement_layers;
+
+    void updateMovementLayerState();
 
     Fvector item_pos[2];
     Fmatrix m_item_pos;

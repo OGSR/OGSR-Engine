@@ -814,6 +814,17 @@ void CWeapon::OnHiddenItem()
     m_set_next_ammoType_on_reload = u32(-1);
 }
 
+bool CWeapon::NeedBlendAnm()
+{
+    /*if (GetState() == eIdle && Actor()->is_safemode())
+        return true;*/
+
+    /*if (IsZoomed() && psDeviceFlags2.test(rsAimSway))
+        return true;*/
+
+    return inherited::NeedBlendAnm();
+}
+
 void CWeapon::OnH_B_Chield()
 {
     inherited::OnH_B_Chield();
@@ -1626,6 +1637,8 @@ void CWeapon::OnZoomIn()
     CActor* pActor = smart_cast<CActor*>(H_Parent());
     if (pActor)
         pActor->callback(GameObject::eOnActorWeaponZoomIn)(lua_game_object());
+
+    g_player_hud->updateMovementLayerState();
 }
 
 void CWeapon::OnZoomOut()
@@ -1651,6 +1664,8 @@ void CWeapon::OnZoomOut()
         GamePersistent().SetPickableEffectorDOF(false);
 
     ResetSubStateTime();
+
+    g_player_hud->updateMovementLayerState();
 }
 
 bool CWeapon::UseScopeTexture()

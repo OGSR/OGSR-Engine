@@ -245,6 +245,8 @@ void CHudItem::OnStateSwitch(u32 S, u32 oldState)
         PlayAnimSprintEnd();
     else if (S != eIdle)
         SprintType = false;
+
+    g_player_hud->updateMovementLayerState();
 }
 
 bool CHudItem::Activate(bool now)
@@ -614,6 +616,12 @@ void CHudItem::PlayAnimIdleSprint()
              ((wpn && ((wpn->GetAmmoElapsed() == 0 && !wpn->IsGrenadeMode()) || (wpn->GetAmmoElapsed2() == 0 && wpn->IsGrenadeMode()))) ? "anm_idle_sprint_empty" : "nullptr"),
          "anm_idle_sprint", "anm_idle", "anim_idle_sprint", "anim_idle"},
         true, GetState());
+}
+
+bool CHudItem::NeedBlendAnm()
+{
+    u32 state = GetState();
+    return (state != eIdle && state != eHidden);
 }
 
 void CHudItem::OnMovementChanged(ACTOR_DEFS::EMoveCommand cmd)
