@@ -29,7 +29,9 @@ CGameFont::CGameFont(LPCSTR section, u32 flags)
     uFlags = flags;
     nNumChars = 0x100;
     TCMap = NULL;
+
     Initialize(pSettings->r_string(section, "shader"), pSettings->r_string(section, "texture"));
+
     if (pSettings->line_exist(section, "size"))
     {
         float sz = pSettings->r_float(section, "size");
@@ -51,6 +53,7 @@ CGameFont::CGameFont(LPCSTR shader, LPCSTR texture, u32 flags)
     uFlags = flags;
     nNumChars = 0x100;
     TCMap = NULL;
+
     Initialize(shader, texture);
 }
 

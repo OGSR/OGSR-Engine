@@ -12,35 +12,15 @@ CFontManager::CFontManager()
 {
     Device.seqDeviceReset.Add(this, REG_PRIORITY_HIGH);
 
-    m_all_fonts.push_back(&pFontMedium);
-    m_all_fonts.push_back(&pFontSmall);
-
-    m_all_fonts.push_back(&pFontDI);
-    m_all_fonts.push_back(&pFontArial14); // used xml
-    m_all_fonts.push_back(&pFontArial21);
-
-    m_all_fonts.push_back(&pFontGraffiti19Russian);
-    m_all_fonts.push_back(&pFontGraffiti22Russian);
-
-    m_all_fonts.push_back(&pFontLetterica16Russian);
-    m_all_fonts.push_back(&pFontLetterica18Russian);
-
-    m_all_fonts.push_back(&pFontGraffiti32Russian);
-    m_all_fonts.push_back(&pFontGraffiti40Russian);
-    m_all_fonts.push_back(&pFontGraffiti50Russian);
-
-    m_all_fonts.push_back(&pFontLetterica25);
-
-    FONTS_VEC_IT it = m_all_fonts.begin();
-    FONTS_VEC_IT it_e = m_all_fonts.end();
-    for (; it != it_e; ++it)
-        (**it) = NULL;
-
     InitializeFonts();
 }
 
 void CFontManager::InitializeFonts()
 {
+    delete_data(m_all_fonts);
+
+    m_all_fonts.clear();
+
     InitializeFont(pFontMedium, "hud_font_medium");
     InitializeFont(pFontSmall, "hud_font_small");
 
@@ -93,7 +73,10 @@ void CFontManager::InitializeFont(CGameFont*& F, LPCSTR section, u32 flags)
 
     const char* sh_name = READ_IF_EXISTS(pSettings, r_string, section, "shader", "font");
     if (!F)
+    {
         F = xr_new<CGameFont>(sh_name, font_tex_name, flags);
+        m_all_fonts.push_back(F);
+    }
     else
         F->Initialize(sh_name, font_tex_name);
 
@@ -130,6 +113,12 @@ void CFontManager::InitializeFont(CGameFont*& F, LPCSTR section, u32 flags)
 
 CGameFont* CFontManager::InitializeCustomFont(LPCSTR section, u32 flags)
 {
+    for (auto& font : m_all_fonts)
+    {
+        if (strstr(font->m_font_name.c_str(), section))
+            return font;
+    }
+
     CGameFont* pFontAdd = NULL;
     InitializeFont(pFontAdd, section, flags);
     return pFontAdd;
@@ -138,19 +127,18 @@ CGameFont* CFontManager::InitializeCustomFont(LPCSTR section, u32 flags)
 CFontManager::~CFontManager()
 {
     Device.seqDeviceReset.Remove(this);
-    FONTS_VEC_IT it = m_all_fonts.begin();
-    FONTS_VEC_IT it_e = m_all_fonts.end();
-    for (; it != it_e; ++it)
-        xr_delete(**it);
+
+    delete_data(m_all_fonts);
 }
 
 void CFontManager::Render()
 {
-    FONTS_VEC_IT it = m_all_fonts.begin();
-    FONTS_VEC_IT it_e = m_all_fonts.end();
-    for (; it != it_e; ++it)
-        (**it)->OnRender();
+    for (auto& font : m_all_fonts)
+    {
+        font->OnRender();
+    }
 }
+
 void CFontManager::OnDeviceReset() { InitializeFonts(); }
 
 //--------------------------------------------------------------------
