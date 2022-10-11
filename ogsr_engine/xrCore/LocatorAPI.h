@@ -47,7 +47,7 @@ private:
     DEFINE_VECTOR(archive, archives_vec, archives_it);
 
     int m_iLockRescan;
-    void rescan_path(LPCSTR full_path, BOOL bRecurse);
+    void rescan_physical_path(LPCSTR full_path, BOOL bRecurse);
     void check_pathes();
 
     files_set files;
@@ -60,7 +60,7 @@ private:
     void Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, u32 modif);
     void ProcessArchive(LPCSTR path, LPCSTR base_path = NULL);
     void ProcessOne(LPCSTR path, const _finddata_t& F);
-    bool Recurse(const char* path, const bool log_if_found = false);
+    bool RecurseScanPhysicalPath(const char* path, const bool log_if_found = false);
 
     files_it file_find_it(LPCSTR n);
 
@@ -155,7 +155,7 @@ public:
     void auth_runtime(void*);*/
 
     // editor functions
-    void rescan_pathes();
+    void rescan_physical_pathes();
     void lock_rescan();
     void unlock_rescan();
 };

@@ -15,6 +15,8 @@
 #include "file_stream_reader.h"
 #include "trivial_encryptor.h"
 
+#include <filesystem>;
+
 constexpr u32 BIG_FILE_READER_WINDOW_SIZE = 1024 * 1024;
 
 std::unique_ptr<CLocatorAPI> xr_FS;
@@ -387,7 +389,7 @@ void CLocatorAPI::ProcessOne(LPCSTR path, const _finddata_t& F)
             return;
         strcat_s(N, "\\");
         Register(N, 0xffffffff, 0, 0, F.size, F.size, (u32)F.time_write);
-        Recurse(N);
+        RecurseScanPhysicalPath(N);
     }
     else
     {
@@ -432,7 +434,7 @@ bool ignore_path(const char* _path)
         return true;
 }
 
-bool CLocatorAPI::Recurse(const char* path, const bool log_if_found)
+bool CLocatorAPI::RecurseScanPhysicalPath(const char* path, const bool log_if_found)
 {
     _finddata_t sFile;
     intptr_t hFile;
@@ -568,31 +570,6 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
     }
     else
     {
-        /*
-                LPCSTR fs_ltx	= (fs_name&&fs_name[0])?fs_name:FSLTX;
-                F				= r_open(fs_ltx);
-                if (!F&&m_Flags.is(flScanAppRoot))
-                    F			= r_open("$app_root$",fs_ltx);
-
-                if (!F)
-                {
-                    string_path tmpAppPath{};
-                    strcpy_s(tmpAppPath, Core.ApplicationPath);
-                    if (xr_strlen(tmpAppPath))
-                    {
-                        tmpAppPath[xr_strlen(tmpAppPath)-1] = 0;
-                        if (strrchr(tmpAppPath, '\\'))
-                            *(strrchr(tmpAppPath, '\\')+1) = 0;
-
-                        FS_Path* pFSRoot		= FS.get_path("$fs_root$");
-                        pFSRoot->_set_root		(tmpAppPath);
-                        rescan_path				(pFSRoot->m_Path, pFSRoot->m_Flags.is(FS_Path::flRecurse));
-                    }
-                    F				= r_open("$fs_root$",fs_ltx);
-                }
-
-                Log				("using fs-ltx",fs_ltx);
-        */
         CHECK_OR_EXIT(pFSltx, make_string("Cannot open file \"%s\".\nCheck your working folder.", fs_ltx));
         // append all pathes
         string_path id, root, add, def, capt;
@@ -642,9 +619,9 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
             bNoRecurse = !(fl & FS_Path::flRecurse);
 #ifdef RESTRICT_GAMEDATA
             if (!strcmp(id, "$app_data_root$") || !strcmp(id, "$game_saves$") || !strcmp(id, "$logs$") || !strcmp(id, "$screenshots$"))
-                Recurse(P->m_Path);
+                RecurseScanPhysicalPath(P->m_Path);
 #else
-            Recurse(P->m_Path, true);
+            RecurseScanPhysicalPath(P->m_Path, true);
 #endif
             I = pathes.emplace(xr_strdup(id), P);
 #ifndef DEBUG
@@ -681,7 +658,7 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
         if (pAppdataPath)
         {
             pAppdataPath->_set_root(c_newAppPathRoot);
-            rescan_path(pAppdataPath->m_Path, pAppdataPath->m_Flags.is(FS_Path::flRecurse));
+            rescan_physical_path(pAppdataPath->m_Path, pAppdataPath->m_Flags.is(FS_Path::flRecurse));
         }
     }
     //-----------------------------------------------------------
@@ -1228,7 +1205,7 @@ FS_Path* CLocatorAPI::append_path(LPCSTR path_alias, LPCSTR root, LPCSTR add, BO
     VERIFY(false == path_exist(path_alias));
     FS_Path* P = xr_new<FS_Path>(root, add, LPCSTR(0), LPCSTR(0), 0);
     bNoRecurse = !recursive;
-    Recurse(P->m_Path);
+    RecurseScanPhysicalPath(P->m_Path);
     pathes.emplace(xr_strdup(path_alias), P);
     return P;
 }
@@ -1280,7 +1257,7 @@ void CLocatorAPI::set_file_age(LPCSTR nm, u32 age)
     }
 }
 
-void CLocatorAPI::rescan_path(LPCSTR full_path, BOOL bRecurse)
+void CLocatorAPI::rescan_physical_path(LPCSTR full_path, BOOL bRecurse)
 {
     file desc;
     desc.name = full_path;
@@ -1308,10 +1285,10 @@ void CLocatorAPI::rescan_path(LPCSTR full_path, BOOL bRecurse)
         files.erase(cur_item);
     }
     bNoRecurse = !bRecurse;
-    Recurse(full_path);
+    RecurseScanPhysicalPath(full_path);
 }
 
-void CLocatorAPI::rescan_pathes()
+void CLocatorAPI::rescan_physical_pathes()
 {
     m_Flags.set(flNeedRescan, FALSE);
     for (PathPairIt p_it = pathes.begin(); p_it != pathes.end(); p_it++)
@@ -1319,7 +1296,15 @@ void CLocatorAPI::rescan_pathes()
         FS_Path* P = p_it->second;
         if (P->m_Flags.is(FS_Path::flNeedRescan))
         {
-            rescan_path(P->m_Path, P->m_Flags.is(FS_Path::flRecurse));
+            std::string filepath{P->m_Path};
+            bool filepathExists = std::filesystem::exists(filepath);
+
+            // рескан нужно делать только для реальных каталогов на диске
+            if (filepathExists)
+            {
+                rescan_physical_path(P->m_Path, P->m_Flags.is(FS_Path::flRecurse));
+            }
+
             P->m_Flags.set(FS_Path::flNeedRescan, FALSE);
         }
     }
@@ -1332,7 +1317,7 @@ void CLocatorAPI::unlock_rescan()
     m_iLockRescan--;
     VERIFY(m_iLockRescan >= 0);
     if ((0 == m_iLockRescan) && m_Flags.is(flNeedRescan))
-        rescan_pathes();
+        rescan_physical_pathes();
 }
 
 void CLocatorAPI::check_pathes()
@@ -1340,7 +1325,7 @@ void CLocatorAPI::check_pathes()
     if (m_Flags.is(flNeedRescan) && (0 == m_iLockRescan))
     {
         lock_rescan();
-        rescan_pathes();
+        rescan_physical_pathes();
         unlock_rescan();
     }
 }
