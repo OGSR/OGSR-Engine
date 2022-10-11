@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "UIXmlInit.h"
 #include "../hudmanager.h"
-#include "../UI.h"
 #include "../level.h"
 #include "../UICustomItem.h"
 
@@ -21,13 +20,10 @@
 #include "UITextBanner.h"
 #include "UIMultiTextStatic.h"
 #include "UIAnimatedStatic.h"
-#include "uixmlinit.h"
 #include "UIListBox.h" //#include "UIScrollView.h"
 #include "UIComboBox.h"
 #include "UITrackBar.h"
-#include "../game_base_space.h"
 
-#include "UITextureMaster.h"
 #include "UIDragDropListEx.h"
 
 extern int keyname_to_dik(LPCSTR);
@@ -53,6 +49,7 @@ extern int keyname_to_dik(LPCSTR);
 //////////////////////////////////////////////////////////////////////////
 
 const char* const COLOR_DEFINITIONS = "color_defs.xml";
+
 CUIXmlInit::ColorDefs* CUIXmlInit::m_pColorDefs = NULL;
 
 //////////////////////////////////////////////////////////////////////////
@@ -797,7 +794,7 @@ bool CUIXmlInit::InitFont(CUIXml& xml_doc, LPCSTR path, int index, u32& color, C
         }
         else if (!xr_strcmp(*font_name, SMALL_FONT_NAME))
         {
-            pFnt = UI()->Font()->pFontStat;
+            pFnt = UI()->Font()->pFontSmall;
         }
         else if (!xr_strcmp(*font_name, LETTERICA16_FONT_NAME))
         {

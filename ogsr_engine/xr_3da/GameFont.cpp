@@ -14,7 +14,7 @@ extern ENGINE_API BOOL g_bRendering;
 ENGINE_API Fvector2 g_current_font_scale = {1.f, 1.f};
 
 ENGINE_API float g_fontWidthScale = 1.f;
-ENGINE_API float g_fontHegihtScale = 1.f;
+ENGINE_API float g_fontHeightScale = 1.f;
 
 #include "../Include/xrAPI/xrAPI.h"
 #include "../Include/xrRender/RenderFactory.h"
@@ -217,7 +217,7 @@ float CGameFont::SizeOf_(LPCSTR s)
     return (X * vInterval.x);
 }
 
-float CGameFont::CurrentHeight_() { return fCurrentHeight * vInterval.y * GetHegihtScale(); }
+float CGameFont::CurrentHeight_() { return fCurrentHeight * vInterval.y * GetHeightScale(); }
 
 void CGameFont::SetHeightI(float S)
 {
@@ -237,9 +237,9 @@ float CGameFont::GetWidthScale()
         return fXScale;
     return g_fontWidthScale;
 }
-float CGameFont::GetHegihtScale()
+float CGameFont::GetHeightScale()
 {
     if (!fis_zero(fYScale))
         return fYScale;
-    return g_fontHegihtScale;
+    return g_fontHeightScale;
 }

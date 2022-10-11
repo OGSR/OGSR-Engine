@@ -75,7 +75,7 @@ void dxFontRender::OnRender(CGameFont& owner)
                 float X = float(iFloor(PS.x));
                 float Y = float(iFloor(PS.y));
 
-                float S = PS.height * g_current_font_scale.y * owner.GetHegihtScale();
+                float S = PS.height * g_current_font_scale.y * owner.GetHeightScale();
 
                 float Y2 = Y + S;
                 float fSize = 0;

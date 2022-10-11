@@ -14,22 +14,27 @@
 CFontManager& mngr() { return *(UI()->Font()); }
 
 // hud font
-CGameFont* GetFontSmall() { return mngr().pFontStat; }
-
+CGameFont* GetFontSmall() { return mngr().pFontSmall; }
 CGameFont* GetFontMedium() { return mngr().pFontMedium; }
+
 CGameFont* GetFontDI() { return mngr().pFontDI; }
 
 // шрифты для интерфейса
 CGameFont* GetFontGraffiti19Russian() { return mngr().pFontGraffiti19Russian; }
 CGameFont* GetFontGraffiti22Russian() { return mngr().pFontGraffiti22Russian; }
+
 CGameFont* GetFontLetterica16Russian() { return mngr().pFontLetterica16Russian; }
 CGameFont* GetFontLetterica18Russian() { return mngr().pFontLetterica18Russian; }
+
 CGameFont* GetFontGraffiti32Russian() { return mngr().pFontGraffiti32Russian; }
 CGameFont* GetFontGraffiti40Russian() { return mngr().pFontGraffiti40Russian; }
 CGameFont* GetFontGraffiti50Russian() { return mngr().pFontGraffiti50Russian; }
+
 CGameFont* GetFontLetterica25() { return mngr().pFontLetterica25; }
+
 CGameFont* GetFontArial14() { return mngr().pFontArial14; }
 CGameFont* GetFontArial21() { return mngr().pFontArial21; }
+
 CGameFont* GetFontCustom(LPCSTR section) { return mngr().InitializeCustomFont(section); }
 
 int GetARGB(u16 a, u16 r, u16 g, u16 b) { return color_argb(a, r, g, b); }

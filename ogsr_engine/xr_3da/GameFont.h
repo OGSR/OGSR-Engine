@@ -86,7 +86,7 @@ public:
 
     float CurrentHeight_();
 
-    float ScaleHeightDelta() { return (fCurrentHeight * vInterval.y * GetHegihtScale() - fCurrentHeight * vInterval.y) / 2; };
+    float ScaleHeightDelta() { return (fCurrentHeight * vInterval.y * GetHeightScale() - fCurrentHeight * vInterval.y) / 2; };
 
     void OutSetI(float x, float y);
     void OutSet(float x, float y);
@@ -104,10 +104,10 @@ public:
     IC void Clear() { strings.clear(); };
 
     float GetWidthScale();
-    float GetHegihtScale();
+    float GetHeightScale();
 
     void SetWidthScale(float f) { fXScale = f; }
-    void SetHegihtScale(float f) { fYScale = f; }
+    void SetHeightScale(float f) { fYScale = f; }
 
     shared_str m_font_name;
 };

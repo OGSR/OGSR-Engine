@@ -615,7 +615,7 @@ extern int rsDIB_Size;
 extern int g_ErrorLineCount;
 
 extern float g_fontWidthScale;
-extern float g_fontHegihtScale;
+extern float g_fontHeightScale;
 
 extern float puddles_drying;
 extern float puddles_wetting;
@@ -752,7 +752,7 @@ void CCC_Register()
 #endif
 
     CMD4(CCC_Float, "g_font_scale_x", &g_fontWidthScale, 0.2f, 5.0f);
-    CMD4(CCC_Float, "g_font_scale_y", &g_fontHegihtScale, 0.2f, 5.0f);
+    CMD4(CCC_Float, "g_font_scale_y", &g_fontHeightScale, 0.2f, 5.0f);
 
     CMD4(CCC_Float, "rain_puddles_drying", &puddles_drying, 0.1f, 20.0f);
     CMD4(CCC_Float, "rain_puddles_wetting", &puddles_wetting, 0.1f, 20.0f);
