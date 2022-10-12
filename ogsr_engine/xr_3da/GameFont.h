@@ -77,8 +77,12 @@ public:
     void SetHeight(float S);
 
     IC float GetHeight() { return fCurrentHeight; };
+
     IC void SetInterval(float x, float y) { vInterval.set(x, y); };
     IC void SetInterval(const Fvector2& v) { vInterval.set(v); };
+
+    IC Fvector2 GetInterval() { return vInterval; };
+
     IC void SetAligment(EAligment aligment) { eCurrentAlignment = aligment; }
 
     float SizeOf_(LPCSTR s);

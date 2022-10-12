@@ -82,12 +82,7 @@ void CFontManager::InitializeFont(CGameFont*& F, LPCSTR section, u32 flags)
 
     F->m_font_name = section;
 
-    if (flags & CGameFont::fsDeviceIndependent)
-    {
-        F->SetWidthScale(1.f);
-        F->SetHeightScale(1.f);
-    }
-    else
+    if (!(flags & CGameFont::fsDeviceIndependent))
     {
         if (pSettings->line_exist(section, "scale_x"))
         {

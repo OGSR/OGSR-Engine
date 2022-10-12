@@ -4,7 +4,6 @@
 #include "GameFont.h"
 #include "Render.h"
 
-
 extern ENGINE_API BOOL g_bRendering;
 
 ENGINE_API Fvector2 g_current_font_scale = {1.f, 1.f};
@@ -86,15 +85,16 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
     if (ini->section_exist("symbol_coords"))
     {
         float d = 0.0f;
-        //.		if(ini->section_exist("width_correction"))
-        //.			d						= ini->r_float("width_correction", "value");
+        if (ini->section_exist("width_correction"))
+            d = ini->r_float("width_correction", "value");
 
         fHeight = ini->r_float("symbol_coords", "height");
+
         for (u32 i = 0; i < nNumChars; i++)
         {
             xr_sprintf(buf, sizeof(buf), "%03d", i);
             Fvector v = ini->r_fvector3("symbol_coords", buf);
-            TCMap[i].set(v.x, v.y, v[2] - v[0] + d);
+            TCMap[i].set(v.x, v.y, v.z - v.x + d);
         }
     }
     else
@@ -102,22 +102,30 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
         if (ini->section_exist("char widths"))
         {
             fHeight = ini->r_float("char widths", "height");
-            int cpl = 16;
+
+            const int cpl = 16;
+
             for (u32 i = 0; i < nNumChars; i++)
             {
                 xr_sprintf(buf, sizeof(buf), "%d", i);
-                float w = ini->r_float("char widths", buf);
+                float w = ini->r_float("char widths", buf); // ширина одного знака
+
                 TCMap[i].set((i % cpl) * fHeight, (i / cpl) * fHeight, w);
             }
         }
         else
         {
             R_ASSERT(ini->section_exist("font_size"));
+
             fHeight = ini->r_float("font_size", "height");
+
             float width = ini->r_float("font_size", "width");
             const int cpl = ini->r_s32("font_size", "cpl");
+
             for (u32 i = 0; i < nNumChars; i++)
+            {
                 TCMap[i].set((i % cpl) * width, (i / cpl) * fHeight, width);
+            }
         }
     }
 
@@ -232,13 +240,15 @@ void CGameFont::SetHeight(float S)
 
 float CGameFont::GetWidthScale()
 {
-    if (!fis_zero(fXScale))
-        return fXScale;
-    return g_fontWidthScale;
+    if (uFlags & fsDeviceIndependent)
+        return 1.f;
+
+    return g_fontWidthScale * (!fis_zero(fXScale) ? fXScale : 1);
 }
 float CGameFont::GetHeightScale()
 {
-    if (!fis_zero(fYScale))
-        return fYScale;
-    return g_fontHeightScale;
+    if (uFlags & fsDeviceIndependent)
+        return 1.f;
+
+    return g_fontHeightScale * (!fis_zero(fYScale) ? fYScale : 1);
 }

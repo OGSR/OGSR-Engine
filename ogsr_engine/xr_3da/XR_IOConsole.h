@@ -116,9 +116,11 @@ public:
 	virtual void OnRender();
 	virtual void OnFrame();
 	virtual void OnScreenResolutionChanged();
+
 	string64 ConfigFile;
 	bool bVisible;
 	vecCMD Commands;
+    float lineDistance;
 
 	void AddCommand(IConsole_Command* cc);
 	void RemoveCommand(IConsole_Command* cc);

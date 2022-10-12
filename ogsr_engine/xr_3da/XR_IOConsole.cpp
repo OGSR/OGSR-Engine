@@ -19,6 +19,7 @@ static float const UI_BASE_WIDTH = 1024.0f;
 static float const UI_BASE_HEIGHT = 768.0f;
 
 static float const LDIST = 0.05f;
+
 static u32 const cmd_history_max = 64;
 
 static u32 const prompt_font_color = color_rgba(228, 228, 255, 255);
@@ -134,6 +135,7 @@ CConsole::CConsole()
 	m_disable_tips = false;
 	Register_callbacks();
 	Device.seqResolutionChanged.Add(this);
+    lineDistance = LDIST;
 }
 
 void CConsole::Initialize()
@@ -230,7 +232,7 @@ void CConsole::OutFont(LPCSTR text, float& pos_y)
 			if (t > scr_width)
 			{
 				OutFont(text + sz + 1, pos_y);
-				pos_y -= LDIST;
+				pos_y -= lineDistance;
 				pFont->OutI(-1.0f, pos_y, "%s", one_line + ln);
 				ln = sz + 1;
 				f = 0.0f;
@@ -275,6 +277,8 @@ void CConsole::OnRender()
 	{
 		pFont = xr_new<CGameFont>("hud_font_di", CGameFont::fsDeviceIndependent);
 		pFont->SetHeightI(0.025f);
+
+		lineDistance = LDIST * pFont->GetInterval().y;
 	}
 
 	if (!pFont2)
@@ -306,7 +310,7 @@ void CConsole::OnRender()
 		fMaxY = 1.0f;
 	}
 
-	float ypos = fMaxY - LDIST * 1.1f;
+	float ypos = fMaxY - lineDistance * 1.1f;
 	float scr_x = 1.0f / Device.fWidth_2;
 
 	//---------------------------------------------------------------------------------
@@ -351,7 +355,7 @@ void CConsole::OnRender()
             vecTipsEx::iterator ite = m_tips.end();
             for (u32 i = 0; itb != ite; ++itb, ++i) // tips
             {
-                pFont->OutI(-1.0f + shift_x, fMaxY + i * LDIST, "%s", (*itb).text.c_str());
+                pFont->OutI(-1.0f + shift_x, fMaxY + i * lineDistance, "%s", (*itb).text.c_str());
                 if (i >= VIEW_TIPS_COUNT - 1)
                 {
                     break; // for
@@ -380,10 +384,10 @@ void CConsole::OnRender()
 
 	// ---------------------
 	u32 log_line = LogFile.size() - 1;
-	ypos -= LDIST;
+	ypos -= lineDistance;
 	for (int i = log_line - scroll_delta; i >= 0; --i)
 	{
-		ypos -= LDIST;
+		ypos -= lineDistance;
 		if (ypos < -1.0f)
 		{
 			break;
@@ -405,7 +409,7 @@ void CConsole::OnRender()
 	itoa(log_line, q, 10);
 	u32 qn = xr_strlen(q);
 	pFont->SetColor(total_font_color);
-	pFont->OutI(0.95f - 0.03f * qn, fMaxY - 2.0f * LDIST, "[%d]", log_line);
+	pFont->OutI(0.95f - 0.03f * qn, fMaxY - 2.0f * lineDistance, "[%d]", log_line);
 
 	pFont->OnRender();
 	pFont2->OnRender();
