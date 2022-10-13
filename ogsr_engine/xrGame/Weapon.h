@@ -671,4 +671,14 @@ public:
     }
     void SaveAttachableParams() override;
     void ParseCurrentItem(CGameFont* F) override;
+
+    	// Up
+    // Magazine system & etc
+    xr_vector<shared_str> bullets_bones;
+    int bullet_cnt{};
+    int last_hide_bullet{};
+    bool bHasBulletsToHide{};
+    bool bullet_update = true;
+
+    void HUD_VisualBulletUpdate(bool force = false, int force_idx = -1);
 };

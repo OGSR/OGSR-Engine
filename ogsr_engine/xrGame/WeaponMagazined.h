@@ -213,4 +213,7 @@ protected:
     virtual void net_Relcase(CObject* object);
 
     bool ScopeRespawn(PIItem);
+
+    virtual void OnMotionMark(u32 state, const motion_marks& M) override;
+    int CheckAmmoBeforeReload(u32& v_ammoType);
 };

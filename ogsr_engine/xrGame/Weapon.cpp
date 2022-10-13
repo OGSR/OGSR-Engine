@@ -858,6 +858,8 @@ void CWeapon::UpdateCL()
     inherited::UpdateCL();
 
     UpdateHUDAddonsVisibility();
+    if (bullet_update)
+        HUD_VisualBulletUpdate();
 
     //подсветка от выстрела
     UpdateLight();
@@ -2174,6 +2176,34 @@ void CWeapon::SaveAttachableParams()
     }
 
     Msg("--[%s] data saved to [%s]", __FUNCTION__, pHudCfg.fname());
+}
+
+void CWeapon::HUD_VisualBulletUpdate(bool force, int force_idx)
+{
+    if (!GetHUDmode())
+        return;
+
+    if (!bHasBulletsToHide)
+        return;
+
+    bool hide = true;
+
+    // Msg("Print %d bullets", last_hide_bullet);
+
+    if (last_hide_bullet == bullet_cnt || force)
+        hide = false;
+
+    for (auto b = 0; b < bullet_cnt; b++)
+    {
+        const auto bone_id = HudItemData()->m_model->LL_BoneID(bullets_bones[b]);
+
+        if (bone_id != BI_NONE)
+
+            HudItemData()->set_bone_visible(bullets_bones[b], !hide);
+
+        if (b == last_hide_bullet)
+            hide = false;
+    }
 }
 
 void CWeapon::ParseCurrentItem(CGameFont* F) { F->OutNext("WEAPON IN STRAPPED MODE: [%d]", m_strapped_mode); }

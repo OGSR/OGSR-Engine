@@ -201,6 +201,20 @@ void CWeaponMagazined::Load(LPCSTR section)
     m_str_count_tmpl = READ_IF_EXISTS(pSettings, r_string, "features", "wpn_magazined_str_count_tmpl", "{AE}/{AC}");
 
     CartridgeInTheChamberEnabled = READ_IF_EXISTS(pSettings, r_bool, section, "CartridgeInTheChamberEnabled", false);
+
+    if (pSettings->line_exist(section, "bullet_bones"))
+    {
+        bHasBulletsToHide = true;
+        LPCSTR str = pSettings->r_string(section, "bullet_bones");
+        for (int i = 0, count = _GetItemCount(str); i < count; ++i)
+        {
+            string128 bullet_bone_name;
+            _GetItem(str, i, bullet_bone_name);
+            bullets_bones.push_back(bullet_bone_name);
+            bullet_cnt++;
+        }
+    }
+
 }
 
 void CWeaponMagazined::FireStart()
@@ -248,6 +262,48 @@ void CWeaponMagazined::FireEnd()
         if (!iAmmoElapsed && actor && GetState() != eReload)
             Reload();
     }
+}
+
+int CWeaponMagazined::CheckAmmoBeforeReload(u32& v_ammoType)
+{
+    if (m_set_next_ammoType_on_reload != u32(-1))
+        v_ammoType = m_set_next_ammoType_on_reload;
+
+    // Msg("Ammo type in next reload : %d", m_set_next_ammoType_on_reload);
+
+    if (m_ammoTypes.size() <= v_ammoType)
+    {
+        // Msg("Ammo type is wrong : %d", v_ammoType);
+        return 0;
+    }
+
+    LPCSTR tmp_sect_name = m_ammoTypes[v_ammoType].c_str();
+
+    if (!tmp_sect_name)
+    {
+        // Msg("Sect name is wrong");
+        return 0;
+    }
+
+    CWeaponAmmo* ammo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny(tmp_sect_name));
+
+    if (!ammo && !m_bLockType)
+    {
+        for (u8 i = 0; i < u8(m_ammoTypes.size()); ++i)
+        {
+            //проверить патроны всех подходящих типов
+            ammo = smart_cast<CWeaponAmmo*>(m_pCurrentInventory->GetAny(m_ammoTypes[i].c_str()));
+            if (ammo)
+            {
+                v_ammoType = i;
+                break;
+            }
+        }
+    }
+
+    // Msg("Ammo type %d", v_ammoType);
+
+    return GetAmmoCount(v_ammoType);
 }
 
 void CWeaponMagazined::Reload()
@@ -307,6 +363,8 @@ void CWeaponMagazined::OnMagazineEmpty()
 
 void CWeaponMagazined::UnloadMagazine(bool spawn_ammo)
 {
+    last_hide_bullet = -1;
+
     xr_map<LPCSTR, u16> l_ammo;
 
     while (!m_magazine.empty())
@@ -779,6 +837,7 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
         HUD_SOUND::StopSound(sndReloadPartly);
         HUD_SOUND::StopSound(sndReloadJammed);
         HUD_SOUND::StopSound(sndReloadJammedLast);
+        bullet_update = true;
         SwitchState(eIdle);
         break; // End of reload animation
     case eHiding: SwitchState(eHidden); break; // End of Hide
@@ -889,6 +948,7 @@ void CWeaponMagazined::switch2_Reload()
     PlayReloadSound();
     PlayAnimReload();
     SetPending(TRUE);
+    bullet_update = false;
 }
 
 void CWeaponMagazined::switch2_Hiding()
@@ -1447,6 +1507,32 @@ void CWeaponMagazined::PlayAnimDeviceSwitch()
     }
 }
 
+void CWeaponMagazined::OnMotionMark(u32 state, const motion_marks& M)
+{
+    inherited::OnMotionMark(state, M);
+
+    if (state == eReload)
+    {
+        if (bHasBulletsToHide && xr_strcmp(M.name.c_str(), "lmg_reload") == 0)
+        {
+            auto ammo_type = m_ammoType;
+            int ae = CheckAmmoBeforeReload(ammo_type);
+
+            if (ammo_type == m_ammoType)
+            {
+                ae += iAmmoElapsed;
+            }
+
+            last_hide_bullet = ae >= bullet_cnt ? bullet_cnt : bullet_cnt - ae - 1;
+            HUD_VisualBulletUpdate();
+        }
+        else
+        {
+            ReloadMagazine();
+        }
+    }
+}
+
 void CWeaponMagazined::OnZoomIn()
 {
     inherited::OnZoomIn();
@@ -1607,6 +1693,14 @@ void CWeaponMagazined::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_na
 
     string256 sItemName;
     strcpy_s(sItemName, CStringTable().translate(pSettings->r_string(icon_sect_name.c_str(), "inv_name_short")).c_str());
+
+    if (bHasBulletsToHide)
+    {
+        last_hide_bullet = AE >= bullet_cnt ? bullet_cnt : bullet_cnt - AE - 1;
+
+        if (AE == 0)
+            last_hide_bullet = -1;
+    }
 
     if (HasFireModes())
         strcat_s(sItemName, GetCurrentFireModeStr());
