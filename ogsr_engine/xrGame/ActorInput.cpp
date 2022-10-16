@@ -190,6 +190,13 @@ void CActor::IR_OnMouseWheel(int direction)
         else
             OnPrevWeaponSlot();
     }
+    else
+    {
+        if (direction > 0)
+            inventory().Action(kWPN_FIREMODE_NEXT, CMD_START | CMD_OPT);
+        else
+            inventory().Action(kWPN_FIREMODE_PREV, CMD_START | CMD_OPT);
+    }
 }
 void CActor::IR_OnKeyboardRelease(int cmd)
 {

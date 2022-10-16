@@ -2,6 +2,7 @@
 
 #define CMD_START (1 << 0)
 #define CMD_STOP (1 << 1)
+#define CMD_OPT (1 << 2)
 
 enum : u32
 {
