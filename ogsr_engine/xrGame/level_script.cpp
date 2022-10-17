@@ -895,6 +895,27 @@ void demo_record_set_direct_input(bool f)
 
 CEffectorBobbing* get_effector_bobbing() { return Actor()->GetEffectorBobbing(); }
 
+void iterate_nearest(const Fvector& pos, float radius, luabind::functor<bool> functor)
+{
+    xr_vector<CObject*> m_nearest;
+    Level().ObjectSpace.GetNearest(m_nearest, pos, radius, NULL);
+
+    if (!m_nearest.size())
+        return;
+
+    xr_vector<CObject*>::iterator it = m_nearest.begin();
+    xr_vector<CObject*>::iterator it_e = m_nearest.end();
+    for (; it != it_e; it++)
+    {
+        CGameObject* obj = smart_cast<CGameObject*>(*it);
+        if (!obj)
+            continue;
+        if (functor(obj->lua_game_object()))
+            break;
+    }
+}
+
+
 #pragma optimize("s", on)
 void CLevel::script_register(lua_State* L)
 {
@@ -1001,6 +1022,8 @@ void CLevel::script_register(lua_State* L)
             //
             def("send_event_key_press", &send_event_key_press), def("send_event_key_release", &send_event_key_release), def("send_event_key_hold", &send_event_key_hold),
             def("send_event_mouse_wheel", &send_event_mouse_wheel),
+
+            def("iterate_nearest", &iterate_nearest),
 
             def("change_level", &change_level), def("set_cam_inert", &set_cam_inert), def("set_monster_relation", &set_monster_relation), def("patrol_path_add", &patrol_path_add),
             def("patrol_path_remove", &patrol_path_remove), def("valid_vertex_id", &valid_vertex_id), def("vertex_count", &vertex_count), def("disable_vertex", &disable_vertex),

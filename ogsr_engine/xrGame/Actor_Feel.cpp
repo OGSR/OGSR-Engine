@@ -4,8 +4,6 @@
 #include "mercuryball.h"
 #include "inventory.h"
 #include "hudmanager.h"
-#include "character_info.h"
-#include "xr_level_controller.h"
 #include "UsableScriptObject.h"
 #include "customzone.h"
 #include "../xr_3da/GameMtlLib.h"
@@ -133,6 +131,7 @@ void CActor::PickupModeUpdate()
 
     CFrustum frustum;
     frustum.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB | FRUSTUM_P_FAR);
+
     //. slow (ray-query test)
     for (xr_vector<CObject*>::iterator it = feel_touch.begin(); it != feel_touch.end(); it++)
         if (CanPickItem(frustum, Device.vCameraPosition, *it))
@@ -140,30 +139,55 @@ void CActor::PickupModeUpdate()
 }
 
 #include "../xr_3da/camerabase.h"
-BOOL g_b_COD_PickUpMode = TRUE;
+#include "script_game_object.h"
+
 void CActor::PickupModeUpdate_COD()
 {
-    if (Level().CurrentViewEntity() != this || !g_b_COD_PickUpMode)
+    if (Level().CurrentViewEntity() != this)
         return;
 
     if (!g_Alive() || eacFirstEye != cam_active)
     {
         HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(NULL);
         return;
-    };
+    }
 
     //подбирание объекта
-    if (inventory().m_pTarget && inventory().m_pTarget->Useful() && m_pUsableObject && m_pUsableObject->nonscript_usable() &&
+    if (inventory().m_pTarget 
+        && inventory().m_pTarget->Useful() 
+        && m_pUsableObject 
+        && m_pUsableObject->nonscript_usable() &&
         !Level().m_feel_deny.is_object_denied(smart_cast<CGameObject*>(inventory().m_pTarget)))
     {
         CInventoryItem* pNearestItem = inventory().m_pTarget;
         if (m_bPickupMode)
         {
-            Game().SendPickUpEvent(ID(), pNearestItem->object().ID());
+            bool allow_pickup = true;
+
+            if (pSettings->line_exist("engine_callbacks", "actor_on_item_before_pickup"))
+            {
+                std::string on_item_before_pickup = pSettings->r_string("engine_callbacks", "actor_on_item_before_pickup");
+
+                // Tronex: ability to prevent item picking up if the export returns false
+                luabind::functor<bool> func;
+                if (ai().script_engine().functor(on_item_before_pickup.c_str(), func))
+                {
+                    allow_pickup = func(pNearestItem->cast_game_object()->lua_game_object());
+                }
+            }
+
             PickupModeOff();
-            pNearestItem = nullptr;
+
+            if (allow_pickup)
+            {
+                // подбирание объекта
+                Game().SendPickUpEvent(ID(), pNearestItem->object().ID());
+                pNearestItem = nullptr;
+            }
         }
+
         HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(pNearestItem);
+
         return;
     }
 
@@ -176,6 +200,7 @@ void CActor::PickupModeUpdate_COD()
     //---------------------------------------------------------------------------
 
     float maxlen = 1000.0f;
+
     CInventoryItem* pNearestItem = NULL;
     for (u32 o_it = 0; o_it < ISpatialResult.size(); o_it++)
     {
@@ -183,10 +208,13 @@ void CActor::PickupModeUpdate_COD()
         CInventoryItem* pIItem = smart_cast<CInventoryItem*>(spatial->dcast_CObject());
         if (0 == pIItem)
             continue;
+
         if (pIItem->object().H_Parent() != NULL)
             continue;
+
         if (!pIItem->CanTake())
             continue;
+
         if (pIItem->object().CLS_ID == CLSID_OBJECT_G_RPG7 || pIItem->object().CLS_ID == CLSID_OBJECT_G_FAKE)
             continue;
 
@@ -213,7 +241,7 @@ void CActor::PickupModeUpdate_COD()
         {
             maxlen = len;
             pNearestItem = pIItem;
-        };
+        }
     }
 
     if (pNearestItem)
@@ -234,10 +262,28 @@ void CActor::PickupModeUpdate_COD()
     {
         if (m_bPickupMode)
         {
-            //подбирание объекта
-            Game().SendPickUpEvent(ID(), pNearestItem->object().ID());
+            bool allow_pickup = true;
+
+            if (pSettings->line_exist("engine_callbacks", "actor_on_item_before_pickup"))
+            {
+                std::string on_item_before_pickup = pSettings->r_string("engine_callbacks", "actor_on_item_before_pickup");
+
+                // Tronex: ability to prevent item picking up if the export returns false
+                luabind::functor<bool> func;
+                if (ai().script_engine().functor(on_item_before_pickup.c_str(), func))
+                {
+                    allow_pickup = func(pNearestItem->cast_game_object()->lua_game_object());
+                }
+            }
+
             PickupModeOff();
-            pNearestItem = nullptr;
+
+            if (allow_pickup)
+            {
+                // подбирание объекта
+                Game().SendPickUpEvent(ID(), pNearestItem->object().ID());
+                pNearestItem = nullptr;
+            }
         }
     }
 

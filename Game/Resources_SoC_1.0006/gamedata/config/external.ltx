@@ -277,6 +277,10 @@ scope_zoom_k = 0.1
 ;on_change_weather = dsh_cop_weather.on_engine_weather_change
 
 
+; Коллбек вызываеться перед поднятием предмета ГГ
+; Если вернуть false - движок не будет поднимать предмет
+;actor_on_item_before_pickup = engine_callbacks.actor_on_item_before_pickup
+
 ; Переопределение секции [capture] из визуалов брони для актора.
 ; А то в этих визуалах такой бардак. У некоторых даже и кастомной даты нет.
 [actor_capture]

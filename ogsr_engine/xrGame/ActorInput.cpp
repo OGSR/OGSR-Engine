@@ -490,6 +490,10 @@ void CActor::ActorUse()
     }
 
     PickupModeOn();
+
+    /*if (g_Alive())
+        PickupModeUpdate();*/
+
     PickupModeUpdate_COD();
 }
 
