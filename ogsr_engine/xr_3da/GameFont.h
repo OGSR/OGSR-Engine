@@ -114,6 +114,7 @@ public:
     void SetHeightScale(float f) { fYScale = f; }
 
     shared_str m_font_name;
+    bool m_bCustom{};
 };
 
 #endif // _XR_GAMEFONT_H_

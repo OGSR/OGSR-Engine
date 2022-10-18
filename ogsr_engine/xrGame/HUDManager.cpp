@@ -17,9 +17,25 @@ CFontManager::CFontManager()
 
 void CFontManager::InitializeFonts()
 {
-    delete_data(m_all_fonts);
+    //pFontMedium = nullptr;
+    //pFontSmall = nullptr;
 
-    m_all_fonts.clear();
+    //pFontDI = nullptr;
+
+    //pFontArial14 = nullptr;
+    //pFontArial21 = nullptr;
+    //pFontGraffiti19Russian = nullptr;
+    //pFontGraffiti22Russian = nullptr;
+    //pFontLetterica16Russian = nullptr;
+    //pFontLetterica18Russian = nullptr;
+    //pFontGraffiti32Russian = nullptr;
+    //pFontGraffiti40Russian = nullptr;
+    //pFontGraffiti50Russian = nullptr;
+    //pFontLetterica25 = nullptr;
+
+    //delete_data(m_all_fonts);
+
+    //m_all_fonts.clear();
 
     InitializeFont(pFontMedium, "hud_font_medium");
     InitializeFont(pFontSmall, "hud_font_small");
@@ -40,6 +56,12 @@ void CFontManager::InitializeFonts()
     InitializeFont(pFontGraffiti50Russian, "ui_font_graff_50");
 
     InitializeFont(pFontLetterica25, "ui_font_letter_25");
+
+    for (auto& font : m_all_fonts)
+    {
+        if (font->m_bCustom)
+            InitializeFont(font, font->m_font_name.c_str());
+    }
 }
 
 LPCSTR CFontManager::GetFontTexName(LPCSTR section)
@@ -116,6 +138,7 @@ CGameFont* CFontManager::InitializeCustomFont(LPCSTR section, u32 flags)
 
     CGameFont* pFontAdd = NULL;
     InitializeFont(pFontAdd, section, flags);
+    pFontAdd->m_bCustom = true;
     return pFontAdd;
 }
 
@@ -123,7 +146,25 @@ CFontManager::~CFontManager()
 {
     Device.seqDeviceReset.Remove(this);
 
+    pFontMedium = nullptr;
+    pFontSmall = nullptr;
+
+    pFontDI = nullptr;
+
+    pFontArial14 = nullptr;
+    pFontArial21 = nullptr;
+    pFontGraffiti19Russian = nullptr;
+    pFontGraffiti22Russian = nullptr;
+    pFontLetterica16Russian = nullptr;
+    pFontLetterica18Russian = nullptr;
+    pFontGraffiti32Russian = nullptr;
+    pFontGraffiti40Russian = nullptr;
+    pFontGraffiti50Russian = nullptr;
+    pFontLetterica25 = nullptr;
+
     delete_data(m_all_fonts);
+
+    m_all_fonts.clear();
 }
 
 void CFontManager::Render()
@@ -253,9 +294,12 @@ void CHUDManager::Render_Actor_Shadow() // added by KD
 }
 
 extern void draw_wnds_rects();
+
 extern ENGINE_API BOOL bShowPauseString;
+
 //отрисовка элементов интерфейса
 #include "string_table.h"
+
 void CHUDManager::RenderUI()
 {
     if (!b_online)
