@@ -60,6 +60,7 @@ public:
     float fTimeStarted; // time of "Start"
     float fTimeToStop; // time to "Stop"
     float fTimeToPropagade;
+    float fTimeToRewind; // --#SM+#--
 
     u32 marker;
     void i_stop();
@@ -95,6 +96,7 @@ public:
         p_source.volume = vol;
     }
     virtual void set_priority(float p) { priority_scale = p; }
+    virtual void set_time(float t); //--#SM+#--
     virtual const CSound_params* get_params() { return &p_source; }
 
     void fill_block(void* ptr, u32 size);

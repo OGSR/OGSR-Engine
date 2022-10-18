@@ -151,11 +151,13 @@ public:
 
     IC void stop();
     IC void stop_deffered();
+
     IC void set_position(const Fvector& pos);
     IC void set_frequency(float freq);
     IC void set_range(float min, float max);
     IC void set_volume(float vol);
     IC void set_priority(float vol);
+    IC void set_time(float t); //--#SM+#--
 
     IC const CSound_params* get_params();
     IC void set_params(CSound_params* p);
@@ -204,6 +206,7 @@ public:
     virtual void set_range(float min, float max) = 0;
     virtual void set_volume(float vol) = 0;
     virtual void set_priority(float vol) = 0;
+    virtual void set_time(float t) = 0; //--#SM+#--
     virtual void stop(BOOL bDeffered) = 0;
     virtual const CSound_params* get_params() = 0;
     virtual u32 play_time() = 0;
@@ -382,6 +385,12 @@ IC void ref_sound::set_priority(float p)
     VERIFY(!::Sound->i_locked());
     if (_feedback())
         _feedback()->set_priority(p);
+}
+IC void ref_sound::set_time(float t)
+{
+    VERIFY(!::Sound->i_locked());
+    if (_feedback())
+        _feedback()->set_time(t);
 }
 IC void ref_sound::stop()
 {

@@ -42,5 +42,7 @@ void CScriptSound::script_register(lua_State* L)
                   .def("stop", &CScriptSound::Stop)
                   .def("stop_deffered", &CScriptSound::StopDeffered)
                   .def("playing", &CScriptSound::IsPlaying)
-                  .def("length", &CScriptSound::Length)];
+                  .def("length", &CScriptSound::Length)
+                  .def("set_start_time", &CScriptSound::SetTime)
+    ];
 }
