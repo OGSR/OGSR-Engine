@@ -299,9 +299,11 @@ void CActor::cam_Update(float dt, float fFOV)
     float _viewport_near = VIEWPORT_NEAR;
     if (eacFirstEye == cam_active && psActorFlags.test(AF_CAM_COLLISION))
     {
+        float check_dir = VIEWPORT_NEAR + 0.1f;
+
         xrXRC xrc;
         xrc.box_options(0);
-        xrc.box_query(Level().ObjectSpace.GetStaticModel(), point, Fvector().set(VIEWPORT_NEAR, VIEWPORT_NEAR, VIEWPORT_NEAR));
+        xrc.box_query(Level().ObjectSpace.GetStaticModel(), point, Fvector().set(check_dir, check_dir, check_dir));
         u32 tri_count = xrc.r_count();
         if (tri_count)
         {
@@ -311,7 +313,7 @@ void CActor::cam_Update(float dt, float fFOV)
         else
         {
             xr_vector<ISpatial*> ISpatialResult;
-            g_SpatialSpacePhysic->q_box(ISpatialResult, 0, STYPE_PHYSIC, point, Fvector().set(VIEWPORT_NEAR, VIEWPORT_NEAR, VIEWPORT_NEAR));
+            g_SpatialSpacePhysic->q_box(ISpatialResult, 0, STYPE_PHYSIC, point, Fvector().set(check_dir, check_dir, check_dir));
             for (u32 o_it = 0; o_it < ISpatialResult.size(); o_it++)
             {
                 CPHShell* pCPHS = smart_cast<CPHShell*>(ISpatialResult[o_it]);
