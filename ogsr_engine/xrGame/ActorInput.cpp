@@ -348,7 +348,7 @@ void CActor::IR_OnMouseMove(int dx, int dy)
         cam_Active()->Move((d > 0) ? kUP : kDOWN, _abs(d));
     }
 }
-#include "HudItem.h"
+
 bool CActor::use_Holder(CHolderCustom* holder)
 {
     if (m_holder)
@@ -404,6 +404,7 @@ bool CActor::use_Holder(CHolderCustom* holder)
 }
 
 extern bool g_bDisableAllInput;
+
 void CActor::ActorUse()
 {
     auto pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
@@ -496,6 +497,7 @@ void CActor::ActorUse()
     PickupModeOn();
     PickupModeUpdate_COD();
 }
+
 BOOL CActor::HUDview() const { return IsFocused() && (cam_active == eacFirstEye) && ((!m_holder) || (m_holder && m_holder->allowWeapon() && m_holder->HUDView())); }
 
 // void CActor::IR_OnMousePress(int btn)
