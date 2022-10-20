@@ -746,9 +746,7 @@ void CConsole::ExecuteScript(LPCSTR str)
 
 IConsole_Command* CConsole::find_next_cmd(LPCSTR in_str, shared_str& out_str)
 {
-	LPCSTR radmin_cmd_name = "ra ";
-	bool b_ra = (in_str == strstr(in_str, radmin_cmd_name));
-	u32 offset = (b_ra) ? xr_strlen(radmin_cmd_name) : 0;
+	u32 offset = 0;
 
 	string_path t2;
     xr_strconcat(t2, in_str + offset, " ");
@@ -761,7 +759,7 @@ IConsole_Command* CConsole::find_next_cmd(LPCSTR in_str, shared_str& out_str)
 		u32 name_cmd_size = xr_strlen(name_cmd);
 		LPSTR new_str = (LPSTR)_alloca((offset + name_cmd_size + 2) * sizeof(char));
 
-		xr_strcpy(new_str, offset + name_cmd_size + 2, (b_ra) ? radmin_cmd_name : "");
+		xr_strcpy(new_str, offset + name_cmd_size + 2, "");
 		xr_strcat(new_str, offset + name_cmd_size + 2, name_cmd);
 
 		out_str._set((LPCSTR)new_str);

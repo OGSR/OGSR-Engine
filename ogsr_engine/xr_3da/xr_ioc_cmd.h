@@ -279,11 +279,11 @@ public:
         while (xr_strlen(S) && ('0' == S[xr_strlen(S) - 1]))
             S[xr_strlen(S) - 1] = 0;
     }
-    virtual void Info(TInfo& I) { xr_sprintf(I, sizeof(I), "float value in range [%3.3f,%3.3f]", min, max); }
+    virtual void Info(TInfo& I) { xr_sprintf(I, sizeof(I), "float value in range [%3.5f,%3.5f]", min, max); }
     virtual void fill_tips(vecTips& tips, u32 mode)
     {
         TStatus str;
-        xr_sprintf(str, sizeof(str), "%3.5f  (current)  [%3.3f,%3.3f]", *value, min, max);
+        xr_sprintf(str, sizeof(str), "%3.5f  (current)  [%3.5f,%3.5f]", *value, min, max);
         tips.push_back(str);
         IConsole_Command::fill_tips(tips, mode);
     }
