@@ -390,7 +390,7 @@ static void ProcessLTX(LPCSTR tgt_name, LPCSTR params, BOOL bFast)
     _Trim(tmp);
     strcat_s(tmp, ".ltx");
     strcpy_s(ltx_fn, tmp);
-    _strlwr_s(ltx_fn, sizeof(ltx_fn));
+    _strlwr_s(ltx_fn);
 
     // append ltx path (if exist)
     string_path fn, dr, di;
@@ -557,19 +557,19 @@ int __cdecl main(int argc, char* argv[])
         Msg("!!ERROR: you must pass folder name as parameter.\n"
             "-ltx <file_name.ltx> - mandatory config for xrCompressor\n"
             "-xdb                 - pack files into .xdb format\n"
+            "-WW                - pack archives in WorldWide format.\n"
             "-fast                - fast compression.\n"
             "-store               - store files. No compression.\n"
             "-max_size <Mb>       - set maximum archive size. Default: [%u Mb]\n"
             "- filename  <file_name.db> - name of the archive to be created by the compressor (without whitespaces!)",
             XRP_MAX_SIZE_DEF);
 
-        Core._destroy();
         goto EXIT;
     }
 
     string_path folder;
     strconcat(sizeof(folder), folder, argv[1], "\\");
-    _strlwr_s(folder, sizeof(folder));
+    _strlwr_s(folder);
 
     FS._initialize(CLocatorAPI::flTargetFolderOnly | CLocatorAPI::flScanAppRoot, folder);
 
@@ -593,9 +593,8 @@ int __cdecl main(int argc, char* argv[])
         ProcessLTX(argv[1], p + 4, bFast);
     }
 
-    Core._destroy();
-
 EXIT:
+    Core._destroy();
     ExitFromWinMain = true;
     return 0;
 }
