@@ -477,8 +477,9 @@ void CActor::ActorUse()
                 {
                     // Msg("--[%s] Actor Captured object: [%s]", __FUNCTION__, object->cName().c_str());
                     character_physics_support()->movement()->PHCaptureObject(object, (u16)RQ.element);
+
+                    return;
                 }
-                return;
             }
             else if (smart_cast<CHolderCustom*>(object) && RQ.range < inventory().GetTakeDist())
             {
@@ -486,6 +487,7 @@ void CActor::ActorUse()
                 CGameObject::u_EventGen(P, GEG_PLAYER_ATTACH_HOLDER, ID());
                 P.w_u32(object->ID());
                 CGameObject::u_EventSend(P);
+
                 return;
             }
         }
