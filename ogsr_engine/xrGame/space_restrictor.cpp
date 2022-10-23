@@ -113,7 +113,7 @@ bool CSpaceRestrictor::inside(const Fsphere& sphere)
         }
         catch (...)
         {
-            Msg("!![%s] FATAL ERROR IN RESTRICTOR!", __FUNCTION__);
+            Msg("!![%s] FATAL ERROR IN RESTRICTOR %s!", __FUNCTION__, cName().c_str());
             return false;
         }
     }
