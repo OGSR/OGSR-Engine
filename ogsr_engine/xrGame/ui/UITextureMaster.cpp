@@ -27,29 +27,76 @@ void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file)
 {
     CUIXml xml;
     xml.Init(CONFIG_PATH, UI_PATH, xml_file);
-    shared_str file = xml.Read("file_name", 0, "");
 
-    //	shared_textures_it	sht_it = m_shTex.find(texture);
-    //	if (m_shTex.end() == sht_it)
-    //	{
-    int num = xml.GetNodesNum("", 0, "texture");
-    //		regions regs;
-    for (int i = 0; i < num; i++)
+    int files_num = xml.GetNodesNum("", 0, "file");
+    if (files_num > 0)
     {
-        TEX_INFO info;
+        // ЗП формат
+        for (int fi = 0; fi < files_num; ++fi)
+        {
+            XML_NODE* root_node = xml.GetLocalRoot();
 
-        info.file = file;
+            shared_str file = xml.ReadAttrib("file", fi, "name");
 
-        info.rect.x1 = xml.ReadAttribFlt("texture", i, "x");
-        info.rect.x2 = xml.ReadAttribFlt("texture", i, "width") + info.rect.x1;
-        info.rect.y1 = xml.ReadAttribFlt("texture", i, "y");
-        info.rect.y2 = xml.ReadAttribFlt("texture", i, "height") + info.rect.y1;
-        shared_str id = xml.ReadAttrib("texture", i, "id");
+            XML_NODE* node = xml.NavigateToNode("file", fi);
+            int num = xml.GetNodesNum(node, "texture");
+            for (int i = 0; i < num; i++)
+            {
+                TEX_INFO info;
 
-        m_textures.insert(mk_pair(id, info));
+                info.file = file;
+
+                info.rect.x1 = xml.ReadAttribFlt(node, "texture", i, "x");
+                info.rect.x2 = xml.ReadAttribFlt(node, "texture", i, "width") + info.rect.x1;
+                info.rect.y1 = xml.ReadAttribFlt(node, "texture", i, "y");
+                info.rect.y2 = xml.ReadAttribFlt(node, "texture", i, "height") + info.rect.y1;
+
+                shared_str id = xml.ReadAttrib(node, "texture", i, "id");
+
+                /* avo: fix issue when values were not updated (silently skipped) when same key is encountered more than once. This is how std::map is designed.
+                /* Also used more efficient C++11 std::map::emplace method instead of outdated std::pair::make_pair */
+                /* XXX: avo: note that xxx.insert(mk_pair(v1,v2)) pattern is used extensively throughout solution so there is a good potential for other bug fixes/improvements */
+                if (m_textures.find(id) == m_textures.end())
+                    m_textures.emplace(id, info);
+                else
+                    m_textures[id] = info;
+                // m_textures.insert(mk_pair(id,info)); // original GSC insert call
+                /* avo: end */
+            }
+
+            xml.SetLocalRoot(root_node);
+        }
     }
-    //		m_shTex.insert(mk_pair(texture, regs));
-    //	}
+    else
+    {
+        // ТЧ формат
+        shared_str file = xml.Read("file_name", 0, "");
+
+        int num = xml.GetNodesNum("", 0, "texture");
+        for (int i = 0; i < num; i++)
+        {
+            TEX_INFO info;
+
+            info.file = file;
+
+            info.rect.x1 = xml.ReadAttribFlt("texture", i, "x");
+            info.rect.x2 = xml.ReadAttribFlt("texture", i, "width") + info.rect.x1;
+            info.rect.y1 = xml.ReadAttribFlt("texture", i, "y");
+            info.rect.y2 = xml.ReadAttribFlt("texture", i, "height") + info.rect.y1;
+
+            shared_str id = xml.ReadAttrib("texture", i, "id");
+
+            /* avo: fix issue when values were not updated (silently skipped) when same key is encountered more than once. This is how std::map is designed.
+            /* Also used more efficient C++11 std::map::emplace method instead of outdated std::pair::make_pair */
+            /* XXX: avo: note that xxx.insert(mk_pair(v1,v2)) pattern is used extensively throughout solution so there is a good potential for other bug fixes/improvements */
+            if (m_textures.find(id) == m_textures.end())
+                m_textures.emplace(id, info);
+            else
+                m_textures[id] = info;
+            // m_textures.insert(mk_pair(id,info)); // original GSC insert call
+            /* avo: end */
+        }
+    }
 }
 
 void CUITextureMaster::InitTexture(const char* texture_name, IUISimpleTextureControl* tc)
