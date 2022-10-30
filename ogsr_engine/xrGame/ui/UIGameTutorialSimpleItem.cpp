@@ -56,9 +56,14 @@ void CUISequenceSimpleItem::Load(CUIXml* xml, int idx)
         m_sound.create(m_snd_name, st_Effect, sg_Undefined);
         VERIFY(m_sound._handle());
     }
+
     m_time_length = xml->ReadFlt("length_sec", 0, 0);
-    m_desired_cursor_pos.x = xml->ReadAttribFlt("cursor_pos", 0, "x", 1024);
-    m_desired_cursor_pos.y = xml->ReadAttribFlt("cursor_pos", 0, "y", 768);
+
+    auto cur_pos = UI()->GetUICursor()->GetCursorPosition();
+
+    m_desired_cursor_pos.x = xml->ReadAttribFlt("cursor_pos", 0, "x", cur_pos.x);
+    m_desired_cursor_pos.y = xml->ReadAttribFlt("cursor_pos", 0, "y", cur_pos.y);
+
     strcpy_s(m_pda_section, xml->Read("pda_section", 0, ""));
 
     LPCSTR str = xml->Read("pause_state", 0, "ignore");
