@@ -434,7 +434,13 @@ void disable_input()
     if (Actor())
         Actor()->PickupModeOff();
 }
-void enable_input() { g_bDisableAllInput = false; }
+void enable_input()
+{
+    g_bDisableAllInput = false;
+
+    Fvector2 pos = GetUICursor()->GetCursorPosition();
+    GetUICursor()->SetUICursorPosition(pos);
+}
 
 bool g_block_all_except_movement{};
 bool g_actor_allow_ladder{true};
