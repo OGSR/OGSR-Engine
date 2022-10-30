@@ -304,10 +304,8 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
         }
 
         // Calc attenuated volume
-        float att = p_source.min_distance / (psSoundRolloff * dist);
-        clamp(att, 0.f, 1.f);
         float fade_scale =
-            bStopping || (att * p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic) < psSoundCull) ?
+            bStopping || (att() * p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic) < psSoundCull) ?
             -1.f :
             1.f;
         fade_volume += dt * 10.f * fade_scale;
@@ -332,12 +330,19 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
         return SoundRender->i_allow_play(this);
 }
 
-float CSoundRender_Emitter::priority()
+float CSoundRender_Emitter::priority() { return smooth_volume * att() * priority_scale; }
+
+float CSoundRender_Emitter::att()
 {
     float dist = SoundRender->listener_position().distance_to(p_source.position);
-    float att = p_source.min_distance / (psSoundRolloff * dist);
+    float rolloff_dist = psSoundRolloff * dist;
+    float att;
+    if (p_source.max_distance > p_source.min_distance && rolloff_dist > p_source.min_distance)
+        att = 1.f - (rolloff_dist - p_source.min_distance) / (p_source.max_distance - p_source.min_distance);
+    else
+        att = p_source.min_distance / rolloff_dist;
     clamp(att, 0.f, 1.f);
-    return smooth_volume * att * priority_scale;
+    return att;
 }
 
 void CSoundRender_Emitter::update_environment(float dt)

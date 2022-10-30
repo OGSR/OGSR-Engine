@@ -103,6 +103,7 @@ public:
     void fill_data(u8* ptr, u32 offset, u32 size);
 
     float priority();
+    float att();
     void start(ref_sound* _owner, BOOL _loop, float delay);
     void cancel(); // manager forces out of rendering
     void update(float dt);
