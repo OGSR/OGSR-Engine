@@ -14,10 +14,15 @@ void CUICursor::InitInternal()
 {
     m_static = std::make_unique<CUIStatic>();
     m_static->InitTextureEx("ui\\ui_ani_cursor", "hud\\cursor");
+
     constexpr Frect rect{0.0f, 0.0f, 40.0f, 40.0f};
     m_static->SetOriginalRect(rect);
+
     Fvector2 sz{rect.rb};
     sz.x *= UI()->get_current_kx();
+
+    sz.x *= READ_IF_EXISTS(pSettings, r_float, "ui_tweaks", "cursor_scale_x", 1.f);
+    sz.y *= READ_IF_EXISTS(pSettings, r_float, "ui_tweaks", "cursor_scale_y", 1.f);
 
     m_static->SetWndSize(sz);
     m_static->SetStretchTexture(true);
@@ -65,6 +70,7 @@ void CUICursor::UpdateCursorPosition(const int _dx, const int _dy)
 
     const u32 screen_size_x = GetSystemMetrics(SM_CXSCREEN);
     const u32 screen_size_y = GetSystemMetrics(SM_CYSCREEN);
+
     const bool m_b_use_win_cursor = (screen_size_y >= Device.dwHeight && screen_size_x >= Device.dwWidth);
 
     if (m_b_use_win_cursor)
