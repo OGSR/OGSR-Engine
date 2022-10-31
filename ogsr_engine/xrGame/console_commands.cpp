@@ -1273,8 +1273,7 @@ void CCC_RegisterCommands()
 
     if (IS_OGSR_GA)
         psHUD_FOV_def = 0.65f;
-    else
-        CMD4(CCC_Float, "hud_fov", &psHUD_FOV_def, 0.1f, 1.0f);
+    CMD4(CCC_Float, "hud_fov", &psHUD_FOV_def, 0.1f, 1.0f);
 
     CMD4(CCC_Float, "fov", &g_fov, 5.0f, 140.0f);
 
