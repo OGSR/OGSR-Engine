@@ -824,6 +824,10 @@ public:
 
     bool can_kill_enemy();
 
+    void setEnabled(bool value);
+
+    void setVisible(bool value);
+
     DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CScriptGameObject)

@@ -917,3 +917,13 @@ void CScriptGameObject::unregister_in_combat()
     if (stalker->g_Alive() && stalker->agent_manager().member().registered_in_combat(stalker))
         stalker->agent_manager().member().unregister_in_combat(stalker);
 }
+
+void CScriptGameObject::setEnabled(bool value)
+{
+    object().setEnabled(value);
+}
+
+void CScriptGameObject::setVisible(bool value)
+{
+    object().setVisible(value);
+}
