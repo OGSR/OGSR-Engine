@@ -221,7 +221,7 @@ float CGameFont::SizeOf_(LPCSTR s)
         for (int j = 0; j < len; j++)
             X += GetCharTC((u16)(u8)s[j]).z;
 
-    return (X * vInterval.x);
+    return (X * vInterval.x) * GetWidthScale();
 }
 
 float CGameFont::CurrentHeight_() { return fCurrentHeight * vInterval.y * GetHeightScale(); }

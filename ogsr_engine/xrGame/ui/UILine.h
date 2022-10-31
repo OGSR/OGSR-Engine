@@ -54,7 +54,7 @@ public:
     void AddSubLine(LPCSTR str, u32 color);
     void AddSubLine(const CUISubLine* subLine);
     void Clear();
-    void ProcessNewLines(int& cursorPos);
+    void ProcessNewLines();
     const CUILine* CutByLength(CGameFont* pFont, float length, BOOL cut_word);
 
     void Draw(CGameFont* pFont, float x, float y) const;

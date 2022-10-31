@@ -107,9 +107,9 @@ void CUILine::AddSubLine(const CUISubLine* subLine) { m_subLines.push_back(*subL
 
 void CUILine::Clear() { m_subLines.clear(); }
 
-void CUILine::ProcessNewLines(int& cursorPos)
+void CUILine::ProcessNewLines()
 {
-#pragma todo("SATAN->SATAN: sometimes working badly (leaves empty lines)")
+    // ("SATAN->SATAN: sometimes working badly (leaves empty lines)")
     for (u32 i = 0; i < m_subLines.size(); i++)
     {
         StrSize pos = m_subLines[i].m_text.find("\\n");
@@ -117,10 +117,14 @@ void CUILine::ProcessNewLines(int& cursorPos)
         {
             CUISubLine sbLine;
             if (pos)
+            {
                 sbLine = *m_subLines[i].Cut2Pos((int)pos - 1);
+            }
             sbLine.m_last_in_line = true;
+
             m_subLines.insert(m_subLines.begin() + i, sbLine);
             m_subLines[i + 1].m_text.erase(0, 2);
+
             if (m_subLines[i + 1].m_text.empty())
             {
                 m_subLines.erase(m_subLines.begin() + i + 1);
