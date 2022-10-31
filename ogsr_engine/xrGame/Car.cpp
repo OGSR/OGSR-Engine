@@ -535,6 +535,9 @@ void CCar::OnHUDDraw(CCustomHUD* /**hud/**/)
 void CCar::Hit(SHit* pHDS)
 {
     SHit HDS = *pHDS;
+    callback(GameObject::entity_alive_before_hit)(&HDS);
+    if (HDS.ignore_flag)
+        return;
     // if(CDelayedActionFuse::isActive()||Initiator()==u16(-1)&&HDS.hit_type==ALife::eHitTypeStrike)
     //{
     //	HDS.power=0.f;
@@ -544,6 +547,7 @@ void CCar::Hit(SHit* pHDS)
     //{
     //	CExplosive::SetInitiator(HDS.who->ID());
     // }
+
     WheelHit(HDS.damage(), HDS.bone(), HDS.hit_type);
     DoorHit(HDS.damage(), HDS.bone(), HDS.hit_type);
     float hitScale = 1.f, woundScale = 1.f;

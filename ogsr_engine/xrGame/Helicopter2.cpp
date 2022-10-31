@@ -186,11 +186,17 @@ void CHelicopter::Hit(SHit* pHDS)
     if (pHDS->who == this)
         return;
 
+    SHit HDS = *pHDS;
+    callback(GameObject::entity_alive_before_hit)(&HDS);
+    if (HDS.ignore_flag)
+        return;
+
     bonesIt It = m_hitBones.find(pHDS->bone());
     if (It != m_hitBones.end() && pHDS->hit_type == ALife::eHitTypeFireWound)
     {
         float curHealth = GetfHealth();
         curHealth -= pHDS->damage() * It->second * 1000.0f;
+
         SetfHealth(curHealth);
 #ifdef DEBUG
         if (bDebug)
@@ -207,7 +213,8 @@ void CHelicopter::Hit(SHit* pHDS)
         if (bDebug)
             Log("----Helicopter::Hit(). health=", GetfHealth());
 #endif
-    };
+    }
+
 #pragma todo("KRodin: а почему только хиты от актора, сталкеров и аномалий передаются в каллбек? Почему бы не передавать хиты от любвх объектов? Надо подумать над этим.")
     if (pHDS->who && (pHDS->who->CLS_ID == CLSID_OBJECT_ACTOR || smart_cast<CAI_Stalker*>(pHDS->who) || smart_cast<CCustomZone*>(pHDS->who)))
     {
