@@ -1,26 +1,18 @@
 #include "stdafx.h"
 #include "actor.h"
-#include "Actor_Flags.h"
 #include "inventory.h"
 #include "xrserver_objects_alife_monsters.h"
 #include "xrServer.h"
-
-#include "CameraLook.h"
 #include "CameraFirstEye.h"
 
 #include "ActorEffector.h"
 
 #include "PHWorld.h"
 #include "level.h"
-#include "xr_level_controller.h"
-#include "game_cl_base.h"
-#include "infoportion.h"
 #include "alife_registry_wrappers.h"
 #include "..\Include/xrRender/Kinematics.h"
 #include "..\Include/xrRender/KinematicsAnimated.h"
 #include "client_spawn_manager.h"
-#include "hit.h"
-#include "PHDestroyable.h"
 #include "CharacterPhysicsSupport.h"
 #include "Grenade.h"
 #include "WeaponMagazined.h"
@@ -31,19 +23,13 @@
 #include "map_manager.h"
 #include "HUDManager.h"
 #include "ui/UIArtefactPanel.h"
-#include "ui/UIMainIngameWnd.h"
-#include "gamepersistent.h"
-#include "game_object_space.h"
 #include "GameTaskManager.h"
-#include "game_base_kill_type.h"
 #include "holder_custom.h"
 #include "actor_memory.h"
 #include "actor_statistic_mgr.h"
-#include "characterphysicssupport.h"
-#include "game_cl_base_weapon_usage_statistic.h"
-#include "clsid_game.h"
 #include "alife_simulator_header.h"
 #include "actorcondition.h"
+#include "player_hud.h"
 #include "UIGameSP.h"
 #include "ui/UIPDAWnd.h"
 #include "ui/UIEncyclopediaWnd.h"
@@ -251,6 +237,9 @@ BOOL CActor::net_Spawn(CSE_Abstract* DC)
     {
         setLocal(FALSE);
     };
+
+    g_player_hud->load_default();
+
     return TRUE;
 }
 
