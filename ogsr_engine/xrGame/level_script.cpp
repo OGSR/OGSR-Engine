@@ -444,6 +444,7 @@ void enable_input()
 
 bool g_block_all_except_movement{};
 bool g_actor_allow_ladder{true};
+bool g_actor_allow_pda{true};
 
 void block_all_except_movement(bool b) { g_block_all_except_movement = b; }
 
@@ -452,6 +453,10 @@ bool only_movement_allowed() { return g_block_all_except_movement; }
 void set_actor_allow_ladder(bool b) { g_actor_allow_ladder = b; }
 
 bool actor_ladder_allowed() { return g_actor_allow_ladder; }
+
+void set_actor_allow_pda(bool b) { g_actor_allow_pda = b; }
+
+bool actor_pda_allowed() { return g_actor_allow_pda; }
 
 void spawn_phantom(const Fvector& position) { Level().spawn_item("m_phantom", position, u32(-1), u16(-1), false); }
 
@@ -911,6 +916,7 @@ void CLevel::script_register(lua_State* L)
             def("only_allow_movekeys", block_all_except_movement), def("only_movekeys_allowed", only_movement_allowed),
 
             def("set_actor_allow_ladder", set_actor_allow_ladder), def("actor_ladder_allowed", actor_ladder_allowed),
+            def("set_actor_allow_pda", set_actor_allow_pda), def("actor_pda_allowed", actor_pda_allowed),
 
             def("spawn_phantom", spawn_phantom),
 

@@ -7,7 +7,6 @@
 #include "ui/UIPdaAux.h"
 #include "xr_level_controller.h"
 #include "actorcondition.h"
-#include "..\xr_3da\XR_IOConsole.h"
 #include "object_broker.h"
 #include "GameTaskManager.h"
 #include "GameTask.h"
@@ -43,6 +42,7 @@ CUIGameSP::~CUIGameSP()
 void CUIGameSP::shedule_Update(u32 dt)
 {
     inherited::shedule_Update(dt);
+
     CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
     if (!pActor)
         return;
@@ -70,6 +70,8 @@ extern bool attach_adjust_mode_keyb(int dik);
 extern void attach_draw_adjust_mode();
 extern void hud_adjust_mode_keyb(int dik);
 extern void hud_draw_adjust_mode();
+
+extern bool g_actor_allow_pda;
 
 bool CUIGameSP::IR_OnKeyboardPress(int dik)
 {
@@ -110,9 +112,12 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
         auto Pda = pActor->GetPDA();
         if ((!Pda || !Pda->Is3DPDA() || !psActorFlags.test(AF_3D_PDA)) && (!MainInputReceiver() || MainInputReceiver() == PdaMenu))
         {
-            PdaMenu->SetActiveSubdialog(bind == kACTIVE_JOBS ? eptQuests : (bind == kMAP ? eptMap : eptContacts));
-            m_game->StartStopMenu(PdaMenu, true);
-            return true;
+            if (g_actor_allow_pda)
+            {
+                PdaMenu->SetActiveSubdialog(bind == kACTIVE_JOBS ? eptQuests : (bind == kMAP ? eptMap : eptContacts));
+                m_game->StartStopMenu(PdaMenu, true);
+                return true;
+            }
         }
     }
     break;
@@ -190,6 +195,7 @@ void CUIGameSP::ReInitShownUI()
 };
 
 extern ENGINE_API BOOL bShowPauseString;
+
 void CUIGameSP::ChangeLevel(GameGraph::_GRAPH_ID game_vert_id, u32 level_vert_id, Fvector pos, Fvector ang, Fvector pos2, Fvector ang2, bool b)
 {
     if (!MainInputReceiver() || MainInputReceiver() != UIChangeLevelWnd)
@@ -235,6 +241,7 @@ CChangeLevelWnd::CChangeLevelWnd()
     m_messageBox->SetWndPos(0.0f, 0.0f);
     SetWndSize(m_messageBox->GetWndSize());
 }
+
 void CChangeLevelWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 {
     if (pWnd == m_messageBox)
@@ -286,6 +293,7 @@ bool CChangeLevelWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 }
 
 bool g_block_pause = false;
+
 void CChangeLevelWnd::Show()
 {
     g_block_pause = true;
