@@ -65,6 +65,21 @@ LPCSTR translate_string(LPCSTR str) { return *CStringTable().translate(str); }
 
 bool has_active_tutotial() { return (g_tutorial != NULL); }
 
+LPCSTR generate_id() 
+{
+    GUID guid;
+    CoCreateGuid(&guid);
+
+    // 32 hex chars + 4 hyphens + null terminator
+    char guid_string[37];
+    snprintf(guid_string, sizeof(guid_string), "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x", 
+        guid.Data1, guid.Data2, guid.Data3, 
+        guid.Data4[0], guid.Data4[1], guid.Data4[2], guid.Data4[3], guid.Data4[4], guid.Data4[5], guid.Data4[6], guid.Data4[7]);
+
+    shared_str r = guid_string;
+    return r.c_str();
+}
+
 #pragma optimize("s", on)
 void game_sv_GameState::script_register(lua_State* L)
 {
@@ -110,7 +125,8 @@ void game_sv_GameState::script_register(lua_State* L)
                    def("play_hud_motion", PlayHudMotion), def("stop_hud_motion", StopHudMotion), def("get_motion_length", MotionLength),
                    def("hud_motion_allowed", AllowHudMotion),
                    def("play_hud_anm", PlayBlendAnm), def("stop_hud_anm", StopBlendAnm), def("stop_all_hud_anms", StopAllBlendAnms),
-                   def("set_hud_anm_time", SetBlendAnmTime)
+                   def("set_hud_anm_time", SetBlendAnmTime),
+                   def("generate_id", &generate_id)
 
 
     ];
