@@ -13,8 +13,6 @@ void CRenderTarget::phase_scene_prepare()
         HW.pContext->ClearRenderTargetView(rt_Position->pRT, ColorRGBA);
         HW.pContext->ClearRenderTargetView(rt_Color->pRT, ColorRGBA);
         HW.pContext->ClearRenderTargetView(rt_Accumulator->pRT, ColorRGBA);
-        if (ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR))
-            HW.pContext->ClearRenderTargetView(rt_Wetness->pRT, ColorRGBA);
         HW.pContext->ClearDepthStencilView(HW.pBaseZB, D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, 1.0f, 0);
 
         if (RImplementation.o.dx10_msaa)
@@ -41,16 +39,16 @@ void CRenderTarget::phase_scene_begin()
     if (!RImplementation.o.dx10_gbuffer_opt)
     {
         if (RImplementation.o.albedo_wo)
-            u_setrt_wetness(rt_Position, rt_Normal, rt_Accumulator, ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR) ? rt_Wetness : nullptr, pZB);
+            u_setrt(rt_Position, rt_Normal, rt_Accumulator, pZB);
         else
-            u_setrt_wetness(rt_Position, rt_Normal, rt_Color, ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR) ? rt_Wetness : nullptr, pZB);
+            u_setrt(rt_Position, rt_Normal, rt_Color, pZB);
     }
     else
     {
         if (RImplementation.o.albedo_wo)
-            u_setrt_wetness(rt_Position, rt_Accumulator, nullptr, ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR) ? rt_Wetness : nullptr, pZB);
+            u_setrt(rt_Position, rt_Accumulator, pZB);
         else
-            u_setrt_wetness(rt_Position, rt_Color, nullptr, ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR) ? rt_Wetness : nullptr, pZB);
+            u_setrt(rt_Position, rt_Color, pZB);
     }
 
     // Stencil - write 0x1 at pixel pos

@@ -254,7 +254,6 @@ public:
 
     void u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, ID3DDepthStencilView* zb);
     void u_setrt(const ref_rt& _1, const ref_rt& _2, ID3DDepthStencilView* zb);
-    void u_setrt_wetness(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, ID3DDepthStencilView* zb);
     void u_setrt(u32 W, u32 H, ID3DRenderTargetView* _1, ID3DRenderTargetView* _2, ID3DRenderTargetView* _3, ID3DDepthStencilView* zb);
 
     void u_calc_tc_noise(Fvector2& p0, Fvector2& p1);
@@ -375,6 +374,4 @@ private:
     ref_rt rt_SunShaftsPass0;
     ref_shader s_ssss_mrmnwar;
     ref_shader s_ssss_ogse;
-
-    ref_rt rt_Wetness;
 };

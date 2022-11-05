@@ -63,9 +63,6 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3
     else
         RCache.set_RT(NULL, 2);
 
-    if (ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR))
-        RCache.set_RT(nullptr, 3); // rt_Wetness
-
     RCache.set_ZB(zb);
 }
 
@@ -107,51 +104,6 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, ID3DDepthStencil
         RCache.set_RT(_2->pRT, 1);
     else
         RCache.set_RT(NULL, 1);
-
-    if (ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR))
-        RCache.set_RT(nullptr, 2); // rt_Wetness
-
-    RCache.set_ZB(zb);
-}
-
-void CRenderTarget::u_setrt_wetness(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, ID3DDepthStencilView* zb)
-{
-    VERIFY(_1 || zb);
-    if (_1)
-    {
-        dwWidth = _1->dwWidth;
-        dwHeight = _1->dwHeight;
-    }
-    else
-    {
-        D3D_DEPTH_STENCIL_VIEW_DESC desc;
-        zb->GetDesc(&desc);
-
-        if (!RImplementation.o.dx10_msaa)
-            VERIFY(desc.ViewDimension == D3D_DSV_DIMENSION_TEXTURE2D);
-
-        ID3DResource* pRes;
-
-        zb->GetResource(&pRes);
-
-        ID3DTexture2D* pTex = (ID3DTexture2D*)pRes;
-
-        D3D_TEXTURE2D_DESC TexDesc;
-
-        pTex->GetDesc(&TexDesc);
-
-        dwWidth = TexDesc.Width;
-        dwHeight = TexDesc.Height;
-        _RELEASE(pRes);
-    }
-
-    RCache.set_RT(_1->pRT, 0);
-    RCache.set_RT(_2->pRT, 1);
-    if (_3)
-        RCache.set_RT(_3->pRT, 2);
-
-    if (_4)
-        RCache.set_RT(_4->pRT, _3 ? 3 : 2); // rt_Wetness
 
     RCache.set_ZB(zb);
 }
@@ -805,9 +757,6 @@ CRenderTarget::CRenderTarget()
         rt_sunshafts_1.create(r2_RT_sunshafts1, w, h, D3DFMT_A8R8G8B8);
         s_ssss_ogse.create("effects\\ss_sunshafts_ogse");
     }
-
-    // SSLR
-    rt_Wetness.create(r2_RT_Wetness, w, h, D3DFMT_A8R8G8B8, SampleCount);
 
     // Build textures
     {

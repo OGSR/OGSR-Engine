@@ -22,8 +22,6 @@ f_deffer main(p_flat I, float4 pos2d : SV_Position)
 f_deffer main(p_flat I)
 #endif //	MSAA_ALPHATEST_DX10_1_ATOC
 {
-    f_deffer O;
-
     // 1. Base texture + kill pixels with low alpha
 
 #if !defined(MSAA_ALPHATEST_DX10_1)
@@ -92,14 +90,13 @@ f_deffer main(p_flat I)
     D *= I.tcdh.z;
 #endif
 
-    // 2. Standart output
     float4 Ne = float4(normalize((float3)I.N.xyz), h);
-#if !(defined(MSAA_ALPHATEST_DX10_1_ATOC) || defined(MSAA_ALPHATEST_DX10_1))
-    O = pack_gbuffer(Ne, float4(I.position.xyz + Ne.xyz * def_virtualh / 2.h, ms), float4(D.rgb, def_gloss), float4(0.f, 0.f, 0.f, 0.f));
-#else
-    O = pack_gbuffer(Ne, float4(I.position.xyz + Ne.xyz * def_virtualh / 2.h, ms), float4(D.rgb, def_gloss), float4(0.f, 0.f, 0.f, 0.f), mask);
+
+    return pack_gbuffer(Ne, float4(I.position.xyz + Ne.xyz * def_virtualh / 2.h, ms), float4(D.rgb, def_gloss)
+#ifdef EXTEND_F_DEFFER
+        , mask
 #endif
-    return O;
+    );
 }
 
 #endif //	ATOC

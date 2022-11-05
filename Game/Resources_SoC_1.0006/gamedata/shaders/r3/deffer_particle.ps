@@ -17,12 +17,9 @@ f_deffer main(p_particle II, float4 pos2d : SV_Position)
 f_deffer main(p_particle II)
 #endif //	MSAA_ALPHATEST_DX10_1_ATOC
 {
-    f_deffer O;
-    p_flat I;
-    I = II.base;
+    p_flat I = II.base;
 
     // 1. Base texture + kill pixels with low alpha
-//  float4 	D 	= 	tex2D		(s_base, I.tcdh);
 #if defined(MSAA_ALPHATEST_DX10_1)
     uint mask = 0x0;
     float2 ddx_base = ddx(I.tcdh);
@@ -63,13 +60,11 @@ f_deffer main(p_particle II)
 
 #endif
 
-    // 2. Standart output
     float4 Ne = float4(normalize((float3)I.N.xyz), I.position.w);
-#ifndef EXTEND_F_DEFFER
-    O = pack_gbuffer(Ne, float4(I.position.xyz + Ne.xyz * def_virtualh / 2.h, xmaterial), float4(D.xyz, def_gloss), float4(0.f, 0.f, 0.f, 0.f));
-#else
-    O = pack_gbuffer(Ne, float4(I.position.xyz + Ne.xyz * def_virtualh / 2.h, xmaterial), float4(D.xyz, def_gloss), float4(0.f, 0.f, 0.f, 0.f), mask);
-#endif
 
-    return O;
+    return pack_gbuffer(Ne, float4(I.position.xyz + Ne.xyz * def_virtualh / 2.h, xmaterial), float4(D.xyz, def_gloss)
+#ifdef EXTEND_F_DEFFER
+        , mask
+#endif
+    );
 }

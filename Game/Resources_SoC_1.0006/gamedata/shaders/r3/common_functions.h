@@ -74,28 +74,27 @@ float3 v_sun(float3 n) { return L_sun_color * dot(n, -L_sun_dir_w); }
 
 float3 calc_reflection(float3 pos_w, float3 norm_w) { return reflect(normalize(pos_w - eye_position), norm_w); }
 
-#define USABLE_BIT_1 uint(0x00002000)
-#define USABLE_BIT_2 uint(0x00004000)
-#define USABLE_BIT_3 uint(0x00008000)
-#define USABLE_BIT_4 uint(0x00010000)
-#define USABLE_BIT_5 uint(0x00020000)
-#define USABLE_BIT_6 uint(0x00040000)
-#define USABLE_BIT_7 uint(0x00080000)
-#define USABLE_BIT_8 uint(0x00100000)
-#define USABLE_BIT_9 uint(0x00200000)
-#define USABLE_BIT_10 uint(0x00400000)
-#define USABLE_BIT_11 uint(0x00800000) // At least two of those four bit flags must be mutually exclusive (i.e. all 4 bits must not be set together)
-#define USABLE_BIT_12 uint(0x01000000) // This is because setting 0x47800000 sets all 5 FP16 exponent bits to 1 which means infinity
-#define USABLE_BIT_13 uint(0x02000000) // This will be translated to a +/-MAX_FLOAT in the FP16 render target (0xFBFF/0x7BFF), overwriting the
-#define USABLE_BIT_14 uint(0x04000000) // mantissa bits where other bit flags are stored.
-#define USABLE_BIT_15 uint(0x80000000)
-#define MUST_BE_SET uint(0x40000000) // This flag *must* be stored in the floating-point representation of the bit flag to store
+static const uint USABLE_BIT_1 = 1 << 13;
+static const uint USABLE_BIT_2 = 1 << 14;
+static const uint USABLE_BIT_3 = 1 << 15;
+static const uint USABLE_BIT_4 = 1 << 16;
+static const uint USABLE_BIT_5 = 1 << 17;
+static const uint USABLE_BIT_6 = 1 << 18;
+static const uint USABLE_BIT_7 = 1 << 19;
+static const uint USABLE_BIT_8 = 1 << 20;
+static const uint USABLE_BIT_9 = 1 << 21;
+static const uint USABLE_BIT_10 = 1 << 22;
+static const uint USABLE_BIT_11 = 1 << 23; // At least two of those four bit flags must be mutually exclusive (i.e. all 4 bits must not be set together)
+static const uint USABLE_BIT_12 = 1 << 24; // This is because setting 0x47800000 sets all 5 FP16 exponent bits to 1 which means infinity
+static const uint USABLE_BIT_13 = 1 << 25; // This will be translated to a +/-MAX_FLOAT in the FP16 render target (0xFBFF/0x7BFF), overwriting the
+static const uint USABLE_BIT_14 = 1 << 26; // mantissa bits where other bit flags are stored.
+static const uint MUST_BE_SET = 1 << 30; // This flag *must* be stored in the floating-point representation of the bit flag to store
+static const uint USABLE_BIT_15 = 1 << 31;
 
 // RainbowZerg: use spheremap transform (Crytek's implementation) for normals packing
 float2 gbuf_pack_normal(float3 N)
 {
     return normalize(N.xy) * sqrt(N.z * 0.5 + 0.5);
-    ;
 }
 
 float3 gbuf_unpack_normal(float2 enc)
@@ -108,39 +107,50 @@ float3 gbuf_unpack_normal(float2 enc)
     return res;
 }
 
-float gbuf_pack_hemi_mtl(float hemi, float mtl)
+
+float gbuf_pack_hemi_mtl(float hemi, float mtl, const bool use_reflections)
 {
     uint packed_mtl = uint((mtl / 1.333333333) * 31.0);
-    //   uint packed = ( MUST_BE_SET + ( uint( hemi * 255.0 ) << 13 ) + ( ( packed_mtl & uint( 31 ) ) << 21 ) );
     //	Clamp hemi max value
-    uint packed = (MUST_BE_SET + (uint(saturate(hemi) * 255.9) << 13) + ((packed_mtl & uint(31)) << 21));
+    uint packed = (MUST_BE_SET + (uint(saturate(hemi) * 255.9) << 12) + ((packed_mtl & uint(31)) << 21));
 
-    if ((packed & USABLE_BIT_13) == 0)
-        packed |= USABLE_BIT_14;
+    if ((packed & USABLE_BIT_12) == 0)
+        packed |= USABLE_BIT_13;
 
     if (packed_mtl & uint(16))
+        packed |= USABLE_BIT_14;
+
+    if (use_reflections)
         packed |= USABLE_BIT_15;
+    else
+        packed &= ~USABLE_BIT_15;
 
     return asfloat(packed);
 }
 
 float gbuf_unpack_hemi(float mtl_hemi)
 {
-    //   return float( ( asuint( mtl_hemi ) >> 13 ) & uint(255) ) * (1.0/255.0);
-    return float((asuint(mtl_hemi) >> 13) & uint(255)) * (1.0 / 254.8);
+    return float((asuint(mtl_hemi) >> 12) & uint(255)) * (1.0 / 254.8);
 }
 
 float gbuf_unpack_mtl(float mtl_hemi)
 {
     uint packed = asuint(mtl_hemi);
-    uint packed_hemi = ((packed >> 21) & uint(15)) + ((packed & USABLE_BIT_15) == 0 ? 0 : 16);
+    uint packed_hemi = ((packed >> 21) & uint(15)) + ((packed & USABLE_BIT_14) == 0 ? 0 : 16);
     return float(packed_hemi) * (1.0 / 31.0) * 1.333333333;
 }
 
+bool gbuf_unpack_refl_flag(float mtl_hemi)
+{
+    uint packed = asuint(mtl_hemi);
+    return (packed & USABLE_BIT_15) != 0;
+}
+
+
 #ifndef EXTEND_F_DEFFER
-f_deffer pack_gbuffer(float4 norm, float4 pos, float4 col, float4 wet)
+f_deffer pack_gbuffer(float4 norm, float4 pos, float4 col, const bool use_reflections = false)
 #else
-f_deffer pack_gbuffer(float4 norm, float4 pos, float4 col, float4 wet, uint imask)
+f_deffer pack_gbuffer(float4 norm, float4 pos, float4 col, uint imask, const bool use_reflections = false)
 #endif
 {
     f_deffer res;
@@ -150,12 +160,8 @@ f_deffer pack_gbuffer(float4 norm, float4 pos, float4 col, float4 wet, uint imas
     res.Ne = norm;
     res.C = col;
 #else
-    res.position = float4(gbuf_pack_normal(norm), pos.z, gbuf_pack_hemi_mtl(norm.w, pos.w));
+    res.position = float4(gbuf_pack_normal(norm), pos.z, gbuf_pack_hemi_mtl(norm.w, pos.w, use_reflections));
     res.C = col;
-#endif
-
-#ifdef SSLR_ENABLED
-    res.Wetness = wet;
 #endif
 
 #ifdef EXTEND_F_DEFFER
@@ -200,6 +206,8 @@ gbuffer_data gbuffer_load_data(float2 tc : TEXCOORD, float2 pos2d, int iSample)
 
     // reconstruct hemi
     gbd.hemi = gbuf_unpack_hemi(P.w);
+
+    gbd.refl_flag = gbuf_unpack_refl_flag(P.w);
 
 #ifndef USE_MSAA
     float4 C = s_diffuse.Sample(smp_nofilter, tc);

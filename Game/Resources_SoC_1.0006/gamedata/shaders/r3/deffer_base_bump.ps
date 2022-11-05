@@ -3,8 +3,6 @@
 
 f_deffer main(p_bumped I)
 {
-    f_deffer O;
-
     surface_bumped S = sload(I);
 
     // Sample normal, rotate it by matrix, encode position
@@ -29,7 +27,5 @@ f_deffer main(p_bumped I)
 #endif
 #endif
 
-    O = pack_gbuffer(float4(Ne, h), float4(I.position.xyz + Ne * S.height * def_virtualh, ms), float4(S.base.xyz, S.gloss), float4(0.f, 0.f, 0.f, 0.f));
-
-    return O;
+    return pack_gbuffer(float4(Ne, h), float4(I.position.xyz + Ne * S.height * def_virtualh, ms), float4(S.base.xyz, S.gloss));
 }

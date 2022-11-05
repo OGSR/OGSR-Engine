@@ -2,18 +2,6 @@
 #include "mblur.h"
 #include "dof.h"
 #include "visor.h"
-/*
-struct 	v2p
-{
-  float4 tc0: 		TEXCOORD0;	// Center
-  float4 tc1: 		TEXCOORD1;	// LT
-  float4 tc2: 		TEXCOORD2;	// RB
-  float4 tc3: 		TEXCOORD3;	// RT
-  float4 tc4: 		TEXCOORD4;	// LB
-  float4 tc5:		TEXCOORD5;	// Left	/ Right
-  float4 tc6:		TEXCOORD6;	// Top  / Bottom
-};
-*/
 
 //////////////////////////////////////////////////////////////////////////////////////////
 #define EPSDEPTH 0.001
@@ -39,14 +27,6 @@ c2_out main(v2p_aa_AA I)
     c2_out res;
     res.Color = float4(0, 0, 0, 0);
 
-    /*
-    #ifdef USE_MSAA
-        [unroll] for( int iSample = 0; iSample < MSAA_SAMPLES; ++iSample )
-        {
-    #else // USE_MSAA
-        int iSample = 0;
-    #endif
-    */
     int iSample = 0;
 
 #ifdef GBUFFER_OPTIMIZATION
@@ -56,8 +36,6 @@ c2_out main(v2p_aa_AA I)
 #endif
 
 #ifdef USE_DISTORT
-    //  	float 	depth 	= tex2D 	(s_position, 	I.tc0).z;
-    //	float4 	distort	= tex2D		(s_distort, 	I.tc0);
     float depth = gbd.P.z;
 #ifndef USE_MSAA
     float4 distort = s_distort.Sample(smp_nofilter, I.Tex0);
@@ -73,22 +51,17 @@ c2_out main(v2p_aa_AA I)
     gbuffer_data gbdx = gbuffer_load_data_offset(I.Tex0, center, iSample);
 #endif
 
-    //	float 	depth_x	= tex2D 	(s_position, center).z	;
     float depth_x = gbdx.P.z;
     if ((depth_x + EPSDEPTH) < depth)
         center = I.Tex0; // discard new sample
 #else // USE_DISTORT
     float2 center = I.Tex0;
 #endif
-    // float3 	img 	= tex2D		(s_image, center);
 
     float3 img = dof(center);
-    //	float4 	bloom	= tex2D		(s_bloom, center);
     float4 bloom = s_bloom.Sample(smp_rtlinear, center);
 
-    //			img 	= mblur		(center,tex2D(s_position,I.tc0),img.rgb);
-    //			img 	= mblur( center, s_position.Sample( smp_nofilter, tc0), img.rgb);
-    img = mblur(center, (gbd).P, img.rgb);
+    img = mblur(center, gbd.P, img.rgb);
 
     if (addon_VControl.w == 1)
     {

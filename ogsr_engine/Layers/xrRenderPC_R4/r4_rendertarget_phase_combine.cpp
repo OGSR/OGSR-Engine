@@ -247,7 +247,6 @@ void CRenderTarget::phase_combine()
         Fmatrix m_inv_v;
         m_inv_v.invert(Device.mView);
         RCache.set_c("m_inv_v", m_inv_v);
-        RCache.set_c("SSLR_params", ps_ext_SSLR_L, 1.f, 1.f, 1.f);
 
         RCache.set_c("m_v2w", m_v2w);
         RCache.set_c("L_ambient", ambclr);

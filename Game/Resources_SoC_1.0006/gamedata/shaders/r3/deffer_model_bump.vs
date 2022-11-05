@@ -1,10 +1,6 @@
 #include "common.h"
 #include "skin.h"
 
-#if defined(USE_PARALLAX) || defined(USE_STEEPPARALLAX)
-uniform float3x4 m_invW;
-#endif //	defined(USE_PARALLAX) || defined(USE_STEEPPARALLAX)
-
 v2p_bumped _main(v_model I)
 {
     float4 w_pos = I.P;

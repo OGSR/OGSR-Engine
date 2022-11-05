@@ -136,9 +136,7 @@ Flags32 ps_r2_ls_flags = {R2FLAG_SUN
 
 Flags32 ps_r2_ls_flags_ext = {
     /*R2FLAGEXT_SSAO_OPT_DATA |*/ R2FLAGEXT_SSAO_HALF_DATA | R2FLAGEXT_ENABLE_TESSELLATION | R2FLAGEXT_RAIN_DROPS | R2FLAGEXT_RAIN_DROPS_CONTROL | R2FLAGEXT_MT_TEXLOAD
-#if RENDER == R_R4
     | R2FLAGEXT_SSLR
-#endif
 };
 
 BOOL ps_no_scale_on_fade = 0; // Alundaio
@@ -207,10 +205,6 @@ float ps_r2_rain_drops_speed = 1.25f;
 
 float ps_r2_visor_refl_intensity = 0.39f;
 float ps_r2_visor_refl_radius = 0.4f;
-
-#if RENDER == R_R4
-float ps_ext_SSLR_L = 1.f;
-#endif
 
 int ps_r__detail_radius = 49;
 u32 dm_size = 24;
@@ -814,7 +808,6 @@ void xrRender_initconsole()
 
 #if RENDER == R_R4
     CMD3(CCC_Mask, "r_sslr_enable", &ps_r2_ls_flags_ext, R2FLAGEXT_SSLR);
-    CMD4(CCC_Float, "r_sslr_l", &ps_ext_SSLR_L, .1f, 10.f);
 #endif
 
     CMD3(CCC_Mask, "r_terrain_parallax_enable", &ps_r2_ls_flags_ext, R2FLAGEXT_TERRAIN_PARALLAX);
@@ -935,7 +928,7 @@ void xrRender_initconsole()
     CMD3(CCC_Token, "r3_msaa", &ps_r3_msaa, qmsaa_token);
     // CMD3(CCC_Mask,		"r3_msaa_hybrid",				&ps_r2_ls_flags,			R3FLAG_MSAA_HYBRID);
     // CMD3(CCC_Mask,		"r3_msaa_opt",					&ps_r2_ls_flags,			R3FLAG_MSAA_OPT);
-    CMD3(CCC_Mask, "r3_gbuffer_opt", &ps_r2_ls_flags, R3FLAG_GBUFFER_OPT);
+    //CMD3(CCC_Mask, "r3_gbuffer_opt", &ps_r2_ls_flags, R3FLAG_GBUFFER_OPT); //xrSimpodin: отключение оптимизации отключено
     // CMD3(CCC_Mask,		"r3_use_dx10_1",				&ps_r2_ls_flags,			(u32)R3FLAG_USE_DX10_1);
     // CMD3(CCC_Token,		"r3_msaa_alphatest",			&ps_r3_msaa_atest,			qmsaa__atest_token);
     // CMD3(CCC_Token,		"r3_minmax_sm",					&ps_r3_minmax_sm,			qminmax_sm_token);

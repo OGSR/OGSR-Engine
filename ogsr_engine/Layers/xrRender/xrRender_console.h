@@ -142,10 +142,6 @@ extern ECORE_API float ps_r2_rain_drops_speed;
 extern ECORE_API float ps_r2_visor_refl_intensity;
 extern ECORE_API float ps_r2_visor_refl_radius;
 
-#if RENDER == R_R4
-extern ECORE_API float ps_ext_SSLR_L;
-#endif
-
 // textures
 extern ECORE_API int psTextureLOD;
 

@@ -10,6 +10,8 @@
 #include "../COMMON_AI/LevelGameDef.h"
 
 ENGINE_API float ps_r_sunshafts_intensity = 0.0f;
+ENGINE_API float puddles_drying = 2.f;
+ENGINE_API float puddles_wetting = 4.f;
 
 void CEnvModifier::load(IReader* fs, u32 version)
 {
@@ -457,7 +459,7 @@ void CEnvDescriptorMixer::clear() { m_pDescriptorMixer->Clear(); }
 
 int get_ref_count(IUnknown* ii);
 
-void CEnvDescriptorMixer::lerp(CEnvironment*, CEnvDescriptor& A, CEnvDescriptor& B, float f, CEnvModifier& Mdf, float modifier_power)
+void CEnvDescriptorMixer::lerp(CEnvironment* env, CEnvDescriptor& A, CEnvDescriptor& B, float f, CEnvModifier& Mdf, float modifier_power)
 {
     float modif_power = 1.f / (modifier_power + 1); // the environment itself
     float fi = 1 - f;
@@ -533,6 +535,13 @@ void CEnvDescriptorMixer::lerp(CEnvironment*, CEnvDescriptor& A, CEnvDescriptor&
     }
 
     sun_color.lerp(A.sun_color, B.sun_color, f);
+
+    if (rain_density > 0.f)
+        env->wetness_factor += (rain_density * puddles_wetting) / 10000.f;
+    else
+        env->wetness_factor -= 0.0001f * puddles_drying;
+
+    clamp(env->wetness_factor, 0.f, 1.f);
 
     R_ASSERT(_valid(A.sun_dir));
     R_ASSERT(_valid(B.sun_dir));

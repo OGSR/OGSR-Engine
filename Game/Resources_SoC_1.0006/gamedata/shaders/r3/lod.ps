@@ -53,13 +53,7 @@ f_deffer main(vf I, float4 pos2d : SV_Position)
 f_deffer main(vf I)
 #endif //	MSAA_ALPHATEST_DX10_1_ATOC
 {
-    f_deffer O;
-
     // 1. Base texture + kill pixels with low alpha
-    //  float4 D0 	= tex2D		(s_base, I.tc0);
-    //  float4 D1 	= tex2D		(s_base, I.tc1);
-    //  float4 H0 	= tex2D		(s_hemi, I.tc0);	H0.xyz 	=  H0.rgb*2-1;	// expand
-    //  float4 H1 	= tex2D		(s_hemi, I.tc1);	H1.xyz 	=  H1.rgb*2-1;	// expand
     float4 D;
     float4 H;
 
@@ -101,17 +95,11 @@ f_deffer main(vf I)
 
     float3 N = normalize(H.xyz);
 
-    //  D.xyz = float3(1,0,0);
-
-    // 2. Standart output
-#ifndef EXTEND_F_DEFFER
-    O = pack_gbuffer(float4(N, H.w), float4(I.position + N * def_virtualh / 2.h, 0), float4(D.x, D.y, D.z, def_gloss), float4(0.f, 0.f, 0.f, 0.f)); // OUT: rgb.gloss
-#else
-    O = pack_gbuffer(float4(N, H.w), float4(I.position + N * def_virtualh / 2.h, 0), float4(D.x, D.y, D.z, def_gloss), float4(0.f, 0.f, 0.f, 0.f),
-                     mask); // OUT: rgb.gloss
+    return pack_gbuffer(float4(N, H.w), float4(I.position + N * def_virtualh / 2.h, 0), float4(D.x, D.y, D.z, def_gloss)
+#ifdef EXTEND_F_DEFFER
+        , mask
 #endif
-
-    return O;
+    );
 }
 
 #endif //	ATOC

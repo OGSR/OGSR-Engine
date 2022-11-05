@@ -39,5 +39,5 @@ f_deffer main(p_flat I)
 
     float4 Ne = float4(normalize((float3)I.N.xyz), h);
 
-    return pack_gbuffer(Ne, float4(I.position.xyz + Ne.xyz * def_virtualh / 2.h, ms), float4(D.rgb, def_gloss), float4(0.f, 0.f, 0.f, 0.f));
+    return pack_gbuffer(Ne, float4(I.position.xyz + Ne.xyz * def_virtualh / 2.h, ms), float4(D.rgb, def_gloss));
 }

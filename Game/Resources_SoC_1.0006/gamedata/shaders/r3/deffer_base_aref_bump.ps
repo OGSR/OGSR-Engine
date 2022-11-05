@@ -22,8 +22,6 @@ f_deffer main(p_bumped I, float4 pos2d : SV_Position)
 f_deffer main(p_bumped I)
 #endif //	MSAA_ALPHATEST_DX10_1_ATOC
 {
-    f_deffer O;
-
 #if !defined(MSAA_ALPHATEST_DX10_1)
     surface_bumped S = sload(I);
 
@@ -76,14 +74,11 @@ f_deffer main(p_bumped I)
 #endif
 #endif
 
-#ifndef EXTEND_F_DEFFER
-    O = pack_gbuffer(float4(Ne, h), float4(I.position.xyz + Ne * S.height * def_virtualh, ms), float4(S.base.x, S.base.y, S.base.z, S.gloss), float4(0.f, 0.f, 0.f, 0.f));
-#else
-    O = pack_gbuffer(float4(Ne, h), float4(I.position.xyz + Ne * S.height * def_virtualh, ms), float4(float3(S.base.x, S.base.y, S.base.z), S.gloss), float4(0.f, 0.f, 0.f, 0.f),
-                     mask);
+    return pack_gbuffer(float4(Ne, h), float4(I.position.xyz + Ne * S.height * def_virtualh, ms), float4(S.base.x, S.base.y, S.base.z, S.gloss)
+#ifdef EXTEND_F_DEFFER
+        , mask
 #endif
-
-    return O;
+    );
 }
 
 #endif //	ATOC
