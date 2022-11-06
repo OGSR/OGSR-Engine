@@ -109,7 +109,7 @@ void get_files_list(xr_vector<shared_str>& files, LPCSTR dir, LPCSTR file_ext)
     FS_Path* P = FS.get_path(dir);
     P->m_Flags.set(FS_Path::flNeedRescan, TRUE);
     FS.m_Flags.set(CLocatorAPI::flNeedCheck, TRUE);
-    FS.rescan_pathes();
+    FS.rescan_physical_pathes();
 
     string_path fext;
     xr_strconcat(fext, "*", file_ext);
