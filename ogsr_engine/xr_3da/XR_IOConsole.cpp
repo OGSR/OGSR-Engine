@@ -724,10 +724,7 @@ void CConsole::Execute(LPCSTR cmd)
 void CConsole::Execute(LPCSTR cmd, LPCSTR arg)
 {
     string1024 full_cmd;
-
-	strcpy(full_cmd, cmd);
-    strcat(full_cmd, " ");
-    strcat(full_cmd, arg);
+	xr_strconcat(full_cmd, cmd, " ", arg);
 
     ExecuteCommand(full_cmd, false, true);
 }
