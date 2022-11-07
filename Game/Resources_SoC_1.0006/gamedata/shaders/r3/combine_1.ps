@@ -139,7 +139,9 @@ _out main(_input I, uint iSample : SV_SAMPLEINDEX)
 
 // Disable specular if SSR is enabled. ( Temporary fix? )
 #ifdef SSFX_SSR
+#ifdef REFLECTIONS_ONLY_ON_TERRAIN
     if (gbd.refl_flag)
+#endif
         hspecular = 0;
 #endif
 
@@ -153,7 +155,9 @@ _out main(_input I, uint iSample : SV_SAMPLEINDEX)
 
 // SSR Implementation
 #ifdef SSFX_SSR
+#ifdef REFLECTIONS_ONLY_ON_TERRAIN
     if (gbd.refl_flag)
+#endif
         SSFX_ScreenSpaceReflections(I.tc0, P, N, D.a, color, ISAMPLE);	
 #endif
 

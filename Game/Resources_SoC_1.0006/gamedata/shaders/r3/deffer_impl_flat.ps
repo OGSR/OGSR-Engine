@@ -1,66 +1,139 @@
+#include "common.h"
+
+
+#ifdef USE_TDETAIL
+
+
 #include "settings_screenspace_PUDDLES.h"
 #include "settings_screenspace_SSR.h"
-
-#include "common.h"
-#include "sload.h"
-
 #include "screenspace_common_ripples.h"
 
-Texture2D s_puddles_normal;
-Texture2D s_puddles_perlin;
-Texture2D s_puddles_mask;
-Texture2D s_rainsplash;
+#define PARALLAX_NEAR_PLANE 0.01
+#define PARALLAX_FAR_PLANE 40
+#define PARALLAX_DEPTH 0.013
+
+uniform Texture2D s_puddles_normal;
+uniform Texture2D s_puddles_perlin;
+uniform Texture2D s_puddles_mask;
+uniform Texture2D s_rainsplash;
 
 uniform float4 rain_params;
 
-#define	USE_4_DETAIL
+// Height maps
+uniform Texture2D s_dnE_r;
+uniform Texture2D s_dnE_g;
+uniform Texture2D s_dnE_b;
+uniform Texture2D s_dnE_a;
 
-#if defined(USE_TDETAIL) && defined(USE_4_DETAIL)
-#	define	USE_4_BUMP
-#endif
-
-#ifdef USE_4_BUMP
-f_deffer 	main	( p_bumped I 	)
-#else
-f_deffer 	main	( p_flat I 		)
-#endif
+struct surface
 {
-	f_deffer	O;
+    float4 base;
+    float3 normal;
+    float gloss;
+};
 
- 	// diffuse
-	float4 D		= tbase		(I.tcdh);			// IN:  rgb.a
-	float4 L 	= s_lmap.Sample( smp_base, I.tcdh);
-	float G 	= 0.001;
+void perform_tc_offset(inout p_bumped p, in Texture2D s_bumpX_new)
+{
+    if ((p.position.z > PARALLAX_NEAR_PLANE) && (p.position.z < PARALLAX_FAR_PLANE))
+    {
+        float3 eye = normalize(mul(float3x3(p.M1.x, p.M2.x, p.M3.x, p.M1.y, p.M2.y, p.M3.y, p.M1.z, p.M2.z, p.M3.z), -p.position));
 
-#ifdef	USE_TDETAIL
- #ifdef USE_4_DETAIL
-	float4	mask= s_mask.Sample ( smp_base, I.tcdh);
-	float 	mag	= dot 		(mask,1);
-			mask= mask/mag	;
+#if (DEFFER_IBM_MODE == 1)
+        p.tcdbump += eye * PARALLAX_DEPTH * (s_bumpX_new.Sample(smp_base, p.tcdbump).ww - 0.5);
+#elif (DEFFER_IBM_MODE == 2) || (DEFFER_IBM_MODE == 3)
+        // steps minmax and refines minmax
+        int4 steps = int4(3, 10, 4, 6); // 3..10, 7..16
 
-  #ifdef USE_4_BUMP
- 	 float4	n_Rt = s_dn_r.Sample ( smp_base, I.tcdbump).wzyx;
-	 float4	n_Gt = s_dn_g.Sample ( smp_base, I.tcdbump).wzyx;
-	 float4	n_Bt = s_dn_b.Sample ( smp_base, I.tcdbump).wzyx;
-	 float4	n_At = s_dn_a.Sample ( smp_base, I.tcdbump).wzyx;
-	 
- 	 float3	n_R = (n_Rt-0.5)*mask.r; 
-	 float g_R=n_Rt.w*mask.r;
-	 
-	 float3	n_G = (n_Gt-0.5)*mask.g; 
-	 float g_G=n_Gt.w*mask.g;
-	 
-	 float3	n_B = (n_Bt-0.5)*mask.b; 
-	 float g_B=n_Bt.w*mask.b;
-	 
-	 float3	n_A = (n_At-0.5)*mask.a; 
-	 float g_A=n_At.w*mask.a;
+        bool need_disp_lerp = true;
 
-	 float3	mix		= 	n_R+n_G+n_B+n_A;
-			mix	*=	float3(G_SSR_TERRAIN_BUMP_INTENSITY, G_SSR_TERRAIN_BUMP_INTENSITY, 1); // Adjust bump strength
+#if (DEFFER_IBM_MODE == 2)
+        bool need_refine = false;
+#elif (DEFFER_IBM_MODE == 3)
+        bool need_refine = true;
+#endif
 
-	 float3	N		= 	mul     	(float3x3(I.M1, I.M2, I.M3), mix.xyz);
+        float view_angle = abs(dot(float3(0.0, 0.0, 1.0), eye));
 
+        float layer_step = rcp(lerp(steps.y, steps.x, view_angle));
+
+        float2 tc_step = layer_step * eye.xy * PARALLAX_DEPTH;
+
+        float2 displaced_tc = p.tcdbump;
+
+        float curr_disp, curr_layer = 0;
+
+        do
+        {
+            displaced_tc -= tc_step;
+            curr_disp = 1 - s_bumpX_new.SampleLevel(smp_base, displaced_tc, 0).w;
+            curr_layer += layer_step;
+        } while (curr_layer < curr_disp);
+
+        if (need_refine)
+        {
+            displaced_tc += tc_step;
+            curr_layer -= layer_step;
+
+            float refine_steps = lerp(steps.w, steps.z, view_angle);
+
+            tc_step /= refine_steps;
+            layer_step /= refine_steps;
+
+            do
+            {
+                displaced_tc -= tc_step;
+                curr_disp = 1 - s_bumpX_new.SampleLevel(smp_base, displaced_tc, 0).w;
+                curr_layer += layer_step;
+            } while (curr_layer < curr_disp);
+        }
+
+        if (need_disp_lerp)
+        {
+            float2 displaced_tc_prev = displaced_tc + tc_step;
+
+            float after_depth = curr_disp - curr_layer;
+            float before_depth = 1 - s_bumpX_new.SampleLevel(smp_base, displaced_tc_prev, 0).w - curr_layer + layer_step;
+
+            float weight = after_depth / (after_depth - before_depth);
+
+            displaced_tc = lerp(displaced_tc, displaced_tc_prev, weight);
+        }
+
+        p.tcdbump = displaced_tc;
+#endif
+    }
+}
+
+surface fill(p_bumped p, Texture2D s_base_det, Texture2D s_bump_det, Texture2D s_bumpX_det, uint need_mask, float mask)
+{
+    surface S;
+
+    mask = need_mask ? mask : 1;
+
+    if (mask <= 0)
+    {
+        S.base = 0;
+        S.gloss = 0;
+        S.normal = 0;
+        return S;
+    }
+
+#if defined(DEFFER_IBM_MODE)
+    perform_tc_offset(p, s_bumpX_det);
+#endif
+
+    S.base = s_base_det.Sample(smp_base, p.tcdbump) * mask;
+
+    float4 Nu = s_bump_det.Sample(smp_base, p.tcdbump);
+
+    S.gloss = Nu.x * mask;
+    S.normal = (Nu.wzy - 0.5) * mask;
+
+    return S;
+}
+
+f_deffer main(p_bumped I)
+{
 	// Puddles Implementation - SSS Update 12
 	// https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders/
 
@@ -123,7 +196,7 @@ f_deffer 	main	( p_flat I 		)
 
 	// Base ripples Intensity
 	ripplesNormal *= (0.05f + rain_int * G_PUDDLES_RIPPLES_RAINING_INT) * G_PUDDLES_RIPPLES_INTENSITY;
-	
+
 	// Mix ripples
 	ripplesNormal = ( ripplesNormal * 0.666f ) + ( rainRipples * 0.333f );
 
@@ -133,7 +206,8 @@ f_deffer 	main	( p_flat I 		)
 
 	// Normal Up and ripples for puddles
 	float3 MirrorUp	= mul(m_V,  float3(ripplesNormal.x, 1.0f, ripplesNormal.y));
-	N = lerp(N, MirrorUp, puddles);
+
+	const float puddles_N = puddles;
 
 	// Refraction Normal
 	float3 N_refra = ripplesNormal;
@@ -143,47 +217,66 @@ f_deffer 	main	( p_flat I 		)
 
 	// Detail textures + refraction when needed
 	float2 detail_tc = I.tcdbump + N_refra;
-	float3 d_R = s_dt_r.Sample ( smp_base, detail_tc) * mask.r;
-	float3 d_G = s_dt_g.Sample ( smp_base, detail_tc) * mask.g;
-	float3 d_B = s_dt_b.Sample ( smp_base, detail_tc) * mask.b;
-	float3 d_A = s_dt_a.Sample ( smp_base, detail_tc) * mask.a;
-	float3 dt = d_R + d_G + d_B + d_A;
-	D.rgb = 2 * D.rgb * dt;
+
+/////////////////////////////////////////////////////////////////////////////////////
+
+	I.tcdbump = detail_tc;
+
+	float4 C = s_base.Sample(smp_base, I.tcdh.xy);
+
+	float4 mask = s_mask.Sample(smp_base, I.tcdh.xy);
+    mask /= dot(mask, 1);
+
+	surface Sr = fill(I, s_dt_r, s_dn_r, s_dnE_r, 1, mask.r);
+    surface Sg = fill(I, s_dt_g, s_dn_g, s_dnE_g, 1, mask.g);
+    surface Sb = fill(I, s_dt_b, s_dn_b, s_dnE_b, 1, mask.b);
+    surface Sa = fill(I, s_dt_a, s_dn_a, s_dnE_a, 1, mask.a);
+
+	C.xyz = (Sr.base.xyz + Sg.base.xyz + Sb.base.xyz + Sa.base.xyz) * C.xyz * 2;
 
 	// Apply tint
-	D.rgb = lerp( D.rgb, D.rgb * G_PUDDLES_TINT, puddles);
+	C.rgb = lerp( C.rgb, C.rgb * G_PUDDLES_TINT, puddles);
 
 	// Limit pudddle reflection.
 	puddles = clamp(puddles, 0, G_PUDDLES_REFLECTIVITY);
 
+#ifdef REFLECTIONS_ONLY_ON_PUDDLES
 	const float puddles_limit = puddles;
+#else
+	const float puddles_limit = 1.0f;
+#endif
 
 	// Add at the end the extra wetness. Full intensity at 50% of wetness ( rain_params.y )
 	puddles = puddles + saturate(wetness_f * 2.0f) * G_PUDDLES_TERRAIN_EXTRA_WETNESS;
 
 	// Add gloss and puddles to the final gloss result
-	G = max(g_R + g_G + g_B + g_A, puddles);
+	float G = max(Sr.gloss + Sg.gloss + Sb.gloss + Sa.gloss, puddles);
 
-  #else
-	float3	N 	= I.N.xyz	;
-	float puddles_limit = 0.f;
-  #endif
+	float3 _mix = Sr.normal + Sg.normal + Sb.normal + Sa.normal;
+	_mix *= float3(G_SSR_TERRAIN_BUMP_INTENSITY, G_SSR_TERRAIN_BUMP_INTENSITY, 1); // Adjust bump strength
 
- #else
-	D.rgb	= 2*D.rgb*s_detail.Sample( smp_base, I.tcdbump).rgb;
-	float puddles_limit = 0.f;
- #endif
-#else
-	float3	N 	= I.N.xyz	;
-	float puddles_limit = 0.f;
-#endif
+	float3 N = mul(float3x3(I.M1, I.M2, I.M3), _mix);
+	N = lerp(N, MirrorUp, puddles_N);
 
-  // 2. Standart output
-  float4     Ne = float4	(normalize(N), 									D.w			);
-  O				= pack_gbuffer( 
-								Ne,	// hemi
-								float4 	(I.position.xyz + Ne.xyz*def_virtualh/2.h, 	0.95f			),	//
-								float4	(D.x,	D.y,	D.z,						G			), puddles_limit > 0.01f );	// OUT: rgb.gloss
+	float4 Ne = float4(normalize(N), C.w);
 
-  return O;
+    return pack_gbuffer(Ne, float4(I.position.xyz, 0.95f), float4(C.rgb, G), puddles_limit > 0.01f);
 }
+
+
+#else
+
+
+f_deffer main(p_flat I)
+{
+	float4 D = s_base.Sample(smp_base, I.tcdh.xy);
+	float G = 0.001; // def_gloss
+	float3 N = I.N.xyz;
+
+    float4 Ne = float4(normalize(N), D.w );
+
+    return pack_gbuffer(Ne, float4(I.position.xyz + Ne.xyz * def_virtualh / 2.h, /*ms*/ 0.95f), float4(D.x, D.y, D.z, G ));
+}
+
+
+#endif

@@ -1,10 +1,7 @@
-#ifdef TERRAIN_PARALLAX_ENABNLED
-
-#include "deffer_impl_flat_parallax.ps"
-
-#else
-
 #define USE_TDETAIL
-#include "deffer_impl_flat.ps"
 
+#ifdef TERRAIN_PARALLAX_ENABNLED
+#define DEFFER_IBM_MODE 3
 #endif
+
+#include "deffer_impl_flat.ps"
