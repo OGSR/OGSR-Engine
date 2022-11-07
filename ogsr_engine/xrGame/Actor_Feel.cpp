@@ -99,6 +99,9 @@ ICF static BOOL info_trace_callback(collide::rq_result& result, LPVOID params)
 
 BOOL CActor::CanPickItem(const CFrustum& frustum, const Fvector& from, CObject* item)
 {
+    if (!item->getVisible())
+        return FALSE;
+
     BOOL bOverlaped = FALSE;
     Fvector dir, to;
     item->Center(to);

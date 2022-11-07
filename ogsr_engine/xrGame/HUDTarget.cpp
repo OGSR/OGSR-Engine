@@ -111,6 +111,8 @@ void CHUDTarget::CursorOnFrame()
 
 extern ENGINE_API BOOL g_bRendering;
 
+#include <ai/monsters/poltergeist/poltergeist.h>
+
 void CHUDTarget::Render()
 {
     VERIFY(g_bRendering);
@@ -150,7 +152,9 @@ void CHUDTarget::Render()
 
     if (psHUD_Flags.test(HUD_INFO))
     {
-        if (RQ.O)
+        const bool is_poltergeist = RQ.O && !!smart_cast<CPoltergeist*>(RQ.O);
+
+        if ((RQ.O && RQ.O->getVisible()) || is_poltergeist)
         {
             CEntityAlive* E = smart_cast<CEntityAlive*>(RQ.O);
             CEntityAlive* pCurEnt = smart_cast<CEntityAlive*>(Level().CurrentEntity());
