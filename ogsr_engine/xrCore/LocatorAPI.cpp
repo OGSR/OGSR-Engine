@@ -377,18 +377,22 @@ void CLocatorAPI::ProcessOne(LPCSTR path, const _finddata_t& F)
     xr_strlwr(N);
 
     if (F.attrib & _A_HIDDEN)
+    {
         return;
+    }
 
     if (F.attrib & _A_SUBDIR)
     {
         if (bNoRecurse)
             return;
+
         if (0 == xr_strcmp(F.name, "."))
             return;
         if (0 == xr_strcmp(F.name, ".."))
             return;
+
         strcat_s(N, "\\");
-        Register(N, 0xffffffff, 0, 0, F.size, F.size, (u32)F.time_write);
+
         RecurseScanPhysicalPath(N);
     }
     else
@@ -414,7 +418,10 @@ bool ignore_name(const char* _name)
         return true;
 
     // ignore processing ".svn" folders
-    return (_name[0] == '.' && _name[1] == 's' && _name[2] == 'v' && _name[3] == 'n' && _name[4] == 0);
+    if (!strcmp(_name, ".svn"))
+        return true;
+    
+    return false;
 }
 
 // we need to check for file existance
@@ -423,15 +430,7 @@ bool ignore_name(const char* _name)
 
 bool ignore_path(const char* _path)
 {
-    HANDLE h = CreateFile(_path, 0, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_READONLY | FILE_FLAG_NO_BUFFERING, NULL);
-
-    if (h != INVALID_HANDLE_VALUE)
-    {
-        CloseHandle(h);
-        return false;
-    }
-    else
-        return true;
+    return !std::filesystem::exists(_path);
 }
 
 bool CLocatorAPI::RecurseScanPhysicalPath(const char* path, const bool log_if_found)
@@ -489,16 +488,22 @@ bool CLocatorAPI::RecurseScanPhysicalPath(const char* path, const bool log_if_fo
     }
 
     _findclose(hFile);
+
     if (log_if_found)
         Msg("  files: [%u]", rec_files.size());
 
     std::sort(rec_files.begin(), rec_files.end(), pred_str_ff);
+
     for (const auto& el : rec_files)
+    {
         ProcessOne(path, el);
+    }
 
     // insert self
     if (path && path[0])
+    {
         Register(path, 0xffffffff, 0, 0, 0, 0, 0);
+    }
 
     return true;
 }
@@ -1265,27 +1270,39 @@ void CLocatorAPI::rescan_physical_path(LPCSTR full_path, BOOL bRecurse)
     if (I == files.end())
         return;
 
+    Msg("[rescan_physical_path] files count before: [%d]", files.size());
+
     size_t base_len = xr_strlen(full_path);
-    for (; I != files.end();)
+
+    for (; I != files.end(); I++)
     {
         files_it cur_item = I;
         const file& entry = *cur_item;
-        I = cur_item;
-        I++;
+
         if (0 != strncmp(entry.name, full_path, base_len))
             break; // end of list
+
         if (entry.vfs != 0xFFFFFFFF)
             continue;
+
         const char* entry_begin = entry.name + base_len;
         if (!bRecurse && strchr(entry_begin, '\\'))
             continue;
-        // erase item
-        char* str = LPSTR(cur_item->name);
-        xr_free(str);
-        files.erase(cur_item);
+
+        // рескан передобавит только физ файлы, потому файлы из игровых архивов не нужно трогать тут
+        if (std::filesystem::exists(cur_item->name))
+        {
+            // erase item
+            char* str = LPSTR(cur_item->name);
+            xr_free(str);
+            files.erase(cur_item);
+        }
     }
+
     bNoRecurse = !bRecurse;
     RecurseScanPhysicalPath(full_path);
+
+    Msg("[rescan_physical_path] files count after: [%d]", files.size());
 }
 
 void CLocatorAPI::rescan_physical_pathes()
