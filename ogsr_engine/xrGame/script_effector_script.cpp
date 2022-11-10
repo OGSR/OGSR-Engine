@@ -57,11 +57,7 @@ void CScriptEffector::script_register(lua_State* L)
 
               class_<CScriptEffector, CScriptEffectorWrapper>("effector")
                   .def(constructor<int, float>())
-#ifdef LUABIND_09
-                  .def("start", &add_effector, adopt(_1))
-#else
                   .def("start", &add_effector, adopt<1>())
-#endif
                   .def("finish", &remove_effector)
                   .def("process", &CScriptEffector::process, &CScriptEffectorWrapper::process_static)];
 }

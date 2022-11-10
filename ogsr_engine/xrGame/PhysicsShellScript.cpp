@@ -69,11 +69,7 @@ void CPhysicsJoint::script_register(lua_State* L)
                   .def("set_max_force_and_velocity", &CPhysicsJoint::SetForceAndVelocity)
                   .def("get_max_force_and_velocity", &CPhysicsJoint::GetMaxForceAndVelocity)
                   .def("get_axis_angle", &CPhysicsJoint::GetAxisAngle)
-#ifdef LUABIND_09
-                  .def("get_limits", &CPhysicsJoint::GetLimits, out_value(_2) + out_value(_3))
-#else
                   .def("get_limits", &CPhysicsJoint::GetLimits, out_value<2>() + out_value<3>())
-#endif
                   .def("get_axis_dir", &CPhysicsJoint::GetAxisDirDynamic)
                   .def("get_anchor", &CPhysicsJoint::GetAnchorDynamic)
                   .def("is_breakable", &CPhysicsJoint::isBreakable)];

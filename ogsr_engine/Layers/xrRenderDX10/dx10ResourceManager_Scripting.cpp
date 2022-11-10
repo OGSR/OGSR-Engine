@@ -409,20 +409,12 @@ void LuaError(lua_State* L)
     Debug.fatal(DEBUG_INFO, "[ResourceManager.lua_error]: %s", lua_isstring(L, -1) ? lua_tostring(L, -1) : "");
 }
 
-#ifdef LUABIND_09
-static void lua_cast_failed(lua_State* L, const luabind::type_id& info)
-#else
 static void lua_cast_failed(lua_State* L, LUABIND_TYPE_INFO info)
-#endif
 {
     print_output("[ResourceManager.lua_cast_failed]", LUA_ERRRUN);
-#ifdef LUABIND_09
-    Msg("LUA error: cannot cast lua value to %s", info.name());
-    // Debug.fatal(DEBUG_INFO, "LUA error: cannot cast lua value to %s", info.name()); //KRodin: Тут наверное вылетать не надо.
-#else
+
     Msg("LUA error: cannot cast lua value to %s", info->name());
-    // Debug.fatal(DEBUG_INFO, "LUA error: cannot cast lua value to %s", info->name()); //KRodin: Тут наверное вылетать не надо.
-#endif
+
 }
 #endif
 
@@ -442,7 +434,6 @@ int lua_panic(lua_State* L)
     return 0;
 }
 
-#ifndef LUABIND_09
 static void* __cdecl luabind_allocator(luabind::memory_allocation_function_parameter, const void* pointer,
                                        size_t const size) //Раньше всего инитится здесь, поэтому пусть здесь и будет
 {
@@ -459,7 +450,7 @@ static void* __cdecl luabind_allocator(luabind::memory_allocation_function_param
     void* non_const_pointer = const_cast<LPVOID>(pointer);
     return Memory.mem_realloc(non_const_pointer, size);
 }
-#endif
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void LuaLog(const char* caMessage) { Log(caMessage); }
@@ -471,12 +462,9 @@ void CResourceManager::LS_Load()
     // Msg("[CResourceManager] Starting LuaJIT");
     R_ASSERT2(!LSVM, "! LuaJIT is already running"); //На всякий случай
     //
-#ifdef LUABIND_09
-    luabind::disable_super_deprecation();
-#else
     luabind::allocator = &luabind_allocator; //Аллокатор инитится только здесь и только один раз!
     luabind::allocator_parameter = nullptr;
-#endif
+
     LSVM = luaL_newstate(); //Запускаем LuaJIT. Память себе он выделит сам.
     luaL_openlibs(LSVM); //Инициализация функций LuaJIT
     R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!"); //Надо проверить, случается ли такое.
@@ -740,11 +728,7 @@ ShaderElement* CBlender_Compile::_lua_Compile(LPCSTR namesp, LPCSTR name)
     LPCSTR t_1 = (L_textures.size() > 1) ? *L_textures[1] : "null";
     LPCSTR t_d = detail_texture ? detail_texture : "null";
 
-#ifdef LUABIND_09
-    luabind::object shader = luabind::globals(LSVM)[namesp];
-#else
     luabind::object shader = luabind::get_globals(LSVM)[namesp];
-#endif
     luabind::object element = shader[name];
 
     bool bFirstPass = false;

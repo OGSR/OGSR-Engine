@@ -40,11 +40,7 @@ void CGameTask::script_register(lua_State* L)
                   .def("get_title", &CGameTask::GetTitle_script)
                   .def("set_priority", &CGameTask::SetPriority_script)
                   .def("get_priority", &CGameTask::GetPriority_script)
-#ifdef LUABIND_09
-                  .def("add_objective", &CGameTask::AddObjective_script, adopt(_2))
-#else
                   .def("add_objective", &CGameTask::AddObjective_script, adopt<2>())
-#endif
                   .def("get_id", &CGameTask::GetID_script)
                   .def("set_id", &CGameTask::SetID_script)
                   .def("get_objective", &CGameTask::GetObjective_script)

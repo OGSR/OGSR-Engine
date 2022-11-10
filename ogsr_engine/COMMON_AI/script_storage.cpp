@@ -381,28 +381,18 @@ luabind::object CScriptStorage::name_space(const char* namespace_name)
     string256 S1;
     xr_strcpy(S1, namespace_name);
     auto S = S1;
-#ifdef LUABIND_09
-    auto lua_namespace = luabind::globals(lua());
-#else
+
     auto lua_namespace = luabind::get_globals(lua());
-#endif
+
     for (;;)
     {
         if (!xr_strlen(S))
             return lua_namespace;
         auto I = strchr(S, '.');
         if (!I)
-#ifdef LUABIND_09
-            return lua_namespace[(const char*)S];
-#else
             return lua_namespace[S];
-#endif
         *I = 0;
-#ifdef LUABIND_09
-        lua_namespace = lua_namespace[(const char*)S];
-#else
         lua_namespace = lua_namespace[S];
-#endif
         S = I + 1;
     }
 }

@@ -3,8 +3,6 @@
 
 #pragma comment(lib, "Luabind.lib")
 
-//#define LUABIND_09 //Может пригодится в будущем.
-
 #pragma warning(push)
 
 #pragma warning(disable : 4459) // declaration of 'x' hides global declaration

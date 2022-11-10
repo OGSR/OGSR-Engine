@@ -9,11 +9,7 @@ void CUITabControl::script_register(lua_State* L)
 {
     module(L)[class_<CUITabControl, CUIWindow>("CUITabControl")
                   .def(constructor<>())
-#ifdef LUABIND_09
-                  .def("AddItem", (bool(CUITabControl::*)(CUITabButton*))(&CUITabControl::AddItem), adopt(_2))
-#else
                   .def("AddItem", (bool(CUITabControl::*)(CUITabButton*))(&CUITabControl::AddItem), adopt<2>())
-#endif
                   .def("AddItem", (bool(CUITabControl::*)(const char*, const char*, float, float, float, float)) & CUITabControl::AddItem)
                   .def("RemoveItem", &CUITabControl::RemoveItem)
                   .def("RemoveAll", &CUITabControl::RemoveAll)
