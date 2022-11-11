@@ -43,7 +43,7 @@ void DeinitializeSymbolEngine()
 #define MACHINE_TYPE IMAGE_FILE_MACHINE_I386
 #endif
 
-std::stringstream BuildStackTrace(const char* header, PCONTEXT threadCtx)
+std::string BuildStackTrace(const char* header, PCONTEXT threadCtx)
 {
     static std::mutex dbghelpMutex;
     std::scoped_lock<decltype(dbghelpMutex)> lock(dbghelpMutex);
@@ -55,7 +55,7 @@ std::stringstream BuildStackTrace(const char* header, PCONTEXT threadCtx)
     {
         const auto LastErr = GetLastError();
         traceResult << "[" << __FUNCTION__ << "] InitializeSymbolEngine failed with error: [" << LastErr << "], descr: [" << Debug.error2string(LastErr) << "]";
-        return traceResult;
+        return traceResult.str();
     }
 
     STACKFRAME stackFrame = {0};
@@ -131,10 +131,10 @@ std::stringstream BuildStackTrace(const char* header, PCONTEXT threadCtx)
 
     DeinitializeSymbolEngine();
 
-    return traceResult;
+    return traceResult.str();
 }
 
-std::stringstream BuildStackTrace(const char* header)
+std::string BuildStackTrace(const char* header)
 {
     CONTEXT currentThreadCtx = {0};
 

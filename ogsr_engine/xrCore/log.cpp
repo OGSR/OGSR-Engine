@@ -2,7 +2,6 @@
 
 #include "log.h"
 
-#include <sstream> //для std::stringstream
 #include <fstream> //для std::ofstream
 #include <iomanip> //для std::strftime
 #include <array> //для std::array
@@ -87,12 +86,10 @@ static void AddOne(xr_string& split, bool first_line)
     }
 }
 
-void Log(std::stringstream&& ss)
+void Log(const xr_string& str)
 {
-    std::string str = ss.str();
-
     if (str.empty())
-        return; //Строка пуста - выходим
+        return;
 
     bool not_first_line = false;
 
@@ -100,22 +97,30 @@ void Log(std::stringstream&& ss)
     const char& color_s = str.front();
     const bool have_color = std::find(color_codes.begin(), color_codes.end(), color_s) != color_codes.end(); //Ищем в начале строки цветовой код
 
-    for (xr_string item; std::getline(ss, item);) //Разбиваем текст по "\n"
+    std::vector<xr_string> substrs;
+    size_t beg{};
+    for (size_t end{}; (end = str.find("\n", end)) != xr_string::npos; ++end) //Разбиваем текст по "\n"
+    {
+        substrs.push_back(str.substr(beg, end - beg));
+        beg = end + 1;
+    }
+    substrs.push_back(str.substr(beg));
+
+    for (auto& str : substrs)
     {
         if (not_first_line && have_color)
         {
-            item = ' ' + item;
-            item = color_s + item; //Если надо, перед каждой строкой вставляем спец-символ цвета, чтобы в консоли цветными были все строки текста, а не только первая.
+            str = ' ' + str;
+            str = color_s + str; //Если надо, перед каждой строкой вставляем спец-символ цвета, чтобы в консоли цветными были все строки текста, а не только первая.
         }
-        AddOne(item, !not_first_line);
+        AddOne(str, !not_first_line);
         not_first_line = true;
     }
 }
 
 void Log(const char* s)
 {
-    std::stringstream ss(s);
-    Log(std::move(ss));
+    Log(xr_string{s});
 }
 
 void __cdecl Msg(const char* format, ...)

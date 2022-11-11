@@ -1,4 +1,4 @@
 #pragma once
 
-std::stringstream BuildStackTrace(const char* header);
-std::stringstream BuildStackTrace(const char* header, PCONTEXT threadCtx);
+std::string BuildStackTrace(const char* header);
+std::string BuildStackTrace(const char* header, PCONTEXT threadCtx);
