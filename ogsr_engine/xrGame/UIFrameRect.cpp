@@ -33,7 +33,9 @@ void CUIFrameRect::InitTexture(const char* texture)
     {
         Fvector4 v;
         // uFlags.set	(flSingleTex,TRUE);
-        CInifile* ini = CInifile::Create(fn, TRUE);
+        CInifile _ini{fn, TRUE};
+        CInifile* ini = &_ini;
+
         LPCSTR sh = ini->r_string("frame", "shader");
         frame[fmBK].CreateShader(texture, sh);
         frame[fmL].CreateShader(texture, sh);
@@ -71,7 +73,6 @@ void CUIFrameRect::InitTexture(const char* texture)
         v = ini->r_fvector4("frame", "lb");
         frame[fmLB].SetOriginalRect(v.x, v.y, v.z, v.w);
         frame[fmLB].SetRect(0, 0, v.z, v.w);
-        CInifile::Destroy(ini);
     }
     else
     {
