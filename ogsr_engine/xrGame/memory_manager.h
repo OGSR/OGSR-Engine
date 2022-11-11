@@ -11,13 +11,14 @@
 class CVisualMemoryManager;
 class CSoundMemoryManager;
 class CHitMemoryManager;
-class CEnemyManager;
 class CItemManager;
 class CDangerManager;
 class CCustomMonster;
 class CAI_Stalker;
 class CEntityAlive;
 class CSound_UserDataVisitor;
+
+#include "enemy_manager.h"
 
 namespace MemorySpace
 {
