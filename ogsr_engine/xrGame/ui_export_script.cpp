@@ -18,6 +18,11 @@ void UIRegistrator::script_register(lua_State* L)
 
         class_<CUICaption>("CUICaption").def("addCustomMessage", &CUICaption::addCustomMessage).def("setCaption", &CUICaption::setCaption),
 
-        class_<CMainMenu, CDialogHolder>("CMainMenu").def("GetGSVer", &CMainMenu::GetGSVer).def("PlaySound", &CMainMenu::PlaySound)],
+        class_<CMainMenu, CDialogHolder>("CMainMenu")
+            .def("GetGSVer", &CMainMenu::GetGSVer)
+            .def("PlaySound", &CMainMenu::PlaySound)
+            .def("IsActive", &CMainMenu::IsActive)]
+        ,
+
         module(L, "main_menu")[def("get_main_menu", &MainMenu)];
 }

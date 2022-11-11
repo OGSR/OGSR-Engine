@@ -91,6 +91,7 @@ void CMainMenu::Activate(bool bActivate)
 {
     if (!!m_Flags.test(flActive) == bActivate)
         return;
+
     if (m_Flags.test(flGameSaveScreenshot))
         return;
 
@@ -124,7 +125,9 @@ void CMainMenu::Activate(bool bActivate)
         m_Flags.set(flRestoreCursor, GetUICursor()->IsVisible());
 
         m_Flags.set(flRestorePauseStr, bShowPauseString);
+
         bShowPauseString = FALSE;
+
         if (!m_Flags.test(flRestorePause))
             Device.Pause(TRUE, TRUE, FALSE, "mm_activate2");
 
@@ -167,6 +170,7 @@ void CMainMenu::Activate(bool bActivate)
 
         StartStopMenu(m_startDialog, true);
         CleanInternals();
+
         if (g_pGameLevel)
         {
             Device.seqFrame.Add(g_pGameLevel);
