@@ -399,7 +399,8 @@ void CUILines::DrawCursor(float x, float y)
     }
 
     UI()->ClientToScreenScaledWidth(_w_tmp);
-    outXY.x = x + _w_tmp * m_pFont->GetWidthScale();
+
+    outXY.x = x + _w_tmp;
 
     UI()->ClientToScreenScaled(outXY);
 
