@@ -86,9 +86,8 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
 
     if (ini->section_exist("symbol_coords"))
     {
-        float d = 0.0f;
-        if (ini->section_exist("width_correction"))
-            d = ini->r_float("width_correction", "value");
+        //float d = READ_IF_EXISTS(ini, r_float, "width_correction", "value", 0.0f); // Это раньше не работало, теперь работает, и чтоб старые кривые конфиги не работали криво, имя параметра переименовано.
+        float d = READ_IF_EXISTS(ini, r_float, "font_width_correction", "value", 0.0f);
 
         fHeight = ini->r_float("symbol_coords", "height");
 
