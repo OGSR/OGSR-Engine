@@ -1,5 +1,15 @@
 #include "stdafx.h"
 
+#if __cpp_lib_stacktrace
+
+#include <stacktrace>
+
+std::string BuildStackTrace(const char* header) { return header + std::to_string(std::stacktrace{}); }
+
+std::string BuildStackTrace(const char* header, PCONTEXT) { return BuildStackTrace(header); }
+
+#else
+
 #include <sstream>
 
 #pragma warning(push)
@@ -43,7 +53,7 @@ void DeinitializeSymbolEngine()
 #define MACHINE_TYPE IMAGE_FILE_MACHINE_I386
 #endif
 
- const char* BuildStackTrace(const char* header, PCONTEXT threadCtx)
+std::string BuildStackTrace(const char* header, PCONTEXT threadCtx)
 {
     static std::mutex dbghelpMutex;
     std::scoped_lock<decltype(dbghelpMutex)> lock(dbghelpMutex);
@@ -55,7 +65,7 @@ void DeinitializeSymbolEngine()
     {
         const auto LastErr = GetLastError();
         traceResult << "[" << __FUNCTION__ << "] InitializeSymbolEngine failed with error: [" << LastErr << "], descr: [" << Debug.error2string(LastErr) << "]";
-        return traceResult.str().c_str();
+        return traceResult.str();
     }
 
     STACKFRAME stackFrame = {0};
@@ -131,10 +141,10 @@ void DeinitializeSymbolEngine()
 
     DeinitializeSymbolEngine();
 
-    return traceResult.str().c_str();
+    return traceResult.str();
 }
 
- const char* BuildStackTrace(const char* header)
+std::string BuildStackTrace(const char* header)
 {
     CONTEXT currentThreadCtx = {0};
 
@@ -143,3 +153,5 @@ void DeinitializeSymbolEngine()
 
     return BuildStackTrace(header, &currentThreadCtx);
 }
+
+#endif

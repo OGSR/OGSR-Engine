@@ -7,11 +7,11 @@
 #include <array> //для std::array
 
 static LogCallback LogCB = nullptr;
-xr_vector<xr_string> LogFile;
+xr_vector<std::string> LogFile;
 static std::ofstream logstream;
 string_path logFName{};
 
-static void AddOne(xr_string& split, bool first_line)
+static void AddOne(std::string& split, bool first_line)
 {
     static std::recursive_mutex logCS;
     std::scoped_lock<decltype(logCS)> lock(logCS);
@@ -46,14 +46,14 @@ static void AddOne(xr_string& split, bool first_line)
     if (!logstream.is_open())
         insert_time();
 
-    static xr_string last_str;
+    static std::string last_str;
     static int items_count;
 
     //LogFile.push_back(split); //Вывод в консоль
 
     if (last_str == split)
     {
-        xr_string tmp = split.c_str();
+        std::string tmp = split.c_str();
 
         if (items_count == 0)
             items_count = 2;
@@ -86,7 +86,7 @@ static void AddOne(xr_string& split, bool first_line)
     }
 }
 
-void Log(const xr_string& str)
+void Log(const std::string& str)
 {
     if (str.empty())
         return;
@@ -97,9 +97,9 @@ void Log(const xr_string& str)
     const char& color_s = str.front();
     const bool have_color = std::find(color_codes.begin(), color_codes.end(), color_s) != color_codes.end(); //Ищем в начале строки цветовой код
 
-    std::vector<xr_string> substrs;
+    std::vector<std::string> substrs;
     size_t beg{};
-    for (size_t end{}; (end = str.find("\n", end)) != xr_string::npos; ++end) //Разбиваем текст по "\n"
+    for (size_t end{}; (end = str.find("\n", end)) != std::string::npos; ++end) // Разбиваем текст по "\n"
     {
         substrs.push_back(str.substr(beg, end - beg));
         beg = end + 1;
@@ -118,10 +118,7 @@ void Log(const xr_string& str)
     }
 }
 
-void Log(const char* s)
-{
-    Log(xr_string{s});
-}
+void Log(const char* s) { Log(std::string{s}); }
 
 void __cdecl Msg(const char* format, ...)
 {
