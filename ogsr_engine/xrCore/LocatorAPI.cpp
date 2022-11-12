@@ -15,7 +15,7 @@
 #include "file_stream_reader.h"
 #include "trivial_encryptor.h"
 
-#include <filesystem>;
+#include <filesystem>
 
 constexpr u32 BIG_FILE_READER_WINDOW_SIZE = 1024 * 1024;
 
