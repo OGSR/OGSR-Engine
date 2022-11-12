@@ -4,7 +4,7 @@
 
 #include <stacktrace>
 
-std::string BuildStackTrace(const char* header) { return header + std::to_string(std::stacktrace{}); }
+std::string BuildStackTrace(const char* header) { return header + std::to_string(std::stacktrace::current()); }
 
 std::string BuildStackTrace(const char* header, PCONTEXT) { return BuildStackTrace(header); }
 
