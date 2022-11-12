@@ -914,7 +914,10 @@ u32 player_hud::motion_length(const motion_params& P, const motion_descr& M, con
 
         auto fStartFromTime = CalculateMotionStartSeconds(P.start_k, motion->GetLength());
 
-        return iFloor(0.5f + 1000.f * (motion->GetLength() - fStartFromTime) / (md->Speed() * speed) * P.stop_k);
+        if (speed >= 0.0f)
+            return iFloor(0.5f + 1000.f * (motion->GetLength() - fStartFromTime) / (md->Speed() * speed) * P.stop_k);
+        else
+            return iFloor(0.5f + 1000.f * (fStartFromTime) / (md->Speed() * abs(speed)) * P.stop_k);
     }
     return 0;
 }
