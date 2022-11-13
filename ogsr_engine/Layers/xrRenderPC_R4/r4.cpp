@@ -449,14 +449,14 @@ void CRender::reset_begin()
         {
             if (0 == Lights_LastFrame[it])
                 continue;
-            try
-            {
+            //try
+            //{
                 Lights_LastFrame[it]->svis.resetoccq();
-            }
+            /*}
             catch (...)
             {
                 Msg("! Failed to flush-OCCq on light [%d] %X", it, *(u32*)(&Lights_LastFrame[it]));
-            }
+            }*/
         }
         Lights_LastFrame.clear();
     }
