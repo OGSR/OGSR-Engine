@@ -273,8 +273,8 @@ void CScriptEntity::ProcessScripts()
         return;
     }
 
-    try
-    {
+    //try
+    //{
         bool l_bCompleted;
         l_bCompleted = l_tpEntityAction->m_tWatchAction.m_bCompleted;
         bfAssignWatch(l_tpEntityAction);
@@ -309,12 +309,12 @@ void CScriptEntity::ProcessScripts()
             bfScriptAnimation();
 
         bfAssignMonsterAction(l_tpEntityAction);
-    }
+    /*}
     catch (...)
     {
         Msg("!![CScriptEntity::ProcessScripts] Error found!");
         ResetScriptData();
-    }
+    }*/
 }
 
 bool CScriptEntity::bfAssignWatch(CScriptEntityAction* tpEntityAction) { return (GetCurrentAction() && !GetCurrentAction()->m_tWatchAction.m_bCompleted); }
