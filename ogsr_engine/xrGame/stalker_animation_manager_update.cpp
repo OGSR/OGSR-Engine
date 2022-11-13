@@ -190,10 +190,10 @@ void CStalkerAnimationManager::update_impl()
 void CStalkerAnimationManager::update()
 {
     START_PROFILE("stalker/client_update/animations")
-    try
-    {
+    //try
+    //{
         update_impl();
-    }
+    /*}
     catch (...)
     {
         Msg("! error in stalker with visual [%s]", object().cNameVisual().c_str());
@@ -201,6 +201,6 @@ void CStalkerAnimationManager::update()
         torso().reset();
         legs().reset();
         global().reset();
-    }
+    }*/
     STOP_PROFILE
 }
