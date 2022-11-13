@@ -275,6 +275,22 @@ void CCC_LoadCFG::Execute(LPCSTR args)
     {
         while (!F->eof())
         {
+            if (strstr(cfg_full_name, "user.ltx") && F->tell() == 0)
+            {
+                if (F->r_u8() == 0) // Костыль от ситуации когда в редких случаях почему-то у игроков бьётся user.ltx - оказывается набит нулями, в результате чего игра не
+                                    // запускается. Не понятно почему так происходит, поэтому сделал тут обработку такой ситуации.
+                {
+                    Msg("!![%s] file [%s] broken!", __FUNCTION__, cfg_full_name);
+                    FS.r_close(F);
+                    FS.file_delete(cfg_full_name);
+                    return;
+                }
+                else
+                {
+                    F->seek(F->tell() - sizeof(u8));
+                }
+            }
+
             F->r_string(str, sizeof(str));
             if (allow(str))
                 Console->Execute(str);
