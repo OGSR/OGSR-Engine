@@ -132,6 +132,9 @@ CSector::~CSector() {}
 extern float r_ssaDISCARD;
 extern float r_ssaLOD_A, r_ssaLOD_B;
 
+// Временно отключена оптимизация в попытке поправить странные редкие краши в этом куске.
+#pragma optimize("", off)
+
 void CSector::traverse(CFrustum& F, _scissor& R_scissor)
 {
     // Register traversal process
@@ -294,6 +297,8 @@ void CSector::traverse(CFrustum& F, _scissor& R_scissor)
         pSector->traverse(Clip, scissor);
     }
 }
+
+#pragma optimize("", on)
 
 void CSector::load(IReader& fs)
 {
