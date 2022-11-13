@@ -519,12 +519,12 @@ void CAI_Stalker::update_object_handler()
     if (!g_Alive())
         return;
 
-    try
+    /*try
     {
         try
-        {
+        {*/
             CObjectHandler::update();
-        }
+        /*}
 #ifndef LUABIND_NO_EXCEPTIONS
         catch (luabind::cast_failed& message)
         {
@@ -547,7 +547,7 @@ void CAI_Stalker::update_object_handler()
         Msg("!![CAI_Stalker::update_object_handler] Error in function CObjectHandler::update()");
         CObjectHandler::set_goal(eObjectActionIdle);
         CObjectHandler::update();
-    }
+    }*/
 }
 
 void CAI_Stalker::create_anim_mov_ctrl(CBlend* b)
