@@ -2,9 +2,9 @@
 #include <psapi.h>
 #include "xrsharedmem.h"
 
-#ifndef _DEBUG
+//#ifndef _DEBUG
 #define USE_MIMALLOC
-#endif
+//#endif
 
 #ifdef USE_MIMALLOC
 #include "..\mimalloc\include\mimalloc-override.h"
