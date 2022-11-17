@@ -24,9 +24,6 @@ public:
     virtual void OnShotBoth();
     virtual void switch2_Fire();
     virtual void switch2_Fire2();
-    void switch2_StartReload();
-    void switch2_AddCartgidge();
-    void switch2_EndReload();
     virtual void StopHUDSounds();
 
     virtual void UpdateSounds();
@@ -56,11 +53,12 @@ protected:
     ESoundTypes m_eSoundAddCartridge;
     ESoundTypes m_eSoundClose;
     HUD_SOUND m_sndOpen;
-    HUD_SOUND m_sndAddCartridge;
+    HUD_SOUND m_sndAddCartridge, m_sndAddCartridgeEmpty;
     HUD_SOUND m_sndClose, m_sndCloseEmpty;
 
     bool is_reload_empty{};
-    bool m_stop_triStateReload;
+    bool m_stop_triStateReload{};
+    bool has_anm_reload_jammed{};
 
     DECLARE_SCRIPT_REGISTER_FUNCTION
 };
