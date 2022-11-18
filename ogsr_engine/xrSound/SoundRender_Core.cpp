@@ -13,6 +13,7 @@
 int psSoundTargets = 256; // 512; //--#SM+#-- //32;
 Flags32 psSoundFlags = {ss_Hardware};
 float psSoundOcclusionScale = 0.5f;
+float psSoundLinearFadeFactor = 0.4f; //--#SM+#--
 float psSoundCull = 0.01f;
 float psSoundRolloff = 0.75f;
 u32 psSoundModel = 0;

@@ -336,12 +336,20 @@ float CSoundRender_Emitter::att()
 {
     float dist = SoundRender->listener_position().distance_to(p_source.position);
     float rolloff_dist = psSoundRolloff * dist;
+
+    // Calc linear fade --#SM+#--
+    // https://www.desmos.com/calculator/lojovfugle
+    const float fMinDistDiff = rolloff_dist - p_source.min_distance;
     float att;
-    if (p_source.max_distance > p_source.min_distance && rolloff_dist > p_source.min_distance)
-        att = 1.f - (rolloff_dist - p_source.min_distance) / (p_source.max_distance - p_source.min_distance);
+    if (fMinDistDiff > 0.f)
+    {
+        const float fMaxDistDiff = p_source.max_distance - p_source.min_distance;
+        att = pow(1.f - (fMinDistDiff / fMaxDistDiff), psSoundLinearFadeFactor);
+    }
     else
-        att = p_source.min_distance / rolloff_dist;
+        att = 1.f;
     clamp(att, 0.f, 1.f);
+
     return att;
 }
 
