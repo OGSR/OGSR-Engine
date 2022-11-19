@@ -6,14 +6,14 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#pragma hdrstop
 #include "os_clipboard.h"
 
 void os_clipboard::copy_to_clipboard(LPCSTR buf)
 {
-	if (!OpenClipboard(0))
+	if (!OpenClipboard(nullptr))
 		return;
-	u32 handle_size = (xr_strlen(buf) + 1) * sizeof(char);
+
+	size_t handle_size = strlen(buf) + 1;
 	HGLOBAL handle = GlobalAlloc(GHND, handle_size);
 	if (!handle)
 	{
@@ -34,17 +34,20 @@ void os_clipboard::paste_from_clipboard(LPSTR buffer, u32 const& buffer_size)
 	VERIFY(buffer);
 	VERIFY(buffer_size > 0);
 
-	if (!OpenClipboard(0))
+	if (!OpenClipboard(nullptr))
 		return;
 
 	HGLOBAL hmem = GetClipboardData(CF_TEXT);
-	if (!hmem)
-		return;
+    if (!hmem)
+    {
+        CloseClipboard();
+        return;
+    }
 
 	LPCSTR clipdata = (LPCSTR)GlobalLock(hmem);
 	strncpy_s(buffer, buffer_size, clipdata, buffer_size - 1);
 	buffer[buffer_size - 1] = 0;
-	for (u32 i = 0; i < strlen(buffer); ++i)
+	for (size_t i = 0; i < strlen(buffer); ++i)
 	{
 		char c = buffer[i];
 		if (((isprint(c) == 0) && (c != char(-1))) || c == '\t' || c == '\n')
@@ -55,30 +58,4 @@ void os_clipboard::paste_from_clipboard(LPSTR buffer, u32 const& buffer_size)
 
 	GlobalUnlock(hmem);
 	CloseClipboard();
-}
-
-void os_clipboard::update_clipboard(LPCSTR string)
-{
-	if (!OpenClipboard(0))
-		return;
-
-	HGLOBAL handle = GetClipboardData(CF_TEXT);
-	if (!handle)
-	{
-		CloseClipboard();
-		copy_to_clipboard(string);
-		return;
-	}
-
-	LPSTR memory = (LPSTR)GlobalLock(handle);
-	int memory_length = (int)strlen(memory);
-	int string_length = (int)strlen(string);
-	int buffer_size = (memory_length + string_length + 1) * sizeof(char);
-	LPSTR buffer = (LPSTR)_alloca(buffer_size);
-	xr_strcpy(buffer, buffer_size, memory);
-	GlobalUnlock(handle);
-
-	xr_strcat(buffer, buffer_size, string);
-	CloseClipboard();
-	copy_to_clipboard(buffer);
 }
