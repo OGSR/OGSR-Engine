@@ -92,20 +92,15 @@ void CConsole::Find_cmd() // DIK_TAB
 void CConsole::Find_cmd_back() // DIK_TAB+shift
 {
 	LPCSTR edt = ec().str_edit();
-	u32 offset = 0;
 
-	vecCMD_IT it = Commands.lower_bound(edt + offset);
+	vecCMD_IT it = Commands.lower_bound(edt);
 	if (it != Commands.begin())
 	{
 		--it;
 		IConsole_Command& cc = *(it->second);
 		LPCSTR name_cmd = cc.Name();
-		u32 name_cmd_size = xr_strlen(name_cmd);
-        LPSTR new_str = (LPSTR)_alloca((offset + name_cmd_size + 2) * sizeof(char));
 
-		strcpy_s(new_str, offset + name_cmd_size + 2, "");
-        strcat_s(new_str, offset + name_cmd_size + 2, name_cmd);
-		ec().set_edit(new_str);
+		ec().set_edit(name_cmd);
 	}
 }
 

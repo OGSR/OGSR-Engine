@@ -46,6 +46,55 @@ char const* const ch_cursor = "_";
 
 BOOL g_console_show_always = FALSE;
 
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// https://stackoverflow.com/questions/216823/how-to-trim-an-stdstring
+// trim from start (in place)
+static inline void ltrim(std::string& s)
+{
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) { return !std::isspace(ch); }));
+}
+
+// trim from end (in place)
+static inline void rtrim(std::string& s)
+{
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), s.end());
+}
+
+// trim from both ends (in place)
+static inline void trim(std::string& s)
+{
+    rtrim(s);
+    ltrim(s);
+}
+////////////////////////////////////////////////////////////////////////////////////////////
+static inline void split_cmd(const std::string& str, std::string& out1, std::string& out2)
+{
+    size_t it{}, start{}, end{};
+    while ((start = str.find_first_not_of(' ', end)) != std::string::npos)
+    {
+        if (it == 0)
+        {
+            end = str.find(' ', start);
+            out1 = str.substr(start, end - start);
+        }
+        else
+        {
+            end = str.length();
+            out2 = str.substr(start, end - start);
+            return;
+        }
+        it++;
+    }
+}
+////////////////////////////////////////////////////////////////////////////////////////////
+static inline void strlwr(std::string& data)
+{
+    std::transform(data.begin(), data.end(), data.begin(), [](unsigned char c) { return std::tolower(c); });
+}
+////////////////////////////////////////////////////////////////////////////////////////////
+
+
 text_editor::line_edit_control& CConsole::ec()
 {
 	return m_editor->control();
@@ -539,7 +588,7 @@ void CConsole::DrawBackgrounds(bool bGame)
 
 		VERIFY(rb.y2 - rb.y1 >= 1.0f);
 		float back_height = rb.y2 - rb.y1;
-		float u_height = (back_height * VIEW_TIPS_COUNT) / float(tips_sz);
+		float u_height = (back_height * static_cast<float>(VIEW_TIPS_COUNT)) / float(tips_sz);
 		if (u_height < 0.5f * font_h)
 		{
 			u_height = 0.5f * font_h;
@@ -572,20 +621,12 @@ void CConsole::DrawRect(Frect const& r, u32 color)
 
 void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabled)
 {
-	u32 str_size = xr_strlen(cmd_str);
+    std::string edt{cmd_str};
 
-	LPSTR edt = (LPSTR)_alloca((str_size + 1) * sizeof(char));
-    LPSTR first = (LPSTR)_alloca((str_size + 1) * sizeof(char));
-    LPSTR last = (LPSTR)_alloca((str_size + 1) * sizeof(char));
+	trim(edt);
 
-	xr_strcpy(edt, str_size + 1, cmd_str);
-	edt[str_size] = 0;
-
-	text_editor::remove_spaces(edt);
-	if (edt[0] == 0)
-	{
+	if (edt.empty())
 		return;
-	}
 
 	if (record_cmd)
 	{
@@ -597,18 +638,19 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabl
 		c[0] = mark2;
 		c[1] = 0;
 
-		if (m_last_cmd.c_str() == 0 || xr_strcmp(m_last_cmd, edt) != 0)
+		if (m_last_cmd.c_str() == 0 || xr_strcmp(m_last_cmd, edt.c_str()) != 0)
 		{
-			Log(c, edt);
-			add_cmd_history(edt);
-			m_last_cmd = edt;
+            Msg("%s %s", c, edt.c_str());
+            add_cmd_history(edt.c_str());
+            m_last_cmd = edt.c_str();
 		}
 	}
 
-	text_editor::split_cmd(first, last, edt);
+    std::string first, last;
+    split_cmd(edt, first, last);
 
 	// search
-	vecCMD_IT it = Commands.find(first);
+	vecCMD_IT it = Commands.find(first.c_str());
 	if (it != Commands.end())
 	{
 		IConsole_Command* cc = it->second;
@@ -618,11 +660,11 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabl
 			{
 				strlwr(last);
 			}
-			if (last[0] == 0)
+			if (last.empty())
 			{
 				if (cc->bEmptyArgsHandled)
 				{
-					cc->Execute(last);
+					cc->Execute(last.c_str());
 				}
 				else
 				{
@@ -633,21 +675,21 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabl
 			}
 			else
 			{
-				cc->Execute(last);
+				cc->Execute(last.c_str());
 				if (record_cmd)
 				{
-					cc->add_to_LRU((LPCSTR)last);
+					cc->add_to_LRU(last.c_str());
 				}
 			}
 		}
 		else
 		{
-            Log("! Command disabled.", first);
+            Msg("! Command disabled: %s", first.c_str());
 		}
 	}
 	else
 	{
-		Log("! Unknown command: ", first);
+        Msg("! Unknown command: %s", first.c_str());
 	}
 
 	if (record_cmd)
@@ -747,26 +789,19 @@ void CConsole::ExecuteScript(LPCSTR str)
 
 IConsole_Command* CConsole::find_next_cmd(LPCSTR in_str, shared_str& out_str)
 {
-	u32 offset = 0;
-
 	string_path t2;
-    xr_strconcat(t2, in_str + offset, " ");
+    xr_strconcat(t2, in_str, " ");
 
 	vecCMD_IT it = Commands.lower_bound(t2);
 	if (it != Commands.end())
 	{
 		IConsole_Command* cc = it->second;
 		LPCSTR name_cmd = cc->Name();
-		u32 name_cmd_size = xr_strlen(name_cmd);
-		LPSTR new_str = (LPSTR)_alloca((offset + name_cmd_size + 2) * sizeof(char));
 
-		xr_strcpy(new_str, offset + name_cmd_size + 2, "");
-		xr_strcat(new_str, offset + name_cmd_size + 2, name_cmd);
-
-		out_str._set((LPCSTR)new_str);
+		out_str._set(name_cmd);
 		return cc;
 	}
-	return NULL;
+	return nullptr;
 }
 
 bool CConsole::add_next_cmds(LPCSTR in_str, vecTipsEx& out_v)
@@ -894,7 +929,7 @@ void CConsole::update_tips()
 	}
 
 	LPCSTR cur = ec().str_edit();
-	u32 cur_length = xr_strlen(cur);
+	size_t cur_length = strlen(cur);
 
 	if (cur_length == 0)
 	{
@@ -908,12 +943,10 @@ void CConsole::update_tips()
 	}
 	m_prev_length_str = cur_length;
 
-	LPSTR first = (LPSTR)_alloca((cur_length + 1) * sizeof(char));
-	LPSTR last = (LPSTR)_alloca((cur_length + 1) * sizeof(char));
+    std::string s_cur{cur}, first, last;
+    split_cmd(s_cur, first, last);
 
-	text_editor::split_cmd(first, last, cur);
-
-	u32 first_lenght = xr_strlen(first);
+	size_t first_lenght = first.length();
 
 	if ((first_lenght > 2) && (first_lenght + 1 <= cur_length)) // param
 	{
@@ -924,7 +957,7 @@ void CConsole::update_tips()
 				reset_selected_tip();
 			}
 
-			vecCMD_IT it = Commands.find(first);
+			vecCMD_IT it = Commands.find(first.c_str());
 			if (it != Commands.end())
 			{
 				IConsole_Command* cc = it->second;
@@ -933,13 +966,13 @@ void CConsole::update_tips()
 				if ((first_lenght + 2 <= cur_length) && (cur[first_lenght] == ' ') && (cur[first_lenght + 1] == ' '))
 				{
 					mode = 1;
-					last += 1; // fake: next char
+                    last.erase(0, 1); // fake: next char
 				}
 
 				cc->fill_tips(m_temp_tips, mode);
 				m_tips_mode = 2;
-				m_cur_cmd._set(first);
-				select_for_filter(last, m_temp_tips, m_tips);
+				m_cur_cmd._set(first.c_str());
+                select_for_filter(last.c_str(), m_temp_tips, m_tips);
 
 				if (m_tips.size() == 0)
 				{

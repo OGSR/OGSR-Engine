@@ -11,9 +11,6 @@
 
 namespace text_editor
 {
-	void remove_spaces(LPSTR str); // in & out
-	void split_cmd(LPSTR first, LPSTR second, LPCSTR str);
-
 	class base;
 
 	enum key_state // Flags32

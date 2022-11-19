@@ -146,14 +146,6 @@ void Log(const char* msg, const Fmatrix& dop)
                   dop.k.x, dop.k.y, dop.k.z, dop._34_, dop.c.x, dop.c.y, dop.c.z, dop._44_);
     Log(buf);
 }
-
-void Log(const char* msg, const char* dop)
-{
-    char buf[1024];
-    std::snprintf(buf, sizeof(buf), "%s %s", msg, dop);
-    Log(buf);
-}
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 void SetLogCB(LogCallback cb) { LogCB = cb; }
