@@ -66,19 +66,6 @@ namespace text_editor
 
 	line_edit_control::line_edit_control(u32 str_buffer_size)
 	{
-		m_edit_str = NULL;
-		m_inserted = NULL;
-		m_undo_buf = NULL;
-		m_buf0 = NULL;
-		m_buf1 = NULL;
-		m_buf2 = NULL;
-		m_buf3 = NULL;
-
-		for (u32 i = 0; i < DIK_COUNT; ++i)
-		{
-			m_actions[i] = NULL;
-		}
-
 		init(str_buffer_size);
 
 		update_key_states();
@@ -94,7 +81,7 @@ namespace text_editor
 		xr_free(m_buf2);
 		xr_free(m_buf3);
 
-		size_t const array_size = sizeof(m_actions) / sizeof(m_actions[0]);
+		constexpr size_t  array_size = sizeof(m_actions) / sizeof(m_actions[0]);
 		buffer_vector<Base*> actions(m_actions, array_size, &m_actions[0], &m_actions[0] + array_size);
 		std::sort(actions.begin(), actions.end());
 		actions.erase(
@@ -155,6 +142,7 @@ namespace text_editor
 		m_buf3[0] = 0;
 
 		m_cur_pos = 0;
+        m_inserted_pos = 0;
 		m_select_start = 0;
 		m_p1 = 0;
 		m_p2 = 0;
@@ -395,26 +383,26 @@ namespace text_editor
 		m_actions[dik]->on_assign(prev_action);
 	}
 
-	void line_edit_control::insert_character(char c)
-	{
-		m_inserted[0] = c;
-	}
+void line_edit_control::insert_character(char c)
+    {
+        VERIFY(m_inserted_pos < (m_buffer_size - 1 /*trailing zero*/));
+        m_inserted[m_inserted_pos] = c;
+        m_inserted[m_inserted_pos + 1] = 0;
+        m_inserted_pos++;
+    }
 
-	void line_edit_control::clear_inserted()
-	{
-		m_inserted[0] = m_inserted[1] = 0;
-	}
+    void line_edit_control::clear_inserted()
+    {
+        m_inserted[0] = m_inserted[1] = 0;
+        m_inserted_pos = 0;
+    }
 
-	bool line_edit_control::empty_inserted()
-	{
-		return (m_inserted[0] == 0);
-	}
+    bool line_edit_control::empty_inserted() const { return m_inserted_pos == 0; }
 
 	void line_edit_control::set_edit(LPCSTR str)
 	{
 		if (!str) str = "";
-		u32 str_size = xr_strlen(str);
-		clamp(str_size, (u32)0, (u32)(m_buffer_size - 1));
+		size_t str_size = std::clamp(strlen(str), 0ull, static_cast<size_t>(m_buffer_size - 1));
 		strncpy_s(m_edit_str, m_buffer_size, str, str_size);
 		m_edit_str[str_size] = 0;
 
@@ -556,12 +544,13 @@ namespace text_editor
 		m_buf2[0] = 0;
 		m_buf3[0] = 0;
 
-		int edit_size = (int)xr_strlen(m_edit_str);
+		size_t edit_size = strlen(m_edit_str);
 		int ds = (m_cursor_view && m_insert_mode && m_p2 < edit_size) ? 1 : 0;
 		strncpy_s(m_buf0, m_buffer_size, m_edit_str, m_cur_pos);
 		strncpy_s(m_buf1, m_buffer_size, m_edit_str, m_p1);
 		strncpy_s(m_buf2, m_buffer_size, m_edit_str + m_p1, m_p2 - m_p1 + ds);
-		strncpy_s(m_buf3, m_buffer_size, m_edit_str + m_p2 + ds, edit_size - m_p2 - ds);
+		//xrSimpodin: m_p2 может быть больше чем edit_size, а потому что edit_size unsigned, вместо отрицательного числа получится огромное положительное число.
+        strncpy_s(m_buf3, m_buffer_size, m_edit_str + m_p2 + ds, edit_size < m_p2 ? 0 : (edit_size - m_p2 - ds));
 
 		m_need_update = true;
 		m_last_changed_frame = Device.dwFrame;
@@ -576,8 +565,8 @@ namespace text_editor
 			return;
 		}
 
-		int old_edit_size = (int)xr_strlen(m_edit_str);
-		for (int i = 0; i < old_edit_size; ++i)
+		size_t old_edit_size = strlen(m_edit_str);
+		for (size_t i = 0; i < old_edit_size; ++i)
 		{
 			if ((m_edit_str[i] == '\n') || (m_edit_str[i] == '\t'))
 			{
@@ -587,30 +576,29 @@ namespace text_editor
 
 		LPSTR buf = (LPSTR)_alloca((m_buffer_size + 1) * sizeof(char));
 
-		strncpy_s(buf, m_buffer_size, m_edit_str, m_p1); // part 1
-		strncpy_s(m_undo_buf, m_buffer_size, m_edit_str + m_p1, m_p2 - m_p1);
+        strncpy_s(buf, m_buffer_size, m_edit_str, m_p1); // part 1
+        strncpy_s(m_undo_buf, m_buffer_size, m_edit_str + m_p1, m_p2 - m_p1);
 
-		int new_size = (int)xr_strlen(m_inserted);
-		if (m_buffer_size - 1 < m_p1 + new_size)
-		{
-			m_inserted[m_buffer_size - 1 - m_p1] = 0;
-			new_size = xr_strlen(m_inserted);
-		}
-		strncpy_s(buf + m_p1, m_buffer_size, m_inserted, _min(new_size, m_buffer_size - m_p1)); // part 2
+        size_t new_size = strlen(m_inserted);
+        if (m_buffer_size - 1 < m_p1 + new_size)
+        {
+            m_inserted[m_buffer_size - 1 - m_p1] = 0;
+            new_size = strlen(m_inserted);
+        }
+        strncpy_s(buf + m_p1, m_buffer_size - m_p1, m_inserted, _min(new_size, m_buffer_size - m_p1)); // part 2
 
-		u8 ds = (m_insert_mode && m_p2 < old_edit_size) ? 1 : 0;
-		strncpy_s(buf + m_p1 + new_size, m_buffer_size, m_edit_str + m_p2 + ds,
-		          _min(old_edit_size - m_p2 - ds, m_buffer_size - m_p1 - new_size)); // part 3
-		buf[m_buffer_size] = 0;
+        const u8 ds = (m_insert_mode && m_p2 < old_edit_size) ? 1 : 0;
+        strncpy_s(buf + m_p1 + new_size, m_buffer_size - (m_p1 + new_size), m_edit_str + m_p2 + ds, _min(old_edit_size - m_p2 - ds, m_buffer_size - m_p1 - new_size)); // part 3
+        buf[m_buffer_size] = 0;
 
-		int szn = m_p1 + new_size + old_edit_size - m_p2 - ds;
-		if (szn < m_buffer_size)
-		{
-			strncpy_s(m_edit_str, m_buffer_size, buf, szn); // part 1+2+3
-			m_edit_str[m_buffer_size - 1] = 0;
-			m_cur_pos = m_p1 + new_size;
-		}
-		clamp_cur_pos();
+        const size_t szn = m_p1 + new_size + old_edit_size - m_p2 - ds;
+        if (szn < m_buffer_size)
+        {
+            strncpy_s(m_edit_str, m_buffer_size, buf, szn); // part 1+2+3
+            m_edit_str[m_buffer_size - 1] = 0;
+            m_cur_pos = m_p1 + new_size;
+        }
+        clamp_cur_pos();
 	}
 
 	//------------------------------------------------
@@ -618,11 +606,10 @@ namespace text_editor
 	void line_edit_control::copy_to_clipboard()
 	{
 		if (m_p1 >= m_p2)
-		{
 			return;
-		}
-		u32 edit_len = xr_strlen(m_edit_str);
-		LPSTR buf = (LPSTR)_alloca((edit_len + 1) * sizeof(char));
+
+		size_t edit_len = strlen(m_edit_str);
+        LPSTR buf = (LPSTR)_alloca((edit_len + 1) * sizeof(char));
 		strncpy_s(buf, edit_len + 1, m_edit_str + m_p1, m_p2 - m_p1);
 		buf[edit_len] = 0;
 		os_clipboard::copy_to_clipboard(buf);
@@ -632,6 +619,7 @@ namespace text_editor
 	void line_edit_control::paste_from_clipboard()
 	{
 		os_clipboard::paste_from_clipboard(m_inserted, m_buffer_size - 1);
+        m_inserted_pos += strlen(m_inserted);
 	}
 
 	void line_edit_control::cut_to_clipboard()
@@ -681,15 +669,15 @@ namespace text_editor
 			{
 				u8 dp = ((m_p1 == m_p2) && m_p1 > 0) ? 1 : 0;
 				strncpy_s(m_undo_buf, m_buffer_size, m_edit_str + m_p1 - dp, m_p2 - m_p1 + dp);
-				strncpy_s(m_edit_str + m_p1 - dp, m_buffer_size, m_edit_str + m_p2, edit_len - m_p2);
-				m_cur_pos = m_p1 - dp;
+                strncpy_s(m_edit_str + m_p1 - dp, m_buffer_size - (m_p1 - dp), m_edit_str + m_p2, edit_len - m_p2);
+                m_cur_pos = m_p1 - dp;
 			}
 			else
 			{
 				u8 dn = ((m_p1 == m_p2) && m_p2 < edit_len) ? 1 : 0;
 				strncpy_s(m_undo_buf, m_buffer_size, m_edit_str + m_p1, m_p2 - m_p1 + dn);
-				strncpy_s(m_edit_str + m_p1, m_buffer_size, m_edit_str + m_p2 + dn, edit_len - m_p2 - dn);
-				m_cur_pos = m_p1;
+                strncpy_s(m_edit_str + m_p1, m_buffer_size - m_p1, m_edit_str + m_p2 + dn, edit_len - m_p2 - dn);
+                m_cur_pos = m_p1;
 			}
 			clamp_cur_pos();
 		}
@@ -787,7 +775,8 @@ namespace text_editor
 
 	void line_edit_control::SwitchKL()
 	{
-		ActivateKeyboardLayout((HKL)HKL_NEXT, 0);
+		// У нас переключение языка находится в xr_input, поэтому здесь не нужно.
+		//ActivateKeyboardLayout((HKL)HKL_NEXT, 0);
 	}
 
 	// -------------------------------------------------------------------------------------------------

@@ -7,8 +7,7 @@
 
 #include "stdafx.h"
 
-#ifndef LINE_EDIT_CONTROL_H_INCLUDED
-#define LINE_EDIT_CONTROL_H_INCLUDED
+#pragma once
 
 namespace text_editor
 {
@@ -86,7 +85,7 @@ namespace text_editor
 
 	private:
 		line_edit_control(line_edit_control const&);
-		line_edit_control const& operator=(line_edit_control const&);
+		line_edit_control const& operator=(line_edit_control const&) = delete;
 
 		void update_key_states();
 		void update_bufs();
@@ -117,7 +116,7 @@ namespace text_editor
 		void create_char_pair(u32 const dik, char c, char c_shift, bool translate = false);
 
 		void clear_inserted();
-		bool empty_inserted();
+		bool empty_inserted() const;
 
 		void add_inserted_text();
 
@@ -128,42 +127,45 @@ namespace text_editor
 	private:
 		enum { DIK_COUNT = 256 };
 
-		Base* m_actions[DIK_COUNT];
+        Base* m_actions[DIK_COUNT]{};
 
-		char* m_edit_str;
-		char* m_undo_buf;
-		char* m_inserted;
-		char* m_buf0;
-		char* m_buf1;
-		char* m_buf2;
-		char* m_buf3;
+        char* m_edit_str{};
+        char* m_undo_buf{};
+        char* m_inserted{};
+        char* m_buf0{};
+        char* m_buf1{};
+        char* m_buf2{};
+        char* m_buf3{};
 
-		enum { MIN_BUF_SIZE = 8, MAX_BUF_SIZE = 4096 };
+        enum
+        {
+            MIN_BUF_SIZE = 8,
+            MAX_BUF_SIZE = 4096
+        };
 
-		int m_buffer_size;
+        int m_buffer_size{};
 
-		int m_cur_pos;
-		int m_select_start;
-		int m_p1;
-		int m_p2;
+        int m_cur_pos{};
+        int m_inserted_pos{};
+        int m_select_start{};
+        int m_p1{};
+        int m_p2{};
 
-		float m_accel;
-		float m_cur_time;
-		float m_rep_time;
-		float m_last_key_time;
-		u32 m_last_frame_time;
-		u32 m_last_changed_frame;
+        float m_accel{};
+        float m_cur_time{};
+        float m_rep_time{};
+        float m_last_key_time{};
+        u32 m_last_frame_time{};
+        u32 m_last_changed_frame{};
 
-		Flags32 m_key_state;
+        Flags32 m_key_state{};
 
-		bool m_hold_mode;
-		bool m_insert_mode;
-		bool m_repeat_mode;
-		bool m_mark;
-		bool m_cursor_view;
-		bool m_need_update;
-		bool m_unselected_mode;
+        bool m_hold_mode{};
+        bool m_insert_mode{};
+        bool m_repeat_mode{};
+        bool m_mark{};
+        bool m_cursor_view{};
+        bool m_need_update{};
+        bool m_unselected_mode{};
 	}; // class line_edit_control
 } // namespace text_editor
-
-#endif // ##ifndef LINE_EDIT_CONTROL_H_INCLUDED

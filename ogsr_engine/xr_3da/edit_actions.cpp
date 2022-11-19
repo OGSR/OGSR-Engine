@@ -84,7 +84,7 @@ namespace text_editor
 		{
 			c = m_char;
 			char c_shift = m_char_shift;
-			string128 buff;
+            unsigned char buff[128];
 			buff[0] = 0;
 
 			/*
@@ -98,13 +98,13 @@ namespace text_editor
 
 			static _locale_t current_locale = _create_locale(LC_ALL, "");
 
-			if (pInput->get_dik_name(m_dik, buff, sizeof(buff)))
+			if (pInput->get_dik_name(m_dik, (char*)buff, sizeof(buff)))
 			{
 				if (_isalpha_l(buff[0], current_locale) || buff[0] == char(-1)) 
 				{
-					_strlwr_l(buff, current_locale);
+                    _strlwr_l((char*)buff, current_locale);
 					c = buff[0];
-					_strupr_l(buff, current_locale);
+                    _strupr_l((char*)buff, current_locale);
 					c_shift = buff[0];
 				}
 			}
