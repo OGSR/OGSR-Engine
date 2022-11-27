@@ -292,6 +292,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
         .def("belt_count", &CScriptGameObject::BeltSize)
         .def("ruck_count", &CScriptGameObject::RuckSize)
         .def("invalidate_inventory", &CScriptGameObject::InvalidateInventory)
+        .def("get_slot", &CScriptGameObject::GetSlot)
 
         // functions for CInventoryItem class
         .def("set_inventory_item_flags", &CScriptGameObject::SetIIFlags)

@@ -1152,6 +1152,14 @@ bool CScriptGameObject::IsInSlot(CScriptGameObject* obj) const
     return inventory_owner->inventory().InSlot(inventory_item);
 }
 
+u8 CScriptGameObject::GetSlot() const
+{
+    CInventoryItem* inventory_item = smart_cast<CInventoryItem*>(&object());
+    ASSERT_FMT(inventory_item, "[%s]: %s not an CInventoryItem", __FUNCTION__, object().Name());
+
+    return inventory_item->GetSlot();
+}
+
 void CScriptGameObject::MoveToRuck(CScriptGameObject* obj)
 {
     CInventoryItem* inventory_item = smart_cast<CInventoryItem*>(&(obj->object()));
