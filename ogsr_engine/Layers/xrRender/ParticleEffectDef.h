@@ -90,6 +90,8 @@ public:
     float m_fCollideResilience;
     float m_fCollideSqrCutoff;
 
+    bool m_copFormat{};
+
 public:
     BOOL SaveActionList(IWriter& F);
     BOOL LoadActionList(IReader& F);

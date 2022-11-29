@@ -236,6 +236,11 @@ bool CPSLibrary::Load(LPCSTR nm)
 
     bool bRes = true;
 
+    bool copFileFormat = strstr(nm, "_cop");
+
+    if (copFileFormat)
+        Msg("cop format used for filr [%s]", nm);
+
     // second generation
     IReader* OBJ;
     OBJ = F->open_chunk(PS_CHUNK_SECONDGEN);
@@ -247,6 +252,8 @@ bool CPSLibrary::Load(LPCSTR nm)
             PS::CPEDef* def = xr_new<PS::CPEDef>();
             if (def->Load(*O))
             {
+                def->m_copFormat = copFileFormat;
+
                 PS::PEDIt it = FindPEDIt(def->Name());
                 if (it != m_PEDs.end())
                 {

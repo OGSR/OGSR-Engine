@@ -83,23 +83,29 @@ public:
     }
     IC pVector operator^(const pVector& b) const { return pVector(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x); }
 };
-// A single particle
-struct Particle
-{
-    enum
-    {
-        ANIMATE_CCW = (1 << 0),
-    };
-    pVector pos; // 12
-    pVector posB; // 12
-    pVector vel; // 12
-    pVector size; // 12
-    pVector rot; // 12   60
-    u32 color; // 4
-    float age; // 4
-    u16 frame; // 2
-    Flags16 flags; // 2
-}; // 		72
+	// A single particle
+	struct Rotation
+	{
+		float x;
+	};
+
+	struct Particle
+	{
+		enum
+		{
+			ANIMATE_CCW = (1 << 0),
+		};
+
+		Rotation rot; // 4
+		pVector pos; // 12
+		pVector posB; // 12
+		pVector vel; // 12
+		pVector size; // 12
+		u32 color; // 4
+		float age; // 4
+		u16 frame; // 2
+		Flags16 flags; // 2
+	}; // = 64
 
 typedef void (*OnBirthParticleCB)(void* owner, u32 param, PAPI::Particle& P, u32 idx);
 typedef void (*OnDeadParticleCB)(void* owner, u32 param, PAPI::Particle& P, u32 idx);
@@ -190,8 +196,7 @@ public:
 
     // action
     virtual ParticleAction* CreateAction(PActionEnum type) = 0;
-    virtual u32 LoadActions(int alist_id, IReader& R) = 0;
-    virtual void SaveActions(int alist_id, IWriter& W) = 0;
+    virtual u32 LoadActions(int alist_id, IReader& R, bool copFormat) = 0;
 };
 
 PARTICLES_API IParticleManager* ParticleManager();

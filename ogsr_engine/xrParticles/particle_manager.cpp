@@ -262,7 +262,7 @@ ParticleAction* CParticleManager::CreateAction(PActionEnum type)
     pa->type = type;
     return pa;
 }
-u32 CParticleManager::LoadActions(int alist_id, IReader& R)
+u32 CParticleManager::LoadActions(int alist_id, IReader& R, bool copFormat)
 {
     // Execute the specified action list.
     ParticleActions* pa = GetActionListPtr(alist_id);
@@ -277,28 +277,10 @@ u32 CParticleManager::LoadActions(int alist_id, IReader& R)
 			if (type == (u32)-1)
 				continue;
 			ParticleAction* act = CreateAction((PActionEnum)type);
+            act->m_copFormat = copFormat;
             act->Load(R);
             pa->append(act);
         }
     }
     return pa->size();
-}
-void CParticleManager::SaveActions(int alist_id, IWriter& W)
-{
-    // Execute the specified action list.
-    ParticleActions* pa = GetActionListPtr(alist_id);
-    VERIFY(pa);
-    pa->lock();
-    W.w_u32(pa->size());
-    for (PAVecIt it = pa->begin(); it != pa->end(); it++)
-	{
-		if (!(*it)) {
-			W.w_u32((u32)-1);
-			continue;
-		}
-
-		W.w_u32((*it)->type);
-        (*it)->Save(W);
-	}
-    pa->unlock();
 }
