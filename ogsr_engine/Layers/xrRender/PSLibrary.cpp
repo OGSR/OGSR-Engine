@@ -41,20 +41,38 @@ void CPSLibrary::LoadAll()
     FS.file_list(flist, _game_data_, FS_ListFiles | FS_RootOnly, "*particles*.xr");
     Msg("[%s] count of *particles*.xr files: [%u]", __FUNCTION__, flist.size());
 
-    for (const auto& file : flist)
+    //for (const auto& file : flist)
+    //{
+    //    string_path fn;
+    //    FS.update_path(fn, _game_data_, file.name.c_str());
+
+    //    if (!FS.exist(fn))
+    //    {
+    //        Msg("Can't find file: '%s'", fn);
+    //    }
+
+    //    if (!Load(fn))
+    //    {
+    //        Msg("CPSLibrary: Cannot load file: '%s'", fn);
+    //    }
+    //}
+
+    string_path fn;
+
+    FS.update_path(fn, _game_data_, "particles_cop.xr");
+    if (FS.exist(fn))
     {
-        string_path fn;
-        FS.update_path(fn, _game_data_, file.name.c_str());
+        Msg("Load [%s]", fn);
 
-        if (!FS.exist(fn))
-        {
-            Msg("Can't find file: '%s'", fn);
-        }
+        Load(fn);
+    }
 
-        if (!Load(fn))
-        {
-            Msg("CPSLibrary: Cannot load file: '%s'", fn);
-        }
+    FS.update_path(fn, _game_data_, "particles.xr");
+    if (FS.exist(fn))
+    {
+        Msg("Load [%s]", fn);
+
+        Load(fn);
     }
 
     std::sort(m_PEDs.begin(), m_PEDs.end(), ped_sort_pred);
@@ -239,7 +257,7 @@ bool CPSLibrary::Load(LPCSTR nm)
     bool copFileFormat = strstr(nm, "_cop");
 
     if (copFileFormat)
-        Msg("cop format used for filr [%s]", nm);
+        Msg("cop format used for file [%s]", nm);
 
     // second generation
     IReader* OBJ;
@@ -254,14 +272,33 @@ bool CPSLibrary::Load(LPCSTR nm)
             {
                 def->m_copFormat = copFileFormat;
 
-                PS::PEDIt it = FindPEDIt(def->Name());
-                if (it != m_PEDs.end())
+                //PS::PEDIt it = FindPEDIt(def->Name());
+                //if (it != m_PEDs.end())
+                //{
+                //    Msg("CPSLibrary: Duplicate ParticleEffect: %s. Last declared will be used.", def->Name());
+                //    xr_delete(*it);
+                //    m_PEDs.erase(it);
+                //}
+
+                bool found = false;
+
+                for (PS::PEDIt it = m_PEDs.begin(); it != m_PEDs.end(); it++)
                 {
-                    Msg("CPSLibrary: Duplicate ParticleEffect: %s. Last declated will be used.", def->Name());
-                    xr_delete(*it);
-                    m_PEDs.erase(it);
+                    if (0 == xr_strcmp((*it)->Name(), def->Name()))
+                    {
+                        found = true;
+                        break;
+                    }
                 }
-                m_PEDs.push_back(def);
+                
+                if (found)
+                {
+                    xr_delete(def);
+                }
+                else
+                {
+                    m_PEDs.push_back(def);
+                }
             }
             else
             {
@@ -285,14 +322,33 @@ bool CPSLibrary::Load(LPCSTR nm)
             PS::CPGDef* def = xr_new<PS::CPGDef>();
             if (def->Load(*O))
             {
-                PS::PGDIt it = FindPGDIt(def->m_Name.c_str());
-                if (it != m_PGDs.end())
+                //PS::PGDIt it = FindPGDIt(def->m_Name.c_str());
+                //if (it != m_PGDs.end())
+                //{
+                //    Msg("CPSLibrary: Duplicate ParticleGroup: %s. Last declared will be used.", def->m_Name.c_str());
+                //    xr_delete(*it);
+                //    m_PGDs.erase(it);
+                //}
+
+                bool found = false;
+
+                for (PS::PGDIt it = m_PGDs.begin(); it != m_PGDs.end(); it++)
                 {
-                    Msg("CPSLibrary: Duplicate ParticleGroup: %s. Last declated will be used.", def->m_Name.c_str());
-                    xr_delete(*it);
-                    m_PGDs.erase(it);
+                    if (0 == xr_strcmp((*it)->m_Name, def->m_Name))
+                    {
+                        found = true;
+                        break;
+                    }
                 }
-                m_PGDs.push_back(def);
+                
+                if (found)
+                {
+                    xr_delete(def);
+                }
+                else
+                {
+                    m_PGDs.push_back(def);
+                }
             }
             else
             {
