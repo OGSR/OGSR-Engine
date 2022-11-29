@@ -228,7 +228,9 @@ void CParticleGroup::SItem::StopRelatedChild(u32 idx)
 void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, LPCSTR nm, PAPI::Particle& m)
 {
     CParticleEffect* C = static_cast<CParticleEffect*>(RImplementation.model_CreatePE(nm));
+
     C->SetHudMode(emitter->GetHudMode());
+
     if (!C->IsLooped())
     {
         Fmatrix M;
