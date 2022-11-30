@@ -301,6 +301,7 @@ bool CUIInventoryWnd::TryUseItem(PIItem itm)
         EatItem(itm);
         return true;
     }
+
     return false;
 }
 

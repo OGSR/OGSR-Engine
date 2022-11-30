@@ -460,12 +460,17 @@ bool CUIInventoryWnd::OnItemDrop(CUICellItem* itm)
     return true;
 }
 
+#include "../../xr_3da/xr_input.h"
+
 bool CUIInventoryWnd::OnItemDbClick(CUICellItem* itm)
 {
     auto __item = (PIItem)itm->m_pData;
+
     auto old_owner = itm->OwnerList();
 
-    if (TryUseItem(__item))
+    bool shift = !!pInput->iGetAsyncKeyState(DIK_LSHIFT) || !!pInput->iGetAsyncKeyState(DIK_RSHIFT);
+
+    if (!shift && TryUseItem(__item))
         return true;
 
     auto t_old = GetType(old_owner);
@@ -482,6 +487,7 @@ bool CUIInventoryWnd::OnItemDbClick(CUICellItem* itm)
         // Если его нету, то принудительно займет первый слот,
         // указанный в списке.
         auto slots = __item->GetSlots();
+
         for (u8 i = 0; i < (u8)slots.size(); ++i)
         {
             __item->SetSlot(slots[i]);
@@ -489,6 +495,7 @@ bool CUIInventoryWnd::OnItemDbClick(CUICellItem* itm)
                 return true;
         }
         __item->SetSlot(slots.size() ? slots[0] : NO_ACTIVE_SLOT);
+
         if (!ToSlot(itm, false))
             if (!ToBelt(itm, false))
                 ToSlot(itm, true);
