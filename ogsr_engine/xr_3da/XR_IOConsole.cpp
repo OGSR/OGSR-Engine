@@ -221,21 +221,21 @@ CConsole::~CConsole()
 {
 	xr_delete(m_hShader_back);
 	xr_delete(m_editor);
-	Destroy();
+    Execute("cfg_save");
+
+    xr_delete(pFont);
+    xr_delete(pFont2);
+    Commands.clear();
+
+    if (g_console_show_always)
+        Device.seqRender.Remove(this);
 	Device.seqResolutionChanged.Remove(this);
 }
 
-void CConsole::Destroy()
-{
-    Execute("cfg_save");
-
-	xr_delete(pFont);
-	xr_delete(pFont2);
-	Commands.clear();
-
-	if (g_console_show_always)
-        Device.seqRender.Remove(this);
-}
+//void CConsole::Destroy()
+//{
+//    
+//}
 
 void CConsole::AddCommand(IConsole_Command* cc)
 {

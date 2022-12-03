@@ -111,7 +111,7 @@ public:
 	CConsole();
 	virtual ~CConsole();
 	virtual void Initialize();
-	virtual void Destroy();
+	//virtual void Destroy();
 
 	virtual void OnRender();
 	virtual void OnFrame();

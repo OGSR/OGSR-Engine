@@ -136,7 +136,7 @@ void destroySettings()
 }
 void destroyConsole()
 {
-    Console->Destroy();
+    //Console->Destroy();
     xr_delete(Console);
 }
 void destroyEngine()
