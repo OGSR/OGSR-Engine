@@ -403,8 +403,22 @@ int luabind::detail::class_rep::operator_dispatcher(lua_State* L)
 		}
 	}
 
+	object_rep* obj = static_cast<object_rep*>(lua_touserdata(L, 1));
+	class_rep* crep = obj->crep();
+
+	//Дефолтный __tostring
+	auto ptr = lua_tostring(L, lua_upvalueindex(1));
+	if (ptr && std::strcmp(ptr, "__tostring") == 0)
+	{
+		lua_pop(L, lua_gettop(L));
+		lua_pushstring(L, crep->name());
+		return 1;
+	}
+
 	lua_pop(L, lua_gettop(L));
-	lua_pushstring(L, "No such operator defined");
+	string512 err_str;
+	xr_sprintf(err_str, "! No such operator [%s] defined in class [%s]", ptr, crep->name());
+	lua_pushstring(L, err_str);
 	lua_error(L);
 
 	return 0;

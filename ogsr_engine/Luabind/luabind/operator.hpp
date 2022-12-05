@@ -290,10 +290,17 @@ namespace luabind {
     }
 
     template<class T>
-    T const& tostring_operator(T const& x)
+    std::string tostring_operator(T const& x)
     {
-        return x;
-    };
+#ifdef LUABIND_NO_STRINGSTREAM
+        std::strstream s;
+        s << x << std::ends;
+#else
+        std::stringstream s;
+        s << x;
+#endif
+        return s.str();
+    }
     
     LUABIND_UNARY_OPERATOR(tostring, tostring_operator, tostring)
     LUABIND_UNARY_OPERATOR(unm, -, operator-)
