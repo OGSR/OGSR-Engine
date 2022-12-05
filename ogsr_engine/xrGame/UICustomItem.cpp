@@ -85,7 +85,9 @@ void CUICustomItem::Render(const Fvector2& pos_ns, u32 color, float angle)
     hp.set(0.5f / ts.x, 0.5f / ts.y);
 
     if (!uFlags.test(flValidRect))
+    {
         SetRect(0, 0, ts.x, ts.y);
+    }
 
     if (!uFlags.test(flValidOriginalRect))
     {

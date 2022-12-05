@@ -33,21 +33,26 @@ public:
     virtual ~CUIStaticItem();
 
     void SetAlphaRef(int val) { alpha_ref = val; };
+
     virtual void CreateShader(const char* tex, const char* sh = "hud\\default");
-    virtual void SetShader(const ui_shader& sh);
+
     virtual void SetTextureColor(u32 color) { SetColor(color); }
     virtual u32 GetTextureColor() const { return GetColor(); }
+
     virtual void SetOriginalRect(const Frect& r)
     {
         iOriginalRect = r;
         uFlags.set(flValidOriginalRect, TRUE);
     }
+
     virtual void SetOriginalRectEx(const Frect& r)
     {
         iOriginalRect = r;
         uFlags.set(flValidOriginalRect, TRUE);
         SetRect(0, 0, r.width(), r.height());
     }
+
+    void ResetOriginalRect() { uFlags.set(flValidOriginalRect, FALSE); }
 
     void Init(LPCSTR tex, LPCSTR sh, float left, float top, u32 align);
 
@@ -72,6 +77,8 @@ public:
     IC void SetColor(Fcolor clr) { dwColor = clr.get(); }
     IC u32 GetColor() const { return dwColor; }
     IC u32& GetColorRef() { return dwColor; }
+
+    virtual void SetShader(const ui_shader& sh);
     ui_shader& GetShader() { return hShader; }
 };
 

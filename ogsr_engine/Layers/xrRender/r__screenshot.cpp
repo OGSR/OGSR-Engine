@@ -9,7 +9,7 @@
 #include <d3dx/d3dx10tex.h>
 #endif //	USE_DX10
 
-#define GAMESAVE_SIZE 128
+#define GAMESAVE_SIZE 768
 
 IC u32 convert(float c)
 {

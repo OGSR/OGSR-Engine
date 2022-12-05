@@ -365,6 +365,7 @@ void CMainMenu::OnFrame()
     if (m_Flags.test(flGameSaveScreenshot) && Device.dwFrame > m_screenshotFrame)
     {
         m_Flags.set(flGameSaveScreenshot, FALSE);
+
         ::Render->Screenshot(IRender_interface::SM_FOR_GAMESAVE, m_screenshot_name);
 
         if (g_pGameLevel && m_Flags.test(flActive))
