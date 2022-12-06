@@ -24,6 +24,8 @@ CWeaponShotgun::~CWeaponShotgun(void)
     HUD_SOUND::DestroySound(m_sndAddCartridgeEmpty);
     HUD_SOUND::DestroySound(m_sndClose);
     HUD_SOUND::DestroySound(m_sndCloseEmpty);
+    HUD_SOUND::DestroySound(m_sndBreech);
+    HUD_SOUND::DestroySound(m_sndBreechJammed);
 }
 
 void CWeaponShotgun::net_Destroy() { inherited::net_Destroy(); }
@@ -49,10 +51,20 @@ void CWeaponShotgun::Load(LPCSTR section)
         HUD_SOUND::LoadSound(section, "snd_close_weapon", m_sndClose, m_eSoundClose);
         if (pSettings->line_exist(section, "snd_close_weapon_empty"))
             HUD_SOUND::LoadSound(section, "snd_close_weapon_empty", m_sndCloseEmpty, m_eSoundClose);
+        if (pSettings->line_exist(section, "snd_breechblock"))
+            HUD_SOUND::LoadSound(section, "snd_breechblock", m_sndBreech, m_eSoundClose);
+        if (pSettings->line_exist(section, "snd_jam"))
+            HUD_SOUND::LoadSound(section, "snd_jam", m_sndBreechJammed, m_eSoundClose);
     }
 }
 
-void CWeaponShotgun::OnShot() { inherited::OnShot(); }
+void CWeaponShotgun::OnShot()
+{
+    inherited::OnShot();
+
+    if (/*!m_sndBreechJammed.sounds.empty() ||*/ !m_sndBreech.sounds.empty())
+        PlaySound(/*(IsMisfire() && !m_sndBreechJammed.sounds.empty()) ? m_sndBreechJammed :*/ m_sndBreech, get_LastFP());
+}
 
 void CWeaponShotgun::Fire2Start()
 {
@@ -223,6 +235,10 @@ void CWeaponShotgun::UpdateSounds()
         m_sndClose.set_position(get_LastFP());
     if (m_sndCloseEmpty.playing())
         m_sndCloseEmpty.set_position(get_LastFP());
+    if (m_sndBreech.playing())
+        m_sndBreech.set_position(get_LastFP());
+    if (m_sndBreechJammed.playing())
+        m_sndBreechJammed.set_position(get_LastFP());
 }
 
 #ifdef DUPLET_STATE_SWITCH
@@ -295,8 +311,8 @@ void CWeaponShotgun::OnAnimationEnd(u32 state)
         if (IsMisfire())
         {
             SwitchMisfire(false);
-            if (iAmmoElapsed > 0)
-                SetAmmoElapsed(iAmmoElapsed - 1);
+            if (iAmmoElapsed > 0) //
+                SetAmmoElapsed(iAmmoElapsed - 1); //
         }
         m_sub_state = eSubstateReloadBegin;
         SwitchState(eIdle);
@@ -506,7 +522,6 @@ void CWeaponShotgun::TryReload()
             return;
         }
     }
-    SwitchState(eIdle);
 }
 
 void CWeaponShotgun::ReloadMagazine()
@@ -533,6 +548,8 @@ void CWeaponShotgun::StopHUDSounds()
     HUD_SOUND::StopSound(m_sndAddCartridgeEmpty);
     HUD_SOUND::StopSound(m_sndClose);
     HUD_SOUND::StopSound(m_sndCloseEmpty);
+    HUD_SOUND::StopSound(m_sndBreech);
+    HUD_SOUND::StopSound(m_sndBreechJammed);
 
     inherited::StopHUDSounds();
 }
