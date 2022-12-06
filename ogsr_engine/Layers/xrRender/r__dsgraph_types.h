@@ -2,7 +2,8 @@
 
 #include "../../xrCore/fixedmap.h"
 
-#define render_alloc xalloc
+#define render_alloc std::allocator
+
 typedef xr_allocator render_allocator;
 
 class dxRender_Visual;

@@ -2,72 +2,13 @@
 
 using std::swap; // TODO: Убрать!
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-template <class T>
-struct xalloc
-{
-    typedef T value_type;
-    typedef std::size_t size_type;
-    typedef std::ptrdiff_t difference_type;
-    typedef value_type& reference;
-    typedef value_type const& const_reference;
-    typedef value_type* pointer;
-    typedef value_type const* const_pointer;
-    template <class U>
-    struct rebind
-    {
-        typedef xalloc<U> other;
-    };
-
-    xalloc() noexcept = default;
-    xalloc(const xalloc&) noexcept = default;
-    template <class U>
-    xalloc(const xalloc<U>&) noexcept
-    {}
-    xalloc select_on_container_copy_construction() const { return *this; }
-    void deallocate(T* p, size_type) { xr_free(p); }
-
-    [[nodiscard]] T* allocate(size_type count) { return static_cast<T*>(Memory.mem_alloc(count * sizeof(T))); }
-    [[nodiscard]] T* allocate(size_type count, const void*) { return allocate(count); }
-
-    using propagate_on_container_copy_assignment = std::true_type;
-    using propagate_on_container_move_assignment = std::true_type;
-    using propagate_on_container_swap = std::true_type;
-    using is_always_equal = std::true_type;
-    template <class U, class... Args>
-    void construct(U* p, Args&&... args)
-    {
-        ::new (p) U(std::forward<Args>(args)...);
-    }
-    template <class U>
-    void destroy(U* p) noexcept
-    {
-        p->~U();
-    }
-
-    size_type max_size() const noexcept { return (PTRDIFF_MAX / sizeof(value_type)); }
-    pointer address(reference x) const { return &x; }
-    const_pointer address(const_reference x) const { return &x; }
-};
-
-template <class T1, class T2>
-bool operator==(const xalloc<T1>&, const xalloc<T2>&) noexcept
-{
-    return true;
-}
-template <class T1, class T2>
-bool operator!=(const xalloc<T1>&, const xalloc<T2>&) noexcept
-{
-    return false;
-}
-//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct xr_allocator
 {
     template <typename T>
     struct helper
     {
-        typedef xalloc<T> result;
+        typedef std::allocator<T> result;
     };
 
     static void* alloc(const u32& n) { return Memory.mem_alloc(n); }
@@ -79,9 +20,9 @@ struct xr_allocator
 };
 
 // string(char)
-using xr_string = std::basic_string<char, std::char_traits<char>, xalloc<char>>;
+using xr_string = std::basic_string<char, std::char_traits<char>, std::allocator<char>>;
 
-template <typename T, typename allocator = xalloc<T>>
+template <typename T, typename allocator = std::allocator<T>>
 using xr_vector = std::vector<T, allocator>;
 
 template <typename T>
@@ -97,28 +38,28 @@ void clear_and_reserve(xr_vector<T>& vec)
     }
 }
 
-template <typename T, typename allocator = xalloc<T>>
+template <typename T, typename allocator = std::allocator<T>>
 using xr_deque = std::deque<T, allocator>;
 
 template <typename T, class C = xr_deque<T>>
 using xr_stack = std::stack<T, C>;
 
-template <typename T, typename allocator = xalloc<T>>
+template <typename T, typename allocator = std::allocator<T>>
 using xr_list = std::list<T, allocator>;
 
-template <typename K, class P = std::less<K>, typename allocator = xalloc<K>>
+template <typename K, class P = std::less<K>, typename allocator = std::allocator<K>>
 using xr_set = std::set<K, P, allocator>;
 
-template <typename K, class P = std::less<K>, typename allocator = xalloc<K>>
+template <typename K, class P = std::less<K>, typename allocator = std::allocator<K>>
 using xr_multiset = std::multiset<K, P, allocator>;
 
-template <typename K, class V, class P = std::less<K>, typename allocator = xalloc<std::pair<const K, V>>>
+template <typename K, class V, class P = std::less<K>, typename allocator = std::allocator<std::pair<const K, V>>>
 using xr_map = std::map<K, V, P, allocator>;
 
-template <typename K, class V, class P = std::less<K>, typename allocator = xalloc<std::pair<const K, V>>>
+template <typename K, class V, class P = std::less<K>, typename allocator = std::allocator<std::pair<const K, V>>>
 using xr_multimap = std::multimap<K, V, P, allocator>;
 
-template <typename K, typename V, class _Hasher = std::hash<K>, class _Keyeq = std::equal_to<K>, class _Alloc = xalloc<std::pair<const K, V>>>
+template <typename K, typename V, class _Hasher = std::hash<K>, class _Keyeq = std::equal_to<K>, class _Alloc = std::allocator<std::pair<const K, V>>>
 using xr_unordered_map = std::unordered_map<K, V, _Hasher, _Keyeq, _Alloc>;
 
 #define mk_pair std::make_pair // TODO: Везде заменить, а это убрать.
