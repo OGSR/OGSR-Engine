@@ -437,15 +437,6 @@ public:
     virtual ~IReader() {}
 
 protected:
-    IC u32 correction(u32 p)
-    {
-        if (p % 16)
-        {
-            return ((p % 16) + 1) * 16 - p;
-        }
-        return 0;
-    }
-
     u32 advance_term_string();
 
 public:
