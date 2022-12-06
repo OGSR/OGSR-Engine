@@ -75,23 +75,21 @@ void dxFontRender::OnRender(CGameFont& owner)
                 float X = float((PS.x));
                 float Y = float((PS.y));
 
-                float S = PS.height * g_current_font_scale.y * owner.GetHeightScale();
+                float S = PS.height * g_current_font_scale.y * owner.GetHeightScale(); // g_current_font_scale это еще один скейлинг шрифтов для pp эффектов похоже
 
                 float Y2 = Y + S;
                 float fSize = 0;
 
                 if (PS.align)
-                    fSize = owner.SizeOf_(PS.string);
+                    fSize = owner.SizeOf_(PS.string); // уже с  * owner.GetWidthScale()
 
                 switch (PS.align)
                 {
                 case CGameFont::alCenter:
-                    X -= (iFloor(fSize * 0.5f)) * g_current_font_scale.x * owner.GetWidthScale();
-                    ;
+                    X -= (iFloor(fSize * 0.5f)) * g_current_font_scale.x;
                     break;
                 case CGameFont::alRight:
-                    X -= iFloor(fSize) * g_current_font_scale.x * owner.GetWidthScale();
-                    ;
+                    X -= iFloor(fSize) * g_current_font_scale.x;
                     break;
                 }
 
