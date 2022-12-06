@@ -1636,9 +1636,6 @@
     <Filter Include="Core\Client\Objects\zones\ScriptZone">
       <UniqueIdentifier>{d79f70d3-fd7e-47c1-b6bc-9416253ec191}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Client\Objects\zones\TeamBaseZone">
-      <UniqueIdentifier>{5287b2df-d9e1-4d37-a487-20e0f066064a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Client\Objects\zones\TorridZone">
       <UniqueIdentifier>{1efac8fd-63e6-41d0-bcc9-d206ac3c098c}</UniqueIdentifier>
     </Filter>
@@ -1686,9 +1683,6 @@
     </Filter>
     <Filter Include="Core\Client\Particles">
       <UniqueIdentifier>{2c8a7a52-126a-4222-bfe0-fb0cecb7778c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core\Client\Spectator">
-      <UniqueIdentifier>{0290c1df-dbfc-4ca1-97e4-a7fa48173f7b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\Common">
       <UniqueIdentifier>{3c431256-4aff-4ffb-98f8-b9de32037b7d}</UniqueIdentifier>
@@ -4761,9 +4755,6 @@
     <ClInclude Include="script_zone.h">
       <Filter>Core\Client\Objects\zones\ScriptZone</Filter>
     </ClInclude>
-    <ClInclude Include="team_base_zone.h">
-      <Filter>Core\Client\Objects\zones\TeamBaseZone</Filter>
-    </ClInclude>
     <ClInclude Include="TorridZone.h">
       <Filter>Core\Client\Objects\zones\TorridZone</Filter>
     </ClInclude>
@@ -4823,9 +4814,6 @@
     </ClInclude>
     <ClInclude Include="ParticlesObject.h">
       <Filter>Core\Client\Particles</Filter>
-    </ClInclude>
-    <ClInclude Include="Spectator.h">
-      <Filter>Core\Client\Spectator</Filter>
     </ClInclude>
     <ClInclude Include="date_time.h">
       <Filter>Core\Common\DateTime</Filter>
@@ -7888,9 +7876,6 @@
     <ClCompile Include="script_zone_script.cpp">
       <Filter>Core\Client\Objects\zones\ScriptZone</Filter>
     </ClCompile>
-    <ClCompile Include="team_base_zone.cpp">
-      <Filter>Core\Client\Objects\zones\TeamBaseZone</Filter>
-    </ClCompile>
     <ClCompile Include="TorridZone.cpp">
       <Filter>Core\Client\Objects\zones\TorridZone</Filter>
     </ClCompile>
@@ -7980,9 +7965,6 @@
     </ClCompile>
     <ClCompile Include="ParticlesObject.cpp">
       <Filter>Core\Client\Particles</Filter>
-    </ClCompile>
-    <ClCompile Include="Spectator.cpp">
-      <Filter>Core\Client\Spectator</Filter>
     </ClCompile>
     <ClCompile Include="xrGame.cpp">
       <Filter>Core\Common</Filter>

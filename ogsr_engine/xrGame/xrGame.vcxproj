@@ -1352,7 +1352,6 @@
     <ClInclude Include="MosquitoBald.h" />
     <ClInclude Include="RadioactiveZone.h" />
     <ClInclude Include="script_zone.h" />
-    <ClInclude Include="team_base_zone.h" />
     <ClInclude Include="TorridZone.h" />
     <ClInclude Include="ZoneVisual.h" />
     <ClInclude Include="space_restrictor.h" />
@@ -1373,7 +1372,6 @@
     <ClInclude Include="DelayedActionFuse.h" />
     <ClInclude Include="InventoryBox.h" />
     <ClInclude Include="ParticlesObject.h" />
-    <ClInclude Include="Spectator.h" />
     <ClInclude Include="date_time.h" />
     <ClInclude Include="NET_Queue.h" />
     <ClInclude Include="..\COMMON_AI\xrMessages.h" />
@@ -2293,7 +2291,6 @@
     <ClCompile Include="RadioactiveZone.cpp" />
     <ClCompile Include="script_zone.cpp" />
     <ClCompile Include="script_zone_script.cpp" />
-    <ClCompile Include="team_base_zone.cpp" />
     <ClCompile Include="TorridZone.cpp" />
     <ClCompile Include="ZoneVisual.cpp" />
     <ClCompile Include="space_restrictor.cpp" />
@@ -2324,7 +2321,6 @@
     <ClCompile Include="DelayedActionFuse.cpp" />
     <ClCompile Include="InventoryBox.cpp" />
     <ClCompile Include="ParticlesObject.cpp" />
-    <ClCompile Include="Spectator.cpp" />
     <ClCompile Include="xrGame.cpp" />
     <ClCompile Include="console_commands.cpp" />
     <ClCompile Include="date_time.cpp" />

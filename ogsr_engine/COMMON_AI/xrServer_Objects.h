@@ -166,13 +166,6 @@ virtual void __stdcall assign_shapes(CShapeData::shape_def* shapes, u32 cnt);
 add_to_type_list(CSE_Shape)
 #define script_type_list save_type_list(CSE_Shape)
 
-    SERVER_ENTITY_DECLARE_BEGIN(CSE_Spectator, CSE_Abstract) CSE_Spectator(LPCSTR caSection);
-virtual ~CSE_Spectator();
-virtual u8 g_team();
-SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_Spectator)
-#define script_type_list save_type_list(CSE_Spectator)
-
     SERVER_ENTITY_DECLARE_BEGIN(CSE_Temporary, CSE_Abstract) u32 m_tNodeID;
 CSE_Temporary(LPCSTR caSection);
 virtual ~CSE_Temporary();

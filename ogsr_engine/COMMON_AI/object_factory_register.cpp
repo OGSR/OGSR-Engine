@@ -123,7 +123,6 @@
 #include "radioactivezone.h"
 #include "level_changer.h"
 #include "script_zone.h"
-#include "team_base_zone.h"
 #include "torridZone.h"
 #include "ZoneVisual.h"
 #include "hairszone.h"
@@ -178,12 +177,8 @@ void CObjectFactory::register_classes()
 
     // server entities
     add<CSE_ALifeGroupTemplate<CSE_ALifeMonsterBase>>(CLSID_AI_FLESH_GROUP, "flesh_group");
-    //	add<CSE_SpawnGroup>											(CLSID_AI_SPAWN_GROUP			,"spawn_group");
     add<CSE_ALifeGraphPoint>(CLSID_AI_GRAPH, "graph_point");
     add<CSE_ALifeOnlineOfflineGroup>(CLSID_ONLINE_OFFLINE_GROUP, "online_offline_group");
-
-    // client and server entities
-    ADD(CSpectator, CSE_Spectator, CLSID_SPECTATOR, "spectator");
 
     ADD(CAI_Flesh, CSE_ALifeMonsterBase, CLSID_AI_FLESH, "flesh");
     ADD(CChimera, CSE_ALifeMonsterBase, CLSID_AI_CHIMERA, "chimera");
@@ -307,7 +302,7 @@ void CObjectFactory::register_classes()
     ADD(CLevelChanger, CSE_ALifeLevelChanger, CLSID_LEVEL_CHANGER, "level_changer");
     ADD(CScriptZone, CSE_ALifeSpaceRestrictor, CLSID_SCRIPT_ZONE, "script_zone");
     ADD(CSmartZone, CSE_ALifeSmartZone, CLSID_SMART_ZONE, "smart_zone");
-    ADD(CTeamBaseZone, CSE_ALifeTeamBaseZone, CLSID_Z_TEAM_BASE, "team_base_zone");
+    
     ADD(CTorridZone, CSE_ALifeTorridZone, CLSID_Z_TORRID, "torrid_zone");
     ADD(CSpaceRestrictor, CSE_ALifeSpaceRestrictor, CLSID_SPACE_RESTRICTOR, "space_restrictor");
     ADD(CAmebaZone, CSE_ALifeZoneVisual, CLSID_Z_AMEBA, "ameba_zone");
@@ -328,6 +323,7 @@ void CObjectFactory::register_classes()
     ADD(CProjector, CSE_ALifeObjectProjector, CLSID_OBJECT_PROJECTOR, "projector");
     ADD(CWeaponMounted, CSE_ALifeMountedWeapon, CLSID_OBJECT_W_MOUNTED, "wpn_mounted");
     ADD(CWeaponStatMgun, CSE_ALifeStationaryMgun, CLSID_OBJECT_W_STATMGUN, "wpn_stat_mgun");
+
     //	ADD(CTrigger				,CSE_Trigger					,CLSID_OBJECT_TRIGGER			,"trigger");
 
     // entity

@@ -6,7 +6,7 @@
 #include "..\xr_3da\igame_level.h"
 #include "clsid_game.h"
 #include "Car.h"
-#include "Spectator.h"
+#include "ui/UIMessagesWindow.h"
 
 CFontManager::CFontManager()
 {
@@ -226,7 +226,7 @@ bool need_render_hud()
     if (A && (!A->HUDview() || !A->g_Alive()))
         return false;
 
-    if (smart_cast<CCar*>(O) || smart_cast<CSpectator*>(O))
+    if (smart_cast<CCar*>(O))
         return false;
 
     return true;

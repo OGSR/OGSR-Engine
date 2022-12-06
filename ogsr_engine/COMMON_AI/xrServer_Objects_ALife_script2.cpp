@@ -36,5 +36,3 @@ void CSE_ALifeMountedWeapon::script_register(lua_State* L)
 {
     module(L)[luabind_class_dynamic_alife1(CSE_ALifeMountedWeapon, "cse_alife_mounted_weapon", CSE_ALifeDynamicObjectVisual)];
 }
-
-void CSE_ALifeTeamBaseZone::script_register(lua_State* L) { module(L)[luabind_class_dynamic_alife1(CSE_ALifeTeamBaseZone, "cse_alife_team_base_zone", CSE_ALifeSpaceRestrictor)]; }

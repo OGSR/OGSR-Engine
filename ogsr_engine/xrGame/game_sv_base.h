@@ -104,7 +104,6 @@ public:
     u32 getRPcount(u16 team_idx);
     // Signals
     virtual void signal_Syncronize();
-    virtual void assign_RP(CSE_Abstract* E, game_PlayerState* ps_who);
     virtual bool IsPointFreezed(RPoint* rp);
     virtual void SetPointFreezed(RPoint* rp);
 

@@ -114,19 +114,6 @@ void xrServer::client_Destroy(IClient* C)
     {
         if (net_Players[I] == C)
         {
-            // has spectator ?
-            CSE_Abstract* pOwner = ((xrClientData*)C)->owner;
-            CSE_Spectator* pS = smart_cast<CSE_Spectator*>(pOwner);
-            if (pS)
-            {
-                NET_Packet P;
-                P.w_begin(M_EVENT);
-                P.w_u32(Level().timeServer()); // Device.TimerAsync());
-                P.w_u16(GE_DESTROY);
-                P.w_u16(pS->ID);
-                SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
-            };
-
             {
                 DelayedPacket pp;
                 pp.SenderID = C->ID;

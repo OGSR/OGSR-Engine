@@ -1187,29 +1187,6 @@ void CSE_ALifeStationaryMgun::STATE_Read(NET_Packet& tNetPacket, u16 size) { inh
 void CSE_ALifeStationaryMgun::STATE_Write(NET_Packet& tNetPacket) { inherited::STATE_Write(tNetPacket); }
 
 ////////////////////////////////////////////////////////////////////////////
-// CSE_ALifeTeamBaseZone
-////////////////////////////////////////////////////////////////////////////
-CSE_ALifeTeamBaseZone::CSE_ALifeTeamBaseZone(LPCSTR caSection) : CSE_ALifeSpaceRestrictor(caSection) { m_team = 0; }
-
-CSE_ALifeTeamBaseZone::~CSE_ALifeTeamBaseZone() {}
-
-void CSE_ALifeTeamBaseZone::STATE_Read(NET_Packet& tNetPacket, u16 size)
-{
-    inherited::STATE_Read(tNetPacket, size);
-    tNetPacket.r_u8(m_team);
-}
-
-void CSE_ALifeTeamBaseZone::STATE_Write(NET_Packet& tNetPacket)
-{
-    inherited::STATE_Write(tNetPacket);
-    tNetPacket.w_u8(m_team);
-}
-
-void CSE_ALifeTeamBaseZone::UPDATE_Read(NET_Packet& tNetPacket) { inherited::UPDATE_Read(tNetPacket); }
-
-void CSE_ALifeTeamBaseZone::UPDATE_Write(NET_Packet& tNetPacket) { inherited::UPDATE_Write(tNetPacket); }
-
-////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeSmartZone
 ////////////////////////////////////////////////////////////////////////////
 
