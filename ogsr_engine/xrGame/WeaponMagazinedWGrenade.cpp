@@ -638,7 +638,7 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle()
     {
         if (IsZoomed())
         {
-            if (IsRotatingToZoom())
+            if (IsRotatingToZoom() && !IsRotatingFromZoom())
             {
                 string128 guns_aim_anm;
                 xr_strconcat(guns_aim_anm, "anm_idle_aim_start",
@@ -676,7 +676,7 @@ void CWeaponMagazinedWGrenade::PlayAnimIdle()
         }
         else
         {
-            if (IsRotatingFromZoom())
+            if (IsRotatingFromZoom() && !IsRotatingToZoom())
             {
                 string128 guns_aim_anm;
                 xr_strconcat(guns_aim_anm, "anm_idle_aim_end",

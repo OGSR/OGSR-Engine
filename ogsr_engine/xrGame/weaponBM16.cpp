@@ -233,7 +233,7 @@ void CWeaponBM16::PlayAnimIdle()
 
     if (IsZoomed())
     {
-        if (IsRotatingToZoom())
+        if (IsRotatingToZoom() && !IsRotatingFromZoom())
         {
             string128 guns_bm_aim_anm;
             xr_strconcat(guns_bm_aim_anm, "anm_idle_aim_start", IsMisfire() ? "_jammed_" : "_", std::to_string(m_magazine.size()).c_str());
@@ -265,7 +265,7 @@ void CWeaponBM16::PlayAnimIdle()
     }
     else
     {
-        if (IsRotatingFromZoom())
+        if (IsRotatingFromZoom() && !IsRotatingToZoom())
         {
             string128 guns_aim_anm;
             xr_strconcat(guns_aim_anm, "anm_idle_aim_end_", IsMisfire() ? "jammed_" : "", std::to_string(m_magazine.size()).c_str());

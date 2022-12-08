@@ -1350,7 +1350,7 @@ const char* CWeaponMagazined::GetAnimAimName()
 
 void CWeaponMagazined::PlayAnimAim()
 {
-    if (IsRotatingToZoom())
+    if (IsRotatingToZoom() && !IsRotatingFromZoom())
     {
         string128 guns_aim_start_anm;
         xr_strconcat(guns_aim_start_anm, "anm_idle_aim_start", IsMisfire() ? "_jammed" : (iAmmoElapsed == 0 ? "_empty" : ""));
@@ -1383,7 +1383,7 @@ void CWeaponMagazined::PlayAnimIdle()
         PlayAnimAim();
     else
     {
-        if (IsRotatingFromZoom())
+        if (IsRotatingFromZoom() && !IsRotatingToZoom())
         {
             string128 guns_aim_end_anm;
             xr_strconcat(guns_aim_end_anm, "anm_idle_aim_end", IsMisfire() ? "_jammed" : (iAmmoElapsed == 0 ? "_empty" : ""));
