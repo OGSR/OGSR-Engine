@@ -45,7 +45,11 @@ CPEDef::~CPEDef()
 void CPEDef::CreateShader()
 {
     if (*m_ShaderName && *m_TextureName)
+    {
         m_CachedShader.create(*m_ShaderName, *m_TextureName);
+    }
+    else
+        Msg("! ParticleEffect [%s] with empty texture or shader. Cannot create shader for Visual!", m_Name.c_str());
 }
 void CPEDef::DestroyShader() { m_CachedShader.destroy(); }
 void CPEDef::SetName(LPCSTR name) { m_Name = name; }
