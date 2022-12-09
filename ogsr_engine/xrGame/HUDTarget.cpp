@@ -213,7 +213,10 @@ void CHUDTarget::Render()
         clamp(fuzzyShowInfo, 0.f, 1.f);
     }
 
-    if (auto Wpn = smart_cast<CWeapon*>(Actor->inventory().ActiveItem()); Wpn && Wpn->IsLaserOn())
+    if (auto Wpn = smart_cast<CWeapon*>(Actor->inventory().ActiveItem()); Wpn && (Wpn->IsLaserOn() || Wpn->GetState() == CHUDState::EHudStates::eReload))
+        return;
+
+    if (const u32 State = Actor->get_state() & mcSprint)
         return;
 
     Fvector2 scr_size;
