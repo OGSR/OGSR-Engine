@@ -63,7 +63,6 @@
 #include "game_base.h"
 #include "game_sv_base.h"
 #include "UIGameCustom.h"
-#include "UIGame_custom_script.h"
 #include "UI/UIScriptWnd.h"
 #include "UI/UIStatic.h"
 #include "UI/UIButton.h"

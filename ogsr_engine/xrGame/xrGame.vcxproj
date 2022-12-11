@@ -1642,7 +1642,6 @@
     <ClInclude Include="HUDManager.h" />
     <ClInclude Include="UIGameCustom.h" />
     <ClInclude Include="UIGameSP.h" />
-    <ClInclude Include="UIGame_custom_script.h" />
     <ClInclude Include="ui\UIGameLog.h" />
     <ClInclude Include="HUDCrosshair.h" />
     <ClInclude Include="HUDTarget.h" />
@@ -2577,7 +2576,6 @@
     <ClCompile Include="UIGameCustom.cpp" />
     <ClCompile Include="UIGameCustom_script.cpp" />
     <ClCompile Include="UIGameSP.cpp" />
-    <ClCompile Include="UIGame_custom_script.cpp" />
     <ClCompile Include="ui\UIGameLog.cpp" />
     <ClCompile Include="HUDCrosshair.cpp" />
     <ClCompile Include="HUDTarget.cpp" />

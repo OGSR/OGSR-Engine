@@ -2059,9 +2059,6 @@
     <Filter Include="AI\AScript\ScriptClasses\UI\GameTypes\Single">
       <UniqueIdentifier>{67495a73-3875-48d9-abbc-406d30c4f780}</UniqueIdentifier>
     </Filter>
-    <Filter Include="AI\AScript\ScriptClasses\UI\GameTypes\Game_custom_script">
-      <UniqueIdentifier>{ec75fb56-3830-4c84-9cd7-cbb2cf18637a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="AI\AScript\ScriptClasses\UI\Multiplayer">
       <UniqueIdentifier>{499cf20f-fe69-480c-b83b-fd8741d95f63}</UniqueIdentifier>
     </Filter>
@@ -5622,9 +5619,6 @@
     <ClInclude Include="UIGameSP.h">
       <Filter>AI\AScript\ScriptClasses\UI\GameTypes\Single</Filter>
     </ClInclude>
-    <ClInclude Include="UIGame_custom_script.h">
-      <Filter>AI\AScript\ScriptClasses\UI\GameTypes\Game_custom_script</Filter>
-    </ClInclude>
     <ClInclude Include="ui\UIGameLog.h">
       <Filter>AI\AScript\ScriptClasses\UI\Multiplayer\HUD\GameLog</Filter>
     </ClInclude>
@@ -8727,9 +8721,6 @@
     </ClCompile>
     <ClCompile Include="UIGameSP.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\GameTypes\Single</Filter>
-    </ClCompile>
-    <ClCompile Include="UIGame_custom_script.cpp">
-      <Filter>AI\AScript\ScriptClasses\UI\GameTypes\Game_custom_script</Filter>
     </ClCompile>
     <ClCompile Include="ui\UIGameLog.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Multiplayer\HUD\GameLog</Filter>
