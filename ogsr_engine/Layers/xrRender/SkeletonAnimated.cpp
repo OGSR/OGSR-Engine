@@ -635,24 +635,10 @@ void CKinematicsAnimated::LL_SetChannelFactor(u16 channel, float factor) { chann
 void CKinematicsAnimated::IBlend_Startup()
 {
     _DBG_SINGLE_USE_MARKER;
-    CBlend B;
-    ZeroMemory(&B, sizeof(B));
-    // B.blend				= CBlend::eFREE_SLOT;
 
-    B.set_free_state();
-
-#ifdef DEBUG
-    B.set_falloff_state();
-#endif
-
-    blend_pool.clear();
-    for (u32 i = 0; i < MAX_BLENDED_POOL; i++)
-    {
-        blend_pool.push_back(B);
-#ifdef DEBUG
-        blend_pool.back().set_free_state();
-#endif
-    }
+    ZeroMemory(&blend_pool, sizeof blend_pool);
+    blend_pool.resize(MAX_BLENDED_POOL);
+ 
     // cycles+fx clear
     for (u32 i = 0; i < MAX_PARTS; i++)
         blend_cycles[i].clear();
