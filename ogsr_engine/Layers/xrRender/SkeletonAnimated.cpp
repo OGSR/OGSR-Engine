@@ -14,7 +14,7 @@ extern int psSkeletonUpdate;
 using namespace animation;
 //////////////////////////////////////////////////////////////////////////
 // BoneInstance methods
-void CBlendInstance::construct() { ZeroMemory(this, sizeof(*this)); }
+void CBlendInstance::construct() { Blend.clear(); }
 void CBlendInstance::blend_add(CBlend* H)
 {
     if (Blend.size() == MAX_BLENDED)

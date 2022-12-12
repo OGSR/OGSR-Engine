@@ -1,6 +1,4 @@
-//----------------------------------------------------
-#ifndef BoneH
-#define BoneH
+#pragma once
 
 // refs
 class CBone;
@@ -42,7 +40,18 @@ public:
     IC u32 _BCL callback_type() { return Callback_type; }
 
 public:
-    IC void _BCL construct();
+    IC void construct()
+    {
+        mTransform.identity();
+        mRenderTransform.identity();
+
+        Callback = nullptr;
+        Callback_Param = nullptr;
+        Callback_overwrite = FALSE;
+        Callback_type = 0;
+
+        ZeroMemory(&param, sizeof(param));
+    }
 
     void _BCL set_callback(u32 Type, BoneCallback C, void* Param, BOOL overwrite = FALSE)
     {
@@ -539,14 +548,3 @@ enum EBoneCallbackType
     bctPhysics,
     bctCustom,
 };
-
-IC void CBoneInstance::construct()
-{
-    ZeroMemory(this, sizeof(*this));
-    mTransform.identity();
-
-    mRenderTransform.identity();
-    Callback_overwrite = FALSE;
-}
-
-#endif
