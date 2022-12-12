@@ -41,8 +41,17 @@ void xrMemory::_destroy()
 
 void xrMemory::mem_compact()
 {
+#ifndef USE_MIMALLOC
+/*
+Следующая команда, в целом, не нужна.
+Современные аллокаторы достаточно грамотно и когда нужно возвращают память операционной системе.
+Эта строчка нужна, скорее всего, в определённых ситуациях, вроде использования файлов отображаемых в память,
+которые требуют большие свободные области памяти.
+*/
     _heapmin(); //-V530
     HeapCompact(GetProcessHeap(), 0);
+#endif
+
     if (g_pStringContainer)
         g_pStringContainer->clean();
     if (g_pSharedMemoryContainer)
