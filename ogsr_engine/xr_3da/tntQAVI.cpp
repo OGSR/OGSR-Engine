@@ -1,14 +1,36 @@
 #include "stdafx.h"
 
-//#include <crtdbg.h>
-
 #include "tntQAVI.h"
+
+//xrSimpodin: тут походу юзается какой то древний формат avi, потому что в актуальном WinSDK эта структура отличается.
+typedef struct
+{
+    FOURCC fccType;
+    FOURCC fccHandler;
+    DWORD dwFlags;
+    DWORD dwPriority;
+    DWORD dwInitialFrames;
+    DWORD dwScale;
+    DWORD dwRate;
+    DWORD dwStart;
+    DWORD dwLength;
+    DWORD dwSuggestedBufferSize;
+    DWORD dwQuality;
+    DWORD dwSampleSize;
+    struct
+    {
+        WORD left;
+        WORD top;
+        WORD right;
+        WORD bottom;
+    };
+    //	RECT   rcFrame;		- лажа в MSDN
+} AVIStreamHeaderCustom;
+
 
 CAviPlayerCustom::CAviPlayerCustom()
 {
-    ZeroMemory(this, sizeof(*this));
     m_dwFrameCurrent = 0xfffffffd; // страхуемся от 0xffffffff + 1 == 0
-    m_dwFirstFrameOffset = 0;
 }
 
 CAviPlayerCustom::~CAviPlayerCustom()
@@ -51,8 +73,7 @@ BOOL CAviPlayerCustom::Load(char* fname)
 
     // Найти чанк FOURCC('movi')
 
-    MMCKINFO mmckinfoParent;
-    ZeroMemory(&mmckinfoParent, sizeof(mmckinfoParent));
+    MMCKINFO mmckinfoParent{};
     mmckinfoParent.fccType = mmioFOURCC('A', 'V', 'I', ' ');
     MMRESULT res;
     if (MMSYSERR_NOERROR != (res = mmioDescend(hmmioFile, &mmckinfoParent, NULL, MMIO_FINDRIFF)))
@@ -87,8 +108,7 @@ BOOL CAviPlayerCustom::Load(char* fname)
         return FALSE;
     }
 
-    AVIStreamHeaderCustom strh;
-    ZeroMemory(&strh, sizeof(strh));
+    AVIStreamHeaderCustom strh{};
     if (mmckinfoParent.cksize != (DWORD)mmioRead(hmmioFile, (HPSTR)&strh, mmckinfoParent.cksize))
     {
         mmioClose(hmmioFile, 0);
@@ -100,8 +120,7 @@ BOOL CAviPlayerCustom::Load(char* fname)
     if (AVIERR_OK != AVIFileOpen(&aviFile, fname, OF_READ, 0))
         return FALSE;
 
-    AVIFILEINFO aviInfo;
-    ZeroMemory(&aviInfo, sizeof(aviInfo));
+    AVIFILEINFO aviInfo{};
     if (AVIERR_OK != AVIFileInfo(aviFile, &aviInfo, sizeof(aviInfo)))
     {
         AVIFileRelease(aviFile);
@@ -181,8 +200,7 @@ BOOL CAviPlayerCustom::Load(char* fname)
     }
 
     //-------------------------------------------------------------------
-    MMCKINFO mmckinfoSubchunk;
-    ZeroMemory(&mmckinfoSubchunk, sizeof(mmckinfoSubchunk));
+    MMCKINFO mmckinfoSubchunk{};
     mmckinfoSubchunk.fccType = mmioFOURCC('m', 'o', 'v', 'i');
     if (MMSYSERR_NOERROR != (res = mmioDescend(hmmioFile, &mmckinfoSubchunk, NULL, MMIO_FINDLIST)) || mmckinfoSubchunk.cksize <= 4)
     {
