@@ -74,13 +74,6 @@ float calc_ssao(float3 P, float3 N, float2 tc, float2 tcJ, uint iSample)
 #endif
 #endif
 {
-    // return 1.0h;
-
-#ifdef GBUFFER_OPTIMIZATION
-    //	Emulate virtual offset
-//	P += N*0.015f;
-#endif //	GBUFFER_OPTIMIZATION
-
     float point_depth = P.z;
     if (point_depth < 0.01)
         point_depth = 100000.0h; //	filter for the sky

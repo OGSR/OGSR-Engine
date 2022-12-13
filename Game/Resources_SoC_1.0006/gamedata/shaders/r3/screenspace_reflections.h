@@ -1,7 +1,7 @@
 /**
- * @ Version: SCREEN SPACE SHADERS - UPDATE 12
+ * @ Version: SCREEN SPACE SHADERS - UPDATE 12.6
  * @ Description: SSR implementation
- * @ Modified time: 2022-10-28 09:14
+ * @ Modified time: 2022-11-26 02:05
  * @ Author: https://www.moddb.com/members/ascii1457
  * @ Mod: https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders
  */
@@ -42,6 +42,9 @@ float4 SSFX_ssr_fast_ray(float3 ray_start_vs, float3 ray_dir_vs, float2 tc, uint
 	// Initialize Ray
 	RayTrace ssr_ray = SSFX_ray_init(ray_start_vs, ray_dir_vs, 150, q_ssr_steps[G_SSR_QUALITY].x, 1.0f);
 
+	// Save the original step.x
+	float ori_x = ssr_ray.r_step.x;
+
 	// Depth from the start of the ray
 	float ray_depthstart = SSFX_get_depth(ssr_ray.r_start, iSample);
 	
@@ -50,7 +53,7 @@ float4 SSFX_ssr_fast_ray(float3 ray_start_vs, float3 ray_dir_vs, float2 tc, uint
 	for (int i = 0; i < q_ssr_steps[G_SSR_QUALITY].x; i++)
 	{
 		// Ray out of screen...
-		if (!(ssr_ray.r_pos.y >= 0.0f && ssr_ray.r_pos.y <= 1.0f))
+		if (ssr_ray.r_pos.y < 0.0f || ssr_ray.r_pos.y > 1.0f)
 			return 0;
 
 		// Trick for the horizontal out of bounds. Mirror border of the screen.
@@ -59,7 +62,7 @@ float4 SSFX_ssr_fast_ray(float3 ray_start_vs, float3 ray_dir_vs, float2 tc, uint
 			ssr_ray.r_pos -= ssr_ray.r_step; // Step back
 			ssr_ray.r_step.x = -ssr_ray.r_step.x; // Invert Horizontal
 			ssr_ray.r_pos += ssr_ray.r_step; // Step
-		} 
+		}
 
 		// Ray intersect check
 		float2 ray_check = SSFX_ray_intersect(ssr_ray, iSample);
@@ -189,11 +192,11 @@ void SSFX_ScreenSpaceReflections(float2 tc, float4 P, float3 N, float gloss, ino
 		uvcoor = hit_uv.zw;
 	}
 
-	// Fade sky if !skyalways ( Terrain MAT )
+	// Fade sky if !m_terrain ( Terrain MAT )
 	float ray_fade = saturate(saturate(uvcoor.y * G_SSR_VERTICAL_SCREENFADE) + 1.0f * m_terrain);
 
 	// Adjust the intensity of MAT_FLORA
-	refl_power *= saturate(G_SSR_FLORA_INTENSITY + 1.0f * !m_flora);
+	refl_power *= m_flora ? G_SSR_FLORA_INTENSITY : 1.0f;
 
 	// Weapon Attenuation factor.
 	float WeaponFactor = smoothstep(G_SSR_WEAPON_MAX_LENGTH - 0.2f, G_SSR_WEAPON_MAX_LENGTH, length(P.xyz));

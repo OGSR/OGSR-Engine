@@ -10,7 +10,7 @@
 #include "common_cbuffers.h"
 #include "common_functions.h"
 
-#define USE_SUNMASK
+//#define USE_SUNMASK
 
 #ifdef USE_R2_STATIC_SUN
 #define xmaterial float(1.0h / 4.h)

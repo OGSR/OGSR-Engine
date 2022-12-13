@@ -147,8 +147,8 @@ _out main(_input I, uint iSample : SV_SAMPLEINDEX)
 
 
     float4 light = float4(L.rgb + hdiffuse, L.w);
-    float4 C = D * light;
-    float3 spec = C.www * L.rgb + hspecular; // replicated specular
+    float4 C = D * light; // rgb.gloss * light(diffuse.specular)
+    float3 spec = C.www * L.rgb + hspecular * C.rgba; // replicated specular
 
     float3 color = C.rgb + spec;
 
@@ -165,8 +165,11 @@ _out main(_input I, uint iSample : SV_SAMPLEINDEX)
     // here should be distance fog
     float3 pos = P.xyz;
     float distance = length(pos);
-    float fog = saturate(distance * fog_params.w + fog_params.x); //
-    color = lerp(color, fog_color, fog); //
+    float fog = saturate(distance * fog_params.w + fog_params.x);
+
+    //				color			= lerp     		(color,fog_color,fog);
+    // float        	skyblend		= saturate		(fog*fog);
+    color = lerp(color, fog_color * 2.0f / 3.0f, fog);
     float skyblend = saturate(fog * fog);
 
     float tm_scale = I.tc0.w; // interpolated from VS

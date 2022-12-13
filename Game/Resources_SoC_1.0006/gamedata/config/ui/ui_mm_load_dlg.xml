@@ -26,7 +26,7 @@
 			<text font="graffiti22" r="184" g="168" b="131">ui_mm_load_game</text>
 		</caption>
 		
-		<picture x="105" y="71" width="128" height="128" clipper="1">
+		<picture x="105" y="71" width="128" height="128" clipper="1" stretch="1">
 			<texture>ui\ui_noise</texture>
 		</picture>
 		

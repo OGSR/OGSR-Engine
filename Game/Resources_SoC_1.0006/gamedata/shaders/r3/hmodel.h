@@ -3,11 +3,6 @@
 
 #include "common.h"
 
-// uniform samplerCUBE         env_s0                ;
-// uniform samplerCUBE         env_s1                ;
-// uniform samplerCUBE         sky_s0                ;
-// uniform samplerCUBE         sky_s1                ;
-
 TextureCube env_s0;
 TextureCube env_s1;
 TextureCube sky_s0;
@@ -33,10 +28,7 @@ void hmodel(out float3 hdiffuse, out float3 hspecular, float m, float h, float s
     float hspec = .5h + .5h * dot(vreflect, v2Pnt);
 
     // material	// sample material
-    // float4	light	= tex3D( s_material, float3(hscale, hspec, m) );
-    //	float4	light	= s_material.Sample( smp_material, float3( hscale, hspec, m ) ).xxxy;
     float4 light = s_material.SampleLevel(smp_material, float3(hscale, hspec, m), 0).xxxy;
-    //	float4	light	= float4(1,1,1,1);
 
     // diffuse color
     //	float3	e0d		= texCUBE( env_s0, nw );

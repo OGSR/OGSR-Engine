@@ -12,6 +12,7 @@ function fill_savedgames_list( wnd )
     local picture = wnd:GetStatic("static_pict")
     wnd.file_caption:SetText("")
     wnd.file_data:SetText("")
+    picture:ResetOriginalRect()
     picture:InitTexture("ui\\ui_noise")
   end
   --
@@ -237,6 +238,7 @@ function save_load_dialog:OnListItemClickedLoad()
 
 	self.file_caption:SetText("")
 	self.file_data:SetText("")
+	picture:ResetOriginalRect()
 	picture:InitTexture("ui\\ui_noise")
 
 	if list_box:GetSize() == 0 then return end
@@ -256,6 +258,7 @@ function save_load_dialog:OnListItemClickedLoad()
 	end
 
 	if getFS():exist("$game_saves$", item_text..".dds") then
+		picture:ResetOriginalRect()
 		picture:InitTexture(item_text)
 	end
 end

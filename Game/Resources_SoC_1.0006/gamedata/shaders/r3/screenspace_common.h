@@ -1,7 +1,7 @@
 /**
- * @ Version: SCREEN SPACE SHADERS - UPDATE 11
+ * @ Version: SCREEN SPACE SHADERS - UPDATE 12.5
  * @ Description: Main file
- * @ Modified time: 2022-10-30 06:51
+ * @ Modified time: 2022-11-23 15:37
  * @ Author: https://www.moddb.com/members/ascii1457
  * @ Mod: https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders
  */
@@ -23,6 +23,7 @@ uniform float4 sky_color;
 //TextureCube sky_s1;
 
 static const float2 ssfx_pixel_size = 1.0f / screen_res.xy;
+static const float ssfx_PI = 3.14159265f;
 
 struct RayTrace
 {
