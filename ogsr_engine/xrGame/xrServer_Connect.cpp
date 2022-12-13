@@ -88,12 +88,5 @@ void xrServer::AttachNewClient(IClient* CL)
     CL->flags.bLocal = 1;
     SendTo_LL(SV_Client->ID, &msgConfig, sizeof(msgConfig), net_flags(TRUE, TRUE, TRUE, TRUE));
 
-    // gen message
-    if (!NeedToCheckClient_GameSpy_CDKey())
-    {
-        //-------------------------------------------------------------
-        Check_GameSpy_CDKey_Success(CL);
-    }
-
     CL->m_guid[0] = 0;
 }

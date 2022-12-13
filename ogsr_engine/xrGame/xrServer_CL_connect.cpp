@@ -113,16 +113,6 @@ void xrServer::SendConnectResult(IClient* CL, u8 res, u8 res1, const char* Resul
     SendTo(CL->ID, P);
 };
 
-void xrServer::Check_GameSpy_CDKey_Success(IClient* CL)
-{
-    Msg("!!xrServer::Check_GameSpy_CDKey_Success - 1");
-    if (NeedToCheckClient_BuildVersion(CL))
-        return;
-
-    Msg("!!xrServer::Check_GameSpy_CDKey_Success - 2");
-    Check_BuildVersion_Success(CL);
-};
-
 bool xrServer::NeedToCheckClient_BuildVersion(IClient* CL)
 {
     //#ifdef DEBUG

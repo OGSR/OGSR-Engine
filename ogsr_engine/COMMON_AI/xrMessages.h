@@ -28,8 +28,6 @@ enum
     M_EVENT_PACK, // Pack of M_EVENT
 
     //-----------------------------------------------------
-    M_GAMESPY_CDKEY_VALIDATION_CHALLENGE,
-    M_GAMESPY_CDKEY_VALIDATION_CHALLENGE_RESPOND,
     M_CLIENT_CONNECT_RESULT,
     M_CLIENT_REQUEST_CONNECTION_DATA,
 
