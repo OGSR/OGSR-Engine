@@ -29,9 +29,6 @@ void xrClientData::Clear()
     net_Ready = FALSE;
     net_Accepted = FALSE;
     net_PassUpdates = TRUE;
-    m_ping_warn.m_maxPingWarnings = 0;
-    m_ping_warn.m_dwLastMaxPingWarningTime = 0;
-    m_admin_rights.m_has_admin_rights = FALSE;
 };
 
 xrClientData::~xrClientData() { xr_delete(ps); }
@@ -379,33 +376,6 @@ u32 xrServer::OnDelayedMessage(NET_Packet& P, ClientID sender) // Non-Zero means
         OnCL_Connected(CL);
     }
     break;
-    case M_REMOTE_CONTROL_CMD: {
-        if (CL->m_admin_rights.m_has_admin_rights)
-        {
-            string1024 buff;
-            P.r_stringZ(buff);
-            SetLogCB(console_log_cb);
-            _tmp_log.clear();
-            Console->Execute(buff);
-            SetLogCB(NULL);
-
-            NET_Packet P_answ;
-            for (u32 i = 0; i < _tmp_log.size(); ++i)
-            {
-                P_answ.w_begin(M_REMOTE_CONTROL_CMD);
-                P_answ.w_stringZ(_tmp_log[i]);
-                SendTo(CL->ID, P_answ, net_flags(TRUE, TRUE));
-            }
-        }
-        else
-        {
-            NET_Packet P_answ;
-            P_answ.w_begin(M_REMOTE_CONTROL_CMD);
-            P_answ.w_stringZ("you dont have admin rights");
-            SendTo(CL->ID, P_answ, net_flags(TRUE, TRUE));
-        }
-    }
-    break;
     }
     VERIFY(verify_entities());
 
@@ -505,11 +475,6 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
         AddDelayedPacket(P, sender);
     }
     break;
-    case M_CHAT_MESSAGE: {
-        xrClientData* l_pC = ID_to_client(sender);
-        OnChatMessage(&P, l_pC);
-    }
-    break;
     case M_CHANGE_LEVEL_GAME: {
         ClientID CID;
         CID.set(0xffffffff);
@@ -535,10 +500,6 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
     case M_PLAYER_FIRE: {
         if (game)
             game->OnPlayerFire(sender, P);
-    }
-    break;
-    case M_REMOTE_CONTROL_CMD: {
-        AddDelayedPacket(P, sender);
     }
     break;
     }
@@ -600,29 +561,6 @@ CSE_Abstract* xrServer::GetEntity(u32 Num)
     return NULL;
 };
 
-void xrServer::OnChatMessage(NET_Packet* P, xrClientData* CL)
-{
-    //	string256 ChatMsg;
-    //	u16 PlayerID = P->r_u16();
-    s16 team = P->r_s16();
-    //	P->r_stringZ(ChatMsg);
-    if (!CL->net_Ready)
-        return;
-    game_PlayerState* Cps = CL->ps;
-    for (u32 client = 0; client < net_Players.size(); ++client)
-    {
-        // Initialize process and check for available bandwidth
-        xrClientData* Client = (xrClientData*)net_Players[client];
-        game_PlayerState* ps = Client->ps;
-        if (!Client->net_Ready)
-            continue;
-        if (team != 0 && ps->team != team)
-            continue;
-        if (Cps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD) && !ps->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD))
-            continue;
-        SendTo(Client->ID, *P);
-    };
-};
 
 #ifdef DEBUG
 
@@ -716,38 +654,12 @@ void xrServer::AddDelayedPacket(NET_Packet& Packet, ClientID Sender)
 
     DelayedPackestCS.Leave();
 }
-
 u32 g_sv_dwMaxClientPing = 2000;
 u32 g_sv_time_for_ping_check = 15000; // 15 sec
 u8 g_sv_maxPingWarningsCount = 5;
 
 void xrServer::PerformCheckClientsForMaxPing()
 {
-    for (u32 client = 0; client < net_Players.size(); ++client)
-    {
-        xrClientData* Client = (xrClientData*)net_Players[client];
-        game_PlayerState* ps = Client->ps;
-
-        if (ps->ping > g_sv_dwMaxClientPing && Client->m_ping_warn.m_dwLastMaxPingWarningTime + g_sv_time_for_ping_check < Device.dwTimeGlobal)
-        {
-            ++Client->m_ping_warn.m_maxPingWarnings;
-            Client->m_ping_warn.m_dwLastMaxPingWarningTime = Device.dwTimeGlobal;
-
-            if (Client->m_ping_warn.m_maxPingWarnings >= g_sv_maxPingWarningsCount)
-            { // kick
-            }
-            else
-            { // send warning
-                NET_Packet P;
-                P.w_begin(M_CLIENT_WARN);
-                P.w_u8(1); // 1 means max-ping-warning
-                P.w_u16(ps->ping);
-                P.w_u8(Client->m_ping_warn.m_maxPingWarnings);
-                P.w_u8(g_sv_maxPingWarningsCount);
-                SendTo(Client->ID, P, net_flags(FALSE, TRUE));
-            }
-        }
-    };
 }
 
 xr_token game_types[];

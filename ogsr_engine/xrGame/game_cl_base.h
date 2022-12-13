@@ -79,12 +79,6 @@ public:
     void u_EventGen(NET_Packet& P, u16 type, u16 dest);
     void u_EventSend(NET_Packet& P);
 
-    virtual void ChatSayTeam(const shared_str& phrase){};
-    virtual void ChatSayAll(const shared_str& phrase){};
-    virtual void OnChatMessage(NET_Packet* P){};
-    virtual void OnWarnMessage(NET_Packet* P){};
-    virtual void OnRadminMessage(u16 type, NET_Packet* P){};
-
     virtual void OnRender(){};
     virtual bool IsServerControlHits() { return m_bServerControlHits; };
     virtual bool IsEnemy(game_PlayerState* ps) { return false; };

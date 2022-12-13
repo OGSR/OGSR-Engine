@@ -279,11 +279,11 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 
     if (smart_cast<CActor*>(E.R.O))
     {
-        game_PlayerState* ps = Game().GetPlayerByGameID(E.R.O->ID());
+        /*game_PlayerState* ps = Game().GetPlayerByGameID(E.R.O->ID());
         if (ps && ps->testFlag(GAME_PLAYER_FLAG_INVINCIBLE))
         {
             NeedShootmark = false;
-        };
+        };*/
     }
     else if (CBaseMonster* monster = smart_cast<CBaseMonster*>(E.R.O))
     {

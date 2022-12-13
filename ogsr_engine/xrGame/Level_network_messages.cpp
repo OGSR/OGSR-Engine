@@ -119,22 +119,6 @@ void CLevel::ClientReceive()
             OnConnectResult(P);
         }
         break;
-        case M_CHAT_MESSAGE: {
-            if (!game)
-                break;
-            Game().OnChatMessage(P);
-        }
-        break;
-        case M_CLIENT_WARN: {
-            if (!game)
-                break;
-            Game().OnWarnMessage(P);
-        }
-        break;
-        case M_REMOTE_CONTROL_CMD: {
-            Game().OnRadminMessage(m_type, P);
-        }
-        break;
         case M_CHANGE_LEVEL_GAME: {
             Msg("- M_CHANGE_LEVEL_GAME Received");
             {

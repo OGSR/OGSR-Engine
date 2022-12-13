@@ -378,7 +378,6 @@ void WeaponUsageStatistic::OnBullet_Check_Result(bool Result)
 
 void WeaponUsageStatistic::Send_Check_Respond()
 {
-    NET_Packet P;
     string1024 STrue, SFalse;
     for (u32 i = 0; i < m_Requests.size(); i++)
     {
@@ -421,23 +420,6 @@ void WeaponUsageStatistic::Send_Check_Respond()
                 BChA_Request.Requests.pop_back();
             }
         }
-        //-----------------------------------------------------
-        P.w_begin(M_BULLET_CHECK_RESPOND);
-        //		Msg("%d-%d || %d-%d", NumFalse, BChA_Request.NumFalse, NumTrue, BChA_Request.NumTrue);
-        P.w_u8(BChA_Request.NumFalse);
-        BChA_Request.NumFalse = 0;
-        P.w_u8(BChA_Request.NumTrue);
-        BChA_Request.NumTrue = 0;
-
-        if ((char*)pSFalse != (char*)SFalse)
-            P.w(SFalse, u32((char*)pSFalse - (char*)SFalse));
-        if ((char*)pSTrue != (char*)STrue)
-            P.w(STrue, u32((char*)pSTrue - (char*)STrue));
-        //-----------------------------------------------------
-        ClientID ClID;
-        ClID.set(BChA_Request.SenderID);
-        if (Level().Server)
-            Level().Server->SendTo(ClID, P);
     };
 }
 
