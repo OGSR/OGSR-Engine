@@ -914,14 +914,20 @@ bool CConsole::add_internal_cmds(LPCSTR in_str, vecTipsEx& out_v)
 	return res;
 }
 
+void CConsole::reset_tips()
+{
+    m_temp_tips.clear();
+    m_tips.clear();
+
+    m_cur_cmd = NULL;
+}
+
 void CConsole::update_tips()
 {
-	m_temp_tips.clear();
-	m_tips.clear();
-
-	m_cur_cmd = NULL;
 	if (!bVisible)
 	{
+        reset_tips();
+
 		return;
 	}
 
@@ -930,14 +936,27 @@ void CConsole::update_tips()
 
 	if (cur_length == 0)
 	{
+        reset_tips();
+
 		m_prev_length_str = 0;
+
 		return;
 	}
+
+	if (cur_length == m_prev_str.size() && m_prev_str.equal(cur))
+	{
+        return;
+	}
+
+	m_prev_str = cur;
+
+    reset_tips();
 
 	if (m_prev_length_str != cur_length)
 	{
 		reset_selected_tip();
 	}
+
 	m_prev_length_str = cur_length;
 
     std::string s_cur{cur}, first, last;

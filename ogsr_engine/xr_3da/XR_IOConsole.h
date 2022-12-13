@@ -105,7 +105,9 @@ private:
 	shared_str m_cur_cmd;
 	int m_select_tip;
 	int m_start_tip;
+
 	u32 m_prev_length_str;
+    shared_str m_prev_str;
 
 public:
 	CConsole();
@@ -223,6 +225,7 @@ protected:
 	bool add_internal_cmds(LPCSTR in_str, vecTipsEx& out_v);
 
 	void update_tips();
+    void reset_tips();
 	void select_for_filter(LPCSTR filter_str, vecTips& in_v, vecTipsEx& out_v);
 }; // class CConsole
 
