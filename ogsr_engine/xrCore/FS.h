@@ -278,26 +278,61 @@ public:
 
     IC u32 find_chunk(const u32 ID, BOOL* bCompressed = nullptr)
     {
-        u32 dwSize, dwType;
+        u32 dwSize{}, dwType{};
+        bool success{};
 
-        constexpr int size = sizeof(u32) * 2;
-
-        rewind();
-        while (impl().elapsed() >= size)
+        if (m_last_pos != 0)
         {
+            impl().seek(m_last_pos);
             dwType = r_u32();
             dwSize = r_u32();
+
             if ((dwType & (~CFS_CompressMark)) == ID)
             {
-                VERIFY((u32)impl().tell() + dwSize <= (u32)impl().length());
-                if (bCompressed)
-                    *bCompressed = dwType & CFS_CompressMark;
-                return dwSize;
+                success = true;
             }
-            else
-                impl().advance(dwSize);
         }
-        return 0;
+
+        if (!success)
+        {
+            rewind();
+            while (!eof()) // while (impl().elapsed() >= (sizeof u32 * 2))
+            {
+                dwType = r_u32();
+                dwSize = r_u32();
+                if ((dwType & (~CFS_CompressMark)) == ID)
+                {
+                    success = true;
+                    break;
+                }
+                else
+                {
+                    impl().advance(dwSize);
+                }
+            }
+
+            if (!success)
+            {
+                m_last_pos = 0;
+                return 0;
+            }
+        }
+
+        VERIFY((u32)impl().tell() + dwSize <= (u32)impl().length());
+        if (bCompressed)
+            *bCompressed = dwType & CFS_CompressMark;
+
+        const int dwPos = impl().tell();
+        if (dwPos + dwSize < (u32)impl().length())
+        {
+            m_last_pos = dwPos + dwSize;
+        }
+        else
+        {
+            m_last_pos = 0;
+        }
+
+        return dwSize;
     }
 
     u32 find_chunk_thm(const u32 ID, const char* dbg_name)
@@ -318,7 +353,7 @@ public:
         if (!success)
         {
             rewind();
-            while (!eof())
+            while (!eof()) // while (impl().elapsed() >= (sizeof u32 * 2))
             {
                 dwType = r_u32();
                 dwSize = r_u32();
