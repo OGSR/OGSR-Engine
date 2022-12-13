@@ -54,7 +54,7 @@ public:
     virtual u32 GetTextureColor() const;
     virtual void SetOriginalRect(const Frect& r) { m_UIStaticItem.SetOriginalRect(r); }
     virtual void SetOriginalRectEx(const Frect& r) { m_UIStaticItem.SetOriginalRectEx(r); }
-    void ResetOriginalRect(const Frect& r) { m_UIStaticItem.ResetOriginalRect(); }
+    void ResetOriginalRect() { m_UIStaticItem.ResetOriginalRect(); }
 
     virtual Frect GetOriginalRect() const { return m_UIStaticItem.GetOriginalRect(); }
     //
