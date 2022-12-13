@@ -137,9 +137,7 @@ void game_sv_GameState::script_register(lua_State* L)
 
            class_<enum_exporter<EGameMessages>>("game_messages")
                .enum_(
-                   "messages")[value("GAME_EVENT_PLAYER_CONNECTED", int(GAME_EVENT_PLAYER_CONNECTED)),
-                               
-                               value("GAME_EVENT_SCRIPT_BEGINS_FROM", int(GAME_EVENT_SCRIPT_BEGINS_FROM))]
+                   "messages")[value("GAME_EVENT_PLAYER_CONNECTED", int(GAME_EVENT_PLAYER_CONNECTED))]
 
     ];
 }

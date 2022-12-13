@@ -24,7 +24,6 @@
 #include "CustomOutfit.h"
 #include "actorcondition.h"
 #include "UIGameCustom.h"
-#include "game_cl_base_weapon_usage_statistic.h"
 
 // breakpoints
 #include "../xr_3da/xr_input.h"

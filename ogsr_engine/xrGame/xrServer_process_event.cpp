@@ -126,14 +126,8 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
         VERIFY(verify_entities());
     }
     break;
-    case GE_HIT:
-    case GE_HIT_STATISTIC: {
+    case GE_HIT:{
         P.r_pos -= 2;
-        if (type == GE_HIT_STATISTIC)
-        {
-            P.B.count -= 4;
-            P.w_u32(sender.value());
-        };
         game->AddDelayedEvent(P, GAME_EVENT_ON_HIT, 0, ClientID());
     }
     break;

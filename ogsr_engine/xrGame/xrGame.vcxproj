@@ -1414,7 +1414,6 @@
     <ClInclude Include="..\COMMON_AI\game_base_space.h" />
     <ClInclude Include="game_cl_single.h" />
     <ClInclude Include="game_cl_base.h" />
-    <ClInclude Include="game_cl_base_weapon_usage_statistic.h" />
     <ClInclude Include="game_sv_base.h" />
     <ClInclude Include="game_sv_event_queue.h" />
     <ClInclude Include="xr_time.h" />
@@ -2341,7 +2340,6 @@
     <ClCompile Include="game_base.cpp" />
     <ClCompile Include="game_cl_single.cpp" />
     <ClCompile Include="game_cl_base.cpp" />
-    <ClCompile Include="game_cl_base_weapon_usage_statistic.cpp" />
     <ClCompile Include="game_sv_base.cpp" />
     <ClCompile Include="game_sv_base_script.cpp" />
     <ClCompile Include="game_sv_event_queue.cpp" />

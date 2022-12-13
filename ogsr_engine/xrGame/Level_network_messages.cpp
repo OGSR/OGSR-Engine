@@ -8,7 +8,6 @@
 #include "Physics.h"
 #include "xrServer.h"
 #include "Actor.h"
-#include "game_cl_base_weapon_usage_statistic.h"
 #include "ai_space.h"
 #include "saved_game_wrapper.h"
 #include "level_graph.h"

@@ -22,7 +22,6 @@
 #include "../xr_3da/NET_Server_Trash/net_utils.h"
 #include "script_callback_ex.h"
 #include "MathUtils.h"
-#include "game_cl_base_weapon_usage_statistic.h"
 #include "game_level_cross_table.h"
 #include "animation_movement_controller.h"
 #include "game_object_space.h"
@@ -153,8 +152,7 @@ void CGameObject::OnEvent(NET_Packet& P, u16 type)
 {
     switch (type)
     {
-    case GE_HIT:
-    case GE_HIT_STATISTIC: {
+    case GE_HIT:{
         /*
                     u16				id,weapon_id;
                     Fvector			dir;
@@ -185,7 +183,6 @@ void CGameObject::OnEvent(NET_Packet& P, u16 type)
         SHit HDS;
         HDS.PACKET_TYPE = type;
         HDS.Read_Packet_Cont(P);
-        //			Msg("Hit received: %d[%d,%d]", HDS.whoID, HDS.weaponID, HDS.BulletID);
         CObject* Hitter = Level().Objects.net_Find(HDS.whoID);
         CObject* Weapon = Level().Objects.net_Find(HDS.weaponID);
         HDS.who = Hitter;

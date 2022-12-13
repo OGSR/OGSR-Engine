@@ -16,7 +16,6 @@
 #include "Actor.h"
 #include "AI/Stalker/ai_stalker.h"
 #include "character_info.h"
-#include "game_cl_base_weapon_usage_statistic.h"
 #include "../xrcdb/xr_collide_defs.h"
 #include "weapon.h"
 #include "ai/monsters/BaseMonster/base_monster.h"
@@ -326,8 +325,6 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
     //отправить хит пораженному объекту
     if (E.bullet.flags.allow_sendhit && !E.Repeated)
     {
-        //-------------------------------------------------
-        bool AddStatistic = false;
         /*
                 NET_Packet		P;
         //		CGameObject::u_EventGen	(P,(AddStatistic)? GE_HIT_STATISTIC : GE_HIT,E.R.O->ID());
@@ -350,7 +347,7 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 
         SHit Hit = SHit(power, original_dir, NULL, u16(E.R.element), position_in_bone_space, impulse, E.bullet.hit_type, E.bullet.ap, E.bullet.flags.aim_bullet);
 
-        Hit.GenHeader(u16((AddStatistic) ? GE_HIT_STATISTIC : GE_HIT) & 0xffff, E.R.O->ID());
+        Hit.GenHeader(u16(GE_HIT) & 0xffff, E.R.O->ID());
         Hit.whoID = E.bullet.parent_id;
         Hit.weaponID = E.bullet.weapon_id;
         Hit.BulletID = E.bullet.m_dwID;

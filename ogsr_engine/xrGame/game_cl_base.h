@@ -11,13 +11,11 @@ class CUIGameCustom;
 class CUI;
 class CUIDialogWnd;
 
-struct WeaponUsageStatistic;
-
 class game_cl_GameState : public game_GameState, public ISheduled
 {
     typedef game_GameState inherited;
     shared_str m_game_type_name;
-    //	bool								m_bCrosshair;	//был ли показан прицел-курсор HUD перед вызовом меню
+
 protected:
     u16 m_u16VotingEnabled;
     bool m_bServerControlHits;
@@ -31,9 +29,7 @@ public:
     ClientID local_svdpnid;
     game_PlayerState* local_player;
     bool m_need_to_update;
-    //.	xr_vector<CGameObject*>				targets;
 
-    WeaponUsageStatistic* m_WeaponUsageStatistic;
     virtual void reset_ui();
 
 private:

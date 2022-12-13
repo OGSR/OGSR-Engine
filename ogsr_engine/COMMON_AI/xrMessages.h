@@ -97,9 +97,7 @@ enum
 
     GEG_PLAYER_ATTACH_HOLDER,
     GEG_PLAYER_DETACH_HOLDER,
-
-    //-------------------------------------
-    GE_HIT_STATISTIC,
+    
     //-------------------------------------
     GE_KILL_SOMEONE,
 

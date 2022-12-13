@@ -85,15 +85,9 @@ void SHit::Read_Packet_Cont(NET_Packet Packet)
     Packet.r_float(impulse);
     aim_bullet = Packet.r_u16() != 0;
     hit_type = (ALife::EHitType)Packet.r_u16(); // hit type
-
     if (hit_type == ALife::eHitTypeFireWound)
     {
         Packet.r_float(ap);
-    }
-    if (PACKET_TYPE == GE_HIT_STATISTIC)
-    {
-        Packet.r_u32(BulletID);
-        Packet.r_u32(SenderID);
     }
     full_power = power;
 }
@@ -112,11 +106,6 @@ void SHit::Write_Packet_Cont(NET_Packet& Packet)
     if (hit_type == ALife::eHitTypeFireWound)
     {
         Packet.w_float(ap);
-    }
-    if (PACKET_TYPE == GE_HIT_STATISTIC)
-    {
-        Packet.w_u32(BulletID);
-        Packet.w_u32(SenderID);
     }
 }
 void SHit::Write_Packet(NET_Packet& Packet)

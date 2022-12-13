@@ -34,7 +34,6 @@
 #include "level_sounds.h"
 #include "car.h"
 #include "trade_parameters.h"
-#include "game_cl_base_weapon_usage_statistic.h"
 #include "clsid_game.h"
 #include "MainMenu.h"
 #include "../xr_3da/XR_IOConsole.h"

@@ -11,12 +11,10 @@
 #include "..\xr_3da\xr_ioc_cmd.h"
 #include "string_table.h"
 
-#include "debug_renderer.h"
-
 #define MAPROT_LIST_NAME "maprot_list.ltx"
+
 string_path MAPROT_LIST = "";
 BOOL net_sv_control_hit = FALSE;
-BOOL g_bCollectStatisticData = FALSE;
 
 //-----------------------------------------------------------------
 u32 g_sv_base_dwRPointFreezeTime = 0;
@@ -247,7 +245,7 @@ void game_sv_GameState::net_Export_State(NET_Packet& P, ClientID to)
     P.w_u32(m_start_time);
     P.w_u8(u8(g_sv_base_iVotingEnabled & 0xff));
     P.w_u8(u8(net_sv_control_hit));
-    P.w_u8(u8(g_bCollectStatisticData));
+    P.w_u8(u8(0));
 
     // Players
     u32 p_count = 0;
