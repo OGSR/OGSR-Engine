@@ -385,13 +385,14 @@ void CPoltergeist::OnDie()
 
     Energy::disable();
     CTelekinesis::deactivate();
-    ability()->on_die();
 }
 
 void CPoltergeist::Die(CObject* who)
 {
     inherited::Die(who);
     OnDie();
+
+    ability()->on_die();
 }
 
 void CPoltergeist::Hit(SHit* pHDS)
