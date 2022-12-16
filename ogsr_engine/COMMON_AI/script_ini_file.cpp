@@ -32,8 +32,6 @@ int CScriptIniFile::r_clsid(LPCSTR S, LPCSTR L) { return (object_factory().scrip
 
 bool CScriptIniFile::r_bool(LPCSTR S, LPCSTR L) { return (!!inherited::r_bool(S, L)); }
 
-int CScriptIniFile::r_token(LPCSTR S, LPCSTR L, const CScriptTokenList& token_list) { return (inherited::r_token(S, L, &*token_list.tokens().begin())); }
-
 LPCSTR CScriptIniFile::r_string_wb(LPCSTR S, LPCSTR L) { return (*inherited::r_string_wb(S, L)); }
 
 u32 CScriptIniFile::line_count(LPCSTR S)

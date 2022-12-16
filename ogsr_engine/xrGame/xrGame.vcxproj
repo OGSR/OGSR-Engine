@@ -1114,10 +1114,6 @@
     <ClInclude Include="script_hit_inline.h" />
     <ClInclude Include="..\COMMON_AI\script_ini_file.h" />
     <ClInclude Include="..\COMMON_AI\script_ini_file_inline.h" />
-    <ClInclude Include="..\COMMON_AI\script_token_list.h" />
-    <ClInclude Include="..\COMMON_AI\script_token_list_inline.h" />
-    <ClInclude Include="..\COMMON_AI\script_rtoken_list.h" />
-    <ClInclude Include="..\COMMON_AI\script_rtoken_list_inline.h" />
     <ClInclude Include="script_monster_hit_info.h" />
     <ClInclude Include="..\COMMON_AI\script_net_packet.h" />
     <ClInclude Include="script_render_device.h" />
@@ -2055,9 +2051,6 @@
     <ClCompile Include="script_hit_script.cpp" />
     <ClCompile Include="..\COMMON_AI\script_ini_file.cpp" />
     <ClCompile Include="..\COMMON_AI\script_ini_file_script.cpp" />
-    <ClCompile Include="..\COMMON_AI\script_token_list.cpp" />
-    <ClCompile Include="..\COMMON_AI\script_token_list_script.cpp" />
-    <ClCompile Include="..\COMMON_AI\script_rtoken_list_script.cpp" />
     <ClCompile Include="script_monster_hit_info_script.cpp" />
     <ClCompile Include="..\COMMON_AI\script_net_packet_script.cpp" />
     <ClCompile Include="script_render_device_script.cpp" />

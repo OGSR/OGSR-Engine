@@ -54,7 +54,6 @@ void CScriptIniFile::script_register(lua_State* L)
 
                   .def("r_clsid", &CScriptIniFile::r_clsid)
                   .def("r_bool", &CScriptIniFile::r_bool)
-                  .def("r_token", &CScriptIniFile::r_token)
                   .def("r_string_wq", &CScriptIniFile::r_string_wb)
                   .def("r_string", &CScriptIniFile::r_string)
                   .def("r_u32", &CScriptIniFile::r_u32)

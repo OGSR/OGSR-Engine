@@ -1159,12 +1159,6 @@
     <Filter Include="AI\AScript\ScriptClasses\ScriptIniFile">
       <UniqueIdentifier>{a857a5c7-c1fa-4e77-b884-ca8616ae8408}</UniqueIdentifier>
     </Filter>
-    <Filter Include="AI\AScript\ScriptClasses\ScriptIniFile\ScriptTokenList">
-      <UniqueIdentifier>{e75b072c-56a9-42be-832e-d5c54657ceda}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\AScript\ScriptClasses\ScriptIniFile\ScriptRTokenList">
-      <UniqueIdentifier>{4423dddc-2d2c-4f31-82bf-56bd4db3ebf5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="AI\AScript\ScriptClasses\ScriptMonsterHitInfo">
       <UniqueIdentifier>{857dcf78-8085-4d82-9ecb-595b09883c62}</UniqueIdentifier>
     </Filter>
@@ -4067,18 +4061,6 @@
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\script_ini_file_inline.h">
       <Filter>AI\AScript\ScriptClasses\ScriptIniFile</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_token_list.h">
-      <Filter>AI\AScript\ScriptClasses\ScriptIniFile\ScriptTokenList</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_token_list_inline.h">
-      <Filter>AI\AScript\ScriptClasses\ScriptIniFile\ScriptTokenList</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_rtoken_list.h">
-      <Filter>AI\AScript\ScriptClasses\ScriptIniFile\ScriptRTokenList</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_rtoken_list_inline.h">
-      <Filter>AI\AScript\ScriptClasses\ScriptIniFile\ScriptRTokenList</Filter>
     </ClInclude>
     <ClInclude Include="script_monster_hit_info.h">
       <Filter>AI\AScript\ScriptClasses\ScriptMonsterHitInfo</Filter>
@@ -7200,15 +7182,6 @@
     </ClCompile>
     <ClCompile Include="..\COMMON_AI\script_ini_file_script.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptIniFile</Filter>
-    </ClCompile>
-    <ClCompile Include="..\COMMON_AI\script_token_list.cpp">
-      <Filter>AI\AScript\ScriptClasses\ScriptIniFile\ScriptTokenList</Filter>
-    </ClCompile>
-    <ClCompile Include="..\COMMON_AI\script_token_list_script.cpp">
-      <Filter>AI\AScript\ScriptClasses\ScriptIniFile\ScriptTokenList</Filter>
-    </ClCompile>
-    <ClCompile Include="..\COMMON_AI\script_rtoken_list_script.cpp">
-      <Filter>AI\AScript\ScriptClasses\ScriptIniFile\ScriptRTokenList</Filter>
     </ClCompile>
     <ClCompile Include="script_monster_hit_info_script.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptMonsterHitInfo</Filter>
