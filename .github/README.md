@@ -43,6 +43,7 @@
 * [X-Ray Engine by Alpet & KD](https://github.com/joye-ramone/xray_xp_dev)
 * [CoC-Xray](https://github.com/revolucas/CoC-Xray)
 * [IX-Ray](https://github.com/ixray-team/ixray-1.6-stcop)
+* [ScreenSpaceShaders](https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders)
 
 And everyone else whose work has been used. If you are not mentioned, send a message and you will be added.
 
@@ -78,5 +79,6 @@ And everyone else whose work has been used. If you are not mentioned, send a mes
 * [X-Ray Engine by Alpet & KD](https://github.com/joye-ramone/xray_xp_dev)
 * [CoC-Xray](https://github.com/revolucas/CoC-Xray)
 * [IX-Ray](https://github.com/ixray-team/ixray-1.6-stcop)
+* [ScreenSpaceShaders](https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders)
 
 И всех остальных, чьи работы я использовал. Пишите, если забыл кого-то, добавлю в список.
