@@ -16,7 +16,7 @@ using namespace luabind;
 void CScriptSoundType::script_register(lua_State* L)
 {
     module(L)[class_<enum_exporter<ESoundTypes>>("snd_type")
-                  .enum_("sound_types")
+                  .enum_("sound_game_types")
                       [value("no_sound", int(SOUND_TYPE_NO_SOUND)), value("weapon", int(SOUND_TYPE_WEAPON)), value("item", int(SOUND_TYPE_ITEM)),
                        value("monster", int(SOUND_TYPE_MONSTER)), value("anomaly", int(SOUND_TYPE_ANOMALY)), value("world", int(SOUND_TYPE_WORLD)),
                        value("pick_up", int(SOUND_TYPE_PICKING_UP)), value("drop", int(SOUND_TYPE_DROPPING)), value("hide", int(SOUND_TYPE_HIDING)),

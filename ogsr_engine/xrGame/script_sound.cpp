@@ -13,13 +13,13 @@
 #include "ai_space.h"
 #include "script_engine.h"
 
-CScriptSound::CScriptSound(LPCSTR caSoundName, ESoundTypes sound_type)
+CScriptSound::CScriptSound(LPCSTR caSoundName, ESoundTypes game_type, esound_type kind)
 {
     m_caSoundToPlay = caSoundName;
     string_path l_caFileName;
     VERIFY(::Sound);
     if (FS.exist(l_caFileName, "$game_sounds$", caSoundName, ".ogg"))
-        m_sound.create(caSoundName, st_Effect, sound_type);
+        m_sound.create(caSoundName, kind, game_type);
     else
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "File not found \"%s\"!", l_caFileName);
 }

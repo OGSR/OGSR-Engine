@@ -21,7 +21,7 @@ class CScriptSound
     friend class CScriptSoundAction;
 
 public:
-    CScriptSound(LPCSTR caSoundName, ESoundTypes sound_type = SOUND_TYPE_NO_SOUND);
+    CScriptSound(LPCSTR caSoundName, ESoundTypes game_type = SOUND_TYPE_NO_SOUND, esound_type kind = st_Effect);
     virtual ~CScriptSound();
     IC u32 Length();
     IC void Play(CScriptGameObject* object);
