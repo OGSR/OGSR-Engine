@@ -1012,10 +1012,10 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
     {
         ID3DBlob* disasm = 0;
         D3DDisassemble(buffer, buffer_size, FALSE, 0, &disasm);
-        // D3DXDisassembleShader		(LPDWORD(code->GetBufferPointer()), FALSE, 0, &disasm );
+        //Пусть дизассемблятся по пути шейдеркэша, всё равно его теперь нету.
         string_path dname;
-        strconcat(sizeof(dname), dname, "disasm\\", file_name, ('v' == pTarget[0]) ? ".vs" : ('p' == pTarget[0]) ? ".ps" : ".gs");
-        IWriter* W = FS.w_open("$logs$", dname);
+        xr_strconcat(dname, file_name, ".txt");
+        IWriter* W = FS.w_open(dname);
         W->w(disasm->GetBufferPointer(), (u32)disasm->GetBufferSize());
         FS.w_close(W);
         _RELEASE(disasm);
@@ -1056,733 +1056,194 @@ public:
     }
 };
 
-static inline bool match_shader_id(LPCSTR const debug_shader_id, LPCSTR const full_shader_id, FS_FileSet const& file_set, string_path& result);
-
 HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcDataLen, LPCSTR pFunctionName, LPCSTR pTarget, DWORD Flags, void*& result)
 {
-    D3D_SHADER_MACRO defines[128];
-    int def_it = 0;
-    char c_smapsize[32];
-    char c_sun_shafts[32];
-    char c_ssao[32];
-    char c_sun_quality[32];
+    xr_vector<D3D_SHADER_MACRO> defines{m_ShaderOptions};
+    defines.reserve(55);
 
-    char sh_name[MAX_PATH] = "";
+    char c_smapsize[10]{};
+    char c_sun_shafts[10]{};
+    char c_sun_quality[10]{};
+    char c_ssao[10]{};
+    char samples[10]{};
 
-    for (u32 i = 0; i < m_ShaderOptions.size(); ++i)
-    {
-        defines[def_it++] = m_ShaderOptions[i];
-    }
-
-    u32 len = xr_strlen(sh_name);
-    // options
-    {
-        xr_sprintf(c_smapsize, "%04d", u32(o.smapsize));
-        defines[def_it].Name = "SMAP_size";
-        defines[def_it].Definition = c_smapsize;
-        def_it++;
-        VERIFY(xr_strlen(c_smapsize) == 4);
-        xr_strcat(sh_name, c_smapsize);
-        len += 4;
-    }
+    sprintf_s(c_smapsize, "%d", o.smapsize);
+    defines.emplace_back("SMAP_size", c_smapsize);
 
     if (o.fp16_filter)
-    {
-        defines[def_it].Name = "FP16_FILTER";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(o.fp16_filter);
-    ++len;
+        defines.emplace_back("FP16_FILTER", "1");
 
     if (o.fp16_blend)
-    {
-        defines[def_it].Name = "FP16_BLEND";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(o.fp16_blend);
-    ++len;
+        defines.emplace_back("FP16_BLEND", "1");
 
     if (o.HW_smap)
-    {
-        defines[def_it].Name = "USE_HWSMAP";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(o.HW_smap);
-    ++len;
+        defines.emplace_back("USE_HWSMAP", "1");
 
     if (o.HW_smap_PCF)
-    {
-        defines[def_it].Name = "USE_HWSMAP_PCF";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(o.HW_smap_PCF);
-    ++len;
+        defines.emplace_back("USE_HWSMAP_PCF", "1");
 
     if (o.HW_smap_FETCH4)
-    {
-        defines[def_it].Name = "USE_FETCH4";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(o.HW_smap_FETCH4);
-    ++len;
+        defines.emplace_back("USE_FETCH4", "1");
 
     if (o.sjitter)
-    {
-        defines[def_it].Name = "USE_SJITTER";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(o.sjitter);
-    ++len;
+        defines.emplace_back("USE_SJITTER", "1");
 
     if (HW.Caps.raster_major >= 3)
-    {
-        defines[def_it].Name = "USE_BRANCHING";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(HW.Caps.raster_major >= 3);
-    ++len;
+        defines.emplace_back("USE_BRANCHING", "1");
 
     if (HW.Caps.geometry.bVTF)
-    {
-        defines[def_it].Name = "USE_VTF";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(HW.Caps.geometry.bVTF);
-    ++len;
+        defines.emplace_back("USE_VTF", "1");
 
     if (o.Tshadows)
-    {
-        defines[def_it].Name = "USE_TSHADOWS";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(o.Tshadows);
-    ++len;
+        defines.emplace_back("USE_TSHADOWS", "1");
 
     if (o.mblur)
-    {
-        defines[def_it].Name = "USE_MBLUR";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(o.mblur);
-    ++len;
+        defines.emplace_back("USE_MBLUR", "1");
 
     if (o.sunfilter)
-    {
-        defines[def_it].Name = "USE_SUNFILTER";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(o.sunfilter);
-    ++len;
+        defines.emplace_back("USE_SUNFILTER", "1");
 
     if (o.sunstatic)
-    {
-        defines[def_it].Name = "USE_R2_STATIC_SUN";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(o.sunstatic);
-    ++len;
+        defines.emplace_back("USE_R2_STATIC_SUN", "1");
 
     if (o.forceskinw)
-    {
-        defines[def_it].Name = "SKIN_COLOR";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(o.forceskinw);
-    ++len;
+        defines.emplace_back("SKIN_COLOR", "1");
 
     if (o.ssao_blur_on)
-    {
-        defines[def_it].Name = "USE_SSAO_BLUR";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(o.ssao_blur_on);
-    ++len;
+        defines.emplace_back("USE_SSAO_BLUR", "1");
 
     if (o.ssao_hdao)
-    {
-        defines[def_it].Name = "HDAO";
-        defines[def_it].Definition = "1";
-        def_it++;
-        sh_name[len] = '1';
-        ++len;
-        sh_name[len] = '0';
-        ++len;
-        sh_name[len] = '0';
-        ++len;
-    }
+        defines.emplace_back("HDAO", "1");
     else
     {
-        sh_name[len] = '0';
-        ++len;
-        sh_name[len] = '0' + char(o.ssao_hbao);
-        ++len;
-        sh_name[len] = '0' + char(o.ssao_half_data);
-        ++len;
         if (o.ssao_hbao)
         {
-            defines[def_it].Name = "SSAO_OPT_DATA";
-            if (o.ssao_half_data)
-            {
-                defines[def_it].Definition = "2";
-            }
-            else
-            {
-                defines[def_it].Definition = "1";
-            }
-            def_it++;
-
+            defines.emplace_back("USE_HBAO", "1");
+            defines.emplace_back("SSAO_OPT_DATA", o.ssao_half_data ? "2" : "1");
             if (o.hbao_vectorized)
-            {
-                defines[def_it].Name = "VECTORIZED_CODE";
-                defines[def_it].Definition = "1";
-                def_it++;
-            }
-
-            defines[def_it].Name = "USE_HBAO";
-            defines[def_it].Definition = "1";
-            def_it++;
+                defines.emplace_back("VECTORIZED_CODE", "1");
         }
     }
 
     if (o.dx10_msaa)
-    {
-        static char def[256];
-        // if( m_MSAASample < 0 )
-        //{
-        def[0] = '0';
-        //	sh_name[len]='0'; ++len;
-        //}
-        // else
-        //{
-        //	def[0]= '0' + char(m_MSAASample);
-        //	sh_name[len]='0' + char(m_MSAASample); ++len;
-        //}
-        def[1] = 0;
-        defines[def_it].Name = "ISAMPLE";
-        defines[def_it].Definition = def;
-        def_it++;
-        sh_name[len] = '0';
-        ++len;
-    }
-    else
-    {
-        sh_name[len] = '0';
-        ++len;
-    }
+        defines.emplace_back("ISAMPLE", "0");
 
     // skinning
     if (m_skinning < 0)
-    {
-        defines[def_it].Name = "SKIN_NONE";
-        defines[def_it].Definition = "1";
-        def_it++;
-        sh_name[len] = '1';
-        ++len;
-    }
-    else
-    {
-        sh_name[len] = '0';
-        ++len;
-    }
-
-    if (0 == m_skinning)
-    {
-        defines[def_it].Name = "SKIN_0";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(0 == m_skinning);
-    ++len;
-
-    if (1 == m_skinning)
-    {
-        defines[def_it].Name = "SKIN_1";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(1 == m_skinning);
-    ++len;
-
-    if (2 == m_skinning)
-    {
-        defines[def_it].Name = "SKIN_2";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(2 == m_skinning);
-    ++len;
-
-    if (3 == m_skinning)
-    {
-        defines[def_it].Name = "SKIN_3";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(3 == m_skinning);
-    ++len;
-
-    if (4 == m_skinning)
-    {
-        defines[def_it].Name = "SKIN_4";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(4 == m_skinning);
-    ++len;
+        defines.emplace_back("SKIN_NONE", "1");
+    else if (0 == m_skinning)
+        defines.emplace_back("SKIN_0", "1");
+    else if (1 == m_skinning)
+        defines.emplace_back("SKIN_1", "1");
+    else if (2 == m_skinning)
+        defines.emplace_back("SKIN_2", "1");
+    else if (3 == m_skinning)
+        defines.emplace_back("SKIN_3", "1");
+    else if (4 == m_skinning)
+        defines.emplace_back("SKIN_4", "1");
 
     //	Igor: need restart options
     if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_WATER))
-    {
-        defines[def_it].Name = "USE_SOFT_WATER";
-        defines[def_it].Definition = "1";
-        def_it++;
-        sh_name[len] = '1';
-        ++len;
-    }
-    else
-    {
-        sh_name[len] = '0';
-        ++len;
-    }
+        defines.emplace_back("USE_SOFT_WATER", "1");
 
     if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES))
-    {
-        defines[def_it].Name = "USE_SOFT_PARTICLES";
-        defines[def_it].Definition = "1";
-        def_it++;
-        sh_name[len] = '1';
-        ++len;
-    }
-    else
-    {
-        sh_name[len] = '0';
-        ++len;
-    }
+        defines.emplace_back("USE_SOFT_PARTICLES", "1");
 
     if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_DOF))
-    {
-        defines[def_it].Name = "USE_DOF";
-        defines[def_it].Definition = "1";
-        def_it++;
-        sh_name[len] = '1';
-        ++len;
-    }
-    else
-    {
-        sh_name[len] = '0';
-        ++len;
-    }
+        defines.emplace_back("USE_DOF", "1");
 
     if (RImplementation.o.advancedpp && ps_r_sun_shafts)
     {
-        xr_sprintf(c_sun_shafts, "%d", ps_r_sun_shafts);
-        defines[def_it].Name = "SUN_SHAFTS_QUALITY";
-        defines[def_it].Definition = c_sun_shafts;
-        def_it++;
-        sh_name[len] = '0' + char(ps_r_sun_shafts);
-        ++len;
-    }
-    else
-    {
-        sh_name[len] = '0';
-        ++len;
+        sprintf_s(c_sun_shafts, "%d", ps_r_sun_shafts);
+        defines.emplace_back("SUN_SHAFTS_QUALITY", c_sun_shafts);
     }
 
     if (RImplementation.o.advancedpp && ps_r_ssao)
     {
-        xr_sprintf(c_ssao, "%d", ps_r_ssao);
-        defines[def_it].Name = "SSAO_QUALITY";
-        defines[def_it].Definition = c_ssao;
-        def_it++;
-        sh_name[len] = '0' + char(ps_r_ssao);
-        ++len;
-    }
-    else
-    {
-        sh_name[len] = '0';
-        ++len;
+        sprintf_s(c_ssao, "%d", ps_r_ssao);
+        defines.emplace_back("SSAO_QUALITY", c_ssao);
     }
 
     if (RImplementation.o.advancedpp && ps_r_sun_quality)
     {
-        xr_sprintf(c_sun_quality, "%d", ps_r_sun_quality);
-        defines[def_it].Name = "SUN_QUALITY";
-        defines[def_it].Definition = c_sun_quality;
-        def_it++;
-        sh_name[len] = '0' + char(ps_r_sun_quality);
-        ++len;
-    }
-    else
-    {
-        sh_name[len] = '0';
-        ++len;
+        sprintf_s(c_sun_quality, "%d", ps_r_sun_quality);
+        defines.emplace_back("SUN_QUALITY", c_sun_quality);
     }
 
     if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_STEEP_PARALLAX))
-    {
-        defines[def_it].Name = "ALLOW_STEEPPARALLAX";
-        defines[def_it].Definition = "1";
-        def_it++;
-        sh_name[len] = '1';
-        ++len;
-    }
-    else
-    {
-        sh_name[len] = '0';
-        ++len;
-    }
+        defines.emplace_back("ALLOW_STEEPPARALLAX", "1");
 
     if (o.dx10_gbuffer_opt)
-    {
-        defines[def_it].Name = "GBUFFER_OPTIMIZATION";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(o.dx10_gbuffer_opt);
-    ++len;
+        defines.emplace_back("GBUFFER_OPTIMIZATION", "1");
 
-    // R_ASSERT						( !o.dx10_sm4_1 );
     if (o.dx10_sm4_1)
-    {
-        defines[def_it].Name = "SM_4_1";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(o.dx10_sm4_1);
-    ++len;
+        defines.emplace_back("SM_4_1", "1");
 
-    R_ASSERT(HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0);
     if (HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0)
-    {
-        defines[def_it].Name = "SM_5";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0);
-    ++len;
+        defines.emplace_back("SM_5", "1");
 
     if (o.dx10_minmax_sm)
-    {
-        defines[def_it].Name = "USE_MINMAX_SM";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(o.dx10_minmax_sm != 0);
-    ++len;
+        defines.emplace_back("USE_MINMAX_SM", "1");
 
     if (ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR))
-    {
-        defines[def_it].Name = "SSLR_ENABLED";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR));
-    ++len;
+        defines.emplace_back("SSLR_ENABLED", "1");
 
     if (ps_r2_ls_flags_ext.test(R2FLAGEXT_TERRAIN_PARALLAX))
-    {
-        defines[def_it].Name = "TERRAIN_PARALLAX_ENABNLED";
-        defines[def_it].Definition = "1";
-        def_it++;
-    }
-    sh_name[len] = '0' + char(ps_r2_ls_flags_ext.test(R2FLAGEXT_TERRAIN_PARALLAX));
-    ++len;
+        defines.emplace_back("TERRAIN_PARALLAX_ENABNLED", "1");
 
-    // Be carefull!!!!! this should be at the end to correctly generate
-    // compiled shader name;
-    //  add a #define for DX10_1 MSAA support
     if (o.dx10_msaa)
     {
-        defines[def_it].Name = "USE_MSAA";
-        defines[def_it].Definition = "1";
-        def_it++;
-        sh_name[len] = '1';
-        ++len;
+        defines.emplace_back("USE_MSAA", "1");
 
-        static char samples[2];
-
-        defines[def_it].Name = "MSAA_SAMPLES";
-        samples[0] = char(o.dx10_msaa_samples) + '0';
-        samples[1] = 0;
-        defines[def_it].Definition = samples;
-        def_it++;
-        sh_name[len] = '0' + char(o.dx10_msaa_samples);
-        ++len;
+        sprintf_s(samples, "%d", o.dx10_msaa_samples);
+        defines.emplace_back("MSAA_SAMPLES", samples);
 
         if (o.dx10_msaa_opt)
-        {
-            defines[def_it].Name = "MSAA_OPTIMIZATION";
-            defines[def_it].Definition = "1";
-            def_it++;
-        }
-        sh_name[len] = '0' + char(o.dx10_msaa_opt);
-        ++len;
+            defines.emplace_back("MSAA_OPTIMIZATION", "1");
 
         switch (o.dx10_msaa_alphatest)
         {
-        case MSAA_ATEST_DX10_0_ATOC:
-            defines[def_it].Name = "MSAA_ALPHATEST_DX10_0_ATOC";
-            defines[def_it].Definition = "1";
-            def_it++;
-            sh_name[len] = '1';
-            ++len;
-            sh_name[len] = '0';
-            ++len;
-            sh_name[len] = '0';
-            ++len;
-            break;
-        case MSAA_ATEST_DX10_1_ATOC:
-            defines[def_it].Name = "MSAA_ALPHATEST_DX10_1_ATOC";
-            defines[def_it].Definition = "1";
-            def_it++;
-            sh_name[len] = '0';
-            ++len;
-            sh_name[len] = '1';
-            ++len;
-            sh_name[len] = '0';
-            ++len;
-            break;
-        case MSAA_ATEST_DX10_1_NATIVE:
-            defines[def_it].Name = "MSAA_ALPHATEST_DX10_1";
-            defines[def_it].Definition = "1";
-            def_it++;
-            sh_name[len] = '0';
-            ++len;
-            sh_name[len] = '0';
-            ++len;
-            sh_name[len] = '1';
-            ++len;
-            break;
-        default:
-            sh_name[len] = '0';
-            ++len;
-            sh_name[len] = '0';
-            ++len;
-            sh_name[len] = '0';
-            ++len;
+        case MSAA_ATEST_DX10_0_ATOC: defines.emplace_back("MSAA_ALPHATEST_DX10_0_ATOC", "1"); break;
+        case MSAA_ATEST_DX10_1_ATOC: defines.emplace_back("MSAA_ALPHATEST_DX10_1_ATOC", "1"); break;
+        case MSAA_ATEST_DX10_1_NATIVE: defines.emplace_back("MSAA_ALPHATEST_DX10_1", "1"); break;
         }
     }
-    else
-    {
-        sh_name[len] = '0';
-        ++len;
-        sh_name[len] = '0';
-        ++len;
-        sh_name[len] = '0';
-        ++len;
-        sh_name[len] = '0';
-        ++len;
-        sh_name[len] = '0';
-        ++len;
-        sh_name[len] = '0';
-        ++len;
-    }
-
-    sh_name[len] = 0;
 
     // finish
-    defines[def_it].Name = 0;
-    defines[def_it].Definition = 0;
-    def_it++;
+    defines.emplace_back(nullptr, nullptr);
 
-    //
-    if (0 == xr_strcmp(pFunctionName, "main"))
-    {
-        if ('v' == pTarget[0])
-        {
-            if (HW.FeatureLevel == D3D_FEATURE_LEVEL_10_0)
-                pTarget = "vs_4_0";
-            else if (HW.FeatureLevel == D3D_FEATURE_LEVEL_10_1)
-                pTarget = "vs_4_1";
-            else if (HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0)
-                pTarget = "vs_5_0";
-        }
-        else if ('p' == pTarget[0])
-        {
-            if (HW.FeatureLevel == D3D_FEATURE_LEVEL_10_0)
-                pTarget = "ps_4_0";
-            else if (HW.FeatureLevel == D3D_FEATURE_LEVEL_10_1)
-                pTarget = "ps_4_1";
-            else if (HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0)
-                pTarget = "ps_5_0";
-        }
-        else if ('g' == pTarget[0])
-        {
-            if (HW.FeatureLevel == D3D_FEATURE_LEVEL_10_0)
-                pTarget = "gs_4_0";
-            else if (HW.FeatureLevel == D3D_FEATURE_LEVEL_10_1)
-                pTarget = "gs_4_1";
-            else if (HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0)
-                pTarget = "gs_5_0";
-        }
-        else if ('c' == pTarget[0])
-        {
-            if (HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0)
-                pTarget = "cs_5_0";
-        }
-    }
-
-    HRESULT _result = E_FAIL;
-
-    string_path folder_name, folder;
-    xr_strcpy(folder, "r3\\objects\\r4\\");
-    xr_strcat(folder, name);
-    xr_strcat(folder, ".");
-
-    char extension[3];
+    char extension[3]{};
     strncpy_s(extension, pTarget, 2);
-    xr_strcat(folder, extension);
 
-    FS.update_path(folder_name, "$game_shaders$", folder);
-    xr_strcat(folder_name, "\\");
+    string_path file_name{};
 
-    m_file_set.clear();
-    FS.file_list(m_file_set, folder_name, FS_ListFiles | FS_RootOnly, "*");
+    string_path file{};
+    xr_strcpy(file, "shaders_cache\\r4\\");
+    xr_strcat(file, name);
+    xr_strcat(file, ".");
+    xr_strcat(file, extension);
+    FS.update_path(file_name, "$app_data_root$", file);
 
-    string_path temp_file_name, file_name;
-    if (!match_shader_id(name, sh_name, m_file_set, temp_file_name))
+    includer Includer;
+    LPD3DBLOB pShaderBuf{};
+    LPD3DBLOB pErrorBuf{};
+
+    // Msg("--Compiling shader [%s] %s] [%s]", name, pTarget, pFunctionName);
+
+    auto _result = D3DCompile(pSrcData, SrcDataLen, "", defines.data(), &Includer, pFunctionName, pTarget, Flags, 0, &pShaderBuf, &pErrorBuf);
+
+    if (SUCCEEDED(_result))
     {
-        string_path file;
-        xr_strcpy(file, "shaders_cache\\r4\\");
-        xr_strcat(file, name);
-        xr_strcat(file, ".");
-        xr_strcat(file, extension);
-        xr_strcat(file, "\\");
-        xr_strcat(file, sh_name);
-        FS.update_path(file_name, "$app_data_root$", file);
+        _result = create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
     }
     else
     {
-        xr_strcpy(file_name, folder_name);
-        xr_strcat(file_name, temp_file_name);
-    }
-
-    if (ps_r2_ls_flags_ext.test(R2FLAGEXT_SHADER_CACHE) && FS.exist(file_name))
-    {
-        IReader* file = FS.r_open(file_name);
-        if (file->length() > 4)
-        {
-            u32 crc = 0;
-            crc = file->r_u32();
-
-            u32 const real_crc = crc32(file->pointer(), file->elapsed());
-
-            if (real_crc == crc)
-            {
-                _result = create_shader(pTarget, (DWORD*)file->pointer(), file->elapsed(), file_name, result, o.disasm);
-            }
-        }
-        file->close();
-    }
-
-    if (FAILED(_result))
-    {
-        includer Includer;
-        LPD3DBLOB pShaderBuf = NULL;
-        LPD3DBLOB pErrorBuf = NULL;
-        _result = D3DCompile(pSrcData, SrcDataLen,
-                             "", // NULL, //LPCSTR pFileName,	//	NVPerfHUD bug workaround.
-                             defines, &Includer, pFunctionName, pTarget, Flags, 0, &pShaderBuf, &pErrorBuf);
-
-        if (SUCCEEDED(_result))
-        {
-            if (ps_r2_ls_flags_ext.test(R2FLAGEXT_SHADER_CACHE))
-            {
-                IWriter* file = FS.w_open(file_name);
-
-                u32 const crc = crc32(pShaderBuf->GetBufferPointer(), u32(pShaderBuf->GetBufferSize()));
-
-                file->w_u32(crc);
-                file->w(pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize());
-                FS.w_close(file);
-            }
-
-            _result = create_shader(pTarget, (DWORD*)pShaderBuf->GetBufferPointer(), (u32)pShaderBuf->GetBufferSize(), file_name, result, o.disasm);
-        }
+        Msg("! %s", file_name);
+        if (pErrorBuf)
+            Msg("! error: %s", pErrorBuf->GetBufferPointer());
         else
-        {
-            Msg("! %s", file_name);
-            if (pErrorBuf)
-                Msg("! error: %s", pErrorBuf->GetBufferPointer());
-            else
-                Msg("Can't compile shader hr=0x%08x", _result);
-        }
+            Msg("Can't compile shader hr=0x%08x", _result);
     }
 
     return _result;
-}
-
-static inline bool match_shader(LPCSTR const debug_shader_id, LPCSTR const full_shader_id, LPCSTR const mask, size_t const mask_length)
-{
-    u32 const full_shader_id_length = xr_strlen(full_shader_id);
-    R_ASSERT2(full_shader_id_length == mask_length, make_string("bad cache for shader %s, [%s], [%s]", debug_shader_id, mask, full_shader_id));
-    char const* i = full_shader_id;
-    char const* const e = full_shader_id + full_shader_id_length;
-    char const* j = mask;
-    for (; i != e; ++i, ++j)
-    {
-        if (*i == *j)
-            continue;
-
-        if (*j == '_')
-            continue;
-
-        return false;
-    }
-
-    return true;
-}
-
-static inline bool match_shader_id(LPCSTR const debug_shader_id, LPCSTR const full_shader_id, FS_FileSet const& file_set, string_path& result)
-{
-#if 0
-	strcpy_s					( result, "" );
-	return						false;
-#else // #if 1
-#ifdef DEBUG
-    LPCSTR temp = "";
-    bool found = false;
-    FS_FileSet::const_iterator i = file_set.begin();
-    FS_FileSet::const_iterator const e = file_set.end();
-    for (; i != e; ++i)
-    {
-        if (match_shader(debug_shader_id, full_shader_id, (*i).name.c_str(), (*i).name.size()))
-        {
-            VERIFY(!found);
-            found = true;
-            temp = (*i).name.c_str();
-        }
-    }
-
-    xr_strcpy(result, temp);
-    return found;
-#else // #ifdef DEBUG
-    FS_FileSet::const_iterator i = file_set.begin();
-    FS_FileSet::const_iterator const e = file_set.end();
-    for (; i != e; ++i)
-    {
-        if (match_shader(debug_shader_id, full_shader_id, (*i).name.c_str(), (*i).name.size()))
-        {
-            xr_strcpy(result, (*i).name.c_str());
-            return true;
-        }
-    }
-
-    return false;
-#endif // #ifdef DEBUG
-#endif // #if 1
 }

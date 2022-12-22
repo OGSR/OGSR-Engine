@@ -163,31 +163,26 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
         string_path cname;
         strconcat(sizeof(cname), cname, ::Render->getShaderPath(), /*_name*/ shName, ".vs");
         FS.update_path(cname, "$game_shaders$", cname);
-        //		LPCSTR						target		= NULL;
 
-        // duplicate and zero-terminate
         IReader* file = FS.r_open(cname);
         R_ASSERT2(file, cname);
 
         const std::string_view strbuf{reinterpret_cast<const char*>(file->pointer()), static_cast<size_t>(file->length())};
 
         // Select target
-        LPCSTR c_target = "vs_2_0";
+        LPCSTR c_target = "vs_5_0";
         LPCSTR c_entry = "main";
-        if (HW.Caps.geometry_major >= 2)
-            c_target = "vs_2_0";
-        else
-            c_target = "vs_1_1";
 
-        if (strbuf.find("main_vs_2_0") != decltype(strbuf)::npos)
+        // xrSimpodin: Для воды снизил версию до 4.1 потому что с ней фиксится баг с неподвижной водой. Не понятно почему так происходит и проблема решается таким странным
+        // способом. Можно было бы сменить c_entry на main_vs_4_1 но там куча шейдеров для воды сделано через инклуды и они не позволяют так сделать.
+        if (!strncmp(shName, "water", strlen("water")))
         {
-            c_target = "vs_2_0";
-            c_entry = "main_vs_2_0";
+            c_target = "vs_4_1";
         }
-        else if (strbuf.find("main_vs_1_1") != decltype(strbuf)::npos)
+        else if (strbuf.find("main_vs_4_1") != decltype(strbuf)::npos)
         {
-            c_target = "vs_1_1";
-            c_entry = "main_vs_1_1";
+            c_target = "vs_4_1";
+            c_entry = "main_vs_4_1";
         }
 
         HRESULT const _hr = ::Render->shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target,
@@ -274,39 +269,26 @@ SPS* CResourceManager::_CreatePS(LPCSTR _name)
         strconcat(sizeof(cname), cname, ::Render->getShaderPath(), /*_name*/ shName, ".ps");
         FS.update_path(cname, "$game_shaders$", cname);
 
-        // duplicate and zero-terminate
         IReader* file = FS.r_open(cname);
         R_ASSERT2(file, cname);
 
         const std::string_view strbuf{reinterpret_cast<const char*>(file->pointer()), static_cast<size_t>(file->length())};
 
         // Select target
-        LPCSTR c_target = "ps_2_0";
+        LPCSTR c_target = "ps_5_0";
         LPCSTR c_entry = "main";
-        if (strbuf.find("main_ps_2_0") != decltype(strbuf)::npos)
+
+        // xrSimpodin: Для воды снизил версию до 4.1 потому что с ней фиксится баг с неподвижной водой. Не понятно почему так происходит и проблема решается таким странным
+        // способом.
+        // Можно было бы сменить c_entry на main_ps_4_1 но там куча шейдеров для воды сделано через инклуды и они не позволяют так сделать.
+        if (!strncmp(shName, "water", strlen("water")))
         {
-            c_target = "ps_2_0";
-            c_entry = "main_ps_2_0";
+            c_target = "ps_4_1";
         }
-        else if (strbuf.find("main_ps_1_4") != decltype(strbuf)::npos)
+        else if (strbuf.find("main_ps_4_1") != decltype(strbuf)::npos)
         {
-            c_target = "ps_1_4";
-            c_entry = "main_ps_1_4";
-        }
-        else if (strbuf.find("main_ps_1_3") != decltype(strbuf)::npos)
-        {
-            c_target = "ps_1_3";
-            c_entry = "main_ps_1_3";
-        }
-        else if (strbuf.find("main_ps_1_2") != decltype(strbuf)::npos)
-        {
-            c_target = "ps_1_2";
-            c_entry = "main_ps_1_2";
-        }
-        else if (strbuf.find("main_ps_1_1") != decltype(strbuf)::npos)
-        {
-            c_target = "ps_1_1";
-            c_entry = "main_ps_1_1";
+            c_target = "ps_4_1";
+            c_entry = "main_ps_4_1";
         }
 
         HRESULT const _hr = ::Render->shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target,
@@ -357,12 +339,11 @@ SGS* CResourceManager::_CreateGS(LPCSTR name)
         strconcat(sizeof(cname), cname, ::Render->getShaderPath(), name, ".gs");
         FS.update_path(cname, "$game_shaders$", cname);
 
-        // duplicate and zero-terminate
         IReader* file = FS.r_open(cname);
         R_ASSERT2(file, cname);
 
         // Select target
-        LPCSTR c_target = "gs_4_0";
+        LPCSTR c_target = "gs_5_0";
         LPCSTR c_entry = "main";
 
         HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_gs);
