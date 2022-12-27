@@ -296,7 +296,7 @@ public:
         if (!success)
         {
             rewind();
-            while (!eof()) // while (impl().elapsed() >= (sizeof u32 * 2))
+            while (impl().elapsed() >= (sizeof u32 * 2)) //while (!eof())
             {
                 dwType = r_u32();
                 dwSize = r_u32();
@@ -353,7 +353,7 @@ public:
         if (!success)
         {
             rewind();
-            while (!eof()) // while (impl().elapsed() >= (sizeof u32 * 2))
+            while (impl().elapsed() >= (sizeof u32 * 2)) //while (!eof())
             {
                 dwType = r_u32();
                 dwSize = r_u32();
