@@ -32,7 +32,7 @@ float3 GetWaterNMap(Texture2D s_texture, float2 tc)
 
     water.xyz *= 0.4;
 
-	water.y = 0.1;
+    water.y = 0.1;
 
     return water.xyz;
 }
@@ -85,7 +85,7 @@ float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1) : SV_Target
 #ifdef INDOOR_LEAKS_FIX
     float s = shadow_hw(PS) * saturate(gbd.hemi * 10.0f);
 #else
-	float s = shadow_rain( PS, WorldP.xz + WorldN.xz * 0.02);  //Virtual position trick - GSC
+    float s = shadow_rain(PS, WorldP.xz + WorldN.xz * 0.02); // Virtual position trick - GSC
 #endif
 
     //	Apply distance falloff
@@ -100,8 +100,8 @@ float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1) : SV_Target
     s *= saturate(fIsUp * 10 + (10 * 0.5) + 0.5);
     fIsUp = max(0, fIsUp);
 
-//	note from meatchunk: using timers.x*3.0 seems to cause big FPS drops for some
-	float3 waterSplash = GetNVNMap( s_water, WorldP.xz, timers.x);	//timers.x*3.0 );
+    //	note from meatchunk: using timers.x*3.0 seems to cause big FPS drops for some
+    float3 waterSplash = GetNVNMap(s_water, WorldP.xz, timers.x); // timers.x*3.0 );
 
     float WeaponAttenuation = smoothstep(0.8, 0.9, length(_P.xyz));
     float ApplyNormalCoeff = s * WeaponAttenuation;

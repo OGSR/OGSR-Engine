@@ -5,7 +5,7 @@
 #define SM_MINMAX
 #endif
 
-#if SUN_QUALITY>2
+#if SUN_QUALITY > 2
 #define ULTRA_SHADOWS_ON
 #endif //	SUN_QUALITY>2
 
@@ -20,54 +20,52 @@
 
 #ifdef USE_SUNFILTER
 #ifdef MSAA_OPTIMIZATION
-float4 main ( v2p_volume I, uint iSample : SV_SAMPLEINDEX  ) : SV_Target
+float4 main(v2p_volume I, uint iSample : SV_SAMPLEINDEX) : SV_Target
 #else
-float4 main ( v2p_volume I  ) : SV_Target
+float4 main(v2p_volume I) : SV_Target
 #endif
 {
-	gbuffer_data gbd = gbuffer_load_data( GLD_P(I.tc, I.hpos, ISAMPLE) );
+    gbuffer_data gbd = gbuffer_load_data(GLD_P(I.tc, I.hpos, ISAMPLE));
 
+    float4 _P = float4(gbd.P, 1.0);
 
-	float4 _P = float4( gbd.P, 1.0);
+    float4 PS = mul(m_shadow, _P);
 
-	float4 PS = mul( m_shadow,  _P );
+    float s = shadowtest_sun(PS, I.tcJ) * sunmask(_P);
 
-	float s	= shadowtest_sun( PS, I.tcJ ) * sunmask( _P );
-
-	return s;
+    return s;
 }
 #else
 #ifdef MSAA_OPTIMIZATION
-float4 main ( v2p_volume I,  uint iSample : SV_SAMPLEINDEX ) : SV_Target
+float4 main(v2p_volume I, uint iSample : SV_SAMPLEINDEX) : SV_Target
 #else
-float4 main ( v2p_volume I ) : SV_Target
+float4 main(v2p_volume I) : SV_Target
 #endif
 {
-	gbuffer_data gbd = gbuffer_load_data( GLD_P(I.tc.xy/I.tc.w, I.hpos, ISAMPLE) );
+    gbuffer_data gbd = gbuffer_load_data(GLD_P(I.tc.xy / I.tc.w, I.hpos, ISAMPLE));
 
-	float4 _P = float4( gbd.P, gbd.mtl );
-	float4  _N = float4( gbd.N, gbd.hemi );
-	
-	// ----- light-model
-	float	m	= xmaterial;
+    float4 _P = float4(gbd.P, gbd.mtl);
+    float4 _N = float4(gbd.N, gbd.hemi);
+
+    // ----- light-model
+    float m = xmaterial;
 #ifndef USE_R2_STATIC_SUN
-			m 	= _P.w;
+    m = _P.w;
 #endif
-	float4	light	= plight_infinity ( m, _P, _N, Ldynamic_dir );
+    float4 light = plight_infinity(m, _P, _N, Ldynamic_dir);
 
-	// ----- shadow
-  	float4 	P4 	= float4( _P.x, _P.y, _P.z, 1.0);
-	float4 	PS	= mul( m_shadow, P4 );
-	float 	s 	= sunmask( P4 );
-			s *= shadow( PS );
+    // ----- shadow
+    float4 P4 = float4(_P.x, _P.y, _P.z, 1.0);
+    float4 PS = mul(m_shadow, P4);
+    float s = sunmask(P4);
+    s *= shadow(PS);
 
-	s *= SSFX_ScreenSpaceShadows(_P, I.hpos, ISAMPLE);
-	
+    s *= SSFX_ScreenSpaceShadows(_P, I.hpos, ISAMPLE);
+
 #ifdef SSFX_ENHANCED_SHADERS // We have Enhanced Shaders installed
-	return 	float4( SRGBToLinear(Ldynamic_color.rgb * s.xxx),1) * light;
+    return float4(SRGBToLinear(Ldynamic_color.rgb * s.xxx), 1) * light;
 #else
-	return 	float4( Ldynamic_color * light * s);
+    return float4(Ldynamic_color * light * s);
 #endif
-
 }
 #endif

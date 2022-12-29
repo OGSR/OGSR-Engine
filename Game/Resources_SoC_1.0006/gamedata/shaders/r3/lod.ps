@@ -97,7 +97,8 @@ f_deffer main(vf I)
 
     return pack_gbuffer(float4(N, H.w), float4(I.position + N * def_virtualh / 2.h, 0), float4(D.x, D.y, D.z, def_gloss)
 #ifdef EXTEND_F_DEFFER
-        , mask
+                                                                                            ,
+                        mask
 #endif
     );
 }

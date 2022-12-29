@@ -1175,7 +1175,7 @@ float4 SMAABlendingWeightCalculationPS(float2 texcoord, float2 pixcoord, float4 
     if (e.g > 0.0)
     { // Edge at north
 #if !defined(SMAA_DISABLE_DIAG_DETECTION)
-        // Diagonals have both north and west edges, so searching for them in
+      // Diagonals have both north and west edges, so searching for them in
         // one of the boundaries is enough.
         weights.rg = SMAACalculateDiagWeights(SMAATexturePass2D(edgesTex), SMAATexturePass2D(areaTex), texcoord, e, subsampleIndices);
 

@@ -64,7 +64,8 @@ f_deffer main(p_particle II)
 
     return pack_gbuffer(Ne, float4(I.position.xyz + Ne.xyz * def_virtualh / 2.h, xmaterial), float4(D.xyz, def_gloss)
 #ifdef EXTEND_F_DEFFER
-        , mask
+                                                                                                 ,
+                        mask
 #endif
     );
 }

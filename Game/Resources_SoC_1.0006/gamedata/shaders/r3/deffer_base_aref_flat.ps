@@ -94,7 +94,8 @@ f_deffer main(p_flat I)
 
     return pack_gbuffer(Ne, float4(I.position.xyz + Ne.xyz * def_virtualh / 2.h, ms), float4(D.rgb, def_gloss)
 #ifdef EXTEND_F_DEFFER
-        , mask
+                                                                                          ,
+                        mask
 #endif
     );
 }

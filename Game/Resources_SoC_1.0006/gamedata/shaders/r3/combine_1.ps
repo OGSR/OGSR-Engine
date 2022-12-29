@@ -1,13 +1,11 @@
 #include "common.h"
 
-
 // Check MODs
 #include "check_screenspace.h"
 
 #ifdef SSFX_SSR
-	#include "screenspace_reflections.h"
+#include "screenspace_reflections.h"
 #endif
-
 
 #include "lmodel.h"
 #include "hmodel.h"
@@ -136,7 +134,6 @@ _out main(_input I, uint iSample : SV_SAMPLEINDEX)
     hdiffuse *= occ;
     hspecular *= occ;
 
-
 // Disable specular if SSR is enabled. ( Temporary fix? )
 #ifdef SSFX_SSR
 #ifdef REFLECTIONS_ONLY_ON_TERRAIN
@@ -145,22 +142,19 @@ _out main(_input I, uint iSample : SV_SAMPLEINDEX)
         hspecular = 0;
 #endif
 
-
     float4 light = float4(L.rgb + hdiffuse, L.w);
     float4 C = D * light; // rgb.gloss * light(diffuse.specular)
     float3 spec = C.www * L.rgb + hspecular * C.rgba; // replicated specular
 
     float3 color = C.rgb + spec;
 
-
 // SSR Implementation
 #ifdef SSFX_SSR
 #ifdef REFLECTIONS_ONLY_ON_TERRAIN
     if (gbd.refl_flag)
 #endif
-        SSFX_ScreenSpaceReflections(I.tc0, P, N, D.a, color, ISAMPLE);	
+        SSFX_ScreenSpaceReflections(I.tc0, P, N, D.a, color, ISAMPLE);
 #endif
-
 
     // here should be distance fog
     float3 pos = P.xyz;

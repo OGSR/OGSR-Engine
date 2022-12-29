@@ -74,31 +74,26 @@ float3 v_sun(float3 n) { return L_sun_color * dot(n, -L_sun_dir_w); }
 
 float3 calc_reflection(float3 pos_w, float3 norm_w) { return reflect(normalize(pos_w - eye_position), norm_w); }
 
-
 // https://knarkowicz.wordpress.com/2014/04/16/octahedron-normal-vector-encoding/
-float2 OctWrap( float2 v )
+float2 OctWrap(float2 v) { return (1.0 - abs(v.yx)) * (v.xy >= 0.0 ? 1.0 : -1.0); }
+
+float2 gbuf_pack_normal(float3 n)
 {
-    return ( 1.0 - abs( v.yx ) ) * ( v.xy >= 0.0 ? 1.0 : -1.0 );
-}
- 
-float2 gbuf_pack_normal( float3 n )
-{
-    n /= ( abs( n.x ) + abs( n.y ) + abs( n.z ) );
-    n.xy = n.z >= 0.0 ? n.xy : OctWrap( n.xy );
+    n /= (abs(n.x) + abs(n.y) + abs(n.z));
+    n.xy = n.z >= 0.0 ? n.xy : OctWrap(n.xy);
     n.xy = n.xy * 0.5 + 0.5;
     return n.xy;
 }
- 
-float3 gbuf_unpack_normal( float2 f )
+
+float3 gbuf_unpack_normal(float2 f)
 {
     f = f * 2.0 - 1.0;
 
-    float3 n = float3( f.x, f.y, 1.0 - abs( f.x ) - abs( f.y ) );
-    float t = saturate( -n.z );
+    float3 n = float3(f.x, f.y, 1.0 - abs(f.x) - abs(f.y));
+    float t = saturate(-n.z);
     n.xy += n.xy >= 0.0 ? -t : t;
-    return normalize( n );
+    return normalize(n);
 }
-
 
 #ifdef REFLECTIONS_ONLY_ON_TERRAIN
 
@@ -139,10 +134,7 @@ float gbuf_pack_hemi_mtl(float hemi, float mtl, const bool use_reflections)
     return asfloat(packed);
 }
 
-float gbuf_unpack_hemi(float mtl_hemi)
-{
-    return float((asuint(mtl_hemi) >> 12) & uint(255)) * (1.0 / 254.8);
-}
+float gbuf_unpack_hemi(float mtl_hemi) { return float((asuint(mtl_hemi) >> 12) & uint(255)) * (1.0 / 254.8); }
 
 float gbuf_unpack_mtl(float mtl_hemi)
 {
@@ -191,10 +183,7 @@ float gbuf_pack_hemi_mtl(float hemi, float mtl)
     return asfloat(packed);
 }
 
-float gbuf_unpack_hemi(float mtl_hemi)
-{
-    return float((asuint(mtl_hemi) >> 13) & uint(255)) * (1.0 / 254.8);
-}
+float gbuf_unpack_hemi(float mtl_hemi) { return float((asuint(mtl_hemi) >> 13) & uint(255)) * (1.0 / 254.8); }
 
 float gbuf_unpack_mtl(float mtl_hemi)
 {
@@ -204,7 +193,6 @@ float gbuf_unpack_mtl(float mtl_hemi)
 }
 
 #endif
-
 
 #ifndef EXTEND_F_DEFFER
 f_deffer pack_gbuffer(float4 norm, float4 pos, float4 col, const bool use_reflections = false)
@@ -219,11 +207,13 @@ f_deffer pack_gbuffer(float4 norm, float4 pos, float4 col, uint imask, const boo
     res.Ne = norm;
     res.C = col;
 #else
-    res.position = float4(gbuf_pack_normal(norm), pos.z, gbuf_pack_hemi_mtl(norm.w, pos.w
+    res.position = float4(gbuf_pack_normal(norm), pos.z,
+                          gbuf_pack_hemi_mtl(norm.w, pos.w
 #ifdef REFLECTIONS_ONLY_ON_TERRAIN
-        , use_reflections
+                                             ,
+                                             use_reflections
 #endif
-));
+                                             ));
     res.C = col;
 #endif
 
