@@ -5,8 +5,6 @@
 
 TextureCube env_s0;
 TextureCube env_s1;
-TextureCube sky_s0;
-TextureCube sky_s1;
 
 uniform float4 env_color; // color.w  = lerp factor
 uniform float3x4 m_v2w;

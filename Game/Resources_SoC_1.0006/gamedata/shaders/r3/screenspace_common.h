@@ -1,7 +1,7 @@
 /**
- * @ Version: SCREEN SPACE SHADERS - UPDATE 12.5
+ * @ Version: SCREEN SPACE SHADERS - UPDATE 13
  * @ Description: Main file
- * @ Modified time: 2022-11-23 15:37
+ * @ Modified time: 2022-12-19 23:28
  * @ Author: https://www.moddb.com/members/ascii1457
  * @ Mod: https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders
  */
@@ -17,10 +17,16 @@
 
 #include "check_screenspace.h"
 
+#ifdef USE_MSAA
+TEXTURE2DMS(float4, MSAA_SAMPLES) s_rimage;
+#else
+Texture2D s_rimage;
+#endif
+
 uniform float4 sky_color;
 
-// TextureCube sky_s0;
-// TextureCube sky_s1;
+TextureCube sky_s0;
+TextureCube sky_s1;
 
 static const float2 ssfx_pixel_size = 1.0f / screen_res.xy;
 static const float ssfx_PI = 3.14159265f;
@@ -82,6 +88,15 @@ float3 SSFX_get_position(float2 tc, uint iSample : SV_SAMPLEINDEX)
     return s_position.Sample(smp_nofilter, tc).xyz;
 #else
     return s_position.Load(int3(tc * screen_res.xy, 0), iSample).xyz;
+#endif
+}
+
+float3 SSFX_get_image(float2 tc, uint iSample : SV_SAMPLEINDEX)
+{
+#ifndef USE_MSAA
+    return s_rimage.Sample(smp_nofilter, tc).rgb;
+#else
+    return s_rimage.Load(int3(tc * screen_res.xy, 0), 0).rgb;
 #endif
 }
 

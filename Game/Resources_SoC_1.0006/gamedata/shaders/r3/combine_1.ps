@@ -7,6 +7,10 @@
 #include "screenspace_reflections.h"
 #endif
 
+#ifdef SSFX_FOG
+#include "screenspace_fog.h"
+#endif
+
 #include "lmodel.h"
 #include "hmodel.h"
 
@@ -156,14 +160,17 @@ _out main(_input I, uint iSample : SV_SAMPLEINDEX)
         SSFX_ScreenSpaceReflections(I.tc0, P, N, D.a, color, ISAMPLE);
 #endif
 
-    // here should be distance fog
+        // here should be distance fog
+#ifdef SSFX_FOG
+    float3 WorldP = mul(m_inv_V, float4(P.xyz, 1));
+    float fog = SSFX_HEIGHT_FOG(P.xyz, WorldP.y, color);
+#else
     float3 pos = P.xyz;
     float distance = length(pos);
     float fog = saturate(distance * fog_params.w + fog_params.x);
-
-    //				color			= lerp     		(color,fog_color,fog);
-    // float        	skyblend		= saturate		(fog*fog);
     color = lerp(color, fog_color * 2.0f / 3.0f, fog);
+#endif
+
     float skyblend = saturate(fog * fog);
 
     float tm_scale = I.tc0.w; // interpolated from VS
