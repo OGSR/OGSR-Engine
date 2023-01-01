@@ -284,12 +284,15 @@ public:
         if (m_last_pos != 0)
         {
             impl().seek(m_last_pos);
-            dwType = r_u32();
-            dwSize = r_u32();
-
-            if ((dwType & (~CFS_CompressMark)) == ID)
+            if (impl().elapsed() >= (sizeof u32 * 2))
             {
-                success = true;
+                dwType = r_u32();
+                dwSize = r_u32();
+
+                if ((dwType & (~CFS_CompressMark)) == ID)
+                {
+                    success = true;
+                }
             }
         }
 
@@ -307,7 +310,10 @@ public:
                 }
                 else
                 {
-                    impl().advance(dwSize);
+                    if (impl().elapsed() > dwSize)
+                        impl().advance(dwSize);
+                    else
+                        break;
                 }
             }
 
@@ -318,21 +324,25 @@ public:
             }
         }
 
-        VERIFY((u32)impl().tell() + dwSize <= (u32)impl().length());
         if (bCompressed)
             *bCompressed = dwType & CFS_CompressMark;
 
-        const int dwPos = impl().tell();
-        if (dwPos + dwSize < (u32)impl().length())
+        // Встречаются объекты, в которых dwSize последнего чанка больше чем реальный размер чанка который там есть.
+        // К примеру, в одной из моделей гранат получается превышение на 9 байт.
+        // Не знаю, от чего такое бывает, но попробуем обработать эту ситуацию.
+        //R_ASSERT((u32)impl().tell() + dwSize <= (u32)impl().length());
+
+        if (impl().elapsed() >= dwSize)
         {
-            m_last_pos = dwPos + dwSize;
+            m_last_pos = impl().tell() + dwSize;
+            return dwSize;
         }
         else
         {
+            Msg("!![%s] chunk [%u] has invalid size [%u], return elapsed size [%d]", __FUNCTION__, ID, dwSize, impl().elapsed());
             m_last_pos = 0;
+            return impl().elapsed();
         }
-
-        return dwSize;
     }
 
     u32 find_chunk_thm(const u32 ID, const char* dbg_name)
@@ -343,13 +353,17 @@ public:
         if (m_last_pos != 0)
         {
             impl().seek(m_last_pos);
-            dwType = r_u32();
-            dwSize = r_u32();
-            if ((dwType & (~CFS_CompressMark)) == ID)
+            if (impl().elapsed() >= (sizeof u32 * 2))
             {
-                success = true;
+                dwType = r_u32();
+                dwSize = r_u32();
+                if ((dwType & (~CFS_CompressMark)) == ID)
+                {
+                    success = true;
+                }
             }
         }
+
         if (!success)
         {
             rewind();
@@ -401,24 +415,28 @@ public:
                     impl().advance(dwSize);
                 }
             }
+
             if (!success)
             {
                 m_last_pos = 0;
                 return 0;
             }
         }
-        VERIFY((u32)impl().tell() + dwSize <= (u32)impl().length());
 
-        const u32 dwPos = (u32)impl().tell();
-        if (dwPos + dwSize < (u32)impl().length())
+        // см. комментарии выше в функции find_chunk
+        // R_ASSERT((u32)impl().tell() + dwSize <= (u32)impl().length());
+
+       if (impl().elapsed() >= dwSize)
         {
-            m_last_pos = dwPos + dwSize;
+            m_last_pos = impl().tell() + dwSize;
+            return dwSize;
         }
         else
         {
+            Msg("!![%s][%p] chunk [%u] has invalid size [%u], return elapsed size [%d]", __FUNCTION__, impl().pointer(), ID, dwSize, impl().elapsed());
             m_last_pos = 0;
+            return impl().elapsed();
         }
-        return dwSize;
     }
 
     IC BOOL r_chunk(u32 ID, void* dest) // чтение XR Chunk'ов (4b-ID,4b-size,??b-data)
@@ -480,14 +498,14 @@ public:
     IC void seek(int ptr)
     {
         Pos = ptr;
-        VERIFY((Pos <= Size) && (Pos >= 0));
+        R_ASSERT((Pos <= Size) && (Pos >= 0));
     };
     IC int length() const { return Size; };
     IC void* pointer() const { return &(data[Pos]); };
     IC void advance(int cnt)
     {
         Pos += cnt;
-        VERIFY((Pos <= Size) && (Pos >= 0));
+        R_ASSERT((Pos <= Size) && (Pos >= 0));
     };
 
 public:

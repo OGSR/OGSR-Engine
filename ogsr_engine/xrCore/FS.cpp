@@ -226,10 +226,19 @@ IReader* IReader::open_chunk_iterator(u32& ID, IReader* _prev)
     }
 
     //	open
-    if (elapsed() < 8)
-        return NULL;
+    if (elapsed() < (sizeof u32 * 2))
+        return nullptr;
+
     ID = r_u32();
     u32 _size = r_u32();
+
+    //На всякий случай тут тоже так сделаем по аналогии с find_chunk()
+    if (elapsed() < _size)
+    {
+        Msg("!![%s] chunk [%u] has invalid size [%u], return elapsed size [%d]", __FUNCTION__, ID, _size, elapsed());
+        _size = elapsed();
+    }
+
     if (ID & CFS_CompressMark)
     {
         // compressed
@@ -247,7 +256,7 @@ IReader* IReader::open_chunk_iterator(u32& ID, IReader* _prev)
 
 void IReader::r(void* p, int cnt)
 {
-    VERIFY(Pos + cnt <= Size);
+    R_ASSERT(Pos + cnt <= Size);
     CopyMemory(p, pointer(), cnt);
     advance(cnt);
 #ifdef DEBUG
@@ -261,7 +270,7 @@ void IReader::r(void* p, int cnt)
 #endif
 };
 
-IC BOOL is_term(char a) { return (a == 13) || (a == 10); };
+constexpr bool is_term(const char a) { return a == '\r' || a == '\n'; }
 IC u32 IReader::advance_term_string()
 {
     u32 sz = 0;
@@ -306,12 +315,12 @@ void IReader::r_stringZ(char* dest, u32 tgt_sz)
 void IReader::r_stringZ(shared_str& dest)
 {
     dest = (char*)(data + Pos);
-    Pos += (dest.size() + 1);
+    advance(dest.size() + 1);
 }
 void IReader::r_stringZ(xr_string& dest)
 {
     dest = (char*)(data + Pos);
-    Pos += int(dest.size() + 1);
+    advance(dest.size() + 1);
 };
 
 void IReader::skip_stringZ()
