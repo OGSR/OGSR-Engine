@@ -72,8 +72,8 @@ void dxFontRender::OnRender(CGameFont& owner)
 
             if (len)
             {
-                float X = float((PS.x));
-                float Y = float((PS.y));
+                float X = float(iFloor(PS.x));
+                float Y = float(iFloor(PS.y));
 
                 float S = PS.height * g_current_font_scale.y * owner.GetHeightScale(); // g_current_font_scale это еще один скейлинг шрифтов для pp эффектов похоже
 
