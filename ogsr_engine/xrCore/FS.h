@@ -520,148 +520,136 @@ public:
     void r_stringZ(shared_str& dest);
     void r_stringZ(xr_string& dest);
 
-    virtual Fvector r_vec3()
+    IC Fvector r_vec3() override
     {
-        Fvector tmp;
-        tmp = *(Fvector*)(&data[Pos]);
-        advance(sizeof(Fvector));
+        auto tmp = *reinterpret_cast<Fvector*>(&data[Pos]);
+        advance(sizeof tmp);
         return tmp;
-    };
-    virtual Fvector4 r_vec4()
-    {
-        Fvector4 tmp;
-        tmp = *(Fvector4*)(&data[Pos]);
-        advance(sizeof(Fvector4));
-        return tmp;
-    };
-    virtual u64 r_u64()
-    {
-        u64 tmp;
-        tmp = *(u64*)(&data[Pos]);
-        advance(sizeof(u64));
-        return tmp;
-    };
-    virtual u32 r_u32()
-    {
-        u32 tmp;
-        tmp = *(u32*)(&data[Pos]);
-        advance(sizeof(u32));
-        return tmp;
-    };
-    virtual u16 r_u16()
-    {
-        u16 tmp;
-        tmp = *(u16*)(&data[Pos]);
-        advance(sizeof(u16));
-        return tmp;
-    };
-    virtual u8 r_u8()
-    {
-        u8 tmp;
-        tmp = *(u8*)(&data[Pos]);
-        advance(sizeof(u8));
-        return tmp;
-    };
-    virtual s64 r_s64()
-    {
-        s64 tmp;
-        tmp = *(s64*)(&data[Pos]);
-        advance(sizeof(s64));
-        return tmp;
-    };
-    virtual s32 r_s32()
-    {
-        s32 tmp;
-        tmp = *(s32*)(&data[Pos]);
-        advance(sizeof(s32));
-        return tmp;
-    };
-    virtual s16 r_s16()
-    {
-        s16 tmp;
-        tmp = *(s16*)(&data[Pos]);
-        advance(sizeof(s16));
-        return tmp;
-    };
-    virtual s8 r_s8()
-    {
-        s8 tmp;
-        tmp = *(s8*)(&data[Pos]);
-        advance(sizeof(s8));
-        return tmp;
-    };
-    virtual float r_float()
-    {
-        float tmp;
-        tmp = *(float*)(&data[Pos]);
-        advance(sizeof(float));
-        return tmp;
-    };
-    virtual void r_fvector4(Fvector4& v)
-    {
-        v = *(Fvector4*)(&data[Pos]);
-        advance(sizeof(Fvector4));
     }
-    virtual void r_fvector3(Fvector3& v)
+    IC Fvector4 r_vec4() override
     {
-        v = *(Fvector3*)(&data[Pos]);
-        advance(sizeof(Fvector3));
+        auto tmp = *reinterpret_cast<Fvector4*>(&data[Pos]);
+        advance(sizeof tmp);
+        return tmp;
     }
-    virtual void r_fvector2(Fvector2& v)
+    IC u64 r_u64() override
     {
-        v = *(Fvector2*)(&data[Pos]);
-        advance(sizeof(Fvector2));
+        auto tmp = *reinterpret_cast<u64*>(&data[Pos]);
+        advance(sizeof tmp);
+        return tmp;
     }
-    virtual void r_ivector4(Ivector4& v)
+    IC u32 r_u32() override
     {
-        v = *(Ivector4*)(&data[Pos]);
-        advance(sizeof(Ivector4));
+        auto tmp = *reinterpret_cast<u32*>(&data[Pos]);
+        advance(sizeof tmp);
+        return tmp;
     }
-    virtual void r_ivector4(Ivector3& v)
+    IC u16 r_u16() override
     {
-        v = *(Ivector3*)(&data[Pos]);
-        advance(sizeof(Ivector3));
+        auto tmp = *reinterpret_cast<u16*>(&data[Pos]);
+        advance(sizeof tmp);
+        return tmp;
     }
-    virtual void r_ivector4(Ivector2& v)
+    IC u8 r_u8() override
     {
-        v = *(Ivector2*)(&data[Pos]);
-        advance(sizeof(Ivector2));
+        auto tmp = *reinterpret_cast<u8*>(&data[Pos]);
+        advance(sizeof tmp);
+        return tmp;
     }
-    virtual void r_fcolor(Fcolor& v)
+    IC s64 r_s64() override
     {
-        v = *(Fcolor*)(&data[Pos]);
-        advance(sizeof(Fcolor));
+        auto tmp = *reinterpret_cast<s64*>(&data[Pos]);
+        advance(sizeof tmp);
+        return tmp;
+    }
+    IC s32 r_s32() override
+    {
+        auto tmp = *reinterpret_cast<s32*>(&data[Pos]);
+        advance(sizeof tmp);
+        return tmp;
+    }
+    IC s16 r_s16() override
+    {
+        auto tmp = *reinterpret_cast<s16*>(&data[Pos]);
+        advance(sizeof tmp);
+        return tmp;
+    }
+    IC s8 r_s8() override
+    {
+        auto tmp = *reinterpret_cast<s8*>(&data[Pos]);
+        advance(sizeof tmp);
+        return tmp;
+    }
+    IC float r_float() override
+    {
+        auto tmp = *reinterpret_cast<float*>(&data[Pos]);
+        advance(sizeof tmp);
+        return tmp;
+    }
+    IC void r_fvector4(Fvector4& v) override
+    {
+        v = *reinterpret_cast<decltype(&v)>(&data[Pos]);
+        advance(sizeof v);
+    }
+    IC void r_fvector3(Fvector3& v) override
+    {
+        v = *reinterpret_cast<decltype(&v)>(&data[Pos]);
+        advance(sizeof v);
+    }
+    IC void r_fvector2(Fvector2& v) override
+    {
+        v = *reinterpret_cast<decltype(&v)>(&data[Pos]);
+        advance(sizeof v);
+    }
+    IC void r_ivector4(Ivector4& v) override
+    {
+        v = *reinterpret_cast<decltype(&v)>(&data[Pos]);
+        advance(sizeof v);
+    }
+    IC void r_ivector4(Ivector3& v) override
+    {
+        v = *reinterpret_cast<decltype(&v)>(&data[Pos]);
+        advance(sizeof v);
+    }
+    IC void r_ivector4(Ivector2& v) override
+    {
+        v = *reinterpret_cast<decltype(&v)>(&data[Pos]);
+        advance(sizeof v);
+    }
+    IC void r_fcolor(Fcolor& v) override
+    {
+        v = *reinterpret_cast<decltype(&v)>(&data[Pos]);
+        advance(sizeof v);
     }
 
-    virtual float r_float_q16(float min, float max)
+    IC float r_float_q16(float min, float max) override
     {
-        u16& val = *(u16*)(&data[Pos]);
-        advance(sizeof(u16));
+        auto& val = *reinterpret_cast<u16*>(&data[Pos]);
+        advance(sizeof val);
         float A = (float(val) * (max - min)) / 65535.f + min; // floating-point-error possible
         VERIFY((A >= min - EPS_S) && (A <= max + EPS_S));
         return A;
     }
-    virtual float r_float_q8(float min, float max)
+    IC float r_float_q8(float min, float max) override
     {
-        u8& val = *(u8*)(&data[Pos]);
-        advance(sizeof(u8));
+        auto& val = *reinterpret_cast<u8*>(&data[Pos]);
+        advance(sizeof val);
         float A = (float(val) / 255.0001f) * (max - min) + min; // floating-point-error possible
         VERIFY(A >= min && A <= max);
         return A;
     }
-
-    virtual void r_dir(Fvector& A)
+    IC void r_dir(Fvector& A) override
     {
-        u16& t = *(u16*)(&data[Pos]);
-        advance(sizeof(u16));
+        auto& t = *reinterpret_cast<u16*>(&data[Pos]);
+        advance(sizeof t);
         pvDecompress(A, t);
     }
-    virtual void r_sdir(Fvector& A)
+    IC void r_sdir(Fvector& A) override
     {
-        u16& t = *(u16*)(&data[Pos]);
-        advance(sizeof(u16));
-        float& s = *(float*)(&data[Pos]);
-        advance(sizeof(float));
+        auto& t = *reinterpret_cast<u16*>(&data[Pos]);
+        advance(sizeof t);
+        auto& s = *reinterpret_cast<float*>(&data[Pos]);
+        advance(sizeof s);
         pvDecompress(A, t);
         A.mul(s);
     }
