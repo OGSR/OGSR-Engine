@@ -284,7 +284,7 @@ public:
         if (m_last_pos != 0)
         {
             impl().seek(m_last_pos);
-            if (impl().elapsed() >= (sizeof u32 * 2))
+            if (impl().elapsed() >= static_cast<int>(sizeof u32 * 2))
             {
                 dwType = r_u32();
                 dwSize = r_u32();
@@ -299,7 +299,7 @@ public:
         if (!success)
         {
             rewind();
-            while (impl().elapsed() >= (sizeof u32 * 2)) //while (!eof())
+            while (impl().elapsed() >= static_cast<int>(sizeof u32 * 2)) // while (!eof())
             {
                 dwType = r_u32();
                 dwSize = r_u32();
@@ -310,7 +310,7 @@ public:
                 }
                 else
                 {
-                    if (impl().elapsed() > dwSize)
+                    if (impl().elapsed() > static_cast<int>(dwSize))
                         impl().advance(dwSize);
                     else
                         break;
@@ -332,7 +332,7 @@ public:
         // Не знаю, от чего такое бывает, но попробуем обработать эту ситуацию.
         //R_ASSERT((u32)impl().tell() + dwSize <= (u32)impl().length());
 
-        if (impl().elapsed() >= dwSize)
+        if (impl().elapsed() >= static_cast<int>(dwSize))
         {
             m_last_pos = impl().tell() + dwSize;
             return dwSize;
@@ -353,7 +353,7 @@ public:
         if (m_last_pos != 0)
         {
             impl().seek(m_last_pos);
-            if (impl().elapsed() >= (sizeof u32 * 2))
+            if (impl().elapsed() >= static_cast<int>(sizeof u32 * 2))
             {
                 dwType = r_u32();
                 dwSize = r_u32();
@@ -367,7 +367,7 @@ public:
         if (!success)
         {
             rewind();
-            while (impl().elapsed() >= (sizeof u32 * 2)) //while (!eof())
+            while (impl().elapsed() >= static_cast<int>(sizeof u32 * 2)) // while (!eof())
             {
                 dwType = r_u32();
                 dwSize = r_u32();
@@ -426,7 +426,7 @@ public:
         // см. комментарии выше в функции find_chunk
         // R_ASSERT((u32)impl().tell() + dwSize <= (u32)impl().length());
 
-       if (impl().elapsed() >= dwSize)
+       if (impl().elapsed() >= static_cast<int>(dwSize))
         {
             m_last_pos = impl().tell() + dwSize;
             return dwSize;

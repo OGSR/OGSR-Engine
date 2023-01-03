@@ -226,14 +226,14 @@ IReader* IReader::open_chunk_iterator(u32& ID, IReader* _prev)
     }
 
     //	open
-    if (elapsed() < (sizeof u32 * 2))
+    if (elapsed() < static_cast<int>(sizeof u32 * 2))
         return nullptr;
 
     ID = r_u32();
     u32 _size = r_u32();
 
     //На всякий случай тут тоже так сделаем по аналогии с find_chunk()
-    if (elapsed() < _size)
+    if (elapsed() < static_cast<int>(_size))
     {
         Msg("!![%s] chunk [%u] has invalid size [%u], return elapsed size [%d]", __FUNCTION__, ID, _size, elapsed());
         _size = elapsed();

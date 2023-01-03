@@ -114,6 +114,8 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
             {
                 MP->r_stringZ(buf, sizeof(buf));
                 shared_str nm = _strlwr(buf);
+                R_ASSERT(MP->elapsed() >= static_cast<int>(sizeof(u32) + sizeof(u16) + sizeof(u16) + sizeof(float) + sizeof(float) + sizeof(float) + sizeof(float)),
+                         "[%s] Something strange with file [%s]. This file broken!", __FUNCTION__, N);
                 u32 dwFlags = MP->r_u32();
                 CMotionDef& D = m_mdefs[mot_i];
                 D.Load(MP, dwFlags, vers);

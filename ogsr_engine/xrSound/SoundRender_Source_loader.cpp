@@ -91,7 +91,7 @@ void CSoundRender_Source::LoadWave(LPCSTR pName)
         IReader F(ovm->user_comments[0], ovm->comment_lengths[0]);
 
         u32 vers{};
-        if (F.elapsed() <= sizeof vers)
+        if (F.elapsed() <= static_cast<int>(sizeof vers))
             Msg("! Invalid ogg-comment, file: [%s]", pName);
         else
             vers = F.r_u32();
