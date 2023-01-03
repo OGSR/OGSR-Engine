@@ -599,7 +599,7 @@ static bool Decode(int total_size) /* recover */
 
     if (textsize == 0)
         return false;
-    if (total_size != -1 && textsize > total_size)
+    if (total_size != -1 && textsize > static_cast<u32>(total_size))
         return false;
 
     fs.Init_Output(textsize);

@@ -436,7 +436,7 @@ void CWeaponMagazined::ReloadMagazine()
     if (m_DefaultCartridge.m_LocalAmmoType != m_ammoType)
         m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));
     CCartridge l_cartridge = m_DefaultCartridge;
-    while (iAmmoElapsed < (iMagazineSize + CartridgeInTheChamber))
+    while (iAmmoElapsed < (iMagazineSize + static_cast<int>(CartridgeInTheChamber)))
     {
         if (!unlimited_ammo())
         {
