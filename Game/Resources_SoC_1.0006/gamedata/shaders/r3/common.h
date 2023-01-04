@@ -96,6 +96,8 @@ struct  				p_screen                {
 float3	v_hemi_wrap     (float3 n, float w)                	{        return L_hemi_color*(w + (1-w)*n.y);                   }
 float3	v_sun_wrap      (float3 n, float w)                	{        return L_sun_color*(w+(1-w)*dot(n,-L_sun_dir_w));      }
 */
+
+/*
 #define FXPS \
     technique _render \
     { \
@@ -106,5 +108,9 @@ float3	v_sun_wrap      (float3 n, float w)                	{        return L_sun
     { \
         pass _code { VertexShader = compile vs_3_0 main(); } \
     }
+*/
+
+#define FXPS
+#define FXVS
 
 #endif
