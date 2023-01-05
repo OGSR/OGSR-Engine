@@ -50,8 +50,8 @@ public:
     IC void w_string(const char* p)
     {
         w(p, (u32)xr_strlen(p));
-        w_u8(13);
-        w_u8(10);
+        w_u8('\r');
+        w_u8('\n');
     }
     IC void w_stringZ(const char* p) { w(p, (u32)xr_strlen(p) + 1); }
     IC void w_stringZ(const shared_str& p)
