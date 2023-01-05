@@ -69,7 +69,7 @@ void CPsyDog::register_phantom(CPsyDogPhantom* phantom) { m_storage.push_back(ph
 
 void CPsyDog::unregister_phantom(CPsyDogPhantom* phantom)
 {
-    xr_vector<CPsyDogPhantom*>::iterator it = std::find(m_storage.begin(), m_storage.end(), phantom);
+    auto it = std::find(m_storage.begin(), m_storage.end(), phantom);
 
     for (int i = 0; i < m_max_phantoms_count; ++i)
     {
@@ -80,8 +80,8 @@ void CPsyDog::unregister_phantom(CPsyDogPhantom* phantom)
         }
     }
 
-    VERIFY(it != m_storage.end());
-    m_storage.erase(it);
+    if (it != m_storage.end())
+        m_storage.erase(it);
 }
 
 //////////////////////////////////////////////////////////////////////////
