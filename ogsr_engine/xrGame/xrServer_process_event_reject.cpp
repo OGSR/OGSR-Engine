@@ -31,17 +31,33 @@ bool xrServer::Process_event_reject(NET_Packet& P, const ClientID sender, const 
             *e_entity->s_name);
 #endif
 
-        return (false);
+        return false;
+    }
+    auto& C = e_parent->children;
+    auto __c = std::find(C.begin(), C.end(), id_entity);
+    if (__c == C.end())
+    {
+        Msg("! ERROR: SV: can't find children [%d] of parent [%d]", id_entity, e_parent);
+        return false;
+    }
+
+    if (0xffff == e_entity->ID_Parent)
+    {
+        Msg("! ERROR: can't detach independant object. entity[%s][%d], parent[%s][%d], section[%s]", e_entity->name_replace(), id_entity, e_parent->name_replace(), id_parent,
+            e_entity->s_name.c_str());
+        return false;
     }
 
     // Rebuild parentness
-    R_ASSERT3(e_entity->ID_Parent == id_parent, e_entity->name_replace(), e_parent->name_replace());
+    if (e_entity->ID_Parent != id_parent)
+    {
+        Msg("! ERROR: e_entity->ID_Parent = [%d]  parent = [%d][%s]  entity_id = [%d]  frame = [%d]", e_entity->ID_Parent, id_parent, e_parent->name_replace(), id_entity,
+            Device.dwFrame);
+        // it can't be !!!
+    }
     e_entity->ID_Parent = 0xffff;
-    xr_vector<u16>& C = e_parent->children;
 
-    xr_vector<u16>::iterator c = std::find(C.begin(), C.end(), id_entity);
-    R_ASSERT3(C.end() != c, e_entity->name_replace(), e_parent->name_replace());
-    C.erase(c);
+    C.erase(__c);
 
     // Signal to everyone (including sender)
     if (send_message)
@@ -50,5 +66,5 @@ bool xrServer::Process_event_reject(NET_Packet& P, const ClientID sender, const 
         SendBroadcast(BroadcastCID, P, MODE);
     }
 
-    return (true);
+    return true;
 }
