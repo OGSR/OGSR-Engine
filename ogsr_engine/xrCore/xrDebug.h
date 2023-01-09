@@ -46,7 +46,7 @@ extern XRCORE_API xrDebug Debug;
 extern XRCORE_API HWND gGameWindow;
 extern XRCORE_API bool ExitFromWinMain;
 
-XRCORE_API void LogStackTrace(const char* header);
+XRCORE_API void LogStackTrace(const char* header, const bool dump_lua_locals = true);
 XRCORE_API void LogStackTrace(const char* header, _EXCEPTION_POINTERS* pExceptionInfo, bool dump_lua_locals = false);
 
 // KRodin: отладочный хак для получения стека вызовов, при вызове проблемного кода внутри __try {...}

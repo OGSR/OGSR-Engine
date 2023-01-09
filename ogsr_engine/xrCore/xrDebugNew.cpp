@@ -63,12 +63,12 @@ static const char* GetThreadName()
     return "UNKNOWN";
 }
 
-void LogStackTrace(const char* header)
+void LogStackTrace(const char* header, const bool dump_lua_locals)
 {
     __try
     {
         if (auto pCrashHandler = Debug.get_crashhandler())
-            pCrashHandler(true);
+            pCrashHandler(dump_lua_locals);
         Log("********************************************************************************");
         Msg("!![" __FUNCTION__ "] Thread: [%s]", GetThreadName());
         Log(BuildStackTrace(header));
