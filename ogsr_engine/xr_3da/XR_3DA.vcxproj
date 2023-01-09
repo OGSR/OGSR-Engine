@@ -148,12 +148,8 @@
     <PostBuildEvent>
       <Command>
         copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL_Soft\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"
-        copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
-      </Command>
-      <Command Condition="'$(LanguageStandard)'=='stdcpp20'">
-        copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL_Soft\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"
         copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
-        copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
+		copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
       </Command>
     </PostBuildEvent>
     <Manifest>
@@ -228,12 +224,8 @@
     <PostBuildEvent>
       <Command>
         copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL_Soft\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"
-        copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
-      </Command>
-      <Command Condition="'$(LanguageStandard)'=='stdcpp20'">
-        copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL_Soft\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"
         copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
-        copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
+		copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
       </Command>
     </PostBuildEvent>
     <Manifest>
@@ -301,12 +293,8 @@
     <PostBuildEvent>
       <Command>
         copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL_Soft\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"
-        copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
-      </Command>
-      <Command Condition="'$(LanguageStandard)'=='stdcpp20'">
-        copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL_Soft\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"
         copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
-        copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
+		copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
       </Command>
     </PostBuildEvent>
     <Manifest>
@@ -378,12 +366,8 @@
     <PostBuildEvent>
       <Command>
         copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL_Soft\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"
-        copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
-      </Command>
-      <Command Condition="'$(LanguageStandard)'=='stdcpp20'">
-        copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL_Soft\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)soft_oal.dll"
         copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
-        copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
+		copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
       </Command>
     </PostBuildEvent>
     <Manifest>
