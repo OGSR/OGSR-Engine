@@ -399,7 +399,10 @@ void CWeaponShotgun::OnStateSwitch(u32 S, u32 oldState)
                 }
             }
             PlaySound(m_sndOpen, get_LastFP());
-            PlayHUDMotion({"anim_open_weapon", "anm_open"}, true, GetState());
+            if (ParentIsActor())
+                PlayHUDMotion({"anim_open_weapon", "anm_open"}, true, GetState());
+            else //Временно заткнул баг с неперезарядкой винчестера у нпс, надо фиксить анимацию, но это будет сделано позже, потом этот код убрать!
+                PlayHUDMotion({"anim_add_cartridge", "anm_add_cartridge"}, true, GetState());
             SetPending(TRUE);
         }
         break;
