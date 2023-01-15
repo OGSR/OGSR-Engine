@@ -44,10 +44,8 @@ MotionID CStalkerAnimationManager::no_object_animation(const EBodyState& body_st
     const CStalkerMovementManager& movement = stalker.movement();
     const xr_vector<CAniVector>& animation = m_data_storage->m_part_animations.A[body_state].m_torso.A[0].A;
 
-    if (eMentalStateFree == movement.mental_state())
+    if (eMentalStateFree == movement.mental_state() && eBodyStateStand == body_state)
     {
-        VERIFY3(eBodyStateStand == movement.body_state(), "Cannot run FREE animations, when body state is not stand!", *stalker.cName());
-
         if (standing())
             return (animation[9].A[1]);
 
@@ -111,10 +109,8 @@ MotionID CStalkerAnimationManager::unknown_object_animation(u32 slot, const EBod
     case ObjectHandlerSpace::eWorldOperatorUnstrapping2Idle: return (animation_stand[12].A[1]);
     }
 
-    if (eMentalStateFree == movement.mental_state())
+    if (eMentalStateFree == movement.mental_state() && eBodyStateStand == body_state)
     {
-        VERIFY3(eBodyStateStand == movement.body_state(), "Cannot run FREE animation when body state is not stand!", *object().cName());
-
         if (standing())
             return (animation[9].A[1]);
 
@@ -129,7 +125,7 @@ MotionID CStalkerAnimationManager::unknown_object_animation(u32 slot, const EBod
 
     VERIFY(eMovementTypeRun == movement.movement_type());
 
-    if (eBodyStateStand == movement.body_state())
+    if (eBodyStateStand == body_state)
         return (animation[6].A[3]);
 
     return (animation[6].A[3]);
