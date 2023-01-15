@@ -187,3 +187,15 @@ struct string_hash
 
 template <typename Key, typename Value, class _Alloc = std::allocator<std::pair<const Key, Value>>>
 using string_unordered_map = std::unordered_map<Key, Value, string_hash, std::equal_to<>, _Alloc>;
+
+
+inline bool SplitFilename(std::string& str)
+{
+    size_t found = str.find_last_of("/\\");
+    if (found != std::string::npos)
+    {
+        str.erase(found);
+        return true;
+    }
+    return false;
+}

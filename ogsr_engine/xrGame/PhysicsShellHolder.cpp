@@ -403,19 +403,17 @@ void CPhysicsShellHolder::PHLoadState(IReader& P)
 
 bool CPhysicsShellHolder::register_schedule() const { return (b_sheduled); }
 
-#include <filesystem>
-
 bool CPhysicsShellHolder::ActorCanCapture() const
 {
     if (!m_pPhysicsShell || hasFixedBones() || Actor()->is_actor_climb() || Actor()->is_actor_climbing())
         return false;
     if (pSettings->line_exist("ph_capture_visuals", cNameVisual().c_str()))
         return true;
-    std::filesystem::path p = cNameVisual().c_str();
-    while (p.has_parent_path())
+    
+    std::string p{cNameVisual().c_str()};
+    while (SplitFilename(p))
     {
-        p = p.parent_path();
-        if (pSettings->line_exist("ph_capture_visuals", p.string().c_str()))
+        if (pSettings->line_exist("ph_capture_visuals", p.c_str()))
             return true;
     }
     return false;

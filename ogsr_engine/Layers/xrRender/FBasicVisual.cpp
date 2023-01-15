@@ -12,7 +12,6 @@
 #include "fbasicvisual.h"
 #include "../../xr_3da/fmesh.h"
 
-#include <filesystem>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -53,6 +52,7 @@ static bool replaceShadersLine(const char* N, char* fnS, u32 fnS_size, LPCSTR it
         if (xr_strcmp(s1, fnS) == 0)
         {
             xr_strcpy(fnS, fnS_size, s2);
+            //Msg("~~[%s][%s] replaced [%s] by [%s]", __FUNCTION__, N, s1, s2);
             break;
         }
     }
@@ -68,19 +68,18 @@ static bool replaceShaders(const char* N, char* fnS, u32 fnS_size)
     if (replaceShadersLine(N, fnS, fnS_size, N))
         return true;
 
+    std::string s{N};
+
     if (strchr(N, ':'))
     {
-        std::string s(N);
         s.erase(s.find(":"));
         if (replaceShadersLine(N, fnS, fnS_size, s.c_str()))
             return true;
     }
 
-    std::filesystem::path p = N;
-    while (p.has_parent_path())
+    while (SplitFilename(s))
     {
-        p = p.parent_path();
-        if (replaceShadersLine(N, fnS, fnS_size, p.string().c_str()))
+        if (replaceShadersLine(N, fnS, fnS_size, s.c_str()))
             return true;
     }
 
