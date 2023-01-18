@@ -16,11 +16,6 @@
 #include "level_graph.h"
 #include "graph_engine.h"
 
-#pragma warning(push)
-#pragma warning(disable : 4995)
-#include <malloc.h>
-#pragma warning(pop)
-
 #ifdef DEBUG
 #include "level.h"
 #include "space_restrictor.h"

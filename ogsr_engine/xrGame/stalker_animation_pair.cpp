@@ -13,11 +13,6 @@
 #include "ai/stalker/ai_stalker.h"
 #include "ai/ai_monsters_anims.h"
 
-#pragma warning(push)
-#pragma warning(disable : 4995)
-#include <malloc.h>
-#pragma warning(pop)
-
 void CStalkerAnimationPair::synchronize(IKinematicsAnimated* skeleton_animated, const CStalkerAnimationPair& stalker_animation) const
 {
     if (!blend())

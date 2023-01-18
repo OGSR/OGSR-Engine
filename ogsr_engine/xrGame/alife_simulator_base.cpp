@@ -21,11 +21,6 @@
 #include "xrserver.h"
 #include "level_graph.h"
 
-#pragma warning(push)
-#pragma warning(disable : 4995)
-#include <malloc.h>
-#pragma warning(pop)
-
 using namespace ALife;
 
 CALifeSimulatorBase::CALifeSimulatorBase(xrServer* server, LPCSTR section)
