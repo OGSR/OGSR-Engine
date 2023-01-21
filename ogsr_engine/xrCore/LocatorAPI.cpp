@@ -857,7 +857,7 @@ int CLocatorAPI::file_list(FS_FileSet& dest, LPCSTR path, u32 flags, LPCSTR mask
             if (flags & FS_ClampExt)
                 fn = EFS.ChangeFileExt(fn, "");
             u32 fl = (entry.vfs != 0xffffffff ? FS_File::flVFS : 0);
-            dest.emplace(fn, entry.size_real, entry.modif, fl);
+            dest.emplace(fn, entry.size_real, entry.modif, fl, !(flags & FS_NoLower));
         }
         else
         {
@@ -869,7 +869,7 @@ int CLocatorAPI::file_list(FS_FileSet& dest, LPCSTR path, u32 flags, LPCSTR mask
             if ((flags & FS_RootOnly) && (strchr(entry_begin, '\\') != end_symbol))
                 continue; // folder in folder
             u32 fl = FS_File::flSubDir | (entry.vfs ? FS_File::flVFS : 0);
-            dest.emplace(entry_begin, entry.size_real, entry.modif, fl);
+            dest.emplace(entry_begin, entry.size_real, entry.modif, fl, !(flags & FS_NoLower));
         }
     }
     return int(dest.size());

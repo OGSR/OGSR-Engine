@@ -6,6 +6,7 @@ enum FS_List
     FS_ListFolders = (1 << 1),
     FS_ClampExt = (1 << 2),
     FS_RootOnly = (1 << 3),
+    FS_NoLower = 1 << 4,
 
     FS_forcedword = u32(-1)
 };
@@ -51,7 +52,7 @@ struct XRCORE_API FS_File
     time_t time_write;
     long size;
     xr_string name; // low-case name
-    void set(const xr_string& nm, long sz, time_t modif, unsigned attr);
+    void set(const xr_string& nm, long sz, time_t modif, unsigned attr, const bool lower = true);
 
 public:
     FS_File() {}
@@ -59,6 +60,7 @@ public:
     FS_File(const _FINDDATA_T& f);
     FS_File(const xr_string& nm, const _FINDDATA_T& f);
     FS_File(const xr_string& nm, long sz, time_t modif, unsigned attr);
+    FS_File(const xr_string& nm, long sz, time_t modif, unsigned attr, const bool lower);
     bool operator<(const FS_File& _X) const { return xr_strcmp(name.c_str(), _X.name.c_str()) < 0; }
 };
 DEFINE_SET(FS_File, FS_FileSet, FS_FileSetIt);

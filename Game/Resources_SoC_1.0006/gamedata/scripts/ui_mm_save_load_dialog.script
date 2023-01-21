@@ -22,22 +22,10 @@ function fill_savedgames_list( wnd )
     list_box:SetSelectedItem(-1)
   end
   --
-  local t = {}
-  local path = getFS():update_path( "$game_saves$", "" )
-  --
-  stdfs.directory_iterator( path, function( file ) -- C++17 FS
-    if file.extension == ".sav" then
-      table.insert( t, {
-        [ "name"      ] = file.short_filename,
-        [ "modif"     ] = file.last_write_time,
-        [ "modif_str" ] = file.last_write_time_string, --slow function...
-     })
-    end
-  end )
-  --
-  table.sort( t, function( a, b ) return b.modif < a.modif end )
-  for _, f in ipairs( t ) do
-    wnd:AddItemToList( f.name, f.modif_str )
+  local flist = getFS():file_list_open_ex( "$game_saves$", FS.FS_ListFiles + FS.FS_ClampExt + FS.FS_RootOnly + FS.FS_NoLower, "*.sav" )
+  flist:Sort(FS.FS_sort_by_modif_down)
+  for file in flist:GetAll() do
+    wnd:AddItemToList( file:NameFull(), file:Modif() )
   end
 end
 

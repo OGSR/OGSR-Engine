@@ -96,6 +96,7 @@ public:
     u32 Size() { return m_file_items.size(); }
     FS_item GetAt(u32 idx) { return m_file_items[idx]; }
     void Sort(u32 flags);
+    decltype(m_file_items)& GetAll() { return m_file_items; }
 };
 
 FS_file_list_ex::FS_file_list_ex(LPCSTR path, u32 flags, LPCSTR mask)
@@ -269,7 +270,12 @@ void fs_registrator::script_register(lua_State* L)
                   .def("ModifDigitOnly", &FS_item::ModifDigitOnly)
                   .def("Modif", &FS_item::Modif),
 
-              class_<FS_file_list_ex>("FS_file_list_ex").def("Size", &FS_file_list_ex::Size).def("GetAt", &FS_file_list_ex::GetAt).def("Sort", &FS_file_list_ex::Sort),
+              class_<FS_file_list_ex>("FS_file_list_ex")
+                  .def("Size", &FS_file_list_ex::Size)
+                  .def("GetAt", &FS_file_list_ex::GetAt)
+                  .def("Sort", &FS_file_list_ex::Sort)
+                  .def( "GetAll", &FS_file_list_ex::GetAll, return_stl_iterator)
+              ,
 
               class_<FS_file_list>("FS_file_list").def("Size", &FS_file_list::Size).def("GetAt", &FS_file_list::GetAt).def("Free", &FS_file_list::Free),
 
@@ -293,7 +299,7 @@ void fs_registrator::script_register(lua_State* L)
                                          value("FS_sort_by_size_up", int(FS_file_list_ex::eSortBySizeUp)), value("FS_sort_by_size_down", int(FS_file_list_ex::eSortBySizeDown)),
                                          value("FS_sort_by_modif_up", int(FS_file_list_ex::eSortByModifUp)), value("FS_sort_by_modif_down", int(FS_file_list_ex::eSortByModifDown))]
                   .enum_("FS_List")[value("FS_ListFiles", int(FS_ListFiles)), value("FS_ListFolders", int(FS_ListFolders)), value("FS_ClampExt", int(FS_ClampExt)),
-                                    value("FS_RootOnly", int(FS_RootOnly))]
+                                    value("FS_RootOnly", int(FS_RootOnly)), value("FS_NoLower", int(FS_NoLower))]
                   .def("path_exist", &CLocatorAPI::path_exist)
                   .def("update_path", &update_path_script)
                   .def("get_path", &CLocatorAPI::get_path)
