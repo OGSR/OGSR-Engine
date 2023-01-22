@@ -34,6 +34,11 @@ float4 main(p_volume I) : SV_Target
 
     gbuffer_data gbd = gbuffer_load_data(GLD_P(tcProj, pos2d, ISAMPLE));
 
+#ifdef GBUFFER_OPTIMIZATION
+    //	Emulate virtual offset
+    gbd.P += gbd.N * 0.015f;
+#endif //	GBUFFER_OPTIMIZATION
+
     float4 _P = float4(gbd.P, gbd.mtl);
     float4 _N = float4(gbd.N, gbd.hemi);
 
