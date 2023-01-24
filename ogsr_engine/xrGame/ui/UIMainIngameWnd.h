@@ -145,6 +145,8 @@ protected:
     // Отображение подсказок при наведении прицела на объект
     void RenderQuickInfos();
 
+    float static_wpn_icon_scale = 1.f;
+
 public:
     CUICarPanel& CarPanel() { return UICarPanel; };
     CUIMotionIcon& MotionIcon() { return UIMotionIcon; }
