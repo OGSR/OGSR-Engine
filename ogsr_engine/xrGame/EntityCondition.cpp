@@ -230,7 +230,11 @@ void CEntityCondition::UpdateCondition()
 
     UpdateEntityMorale();
 
+    //if (m_object && m_object->ID() == 0)
+    //    clamp(m_fDeltaHealth, -0.8f, 1.0f);
+
     health() += m_fDeltaHealth;
+
     m_fPower += m_fDeltaPower;
     m_fPsyHealth += m_fDeltaPsyHealth;
     m_fEntityMorale += m_fDeltaEntityMorale;
@@ -586,8 +590,18 @@ void CEntityCondition::script_register(lua_State* L)
               class_<CEntityCondition>("CEntityCondition")
                   .def("fdelta_time", &CEntityCondition::fdelta_time)
                   .def_readonly("has_valid_time", &CEntityCondition::m_bTimeValid)
-#define CONDITION_CLASS CEntityCondition
-#include "entity_conditions_export.inc"
+                  .def_readwrite("power", &CEntityCondition::m_fPower)
+                  .def_readwrite("power_max", &CEntityCondition::m_fPowerMax)
+                  .def_readwrite("psy_health", &CEntityCondition::m_fPsyHealth)
+                  .def_readwrite("psy_health_max", &CEntityCondition::m_fPsyHealthMax)
+                  .def_readwrite("radiation", &CEntityCondition::m_fRadiation)
+                  .def_readwrite("radiation_max", &CEntityCondition::m_fRadiationMax)
+                  .def_readwrite("morale", &CEntityCondition::m_fEntityMorale)
+                  .def_readwrite("morale_max", &CEntityCondition::m_fEntityMoraleMax)
+                  .def_readwrite("min_wound_size", &CEntityCondition::m_fMinWoundSize)
+                  .def_readonly("is_bleeding", &CEntityCondition::m_bIsBleeding)
+                  //.def_readwrite("health_hit_part",			&CEntityCondition::m_fHealthHitPart)
+                  .def_readwrite("power_hit_part", &CEntityCondition::m_fPowerHitPart)				
                   .property("health", &CEntityCondition::GetHealth, &set_entity_health)
                   .property("max_health", &CEntityCondition::GetMaxHealth, &set_entity_max_health)
               //.property("class_name"				,				&get_lua_class_name)

@@ -116,9 +116,8 @@ float CCustomOutfit::HitThruArmour(float hit_power, s16 element, float AP)
     return NewHitPower;
 };
 
-BOOL CCustomOutfit::BonePassBullet(int boneID) { return m_boneProtection->getBonePassBullet(s16(boneID)); };
-
 #include "torch.h"
+
 void CCustomOutfit::OnMoveToSlot()
 {
     inherited::OnMoveToSlot();

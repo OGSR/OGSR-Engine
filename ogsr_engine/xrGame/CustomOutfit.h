@@ -54,7 +54,6 @@ public:
     float m_additional_weight2{};
     shared_str m_NightVisionSect;
     virtual u32 ef_equipment_type() const;
-    virtual BOOL BonePassBullet(int boneID);
     const shared_str& GetFullIconName() const { return m_full_icon_name; };
 
     virtual void net_Export(CSE_Abstract* E);

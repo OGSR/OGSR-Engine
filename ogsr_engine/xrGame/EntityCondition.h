@@ -61,7 +61,6 @@ public:
     virtual void ChangeAlcohol(float value){};
     virtual void ChangeThirst(float value){};
 
-    IC void MaxPower() { m_fPower = m_fPowerMax; };
     IC void SetMaxPower(float val)
     {
         m_fPowerMax = val;
