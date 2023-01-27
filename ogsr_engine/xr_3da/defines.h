@@ -40,7 +40,7 @@ enum
     rsDisableObjectsAsCrows = (1ul << 11ul),
 
     rsOcclusionDraw = (1ul << 12ul),
-    rsRefresh60hz = (1ul << 13ul),
+    // = 1ul << 13ul,
 
     rsHWInfo = (1ul << 14ul),
 

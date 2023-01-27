@@ -975,6 +975,9 @@ void CLevel::script_register(lua_State* L)
     //установка параметров для шейдеров из скриптов
     module(L)[def("set_artefact_slot", &g_set_artefact_position), def("set_anomaly_slot", &g_set_anomaly_position), def("set_detector_mode", &g_set_detector_params),
               def("set_pda_params", [](const Fvector& p) { shader_exports.set_pda_params(p); }), def("update_inventory_window", &update_inventory_window),
+
+           def("set_dof_params", [](const float& p1, const float& p2, const float& p3, const float& p4) { shader_exports.set_dof_params(p1, p2, p3, p4); }),
+
               def("update_inventory_weight", &update_inventory_weight),
 
               class_<enum_exporter<collide::rq_target>>("rq_target")

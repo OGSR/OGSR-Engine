@@ -251,8 +251,6 @@ protected:
 
     bool m_bUseScopeZoom = false;
     bool m_bUseScopeGrenadeZoom = false;
-    bool m_bUseScopeDOF = true;
-    bool m_bForceScopeDOF = false;
     bool m_bScopeShowIndicators = true;
     bool m_bIgnoreScopeTexture = false;
 
@@ -416,6 +414,13 @@ public:
     float camMaxAngleHorz;
     float camStepAngleHorz;
 
+    float dof_transition_time{};
+    float dof_zoom_effect{};
+    float dof_reload_effect{};
+    Fvector4 dof_params_zoom{};
+    Fvector4 dof_params_reload{};
+    void UpdateDof(float& type, Fvector4 params_type, bool desire);
+
 protected:
     //фактор увеличения дисперсии при максимальной изношености
     //(на сколько процентов увеличится дисперсия)
@@ -548,7 +553,6 @@ private:
 
 public:
     const float& hit_probability() const;
-    void UpdateWeaponParams();
     void UpdateSecondVP();
     float GetZRotatingFactor() const { return m_fZoomRotationFactor; } //--#SM+#--
     float GetSecondVPFov() const; //--#SM+#--

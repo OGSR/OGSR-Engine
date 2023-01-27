@@ -286,24 +286,6 @@ void CRender::create()
     o.disasm = (strstr(Core.Params, "-disasm")) ? TRUE : FALSE;
     o.forceskinw = (strstr(Core.Params, "-skinw")) ? TRUE : FALSE;
 
-    o.ssao_blur_on = ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_BLUR) && (ps_r_ssao != 0);
-    o.ssao_opt_data = ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_OPT_DATA) && (ps_r_ssao != 0);
-    o.ssao_half_data = ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HALF_DATA) && o.ssao_opt_data && (ps_r_ssao != 0);
-    o.ssao_hdao = ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HDAO) && (ps_r_ssao != 0);
-    o.ssao_hbao = !o.ssao_hdao && ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HBAO) && (ps_r_ssao != 0);
-
-    //	TODO: fix hbao shader to allow to perform per-subsample effect!
-    o.hbao_vectorized = false;
-    if (o.ssao_hbao)
-    {
-        if (HW.Caps.id_vendor == 0x1002)
-            o.hbao_vectorized = true;
-        o.ssao_opt_data = true;
-    }
-
-    if (o.ssao_hdao)
-        o.ssao_opt_data = false;
-
     o.dx10_sm4_1 = ps_r2_ls_flags.test((u32)R3FLAG_USE_DX10_1);
     o.dx10_sm4_1 = o.dx10_sm4_1 && (HW.FeatureLevel >= D3D_FEATURE_LEVEL_10_1);
 
@@ -462,8 +444,8 @@ void CRender::reset_begin()
     }
 
     reset_frame = Device.dwFrame;
-    // AVO: let's reload details while changed details options on vid_restart
-    if (b_loaded && ((dm_current_size != dm_size) || (ps_r__Detail_density != ps_current_detail_density)))
+
+    if (b_loaded /*&& ((dm_current_size != dm_size) || (ps_r__Detail_density != ps_current_detail_density))*/)
     {
         Details->Unload();
         xr_delete(Details);
@@ -492,8 +474,7 @@ void CRender::reset_end()
 
     Target = xr_new<CRenderTarget>();
 
-    // AVO: let's reload details while changed details options on vid_restart
-    if (b_loaded && ((dm_current_size != dm_size) || (ps_r__Detail_density != ps_current_detail_density)))
+    if (b_loaded /*&& ((dm_current_size != dm_size) || (ps_r__Detail_density != ps_current_detail_density))*/)
     {
         Details = xr_new<CDetailManager>();
         Details->Load();
@@ -1109,22 +1090,6 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
     if (o.forceskinw)
         defines.emplace_back("SKIN_COLOR", "1");
 
-    if (o.ssao_blur_on)
-        defines.emplace_back("USE_SSAO_BLUR", "1");
-
-    if (o.ssao_hdao)
-        defines.emplace_back("HDAO", "1");
-    else
-    {
-        if (o.ssao_hbao)
-        {
-            defines.emplace_back("USE_HBAO", "1");
-            defines.emplace_back("SSAO_OPT_DATA", o.ssao_half_data ? "2" : "1");
-            if (o.hbao_vectorized)
-                defines.emplace_back("VECTORIZED_CODE", "1");
-        }
-    }
-
     if (o.dx10_msaa)
         defines.emplace_back("ISAMPLE", "0");
 
@@ -1142,12 +1107,9 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
     else if (4 == m_skinning)
         defines.emplace_back("SKIN_4", "1");
 
-    //	Igor: need restart options
-    if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_WATER))
-        defines.emplace_back("USE_SOFT_WATER", "1");
+    defines.emplace_back("USE_SOFT_WATER", "1");
 
-    if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES))
-        defines.emplace_back("USE_SOFT_PARTICLES", "1");
+    defines.emplace_back("USE_SOFT_PARTICLES", "1");
 
     if (RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_DOF))
         defines.emplace_back("USE_DOF", "1");
@@ -1187,6 +1149,21 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
 
     if (ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR))
         defines.emplace_back("SSLR_ENABLED", "1");
+
+    if (ps_r2_ls_flags_ext.test(SSFX_HEIGHT_FOG))
+        defines.emplace_back("SSFX_FOG", "1");
+
+    if (ps_r2_ls_flags_ext.test(SSFX_SKY_DEBANDING))
+        defines.emplace_back("SSFX_DEBAND", "1");
+
+    if (ps_r2_ls_flags_ext.test(SSFX_INDIRECT_LIGHT))
+        defines.emplace_back("SSFX_INDIRECT_LIGHT", "1");
+
+    if (ps_r2_ls_flags_ext.test(REFLECTIONS_ONLY_ON_TERRAIN))
+        defines.emplace_back("REFLECTIONS_ONLY_ON_TERRAIN", "1");
+
+    if (ps_r2_ls_flags_ext.test(REFLECTIONS_ONLY_ON_PUDDLES))
+        defines.emplace_back("REFLECTIONS_ONLY_ON_PUDDLES", "1");
 
     if (ps_r2_ls_flags_ext.test(R2FLAGEXT_TERRAIN_PARALLAX))
         defines.emplace_back("TERRAIN_PARALLAX_ENABNLED", "1");

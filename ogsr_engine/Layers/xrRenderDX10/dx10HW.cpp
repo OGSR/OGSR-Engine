@@ -333,11 +333,6 @@ DXGI_RATIONAL CHW::selectRefresh(u32 dwWidth, u32 dwHeight, DXGI_FORMAT fmt)
 
     float CurrentFreq = 60.0f;
 
-    if (psDeviceFlags.is(rsRefresh60hz))
-    {
-        return res;
-    }
-    else
     {
         xr_vector<DXGI_MODE_DESC> modes;
 

@@ -10,7 +10,7 @@ enum
     AF_WPN_AIM_TOGGLE = (1 << 5),
     AF_PSP = (1 << 6),
     AF_MUSIC_TRACKS = (1 << 7),
-    AF_DOF_SCOPE = (1 << 8),
+    AF_DOF_RELOAD = (1 << 8),
     AF_AMMO_ON_BELT = (1 << 9),
     AF_3D_SCOPES = (1 << 10),
     AF_ZONES_DBG = (1 << 11),
@@ -21,6 +21,7 @@ enum
     AF_3D_PDA = 1 << 16,
     AF_AI_VOLUMETRIC_LIGHTS = 1 << 17,
     AF_EFFECTS_ON_DEMORECORD = 1 << 18,
+    AF_DOF_ZOOM_NEW = 1 << 19,
 };
 
 enum

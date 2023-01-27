@@ -344,6 +344,7 @@ class ShExports final
     PositionsStorage<Fvector2, 24> anomalys_position{};
     Ivector2 detector_params{};
     Fvector pda_params{}, actor_params{};
+    Fvector4 dof_params{};
 
 public:
     void set_artefact_position(const u32& _i, const Fvector2& _pos) { artefacts_position[_i] = _pos; };
@@ -351,12 +352,14 @@ public:
     void set_detector_params(const Ivector2& _pos) { detector_params = _pos; };
     void set_pda_params(const Fvector& _pos) { pda_params = _pos; };
     void set_actor_params(const Fvector& _pos) { actor_params = _pos; };
+    void set_dof_params(float a, float b, float c, float d) { dof_params = {a, b, c, d}; };
 
     const Fvector2& get_artefact_position(const u32& _i) { return artefacts_position[_i]; }
     const Fvector2& get_anomaly_position(const u32& _i) { return anomalys_position[_i]; }
     const Ivector2& get_detector_params() const { return detector_params; }
     const Fvector& get_pda_params() const { return pda_params; }
     const Fvector& get_actor_params() const { return actor_params; }
+    const Fvector4& get_dof_params() const { return dof_params; }
 };
 
 ENGINE_API extern ShExports shader_exports;

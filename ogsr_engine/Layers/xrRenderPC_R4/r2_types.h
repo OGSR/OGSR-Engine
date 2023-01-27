@@ -17,9 +17,6 @@
 #define r2_T_sky0 "$user$sky0"
 #define r2_T_sky1 "$user$sky1"
 
-#define r2_RT_ssao_temp "$user$ssao_temp" // temporary rt for ssao calculation
-#define r2_RT_half_depth "$user$half_depth" // temporary rt for ssao calculation
-
 #define r2_RT_generic0 "$user$generic0" // ---
 #define r2_RT_generic0_r "$user$generic0_r" // ---
 #define r2_RT_generic1 "$user$generic1" // ---
@@ -52,6 +49,17 @@
 // SMAA
 #define r2_RT_smaa_edgetex "$user$smaa_edgetex"
 #define r2_RT_smaa_blendtex "$user$smaa_blendtex"
+
+#define r2_RT_blur_h_2 "$user$blur_h_2"
+#define r2_RT_blur_2 "$user$blur_2"
+
+#define r2_RT_blur_h_4 "$user$blur_h_4"
+#define r2_RT_blur_4 "$user$blur_4"
+
+#define r2_RT_blur_h_8 "$user$blur_h_8"
+#define r2_RT_blur_8 "$user$blur_8"
+
+#define r2_RT_dof "$user$dof"
 
 #define r2_RT_secondVP "$user$viewport2" // --#SM+#-- +SecondVP+ Хранит картинку со второго вьюпорта
 

@@ -433,7 +433,25 @@ static class cl_inv_v final : public R_constant_setup
     }
 } binder_inv_v;
 
+// Screen Space Shaders Stuff
+extern float ps_ssfx_wpn_dof_2;
 
+static class ssfx_wpn_dof_1 final : public R_constant_setup
+{
+    void setup(R_constant* C) override
+    {
+        const auto& P = shader_exports.get_dof_params();
+        RCache.set_c(C, P.x, P.y, P.z, P.w);
+    }
+} ssfx_wpn_dof_1;
+
+static class ssfx_wpn_dof_2 final : public R_constant_setup
+{
+    void setup(R_constant* C) override
+    {
+        RCache.set_c(C, ps_ssfx_wpn_dof_2, 0, 0, 0);    
+    }
+} ssfx_wpn_dof_2;
 
 // Standart constant-binding
 void CBlender_Compile::SetMapping()
@@ -523,6 +541,9 @@ void CBlender_Compile::SetMapping()
     r_Constant("m_actor_params", &binder_actor_params);
 
     r_Constant("sky_color", &binder_sky_color);
+
+    r_Constant("ssfx_wpn_dof_1", &ssfx_wpn_dof_1);
+    r_Constant("ssfx_wpn_dof_2", &ssfx_wpn_dof_2);
 
     // other common
     for (const auto& [name, s] : DEV->v_constant_setup)
