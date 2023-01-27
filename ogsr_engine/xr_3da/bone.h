@@ -309,21 +309,21 @@ struct ECORE_API SJointIKData
 class IBoneData
 {
 public:
-    virtual IBoneData& _BCL GetChild(u16 id) = 0;
-    virtual const IBoneData& _BCL GetChild(u16 id) const = 0;
-    virtual u16 _BCL GetSelfID() const = 0;
-    virtual u16 _BCL GetNumChildren() const = 0;
+    //virtual IBoneData& _BCL GetChild(u16 id) = 0;
+    //virtual const IBoneData& _BCL GetChild(u16 id) const = 0;
+    //virtual u16 _BCL GetSelfID() const = 0;
+    //virtual u16 _BCL GetNumChildren() const = 0;
 
-    virtual const SJointIKData& _BCL get_IK_data() const = 0;
-    virtual const Fmatrix& _BCL get_bind_transform() const = 0;
-    virtual const SBoneShape& _BCL get_shape() const = 0;
-    virtual const Fobb& _BCL get_obb() const = 0;
-    virtual const Fvector& _BCL get_center_of_mass() const = 0;
-    virtual float _BCL get_mass() const = 0;
-    virtual u16 _BCL get_game_mtl_idx() const = 0;
-    virtual u16 _BCL GetParentID() const = 0;
-    virtual float _BCL lo_limit(u8 k) const = 0;
-    virtual float _BCL hi_limit(u8 k) const = 0;
+    //virtual const SJointIKData& _BCL get_IK_data() const = 0;
+    //virtual const Fmatrix& _BCL get_bind_transform() const = 0;
+    //virtual const SBoneShape& _BCL get_shape() const = 0;
+    //virtual const Fobb& _BCL get_obb() const = 0;
+    //virtual const Fvector& _BCL get_center_of_mass() const = 0;
+    //virtual float _BCL get_mass() const = 0;
+    //virtual u16 _BCL get_game_mtl_idx() const = 0;
+    //virtual u16 _BCL GetParentID() const = 0;
+    //virtual float _BCL lo_limit(u8 k) const = 0;
+    //virtual float _BCL hi_limit(u8 k) const = 0;
 };
 
 // static const Fobb	dummy ;//= Fobb().identity();
@@ -367,7 +367,7 @@ public:
     };
     SJointIKData IK_data;
     shared_str game_mtl;
-    SBoneShape shape;
+    //SBoneShape shape;
 
     float mass;
     Fvector center_of_mass;
@@ -447,27 +447,26 @@ public:
     void CopyData(CBone* bone);
 
 private:
-    IBoneData& _BCL GetChild(u16 id) { return *children[id]; }
-    const IBoneData& _BCL GetChild(u16 id) const { return *children[id]; }
-    u16 _BCL GetSelfID() const { return (u16)SelfID; }
-    u16 _BCL GetNumChildren() const { return u16(children.size()); }
-    const SJointIKData& _BCL get_IK_data() const { return IK_data; }
-    const Fmatrix& _BCL get_bind_transform() const { return local_rest_transform; }
-    const SBoneShape& _BCL get_shape() const { return shape; }
-
-    const Fobb& _BCL get_obb() const;
-    const Fvector& _BCL get_center_of_mass() const { return center_of_mass; }
-    float _BCL get_mass() const { return mass; }
-    u16 _BCL get_game_mtl_idx() const;
-    u16 _BCL GetParentID() const
-    {
-        if (parent)
-            return u16(parent->SelfID);
-        else
-            return u16(-1);
-    };
-    float _BCL lo_limit(u8 k) const { return engine_lo_limit(k); }
-    float _BCL hi_limit(u8 k) const { return engine_hi_limit(k); }
+    //IBoneData& _BCL GetChild(u16 id) { return *children[id]; }
+    //const IBoneData& _BCL GetChild(u16 id) const { return *children[id]; }
+    //u16 _BCL GetSelfID() const { return (u16)SelfID; }
+    //u16 _BCL GetNumChildren() const { return u16(children.size()); }
+    //const SJointIKData& _BCL get_IK_data() const { return IK_data; }
+    //const Fmatrix& _BCL get_bind_transform() const { return local_rest_transform; }
+    //const SBoneShape& _BCL get_shape() const { return shape; }
+    //const Fobb& _BCL get_obb() const;
+    //const Fvector& _BCL get_center_of_mass() const { return center_of_mass; }
+    //float _BCL get_mass() const { return mass; }
+    //u16 _BCL get_game_mtl_idx() const;
+    //u16 _BCL GetParentID() const
+    //{
+    //    if (parent)
+    //        return u16(parent->SelfID);
+    //    else
+    //        return u16(-1);
+    //};
+    //float _BCL lo_limit(u8 k) const { return engine_lo_limit(k); }
+    //float _BCL hi_limit(u8 k) const { return engine_hi_limit(k); }
 };
 
 //*** Shared Bone Data ****************************************************************************
@@ -519,18 +518,18 @@ public:
     void CalculateM2B(const Fmatrix& Parent);
 
 private:
-    IBoneData& _BCL GetChild(u16 id);
-    const IBoneData& _BCL GetChild(u16 id) const;
-    u16 _BCL GetNumChildren() const;
-    const SJointIKData& _BCL get_IK_data() const { return IK_data; }
-    const Fmatrix& _BCL get_bind_transform() const { return bind_transform; }
-    const SBoneShape& _BCL get_shape() const { return shape; }
-    const Fobb& _BCL get_obb() const { return obb; }
-    const Fvector& _BCL get_center_of_mass() const { return center_of_mass; }
-    float _BCL get_mass() const { return mass; }
-    u16 _BCL get_game_mtl_idx() const { return game_mtl_idx; }
-    float _BCL lo_limit(u8 k) const { return IK_data.limits[k].limit.x; }
-    float _BCL hi_limit(u8 k) const { return IK_data.limits[k].limit.y; }
+    //IBoneData& _BCL GetChild(u16 id);
+    //const IBoneData& _BCL GetChild(u16 id) const;
+    //u16 _BCL GetNumChildren() const;
+    //const SJointIKData& _BCL get_IK_data() const { return IK_data; }
+    //const Fmatrix& _BCL get_bind_transform() const { return bind_transform; }
+    //const SBoneShape& _BCL get_shape() const { return shape; }
+    //const Fobb& _BCL get_obb() const { return obb; }
+    //const Fvector& _BCL get_center_of_mass() const { return center_of_mass; }
+    //float _BCL get_mass() const { return mass; }
+    //u16 _BCL get_game_mtl_idx() const { return game_mtl_idx; }
+    //float _BCL lo_limit(u8 k) const { return IK_data.limits[k].limit.x; }
+    //float _BCL hi_limit(u8 k) const { return IK_data.limits[k].limit.y; }
 
 public:
     virtual u32 mem_usage()
