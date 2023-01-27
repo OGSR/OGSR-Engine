@@ -6,3 +6,4 @@
 #include "check_screenspace_NVG.h"
 #include "check_screenspace_DEBAND.h"
 #include "check_screenspace_FOG.h"
+#include "check_screenspace_IL.h"

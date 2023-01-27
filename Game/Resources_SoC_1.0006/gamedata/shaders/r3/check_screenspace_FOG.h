@@ -1,1 +1,1 @@
-#define SSFX_FOG
+//#define SSFX_FOG - Теперь управляется из движка

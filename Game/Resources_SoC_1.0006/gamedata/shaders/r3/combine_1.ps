@@ -14,45 +14,9 @@
 #include "lmodel.h"
 #include "hmodel.h"
 
-uniform Texture2D s_half_depth;
-
-#ifdef HDAO
-#define USE_HDAO 1
+#ifdef SSAO_QUALITY
+#include "ssdo.ps"
 #endif
-
-#ifdef SM_5
-Texture2D<float> s_occ;
-#endif // SM_5
-
-#if SSAO_QUALITY <= 3
-#include "ssao.ps"
-#else
-#ifndef USE_HDAO
-#define USE_HDAO
-#endif
-#endif
-
-#ifdef USE_HDAO
-#if SSAO_QUALITY > 3
-#include "ssao_hdao_new.ps"
-#endif
-#define USE_HDAO_CODE
-#if SSAO_QUALITY <= 3
-#define g_f2RTSize (pos_decompression_params2.xy)
-#ifdef GBUFFER_OPTIMIZATION
-#define g_txDepth s_position
-#define g_txNormal s_position
-#else
-#define g_txDepth s_position
-#define g_txNormal s_normal
-#endif
-#include "ssao_hdao.ps"
-#endif
-#else // USE_HDAO
-#ifdef USE_HBAO
-#include "ssao_hbao.ps"
-#endif //	USE_HBAO
-#endif // USE_HDAO
 
 struct _input
 {
@@ -112,31 +76,17 @@ _out main(_input I, uint iSample : SV_SAMPLEINDEX)
 #endif
 #endif
 
-#ifdef USE_HDAO
-#ifdef SM_5
-#if SSAO_QUALITY > 3
-    float occ = s_occ.Sample(smp_nofilter, I.tc0);
-#else // SSAO_QUALITY > 3
-    float occ = calc_hdao(CS_P(P, N, I.tc0, I.tcJ, I.pos2d, ISAMPLE));
-#endif // SSAO_QUALITY > 3
-#else // SM_5
-#if SSAO_QUALITY > 3
-    float occ = calc_new_hdao(CS_P(P, N, I.tc0, I.tcJ, I.pos2d, ISAMPLE));
-#else // SSAO_QUALITY > 3
-    float occ = calc_hdao(CS_P(P, N, I.tc0, I.tcJ, I.pos2d, ISAMPLE));
-#endif // SSAO_QUALITY > 3
-#endif // SM_5
-#else // USE_HDAO
-#ifdef USE_HBAO
-    float occ = calc_hbao(P.z, N, I.tc0, I.pos2d);
-#else // USE_HBAO
-    float occ = calc_ssao(CS_P(P, N, I.tc0, I.tcJ, I.pos2d, ISAMPLE));
+#ifdef SSAO_QUALITY
+    float3 occ = calc_ssdo(P, N, I.tc0, I.pos2d, ISAMPLE);
+    occ = compute_colored_ao(occ.x, D.xyz);
 #endif
-#endif // USE_HDAO
 
     hmodel(hdiffuse, hspecular, mtl, N.w, D.w, P.xyz, N.xyz);
-    hdiffuse *= occ;
-    hspecular *= occ;
+
+// AO implementation
+#ifdef SSAO_QUALITY
+    hdiffuse *= (1.0f - (1.0f - occ) * (1.0f - dot(hdiffuse.rgb, LUMINANCE_VECTOR)));
+#endif
 
 // Disable specular if SSR is enabled. ( Temporary fix? )
 #ifdef SSFX_SSR
@@ -147,8 +97,9 @@ _out main(_input I, uint iSample : SV_SAMPLEINDEX)
 #endif
 
     float4 light = float4(L.rgb + hdiffuse, L.w);
-    float4 C = D * light; // rgb.gloss * light(diffuse.specular)
-    float3 spec = C.www * L.rgb + hspecular * C.rgba; // replicated specular
+    float4 C = D * light;
+
+    float3 spec = C.www * L.rgb + hspecular * C.rgba; // replicated specular //Anomaly-style
 
     float3 color = C.rgb + spec;
 

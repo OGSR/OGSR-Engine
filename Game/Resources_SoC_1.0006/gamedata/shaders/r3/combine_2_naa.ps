@@ -1,7 +1,21 @@
 #include "common.h"
 #include "mblur.h"
-#include "dof.h"
 #include "visor.h"
+
+// Check Screen Space Shaders modules
+#include "check_screenspace.h"
+
+#ifdef SSFX_DEBAND
+#include "screenspace_debanding.h"
+#endif
+
+#ifdef SSFX_FOG
+#include "screenspace_fog.h"
+#endif
+
+#ifdef SSFX_INDIRECT_LIGHT
+#include "screenspace_il.h"
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
 #define EPSDEPTH 0.001
@@ -35,8 +49,9 @@ c2_out main(v2p_aa_AA I)
     gbuffer_data gbd = gbuffer_load_data(I.Tex0, iSample);
 #endif
 
-#ifdef USE_DISTORT
     float depth = gbd.P.z;
+
+#ifdef USE_DISTORT
 #ifndef USE_MSAA
     float4 distort = s_distort.Sample(smp_nofilter, I.Tex0);
 #else // USE_MSAA
@@ -58,15 +73,25 @@ c2_out main(v2p_aa_AA I)
     float2 center = I.Tex0;
 #endif
 
-    float3 img = dof(center);
+    float3 img = s_image.Load(int3(center.xy * screen_res.xy, 0), 0);
+
+// Indirect light - SCREEN SPACE SHADERS - UPDATE 14
+#ifdef SSFX_INDIRECT_LIGHT
+    ssfx_il(I.Tex0, I.HPos, gbd.P, gbd.N, img, iSample);
+#endif
+
     float4 bloom = s_bloom.Sample(smp_rtlinear, center);
+
+// Sky Debanding Implementation  - SCREEN SPACE SHADERS - UPDATE 12.5
+#ifdef SSFX_DEBAND
+    if (depth <= SKY_EPS)
+        img = ssfx_debanding(img, I.Tex0.xy);
+#endif
 
     img = mblur(center, gbd.P, img.rgb);
 
     if (addon_VControl.w == 1)
-    {
         img = visor_reflection(img, center);
-    }
 
 #ifdef USE_DISTORT
     float3 blurred = bloom * def_hdr;

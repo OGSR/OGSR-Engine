@@ -1,6 +1,6 @@
 --Normal pass, with bumpmapping
 function normal		(shader, t_base, t_second, t_detail)
-	shader:begin	("deffer_grass","deffer_base_aref_bump-hq")	
+	shader:begin	("deffer_grass","deffer_grass")	
 	: fog (false)	
 	shader:dx10stencil	( 	true, cmp_func.always, 
 							255 , 127, 

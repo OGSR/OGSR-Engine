@@ -1,5 +1,5 @@
 -- Меню расширенных настроек графики для OGSR Engine
--- Глобальная переделка KRodin (c) 2019
+-- Глобальная переделка xrSimpodin (c) 2023
 
 local hint_colors = {
 	["green"]  = { 255, 0, 128, 0 },
@@ -7,80 +7,47 @@ local hint_colors = {
 	["red"]    = { 255, 255, 0, 0 },
 }
 
-local renders_tbl = {
-	["renderer_r1"]   = 0,
-	["renderer_r2a"]  = 1,
-	["renderer_r2"]   = 2,
-	["renderer_r2.5"] = 3,
-	["renderer_r3"]   = 4,
-	["renderer_r4"]   = 5,
-}
-local function get_current_renderer() return renders_tbl[get_console():get_string("renderer")] end
-
-local function only_1_mode()                    return get_current_renderer() == 0 end
-local function only_2a_and_more_mode()          return get_current_renderer() >= 1 end
-local function only_2_and_more_mode()           return get_current_renderer() >= 2 end
-local function only_25_and_more_mode()          return get_current_renderer() >= 3 end
-local function only_3_and_more_mode()           return get_current_renderer() >= 4 end
-local function only_3_mode()                    return get_current_renderer() == 4 end
-local function only_3_and_more_mode_invisible() return not only_3_and_more_mode()  end
-local function only_4_and_more_mode()           return get_current_renderer() >= 5 end
-
 local adv_vid_opt_params = {
-	{ "vis_dist",              "track", 0, hint_colors.yellow, "video_settings_name_2" , "video_settings_desc_2"  },
-	{ "geometry_lod",          "track", 0, hint_colors.yellow, "video_settings_name_3" , "video_settings_desc_3"  },
-	{ "texture_lod",           "track", 1, hint_colors.yellow, "video_settings_name_7" , "video_settings_desc_7", only_3_and_more_mode_invisible  },
-	{ "aniso",                 "track", 0, hint_colors.yellow, "video_settings_name_8" , "video_settings_desc_8"  },
+	{ "fov",                   "track", 0, hint_colors.green , "video_settings_name_61", "video_settings_desc_61" },
+	{ "hud_fov",               "track", 0, hint_colors.green , "video_settings_name_62", "video_settings_desc_62" },
 	--
-	{ "aa",                    "list",  0, hint_colors.green , "video_settings_name_19", "video_settings_desc_19", only_2a_and_more_mode },
-	{ "msaa",                  "list",  1, hint_colors.red   , "", ""                                            , only_3_and_more_mode    },
-	{ "ssample",               "track", 0, hint_colors.green , "", ""                                            , only_1_mode  },
+	{ "aa",                    "list",  0, hint_colors.green , "video_settings_name_19", "video_settings_desc_19" },
+	{ "msaa",                  "list",  1, hint_colors.red   , "video_settings_name_1" , "video_settings_desc_1"  },
+	--
+	{ "r2_sun",                "check", 0, hint_colors.red   , "video_settings_name_11", "video_settings_desc_11" },
+	{ "r__smap_size",          "list",  1, hint_colors.red   , "video_settings_name_59", "video_settings_desc_59" },
+	{ "r2_sun_quality",        "list",  0, hint_colors.red   , "", ""                                             },
+	{ "sun_shafts",            "list",  0, hint_colors.yellow, "video_settings_name_29", "video_settings_desc_29" },
+	{ "r2_actor_shadow",       "check", 0, hint_colors.green , "video_settings_name_56", ""                       },
+	--
+	{ "ssao",                  "list",  0, hint_colors.yellow, "video_settings_name_37", "video_settings_desc_37" },
+	--
+	{ "r3_dynamic_wet_surfaces","check",0, hint_colors.yellow, "video_settings_name_49", "video_settings_desc_49" },
+	{ "r_sslr_enable",         "check", 0, hint_colors.yellow, "video_settings_name_51", "video_settings_desc_51" },
+	--
+	{ "tessellation",          "check", 0, hint_colors.green , "video_settings_name_52", "video_settings_desc_52" },
+	{ "vsync",                 "check", 0, hint_colors.green , "video_settings_name_16", "video_settings_desc_16" },
+	{ "3d_scopes_fps_factor",  "track", 0, hint_colors.red   , "video_settings_name_64", "video_settings_desc_64" },
+	{ "mt_texload",            "check", 0, hint_colors.green , "video_settings_name_60", ""                       },
 	--
 	{ "detail_density",        "track", 0, hint_colors.red   , "video_settings_name_4" , "video_settings_desc_4"  },
 	{ "detail_distance",       "track", 0, hint_colors.red   , "video_settings_name_5" , "video_settings_desc_5"  },
-	{ "r2_sun_details",        "check", 0, hint_colors.red   , "video_settings_name_12", "video_settings_desc_12" },
-	{ "r2_sun",                "check", 0, hint_colors.red   , "video_settings_name_11", "video_settings_desc_11", only_2_and_more_mode  },
-	{ "light_distance",        "track", 0, hint_colors.yellow, "video_settings_name_13", "video_settings_desc_13", only_2a_and_more_mode },
-	{ "particles_distance",    "track", 0, hint_colors.yellow, "video_settings_name_15", ""                      , only_2a_and_more_mode },
-	{ "r__smap_size",          "list",  1, hint_colors.red   , "video_settings_name_59", "video_settings_desc_59", only_2_and_more_mode  },
---	{ "r2_sun_near",           "track", 0, hint_colors.red   , "video_settings_name_22", "video_settings_desc_22", only_2_and_more_mode  }, --теперь эта команда ни на что не влияет, т.ч. выключаю.
---	{ "r2_sun_far",            "track", 0, hint_colors.yellow, "video_settings_name_58", "video_settings_desc_58", only_2_and_more_mode  }, --теперь эта команда ни на что не влияет, т.ч. выключаю.
---	{ "npc_torch",             "check", 0, hint_colors.red   , "video_settings_name_14", "video_settings_desc_14", only_25_and_more_mode },
-	{ "r1_detail_textures",    "check", 0, hint_colors.green , "", ""                                            , only_1_mode },
-	{ "r2_detail_bump",        "check", 0, hint_colors.yellow, "video_settings_name_44", "video_settings_desc_44", only_2_and_more_mode },
-	{ "r2_steep_parallax",     "check", 0, hint_colors.red   , "video_settings_name_39", "video_settings_desc_39", only_25_and_more_mode },
-	{ "terrain_parallax",      "check", 1, hint_colors.red   , "", ""                                            , only_3_and_more_mode },
-	{ "r2_sun_quality",        "list",  0, hint_colors.red   , "", ""                                            , only_25_and_more_mode },
-	{ "sun_shafts",            "list",  0, hint_colors.red   , "video_settings_name_29", "video_settings_desc_29", only_2a_and_more_mode },
-	{ "ssao_mode",             "list",  1, hint_colors.yellow, "video_settings_name_38", "video_settings_desc_38", only_25_and_more_mode },
-	{ "ssao",                  "list",  1, hint_colors.yellow, "video_settings_name_37", "video_settings_desc_37", only_25_and_more_mode },
-	{ "soft_water",            "check", 0, hint_colors.green , "video_settings_name_31", "video_settings_desc_31", only_25_and_more_mode },
-	{ "soft_particles",        "check", 0, hint_colors.green , "video_settings_name_32", "video_settings_desc_32", only_25_and_more_mode },
-	{ "dof",                   "check", 0, hint_colors.yellow, "video_settings_name_40", "video_settings_desc_40", only_25_and_more_mode },
-	{ "dof_zoom",              "check", 0, hint_colors.green,  "video_settings_name_42", "video_settings_desc_42", only_25_and_more_mode },
-	{ "dof_zoom_far",          "track", 0, hint_colors.green,  "", "",                                             only_25_and_more_mode },
-	{ "dof_zoom_near",         "track", 0, hint_colors.green,  "", "",                                             only_25_and_more_mode },
-	{ "volumetric_light",      "check", 0, hint_colors.green , "video_settings_name_50", "video_settings_desc_50", only_25_and_more_mode },
-	{ "r3_dynamic_wet_surfaces","check",0, hint_colors.green , "video_settings_name_49", "video_settings_desc_49", only_3_and_more_mode },
---	{ "r3_volumetric_smoke",   "check", 0, hint_colors.green , "video_settings_name_55", "video_settings_desc_55", only_3_and_more_mode }, --Вообще выключен в движке, до лучших времен.
-	{ "tessellation",          "check", 0, hint_colors.green , "", ""                                            , only_4_and_more_mode },
-	{ "vsync",                 "check", 0, hint_colors.green , "video_settings_name_16", "video_settings_desc_16" },
-	{ "60hz",                  "check", 0, hint_colors.green , "video_settings_name_17", "video_settings_desc_17" },
-	{ "fov",                   "track", 0, hint_colors.green , "video_settings_name_61", "video_settings_desc_61" },
-	{ "hud_fov",               "track", 0, hint_colors.green , "video_settings_name_62", "video_settings_desc_62" },
-	{ "cam_inert",             "track", 0, hint_colors.green , "video_settings_name_1" , "video_settings_desc_1"  },
---	{ "r2_sun_lumscale",       "track", 0, hint_colors.green , "video_settings_name_27", "video_settings_desc_27" },
---	{ "r2_sun_lumscale_amb",   "track", 0, hint_colors.green , "video_settings_name_28", "video_settings_desc_28", only_2_and_more_mode  },
---	{ "r2_sun_lumscale_hemi",  "track", 0, hint_colors.green , "video_settings_name_63", "video_settings_desc_63", only_2_and_more_mode  }, --Это более не нужно.
---	{ "r2_tf_mipbias",         "track", 0, hint_colors.green , "video_settings_name_20", "video_settings_desc_20" }, -- Лучше это не менять, а то на DX10+ при значениях выше -0.5f мылится UI.
---	{ "r2_sun_near_border",    "track", 0, hint_colors.green , "video_settings_name_23", "video_settings_desc_23", only_2_and_more_mode  }, --теперь эта команда ни на что не влияет, т.ч. выключаю.
-	{ "r2_tonemap",            "check", 0, hint_colors.green , "video_settings_name_25", "video_settings_desc_25", only_2_and_more_mode  },
-	{ "r2_tonemap_middlegray", "track", 0, hint_colors.green , "video_settings_name_26", "video_settings_desc_26", only_2_and_more_mode  },
-	{ "r2_rain_drops",         "check", 0, hint_colors.green , "video_settings_name_47", "video_settings_desc_47", only_2a_and_more_mode },
-	{ "r2_actor_shadow",       "check", 0, hint_colors.green , "video_settings_name_56", "",                       only_2a_and_more_mode },
-	{ "r_sslr_enable",         "check", 1, hint_colors.yellow, "", "",                                             only_4_and_more_mode },
-	{ "3d_scopes_fps_factor",  "track", 0, hint_colors.red   , "video_settings_name_64", "video_settings_desc_64", },
-	{ "mt_texload",            "check", 0, hint_colors.green , "video_settings_name_60", "",                       only_2a_and_more_mode },
+	{ "detail_scale",          "track", 0, hint_colors.yellow, "" , ""  },
+	--
+	{ "r2_steep_parallax",     "check", 0, hint_colors.yellow, "video_settings_name_39", "video_settings_desc_39" },
+	{ "terrain_parallax",      "check", 1, hint_colors.yellow, "video_settings_name_24", "video_settings_desc_24" },
+	--
+	{ "npc_torch",             "check", 0, hint_colors.yellow, "video_settings_name_14", "video_settings_desc_14" },
+	--
+	{ "dof_reload",            "check", 0, hint_colors.green , "video_settings_name_41", "video_settings_desc_41" },
+	{ "dof_zoom",              "check", 0, hint_colors.green , "video_settings_name_42", "video_settings_desc_42" },
+	{ "dof_zoom_param",        "track", 0, hint_colors.green , "", ""                                             },
+	--	
+	{ "r2_rain_drops",         "check", 0, hint_colors.green , "video_settings_name_47", "video_settings_desc_47" },
+	{ "r2_visor_refl",         "check", 0, hint_colors.green , "video_settings_name_65", "",                      },
+	--
+--	{ "volumetric_light",      "check", 0, hint_colors.green , "video_settings_name_50", "video_settings_desc_50" }, --нету у нас таких ламп
+--	{ "r3_volumetric_smoke",   "check", 0, hint_colors.green , "video_settings_name_55", "video_settings_desc_55" }, --Вообще выключен в движке, до лучших времен.
 }
 
 local control_init_funs = {
@@ -112,13 +79,12 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 		local opt, ctr_type, need_restart, color, hint_caption, hint_string, cond = unpack(adv_vid_opt_params[i])
 
 		local enabled = not cond or cond()
-		if not enabled then goto CONTINUE end
 
 		local _st = xml:InitStatic("video_adv:templ_item", self.scroll_v)
 		local _st2 = xml:InitStatic("video_adv:cap_"..opt, _st)
 		local ctl = xml[control_init_funs[ctr_type]](xml, "video_adv:"..ctr_type.."_"..opt, _st)
 
-		if color then
+		if color and enabled then
 			_st2:SetTextColor(unpack(color))
 		end
 
@@ -141,7 +107,8 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 			)
 		end
 
-		::CONTINUE::
+		_st:Enable(enabled)
+		_st2:Enable(enabled)
 	end
 
 	local btn = xml:Init3tButton("video_adv:btn_to_simply",	self)

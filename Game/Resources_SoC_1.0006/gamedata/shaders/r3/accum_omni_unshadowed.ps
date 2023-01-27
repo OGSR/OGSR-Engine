@@ -33,7 +33,12 @@ float4 main(float4 tc : TEXCOORD0) : SV_Target
     m = _P.w;
 #endif
 
+    // FLORA FIXES & IMPROVEMENTS - SSS Update 14.2
+    // Fix Flora ilumination ( Align normal to light )
+    if (abs(m - MAT_FLORA) <= 0.05)
+        _N.rgb = -normalize(_P - Ldynamic_pos.xyz);
+
     float rsqr;
     float4 light = plight_local(m, _P, _N, Ldynamic_pos, Ldynamic_pos.w, rsqr);
-    return blendp(Ldynamic_color * light, tc);
+    return float4(Ldynamic_color * light);
 }

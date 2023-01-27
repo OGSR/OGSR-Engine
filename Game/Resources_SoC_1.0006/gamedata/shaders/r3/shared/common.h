@@ -65,7 +65,4 @@ float2 calc_xz_wave(float2 dir2D, float frac)
     return lerp(ctrl_A, ctrl_B, frac); //! This calculates tree wave. No changes made
 }
 
-#define SKY_EPS float(0.001)
-#define MAT_FLORA 6.0
-
 #endif

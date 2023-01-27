@@ -1,7 +1,7 @@
 /**
- * @ Version: SCREEN SPACE SHADERS - UPDATE 13
+ * @ Version: SCREEN SPACE SHADERS - UPDATE 14
  * @ Description: Main file
- * @ Modified time: 2022-12-19 23:28
+ * @ Modified time: 2023-01-18 21:11
  * @ Author: https://www.moddb.com/members/ascii1457
  * @ Mod: https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders
  */
@@ -16,6 +16,16 @@
 #include "screenspace_common_ripples.h"
 
 #include "check_screenspace.h"
+
+static const float3 ssfx_hemisphere[32] = {
+    float3(-0.134, 0.044, -0.825),  float3(0.045, -0.431, -0.529),  float3(-0.537, 0.195, -0.371),  float3(0.525, -0.397, 0.713),  float3(0.895, 0.302, 0.139),
+    float3(-0.613, -0.408, -0.141), float3(0.307, 0.822, 0.169),    float3(-0.819, 0.037, -0.388),  float3(0.376, 0.009, 0.193),   float3(-0.006, -0.103, -0.035),
+    float3(0.098, 0.393, 0.019),    float3(0.542, -0.218, -0.593),  float3(0.526, -0.183, 0.424),   float3(-0.529, -0.178, 0.684), float3(0.066, -0.657, -0.570),
+    float3(-0.214, 0.288, 0.188),   float3(-0.689, -0.222, -0.192), float3(-0.008, -0.212, -0.721), float3(0.053, -0.863, 0.054),  float3(0.639, -0.558, 0.289),
+    float3(-0.255, 0.958, 0.099),   float3(-0.488, 0.473, -0.381),  float3(-0.592, -0.332, 0.137),  float3(0.080, 0.756, -0.494),  float3(-0.638, 0.319, 0.686),
+    float3(-0.663, 0.230, -0.634),  float3(0.235, -0.547, 0.664),   float3(0.164, -0.710, 0.086),   float3(-0.009, 0.493, -0.038), float3(-0.322, 0.147, -0.105),
+    float3(-0.554, -0.725, 0.289),  float3(0.534, 0.157, -0.250),
+};
 
 #ifdef USE_MSAA
 TEXTURE2DMS(float4, MSAA_SAMPLES) s_rimage;
@@ -82,12 +92,12 @@ float SSFX_get_depth(float2 tc, uint iSample : SV_SAMPLEINDEX)
 #endif
 }
 
-float3 SSFX_get_position(float2 tc, uint iSample : SV_SAMPLEINDEX)
+float4 SSFX_get_position(float2 tc, uint iSample : SV_SAMPLEINDEX)
 {
 #ifndef USE_MSAA
-    return s_position.Sample(smp_nofilter, tc).xyz;
+    return s_position.Sample(smp_nofilter, tc);
 #else
-    return s_position.Load(int3(tc * screen_res.xy, 0), iSample).xyz;
+    return s_position.Load(int3(tc * screen_res.xy, 0), iSample);
 #endif
 }
 
@@ -147,11 +157,16 @@ float4 SSFX_get_fast_scenelighting(float2 tc, uint iSample : SV_SAMPLEINDEX)
 
 #ifdef SSFX_ENHANCED_SHADERS // We have Enhanced Shaders installed
 
-    float3 hdiffuse = C.rgb + L_ambient.rgb;
+    /*float3 hdiffuse = C.rgb + L_ambient.rgb;
 
     rL.rgb += rL.a * SRGBToLinear(C.rgb);
 
-    return float4(LinearTosRGB((rL.rgb + hdiffuse) * saturate(rL.rrr * 100)), C.w);
+    return float4(LinearTosRGB((rL.rgb + hdiffuse) * saturate(rL.rrr * 100)), C.w);*/
+
+    float3 result = rL.rgb + rL.a * C.rgb;
+    result *= env_color.rgb;
+
+    return float4(result, C.w);
 
 #else
 

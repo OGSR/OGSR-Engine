@@ -1,6 +1,16 @@
 #ifndef common_functions_h_included
 #define common_functions_h_included
 
+float3 vibrance(float3 img, half val)
+{
+    float luminance = dot(float3(img.rgb), LUMINANCE_VECTOR);
+    return float3(lerp(luminance, float3(img.rgb), val));
+}
+
+float noise(float2 tc) {
+    return frac(sin(dot(tc, float2(12.0, 78.0) + (timers.x))) * 43758.0) * 0.25f;
+}
+
 //	contrast function
 float Contrast(float Input, float ContrastPower)
 {
@@ -476,6 +486,31 @@ inline bool isSecondVPActive() { return (m_blender_mode.z == 1.f); }
 
 // Рендерится ли в данный момент кадр для прицела?
 inline bool IsSVPFrame() { return (m_blender_mode.y == 1.f); }
+//////////////////////////////////////////////////////////////////////////////////////////
+
+//#define SKY_WITH_DEPTH // sky renders with
+// depth to avoid some problems with reflections
+
+#define SKY_DEPTH float(10000.0)
+#define SKY_EPS float(0.001)
+
+#ifndef SKY_WITH_DEPTH
+float is_sky(float depth) { return step(depth, SKY_EPS); }
+float is_not_sky(float depth) { return step(SKY_EPS, depth); }
+#else
+float is_sky(float depth) { return step(abs(depth - SKY_DEPTH), SKY_EPS); }
+float is_not_sky(float depth) { return step(SKY_EPS, abs(depth - SKY_DEPTH)); }
+#endif
+
+float3 compute_colored_ao(float ao, float3 albedo)
+{ // https://www.activision.com/cdn/research/s2016_pbs_activision_occlusion.pptx
+    float3 a = 2.0404 * albedo - 0.3324;
+    float3 b = -4.7951 * albedo + 0.6417;
+    float3 c = 2.7552 * albedo + 0.6903;
+
+    return max(ao, ((ao * a + b) * ao + c) * ao);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 
 #endif //	common_functions_h_included

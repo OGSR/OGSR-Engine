@@ -310,6 +310,13 @@
 			<options_item entry="r__detail_radius" group="mm_opt_video_adv"/>
 		</track_detail_distance>
 
+		<cap_detail_scale x="5" y="5" width="143" height="21">
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_detail_scale</text>
+		</cap_detail_scale>
+		<track_detail_scale x="249" y="0" width="190" height="21" step="0.01">
+			<options_item entry="r__detail_scale" group="mm_opt_video_adv"/>
+		</track_detail_scale>
+
         <cap_texture_lod x="5" y="5" width="143" height="21">
             <text font="letterica16" r="215" g="195" b="170">ui_mm_texture_quality</text>
         </cap_texture_lod>
@@ -500,12 +507,12 @@
             <options_item entry="r2_soft_particles" group="mm_opt_video_adv" depend="vid"/>
         </check_soft_particles>
 
-        <cap_dof x="5" y="5" width="143" height="21">
-            <text font="letterica16" r="215" g="195" b="170">ui_mm_dof</text>
-        </cap_dof>
-        <check_dof x="249" y="0" width="30" height="21">
-            <options_item entry="r2_dof_enable" group="mm_opt_video_adv" depend="vid"/>
-        </check_dof>
+        <cap_dof_reload x="5" y="5" width="143" height="21">
+            <text font="letterica16" r="215" g="195" b="170">ui_mm_r2_reload_dof</text>
+        </cap_dof_reload>
+        <check_dof_reload x="249" y="0" width="30" height="21">
+            <options_item entry="g_dof_reload" group="mm_opt_video_adv" depend="vid"/>
+        </check_dof_reload>
 
 		<cap_dof_zoom x="5" y="5" width="143" height="21">
             <text font="letterica16" r="215" g="195" b="170">ui_mm_r2_zoom_dof</text>
@@ -514,19 +521,12 @@
             <options_item entry="g_dof_zoom" group="mm_opt_video_adv" depend="vid"/>
         </check_dof_zoom>
 
-		<cap_dof_zoom_far x="5" y="5" width="143" height="21">
-            <text font="letterica16" r="215" g="195" b="170">ui_mm_dof_zoom_far</text>
-        </cap_dof_zoom_far>
-        <track_dof_zoom_far x="249" y="0" width="190" height="21" is_integer="1" step="10">
-            <options_item entry="g_dof_zoom_far" group="mm_opt_video_adv"/>
-        </track_dof_zoom_far>
-
-        <cap_dof_zoom_near x="5" y="5" width="143" height="21">
-            <text font="letterica16" r="215" g="195" b="170">ui_mm_dof_zoom_near</text>
-        </cap_dof_zoom_near>
-        <track_dof_zoom_near x="249" y="0" width="190" height="21" is_integer="1" step="10">
-            <options_item entry="g_dof_zoom_near" group="mm_opt_video_adv"/>
-        </track_dof_zoom_near>
+		<cap_dof_zoom_param x="5" y="5" width="143" height="21">
+            <text font="letterica16" r="215" g="195" b="170">ui_mm_dof_zoom_param</text>
+        </cap_dof_zoom_param>
+        <track_dof_zoom_param x="249" y="0" width="190" height="21" step="0.01">
+            <options_item entry="ssfx_wpn_dof_2" group="mm_opt_video_adv"/>
+        </track_dof_zoom_param>
 
         <cap_volumetric_light x="5" y="5" width="143" height="21">
             <text font="letterica16" r="215" g="195" b="170">ui_mm_volumetric_light</text>
@@ -568,6 +568,13 @@
 		<check_r2_rain_drops x="249" y="0" width="30" height="21">
 			<options_item entry="r2_rain_drops" group="mm_opt_video_adv"/>
 		</check_r2_rain_drops>
+
+		<cap_r2_visor_refl x="5" y="5" width="143" height="21">
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_r2_visor_refl</text>
+		</cap_r2_visor_refl>
+		<check_r2_visor_refl x="249" y="0" width="30" height="21">
+			<options_item entry="r2_visor_refl" group="mm_opt_video_adv"/>
+		</check_r2_visor_refl>	
 
 		<cap_r2_actor_shadow x="5" y="5" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_r2_actor_shadow</text>
