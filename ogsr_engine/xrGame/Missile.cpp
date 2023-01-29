@@ -3,25 +3,24 @@
 #include "PhysicsShell.h"
 #include "actor.h"
 #include "torch.h"
-#include "../xr_3da/camerabase.h"
 #include "xrserver_objects_alife.h"
-#include "ActorEffector.h"
 #include "level.h"
 #include "xr_level_controller.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "ai_object_location.h"
 #include "ExtendedGeom.h"
-#include "MathUtils.h"
 #include "characterphysicssupport.h"
 #include "inventory.h"
-#include "..\xr_3da\IGame_Persistent.h"
 #ifdef DEBUG
 #include "phdebug.h"
 #endif
 
+
 #include "ui/UIProgressShape.h"
 #include "ui/UIXmlInit.h"
-#include "../xr_3da/x_ray.h"
+
+#include "CalculateTriangle.h"
+#include "tri-colliderknoopc/dcTriangle.h"
 
 CUIProgressShape* g_MissileForceShape = NULL;
 
@@ -84,6 +83,9 @@ void CMissile::Load(LPCSTR section)
         HUD_SOUND::LoadSound(section, "snd_item_on", sndItemOn);
 
     m_ef_weapon_type = READ_IF_EXISTS(pSettings, r_u32, section, "ef_weapon_type", u32(-1));
+
+    m_safe_dist_to_explode = READ_IF_EXISTS(pSettings, r_float, section, "safe_dist_to_explode", 0);
+    m_kick_on_explode = READ_IF_EXISTS(pSettings, r_bool, section, "explosion_on_kick", false);
 }
 
 BOOL CMissile::net_Spawn(CSE_Abstract* DC)
@@ -513,6 +515,7 @@ void CMissile::Throw()
 
     m_fake_missile->m_throw_direction = m_throw_direction;
     m_fake_missile->m_throw_matrix = m_throw_matrix;
+    m_fake_missile->m_pOwner = smart_cast<CGameObject*>(H_Parent());
 
     CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(H_Parent());
     VERIFY(inventory_owner);
@@ -548,11 +551,9 @@ void CMissile::OnEvent(NET_Packet& P, u16 type)
     }
     case GE_OWNERSHIP_REJECT: {
         P.r_u16(id);
-        bool IsFakeMissile = false;
         if (m_fake_missile && (id == m_fake_missile->ID()))
         {
             m_fake_missile = NULL;
-            IsFakeMissile = true;
         }
 
         CMissile* missile = smart_cast<CMissile*>(Level().Objects.net_Find(id));
@@ -742,7 +743,7 @@ void CMissile::OnDrawUI()
     }
 }
 
-void CMissile::ExitContactCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/)
+void CMissile::ExitContactCallback(bool& do_colide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {
     dxGeomUserData *gd1 = NULL, *gd2 = NULL;
     if (bo1)
@@ -756,7 +757,90 @@ void CMissile::ExitContactCallback(bool& do_colide, bool bo1, dContact& c, SGame
         gd1 = retrieveGeomUserData(c.geom.g2);
     }
     if (gd1 && gd2 && (CPhysicsShellHolder*)gd1->callback_data == gd2->ph_ref_object)
+    {
         do_colide = false;
+    }
+
+    {
+        dxGeomUserData* l_pUD1 = retrieveGeomUserData(c.geom.g1);
+        dxGeomUserData* l_pUD2 = retrieveGeomUserData(c.geom.g2);
+
+        SGameMtl* material;
+        CMissile* l_this = l_pUD1 ? smart_cast<CMissile*>(l_pUD1->ph_ref_object) : NULL;
+        if (!l_this)
+        {
+            l_this = l_pUD2 ? smart_cast<CMissile*>(l_pUD2->ph_ref_object) : NULL;
+            material = material_1;
+        }
+        else
+        {
+            material = material_2;
+        }
+
+        VERIFY(material);
+        if (material->Flags.is(SGameMtl::flPassable))
+            return;
+
+        if (!l_this || !l_this->m_kick_on_explode || l_this->contact)
+            return;
+
+        bool safe_to_explode = true;
+
+        Fvector l_pos;
+        l_pos.set(l_this->Position());
+
+        if (l_this->m_pOwner)
+        {
+            float dist = l_this->m_pOwner->Position().distance_to(l_pos);
+            if (dist < l_this->m_safe_dist_to_explode)
+            {
+                safe_to_explode = false;
+
+                CActor* pActor = smart_cast<CActor*>(l_this->m_pOwner);
+                if (pActor)
+                {
+                    dGeomID g = NULL;
+                    dxGeomUserData*& l_pUD = l_pUD1 ? l_pUD1 : l_pUD2;
+                    if (l_pUD1)
+                        g = c.geom.g1;
+                    else
+                        g = c.geom.g2;
+
+                    Fvector velocity;
+                    l_this->PHGetLinearVell(velocity);
+                    if (velocity.square_magnitude() > EPS)
+                    {
+                        velocity.normalize();
+                        Triangle neg_tri;
+                        CalculateTriangle(l_pUD->neg_tri, g, neg_tri);
+                        float cosinus = velocity.dotproduct(*((Fvector*)neg_tri.norm));
+                        VERIFY(_valid(neg_tri.dist));
+                        float dist = neg_tri.dist / cosinus;
+                        velocity.mul(dist * 1.1f);
+                        l_pos.sub(velocity);
+                    }
+
+                    u32 lvid = l_this->UsedAI_Locations() ? l_this->ai_location().level_vertex_id() : ai().level_graph().vertex(l_pos);
+                    CSE_Abstract* object = Level().spawn_item(l_this->cNameSect().c_str(), l_pos, lvid, 0xffff, true);
+
+                    NET_Packet P;
+                    object->Spawn_Write(P, TRUE);
+                    Level().Send(P, net_flags(TRUE));
+                    F_entity_Destroy(object);
+                }
+
+                l_this->set_destroy_time(500);
+                l_this->DestroyObject();
+            }
+        }
+
+        if (safe_to_explode)
+        {
+            l_this->set_destroy_time(5);
+        }
+
+        l_this->contact = true;
+    }
 }
 
 void CMissile::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count)

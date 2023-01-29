@@ -4,6 +4,7 @@
 
 struct dContact;
 struct SGameMtl;
+
 class CMissile : public CHudItemObject
 {
     friend class CWeaponScript;
@@ -76,6 +77,9 @@ protected:
     Fvector m_throw_direction;
     Fmatrix m_throw_matrix;
 
+    // указатель на владельца RocketLauncher - который кидал гранату
+    CGameObject* m_pOwner{};
+
     CMissile* m_fake_missile;
 
     //параметры броска
@@ -84,6 +88,10 @@ protected:
     // private:
     bool m_constpower;
     float m_fThrowForce;
+
+    bool m_kick_on_explode{};
+    float m_safe_dist_to_explode{};
+    bool contact{};
 
 protected:
     //относительная точка и направление вылета гранаты

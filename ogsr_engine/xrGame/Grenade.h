@@ -67,7 +67,7 @@ public:
 
     using destroy_callback = fastdelegate::FastDelegate<void(CGrenade*)>;
     void set_destroy_callback(destroy_callback callback) { m_destroy_callback = callback; }
-    void DestroyCalbackClear() { m_destroy_callback.clear(); }
+    //void DestroyCallbackClear() { m_destroy_callback.clear(); }
 
 private:
     destroy_callback m_destroy_callback;
