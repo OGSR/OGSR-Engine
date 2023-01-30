@@ -109,7 +109,7 @@ void CDamageManager::load_section(LPCSTR section, CInifile* ini)
 
 void CDamageManager::HitScale(const int element, float& hit_scale, float& wound_scale, bool aim_bullet)
 {
-    if (BI_NONE == u16(element))
+    if (BI_NONE == u16(element) || !m_object->Visual()) // при выгрузке уровня были вылеты если визуала уже нет.
     {
         //считаем что параметры для BI_NONE заданы как 1.f
         hit_scale = 1.f * m_default_hit_factor;
