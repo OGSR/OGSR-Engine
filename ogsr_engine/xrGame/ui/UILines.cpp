@@ -161,11 +161,92 @@ void CUILines::ParseText()
         line->AddSubLine(&subline);
     }
 
+    BOOL bNewLines = FALSE;
+
     if (uFlags.test(flRecognizeNewLine))
-    {
-        line->ProcessNewLines(); // process "\n"
-    }
+        if (m_pFont->IsMultibyte())
+        {
+            CUILine* ptmp_line = xr_new<CUILine>();
+            int vsz = line->m_subLines.size();
+            VERIFY(vsz);
+            for (int i = 0; i < vsz; i++)
+            {
+                char* pszTemp = NULL;
+                const u32 tcolor = line->m_subLines[i].m_color;
+                char szTempLine[MAX_MB_CHARS], *pszSearch = NULL;
+                VERIFY(strlen(line->m_subLines[i].m_text.c_str()) < MAX_MB_CHARS);
+                strcpy_s(szTempLine, line->m_subLines[i].m_text.c_str());
+                pszSearch = szTempLine;
+                while ((pszTemp = strstr(pszSearch, "\\n")) != NULL)
+                {
+                    bNewLines = TRUE;
+                    *pszTemp = '\0';
+                    ptmp_line->AddSubLine(pszSearch, tcolor);
+                    pszSearch = pszTemp + 2;
+                }
+                ptmp_line->AddSubLine(pszSearch, tcolor);
+            }
+            line->Clear();
+            xr_free(line);
+            line = ptmp_line;
+        }
+        else
+            line->ProcessNewLines(); // process "\n"
        
+    if (m_pFont->IsMultibyte())
+    {
+#define UBUFFER_SIZE 100
+        u16 aMarkers[UBUFFER_SIZE];
+        CUILine tmp_line;
+        char szTempLine[MAX_MB_CHARS];
+        float fTargetWidth = 1.0f;
+        UI()->ClientToScreenScaledWidth(fTargetWidth);
+        VERIFY((m_wndSize.x > 0) && (fTargetWidth > 0));
+        fTargetWidth = m_wndSize.x / fTargetWidth;
+        int vsz = line->m_subLines.size();
+        VERIFY(vsz);
+        if ((vsz > 1) && (!bNewLines))
+        { // only colored line, pizdets
+            for (int i = 0; i < vsz; i++)
+            {
+                const char* pszText = line->m_subLines[i].m_text.c_str();
+                const u32 tcolor = line->m_subLines[i].m_color;
+                VERIFY(pszText);
+                tmp_line.AddSubLine(pszText, tcolor);
+            }
+            m_lines.push_back(tmp_line);
+            tmp_line.Clear();
+        }
+        else
+        {
+            for (int i = 0; i < vsz; i++)
+            {
+                const char* pszText = line->m_subLines[i].m_text.c_str();
+                const u32 tcolor = line->m_subLines[i].m_color;
+                u16 uFrom = 0, uPartLen = 0;
+                VERIFY(pszText);
+                u16 nMarkers = m_pFont->SplitByWidth(aMarkers, UBUFFER_SIZE, fTargetWidth, pszText);
+                for (u16 j = 0; j < nMarkers; j++)
+                {
+                    uPartLen = aMarkers[j] - uFrom;
+                    VERIFY((uPartLen > 0) && (uPartLen < MAX_MB_CHARS));
+                    strncpy_s(szTempLine, pszText + uFrom, uPartLen);
+                    szTempLine[uPartLen] = '\0';
+                    tmp_line.AddSubLine(szTempLine, tcolor);
+                    m_lines.push_back(tmp_line);
+                    tmp_line.Clear();
+                    uFrom += uPartLen;
+                }
+                strncpy_s(szTempLine, pszText + uFrom, MAX_MB_CHARS);
+                tmp_line.AddSubLine(szTempLine, tcolor);
+                m_lines.push_back(tmp_line);
+                tmp_line.Clear();
+            }
+        }
+    }
+    else
+    {
+
     float max_width = m_wndSize.x;
 
     CUILine tmp_line;
@@ -227,6 +308,8 @@ void CUILines::ParseText()
             curr_width = 0.0f;
         }
     }
+
+	}
 
     xr_delete(line);
     uFlags.set(flNeedReparse, FALSE);

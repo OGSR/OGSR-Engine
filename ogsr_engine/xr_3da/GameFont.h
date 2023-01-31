@@ -2,6 +2,8 @@
 #define GameFontH
 #pragma once
 
+#include "MbHelpers.h"
+
 #include "../Include/xrRender/FontRender.h"
 
 class ENGINE_API CGameFont
@@ -57,6 +59,7 @@ public:
         fsGradient = (1 << 0),
         fsDeviceIndependent = (1 << 1),
         fsValid = (1 << 2),
+        fsMultibyte = (1 << 3),
 
         fsForceDWORD = u32(-1)
     };
@@ -86,6 +89,7 @@ public:
     IC void SetAligment(EAligment aligment) { eCurrentAlignment = aligment; }
 
     float SizeOf_(LPCSTR s);
+    float SizeOf_(const wide_char* wsStr);
     float SizeOf_(const char cChar); // only ANSII
 
     float CurrentHeight_();
@@ -96,6 +100,11 @@ public:
     void OutSet(float x, float y);
 
     void MasterOut(BOOL bCheckDevice, BOOL bUseCoords, BOOL bScaleCoords, BOOL bUseSkip, float _x, float _y, float _skip, LPCSTR fmt, va_list p);
+
+    u32 smart_strlen(const char* S);
+    BOOL IsMultibyte() { return (uFlags & fsMultibyte); };
+    u16 SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, const char* pszText);
+    u16 GetCutLengthPos(float fTargetWidth, const char* pszText);
 
     void OutI(float _x, float _y, LPCSTR fmt, ...);
     void Out(float _x, float _y, LPCSTR fmt, ...);
