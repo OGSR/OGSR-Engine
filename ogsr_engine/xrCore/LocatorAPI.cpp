@@ -1160,6 +1160,9 @@ void CLocatorAPI::file_rename(LPCSTR src, LPCSTR dest, bool bOwerwrite)
             char* str = LPSTR(D->name);
             xr_free(str);
             files.erase(D);
+
+            S = file_find_it(src); //Обновим снова, потому что после erase итератор может быть невалидным
+            R_ASSERT(S != files.end()); //на всякий случай
         }
 
         file new_desc = *S;
