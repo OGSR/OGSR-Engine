@@ -27,6 +27,7 @@ public:
         u32 size_real; //
         u32 size_compressed; // if (size_real==size_compressed) - uncompressed
         u32 modif; // for editor
+        bool folder{};
     };
 
 private:

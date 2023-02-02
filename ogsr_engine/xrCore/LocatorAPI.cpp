@@ -228,6 +228,8 @@ void CLocatorAPI::Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real
             desc.size_real = 0;
             desc.size_compressed = 0;
             desc.modif = u32(-1);
+            desc.folder = true;
+
             std::pair<files_it, bool> I = files.insert(desc);
 
             R_ASSERT(I.second);
@@ -1272,32 +1274,33 @@ void CLocatorAPI::rescan_physical_path(LPCSTR full_path, BOOL bRecurse)
 
     Msg("[rescan_physical_path] files count before: [%d]", files.size());
 
-    size_t base_len = xr_strlen(full_path);
+    const size_t base_len = strlen(full_path);
 
-    for (; I != files.end(); I++)
+    while (I != files.end())
     {
-        files_it cur_item = I;
-        const file& entry = *cur_item;
+        const file& entry = *I;
 
         if (0 != strncmp(entry.name, full_path, base_len))
             break; // end of list
 
-        if (entry.vfs != 0xFFFFFFFF)
-            continue;
-
         const char* entry_begin = entry.name + base_len;
-        if (!bRecurse && strchr(entry_begin, '\\'))
-            continue;
 
-        // рескан передобавит только физ файлы, потому файлы из игровых архивов не нужно трогать тут
-        if (std::filesystem::exists(cur_item->name))
+        if (entry.vfs != 0xFFFFFFFF || entry.folder || (!bRecurse && strchr(entry_begin, '\\')))
         {
+            I++;
+        }
+        else
+        {
+            //Msg("[rescan_physical_path] erace file: [%s]", entry.name);
             // erase item
-            char* str = LPSTR(cur_item->name);
+            char* str = LPSTR(entry.name);
             xr_free(str);
-            files.erase(cur_item);
+
+            I = files.erase(I);
         }
     }
+
+    Msg("[rescan_physical_path] files count before2: [%u]", files.size());
 
     bNoRecurse = !bRecurse;
     RecurseScanPhysicalPath(full_path);
