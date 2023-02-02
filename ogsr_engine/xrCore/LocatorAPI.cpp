@@ -1075,47 +1075,33 @@ BOOL CLocatorAPI::dir_delete(LPCSTR path, LPCSTR nm, BOOL remove_files)
     else
         strcpy_s(fpath, nm);
 
-    files_set folders;
-    files_it I;
     // remove files
-    I = file_find_it(fpath);
-    if (I != files.end())
+    auto I = file_find_it(fpath);
+
+    const size_t base_len = strlen(fpath);
+    while (I != files.end())
     {
-        size_t base_len = xr_strlen(fpath);
-        for (; I != files.end();)
+        const file& entry = *I;
+
+        if (0 != strncmp(entry.name, fpath, base_len))
+            break; // end of list
+
+        const char* end_symbol = entry.name + strlen(entry.name) - 1;
+        if ((*end_symbol) != '\\')
         {
-            files_it cur_item = I;
-            const file& entry = *cur_item;
-            I = cur_item;
-            I++;
-            if (0 != strncmp(entry.name, fpath, base_len))
-                break; // end of list
-            const char* end_symbol = entry.name + xr_strlen(entry.name) - 1;
-            if ((*end_symbol) != '\\')
-            {
-                //		        const char* entry_begin = entry.name+base_len;
-                if (!remove_files)
-                    return FALSE;
-                unlink(entry.name);
-                files.erase(cur_item);
-            }
-            else
-            {
-                folders.insert(entry);
-            }
+            if (!remove_files)
+                return FALSE;
+
+            unlink(entry.name);
+            I = files.erase(I);
+        }
+        else // remove folders
+        {
+            _rmdir(entry.name);
+            I = files.erase(I);
         }
     }
-    // remove folders
-    files_set::reverse_iterator r_it = folders.rbegin();
-    for (; r_it != folders.rend(); r_it++)
-    {
-        const char* end_symbol = r_it->name + xr_strlen(r_it->name) - 1;
-        if ((*end_symbol) == '\\')
-        {
-            _rmdir(r_it->name);
-            files.erase(*r_it);
-        }
-    }
+
     return TRUE;
 }
 
