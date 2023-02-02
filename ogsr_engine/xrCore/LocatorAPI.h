@@ -41,6 +41,7 @@ private:
         void *hSrcFile, *hSrcMap;
         u32 size;
     };
+
     DEFINE_MAP_PRED(LPCSTR, FS_Path*, PathMap, PathPairIt, pred_str);
     PathMap pathes;
 
@@ -48,20 +49,17 @@ private:
     DEFINE_VECTOR(archive, archives_vec, archives_it);
 
     int m_iLockRescan;
+
     void rescan_physical_path(LPCSTR full_path, BOOL bRecurse);
     void check_pathes();
 
     files_set files;
     archives_vec archives;
-    BOOL bNoRecurse{};
-
-    xrCriticalSection m_auth_lock;
-    u64 m_auth_code{};
 
     void Register(LPCSTR name, u32 vfs, u32 crc, u32 ptr, u32 size_real, u32 size_compressed, u32 modif);
     void ProcessArchive(LPCSTR path, LPCSTR base_path = NULL);
-    void ProcessOne(LPCSTR path, const _finddata_t& F);
-    bool RecurseScanPhysicalPath(const char* path, const bool log_if_found = false);
+    void ProcessOne(LPCSTR path, const _finddata_t& F, bool bNoRecurse);
+    bool RecurseScanPhysicalPath(const char* path, const bool log_if_found, bool bNoRecurse);
 
     files_it file_find_it(LPCSTR n);
 
@@ -86,6 +84,7 @@ public:
 private:
     void file_from_cache_impl(IReader*& R, LPSTR fname, const file& desc);
     void file_from_cache_impl(CStreamReader*& R, LPSTR fname, const file& desc);
+
     template <typename T>
     void file_from_cache(T*& R, LPSTR fname, const file& desc, LPCSTR& source_name);
 
@@ -121,21 +120,12 @@ public:
     const file* exist(string_path& fn, LPCSTR path, LPCSTR name);
     const file* exist(string_path& fn, LPCSTR path, LPCSTR name, LPCSTR ext);
 
-    BOOL can_write_to_folder(LPCSTR path);
-    BOOL can_write_to_alias(LPCSTR path);
-    BOOL can_modify_file(LPCSTR fname);
-    BOOL can_modify_file(LPCSTR path, LPCSTR name);
-
-    BOOL dir_delete(LPCSTR path, LPCSTR nm, BOOL remove_files);
-    BOOL dir_delete(LPCSTR full_path, BOOL remove_files) { return dir_delete(0, full_path, remove_files); }
     void file_delete(LPCSTR path, LPCSTR nm);
     void file_delete(LPCSTR full_path) { file_delete(0, full_path); }
     void file_copy(LPCSTR src, LPCSTR dest);
     void file_rename(LPCSTR src, LPCSTR dest, bool bOwerwrite = true);
-    int file_length(LPCSTR src);
 
     u32 get_file_age(LPCSTR nm);
-    void set_file_age(LPCSTR nm, u32 age);
 
     xr_vector<LPSTR>* file_list_open(LPCSTR initial, LPCSTR folder, u32 flags = FS_ListFiles);
     xr_vector<LPSTR>* file_list_open(LPCSTR path, u32 flags = FS_ListFiles);
@@ -148,12 +138,7 @@ public:
 
     int file_list(FS_FileSet& dest, LPCSTR path, u32 flags = FS_ListFiles, LPCSTR mask = 0);
 
-    //
     void register_archieve(LPCSTR path);
-    
-    /*void auth_generate(xr_vector<xr_string>& ignore, xr_vector<xr_string>& important);
-    u64 auth_get();
-    void auth_runtime(void*);*/
 
     // editor functions
     void rescan_physical_pathes();

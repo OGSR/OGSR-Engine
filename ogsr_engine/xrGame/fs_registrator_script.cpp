@@ -143,10 +143,6 @@ FS_file_list file_list_open_script(CLocatorAPI* fs, LPCSTR initial, u32 flags) {
 
 FS_file_list file_list_open_script_2(CLocatorAPI* fs, LPCSTR initial, LPCSTR folder, u32 flags) { return FS_file_list(fs->file_list_open(initial, folder, flags)); }
 
-void dir_delete_script_2(CLocatorAPI* fs, LPCSTR path, LPCSTR nm, int remove_files) { fs->dir_delete(path, nm, remove_files); }
-
-void dir_delete_script(CLocatorAPI* fs, LPCSTR full_path, int remove_files) { fs->dir_delete(full_path, remove_files); }
-
 LPCSTR get_file_age_str(CLocatorAPI* fs, LPCSTR nm)
 {
     time_t t = fs->get_file_age(nm);
@@ -300,6 +296,7 @@ void fs_registrator::script_register(lua_State* L)
                                          value("FS_sort_by_modif_up", int(FS_file_list_ex::eSortByModifUp)), value("FS_sort_by_modif_down", int(FS_file_list_ex::eSortByModifDown))]
                   .enum_("FS_List")[value("FS_ListFiles", int(FS_ListFiles)), value("FS_ListFolders", int(FS_ListFolders)), value("FS_ClampExt", int(FS_ClampExt)),
                                     value("FS_RootOnly", int(FS_RootOnly)), value("FS_NoLower", int(FS_NoLower))]
+
                   .def("path_exist", &CLocatorAPI::path_exist)
                   .def("update_path", &update_path_script)
                   .def("get_path", &CLocatorAPI::get_path)
@@ -308,13 +305,12 @@ void fs_registrator::script_register(lua_State* L)
                   .def("file_delete", (void(CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::file_delete))
                   .def("file_delete", (void(CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::file_delete))
 
-                  .def("dir_delete", &dir_delete_script)
-                  .def("dir_delete", &dir_delete_script_2)
+                  //.def("dir_delete", &dir_delete_script)
+                  //.def("dir_delete", &dir_delete_script_2)
 
                   .def("application_dir", &get_engine_dir)
 
                   .def("file_rename", &CLocatorAPI::file_rename)
-                  .def("file_length", &CLocatorAPI::file_length)
                   .def("file_copy", &CLocatorAPI::file_copy)
 
                   .def("exist", (const CLocatorAPI::file* (CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::exist))
@@ -322,6 +318,7 @@ void fs_registrator::script_register(lua_State* L)
 
                   .def("get_file_age", &CLocatorAPI::get_file_age)
                   .def("get_file_age_str", &get_file_age_str)
+
                   .def("r_open", (IReader * (CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::r_open))
                   .def("r_open", (IReader * (CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::r_open))
                   .def("r_close", (void(CLocatorAPI::*)(IReader*&))(&CLocatorAPI::r_close))
