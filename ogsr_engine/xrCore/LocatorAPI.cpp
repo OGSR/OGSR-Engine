@@ -1249,9 +1249,7 @@ void CLocatorAPI::set_file_age(LPCSTR nm, u32 age)
 
 void CLocatorAPI::rescan_physical_path(LPCSTR full_path, BOOL bRecurse)
 {
-    file desc;
-    desc.name = full_path;
-    files_it I = files.lower_bound(desc);
+    auto I = file_find_it(full_path);
     if (I == files.end())
         return;
 
