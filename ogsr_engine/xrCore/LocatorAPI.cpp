@@ -1062,10 +1062,7 @@ CLocatorAPI::files_it CLocatorAPI::file_find_it(LPCSTR fname)
     check_pathes();
 
     file desc_f;
-    string_path file_name;
-    VERIFY(xr_strlen(fname) * sizeof(char) < sizeof(file_name));
-    strcpy_s(file_name, fname);
-    desc_f.name = file_name;
+    desc_f.name = fname;
 
     return files.find(desc_f);
 }
