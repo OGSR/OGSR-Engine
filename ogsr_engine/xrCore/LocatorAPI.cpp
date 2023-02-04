@@ -830,15 +830,18 @@ int CLocatorAPI::file_list(FS_FileSet& dest, LPCSTR path, u32 flags, LPCSTR mask
         const file& entry = *I;
         if (0 != strncmp(entry.name, N, base_len))
             break; // end of list
+
         LPCSTR end_symbol = entry.name + xr_strlen(entry.name) - 1;
         if ((*end_symbol) != '\\')
         {
             // file
             if ((flags & FS_ListFiles) == 0)
                 continue;
+
             LPCSTR entry_begin = entry.name + base_len;
             if ((flags & FS_RootOnly) && strchr(entry_begin, '\\'))
                 continue; // folder in folder
+
             // check extension
             if (b_mask)
             {
@@ -854,10 +857,21 @@ int CLocatorAPI::file_list(FS_FileSet& dest, LPCSTR path, u32 flags, LPCSTR mask
                 if (!bOK)
                     continue;
             }
+
+
             xr_string fn = entry_begin;
+
             // insert file entry
             if (flags & FS_ClampExt)
-                fn = EFS.ChangeFileExt(fn, "");
+            {
+                LPSTR src_ext = strext(entry_begin);
+                if (src_ext)
+                {
+                    size_t ext_pos = src_ext - entry_begin;
+                    fn.replace(ext_pos, strlen(src_ext), "");
+                }
+            }
+
             u32 fl = (entry.vfs != 0xffffffff ? FS_File::flVFS : 0);
             dest.emplace(fn, entry.size_real, entry.modif, fl, !(flags & FS_NoLower));
         }

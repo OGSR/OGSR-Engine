@@ -79,7 +79,6 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
         rtc_initialize();
 
         xr_FS = std::make_unique<CLocatorAPI>();
-        xr_EFS = std::make_unique<EFS_Utils>();
     }
     if (init_fs)
     {
@@ -111,7 +110,6 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs, 
         Msg("Working Directory: [%s]", WorkingPath);
         Msg("CommandLine: [%s]", Core.Params);
 
-        EFS._initialize();
 #ifdef DEBUG
         Msg("CRT heap 0x%08x", _get_heap_handle());
         Msg("Process heap 0x%08x", GetProcessHeap());
@@ -128,10 +126,8 @@ void xrCore::_destroy()
     if (0 == init_counter)
     {
         FS._destroy();
-        EFS._destroy();
 
         xr_FS.reset();
-        xr_EFS.reset();
 
         Memory._destroy();
 

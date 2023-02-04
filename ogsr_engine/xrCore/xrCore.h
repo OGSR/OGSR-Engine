@@ -143,8 +143,6 @@ DEFINE_VECTOR(xr_rtoken, RTokenVec, RTokenVecIt);
 #endif
 
 #include "LocatorAPI.h"
-
-#include "FileSystem.h"
 #include "FTimer.h"
 #include "intrusive_ptr.h"
 

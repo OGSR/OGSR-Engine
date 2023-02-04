@@ -90,16 +90,10 @@
     <ClCompile Include="xr_trims.cpp">
       <Filter>Math\Extensions</Filter>
     </ClCompile>
-    <ClCompile Include="FileSystem.cpp">
-      <Filter>FS</Filter>
-    </ClCompile>
     <ClCompile Include="FS.cpp">
       <Filter>FS</Filter>
     </ClCompile>
     <ClCompile Include="LocatorAPI.cpp">
-      <Filter>FS</Filter>
-    </ClCompile>
-    <ClCompile Include="LocatorAPI_auth.cpp">
       <Filter>FS</Filter>
     </ClCompile>
     <ClCompile Include="LocatorAPI_defs.cpp">
@@ -382,10 +376,5 @@
     <ClInclude Include="trivial_encryptor.h">
       <Filter>FS</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuildStep Include="FileSystem.h">
-      <Filter>FS</Filter>
-    </CustomBuildStep>
   </ItemGroup>
 </Project>
