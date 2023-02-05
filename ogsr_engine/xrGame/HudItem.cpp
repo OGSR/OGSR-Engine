@@ -133,17 +133,30 @@ void CHudItem::Load(LPCSTR section)
                                READ_IF_EXISTS(pSettings, r_float, section, "lookout_aim_transition_time", 0.15f), 0.f); // aim-GL
     ////////////////////////////////////////////
     ////////////////////////////////////////////
-    m_jump_offset[0][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "jump_hud_offset_pos", (Fvector{0.f, -0.07f, 0.03f}));
-    m_jump_offset[1][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "jump_hud_offset_rot", (Fvector{0.f, 3.f, -5.f}));
+    m_jump_offset[0][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "jump_hud_offset_pos", (Fvector{0.f, 0.05f, 0.03f}));
+    m_jump_offset[1][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "jump_hud_offset_rot", (Fvector{0.f, -10.f, -10.f}));
 
     m_jump_offset[0][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "jump_aim_hud_offset_pos", (Fvector{0.f, -0.03f, 0.01f}));
-    m_jump_offset[1][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "jump_aim_hud_offset_rot", (Fvector{0.f, 2.f, -3.f}));
+    m_jump_offset[1][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "jump_aim_hud_offset_rot", (Fvector{0.f, 2.5f, -3.f}));
 
-    m_jump_offset[2][0].set(READ_IF_EXISTS(pSettings, r_bool, section, "jump_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "jump_transition_time", 0.45f),
-                            READ_IF_EXISTS(pSettings, r_float, section, "fall_transition_time", 0.7f)); // normal
-    m_jump_offset[2][1].set(READ_IF_EXISTS(pSettings, r_bool, section, "jump_aim_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "jump_aim_transition_time", 0.45f),
-                            READ_IF_EXISTS(pSettings, r_float, section, "fall_aim_transition_time", 0.7f)); // aim-GL
-                                                                                                            ////////////////////////////////////////////
+    m_jump_offset[2][0].set(READ_IF_EXISTS(pSettings, r_bool, section, "jump_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "jump_transition_time", 0.7f),
+                               0.f); // normal
+    m_jump_offset[2][1].set(READ_IF_EXISTS(pSettings, r_bool, section, "jump_aim_enabled", true),
+                               READ_IF_EXISTS(pSettings, r_float, section, "jump_aim_transition_time", 0.7f), 0.f); // aim-GL
+    ////////////////////////////////////////////
+    ////////////////////////////////////////////
+    m_fall_offset[0][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "fall_hud_offset_pos", (Fvector{0.f, -0.05f, 0.06f}));
+    m_fall_offset[1][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "fall_hud_offset_rot", (Fvector{0.f, 5.f, 0.f}));
+
+    m_fall_offset[0][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "fall_aim_hud_offset_pos", (Fvector{0.f, 0.03f, -0.01f}));
+    m_fall_offset[1][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "fall_aim_hud_offset_rot", (Fvector{0.f, -2.5f, 3.f}));
+
+    m_fall_offset[2][0].set(READ_IF_EXISTS(pSettings, r_bool, section, "fall_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "fall_transition_time", 0.7f),
+                            0.f); // normal
+    m_fall_offset[2][1].set(READ_IF_EXISTS(pSettings, r_bool, section, "fall_aim_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "fall_aim_transition_time", 0.7f),
+                            0.f); // aim-GL
+
+    ////////////////////////////////////////////
 
     //Загрузка параметров инерции --#SM+# Begin--
     constexpr float PITCH_OFFSET_R = 0.0f; // Насколько сильно ствол смещается вбок (влево) при вертикальных поворотах камеры
@@ -1024,13 +1037,30 @@ LOOKOUT_EFFECT:
 
         if ((iMovingState & mcLLookout) && !(iMovingState & mcRLookout))
         { // Выглядываем влево
-            float fVal = (m_fLookout_MovingFactor > 0.f ? fStepPerUpdL * 3 : fStepPerUpdL);
-            m_fLookout_MovingFactor -= fVal;
+            if (!IsZoomed())
+            {
+                m_fAimLookout_MovingFactor += fStepPerUpdL;
+                m_fLookout_MovingFactor -= fStepPerUpdL;
+            }
+            else
+            {
+                m_fAimLookout_MovingFactor -= fStepPerUpdL;
+                m_fLookout_MovingFactor += fStepPerUpdL;
+            }
         }
         else if ((iMovingState & mcRLookout) && !(iMovingState & mcLLookout))
         { // Выглядываем вправо
-            float fVal = (m_fLookout_MovingFactor < 0.f ? fStepPerUpdL * 3 : fStepPerUpdL);
-            m_fLookout_MovingFactor += fVal;
+
+            if (!IsZoomed())
+            {
+                m_fAimLookout_MovingFactor -= fStepPerUpdL;
+                m_fLookout_MovingFactor += fStepPerUpdL;
+            }
+            else
+            {
+                m_fAimLookout_MovingFactor += fStepPerUpdL;
+                m_fLookout_MovingFactor -= fStepPerUpdL;
+            }
         }
         else
         { // Двигаемся в любом другом направлении
@@ -1044,8 +1074,20 @@ LOOKOUT_EFFECT:
                 m_fLookout_MovingFactor -= fStepPerUpdL;
                 clamp(m_fLookout_MovingFactor, 0.0f, 1.0f);
             }
+
+            if (m_fAimLookout_MovingFactor < 0.0f)
+            {
+                m_fAimLookout_MovingFactor += fStepPerUpdL;
+                clamp(m_fAimLookout_MovingFactor, -1.0f, 0.0f);
+            }
+            else
+            {
+                m_fAimLookout_MovingFactor -= fStepPerUpdL;
+                clamp(m_fAimLookout_MovingFactor, 0.0f, 1.0f);
+            }
         }
 
+        clamp(m_fAimLookout_MovingFactor, -1.0f, 1.0f); // не должен превышать эти лимиты
         clamp(m_fLookout_MovingFactor, -1.0f, 1.0f); // не должен превышать эти лимиты
 
         float koef{1.f};
@@ -1055,29 +1097,44 @@ LOOKOUT_EFFECT:
             koef = 0.75; // во сколько раз менять амплитуду при присяде
 
         // Смещение позиции худа
-        Fvector lookout_offs = m_lookout_offset[0][idx]; // pos
+        Fvector lookout_offs = m_lookout_offset[0][0]; // pos
         lookout_offs.mul(koef);
         lookout_offs.mul(m_fLookout_MovingFactor); // Умножаем на фактор наклона
 
         // Поворот худа
-        Fvector lookout_rot = m_lookout_offset[1][idx]; // rot
+        Fvector lookout_rot = m_lookout_offset[1][0]; // rot
         lookout_rot.mul(koef);
         lookout_rot.mul(-PI / 180.f); // Преобразуем углы в радианы
         lookout_rot.mul(m_fLookout_MovingFactor); // Умножаем на фактор наклона
 
-        if (idx == 0)
+        // Смещение позиции худа
+        Fvector aim_lookout_offs = m_lookout_offset[0][1]; // pos
+        aim_lookout_offs.mul(koef);
+        aim_lookout_offs.mul(m_fAimLookout_MovingFactor); // Умножаем на фактор наклона
+
+        // Поворот худа
+        Fvector aim_lookout_rot = m_lookout_offset[1][1]; // rot
+        aim_lookout_rot.mul(koef);
+        aim_lookout_rot.mul(-PI / 180.f); // Преобразуем углы в радианы
+        aim_lookout_rot.mul(m_fAimLookout_MovingFactor); // Умножаем на фактор наклона
+
+        if (!IsZoomed())
         { // От бедра
+            aim_lookout_offs.mul(m_fZoomRotationFactor);
+            aim_lookout_rot.mul(m_fZoomRotationFactor);
             lookout_offs.mul(1.f - m_fZoomRotationFactor);
             lookout_rot.mul(1.f - m_fZoomRotationFactor);
         }
         else
         { // Во время аима
-            lookout_offs.mul(m_fZoomRotationFactor);
-            lookout_rot.mul(m_fZoomRotationFactor);
+            aim_lookout_offs.mul(m_fZoomRotationFactor);
+            aim_lookout_rot.mul(m_fZoomRotationFactor);
+            lookout_offs.mul(1.f - m_fZoomRotationFactor);
+            lookout_rot.mul(1.f - m_fZoomRotationFactor);
         }
 
-        summary_offset.add(lookout_offs);
-        summary_rotate.add(lookout_rot);
+        summary_offset.add(lookout_offs + aim_lookout_offs);
+        summary_rotate.add(lookout_rot + aim_lookout_rot);
     }
     //====================================================//
 
@@ -1089,7 +1146,7 @@ JUMP_EFFECT:
             goto APPLY_EFFECTS;
 
         float fJumpMaxTime = m_jump_offset[2][idx].y; // Макс. время в секундах, за которое произойдет смещение худа при прыжке
-        float fFallMaxTime = m_jump_offset[2][idx].z; // Макс. время в секундах, за которое произойдет смещение худа при падении
+        float fFallMaxTime = m_fall_offset[2][idx].y; // Макс. время в секундах, за которое произойдет смещение худа при падении
 
         if (fJumpMaxTime <= EPS)
             fJumpMaxTime = 0.01f;
@@ -1100,29 +1157,32 @@ JUMP_EFFECT:
         const float fJumpPerUpd = Device.fTimeDelta / fJumpMaxTime; // Величина изменение фактора смещения худа при прыжке
         const float fFallPerUpd = Device.fTimeDelta / fFallMaxTime; // Величина изменение фактора смещения худа при падении
 
-        if (iMovingState & mcJump)
+        if (iMovingState & mcJump && m_fJump_MovingFactor < 1.f)
         { // Прыжок
             m_fJump_MovingFactor += fJumpPerUpd;
+            m_fFall_MovingFactor -= fFallPerUpd;
         }
-        else if (iMovingState & mcFall)
+        else if (iMovingState & mcFall && m_fJump_MovingFactor > 0.f)
         { // Падание
-            m_fJump_MovingFactor -= fFallPerUpd;
+            m_fJump_MovingFactor -= fJumpPerUpd;
+            m_fFall_MovingFactor += fFallPerUpd;
         }
         else
         { // Двигаемся в любом другом направлении
-            if (m_fJump_MovingFactor < 0.0f)
+            if (m_fJump_MovingFactor < 0.0f && m_fFall_MovingFactor < 0.0f)
             {
                 m_fJump_MovingFactor += fJumpPerUpd;
-                clamp(m_fJump_MovingFactor, -1.0f, 0.0f);
+                m_fFall_MovingFactor += fFallPerUpd;
             }
             else
             {
                 m_fJump_MovingFactor -= fJumpPerUpd;
-                clamp(m_fJump_MovingFactor, 0.0f, 1.0f);
+                m_fFall_MovingFactor -= fFallPerUpd;
             }
         }
 
-        clamp(m_fJump_MovingFactor, -1.0f, 1.0f); // не должен превышать эти лимиты
+        clamp(m_fJump_MovingFactor, 0.0f, 1.0f); // не должен превышать эти лимиты
+        clamp(m_fFall_MovingFactor, 0.0f, 1.0f); // не должен превышать эти лимиты
 
         // Смещение позиции худа в стрейфе
         Fvector jump_offs = m_jump_offset[0][idx]; // pos
@@ -1133,19 +1193,32 @@ JUMP_EFFECT:
         jump_rot.mul(-PI / 180.f); // Преобразуем углы в радианы
         jump_rot.mul(m_fJump_MovingFactor); // Умножаем на фактор эффекта
 
+        // Смещение позиции худа в стрейфе
+        Fvector fall_offs = m_fall_offset[0][idx]; // pos
+        fall_offs.mul(m_fFall_MovingFactor); // Умножаем на фактор эффекта
+
+        // Поворот худа в стрейфе
+        Fvector fall_rot = m_fall_offset[1][idx]; // rot
+        fall_rot.mul(-PI / 180.f); // Преобразуем углы в радианы
+        fall_rot.mul(m_fFall_MovingFactor); // Умножаем на фактор эффекта
+
         if (idx == 0)
         { // От бедра
             jump_offs.mul(1.f - m_fZoomRotationFactor);
             jump_rot.mul(1.f - m_fZoomRotationFactor);
+            fall_offs.mul(1.f - m_fZoomRotationFactor);
+            fall_rot.mul(1.f - m_fZoomRotationFactor);
         }
         else
         { // Во время аима
             jump_offs.mul(m_fZoomRotationFactor);
             jump_rot.mul(m_fZoomRotationFactor);
+            fall_offs.mul(m_fZoomRotationFactor);
+            fall_rot.mul(m_fZoomRotationFactor);
         }
 
-        summary_offset.add(jump_offs);
-        summary_rotate.add(jump_rot);
+        summary_offset.add(jump_offs + fall_offs);
+        summary_rotate.add(jump_rot + fall_rot);
     }
     //====================================================//
 
