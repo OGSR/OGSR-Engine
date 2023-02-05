@@ -312,10 +312,7 @@ void CConsole::OnRender()
 	{
 		return;
 	}
-
-	if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Device.Statistic->errors.size())
-		Device.Statistic->Show();
-
+	
 	if (!m_hShader_back)
 	{
 		m_hShader_back = xr_new<FactoryPtr<IUIShader>>();
