@@ -44,7 +44,6 @@ CSoundRender_Core::CSoundRender_Core()
     bPresent = FALSE;
     bEAX = FALSE;
     bDeferredEAX = FALSE;
-    bUserEnvironment = FALSE;
     geom_MODEL = NULL;
     geom_ENV = NULL;
     geom_SOM = NULL;
@@ -417,48 +416,48 @@ CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
 {
     static CSoundRender_Environment identity;
 
-    if (bUserEnvironment)
+    if (geom_ENV)
     {
-        return &s_user_environment;
-    }
-    else
-    {
-        if (geom_ENV)
+        Fvector dir = {0, -1, 0};
+
+        CDB::COLLIDER geom_DB1;
+        geom_DB1.ray_options(CDB::OPT_ONLYNEAREST);
+        geom_DB1.ray_query(geom_ENV, P, dir, 1000.f);
+
+        CDB::COLLIDER geom_DB2;
+        geom_DB2.ray_options(CDB::OPT_ONLYNEAREST);
+        geom_DB2.ray_query(geom_ENV, P, Fvector(dir).invert(), 1000.f);
+
+        if (geom_DB1.r_count() && geom_DB2.r_count())
         {
-            Fvector dir = {0, -1, 0};
-            geom_DB.ray_options(CDB::OPT_ONLYNEAREST);
-            geom_DB.ray_query(geom_ENV, P, dir, 1000.f);
-            if (geom_DB.r_count())
+            CDB::RESULT* r = geom_DB1.r_begin();
+            CDB::RESULT* r2 = geom_DB2.r_begin();
+
+            if (r2->range < r->range)
+                r = r2;
+
+            CDB::TRI* T = geom_ENV->get_tris() + r->id;
+            Fvector* V = geom_ENV->get_verts();
+
+            Fvector tri_norm;
+            tri_norm.mknormal(V[T->verts[0]], V[T->verts[1]], V[T->verts[2]]);
+            float dot = dir.dotproduct(tri_norm);
+
+            if (dot <= 0)
             {
-                CDB::RESULT* r = geom_DB.r_begin();
-                CDB::TRI* T = geom_ENV->get_tris() + r->id;
-                Fvector* V = geom_ENV->get_verts();
-                Fvector tri_norm;
-                tri_norm.mknormal(V[T->verts[0]], V[T->verts[1]], V[T->verts[2]]);
-                float dot = dir.dotproduct(tri_norm);
-                if (dot < 0)
-                {
-                    u16 id_front = (u16)((T->dummy & 0x0000ffff) >> 0); //	front face
-                    return s_environment->Get(id_front);
-                }
-                else
-                {
-                    u16 id_back = (u16)((T->dummy & 0xffff0000) >> 16); //	back face
-                    return s_environment->Get(id_back);
-                }
+                u16 id_front = (u16)((T->dummy & 0x0000ffff) >> 0); //	front face
+                return s_environment->Get(id_front);
             }
             else
             {
-                identity.set_identity();
-                return &identity;
+                u16 id_back = (u16)((T->dummy & 0xffff0000) >> 16); //	back face
+                return s_environment->Get(id_back);
             }
         }
-        else
-        {
-            identity.set_identity();
-            return &identity;
-        }
     }
+
+    identity.set_identity();
+    return &identity;
 }
 
 void CSoundRender_Core::env_apply()
