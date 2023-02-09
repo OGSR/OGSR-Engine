@@ -224,20 +224,11 @@ void CStalkerAnimationPair::on_animation_end()
 {
     make_inactual();
 
-    if (m_callbacks.empty())
-        return;
+    for (size_t size{m_callbacks.size()}, processed{1}; !m_callbacks.empty(); processed++)
+    {
+        //Вставил ассерт на случай если вдруг когда то появится багованый каллбек который сам себя не удалит.
+        R_ASSERT(size >= processed , "!!Something strange in CStalkerAnimationPair::on_animation_end()");
 
-    u32 callback_count = m_callbacks.size();
-    CALLBACK_ID* callbacks = (CALLBACK_ID*)_alloca(callback_count * sizeof(CALLBACK_ID));
-    CALLBACK_ID* I = callbacks;
-    CALLBACK_ID* E = callbacks + callback_count;
-    CALLBACKS::iterator i = m_callbacks.begin();
-    for (; I != E; ++I, ++i)
-        new (I) CALLBACK_ID(*i);
-
-    for (I = callbacks; I != E; ++I)
-        (*I)();
-
-    for (I = callbacks; I != E; ++I)
-        I->~CALLBACK_ID();
+        m_callbacks.front()();
+    }
 }

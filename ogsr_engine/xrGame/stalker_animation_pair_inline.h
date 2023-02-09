@@ -83,8 +83,8 @@ IC void CStalkerAnimationPair::add_callback(const CALLBACK_ID& callback)
 IC void CStalkerAnimationPair::remove_callback(const CALLBACK_ID& callback)
 {
     CALLBACKS::iterator I = std::find(m_callbacks.begin(), m_callbacks.end(), callback);
-    VERIFY(I != m_callbacks.end());
-    m_callbacks.erase(I);
+    if (I != m_callbacks.end())
+        m_callbacks.erase(I);
 }
 
 IC bool CStalkerAnimationPair::need_update() const { return (!m_callbacks.empty()); }
