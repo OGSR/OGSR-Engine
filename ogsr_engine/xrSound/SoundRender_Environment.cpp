@@ -10,6 +10,7 @@
 CSoundRender_Environment::CSoundRender_Environment(void)
 {
     version = sdef_env_version;
+    name = "_engine_default_";
     set_default();
 }
 
@@ -158,6 +159,7 @@ void SoundEnvironment_LIB::Load(LPCSTR name)
     }
     FS.r_close(F);
 }
+
 bool SoundEnvironment_LIB::Save(LPCSTR name)
 {
     IWriter* F = FS.w_open(name);
@@ -174,12 +176,14 @@ bool SoundEnvironment_LIB::Save(LPCSTR name)
     }
     return false;
 }
+
 void SoundEnvironment_LIB::Unload()
 {
     for (u32 chunk = 0; chunk < library.size(); chunk++)
         xr_delete(library[chunk]);
     library.clear();
 }
+
 int SoundEnvironment_LIB::GetID(LPCSTR name)
 {
     for (SE_IT it = library.begin(); it != library.end(); it++)
@@ -187,6 +191,7 @@ int SoundEnvironment_LIB::GetID(LPCSTR name)
             return int(it - library.begin());
     return -1;
 }
+
 CSoundRender_Environment* SoundEnvironment_LIB::Get(LPCSTR name)
 {
     for (SE_IT it = library.begin(); it != library.end(); it++)
@@ -194,12 +199,15 @@ CSoundRender_Environment* SoundEnvironment_LIB::Get(LPCSTR name)
             return *it;
     return NULL;
 }
+
 CSoundRender_Environment* SoundEnvironment_LIB::Get(int id) { return library[id]; }
+
 CSoundRender_Environment* SoundEnvironment_LIB::Append(CSoundRender_Environment* parent)
 {
     library.push_back(parent ? xr_new<CSoundRender_Environment>(*parent) : xr_new<CSoundRender_Environment>());
     return library.back();
 }
+
 void SoundEnvironment_LIB::Remove(LPCSTR name)
 {
     for (SE_IT it = library.begin(); it != library.end(); it++)
@@ -215,4 +223,5 @@ void SoundEnvironment_LIB::Remove(int id)
     xr_delete(library[id]);
     library.erase(library.begin() + id);
 }
+
 SoundEnvironment_LIB::SE_VEC& SoundEnvironment_LIB::Library() { return library; }

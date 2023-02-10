@@ -140,8 +140,17 @@ void CSoundRender_Core::env_load()
     string_path fn;
     if (FS.exist(fn, "$game_data$", SNDENV_FILENAME))
     {
+        Msg("Loading of [%s]", SNDENV_FILENAME);
+
         s_environment = xr_new<SoundEnvironment_LIB>();
         s_environment->Load(fn);
+
+        for (u32 chunk = 0; chunk < s_environment->Library().size(); chunk++)
+        {
+            shared_str name = s_environment->Library()[chunk]->name;
+
+            Msg("~ env id=[%d] name=[%s]", chunk, name.c_str());
+        }
     }
 
     // Load geometry
@@ -231,7 +240,7 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
         int id = s_environment->GetID(n);
         R_ASSERT(id >= 0);
         s_environment_ids.push_back(u16(id));
-        Msg("~ set_geometry_env name[%s]=id[%d]", n, id);
+        Msg("~ set_geometry_env id=%d name[%s]=environment id[%d]", s_environment_ids.size() - 1, n, id);
     }
     names->close();
 
@@ -412,21 +421,29 @@ CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
     {
         Fvector dir = {0, -1, 0};
 
-        CDB::COLLIDER geom_DB1;
-        geom_DB1.ray_options(CDB::OPT_ONLYNEAREST);
-        geom_DB1.ray_query(geom_ENV, P, dir, 1000.f);
+        // хитрый способ для проверки звуковых зон в 2х направлениях от камеры. но что то он хуже работает. часто не та зона выбираеться. пока убрал
 
-        CDB::COLLIDER geom_DB2;
-        geom_DB2.ray_options(CDB::OPT_ONLYNEAREST);
-        geom_DB2.ray_query(geom_ENV, P, Fvector(dir).invert(), 1000.f);
+        //CDB::COLLIDER geom_DB1;
+        //geom_DB1.ray_options(CDB::OPT_ONLYNEAREST);
+        //geom_DB1.ray_query(geom_ENV, P, dir, 1000.f);
 
-        if (geom_DB1.r_count() && geom_DB2.r_count())
+        //CDB::COLLIDER geom_DB2;
+        //geom_DB2.ray_options(CDB::OPT_ONLYNEAREST);
+        //geom_DB2.ray_query(geom_ENV, P, Fvector(dir).invert(), 1000.f);
+
+        geom_DB.ray_options(CDB::OPT_ONLYNEAREST);
+        geom_DB.ray_query(geom_ENV, P, dir, 1000.f);
+
+        //if (geom_DB1.r_count() && geom_DB2.r_count())
+        if (geom_DB.r_count())
         {
-            CDB::RESULT* r = geom_DB1.r_begin();
-            CDB::RESULT* r2 = geom_DB2.r_begin();
+            //CDB::RESULT* r = geom_DB1.r_begin();
+            //CDB::RESULT* r2 = geom_DB2.r_begin();
 
-            if (r2->range < r->range)
-                r = r2;
+            //if (r2->range < r->range)
+            //    r = r2;
+
+            CDB::RESULT* r = geom_DB.r_begin();
 
             CDB::TRI* T = geom_ENV->get_tris() + r->id;
             Fvector* V = geom_ENV->get_verts();
@@ -435,7 +452,7 @@ CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
             tri_norm.mknormal(V[T->verts[0]], V[T->verts[1]], V[T->verts[2]]);
             float dot = dir.dotproduct(tri_norm);
 
-            if (dot < 0)
+            if (dot <= 0)
             {
                 u16 id_front = (u16)((((u32)T->dummy) & 0x0000ffff) >> 0); //	front face
 
@@ -530,6 +547,7 @@ void CSoundRender_Core::i_efx_listener_set(CSound_environment* _E)
     float density = powf(E->EnvironmentSize, 3.0f) / 16.0f;
     if (density > 1.0f)
         density = 1.0f;
+
     alEffectf(effect, AL_REVERB_DENSITY, density);
     alEffectf(effect, AL_REVERB_DIFFUSION, E->EnvironmentDiffusion);
     alEffectf(effect, AL_REVERB_GAIN, mB_to_gain(E->Room));
