@@ -14,7 +14,7 @@
 #ifdef DEBUG
 #include "phdebug.h"
 #endif
-
+#include "../xr_3da/x_ray.h"
 
 #include "ui/UIProgressShape.h"
 #include "ui/UIXmlInit.h"
