@@ -26,7 +26,6 @@ void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector
     Timer.time_factor(psSoundTimeFactor); //--#SM+#--
     float new_tm = Timer.GetElapsed_sec();
     fTimer_Delta = new_tm - fTimer_Value;
-    //.	float dt					= float(Timer_Delta)/1000.f;
     float dt_sec = fTimer_Delta;
     fTimer_Value = new_tm;
 
@@ -106,10 +105,18 @@ void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector
     // update EAX or EFX
     if (psSoundFlags.test(ss_EAX) && (bEAX || bEFX))
     {
+        static shared_str curr_env;
+
         if (bListenerMoved)
         {
             bListenerMoved = FALSE;
             e_target = *get_environment(P);
+
+            if (!curr_env.size() || curr_env != e_target.name)
+            {
+                curr_env = e_target.name;
+                Msg("curr env [%s]", curr_env.c_str());
+            }
         }
 
         e_current.lerp(e_current, e_target, dt_sec);

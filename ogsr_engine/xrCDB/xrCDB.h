@@ -50,7 +50,7 @@ public:
     u32 verts[3]; // 3*4 = 12b
     union
     {
-        size_t dummy; // 4b
+        size_t dummy;
         struct
         {
             size_t material : 14;
@@ -71,15 +71,6 @@ public:
     };
 
 #ifdef _M_X64
-    TRI(TRI_DEPRECATED& oldTri)
-    {
-        verts[0] = oldTri.verts[0];
-        verts[1] = oldTri.verts[1];
-        verts[2] = oldTri.verts[2];
-        dummy = oldTri.dummy;
-        dumb = 0;
-    }
-
     TRI()
     {
         verts[0] = 0;

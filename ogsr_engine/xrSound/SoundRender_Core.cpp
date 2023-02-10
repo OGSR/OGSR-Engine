@@ -215,13 +215,14 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
 void CSoundRender_Core::set_geometry_env(IReader* I)
 {
     xr_delete(geom_ENV);
+    s_environment_ids.clear();
+
     if (0 == I)
         return;
     if (0 == s_environment)
         return;
 
     // Assosiate names
-    xr_vector<u16> ids;
     IReader* names = I->open_chunk(0);
     while (!names->eof())
     {
@@ -229,7 +230,8 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
         names->r_stringZ(n, sizeof(n));
         int id = s_environment->GetID(n);
         R_ASSERT(id >= 0);
-        ids.push_back(u16(id));
+        s_environment_ids.push_back(u16(id));
+        Msg("~ set_geometry_env name[%s]=id[%d]", n, id);
     }
     names->close();
 
@@ -247,17 +249,7 @@ void CSoundRender_Core::set_geometry_env(IReader* I)
     R_ASSERT(H.version == CFORM_CURRENT_VERSION);
     Fvector* verts = (Fvector*)geom->pointer();
     CDB::TRI* tris = (CDB::TRI*)(verts + H.vertcount);
-#ifndef _M_X64
-    for (u32 it = 0; it < H.facecount; it++)
-    {
-        CDB::TRI* T = tris + it;
-        u16 id_front = (u16)((T->dummy & 0x0000ffff) >> 0); //	front face
-        u16 id_back = (u16)((T->dummy & 0xffff0000) >> 16); //	back face
-        R_ASSERT(id_front < (u16)ids.size());
-        R_ASSERT(id_back < (u16)ids.size());
-        T->dummy = u32(ids[id_back] << 16) | u32(ids[id_front]);
-    }
-#endif
+
     geom_ENV = xr_new<CDB::MODEL>();
     geom_ENV->build(verts, H.vertcount, tris, H.facecount);
     geom_ch->close();
@@ -443,15 +435,17 @@ CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
             tri_norm.mknormal(V[T->verts[0]], V[T->verts[1]], V[T->verts[2]]);
             float dot = dir.dotproduct(tri_norm);
 
-            if (dot <= 0)
+            if (dot < 0)
             {
-                u16 id_front = (u16)((T->dummy & 0x0000ffff) >> 0); //	front face
-                return s_environment->Get(id_front);
+                u16 id_front = (u16)((((u32)T->dummy) & 0x0000ffff) >> 0); //	front face
+
+                return s_environment->Get(s_environment_ids[id_front]);
             }
             else
             {
-                u16 id_back = (u16)((T->dummy & 0xffff0000) >> 16); //	back face
-                return s_environment->Get(id_back);
+                u16 id_back = (u16)((((u32)T->dummy) & 0xffff0000) >> 16); //	back face
+
+                return s_environment->Get(s_environment_ids[id_back]);
             }
         }
     }

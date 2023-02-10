@@ -52,9 +52,8 @@ void CSoundRender_Emitter::update(float dt)
         fTimeToPropagade = fTime;
         fade_volume = 1.f;
         occluder_volume = SoundRender->get_occlusion(p_source.position, .2f, occluder);
-        smooth_volume =
-            p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic) * (b2D ? 1.f : occluder_volume);
-        e_current = e_target = *SoundRender->get_environment(p_source.position);
+        smooth_volume = p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic) * (b2D ? 1.f : occluder_volume);
+
         if (update_culling(dt))
         {
             m_current_state = stPlaying;
@@ -79,9 +78,8 @@ void CSoundRender_Emitter::update(float dt)
         fTimeToPropagade = fTime;
         fade_volume = 1.f;
         occluder_volume = SoundRender->get_occlusion(p_source.position, .2f, occluder);
-        smooth_volume =
-            p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic) * (b2D ? 1.f : occluder_volume);
-        e_current = e_target = *SoundRender->get_environment(p_source.position);
+        smooth_volume = p_source.base_volume * p_source.volume * (owner_data->s_type == st_Effect ? psSoundVEffects * psSoundVFactor : psSoundVMusic) * (b2D ? 1.f : occluder_volume);
+        
         if (update_culling(dt))
         {
             m_current_state = stPlayingLooped;
@@ -355,7 +353,4 @@ float CSoundRender_Emitter::att()
 
 void CSoundRender_Emitter::update_environment(float dt)
 {
-    if (bMoved)
-        e_target = *SoundRender->get_environment(p_source.position);
-    e_current.lerp(e_current, e_target, dt);
 }

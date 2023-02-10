@@ -49,8 +49,6 @@ public:
     u32 m_stream_cursor;
     u32 m_cur_handle_cursor;
     CSound_params p_source;
-    CSoundRender_Environment e_current;
-    CSoundRender_Environment e_target;
 
     int iPaused;
     BOOL bMoved;
