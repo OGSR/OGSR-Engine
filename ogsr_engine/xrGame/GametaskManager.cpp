@@ -193,7 +193,6 @@ void CGameTaskManager::UpdateTasks()
         return;
 
     auto act_task = ActiveTask();
-    auto act_obj = ActiveObjective();
     bool need_update_active_task = !act_task || act_task->Objective(0).TaskState() != eTaskStateInProgress;
 
     for (auto I = GameTasks().begin(), E = GameTasks().end(); I != E; ++I)
@@ -211,16 +210,19 @@ void CGameTaskManager::UpdateTasks()
             }
 
             ETaskState state = obj.UpdateState();
-
             if (state == eTaskStateFail || state == eTaskStateCompleted)
             {
                 SetTaskState(t, i, state);
-
-                if (act_task == t && act_obj == &obj)
-                    need_update_active_task = true;
+                // Тут проверяем заново, потому что в функции выше активный таск может обновиться
+                act_task = ActiveTask();
+                need_update_active_task = !act_task || act_task->Objective(0).TaskState() != eTaskStateInProgress;
             }
-            else if (need_update_active_task && (t->Objective(0).TaskState() == eTaskStateInProgress))
+            //Тут ставим активным только первый objective если он один либо второй, чтоб тут случайно не назначился тот который скрыт опцией show_objectives_ondemand.
+            else if (need_update_active_task && ((i == 0 && t->m_Objectives.size() == 1) || (i == 1 && t->Objective(0).TaskState() == eTaskStateInProgress)))
+            {
                 SetActiveTask(t->m_ID, i);
+                need_update_active_task = false;
+            }
         }
     }
 
