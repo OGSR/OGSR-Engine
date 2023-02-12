@@ -187,19 +187,19 @@ void CWeaponPistol::PlayAnimShoot()
                  this->IsSilencerAttached() ? "_sil" : "");
     if (AnimationExist(guns_shoot_anm))
     {
-        PlayHUDMotion(guns_shoot_anm, used_cop_fire_point(), GetState());
+        PlayHUDMotion(guns_shoot_anm, false, GetState());
         m_opened = iAmmoElapsed <= 1;
         return;
     }
 
     if (iAmmoElapsed > 1)
     {
-        PlayHUDMotion({"anim_shoot", "anm_shots"}, used_cop_fire_point(), GetState());
+        PlayHUDMotion({"anim_shoot", "anm_shots"}, false, GetState());
         m_opened = false;
     }
     else
     {
-        PlayHUDMotion({"anim_shot_last", "anm_shot_l"}, used_cop_fire_point(), GetState());
+        PlayHUDMotion({"anim_shot_last", "anm_shot_l"}, false, GetState());
         m_opened = true;
     }
 }

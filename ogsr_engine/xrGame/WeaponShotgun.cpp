@@ -118,7 +118,7 @@ void CWeaponShotgun::OnShotBoth()
     AddShotEffector();
 
     // анимация дуплета
-    PlayHUDMotion({"anim_shoot_both", "anm_shots_both"}, used_cop_fire_point(), GetState());
+    PlayHUDMotion({"anim_shoot_both", "anm_shots_both"}, false, GetState());
 
     // Shell Drop
     Fvector vel;

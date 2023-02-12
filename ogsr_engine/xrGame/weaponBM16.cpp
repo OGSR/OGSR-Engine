@@ -36,15 +36,15 @@ void CWeaponBM16::PlayAnimShoot()
                  std::to_string(m_magazine.size()).c_str());
     if (AnimationExist(guns_shoot_anm))
     {
-        PlayHUDMotion(guns_shoot_anm, used_cop_fire_point(), GetState());
+        PlayHUDMotion(guns_shoot_anm, false, GetState());
         return;
     }
 
     switch (m_magazine.size())
     {
-    case 1: PlayHUDMotion({"anim_shoot_1", "anm_shot_1"}, used_cop_fire_point(), GetState()); break;
-    case 2: PlayHUDMotion({"anim_shoot", "anm_shot_2"}, used_cop_fire_point(), GetState()); break;
-    default: PlayHUDMotion({"anim_shoot", "anm_shots"}, used_cop_fire_point(), GetState()); break; //А что, у БМ бывает больше двух патронов?...
+    case 1: PlayHUDMotion({"anim_shoot_1", "anm_shot_1"}, false, GetState()); break;
+    case 2: PlayHUDMotion({"anim_shoot", "anm_shot_2"}, false, GetState()); break;
+    default: PlayHUDMotion({"anim_shoot", "anm_shots"}, false, GetState()); break; // А что, у БМ бывает больше двух патронов?...
     }
 }
 
