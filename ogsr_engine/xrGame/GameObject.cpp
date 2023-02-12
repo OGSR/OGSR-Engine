@@ -925,30 +925,6 @@ void CGameObject::update_animation_movement_controller()
 
 void CGameObject::UpdateCL() { inherited::UpdateCL(); }
 
-void CGameObject::UpdateXFORM(const Fmatrix& upd)
-{
-    XFORM() = upd;
-    IKinematics* pK = PKinematics(Visual());
-    if (pK)
-    {
-        Visual()->getVisData().sphere.P = upd.c;
-        pK->CalculateBones_Invalidate(); // позволит объекту быстрее объявиться в новой точке
-    }
-
-    // OnChangePosition processing
-    spatial_move();
-    /*
-
-    const CLevelGraph &graph = ai().level_graph();
-    if (graph.valid_vertex_position(upd.c))
-    {
-        u32 lvid = graph.vertex_id (upd.c);
-        u16 gvid = ai().cross_table().vertex(lvid).game_vertex_id();
-        ai_location().level_vertex(lvid);
-    }
-    */
-}
-
 void CGameObject::OnChangeVisual()
 {
     inherited::OnChangeVisual();

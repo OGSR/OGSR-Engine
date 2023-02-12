@@ -12,6 +12,7 @@
 #include "PHCollideValidator.h"
 #include "ai_object_location.h"
 #include "ai_space.h"
+#include "entity_alive.h"
 #include "game_graph.h"
 #include "PHDestroyable.h"
 #define F_MAX 3.402823466e+38F
@@ -275,8 +276,13 @@ void CPHSkeleton::RestoreNetState(CSE_PHSkeleton* /*po*/)
         };
     }
     else
+    {
+        bool alive = obj->cast_entity_alive() && obj->cast_entity_alive()->conditions().GetHealth() > 0.f;
+
         Msg("~ [%s]: [%s] has different state in saved_bones[%u] PHGetSyncItemsNumber[%u] Visual[%s] alive[%s]", __FUNCTION__, obj->Name_script(), saved_bones.size(),
-            obj->PHGetSyncItemsNumber(), obj->cNameVisual().c_str(), obj->GetHealth() > 0 ? "yes" : "no");
+            obj->PHGetSyncItemsNumber(), obj->cNameVisual().c_str(), alive ? "yes" : "no");
+    }
+
     saved_bones.clear();
     po->_flags.set(CSE_PHSkeleton::flSavedData, FALSE);
     m_flags.set(CSE_PHSkeleton::flSavedData, FALSE);

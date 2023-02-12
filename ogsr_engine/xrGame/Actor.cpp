@@ -920,7 +920,7 @@ void CActor::UpdateCL()
             outfit_cond = outfit->GetCondition();
         if (auto wpn = inventory().ActiveItem())
             wpn_cond = wpn->GetCondition();
-        shader_exports.set_actor_params(Fvector{this->GetHealth(), outfit_cond, wpn_cond});
+        shader_exports.set_actor_params(Fvector{this->conditions().GetHealth(), outfit_cond, wpn_cond});
     }
 }
 

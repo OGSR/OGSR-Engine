@@ -269,9 +269,6 @@ public:
     virtual void On_B_NotCurrentEntity(){};
 
     CSE_ALifeDynamicObject* alife_object() const; // alpet: возвращает серверный экземпляр для этого объекта
-    virtual void UpdateXFORM(const Fmatrix& upd); // alpet: для обновления позиции и направления
-    virtual float GetHealth() const { return -1; } // alpet: для универсального доступа к переменным класса вроде fHealth
-    virtual void SetHealth(float h) {}
 
 protected:
     xr_vector<FeelTouchAddon*> feel_touch_addons;
