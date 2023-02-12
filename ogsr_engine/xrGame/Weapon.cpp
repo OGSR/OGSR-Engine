@@ -1258,11 +1258,8 @@ void CWeapon::SpawnAmmo(u32 boxCurr, LPCSTR ammoSect, u32 ParentID)
 
     CSE_Abstract* D = F_entity_Create(ammoSect);
 
-    // KRodin: GOVNOKOD DETECTED!
-    if (D->m_tClassID == CLSID_OBJECT_AMMO || D->m_tClassID == CLSID_OBJECT_A_M209 || D->m_tClassID == CLSID_OBJECT_A_VOG25 || D->m_tClassID == CLSID_OBJECT_A_OG7B)
+    if (auto l_pA = smart_cast<CSE_ALifeItemAmmo*>(D))
     {
-        CSE_ALifeItemAmmo* l_pA = smart_cast<CSE_ALifeItemAmmo*>(D);
-        R_ASSERT(l_pA);
         l_pA->m_boxSize = (u16)pSettings->r_s32(ammoSect, "box_size");
         D->s_name = ammoSect;
         D->set_name_replace("");
