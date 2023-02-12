@@ -1751,8 +1751,10 @@ void CWeapon::create_physic_shell()
     // физики происходят краши в ode которые исправить невозможно.
     if (IS_OGSR_GA)
     {
-        m_pPhysicsShell = P_build_SimpleShell(this, 0.3f, false);
-        m_pPhysicsShell->SetMaterial(smart_cast<IKinematics*>(Visual())->LL_GetData(smart_cast<IKinematics*>(Visual())->LL_GetBoneRoot()).game_mtl_idx);
+        auto vis = smart_cast<IKinematics*>(Visual());
+        auto& rootBoneData = vis->LL_GetData(vis->LL_GetBoneRoot());
+        m_pPhysicsShell = P_build_SimpleShell(this, rootBoneData.mass, false);
+        m_pPhysicsShell->SetMaterial(rootBoneData.game_mtl_idx);
     }
     else
         CPhysicsShellHolder::create_physic_shell();
