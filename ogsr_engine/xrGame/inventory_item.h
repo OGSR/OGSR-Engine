@@ -150,6 +150,7 @@ public:
     virtual void OnMoveToBelt();
     virtual void OnMoveToRuck(EItemPlace prevPlace);
     virtual void OnDrop(){};
+    virtual void OnBeforeDrop(){};
 
     int GetGridWidth() const;
     int GetGridHeight() const;

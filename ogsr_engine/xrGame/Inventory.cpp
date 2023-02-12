@@ -237,6 +237,8 @@ bool CInventory::DropItem(CGameObject* pObj)
 
     pIItem->object().processing_activate();
 
+    pIItem->OnBeforeDrop();
+
     switch (pIItem->m_eItemPlace)
     {
     case eItemPlaceBelt: {

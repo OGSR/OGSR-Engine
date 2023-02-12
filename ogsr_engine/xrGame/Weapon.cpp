@@ -827,6 +827,14 @@ void CWeapon::OnH_B_Chield()
     m_set_next_ammoType_on_reload = u32(-1);
 }
 
+void CWeapon::OnBeforeDrop()
+{
+    if (auto io = smart_cast<CActor*>(H_Parent()); io && this == io->inventory().ActiveItem())
+        shader_exports.set_dof_params(0.f, 0.f, 0.f, 0.f);
+
+    inherited::OnBeforeDrop();
+}
+
 u8 CWeapon::idle_state()
 {
     auto* actor = smart_cast<CActor*>(H_Parent());

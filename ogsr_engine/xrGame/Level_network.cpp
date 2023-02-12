@@ -82,6 +82,8 @@ void CLevel::remove_objects()
 
     g_ScriptVars.clear();
 
+    shader_exports.set_dof_params(0.f, 0.f, 0.f, 0.f);
+
     m_is_removing_objects = false;
 }
 
