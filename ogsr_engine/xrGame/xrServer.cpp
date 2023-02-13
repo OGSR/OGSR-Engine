@@ -497,11 +497,6 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
             SendTo(SV_Client->ID, P, net_flags(TRUE, TRUE));
     }
     break;
-    case M_PLAYER_FIRE: {
-        if (game)
-            game->OnPlayerFire(sender, P);
-    }
-    break;
     }
 
     VERIFY(verify_entities());

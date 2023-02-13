@@ -69,13 +69,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
         {
             mstate_wishful &= ~mcSprint;
         }
-        //-----------------------------
-        {
-            NET_Packet P;
-            P.w_begin(M_PLAYER_FIRE);
-            P.w_u16(ID());
-            u_EventSend(P);
-        }
+
     }
     break;
     default: {
