@@ -234,7 +234,7 @@ bool need_render_hud()
 
 void CHUDManager::Render_First()
 {
-    if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT))
+    if (!psHUD_Flags.is(HUD_WEAPON_RT))
         return;
 
     if (pUI == nullptr)
@@ -253,7 +253,7 @@ void CHUDManager::Render_First()
 
 void CHUDManager::Render_Last()
 {
-    if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT))
+    if (!psHUD_Flags.is(HUD_WEAPON_RT))
         return;
     if (0 == pUI)
         return;
@@ -386,7 +386,7 @@ void CHUDManager::net_Relcase(CObject* object)
 #include "player_hud.h"
 bool CHUDManager::RenderActiveItemUIQuery()
 {
-    if (!psHUD_Flags.is(HUD_WEAPON | HUD_WEAPON_RT))
+    if (!psHUD_Flags.is(HUD_WEAPON_RT))
         return false;
 
     if (!need_render_hud())

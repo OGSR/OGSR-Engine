@@ -8,7 +8,7 @@ enum HUD_Flags : u32
 {
     HUD_CROSSHAIR = 1 << 0,
     HUD_CROSSHAIR_DIST = 1 << 1,
-    HUD_WEAPON = 1 << 2,
+    // = 1 << 2,
     HUD_INFO = 1 << 3,
     HUD_DRAW = 1 << 4,
     HUD_CROSSHAIR_RT = 1 << 5,

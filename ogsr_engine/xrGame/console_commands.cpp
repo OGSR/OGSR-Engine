@@ -1308,7 +1308,6 @@ void CCC_RegisterCommands()
     CMD1(CCC_ALifeSwitchFactor, "al_switch_factor"); // set switch factor
 #endif // MASTER_GOLD
 
-    CMD3(CCC_Mask, "hud_weapon", &psHUD_Flags, HUD_WEAPON);
     CMD3(CCC_Mask, "hud_info", &psHUD_Flags, HUD_INFO);
     CMD3(CCC_Mask, "hud_draw", &psHUD_Flags, HUD_DRAW);
     CMD3(CCC_Mask, "hud_crosshair_build", &psHUD_Flags, HUD_CROSSHAIR_BUILD); // билдокурсор
