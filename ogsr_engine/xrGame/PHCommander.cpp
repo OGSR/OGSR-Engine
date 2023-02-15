@@ -57,7 +57,7 @@ CPHCall* CPHCommander::add_call(CPHCondition* condition, CPHAction* action) { re
 
 PHCALL_I CPHCommander::find_call(CPHReqComparerV* cmp_condition, CPHReqComparerV* cmp_action)
 {
-    return std::find_if(m_calls.begin(), m_calls.end(), [&](auto& call) { return call->equal(cmp_condition, cmp_action); });
+    return std::find_if(m_calls.begin(), m_calls.end(), [&](auto& call) { return !call->isNeedRemove() && call->equal(cmp_condition, cmp_action); });
 }
 
 bool CPHCommander::has_call(CPHReqComparerV* cmp_condition, CPHReqComparerV* cmp_action) { return find_call(cmp_condition, cmp_action) != m_calls.end(); }
@@ -83,6 +83,6 @@ CPHCall* CPHCommander::add_call_unique(CPHCondition* condition, CPHReqComparerV*
 void CPHCommander::remove_calls(CPHReqComparerV* cmp_object)
 {
     for (const auto& call : m_calls)
-        if (call->is_any(cmp_object))
+        if (!call->isNeedRemove() && call->is_any(cmp_object))
             call->removeLater();
 }
