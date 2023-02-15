@@ -39,10 +39,12 @@ void CLevel::remove_objects()
         // we need it since we do updates for checking network messages
         ++(Device.dwFrame);
         psDeviceFlags.set(rsDisableObjectsAsCrows, TRUE);
+
         ClientReceive();
         ProcessGameEvents();
+
         Objects.Update(true);
-        Sleep(100);
+        //Sleep(100);
     }
 
 
@@ -51,7 +53,6 @@ void CLevel::remove_objects()
     ph_commander_scripts().clear();
 
     space_restriction_manager().clear();
-
     psDeviceFlags.set(rsDisableObjectsAsCrows, b_stored);
 
     ai().script_engine().collect_all_garbage();

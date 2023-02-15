@@ -1327,7 +1327,6 @@
     <ClInclude Include="antirad.h" />
     <ClInclude Include="BottleItem.h" />
     <ClInclude Include="FoodItem.h" />
-    <ClInclude Include="ItemHealth.h" />
     <ClInclude Include="medkit.h" />
     <ClInclude Include="BoneProtections.h" />
     <ClInclude Include="CustomOutfit.h" />
@@ -1347,7 +1346,6 @@
     <ClInclude Include="searchlight.h" />
     <ClInclude Include="trade.h" />
     <ClInclude Include="CustomZone.h" />
-    <ClInclude Include="FryupZone.h" />
     <ClInclude Include="GraviZone.h" />
     <ClInclude Include="level_changer.h" />
     <ClInclude Include="Mincer.h" />
@@ -2269,7 +2267,6 @@
     <ClCompile Include="antirad.cpp" />
     <ClCompile Include="BottleItem.cpp" />
     <ClCompile Include="FoodItem.cpp" />
-    <ClCompile Include="ItemHealth.cpp" />
     <ClCompile Include="medkit.cpp" />
     <ClCompile Include="BoneProtections.cpp" />
     <ClCompile Include="CustomOutfit.cpp" />
@@ -2289,7 +2286,6 @@
     <ClCompile Include="trade.cpp" />
     <ClCompile Include="trade2.cpp" />
     <ClCompile Include="CustomZone.cpp" />
-    <ClCompile Include="FryupZone.cpp" />
     <ClCompile Include="GraviZone.cpp" />
     <ClCompile Include="level_changer.cpp" />
     <ClCompile Include="Mincer.cpp" />

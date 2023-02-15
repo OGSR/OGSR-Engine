@@ -22,9 +22,6 @@ CPhysicsShellHolder::CPhysicsShellHolder() { init(); }
 
 void CPhysicsShellHolder::net_Destroy()
 {
-    // remove calls
-    CPHSriptReqGObjComparer cmpr(this);
-    Level().ph_commander_scripts().remove_calls(&cmpr);
     //удалить партиклы из ParticlePlayer
     CParticlesPlayer::net_DestroyParticles();
     inherited::net_Destroy();

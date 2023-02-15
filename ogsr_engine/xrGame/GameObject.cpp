@@ -29,8 +29,9 @@
 #include "alife_simulator.h"
 #include "alife_object_registry.h"
 #include "Car.h"
-
 #include "ai_object_location.h"
+#include "PHCommander.h"
+#include "PHScriptCall.h"
 
 #ifdef DEBUG
 #include "debug_renderer.h"
@@ -137,7 +138,10 @@ void CGameObject::net_Destroy()
         Level().SetControlEntity(0);
     }
 
-    //.	Parent									= 0;
+    
+    // remove calls
+    CPHSriptReqGObjComparer cmpr(this);
+    Level().ph_commander_scripts().remove_calls(&cmpr);
 
     CScriptBinder::net_Destroy();
 
