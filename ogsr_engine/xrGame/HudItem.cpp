@@ -713,7 +713,7 @@ void CHudItem::UpdateCollision(Fmatrix& trans)
 
             if (result.O)
             {
-                if (smart_cast<CEntityAlive*>(result.O))
+                if (auto* e = smart_cast<CEntityAlive*>(result.O); e && e->g_Alive())
                     return TRUE;
 
                 *RQ = result;
