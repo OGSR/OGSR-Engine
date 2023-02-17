@@ -209,6 +209,28 @@ void CPhysicObject::CreateBody(CSE_ALifeObjectPhysic* po)
     {
     case epotBox: {
         m_pPhysicsShell = P_build_SimpleShell(this, m_mass, !po->_flags.test(CSE_ALifeObjectPhysic::flActive));
+        {
+            // для SimpleShell нет привязки к костям и вообще не работают параметры из секцции collide
+            // но объекты с таким type есть в all.spawn например визуалы сталкеров на Арене. я так и не нашел как оно раньше могло работать
+            // пока сделаем фикс прямо тут
+
+            if (*po->fixed_bones)
+            {
+                m_pPhysicsShell->get_ElementByStoreOrder(0)->Fix();
+
+                CInifile& ini = po->spawn_ini();
+
+                if (ini.line_exist("collide", "ignore_static"))
+                {
+                    m_pPhysicsShell->SetIgnoreStatic();
+                }
+
+                if (ini.line_exist("collide", "ignore_dynamic"))
+                {
+                    m_pPhysicsShell->SetIgnoreDynamic();
+                }                
+            }
+        }
     }
     break;
     case epotFixedChain:
