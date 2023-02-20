@@ -1037,13 +1037,13 @@ void CRender::init_cacades()
     u32 cascade_count = 3;
     m_sun_cascades.resize(cascade_count);
 
-    float fBias = -0.0000010f;
+    float fBias = -0.0000025f;
     //	float size = MAP_SIZE_START;
     m_sun_cascades[0].reset_chain = true;
     m_sun_cascades[0].size = 40;
     m_sun_cascades[0].bias = m_sun_cascades[0].size * fBias;
 
-    m_sun_cascades[1].size = 80;
+    m_sun_cascades[1].size = 120;
     m_sun_cascades[1].bias = m_sun_cascades[1].size * fBias;
 
     m_sun_cascades[2].size = 320;
