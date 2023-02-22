@@ -6,6 +6,9 @@
 #include "sload.h"
 #include "common_brdf.h"
 
+// SSS Settings
+#include "settings_screenspace_FLORA.h"
+
 #ifdef ATOC
 
 float4 main(p_bumped I) : SV_Target
@@ -55,16 +58,17 @@ f_deffer main(p_bumped I)
         discard;
 #endif //	!defined(MSAA_ALPHATEST_DX10_1)
 
-    // FLORA FIXES & IMPROVEMENTS - SSS Update 14
+    // FLORA FIXES & IMPROVEMENTS - SSS Update 14.3
     // https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders/
-    float3 Ne = mul(float3x3(I.M1, I.M2, I.M3), float3(S.normal.x, 1, S.normal.y));
+    float3 Ne = mul(float3x3(I.M1, I.M2, I.M3), S.normal);
     Ne = normalize(Ne);
 
     // Material value ( MAT_FLORA )
     float ms = MAT_FLORA;
 
     // Fake gloss
-    S.gloss = 2.0f * saturate(S.base.g - (S.base.r + S.base.b) * 0.54f);
+    S.gloss = G_GRASS_SPECULAR * saturate(S.base.g - (S.base.r + S.base.b) * 0.54f);
+    // -----------------------------------------------------------------------
 
 #ifdef USE_LM_HEMI
     //	float4	lm 	= tex2D			(s_hemi, I.lmh);

@@ -22,7 +22,8 @@ vf _main(v_model v)
     o.hpos = mul(m_WVP, pos); // xform, input in world coords
     o.tc0 = v.tc.xy; // copy tc
     o.tc1 = calc_reflection(pos_w, norm_w);
-    o.c0 = calc_model_lq_lighting(norm_w);
+    o.c0 = calc_model_lq_lighting(float3(0, 1, 0)); // SSS 14.5 - Improve the illumination a little using a fake normal
+
     o.fog = saturate(calc_fogging(float4(pos_w, 1))); // fog, input in world coords
 #ifdef SSFX_FOG
     o.fog = SSFX_FOGGING(1.0 - o.fog, pos.y); // Add SSFX Fog

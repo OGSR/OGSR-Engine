@@ -27,7 +27,7 @@ v2p_bumped main(v_tree I)
 #endif
     float4 w_pos = float4(pos.x + result.x, pos.y, pos.z + result.y, 1);
     float2 tc = (I.tc * consts).xy;
-    float hemi = I.Nh.w * c_scale.w + c_bias.w;
+    float hemi = clamp(I.Nh.w * c_scale.w + c_bias.w, 0.3f, 1.0f); // Limit hemi - SSS Update 14.5
     //	float 	hemi 	= I.Nh.w;
 
     // Eye-space pos/normal
@@ -47,19 +47,13 @@ v2p_bumped main(v_tree I)
     //		     = object2eye * transpose(object2tangent) (since the inverse of a rotation is its transpose)
     // Normal mapping
 
-    float3 N = 0;
-    float3 T = 0;
-    float3 B = 0;
-    float3x3 xform = 0;
-
     // FLORA FIXES & IMPROVEMENTS - SSS Update 14
     // https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders/
-
     // Use real tree Normal, Tangent and Binormal.
-    N = unpack_bx4(I.Nh);
-    T = unpack_bx4(I.T);
-    B = unpack_bx4(I.B);
-    xform = mul((float3x3)m_xform_v, float3x3(T.x, B.x, N.x, T.y, B.y, N.y, T.z, B.z, N.z));
+    float3 N = unpack_bx4(I.Nh);
+    float3 T = unpack_bx4(I.T);
+    float3 B = unpack_bx4(I.B);
+    float3x3 xform = mul((float3x3)m_xform_v, float3x3(T.x, B.x, N.x, T.y, B.y, N.y, T.z, B.z, N.z));
 
     // The pixel shader operates on the bump-map in [0..1] range
     // Remap this range in the matrix, anyway we are pixel-shader limited :)

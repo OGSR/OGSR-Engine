@@ -1,7 +1,7 @@
 /**
- * @ Version: SCREEN SPACE SHADERS - UPDATE 14
+ * @ Version: SCREEN SPACE SHADERS - UPDATE 14.4
  * @ Description: 2 Layers fog ( Distance + Height )
- * @ Modified time: 2023-01-19 15:22
+ * @ Modified time: 2023-01-30 09:14
  * @ Author: https://www.moddb.com/members/ascii1457
  * @ Mod: https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders
  */
@@ -11,10 +11,10 @@
 float SSFX_HEIGHT_FOG(float3 P, float World_Py, inout float3 color)
 {
     // Get Sun dir
-    float3 Sun = saturate(dot(normalize(L_sun_dir_w), -normalize(P)));
+    float3 Sun = saturate(dot(normalize(Ldynamic_dir), -normalize(P)));
 
     // Apply sun color
-    Sun = lerp(fog_color, L_sun_color.rgb, Sun);
+    Sun = lerp(fog_color, Ldynamic_color.rgb, Sun);
 
     // Distance Fog ( Default Anomaly Fog )
     float fog = saturate(length(P) * fog_params.w + fog_params.x);

@@ -6,6 +6,9 @@
 #include "sload.h"
 #include "common_brdf.h"
 
+// SSS Settings
+#include "settings_screenspace_FLORA.h"
+
 #ifdef ATOC
 
 float4 main(p_bumped I) : SV_Target
@@ -67,8 +70,8 @@ f_deffer main(p_bumped I)
     float ms = MAT_FLORA;
 
     // Fake gloss
-    S.gloss = 2.0f * saturate(S.base.g - (S.base.r + S.base.b) * 0.54f);
-    // -----------------------------------------------------------------------------
+    S.gloss = G_TREES_SPECULAR * saturate(S.base.g - (S.base.r + S.base.b) * 0.54f);
+    // -----------------------------------------------------------------------
 
 #ifdef USE_LM_HEMI
     //	float4	lm 	= tex2D			(s_hemi, I.lmh);

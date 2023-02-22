@@ -96,7 +96,7 @@ void UpdateTC(inout p_bumped I)
     }
 }
 
-#elif defined(USE_PARALLAX) || defined(USE_STEEPPARALLAX)
+#elif defined(USE_PARALLAX) && defined(USE_STEEPPARALLAX)
 
 void UpdateTC(inout p_bumped I)
 {

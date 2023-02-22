@@ -33,11 +33,11 @@ v2p_bumped main(v_detail v)
     // Pos + Wave Result
     pos = float4(pos.x + result.x, pos.y, pos.z + result.y, 1);
 
-    // FLORA FIXES & IMPROVEMENTS - SSS Update 14
+    // FLORA FIXES & IMPROVEMENTS - SSS Update 14.6
     // https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders/
 
     // Fake Normal, Bi-Normal and Tangent
-    float3 N = normalize(float3(v.pos.x, 1.0f, v.pos.z));
+    float3 N = normalize(float3(pos.x - m0.w, pos.y - m1.w + 1.0f, pos.z - m2.w));
 
     float3x3 xform = mul((float3x3)m_WV, float3x3(0, 0, N.x, 0, 0, N.y, 0, 0, N.z));
 
@@ -47,7 +47,7 @@ v2p_bumped main(v_detail v)
     O.M3 = xform[2];
 
     // Eye-space pos/normal
-    float hemi = clamp(c0.w, 0.05f, 1.0f); // Some spots are bugged ( Full black )
+    float hemi = clamp(c0.w, 0.05f, 1.0f); // Some spots are bugged ( Full black ), better if we limit the value till a better solution. // Option -> v_hemi(N);
     float3 Pe = mul(m_V, pos);
     O.tcdh = float4((v.misc * consts).xyyy);
     O.hpos = mul(m_VP, pos);

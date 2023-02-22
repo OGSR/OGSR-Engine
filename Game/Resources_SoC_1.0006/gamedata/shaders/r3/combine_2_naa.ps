@@ -75,12 +75,12 @@ c2_out main(v2p_aa_AA I)
 
     float3 img = s_image.Load(int3(center.xy * screen_res.xy, 0), 0);
 
+    img = mblur(center, gbd.P, img.rgb);
+
 // Indirect light - SCREEN SPACE SHADERS - UPDATE 14
 #ifdef SSFX_INDIRECT_LIGHT
     ssfx_il(I.Tex0, I.HPos, gbd.P, gbd.N, img, iSample);
 #endif
-
-    float4 bloom = s_bloom.Sample(smp_rtlinear, center);
 
 // Sky Debanding Implementation  - SCREEN SPACE SHADERS - UPDATE 12.5
 #ifdef SSFX_DEBAND
@@ -88,7 +88,7 @@ c2_out main(v2p_aa_AA I)
         img = ssfx_debanding(img, I.Tex0.xy);
 #endif
 
-    img = mblur(center, gbd.P, img.rgb);
+    float4 bloom = s_bloom.Sample(smp_rtlinear, center);
 
     if (addon_VControl.w == 1)
         img = visor_reflection(img, center);

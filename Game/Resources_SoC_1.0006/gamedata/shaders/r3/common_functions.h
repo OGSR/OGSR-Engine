@@ -1,15 +1,15 @@
 #ifndef common_functions_h_included
 #define common_functions_h_included
 
+uniform float4 m_actor_params;
+
 float3 vibrance(float3 img, half val)
 {
     float luminance = dot(float3(img.rgb), LUMINANCE_VECTOR);
     return float3(lerp(luminance, float3(img.rgb), val));
 }
 
-float noise(float2 tc) {
-    return frac(sin(dot(tc, float2(12.0, 78.0) + (timers.x))) * 43758.0) * 0.25f;
-}
+float noise(float2 tc) { return frac(sin(dot(tc, float2(12.0, 78.0) + (timers.x))) * 43758.0) * 0.25f; }
 
 //	contrast function
 float Contrast(float Input, float ContrastPower)
@@ -21,8 +21,6 @@ float Contrast(float Input, float ContrastPower)
     Output = IsAboveHalf ? 1 - Output : Output;
     return Output;
 }
-
-uniform float4 m_actor_params;
 
 void tonemap(out float4 low, out float4 high, float3 rgb, float scale)
 {

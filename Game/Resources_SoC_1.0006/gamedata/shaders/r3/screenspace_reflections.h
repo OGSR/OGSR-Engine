@@ -1,7 +1,7 @@
 /**
- * @ Version: SCREEN SPACE SHADERS - UPDATE 12.6
+ * @ Version: SCREEN SPACE SHADERS - UPDATE 14.3
  * @ Description: SSR implementation
- * @ Modified time: 2022-11-26 02:05
+ * @ Modified time: 2023-01-29 08:40
  * @ Author: https://www.moddb.com/members/ascii1457
  * @ Mod: https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders
  */
@@ -79,7 +79,7 @@ float4 SSFX_ssr_fast_ray(float3 ray_start_vs, float3 ray_dir_vs, float2 tc, uint
 			if (ray_check.x <= q_ssr_steps[G_SSR_QUALITY].y)
 				return float4(ssr_ray.r_pos, 0, 0);
 
-#if G_SSR_QUALITY > 2 // 1 Binary Search step in higher quality options ( Quality 4 & 5 )
+#if G_SSR_QUALITY > 2 // 1 Binary Search step in higher quality settigns ( Quality 4 & 5 )
 			
 			// Current ray pos & step to restore later...
 			float4 prev_step = 0;
@@ -132,11 +132,11 @@ void SSFX_ScreenSpaceReflections(float2 tc, float4 P, float3 N, float gloss, ino
 	
 	// Material conditions ( MAT_FLORA and Terrain for now... )
 	bool m_terrain = abs(P.w - 0.95f) <= 0.02f;
-	bool m_flora = abs(P.w - MAT_FLORA) <= 0.02f;
+	bool m_flora = abs(P.w - MAT_FLORA) <= 0.04f;
 
 	// Let's start with pure gloss.
 	float refl_power = gloss;
-	
+
 	// Calc reflection bounce
 	float3 inVec = normalize(P.xyz); // Incident
 	float3 reVec = reflect(inVec , N); // Reflected
