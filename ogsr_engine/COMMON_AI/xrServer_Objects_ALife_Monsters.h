@@ -143,6 +143,7 @@ virtual u32 ef_weapon_type() const;
 virtual u32 ef_creature_type() const;
 #ifdef XRGAME_EXPORTS
 virtual void on_spawn();
+void spawn_artefacts();
 virtual CSE_ALifeItemWeapon* tpfGetBestWeapon(ALife::EHitType& tHitType, float& fHitPower);
 virtual ALife::EMeetActionType tfGetActionType(CSE_ALifeSchedulable* tpALifeSchedulable, int iGroupIndex, bool bMutualDetection);
 virtual bool bfActive();

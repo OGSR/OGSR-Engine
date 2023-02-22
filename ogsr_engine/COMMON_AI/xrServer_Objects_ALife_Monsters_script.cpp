@@ -47,4 +47,7 @@ void CSE_ALifeTrader::script_register(lua_State* L)
 
 void CSE_ALifeCustomZone::script_register(lua_State* L) { module(L)[luabind_class_dynamic_alife1(CSE_ALifeCustomZone, "cse_custom_zone", CSE_ALifeSpaceRestrictor)]; }
 
-void CSE_ALifeAnomalousZone::script_register(lua_State* L) { module(L)[luabind_class_dynamic_alife1(CSE_ALifeAnomalousZone, "cse_anomalous_zone", CSE_ALifeCustomZone)]; }
+void CSE_ALifeAnomalousZone::script_register(lua_State* L)
+{
+    module(L)[luabind_class_dynamic_alife1(CSE_ALifeAnomalousZone, "cse_anomalous_zone", CSE_ALifeCustomZone).def("spawn_artefacts", &CSE_ALifeAnomalousZone::spawn_artefacts)];
+}

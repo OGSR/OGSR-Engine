@@ -30,7 +30,7 @@ public:
 private:
     CALifeSpawnHeader m_header{};
     SPAWN_GRAPH m_spawns;
-    // ARTEFACT_SPAWNS							m_artefact_spawn_positions;
+    ARTEFACT_SPAWNS m_artefact_spawn_positions;
     shared_str m_spawn_name;
     SPAWN_IDS m_spawn_roots;
     SPAWN_IDS m_temp0;
@@ -64,7 +64,7 @@ public:
     void fill_new_spawns(xr_vector<ALife::_SPAWN_ID>& spawns, ALife::_TIME_ID game_time);
     IC const CALifeSpawnHeader& header() const;
     IC const SPAWN_GRAPH& spawns() const;
-    // IC		void							assign_artefact_position	(CSE_ALifeAnomalousZone	*anomaly, CSE_ALifeDynamicObject *object) const;
+    IC void assign_artefact_position(CSE_ALifeAnomalousZone* anomaly, CSE_ALifeDynamicObject* object) const;
 
     //Используется только в луа
     ALife::_SPAWN_ID spawn_id(const ALife::_SPAWN_STORY_ID& spawn_story_id) const;
