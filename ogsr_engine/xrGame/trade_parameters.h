@@ -28,7 +28,7 @@ public:
     typedef _show_parameters* action_show;
 
 private:
-    static CTradeParameters* m_instance;
+    static CTradeParameters* g_default_instance;
 
 private:
     CTradeActionParameters m_buy;
@@ -48,7 +48,7 @@ public:
     IC void clear();
 
 public:
-    IC static CTradeParameters& instance();
+    IC static CTradeParameters& default_instance();
     IC static void clean();
 
 public:
@@ -60,6 +60,7 @@ public:
 
     template <typename _action_type>
     IC void process(_action_type type, CInifile& ini_file, const shared_str& section);
+
     void process(action_show, CInifile& ini_file, const shared_str& section);
 
     template <typename _action_type>

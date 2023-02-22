@@ -19,18 +19,18 @@ IC void CTradeParameters::clear()
     m_sell.clear();
 }
 
-IC CTradeParameters& CTradeParameters::instance()
+IC CTradeParameters& CTradeParameters::default_instance()
 {
-    if (m_instance)
-        return (*m_instance);
+    if (g_default_instance)
+        return (*g_default_instance);
 
-    m_instance = xr_new<CTradeParameters>();
-    return (*m_instance);
+    g_default_instance = xr_new<CTradeParameters>();
+    return (*g_default_instance);
 }
 
-IC void CTradeParameters::clean() { xr_delete(m_instance); }
+IC void CTradeParameters::clean() { xr_delete(g_default_instance); }
 
-IC CTradeParameters& default_trade_parameters() { return (CTradeParameters::instance()); }
+IC CTradeParameters& default_trade_parameters() { return (CTradeParameters::default_instance()); }
 
 IC const CTradeActionParameters& CTradeParameters::action(action_buy) const { return (m_buy); }
 
