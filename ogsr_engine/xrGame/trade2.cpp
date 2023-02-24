@@ -112,18 +112,6 @@ void CTrade::TransferItem(CInventoryItem* pItem, bool bBuying, bool change_money
             pPartner.inv_owner->set_money(pPartner.inv_owner->get_money() - dwTransferMoney, false);
     }
 
-    CAI_Trader* pTrader = NULL;
-
-    if (pThis.type == TT_TRADER && bBuying)
-    {
-        CArtefact* pArtefact = smart_cast<CArtefact*>(pItem);
-        if (pArtefact)
-        {
-            pTrader = smart_cast<CAI_Trader*>(pThis.base);
-            m_bNeedToUpdateArtefactTasks |= pTrader->BuyArtefact(pArtefact);
-        }
-    }
-
     if ((pPartner.type == TT_ACTOR) || (pThis.type == TT_ACTOR))
     {
         bool bDir = (pThis.type != TT_ACTOR) && bBuying;
@@ -140,24 +128,15 @@ CInventory& CTrade::GetTradeInv(SInventoryOwner owner)
 }
 
 CTrade* CTrade::GetPartnerTrade() { return pPartner.inv_owner->GetTrade(); }
+
 CInventory* CTrade::GetPartnerInventory() { return &GetTradeInv(pPartner); }
 
 CInventoryOwner* CTrade::GetPartner() { return pPartner.inv_owner; }
 
 u32 CTrade::GetItemPrice(PIItem pItem, bool b_buying)
 {
-    CArtefact* pArtefact = smart_cast<CArtefact*>(pItem);
-
     // computing base_cost
-    float base_cost;
-    if (pArtefact && (pThis.type == TT_ACTOR) && (pPartner.type == TT_TRADER))
-    {
-        CAI_Trader* pTrader = smart_cast<CAI_Trader*>(pPartner.inv_owner);
-        VERIFY(pTrader);
-        base_cost = (float)pTrader->ArtefactPrice(pArtefact);
-    }
-    else
-        base_cost = (float)pItem->Cost();
+    float base_cost = (float)pItem->Cost();
 
     // computing condition factor
     // for "dead" weapon we use 10% from base cost, for "good" weapon we use full base cost

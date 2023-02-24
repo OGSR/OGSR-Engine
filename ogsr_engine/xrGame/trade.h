@@ -34,9 +34,7 @@ class CTrade
         }
     };
 
-    //если нужно провести синхронизацию с сервером для торговцев
-    bool m_bNeedToUpdateArtefactTasks;
-
+    
 public:
     void TradeCB(bool bStart);
     SInventoryOwner pThis;

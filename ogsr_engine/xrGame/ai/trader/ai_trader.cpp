@@ -320,16 +320,6 @@ void CAI_Trader::load(IReader& input_packet)
     CInventoryOwner::load(input_packet);
 }
 
-//проверяет список артефактов в заказах
-u32 CAI_Trader::ArtefactPrice(CArtefact* pArtefact) { return pArtefact->Cost(); }
-
-//продажа артефакта, с последуещим изменением списка заказов (true - если артефакт был в списке)
-bool CAI_Trader::BuyArtefact(CArtefact* pArtefact)
-{
-    VERIFY(pArtefact);
-    return false;
-}
-
 ALife::ERelationType CAI_Trader::tfGetRelationType(const CEntityAlive* tpEntityAlive) const
 {
     const CInventoryOwner* pOtherIO = smart_cast<const CInventoryOwner*>(tpEntityAlive);

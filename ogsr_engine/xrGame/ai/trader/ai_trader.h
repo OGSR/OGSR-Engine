@@ -97,15 +97,6 @@ public:
 
     virtual ALife::ERelationType tfGetRelationType(const CEntityAlive* tpEntityAlive) const;
 
-    //////////////////////////////////////////////////////////////////////////
-    //генерируемые задания
-public:
-    //проверяет список артефактов в заказах
-    virtual u32 ArtefactPrice(CArtefact* pArtefact);
-    //продажа артефакта, с последуещим изменением списка заказов  (true - если артефакт был в списке)
-    virtual bool BuyArtefact(CArtefact* pArtefact);
-
-public:
     IC bool busy_now() const { return (m_busy_now); }
 
 private:
