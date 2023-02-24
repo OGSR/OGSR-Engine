@@ -5550,9 +5550,6 @@
     <ClInclude Include="ui\UITrackButton.h">
       <Filter>AI\AScript\ScriptClasses\UI\UIWindows\TrackBar</Filter>
     </ClInclude>
-    <ClInclude Include="ui\UIFrameLine.h">
-      <Filter>AI\AScript\ScriptClasses\UI\UIWindows\Frames</Filter>
-    </ClInclude>
     <ClInclude Include="UIFrameRect.h">
       <Filter>AI\AScript\ScriptClasses\UI\UIWindows\Frames</Filter>
     </ClInclude>
@@ -8670,9 +8667,6 @@
     </ClCompile>
     <ClCompile Include="ui\UITrackBar.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\UIWindows\TrackBar</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\UIFrameLine.cpp">
-      <Filter>AI\AScript\ScriptClasses\UI\UIWindows\Frames</Filter>
     </ClCompile>
     <ClCompile Include="UIFrameRect.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\UIWindows\Frames</Filter>
