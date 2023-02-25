@@ -62,8 +62,10 @@ void CExplosiveRocket::Contact(const Fvector& pos, const Fvector& normal)
                 {
                     u32 lvid = UsedAI_Locations() ? ai_location().level_vertex_id() : ai().level_graph().vertex(pos);
                     CSE_Abstract* object = Level().spawn_item(real_grenade_name.c_str(), pos, lvid, 0xffff, true);
+
                     CSE_ALifeItemAmmo* ammo = smart_cast<CSE_ALifeItemAmmo*>(object);
                     ammo->m_boxSize = 1;
+
                     NET_Packet P;
                     object->Spawn_Write(P, TRUE);
                     Level().Send(P, net_flags(TRUE));

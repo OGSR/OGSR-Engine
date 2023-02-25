@@ -178,12 +178,10 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide, bool bo1, dContact& c
 {
     do_colide = false;
 
-    dxGeomUserData* l_pUD1 = NULL;
-    dxGeomUserData* l_pUD2 = NULL;
-    l_pUD1 = retrieveGeomUserData(c.geom.g1);
-    l_pUD2 = retrieveGeomUserData(c.geom.g2);
+    dxGeomUserData* l_pUD1 = retrieveGeomUserData(c.geom.g1);
+    dxGeomUserData* l_pUD2 = retrieveGeomUserData(c.geom.g2);
 
-    SGameMtl* material = 0;
+    const SGameMtl* material;
     CCustomRocket* l_this = l_pUD1 ? smart_cast<CCustomRocket*>(l_pUD1->ph_ref_object) : NULL;
     Fvector vUp;
     if (!l_this)
@@ -402,7 +400,6 @@ void CCustomRocket::UpdateCL()
         if (m_time_to_explode < Device.fTimeGlobal)
         {
             Contact(Position(), Direction());
-            //			Msg("--contact");
         }
     }
 }

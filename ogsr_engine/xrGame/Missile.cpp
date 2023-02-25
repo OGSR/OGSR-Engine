@@ -791,21 +791,17 @@ void CMissile::ExitContactCallback(bool& do_colide, bool bo1, dContact& c, SGame
 
         if (l_this->m_pOwner)
         {
-            float dist = l_this->m_pOwner->Position().distance_to(l_pos);
-            if (dist < l_this->m_safe_dist_to_explode)
+            if (!l_pUD1 || !l_pUD2)
             {
-                safe_to_explode = false;
+                dGeomID g = NULL;
+                dxGeomUserData*& l_pUD = l_pUD1 ? l_pUD1 : l_pUD2;
+                if (l_pUD1)
+                    g = c.geom.g1;
+                else
+                    g = c.geom.g2;
 
-                CActor* pActor = smart_cast<CActor*>(l_this->m_pOwner);
-                if (pActor)
+                if (l_pUD->pushing_neg)
                 {
-                    dGeomID g = NULL;
-                    dxGeomUserData*& l_pUD = l_pUD1 ? l_pUD1 : l_pUD2;
-                    if (l_pUD1)
-                        g = c.geom.g1;
-                    else
-                        g = c.geom.g2;
-
                     Fvector velocity;
                     l_this->PHGetLinearVell(velocity);
                     if (velocity.square_magnitude() > EPS)
@@ -819,7 +815,17 @@ void CMissile::ExitContactCallback(bool& do_colide, bool bo1, dContact& c, SGame
                         velocity.mul(dist * 1.1f);
                         l_pos.sub(velocity);
                     }
+                }
+            }
 
+            float dist = l_this->m_pOwner->Position().distance_to(l_pos);
+            if (dist < l_this->m_safe_dist_to_explode)
+            {
+                safe_to_explode = false;
+
+                CActor* pActor = smart_cast<CActor*>(l_this->m_pOwner);
+                if (pActor)
+                {
                     u32 lvid = l_this->UsedAI_Locations() ? l_this->ai_location().level_vertex_id() : ai().level_graph().vertex(l_pos);
                     CSE_Abstract* object = Level().spawn_item(l_this->cNameSect().c_str(), l_pos, lvid, 0xffff, true);
 
