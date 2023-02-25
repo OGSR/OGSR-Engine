@@ -86,6 +86,7 @@ void CMissile::Load(LPCSTR section)
 
     m_safe_dist_to_explode = READ_IF_EXISTS(pSettings, r_float, section, "safe_dist_to_explode", 0);
     m_kick_on_explode = READ_IF_EXISTS(pSettings, r_bool, section, "explosion_on_kick", false);
+    m_explode_by_timer_on_safe_dist = READ_IF_EXISTS(pSettings, r_bool, section, "explode_by_timer_on_safe_dist", true);
 }
 
 BOOL CMissile::net_Spawn(CSE_Abstract* DC)
@@ -781,7 +782,7 @@ void CMissile::ExitContactCallback(bool& do_colide, bool bo1, dContact& c, SGame
         if (material->Flags.is(SGameMtl::flPassable))
             return;
 
-        if (!l_this || !l_this->m_kick_on_explode || l_this->contact)
+        if (!l_this || !l_this->m_kick_on_explode || l_this->has_already_contact)
             return;
 
         bool safe_to_explode = true;
@@ -823,20 +824,23 @@ void CMissile::ExitContactCallback(bool& do_colide, bool bo1, dContact& c, SGame
             {
                 safe_to_explode = false;
 
-                CActor* pActor = smart_cast<CActor*>(l_this->m_pOwner);
-                if (pActor)
+                if (!l_this->m_explode_by_timer_on_safe_dist)
                 {
-                    u32 lvid = l_this->UsedAI_Locations() ? l_this->ai_location().level_vertex_id() : ai().level_graph().vertex(l_pos);
-                    CSE_Abstract* object = Level().spawn_item(l_this->cNameSect().c_str(), l_pos, lvid, 0xffff, true);
+                    CActor* pActor = smart_cast<CActor*>(l_this->m_pOwner);
+                    if (pActor)
+                    {
+                        u32 lvid = l_this->UsedAI_Locations() ? l_this->ai_location().level_vertex_id() : ai().level_graph().vertex(l_pos);
+                        CSE_Abstract* object = Level().spawn_item(l_this->cNameSect().c_str(), l_pos, lvid, 0xffff, true);
 
-                    NET_Packet P;
-                    object->Spawn_Write(P, TRUE);
-                    Level().Send(P, net_flags(TRUE));
-                    F_entity_Destroy(object);
+                        NET_Packet P;
+                        object->Spawn_Write(P, TRUE);
+                        Level().Send(P, net_flags(TRUE));
+                        F_entity_Destroy(object);
+                    }
+
+                    l_this->set_destroy_time(500);
+                    l_this->DestroyObject();
                 }
-
-                l_this->set_destroy_time(500);
-                l_this->DestroyObject();
             }
         }
 
@@ -845,7 +849,7 @@ void CMissile::ExitContactCallback(bool& do_colide, bool bo1, dContact& c, SGame
             l_this->set_destroy_time(5);
         }
 
-        l_this->contact = true;
+        l_this->has_already_contact = true;
     }
 }
 

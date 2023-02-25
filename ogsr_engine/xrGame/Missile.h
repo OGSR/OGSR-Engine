@@ -85,13 +85,16 @@ protected:
     //параметры броска
 
     float m_fMinForce, m_fConstForce, m_fMaxForce, m_fForceGrowSpeed;
-    // private:
+    
     bool m_constpower;
     float m_fThrowForce;
 
     bool m_kick_on_explode{};
+    bool m_explode_by_timer_on_safe_dist{true};
+
     float m_safe_dist_to_explode{};
-    bool contact{};
+
+    bool has_already_contact{};
 
 protected:
     //относительная точка и направление вылета гранаты
