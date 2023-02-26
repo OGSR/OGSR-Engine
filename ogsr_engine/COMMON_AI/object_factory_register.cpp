@@ -20,7 +20,6 @@
 #include "gamepersistent.h"
 #include "hudmanager.h"
 #include "actor.h"
-#include "spectator.h"
 
 #include "ai/monsters/flesh/flesh.h"
 #include "ai/monsters/chimera/chimera.h"
