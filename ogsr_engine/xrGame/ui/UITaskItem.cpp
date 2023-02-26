@@ -202,6 +202,7 @@ void CUITaskSubItem::Init()
     m_active_color = xml_init.GetColor(uiXml, "task_sub_item:description:text_colors:active", 0, 0x00);
     m_failed_color = xml_init.GetColor(uiXml, "task_sub_item:description:text_colors:failed", 0, 0x00);
     m_accomplished_color = xml_init.GetColor(uiXml, "task_sub_item:description:text_colors:accomplished", 0, 0x00);
+    m_skiped_color = xml_init.GetColor(uiXml, "task_sub_item:description:text_colors:skiped", 0, 0x00);
 }
 
 void CUITaskSubItem::SetGameTask(CGameTask* gt, u16 obj_idx)
@@ -230,6 +231,12 @@ void CUITaskSubItem::SetGameTask(CGameTask* gt, u16 obj_idx)
         m_stateStatic->InitTexture("ui_icons_PDA_subtask_accomplished");
         m_descriptionStatic->SetTextColor(m_accomplished_color);
         break;
+    case eTaskStateSkiped:
+        m_stateStatic->InitTexture("ui_icons_PDA_subtask_skiped");
+        m_descriptionStatic->SetTextureColor(m_skiped_color);
+        break;
+
+
     default: NODEFAULT;
     };
 }

@@ -201,7 +201,7 @@ bool CUIEventsWnd::Filter(CGameTask* t)
     return (false /*m_currFilter==eOwnTask && task_state==eTaskUserDefined*/) ||
         ((true /*!bprimary_only || (bprimary_only && t->m_is_task_general)*/) &&
          ((m_currFilter == eAccomplishedTask && task_state == eTaskStateCompleted) || (m_currFilter == eFailedTask && task_state == eTaskStateFail) ||
-          (m_currFilter == eActiveTask && task_state == eTaskStateInProgress)));
+          (m_currFilter == eActiveTask && task_state == eTaskStateInProgress) || (m_currFilter == eSkipedTask && task_state == eTaskStateSkiped)));
 }
 
 void CUIEventsWnd::SetDescriptionMode(bool bMap)

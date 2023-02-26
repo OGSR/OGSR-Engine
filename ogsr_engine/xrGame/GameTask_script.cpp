@@ -6,8 +6,8 @@ using namespace luabind;
 
 void CGameTask::script_register(lua_State* L)
 {
-    module(L)[class_<enum_exporter<ETaskState>>("task").enum_("task_state")[value("fail", int(eTaskStateFail)), value("in_progress", int(eTaskStateInProgress)),
-                                                                            value("completed", int(eTaskStateCompleted)), value("task_dummy", int(eTaskStateDummy))],
+    module(L)[class_<enum_exporter<ETaskState>>("task").enum_("task_state")[value("fail", int(eTaskStateFail)), value("in_progress", int(eTaskStateInProgress)), value("completed", int(eTaskStateCompleted)),
+                                value("skipped", int(eTaskStateSkiped)), value("task_dummy", int(eTaskStateDummy))],
 
               class_<SGameTaskObjective>("SGameTaskObjective")
                   .def(constructor<CGameTask*, int>())
@@ -22,13 +22,18 @@ void CGameTask::script_register(lua_State* L)
 
                   .def("add_complete_info", &SGameTaskObjective::AddCompleteInfo_script)
                   .def("add_fail_info", &SGameTaskObjective::AddFailInfo_script)
+
+				  .def("add_skipped_info", &SGameTaskObjective::AddSkipedInfo_script)
+
                   .def("add_on_complete_info", &SGameTaskObjective::AddOnCompleteInfo_script)
                   .def("add_on_fail_info", &SGameTaskObjective::AddOnFailInfo_script)
-
+                  .def("add_on_skipped_info", &SGameTaskObjective::AddOnSkipedInfo_script)
                   .def("add_complete_func", &SGameTaskObjective::AddCompleteFunc_script)
                   .def("add_fail_func", &SGameTaskObjective::AddFailFunc_script)
+                  .def("add_skipped_func", &SGameTaskObjective::AddSkipedFunc_script)
                   .def("add_on_complete_func", &SGameTaskObjective::AddOnCompleteFunc_script)
                   .def("add_on_fail_func", &SGameTaskObjective::AddOnFailFunc_script)
+                  .def("add_on_skipped_func", &SGameTaskObjective::AddOnSkipedFunc_script)
 
                   .def("get_idx", &SGameTaskObjective::GetIDX_script)
                   .def("get_state", &SGameTaskObjective::TaskState),

@@ -5,6 +5,7 @@ enum ETaskState
     eTaskStateFail = 0,
     eTaskStateInProgress,
     eTaskStateCompleted,
+    eTaskStateSkiped,
     //.	eTaskUserDefined,
     eTaskStateDummy = u32(-1)
 };

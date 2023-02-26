@@ -121,7 +121,7 @@ void CGameTaskManager::SetTaskState(CGameTask* t, u16 objective_num, ETaskState 
     CMapLocation* ml = o->LinkedMapLocation();
     bool bActive = ActiveObjective() == o;
 
-    if ((state == eTaskStateFail || state == eTaskStateCompleted) && ml)
+    if ((state == eTaskStateFail || state == eTaskStateCompleted || (state == eTaskStateSkiped)) && ml)
     {
         Level().MapManager().RemoveMapLocation(o->map_location, o->object_id);
         o->map_location = NULL;
@@ -166,7 +166,7 @@ void CGameTaskManager::SetTaskState(CGameTask* t, u16 objective_num, ETaskState 
         }
     }
 
-    if (isRoot && eTaskStateCompleted == state || eTaskStateFail == state)
+    if (isRoot && eTaskStateCompleted == state || eTaskStateFail == state || eTaskStateSkiped == state)
         t->m_FinishTime = Level().GetGameTime();
 
     CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
@@ -219,7 +219,7 @@ void CGameTaskManager::UpdateTasks()
             }
 
             ETaskState state = obj.UpdateState();
-            if (state == eTaskStateFail || state == eTaskStateCompleted)
+            if (state == eTaskStateFail || state == eTaskStateCompleted || state == eTaskStateSkiped)
             {
                 SetTaskState(t, i, state);
                 // Тут проверяем заново, потому что в функции выше активный таск может обновиться

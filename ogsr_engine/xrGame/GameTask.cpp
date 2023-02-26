@@ -180,6 +180,14 @@ void CGameTask::Load(const TASK_ID& id)
         for (j = 0; j < info_num; ++j)
             objective.m_failInfos[j] = g_gameTaskXml->Read(l_root, "infoportion_fail", j, NULL);
 
+        //------infoportion_skiped
+        info_num = g_gameTaskXml->GetNodesNum(l_root, "infoportion_skipped");
+        objective.m_skipedInfos.resize(info_num);
+
+        for (j = 0; j < info_num; ++j)
+            objective.m_skipedInfos[j] = g_gameTaskXml->Read(l_root, "infoportion_skipped", j, NULL);
+
+
         //------infoportion_set_complete
         info_num = g_gameTaskXml->GetNodesNum(l_root, "infoportion_set_complete");
         objective.m_infos_on_complete.resize(info_num);
@@ -191,6 +199,13 @@ void CGameTask::Load(const TASK_ID& id)
         objective.m_infos_on_fail.resize(info_num);
         for (j = 0; j < info_num; ++j)
             objective.m_infos_on_fail[j] = g_gameTaskXml->Read(l_root, "infoportion_set_fail", j, NULL);
+
+        //------infoportion_set_skiped
+        info_num = g_gameTaskXml->GetNodesNum(l_root, "infoportion_set_skipped");
+        objective.m_infos_on_skiped.resize(info_num);
+        for (j = 0; j < info_num; ++j)
+            objective.m_infos_on_skiped[j] = g_gameTaskXml->Read(l_root, "infoportion_set_skipped", j, NULL);
+
 
         //------function_complete
         LPCSTR str;
@@ -214,6 +229,17 @@ void CGameTask::Load(const TASK_ID& id)
             ASSERT_FMT_DBG(functor_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str);
         }
 
+        //------function_skiped
+        info_num = g_gameTaskXml->GetNodesNum(l_root, "function_skipped");
+        objective.m_skiped_lua_functions.resize(info_num);
+        for (j = 0; j < info_num; ++j)
+        {
+            str = g_gameTaskXml->Read(l_root, "function_skipped", j, NULL);
+            functor_exists = ai().script_engine().functor(str, objective.m_skiped_lua_functions[j]);
+            THROW3(functor_exists, "Cannot find script function described in task objective  ", str);
+        }
+
+
         //------function_on_complete
         info_num = g_gameTaskXml->GetNodesNum(l_root, "function_call_complete");
         objective.m_lua_functions_on_complete.resize(info_num);
@@ -233,6 +259,18 @@ void CGameTask::Load(const TASK_ID& id)
             functor_exists = ai().script_engine().functor(str, objective.m_lua_functions_on_fail[j]);
             ASSERT_FMT_DBG(functor_exists, "[%s]: Cannot find script function described in task objective: %s", __FUNCTION__, str);
         }
+
+
+        //------function_on_fail
+        info_num = g_gameTaskXml->GetNodesNum(l_root, "function_call_skipped");
+        objective.m_lua_functions_on_skiped.resize(info_num);
+        for (j = 0; j < info_num; ++j)
+        {
+            str = g_gameTaskXml->Read(l_root, "function_call_skipped", j, NULL);
+            functor_exists = ai().script_engine().functor(str, objective.m_lua_functions_on_skiped[j]);
+            THROW3(functor_exists, "Cannot find script function described in task objective  ", str);
+        }
+
 
         g_gameTaskXml->SetLocalRoot(task_node);
     }
@@ -274,7 +312,7 @@ CMapLocation* SGameTaskObjective::LinkedMapLocation()
 void SGameTaskObjective::SetTaskState(ETaskState new_state)
 {
     task_state = new_state;
-    if ((new_state == eTaskStateFail) || (new_state == eTaskStateCompleted))
+    if ((new_state == eTaskStateFail) || (new_state == eTaskStateCompleted) || (new_state == eTaskStateSkiped))
     {
         if (task_state == eTaskStateFail)
         {
@@ -286,6 +324,12 @@ void SGameTaskObjective::SetTaskState(ETaskState new_state)
             SendInfo(m_infos_on_complete);
             CallAllFuncs(m_lua_functions_on_complete);
         }
+        else if (task_state == eTaskStateSkiped)
+        {
+            SendInfo(m_infos_on_skiped);
+            CallAllFuncs(m_lua_functions_on_skiped);
+        }
+
         // callback for scripters
         ChangeStateCallback();
     }
@@ -315,6 +359,16 @@ ETaskState SGameTaskObjective::UpdateState()
     // check complete functor
     if (CheckFunctions(m_complete_lua_functions))
         return eTaskStateCompleted;
+
+    // check skiped infos
+    if (CheckInfo(m_skipedInfos))
+        return eTaskStateSkiped;
+
+    // check skiped functor
+    if (CheckFunctions(m_skiped_lua_functions))
+        return eTaskStateSkiped;
+
+
 
     return TaskState();
 }
@@ -384,14 +438,23 @@ void SGameTaskObjective::AddCompleteInfo_script(LPCSTR _str) { m_completeInfos.p
 
 void SGameTaskObjective::AddFailInfo_script(LPCSTR _str) { m_failInfos.push_back(_str); }
 
+void SGameTaskObjective::AddSkipedInfo_script(LPCSTR _str) { m_skipedInfos.push_back(_str); }
+
+
+
 void SGameTaskObjective::AddOnCompleteInfo_script(LPCSTR _str) { m_infos_on_complete.push_back(_str); }
 
 void SGameTaskObjective::AddOnFailInfo_script(LPCSTR _str) { m_infos_on_fail.push_back(_str); }
 
+void SGameTaskObjective::AddOnSkipedInfo_script(LPCSTR _str) { m_infos_on_skiped.push_back(_str); }
+
 void SGameTaskObjective::AddCompleteFunc_script(LPCSTR _str) { m_pScriptHelper.m_s_complete_lua_functions.push_back(_str); }
 void SGameTaskObjective::AddFailFunc_script(LPCSTR _str) { m_pScriptHelper.m_s_fail_lua_functions.push_back(_str); }
+void SGameTaskObjective::AddSkipedFunc_script(LPCSTR _str) { m_pScriptHelper.m_s_skiped_lua_functions.push_back(_str); }
+
 void SGameTaskObjective::AddOnCompleteFunc_script(LPCSTR _str) { m_pScriptHelper.m_s_lua_functions_on_complete.push_back(_str); }
 void SGameTaskObjective::AddOnFailFunc_script(LPCSTR _str) { m_pScriptHelper.m_s_lua_functions_on_fail.push_back(_str); }
+void SGameTaskObjective::AddOnSkipedFunc_script(LPCSTR _str) { m_pScriptHelper.m_s_lua_functions_on_skiped.push_back(_str); }
 
 void CGameTask::Load_script(LPCSTR _id) { Load(_id); }
 
@@ -403,8 +466,10 @@ void CGameTask::AddObjective_script(SGameTaskObjective* O)
 {
     O->m_pScriptHelper.init_functors(O->m_pScriptHelper.m_s_complete_lua_functions, O->m_complete_lua_functions);
     O->m_pScriptHelper.init_functors(O->m_pScriptHelper.m_s_fail_lua_functions, O->m_fail_lua_functions);
+    O->m_pScriptHelper.init_functors(O->m_pScriptHelper.m_s_skiped_lua_functions, O->m_skiped_lua_functions);
     O->m_pScriptHelper.init_functors(O->m_pScriptHelper.m_s_lua_functions_on_complete, O->m_lua_functions_on_complete);
     O->m_pScriptHelper.init_functors(O->m_pScriptHelper.m_s_lua_functions_on_fail, O->m_lua_functions_on_fail);
+    O->m_pScriptHelper.init_functors(O->m_pScriptHelper.m_s_lua_functions_on_skiped, O->m_lua_functions_on_skiped);
 
     m_Objectives.push_back(*O);
 }
@@ -428,8 +493,10 @@ void SGameTaskObjective::save(IWriter& stream)
 
     save_data(m_completeInfos, stream);
     save_data(m_failInfos, stream);
+    save_data(m_skipedInfos, stream);
     save_data(m_infos_on_complete, stream);
     save_data(m_infos_on_fail, stream);
+    save_data(m_infos_on_skiped, stream);
 
     bool b_script = m_pScriptHelper.not_empty();
     save_data(b_script, stream);
@@ -454,8 +521,12 @@ void SGameTaskObjective::load(IReader& stream)
 
     load_data(m_completeInfos, stream);
     load_data(m_failInfos, stream);
+    if (ai().get_alife()->header().version() > 9)
+        load_data(m_skipedInfos, stream);
     load_data(m_infos_on_complete, stream);
     load_data(m_infos_on_fail, stream);
+    if (ai().get_alife()->header().version() > 9)
+        load_data(m_infos_on_skiped, stream);
 
     bool b_script;
     load_data(b_script, stream); //-V614
@@ -465,8 +536,10 @@ void SGameTaskObjective::load(IReader& stream)
 
         m_pScriptHelper.init_functors(m_pScriptHelper.m_s_complete_lua_functions, m_complete_lua_functions);
         m_pScriptHelper.init_functors(m_pScriptHelper.m_s_fail_lua_functions, m_fail_lua_functions);
+        m_pScriptHelper.init_functors(m_pScriptHelper.m_s_skiped_lua_functions, m_skiped_lua_functions);
         m_pScriptHelper.init_functors(m_pScriptHelper.m_s_lua_functions_on_complete, m_lua_functions_on_complete);
         m_pScriptHelper.init_functors(m_pScriptHelper.m_s_lua_functions_on_fail, m_lua_functions_on_fail);
+        m_pScriptHelper.init_functors(m_pScriptHelper.m_s_lua_functions_on_skiped, m_lua_functions_on_skiped);
     }
 }
 
@@ -487,16 +560,22 @@ void SScriptObjectiveHelper::load(IReader& stream)
 {
     load_data(m_s_complete_lua_functions, stream);
     load_data(m_s_fail_lua_functions, stream);
+    if (ai().get_alife()->header().version() > 9)
+        load_data(m_s_skiped_lua_functions, stream);
     load_data(m_s_lua_functions_on_complete, stream);
     load_data(m_s_lua_functions_on_fail, stream);
+    if (ai().get_alife()->header().version() > 9)
+        load_data(m_s_lua_functions_on_skiped, stream);
 }
 
 void SScriptObjectiveHelper::save(IWriter& stream)
 {
     save_data(m_s_complete_lua_functions, stream);
     save_data(m_s_fail_lua_functions, stream);
+    save_data(m_s_skiped_lua_functions, stream);
     save_data(m_s_lua_functions_on_complete, stream);
     save_data(m_s_lua_functions_on_fail, stream);
+    save_data(m_s_lua_functions_on_skiped, stream);
 }
 
 void SGameTaskKey::save(IWriter& stream)

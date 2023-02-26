@@ -13,12 +13,19 @@ class SScriptObjectiveHelper : public IPureSerializeObject<IReader, IWriter>
 public:
     xr_vector<shared_str> m_s_complete_lua_functions;
     xr_vector<shared_str> m_s_fail_lua_functions;
+    xr_vector<shared_str> m_s_skiped_lua_functions;
 
     xr_vector<shared_str> m_s_lua_functions_on_complete;
     xr_vector<shared_str> m_s_lua_functions_on_fail;
+    xr_vector<shared_str> m_s_lua_functions_on_skiped;
 
 public:
-    bool not_empty() { return m_s_complete_lua_functions.size() || m_s_fail_lua_functions.size() || m_s_lua_functions_on_complete.size() || m_s_lua_functions_on_fail.size(); }
+    bool not_empty()
+    {
+        return m_s_complete_lua_functions.size() || m_s_fail_lua_functions.size() || m_s_skiped_lua_functions.size() || m_s_lua_functions_on_complete.size() ||
+            m_s_lua_functions_on_fail.size() || m_s_lua_functions_on_skiped.size();
+
+    }
 
     virtual void save(IWriter& stream);
     virtual void load(IReader& stream);
@@ -63,15 +70,18 @@ public:
     // complete/fail stuff
     xr_vector<shared_str> m_completeInfos;
     xr_vector<shared_str> m_failInfos;
+    xr_vector<shared_str> m_skipedInfos;
     xr_vector<shared_str> m_infos_on_complete;
     xr_vector<shared_str> m_infos_on_fail;
+    xr_vector<shared_str> m_infos_on_skiped;
 
     xr_vector<luabind::functor<bool>> m_complete_lua_functions;
     xr_vector<luabind::functor<bool>> m_fail_lua_functions;
+    xr_vector<luabind::functor<bool>> m_skiped_lua_functions;
 
     xr_vector<luabind::functor<bool>> m_lua_functions_on_complete;
     xr_vector<luabind::functor<bool>> m_lua_functions_on_fail;
-
+    xr_vector<luabind::functor<bool>> m_lua_functions_on_skiped;
     // for scripting access
     void SetDescription_script(LPCSTR _descr);
     void SetArticleID_script(LPCSTR _id);
@@ -84,13 +94,17 @@ public:
 
     void AddCompleteInfo_script(LPCSTR _str);
     void AddFailInfo_script(LPCSTR _str);
+    void AddSkipedInfo_script(LPCSTR _str);
     void AddOnCompleteInfo_script(LPCSTR _str);
     void AddOnFailInfo_script(LPCSTR _str);
+    void AddOnSkipedInfo_script(LPCSTR _str);
 
     void AddCompleteFunc_script(LPCSTR _str);
     void AddFailFunc_script(LPCSTR _str);
+    void AddSkipedFunc_script(LPCSTR _str);
     void AddOnCompleteFunc_script(LPCSTR _str);
     void AddOnFailFunc_script(LPCSTR _str);
+    void AddOnSkipedFunc_script(LPCSTR _str);
     LPCSTR GetDescription_script() { return *description; };
     void ChangeStateCallback();
 };
