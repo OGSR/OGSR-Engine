@@ -900,6 +900,29 @@ public:
         if (auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game))
             tpGame->alife().spawn_item(args, Actor()->Position(), Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
     }
+
+    virtual void fill_tips(vecTips& tips, u32 mode)
+    {
+        if (!ai().get_alife())
+        {
+            Msg("! ALife simulator is needed to perform specified command!");
+            return;
+        }
+
+        for (const auto& it : pSettings->sections())
+        {
+            auto& section = it.first;
+
+            if (pSettings->line_exist(section, "class"))
+            {
+                tips.push_back(section);
+            }
+        }
+
+        std::sort(tips.begin(), tips.end());
+
+        // tips.push_back((*itb).second.name());
+    }
 };
 //#endif // MASTER_GOLD
 
