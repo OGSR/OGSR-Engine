@@ -69,9 +69,6 @@ SGameMtlPair::~SGameMtlPair()
     DestroySounds(StepSounds);
     DestroySounds(CollideSounds);
     DestroyPSs(CollideParticles);
-    //	DestroyMarks	(CollideMarks);
-    // RenderFactory->DestroyGameMtlPair(m_pCollideMarks);
-    // m_pCollideMarks->
 }
 
 void SGameMtlPair::Load(IReader& fs)
@@ -99,6 +96,6 @@ void SGameMtlPair::Load(IReader& fs)
     fs.r_stringZ(buf);
     CreatePSs(CollideParticles, *buf);
     fs.r_stringZ(buf);
-    // CreateMarks			(CollideMarks,*buf);
+
     CreateMarks(&*m_pCollideMarks, *buf);
 }
