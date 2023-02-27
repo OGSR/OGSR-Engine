@@ -118,9 +118,9 @@ void CALifeSpawnRegistry::load(IReader& file_stream, xrGUID* save_guid)
 	}
 #endif
 
-    chunk = file_stream.open_chunk(2);
-    load_data(m_artefact_spawn_positions, *chunk);
-    chunk->close();
+    //chunk = file_stream.open_chunk(2);
+    //load_data(m_artefact_spawn_positions, *chunk);
+    //chunk->close();
 
     chunk = file_stream.open_chunk(3);
     R_ASSERT2(chunk, "Spawn version mismatch - REBUILD SPAWN!");
