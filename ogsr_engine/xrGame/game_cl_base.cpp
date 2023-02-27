@@ -187,14 +187,6 @@ void game_cl_GameState::shedule_Update(u32 dt) { ISheduled::shedule_Update(dt); 
 
 void game_cl_GameState::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators) { HUD().GetUI()->StartStopMenu(pDialog, bDoHideIndicators); }
 
-void game_cl_GameState::sv_GameEventGen(NET_Packet& P)
-{
-    P.w_begin(M_EVENT);
-    P.w_u32(Level().timeServer());
-    P.w_u16(u16(GE_GAME_EVENT & 0xffff));
-    P.w_u16(0); // dest==0
-}
-
 void game_cl_GameState::sv_EventSend(NET_Packet& P) { Level().Send(P, net_flags(TRUE, TRUE)); }
 
 bool game_cl_GameState::IR_OnKeyboardPress(int dik)

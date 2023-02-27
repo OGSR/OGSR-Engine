@@ -42,7 +42,6 @@ protected:
     virtual float shedule_Scale();
     virtual bool shedule_Needed() { return true; };
 
-    void sv_GameEventGen(NET_Packet& P);
     void sv_EventSend(NET_Packet& P);
 
 public:

@@ -1004,18 +1004,7 @@ void CActor::shedule_Update(u32 DT)
     //------------------------------------------------
     {
         g_cl_CheckControls(mstate_wishful, NET_SavedAccel, NET_Jump, dt);
-        {
-            /*
-            if (mstate_real & mcJump)
-            {
-                NET_Packet	P;
-                u_EventGen(P, GE_ACTOR_JUMPING, ID());
-                P.w_sdir(NET_SavedAccel);
-                P.w_float(NET_Jump);
-                u_EventSend(P);
-            }
-            */
-        }
+
         g_cl_Orientate(mstate_real, dt);
         g_Orientate(mstate_real, dt);
 
