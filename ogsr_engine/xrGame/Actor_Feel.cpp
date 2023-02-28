@@ -102,6 +102,9 @@ BOOL CActor::CanPickItem(const CFrustum& frustum, const Fvector& from, CObject* 
     if (!item->getVisible())
         return FALSE;
 
+    if (smart_cast<CObject*>(ObjectWeLookingAt()) == item)
+        return TRUE;
+
     BOOL bOverlaped = FALSE;
     Fvector dir, to;
     item->Center(to);
