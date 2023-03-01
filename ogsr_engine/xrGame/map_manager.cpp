@@ -159,8 +159,10 @@ CMapLocation* CMapManager::AddUserLocation(const shared_str& spot_type, const sh
     u16 _id = Level().Server->PerformIDgen(0xffff);
     CMapLocation* l = xr_new<CMapLocation>(spot_type.c_str(), _id, true);
     l->InitUserSpot(level_name, position);
-#pragma todo( \
-    "KRodin: на данный момент юзерские метки используют дефицитные ID объектов. В конструктор класса CMapLocation можно смело отправлять u16(-1), а вот хранилище Locations() я бы трогать побоялся, т.к. не уверен, что из него не достают ID и что-то там с ним делают. В идеале конечно надо это всё перепилить.")
+
+    // "KRodin: на данный момент юзерские метки используют дефицитные ID объектов. В конструктор класса CMapLocation можно смело отправлять u16(-1),
+    // а вот хранилище Locations() я бы трогать побоялся, т.к. не уверен, что из него не достают ID и что-то там с ним делают. В идеале конечно надо это всё перепилить.
+
     Locations().emplace_back(SLocationKey(spot_type, _id));
     Locations().back().location = l;
     return l;

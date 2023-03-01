@@ -193,6 +193,19 @@ void map_add_object_spot_ser(u16 id, LPCSTR spot_type, LPCSTR text)
     ml->SetSerializable(true);
 }
 
+#include "graph_engine.h"
+
+u16 map_add_user_spot(u8 level_id, Fvector position, LPCSTR spot_type, LPCSTR text)
+{
+    shared_str level_name = ai().game_graph().header().level((GameGraph::_LEVEL_ID)level_id).name();
+
+    CMapLocation* ml = Level().MapManager().AddUserLocation(spot_type, level_name, position);
+    if (xr_strlen(text))
+        ml->SetHint(text);
+
+    return ml->ObjectID();
+}
+
 void map_change_spot_hint(u16 id, LPCSTR spot_type, LPCSTR text)
 {
     CMapLocation* ml = Level().MapManager().GetMapLocation(spot_type, id);
@@ -200,6 +213,15 @@ void map_change_spot_hint(u16 id, LPCSTR spot_type, LPCSTR text)
         return;
     ml->SetHint(text);
 }
+
+void map_change_spot_ser(u16 id, LPCSTR spot_type, BOOL v)
+{
+    CMapLocation* ml = Level().MapManager().GetMapLocation(spot_type, id);
+    if (!ml)
+        return;
+    ml->SetSerializable(!!v);
+}
+
 
 void map_remove_object_spot(u16 id, LPCSTR spot_type) { Level().MapManager().RemoveMapLocation(spot_type, id); }
 
@@ -894,7 +916,8 @@ void CLevel::script_register(lua_State* L)
             def("client_spawn_manager", &get_client_spawn_manager),
 
             def("map_add_object_spot_ser", &map_add_object_spot_ser), def("map_add_object_spot", &map_add_object_spot), def("map_remove_object_spot", &map_remove_object_spot),
-            def("map_has_object_spot", &map_has_object_spot), def("map_change_spot_hint", &map_change_spot_hint),
+            def("map_has_object_spot", &map_has_object_spot), def("map_change_spot_hint", &map_change_spot_hint), def("map_change_spot_ser", &map_change_spot_ser),
+            def("map_add_user_spot", &map_add_user_spot),
 
             def("start_stop_menu", &start_stop_menu), def("add_dialog_to_render", &add_dialog_to_render), def("remove_dialog_to_render", &remove_dialog_to_render),
             def("main_input_receiver", &main_input_receiver), def("hide_indicators", &hide_indicators), def("show_indicators", &show_indicators),
