@@ -103,6 +103,9 @@ void CSpaceRestrictor::net_Destroy()
     Level().space_restriction_manager().unregister_restrictor(this);
 }
 
+// Временно отключена оптимизация в попытке выяснить причину странных крашей в этом куске.
+#pragma optimize("", off)
+
 bool CSpaceRestrictor::inside(const Fsphere& sphere)
 {
     if (!actual())
@@ -200,6 +203,8 @@ void CSpaceRestrictor::prepare()
 
     actual(true);
 }
+
+#pragma optimize("", on)
 
 bool CSpaceRestrictor::prepared_inside(const Fsphere& sphere) const
 {
