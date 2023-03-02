@@ -242,22 +242,44 @@ bool CInventory::DropItem(CGameObject* pObj)
     switch (pIItem->m_eItemPlace)
     {
     case eItemPlaceBelt: {
-        ASSERT_FMT(InBelt(pIItem), "CInventory::DropItem: InBelt(pIItem): %s", pObj->cName().c_str());
-        m_belt.erase(std::find(m_belt.begin(), m_belt.end(), pIItem));
+        if (!InBelt(pIItem))
+        {
+            Msg("!!CInventory::DropItem: InBelt(pIItem): [%s]", pObj->cName().c_str());
+            pIItem->m_eItemPlace = eItemPlaceUndefined;
+        }
+        else
+        {
+            m_belt.erase(std::find(m_belt.begin(), m_belt.end(), pIItem));
+        }
+
         pIItem->object().processing_deactivate();
     }
     break;
     case eItemPlaceRuck: {
-        ASSERT_FMT(InRuck(pIItem), "CInventory::DropItem: InRuck(pIItem): %s", pObj->cName().c_str());
-        m_ruck.erase(std::find(m_ruck.begin(), m_ruck.end(), pIItem));
+        if (!InRuck(pIItem))
+        {
+            Msg("!!CInventory::DropItem: InRuck(pIItem): [%s]", pObj->cName().c_str());
+            pIItem->m_eItemPlace = eItemPlaceUndefined;
+        }
+        else
+        {
+            m_ruck.erase(std::find(m_ruck.begin(), m_ruck.end(), pIItem));
+        }
     }
     break;
     case eItemPlaceSlot: {
-        ASSERT_FMT(InSlot(pIItem), "CInventory::DropItem: InSlot(pIItem): [%s], id: [%u]", pObj->cName().c_str(), pObj->ID());
-        if (m_iActiveSlot == pIItem->GetSlot())
-            Activate(NO_ACTIVE_SLOT);
+        if (!InSlot(pIItem))
+        {
+            Msg("!!CInventory::DropItem: InSlot(pIItem): [%s], id: [%u]", pObj->cName().c_str(), pObj->ID());
+            pIItem->m_eItemPlace = eItemPlaceUndefined;
+        }
+        else
+        {
+            if (m_iActiveSlot == pIItem->GetSlot())
+                Activate(NO_ACTIVE_SLOT);
 
-        m_slots[pIItem->GetSlot()].m_pIItem = NULL;
+            m_slots[pIItem->GetSlot()].m_pIItem = nullptr;
+        }
 
         // хак для учета снятия брони - надо менять визуал актору
         pIItem->OnDrop();
