@@ -271,6 +271,7 @@ void IReader::r(void* p, int cnt)
 };
 
 constexpr bool is_term(const char a) { return a == '\r' || a == '\n'; }
+
 IC u32 IReader::advance_term_string()
 {
     u32 sz = 0;
@@ -283,11 +284,13 @@ IC u32 IReader::advance_term_string()
         {
             while (!eof() && is_term(src[Pos]))
                 Pos++;
+
             break;
         }
     }
     return sz;
 }
+
 void IReader::r_string(char* dest, u32 tgt_sz)
 {
     char* src = (char*)data + Pos;
@@ -296,38 +299,81 @@ void IReader::r_string(char* dest, u32 tgt_sz)
     strncpy(dest, src, sz);
     dest[sz] = 0;
 }
+
 void IReader::r_string(xr_string& dest)
 {
     char* src = (char*)data + Pos;
     u32 sz = advance_term_string();
     dest.assign(src, sz);
 }
+
 void IReader::r_stringZ(char* dest, u32 tgt_sz)
 {
     char* src = (char*)data;
-    u32 sz = xr_strlen(src);
-    R_ASSERT2(sz < tgt_sz, "Dest string less than needed.");
+
+    u32 sz = 0;
+
     while ((src[Pos] != 0) && (!eof()))
+    {
+        sz++;
+
+        R_ASSERT2(sz < (tgt_sz - 1), "Dest string less than needed.");
+
         *dest++ = src[Pos++];
+    }
+
     *dest = 0;
-    Pos++;
+
+    if (!eof())
+        Pos++;
 }
+
 void IReader::r_stringZ(shared_str& dest)
 {
-    dest = (char*)(data + Pos);
-    advance(dest.size() + 1);
+    char* src = (char*)(data + Pos);
+
+    int size = 0;
+    while ((src[size] != 0) && (!eof()))
+    {
+        size++;
+        Pos++;
+    }
+
+    std::string tmp;
+    tmp.assign(src, size);
+
+    dest = tmp.c_str();
+
+    //advance(size);
+
+    if (!eof())
+        Pos++;
 }
 void IReader::r_stringZ(xr_string& dest)
 {
-    dest = (char*)(data + Pos);
-    advance(dest.size() + 1);
-};
+    char* src = (char*)(data + Pos);
+
+    int size = 0;
+    while ((src[size] != 0) && (!eof()))
+    {
+        size++;
+        Pos++;
+    }
+
+    dest.assign(src, size);
+
+    //advance(size);
+
+    if (!eof())
+        Pos++;
+}
 
 void IReader::skip_stringZ()
 {
     char* src = (char*)data;
     while ((src[Pos] != 0) && (!eof()))
         Pos++;
+
     Pos++;
 };
 

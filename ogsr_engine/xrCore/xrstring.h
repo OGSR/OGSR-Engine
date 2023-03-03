@@ -93,13 +93,14 @@ public:
     shared_str& operator=(const char* rhs)
     {
         _set(rhs);
-        return reinterpret_cast<shared_str&>(*this);
+        return *this;
     }
     shared_str& operator=(shared_str const& rhs)
     {
         _set(rhs);
-        return reinterpret_cast<shared_str&>(*this);
+        return *this;
     }
+
     bool operator==(shared_str const& rhs) const { return _get() == rhs._get(); }
     bool operator!=(shared_str const& rhs) const { return _get() != rhs._get(); }
     bool operator<(shared_str const& rhs) const
@@ -129,8 +130,10 @@ public:
         str_value* tmp = p_;
         p_ = rhs.p_;
         rhs.p_ = tmp;
+
     }
     bool equal(const shared_str& rhs) const { return (p_ == rhs.p_); }
+
     shared_str& __cdecl sprintf(const char* format, ...)
     {
         string4096 buf;

@@ -18,7 +18,6 @@ str_value* str_container::dock(const char* value)
     // calc len
     u32 s_len = xr_strlen(value);
     u32 s_len_with_zero = (u32)s_len + 1;
-    // VERIFY	(HEADER+s_len_with_zero < 4096); //Зачем? Строки вполне могут быть длиной в разы больше.
 
     // setup find structure
     string16 header;
@@ -57,6 +56,7 @@ str_value* str_container::dock(const char* value)
         CopyMemory(result->value, value, s_len_with_zero);
         container.insert(result);
     }
+
     cs.Leave();
 
     return result;
