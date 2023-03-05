@@ -107,7 +107,7 @@ void CLevel::ClientReceive()
         }
         break;
         case M_SAVE_GAME: {
-            ClientSave();
+            //ClientSave();
         }
         break;
         case M_AUTH_CHALLENGE: {
