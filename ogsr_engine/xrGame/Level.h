@@ -220,7 +220,7 @@ public:
     void ClientReceive();
     void ClientSend();
     void ClientSave();
-    u32 Objects_net_Save(NET_Packet* _Packet, u32 start, u32 count);
+    
     virtual void Send(NET_Packet& P, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
 
     void g_cl_Spawn(LPCSTR name, u8 rp, u16 flags, Fvector pos); // only ask server

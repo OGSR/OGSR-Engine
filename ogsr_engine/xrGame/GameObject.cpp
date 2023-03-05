@@ -105,7 +105,10 @@ void CGameObject::reinit()
         pair.second->m_callback.clear();
 }
 
-void CGameObject::reload(LPCSTR section) { m_script_clsid = object_factory().script_clsid(CLS_ID); }
+void CGameObject::reload(LPCSTR section)
+{
+    m_script_clsid = object_factory().script_clsid(CLS_ID);
+}
 
 void CGameObject::net_Destroy()
 {
@@ -313,6 +316,8 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
     if (pSettings->line_exist(cNameSect(), "use_ai_locations"))
         SetUseAI_Locations(!!pSettings->r_bool(cNameSect(), "use_ai_locations"));
 
+    load_upgrades(DC);
+
     reload(*cNameSect());
     CScriptBinder::reload(*cNameSect());
 
@@ -329,7 +334,7 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
     {
         //		Msg				("client data is present for object [%d][%s], load is processed",ID(),*cName());
         IReader ireader = IReader(&*E->client_data.begin(), E->client_data.size());
-        net_Load(ireader);
+        net_Load(ireader); // вызов load(IReader& input_packet)
     }
     else
     {
@@ -383,6 +388,7 @@ BOOL CGameObject::net_Spawn(CSE_Abstract* DC)
             if (UsedAI_Locations() && ai().level_graph().inside(ai_location().level_vertex_id(), Position()) && can_validate_position_on_spawn())
                 Position().y = EPS_L + ai().level_graph().vertex_plane_y(*ai_location().level_vertex(), Position().x, Position().z);
         }
+
         inherited::net_Spawn(DC);
     }
 

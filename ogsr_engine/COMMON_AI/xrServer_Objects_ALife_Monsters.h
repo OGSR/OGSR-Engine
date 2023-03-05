@@ -97,7 +97,6 @@ virtual bool natural_weapon() const { return false; }
 virtual bool natural_detector() const { return false; }
 
 #ifdef XRGAME_EXPORTS
-u32 dwfGetItemCost(CSE_ALifeInventoryItem* tpALifeInventoryItem);
 virtual void spawn_supplies();
 virtual void add_online(const bool& update_registries);
 virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, const bool& update_registries);

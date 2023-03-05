@@ -266,7 +266,7 @@ BOOL CSE_Abstract::Spawn_Read(NET_Packet& tNetPacket)
 void CSE_Abstract::load(NET_Packet& tNetPacket)
 {
     CPureServerObject::load(tNetPacket);
-    u16 client_data_size = (m_wVersion > 93) ? tNetPacket.r_u16() : tNetPacket.r_u8(); //не может быть больше 256 байт
+    u16 client_data_size = (m_wVersion > 93) ? tNetPacket.r_u16() : tNetPacket.r_u8();
     if (client_data_size > 0)
     {
 #ifdef DEBUG

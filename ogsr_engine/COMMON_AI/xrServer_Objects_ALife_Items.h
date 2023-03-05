@@ -44,8 +44,7 @@ public:
 float m_fCondition;
 float m_fMass;
 u32 m_dwCost;
-s32 m_iHealthValue;
-s32 m_iFoodValue;
+
 float m_fDeteriorationValue;
 CSE_ALifeObject* m_self{};
 u32 m_last_update_time;
@@ -151,8 +150,7 @@ u8 wpn_state;
 u8 ammo_type;
 u16 a_current;
 u16 a_elapsed;
-float m_fHitPower;
-ALife::EHitType m_tHitType;
+
 LPCSTR m_caAmmoSections;
 u32 m_dwAmmoAvailable{};
 Flags8 m_addon_flags;
@@ -165,8 +163,7 @@ virtual ~CSE_ALifeItemWeapon();
 virtual void OnEvent(NET_Packet& P, u16 type, u32 time, ClientID sender);
 virtual u32 ef_main_weapon_type() const;
 virtual u32 ef_weapon_type() const;
-u8 get_slot();
-u16 get_ammo_limit();
+
 u16 get_ammo_total();
 u16 get_ammo_elapsed();
 u16 get_ammo_magsize();

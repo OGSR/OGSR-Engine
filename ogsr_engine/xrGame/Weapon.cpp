@@ -625,8 +625,10 @@ BOOL CWeapon::net_Spawn(CSE_Abstract* DC)
 
     // iAmmoCurrent					= E->a_current;
     iAmmoElapsed = E->a_elapsed;
+
     m_flagsAddOnState = E->m_addon_flags.get();
     m_ammoType = E->ammo_type;
+
     SetState(E->wpn_state);
     SetNextState(E->wpn_state);
 

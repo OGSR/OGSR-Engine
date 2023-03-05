@@ -35,16 +35,6 @@ CSE_ALifeInventoryItem::CSE_ALifeInventoryItem(LPCSTR caSection)
     if (pSettings->line_exist(caSection, "condition"))
         m_fCondition = pSettings->r_float(caSection, "condition");
 
-    if (pSettings->line_exist(caSection, "health_value"))
-        m_iHealthValue = pSettings->r_s32(caSection, "health_value");
-    else
-        m_iHealthValue = 0;
-
-    if (pSettings->line_exist(caSection, "food_value"))
-        m_iFoodValue = pSettings->r_s32(caSection, "food_value");
-    else
-        m_iFoodValue = 0;
-
     m_fDeteriorationValue = 0;
 
     m_last_update_time = 0;
@@ -316,9 +306,8 @@ CSE_ALifeItemWeapon::CSE_ALifeItemWeapon(LPCSTR caSection) : CSE_ALifeItem(caSec
     wpn_state = 0;
     ammo_type = 0;
 
-    m_fHitPower = pSettings->r_float(caSection, "hit_power");
-    m_tHitType = ALife::g_tfString2HitType(pSettings->r_string(caSection, "hit_type"));
     m_caAmmoSections = pSettings->r_string(caSection, "ammo_class");
+
     if (pSettings->section_exist(caSection) && pSettings->line_exist(caSection, "visual"))
         set_visual(pSettings->r_string(caSection, "visual"));
 
@@ -327,6 +316,7 @@ CSE_ALifeItemWeapon::CSE_ALifeItemWeapon(LPCSTR caSection) : CSE_ALifeItem(caSec
     m_scope_status = (EWeaponAddonStatus)pSettings->r_s32(s_name, "scope_status");
     m_silencer_status = (EWeaponAddonStatus)pSettings->r_s32(s_name, "silencer_status");
     m_grenade_launcher_status = (EWeaponAddonStatus)pSettings->r_s32(s_name, "grenade_launcher_status");
+
     m_ef_main_weapon_type = READ_IF_EXISTS(pSettings, r_u32, caSection, "ef_main_weapon_type", u32(-1));
     m_ef_weapon_type = READ_IF_EXISTS(pSettings, r_u32, caSection, "ef_weapon_type", u32(-1));
 }
@@ -412,10 +402,6 @@ void CSE_ALifeItemWeapon::OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, Cl
     break;
     }
 }
-
-u8 CSE_ALifeItemWeapon::get_slot() { return ((u8)pSettings->r_u8(s_name, "slot")); }
-
-u16 CSE_ALifeItemWeapon::get_ammo_limit() { return (u16)pSettings->r_u16(s_name, "ammo_limit"); }
 
 u16 CSE_ALifeItemWeapon::get_ammo_total() { return ((u16)a_current); }
 
@@ -814,7 +800,10 @@ bool CSE_ALifeItemBolt::used_ai_locations() const { return false; }
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeItemCustomOutfit
 ////////////////////////////////////////////////////////////////////////////
-CSE_ALifeItemCustomOutfit::CSE_ALifeItemCustomOutfit(LPCSTR caSection) : CSE_ALifeItem(caSection) { m_ef_equipment_type = pSettings->r_u32(caSection, "ef_equipment_type"); }
+CSE_ALifeItemCustomOutfit::CSE_ALifeItemCustomOutfit(LPCSTR caSection) : CSE_ALifeItem(caSection)
+{
+    m_ef_equipment_type = pSettings->r_u32(caSection, "ef_equipment_type");
+}
 
 CSE_ALifeItemCustomOutfit::~CSE_ALifeItemCustomOutfit() {}
 
