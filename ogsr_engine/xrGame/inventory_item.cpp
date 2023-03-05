@@ -587,14 +587,6 @@ bool CInventoryItem::CanTrade() const
     return (res && m_flags.test(FCanTrade) && !IsQuestItem());
 }
 
-float CInventoryItem::GetKillMsgXPos() const { return READ_IF_EXISTS(pSettings, r_float, m_object->cNameSect(), "kill_msg_x", 0.0f); }
-
-float CInventoryItem::GetKillMsgYPos() const { return READ_IF_EXISTS(pSettings, r_float, m_object->cNameSect(), "kill_msg_y", 0.0f); }
-
-float CInventoryItem::GetKillMsgWidth() const { return READ_IF_EXISTS(pSettings, r_float, m_object->cNameSect(), "kill_msg_width", 0.0f); }
-
-float CInventoryItem::GetKillMsgHeight() const { return READ_IF_EXISTS(pSettings, r_float, m_object->cNameSect(), "kill_msg_height", 0.0f); }
-
 int CInventoryItem::GetGridWidth() const { return (int)m_icon_params.grid_width; }
 
 int CInventoryItem::GetGridHeight() const { return (int)m_icon_params.grid_height; }
