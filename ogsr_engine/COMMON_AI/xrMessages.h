@@ -68,9 +68,6 @@ enum
     GE_WPN_AMMO_ADD,
     GE_WPN_STATE_CHANGE,
 
-    GE_ADDON_ATTACH,
-    GE_ADDON_DETACH,
-
     GE_GRENADE_EXPLODE,
     GE_INV_ACTION, // a action beign taken on inventory
 
