@@ -192,12 +192,18 @@ bool CCarLights::IsLight(u16 bone_id)
 }
 bool CCarLights::findLight(u16 bone_id, SCarLight*& light)
 {
-    LIGHTS_I i, e = m_lights.end();
     SCarLight find_light;
     find_light.bone_id = bone_id;
-    i = std::find_if(m_lights.begin(), e, SFindLightPredicate(&find_light));
-    light = *i;
-    return i != e; //-V783
+
+    auto e = m_lights.end();
+    auto i = std::find_if(m_lights.begin(), e, SFindLightPredicate(&find_light));
+    if (i != e)
+    {
+        light = *i;
+        return true;
+    }
+    else
+        return false;
 }
 CCarLights::~CCarLights()
 {
