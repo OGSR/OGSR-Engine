@@ -1150,6 +1150,12 @@ void CLocatorAPI::file_rename(LPCSTR src, LPCSTR dest, bool bOwerwrite)
     }
 }
 
+int CLocatorAPI::file_length(LPCSTR src)
+{
+    auto I = file_find_it(src);
+    return I != files.end() ? I->size_real : -1;
+}
+
 bool CLocatorAPI::path_exist(LPCSTR path)
 {
     PathPairIt P = pathes.find(path);

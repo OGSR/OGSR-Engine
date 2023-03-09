@@ -124,6 +124,7 @@ public:
     void file_delete(LPCSTR full_path) { file_delete(0, full_path); }
     void file_copy(LPCSTR src, LPCSTR dest);
     void file_rename(LPCSTR src, LPCSTR dest, bool bOwerwrite = true);
+    int file_length(LPCSTR src);
 
     u32 get_file_age(LPCSTR nm);
 

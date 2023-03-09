@@ -311,6 +311,7 @@ void fs_registrator::script_register(lua_State* L)
                   .def("application_dir", &get_engine_dir)
 
                   .def("file_rename", &CLocatorAPI::file_rename)
+                  .def("file_length", &CLocatorAPI::file_length)
                   .def("file_copy", &CLocatorAPI::file_copy)
 
                   .def("exist", (const CLocatorAPI::file* (CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::exist))
