@@ -44,6 +44,7 @@ public:
     u32 MODE;
     u32 dwFrame;
     u32 dwFrameSmooth{};
+    bool skip{};
 
     //
     xr_vector<Item> track; // everything what touches

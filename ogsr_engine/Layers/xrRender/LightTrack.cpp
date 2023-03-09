@@ -177,6 +177,24 @@ void CROS_impl::update(IRenderable* O)
 
     CObject* _object = dynamic_cast<CObject*>(O);
 
+    if (skip)
+    {
+        return;
+    }
+
+    if (isnan(_object->renderable.xform._41) || 
+        isnan(_object->renderable.xform._42) ||
+        isnan(_object->renderable.xform._43))
+    {
+        if (!skip)
+        {
+            Msg("~ NaN position for obj id=%d sect [%s] name [%s]. Skip!", _object->ID(), _object->cNameSect().c_str(), _object->cName().c_str());
+            skip = true;
+        }
+
+        return;
+    }
+
     // select sample, randomize position inside object
     vis_data& vis = O->renderable.visual->getVisData();
     Fvector position;
