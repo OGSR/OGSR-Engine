@@ -156,7 +156,7 @@ bool InventoryUtilities::FreeRoom_inBelt(TIItemContainer& item_list, PIItem _ite
                 }
             }
         }
-/*
+
         //разместить элемент на найденном месте
         if (found_place)
         {
@@ -168,8 +168,8 @@ bool InventoryUtilities::FreeRoom_inBelt(TIItemContainer& item_list, PIItem _ite
                 }
             }
         }
-*/
     }
+
     // remove
     item_list.erase(std::remove(item_list.begin(), item_list.end(), _item), item_list.end());
 
