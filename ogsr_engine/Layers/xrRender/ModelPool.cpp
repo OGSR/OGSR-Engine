@@ -235,6 +235,11 @@ dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
 
         if (0 == Base)
         {
+            const bool prefetch = Device.dwPrecacheFrame > 0;
+
+            if (!prefetch)
+                Msg("CModelPool::Create name=%s", low_name);
+
             // 2. If not found
             bAllowChildrenDuplicate = FALSE;
             if (data)
@@ -243,6 +248,7 @@ dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
                 Base = Instance_Load(low_name, TRUE);
             bAllowChildrenDuplicate = TRUE;
         }
+
         // 3. If found - return (cloned) reference
         dxRender_Visual* Model = Instance_Duplicate(Base);
         Registry.insert(mk_pair(Model, low_name));
@@ -271,7 +277,7 @@ void CModelPool::refresh_prefetch(LPCSTR low_name)
         shared_str fname;
         bool is_global = !!FS.exist("$game_meshes$", *fname.sprintf("%s.ogf", low_name));
         if (is_global)
-            vis_prefetch_ini->w_float("prefetch", low_name, 1.f);
+            vis_prefetch_ini->w_float("prefetch", low_name, 2.f);
     }
 }
 
@@ -593,7 +599,7 @@ void CModelPool::process_vis_prefetch()
     std::vector<std::string> expired;
     for (auto& it : sect.Data)
     {
-        float need = (float)atof(it.second.c_str()) * 0.5f; // делить пополам
+        float need = (float)atof(it.second.c_str()) * 0.8f; // скорость уменьшение популярности визуала
         // -0.5..+0.5 - добавить случайность, чтобы не было общего выключения
         float rnd = Random.randF() - 0.5f;
         float val = need + rnd * 0.1f;
