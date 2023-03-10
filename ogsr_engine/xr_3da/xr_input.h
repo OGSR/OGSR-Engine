@@ -90,7 +90,7 @@ public:
     // Возвращает символ по коду клавиши. Учитывается переключение языка, зажатый shift и caps lock
     // ( caps lock учитывается только в неэксклюзивном режиме, из-за его особенностей )
     // В случае неудачи функция возвращает 0.
-    char DikToChar(int dik);
+    u16 DikToChar(const int dik, const bool utf);
 
     void clip_cursor(bool clip);
 };

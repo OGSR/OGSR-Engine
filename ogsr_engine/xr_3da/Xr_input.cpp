@@ -516,7 +516,7 @@ IInputReceiver* CInput::CurrentIR()
         return NULL;
 }
 
-char CInput::DikToChar(int dik)
+u16 CInput::DikToChar(const int dik, const bool utf)
 {
     switch (dik)
     {
@@ -535,7 +535,7 @@ char CInput::DikToChar(int dik)
     case DIK_NUMPADPERIOD: return '.';
     //
     default:
-        u8 State[256] = {};
+        u8 State[256]{};
         if (this->is_exclusive_mode)
         { // GetKeyboardState в данном случае не используем, потому что оно очень глючно работает в эксклюзивном режиме
             if (this->iGetAsyncKeyState(DIK_LSHIFT) || this->iGetAsyncKeyState(DIK_RSHIFT))
@@ -546,17 +546,39 @@ char CInput::DikToChar(int dik)
             if (!GetKeyboardState(State))
                 return 0;
         }
-        u16 symbol;
-        if (this->is_exclusive_mode)
+
+        if (utf)
         {
-            auto layout = GetKeyboardLayout(GetWindowThreadProcessId(gGameWindow, nullptr));
-            if (ToAsciiEx(MapVirtualKeyEx(dik, MAPVK_VSC_TO_VK, layout), dik, State, &symbol, 0, layout) == 1)
-                return static_cast<char>(symbol);
+            WCHAR symbol{};
+            if (this->is_exclusive_mode)
+            {
+                auto layout = GetKeyboardLayout(GetWindowThreadProcessId(gGameWindow, nullptr));
+                if (ToUnicodeEx(MapVirtualKeyEx(dik, MAPVK_VSC_TO_VK, layout), dik, State, &symbol, 1, 0, layout) != 1)
+                    return 0;
+            }
+            else
+            {
+                if (ToUnicode(MapVirtualKey(dik, MAPVK_VSC_TO_VK), dik, State, &symbol, 1, 0) != 1)
+                    return 0;
+            }
+            char output[2]{}; // output buffer where the utf-8 string will be written
+            WideCharToMultiByte(CP_UTF8, 0, &symbol, 1, output, sizeof output, nullptr, nullptr);
+            return *reinterpret_cast<u16*>(&output[0]);
         }
         else
         {
-            if (ToAscii(MapVirtualKey(dik, MAPVK_VSC_TO_VK), dik, State, &symbol, 0) == 1)
-                return static_cast<char>(symbol);
+            u16 symbol{};
+            if (this->is_exclusive_mode)
+            {
+                auto layout = GetKeyboardLayout(GetWindowThreadProcessId(gGameWindow, nullptr));
+                if (ToAsciiEx(MapVirtualKeyEx(dik, MAPVK_VSC_TO_VK, layout), dik, State, &symbol, 0, layout) == 1)
+                    return symbol;
+            }
+            else
+            {
+                if (ToAscii(MapVirtualKey(dik, MAPVK_VSC_TO_VK), dik, State, &symbol, 0) == 1)
+                    return symbol;
+            }
         }
     }
 

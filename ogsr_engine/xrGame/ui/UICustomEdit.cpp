@@ -119,7 +119,6 @@ bool CUICustomEdit::OnKeyboard(int dik, EUIMessages keyboard_action)
 
 bool CUICustomEdit::KeyPressed(int dik)
 {
-    char out_me = 0;
     bool bChanged = false;
 
     switch (dik)
@@ -157,15 +156,15 @@ bool CUICustomEdit::KeyPressed(int dik)
         m_lines.DelChar();
         bChanged = true;
         break;
-    default: out_me = pInput->DikToChar(dik);
-    }
-
-    if (out_me)
-    {
-        if (!m_bNumbersOnly || (out_me >= '0' && out_me <= '9') || (m_bFloatNumbers && out_me == '.' && !strchr(m_lines.GetText(), '.')))
+    default:
+        const u16 out_me = pInput->DikToChar(dik, m_lines.GetFont()->IsMultibyte());
+        if (out_me)
         {
-            AddChar(out_me);
-            bChanged = true;
+            if (!m_bNumbersOnly || (out_me >= '0' && out_me <= '9') || (m_bFloatNumbers && out_me == '.' && !strchr(m_lines.GetText(), '.')))
+            {
+                AddChar(out_me);
+                bChanged = true;
+            }
         }
     }
 
@@ -175,7 +174,7 @@ bool CUICustomEdit::KeyPressed(int dik)
     return true;
 }
 
-void CUICustomEdit::AddChar(char c)
+void CUICustomEdit::AddChar(const u16 c)
 {
     if (xr_strlen(m_lines.GetText()) >= m_max_symb_count)
         return;

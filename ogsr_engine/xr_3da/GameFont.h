@@ -91,6 +91,7 @@ public:
     float SizeOf_(LPCSTR s);
     float SizeOf_(const wide_char* wsStr);
     float SizeOf_(const char cChar); // only ANSII
+    float SizeOf_(const u16 cChar); // only UTF-8
 
     float CurrentHeight_();
 

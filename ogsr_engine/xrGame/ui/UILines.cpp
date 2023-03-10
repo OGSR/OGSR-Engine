@@ -86,10 +86,19 @@ void CUILines::SetText(LPCSTR text)
     MoveCursorToEnd();
 }
 
-void CUILines::AddCharAtCursor(char ch)
+void CUILines::AddCharAtCursor(const u16 ch)
 {
     uFlags.set(flNeedReparse, TRUE);
-    m_text.insert(m_text.begin() + m_iCursorPos, ch);
+    if (m_pFont->IsMultibyte() && ch > std::numeric_limits<char>::max())
+    {
+        auto byte = reinterpret_cast<const char*>(&ch);
+        m_text.insert(m_text.begin() + m_iCursorPos, *byte);
+        m_text.insert(m_text.begin() + (++m_iCursorPos), *(++byte));
+    }
+    else
+    {
+        m_text.insert(m_text.begin() + m_iCursorPos, ch);
+    }
     IncCursorPos();
 }
 

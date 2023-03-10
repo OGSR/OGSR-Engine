@@ -48,7 +48,7 @@ protected:
     bool KeyPressed(int dik);
     bool KeyReleased(int dik);
 
-    virtual void AddChar(char c);
+    virtual void AddChar(const u16 c);
 
     bool m_bInputFocus;
 
