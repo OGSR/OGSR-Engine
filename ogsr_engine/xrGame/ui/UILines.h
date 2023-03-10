@@ -37,7 +37,6 @@ public:
     // additional
     void SetCursorColor(u32 color) { m_dwCursorColor = color; }
     void AddCharAtCursor(const u16 ch);
-    void DelChar();
     void DelLeftChar();
     void MoveCursorToEnd();
 
@@ -88,6 +87,7 @@ protected:
     bool m_bDrawCursor;
 
     Text m_text;
+    std::vector<bool> m_text_mask;
 
     ETextAlignment m_eTextAlign;
     EVTextAlignment m_eVTextAlign;

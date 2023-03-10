@@ -148,12 +148,9 @@ bool CUICustomEdit::KeyPressed(int dik)
         GetMessageTarget()->SendMessage(this, EDIT_TEXT_COMMIT, NULL);
         break;
     case DIK_BACKSPACE:
-        m_lines.DelLeftChar();
-        bChanged = true;
-        break;
     case DIK_DELETE:
     case DIKEYBOARD_DELETE:
-        m_lines.DelChar();
+        m_lines.DelLeftChar();
         bChanged = true;
         break;
     default:

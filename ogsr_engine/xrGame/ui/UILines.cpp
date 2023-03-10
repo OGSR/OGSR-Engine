@@ -75,12 +75,15 @@ void CUILines::SetText(LPCSTR text)
             return;
 
         m_text = text;
+        m_text_mask.clear();
 
         uFlags.set(flNeedReparse, TRUE);
     }
     else
     {
         m_text = "";
+        m_text_mask.clear();
+
         Reset();
     }
     MoveCursorToEnd();
@@ -88,39 +91,45 @@ void CUILines::SetText(LPCSTR text)
 
 void CUILines::AddCharAtCursor(const u16 ch)
 {
-    uFlags.set(flNeedReparse, TRUE);
     if (m_pFont->IsMultibyte() && ch > std::numeric_limits<char>::max())
     {
         auto byte = reinterpret_cast<const char*>(&ch);
-        m_text.insert(m_text.begin() + m_iCursorPos, *byte);
-        m_text.insert(m_text.begin() + (++m_iCursorPos), *(++byte));
+        m_text_mask.insert(m_text_mask.begin() + m_iCursorPos, true);
+        m_text.insert(m_text.begin() + (m_iCursorPos++), *byte);
+        m_text_mask.insert(m_text_mask.begin() + m_iCursorPos, true);
+        m_text.insert(m_text.begin() + (m_iCursorPos++), *(++byte));
     }
     else
     {
-        m_text.insert(m_text.begin() + m_iCursorPos, ch);
+        m_text_mask.insert(m_text_mask.begin() + m_iCursorPos, false);
+        m_text.insert(m_text.begin() + (m_iCursorPos++), ch);
     }
-    IncCursorPos();
+
+    uFlags.set(flNeedReparse, TRUE);
 }
 
 void CUILines::MoveCursorToEnd() { m_iCursorPos = (int)m_text.size(); }
 
-void CUILines::DelChar()
-{
-    const int sz = (int)m_text.size();
-    if (m_iCursorPos < sz)
-    {
-        m_text.erase(m_text.begin() + m_iCursorPos);
-        uFlags.set(flNeedReparse, TRUE);
-    }
-}
-
 void CUILines::DelLeftChar()
 {
-    if (m_iCursorPos > 0)
+    if (m_text.empty() || m_iCursorPos <= 0)
+        return;
+
+    if (!m_text_mask.empty() && m_text_mask.at(m_iCursorPos - 1))
     {
-        DecCursorPos();
-        DelChar();
+        m_text.erase(m_text.begin() + m_iCursorPos - 2, m_text.begin() + m_iCursorPos);
+        m_text_mask.erase(m_text_mask.begin() + m_iCursorPos - 2, m_text_mask.begin() + m_iCursorPos);
+        m_iCursorPos -= 2;
     }
+    else
+    {
+        m_text.erase(m_text.begin() + m_iCursorPos - 1);
+        if (!m_text_mask.empty()) // такое может быть если текст добавили через SetText из скрипта, т.к. в этом случае сложно определить кодировку символов.
+            m_text_mask.erase(m_text_mask.begin() + m_iCursorPos - 1);
+        --m_iCursorPos;
+    }
+
+    uFlags.set(flNeedReparse, TRUE);
 }
 
 LPCSTR CUILines::GetText() { return m_text.c_str(); }
@@ -704,25 +713,24 @@ void CUILines::IncCursorPos()
 {
     const int txt_len = (int)m_text.size();
 
-    if (0 == txt_len)
+    if (0 == txt_len || m_iCursorPos >= txt_len)
         return;
 
-    if (m_iCursorPos < txt_len)
+    if (m_text_mask.at(m_iCursorPos))
+        m_iCursorPos += 2;
+    else
         m_iCursorPos++;
-
-    return;
 }
 
 void CUILines::DecCursorPos()
 {
-    const int txt_len = (int)m_text.size();
-
-    if (0 == txt_len)
+    if (m_text.empty() || m_iCursorPos <= 0)
         return;
 
-    if (m_iCursorPos > 0)
-        m_iCursorPos--;
-    return;
+    if (m_text_mask.at(m_iCursorPos - 1))
+        m_iCursorPos -= 2;
+    else
+        --m_iCursorPos;
 }
 
 void CUILines::UpdateCursor()
