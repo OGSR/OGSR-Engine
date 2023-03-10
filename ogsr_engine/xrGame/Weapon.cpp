@@ -669,6 +669,12 @@ BOOL CWeapon::net_Spawn(CSE_Abstract* DC)
 
     VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
+    if (m_pPhysicsShell)
+    {
+        float frc = 5.f * EffectiveGravity() * m_pPhysicsShell->getMass();
+        m_pPhysicsShell->applyForce(frc, frc*0.5, 0.f);
+    }
+
     return bResult;
 }
 

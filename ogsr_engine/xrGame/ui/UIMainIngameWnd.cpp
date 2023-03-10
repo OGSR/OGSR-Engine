@@ -151,6 +151,7 @@ void CUIMainIngameWnd::Init()
 
     UIWeaponBack.AttachChild(&UIWeaponIcon);
     xml_init.InitStatic(uiXml, "static_wpn_icon", 0, &UIWeaponIcon);
+    static_wpn_icon_scale = uiXml.ReadAttribFlt("static_wpn_icon", 0, "scale", 1.0);
     UIWeaponIcon.SetShader(GetEquipmentIconsShader());
     UIWeaponIcon_rect = UIWeaponIcon.GetWndRect();
     //---------------------------------------------------------
@@ -322,8 +323,8 @@ void CUIMainIngameWnd::SetAmmoIcon(const shared_str& sect_name)
 
     float iGridWidth = icon_params.grid_width;
 
-    float w = std::clamp(iGridWidth, 1.f, 2.f) * INV_GRID_WIDTH;
-    float h = INV_GRID_HEIGHT;
+    float w = std::clamp(iGridWidth, 1.f, 2.f) * INV_GRID_WIDTH * static_wpn_icon_scale;
+    float h = INV_GRID_HEIGHT * static_wpn_icon_scale;
     w *= UI()->get_current_kx();
 
     float x = UIWeaponIcon_rect.x1;
