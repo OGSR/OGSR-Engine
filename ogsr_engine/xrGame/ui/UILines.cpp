@@ -76,6 +76,20 @@ void CUILines::SetText(LPCSTR text)
 
         m_text = text;
         m_text_mask.clear();
+        for (auto it = m_text.cbegin(), it_end = m_text.cend(); it != it_end; ++it)
+        {
+            if (m_pFont->IsMultibyte() && *reinterpret_cast<const unsigned char*>(&*it) > std::numeric_limits<char>::max() &&
+                (it + 1) != it_end) // Костыльный поиск юникодных символов. Но для хрея пойдет, тут в рендере юникодного текста и так костыль на костыле
+            {
+                m_text_mask.emplace_back(true);
+                m_text_mask.emplace_back(true);
+                ++it;
+            }
+            else
+            {
+                m_text_mask.emplace_back(false);
+            }
+        }
 
         uFlags.set(flNeedReparse, TRUE);
     }
@@ -115,7 +129,7 @@ void CUILines::DelLeftChar()
     if (m_text.empty() || m_iCursorPos <= 0)
         return;
 
-    if (!m_text_mask.empty() && m_text_mask.at(m_iCursorPos - 1))
+    if (m_text_mask.at(m_iCursorPos - 1))
     {
         m_text.erase(m_text.begin() + m_iCursorPos - 2, m_text.begin() + m_iCursorPos);
         m_text_mask.erase(m_text_mask.begin() + m_iCursorPos - 2, m_text_mask.begin() + m_iCursorPos);
@@ -124,8 +138,7 @@ void CUILines::DelLeftChar()
     else
     {
         m_text.erase(m_text.begin() + m_iCursorPos - 1);
-        if (!m_text_mask.empty()) // такое может быть если текст добавили через SetText из скрипта, т.к. в этом случае сложно определить кодировку символов.
-            m_text_mask.erase(m_text_mask.begin() + m_iCursorPos - 1);
+        m_text_mask.erase(m_text_mask.begin() + m_iCursorPos - 1);
         --m_iCursorPos;
     }
 
