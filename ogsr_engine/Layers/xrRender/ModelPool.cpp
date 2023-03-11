@@ -420,12 +420,22 @@ void CModelPool::Prefetch()
     CTimer timer;
     timer.Start();
     u32 cnt = 0;
-    for (auto I = sect.Data.begin(); I != sect.Data.end(); I++)
+    for (auto I = sect.Ordered_Data.begin(); I != sect.Ordered_Data.end(); I++)
     {
-        const CInifile::Item& item = *I;
-        dxRender_Visual* V = Create(item.first.c_str());
-        Delete(V, FALSE);
-        cnt++;
+        const shared_str& low_name = (*I).first;
+        if (!Instance_Find(low_name.c_str()))
+        {
+            shared_str fname;
+            fname.sprintf("%s.ogf", low_name.c_str());
+            if (FS.exist("$game_meshes$", fname.c_str()))
+            {
+                dxRender_Visual* V = Create(low_name.c_str());
+                Delete(V, FALSE);
+                cnt++;
+            }
+            else
+                Msg("! [%s]: %s not found in $game_meshes$", __FUNCTION__, fname.c_str());
+        }
     }
     begin_prefetch1(false);
 
@@ -437,7 +447,7 @@ void CModelPool::Prefetch()
 
     now_prefetch2 = true;
     sect = vis_prefetch_ini->r_section("prefetch");
-    for (const auto& it : sect.Data)
+    for (const auto& it : sect.Ordered_Data)
     {
         const shared_str& low_name = it.first;
         if (!Instance_Find(low_name.c_str()))

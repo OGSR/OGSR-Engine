@@ -22,7 +22,7 @@ void IGame_ObjectPool::prefetch()
     CTimer T;
     T.Start();
     Render->models_begin_prefetch1(true);
-    for (const auto& item : sect.Data)
+    for (const auto& item : sect.Ordered_Data)
     {
         CLASS_ID CLS = pSettings->r_clsid(item.first.c_str(), "class");
         p_count++;
