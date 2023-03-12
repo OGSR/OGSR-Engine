@@ -22,8 +22,6 @@ CGameFont::CGameFont(LPCSTR section, u32 flags)
     fXStep = 0.0f;
     fYStep = 0.0f;
     uFlags = flags;
-    nNumChars = 0x100;
-    TCMap = NULL;
 
     Initialize(pSettings->r_string(section, "shader"), pSettings->r_string(section, "texture"));
 
@@ -46,8 +44,6 @@ CGameFont::CGameFont(LPCSTR shader, LPCSTR texture, u32 flags)
     fXStep = 0.0f;
     fYStep = 0.0f;
     uFlags = flags;
-    nNumChars = 0x100;
-    TCMap = NULL;
 
     Initialize(shader, texture);
 }
@@ -81,13 +77,12 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
     CInifile _ini{fn, TRUE};
     CInifile* ini = &_ini;
 
-    nNumChars = 0x100;
-    TCMap = (Fvector*)xr_realloc((void*)TCMap, nNumChars * sizeof(Fvector));
+    const bool is_mb = ini->section_exist("mb_symbol_coords");
+    const u32 nNumChars = is_mb ? (std::numeric_limits<unsigned short>::max() + 1) : (std::numeric_limits<unsigned char>::max() + 1);
+    TCMap = std::make_unique<Fvector[]>(nNumChars);
 
-    if (ini->section_exist("mb_symbol_coords"))
+    if (is_mb)
     {
-        nNumChars = 0x10000;
-        TCMap = (Fvector*)xr_realloc((void*)TCMap, nNumChars * sizeof(Fvector));
         uFlags |= fsMultibyte;
         fHeight = ini->r_float("mb_symbol_coords", "height");
 
@@ -187,9 +182,6 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
 
 CGameFont::~CGameFont()
 {
-    if (TCMap)
-        xr_free(TCMap);
-
     // Shading
     RenderFactory->DestroyFontRender(pFontRender);
 }

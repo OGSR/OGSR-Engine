@@ -38,7 +38,7 @@ protected:
     float fCurrentX, fCurrentY;
     Fvector2 vInterval;
 
-    Fvector* TCMap;
+    std::unique_ptr<Fvector[]> TCMap;
     float fHeight;
     float fXStep;
     float fYStep;
@@ -48,8 +48,6 @@ protected:
     xr_vector<String> strings;
 
     IFontRender* pFontRender;
-
-    u32 nNumChars;
 
     u32 uFlags;
 
