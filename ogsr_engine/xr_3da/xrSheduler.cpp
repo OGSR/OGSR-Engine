@@ -6,7 +6,9 @@
 
 float psShedulerCurrent = 10.f;
 float psShedulerTarget = 10.f;
-const float psShedulerReaction = 0.1f;
+float psShedulerMax = 10.f;
+constexpr float psShedulerReaction = 1.f; // 0.1f;
+
 BOOL g_bSheduleInProgress = FALSE;
 
 //-------------------------------------------------------------------------------------
@@ -296,11 +298,18 @@ void CSheduler::ProcessStep()
 {
     // Normal priority
     u32 dwTime = Device.dwTimeGlobal;
+#ifdef DEBUG
     CTimer eTimer;
+#endif
+
+    const bool prefetch = Device.dwPrecacheFrame > 0;
+    bool stopped{};
+    size_t cnt{};
+    CTimer t_total;
+    t_total.Start();
+
     for (int i = 0; !Items.empty() && Top().dwTimeForExecute < dwTime; ++i)
     {
-        // u32		delta_ms			= dwTime - Top().dwTimeForExecute;
-
         // Update
         Item T = Top();
 #ifdef DEBUG_SCHEDULER
@@ -380,6 +389,7 @@ void CSheduler::ProcessStep()
             TNext.scheduled_name = T.Object->shedule_Name();
 
             ItemsProcessed.push_back(TNext);
+            cnt++;
 #ifdef DEBUG
             //		u32	execTime				= eTimer.GetElapsed_ms		();
             // VERIFY3					(T.Object->dbg_update_shedule == T.Object->dbg_startframe, "Broken sequence of calls to 'shedule_Update'", _obj_name );
@@ -401,17 +411,28 @@ void CSheduler::ProcessStep()
         }
 #endif // DEBUG
 
-        //
-        if ((i % 3) != (3 - 1))
-            continue;
-
-        if (CPU::QPC() > cycles_limit)
+        if (!prefetch && t_total.GetElapsed_ms() > static_cast<u32>(std::floor(psShedulerCurrent)))
         {
             // we have maxed out the load - increase heap
             psShedulerTarget += (psShedulerReaction * 3);
+
+            //if (Core.DebugFlags.test(xrCore::dbg_TraceScheduler))
+            {
+                //Msg("Break ProcessStep. Processed: [%u], left in queue: [%u]", ItemsProcessed.size(), Items.size());
+                if (ItemsProcessed.size() == 1) // кто то жрет все время на кадре
+                    Msg("! Single item [%s] took whole update frame!!!", ItemsProcessed[0].scheduled_name.c_str());
+            }
+
+            stopped = true;
             break;
         }
     }
+
+    //if (/*Core.DebugFlags.test(xrCore::dbg_TraceScheduler) &&*/ !prefetch && t_total.GetElapsed_ms() > 20)
+    //    Msg("Long ProcessStep !!! duration [%u]ms. updated: [%u] objects!", t_total.GetElapsed_ms(), cnt);
+
+    //if (prefetch)
+    //    Msg("Prefetch frame, updated: [%u] objects!", cnt);
 
     // Push "processed" back
     while (ItemsProcessed.size())
@@ -420,8 +441,11 @@ void CSheduler::ProcessStep()
         ItemsProcessed.pop_back();
     }
 
-    // always try to decrease target
-    psShedulerTarget -= psShedulerReaction;
+    if (!stopped)
+    {
+        // always try to decrease target
+        psShedulerTarget -= psShedulerReaction;
+    }
 }
 /*
 void CSheduler::Switch				()
@@ -438,8 +462,6 @@ void CSheduler::Update()
     R_ASSERT(Device.Statistic);
     // Initialize
     Device.Statistic->Sheduler.Begin();
-    cycles_start = CPU::QPC();
-    cycles_limit = CPU::qpc_freq * u64(iCeil(psShedulerCurrent)) / 1000i64 + cycles_start;
     internal_Registration();
     g_bSheduleInProgress = TRUE;
 
@@ -481,10 +503,7 @@ void CSheduler::Update()
     Msg("SCHEDULER: PROCESS STEP FINISHED %d", Device.dwFrame);
 #endif // DEBUG_SCHEDULER
 
-    // занимать до 50 мс в кадре (клинч неписей вероятен, если много в онлайне объектов).
-    //#pragma todo("KRodin: раскомментировал обратно, посмотрим, возможно это поможет от виснущих неписей в ОГСЕ.")
-    // clamp(psShedulerTarget,3.f,50.f);
-    clamp(psShedulerTarget, 3.f, 66.f);
+    clamp(psShedulerTarget, 3.f, psShedulerMax);
 
     psShedulerCurrent = 0.9f * psShedulerCurrent + 0.1f * psShedulerTarget;
     Device.Statistic->fShedulerLoad = psShedulerCurrent;

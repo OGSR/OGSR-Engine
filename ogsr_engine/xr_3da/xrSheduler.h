@@ -37,10 +37,6 @@ private:
     void internal_Registration();
 
 public:
-    u64 cycles_start;
-    u64 cycles_limit;
-
-public:
     void ProcessStep();
     void Process();
     void Update();
