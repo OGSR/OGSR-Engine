@@ -82,39 +82,7 @@ namespace text_editor
 		char c = 0;
 		if (m_translate)
 		{
-			c = m_char;
-			char c_shift = m_char_shift;
-            unsigned char buff[128];
-			buff[0] = 0;
-
-			/*
-			//setlocale( LC_ALL, "" ); // User-default
-	
-			// The following 3 lines looks useless
-	
-			LPSTR loc;
-			STRCONCAT ( loc, ".", itoa( GetACP(), code_page, 10 ) );
-			setlocale ( LC_ALL, loc );*/
-
-			static _locale_t current_locale = _create_locale(LC_ALL, "");
-
-			if (pInput->get_dik_name(m_dik, (char*)buff, sizeof(buff)))
-			{
-				if (_isalpha_l(buff[0], current_locale) || buff[0] == char(-1)) 
-				{
-                    _strlwr_l((char*)buff, current_locale);
-					c = buff[0];
-                    _strupr_l((char*)buff, current_locale);
-					c_shift = buff[0];
-				}
-			}
-
-			//setlocale( LC_ALL, "C" ); // restore to ANSI
-
-			if (control->get_key_state(ks_Shift) != control->get_key_state(ks_CapsLock))
-			{
-				c = c_shift;
-			}
+            c = static_cast<char>(pInput->DikToChar(m_dik, false));
 		}
 		else
 		{
