@@ -37,6 +37,7 @@
 #include "car.h"
 #include "movement_manager.h"
 #include "detail_path_manager.h"
+#include "CharacterPhysicsSupport.h"
 
 void CScriptGameObject::explode(u32 level_time)
 {
@@ -325,15 +326,29 @@ void CScriptGameObject::RestoreDefaultStartDialog()
     pDialogManager->RestoreDefaultStartDialog();
 }
 
-void CScriptGameObject::SetActorPosition(Fvector pos)
+void CScriptGameObject::SetActorPosition(Fvector pos, bool skipCollisionCorrect)
 {
     CActor* actor = smart_cast<CActor*>(&object());
     if (actor)
     {
-        Fmatrix F = actor->XFORM();
-        F.c = pos;
-        actor->ForceTransform(F);
-        //		actor->XFORM().c = pos;
+        if (skipCollisionCorrect)
+        {
+            Fmatrix F = actor->XFORM();
+            F.c = pos;
+            actor->XFORM().set(F);
+            if (actor->character_physics_support()->movement()->CharacterExist())
+            {
+                actor->character_physics_support()->movement()->SetPosition(F.c);
+                actor->character_physics_support()->movement()->SetVelocity(0.f, 0.f, 0.f);
+            }
+
+        }
+        else
+        {
+            Fmatrix F = actor->XFORM();
+            F.c = pos;
+            actor->ForceTransform(F);
+        }
     }
     else
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "ScriptGameObject : attempt to call SetActorPosition method for non-actor object");
@@ -345,24 +360,38 @@ void CScriptGameObject::SetActorDirection(float dir)
     if (actor)
     {
         actor->cam_Active()->Set(dir, 0, 0);
-        //		actor->XFORM().setXYZ(0,dir,0);
     }
     else
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "ScriptGameObject : attempt to call SetActorDirection method for non-actor object");
 }
 
-void CScriptGameObject::SetNpcPosition(Fvector pos)
+void CScriptGameObject::SetNpcPosition(Fvector pos, bool skipCollisionCorrect)
 {
     CCustomMonster* obj = smart_cast<CCustomMonster*>(&object());
     if (obj)
     {
-        Fmatrix F = obj->XFORM();
-        F.c = pos;
+        if (skipCollisionCorrect)
+        {
+            Fmatrix F = obj->XFORM();
+            F.c = pos;
+            obj->XFORM().set(F);
+            if (obj->character_physics_support()->movement()->CharacterExist())
+            {
+                obj->character_physics_support()->movement()->SetPosition(F.c);
+                obj->character_physics_support()->movement()->SetVelocity(0.f, 0.f, 0.f);
+            }
+        }
+        else
+        {
+            Fmatrix F = obj->XFORM();
+            F.c = pos;
+            obj->ForceTransform(F);
+        }
+
         obj->movement().detail().make_inactual();
         if (obj->animation_movement_controlled())
             obj->destroy_anim_mov_ctrl();
-        obj->ForceTransform(F);
-        //		actor->XFORM().c = pos;
+
     }
     else
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "ScriptGameObject : attempt to call SetNpcPosition method for non-CCustomMonster object");

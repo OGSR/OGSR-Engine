@@ -228,7 +228,7 @@ public:
     void AddAction(const CScriptEntityAction* tpEntityAction, bool bHighPriority = false);
     void ResetActionQueue();
     // Actor only
-    void SetActorPosition(Fvector pos);
+    void SetActorPosition(Fvector pos, bool skipCollisionCorrect);
     void SetActorDirection(float dir);
     // CCustomMonster
     bool CheckObjectVisibility(const CScriptGameObject* tpLuaGameObject);
@@ -238,7 +238,7 @@ public:
     LPCSTR WhoHitSectionName();
 
     void ChangeTeam(u8 team, u8 squad, u8 group);
-    void SetNpcPosition(Fvector pos);
+    void SetNpcPosition(Fvector pos, bool skipCollisionCorrect);
 
     // CAI_Stalker
     CScriptGameObject* GetCurrentWeapon() const;

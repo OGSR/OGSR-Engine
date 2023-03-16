@@ -1351,6 +1351,7 @@ void CActor::ForceTransform(const Fmatrix& m)
 
     if (character_physics_support()->movement()->CharacterExist())
         character_physics_support()->movement()->EnableCharacter();
+
     character_physics_support()->set_movement_position(m.c);
     character_physics_support()->movement()->SetVelocity(0, 0, 0);
 }
