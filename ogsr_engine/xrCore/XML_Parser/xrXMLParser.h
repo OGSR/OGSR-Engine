@@ -14,7 +14,7 @@ typedef TiXmlAttribute XML_ATTRIBUTE;
 class XRCORE_API CXml
 {
 public:
-    string_path m_xml_file_name;
+    string_path m_xml_file_name{};
     CXml();
     virtual ~CXml();
     void ClearInternal();

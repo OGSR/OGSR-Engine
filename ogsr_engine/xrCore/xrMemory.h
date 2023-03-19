@@ -7,7 +7,7 @@ public:
     void _initialize();
     void _destroy();
 
-    u32 stat_calls;
+    u32 stat_calls{};
 
     u32 mem_usage(u32* pBlocksUsed = nullptr, u32* pBlocksFree = nullptr);
     void mem_compact();

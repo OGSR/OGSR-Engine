@@ -48,9 +48,9 @@ struct XRCORE_API FS_File
         flSubDir = (1 << 0),
         flVFS = (1 << 1),
     };
-    unsigned attrib;
-    time_t time_write;
-    long size;
+    unsigned attrib{};
+    time_t time_write{};
+    long size{};
     xr_string name; // low-case name
     void set(const xr_string& nm, long sz, time_t modif, unsigned attr, const bool lower = true);
 

@@ -14,7 +14,7 @@ public:
     typedef const value_type& const_reference;
 
 private:
-    value_type array[dim];
+    value_type array[dim]{};
     u32 count;
 
 public:

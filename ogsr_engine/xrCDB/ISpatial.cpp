@@ -138,9 +138,9 @@ void ISpatial_NODE::_insert(ISpatial* S)
 void ISpatial_NODE::_remove(ISpatial* S)
 {
     S->spatial.node_ptr = NULL;
-    xr_vector<ISpatial*>::iterator it = std::find(items.begin(), items.end(), S);
-    VERIFY(it != items.end());
-    items.erase(it);
+    auto it = std::find(items.begin(), items.end(), S);
+    if (it != items.end())
+        items.erase(it);
     S->spatial.space->stat_objects--;
 }
 
@@ -331,9 +331,11 @@ void ISpatial_DB::_remove(ISpatial_NODE* N, ISpatial_NODE* N_sub)
         octant = 6;
     else if (N_sub == N->children[7])
         octant = 7;
-    VERIFY(octant < 8);
+
     VERIFY(N_sub->_empty());
-    _node_destroy(N->children[octant]);
+
+    if (octant < 8)
+        _node_destroy(N->children[octant]);
 
     // Recurse
     if (N->_empty())

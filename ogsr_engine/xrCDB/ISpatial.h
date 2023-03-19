@@ -81,7 +81,7 @@ public:
 
 public:
     virtual void spatial_register();
-    virtual void spatial_unregister();
+    void spatial_unregister();
     virtual void spatial_move();
     virtual Fvector spatial_sector_point() { return spatial.sphere.P; }
     ICF void spatial_updatesector()
@@ -132,7 +132,7 @@ private:
 
 public:
     ISpatial_NODE* m_root;
-    Fvector m_center;
+    Fvector m_center{};
     float m_bounds{};
     xr_vector<ISpatial*>* q_result{};
     u32 stat_nodes;

@@ -338,8 +338,6 @@ void CObject::spatial_register()
     ISpatial::spatial_register();
 }
 
-void CObject::spatial_unregister() { ISpatial::spatial_unregister(); }
-
 void CObject::spatial_move()
 {
     Center(spatial.sphere.P);
