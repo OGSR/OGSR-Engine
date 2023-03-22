@@ -247,6 +247,12 @@ bool CPSLibrary::Load2()
 bool CPSLibrary::Load(LPCSTR nm)
 {
     IReader* F = FS.r_open(nm);
+
+    if (F->length() == 0)
+        return true;
+
+    Msg("Load [%s]", nm);
+
     R_ASSERT(F->find_chunk(PS_CHUNK_VERSION));
     u16 ver = F->r_u16();
     if (ver != PS_VERSION)
