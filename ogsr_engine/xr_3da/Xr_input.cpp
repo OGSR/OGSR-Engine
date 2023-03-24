@@ -551,6 +551,7 @@ u16 CInput::DikToChar(const int dik, const bool utf)
                 return 0;
         }
 
+        u16 output{};
         if (utf)
         {
             WCHAR symbol{};
@@ -565,23 +566,21 @@ u16 CInput::DikToChar(const int dik, const bool utf)
                 if (ToUnicode(MapVirtualKey(dik, MAPVK_VSC_TO_VK), dik, State, &symbol, 1, 0) != 1)
                     return 0;
             }
-            char output[2]{}; // output buffer where the utf-8 string will be written
-            WideCharToMultiByte(CP_UTF8, 0, &symbol, 1, output, sizeof output, nullptr, nullptr);
-            return *reinterpret_cast<u16*>(&output[0]);
+            WideCharToMultiByte(CP_UTF8, 0, &symbol, 1, reinterpret_cast<char*>(&output), sizeof output, nullptr, nullptr);
+            return output;
         }
         else
         {
-            u16 symbol{};
             if (this->is_exclusive_mode)
             {
                 auto layout = GetKeyboardLayout(GetWindowThreadProcessId(gGameWindow, nullptr));
-                if (ToAsciiEx(MapVirtualKeyEx(dik, MAPVK_VSC_TO_VK, layout), dik, State, &symbol, 0, layout) == 1)
-                    return symbol;
+                if (ToAsciiEx(MapVirtualKeyEx(dik, MAPVK_VSC_TO_VK, layout), dik, State, &output, 0, layout) == 1)
+                    return output;
             }
             else
             {
-                if (ToAscii(MapVirtualKey(dik, MAPVK_VSC_TO_VK), dik, State, &symbol, 0) == 1)
-                    return symbol;
+                if (ToAscii(MapVirtualKey(dik, MAPVK_VSC_TO_VK), dik, State, &output, 0) == 1)
+                    return output;
             }
         }
     }
