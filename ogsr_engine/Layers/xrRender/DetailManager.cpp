@@ -8,17 +8,10 @@
 #include "DetailManager.h"
 #include "cl_intersect.h"
 
-#ifdef _EDITOR
-#include "ESceneClassList.h"
-#include "Scene.h"
-#include "SceneObject.h"
-#include "igame_persistent.h"
-#include "environment.h"
-#else
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/environment.h"
 #include <xmmintrin.h>
-#endif
+
 
 const float dbgOffset = 0.f;
 const int dbgItems = 128;
@@ -129,7 +122,6 @@ CDetailManager::~CDetailManager()
 }
 /*
  */
-#ifndef _EDITOR
 
 /*
 void dump	(CDetailManager::vis_list& lst)
@@ -203,7 +195,7 @@ void CDetailManager::Load()
     swing_desc[1].rot2 = pSettings->r_float("details", "swing_fast_rot2");
     swing_desc[1].speed = pSettings->r_float("details", "swing_fast_speed");
 }
-#endif
+
 void CDetailManager::Unload()
 {
     if (UseVS())

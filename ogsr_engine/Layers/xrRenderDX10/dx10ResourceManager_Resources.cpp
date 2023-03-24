@@ -3,9 +3,9 @@
 
 #pragma warning(disable : 4995)
 #include <d3dx/d3dx9.h>
-#ifndef _EDITOR
+
 #include "../../xr_3da/render.h"
-#endif
+
 #pragma warning(default : 4995)
 
 #include <d3dx/D3DX10Core.h>
@@ -103,9 +103,6 @@ SPass* CResourceManager::_CreatePass(const SPass& proto)
 #endif
     P->constants = proto.constants;
     P->T = proto.T;
-#ifdef _EDITOR
-    P->M = proto.M;
-#endif
     P->C = proto.C;
 
     v_passes.push_back(P);

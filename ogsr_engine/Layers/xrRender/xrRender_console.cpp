@@ -220,7 +220,6 @@ int psTextureLOD = 0;
 
 u32 psCurrentBPP = 32;
 
-#ifndef _EDITOR
 #include "../../xr_3da/xr_ioconsole.h"
 #include "../../xr_3da/xr_ioc_cmd.h"
 
@@ -342,9 +341,6 @@ public:
     CCC_Screenshot(LPCSTR N) : IConsole_Command(N){};
     virtual void Execute(LPCSTR args)
     {
-        if (g_dedicated_server)
-            return;
-
         string_path name;
         name[0] = 0;
         sscanf(args, "%s", name);
@@ -868,5 +864,3 @@ void xrRender_initconsole()
 
     //	CMD3(CCC_Mask,		"r2_sun_ignore_portals",		&ps_r2_ls_flags,			R2FLAG_SUN_IGNORE_PORTALS);
 }
-
-#endif

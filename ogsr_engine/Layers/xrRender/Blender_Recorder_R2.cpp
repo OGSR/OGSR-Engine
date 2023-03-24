@@ -177,9 +177,6 @@ void CBlender_Compile::r_End()
     dest.state = DEV->_CreateState(RS.GetContainer());
     dest.T = DEV->_CreateTextureList(passTextures);
     dest.C = 0;
-#ifdef _EDITOR
-    dest.M = 0;
-#endif
     SH->passes.push_back(DEV->_CreatePass(dest));
 }
 #endif //	USE_DX10

@@ -5,11 +5,7 @@
 #define FVisualH
 #pragma once
 
-#ifdef _EDITOR
 #include "fbasicvisual.h"
-#else
-#include "fbasicvisual.h"
-#endif
 
 class Fvisual : public dxRender_Visual, public IRender_Mesh
 {

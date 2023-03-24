@@ -60,10 +60,6 @@ BOOL SPass::equal(const SPass& other)
         return FALSE;
     if (C != other.C)
         return FALSE;
-#ifdef _EDITOR
-    if (M != other.M)
-        return FALSE;
-#endif
     return TRUE;
 }
 

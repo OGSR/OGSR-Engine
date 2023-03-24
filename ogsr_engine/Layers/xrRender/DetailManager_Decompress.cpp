@@ -4,11 +4,7 @@
 #include "DetailManager.h"
 #include "cl_intersect.h"
 
-#ifdef _EDITOR
-#include "scene.h"
-#include "sceneobject.h"
-#include "../utils/ETools/ETools.h"
-#endif
+
 
 //--------------------------------------------------- Decompression
 IC float Interpolate(float* base, u32 x, u32 y, u32 size)
@@ -42,7 +38,7 @@ IC bool InterpolateAndDither(float* alpha255, u32 x, u32 y, u32 sx, u32 sy, u32 
     return c > dither[col][row];
 }
 
-#ifndef _EDITOR
+
 #ifdef DEBUG
 //#include "../../Include/xrRender/DebugRender.h"
 #include "dxDebugRender.h"
@@ -65,7 +61,6 @@ static void draw_obb(const Fmatrix& matrix, const u32& color)
 
 bool det_render_debug = false;
 #endif
-#endif
 
 #include "../../xr_3da/gamemtllib.h"
 
@@ -85,19 +80,12 @@ void CDetailManager::cache_Decompress(Slot* S)
     Fvector bC, bD;
     D.vis.box.get_CD(bC, bD);
 
-#ifdef _EDITOR
-    ETOOLS::box_options(CDB::OPT_FULL_TEST);
-    // Select polygons
-    SBoxPickInfoVec pinf;
-    Scene->BoxPickObjects(D.vis.box, pinf, GetSnapList());
-    u32 triCount = pinf.size();
-#else
     xrc.box_options(CDB::OPT_FULL_TEST);
     xrc.box_query(g_pGameLevel->ObjectSpace.GetStaticModel(), bC, bD);
     u32 triCount = xrc.r_count();
     CDB::TRI* tris = g_pGameLevel->ObjectSpace.GetStaticTris();
     Fvector* verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
-#endif
+
 
     if (0 == triCount)
         return;
@@ -200,26 +188,7 @@ void CDetailManager::cache_Decompress(Slot* S)
             float r_u, r_v, r_range;
             for (u32 tid = 0; tid < triCount; tid++)
             {
-#ifdef _EDITOR
-                Fvector verts[3];
-                SBoxPickInfo& I = pinf[tid];
-                for (int k = 0; k < (int)I.inf.size(); k++)
-                {
-                    VERIFY(I.s_obj);
-                    RDEVICE.Statistic->TEST0.Begin();
-                    I.e_obj->GetFaceWorld(I.s_obj->_Transform(), I.e_mesh, I.inf[k].id, verts);
-                    RDEVICE.Statistic->TEST0.End();
-                    if (CDB::TestRayTri(Item_P, dir, verts, r_u, r_v, r_range, TRUE))
-                    {
-                        if (r_range >= 0)
-                        {
-                            float y_test = Item_P.y - r_range;
-                            if (y_test > y)
-                                y = y_test;
-                        }
-                    }
-                }
-#else
+
                 CDB::TRI& T = tris[xrc.r_begin()[tid].id];
                 SGameMtl* mtl = GMLib.GetMaterialByIdx(T.material);
                 if (mtl->Flags.test(SGameMtl::flPassable))
@@ -235,7 +204,7 @@ void CDetailManager::cache_Decompress(Slot* S)
                             y = y_test;
                     }
                 }
-#endif
+
             }
             if (y < D.vis.box.min.y)
                 continue;
@@ -265,11 +234,10 @@ void CDetailManager::cache_Decompress(Slot* S)
             ItemBB.xform(Dobj->bv_bb, mXform);
             Bounds.merge(ItemBB);
 
-#ifndef _EDITOR
+
 #ifdef DEBUG
             if (det_render_debug)
                 draw_obb(mXform, color_rgba(255, 0, 0, 255)); // Fmatrix().mul_43( mXform, Fmatrix().scale(5,5,5) )
-#endif
 #endif
 
                 // Color

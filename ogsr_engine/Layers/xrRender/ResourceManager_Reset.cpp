@@ -2,11 +2,8 @@
 #pragma hdrstop
 
 #include "ResourceManager.h"
-#ifndef _EDITOR
 #include "../../xr_3da/Render.h"
-#else
-#include "../../Include/xrAPI/xrAPI.h"
-#endif
+
 
 void CResourceManager::reset_begin()
 {

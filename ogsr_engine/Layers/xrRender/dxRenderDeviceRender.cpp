@@ -127,15 +127,12 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
     ::Render->create();
     Device.Statistic->OnDeviceCreate();
 
-    //#ifndef DEDICATED_SERVER
-    if (!g_dedicated_server)
     {
         m_WireShader.create("editor\\wire");
         m_SelectionShader.create("editor\\selection");
 
         DUImpl.OnDeviceCreate();
     }
-    //#endif
 }
 
 void dxRenderDeviceRender::Create(HWND hWnd, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2, bool move_window)

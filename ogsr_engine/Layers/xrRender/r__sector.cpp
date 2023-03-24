@@ -315,9 +315,6 @@ void CSector::load(IReader& fs)
         count--;
     }
 
-    if (g_dedicated_server)
-        m_root = 0;
-    else
     {
         // Assign visual
         size = fs.find_chunk(fsP_Root);

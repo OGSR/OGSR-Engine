@@ -3,9 +3,7 @@
 
 #include "../xrRender/ResourceManager.h"
 
-#ifndef _EDITOR
 #include "../../xr_3da/render.h"
-#endif
 
 #include "../../xr_3da/tntQAVI.h"
 #include "../../xr_3da/xrTheora_Surface.h"

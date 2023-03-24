@@ -206,7 +206,7 @@ void CGamePersistent::WeathersUpdate()
 {
     if (g_pGamePersistent->Environment().USED_COP_WEATHER)
     {
-        if (g_pGameLevel && !g_dedicated_server)
+        if (g_pGameLevel)
         {
             CActor* actor = smart_cast<CActor*>(Level().CurrentViewEntity());
             BOOL bIndoor = TRUE;
@@ -387,7 +387,7 @@ void CGamePersistent::WeathersUpdate()
     }
     else
     {
-        if (g_pGameLevel && !g_dedicated_server)
+        if (g_pGameLevel)
         {
             CActor* actor = smart_cast<CActor*>(Level().CurrentViewEntity());
             BOOL bIndoor = TRUE;

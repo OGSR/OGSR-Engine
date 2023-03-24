@@ -5,9 +5,7 @@
 #include "stdafx.h"
 #pragma hdrstop
 
-#ifndef _EDITOR
 #include "../../xr_3da/render.h"
-#endif // #ifndef _EDITOR
 
 #include "fbasicvisual.h"
 #include "../../xr_3da/fmesh.h"
@@ -121,11 +119,6 @@ void dxRender_Visual::Load(const char* N, IReader* data, u32)
         shader.create(fnS, fnT);
     }
 
-    // desc
-#ifdef _EDITOR
-    if (data->find_chunk(OGF_S_DESC))
-        desc.Load(*data);
-#endif
 }
 
 #define PCOPY(a) a = pFrom->a

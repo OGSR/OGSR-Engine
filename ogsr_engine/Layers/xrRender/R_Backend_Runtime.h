@@ -82,29 +82,6 @@ ICF void CBackend::set_States(ID3DState* _state)
     }
 }
 
-#ifdef _EDITOR
-IC void CBackend::set_Matrices(SMatrixList* _M)
-{
-    if (M != _M)
-    {
-        M = _M;
-        if (M)
-        {
-            for (u32 it = 0; it < M->size(); it++)
-            {
-                CMatrix* mat = &*((*M)[it]);
-                if (mat && matrices[it] != mat)
-                {
-                    matrices[it] = mat;
-                    mat->Calculate();
-                    set_xform(D3DTS_TEXTURE0 + it, mat->xform);
-                    //				stat.matrices		++;
-                }
-            }
-        }
-    }
-}
-#endif
 
 IC void CBackend::set_Element(ShaderElement* S, u32 pass)
 {
@@ -122,9 +99,6 @@ IC void CBackend::set_Element(ShaderElement* S, u32 pass)
 #endif //	USE_DX10
     set_Constants(P.constants);
     set_Textures(P.T);
-#ifdef _EDITOR
-    set_Matrices(P.M);
-#endif
 }
 
 ICF void CBackend::set_Shader(Shader* S, u32 pass) { set_Element(S->E[0], pass); }

@@ -44,9 +44,7 @@ void CResourceManager::OnDeviceDestroy(BOOL)
     m_td.clear();
 
     // scripting
-#ifndef _EDITOR
     LS_Unload();
-#endif
 }
 
 void CResourceManager::OnDeviceCreate()
@@ -54,10 +52,8 @@ void CResourceManager::OnDeviceCreate()
     if (!RDEVICE.b_is_Ready)
         return;
 
-#ifndef _EDITOR
     // scripting
     LS_Load();
-#endif
 
     FS_FileSet flist;
     FS.file_list(flist, _game_data_, FS_ListFiles | FS_RootOnly, "*shaders*.xr");

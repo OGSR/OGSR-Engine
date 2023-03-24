@@ -15,18 +15,11 @@
 #include "StateManager\dx10SamplerStateCache.h"
 #include "StateManager\dx10StateCache.h"
 
-#ifndef _EDITOR
 void fill_vid_mode_list(CHW* _hw);
 void free_vid_mode_list();
 
 void fill_render_mode_list();
 void free_render_mode_list();
-#else
-void fill_vid_mode_list(CHW* _hw) {}
-void free_vid_mode_list() {}
-void fill_render_mode_list() {}
-void free_render_mode_list() {}
-#endif
 
 CHW HW;
 
@@ -244,9 +237,7 @@ void CHW::DestroyDevice()
 
     DestroyD3D();
 
-#ifndef _EDITOR
     free_vid_mode_list();
-#endif
 }
 
 //////////////////////////////////////////////////////////////////////
