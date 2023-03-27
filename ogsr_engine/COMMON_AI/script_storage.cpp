@@ -120,6 +120,7 @@ void CScriptStorage::LogVariable(lua_State* l, const char* name, int level)
         if (m_dumpedObjList.find(obj) != m_dumpedObjList.end())
             return;
         m_dumpedObjList.insert(obj);
+
         auto& r = obj->get_lua_table();
         if (r.is_valid())
         {
@@ -133,7 +134,11 @@ void CScriptStorage::LogVariable(lua_State* l, const char* name, int level)
         {
             // Dump class and element pointer if available
             if (const auto objectClass = obj->crep())
-                xr_sprintf(value, "(%s): %p", objectClass->name(), obj->ptr());
+            {
+                auto cpp_name = objectClass->type()->name();
+
+                xr_sprintf(value, "(%s): %p", cpp_name ? cpp_name : objectClass->name(), obj->ptr());
+            }
             else
                 xr_strcpy(value, "[not available]");
         }
