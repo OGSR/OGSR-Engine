@@ -1077,6 +1077,13 @@ void CWeapon::renderable_Render()
     inherited::renderable_Render();
 }
 
+void CWeapon::render_hud_mode()
+{
+    RenderLight();
+
+    inherited::render_hud_mode();
+}
+
 bool CWeapon::need_renderable() { return !Device.m_SecondViewport.IsSVPFrame() && !(IsZoomed() && ZoomTexture() && !IsRotatingToZoom()); }
 
 void CWeapon::signal_HideComplete()

@@ -56,6 +56,7 @@ public:
     virtual void shedule_Update(u32 dt);
 
     virtual void renderable_Render();
+    virtual void render_hud_mode() override;
     virtual void OnDrawUI();
     virtual bool need_renderable();
 
