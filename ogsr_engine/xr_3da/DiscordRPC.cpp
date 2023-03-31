@@ -3,6 +3,58 @@
 #include "DiscordRPC.hpp"
 #include "../xr_3da/x_ray.h"
 
+
+// Определяет есть ли в строке юникодные символы
+static inline bool has_utf8(const char* str)
+{
+    const unsigned char* p = reinterpret_cast<const unsigned char*>(str);
+    while (*p != 0)
+    {
+        if (*p < 0x80)
+        {
+            // однобайтовый символ в UTF-8, пропускаем
+            p++;
+        }
+        else if (*p < 0xc2 || *p > 0xf4)
+        {
+            // байт не может быть первым байтом в UTF-8, строка содержит ошибку
+            return false;
+        }
+        else if (*p < 0xe0)
+        {
+            // двухбайтовый символ в UTF-8
+            if (*(p + 1) < 0x80 || *(p + 1) > 0xbf)
+            {
+                // неправильный второй байт, строка содержит ошибку
+                return false;
+            }
+            p += 2;
+        }
+        else if (*p < 0xf0)
+        {
+            // трехбайтовый символ в UTF-8
+            if (*(p + 1) < 0x80 || *(p + 1) > 0xbf || *(p + 2) < 0x80 || *(p + 2) > 0xbf)
+            {
+                // неправильные второй и/или третий байты, строка содержит ошибку
+                return false;
+            }
+            p += 3;
+        }
+        else
+        {
+            // четырехбайтовый символ в UTF-8
+            if (*(p + 1) < 0x80 || *(p + 1) > 0xbf || *(p + 2) < 0x80 || *(p + 2) > 0xbf || *(p + 3) < 0x80 || *(p + 3) > 0xbf)
+            {
+                // неправильные второй, третий и/или четвертый байты, строка содержит ошибку
+                return false;
+            }
+            p += 4;
+        }
+    }
+    return true;
+}
+
+
 constexpr const char* DISCORD_LIBRARY_DLL{"discord-rpc.dll"};
 
 ENGINE_API DiscordRPC Discord;
@@ -70,7 +122,7 @@ void DiscordRPC::Update(const char* level_name_translated, const char* level_nam
 
     if (active_task_text)
     {
-        task_txt = StringToUTF8(active_task_text);
+        task_txt = has_utf8(active_task_text) ? active_task_text : StringToUTF8(active_task_text);
         presenseInfo.state = task_txt.c_str(); //Активное задание
     }
 
@@ -79,7 +131,7 @@ void DiscordRPC::Update(const char* level_name_translated, const char* level_nam
 
     if (current_level_name)
     {
-        lname = StringToUTF8(current_level_name);
+        lname = has_utf8(current_level_name) ? current_level_name : StringToUTF8(current_level_name);
         presenseInfo.details = lname.c_str(); //название уровня
     }
 
