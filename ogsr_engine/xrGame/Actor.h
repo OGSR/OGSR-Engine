@@ -231,14 +231,6 @@ protected:
     ref_sound m_HeavyBreathSnd;
     ref_sound m_BloodSnd;
 
-protected:
-    // Sleep params
-    //время когда актера надо разбудить
-    ALife::_TIME_ID m_dwWakeUpTime;
-    float m_fOldTimeFactor;
-    float m_fOldOnlineRadius;
-    float m_fSleepTimeFactor;
-
     /////////////////////////////////////////////////////////////////
     // misc properties
 protected:

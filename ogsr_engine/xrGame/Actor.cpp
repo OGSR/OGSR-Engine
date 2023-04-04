@@ -364,7 +364,6 @@ void CActor::Load(LPCSTR section)
     character_physics_support()->movement()->SetAirControlParam(AirControlParam);
 
     m_fPickupInfoRadius = pSettings->r_float(section, "pickup_info_radius");
-    m_fSleepTimeFactor = pSettings->r_float(section, "sleep_time_factor");
 
     character_physics_support()->in_Load(section);
 
