@@ -84,7 +84,7 @@ private:
     int m_iRenderTextureWidth;
     int m_iRenderTextureHeight;
 
-    D3DXMATRIX m_gridMatrix;
+    D3DXMATRIXA16 m_gridMatrix;
     // Fmatrix		m_gridMatrix;
 
     D3DFORMAT RTFormats[RRT_NumRT];

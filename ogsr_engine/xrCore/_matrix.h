@@ -26,7 +26,7 @@
 // NOTE_4: The rotation sequence is ZXY
 
 template <class T>
-struct _matrix
+struct alignas(16) _matrix
 {
 public:
     typedef T TYPE;

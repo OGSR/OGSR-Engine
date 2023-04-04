@@ -29,7 +29,7 @@ void CRender::render_rain()
 
     PIX_EVENT(render_rain);
 
-    D3DXMATRIX m_LightViewProj;
+    D3DXMATRIXA16 m_LightViewProj;
 
     //	Use light as placeholder for rain data.
     light RainLight;
@@ -49,7 +49,7 @@ void CRender::render_rain()
         const float fRainFar = ps_r3_dyn_wet_surf_far;
         ex_project.build_projection(deg2rad(Device.fFOV /* *Device.fASPECT*/), Device.fASPECT, VIEWPORT_NEAR, fRainFar);
         ex_full.mul(ex_project, Device.mView);
-        D3DXMatrixInverse((D3DXMATRIX*)&ex_full_inverse, 0, (D3DXMATRIX*)&ex_full);
+        D3DXMatrixInverse((D3DXMATRIXA16*)&ex_full_inverse, 0, (D3DXMATRIXA16*)&ex_full);
 
         //	Calculate view frustum were we can see dynamic rain radius
         {
@@ -172,8 +172,8 @@ void CRender::render_rain()
         bb.min.y = -fBoundingSphereRadius + vRectOffset.z;
         bb.max.y = fBoundingSphereRadius + vRectOffset.z;
 
-        // D3DXMatrixOrthoOffCenterLH	((D3DXMATRIX*)&mdir_Project,bb.min.x,bb.max.x,  bb.min.y,bb.max.y,  bb.min.z-tweak_rain_ortho_xform_initial_offs,bb.max.z);
-        D3DXMatrixOrthoOffCenterLH((D3DXMATRIX*)&mdir_Project, bb.min.x, bb.max.x, bb.min.y, bb.max.y, bb.min.z - tweak_rain_ortho_xform_initial_offs,
+        // D3DXMatrixOrthoOffCenterLH	((D3DXMATRIXA16*)&mdir_Project,bb.min.x,bb.max.x,  bb.min.y,bb.max.y,  bb.min.z-tweak_rain_ortho_xform_initial_offs,bb.max.z);
+        D3DXMatrixOrthoOffCenterLH((D3DXMATRIXA16*)&mdir_Project, bb.min.x, bb.max.x, bb.min.y, bb.max.y, bb.min.z - tweak_rain_ortho_xform_initial_offs,
                                    bb.min.z + 2 * tweak_rain_ortho_xform_initial_offs);
 
         cull_xform.mul(mdir_Project, mdir_View);
@@ -186,7 +186,7 @@ void CRender::render_rain()
         Fmatrix m_viewport = {view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f + fTexelOffs, view_dim / 2.f + fTexelOffs,
                               0.0f,           1.0f};
         Fmatrix m_viewport_inv;
-        D3DXMatrixInverse((D3DXMATRIX*)&m_viewport_inv, 0, (D3DXMATRIX*)&m_viewport);
+        D3DXMatrixInverse((D3DXMATRIXA16*)&m_viewport_inv, 0, (D3DXMATRIXA16*)&m_viewport);
 
         // snap view-position to pixel
         //	snap zero point to pixel

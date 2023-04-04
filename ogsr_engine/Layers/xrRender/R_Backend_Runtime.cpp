@@ -173,8 +173,8 @@ void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count
     if (count > HW.Caps.geometry.dwClipPlanes)
         count = HW.Caps.geometry.dwClipPlanes;
 
-    D3DXMATRIX worldToClipMatrixIT;
-    D3DXMatrixInverse(&worldToClipMatrixIT, NULL, (D3DXMATRIX*)&RDEVICE.mFullTransform);
+    D3DXMATRIXA16 worldToClipMatrixIT;
+    D3DXMatrixInverse(&worldToClipMatrixIT, NULL, (D3DXMATRIXA16*)&RDEVICE.mFullTransform);
     D3DXMatrixTranspose(&worldToClipMatrixIT, &worldToClipMatrixIT);
     for (u32 it = 0; it < count; it++)
     {
