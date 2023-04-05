@@ -181,6 +181,7 @@ float ps_r2_lt_smooth = 1.f; // 1.f
 float ps_r2_slight_fade = 2.0f; // 1.f
 
 // Screen Space Shaders Stuff
+Fvector3 ps_ssfx_grass_interactive{1.f, static_cast<float>(GRASS_SHADER_DATA_COUNT), 150.f};
 float ps_ssfx_wpn_dof_2 = 0.5f;
 
 //	x - min (0), y - focus (1.4), z - max (100)
@@ -887,6 +888,7 @@ void xrRender_initconsole()
 
     // Screen Space Shaders
     CMD4(CCC_Float, "ssfx_wpn_dof_2", &ps_ssfx_wpn_dof_2, 0, 1);
+    CMD4(CCC_Vector3, "ssfx_grass_interactive", &ps_ssfx_grass_interactive, (Fvector3{}), (Fvector3{1.f, static_cast<float>(GRASS_SHADER_DATA_COUNT), 1500.f}));
 
     CMD3(CCC_Mask, "ssfx_height_fog", &ps_r2_ls_flags_ext, SSFX_HEIGHT_FOG);
     CMD3(CCC_Mask, "ssfx_sky_debanding", &ps_r2_ls_flags_ext, SSFX_SKY_DEBANDING);

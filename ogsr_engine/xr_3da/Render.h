@@ -359,3 +359,17 @@ public:
 };
 
 ENGINE_API extern ShExports shader_exports;
+
+// Увеличивая или уменьшая максимальное кол-во здесь, обязательно нужно сделать тоже самое в вершинном шейдере в объявлении benders_pos
+constexpr size_t GRASS_SHADER_DATA_COUNT = 16;
+
+struct GRASS_SHADER_DATA
+{
+    u8 index{};
+    u16 id[GRASS_SHADER_DATA_COUNT]{};
+    Fvector4 pos[GRASS_SHADER_DATA_COUNT]{};
+};
+
+ENGINE_API extern GRASS_SHADER_DATA grass_shader_data;
+
+extern Fvector3 ps_ssfx_grass_interactive;

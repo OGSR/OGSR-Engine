@@ -42,14 +42,15 @@ public:
     };
     params m_game_params;
 
-public:
     xr_set<CPS_Instance*> ps_active, ps_destroy;
     xr_vector<CPS_Instance*> ps_needtoplay;
 
-public:
+    void GrassBendersRemoveById(const u16 id);
+    void GrassBendersRemoveByIndex(u8& idx);
+    void GrassBendersUpdate(const u16 id, u8& data_idx, u32& data_frame, const Fvector& position);
+
     void destroy_particles(const bool& all_particles);
 
-public:
     virtual void PreStart(LPCSTR op);
     virtual void Start(LPCSTR op);
     virtual void Disconnect();

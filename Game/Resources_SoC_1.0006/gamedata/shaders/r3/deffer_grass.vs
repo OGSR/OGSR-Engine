@@ -1,5 +1,6 @@
 #include "common.h"
 
+float4 benders_pos[16];
 float4 consts; // {1/quant,1/quant,diffusescale,ambient}
 float4 wave; // cx,cy,cz,tm
 float4 dir2D;
@@ -30,8 +31,22 @@ v2p_bumped main(v_detail v)
     float inten = H * dp;
     float2 result = calc_xz_wave(dir2D.xz * inten, frac);
 
-    // Pos + Wave Result
+    // Add wind
     pos = float4(pos.x + result.x, pos.y, pos.z + result.y, 1);
+
+    // SSS Update 15 - Apply Grass Benders
+#if SSFX_INT_GRASS > 0
+    [unroll(SSFX_INT_GRASS)] for (int b = 0; b < SSFX_INT_GRASS; b++)
+    {
+        float dist = distance(float3(pos.x, 0, pos.z), float3(benders_pos[b].x, 0, benders_pos[b].z));
+        float bend = benders_pos[b].w - min(benders_pos[b].w, dist * dist);
+        float3 dir = normalize(pos.xyz - benders_pos[b].xyz);
+        float2 vertexOffset = dir.xz * bend * 0.5f * H;
+
+        pos.xz += vertexOffset;
+        pos.y -= saturate(0.5f - dist) * 1.35f * H;
+    }
+#endif
 
     // FLORA FIXES & IMPROVEMENTS - SSS Update 14.6
     // https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders/

@@ -107,6 +107,12 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
     static shared_str strArray("array");
     static shared_str strXForm("xform");
 
+    static shared_str strPos("benders_pos");
+    if (ps_ssfx_grass_interactive.x > 0.f) // Add Player?
+        grass_shader_data.pos[0].set(Device.vCameraPosition.x, Device.vCameraPosition.y, Device.vCameraPosition.z);
+    else
+        grass_shader_data.pos[0].set(0.f, 0.f, 0.f);
+
     Device.Statistic->RenderDUMP_DT_Count = 0;
 
     // Matrices and offsets
@@ -142,6 +148,11 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
                 RCache.set_c(strWave, wave);
                 RCache.set_c(strDir2D, wind);
                 RCache.set_c(strXForm, Device.mFullTransform);
+
+                Fvector4* c_grass{};
+                RCache.get_ConstantDirect(strPos, sizeof grass_shader_data.pos, reinterpret_cast<void**>(&c_grass), nullptr, nullptr);
+                if (c_grass)
+                    std::memcpy(c_grass, &grass_shader_data.pos, sizeof grass_shader_data.pos);
 
                 // ref_constant constArray = RCache.get_c(strArray);
                 // VERIFY(constArray);

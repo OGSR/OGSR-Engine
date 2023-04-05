@@ -65,7 +65,7 @@ u32 frustum_aabb_remap[8][6] = {{Mx, My, Mz, mx, my, mz}, {Mx, My, mz, mx, my, M
                                 {mx, My, Mz, Mx, my, mz}, {mx, My, mz, Mx, my, Mz}, {mx, my, Mz, Mx, My, mz}, {mx, my, mz, Mx, My, Mz}};
 
 //////////////////////////////////////////////////////////////////////
-EFC_Visible CFrustum::testSphere(Fvector& c, float r, u32& test_mask) const
+EFC_Visible CFrustum::testSphere(const Fvector& c, float r, u32& test_mask) const
 {
     u32 bit = 1;
     for (int i = 0; i < p_count; i++, bit <<= 1)

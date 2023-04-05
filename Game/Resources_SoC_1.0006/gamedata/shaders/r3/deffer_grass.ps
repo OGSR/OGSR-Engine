@@ -6,8 +6,12 @@
 #include "sload.h"
 #include "common_brdf.h"
 
+#include "check_screenspace.h"
+
 // SSS Settings
+#ifdef SSFX_FLORAFIX
 #include "settings_screenspace_FLORA.h"
+#endif
 
 #ifdef ATOC
 
@@ -63,11 +67,16 @@ f_deffer main(p_bumped I)
     float3 Ne = mul(float3x3(I.M1, I.M2, I.M3), S.normal);
     Ne = normalize(Ne);
 
+    float ms = xmaterial;
+    S.gloss = def_gloss;
+
+#ifdef SSFX_FLORAFIX
     // Material value ( MAT_FLORA )
-    float ms = MAT_FLORA;
+    ms = MAT_FLORA;
 
     // Fake gloss
     S.gloss = G_GRASS_SPECULAR * saturate(S.base.g - (S.base.r + S.base.b) * 0.54f);
+#endif
     // -----------------------------------------------------------------------
 
 #ifdef USE_LM_HEMI

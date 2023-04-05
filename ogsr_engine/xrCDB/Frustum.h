@@ -80,7 +80,7 @@ public:
 
     u32 getMask() const { return (1 << p_count) - 1; }
 
-    EFC_Visible testSphere(Fvector& c, float r, u32& test_mask) const;
+    EFC_Visible testSphere(const Fvector& c, float r, u32& test_mask) const;
     BOOL testSphere_dirty(Fvector& c, float r) const;
     EFC_Visible testAABB(const float* mM, u32& test_mask) const;
     EFC_Visible testSAABB(Fvector& c, float r, const float* mM, u32& test_mask) const;

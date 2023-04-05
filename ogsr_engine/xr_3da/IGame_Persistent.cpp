@@ -201,3 +201,75 @@ void IGame_Persistent::destroy_particles(const bool& all_particles)
         }
     }
 }
+
+void IGame_Persistent::GrassBendersUpdate(const u16 id, u8& data_idx, u32& data_frame, const Fvector& position)
+{
+    if (ps_ssfx_grass_interactive.y < 1.f) // Interactive grass disabled
+        return;
+
+    if (Device.dwFrame < data_frame)
+    {
+        // Just update position if not NULL
+        if (data_idx)
+        {
+            grass_shader_data.pos[data_idx].set(position.x, position.y, position.z);
+        }
+        return;
+    }
+
+    // Wait some random frames to split the checks
+    data_frame = Device.dwFrame + Random.randI(10, 30);
+    // Check Distance
+    if (position.distance_to_xz_sqr(Device.vCameraPosition) > ps_ssfx_grass_interactive.z)
+    {
+        GrassBendersRemoveByIndex(data_idx);
+        return;
+    }
+
+    const CFrustum& view_frust = ::Render->ViewBase;
+    u32 mask = 0xff;
+    // In view frustum?
+    if (!view_frust.testSphere(position, 1, mask))
+    {
+        GrassBendersRemoveByIndex(data_idx);
+        return;
+    }
+
+    // Empty slot, let's use this
+    if (data_idx == 0)
+    {
+        const u8 idx = grass_shader_data.index + 1;
+        // Add to grass blenders array
+        if (grass_shader_data.id[idx] == 0)
+        {
+            data_idx = idx;
+            grass_shader_data.pos[idx].set(position.x, position.y, position.z);
+            grass_shader_data.id[idx] = id;
+        }
+        // Back to 0 when the array limit is reached
+        grass_shader_data.index = idx < static_cast<u8>(ps_ssfx_grass_interactive.y) ? idx : 0;
+    }
+    else
+    {
+        // Is already inview, let's add more time to re-check
+        data_frame += 30;
+        grass_shader_data.pos[data_idx].set(position.x, position.y, position.z);
+    }
+}
+
+void IGame_Persistent::GrassBendersRemoveByIndex(u8& index)
+{
+    if (index)
+    {
+        grass_shader_data.id[index] = 0;
+        grass_shader_data.pos[index].set(0.f, 0.f, 0.f); // Reset Position?
+        index = 0;
+    }
+}
+
+void IGame_Persistent::GrassBendersRemoveById(const u16 id)
+{
+    for (auto& _id : grass_shader_data.id)
+        if (_id == id)
+            _id = 0;
+}
