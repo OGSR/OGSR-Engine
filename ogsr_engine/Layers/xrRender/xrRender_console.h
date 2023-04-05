@@ -24,9 +24,7 @@ extern ECORE_API u32 ps_r3_msaa_atest; //=	0;
 
 extern ECORE_API u32 ps_r3_minmax_sm; //	=	0;
 
-#if RENDER == R_R1
-extern ECORE_API int ps_r__Supersample;
-#endif
+
 extern ECORE_API int ps_r__LightSleepFrames;
 
 extern ECORE_API float ps_r__Detail_l_ambient;

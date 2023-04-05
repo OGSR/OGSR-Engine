@@ -531,10 +531,6 @@ void R_dsgraph_structure::r_dsgraph_render_hud()
     mapHUD.traverseLR(sorted_L1);
     mapHUD.clear();
 
-#if RENDER == R_R1
-    if (g_hud && g_hud->RenderActiveItemUIQuery())
-        r_dsgraph_render_hud_ui(); // hud ui
-#endif
 
     rmNormal();
 
@@ -562,12 +558,12 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
     RCache.set_xform_view(Device.mView);
     RCache.set_xform_project(Device.mProject);
 
-#if RENDER != R_R1
+
     // Targets, use accumulator for temporary storage
     const ref_rt rt_null;
     RCache.set_RT(0, 1);
     RCache.set_RT(0, 2);
-#if (RENDER == R_R3) || (RENDER == R_R4)
+#if (RENDER == R_R4)
     if (!RImplementation.o.dx10_msaa)
     {
         if (RImplementation.o.albedo_wo)
@@ -582,13 +578,8 @@ void R_dsgraph_structure::r_dsgraph_render_hud_ui()
         else
             RImplementation.Target->u_setrt(RImplementation.Target->rt_Color, rt_null, rt_null, RImplementation.Target->rt_MSAADepth->pZRT);
     }
-#else // (RENDER==R_R3) || (RENDER==R_R4)
-    if (RImplementation.o.albedo_wo)
-        RImplementation.Target->u_setrt(RImplementation.Target->rt_Accumulator, rt_null, rt_null, HW.pBaseZB);
-    else
-        RImplementation.Target->u_setrt(RImplementation.Target->rt_Color, rt_null, rt_null, HW.pBaseZB);
-#endif // (RENDER==R_R3) || (RENDER==R_R4)
-#endif // RENDER!=R_R1
+#endif // (RENDER==R_R4)
+
 
     rmNear();
     g_hud->RenderActiveItemUI();
@@ -640,7 +631,7 @@ void R_dsgraph_structure::r_dsgraph_render_sorted()
 // strict-sorted render
 void R_dsgraph_structure::r_dsgraph_render_emissive()
 {
-#if RENDER != R_R1
+
     // Sorted (back to front)
     mapEmissive.traverseLR(sorted_L1);
     mapEmissive.clear();
@@ -671,18 +662,16 @@ void R_dsgraph_structure::r_dsgraph_render_emissive()
     Device.mView = Vold;
     RCache.set_xform_view(Device.mView);
     RCache.set_xform_project(Device.mProject);
-#endif
+
 }
 
 //////////////////////////////////////////////////////////////////////////
 // strict-sorted render
 void R_dsgraph_structure::r_dsgraph_render_wmarks()
 {
-#if RENDER != R_R1
     // Sorted (back to front)
     mapWmark.traverseLR(sorted_L1);
     mapWmark.clear();
-#endif
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -774,10 +763,10 @@ void R_dsgraph_structure::r_dsgraph_render_subspace(IRender_Sector* _sector, CFr
             }
         }
 
-#if RENDER != R_R1
+
         if (g_pGameLevel && phase == RImplementation.PHASE_SMAP && ps_r2_ls_flags_ext.test(R2FLAGEXT_ACTOR_SHADOW))
             g_hud->Render_Actor_Shadow(); // R2 actor Shadow
-#endif
+
     }
 
     // Restore

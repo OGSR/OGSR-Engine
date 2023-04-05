@@ -74,11 +74,11 @@ private:
 
     Fvector approximate;
 
-#if RENDER != R_R1
+
     Fvector last_position;
     s32 ticks_to_update;
     s32 sky_rays_uptodate;
-#endif // RENDER!=R_R1
+
 public:
     virtual void force_mode(u32 mode) { MODE = mode; };
     virtual float get_luminocity()
@@ -138,10 +138,9 @@ private:
     // prepares static or hemisphere lights for ambient occlusion calculations
     void prepare_lights(Fvector& position, IRenderable* O);
 
-#if RENDER != R_R1
     //	Updates only if makes a desizion that update is necessary
     void smart_update(IRenderable* O);
-#endif //	RENDER!=R_R1
+
 };
 
 #endif // !defined(AFX_LIGHTTRACK_H__89914D61_AC0B_4C7C_BA8C_D7D810738CE7__INCLUDED_)

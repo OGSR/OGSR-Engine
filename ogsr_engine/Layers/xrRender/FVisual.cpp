@@ -63,7 +63,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
         p_rm_Indices = RImplementation.getIB(ID);
         p_rm_Indices->AddRef();
 #endif
-#if (RENDER == R_R2) || (RENDER == R_R3) || (RENDER == R_R4)
+#if (RENDER == R_R4)
         // check for fast-vertices
         if (data->find_chunk(OGF_FASTPATH))
         {
@@ -97,7 +97,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
             // geom
             m_fast->rm_geom.create(fmt, m_fast->p_rm_Vertices, m_fast->p_rm_Indices);
         }
-#endif // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
+#endif // (RENDER==R_R4)
     }
 
     // read vertices
@@ -204,7 +204,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
 
 void Fvisual::Render(float)
 {
-#if (RENDER == R_R2) || (RENDER == R_R3) || (RENDER == R_R4)
+#if (RENDER == R_R4)
     if (m_fast && RImplementation.phase == CRender::PHASE_SMAP && !RCache.is_TessEnabled())
     {
         RCache.set_Geometry(m_fast->rm_geom);
@@ -217,11 +217,7 @@ void Fvisual::Render(float)
         RCache.Render(D3DPT_TRIANGLELIST, vBase, 0, vCount, iBase, dwPrimitives);
         RCache.stat.r.s_static.add(vCount);
     }
-#else // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
-    RCache.set_Geometry(rm_geom);
-    RCache.Render(D3DPT_TRIANGLELIST, vBase, 0, vCount, iBase, dwPrimitives);
-    RCache.stat.r.s_static.add(vCount);
-#endif // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
+#endif // (RENDER==R_R4)
 }
 
 #define PCOPY(a) a = pFrom->a

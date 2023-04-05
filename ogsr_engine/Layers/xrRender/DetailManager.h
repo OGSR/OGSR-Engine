@@ -58,9 +58,6 @@ public:
         u32 vis_ID; // индекс в visibility списке он же тип [не качается, качается1, качается2]
         float c_hemi;
         float c_sun;
-#if RENDER == R_R1
-        Fvector c_rgb;
-#endif
     };
     DEFINE_VECTOR(SlotItem*, SlotItemVec, SlotItemVecIt);
     struct SlotPart

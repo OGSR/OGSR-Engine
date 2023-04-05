@@ -27,7 +27,7 @@ light::light(void) : ISpatial(g_SpatialSpace)
 
     frame_render = 0;
 
-#if (RENDER == R_R2) || (RENDER == R_R3) || (RENDER == R_R4)
+#if (RENDER == R_R4)
     virtual_size = .1f; // Ray Twitty (aka Shadows): по умолчанию надо 0.1, чтобы не пришлось вызывать для каждого лайта установку виртуального размера
     ZeroMemory(omnipart, sizeof(omnipart));
     s_spot = NULL;
@@ -37,19 +37,19 @@ light::light(void) : ISpatial(g_SpatialSpace)
     vis.query_order = 0;
     vis.visible = true;
     vis.pending = false;
-#endif // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
+#endif // (RENDER==R_R4)
 }
 
 light::~light()
 {
-#if (RENDER == R_R2) || (RENDER == R_R3) || (RENDER == R_R4)
+#if (RENDER == R_R4)
     for (int f = 0; f < 6; f++)
         xr_delete(omnipart[f]);
-#endif // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
+#endif // (RENDER==R_R4)
     set_active(false);
 
     // remove from Lights_LastFrame
-#if (RENDER == R_R2) || (RENDER == R_R3) || (RENDER == R_R4)
+#if (RENDER == R_R4)
 
     for (u32 it = 0; it < RImplementation.Lights_LastFrame.size(); it++)
     {
@@ -60,10 +60,10 @@ light::~light()
     if (vis.pending)
         RImplementation.occq_free(vis.query_id);
 
-#endif // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
+#endif // (RENDER==R_R4)
 }
 
-#if (RENDER == R_R2) || (RENDER == R_R3) || (RENDER == R_R4)
+#if (RENDER == R_R4)
 void light::set_texture(LPCSTR name)
 {
     if ((0 == name) || (0 == name[0]))
@@ -80,10 +80,6 @@ void light::set_texture(LPCSTR name)
 
     s_spot.create(RImplementation.Target->b_accum_spot, xr_strconcat(temp, "r2\\accum_spot_", name), name);
     s_point.create(RImplementation.Target->b_accum_point, xr_strconcat(temp, "r2\\accum_point_", name), name);
-
-#if (RENDER != R_R3) && (RENDER != R_R4)
-    s_volumetric.create("accum_volumetric", name);
-#else //	(RENDER!=R_R3) && (RENDER!=R_R4)
     s_volumetric.create("accum_volumetric_nomsaa", name);
     if (RImplementation.o.dx10_msaa)
     {
@@ -99,13 +95,9 @@ void light::set_texture(LPCSTR name)
             s_volumetric_msaa[i].create(RImplementation.Target->b_accum_volumetric_msaa[i], xr_strconcat(temp, "r2\\accum_volumetric_", name), name);
         }
     }
-#endif // (RENDER!=R_R3) || (RENDER!=R_R4)
 }
 #endif
 
-#if RENDER == R_R1
-void light::set_texture(LPCSTR name) {}
-#endif
 
 void light::set_active(bool a)
 {
@@ -213,11 +205,11 @@ void light::spatial_move()
     // update spatial DB
     ISpatial::spatial_move();
 
-#if (RENDER == R_R2) || (RENDER == R_R3) || (RENDER == R_R4)
+#if (RENDER == R_R4)
     if (flags.bActive)
         gi_generate();
     svis.invalidate();
-#endif // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
+#endif // (RENDER==R_R4)
 }
 
 vis_data& light::get_homdata()
@@ -232,7 +224,7 @@ vis_data& light::get_homdata()
 Fvector light::spatial_sector_point() { return position; }
 
 //////////////////////////////////////////////////////////////////////////
-#if (RENDER == R_R2) || (RENDER == R_R3) || (RENDER == R_R4)
+#if (RENDER == R_R4)
 // Xforms
 void light::xform_calc()
 {
@@ -350,7 +342,7 @@ void light::export_to(light_Package& package)
                 L->s_point = s_point;
 
                 // Holger - do we need to export msaa stuff as well ?
-#if (RENDER == R_R3) || (RENDER == R_R4)
+#if (RENDER == R_R4)
                 if (RImplementation.o.dx10_msaa)
                 {
                     int bound = 1;
@@ -365,7 +357,7 @@ void light::export_to(light_Package& package)
                         // L->s_volumetric_msaa[i] = s_volumetric_msaa[i];
                     }
                 }
-#endif //	(RENDER==R_R3) || (RENDER==R_R4)
+#endif (RENDER==R_R4)
 
                 //	Igor: add volumetric support
                 L->set_volumetric(flags.bVolumetric);
@@ -398,10 +390,11 @@ void light::set_attenuation_params(float a0, float a1, float a2, float fo)
     falloff = fo;
 }
 
-#endif // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
+#endif // (RENDER==R_R4)
 
 extern float r_ssaGLOD_start, r_ssaGLOD_end;
 extern float ps_r2_slight_fade;
+
 float light::get_LOD()
 {
     if (!flags.bShadow)

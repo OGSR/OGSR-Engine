@@ -97,10 +97,6 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
     bDetail_Bump = FALSE;
 
 #ifndef _EDITOR
-#if RENDER == R_R1
-    if (RImplementation.o.no_detail_textures)
-        bDetail = FALSE;
-#endif
 #endif
 
     if (bDetail)

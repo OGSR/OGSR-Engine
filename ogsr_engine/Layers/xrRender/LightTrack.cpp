@@ -39,17 +39,12 @@ CROS_impl::CROS_impl()
         hemi_cube[i] = hemi_cube_smooth[i] = 0;
     }
 
-#if RENDER != R_R1
+
     last_position.set(0.0f, 0.0f, 0.0f);
     ticks_to_update = 0;
     sky_rays_uptodate = 0;
-#endif // RENDER!=R_R1
 
-    //#if RENDER==R_R1
     MODE = IRender_ObjectSpecific::TRACE_ALL;
-    //#else
-    //	MODE				= IRender_ObjectSpecific::TRACE_HEMI + IRender_ObjectSpecific::TRACE_SUN	;
-    //#endif
 }
 
 void CROS_impl::add(light* source)
@@ -236,15 +231,14 @@ void CROS_impl::update(IRenderable* O)
     if (MODE & IRender_ObjectSpecific::TRACE_LIGHTS)
     {
         Fvector lacc = {0, 0, 0};
-#if RENDER != R_R1
+
         float hemi_cube_light[NUM_FACES] = {0, 0, 0, 0, 0, 0};
-#endif
+
         for (u32 lit = 0; lit < lights.size(); lit++)
         {
             light* L = lights[lit].source;
             float d = L->position.distance_to(position);
 
-#if RENDER != R_R1
             float a = (1 / (L->attenuation0 + L->attenuation1 * d + L->attenuation2 * d * d) - d * L->falloff) * (L->flags.bStatic ? 1.f : 2.f);
             a = (a > 0) ? a : 0.0f;
 
@@ -256,15 +250,12 @@ void CROS_impl::update(IRenderable* O)
             float koef = (lights[lit].color.r + lights[lit].color.g + lights[lit].color.b) / 3.0f * a * ps_r2_dhemi_light_scale;
 
             accum_hemi(hemi_cube_light, dir, koef);
-#else
-            float r = L->range;
-            float a = clampr(1.f - d / (r + EPS), 0.f, 1.f) * (L->flags.bStatic ? 1.f : 2.f);
-#endif
+
             lacc.x += lights[lit].color.r * a;
             lacc.y += lights[lit].color.g * a;
             lacc.z += lights[lit].color.b * a;
         }
-#if RENDER != R_R1
+
         const float minHemiValue = 1 / 255.f;
 
         float hemi_light = (lacc.x + lacc.y + lacc.z) / 3.0f * ps_r2_dhemi_light_scale;
@@ -277,7 +268,7 @@ void CROS_impl::update(IRenderable* O)
             hemi_cube[i] += hemi_cube_light[i] * (1 - ps_r2_dhemi_light_flow) + ps_r2_dhemi_light_flow * hemi_cube_light[(i + NUM_FACES / 2) % NUM_FACES];
             hemi_cube[i] = std::max(hemi_cube[i], minHemiValue);
         }
-#endif
+
 
         //		lacc.x		*= desc.lmap_color.x;
         //		lacc.y		*= desc.lmap_color.y;
@@ -298,8 +289,6 @@ void CROS_impl::update(IRenderable* O)
     update_smooth();
     approximate = accum;
 }
-
-#if RENDER != R_R1
 
 //	Update ticks settings
 static const s32 s_iUTFirstTimeMin = 1;
@@ -352,7 +341,6 @@ void CROS_impl::smart_update(IRenderable* O)
     }
 }
 
-#endif //	#if RENDER!=R_R1
 
 extern float ps_r2_lt_smooth;
 
@@ -364,12 +352,9 @@ void CROS_impl::update_smooth(IRenderable* O)
 
     dwFrameSmooth = Device.dwFrame;
 
-#if RENDER == R_R1
-    if (O && (0 == result_count))
-        update(O); // First time only
-#else //	RENDER!=R_R1
+
     smart_update(O);
-#endif //	RENDER!=R_R1
+
 
     float l_f = Device.fTimeDelta * ps_r2_lt_smooth;
     clamp(l_f, 0.f, 1.f);
@@ -384,11 +369,8 @@ void CROS_impl::update_smooth(IRenderable* O)
 
 void CROS_impl::calc_sun_value(Fvector& position, CObject* _object)
 {
-#if RENDER == R_R1
-    light* sun = (light*)RImplementation.L_DB->sun_adapted._get();
-#else
     light* sun = (light*)RImplementation.Lights.sun_adapted._get();
-#endif
+
     if (MODE & IRender_ObjectSpecific::TRACE_SUN)
     {
         if (--result_sun < 0)
@@ -406,10 +388,8 @@ void CROS_impl::calc_sky_hemi_value(Fvector& position, CObject* _object)
     // hemi-tracing
     if (MODE & IRender_ObjectSpecific::TRACE_HEMI)
     {
-#if RENDER != R_R1
         sky_rays_uptodate += ps_r2_dhemi_count;
         sky_rays_uptodate = _min(sky_rays_uptodate, lt_hemisamples);
-#endif //	RENDER!=R_R1
 
         for (u32 it = 0; it < (u32)ps_r2_dhemi_count; it++)
         { // five samples per one frame
@@ -469,11 +449,9 @@ void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
         // Select nearest lights
         Fvector bb_size = {radius, radius, radius};
 
-#if RENDER != R_R1
+
         g_SpatialSpace->q_box(RImplementation.lstSpatial, 0, STYPE_LIGHTSOURCEHEMI, position, bb_size);
-#else
-        g_SpatialSpace->q_box(RImplementation.lstSpatial, 0, STYPE_LIGHTSOURCE, position, bb_size);
-#endif
+
         for (u32 o_it = 0; o_it < RImplementation.lstSpatial.size(); o_it++)
         {
             ISpatial* spatial = RImplementation.lstSpatial[o_it];
@@ -481,18 +459,16 @@ void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
             VERIFY(source); // sanity check
             float R = radius + source->range;
             if (position.distance_to(source->position) < R
-#if RENDER != R_R1
+
                 && source->flags.bStatic
-#endif
+
             )
                 add(source);
         }
 
         // Trace visibility
         lights.clear();
-#if RENDER == R_R1
-        float traceR = radius * .5f;
-#endif
+
         for (s32 id = 0; id < s32(track.size()); id++)
         {
             // remove untouched lights
@@ -509,11 +485,8 @@ void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
             float amount = 0;
             light* xrL = I->source;
             Fvector& LP = xrL->position;
-#if RENDER == R_R1
-            P.mad(position, P.random_dir(), traceR); // Random point inside range
-#else
+
             P = position;
-#endif
 
             // point/spot
             float f = D.sub(P, LP).magnitude();
@@ -543,21 +516,6 @@ void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
             }
         }
 
-#if RENDER == R_R1
-        light* sun = (light*)RImplementation.L_DB->sun_adapted._get();
-
-        // Sun
-        float E = sun_smooth * sun->color.intensity();
-        if (E > EPS)
-        {
-            // Select light
-            lights.push_back(CROS_impl::Light());
-            CROS_impl::Light& L = lights.back();
-            L.source = sun;
-            L.color.mul_rgb(sun->color, sun_smooth / 2);
-            L.energy = sun_smooth;
-        }
-#endif
         // Sort lights by importance - important for R1-shadows
         std::sort(lights.begin(), lights.end(), pred_energy);
     }

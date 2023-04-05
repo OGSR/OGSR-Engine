@@ -32,11 +32,8 @@ void CLight_DB::Load(IReader* fs)
             L->flags.bStatic = true;
             L->set_type(IRender_Light::POINT);
 
-#if RENDER == R_R1
-            L->set_shadow(false);
-#else
             L->set_shadow(true);
-#endif
+
             u32 controller = 0;
             F->r(&controller, 4);
             F->r(&Ldata, sizeof(Flight));
@@ -97,7 +94,6 @@ void CLight_DB::Load(IReader* fs)
     */
 }
 
-#if RENDER != R_R1
 void CLight_DB::LoadHemi()
 {
     string_path fn_game;
@@ -152,7 +148,7 @@ void CLight_DB::LoadHemi()
         FS.r_close(F);
     }
 }
-#endif
+
 
 void CLight_DB::Unload()
 {
@@ -171,20 +167,7 @@ light* CLight_DB::Create()
     return L;
 }
 
-#if RENDER == R_R1
-void CLight_DB::add_light(light* L)
-{
-    if (Device.dwFrame == L->frame_render)
-        return;
-    L->frame_render = Device.dwFrame;
-    if (L->flags.bStatic)
-        return; // skip static lighting, 'cause they are in lmaps
-    if (ps_r1_flags.test(R1FLAG_DLIGHTS))
-        RImplementation.L_Dynamic->add(L);
-}
-#endif
-
-#if (RENDER == R_R2) || (RENDER == R_R3) || (RENDER == R_R4)
+#if (RENDER == R_R4)
 void CLight_DB::add_light(light* L)
 {
     if (Device.dwFrame == L->frame_render)
@@ -196,7 +179,7 @@ void CLight_DB::add_light(light* L)
         return;
     L->export_to(package);
 }
-#endif // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
+#endif // (RENDER==R_R4)
 
 void CLight_DB::Update()
 {

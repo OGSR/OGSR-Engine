@@ -69,9 +69,6 @@ constexpr xr_token qminmax_sm_token[] = {{"off", 0}, {"on", 1}, {"auto", 2}, {"a
 extern int psSkeletonUpdate;
 extern float r__dtex_range;
 
-#if RENDER == R_R1
-int ps_r__Supersample = 1;
-#endif
 
 int ps_r__LightSleepFrames = 10;
 
@@ -436,7 +433,7 @@ public:
     }
 };
 
-#if RENDER != R_R1
+
 #include "r__pixel_calculator.h"
 class CCC_BuildSSA : public IConsole_Command
 {
@@ -451,7 +448,6 @@ public:
 #endif //	USE_DX10
     }
 };
-#endif
 
 class CCC_DofFar : public CCC_Float
 {
@@ -594,7 +590,7 @@ public:
 };
 
 //	Allow real-time fog config reload
-#if (RENDER == R_R3) || (RENDER == R_R4)
+#if (RENDER == R_R4)
 #ifdef DEBUG
 
 #include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
@@ -606,7 +602,7 @@ public:
     virtual void Execute(LPCSTR args) { FluidManager.UpdateProfiles(); }
 };
 #endif //	DEBUG
-#endif //	(RENDER == R_R3) || (RENDER == R_R4)
+#endif //	(RENDER == R_R4)
 
 //-----------------------------------------------------------------------
 void xrRender_initconsole()
@@ -632,9 +628,9 @@ void xrRender_initconsole()
     //	Igor: just to test bug with rain/particles corruption
     CMD1(CCC_RestoreQuadIBData, "r_restore_quad_ib_data");
 #ifdef DEBUG
-#if RENDER != R_R1
+
     CMD1(CCC_BuildSSA, "build_ssa");
-#endif
+
     CMD4(CCC_Integer, "r__lsleep_frames", &ps_r__LightSleepFrames, 4, 30);
     CMD4(CCC_Float, "r__ssa_glod_start", &ps_r__GLOD_ssa_start, 128, 512);
     CMD4(CCC_Float, "r__ssa_glod_end", &ps_r__GLOD_ssa_end, 16, 96);
@@ -645,16 +641,10 @@ void xrRender_initconsole()
 #endif // DEBUG
     CMD4(CCC_Float, "r__wallmark_ttl", &ps_r__WallmarkTTL, 1.0f, 10.f * 60.f);
 
-#if RENDER == R_R1
-    CMD4(CCC_Integer, "r__supersample", &ps_r__Supersample, 1, 8);
-#endif
+
 
     Fvector tw_min, tw_max;
 
-#if RENDER == R_R2
-    // Texture manager
-    CMD4(CCC_Integer, "texture_lod", &psTextureLOD, 0, 4);
-#endif
 
     CMD4(CCC_Float, "r__geometry_lod", &ps_r__LOD, 1.f, 3.f); // AVO: extended from 1.2f to 3.f
     //.	CMD4(CCC_Float,		"r__geometry_lod_pow",	&ps_r__LOD_Power,			0,		2		);
@@ -680,30 +670,9 @@ void xrRender_initconsole()
 
     CMD3(CCC_Mask, "r__actor_shadow", &ps_r2_ls_flags_ext, R2FLAGEXT_ACTOR_SHADOW);
 
-    // R1
-#if RENDER == R_R1
-    CMD4(CCC_Float, "r1_ssa_lod_a", &ps_r1_ssaLOD_A, 16, 96);
-    CMD4(CCC_Float, "r1_ssa_lod_b", &ps_r1_ssaLOD_B, 16, 64);
-    CMD4(CCC_Float, "r1_lmodel_lerp", &ps_r1_lmodel_lerp, 0, 0.333f);
-    CMD3(CCC_Mask, "r1_dlights", &ps_r1_flags, R1FLAG_DLIGHTS);
-    CMD4(CCC_Float, "r1_dlights_clip", &ps_r1_dlights_clip, 10.f, 150.f);
-#endif
+
     CMD4(CCC_Float, "r1_pps_u", &ps_r1_pps_u, -1.f, +1.f);
     CMD4(CCC_Float, "r1_pps_v", &ps_r1_pps_v, -1.f, +1.f);
-
-#if RENDER == R_R1
-    // R1-specific
-    CMD4(CCC_Integer, "r1_glows_per_frame", &ps_r1_GlowsPerFrame, 2, 32);
-    CMD3(CCC_Mask, "r1_detail_textures", &ps_r2_ls_flags, R1FLAG_DETAIL_TEXTURES);
-
-    CMD4(CCC_Float, "r1_fog_luminance", &ps_r1_fog_luminance, 0.2f, 5.f);
-
-    // Software Skinning
-    // 0 - disabled (renderer can override)
-    // 1 - enabled
-    // 2 - forced hardware skinning (renderer can not override)
-    CMD4(CCC_Integer, "r1_software_skinning", &ps_r1_SoftwareSkinning, 0, 2);
-#endif
 
     // R2
     CMD4(CCC_Float, "r2_ssa_lod_a", &ps_r2_ssaLOD_A, 16, 96);
@@ -769,9 +738,8 @@ void xrRender_initconsole()
     CMD3(CCC_Token, "r__smap_size", &r2_SmapSize, SmapSizeToken);
     CMD4(CCC_Float, "r2_sun_near", &ps_r2_sun_near, 1.f, 100.f /*50.f*/);
 
-#if RENDER != R_R1
     CMD4(CCC_Float, "r2_sun_far", &OLES_SUN_LIMIT_27_01_07, 51.f, 180.f);
-#endif
+
     CMD4(CCC_Float, "r2_sun_near_border", &ps_r2_sun_near_border, .5f, 3.0f);
     CMD4(CCC_Float, "r2_sun_depth_far_scale", &ps_r2_sun_depth_far_scale, 0.5, 1.5);
     CMD4(CCC_Float, "r2_sun_depth_far_bias", &ps_r2_sun_depth_far_bias, -0.5, +0.5);
@@ -866,11 +834,11 @@ void xrRender_initconsole()
     CMD4(CCC_Integer, "r__no_scale_on_fade", &ps_no_scale_on_fade, 0, 1); // Alundaio
 
     //	Allow real-time fog config reload
-#if (RENDER == R_R3) || (RENDER == R_R4)
+#if (RENDER == R_R4)
 #ifdef DEBUG
     CMD1(CCC_Fog_Reload, "r3_fog_reload");
 #endif //	DEBUG
-#endif //	(RENDER == R_R3) || (RENDER == R_R4)
+#endif //	(RENDER == R_R4)
 
     CMD3(CCC_Mask, "r3_dynamic_wet_surfaces", &ps_r2_ls_flags, R3FLAG_DYN_WET_SURF);
     CMD4(CCC_Integer, "r3_dynamic_wet_surfaces_sm_res", &ps_r3_dyn_wet_surf_sm_res, 64, 2048);
