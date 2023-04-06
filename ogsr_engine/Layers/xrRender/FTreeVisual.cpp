@@ -8,15 +8,6 @@
 
 #include "ftreevisual.h"
 
-shared_str m_xform;
-shared_str m_xform_v;
-shared_str c_consts;
-shared_str c_wave;
-shared_str c_wind;
-shared_str c_c_bias;
-shared_str c_c_scale;
-shared_str c_c_sun;
-
 FTreeVisual::FTreeVisual(void) {}
 
 FTreeVisual::~FTreeVisual(void) {}
@@ -72,16 +63,6 @@ void FTreeVisual::Load(const char* N, IReader* data, u32 dwFlags)
 
     // Geom
     rm_geom.create(vFormat, p_rm_Vertices, p_rm_Indices);
-
-    // Get constants
-    m_xform = "m_xform";
-    m_xform_v = "m_xform_v";
-    c_consts = "consts";
-    c_wave = "wave";
-    c_wind = "wind";
-    c_c_bias = "c_bias";
-    c_c_scale = "c_scale";
-    c_c_sun = "c_sun";
 }
 
 struct FTreeVisual_setup
@@ -133,6 +114,19 @@ void FTreeVisual::Render(float LOD)
     RCache.tree.set_c_bias(s * c_bias.rgb.x, s * c_bias.rgb.y, s * c_bias.rgb.z, s * c_bias.hemi); // bias
 
     RCache.tree.set_c_sun(s * c_scale.sun, s * c_bias.sun, 0, 0); // sun
+
+    static shared_str strBendersPos{"benders_pos"};
+    static shared_str strBendersSetup{"benders_setup"};
+
+    RCache.set_c(strBendersSetup, Fvector4{ps_ssfx_int_grass_params_1.x, ps_ssfx_int_grass_params_1.y, ps_ssfx_int_grass_params_1.z, ps_r2_ls_flags_ext.test(SSFX_INTER_GRASS) ? ps_ssfx_grass_interactive.y : 0.f});
+
+    if (ps_r2_ls_flags_ext.test(SSFX_INTER_GRASS))
+    {
+        Fvector4* c_grass{};
+        RCache.get_ConstantDirect(strBendersPos, sizeof grass_shader_data.pos, reinterpret_cast<void**>(&c_grass), nullptr, nullptr);
+        if (c_grass)
+            std::memcpy(c_grass, &grass_shader_data.pos, sizeof grass_shader_data.pos);
+    }
 }
 
 #define PCOPY(a) a = pFrom->a

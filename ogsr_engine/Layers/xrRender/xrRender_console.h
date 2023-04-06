@@ -139,6 +139,7 @@ extern ECORE_API float ps_r2_visor_refl_intensity;
 extern ECORE_API float ps_r2_visor_refl_radius;
 
 extern ECORE_API float ps_ssfx_wpn_dof_2;
+extern Fvector3 ps_ssfx_int_grass_params_1;
 
 // textures
 extern ECORE_API int psTextureLOD;
@@ -204,7 +205,7 @@ enum
     R_FLAGEXT_HOM_DEPTH_DRAW = (1 << 7),
     R2FLAGEXT_SUN_ZCULLING = (1 << 8),
     R2FLAGEXT_SUN_OLD = (1 << 9),
-    // = 1 << 10,
+    SSFX_INTER_GRASS = 1 << 10,
     R2FLAGEXT_DISABLE_HOM = 1 << 11,
     R2FLAGEXT_RAIN_DROPS = 1 << 12,
     R2FLAGEXT_RAIN_DROPS_CONTROL = 1 << 13,

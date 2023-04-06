@@ -125,8 +125,7 @@ Flags32 ps_r2_ls_flags = {R2FLAG_SUN
                           | R3FLAG_MSAA_OPT | R3FLAG_GBUFFER_OPT |  R2FLAG_STEEP_PARALLAX |
                           R2FLAG_SUN_FOCUS | R2FLAG_SUN_TSM | R2FLAG_TONEMAP | R2FLAG_VOLUMETRIC_LIGHTS}; // r2-only
 
-Flags32 ps_r2_ls_flags_ext = {
-    R2FLAGEXT_ENABLE_TESSELLATION | R2FLAGEXT_RAIN_DROPS | R2FLAGEXT_RAIN_DROPS_CONTROL | R2FLAGEXT_SSLR | SSFX_HEIGHT_FOG};
+Flags32 ps_r2_ls_flags_ext = {R2FLAGEXT_ENABLE_TESSELLATION | R2FLAGEXT_RAIN_DROPS | R2FLAGEXT_RAIN_DROPS_CONTROL | R2FLAGEXT_SSLR | SSFX_HEIGHT_FOG | SSFX_INTER_GRASS};
 
 BOOL ps_no_scale_on_fade = 0; // Alundaio
 float ps_r2_df_parallax_h = 0.02f;
@@ -179,6 +178,7 @@ float ps_r2_slight_fade = 2.0f; // 1.f
 
 // Screen Space Shaders Stuff
 Fvector3 ps_ssfx_grass_interactive{1.f, static_cast<float>(GRASS_SHADER_DATA_COUNT), 150.f};
+Fvector3 ps_ssfx_int_grass_params_1{1.0f, 1.0f, 1.0f};
 float ps_ssfx_wpn_dof_2 = 0.5f;
 
 //	x - min (0), y - focus (1.4), z - max (100)
@@ -857,10 +857,12 @@ void xrRender_initconsole()
     // Screen Space Shaders
     CMD4(CCC_Float, "ssfx_wpn_dof_2", &ps_ssfx_wpn_dof_2, 0, 1);
     CMD4(CCC_Vector3, "ssfx_grass_interactive", &ps_ssfx_grass_interactive, (Fvector3{}), (Fvector3{1.f, static_cast<float>(GRASS_SHADER_DATA_COUNT), 1500.f}));
+    CMD4(CCC_Vector3, "ssfx_int_grass_params_1", &ps_ssfx_int_grass_params_1, (Fvector3{}), (Fvector3{5.f, 5.f, 5.f}));
 
     CMD3(CCC_Mask, "ssfx_height_fog", &ps_r2_ls_flags_ext, SSFX_HEIGHT_FOG);
     CMD3(CCC_Mask, "ssfx_sky_debanding", &ps_r2_ls_flags_ext, SSFX_SKY_DEBANDING);
     CMD3(CCC_Mask, "ssfx_indirect_light", &ps_r2_ls_flags_ext, SSFX_INDIRECT_LIGHT);
+    CMD3(CCC_Mask, "ssfx_inter_grass", &ps_r2_ls_flags_ext, SSFX_INTER_GRASS);
     CMD3(CCC_Mask, "reflections_only_on_terrain", &ps_r2_ls_flags_ext, REFLECTIONS_ONLY_ON_TERRAIN);
     CMD3(CCC_Mask, "reflections_only_on_puddles", &ps_r2_ls_flags_ext, REFLECTIONS_ONLY_ON_PUDDLES);
 

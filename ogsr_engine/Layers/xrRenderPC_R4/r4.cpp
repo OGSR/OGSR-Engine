@@ -1047,7 +1047,6 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
     char c_sun_quality[10]{};
     char c_ssao[10]{};
     char samples[10]{};
-    char c_inter_grass[10]{};
 
     sprintf_s(c_smapsize, "%d", o.smapsize);
     defines.emplace_back("SMAP_size", c_smapsize);
@@ -1168,12 +1167,6 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
 
     if (ps_r2_ls_flags_ext.test(R2FLAGEXT_TERRAIN_PARALLAX))
         defines.emplace_back("TERRAIN_PARALLAX_ENABNLED", "1");
-
-    if (ps_ssfx_grass_interactive.y > 0.f)
-    {
-        xr_sprintf(c_inter_grass, "%.0f", ps_ssfx_grass_interactive.y);
-        defines.emplace_back("SSFX_INT_GRASS", c_inter_grass);
-    }
 
     if (o.dx10_msaa)
     {

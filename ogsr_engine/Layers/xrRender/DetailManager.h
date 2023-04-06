@@ -174,16 +174,9 @@ public:
     u32 hw_BatchSize;
     ID3DVertexBuffer* hw_VB;
     ID3DIndexBuffer* hw_IB;
-    ref_constant hwc_consts;
-    ref_constant hwc_wave;
-    ref_constant hwc_wind;
-    ref_constant hwc_array;
-    ref_constant hwc_s_consts;
-    ref_constant hwc_s_xform;
-    ref_constant hwc_s_array;
+
     void hw_Load();
     void hw_Load_Geom();
-    void hw_Load_Shaders();
     void hw_Unload();
     void hw_Render();
 #if defined(USE_DX10) || defined(USE_DX11)

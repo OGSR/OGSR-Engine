@@ -921,6 +921,17 @@ void CActor::UpdateCL()
             wpn_cond = wpn->GetCondition();
         shader_exports.set_actor_params(Fvector{this->conditions().GetHealth(), outfit_cond, wpn_cond});
     }
+
+    // Обновление позиции актора для коллизии с травой/кустами
+    if (ps_ssfx_grass_interactive.x > 0.f)
+    {
+        // Не знаю что лучше использовать - позицию камеры или актора. Вроде для травы с позицией актора получше выглядит. Для кустов - не понятно, что лучше.
+        // grass_shader_data.pos[0].set(Device.vCameraPosition.x, Device.vCameraPosition.y, Device.vCameraPosition.z);
+        const auto& pos = Position();
+        grass_shader_data.pos[0].set(pos.x, pos.y, pos.z);
+    }
+    else
+        grass_shader_data.pos[0].set(0.f, 0.f, 0.f);
 }
 
 constexpr u32 TASKS_UPDATE_TIME = 1u;
