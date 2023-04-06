@@ -285,18 +285,16 @@ public:
             if (mask != (S->spatial.type & mask))
                 continue;
             Fsphere& sS = S->spatial.sphere;
-            int quantity;
-            float afT[2];
-            Fsphere::ERP_Result result = sS.intersect(ray.pos, ray.fwd_dir, range, quantity, afT);
-
-            if (result == Fsphere::rpOriginInside || ((result == Fsphere::rpOriginOutside) && (afT[0] < range)))
+            float dist = range;
+            Fsphere::ERP_Result result = sS.intersect(ray.pos, ray.fwd_dir, dist);
+            if (result != Fsphere::rpNone)
             {
                 if (b_nearest)
                 {
                     switch (result)
                     {
-                    case Fsphere::rpOriginInside: range = afT[0] < range ? afT[0] : range; break;
-                    case Fsphere::rpOriginOutside: range = afT[0]; break;
+                    case Fsphere::rpOriginInside: range = dist < range ? dist : range; break;
+                    case Fsphere::rpOriginOutside: range = dist; break;
                     }
                     range2 = range * range;
                 }
