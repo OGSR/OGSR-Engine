@@ -17,7 +17,6 @@ typedef struct _PROCESSOR_POWER_INFORMATION
 
 // Initialized on startup
 XRCORE_API Fmatrix Fidentity;
-XRCORE_API Dmatrix Didentity;
 XRCORE_API CRandom Random;
 
 /*
@@ -164,7 +163,6 @@ void _initialize_cpu()
     CPU::qpc_freq = Freq.QuadPart;
 
     Fidentity.identity(); // Identity matrix
-    Didentity.identity(); // Identity matrix
     pvInitializeStatics(); // Lookup table for compressed normals
     FPU::initialize();
 }

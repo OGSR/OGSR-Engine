@@ -6,10 +6,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "edit_actions.h"
 #include "line_edit_control.h"
+#include "edit_actions.h"
 #include "xr_input.h"
-#include <locale.h>
 
 namespace text_editor
 {

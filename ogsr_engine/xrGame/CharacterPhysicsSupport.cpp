@@ -681,9 +681,8 @@ void CCharacterPhysicsSupport::ActivateShell(CObject* who)
     }
 
 //////////////////////this needs to evaluate object box//////////////////////////////////////////////////////
-#pragma todo("KRodin: V621 Consider inspecting the 'for' operator. It's possible that the loop will be executed incorrectly or won't be executed at all.")
-    for (u16 I = K->LL_BoneCount() - 1; I != u16(-1); --I)
-        K->LL_GetBoneInstance(I).reset_callback();
+    for (u16 I = K->LL_BoneCount(); I > 0;)
+        K->LL_GetBoneInstance(--I).reset_callback();
 
     if (anim_mov_ctrl) // we do not whant to move by long animation in root
         BR.set_callback_overwrite(TRUE);

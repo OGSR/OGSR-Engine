@@ -90,7 +90,7 @@ static inline void split_cmd(const std::string& str, std::string& out1, std::str
 ////////////////////////////////////////////////////////////////////////////////////////////
 static inline void strlwr(std::string& data)
 {
-    std::transform(data.begin(), data.end(), data.begin(), [](unsigned char c) { return std::tolower(c); });
+    std::transform(data.begin(), data.end(), data.begin(), [](const auto& c) { return static_cast<std::string::value_type>(std::tolower(c)); });
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
 

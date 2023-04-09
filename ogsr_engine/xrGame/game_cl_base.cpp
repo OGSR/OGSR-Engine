@@ -78,7 +78,7 @@ void game_cl_GameState::net_import_state(NET_Packet& P)
     P.r_u32(m_start_time);
     m_u16VotingEnabled = u16(P.r_u8());
     m_bServerControlHits = !!P.r_u8();
-    !!P.r_u8();
+    P.r_u8();
 
     // Players
     u16 p_count;
