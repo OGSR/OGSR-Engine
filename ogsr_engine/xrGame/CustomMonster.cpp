@@ -548,11 +548,7 @@ void CCustomMonster::eye_pp_s1()
     float new_range = eye_range, new_fov = eye_fov;
     if (g_Alive())
     {
-#ifndef USE_STALKER_VISION_FOR_MONSTERS
-        update_range_fov(new_range, new_fov, human_being() ? memory().visual().current_state().m_max_view_distance * eye_range : eye_range, eye_fov);
-#else
         update_range_fov(new_range, new_fov, memory().visual().current_state().m_max_view_distance * eye_range, eye_fov);
-#endif
     }
     // Standart visibility
     Device.Statistic->AI_Vis_Query.Begin();

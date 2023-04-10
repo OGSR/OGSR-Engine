@@ -356,10 +356,6 @@ bool CVisualMemoryManager::visible(const CGameObject* game_object, float time_de
     if (game_object->getDestroy())
         return (false);
 
-#ifndef USE_STALKER_VISION_FOR_MONSTERS
-    if (!m_stalker && !m_client)
-        return (true);
-#endif
 
     float object_distance, distance = object_visible_distance(game_object, object_distance);
 
