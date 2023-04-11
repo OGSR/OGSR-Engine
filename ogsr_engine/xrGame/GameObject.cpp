@@ -803,7 +803,7 @@ CScriptGameObject* CGameObject::lua_game_object() const
 {
     if (!m_spawned)
     {
-        Msg("!! [%s] you are trying to use a destroyed object [%s]", __FUNCTION__, cName().c_str());
+        Msg("!! [%s] you are trying to use a destroyed object name=[%s] getDestroy=%d", __FUNCTION__, cName().c_str(), getDestroy());
         LogStackTrace("!!stack trace:\n", false);
     }
 

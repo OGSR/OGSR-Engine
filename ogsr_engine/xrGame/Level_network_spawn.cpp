@@ -93,7 +93,7 @@ void CLevel::g_sv_Spawn(CSE_Abstract* E)
     auto obj = Objects.net_Find(E->ID);
     if (obj && obj->getDestroy())
     {
-        Msg("[%s]: %s[%u] already net_Spawn'ed, ProcessDestroyQueue()", __FUNCTION__, obj->cName().c_str(), obj->ID());
+        Msg("[%s]: %s[%u] already net_Spawn'ed, call ProcessDestroyQueue()", __FUNCTION__, obj->cName().c_str(), obj->ID());
         Objects.ProcessDestroyQueue();
     }
 
