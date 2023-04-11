@@ -641,6 +641,8 @@ void CVisualMemoryManager::update(float time_delta)
         xr_vector<CObject*>::const_iterator E = m_visible_objects.end();
         for (; I != E; ++I)
             add_visible_object(*I, time_delta);
+
+        m_visible_objects.clear();
     }
     STOP_PROFILE
 

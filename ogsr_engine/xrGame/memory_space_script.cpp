@@ -15,20 +15,23 @@
 
 using namespace luabind;
 
-CScriptGameObject* not_yet_visible_object(const MemorySpace::CNotYetVisibleObject& object) { return (object.m_object->lua_game_object()); }
+CScriptGameObject* not_yet_visible_object(const MemorySpace::CNotYetVisibleObject& object)
+{
+    return (object.m_object && object.m_object->m_spawned ? object.m_object->lua_game_object() : nullptr);
+}
 
 int get_sound_type(const CSoundObject& sound_object) { return ((int)sound_object.m_sound_type); }
 
 template <typename T>
 CScriptGameObject* get_memory_object(const MemorySpace::CMemoryObject<T>& memory_object)
 {
-    return (memory_object.m_object->lua_game_object());
+    return (memory_object.m_object && memory_object.m_object->m_spawned ? memory_object.m_object->lua_game_object() : nullptr);
 }
 
 CScriptGameObject* CDangerObject_object(const CDangerObject* self)
 {
     VERIFY(self);
-    return (self->object() ? self->object()->lua_game_object() : 0);
+    return (self->object() && self->object()->m_spawned ? self->object()->lua_game_object() : nullptr);
 }
 
 CScriptGameObject* CDangerObject_dependent_object(const CDangerObject* self)
@@ -38,7 +41,7 @@ CScriptGameObject* CDangerObject_dependent_object(const CDangerObject* self)
         return (0);
 
     const CGameObject* game_object = smart_cast<const CGameObject*>(self->dependent_object());
-    return (game_object ? game_object->lua_game_object() : 0);
+    return (game_object && game_object->m_spawned ? game_object->lua_game_object() : nullptr);
 }
 
 Fvector CDangerObject__position(const CDangerObject* self)
@@ -101,9 +104,7 @@ void CMemoryInfo::script_register(lua_State* L)
             .def_readonly("bone_index", &MemorySpace::CHitObject::m_bone_index)
             .def_readonly("amount", &MemorySpace::CHitObject::m_amount),
 
-        class_<MemorySpace::CVisibleObject, MemorySpace::CMemoryObject<CGameObject>>("visible_memory_object")
-        //			.def("visible",					&MemorySpace_CVisibleObject_visible)
-        ,
+        class_<MemorySpace::CVisibleObject, MemorySpace::CMemoryObject<CGameObject>>("visible_memory_object"),
 
         class_<MemorySpace::CMemoryInfo, MemorySpace::CVisibleObject>("memory_info")
             .def_readonly("visual_info", &MemorySpace::CMemoryInfo::m_visual_info)
@@ -119,12 +120,19 @@ void CMemoryInfo::script_register(lua_State* L)
             .def("object", &not_yet_visible_object),
 
         class_<CDangerObject>("danger_object")
-            .enum_("danger_type")[value("bullet_ricochet", CDangerObject::eDangerTypeBulletRicochet), value("attack_sound", CDangerObject::eDangerTypeAttackSound),
-                                  value("entity_attacked", CDangerObject::eDangerTypeEntityAttacked), value("entity_death", CDangerObject::eDangerTypeEntityDeath),
-                                  value("entity_corpse", CDangerObject::eDangerTypeFreshEntityCorpse), value("attacked", CDangerObject::eDangerTypeAttacked),
-                                  value("grenade", CDangerObject::eDangerTypeGrenade), value("enemy_sound", CDangerObject::eDangerTypeEnemySound)]
-            .enum_("danger_perceive_type")[value("visual", CDangerObject::eDangerPerceiveTypeVisual), value("sound", CDangerObject::eDangerPerceiveTypeSound),
+            .enum_("danger_type")[value("bullet_ricochet", CDangerObject::eDangerTypeBulletRicochet), 
+                                  value("attack_sound", CDangerObject::eDangerTypeAttackSound),
+                                  value("entity_attacked", CDangerObject::eDangerTypeEntityAttacked), 
+                                  value("entity_death", CDangerObject::eDangerTypeEntityDeath),
+                                  value("entity_corpse", CDangerObject::eDangerTypeFreshEntityCorpse), 
+                                  value("attacked", CDangerObject::eDangerTypeAttacked),
+                                  value("grenade", CDangerObject::eDangerTypeGrenade), 
+                                  value("enemy_sound", CDangerObject::eDangerTypeEnemySound)]
+
+            .enum_("danger_perceive_type")[value("visual", CDangerObject::eDangerPerceiveTypeVisual), 
+                                           value("sound", CDangerObject::eDangerPerceiveTypeSound),
                                            value("hit", CDangerObject::eDangerPerceiveTypeHit)]
+
             .def(const_self == other<CDangerObject>())
             .def("position", &CDangerObject__position)
             .def("time", &CDangerObject::time)

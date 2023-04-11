@@ -14,8 +14,6 @@ IC const CVisualMemoryManager::VISIBLES& CVisualMemoryManager::objects() const
     return *m_objects;
 }
 
-IC const CVisualMemoryManager::RAW_VISIBLES& CVisualMemoryManager::raw_objects() const { return (m_visible_objects); }
-
 IC const CVisualMemoryManager::NOT_YET_VISIBLES& CVisualMemoryManager::not_yet_visible_objects() const { return (m_not_yet_visible_objects); }
 
 IC void CVisualMemoryManager::set_squad_objects(VISIBLES* squad_objects)
