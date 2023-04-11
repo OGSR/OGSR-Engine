@@ -310,10 +310,7 @@ struct CRemoveOfflinePredicate
 {
     bool operator()(const CSoundObject& object) const
     {
-        if (!object.m_object)
-            return (false);
-
-        return (!!object.m_object->H_Parent());
+        return (!object.m_object || !!object.m_object->getDestroy() || object.m_object->H_Parent());
     }
 };
 
