@@ -375,10 +375,12 @@ bool CVisualMemoryManager::visible(const CGameObject* game_object, float time_de
 
     float luminocity = object_luminocity(game_object);
     float trans;
-    if (current_state().m_transparency_factor > 0 && smart_cast<const CActor*>(game_object))
+    if (current_state().m_transparency_factor > 0.f && smart_cast<const CActor*>(game_object))
     {
         trans = visible_transparency_threshold(game_object);
-        trans = trans < 0.f ? 1.f : (trans * current_state().m_transparency_factor);
+        if (trans < 1.f)
+            trans = trans < 0.f ? 1.f : (trans * current_state().m_transparency_factor);
+
         clamp(trans, 0.f, 1.f);
     }
     else
