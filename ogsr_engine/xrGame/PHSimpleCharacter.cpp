@@ -700,14 +700,19 @@ void CPHSimpleCharacter::PhTune(dReal step)
         dVector3 dif = {current_pos[0] - m_jump_depart_position[0], current_pos[1] - m_jump_depart_position[1], current_pos[2] - m_jump_depart_position[2]};
         dReal amag = _sqrt(m_acceleration.x * m_acceleration.x + m_acceleration.z * m_acceleration.z);
         if (amag > 0.f)
+        {
             if (dif[0] * m_acceleration.x / amag + dif[2] * m_acceleration.z / amag < 0.3f)
             {
                 dBodyAddForce(m_body, m_acceleration.x / amag * 1000.f, 0, m_acceleration.z / amag * 1000.f);
             }
-        if (proj < 0.f)
-        {
-            dReal vmag = chVel[0] * chVel[0] + chVel[2] * chVel[2];
-            dBodyAddForce(m_body, chVel[0] / vmag / amag * proj * 3000.f, 0, chVel[2] / vmag / amag * proj * 3000.f);
+            if (proj < 0.f)
+            {
+                dReal vmag = chVel[0] * chVel[0] + chVel[2] * chVel[2];
+                if (vmag > 0.f)
+                {
+                    dBodyAddForce(m_body, chVel[0] / vmag / amag * proj * 3000.f, 0, chVel[2] / vmag / amag * proj * 3000.f);
+                }
+            }
         }
     }
     // else
