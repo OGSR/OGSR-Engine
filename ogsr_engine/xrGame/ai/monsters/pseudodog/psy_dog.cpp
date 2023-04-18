@@ -170,6 +170,7 @@ u8 CPsyDog::get_phantoms_count() { return u8(m_storage.size()); }
 //////////////////////////////////////////////////////////////////////////
 CPsyDogPhantom::CPsyDogPhantom() {}
 CPsyDogPhantom::~CPsyDogPhantom() {}
+
 BOOL CPsyDogPhantom::net_Spawn(CSE_Abstract* dc)
 {
     if (!inherited::net_Spawn(dc))
@@ -279,12 +280,16 @@ void CPsyDogPhantom::net_Destroy()
     Center(center);
     PlayParticles(m_particles_disappear, center, Fvector().set(0.f, 1.f, 0.f));
 
-    if (m_parent && !is_wait_to_destroy_object())
+    if (!is_wait_to_destroy_object())
     {
-        m_parent->unregister_phantom(this);
-        m_parent = nullptr;
-        m_parent_id = 0xffff;
-    }
+        if (m_parent)
+        {
+            m_parent->unregister_phantom(this);
+            m_parent = nullptr;
+        }
+
+        destroy_from_parent();
+    }        
 
     inherited::net_Destroy();
 }
@@ -307,12 +312,15 @@ void CPsyDogPhantom::try_to_register_to_parent()
         CPsyDog* dog = smart_cast<CPsyDog*>(obj);
         VERIFY(dog);
 
-        m_parent = dog;
-        m_parent->register_phantom(this);
+        if (dog)
+        {
+            m_parent = dog;
+            m_parent->register_phantom(this);
 
-        movement().restrictions().add_restrictions(m_parent->movement().restrictions().out_restrictions(), m_parent->movement().restrictions().in_restrictions());
+            movement().restrictions().add_restrictions(m_parent->movement().restrictions().out_restrictions(), m_parent->movement().restrictions().in_restrictions());
 
-        m_state = eWaitToAppear;
+            m_state = eWaitToAppear;
+        }
     }
 }
 
