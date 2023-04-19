@@ -498,12 +498,12 @@ void CResourceManager::LS_Load()
                  //.def("texture",						&adopt_sampler::_texture		,return_reference_to(_1))
                  //.def("project",						&adopt_sampler::_projective		,return_reference_to(_1))
                  //.def("clamp",						&adopt_sampler::_clamp			,return_reference_to(_1))
-                 //.def("wrap",						&adopt_sampler::_wrap			,return_reference_to(_1))
+                 //.def("wrap",						    &adopt_sampler::_wrap			,return_reference_to(_1))
                  //.def("mirror",						&adopt_sampler::_mirror			,return_reference_to(_1))
                  //.def("f_anisotropic",				&adopt_sampler::_f_anisotropic	,return_reference_to(_1))
                  //.def("f_trilinear",					&adopt_sampler::_f_trilinear	,return_reference_to(_1))
                  //.def("f_bilinear",					&adopt_sampler::_f_bilinear		,return_reference_to(_1))
-                 //.def("f_linear",					&adopt_sampler::_f_linear		,return_reference_to(_1))
+                 //.def("f_linear",					    &adopt_sampler::_f_linear		,return_reference_to(_1))
                  //.def("f_none",						&adopt_sampler::_f_none			,return_reference_to(_1))
                  //.def("fmin_none",					&adopt_sampler::_fmin_none		,return_reference_to(_1))
                  //.def("fmin_point",					&adopt_sampler::_fmin_point		,return_reference_to(_1))
@@ -529,6 +529,7 @@ void CResourceManager::LS_Load()
                      .def("zb", &adopt_compiler::_ZB, return_reference_to<1>())
                      .def("blend", &adopt_compiler::_blend, return_reference_to<1>())
                      .def("aref", &adopt_compiler::_aref, return_reference_to<1>())
+
                      //	For compatibility only
                      .def("dx10color_write_enable", &adopt_compiler::_dx10color_write_enable, return_reference_to<1>())
                      .def("color_write_enable", &adopt_compiler::_dx10color_write_enable, return_reference_to<1>())
@@ -542,21 +543,38 @@ void CResourceManager::LS_Load()
                      .def("dx10sampler", &adopt_compiler::_dx10sampler) // returns sampler-object
                      .def("dx10Options", &adopt_compiler::_dx10Options), // returns options-object
 
-                 class_<adopt_blend>("blend").enum_(
-                     "blend")[value("zero", int(D3DBLEND_ZERO)), value("one", int(D3DBLEND_ONE)), value("srccolor", int(D3DBLEND_SRCCOLOR)),
-                              value("invsrccolor", int(D3DBLEND_INVSRCCOLOR)), value("srcalpha", int(D3DBLEND_SRCALPHA)), value("invsrcalpha", int(D3DBLEND_INVSRCALPHA)),
-                              value("destalpha", int(D3DBLEND_DESTALPHA)), value("invdestalpha", int(D3DBLEND_INVDESTALPHA)), value("destcolor", int(D3DBLEND_DESTCOLOR)),
-                              value("invdestcolor", int(D3DBLEND_INVDESTCOLOR)), value("srcalphasat", int(D3DBLEND_SRCALPHASAT))],
+                 class_<adopt_blend>("blend").enum_("blend")[
+                        value("zero", int(D3DBLEND_ZERO)), 
+                        value("one", int(D3DBLEND_ONE)), 
+                        value("srccolor", int(D3DBLEND_SRCCOLOR)),
+                        value("invsrccolor", int(D3DBLEND_INVSRCCOLOR)), 
+                        value("srcalpha", int(D3DBLEND_SRCALPHA)), 
+                        value("invsrcalpha", int(D3DBLEND_INVSRCALPHA)),
+                        value("destalpha", int(D3DBLEND_DESTALPHA)), 
+                        value("invdestalpha", int(D3DBLEND_INVDESTALPHA)), 
+                        value("destcolor", int(D3DBLEND_DESTCOLOR)),
+                        value("invdestcolor", int(D3DBLEND_INVDESTCOLOR)), 
+                        value("srcalphasat", int(D3DBLEND_SRCALPHASAT))],
 
-                 class_<adopt_cmp_func>("cmp_func")
-                     .enum_("cmp_func")[value("never", int(D3DCMP_NEVER)), value("less", int(D3DCMP_LESS)), value("equal", int(D3DCMP_EQUAL)),
-                                        value("lessequal", int(D3DCMP_LESSEQUAL)), value("greater", int(D3DCMP_GREATER)), value("notequal", int(D3DCMP_NOTEQUAL)),
-                                        value("greaterequal", int(D3DCMP_GREATEREQUAL)), value("always", int(D3DCMP_ALWAYS))],
+                 class_<adopt_cmp_func>("cmp_func").enum_("cmp_func")[
+                        value("never", int(D3DCMP_NEVER)), 
+                        value("less", int(D3DCMP_LESS)), 
+                        value("equal", int(D3DCMP_EQUAL)),
+                        value("lessequal", int(D3DCMP_LESSEQUAL)), 
+                        value("greater", int(D3DCMP_GREATER)), 
+                        value("notequal", int(D3DCMP_NOTEQUAL)),
+                        value("greaterequal", int(D3DCMP_GREATEREQUAL)), 
+                        value("always", int(D3DCMP_ALWAYS))],
 
-                 class_<adopt_stencil_op>("stencil_op")
-                     .enum_("stencil_op")[value("keep", int(D3DSTENCILOP_KEEP)), value("zero", int(D3DSTENCILOP_ZERO)), value("replace", int(D3DSTENCILOP_REPLACE)),
-                                          value("incrsat", int(D3DSTENCILOP_INCRSAT)), value("decrsat", int(D3DSTENCILOP_DECRSAT)), value("invert", int(D3DSTENCILOP_INVERT)),
-                                          value("incr", int(D3DSTENCILOP_INCR)), value("decr", int(D3DSTENCILOP_DECR))]];
+                 class_<adopt_stencil_op>("stencil_op").enum_("stencil_op")[
+                        value("keep", int(D3DSTENCILOP_KEEP)), 
+                        value("zero", int(D3DSTENCILOP_ZERO)), 
+                        value("replace", int(D3DSTENCILOP_REPLACE)),
+                        value("incrsat", int(D3DSTENCILOP_INCRSAT)), 
+                        value("decrsat", int(D3DSTENCILOP_DECRSAT)), 
+                        value("invert", int(D3DSTENCILOP_INVERT)),
+                        value("incr", int(D3DSTENCILOP_INCR)), 
+                        value("decr", int(D3DSTENCILOP_DECR))]];
 
     // load shaders
     xr_vector<char*>* folder = FS.file_list_open("$game_shaders$", ::Render->getShaderPath(), FS_ListFiles | FS_RootOnly);
@@ -653,7 +671,7 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
         {
             // Analyze possibility to detail this shader
             C.iElement = 0;
-            //.		C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
+            //.	C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
             // C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
             C.bDetail = dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
 
@@ -667,7 +685,7 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
             if (OBJECT_2(s_shader, "normal", LUA_TFUNCTION))
             {
                 C.iElement = 0;
-                //.			C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
+                //.	C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
                 // C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
                 C.bDetail = dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
                 S.E[0] = C._lua_Compile(s_shader, "normal");
@@ -678,7 +696,7 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
         if (OBJECT_2(s_shader, "normal", LUA_TFUNCTION))
         {
             C.iElement = 1;
-            //.		C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
+            //.	C.bDetail			= dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
             // C.bDetail			= dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
             C.bDetail = dxRenderDeviceRender::Instance().Resources->m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
             S.E[1] = C._lua_Compile(s_shader, "normal");
@@ -690,7 +708,6 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
             C.iElement = 2;
             C.bDetail = FALSE;
             S.E[2] = C._lua_Compile(s_shader, "l_point");
-            ;
         }
 
         // Compile element
@@ -699,7 +716,6 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
             C.iElement = 3;
             C.bDetail = FALSE;
             S.E[3] = C._lua_Compile(s_shader, "l_spot");
-            ;
         }
 
         // Compile element

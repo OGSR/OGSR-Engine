@@ -199,9 +199,10 @@ void CPatrolPathScript::script_register(lua_State* L)
                   .def("add_vertex", &CPatrolPath::add_vertex)];
 }
 
-decltype(auto) script_texture_find(const char* name)
+luabind::object script_texture_find(const char* name)
 {
     auto textures = Device.m_pRender->GetResourceManager()->FindTexture(name);
+
     auto table = luabind::newtable(ai().script_engine().lua());
 
     for (const auto& tex : textures)

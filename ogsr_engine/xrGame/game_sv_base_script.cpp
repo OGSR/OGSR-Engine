@@ -83,61 +83,77 @@ LPCSTR generate_id()
 #pragma optimize("s", on)
 void game_sv_GameState::script_register(lua_State* L)
 {
-    module(L,
-           "game")[class_<xrTime>("CTime")
-                       .enum_("date_format")[value("DateToDay", int(InventoryUtilities::edpDateToDay)), value("DateToMonth", int(InventoryUtilities::edpDateToMonth)),
-                                             value("DateToYear", int(InventoryUtilities::edpDateToYear))]
-                       .enum_("time_format")[value("TimeToHours", int(InventoryUtilities::etpTimeToHours)), value("TimeToMinutes", int(InventoryUtilities::etpTimeToMinutes)),
-                                             value("TimeToSeconds", int(InventoryUtilities::etpTimeToSeconds)), value("TimeToMilisecs", int(InventoryUtilities::etpTimeToMilisecs))]
-                       .def(constructor<>())
-                       .def(constructor<const xrTime&>())
-                       .def(const_self < xrTime())
-                       .def(const_self <= xrTime())
-                       .def(const_self > xrTime())
-                       .def(const_self >= xrTime())
-                       .def(const_self == xrTime())
-                       .def(self + xrTime())
-                       .def(self - xrTime())
+    module(L,"game")[
+        class_<xrTime>("CTime")
+           .enum_("date_format")[
+                value("DateToDay", int(InventoryUtilities::edpDateToDay)), 
+                value("DateToMonth", int(InventoryUtilities::edpDateToMonth)),
+                value("DateToYear", int(InventoryUtilities::edpDateToYear))
+           ]
+           .enum_("time_format")[
+                value("TimeToHours", int(InventoryUtilities::etpTimeToHours)), 
+                value("TimeToMinutes", int(InventoryUtilities::etpTimeToMinutes)),
+                value("TimeToSeconds", int(InventoryUtilities::etpTimeToSeconds)), 
+                value("TimeToMilisecs", int(InventoryUtilities::etpTimeToMilisecs))
+           ]
+           .def(constructor<>())
+           .def(constructor<const xrTime&>())
+           .def(const_self < xrTime())
+           .def(const_self <= xrTime())
+           .def(const_self > xrTime())
+           .def(const_self >= xrTime())
+           .def(const_self == xrTime())
+           .def(self + xrTime())
+           .def(self - xrTime())
 
-                       .def("diffSec", &xrTime::diffSec_script)
-                       .def("add", &xrTime::add_script)
-                       .def("sub", &xrTime::sub_script)
+           .def("diffSec", &xrTime::diffSec_script)
+           .def("add", &xrTime::add_script)
+           .def("sub", &xrTime::sub_script)
 
-                       .def("setHMS", &xrTime::setHMS)
-                       .def("setHMSms", &xrTime::setHMSms)
-                       .def("set", &xrTime::set)
-                       .def("get", &xrTime::get, out_value<2>() + out_value<3>() + out_value<4>() + out_value<5>() + out_value<6>() + out_value<7>() + out_value<8>())
-                       .def("dateToString", &xrTime::dateToString)
-                       .def("timeToString", &xrTime::timeToString),
+           .def("setHMS", &xrTime::setHMS)
+           .def("setHMSms", &xrTime::setHMSms)
+           .def("set", &xrTime::set)
+           .def("get", &xrTime::get,
+                pure_out_value<2>() + pure_out_value<3>() + pure_out_value<4>() + pure_out_value<5>() + pure_out_value<6>() + pure_out_value<7>() + pure_out_value<8>())
 
-
-                   // declarations
-                   def("time", &get_time), def("get_game_time", &get_time_struct),
-                   //	def("get_surge_time",	Game::get_surge_time),
-                   //	def("get_object_by_name",Game::get_object_by_name),
-
-                   def("start_tutorial", &start_tutorial), def("stop_tutorial", &stop_tutorial), def("has_active_tutorial", &has_active_tutotial),
-                   def("translate_string", &translate_string),
-                   def("play_hud_motion", PlayHudMotion), def("stop_hud_motion", StopHudMotion), def("get_motion_length", MotionLength),
-                   def("hud_motion_allowed", AllowHudMotion),
-                   def("play_hud_anm", PlayBlendAnm), def("stop_hud_anm", StopBlendAnm), def("stop_all_hud_anms", StopAllBlendAnms),
-                   def("set_hud_anm_time", SetBlendAnmTime),
-                   def("generate_id", &generate_id)
+           .def("dateToString", &xrTime::dateToString)
+           .def("timeToString", &xrTime::timeToString),
 
 
+       // declarations
+       def("time", &get_time), 
+       def("get_game_time", &get_time_struct),
+
+       def("start_tutorial", &start_tutorial), 
+       def("stop_tutorial", &stop_tutorial),
+       def("has_active_tutorial", &has_active_tutotial),
+
+       def("translate_string", &translate_string),
+
+       def("play_hud_motion", PlayHudMotion), 
+       def("stop_hud_motion", StopHudMotion), 
+       def("get_motion_length", MotionLength),
+       def("hud_motion_allowed", AllowHudMotion),
+       def("play_hud_anm", PlayBlendAnm), 
+       def("stop_hud_anm", StopBlendAnm), 
+       def("stop_all_hud_anms", StopAllBlendAnms),
+       def("set_hud_anm_time", SetBlendAnmTime),
+       //def("set_next_hud_motion_speed", SetNextHudMotionSpeed),
+
+       def("generate_id", &generate_id)
     ];
 
-    module(
-        L)[class_<enum_exporter<EGamePlayerFlags>>("game_player_flags")
+    module(L)[
+            class_<enum_exporter<EGamePlayerFlags>>("game_player_flags")
                .enum_("flags")[value("GAME_PLAYER_FLAG_LOCAL", int(GAME_PLAYER_FLAG_LOCAL))],
 
-           class_<enum_exporter<EGamePhases>>("game_phases")
-               .enum_("phases")[value("GAME_PHASE_NONE", int(GAME_PHASE_NONE)), value("GAME_PHASE_INPROGRESS", int(GAME_PHASE_INPROGRESS)),
+            class_<enum_exporter<EGamePhases>>("game_phases")
+               .enum_("phases")[value("GAME_PHASE_NONE", int(GAME_PHASE_NONE)), 
+                                value("GAME_PHASE_INPROGRESS", int(GAME_PHASE_INPROGRESS)),
                                 value("GAME_PHASE_PENDING", int(GAME_PHASE_PENDING))],
 
            class_<enum_exporter<EGameMessages>>("game_messages")
-               .enum_(
-                   "messages")[value("GAME_EVENT_PLAYER_CONNECTED", int(GAME_EVENT_PLAYER_CONNECTED))]
+               .enum_("messages")[value("GAME_EVENT_PLAYER_CONNECTED", int(GAME_EVENT_PLAYER_CONNECTED))]
 
     ];
 }

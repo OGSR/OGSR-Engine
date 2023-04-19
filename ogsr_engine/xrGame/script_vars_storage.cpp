@@ -641,6 +641,12 @@ int get_stored_vars(lua_State* L) { return lua_pushsvt(L, &g_ScriptVars); }
 void CScriptVarsStorage::script_register(lua_State* L)
 {
     g_ScriptVars.set_name("g_ScriptVars");
-    module(L)[def("get_stored_vars", &get_stored_vars, raw<1>()), def("vars_table_assign", &script_vars_assign, raw<1>()), def("vars_table_create", &script_vars_create, raw<1>()),
-              def("vars_table_export", &script_vars_export, raw<1>()), def("vars_table_import", &script_vars_import, raw<1>())];
+
+    module(L)[
+        def("get_stored_vars", &get_stored_vars, raw<1>()), 
+        def("vars_table_assign", &script_vars_assign, raw<1>()), 
+        def("vars_table_create", &script_vars_create, raw<1>()),
+        def("vars_table_export", &script_vars_export, raw<1>()), 
+        def("vars_table_import", &script_vars_import, raw<1>())
+    ];
 }

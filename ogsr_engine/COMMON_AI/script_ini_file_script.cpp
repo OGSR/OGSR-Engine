@@ -60,7 +60,7 @@ void CScriptIniFile::script_register(lua_State* L)
                   .def("r_s32", &CScriptIniFile::r_s32)
                   .def("r_float", &CScriptIniFile::r_float)
                   .def("r_vector", &CScriptIniFile::r_fvector3)
-			      .def("r_line",			&::r_line, out_value<4>() + out_value<5>())
+                  .def("r_line", &::r_line, pure_out_value<4>() + pure_out_value<5>())
 
         .def("w_bool", &CScriptIniFile::w_bool)
                   .def("w_string", &CScriptIniFile::w_string)
