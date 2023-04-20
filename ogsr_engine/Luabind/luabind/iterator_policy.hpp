@@ -56,6 +56,7 @@ namespace luabind { namespace detail
 			, end(e)
 		{}
 
+	private:
 		Iter start;
 		Iter end;
 	};
@@ -101,6 +102,79 @@ namespace luabind { namespace detail
 		};
 	};
 
+    template <typename Iter>
+    struct iterator_state_safe
+    {
+        typedef iterator_state_safe<Iter> self_t;
+
+        static int step(lua_State* L)
+        {
+            self_t& state = *static_cast<self_t*>(lua_touserdata(L, lua_upvalueindex(1)));
+
+            while (state.start != state.end && !(*state.start).is_valid())
+                ++state.start;
+
+            if (state.start == state.end)
+            {
+                lua_pushnil(L);
+            }
+            else
+            {
+                convert_to_lua(L, *state.start);
+                ++state.start;
+            }
+
+            return 1;
+        }
+
+        iterator_state_safe(const Iter& s, const Iter& e) : start(s), end(e) {}
+
+    private:
+        Iter start;
+        Iter end;
+    };
+
+    struct iterator_converter_safe
+    {
+        template <typename T>
+        void apply(lua_State* L, const T& c)
+        {
+            typedef typename T::const_iterator iter_t;
+            typedef iterator_state_safe<iter_t> state_t;
+
+            // note that this should be destructed, for now.. just hope that iterator
+            // is a pod
+            void* iter = lua_newuserdata(L, sizeof(state_t));
+            new (iter) state_t(c.begin(), c.end());
+            lua_pushcclosure(L, state_t::step, 1);
+        }
+
+        template <typename T>
+        void apply(lua_State* L, T& c)
+        {
+            typedef typename T::iterator iter_t;
+            typedef iterator_state_safe<iter_t> state_t;
+
+            // note that this should be destructed, for now.. just hope that iterator
+            // is a pod
+            void* iter = lua_newuserdata(L, sizeof(state_t));
+            new (iter) state_t(c.begin(), c.end());
+            lua_pushcclosure(L, state_t::step, 1);
+        }
+    };
+
+    struct iterator_policy_safe : conversion_policy<0>
+    {
+        static void precall(lua_State*, const index_map&) {}
+        static void postcall(lua_State*, const index_map&) {}
+
+        template <typename T, Direction>
+        struct generate_converter
+        {
+            typedef iterator_converter_safe type;
+        };
+    };
+
 }}
 
 namespace luabind
@@ -108,5 +182,7 @@ namespace luabind
 	namespace
 	{
 		detail::policy_cons<detail::iterator_policy> return_stl_iterator;
+
+	    detail::policy_cons<detail::iterator_policy_safe> return_stl_safe_iterator;
 	}
 }

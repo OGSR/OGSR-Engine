@@ -68,9 +68,9 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
         .def("angle_cover",
              (const CCoverPoint* (CScriptGameObject::*)(const Fvector&, float, const Fvector&, float, float, u32, const luabind::functor<bool>&))(&CScriptGameObject::angle_cover))
         .def("spawn_ini", &CScriptGameObject::spawn_ini)
-        .def("memory_visible_objects", &CScriptGameObject::memory_visible_objects, return_stl_iterator)
-        .def("memory_sound_objects", &CScriptGameObject::memory_sound_objects, return_stl_iterator)
-        .def("memory_hit_objects", &CScriptGameObject::memory_hit_objects, return_stl_iterator)
+        .def("memory_visible_objects", &CScriptGameObject::memory_visible_objects, return_stl_safe_iterator)
+        .def("memory_sound_objects", &CScriptGameObject::memory_sound_objects, return_stl_safe_iterator)
+        .def("memory_hit_objects", &CScriptGameObject::memory_hit_objects, return_stl_safe_iterator)
         .def("not_yet_visible_objects", &CScriptGameObject::not_yet_visible_objects, return_stl_iterator)
         .def("visibility_threshold", &CScriptGameObject::visibility_threshold)
         .def("enable_vision", &CScriptGameObject::enable_vision)

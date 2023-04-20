@@ -132,6 +132,7 @@ struct CMemoryObject : public SMemoryObject
     IC CMemoryObject();
     IC bool operator==(u16 id) const;
     IC void fill(const T* game_object, const T* self, const squad_mask_type& mask);
+    bool is_valid() const { return m_object && m_object->m_spawned; }
 };
 
 struct CVisibleObject : CMemoryObject<CGameObject>

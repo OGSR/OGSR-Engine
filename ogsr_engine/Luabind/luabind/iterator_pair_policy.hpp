@@ -20,18 +20,20 @@ namespace luabind { namespace detail
 			if (state.start == state.end)
 			{
 				lua_pushnil(L);
-				return 1;
+
+                return 1;
 			}
 			else
 			{
 				convert_to_lua(L, (*state.start).first);
 				convert_to_lua(L, (*state.start).second);
 				++state.start;
-				return 2;
+
+                return 2; // number of return values
 			}
 		}
 
-		explicit iterator_pair_state( Iter&& s, Iter&& e )
+		iterator_pair_state(const Iter&& s, const Iter&& e)
 			: start(std::move(s))
 			, end(std::move(e))
 		{}
@@ -42,15 +44,27 @@ namespace luabind { namespace detail
 
 	struct iterator_pair_converter
 	{
+        template <typename T>
+        void apply(lua_State* L, const T& c)
+        {
+            auto it_begin = c.crbegin();
+            using state_t = iterator_pair_state<decltype(it_begin)>;
+
+            // note that this should be destructed, for now.. just hope that iterator is a pod
+            void* iter = lua_newuserdata(L, sizeof(state_t));
+            new (iter) state_t(std::move(it_begin), c.crend());
+            lua_pushcclosure(L, state_t::step, 1);
+        }
+
 		template<typename T>
 		void apply(lua_State* L, T& c)
 		{
-			auto it_begin = c.crbegin();
+			auto it_begin = c.rbegin();
 			using state_t = iterator_pair_state<decltype( it_begin )>;
 
 			// note that this should be destructed, for now.. just hope that iterator is a pod
 			void* iter = lua_newuserdata(L, sizeof(state_t));
-			new (iter) state_t(std::move(it_begin), c.crend());
+			new (iter) state_t(std::move(it_begin), c.rend());
 			lua_pushcclosure(L, state_t::step, 1);
 		}
 	};
