@@ -77,24 +77,3 @@ public:
 
     static bool net_Spawn_static(CGameObject* self, CSE_Abstract* abstract) { return (!!self->CGameObject::net_Spawn(abstract)); }
 };
-
-class CEntityWrapper : public CEntity, public luabind::wrap_base
-{
-public:
-    CEntityWrapper() = default;
-    virtual ~CEntityWrapper() = default;
-
-    virtual void HitSignal(float P, Fvector& local_dir, CObject* who, s16 element) { luabind::call_member<void>(this, "HitSignal", P, local_dir, who, element); }
-
-    static void HitSignal_static(CEntity* self, float P, Fvector& local_dir, CObject* who, s16 element)
-    {
-        ai().script_engine().script_log(eLuaMessageTypeError, "You are trying to call a pure virtual function CEntity::HitSignal!");
-    }
-
-    virtual void HitImpulse(float P, Fvector& vWorldDir, Fvector& vLocalDir) { luabind::call_member<void>(this, "HitImpulse", P, vWorldDir, vLocalDir); }
-
-    static void HitImpulse_static(float P, Fvector& vWorldDir, Fvector& vLocalDir)
-    {
-        ai().script_engine().script_log(eLuaMessageTypeError, "You are trying to call a pure virtual function CEntity::HitImpulse!");
-    }
-};
