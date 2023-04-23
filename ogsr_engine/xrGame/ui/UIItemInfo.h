@@ -48,4 +48,6 @@ public:
 
     Fvector2 UIItemImageSize;
     CUIStatic* UIItemImage;
+
+    std::string m_sStMoneyDescr;
 };

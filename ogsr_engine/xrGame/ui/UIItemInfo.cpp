@@ -29,6 +29,7 @@ CUIItemInfo::CUIItemInfo()
     UIName = NULL;
     m_pInvItem = NULL;
     m_b_force_drawing = false;
+    m_sStMoneyDescr = CStringTable().translate("ui_st_money_descr").c_str();
 }
 
 CUIItemInfo::~CUIItemInfo()
@@ -153,8 +154,8 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
     }
     if (UICost)
     {
-        sprintf_s(str, "%d RU", pInvItem->Cost()); // will be owerwritten in multiplayer
-        UICost->SetText(str);
+        //sprintf_s(str, "%d RU", pInvItem->Cost()); // will be owerwritten in multiplayer
+        UICost->SetText(std::string(std::to_string((int)pInvItem->Cost()) + " " + m_sStMoneyDescr).c_str());
     }
 
     if (UICondProgresBar)
