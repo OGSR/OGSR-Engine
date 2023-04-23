@@ -82,6 +82,7 @@ CUITradeWnd::CUITradeWnd() : m_bDealControlsVisible(false), m_pTrade(NULL), m_pO
     Hide();
     SetCurrentItem(NULL);
     others_zero_trade = !!READ_IF_EXISTS(pSettings, r_bool, "trade", "others_zero_trade", false);
+    m_sStMoneyDescr = CStringTable().translate("ui_st_money_descr").c_str();
 }
 
 CUITradeWnd::~CUITradeWnd()
@@ -563,19 +564,13 @@ void CUITradeWnd::UpdatePrices()
             m_iOurTradePrice = others_money;
     }
 
-    string256 buf;
-    sprintf_s(buf, "%d RU", m_iOurTradePrice);
-    m_uidata->UIOurPriceCaption.GetPhraseByIndex(2)->str = buf;
-    sprintf_s(buf, "%d RU", m_iOthersTradePrice);
-    m_uidata->UIOthersPriceCaption.GetPhraseByIndex(2)->str = buf;
+    m_uidata->UIOurPriceCaption.GetPhraseByIndex(2)->str = (std::string(std::to_string((int)m_iOurTradePrice) + " " + m_sStMoneyDescr)).c_str();
+    m_uidata->UIOthersPriceCaption.GetPhraseByIndex(2)->str = (std::string(std::to_string((int)m_iOthersTradePrice) + " " + m_sStMoneyDescr)).c_str();
 
-    sprintf_s(buf, "%d RU", m_pInvOwner->get_money());
-    m_uidata->UIOurMoneyStatic.SetText(buf);
-
+    m_uidata->UIOurMoneyStatic.SetText((std::string(std::to_string((int)m_pInvOwner->get_money()) + " " + m_sStMoneyDescr)).c_str());
     if (!m_pOthersInvOwner->InfinitiveMoney())
     {
-        sprintf_s(buf, "%d RU", (int)m_pOthersInvOwner->get_money());
-        m_uidata->UIOtherMoneyStatic.SetText(buf);
+        m_uidata->UIOtherMoneyStatic.SetText((std::string(std::to_string((int)m_pOthersInvOwner->get_money()) + " " + m_sStMoneyDescr)).c_str());
     }
     else
     {

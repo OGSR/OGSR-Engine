@@ -91,6 +91,8 @@ protected:
     u32 m_iOurTradePrice;
     u32 m_iOthersTradePrice;
 
+    std::string m_sStMoneyDescr;
+
 public:
     CUICellItem* m_pCurrentCellItem;
 
