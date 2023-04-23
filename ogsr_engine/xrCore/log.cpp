@@ -182,7 +182,7 @@ void CreateLog(BOOL nl)
                 xr_strconcat(logFName, "logs\\", temp);
             }
 
-            logstream.imbue(std::locale(""));
+            //logstream.imbue(std::locale(""));
             VerifyPath(logFName);
             logstream.open(logFName);
         }
