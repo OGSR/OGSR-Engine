@@ -247,4 +247,8 @@
 		<text>Нажмите любую клавишу для перехода к игре</text>
 	</string>
 
+	<string id="ui_st_money_descr">
+		<text>РУ</text>
+	</string>
+
 </string_table>
