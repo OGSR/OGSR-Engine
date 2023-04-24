@@ -1,254 +1,254 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <string_table>
 	<string id="id_mp_money">
-		<text>Деньги</text>
+		<text>Р”РµРЅСЊРіРё</text>
 	</string>
 	<string id="mm_mp_pda_hunt">
-		<text>Бонус за КПК</text>
+		<text>Р‘РѕРЅСѓСЃ Р·Р° РљРџРљ</text>
 	</string>
 	<string id="st_drink">
-		<text>выпить</text>
+		<text>РІС‹РїРёС‚СЊ</text>
 	</string>
 	<string id="st_mp_direct_ip">
-		<text>Прямой IP</text>
+		<text>РџСЂСЏРјРѕР№ IP</text>
 	</string>
 	<string id="ui_mm_render_2">
-		<text>Рендер-2</text>
+		<text>Р РµРЅРґРµСЂ-2</text>
 	</string>
 	<string id="ui_pda_details">
-		<text># /детали</text>
+		<text># /РґРµС‚Р°Р»Рё</text>
 	</string>
 	<string id="ui_st_btn_cancel">
-		<text>Отмена</text>
+		<text>РћС‚РјРµРЅР°</text>
 	</string>
 	<string id="ui_st_btn_no">
-		<text>Нет</text>
+		<text>РќРµС‚</text>
 	</string>
 	<string id="ui_st_btn_ok">
-		<text>ОК</text>
+		<text>РћРљ</text>
 	</string>
 	<string id="ui_st_btn_yes">
-		<text>Да</text>
+		<text>Р”Р°</text>
 	</string>
 	<string id="ui_st_cant_run_r2">
-		<text>Вы не можете запустить второй рендер на вашем компьютере</text>
+		<text>Р’С‹ РЅРµ РјРѕР¶РµС‚Рµ Р·Р°РїСѓСЃС‚РёС‚СЊ РІС‚РѕСЂРѕР№ СЂРµРЅРґРµСЂ РЅР° РІР°С€РµРј РєРѕРјРїСЊСЋС‚РµСЂРµ</text>
 	</string>
 	<string id="ui_st_conn_invalid_host">
-		<text>Ошибка соединения: неверный хост</text>
+		<text>РћС€РёР±РєР° СЃРѕРµРґРёРЅРµРЅРёСЏ: РЅРµРІРµСЂРЅС‹Р№ С…РѕСЃС‚</text>
 	</string>
 	<string id="ui_st_conn_invalid_pass">
-		<text>Ошибка соединения: неверный пароль</text>
+		<text>РћС€РёР±РєР° СЃРѕРµРґРёРЅРµРЅРёСЏ: РЅРµРІРµСЂРЅС‹Р№ РїР°СЂРѕР»СЊ</text>
 	</string>
 	<string id="ui_st_conn_rejected_server">
-		<text>Ошибка соединения: соединение прервано сервером</text>
+		<text>РћС€РёР±РєР° СЃРѕРµРґРёРЅРµРЅРёСЏ: СЃРѕРµРґРёРЅРµРЅРёРµ РїСЂРµСЂРІР°РЅРѕ СЃРµСЂРІРµСЂРѕРј</text>
 	</string>
 	<string id="ui_st_conn_sess_full">
-		<text>Ошибка соединения: сервер заполнен</text>
+		<text>РћС€РёР±РєР° СЃРѕРµРґРёРЅРµРЅРёСЏ: СЃРµСЂРІРµСЂ Р·Р°РїРѕР»РЅРµРЅ</text>
 	</string>
 	<string id="ui_st_days">
-		<text>дн.</text>
+		<text>РґРЅ.</text>
 	</string>
 	<string id="ui_st_error">
-		<text>Ошибка</text>
+		<text>РћС€РёР±РєР°</text>
 	</string>
 	<string id="ui_st_hours">
-		<text>час.</text>
+		<text>С‡Р°СЃ.</text>
 	</string>
 	<string id="ui_st_leave">
-		<text>Уйти</text>
+		<text>РЈР№С‚Рё</text>
 	</string>
 	<string id="ui_st_mins">
-		<text>мин.</text>
+		<text>РјРёРЅ.</text>
 	</string>
 	<string id="ui_st_months">
-		<text>мес.</text>
+		<text>РјРµСЃ.</text>
 	</string>
 	<string id="ui_st_params">
-		<text>Параметры</text>
+		<text>РџР°СЂР°РјРµС‚СЂС‹</text>
 	</string>
 	<string id="ui_st_secs">
-		<text>сек.</text>
+		<text>СЃРµРє.</text>
 	</string>
 	<string id="ui_st_select_one_map">
-		<text>Пожалуйста, выберите хотя бы одну карту</text>
+		<text>РџРѕР¶Р°Р»СѓР№СЃС‚Р°, РІС‹Р±РµСЂРёС‚Рµ С…РѕС‚СЏ Р±С‹ РѕРґРЅСѓ РєР°СЂС‚Сѓ</text>
 	</string>
 	<string id="ui_st_take_all">
-		<text>Взять все</text>
+		<text>Р’Р·СЏС‚СЊ РІСЃРµ</text>
 	</string>
 	<string id="ui_st_time_remains">
-		<text>Осталось</text>
+		<text>РћСЃС‚Р°Р»РѕСЃСЊ</text>
 	</string>
 	<string id="ui_st_trade">
-		<text>Торговать</text>
+		<text>РўРѕСЂРіРѕРІР°С‚СЊ</text>
 	</string>
 	<string id="ui_st_voting_disabled">
-		<text>Голосование отключено</text>
+		<text>Р“РѕР»РѕСЃРѕРІР°РЅРёРµ РѕС‚РєР»СЋС‡РµРЅРѕ</text>
 	</string>
 	<string id="ui_st_your_items">
-		<text>Вещи Меченого</text>
+		<text>Р’РµС‰Рё РњРµС‡РµРЅРѕРіРѕ</text>
 	</string>
 	<string id="st_level">
-		<text>Уровень</text>
+		<text>РЈСЂРѕРІРµРЅСЊ</text>
 	</string>
 	<string id="st_opening_stream">
-		<text>Открытие потока</text>
+		<text>РћС‚РєСЂС‹С‚РёРµ РїРѕС‚РѕРєР°</text>
 	</string>
 	<string id="st_loading_cform">
-		<text>Загрузка формы объектов</text>
+		<text>Р—Р°РіСЂСѓР·РєР° С„РѕСЂРјС‹ РѕР±СЉРµРєС‚РѕРІ</text>
 	</string>
 	<string id="st_prefetching_objects">
-		<text>Кэширование объектов</text>
+		<text>РљСЌС€РёСЂРѕРІР°РЅРёРµ РѕР±СЉРµРєС‚РѕРІ</text>
 	</string>
 	<string id="st_creating_new_game">
-		<text>Создание новой игры</text>
+		<text>РЎРѕР·РґР°РЅРёРµ РЅРѕРІРѕР№ РёРіСЂС‹</text>
 	</string>
 	<string id="st_loading_alife_simulator">
-		<text>Сервер: Загрузка симуляции жизни</text>
+		<text>РЎРµСЂРІРµСЂ: Р—Р°РіСЂСѓР·РєР° СЃРёРјСѓР»СЏС†РёРё Р¶РёР·РЅРё</text>
 	</string>
 	<string id="st_server_connecting">
-		<text>Сервер: Соединяемся</text>
+		<text>РЎРµСЂРІРµСЂ: РЎРѕРµРґРёРЅСЏРµРјСЃСЏ</text>
 	</string>
 	<string id="st_loading_saved_game">
-		<text>Загрузка игры</text>
+		<text>Р—Р°РіСЂСѓР·РєР° РёРіСЂС‹</text>
 	</string>
 	<string id="st_validating_cdkey">
-		<text>Проверка ключа</text>
+		<text>РџСЂРѕРІРµСЂРєР° РєР»СЋС‡Р°</text>
 	</string>
 	<string id="st_loading_ai_objects">
-		<text>Загрузка ИИ объектов</text>
+		<text>Р—Р°РіСЂСѓР·РєР° РР РѕР±СЉРµРєС‚РѕРІ</text>
 	</string>
 	<string id="st_client_connecting_to">
-		<text>Клиент: Соединение с</text>
+		<text>РљР»РёРµРЅС‚: РЎРѕРµРґРёРЅРµРЅРёРµ СЃ</text>
 	</string>
 	<string id="st_client_spawning">
-		<text>Клиент: Создание</text>
+		<text>РљР»РёРµРЅС‚: РЎРѕР·РґР°РЅРёРµ</text>
 	</string>
 	<string id="st_loading_textures">
-		<text>Загрузка текстур</text>
+		<text>Р—Р°РіСЂСѓР·РєР° С‚РµРєСЃС‚СѓСЂ</text>
 	</string>
 	<string id="st_client_synchronising">
-		<text>Клиент: Синхронизация</text>
+		<text>РљР»РёРµРЅС‚: РЎРёРЅС…СЂРѕРЅРёР·Р°С†РёСЏ</text>
 	</string>
 	<string id="st_server_starting">
-		<text>Сервер: Старт</text>
+		<text>РЎРµСЂРІРµСЂ: РЎС‚Р°СЂС‚</text>
 	</string>
 	<string id="st_loading_shaders">
-		<text>Загрузка шейдеров</text>
+		<text>Р—Р°РіСЂСѓР·РєР° С€РµР№РґРµСЂРѕРІ</text>
 	</string>
 	<string id="st_loading_geometry">
-		<text>Загрузка геометрии</text>
+		<text>Р—Р°РіСЂСѓР·РєР° РіРµРѕРјРµС‚СЂРёРё</text>
 	</string>
 	<string id="st_loading_spatial_db">
-		<text>Загрузка базы пространств</text>
+		<text>Р—Р°РіСЂСѓР·РєР° Р±Р°Р·С‹ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІ</text>
 	</string>
 	<string id="st_loading_details">
-		<text>Загрузка детальных объектов</text>
+		<text>Р—Р°РіСЂСѓР·РєР° РґРµС‚Р°Р»СЊРЅС‹С… РѕР±СЉРµРєС‚РѕРІ</text>
 	</string>
 	<string id="st_loading_sectors_portals">
-		<text>Загрузка секторов и порталов</text>
+		<text>Р—Р°РіСЂСѓР·РєР° СЃРµРєС‚РѕСЂРѕРІ Рё РїРѕСЂС‚Р°Р»РѕРІ</text>
 	</string>
 	<string id="ui_st_conn_version_differs">
-		<text>Ошибка соединения: Отличаются версии.</text>
+		<text>РћС€РёР±РєР° СЃРѕРµРґРёРЅРµРЅРёСЏ: РћС‚Р»РёС‡Р°СЋС‚СЃСЏ РІРµСЂСЃРёРё.</text>
 	</string>
 	<string id="ui_st_conn_cdkey_invalid">
-		<text>Ошибка соединения: Неверный CD-Key.</text>
+		<text>РћС€РёР±РєР° СЃРѕРµРґРёРЅРµРЅРёСЏ: РќРµРІРµСЂРЅС‹Р№ CD-Key.</text>
 	</string>
 	<string id="ui_st_conn_cdkey_in_use">
-		<text>Ошибка соединения: Такой CD-Key уже используется.</text>
+		<text>РћС€РёР±РєР° СЃРѕРµРґРёРЅРµРЅРёСЏ: РўР°РєРѕР№ CD-Key СѓР¶Рµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ.</text>
 	</string>
 	<string id="ui_st_conn_cdkey_disabled">
-		<text>Ошибка соединения: Ваш CD-Key заблокирован. Свяжитесь со службой поддержки.</text>
+		<text>РћС€РёР±РєР° СЃРѕРµРґРёРЅРµРЅРёСЏ: Р’Р°С€ CD-Key Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅ. РЎРІСЏР¶РёС‚РµСЃСЊ СЃРѕ СЃР»СѓР¶Р±РѕР№ РїРѕРґРґРµСЂР¶РєРё.</text>
 	</string>
 	<string id="ui_st_conn_new_patch">
-		<text>Доступен новый патч. \n Версия: %s\n %s\n Хотите загрузить его сейчас?</text>
+		<text>Р”РѕСЃС‚СѓРїРµРЅ РЅРѕРІС‹Р№ РїР°С‚С‡. \n Р’РµСЂСЃРёСЏ: %s\n %s\n РҐРѕС‚РёС‚Рµ Р·Р°РіСЂСѓР·РёС‚СЊ РµРіРѕ СЃРµР№С‡Р°СЃ?</text>
 	</string>
 	<string id="ui_st_conn_no_new_patch">
-		<text>Нет новых патчей</text>
+		<text>РќРµС‚ РЅРѕРІС‹С… РїР°С‚С‡РµР№</text>
 	</string>
 	<string id="st_game_paused">
-		<text>Пауза</text>
+		<text>РџР°СѓР·Р°</text>
 	</string>
 	<string id="st_bolt">
-		<text>Болт</text>
+		<text>Р‘РѕР»С‚</text>
 	</string>
 	<string id="st_items">
-		<text>Предметы</text>
+		<text>РџСЂРµРґРјРµС‚С‹</text>
 	</string>
 	<string id="st_video">
-		<text>Видео</text>
+		<text>Р’РёРґРµРѕ</text>
 	</string>
 	<string id="st_audio">
-		<text>Звук</text>
+		<text>Р—РІСѓРє</text>
 	</string>
 	<string id="st_game">
-		<text>Игра</text>
+		<text>РРіСЂР°</text>
 	</string>
 	<string id="st_controll">
-		<text>Управление</text>
+		<text>РЈРїСЂР°РІР»РµРЅРёРµ</text>
 	</string>
 	<string id="ui_st_connecting_to_masterserver">
-		<text>Присоединение к мастер-серверу</text>
+		<text>РџСЂРёСЃРѕРµРґРёРЅРµРЅРёРµ Рє РјР°СЃС‚РµСЂ-СЃРµСЂРІРµСЂСѓ</text>
 	</string>
 	<string id="mp_only_one_voting">
-		<text>Разрешено только одно активное голосование</text>
+		<text>Р Р°Р·СЂРµС€РµРЅРѕ С‚РѕР»СЊРєРѕ РѕРґРЅРѕ Р°РєС‚РёРІРЅРѕРµ РіРѕР»РѕСЃРѕРІР°РЅРёРµ</text>
 	</string>
 	<string id="ui_st_patch_download_success">
-		<text>Патч успешно скачан. Установить?</text>
+		<text>РџР°С‚С‡ СѓСЃРїРµС€РЅРѕ СЃРєР°С‡Р°РЅ. РЈСЃС‚Р°РЅРѕРІРёС‚СЊ?</text>
 	</string>
 	<string id="ui_st_patch_download_error">
-		<text>Невозможно скачать патч.</text>
+		<text>РќРµРІРѕР·РјРѕР¶РЅРѕ СЃРєР°С‡Р°С‚СЊ РїР°С‚С‡.</text>
 	</string>
 
 	<string id="st_pda_change_spot_hint">
-		<text>Изменить текст метки</text>
+		<text>РР·РјРµРЅРёС‚СЊ С‚РµРєСЃС‚ РјРµС‚РєРё</text>
 	</string>
 	<string id="st_pda_delete_spot">
-		<text>Удалить метку</text>
+		<text>РЈРґР°Р»РёС‚СЊ РјРµС‚РєСѓ</text>
 	</string>
 
 	<string id="st_move">
-		<text>перенести</text>
+		<text>РїРµСЂРµРЅРµСЃС‚Рё</text>
 	</string>
 	<string id="st_move_all">
-		<text>перенести все</text>
+		<text>РїРµСЂРµРЅРµСЃС‚Рё РІСЃРµ</text>
 	</string>
 
 	<string id="st_move_to_slot_1">
-		<text>переместить в первый слот</text>
+		<text>РїРµСЂРµРјРµСЃС‚РёС‚СЊ РІ РїРµСЂРІС‹Р№ СЃР»РѕС‚</text>
 	</string>
 	<string id="st_move_to_slot_2">
-		<text>переместить во второй слот</text>
+		<text>РїРµСЂРµРјРµСЃС‚РёС‚СЊ РІРѕ РІС‚РѕСЂРѕР№ СЃР»РѕС‚</text>
 	</string>
 	<string id="st_attach_addon_to_wpn_in_slot_1">
-		<text>прикрепить %s к %s в первом слоте</text>
+		<text>РїСЂРёРєСЂРµРїРёС‚СЊ %s Рє %s РІ РїРµСЂРІРѕРј СЃР»РѕС‚Рµ</text>
 	</string>
 	<string id="st_attach_addon_to_wpn_in_slot_2">
-		<text>прикрепить %s к %s во втором слоте</text>
+		<text>РїСЂРёРєСЂРµРїРёС‚СЊ %s Рє %s РІРѕ РІС‚РѕСЂРѕРј СЃР»РѕС‚Рµ</text>
 	</string>
 	
 	<string id="kb_cam_1">
-		<text>Вид от первого лица</text>
+		<text>Р’РёРґ РѕС‚ РїРµСЂРІРѕРіРѕ Р»РёС†Р°</text>
 	</string>
 	<string id="kb_cam_2">
-		<text>Вид от третьего лица</text>
+		<text>Р’РёРґ РѕС‚ С‚СЂРµС‚СЊРµРіРѕ Р»РёС†Р°</text>
 	</string>
 	<string id="kb_cam_3">
-		<text>Вид от третьего лица (freelook)</text>
+		<text>Р’РёРґ РѕС‚ С‚СЂРµС‚СЊРµРіРѕ Р»РёС†Р° (freelook)</text>
 	</string>
 
 	<string id="inventory_item_use_or_drag">
-		<text>Поднять предмет ($$ACTION_USE$$) \n Перетащить предмет (SHIFT+$$ACTION_USE$$)</text>
+		<text>РџРѕРґРЅСЏС‚СЊ РїСЂРµРґРјРµС‚ ($$ACTION_USE$$) \n РџРµСЂРµС‚Р°С‰РёС‚СЊ РїСЂРµРґРјРµС‚ (SHIFT+$$ACTION_USE$$)</text>
 	</string>
 	<string id="game_object_drag">
-		<text>Перетащить предмет (SHIFT+$$ACTION_USE$$)</text>
+		<text>РџРµСЂРµС‚Р°С‰РёС‚СЊ РїСЂРµРґРјРµС‚ (SHIFT+$$ACTION_USE$$)</text>
 	</string>
 
 	<string id="st_press_any_key">
-		<text>Нажмите любую клавишу для перехода к игре</text>
+		<text>РќР°Р¶РјРёС‚Рµ Р»СЋР±СѓСЋ РєР»Р°РІРёС€Сѓ РґР»СЏ РїРµСЂРµС…РѕРґР° Рє РёРіСЂРµ</text>
 	</string>
 
 	<string id="ui_st_money_descr">
-		<text>РУ</text>
+		<text>Р РЈ</text>
 	</string>
 	
 </string_table>
