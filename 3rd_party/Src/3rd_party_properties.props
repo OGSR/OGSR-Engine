@@ -12,7 +12,6 @@
       <AssemblerListingLocation>$(SolutionDir)\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</AssemblerListingLocation>
       <ObjectFileName>$(SolutionDir)\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</ObjectFileName>
       <ProgramDataBaseFileName>$(SolutionDir)\3rd_party\_TEMP\$(Configuration)\$(Platform)\$(ProjectName)\</ProgramDataBaseFileName>
-	  <PreprocessorDefinitions>_ITERATOR_DEBUG_LEVEL=0;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <ImportLibrary>$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform)\$(TargetName).lib</ImportLibrary>
