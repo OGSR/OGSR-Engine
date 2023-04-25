@@ -132,7 +132,6 @@
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>ode.lib;libvorbis_static.lib;libvorbisfile_static.lib;OpenAL32.lib;lzo.lib;libogg_static.lib;libtheora_static.lib;vfw32.lib;winmm.lib;dinput8.lib;d3dx9.lib;d3dx11.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <IgnoreSpecificDefaultLibraries>libcmt;</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)xrEngine.pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
@@ -206,7 +205,6 @@
       <AdditionalOptions>/MACHINE:I386  %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>ode.lib;libvorbis_static.lib;libvorbisfile_static.lib;OpenAL32.lib;lzo.lib;libogg_static.lib;libtheora_static.lib;vfw32.lib;winmm.lib;dinput8.lib;d3dx9.lib;d3dx11.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <IgnoreSpecificDefaultLibraries>libcmt;msvcrt;</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)xrEngine.pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
@@ -278,7 +276,6 @@
     <Link>
       <AdditionalDependencies>ode.lib;libvorbis_static.lib;libvorbisfile_static.lib;OpenAL32.lib;lzo.lib;libogg_static.lib;libtheora_static.lib;vfw32.lib;winmm.lib;dinput8.lib;d3dx9.lib;d3dx11.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <IgnoreSpecificDefaultLibraries>libcmt;</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)xrEngine.pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
@@ -348,7 +345,6 @@
     <Link>
       <AdditionalDependencies>ode.lib;libvorbis_static.lib;libvorbisfile_static.lib;OpenAL32.lib;lzo.lib;libogg_static.lib;libtheora_static.lib;vfw32.lib;winmm.lib;dinput8.lib;d3dx9.lib;d3dx11.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <IgnoreSpecificDefaultLibraries>libcmt;msvcrt;</IgnoreSpecificDefaultLibraries>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)xrEngine.pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
