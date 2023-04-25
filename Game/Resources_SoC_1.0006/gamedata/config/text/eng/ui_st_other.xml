@@ -247,4 +247,8 @@
 		<text>Press any key to play</text>
 	</string>
 
+	<string id="ui_st_money_descr">
+		<text>RU</text>
+	</string>
+
 </string_table>

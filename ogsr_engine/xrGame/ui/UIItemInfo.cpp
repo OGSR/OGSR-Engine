@@ -14,6 +14,7 @@
 #include "../PhysicsShellHolder.h"
 #include "UIWpnParams.h"
 #include "ui_af_params.h"
+#include <format>
 
 CUIItemInfo::CUIItemInfo()
 {
@@ -141,20 +142,20 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
     if (!m_pInvItem)
         return;
 
-    string256 str;
     if (UIName)
     {
         UIName->SetText(pInvItem->Name());
     }
     if (UIWeight)
     {
+        string256 str;
         sprintf_s(str, "%3.2f kg", pInvItem->Weight());
         UIWeight->SetText(str);
     }
     if (UICost)
     {
-        sprintf_s(str, "%d RU", pInvItem->Cost()); // will be owerwritten in multiplayer
-        UICost->SetText(str);
+        static const char* StMoneyDescr = CStringTable().translate("ui_st_money_descr").c_str();  
+        UICost->SetText(std::format("{} {}", pInvItem->Cost(), StMoneyDescr).c_str());
     }
 
     if (UICondProgresBar)

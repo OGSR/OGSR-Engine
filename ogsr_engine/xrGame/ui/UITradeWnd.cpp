@@ -32,6 +32,7 @@
 #include "../script_callback_ex.h"
 #include "../script_game_object.h"
 #include "../xr_3da/xr_input.h"
+#include <format>
 
 #define TRADE_XML "trade.xml"
 #define TRADE_CHARACTER_XML "trade_character.xml"
@@ -563,24 +564,11 @@ void CUITradeWnd::UpdatePrices()
             m_iOurTradePrice = others_money;
     }
 
-    string256 buf;
-    sprintf_s(buf, "%d RU", m_iOurTradePrice);
-    m_uidata->UIOurPriceCaption.GetPhraseByIndex(2)->str = buf;
-    sprintf_s(buf, "%d RU", m_iOthersTradePrice);
-    m_uidata->UIOthersPriceCaption.GetPhraseByIndex(2)->str = buf;
-
-    sprintf_s(buf, "%d RU", m_pInvOwner->get_money());
-    m_uidata->UIOurMoneyStatic.SetText(buf);
-
-    if (!m_pOthersInvOwner->InfinitiveMoney())
-    {
-        sprintf_s(buf, "%d RU", (int)m_pOthersInvOwner->get_money());
-        m_uidata->UIOtherMoneyStatic.SetText(buf);
-    }
-    else
-    {
-        m_uidata->UIOtherMoneyStatic.SetText("---");
-    }
+    static const char* StMoneyDescr = CStringTable().translate("ui_st_money_descr").c_str();
+    m_uidata->UIOurPriceCaption.GetPhraseByIndex(2)->str = std::format("{} {}", m_iOurTradePrice, StMoneyDescr).c_str();
+    m_uidata->UIOthersPriceCaption.GetPhraseByIndex(2)->str = std::format("{} {}", m_iOthersTradePrice, StMoneyDescr).c_str();
+    m_uidata->UIOurMoneyStatic.SetText(std::format("{} {}", m_pInvOwner->get_money(), StMoneyDescr).c_str());
+    m_uidata->UIOtherMoneyStatic.SetText(m_pOthersInvOwner->InfinitiveMoney() ? "---" : std::format("{} {}", m_pOthersInvOwner->get_money(), StMoneyDescr).c_str());
 }
 
 void CUITradeWnd::TransferItems(CUIDragDropListEx* pSellList, CUIDragDropListEx* pBuyList, CTrade* pTrade, bool bBuying)
@@ -794,10 +782,8 @@ void CUITradeWnd::SetCurrentItem(CUICellItem* itm)
 
     if (m_uidata->UIItemInfo.UICost)
     {
-        string256 str;
-
-        sprintf_s(str, "%d RU", m_pOthersTrade->GetItemPrice(CurrentIItem(), bBuying));
-        m_uidata->UIItemInfo.UICost->SetText(str);
+        static const char* StMoneyDescr = CStringTable().translate("ui_st_money_descr").c_str();
+        m_uidata->UIItemInfo.UICost->SetText(std::format("{} {}", m_pOthersTrade->GetItemPrice(CurrentIItem(), bBuying), StMoneyDescr).c_str());
     }
 
     auto script_obj = CurrentIItem()->object().lua_game_object();
