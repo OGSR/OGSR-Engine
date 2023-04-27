@@ -14,6 +14,9 @@
 #include "ai_space.h"
 #include "game_graph.h"
 #include "alife_simulator_header.h"
+#include "alife_simulator.h"
+#include "alife_spawn_registry.h"
+#include "string_table.h"
 
 extern LPCSTR alife_section;
 
@@ -70,7 +73,8 @@ CSavedGameWrapper::CSavedGameWrapper(LPCSTR saved_game_name)
         CALifeTimeManager time_manager(alife_section);
         m_game_time = time_manager.game_time();
         m_actor_health = 1.f;
-        m_level_id = ai().game_graph().header().levels().begin()->first;
+        m_level_id = _LEVEL_ID(-1);
+        m_level_name = "";
         return;
     }
 
@@ -100,8 +104,85 @@ CSavedGameWrapper::CSavedGameWrapper(LPCSTR saved_game_name)
         VERIFY(actor);
 
         m_actor_health = actor->g_Health();
-        m_level_id = ai().game_graph().vertex(object->m_tGraphID)->level_id();
 
+        IReader* R = reader.open_chunk(SPAWN_CHUNK_DATA);
+        R_ASSERT(R, "Spawn version mismatch - REBUILD SPAWN!");
+
+        string_path spawn_file_name;
+        {
+            IReader* sub_chunk = R->open_chunk(0);
+            if (!sub_chunk)
+            {
+                R->close();
+                F_entity_Destroy(object);
+                m_level_id = _LEVEL_ID(-1);
+                m_level_name = "";
+                return;
+            }
+            sub_chunk->r_stringZ(spawn_file_name, sizeof(spawn_file_name));
+            sub_chunk->close();
+        }
+        R->close();
+
+        if (!FS.exist(file_name, "$game_spawn$", spawn_file_name, ".spawn"))
+        {
+            F_entity_Destroy(object);
+            m_level_id = _LEVEL_ID(-1);
+            m_level_name = "";
+            return;
+        }
+
+        IReader* spawn = nullptr;
+        bool b_destroy_spawn = true;
+        if (ai().get_alife() && ai().alife().spawns().get_spawn_name() == spawn_file_name)
+        {
+            spawn = ai().alife().spawns().get_spawn_file();
+            b_destroy_spawn = false;
+        }
+        else
+            spawn = FS.r_open(file_name);
+
+        if (!spawn)
+        {
+            F_entity_Destroy(object);
+            m_level_id = _LEVEL_ID(-1);
+            m_level_name = "";
+            return;
+        }
+
+        bool separated_graphs = false;
+        R = spawn->open_chunk(4);
+        if (!R)
+        {
+            string_path graph_path;
+            FS.update_path(graph_path, _game_data_, GRAPH_NAME);
+            R = FS.r_open(graph_path);
+            separated_graphs = true;
+        }
+
+        if (!R)
+        {
+            F_entity_Destroy(object);
+            if (b_destroy_spawn)
+                FS.r_close(spawn);
+            m_level_id = _LEVEL_ID(-1);
+            m_level_name = "";
+            return;
+        }
+
+        {
+            CGameGraph graph(R, separated_graphs);
+            m_level_id = graph.vertex(object->m_tGraphID)->level_id();
+            if (graph.header().level_exist(m_level_id))
+                m_level_name = graph.header().level(m_level_id).name();
+            else
+                m_level_name = CStringTable().translate("ui_st_error");
+        }
+
+        if (!separated_graphs)
+            R->close();
+        if (b_destroy_spawn)
+            FS.r_close(spawn);
         F_entity_Destroy(object);
     }
 

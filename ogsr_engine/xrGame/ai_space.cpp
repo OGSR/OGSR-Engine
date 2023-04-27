@@ -28,7 +28,6 @@ CAI_Space::CAI_Space()
     m_graph_engine = 0;
     m_cover_manager = 0;
     m_level_graph = 0;
-    m_cross_table = 0;
     m_alife_simulator = 0;
     m_patrol_path_storage = 0;
     m_script_engine = 0;
@@ -39,11 +38,8 @@ void CAI_Space::init()
     VERIFY(!m_ef_storage);
     m_ef_storage = xr_new<CEF_Storage>();
 
-    VERIFY(!m_game_graph);
-    m_game_graph = xr_new<CGameGraph>();
-
     VERIFY(!m_graph_engine);
-    m_graph_engine = xr_new<CGraphEngine>(game_graph().header().vertex_count());
+    m_graph_engine = xr_new<CGraphEngine>(1024); // game_graph().header().vertex_count() ???
 
     VERIFY(!m_cover_manager);
     m_cover_manager = xr_new<CCoverManager>();
@@ -62,17 +58,19 @@ CAI_Space::~CAI_Space()
 
     xr_delete(m_patrol_path_storage);
     xr_delete(m_ef_storage);
+    xr_delete(m_graph_engine);
 
-    xr_delete(m_game_graph);
+    VERIFY(!m_game_graph);
 
     xr_delete(m_script_engine);
 
     xr_delete(m_cover_manager);
-    xr_delete(m_graph_engine);
 }
 
 void CAI_Space::load(LPCSTR level_name)
 {
+    VERIFY(m_game_graph);
+
     unload(true);
 
 #ifdef DEBUG
@@ -85,12 +83,16 @@ void CAI_Space::load(LPCSTR level_name)
     const CGameGraph::SLevel& current_level = game_graph().header().level(level_name);
 
     m_level_graph = xr_new<CLevelGraph>();
-    m_cross_table = xr_new<CGameLevelCrossTable>();
-    R_ASSERT2(cross_table().header().level_guid() == level_graph().header().guid(), "cross_table doesn't correspond to the AI-map");
-    R_ASSERT2(cross_table().header().game_guid() == game_graph().header().guid(), "graph doesn't correspond to the cross table");
-    m_graph_engine = xr_new<CGraphEngine>(_max(game_graph().header().vertex_count(), level_graph().header().vertex_count()));
+    game_graph().set_current_level(current_level.id());
+    auto& crossHeader = cross_table().header();
+    auto& levelHeader = level_graph().header();
+    auto& gameHeader = game_graph().header();
+    R_ASSERT(crossHeader.level_guid() == levelHeader.guid(), "cross_table doesn't correspond to the AI-map");
+    R_ASSERT(crossHeader.game_guid() == gameHeader.guid(), "graph doesn't correspond to the cross table");
 
-    R_ASSERT2(current_level.guid() == level_graph().header().guid(), "graph doesn't correspond to the AI-map");
+    u32 vertexCount = _max(gameHeader.vertex_count(), levelHeader.vertex_count());
+    m_graph_engine = xr_new<CGraphEngine>(vertexCount);
+    R_ASSERT(current_level.guid() == levelHeader.guid(), "graph doesn't correspond to the AI-map");
 
 #ifdef DEBUG
     if (!xr_strcmp(current_level.name(), level_name))
@@ -98,7 +100,6 @@ void CAI_Space::load(LPCSTR level_name)
 #endif
 
     level_graph().level_id(current_level.id());
-    game_graph().set_current_level(current_level.id());
 
     m_cover_manager->compute_static_cover();
 
@@ -112,8 +113,8 @@ void CAI_Space::unload(bool reload)
     script_engine().unload();
     xr_delete(m_graph_engine);
     xr_delete(m_level_graph);
-    xr_delete(m_cross_table);
-    if (!reload)
+    
+    if (!reload && m_game_graph)
         m_graph_engine = xr_new<CGraphEngine>(game_graph().header().vertex_count());
 }
 
@@ -163,4 +164,9 @@ void CAI_Space::set_alife(CALifeSimulator* alife_simulator)
 {
     VERIFY((!m_alife_simulator && alife_simulator) || (m_alife_simulator && !alife_simulator));
     m_alife_simulator = alife_simulator;
+
+    VERIFY(!alife_simulator || !m_game_graph);
+    if (alife_simulator)
+        return;
+    set_game_graph(nullptr);
 }

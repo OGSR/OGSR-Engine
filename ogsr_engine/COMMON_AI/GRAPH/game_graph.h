@@ -39,15 +39,21 @@ private:
     CHeader m_header;
     IReader* m_reader;
     CVertex* m_nodes;
+    bool m_separated_graphs;
     mutable ENABLED m_enabled;
     _GRAPH_ID m_current_level_some_vertex_id;
 
+private:
+    u32* m_cross_tables;
+    CGameLevelCrossTable* m_current_level_cross_table;
+
 public:
-    IC CGameGraph();
+    IC CGameGraph(IReader* stream, bool separatedGraphs);
 
 public:
     IC virtual ~CGameGraph();
     IC const CHeader& header() const;
+    IC const CGameLevelCrossTable& cross_table() const;
     IC bool mask(const svector<_LOCATION_ID, GameGraph::LOCATION_TYPE_COUNT>& M, const _LOCATION_ID E[GameGraph::LOCATION_TYPE_COUNT]) const;
     IC bool mask(const _LOCATION_ID M[GameGraph::LOCATION_TYPE_COUNT], const _LOCATION_ID E[GameGraph::LOCATION_TYPE_COUNT]) const;
     IC float distance(const _GRAPH_ID tGraphID0, const _GRAPH_ID tGraphID1) const;

@@ -14,8 +14,6 @@ using namespace ALife;
 
 CALifeGraphRegistry::CALifeGraphRegistry()
 {
-    on_load();
-
     m_level = 0;
     m_process_time = 0;
     m_actor = 0;

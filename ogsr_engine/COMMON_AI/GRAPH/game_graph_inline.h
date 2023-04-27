@@ -8,21 +8,38 @@
 
 #pragma once
 
-IC CGameGraph::CGameGraph()
+IC CGameGraph::CGameGraph(IReader* stream, bool separatedGraphs)
 {
-    string_path file_name;
-    FS.update_path(file_name, "$game_data$", GRAPH_NAME);
-
-    m_reader = FS.r_open(file_name);
+    m_reader = stream;
+    m_separated_graphs = separatedGraphs;
     VERIFY(m_reader);
     m_header.load(m_reader);
     R_ASSERT2(header().version() == XRAI_CURRENT_VERSION, "Graph version mismatch!");
     m_nodes = (CVertex*)m_reader->pointer();
     m_current_level_some_vertex_id = _GRAPH_ID(-1);
     m_enabled.assign(header().vertex_count(), true);
+
+	if (m_separated_graphs)
+    {
+        m_cross_tables = nullptr;
+        m_current_level_cross_table = nullptr;
+    }
+    else
+    {
+        u8* temp = (u8*)(m_nodes + header().vertex_count());
+        temp += header().edge_count() * sizeof(CGameGraph::CEdge);
+        m_cross_tables = (u32*)(((CLevelPoint*)temp) + header().death_point_count());
+        m_current_level_cross_table = nullptr;
+    }
 }
 
-IC CGameGraph::~CGameGraph() { FS.r_close(m_reader); }
+IC CGameGraph::~CGameGraph()
+{
+    FS.r_close(m_reader);
+    xr_delete(m_current_level_cross_table);
+    if (m_separated_graphs)
+        FS.r_close(m_reader);
+}
 
 IC const CGameGraph::CHeader& CGameGraph::header() const { return (m_header); }
 
@@ -111,6 +128,16 @@ IC const u32& GameGraph::CHeader::edge_count() const { return (m_edge_count); }
 //IC const u32& GameGraph::CHeader::death_point_count() const { return (m_death_point_count); }
 
 IC const GameGraph::LEVEL_MAP& GameGraph::CHeader::levels() const { return (m_levels); }
+
+IC bool GameGraph::CHeader::level_exist(const _LEVEL_ID& id) const { return levels().find(id) != levels().end(); }
+
+IC bool GameGraph::CHeader::level_exist(pcstr level_name) const
+{
+    for (const auto& levelPair : levels())
+        if (xr_strcmp(levelPair.second.name(), level_name) == 0)
+            return true;
+    return false;
+}
 
 IC const GameGraph::SLevel& GameGraph::CHeader::level(const _LEVEL_ID& id) const
 {
@@ -252,6 +279,29 @@ IC void GameGraph::CHeader::save(IWriter* writer)
 
 IC void CGameGraph::set_current_level(const u32& level_id)
 {
+    xr_delete(m_current_level_cross_table);
+    if (m_cross_tables)
+    {
+        u32* current_cross_table = m_cross_tables;
+        for (const auto& levelPair : header().levels())
+        {
+            if (level_id != levelPair.first)
+            {
+                current_cross_table = (u32*)((u8*)current_cross_table + *current_cross_table);
+                continue;
+            }
+
+            m_current_level_cross_table = xr_new<CGameLevelCrossTable>(current_cross_table + 1, *current_cross_table);
+            break;
+        }
+    }
+    else
+    {
+        string_path fName;
+        FS.update_path(fName, "$level$", CROSS_TABLE_NAME);
+        m_current_level_cross_table = xr_new<CGameLevelCrossTable>(fName);
+    }
+    VERIFY(m_current_level_cross_table);
     m_current_level_some_vertex_id = _GRAPH_ID(-1);
     for (_GRAPH_ID i = 0, n = header().vertex_count(); i < n; ++i)
     {
@@ -263,4 +313,10 @@ IC void CGameGraph::set_current_level(const u32& level_id)
     }
 
     VERIFY(valid_vertex_id(m_current_level_some_vertex_id));
+}
+
+IC const CGameLevelCrossTable& CGameGraph::cross_table() const
+{
+    VERIFY(m_current_level_cross_table);
+    return (*m_current_level_cross_table);
 }

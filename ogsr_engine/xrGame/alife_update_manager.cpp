@@ -216,6 +216,8 @@ void CALifeUpdateManager::new_game(LPCSTR save_name)
     reload(m_section);
     spawns().load(save_name);
 
+    graph().on_load();
+
     server().PerformIDgen(0x0000);
     time_manager().init(m_section);
     VERIFY(can_register_objects());

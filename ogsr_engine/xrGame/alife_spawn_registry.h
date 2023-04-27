@@ -39,6 +39,12 @@ private:
     xr_unordered_map<ALife::_SPAWN_STORY_ID, ALife::_SPAWN_ID> m_spawn_story_ids;
     string_unordered_map<shared_str, ALife::_SPAWN_ID> m_spawn_ids_by_name;
 
+private:
+    IReader* m_file;
+    IReader* m_chunk;
+    CGameGraph* m_game_graph;
+    bool m_separated_graphs;
+
 protected:
     // void							save_updates				(IWriter &stream);
     // void							load_updates				(IReader &stream);
@@ -64,6 +70,8 @@ public:
     void fill_new_spawns(xr_vector<ALife::_SPAWN_ID>& spawns, ALife::_TIME_ID game_time);
     IC const CALifeSpawnHeader& header() const;
     IC const SPAWN_GRAPH& spawns() const;
+    shared_str const& get_spawn_name() const { return m_spawn_name; }
+    IReader* get_spawn_file() const { return m_file; }
     //IC void assign_artefact_position(CSE_ALifeAnomalousZone* anomaly, CSE_ALifeDynamicObject* object) const;
 
     //Используется только в луа
