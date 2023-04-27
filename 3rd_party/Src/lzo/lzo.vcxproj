@@ -180,6 +180,7 @@
       </ExceptionHandling>
       <DisableSpecificWarnings>4456;4457;4458;4577;</DisableSpecificWarnings>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

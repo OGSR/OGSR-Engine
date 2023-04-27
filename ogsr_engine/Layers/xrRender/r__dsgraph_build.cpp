@@ -403,8 +403,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
         mapNormalStates::TNode* Nstate = Ncs->val.insert(pass.state->state);
         mapNormalTextures::TNode* Ntex = Nstate->val.insert(pass.T._get());
         mapNormalItems& items = Ntex->val;
-        _NormalItem item = {SSA, pVisual};
-        items.push_back(item);
+        items.emplace_back(_NormalItem{SSA, pVisual});
 
         // Need to sort for HZB efficient use
         if (SSA > Ntex->val.ssa)
