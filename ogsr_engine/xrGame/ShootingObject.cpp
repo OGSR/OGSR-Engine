@@ -409,12 +409,10 @@ bool CShootingObject::SendHitAllowed(CObject* pUser)
     }
 };
 
-extern void random_dir(Fvector& tgt_dir, const Fvector& src_dir, float dispersion);
-
 void CShootingObject::FireBullet(const Fvector& pos, const Fvector& shot_dir, float fire_disp, const CCartridge& cartridge, u16 parent_id, u16 weapon_id, bool send_hit)
 {
     Fvector dir;
-    random_dir(dir, shot_dir, fire_disp);
+    dir.random_dir(shot_dir, fire_disp);
 
     if (!Core.Features.test(xrCore::Feature::npc_simplified_shooting) || ParentIsActor())
         if (!fis_zero(constDeviation.pitch) || !fis_zero(constDeviation.yaw))
