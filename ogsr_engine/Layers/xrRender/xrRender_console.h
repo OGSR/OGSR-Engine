@@ -140,6 +140,7 @@ extern ECORE_API float ps_r2_visor_refl_radius;
 
 extern ECORE_API float ps_ssfx_wpn_dof_2;
 extern Fvector3 ps_ssfx_int_grass_params_1;
+extern Fvector3 ps_ssfx_shadow_cascades;
 
 // textures
 extern ECORE_API int psTextureLOD;

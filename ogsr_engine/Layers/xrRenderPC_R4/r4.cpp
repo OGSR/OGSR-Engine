@@ -508,6 +508,8 @@ void CRender::OnFrame()
         // MT-HOM (@front)
         Device.seqParallel.insert(Device.seqParallel.begin(), fastdelegate::MakeDelegate(&HOM, &CHOM::MT_RENDER));
     }
+
+    g_pGamePersistent->GrassBendersUpdateExplosions();
 }
 
 // Перед началом рендера мира --#SM+#-- +SecondVP+

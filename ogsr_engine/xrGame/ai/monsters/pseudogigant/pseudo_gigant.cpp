@@ -15,6 +15,7 @@
 #include "../../../detail_path_manager.h"
 #include "../../../CharacterPhysicsSupport.h"
 #include "../control_path_builder_base.h"
+#include "../../../../xr_3da/IGame_Persistent.h"
 
 CPseudoGigant::CPseudoGigant()
 {
@@ -245,6 +246,8 @@ void CPseudoGigant::on_threaten_execute()
     pos.set(Position());
     pos.y += 0.1f;
     m_sound_threaten_hit.play_at_pos(this, pos);
+
+    g_pGamePersistent->GrassBendersAddExplosion(ID(), pos, {0.f, -99.f, 0.f}, 1.33f, 5.0f, ps_ssfx_grass_interactive.w, 20);
 
     // играть партиклы
     PlayParticles(m_kick_particles, pos, Direction());

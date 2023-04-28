@@ -57,7 +57,7 @@ class CDetailPathBuilder;
 
 class CMovementManager
 {
-    u8 grassbender_id{};
+    size_t grassbender_id{};
     u32 grassbender_frame{};
 
 private:

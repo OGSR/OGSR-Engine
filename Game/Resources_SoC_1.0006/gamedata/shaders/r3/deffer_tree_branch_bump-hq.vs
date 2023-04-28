@@ -1,7 +1,7 @@
 #include "common.h"
 #include "check_screenspace.h"
 
-float4 benders_pos[16];
+float4 benders_pos[32];
 float4 benders_setup;
 
 uniform float3x4 m_xform;
@@ -30,26 +30,39 @@ v2p_bumped main(v_tree I)
     result = 0;
 #endif
     float4 w_pos = float4(pos.x + result.x, pos.y, pos.z + result.y, 1);
+    float2 tc = (I.tc * consts).xy;
 
-    // INTERACTIVE GRASS ( Bushes ) - SSS Update 15.2
+    // INTERACTIVE GRASS ( Bushes ) - SSS Update 15.4
     // https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders/
 #ifdef SSFX_INTER_GRASS
     for (int b = 0; b < benders_setup.w; b++)
     {
-        float dist = distance(float2(w_pos.x, w_pos.z), float2(benders_pos[b].x, benders_pos[b].z)); // Distance from Vertex to Bender.
-        float height_limit =
-            saturate(1.0f - abs(w_pos.y - benders_pos[b].y) * 0.5f); // Limit the effect vertically. We don't want a Stalker walking on a platform and affecting the grass bellow.
-        float bend = saturate(benders_setup.x - dist * dist) * height_limit; // Bend intensity, Radius - Dist. ( Square Dist to soft the end )
-        float3 dir = normalize(w_pos.xyz - benders_pos[b].xyz) * bend; // Direction of the bend.
-        float VHeight = clamp(H, 0, 1.5f); // Clamp H to stay at a range of 0.0f ~ 1.5f
+        // Direction, Radius & Bending Strength, Distance and Height Limit
+        float3 dir = benders_pos[b + 16].xyz;
+        float3 rstr = float3(benders_pos[b].w, benders_pos[b + 16].ww); // .x = Radius | .yz = Str
+        bool non_dynamic = rstr.x <= 0 ? true : false;
+        float dist = distance(w_pos.xz, benders_pos[b].xz);
+        float height_limit = 1.0f - saturate(abs(pos.y - benders_pos[b].y) / (non_dynamic ? 2.0f : rstr.x));
+        height_limit *= (1.0f - tc.y); // Bushes uses UV Coor instead of H to limit displacement
+
+        // Adjustments ( Fix Radius or Dynamic Radius )
+        rstr.x = non_dynamic ? benders_setup.x : rstr.x;
+        rstr.yz *= non_dynamic ? benders_setup.yz : 1.0f;
+
+        // Strength through distance and bending direction.
+        float bend = 1.0f - saturate(dist / (rstr.x + 0.001f));
+        float3 bend_dir = normalize(w_pos.xyz - benders_pos[b].xyz) * bend;
+        float3 dir_limit = dir.y >= -1 ? saturate(dot(bend_dir.xyz, dir.xyz) * 5.0f) : 1.0f; // Limit if nedeed
+
+        // Apply direction limit
+        bend_dir.xz *= dir_limit.xz;
 
         // Apply vertex displacement
-        w_pos.xz += dir.xz * 1.4f * benders_setup.y * VHeight; // Horizontal
-        w_pos.y += dir.y * 0.8f * benders_setup.z * VHeight; // Vertical
+        w_pos.xz += bend_dir.xz * 2.25f * rstr.yy * height_limit; // Horizontal
+        w_pos.y -= bend * 0.67f * rstr.z * height_limit * dir_limit.y; // Vertical
     }
 #endif
 
-    float2 tc = (I.tc * consts).xy;
     float hemi = clamp(I.Nh.w * c_scale.w + c_bias.w, 0.3f, 1.0f); // Limit hemi - SSS Update 14.5
     //	float 	hemi 	= I.Nh.w;
 

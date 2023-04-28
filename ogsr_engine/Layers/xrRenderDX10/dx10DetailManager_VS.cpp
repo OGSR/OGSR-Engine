@@ -103,9 +103,12 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
                 if (ps_r2_ls_flags_ext.test(SSFX_INTER_GRASS))
                 {
                     Fvector4* c_grass{};
-                    RCache.get_ConstantDirect(strBendersPos, sizeof grass_shader_data.pos, reinterpret_cast<void**>(&c_grass), nullptr, nullptr);
+                    RCache.get_ConstantDirect(strBendersPos, sizeof grass_shader_data.pos + sizeof grass_shader_data.dir, reinterpret_cast<void**>(&c_grass), nullptr, nullptr);
                     if (c_grass)
+                    {
                         std::memcpy(c_grass, &grass_shader_data.pos, sizeof grass_shader_data.pos);
+                        std::memcpy(c_grass + std::size(grass_shader_data.pos), &grass_shader_data.dir, sizeof grass_shader_data.dir);
+                    }
                 }
 
                 Fvector4* c_storage{};

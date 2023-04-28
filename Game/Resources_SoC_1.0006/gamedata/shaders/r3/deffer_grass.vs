@@ -1,7 +1,7 @@
 #include "common.h"
 #include "check_screenspace.h"
 
-float4 benders_pos[16];
+float4 benders_pos[32];
 float4 benders_setup;
 
 float4 consts; // {1/quant,1/quant,diffusescale,ambient}
@@ -37,20 +37,34 @@ v2p_bumped main(v_detail v)
     // Add wind
     pos = float4(pos.x + result.x, pos.y, pos.z + result.y, 1);
 
-    // INTERACTIVE GRASS - SSS Update 15.2
+    // INTERACTIVE GRASS - SSS Update 15.4
     // https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders/
 #ifdef SSFX_INTER_GRASS
     for (int b = 0; b < benders_setup.w; b++)
     {
-        float dist = distance(float2(pos.x, pos.z), float2(benders_pos[b].x, benders_pos[b].z)); // Distance from Vertex to Bender.
-        float height_limit =
-            saturate(1.0f - abs(pos.y - benders_pos[b].y) * 0.5f); // Limit the effect vertically. We don't want a Stalker walking on a platform and affecting the grass bellow.
-        float bend = saturate(benders_setup.x - dist * dist) * height_limit; // Bend intensity, Radius - Dist. ( Square Dist to soft the end )
-        float3 dir = normalize(pos.xyz - benders_pos[b].xyz) * bend; // Direction of the bend.
+        // Direction, Radius & Bending Strength, Distance and Height Limit
+        float3 dir = benders_pos[b + 16].xyz;
+        float3 rstr = float3(benders_pos[b].w, benders_pos[b + 16].ww);
+        bool non_dynamic = rstr.x <= 0 ? true : false;
+        float dist = distance(pos.xz, benders_pos[b].xz);
+        float height_limit = 1.0f - saturate(abs(pos.y - benders_pos[b].y) / (non_dynamic ? 2.0f : rstr.x));
+        height_limit *= H;
+
+        // Adjustments ( Fix Radius or Dynamic Radius )
+        rstr.x = non_dynamic ? benders_setup.x : rstr.x;
+        rstr.yz *= non_dynamic ? benders_setup.yz : 1.0f;
+
+        // Strength through distance and bending direction.
+        float bend = 1.0f - saturate(dist / (rstr.x + 0.001f));
+        float3 bend_dir = normalize(pos.xyz - benders_pos[b].xyz) * bend;
+        float3 dir_limit = dir.y >= -1 ? saturate(dot(bend_dir.xyz, dir.xyz) * 5.0f) : 1.0f; // Limit if nedeed
+
+        // Apply direction limit
+        bend_dir.xz *= dir_limit.xz;
 
         // Apply vertex displacement
-        pos.xz += dir.xz * 2.0f * benders_setup.y * H; // Horizontal
-        pos.y -= bend * 0.4f * benders_setup.z * H; // Vertical
+        pos.xz += bend_dir.xz * 2.0f * rstr.yy * height_limit; // Horizontal
+        pos.y -= bend * 0.6f * rstr.z * height_limit * dir_limit.y; // Vertical
     }
 #endif
 

@@ -177,8 +177,10 @@ float ps_r2_lt_smooth = 1.f; // 1.f
 float ps_r2_slight_fade = 2.0f; // 1.f
 
 // Screen Space Shaders Stuff
-Fvector3 ps_ssfx_grass_interactive{1.f, static_cast<float>(GRASS_SHADER_DATA_COUNT), 150.f};
-Fvector3 ps_ssfx_int_grass_params_1{1.0f, 1.0f, 1.0f};
+Fvector3 ps_ssfx_shadow_cascades{20.f, 40.f, 160.f};
+Fvector4 ps_ssfx_grass_interactive{1.f, static_cast<float>(GRASS_SHADER_DATA_COUNT), 2000.f, 1.0f};
+Fvector3 ps_ssfx_int_grass_params_1{2.0f, 1.0f, 1.0f};
+Fvector4 ps_ssfx_int_grass_params_2{1.0f, 5.0f, 1.0f, 1.0f};
 float ps_ssfx_wpn_dof_2 = 0.5f;
 
 //	x - min (0), y - focus (1.4), z - max (100)
@@ -600,7 +602,25 @@ public:
 #endif //	DEBUG
 #endif //	(RENDER == R_R4)
 
-//-----------------------------------------------------------------------
+class CCC_ssfx_cascades final: public CCC_Vector3
+{
+    void apply() { RImplementation.init_cacades(); }
+
+public:
+    CCC_ssfx_cascades(LPCSTR N, Fvector3* V, const Fvector3 _min, const Fvector3 _max) : CCC_Vector3(N, V, _min, _max) {}
+    void Execute(LPCSTR args) override
+    {
+        CCC_Vector3::Execute(args);
+        apply();
+    }
+    void Status(TStatus& S) override
+    {
+        CCC_Vector3::Status(S);
+        apply();
+    }
+};
+
+
 void xrRender_initconsole()
 {
     if (!FS.path_exist("$game_weathers$"))
@@ -846,9 +866,11 @@ void xrRender_initconsole()
     CMD1(CCC_memory_stats, "render_memory_stats");
 
     // Screen Space Shaders
+    CMD4(CCC_ssfx_cascades, "ssfx_shadow_cascades", &ps_ssfx_shadow_cascades, (Fvector3{1.0f, 1.0f, 1.0f}), (Fvector3{300.f, 300.f, 300.f}));
     CMD4(CCC_Float, "ssfx_wpn_dof_2", &ps_ssfx_wpn_dof_2, 0, 1);
-    CMD4(CCC_Vector3, "ssfx_grass_interactive", &ps_ssfx_grass_interactive, (Fvector3{}), (Fvector3{1.f, static_cast<float>(GRASS_SHADER_DATA_COUNT), 1500.f}));
+    CMD4(CCC_Vector4, "ssfx_grass_interactive", &ps_ssfx_grass_interactive, (Fvector4{}), (Fvector4{1.f, static_cast<float>(GRASS_SHADER_DATA_COUNT), 5000.f, 1.f}));
     CMD4(CCC_Vector3, "ssfx_int_grass_params_1", &ps_ssfx_int_grass_params_1, (Fvector3{}), (Fvector3{5.f, 5.f, 5.f}));
+    CMD4(CCC_Vector4, "ssfx_int_grass_params_2", &ps_ssfx_int_grass_params_2, (Fvector4{}), (Fvector4{5.f, 20.f, 1.f, 5.f}));
 
     CMD3(CCC_Mask, "ssfx_height_fog", &ps_r2_ls_flags_ext, SSFX_HEIGHT_FOG);
     CMD3(CCC_Mask, "ssfx_sky_debanding", &ps_r2_ls_flags_ext, SSFX_SKY_DEBANDING);

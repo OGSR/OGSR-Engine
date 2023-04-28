@@ -762,9 +762,8 @@ uniform float3x4 m_sunmask; // ortho-projection
 #ifdef USE_SUNMASK
 float sunmask(float4 P)
 {
-    float2 tc = mul(m_sunmask, P); //
-    //	return 		tex2D( s_lmap, tc ).w;			// A8
-    return s_lmap.Sample(smp_linear, tc).w; // A8
+    float2 tc = mul(m_sunmask, P);
+    return s_lmap.SampleLevel(smp_linear, tc, 0).w; //Hemi map - ambient occlusion
 }
 #else
 float sunmask(float4 P) { return 1.h; } //

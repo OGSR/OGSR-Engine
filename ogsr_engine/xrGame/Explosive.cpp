@@ -32,6 +32,7 @@
 #include "game_base_space.h"
 #include "profiler.h"
 #include "..\Include/xrRender/Kinematics.h"
+#include "../xr_3da/IGame_Persistent.h"
 
 #define EFFECTOR_RADIUS 30.f
 const u16 TEST_RAYS_PER_OBJECT = 5;
@@ -329,6 +330,9 @@ void CExplosive::Explode()
         DBG_DrawPoint(pos, 0.3f, D3DCOLOR_XRGB(255, 0, 0));
     }
 #endif
+
+    g_pGamePersistent->GrassBendersAddExplosion(cast_game_object()->ID(), pos, {0, -99, 0}, 1.33f, ps_ssfx_int_grass_params_2.y, ps_ssfx_int_grass_params_2.x, m_fBlastRadius * 2.0f);
+
     //	Msg("---------CExplosive Explode [%d] frame[%d]",cast_game_object()->ID(), Device.dwFrame);
     OnBeforeExplosion();
     //играем звук взрыва

@@ -360,16 +360,23 @@ public:
 
 ENGINE_API extern ShExports shader_exports;
 
-// Увеличивая или уменьшая максимальное кол-во здесь, обязательно нужно сделать тоже самое в вершинном шейдере в объявлении benders_pos
+// Увеличивая или уменьшая максимальное кол-во здесь, обязательно нужно сделать тоже самое в вершинном шейдере в объявлении benders_pos. Там должно быть это значение умноженное на два.
 constexpr size_t GRASS_SHADER_DATA_COUNT = 16;
 
 struct GRASS_SHADER_DATA
 {
-    u8 index{};
+    size_t index{};
     u16 id[GRASS_SHADER_DATA_COUNT]{};
-    Fvector4 pos[GRASS_SHADER_DATA_COUNT]{};
+    Fvector4 pos[GRASS_SHADER_DATA_COUNT]{}; //x,y,z - pos, w - radius
+    Fvector4 dir[GRASS_SHADER_DATA_COUNT]{}; // x,y,z - dir, w - str
+    float radius[GRASS_SHADER_DATA_COUNT]{};
+    float str_target[GRASS_SHADER_DATA_COUNT]{};
+    float time[GRASS_SHADER_DATA_COUNT]{};
+    float fade[GRASS_SHADER_DATA_COUNT]{};
+    float speed[GRASS_SHADER_DATA_COUNT]{};
 };
 
 ENGINE_API extern GRASS_SHADER_DATA grass_shader_data;
 
-extern Fvector3 ps_ssfx_grass_interactive;
+extern Fvector4 ps_ssfx_grass_interactive;
+extern Fvector4 ps_ssfx_int_grass_params_2;

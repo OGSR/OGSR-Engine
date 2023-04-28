@@ -11,6 +11,7 @@
 #include "entity_alive.h"
 #include "PHDestroyableNotificate.h"
 #include "clsid_game.h"
+#include "../xr_3da/IGame_Persistent.h"
 
 CMincer::CMincer(void) { m_fActorBlowoutRadiusPercent = 0.5f; }
 
@@ -75,7 +76,13 @@ void CMincer::feel_touch_new(CObject* O)
     }
 }
 BOOL CMincer::feel_touch_contact(CObject* O) { return inherited::feel_touch_contact(O) && smart_cast<CPhysicsShellHolder*>(O); }
-void CMincer::AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist) { inherited::AffectThrow(O, GO, throw_in_dir, dist); }
+
+void CMincer::AffectThrow(SZoneObjectInfo* O, CPhysicsShellHolder* GO, const Fvector& throw_in_dir, float dist)
+{
+    inherited::AffectThrow(O, GO, throw_in_dir, dist);
+
+    g_pGamePersistent->GrassBendersAddExplosion(cast_game_object()->ID(), Position(), {0, -99, 0}, 1.33f, ps_ssfx_int_grass_params_2.y, ps_ssfx_int_grass_params_2.x, Radius() * 4.0f);
+}
 
 bool CMincer::BlowoutState()
 {

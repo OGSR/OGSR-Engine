@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "burer.h"
+#include "../../../../xr_3da/IGame_Persistent.h"
 #include "burer_state_manager.h"
 
 #include "../control_animation_base.h"

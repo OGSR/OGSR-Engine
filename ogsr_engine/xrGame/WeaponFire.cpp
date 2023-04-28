@@ -13,6 +13,7 @@
 #include "effectorshot.h"
 
 #include "level_bullet_manager.h"
+#include "../xr_3da/IGame_Persistent.h"
 
 float CWeapon::GetWeaponDeterioration() { return conditionDecreasePerShot; };
 
@@ -54,6 +55,9 @@ void CWeapon::FireTrace(const Fvector& P, const Fvector& D)
 
     if (m_bLightShotEnabled)
         Light_Start();
+
+    const Fvector ShotPos = Fvector().mad(P, D, 1.5f);
+    g_pGamePersistent->GrassBendersAddShot(cast_game_object()->ID(), ShotPos, D, 3.0f, 20.0f, ps_ssfx_int_grass_params_2.z, ps_ssfx_int_grass_params_2.w);
 
     // Ammo
     m_magazine.pop_back();

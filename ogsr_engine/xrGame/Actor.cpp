@@ -926,12 +926,13 @@ void CActor::UpdateCL()
     if (ps_ssfx_grass_interactive.x > 0.f)
     {
         // Не знаю что лучше использовать - позицию камеры или актора. Вроде для травы с позицией актора получше выглядит. Для кустов - не понятно, что лучше.
-        // grass_shader_data.pos[0].set(Device.vCameraPosition.x, Device.vCameraPosition.y, Device.vCameraPosition.z);
+        // grass_shader_data.pos[0].set(Device.vCameraPosition.x, Device.vCameraPosition.y, Device.vCameraPosition.z, -1);
         const auto& pos = Position();
-        grass_shader_data.pos[0].set(pos.x, pos.y, pos.z);
+        grass_shader_data.pos[0].set(pos.x, pos.y, pos.z, -1);
     }
     else
         grass_shader_data.pos[0].set(0.f, 0.f, 0.f);
+    grass_shader_data.dir[0].set(0.0f, -99.0f, 0.0f, 1.0f);
 }
 
 constexpr u32 TASKS_UPDATE_TIME = 1u;

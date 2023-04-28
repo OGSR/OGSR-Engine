@@ -45,9 +45,14 @@ public:
     xr_set<CPS_Instance*> ps_active, ps_destroy;
     xr_vector<CPS_Instance*> ps_needtoplay;
 
+    void GrassBendersUpdateExplosions();
+    void GrassBendersAddExplosion(const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity, const float radius);
+    void GrassBendersAddShot(const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity, const float radius);
     void GrassBendersRemoveById(const u16 id);
-    void GrassBendersRemoveByIndex(u8& idx);
-    void GrassBendersUpdate(const u16 id, u8& data_idx, u32& data_frame, const Fvector& position);
+    void GrassBendersRemoveByIndex(size_t& idx);
+    void GrassBendersUpdate(const u16 id, size_t& data_idx, u32& data_frame, const Fvector& position);
+    void GrassBendersReset(const size_t idx);
+    void GrassBendersSet(const size_t idx, const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity, const float radius, const bool resetTime);
 
     void destroy_particles(const bool& all_particles);
 
