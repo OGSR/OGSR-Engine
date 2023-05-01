@@ -16,17 +16,8 @@ BOOL CLevel::Load_GameSpecific_Before()
 {
     // AI space
     g_pGamePersistent->LoadTitle("st_loading_ai_objects");
-    string_path fn_game;
 
-    if (!ai().get_alife() && FS.exist(fn_game, "$level$", "level.ai"))
-        ai().load(net_SessionName());
-
-    if (!ai().get_alife() && ai().get_game_graph() && FS.exist(fn_game, "$level$", "level.game"))
-    {
-        IReader* stream = FS.r_open(fn_game);
-        ai().patrol_path_storage_raw(*stream);
-        FS.r_close(stream);
-    }
+    ASSERT_FMT(ai().get_alife(), "ai().get_alife() does not exist!");
 
     return (TRUE);
 }

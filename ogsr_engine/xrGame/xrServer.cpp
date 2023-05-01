@@ -71,7 +71,6 @@ CSE_Abstract* xrServer::ID_to_entity(u16 ID)
 
 //--------------------------------------------------------------------
 IClient* xrServer::client_Create() { return xr_new<xrClientData>(); }
-void xrServer::client_Replicate() {}
 
 IClient* xrServer::client_Find_Get(ClientID ID)
 {
@@ -206,8 +205,6 @@ void xrServer::Update()
         }
         DI++;
     }
-
-    PerformCheckClientsForMaxPing();
 
     csPlayers.Leave();
 }
@@ -417,7 +414,6 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
         {
             CL->net_Ready = TRUE;
             CL->ps->DeathTime = Device.dwTimeGlobal;
-            game->OnPlayerConnectFinished(sender);
             CL->ps->setName(CL->name.c_str());
         };
         game->signal_Syncronize();
@@ -532,18 +528,6 @@ void xrServer::entity_Destroy(CSE_Abstract*& P)
     }
 }
 
-CSE_Abstract* xrServer::GetEntity(u32 Num)
-{
-    xrS_entities::iterator I = entities.begin(), E = entities.end();
-    for (u32 C = 0; I != E; ++I, ++C)
-    {
-        if (C == Num)
-            return I->second;
-    };
-    return NULL;
-};
-
-
 #ifdef DEBUG
 
 static BOOL _ve_initialized = FALSE;
@@ -635,32 +619,4 @@ void xrServer::AddDelayedPacket(NET_Packet& Packet, ClientID Sender)
     CopyMemory(&(NewPacket->Packet), &Packet, sizeof(NET_Packet));
 
     DelayedPackestCS.Leave();
-}
-u32 g_sv_dwMaxClientPing = 2000;
-u32 g_sv_time_for_ping_check = 15000; // 15 sec
-u8 g_sv_maxPingWarningsCount = 5;
-
-void xrServer::PerformCheckClientsForMaxPing()
-{
-}
-
-xr_token game_types[];
-void xrServer::GetServerInfo(CServerInfo* si)
-{
-    string32 tmp;
-    string256 tmp256;
-
-    si->AddItem("Server port", itoa(GetPort(), tmp, 10), RGB(128, 128, 255));
-    LPCSTR time = InventoryUtilities::GetTimeAsString(Device.dwTimeGlobal, InventoryUtilities::etpTimeToSecondsAndDay).c_str();
-    si->AddItem("Uptime", time, RGB(255, 228, 0));
-
-    strcpy_s(tmp256, get_token_name(game_types, game->Type()));
-
-    // if ( g_sv_dm_dwTimeLimit > 0 )
-    {
-        strcat_s(tmp256, " time limit [");
-        strcat_s(tmp256, "] ");
-    }
-
-    si->AddItem("Game type", tmp256, RGB(128, 255, 255));
 }

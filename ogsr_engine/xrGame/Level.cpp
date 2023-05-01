@@ -239,8 +239,6 @@ CLevel::~CLevel()
 
 shared_str CLevel::name() const { return (m_name); }
 
-void CLevel::GetLevelInfo(CServerInfo* si) { Server->GetServerInfo(si); }
-
 void CLevel::PrefetchSound(LPCSTR name)
 {
     // preprocess sound name

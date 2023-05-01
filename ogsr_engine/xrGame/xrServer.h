@@ -63,6 +63,7 @@ private:
 
     xrCriticalSection DelayedPackestCS;
     xr_deque<DelayedPacket> m_aDelayedPackets;
+
     void ProceedDelayedPackets();
     void AddDelayedPacket(NET_Packet& Packet, ClientID Sender);
     u32 OnDelayedMessage(NET_Packet& P, ClientID sender); // Non-Zero means broadcasting with "flags" as returned
@@ -84,9 +85,6 @@ private:
 
 private:
     id_generator_type m_tID_Generator;
-
-protected:
-    void PerformCheckClientsForMaxPing();
 
 public:
     game_sv_GameState* game{};
@@ -121,9 +119,6 @@ public:
 protected:
     virtual IClient* new_client(SClientConnectData* cl_data);
 
-    virtual bool Check_ServerAccess(IClient* CL, string512& reason) { return true; }
-
-    virtual bool NeedToCheckClient_BuildVersion(IClient* CL);
     virtual void Check_BuildVersion_Success(IClient* CL);
 
     void SendConnectionData(IClient* CL);
@@ -139,15 +134,12 @@ public:
     virtual void SendTo_LL(ClientID ID, void* data, u32 size, u32 dwFlags = DPNSEND_GUARANTEED, u32 dwTimeout = 0);
 
     virtual IClient* client_Create(); // create client info
-    virtual void client_Replicate(); // replicate current state to client
     virtual IClient* client_Find_Get(ClientID ID); // Find earlier disconnected client
     virtual void client_Destroy(IClient* C); // destroy client info
 
     // utilities
     CSE_Abstract* entity_Create(LPCSTR name);
     void entity_Destroy(CSE_Abstract*& P);
-    u32 GetEntitiesNum() { return entities.size(); };
-    CSE_Abstract* GetEntity(u32 Num);
 
     xrClientData* ID_to_client(ClientID ID, bool ScanAll = false) { return (xrClientData*)(IPureServer::ID_to_client(ID, ScanAll)); }
     CSE_Abstract* ID_to_entity(u16 ID);
@@ -156,21 +148,18 @@ public:
     virtual EConnect Connect(shared_str& session_name);
     virtual void Disconnect();
     virtual void Update();
+
     void SLS_Default();
     void SLS_Clear();
     void SLS_Save(IWriter& fs);
+
     shared_str level_name(const shared_str& server_options) const;
 
     void create_direct_client();
 
-    virtual void Assign_ServerType(string512& res){};
-    virtual bool HasPassword() { return false; }
-    virtual bool HasProtected() { return false; }
-
-    virtual void GetServerInfo(CServerInfo* si);
-
 public:
     xr_string ent_name_safe(u16 eid);
+
 #ifdef DEBUG
     bool verify_entities() const;
     void verify_entity(const CSE_Abstract* entity) const;

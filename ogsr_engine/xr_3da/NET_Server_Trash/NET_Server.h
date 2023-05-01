@@ -115,17 +115,12 @@ public:
     virtual u32 OnMessage(NET_Packet& P, ClientID sender); // Non-Zero means broadcasting with "flags" as returned
 
     virtual IClient* client_Create() = 0; // create client info
-    virtual void client_Replicate() = 0; // replicate current state to client
     virtual void client_Destroy(IClient* C) = 0; // destroy client info
 
     IC u32 client_Count() { return net_Players.size(); }
     IC IClient* client_Get(u32 num) { return net_Players[num]; }
 
-    IC int GetPort() { return 0; };
-
-    virtual bool Check_ServerAccess(IClient* CL, string512& reason) { return true; }
     virtual void Assign_ServerType(string512& res){};
-    virtual void GetServerInfo(CServerInfo* si){};
 
     IClient* GetServerClient() { return SV_Client; };
 

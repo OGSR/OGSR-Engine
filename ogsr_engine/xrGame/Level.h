@@ -226,9 +226,6 @@ public:
     void g_cl_Spawn(LPCSTR name, u8 rp, u16 flags, Fvector pos); // only ask server
     void g_sv_Spawn(CSE_Abstract* E); // server reply/command spawning
 
-    // Save/Load/State
-    void SLS_Default(); // Default/Editor Load
-
     IC CSpaceRestrictionManager& space_restriction_manager();
     IC CSeniorityHierarchyHolder& seniority_holder();
     IC CClientSpawnManager& client_spawn_manager();
@@ -243,7 +240,6 @@ public:
 
     //названияе текущего уровня
     virtual shared_str name() const;
-    virtual void GetLevelInfo(CServerInfo* si);
 
     // gets the time from the game simulation
 

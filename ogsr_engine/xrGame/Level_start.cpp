@@ -120,35 +120,7 @@ bool CLevel::net_start3()
 {
     if (!net_start_result_total)
         return true;
-    // add server port if don't have one in options
-    if (!strstr(m_caClientOptions.c_str(), "port=") && Server)
-    {
-        string64 PortStr;
-        sprintf_s(PortStr, "/port=%d", Server->GetPort());
 
-        string4096 tmp;
-        strcpy_s(tmp, m_caClientOptions.c_str());
-        strcat_s(tmp, PortStr);
-
-        m_caClientOptions = tmp;
-    }
-    // add password string to client, if don't have one
-    if (m_caServerOptions.size())
-    {
-        if (strstr(m_caServerOptions.c_str(), "psw=") && !strstr(m_caClientOptions.c_str(), "psw="))
-        {
-            string64 PasswordStr = "";
-            const char* PSW = strstr(m_caServerOptions.c_str(), "psw=") + 4;
-            if (strchr(PSW, '/'))
-                strncpy_s(PasswordStr, PSW, strchr(PSW, '/') - PSW);
-            else
-                strcpy_s(PasswordStr, PSW);
-
-            string4096 tmp;
-            sprintf_s(tmp, "%s/psw=%s", m_caClientOptions.c_str(), PasswordStr);
-            m_caClientOptions = tmp;
-        };
-    };
     return true;
 }
 

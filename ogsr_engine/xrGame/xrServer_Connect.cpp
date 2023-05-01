@@ -57,13 +57,6 @@ IClient* xrServer::new_client(SClientConnectData* cl_data)
     string64 new_name;
     strcpy_s(new_name, cl_data->name);
     CL->name._set(new_name);
-
-    if (!HasProtected() && game->NewPlayerName_Exists(CL, new_name))
-    {
-        game->NewPlayerName_Generate(CL, new_name);
-        game->NewPlayerName_Replace(CL, new_name);
-    }
-    CL->name._set(new_name);
     CL->pass._set(cl_data->pass);
 
     NET_Packet P;
