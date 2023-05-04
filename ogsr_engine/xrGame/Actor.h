@@ -634,15 +634,10 @@ protected:
 
     shared_str m_DefaultVisualOutfit;
 
-    LPCSTR invincibility_fire_shield_3rd;
-    LPCSTR invincibility_fire_shield_1st;
-    shared_str m_sHeadShotParticle;
     u32 last_hit_frame;
 #ifdef DEBUG
     friend class CLevelGraph;
 #endif
-    Fvector m_AutoPickUp_AABB;
-    Fvector m_AutoPickUp_AABB_Offset;
 
 public:
     void SetWeaponHideState(u32 State, bool bSet, bool now = false);

@@ -427,16 +427,7 @@ void CActor::Load(LPCSTR section)
     LPCSTR default_outfit = READ_IF_EXISTS(pSettings, r_string, section, "default_outfit", 0);
     SetDefaultVisualOutfit(default_outfit);
 
-    invincibility_fire_shield_1st = READ_IF_EXISTS(pSettings, r_string, section, "Invincibility_Shield_1st", 0);
-    invincibility_fire_shield_3rd = READ_IF_EXISTS(pSettings, r_string, section, "Invincibility_Shield_3rd", 0);
     //-----------------------------------------
-    m_AutoPickUp_AABB = READ_IF_EXISTS(pSettings, r_fvector3, section, "AutoPickUp_AABB", Fvector().set(0.02f, 0.02f, 0.02f));
-    m_AutoPickUp_AABB_Offset = READ_IF_EXISTS(pSettings, r_fvector3, section, "AutoPickUp_AABB_offs", Fvector().set(0, 0, 0));
-
-    CStringTable string_table;
-    //---------------------------------------------------------------------
-    m_sHeadShotParticle = READ_IF_EXISTS(pSettings, r_string, section, "HeadShotParticle", 0);
-
     if (pSettings->line_exist(section, "lookout_angle"))
     {
         m_fLookoutAngle = pSettings->r_float(section, "lookout_angle");
