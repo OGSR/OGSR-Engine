@@ -14,11 +14,13 @@ float psOSSR = .001f;
 void CHOM::MT_RENDER()
 {
     MT.Enter();
-    bool b_main_menu_is_active = (g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive());
+    bool b_main_menu_is_active = (g_pGamePersistent->m_pMainMenu &&
+                                  g_pGamePersistent->m_pMainMenu->IsActive());
     if (MT_frame_rendered != Device.dwFrame && !b_main_menu_is_active)
     {
         CFrustum ViewBase;
-        ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+        ViewBase.CreateFromMatrix(Device.mFullTransform,
+                                  FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
         Enable();
         Render(ViewBase);
     }
@@ -329,15 +331,19 @@ BOOL CHOM::visible(vis_data& vis)
         return TRUE; // return - everything visible
 
     // Now, the test time comes
-    // 0. The object was hidden, and we must prove that each frame	- test		| frame-old, tested-new, hom_res = false;
-    // 1. The object was visible, but we must to re-check it		- test		| frame-new, tested-???, hom_res = true;
-    // 2. New object slides into view								- delay test| frame-old, tested-old, hom_res = ???;
+    // 0. The object was hidden, and we must prove that each frame - test |
+    // frame-old, tested-new, hom_res = false;
+    // 1. The object was visible, but we must to re-check it - test | frame-new,
+    // tested-???, hom_res = true;
+    // 2. New object slides into view - delay test| frame-old, tested-old,
+    // hom_res = ???;
     u32 frame_current = Device.dwFrame;
-    // u32	frame_prev		= frame_current-1;
+    // u32 frame_prev = frame_current-1;
 
 #ifdef DEBUG
     Device.Statistic->RenderCALC_HOM.Begin();
 #endif
+
     BOOL result = _visible(vis.box, m_xform_01);
     u32 delay = 1;
     if (result)
@@ -351,6 +357,7 @@ BOOL CHOM::visible(vis_data& vis)
     }
     vis.hom_frame = frame_current + delay;
     vis.hom_tested = frame_current;
+
 #ifdef DEBUG
     Device.Statistic->RenderCALC_HOM.End();
 #endif
