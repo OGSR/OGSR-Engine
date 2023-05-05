@@ -9,8 +9,6 @@
 
 #include "dxRenderDeviceRender.h"
 
-float psOSSR = .001f;
-
 void CHOM::MT_RENDER()
 {
     MT.Enter();
