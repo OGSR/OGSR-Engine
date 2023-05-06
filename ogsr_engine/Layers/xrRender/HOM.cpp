@@ -323,10 +323,14 @@ BOOL CHOM::visible(Fbox2& B, float depth)
 
 BOOL CHOM::visible(vis_data& vis)
 {
-    if (Device.dwFrame < vis.hom_frame)
-        return TRUE; // not at this time :)
     if (!bEnabled || ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_HOM))
         return TRUE; // return - everything visible
+
+    if (vis.hom_tested == Device.dwFrame)
+        return vis.hom_frame > vis.hom_tested;
+
+    if (Device.dwFrame < vis.hom_frame)
+        return TRUE; // not at this time :)
 
     // Now, the test time comes
     // 0. The object was hidden, and we must prove that each frame - test |
@@ -343,17 +347,12 @@ BOOL CHOM::visible(vis_data& vis)
 #endif
 
     BOOL result = _visible(vis.box, m_xform_01);
-    u32 delay = 1;
     if (result)
-    {
-        // visible	- delay next test
-        delay = ::Random.randI(5 * 2, 5 * 5);
-    }
+        // visible - delay next test
+        vis.hom_frame = frame_current + ::Random.randI(5 * 2, 5 * 5);
     else
-    {
-        // hidden	- shedule to next frame
-    }
-    vis.hom_frame = frame_current + delay;
+        // hidden - shedule to next frame
+        vis.hom_frame = frame_current;
     vis.hom_tested = frame_current;
 
 #ifdef DEBUG
