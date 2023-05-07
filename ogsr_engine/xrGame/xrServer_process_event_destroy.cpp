@@ -24,6 +24,7 @@ xr_string xrServer::ent_name_safe(u16 eid)
 void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u16 ID, NET_Packet* pEPack)
 {
     u32 MODE = net_flags(TRUE, TRUE);
+
     // Parse message
     u16 id_dest = ID;
 #ifdef DEBUG
@@ -45,6 +46,7 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u
     xrClientData* c_from = ID_to_client(sender); // клиент, кто прислал
     R_ASSERT(c_from);
     R_ASSERT(c_dest == c_from || GetServerClient() == c_from);
+
     u16 parent_id = e_dest->ID_Parent;
 
     //---------------------------------------------
@@ -59,7 +61,7 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u
 
         while (!e_dest->children.empty())
             Process_event_destroy(P, sender, time, *e_dest->children.begin(), pEventPack);
-    };
+    }
 
     if (0xffff == parent_id && NULL == pEventPack)
     {
@@ -85,7 +87,7 @@ void xrServer::Process_event_destroy(NET_Packet& P, ClientID sender, u32 time, u
 
         pEventPack->w_u8(u8(tmpP.B.count));
         pEventPack->w(&tmpP.B.data, tmpP.B.count);
-    };
+    }
 
     if (NULL == pEPack && NULL != pEventPack)
     {

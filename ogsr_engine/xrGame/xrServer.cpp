@@ -405,7 +405,7 @@ u32 xrServer::OnMessage(NET_Packet& P, ClientID sender) // Non-Zero means broadc
             P.r(&tmpP.B.data, tmpP.B.count);
 
             OnMessage(tmpP, sender);
-        };
+        }
     }
     break;
     case M_CLIENTREADY: {

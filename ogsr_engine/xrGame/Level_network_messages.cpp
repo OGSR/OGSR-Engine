@@ -63,7 +63,7 @@ void CLevel::ClientReceive()
                 game_events->insert(tmpP);
                 if (g_bDebugEvents)
                     ProcessGameEvents();
-            };
+            }
         }
         break;
         case M_UPDATE: {

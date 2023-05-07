@@ -53,8 +53,6 @@ public:
 
 class CLevel : public IGame_Level, public IPureClient
 {
-    void ClearAllObjects();
-
 private:
 #ifdef DEBUG
     bool m_bSynchronization;

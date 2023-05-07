@@ -278,68 +278,6 @@ void CLevel::OnConnectResult(NET_Packet* P)
     m_sConnectResult = ResultStr;
 };
 
-void CLevel::ClearAllObjects()
-{
-    bool ParentFound = true;
-
-    while (ParentFound)
-    {
-        ProcessGameEvents();
-
-        u32 CLObjNum = Level().Objects.o_count();
-        ParentFound = false;
-
-        for (u32 i = 0; i < CLObjNum; i++)
-        {
-            CObject* pObj = Level().Objects.o_get_by_iterator(i);
-            if (!pObj->H_Parent())
-                continue;
-            //-----------------------------------------------------------
-            NET_Packet GEN;
-            GEN.w_begin(M_EVENT);
-            //------------------		---------------------------
-            GEN.w_u32(Level().timeServer());
-            GEN.w_u16(GE_OWNERSHIP_REJECT);
-            GEN.w_u16(pObj->H_Parent()->ID());
-            GEN.w_u16(u16(pObj->ID()));
-            game_events->insert(GEN);
-            if (g_bDebugEvents)
-                ProcessGameEvents();
-            //-------------------------------------------------------------
-            ParentFound = true;
-            //-------------------------------------------------------------
-#ifdef DEBUG
-            Msg("Rejection of %s[%d] from %s[%d]", *(pObj->cNameSect()), pObj->ID(), *(pObj->H_Parent()->cNameSect()), pObj->H_Parent()->ID());
-#endif
-        };
-    };
-
-    u32 CLObjNum = Level().Objects.o_count();
-
-    for (u32 i = 0; i < CLObjNum; i++)
-    {
-        CObject* pObj = Level().Objects.o_get_by_iterator(i);
-        R_ASSERT(pObj->H_Parent() == NULL);
-        //-----------------------------------------------------------
-        NET_Packet GEN;
-        GEN.w_begin(M_EVENT);
-        //---------------------------------------------
-        GEN.w_u32(Level().timeServer());
-        GEN.w_u16(GE_DESTROY);
-        GEN.w_u16(u16(pObj->ID()));
-        game_events->insert(GEN);
-        if (g_bDebugEvents)
-            ProcessGameEvents();
-        //-------------------------------------------------------------
-        ParentFound = true;
-        //-------------------------------------------------------------
-#ifdef DEBUG
-        Msg("Destruction of %s[%d]", *(pObj->cNameSect()), pObj->ID());
-#endif
-    };
-    ProcessGameEvents();
-};
-
 void CLevel::OnConnectRejected() { IPureClient::OnConnectRejected(); };
 
 void CLevel::net_OnChangeSelfName(NET_Packet* P)
