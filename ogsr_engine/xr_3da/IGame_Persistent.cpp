@@ -226,7 +226,8 @@ void IGame_Persistent::GrassBendersUpdate(const u16 id, size_t& data_idx, u32& d
                 else
                     grass_shader_data.dir[data_idx].w = 1.0f;
 
-                grass_shader_data.pos[data_idx].set(position.x, position.y, position.z);
+                const float saved_radius = grass_shader_data.pos[data_idx].w;
+                grass_shader_data.pos[data_idx].set(position.x, position.y, position.z, saved_radius);
             }
         }
 
@@ -269,7 +270,8 @@ void IGame_Persistent::GrassBendersUpdate(const u16 id, size_t& data_idx, u32& d
     {
         // Already inview, let's add more time to re-check
         data_frame += 60;
-        grass_shader_data.pos[data_idx].set(position.x, position.y, position.z);
+        const float saved_radius = grass_shader_data.pos[data_idx].w;
+        grass_shader_data.pos[data_idx].set(position.x, position.y, position.z, saved_radius);
     }
 }
 
@@ -383,7 +385,8 @@ void IGame_Persistent::GrassBendersReset(const size_t idx) { GrassBendersSet(idx
 void IGame_Persistent::GrassBendersSet(const size_t idx, const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity, const float radius, const bool resetTime)
 {
     // Set values
-    grass_shader_data.pos[idx].set(position.x, position.y, position.z);
+    const float saved_radius = grass_shader_data.pos[idx].w;
+    grass_shader_data.pos[idx].set(position.x, position.y, position.z, saved_radius);
     grass_shader_data.id[idx] = id;
     grass_shader_data.radius[idx] = radius;
     grass_shader_data.fade[idx] = fade;
