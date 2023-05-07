@@ -3,9 +3,6 @@
 #pragma once
 
 const int occ_dim_0 = 64;
-const int occ_dim_1 = occ_dim_0 / 2;
-const int occ_dim_2 = occ_dim_1 / 2;
-const int occ_dim_3 = occ_dim_2 / 2;
 const int occ_dim = occ_dim_0 + 4; // 2 pixel border around frame
 
 class occTri
@@ -30,9 +27,6 @@ private:
     float bufDepth[occ_dim][occ_dim];
 
     occD bufDepth_0[occ_dim_0][occ_dim_0];
-    occD bufDepth_1[occ_dim_1][occ_dim_1];
-    occD bufDepth_2[occ_dim_2][occ_dim_2];
-    occD bufDepth_3[occ_dim_3][occ_dim_3];
 
 public:
     IC int df_2_s32(float d) { return iFloor(d * occQ_s32); }
@@ -45,17 +39,7 @@ public:
 
     occTri** get_frame() { return &(bufFrame[0][0]); }
     float* get_depth() { return &(bufDepth[0][0]); }
-    occD* get_depth_level(int level)
-    {
-        switch (level)
-        {
-        case 0: return &(bufDepth_0[0][0]);
-        case 1: return &(bufDepth_1[0][0]);
-        case 2: return &(bufDepth_2[0][0]);
-        case 3: return &(bufDepth_3[0][0]);
-        default: return NULL;
-        }
-    }
+    occD* get_depth_level() { return &(bufDepth_0[0][0]); }
 
     void on_dbg_render();
 

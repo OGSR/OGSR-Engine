@@ -54,9 +54,11 @@ IC void propagade_depth(LPVOID p_dest, LPVOID p_src, int dim)
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-occRasterizer::occRasterizer() : bufFrame{}, bufDepth{}, bufDepth_0{}, bufDepth_1{}, bufDepth_2{}, bufDepth_3 {}
+occRasterizer::occRasterizer()
+    : bufFrame{}, bufDepth{}, bufDepth_0{}
 #if DEBUG
-, dbg_HOM_draw_initialized(false)
+      ,
+      dbg_HOM_draw_initialized(false)
 #endif
 {}
 
@@ -141,11 +143,6 @@ void occRasterizer::propagade()
             bufDepth_0[y][x] = df_2_s32(d);
         }
     }
-
-    // Propagate other levels
-    propagade_depth(bufDepth_1, bufDepth_0, occ_dim_1);
-    propagade_depth(bufDepth_2, bufDepth_1, occ_dim_2);
-    propagade_depth(bufDepth_3, bufDepth_2, occ_dim_3);
 }
 
 void occRasterizer::on_dbg_render()
@@ -235,7 +232,7 @@ IC BOOL test_Level(occD* depth, int dim, float _x0, float _y0, float _x1, float 
 BOOL occRasterizer::test(float _x0, float _y0, float _x1, float _y1, float _z)
 {
     occD z = df_2_s32up(_z) + 1;
-    return test_Level(get_depth_level(0), occ_dim_0, _x0, _y0, _x1, _y1, z);
+    return test_Level(get_depth_level(), occ_dim_0, _x0, _y0, _x1, _y1, z);
     /*
     if	(test_Level(get_depth_level(2),occ_dim_2,_x0,_y0,_x1,_y1,z))
     {
