@@ -457,8 +457,6 @@ void CEnvDescriptorMixer::destroy()
 
 void CEnvDescriptorMixer::clear() { m_pDescriptorMixer->Clear(); }
 
-int get_ref_count(IUnknown* ii);
-
 void CEnvDescriptorMixer::lerp(CEnvironment* env, CEnvDescriptor& A, CEnvDescriptor& B, float f, CEnvModifier& Mdf, float modifier_power)
 {
     float modif_power = 1.f / (modifier_power + 1); // the environment itself
