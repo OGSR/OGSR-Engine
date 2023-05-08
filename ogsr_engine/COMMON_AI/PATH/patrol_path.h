@@ -40,6 +40,7 @@ public:
     IC const CVertex* point(const Fvector& position) const;
     CPatrolPoint add_point(Fvector);
     CPatrolPoint point(u32);
+    CPatrolPoint* point_raw(u32);
 
 #ifdef DEBUG
 public:

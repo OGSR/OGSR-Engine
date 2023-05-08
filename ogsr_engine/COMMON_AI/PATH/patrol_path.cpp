@@ -102,3 +102,8 @@ CPatrolPoint CPatrolPath::add_point(Fvector pos)
 }
 
 CPatrolPoint CPatrolPath::point(u32 index) { return vertex(index)->data(); }
+
+CPatrolPoint* CPatrolPath::point_raw(u32 index)
+{
+    return &vertex(index)->data();
+}

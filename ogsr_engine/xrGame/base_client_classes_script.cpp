@@ -196,6 +196,7 @@ void CPatrolPathScript::script_register(lua_State* L)
                   .def(constructor<>())
                   .def("add_point", &CPatrolPath::add_point)
                   .def("point", (CPatrolPoint(CPatrolPath::*)(u32))(&CPatrolPath::point))
+                  .def("point_raw", &CPatrolPath::point_raw)
                   .def("add_vertex", &CPatrolPath::add_vertex)];
 }
 
