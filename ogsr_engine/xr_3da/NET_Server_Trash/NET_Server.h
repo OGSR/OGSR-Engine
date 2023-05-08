@@ -120,9 +120,5 @@ public:
     IC u32 client_Count() { return net_Players.size(); }
     IC IClient* client_Get(u32 num) { return net_Players[num]; }
 
-    virtual void Assign_ServerType(string512& res){};
-
     IClient* GetServerClient() { return SV_Client; };
-
-    const shared_str& GetConnectOptions() const { return connect_options; }
 };

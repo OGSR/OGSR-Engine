@@ -49,8 +49,7 @@ bool CLevel::net_start_client3()
 {
     if (connected_to_server)
     {
-        LPCSTR level_name = NULL;
-        level_name = ai().get_alife() ? *name() : Server->level_name(Server->GetConnectOptions()).c_str();
+        LPCSTR level_name = name().c_str();
 
         // Determine internal level-ID
         int level_id = pApp->Level_ID(level_name);

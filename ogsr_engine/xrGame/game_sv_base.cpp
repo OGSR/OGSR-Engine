@@ -222,6 +222,13 @@ void game_sv_GameState::OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, Clie
     break;
 
     case GAME_EVENT_ON_HIT: {
+        tNetPacket.r_u16();
+        u16 id_src = tNetPacket.r_u16();
+        CSE_Abstract* e_src = get_entity_from_eid(id_src);
+
+        if (!e_src) // added by andy because of Phantom does not have server entity
+            break;
+
         m_server->SendBroadcast(BroadcastCID, tNetPacket, net_flags(TRUE, TRUE));
     }
     break;
