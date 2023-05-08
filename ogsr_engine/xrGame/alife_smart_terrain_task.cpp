@@ -41,4 +41,12 @@ u32 CALifeSmartTerrainTask::level_vertex_id() const
     return (patrol_point().level_vertex_id());
 }
 
-Fvector CALifeSmartTerrainTask::position() const { return (patrol_point().position()); }
+Fvector CALifeSmartTerrainTask::position() const
+{
+    return (patrol_point().position());
+}
+
+CPatrolPoint* CALifeSmartTerrainTask::point_raw()
+{
+    return const_cast<CPatrolPoint*>(m_patrol_point);
+}

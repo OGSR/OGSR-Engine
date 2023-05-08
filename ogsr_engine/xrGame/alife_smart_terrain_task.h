@@ -10,6 +10,7 @@
 
 #include "game_graph_space.h"
 #include "script_export_space.h"
+#include "patrol_point.h"
 
 class CPatrolPoint;
 
@@ -29,18 +30,23 @@ private:
 #endif
 
 private:
-    void setup_patrol_point(const shared_str& patrol_path_name, const u32& patrol_point_index);
+    void setup_patrol_point(const shared_str& patrol_path_name,
+                            const u32& patrol_point_index);
     IC const CPatrolPoint& patrol_point() const;
-    void init(const shared_str& patrol_path_name, const u32& patrol_point_index);
+    void init(const shared_str& patrol_path_name,
+              const u32& patrol_point_index);
 
 public:
     CALifeSmartTerrainTask(LPCSTR patrol_path_name);
-    CALifeSmartTerrainTask(LPCSTR patrol_path_name, const u32& patrol_point_index);
+    CALifeSmartTerrainTask(LPCSTR patrol_path_name,
+                           const u32& patrol_point_index);
     CALifeSmartTerrainTask(const shared_str& patrol_path_name);
-    CALifeSmartTerrainTask(const shared_str& patrol_path_name, const u32& patrol_point_index = 0);
+    CALifeSmartTerrainTask(const shared_str& patrol_path_name,
+                           const u32& patrol_point_index = 0);
     GameGraph::_GRAPH_ID game_vertex_id() const;
     u32 level_vertex_id() const;
     Fvector position() const;
+    CPatrolPoint* point_raw();
 
     DECLARE_SCRIPT_REGISTER_FUNCTION
 };
