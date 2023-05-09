@@ -81,8 +81,8 @@ public:
     IC const u8* vertex_type() const;
     IC const u8& edge_count() const;
     IC const u32& edge_offset() const;
-    IC const u8& death_point_count() const;
-    IC const u32& death_point_offset() const;
+    //IC const u8& death_point_count() const;
+    //IC const u32& death_point_offset() const;
     friend class CGameGraph;
 };
 
@@ -100,7 +100,7 @@ public:
     IC _LEVEL_ID level_count() const;
     IC const _GRAPH_ID& vertex_count() const;
     IC const u32& edge_count() const;
-    IC const u32& death_point_count() const;
+    //IC const u32& death_point_count() const;
     IC const xrGUID& guid() const;
     IC const LEVEL_MAP& levels() const;
     IC const SLevel& level(const _LEVEL_ID& id) const;

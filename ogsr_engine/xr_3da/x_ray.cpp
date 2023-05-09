@@ -642,7 +642,11 @@ void CApplication::Level_Append(LPCSTR folder)
     strconcat(sizeof(N2), N2, folder, "level.ltx");
     strconcat(sizeof(N3), N3, folder, "level.geom");
     strconcat(sizeof(N4), N4, folder, "level.cform");
-    if (FS.exist("$game_levels$", N1) && FS.exist("$game_levels$", N2) && FS.exist("$game_levels$", N3) && FS.exist("$game_levels$", N4))
+
+    if (FS.exist("$game_levels$", N1) 
+        && FS.exist("$game_levels$", N2) 
+        && FS.exist("$game_levels$", N3) 
+        && FS.exist("$game_levels$", N4))
     {
         Levels.emplace_back(sLevelInfo{xr_strdup(folder)});
     }
