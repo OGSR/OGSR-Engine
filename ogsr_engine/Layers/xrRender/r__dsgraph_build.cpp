@@ -63,7 +63,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
     ShaderElement* sh_d = &*pVisual->shader->E[4];
     if (RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2])
     {
-        mapSorted_Node* N = mapDistort.insertInAnyWay(distSQ);
+        auto N = mapDistort.insertInAnyWay(distSQ);
         N->val.ssa = SSA;
         N->val.pObject = RI.val_pObject;
         N->val.pVisual = pVisual;
@@ -90,7 +90,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 
             if (sh->flags.bEmissive)
             {
-                mapSorted_Node* N = mapHUDEmissive.insertInAnyWay(distSQ);
+                auto N = mapHUDEmissive.insertInAnyWay(distSQ);
                 N->val.ssa = SSA;
                 N->val.pObject = RI.val_pObject;
                 N->val.pVisual = pVisual;
@@ -98,7 +98,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
                 N->val.se = &*pVisual->shader->E[4]; // 4=L_special
             }
 
-            mapSorted_Node* N = mapHUDSorted.insertInAnyWay(distSQ);
+            auto N = mapHUDSorted.insertInAnyWay(distSQ);
             N->val.ssa = SSA;
             N->val.pObject = RI.val_pObject;
             N->val.pVisual = pVisual;
@@ -108,7 +108,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
         }
         else
         {
-            mapHUD_Node* N = mapHUD.insertInAnyWay(distSQ);
+            auto N = mapHUD.insertInAnyWay(distSQ);
             N->val.ssa = SSA;
             N->val.pObject = RI.val_pObject;
             N->val.pVisual = pVisual;
@@ -117,7 +117,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
 
             if (sh->flags.bEmissive)
             {
-                mapSorted_Node* N = mapHUDEmissive.insertInAnyWay(distSQ);
+                auto N = mapHUDEmissive.insertInAnyWay(distSQ);
                 N->val.ssa = SSA;
                 N->val.pObject = RI.val_pObject;
                 N->val.pVisual = pVisual;
@@ -137,7 +137,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
     // strict-sorting selection
     if (sh->flags.bStrictB2F)
     {
-        mapSorted_Node* N = mapSorted.insertInAnyWay(distSQ);
+        auto N = mapSorted.insertInAnyWay(distSQ);
         N->val.ssa = SSA;
         N->val.pObject = RI.val_pObject;
         N->val.pVisual = pVisual;
@@ -154,7 +154,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
     // d) Should be rendered to accumulation buffer in the second pass
     if (sh->flags.bEmissive)
     {
-        mapSorted_Node* N = mapEmissive.insertInAnyWay(distSQ);
+        auto N = mapEmissive.insertInAnyWay(distSQ);
         N->val.ssa = SSA;
         N->val.pObject = RI.val_pObject;
         N->val.pVisual = pVisual;
@@ -163,7 +163,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
     }
     if (sh->flags.bWmark && pmask_wmark)
     {
-        mapSorted_Node* N = mapWmark.insertInAnyWay(distSQ);
+        auto N = mapWmark.insertInAnyWay(distSQ);
         N->val.ssa = SSA;
         N->val.pObject = RI.val_pObject;
         N->val.pVisual = pVisual;
@@ -291,7 +291,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
     ShaderElement* sh_d = &*pVisual->shader->E[4];
     if (RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2])
     {
-        mapSorted_Node* N = mapDistort.insertInAnyWay(distSQ);
+        auto N = mapDistort.insertInAnyWay(distSQ);
         N->val.ssa = SSA;
         N->val.pObject = NULL;
         N->val.pVisual = pVisual;
@@ -309,7 +309,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
     // strict-sorting selection
     if (sh->flags.bStrictB2F)
     {
-        mapSorted_Node* N = mapSorted.insertInAnyWay(distSQ);
+        auto N = mapSorted.insertInAnyWay(distSQ);
         N->val.pObject = NULL;
         N->val.pVisual = pVisual;
         N->val.Matrix = Fidentity;
@@ -325,7 +325,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
     // d) Should be rendered to accumulation buffer in the second pass
     if (sh->flags.bEmissive)
     {
-        mapSorted_Node* N = mapEmissive.insertInAnyWay(distSQ);
+        auto N = mapEmissive.insertInAnyWay(distSQ);
         N->val.ssa = SSA;
         N->val.pObject = NULL;
         N->val.pVisual = pVisual;
@@ -334,7 +334,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
     }
     if (sh->flags.bWmark && pmask_wmark)
     {
-        mapSorted_Node* N = mapWmark.insertInAnyWay(distSQ);
+        auto N = mapWmark.insertInAnyWay(distSQ);
         N->val.ssa = SSA;
         N->val.pObject = NULL;
         N->val.pVisual = pVisual;
@@ -574,7 +574,7 @@ void CRender::add_leafs_Static(dxRender_Visual* pVisual)
         {
             if (ssa < r_ssaDISCARD)
                 return;
-            mapLOD_Node* N = mapLOD.insertInAnyWay(D);
+            auto N = mapLOD.insertInAnyWay(D);
             N->val.ssa = ssa;
             N->val.pVisual = pVisual;
         }
@@ -784,7 +784,7 @@ void CRender::add_Static(dxRender_Visual* pVisual, u32 planes)
         {
             if (ssa < r_ssaDISCARD)
                 return;
-            mapLOD_Node* N = mapLOD.insertInAnyWay(D);
+            auto N = mapLOD.insertInAnyWay(D);
             N->val.ssa = ssa;
             N->val.pVisual = pVisual;
         }

@@ -182,8 +182,8 @@ IC bool cmp_textures_lexN_mat(mapMatrixTextures::TNode* N1, mapMatrixTextures::T
 IC bool cmp_textures_ssa_nrm(mapNormalTextures::TNode* N1, mapNormalTextures::TNode* N2) { return (N1->val.ssa > N2->val.ssa); }
 IC bool cmp_textures_ssa_mat(mapMatrixTextures::TNode* N1, mapMatrixTextures::TNode* N2) { return (N1->val.ssa > N2->val.ssa); }
 
-void sort_tlist_nrm(xr_vector<mapNormalTextures::TNode*, render_alloc<mapNormalTextures::TNode*>>& lst,
-                    xr_vector<mapNormalTextures::TNode*, render_alloc<mapNormalTextures::TNode*>>& temp, mapNormalTextures& textures, BOOL bSSA)
+void sort_tlist_nrm(xr_vector<mapNormalTextures::TNode*>& lst,
+                    xr_vector<mapNormalTextures::TNode*>& temp, mapNormalTextures& textures, BOOL bSSA)
 {
     int amount = textures.begin()->key->size();
     if (bSSA)
@@ -232,8 +232,8 @@ void sort_tlist_nrm(xr_vector<mapNormalTextures::TNode*, render_alloc<mapNormalT
     }
 }
 
-void sort_tlist_mat(xr_vector<mapMatrixTextures::TNode*, render_alloc<mapMatrixTextures::TNode*>>& lst,
-                    xr_vector<mapMatrixTextures::TNode*, render_alloc<mapMatrixTextures::TNode*>>& temp, mapMatrixTextures& textures, BOOL bSSA)
+void sort_tlist_mat(xr_vector<mapMatrixTextures::TNode*>& lst,
+                    xr_vector<mapMatrixTextures::TNode*>& temp, mapMatrixTextures& textures, BOOL bSSA)
 {
     int amount = textures.begin()->key->size();
     if (bSSA)
