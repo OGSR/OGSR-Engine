@@ -8,8 +8,6 @@
 
 CEngine Engine;
 
-extern void msCreate(LPCSTR name);
-
 void CEngine::Initialize()
 {
     /*
@@ -31,10 +29,6 @@ void CEngine::Initialize()
     */
     //
     Engine.Sheduler.Initialize();
-
-#ifdef DEBUG
-    msCreate("game");
-#endif
 }
 
 void CEngine::Destroy()

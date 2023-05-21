@@ -537,7 +537,6 @@
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="EngineAPI.cpp" />
     <ClCompile Include="EventAPI.cpp" />
-    <ClCompile Include="mailSlot.cpp" />
     <ClCompile Include="perlin.cpp" />
   </ItemGroup>
   <ItemGroup>

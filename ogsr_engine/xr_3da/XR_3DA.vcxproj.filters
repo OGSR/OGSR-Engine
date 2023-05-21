@@ -528,9 +528,6 @@
     <ClCompile Include="EventAPI.cpp">
       <Filter>Engine\Core</Filter>
     </ClCompile>
-    <ClCompile Include="mailSlot.cpp">
-      <Filter>Engine\Core</Filter>
-    </ClCompile>
     <ClCompile Include="perlin.cpp">
       <Filter>Engine\Noise</Filter>
     </ClCompile>
