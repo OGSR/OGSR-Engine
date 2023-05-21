@@ -12,44 +12,6 @@
 
 occRasterizer Raster;
 
-void __stdcall fillDW_8x(void* _p, u32 size, u32 value)
-{
-    LPDWORD ptr = LPDWORD(_p);
-    LPDWORD end = ptr + size;
-    for (; ptr != end; ptr += 2)
-    {
-        ptr[0] = value;
-        ptr[1] = value;
-    }
-}
-
-IC void propagade_depth(LPVOID p_dest, LPVOID p_src, int dim)
-{
-    occD* dest = (occD*)p_dest;
-    occD* src = (occD*)p_src;
-
-    for (int y = 0; y < dim; y++)
-    {
-        for (int x = 0; x < dim; x++)
-        {
-            occD* base0 = src + (y * 2 + 0) * (dim * 2) + (x * 2);
-            occD* base1 = src + (y * 2 + 1) * (dim * 2) + (x * 2);
-            occD f1 = base0[0];
-            occD f2 = base0[1];
-            occD f3 = base1[0];
-            occD f4 = base1[1];
-            occD f = f1;
-            if (f2 > f)
-                f = f2;
-            if (f3 > f)
-                f = f3;
-            if (f4 > f)
-                f = f4;
-            dest[y * dim + x] = f;
-        }
-    }
-}
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -62,36 +24,32 @@ occRasterizer::occRasterizer()
 #endif
 {}
 
-void occRasterizer::clear()
+template<typename T>
+static inline void MemFill(void* dst, const T value, const size_t dstSize)
 {
-    for (u32 mit = 0; mit < occ_dim; mit++)
-    {
-        for (u32 it = 0; it < occ_dim; it++)
-        {
-            bufFrame[mit][it] = nullptr;
-        }
-    }
-
-    float f = 1.f;
-    u32 fillValue = *LPDWORD(&f);
-
-    for (std::size_t i = 0; i < occ_dim * occ_dim; i++) // fill32 TODO: SSE optimize
-    {
-        std::memcpy(reinterpret_cast<u8*>(bufDepth) + (i * sizeof(u32)), &fillValue, sizeof(u32));
-    }
+    T* ptr = reinterpret_cast<T*>(dst);
+    T* end = ptr + dstSize;
+    while (ptr != end)
+        *ptr++ = value;
 }
 
-IC BOOL shared(occTri* T1, occTri* T2)
+void occRasterizer::clear()
+{
+    MemFill<ptrdiff_t>(bufFrame, 0, sizeof bufFrame / sizeof(occTri*));
+    MemFill<float>(bufDepth, 1.f, sizeof bufDepth / sizeof(float));
+}
+
+static inline bool shared(occTri* T1, occTri* T2)
 {
     if (T1 == T2)
-        return TRUE;
+        return true;
     if (T1->adjacent[0] == T2)
-        return TRUE;
+        return true;
     if (T1->adjacent[1] == T2)
-        return TRUE;
+        return true;
     if (T1->adjacent[2] == T2)
-        return TRUE;
-    return FALSE;
+        return true;
+    return false;
 }
 
 void occRasterizer::propagade()

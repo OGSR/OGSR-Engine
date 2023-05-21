@@ -153,7 +153,7 @@ void CSoundRender_Cache::cat_create(cache_cat& cat, u32 bytes)
         cat.size += 1;
     u32 allocsize = (cat.size & 1) ? cat.size + 1 : cat.size;
     cat.table = xr_alloc<u16>(allocsize);
-    memset(cat.table, 0xff, allocsize * 2); // fill32
+    memset(cat.table, 0xff, allocsize * sizeof u16); // fill32
 }
 
 void CSoundRender_Cache::cat_destroy(cache_cat& cat)
