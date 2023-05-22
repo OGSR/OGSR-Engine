@@ -20,18 +20,7 @@ CInput::CInput(bool bExclusive, int deviceForInit)
 
     Log("Starting INPUT device...");
 
-    pDI = NULL;
-    pMouse = NULL;
-    pKeyboard = NULL;
-
-    //=====================Mouse
     mouse_property.mouse_dt = 25;
-
-    ZeroMemory(mouseState, sizeof(mouseState));
-    ZeroMemory(KBState, sizeof(KBState));
-    ZeroMemory(timeStamp, sizeof(timeStamp));
-    ZeroMemory(timeSave, sizeof(timeSave));
-    ZeroMemory(offs, sizeof(offs));
 
     //===================== Dummy pack
     iCapture(&dummyController);

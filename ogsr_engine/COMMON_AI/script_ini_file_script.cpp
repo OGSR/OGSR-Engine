@@ -34,6 +34,37 @@ void iterate_sections(CScriptIniFile* self, const luabind::functor<void>& functo
         functor(it.first.c_str());
 }
 
+CScriptIniFile* reload_system_ini()
+{
+    pSettings->Destroy(const_cast<CInifile*>(pSettings));
+
+    CInifile* tmp{};
+    string_path fname;
+
+    FS.update_path(fname, "$game_config$", "system_mods.ltx");
+    if (FS.exist(fname))
+    {
+        tmp = xr_new<CInifile>(fname, TRUE, FALSE);
+
+        tmp->load_file(TRUE);
+
+        Msg("~ Apply system_mods.ltx...");
+    }
+
+    FS.update_path(fname, "$game_config$", "system.ltx");
+    pSettings = xr_new<CInifile>(fname, TRUE, FALSE);
+    pSettings->load_file(FALSE, tmp);
+
+    CHECK_OR_EXIT(!pSettings->sections().empty(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
+
+    if (tmp)
+    {
+        xr_delete(tmp);
+    }
+
+    return ((CScriptIniFile*)pSettings);
+}
+
 using namespace luabind;
 #pragma optimize("s", on)
 void CScriptIniFile::script_register(lua_State* L)
@@ -41,7 +72,7 @@ void CScriptIniFile::script_register(lua_State* L)
     module(L)[class_<CScriptIniFile>("ini_file")
                   .def(constructor<LPCSTR>())
                   .def(constructor<LPCSTR, bool>())
-                  .def("section_exist", &CScriptIniFile::section_exist)
+                  .def("section_exist", &CScriptIniFile::section_exist_script)
                   .def("line_exist", &CScriptIniFile::line_exist)
                   .def("line_count", &CScriptIniFile::line_count)
                   .def("remove_line", &CScriptIniFile::remove_line)
@@ -62,21 +93,20 @@ void CScriptIniFile::script_register(lua_State* L)
                   .def("r_vector", &CScriptIniFile::r_fvector3)
                   .def("r_line", &::r_line, pure_out_value<4>() + pure_out_value<5>())
 
-        .def("w_bool", &CScriptIniFile::w_bool)
+                  .def("w_bool", &CScriptIniFile::w_bool)
                   .def("w_string", &CScriptIniFile::w_string)
                   .def("w_u32", &CScriptIniFile::w_u32)
                   .def("w_s32", &CScriptIniFile::w_s32)
                   .def("w_float", &CScriptIniFile::w_float)
                   .def("w_vector", &CScriptIniFile::w_fvector3),
 
-              def("system_ini", [] { return reinterpret_cast<CScriptIniFile*>(pSettings); }), 
-              def("game_ini", [] { return reinterpret_cast<CScriptIniFile*>(pGameIni); }),
+              def("system_ini", [] { return reinterpret_cast<CScriptIniFile*>(pSettings); }), def("game_ini", [] { return reinterpret_cast<CScriptIniFile*>(pGameIni); }),
               def(
                   "create_ini_file", // чтение ini как текста, без возможности сохранить
                   [](const char* ini_string) {
                       IReader reader((void*)ini_string, strlen(ini_string));
                       return static_cast<CScriptIniFile*>(xr_new<CInifile>(&reader, FS.get_path("$game_config$")->m_Path));
                   },
-                  adopt<result>())
-    ];
+                  adopt<result>()),
+              def("reload_system_ini", &reload_system_ini)];
 }

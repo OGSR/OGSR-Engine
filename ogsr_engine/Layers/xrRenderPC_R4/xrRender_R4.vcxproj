@@ -71,7 +71,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\imgui</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_DX11;WIN32;_WINDOWS;_USRDLL;XRENGINE_STATIC;XRCORE_STATIC;XRCDB_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;XRRENDER_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -112,7 +112,7 @@
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4456;4457;4458;4459;4315;4267;4324;</DisableSpecificWarnings>
       <StringPooling>false</StringPooling>
-      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\imgui</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OmitFramePointers>false</OmitFramePointers>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -137,7 +137,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\imgui</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_DX11;WIN32;NDEBUG;_WINDOWS;_USRDLL;XRENGINE_STATIC;XRCORE_STATIC;XRCDB_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;XRRENDER_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling />
@@ -171,7 +171,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\imgui</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_DX11;WIN32;NDEBUG;_WINDOWS;_USRDLL;XRENGINE_STATIC;XRCORE_STATIC;XRCDB_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;XRRENDER_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
@@ -246,6 +246,7 @@
     <ClInclude Include="..\xrRenderDX10\dx10StateUtils.h" />
     <ClInclude Include="..\xrRenderDX10\dx10TextureUtils.h" />
     <ClInclude Include="..\xrRenderDX10\DXCommonTypes.h" />
+    <ClInclude Include="..\xrRenderDX10\imgui_impl_dx11.h" />
     <ClInclude Include="..\xrRenderDX10\MSAA\dx10MSAABlender.h" />
     <ClInclude Include="..\xrRenderDX10\StateManager\dx10SamplerStateCache.h" />
     <ClInclude Include="..\xrRenderDX10\StateManager\dx10ShaderResourceStateCache.h" />
@@ -412,6 +413,7 @@
     <ClCompile Include="..\xrRenderDX10\dx10StateUtils.cpp" />
     <ClCompile Include="..\xrRenderDX10\dx10Texture.cpp" />
     <ClCompile Include="..\xrRenderDX10\dx10TextureUtils.cpp" />
+    <ClCompile Include="..\xrRenderDX10\imgui_impl_dx11.cpp" />
     <ClCompile Include="..\xrRenderDX10\MSAA\dx10MSAABlender.cpp" />
     <ClCompile Include="..\xrRenderDX10\StateManager\dx10SamplerStateCache.cpp" />
     <ClCompile Include="..\xrRenderDX10\StateManager\dx10ShaderResourceStateCache.cpp" />
@@ -609,6 +611,9 @@
     <ProjectReference Include="..\..\xrParticles\xrParticles.vcxproj">
       <Project>{94a1c366-3d19-48e6-8170-4adc2e70df97}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\3rd_party\Src\imgui\imgui.vcxproj">
+      <Project>{c8fbc3ce-d6de-4fc3-bc15-7b647614db09}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

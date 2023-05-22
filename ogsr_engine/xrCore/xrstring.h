@@ -116,6 +116,8 @@ public:
     const char* operator*() const { return p_ ? p_->value : nullptr; }
 
     const char* c_str() const { return p_ ? p_->value : nullptr; }
+    //Используется в погодном редакторе.
+    const char* data() const { return p_ ? p_->value : ""; }
 
     // misc func
     u32 size() const

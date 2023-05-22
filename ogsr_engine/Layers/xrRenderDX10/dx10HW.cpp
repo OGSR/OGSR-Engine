@@ -7,6 +7,7 @@
 #pragma warning(disable : 4995)
 #include <d3dx/d3dx9.h>
 #pragma warning(default : 4995)
+
 #include "../xrRender/HW.h"
 #include "../../xr_3da/XR_IOConsole.h"
 #include "../../xr_3da/xr_input.h"
@@ -14,6 +15,9 @@
 
 #include "StateManager\dx10SamplerStateCache.h"
 #include "StateManager\dx10StateCache.h"
+
+#include "imgui.h"
+#include "imgui_impl_dx11.h"
 
 void fill_vid_mode_list(CHW* _hw);
 void free_vid_mode_list();
@@ -198,10 +202,14 @@ void CHW::CreateDevice(HWND m_hWnd, bool move_window)
 
     updateWindowProps(m_hWnd);
     fill_vid_mode_list(this);
+
+    ImGui_ImplDX11_Init(m_hWnd, pDevice, pContext);
 }
 
 void CHW::DestroyDevice()
 {
+    ImGui_ImplDX11_Shutdown();
+
     //	Destroy state managers
     StateManager.Reset();
     RSManager.ClearStateArray();
@@ -245,6 +253,8 @@ void CHW::DestroyDevice()
 //////////////////////////////////////////////////////////////////////
 void CHW::Reset(HWND hwnd)
 {
+    ImGui_ImplDX11_InvalidateDeviceObjects();
+
     DXGI_SWAP_CHAIN_DESC& cd = m_ChainDesc;
 
     BOOL bWindowed = !psDeviceFlags.is(rsFullscreen);
@@ -281,6 +291,8 @@ void CHW::Reset(HWND hwnd)
     UpdateViews();
 
     updateWindowProps(hwnd);
+
+    ImGui_ImplDX11_CreateDeviceObjects();
 }
 
 D3DFORMAT CHW::selectDepthStencil(D3DFORMAT fTarget)

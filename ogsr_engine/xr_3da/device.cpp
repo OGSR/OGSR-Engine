@@ -1,20 +1,15 @@
 #include "stdafx.h"
 
-#include "../xrCDB/frustum.h"
-
 #include <mmsystem.h>
 
 #include "x_ray.h"
 #include "render.h"
 #include "xr_input.h"
 
-// must be defined before include of FS_impl.h
-// KRodin: зачем это?
-//#define INCLUDE_FROM_ENGINE
-//#include "../xrCore/FS_impl.h"
-
-//#include "xrSash.h"
 #include "igame_persistent.h"
+
+#include "imgui.h"
+#include "..\Layers\xrRenderDX10\imgui_impl_dx11.h"
 
 //#define SHOW_SECOND_THREAD_STATS
 
@@ -22,35 +17,16 @@ ENGINE_API CRenderDevice Device;
 ENGINE_API CLoadScreenRenderer load_screen_renderer;
 
 ENGINE_API BOOL g_bRendering = FALSE;
+
 u32 g_dwFPSlimit = 60;
+
 ENGINE_API int g_3dscopes_fps_factor = 2; // На каком кадре с момента прошлого рендера во второй вьюпорт мы начнём новый (не может быть меньше 2 - каждый второй кадр, чем больше
                                           // тем более низкий FPS во втором вьюпорте)
 
 BOOL g_bLoaded = FALSE;
-// static ref_light precache_light{};
 
 BOOL CRenderDevice::Begin()
 {
-
-    /*
-    HW.Validate		();
-    HRESULT	_hr		= HW.pDevice->TestCooperativeLevel();
-    if (FAILED(_hr))
-    {
-        // If the device was lost, do not render until we get it back
-        if		(D3DERR_DEVICELOST==_hr)		{
-            Sleep	(33);
-            return	FALSE;
-        }
-
-        // Check if the device is ready to be reset
-        if		(D3DERR_DEVICENOTRESET==_hr)
-        {
-            Reset	();
-        }
-    }
-    */
-
     switch (m_pRender->GetDeviceState())
     {
     case IRenderDeviceRender::dsOK: break;
@@ -71,15 +47,8 @@ BOOL CRenderDevice::Begin()
 
     m_pRender->Begin();
 
-    /*
-    CHK_DX					(HW.pDevice->BeginScene());
-    RCache.OnFrameBegin		();
-    RCache.set_CullMode		(CULL_CW);
-    RCache.set_CullMode		(CULL_CCW);
-    if (HW.Caps.SceneMode)	overdrawBegin	();
-    */
-
     FPU::m24r();
+
     g_bRendering = TRUE;
 
     return TRUE;
@@ -89,22 +58,19 @@ void CRenderDevice::Clear() { m_pRender->Clear(); }
 
 void CRenderDevice::End(void)
 {
-
     if (dwPrecacheFrame)
     {
         ::Sound->set_master_volume(0.f);
         dwPrecacheFrame--;
+
         if (!load_screen_renderer.b_registered)
             m_pRender->ClearTarget();
+
         if (0 == dwPrecacheFrame)
         {
-       // Gamma.Update		();
             m_pRender->updateGamma();
-
-            // if(precache_light) precache_light->set_active	(false);
-            // if(precache_light) precache_light.destroy		();
+            
             ::Sound->set_master_volume(1.f);
-            //			pApp->destroy_loading_shaders					();
 
             m_pRender->ResourcesDestroyNecessaryTextures();
             Memory.mem_compact();
@@ -115,37 +81,28 @@ void CRenderDevice::End(void)
     }
 
     g_bRendering = FALSE;
-    // end scene
-    //	Present goes here, so call OA Frame end.
-    // KRodin: бенчмарк не нужен
-    /*if (g_SASH.IsBenchmarkRunning())
-        g_SASH.DisplayFrame(Device.fTimeGlobal);*/
+
+    extern BOOL g_appLoaded;
+
+    if (g_appLoaded)
+    {
+        ImGui::Render();
+
+        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    }
+
     m_pRender->End();
-    // RCache.OnFrameEnd	();
-    // Memory.dbg_check		();
-    // CHK_DX				(HW.pDevice->EndScene());
-
-    // HRESULT _hr		= HW.pDevice->Present( NULL, NULL, NULL, NULL );
-    // if				(D3DERR_DEVICELOST==_hr)	return;			// we will handle this later
-    // R_ASSERT2		(SUCCEEDED(_hr),	"Presentation failed. Driver upgrade needed?");
-
 }
 
 #include "igame_level.h"
+
 void CRenderDevice::PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input)
 {
     if (m_pRender->GetForceGPU_REF())
         amount = 0;
+
     // Msg			("* PCACHE: start for %d...",amount);
     dwPrecacheFrame = dwPrecacheTotal = amount;
-    /*if (amount && !precache_light && g_pGameLevel && g_loading_events.empty()) {
-        precache_light					= ::Render->light_create();
-        precache_light->set_shadow		(false);
-        precache_light->set_position	(vCameraPosition);
-        precache_light->set_color		(255,255,255);
-        precache_light->set_range		(5.0f);
-        precache_light->set_active		(true);
-    }*/
 
     if (amount && b_draw_loadscreen && load_screen_renderer.b_registered == false)
     {
@@ -169,17 +126,20 @@ void CRenderDevice::on_idle()
         g_bEnableStatGather = TRUE;
     else
         g_bEnableStatGather = FALSE;
+
     if (g_loading_events.size())
     {
         if (g_loading_events.front()())
             g_loading_events.pop_front();
+
         pApp->LoadDraw();
+
         return;
     }
-    else
-    {
-        FrameMove();
-    }
+
+    ImGui_ImplDX11_NewFrame(); // должно быть перед FrameMove
+
+    FrameMove();
 
     // Precache
     if (dwPrecacheFrame)
@@ -212,22 +172,24 @@ void CRenderDevice::on_idle()
 
     Statistic->RenderTOTAL_Real.FrameStart();
     Statistic->RenderTOTAL_Real.Begin();
+
     if (b_is_Active)
     {
         if (Begin())
         {
             seqRender.Process(rp_Render);
+
             if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
                 Statistic->Show();
 
             Statistic->Show_HW_Stats();
 
-            //	TEST!!!
-            // Statistic->RenderTOTAL_Real.End			();
-            //	Present goes here
             End();
         }
     }
+
+    ImGui::EndFrame();
+
     Statistic->RenderTOTAL_Real.End();
     Statistic->RenderTOTAL_Real.FrameEnd();
     Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
@@ -287,6 +249,7 @@ void CRenderDevice::Run()
 {
     //	DUMP_PHASE;
     g_bLoaded = FALSE;
+
     Log("Starting engine...");
     set_current_thread_name("X-RAY Primary thread");
 
@@ -304,6 +267,7 @@ void CRenderDevice::Run()
 
     // Start all threads
     mt_bMustExit = false;
+
     // KRodin: TODO: Use C++20 std::jthread
     std::thread second_thread(
         [](void* context) {
@@ -345,7 +309,6 @@ void CRenderDevice::Run()
     // Message cycle
     seqAppStart.Process(rp_AppStart);
 
-    // CHK_DX(HW.pDevice->Clear(0,0,D3DCLEAR_TARGET,D3DCOLOR_XRGB(0,0,0),1,0));
     m_pRender->ClearTarget();
 
     message_loop();
@@ -368,26 +331,12 @@ void CRenderDevice::FrameMove()
 
     dwTimeContinual = TimerMM.GetElapsed_ms() - app_inactive_time;
 
-    if (psDeviceFlags.test(rsConstantFPS))
-    {
-        // 20ms = 50fps
-        // fTimeDelta		=	0.020f;
-        // fTimeGlobal		+=	0.020f;
-        // dwTimeDelta		=	20;
-        // dwTimeGlobal	+=	20;
-        // 33ms = 30fps
-        fTimeDelta = 0.033f;
-        fTimeGlobal += 0.033f;
-        dwTimeDelta = 33;
-        dwTimeGlobal += 33;
-    }
-    else
     {
         // Timer
         float fPreviousFrameTime = Timer.GetElapsed_sec();
         Timer.Start(); // previous frame
         fTimeDelta = 0.1f * fTimeDelta + 0.9f * fPreviousFrameTime; // smooth random system activity - worst case ~7% error
-        // fTimeDelta = 0.7f * fTimeDelta + 0.3f*fPreviousFrameTime;			// smooth random system activity
+
         if (fTimeDelta > .1f)
             fTimeDelta = .1f; // limit to 15fps minimum
 
@@ -397,8 +346,8 @@ void CRenderDevice::FrameMove()
         if (Paused())
             fTimeDelta = 0.0f;
 
-        //		u64	qTime		= TimerGlobal.GetElapsed_clk();
         fTimeGlobal = TimerGlobal.GetElapsed_sec(); // float(qTime)*CPU::cycles2seconds;
+
         u32 _old_global = dwTimeGlobal;
         dwTimeGlobal = TimerGlobal.GetElapsed_ms();
         dwTimeDelta = dwTimeGlobal - _old_global;
@@ -414,7 +363,6 @@ void CRenderDevice::FrameMove()
 }
 
 ENGINE_API BOOL bShowPauseString = TRUE;
-#include "IGame_Persistent.h"
 
 void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 {

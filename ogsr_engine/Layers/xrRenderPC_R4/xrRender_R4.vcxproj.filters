@@ -178,6 +178,9 @@
     <Filter Include="Debug">
       <UniqueIdentifier>{cc1e8298-c23d-409f-ac5a-df5c6d5ed185}</UniqueIdentifier>
     </Filter>
+    <Filter Include="imgui_render">
+      <UniqueIdentifier>{7c74773a-ef3c-4d85-8757-98df76dc3d66}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cl_intersect.h">
@@ -728,6 +731,9 @@
     </ClInclude>
     <ClInclude Include="blender_blur.h">
       <Filter>Shading templates</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\imgui_impl_dx11.h">
+      <Filter>imgui_render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1336,6 +1342,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\rendertarget_phase_blur.cpp">
       <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\imgui_impl_dx11.cpp">
+      <Filter>imgui_render</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

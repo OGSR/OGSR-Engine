@@ -2107,6 +2107,9 @@
     <Filter Include="AI\AScript\ScriptClasses\UI\LoadScreen">
       <UniqueIdentifier>{a98119e5-515e-4cbe-844d-ef75fbe162e4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="EmbeddedEditor">
+      <UniqueIdentifier>{2ae8c39f-5f30-4c34-b654-7b159e43244b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -4045,9 +4048,6 @@
       <Filter>AI\AScript\ScriptClasses\ScriptHit</Filter>
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\script_ini_file.h">
-      <Filter>AI\AScript\ScriptClasses\ScriptIniFile</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_ini_file_inline.h">
       <Filter>AI\AScript\ScriptClasses\ScriptIniFile</Filter>
     </ClInclude>
     <ClInclude Include="script_monster_hit_info.h">
@@ -6064,6 +6064,21 @@
     </ClInclude>
     <ClInclude Include="SimpleDetectorSHOC.h">
       <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors</Filter>
+    </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_helper.h">
+      <Filter>EmbeddedEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_main.h">
+      <Filter>EmbeddedEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_weather.h">
+      <Filter>EmbeddedEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_hud.h">
+      <Filter>EmbeddedEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_pos_informer.h">
+      <Filter>EmbeddedEditor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -8845,6 +8860,21 @@
     </ClCompile>
     <ClCompile Include="SimpleDetectorSHOC.cpp">
       <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors</Filter>
+    </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor_helper.cpp">
+      <Filter>EmbeddedEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor_main.cpp">
+      <Filter>EmbeddedEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor_weather.cpp">
+      <Filter>EmbeddedEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor_hud.cpp">
+      <Filter>EmbeddedEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor_pos_informer.cpp">
+      <Filter>EmbeddedEditor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

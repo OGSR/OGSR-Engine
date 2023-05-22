@@ -5,11 +5,15 @@ struct xr_token;
 
 class XRCORE_API CInifile
 {
+    friend class CIniMerger;
+
 public:
     using Item = std::pair<shared_str, shared_str>;
     struct XRCORE_API Sect
     {
-        shared_str Name;
+        u32 Index{};
+        shared_str Name{};
+        shared_str ParentNames{};
         string_unordered_map<shared_str, shared_str> Data;
         xr_vector<Item> Ordered_Data;
         BOOL line_exist(LPCSTR, LPCSTR* = nullptr);
@@ -23,41 +27,57 @@ public:
         Fvector3 r_fvector3(LPCSTR);
     };
     using Root = string_unordered_map<shared_str, Sect*>;
+    using RootItem = std::pair<shared_str, Sect*>;
 
     // factorisation
     static CInifile* Create(LPCSTR, BOOL = TRUE);
     static void Destroy(CInifile*);
+
     static IC BOOL IsBOOL(LPCSTR B) { return (xr_strcmp(B, "on") == 0 || xr_strcmp(B, "yes") == 0 || xr_strcmp(B, "true") == 0 || xr_strcmp(B, "1") == 0); }
 
-private:
+protected:
     LPSTR fName;
+
     Root DATA;
-    void Load(IReader*, LPCSTR);
+    xr_vector<RootItem> Ordered_DATA;
+
+    Sect* Current{}; // for use during load only
+
+    void Load(IReader*, LPCSTR, BOOL, const CInifile*, bool root_level);
 
 public:
     bool bReadOnly;
     BOOL bSaveAtEnd;
+    bool bWasChanged{};
 
 public:
     CInifile(IReader*, LPCSTR = 0);
     CInifile(LPCSTR, BOOL = TRUE, BOOL = TRUE, BOOL = TRUE);
+
     virtual ~CInifile();
+
+    virtual const Root& sections() const { return DATA; }
+
+    virtual const xr_vector<RootItem>& sections_ordered() const { return Ordered_DATA; }
+
+    void load_file(BOOL allow_dup_sections = FALSE, const CInifile* f = NULL);
 
     bool save_as(LPCSTR = 0);
     std::string get_as_string();
 
-    LPCSTR fname() { return fName; };
+    LPCSTR fname() { return fName; }
 
-    Sect& r_section(LPCSTR);
-    Sect& r_section(const shared_str&);
+    virtual Sect& r_section(LPCSTR);
+    virtual Sect& r_section(const shared_str&);
+
     BOOL line_exist(LPCSTR, LPCSTR);
     BOOL line_exist(const shared_str&, const shared_str&);
+
     u32 line_count(LPCSTR);
     u32 line_count(const shared_str&);
-    BOOL section_exist(LPCSTR);
-    BOOL section_exist(const shared_str&);
-    Root& sections() { return DATA; }
-    const Root& sections() const { return DATA; }
+
+    virtual BOOL section_exist(LPCSTR);
+    virtual BOOL section_exist(const shared_str&);
 
     CLASS_ID r_clsid(LPCSTR, LPCSTR);
     CLASS_ID r_clsid(const shared_str& S, LPCSTR L) { return r_clsid(S.c_str(), L); }
@@ -117,6 +137,7 @@ public:
     BOOL r_bool(const shared_str& S, LPCSTR L) { return r_bool(S.c_str(), L); }
 
     int r_token(LPCSTR, LPCSTR, const xr_token* token_list);
+
     BOOL r_line(LPCSTR, int, LPCSTR*, LPCSTR*);
     BOOL r_line(const shared_str&, int, LPCSTR*, LPCSTR*);
 
@@ -140,6 +161,8 @@ public:
 
     void remove_line(LPCSTR, LPCSTR);
     void remove_section(LPCSTR);
+
+    Sect& append_section(LPCSTR name, Sect* base = nullptr);
 };
 
 // Main configuration file

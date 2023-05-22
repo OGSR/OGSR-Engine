@@ -677,7 +677,6 @@ void CCC_Register()
     CMD3(CCC_Mask, "rs_detail", &psDeviceFlags, rsDetails);
     // CMD4(CCC_Float,		"r__dtex_range",		&r__dtex_range,		5,		175	);
 
-    //	CMD3(CCC_Mask,		"rs_constant_fps",		&psDeviceFlags,		rsConstantFPS			);
     CMD3(CCC_Mask, "rs_render_statics", &psDeviceFlags, rsDrawStatic);
     CMD3(CCC_Mask, "rs_render_dynamics", &psDeviceFlags, rsDrawDynamic);
 #endif

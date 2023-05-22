@@ -53,6 +53,8 @@
 #include "ui/UIPDAWnd.h"
 #include "ui/UIBtnHint.h"
 
+#include "embedded_editor/embedded_editor_main.h"
+
 CPHWorld* ph_world = 0;
 
 //////////////////////////////////////////////////////////////////////
@@ -419,6 +421,8 @@ void CLevel::OnFrame()
         pStatGraphR->AppendItem(float(m_dwRPC) * fRPC_Mult, 0xffff0000, 1);
         pStatGraphR->AppendItem(float(m_dwRPS) * fRPS_Mult, 0xff00ff00, 0);
     };
+
+    ShowEditor();
 }
 
 #ifdef DEBUG_PRECISE_PATH

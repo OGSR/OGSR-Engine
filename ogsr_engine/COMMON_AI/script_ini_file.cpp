@@ -26,7 +26,7 @@ LPCSTR CScriptIniFile::update(LPCSTR file_name)
 
 bool CScriptIniFile::line_exist(LPCSTR S, LPCSTR L) { return (!!inherited::line_exist(S, L)); }
 
-bool CScriptIniFile::section_exist(LPCSTR S) { return (!!inherited::section_exist(S)); }
+bool CScriptIniFile::section_exist_script(LPCSTR S) { return (!!inherited::section_exist(S)); }
 
 int CScriptIniFile::r_clsid(LPCSTR S, LPCSTR L) { return (object_factory().script_clsid(inherited::r_clsid(S, L))); }
 

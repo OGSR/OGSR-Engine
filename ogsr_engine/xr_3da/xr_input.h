@@ -36,17 +36,15 @@ public:
     };
 
 private:
-    LPDIRECTINPUT8 pDI; // The DInput object
-    LPDIRECTINPUTDEVICE8 pMouse; // The DIDevice7 interface
-    LPDIRECTINPUTDEVICE8 pKeyboard; // The DIDevice7 interface
-    //----------------------
-    u32 timeStamp[COUNT_MOUSE_AXIS];
-    u32 timeSave[COUNT_MOUSE_AXIS];
-    int offs[COUNT_MOUSE_AXIS];
-    BOOL mouseState[COUNT_MOUSE_BUTTONS];
+    LPDIRECTINPUT8 pDI{}; // The DInput object
+    LPDIRECTINPUTDEVICE8 pMouse{}; // The DIDevice7 interface
+    LPDIRECTINPUTDEVICE8 pKeyboard{}; // The DIDevice7 interface
 
-    //----------------------
-    BOOL KBState[COUNT_KB_BUTTONS];
+    u32 timeStamp[COUNT_MOUSE_AXIS]{};
+    u32 timeSave[COUNT_MOUSE_AXIS]{};
+    int offs[COUNT_MOUSE_AXIS]{};
+    BOOL mouseState[COUNT_MOUSE_BUTTONS]{};
+    uint8_t KBState[COUNT_KB_BUTTONS]{};
 
     HRESULT CreateInputDevice(LPDIRECTINPUTDEVICE8* device, GUID guidDevice, const DIDATAFORMAT* pdidDataFormat, u32 dwFlags, u32 buf_size);
 

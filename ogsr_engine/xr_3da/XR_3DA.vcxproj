@@ -99,7 +99,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\imgui;..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;XRGAME_STATIC;XRRENDER_STATIC;XRCORE_STATIC;XRCDB_STATIC;XRSOUND_STATIC;XR_PARTICLES_STATIC;NDEBUG;_WINDOWS;XRENGINE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
@@ -171,7 +171,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\imgui;..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;XRGAME_STATIC;XRRENDER_STATIC;XRCORE_STATIC;XRCDB_STATIC;XRSOUND_STATIC;XR_PARTICLES_STATIC;_WINDOWS;XRENGINE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>false</StringPooling>
       <ExceptionHandling>
@@ -245,7 +245,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\imgui;..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>XRGAME_STATIC;XRRENDER_STATIC;XRCORE_STATIC;XRCDB_STATIC;XRSOUND_STATIC;XR_PARTICLES_STATIC;NDEBUG;_WINDOWS;XRENGINE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
@@ -313,7 +313,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\imgui;..\xrCore\;$(SolutionDir)\3rd_party\Src\d3dx;$(SolutionDir)\3rd_party\Src\Xiph\libogg\include;$(SolutionDir)\3rd_party\Src\Xiph\libtheora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>XRGAME_STATIC;XRRENDER_STATIC;XRCORE_STATIC;XRCDB_STATIC;XRSOUND_STATIC;XR_PARTICLES_STATIC;_WINDOWS;XRENGINE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>false</StringPooling>
       <ExceptionHandling>
@@ -576,6 +576,9 @@
     <ProjectReference Include="..\xrGame\xrGame.vcxproj">
       <Project>{200652A6-043E-4634-8837-87983B3BD5E0}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\3rd_party\Src\imgui\imgui.vcxproj">
+      <Project>{c8fbc3ce-d6de-4fc3-bc15-7b647614db09}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

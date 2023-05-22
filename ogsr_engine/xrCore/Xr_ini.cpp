@@ -8,7 +8,7 @@ CInifile* CInifile::Create(const char* szFileName, BOOL ReadOnly) { return xr_ne
 
 void CInifile::Destroy(CInifile* ini) { xr_delete(ini); }
 
-//Тело функций Inifile
+// Тело функций Inifile
 XRCORE_API void _parse(LPSTR dest, LPCSTR src)
 {
     if (src)
@@ -125,7 +125,8 @@ CInifile::CInifile(IReader* F, LPCSTR path)
     fName = 0;
     bReadOnly = true;
     bSaveAtEnd = FALSE;
-    Load(F, path);
+
+    Load(F, path, FALSE, NULL, true);
 }
 
 CInifile::CInifile(LPCSTR szFileName, BOOL ReadOnly, BOOL bLoad, BOOL SaveAtEnd)
@@ -133,17 +134,10 @@ CInifile::CInifile(LPCSTR szFileName, BOOL ReadOnly, BOOL bLoad, BOOL SaveAtEnd)
     fName = szFileName ? xr_strdup(szFileName) : 0;
     bReadOnly = !!ReadOnly;
     bSaveAtEnd = SaveAtEnd;
+
     if (bLoad)
     {
-        string_path path, folder;
-        _splitpath(fName, path, folder, 0, 0);
-        strcat_s(path, folder);
-        IReader* R = FS.r_open(szFileName);
-        if (R)
-        {
-            Load(R, path);
-            FS.r_close(R);
-        }
+        load_file(FALSE);
     }
 }
 
@@ -154,12 +148,17 @@ CInifile::~CInifile()
         if (!save_as())
             Msg("!Can't save inifile: [%s]", fName);
     }
+
     xr_free(fName);
+
     for (auto& I : DATA)
         xr_delete(I.second);
+
+    DATA.clear();
+    Ordered_DATA.clear();
 }
 
-static void insert_item(CInifile::Sect* tgt, const CInifile::Item& I)
+void insert_item(CInifile::Sect* tgt, const CInifile::Item& I)
 {
     auto sect_it = tgt->Data.find(I.first);
     if (sect_it != tgt->Data.end() && sect_it->first.equal(I.first))
@@ -178,12 +177,54 @@ static void insert_item(CInifile::Sect* tgt, const CInifile::Item& I)
     }
 }
 
-void CInifile::Load(IReader* F, LPCSTR path)
+void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CInifile* override, bool root_level)
 {
     R_ASSERT(F);
-    Sect* Current = nullptr;
+
     string4096 str;
     string4096 str2;
+
+    auto AddOrOverride = [&]() {
+        auto I = DATA.find(Current->Name);
+        if (I != DATA.end())
+        {
+            if (allow_dup_sections)
+            {
+                Sect* existing = (I->second);
+                for (auto& it : Current->Ordered_Data)
+                {
+                    Item I = {it.first, it.second};
+                    insert_item(existing, I);
+                }
+            }
+            else
+            {
+                FATAL("Duplicate section '%s' found.", Current->Name.c_str());
+            }
+        }
+        else
+        {
+            if (override)
+            {
+                auto O = override->DATA.find(Current->Name);
+                if (O != override->DATA.end())
+                {
+                    Msg("~ Override section [%s]", Current->Name.c_str());
+
+                    Sect* override = (O->second);
+                    for (auto& it : override->Ordered_Data)
+                    {
+                        Item v = {it.first, it.second};
+                        insert_item(Current, v);
+                    }
+                }
+            }
+
+            Current->Index = DATA.size();
+            DATA.emplace(Current->Name, Current);
+            Ordered_DATA.push_back({Current->Name, Current});
+        }
+    };
 
     while (!F->eof())
     {
@@ -200,18 +241,45 @@ void CInifile::Load(IReader* F, LPCSTR path)
 
         if (str[0] && (str[0] == '#') && strstr(str, "#include"))
         {
+            VERIFY(bReadOnly, "Allow for readonly mode only.");
+
             string64 inc_name;
             R_ASSERT(path && path[0]);
+
             if (_GetItem(str, 1, inc_name, '"'))
             {
                 string_path fn, inc_path, folder;
                 strconcat(sizeof(fn), fn, path, inc_name);
                 _splitpath(fn, inc_path, folder, 0, 0);
                 strcat_s(inc_path, folder);
-                IReader* I = FS.r_open(fn);
-                R_ASSERT3(I, "Can't find include file:", inc_name);
-                Load(I, inc_path);
-                FS.r_close(I);
+
+                // IReader* I = FS.r_open(fn);
+                // R_ASSERT(I, "Can't find include file:", inc_name);
+                // Load(I, inc_path);
+                // FS.r_close(I);
+
+                const auto loadFile = [&](const string_path _fn, const string_path name) {
+                    IReader* I = FS.r_open(_fn);
+                    R_ASSERT(I, "Can't find include file:", name);
+                    Load(I, inc_path, allow_dup_sections, override, false);
+                    FS.r_close(I);
+                };
+
+                if (strstr(inc_name, "*.ltx"))
+                {
+                    FS_FileSet fset;
+                    FS.file_list(fset, path, FS_ListFiles, inc_name);
+
+                    for (FS_FileSet::iterator it = fset.begin(); it != fset.end(); it++)
+                    {
+                        LPCSTR _name = it->name.c_str();
+                        string_path _fn;
+                        strconcat(sizeof(_fn), _fn, path, _name);
+                        loadFile(_fn, _name);
+                    }
+                }
+                else
+                    loadFile(fn, inc_name);
             }
         }
         else if (str[0] && (str[0] == '['))
@@ -219,34 +287,44 @@ void CInifile::Load(IReader* F, LPCSTR path)
             // insert previous filled section
             if (Current)
             {
-                auto I = DATA.find(Current->Name);
-                if (I != DATA.end())
-                    FATAL("Duplicate section '%s' found.", Current->Name.c_str());
-                DATA.emplace(Current->Name, Current);
+                AddOrOverride();
+                Current = nullptr;
             }
+
             Current = xr_new<Sect>();
-            Current->Name = 0;
+
             // start new section
-            R_ASSERT3(strchr(str, ']'), "Bad ini section found: ", str);
+            R_ASSERT(strchr(str, ']'), "Bad ini section found: ", str);
+
             LPCSTR inherited_names = strstr(str, "]:");
             if (0 != inherited_names)
             {
-                VERIFY2(bReadOnly, "Allow for readonly mode only.");
                 inherited_names += 2;
-                int cnt = _GetItemCount(inherited_names);
-                for (int k = 0; k < cnt; ++k)
+
+                if (bReadOnly)
                 {
-                    xr_string tmp;
-                    _GetItem(inherited_names, k, tmp);
-                    Sect& inherited = r_section(tmp.c_str());
-                    for (auto& it : inherited.Ordered_Data)
+                    VERIFY(bReadOnly, "Allow for readonly mode only.");
+
+                    int cnt = _GetItemCount(inherited_names);
+                    for (int k = 0; k < cnt; ++k)
                     {
-                        Item I = {it.first, it.second};
-                        insert_item(Current, I);
+                        xr_string tmp;
+                        _GetItem(inherited_names, k, tmp);
+
+                        Sect& inherited = r_section(tmp.c_str());
+                        for (auto& it : inherited.Ordered_Data)
+                        {
+                            Item I = {it.first, it.second};
+                            insert_item(Current, I);
+                        }
                     }
                 }
+                else
+                    Current->ParentNames = inherited_names;
             }
+
             *strchr(str, ']') = 0;
+
             Current->Name = strlwr(str + 1);
         }
         else
@@ -255,6 +333,7 @@ void CInifile::Load(IReader* F, LPCSTR path)
             {
                 char* name = str;
                 char* t = strchr(name, '=');
+
                 if (t)
                 {
                     *t = 0;
@@ -287,12 +366,24 @@ void CInifile::Load(IReader* F, LPCSTR path)
         }
     }
 
-    if (Current)
+    if (Current && root_level)
     {
-        auto I = DATA.find(Current->Name);
-        if (I != DATA.end())
-            FATAL("Duplicate section '%s' found.", Current->Name.c_str());
-        DATA.emplace(Current->Name, Current);
+        AddOrOverride();
+        Current = nullptr;
+    }
+}
+
+void CInifile::load_file(BOOL allow_dup_sections, const CInifile* f)
+{
+    string_path path, folder;
+    _splitpath(fName, path, folder, 0, 0);
+    strcat_s(path, folder);
+
+    IReader* R = FS.r_open(fName);
+    if (R)
+    {
+        Load(R, path, allow_dup_sections, f, true);
+        FS.r_close(R);
     }
 }
 
@@ -304,22 +395,49 @@ bool CInifile::save_as(LPCSTR new_fname)
         xr_free(fName);
         fName = xr_strdup(new_fname);
     }
+
     R_ASSERT(fName && fName[0]);
     IWriter* F = FS.w_open_ex(fName);
     if (F)
     {
-        string512 temp, val;
+        std::vector<Sect*> sorted_List;
+
         for (const auto& r_it : DATA)
         {
-            sprintf_s(temp, "[%s]", r_it.first.c_str());
+            sorted_List.push_back(r_it.second);
+        }
+
+        struct
+        {
+            bool operator()(Sect* a, Sect* b) const { return a->Index < b->Index; }
+        } pred;
+
+        std::sort(sorted_List.begin(), sorted_List.end(), pred);
+
+        for (const auto& r_it : sorted_List)
+        {
+            const Sect* second = r_it;
+
+            string512 temp, val;
+            if (second->ParentNames.size())
+            {
+                sprintf_s(temp, "[%s]:%s", second->Name.c_str(), second->ParentNames.c_str());
+            }
+            else
+            {
+                sprintf_s(temp, "[%s]", second->Name.c_str());
+            }
+
             F->w_string(temp);
-            for (const auto& I : r_it.second->Ordered_Data)
+
+            for (const auto& I : second->Ordered_Data)
             {
                 if (*I.first)
                 {
                     if (*I.second)
                     {
                         _decorate(val, *I.second);
+
                         {
                             // only name and value
                             sprintf_s(temp, "%-32s = %-32s", *I.first, val);
@@ -338,10 +456,13 @@ bool CInifile::save_as(LPCSTR new_fname)
                     // no name, so no value
                     temp[0] = 0;
                 }
+
                 _TrimRight(temp);
+
                 if (temp[0])
                     F->w_string(temp);
             }
+
             F->w_string(" ");
         }
         FS.w_close(F);
@@ -571,12 +692,15 @@ void CInifile::w_string(LPCSTR S, LPCSTR L, LPCSTR V)
     _parse(sect, S);
     _strlwr(sect);
     ASSERT_FMT(sect[0], "[%s]: wrong section name [%s]", __FUNCTION__, S);
+
     if (!section_exist(sect))
     {
         // create _new_ section
         Sect* NEW = xr_new<Sect>();
         NEW->Name = sect;
+        NEW->Index = DATA.size();
         DATA.emplace(NEW->Name, NEW);
+        Ordered_DATA.push_back({NEW->Name, NEW});
     }
 
     // parse line/value
@@ -590,8 +714,11 @@ void CInifile::w_string(LPCSTR S, LPCSTR L, LPCSTR V)
     Item I;
     I.first = line;
     I.second = value[0] ? value : 0;
+
     Sect* data = &r_section(sect);
     insert_item(data, I);
+
+    bWasChanged = true;
 }
 
 void CInifile::w_u8(LPCSTR S, LPCSTR L, u8 V)
@@ -703,14 +830,16 @@ void CInifile::w_bool(LPCSTR S, LPCSTR L, bool V) { w_string(S, L, V ? "true" : 
 
 void CInifile::remove_line(LPCSTR S, LPCSTR L)
 {
-    R_ASSERT(!bReadOnly);
+    // R_ASSERT(!bReadOnly);
 
     if (line_exist(S, L))
     {
         Sect& data = r_section(S);
+
         auto A = data.Data.find(L);
         R_ASSERT(A != data.Data.end());
         data.Data.erase(A);
+
         auto found = std::find_if(data.Ordered_Data.begin(), data.Ordered_Data.end(), [&](const auto& it) { return xr_strcmp(*it.first, L) == 0; });
         R_ASSERT(found != data.Ordered_Data.end());
         data.Ordered_Data.erase(found);
@@ -719,14 +848,43 @@ void CInifile::remove_line(LPCSTR S, LPCSTR L)
 
 void CInifile::remove_section(LPCSTR S)
 {
-    R_ASSERT(!bReadOnly);
+    // R_ASSERT(!bReadOnly);
 
     if (section_exist(S))
     {
         const auto I = DATA.find(S);
         R_ASSERT(I != DATA.end());
+
         DATA.erase(I);
+
+        auto found = std::find_if(Ordered_DATA.begin(), Ordered_DATA.end(), [&](const auto& it) { return xr_strcmp(*it.first, S) == 0; });
+        R_ASSERT(found != Ordered_DATA.end());
+        Ordered_DATA.erase(found);
     }
+}
+
+CInifile::Sect& CInifile::append_section(LPCSTR name, Sect* base)
+{
+    Sect* new_sect = xr_new<Sect>();
+
+    if (base)
+    {
+        // copy section to own DATA
+        Sect old_sect = *base;
+        for (auto& it : old_sect.Ordered_Data)
+        {
+            Item v = {it.first, it.second};
+            insert_item(new_sect, v);
+        }
+    }
+
+    new_sect->Name = name;
+    new_sect->Index = DATA.size();
+
+    DATA.emplace(new_sect->Name, new_sect);
+    Ordered_DATA.push_back({new_sect->Name, new_sect});
+
+    return r_section(name);
 }
 
 #include <sstream>

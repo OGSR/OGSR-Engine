@@ -36,6 +36,8 @@ extern void try_change_current_entity();
 extern void restore_actor();
 #endif
 
+#include "embedded_editor/embedded_editor_main.h"
+
 bool g_bDisableAllInput = false;
 
 extern float g_fTimeFactor;
@@ -44,6 +46,9 @@ extern float g_fTimeFactor;
 
 void CLevel::IR_OnMouseWheel(int direction)
 {
+    if (Editor_MouseWheel(direction))
+        return;
+
     if (g_bDisableAllInput)
         return;
 
@@ -78,6 +83,9 @@ void CLevel::IR_OnMouseHold(int btn) { IR_OnKeyboardHold(mouse_button_2_key[btn]
 
 void CLevel::IR_OnMouseMove(int dx, int dy)
 {
+    if (Editor_MouseMove(dx, dy))
+        return;
+
     if (g_bDisableAllInput)
         return;
     if (pHUD->GetUI()->IR_OnMouseMove(dx, dy))
@@ -128,6 +136,9 @@ extern bool g_block_all_except_movement;
 
 void CLevel::IR_OnKeyboardPress(int key)
 {
+    if (Editor_KeyPress(key))
+        return;
+
     if (GamePersistent().OnKeyboardPress(key))
         return;
 
@@ -350,6 +361,9 @@ void CLevel::IR_OnKeyboardPress(int key)
 
 void CLevel::IR_OnKeyboardRelease(int key)
 {
+    if (Editor_KeyRelease(key))
+        return;
+
     if (g_bDisableAllInput)
         return;
 
@@ -388,6 +402,9 @@ void CLevel::IR_OnKeyboardRelease(int key)
 
 void CLevel::IR_OnKeyboardHold(int key)
 {
+    if (Editor_KeyHold(key))
+        return;
+
     if (g_bDisableAllInput)
         return;
 

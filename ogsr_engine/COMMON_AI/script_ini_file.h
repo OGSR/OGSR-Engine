@@ -20,7 +20,7 @@ public:
     CScriptIniFile(LPCSTR szFileName, bool updatePath = true);
     virtual ~CScriptIniFile();
     bool line_exist(LPCSTR S, LPCSTR L);
-    bool section_exist(LPCSTR S);
+    bool section_exist_script(LPCSTR S);
     int r_clsid(LPCSTR S, LPCSTR L);
     bool r_bool(LPCSTR S, LPCSTR L);
     LPCSTR r_string_wb(LPCSTR S, LPCSTR L);
@@ -37,5 +37,3 @@ public:
 add_to_type_list(CScriptIniFile)
 #undef script_type_list
 #define script_type_list save_type_list(CScriptIniFile)
-
-#include "script_ini_file_inline.h"

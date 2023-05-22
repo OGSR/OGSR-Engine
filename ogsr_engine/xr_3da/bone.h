@@ -401,34 +401,34 @@ public:
     IC BOOL IsRoot() { return (parent == 0); }
     shared_str& NameRef() { return name; }
 
-    // transformation
-    const Fvector& _Offset() { return mot_offset; }
-    const Fvector& _Rotate() { return mot_rotate; }
-    float _Length() { return mot_length; }
-    IC Fmatrix& _RTransform() { return rest_transform; }
-    IC Fmatrix& _RITransform() { return rest_i_transform; }
-    IC Fmatrix& _LRTransform() { return local_rest_transform; }
-    IC Fmatrix& _MTransform() { return mot_transform; }
+    //// transformation
+    //const Fvector& _Offset() { return mot_offset; }
+    //const Fvector& _Rotate() { return mot_rotate; }
+    //float _Length() { return mot_length; }
+    //IC Fmatrix& _RTransform() { return rest_transform; }
+    //IC Fmatrix& _RITransform() { return rest_i_transform; }
+    //IC Fmatrix& _LRTransform() { return local_rest_transform; }
+    //IC Fmatrix& _MTransform() { return mot_transform; }
 
-    IC Fmatrix& _LTransform() { return mTransform; } //{return last_transform;}
-    IC const Fmatrix& _LTransform() const { return mTransform; }
+    //IC Fmatrix& _LTransform() { return mTransform; } //{return last_transform;}
+    //IC const Fmatrix& _LTransform() const { return mTransform; }
 
-    IC Fmatrix& _RenderTransform() { return mRenderTransform; } //{return render_transform;}
-    IC Fvector& _RestOffset() { return rest_offset; }
-    IC Fvector& _RestRotate() { return rest_rotate; }
+    //IC Fmatrix& _RenderTransform() { return mRenderTransform; } //{return render_transform;}
+    //IC Fvector& _RestOffset() { return rest_offset; }
+    //IC Fvector& _RestRotate() { return rest_rotate; }
 
-    void _Update(const Fvector& T, const Fvector& R)
-    {
-        mot_offset.set(T);
-        mot_rotate.set(R);
-        mot_length = rest_length;
-    }
-    void Reset()
-    {
-        mot_offset.set(rest_offset);
-        mot_rotate.set(rest_rotate);
-        mot_length = rest_length;
-    }
+    //void _Update(const Fvector& T, const Fvector& R)
+    //{
+    //    mot_offset.set(T);
+    //    mot_rotate.set(R);
+    //    mot_length = rest_length;
+    //}
+    //void Reset()
+    //{
+    //    mot_offset.set(rest_offset);
+    //    mot_rotate.set(rest_rotate);
+    //    mot_length = rest_length;
+    //}
 
     // IO
     void Save(IWriter& F);
