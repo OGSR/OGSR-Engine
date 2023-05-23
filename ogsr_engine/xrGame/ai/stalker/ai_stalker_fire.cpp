@@ -249,8 +249,8 @@ void CAI_Stalker::Hit(SHit* pHDS)
         {
             if (is_relation_enemy(entity_alive))
                 sound().play(eStalkerSoundInjuring);
-            //			else
-            //				sound().play		(eStalkerSoundInjuringByFriend);
+            else
+                sound().play(eStalkerSoundInjuringByFriend);
         }
 
         int weapon_type = -1;
@@ -307,6 +307,14 @@ void CAI_Stalker::HitSignal(float amount, Fvector& vLocalDir, CObject* who, s16 
 
     if (g_Alive())
         memory().hit().add(amount, vLocalDir, who, element);
+    else if (!AlreadyDie())
+    {
+        const auto I = m_bones_body_parts.find(element);
+        if (I != m_bones_body_parts.end() && I->second == critical_wound_type_head)
+            m_headshot = true;
+        else
+            m_headshot = false;
+    }
 }
 
 void CAI_Stalker::OnItemTake(CInventoryItem* inventory_item)
