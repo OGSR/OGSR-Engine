@@ -205,16 +205,16 @@ void attachable_hud_item::debug_draw_firedeps()
 
         if (g_bHudAdjustMode == FIRE_POINT || bForce)
         {
-            render.draw_aabb(fd.vLastFP, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(255, 0, 0));
-            render.draw_aabb(fd.vLastShootPoint, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(5, 107, 0));
+            render.draw_aabb(fd.vLastFP, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(255, 0, 0), true);
+            render.draw_aabb(fd.vLastShootPoint, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(5, 107, 0), true);
         }
         else if (g_bHudAdjustMode == FIRE_POINT2)
         {
-            render.draw_aabb(fd.vLastFP2, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(0, 0, 255));
+            render.draw_aabb(fd.vLastFP2, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(0, 0, 255), true);
         }
         else if (g_bHudAdjustMode == SHELL_POINT)
         {
-            render.draw_aabb(fd.vLastSP, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(0, 255, 0));
+            render.draw_aabb(fd.vLastSP, 0.01f, 0.01f, 0.01f, D3DCOLOR_XRGB(0, 255, 0), true);
         }
         else if (g_bHudAdjustMode == LASETDOT_POS)
         {

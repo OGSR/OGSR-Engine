@@ -6,34 +6,82 @@
 
 dxDebugRender DebugRenderImpl;
 
+extern ENGINE_API float psHUD_FOV;
+
 void dxDebugRender::Render()
 {
-    if (m_line_vertices.empty())
-        return;
-
-    for (auto& [color, vert_vec] : m_line_vertices)
+    if (!m_line_vertices.empty())
     {
-        auto& ind_vec = m_line_indices.at(color);
+        for (auto& [color, vert_vec] : m_line_vertices)
+        {
+            auto& ind_vec = m_line_indices.at(color);
 
-        RCache.set_xform_world(Fidentity);
+            RCache.set_xform_world(Fidentity);
+
 #if defined(USE_DX10) || defined(USE_DX11)
-        RCache.set_Shader(dxRenderDeviceRender::Instance().m_WireShader);
-        RCache.set_c("tfactor", float(color_get_R(color)) / 255.f, float(color_get_G(color)) / 255.f, float(color_get_B(color)) / 255.f, float(color_get_A(color)) / 255.f);
+            RCache.set_Shader(dxRenderDeviceRender::Instance().m_WireShader);
+            RCache.set_c("tfactor", float(color_get_R(color)) / 255.f, float(color_get_G(color)) / 255.f, float(color_get_B(color)) / 255.f, float(color_get_A(color)) / 255.f);
 #endif
-        RCache.dbg_Draw(D3DPT_LINELIST, &vert_vec.front(), static_cast<int>(vert_vec.size()), &ind_vec.front(), static_cast<int>(ind_vec.size() / 2));
+
+            RCache.dbg_Draw(D3DPT_LINELIST, &vert_vec.front(), static_cast<int>(vert_vec.size()), &ind_vec.front(), static_cast<int>(ind_vec.size() / 2));
+        }
+
+        m_line_vertices.clear();
+        m_line_indices.clear();
     }
 
-    m_line_vertices.clear();
-    m_line_indices.clear();
+    if (!m_line_vertices_hud.empty())
+    {
+        Fmatrix Pold = Device.mProject;
+        Fmatrix FTold = Device.mFullTransform;
+
+        {
+            RDEVICE.mProject.build_projection(deg2rad(psHUD_FOV < 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV), Device.fASPECT, HUD_VIEWPORT_NEAR,
+                                              g_pGamePersistent->Environment().CurrentEnv->far_plane);
+
+            Device.mFullTransform.mul(Device.mProject, Device.mView);
+            RCache.set_xform_project(Device.mProject);
+            //RImplementation.rmNear();
+            //ApplyTexgen(Device.mFullTransform);
+        }
+
+        for (auto& [color, vert_vec] : m_line_vertices_hud)
+        {
+            auto& ind_vec = m_line_indices_hud.at(color);
+
+            RCache.set_xform_world(Fidentity);
+
+#if defined(USE_DX10) || defined(USE_DX11)
+            RCache.set_Shader(dxRenderDeviceRender::Instance().m_WireShader);
+            RCache.set_c("tfactor", float(color_get_R(color)) / 255.f, float(color_get_G(color)) / 255.f, float(color_get_B(color)) / 255.f, float(color_get_A(color)) / 255.f);
+#endif
+
+            RCache.dbg_Draw_Near(D3DPT_LINELIST, &vert_vec.front(), static_cast<int>(vert_vec.size()), &ind_vec.front(), static_cast<int>(ind_vec.size() / 2));
+        }
+
+        {
+            //RImplementation.rmNormal();
+            Device.mProject = Pold;
+            Device.mFullTransform = FTold;
+            RCache.set_xform_project(Device.mProject);
+            //ApplyTexgen(Device.mFullTransform);
+        }
+
+        m_line_vertices_hud.clear();
+        m_line_indices_hud.clear();
+    }
 }
 
-void dxDebugRender::add_lines(Fvector const* vertices, u32 const& vertex_count, u16 const* pairs, u32 const& pair_count, u32 const& color)
+void dxDebugRender::add_lines(Fvector const* vertices, u32 const& vertex_count, u16 const* pairs, u32 const& pair_count, u32 const& color, bool hud_mode)
 {
+    auto& line_vertices = hud_mode ? m_line_vertices_hud : m_line_vertices;
+    auto& line_indices = hud_mode ? m_line_indices_hud : m_line_indices;
+
     size_t all_verts_count{}, all_inds_count{};
-    for (const auto& [color, vert_vec] : m_line_vertices)
+    for (const auto& [color, vert_vec] : line_vertices)
     {
         all_verts_count += vert_vec.size();
-        all_inds_count += m_line_indices.at(color).size();
+        all_inds_count += line_indices.at(color).size();
     }
 
     //Лимиты превышать нельзя ни в коем случае - убавить лимит если будут краши в R_DStreams.cpp
@@ -50,8 +98,8 @@ void dxDebugRender::add_lines(Fvector const* vertices, u32 const& vertex_count, 
 
     //////////////////////////////////////////////////////////////////
 
-    auto& vert_vec = m_line_vertices[color];
-    auto& ind_vec = m_line_indices[color];
+    auto& vert_vec = line_vertices[color];
+    auto& ind_vec = line_indices[color];
 
     const auto vertices_size = vert_vec.size(), indices_size = ind_vec.size();
 
@@ -71,14 +119,6 @@ void dxDebugRender::add_lines(Fvector const* vertices, u32 const& vertex_count, 
     }
 }
 
-void dxDebugRender::NextSceneMode()
-{
-//	This mode is not supported in DX10
-#ifndef USE_DX10
-    HW.Caps.SceneMode = (HW.Caps.SceneMode + 1) % 3;
-#endif //	USE_DX10
-}
-
 void dxDebugRender::ZEnable(bool bEnable)
 {
     // CHK_DX(HW.pDevice->SetRenderState(D3DRS_ZENABLE,bEnable));
@@ -89,9 +129,9 @@ void dxDebugRender::OnFrameEnd() { RCache.OnFrameEnd(); }
 
 void dxDebugRender::SetShader(const debug_shader& shader) { RCache.set_Shader(((dxUIShader*)&*shader)->hShader); }
 
-void dxDebugRender::CacheSetXformWorld(const Fmatrix& M) { RCache.set_xform_world(M); }
-
-void dxDebugRender::CacheSetCullMode(CullMode m) { RCache.set_CullMode(CULL_NONE + m); }
+//void dxDebugRender::CacheSetXformWorld(const Fmatrix& M) { RCache.set_xform_world(M); }
+//
+//void dxDebugRender::CacheSetCullMode(CullMode m) { RCache.set_CullMode(CULL_NONE + m); }
 
 void dxDebugRender::SetAmbient(u32 colour)
 {

@@ -9,12 +9,12 @@
 #include "stdafx.h"
 #include "debug_renderer.h"
 
-void CDebugRenderer::add_lines(Fvector const* vertices, u32 const& vertex_count, u16 const* pairs, u32 const& pair_count, u32 const& color)
+void CDebugRenderer::add_lines(Fvector const* vertices, u32 const& vertex_count, u16 const* pairs, u32 const& pair_count, u32 const& color, bool hud_mode)
 {
-    DRender->add_lines(vertices, vertex_count, pairs, pair_count, color);
+    DRender->add_lines(vertices, vertex_count, pairs, pair_count, color, hud_mode);
 }
 
-void CDebugRenderer::draw_obb(const Fmatrix& matrix, const u32& color)
+void CDebugRenderer::draw_obb(const Fmatrix& matrix, const u32& color, bool hud_mode)
 {
     Fvector aabb[8];
     matrix.transform_tiny(aabb[0], Fvector().set(-1, -1, -1)); // 0
@@ -28,20 +28,20 @@ void CDebugRenderer::draw_obb(const Fmatrix& matrix, const u32& color)
 
     u16 aabb_id[12 * 2] = {0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 1, 5, 2, 6, 3, 7, 0, 4};
 
-    add_lines(aabb, sizeof(aabb) / sizeof(Fvector), &aabb_id[0], sizeof(aabb_id) / (2 * sizeof(u16)), color); //-V706
+    add_lines(aabb, sizeof(aabb) / sizeof(Fvector), &aabb_id[0], sizeof(aabb_id) / (2 * sizeof(u16)), color, hud_mode); //-V706
 }
 
-void CDebugRenderer::draw_obb(const Fmatrix& matrix, const Fvector& half_size, const u32& color)
+void CDebugRenderer::draw_obb(const Fmatrix& matrix, const Fvector& half_size, const u32& color, bool hud_mode)
 {
     Fmatrix mL2W_Transform, mScaleTransform;
 
     mScaleTransform.scale(half_size);
     mL2W_Transform.mul_43(matrix, mScaleTransform);
 
-    draw_obb(mL2W_Transform, color);
+    draw_obb(mL2W_Transform, color, hud_mode);
 }
 
-void CDebugRenderer::draw_ellipse(const Fmatrix& matrix, const u32& color)
+void CDebugRenderer::draw_ellipse(const Fmatrix& matrix, const u32& color, bool hud_mode)
 {
     float vertices[114 * 3] = {
         0.0000f,  0.0000f,  1.0000f,  0.0000f,  0.3827f,  0.9239f,  -0.1464f, 0.3536f,  0.9239f,  -0.2706f, 0.2706f,  0.9239f,  -0.3536f, 0.1464f,  0.9239f,  -0.3827f, 0.0000f,
@@ -101,5 +101,5 @@ void CDebugRenderer::draw_ellipse(const Fmatrix& matrix, const u32& color)
     for (; I != E; ++I)
         matrix.transform_tiny(*I, Fvector().set(*I));
 
-    add_lines((Fvector*)&vertices[0], sizeof(vertices) / sizeof(Fvector), &pairs[0], sizeof(pairs) / (2 * sizeof(u16)), color); //-V706
+    add_lines((Fvector*)&vertices[0], sizeof(vertices) / sizeof(Fvector), &pairs[0], sizeof(pairs) / (2 * sizeof(u16)), color, hud_mode); //-V706
 }

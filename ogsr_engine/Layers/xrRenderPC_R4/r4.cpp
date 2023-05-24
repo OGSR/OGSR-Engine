@@ -707,8 +707,10 @@ void CRender::add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMar
     if (pShader)
         add_SkeletonWallmark(xf, (CKinematics*)obj, *pShader, start, dir, size);
 }
+
 void CRender::add_Occluder(Fbox2& bb_screenspace) { HOM.occlude(bb_screenspace); }
 void CRender::set_Object(IRenderable* O) { val_pObject = O; }
+
 void CRender::rmNear()
 {
     IRender_Target* T = getTarget();
