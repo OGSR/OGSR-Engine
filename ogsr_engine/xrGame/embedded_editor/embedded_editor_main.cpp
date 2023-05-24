@@ -251,9 +251,7 @@ bool Editor_MouseWheel(int direction)
 void Editor_OnFrame()
 {
     if (s_direction != 0)
-    {
-        Msg("Set mouse wheel...");
-
+    {       
         ImGuiIO& io = ImGui::GetIO();
         io.MouseWheel += s_direction > 0 ? +1.0f : -1.0f;
         s_direction = 0;
