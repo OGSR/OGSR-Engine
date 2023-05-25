@@ -1425,13 +1425,14 @@ void CHudItem::GetBoneOffsetPosDir(const shared_str& bone_name, Fvector& dest_po
     HudItemData()->m_item_transform.transform_dir(dest_dir);
 }
 
+extern ENGINE_API float psHUD_FOV;
+
 void CHudItem::CorrectDirFromWorldToHud(Fvector& dir)
 {
-    const auto& CamDir = Device.vCameraDirection;
     const float Fov = Device.fFOV;
-    extern ENGINE_API float psHUD_FOV;
-    const float HudFov = psHUD_FOV < 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV;
+    const float HudFov = psHUD_FOV <= 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV;
     const float diff = hud_recalc_koef * Fov / HudFov;
+    const auto& CamDir = Device.vCameraDirection;
     dir.sub(CamDir);
     dir.mul(diff);
     dir.add(CamDir);
