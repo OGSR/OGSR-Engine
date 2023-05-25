@@ -305,7 +305,7 @@ void ShowWeatherEditor(bool& show)
     ImGui::Text("Time: %02d:%02d:%02d", int(time / (60 * 60) % 24), int(time / 60 % 60), int(time % 60));
 
     float tf = Level().GetGameTimeFactor();
-    if (ImGui::SliderFloat("Time factor", &tf, 0.0f, 1000.0f, "%.3f", 2.0f))
+    if (ImGui::SliderFloat("Time factor", &tf, 0.0f, 1000.0f, "%.3f", ImGuiSliderFlags_Logarithmic))
     {
         //Level().SetGameTimeFactor(tf);
 

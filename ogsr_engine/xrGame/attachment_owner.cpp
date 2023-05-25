@@ -109,10 +109,11 @@ void CAttachmentOwner::detach(CInventoryItem* inventory_item)
     xr_vector<CAttachableItem*>::iterator E = m_attached_objects.end();
     for (; I != E; ++I)
     {
-        if ((*I)->item().object().ID() == inventory_item->object().ID())
+        CAttachableItem* attachable_item = (*I);
+        if (attachable_item->item().object().ID() == inventory_item->object().ID())
         {
-            (*I)->afterDetach();
             m_attached_objects.erase(I);
+            attachable_item->afterDetach();
             if (m_attached_objects.empty())
             {
                 CGameObject* game_object = smart_cast<CGameObject*>(this);

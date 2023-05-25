@@ -119,8 +119,15 @@ void CGameMtlLibrary::Load()
     for (GameMtlPairIt p_it = material_pairs.begin(); material_pairs.end() != p_it; ++p_it)
     {
         SGameMtlPair* S = *p_it;
-        int idx0 = GetMaterialIdx(S->mtl0) * material_count + GetMaterialIdx(S->mtl1);
-        int idx1 = GetMaterialIdx(S->mtl1) * material_count + GetMaterialIdx(S->mtl0);
+        u16 idx_1 = GetMaterialIdx(S->mtl0);
+        u16 idx_2 = GetMaterialIdx(S->mtl1);
+        if (idx_1 >= materials.size() || idx_2 >= materials.size())
+        {
+            Msg("~ Wrong material pars: mtl0=[%d] mtl1=[%d]", S->mtl0, S->mtl1);
+            continue;
+        }
+        int idx0 = idx_1 * material_count + idx_2;
+        int idx1 = idx_2 * material_count + idx_1;
         material_pairs_rt[idx0] = S;
         material_pairs_rt[idx1] = S;
     }
