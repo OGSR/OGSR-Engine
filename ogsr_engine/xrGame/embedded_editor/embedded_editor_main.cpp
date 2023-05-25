@@ -136,6 +136,7 @@ bool Editor_KeyPress(int key)
     case DIK_RALT:
     case DIK_LALT:
     case DIK_F10: break;
+
     case DIK_RCONTROL:
         isRControl = true;
         io.KeyCtrl = true;
@@ -155,26 +156,13 @@ bool Editor_KeyPress(int key)
     case MOUSE_1: io.MouseDown[0] = true; break;
     case MOUSE_2: io.MouseDown[1] = true; break;
     case MOUSE_3: io.MouseDown[2] = true; break;
-    case DIK_NUMPAD0:
-    case DIK_NUMPAD1:
-    case DIK_NUMPAD2:
-    case DIK_NUMPAD3:
-    case DIK_NUMPAD4:
-    case DIK_NUMPAD5:
-    case DIK_NUMPAD6:
-    case DIK_NUMPAD7:
-    case DIK_NUMPAD8:
-    case DIK_NUMPAD9: io.AddInputCharacter('0' + key - DIK_NUMPAD0); break;
+
     default:
         if (key < 512)
             io.KeysDown[key] = true;
-        if (key == DIK_SPACE && (pInput->iGetAsyncKeyState(DIK_RWIN) || pInput->iGetAsyncKeyState(DIK_LWIN)))
-            ActivateKeyboardLayout((HKL)HKL_NEXT, 0);
-        else
-        {
-            if (const u16 ch = pInput->DikToChar(key, false))
-                io.AddInputCharacter(ch);
-        }
+
+        if (const u16 ch = pInput->DikToChar(key, false))
+            io.AddInputCharacter(ch);
     }
     return true;
 }
