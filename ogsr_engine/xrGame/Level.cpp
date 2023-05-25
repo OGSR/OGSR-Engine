@@ -397,7 +397,12 @@ void CLevel::OnFrame()
     // Inherited update
     inherited::OnFrame();
 
-    g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
+    extern bool s_ScriptTime;
+
+    if (!s_ScriptTime)
+    {
+        g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
+    }
 
     m_ph_commander->update();
     m_ph_commander_scripts->update();

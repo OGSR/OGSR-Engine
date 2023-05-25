@@ -52,17 +52,22 @@ void ShowMain()
     if (wnd.Collapsed)
         return;
 
-    ImGui::Text("Advanced X-Ray Editor");
-    if (ImGui::Button("Test Window"))
-        show_test_window ^= 1;
-    /*	if (ImGui::Button("Test Node Editor"))
-            show_node_editor ^= 1;*/
+    ImGui::Text("OGSR Editor");
+
     if (ImGui::Button("Weather"))
-        show_weather_window ^= 1;
+        show_weather_window = !show_weather_window;
     if (ImGui::Button("Position Informer"))
         show_position_informer = !show_position_informer;
     if (ImGui::Button("HUD Editor"))
         show_hud_editor = !show_hud_editor;
+
+    if (ImGui::Button("Test Window"))
+        show_test_window = !show_test_window;
+
+    /*
+    if (ImGui::Button("Test Node Editor"))
+        show_node_editor = !show_node_editor;
+    */
 
     bool full = stage == EditorStage::Full;
     if (ImGui::Checkbox("Active", &full))

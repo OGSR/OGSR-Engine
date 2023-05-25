@@ -69,10 +69,7 @@ bool enumIni(void* data, int idx, const char** item)
 }
 
 bool s_ScriptWeather{};
-
-bool getScriptWeather() { return s_ScriptWeather; }
-
-void setScriptWeather(bool b) { s_ScriptWeather = b; }
+bool s_ScriptTime{};
 
 xr_set<shared_str> modifiedWeathers;
 
@@ -313,7 +310,7 @@ void ShowWeatherEditor(bool& show)
         //Level().SetGameTimeFactor(tf);
 
         Level().Server->game->SetGameTimeFactor(tf);
-        GamePersistent().Environment().SetGameTime(Level().GetEnvironmentGameDayTimeSec(), Level().game->GetEnvironmentGameTimeFactor());
+        env.SetGameTime(Level().GetEnvironmentGameDayTimeSec(), Level().game->GetEnvironmentGameTimeFactor());
     }
 
     xr_vector<shared_str> cycles;
@@ -327,8 +324,13 @@ void ShowWeatherEditor(bool& show)
 
     ImGui::Text("Main parameters");
 
+    
+    ImGui::Checkbox("Script weather", &s_ScriptWeather);
+
     if (ImGui::Combo("Weather cycle", &iCycle, enumCycle, &cycles, env.WeatherCycles.size()))
         env.SetWeather(cycles[iCycle], true);
+
+    ImGui::Checkbox("Script time", &s_ScriptTime);
 
     int sel = -1;
     for (int i = 0; i != env.CurrentWeather->size(); i++)
@@ -337,17 +339,17 @@ void ShowWeatherEditor(bool& show)
 
     if (ImGui::Combo("Current section", &sel, enumWeather, env.CurrentWeather, env.CurrentWeather->size()))
     {
-        env.SetGameTime(env.CurrentWeather->at(sel)->exec_time + 0.5f, tf);
+        env.SetGameTime(env.CurrentWeather->at(sel)->exec_time + 0.5f, Level().game->GetEnvironmentGameTimeFactor());
         env.SetWeather(cycles[iCycle], true);
     }
 
-     static bool b = getScriptWeather();
-     if (ImGui::Checkbox("Script weather", &b))
-         setScriptWeather(b);
-
     ImGui::Separator();
+
     bool changed = false;
     sel = -1;
+
+    ImGui::Text("Ambient light parameters");
+
     for (int i = 0; i != env.m_ambients_config->sections_ordered().size(); i++)
         if (cur->env_ambient->name() == env.m_ambients_config->sections_ordered()[i].second->Name)
             sel = i;
