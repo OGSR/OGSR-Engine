@@ -298,6 +298,8 @@ void ShowWeatherEditor(bool& show)
         return;
     }
 
+    int sel = -1;
+
     CEnvironment& env = GamePersistent().Environment();
     CEnvDescriptor* cur = env.Current[0];
 
@@ -305,7 +307,7 @@ void ShowWeatherEditor(bool& show)
     ImGui::Text("Time: %02d:%02d:%02d", int(time / (60 * 60) % 24), int(time / 60 % 60), int(time % 60));
 
     float tf = Level().GetGameTimeFactor();
-    if (ImGui::SliderFloat("Time factor", &tf, 0.0f, 1000.0f, "%.3f", ImGuiSliderFlags_Logarithmic))
+    if (ImGui::SliderFloat("Time factor", &tf, 0.0f, 10000.0f, "%.3f", ImGuiSliderFlags_Logarithmic))
     {
         //Level().SetGameTimeFactor(tf);
 
@@ -323,25 +325,33 @@ void ShowWeatherEditor(bool& show)
     }
 
     ImGui::Text("Main parameters");
-
     
     ImGui::Checkbox("Script weather", &s_ScriptWeather);
 
-    if (ImGui::Combo("Weather cycle", &iCycle, enumCycle, &cycles, env.WeatherCycles.size()))
-        env.SetWeather(cycles[iCycle], true);
+    if (s_ScriptWeather)
+    {
+        if (ImGui::Combo("Weather cycle", &iCycle, enumCycle, &cycles, env.WeatherCycles.size()))
+            env.SetWeather(cycles[iCycle], true);
+    }
+    else
+        ImGui::Text(env.CurrentWeatherName.c_str());
 
     ImGui::Checkbox("Script time", &s_ScriptTime);
 
-    int sel = -1;
-    for (int i = 0; i != env.CurrentWeather->size(); i++)
-        if (cur->m_identifier == env.CurrentWeather->at(i)->m_identifier)
-            sel = i;
-
-    if (ImGui::Combo("Current section", &sel, enumWeather, env.CurrentWeather, env.CurrentWeather->size()))
+    if (s_ScriptTime)
     {
-        env.SetGameTime(env.CurrentWeather->at(sel)->exec_time + 0.5f, Level().game->GetEnvironmentGameTimeFactor());
-        env.SetWeather(cycles[iCycle], true);
+        for (int i = 0; i != env.CurrentWeather->size(); i++)
+            if (cur->m_identifier == env.CurrentWeather->at(i)->m_identifier)
+                sel = i;
+
+        if (ImGui::Combo("Current section", &sel, enumWeather, env.CurrentWeather, env.CurrentWeather->size()))
+        {
+            env.SetGameTime(env.CurrentWeather->at(sel)->exec_time + 0.5f, Level().game->GetEnvironmentGameTimeFactor());
+            env.SetWeather(cycles[iCycle], true);
+        }
     }
+    else
+        ImGui::Text(cur->m_identifier.c_str());
 
     ImGui::Separator();
 
