@@ -201,12 +201,14 @@ int compare_naturally(const void* a_ptr, const void* b_ptr)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool editTexture(const char* label, shared_str& texName)
+bool SelectTexture(const char* label, shared_str& texName)
 {
     char tex[100];
     strncpy(tex, texName.data(), 100);
+
     bool changed = false;
     static shared_str prevValue;
+
     ImGui::PushID(label);
     if (ImGui::InputText("", tex, 100))
     {
@@ -221,12 +223,14 @@ bool editTexture(const char* label, shared_str& texName)
     }
     ImGui::SameLine();
     ImGui::Text(label);
-    ImGui::SetNextWindowSize(ImVec2(250, 400), ImGuiCond_FirstUseEver);
-    if (ImGui::BeginPopupModal("Choose texture", NULL, 0))
+
+    ImGui::SetNextWindowSize(ImVec2(250, 410), ImGuiCond_FirstUseEver);
+    if (ImGui::BeginPopupModal("Choose texture", nullptr, 0))
     {
         string_path dir, fn;
         _splitpath(tex, nullptr, dir, fn, nullptr);
         strconcat(sizeof(fn), fn, fn, ".dds");
+
         static xr_map<xr_string, xr_vector<xr_string>> dirs;
         auto filtered = dirs[dir];
         if (filtered.empty())
@@ -238,10 +242,12 @@ bool editTexture(const char* label, shared_str& texName)
                 auto e = std::copy_if(files->begin(), files->end(), filtered.begin(), [](auto x) { return strstr(x, "#small") == nullptr && strstr(x, ".thm") == nullptr; });
                 filtered.resize(e - filtered.begin());
                 std::sort(filtered.begin(), filtered.end(), [](auto a, auto b) { return compare_naturally(a.c_str(), b.c_str()) < 0; });
+
                 dirs[dir] = filtered;
             }
             FS.file_list_close(files);
         }
+
         int cur = -1;
         for (size_t i = 0; i != filtered.size(); i++)
         {
@@ -251,17 +257,16 @@ bool editTexture(const char* label, shared_str& texName)
                 break;
             }
         }
+
         if (ImGui_ListBox("", &cur,   
             [](void* data, int idx, const char** out_text) -> bool {
-                    xr_vector<xr_string>* textures = (xr_vector<xr_string>*)data;
-                    *out_text = (*textures)[idx].c_str();
-                    return true;
+                const auto textures = static_cast<xr_vector<xr_string>*>(data);
+                *out_text = (*textures)[idx].c_str();
+                return true;
                 },
-                &filtered, filtered.size(), ImVec2(-1.0f, -20.0f)))
+                &filtered, filtered.size(), ImVec2(-4.0f, -30.0f)))
         {
-            string_path newFn;
-            _splitpath(filtered[cur].c_str(), nullptr, nullptr, newFn, nullptr);
-            strconcat(100, tex, dir, newFn);
+            strconcat(100, tex, dir, filtered[cur].c_str());
             texName = tex;
             changed = true;
         }
@@ -276,10 +281,8 @@ bool editTexture(const char* label, shared_str& texName)
         if (ImGui::Button("Cancel", ImVec2(120, 0)))
         {
             ImGui::CloseCurrentPopup();
-            string_path newFn;
-            _splitpath(prevValue.data(), nullptr, nullptr, newFn, nullptr);
-            strconcat(100, tex, dir, newFn);
-            texName = tex;
+
+            texName = prevValue;
             changed = true;
         }
 
@@ -328,30 +331,24 @@ void ShowWeatherEditor(bool& show)
     
     ImGui::Checkbox("Script weather", &s_ScriptWeather);
 
-    if (s_ScriptWeather)
-    {
-        if (ImGui::Combo("Weather cycle", &iCycle, enumCycle, &cycles, env.WeatherCycles.size()))
-            env.SetWeather(cycles[iCycle], true);
-    }
-    else
-        ImGui::Text(env.CurrentWeatherName.c_str());
+    ImGui::BeginDisabled(!s_ScriptWeather);
+    if (ImGui::Combo("Weather cycle", &iCycle, enumCycle, &cycles, env.WeatherCycles.size()))
+        env.SetWeather(cycles[iCycle], true);
+    ImGui::EndDisabled();
 
     ImGui::Checkbox("Script time", &s_ScriptTime);
 
-    if (s_ScriptTime)
-    {
-        for (int i = 0; i != env.CurrentWeather->size(); i++)
-            if (cur->m_identifier == env.CurrentWeather->at(i)->m_identifier)
-                sel = i;
+    for (int i = 0; i != env.CurrentWeather->size(); i++)
+        if (cur->m_identifier == env.CurrentWeather->at(i)->m_identifier)
+            sel = i;
 
-        if (ImGui::Combo("Current section", &sel, enumWeather, env.CurrentWeather, env.CurrentWeather->size()))
-        {
-            env.SetGameTime(env.CurrentWeather->at(sel)->exec_time + 0.5f, Level().game->GetEnvironmentGameTimeFactor());
-            env.SetWeather(cycles[iCycle], true);
-        }
+    ImGui::BeginDisabled(!s_ScriptTime);
+    if (ImGui::Combo("Current section", &sel, enumWeather, env.CurrentWeather, env.CurrentWeather->size()))
+    {
+        env.SetGameTime(env.CurrentWeather->at(sel)->exec_time + 0.5f, Level().game->GetEnvironmentGameTimeFactor());
+        env.SetWeather(cycles[iCycle], true);
     }
-    else
-        ImGui::Text(cur->m_identifier.c_str());
+    ImGui::EndDisabled();
 
     ImGui::Separator();
 
@@ -363,8 +360,6 @@ void ShowWeatherEditor(bool& show)
     for (int i = 0; i != env.m_ambients_config->sections_ordered().size(); i++)
         if (cur->env_ambient->name() == env.m_ambients_config->sections_ordered()[i].second->Name)
             sel = i;
-
-    ImGui::Text("Ambient light parameters");
 
     if (ImGui::Combo("ambient", &sel, enumIni, env.m_ambients_config, env.m_ambients_config->sections_ordered().size()))
     {
@@ -379,8 +374,7 @@ void ShowWeatherEditor(bool& show)
     if (ImGui::ColorEdit4("clouds_color", (float*)&cur->clouds_color, ImGuiColorEditFlags_AlphaBar))
         changed = true;
 
-    char buf[100];
-    if (editTexture("clouds_texture", cur->clouds_texture_name))
+    if (SelectTexture("clouds_texture", cur->clouds_texture_name))
     {
         cur->on_device_create();
         changed = true;
@@ -424,8 +418,9 @@ void ShowWeatherEditor(bool& show)
     if (ImGui::SliderFloat("sky_rotation", &cur->sky_rotation, 0.0f, 6.28318f))
         changed = true;
 
-    if (editTexture("sky_texture", cur->sky_texture_name))
+    if (SelectTexture("sky_texture", cur->sky_texture_name))
     {
+        char buf[100];
         strconcat(sizeof(buf), buf, cur->sky_texture_name.data(), "#small");
         cur->sky_texture_env_name = buf;
         cur->on_device_create();

@@ -291,11 +291,12 @@ void ImGui_ImplDX11_RenderDrawData(ImDrawData* draw_data)
                 const D3D11_RECT r = {(LONG)pcmd->ClipRect.x, (LONG)pcmd->ClipRect.y, (LONG)pcmd->ClipRect.z, (LONG)pcmd->ClipRect.w};
                 ctx->PSSetShaderResources(0, 1, (ID3D11ShaderResourceView**)&pcmd->TextureId);
                 ctx->RSSetScissorRects(1, &r);
-                ctx->DrawIndexed(pcmd->ElemCount, idx_offset, vtx_offset);
+                ctx->DrawIndexed(pcmd->ElemCount, pcmd->IdxOffset + idx_offset, pcmd->VtxOffset + vtx_offset);
             }
-            idx_offset += pcmd->ElemCount;
         }
         vtx_offset += cmd_list->VtxBuffer.Size;
+        idx_offset += cmd_list->IdxBuffer.Size;
+
     }
 
     // Restore modified DX state
