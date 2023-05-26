@@ -163,6 +163,15 @@ bool Editor_KeyPress(int key)
 
         if (const u16 ch = pInput->DikToChar(key, false))
             io.AddInputCharacter(ch);
+
+            // пример подключения шрифт и нормального ввода в utf
+            // запишем что б не забыть, но хз надо ли оно реально
+
+            //io.Fonts->AddFontFromFileTTF("DroidSans.ttf", 13.0f, &font_config, io.Fonts->GetGlyphRangesCyrillic());
+
+            //wchar_t wch;
+            //MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, (char*)&ch, 1, &wch, 1);
+            //io.AddInputCharacter(wch);
     }
     return true;
 }
