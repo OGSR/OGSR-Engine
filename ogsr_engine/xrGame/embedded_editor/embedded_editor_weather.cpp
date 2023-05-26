@@ -224,18 +224,22 @@ bool SelectTexture(const char* label, shared_str& texName)
     ImGui::SameLine();
     ImGui::Text(label);
 
-    ImGui::SetNextWindowSize(ImVec2(250, 410), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(250, 400), ImGuiCond_FirstUseEver);
     if (ImGui::BeginPopupModal("Choose texture", nullptr, 0))
     {
-        string_path dir, fn;
-        _splitpath(tex, nullptr, dir, fn, nullptr);
-        strconcat(sizeof(fn), fn, fn, ".dds");
+        string_path curr_dir, curr_fileName;
+        _splitpath(tex, nullptr, nullptr, curr_fileName, nullptr);
+        strconcat(sizeof(fn), curr_fileName, curr_fileName, ".dds");
+
+        _splitpath(prevValue.c_str(), nullptr, curr_dir, nullptr, nullptr);
+
+        ImGui::Text("Current dir: %s", curr_dir);
 
         static xr_map<xr_string, xr_vector<xr_string>> dirs;
-        auto filtered = dirs[dir];
+        auto filtered = dirs[curr_dir];
         if (filtered.empty())
         {
-            xr_vector<LPSTR>* files = FS.file_list_open("$game_textures$", dir, FS_ListFiles);
+            xr_vector<LPSTR>* files = FS.file_list_open("$game_textures$", curr_dir, FS_ListFiles);
             if (files)
             {
                 filtered.resize(files->size());
@@ -243,7 +247,7 @@ bool SelectTexture(const char* label, shared_str& texName)
                 filtered.resize(e - filtered.begin());
                 std::sort(filtered.begin(), filtered.end(), [](auto a, auto b) { return compare_naturally(a.c_str(), b.c_str()) < 0; });
 
-                dirs[dir] = filtered;
+                dirs[curr_dir] = filtered;
             }
             FS.file_list_close(files);
         }
@@ -251,7 +255,7 @@ bool SelectTexture(const char* label, shared_str& texName)
         int cur = -1;
         for (size_t i = 0; i != filtered.size(); i++)
         {
-            if (filtered[i] == fn)
+            if (filtered[i] == curr_fileName)
             {
                 cur = i;
                 break;
@@ -266,7 +270,7 @@ bool SelectTexture(const char* label, shared_str& texName)
                 },
                 &filtered, filtered.size(), ImVec2(-4.0f, -30.0f)))
         {
-            strconcat(100, tex, dir, filtered[cur].c_str());
+            strconcat(100, tex, curr_dir, filtered[cur].c_str());
             texName = tex;
             changed = true;
         }
