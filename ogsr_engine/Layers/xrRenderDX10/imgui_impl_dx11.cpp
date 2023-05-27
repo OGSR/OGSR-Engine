@@ -71,11 +71,18 @@ static void ImGui_ImplDX11_CreateFontsTexture()
     font_config.GlyphOffset.x = +1;
     font_config.GlyphOffset.y = -1;
     strcpy(font_config.Name, "Terminuz14.ttf, 14px");
-    io.Fonts->AddFontFromMemoryCompressedBase85TTF(Terminuz14_compressed_data_base85, 14.0f, &font_config, io.Fonts->GetGlyphRangesCyrillic());
+    auto f = io.Fonts->AddFontFromMemoryCompressedBase85TTF(Terminuz14_compressed_data_base85, 14.0f, &font_config, io.Fonts->GetGlyphRangesCyrillic());
 
     unsigned char* pixels;
     int width, height;
     io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+
+    // add remap for local rus
+    for (int i = 0; i < 256; i++)
+        f->AddRemapChar(0xC0 + i, 0x410 + i, true);
+
+    f->AddRemapChar(0xA8, 0x401, true);
+    f->AddRemapChar(0xB8, 0x451, true);
 
     // Upload texture to graphics system
     {
