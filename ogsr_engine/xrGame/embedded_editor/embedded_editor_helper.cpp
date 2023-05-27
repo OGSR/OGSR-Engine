@@ -14,7 +14,10 @@ bool ImGui_ListBox(const char* label, int* current_item, bool (*items_getter)(vo
 
     bool value_changed = false;
 
-    clipper.ForceDisplayRangeByIndices(*current_item - 5, *current_item + 5);
+    const bool scrollTo = ImGui::IsWindowAppearing();
+
+    if (scrollTo)
+        clipper.ForceDisplayRangeByIndices(*current_item - 5, *current_item + 5);
 
     while (clipper.Step())
     {
@@ -32,7 +35,7 @@ bool ImGui_ListBox(const char* label, int* current_item, bool (*items_getter)(vo
                 *current_item = i;
                 value_changed = true;
             }
-            if (item_selected)
+            if (scrollTo && item_selected)
                 ImGui::SetScrollHereY(0.5f);
             ImGui::PopID();
         }
