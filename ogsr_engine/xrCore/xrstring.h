@@ -114,6 +114,8 @@ public:
     char operator[](size_t id) const { return p_->value[id]; }
     bool operator!() const { return !p_; }
     const char* operator*() const { return p_ ? p_->value : nullptr; }
+    // Чтобы можно было легко кастить в std::string_view как и все остальные строки
+    operator std::string_view() const { return std::string_view{p_ ? p_->value : ""}; }
 
     const char* c_str() const { return p_ ? p_->value : nullptr; }
     //Используется в погодном редакторе.
@@ -180,18 +182,26 @@ IC void xr_strlwr(shared_str& src)
 
 #pragma pack(pop)
 
-struct string_hash
+struct transparent_string_hash
 {
     using is_transparent = void; // https://www.cppstories.com/2021/heterogeneous-access-cpp20/
     using hash_type = std::hash<std::string_view>;
-    [[nodiscard]] decltype(auto) operator()(std::string_view txt) const noexcept { return hash_type{}(txt); }
-    [[nodiscard]] decltype(auto) operator()(const std::string& txt) const noexcept { return hash_type{}(txt); }
-    [[nodiscard]] decltype(auto) operator()(const char* txt) const noexcept { return hash_type{}(txt); }
-    [[nodiscard]] decltype(auto) operator()(const shared_str& txt) const noexcept { return hash_type{}(txt.c_str() ? txt.c_str() : ""); }
+    [[nodiscard]] size_t operator()(const std::string_view txt) const noexcept { return hash_type{}(txt); }
+    [[nodiscard]] size_t operator()(const std::string& txt) const noexcept { return hash_type{}(txt); }
+    [[nodiscard]] size_t operator()(const char* txt) const noexcept { return hash_type{}(txt); }
+    [[nodiscard]] size_t operator()(const shared_str& txt) const noexcept { return hash_type{}(txt); }
+};
+
+struct transparent_string_equal
+{
+    using is_transparent = void;
+    [[nodiscard]] bool operator()(const std::string_view lhs, const std::string_view rhs) const { return lhs == rhs; }
+    [[nodiscard]] bool operator()(const shared_str& lhs, const shared_str& rhs) const { return lhs == rhs; }
+    [[nodiscard]] bool operator()(const char* lhs, const char* rhs) const { return !strcmp(lhs, rhs); }
 };
 
 template <typename Key, typename Value, class _Alloc = std::allocator<std::pair<const Key, Value>>>
-using string_unordered_map = std::unordered_map<Key, Value, string_hash, std::equal_to<>, _Alloc>;
+using string_unordered_map = std::unordered_map<Key, Value, transparent_string_hash, transparent_string_equal, _Alloc>;
 
 
 inline bool SplitFilename(std::string& str)
