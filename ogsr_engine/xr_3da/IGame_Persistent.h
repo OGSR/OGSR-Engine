@@ -84,9 +84,6 @@ public:
 
     virtual void UpdateGameType(){};
 
-    // KRodin: TODO: Доделать перегрузки если оно надо.
-    virtual void GetCurrentDof(Fvector3& dof) { dof.set(-1.4f, 0.0f, 250.f); };
-    virtual void SetBaseDof(const Fvector3& dof){};
     virtual void OnSectorChanged(int sector){};
 
     virtual void RegisterModel(IRenderVisual* V) = 0;

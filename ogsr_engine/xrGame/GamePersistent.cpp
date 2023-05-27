@@ -34,7 +34,6 @@ static void ode_free(void* ptr, size_t size) { return xr_free(ptr); }
 
 CGamePersistent::CGamePersistent(void)
 {
-    m_bPickableDOF = false;
     m_game_params.m_e_game_type = GAME_ANY;
     ambient_effect_next_time = 0;
     ambient_effect_stop_time = 0;
@@ -80,10 +79,6 @@ CGamePersistent::CGamePersistent(void)
     }
 
     eQuickLoad = Engine.Event.Handler_Attach("Game:QuickLoad", this);
-
-    Fvector3* DofValue = Console->GetFVectorPtr("r2_dof");
-    if (DofValue)
-        SetBaseDof(*DofValue);
 }
 
 CGamePersistent::~CGamePersistent(void)
@@ -642,8 +637,6 @@ void CGamePersistent::OnFrame()
     if ((m_last_stats_frame + 1) < m_frame_counter)
         profiler().clear();
 #endif
-    if (psActorFlags.test(AF_DOF_ZOOM))
-        UpdateDof();
 }
 
 #include "game_sv_single.h"
@@ -747,98 +740,4 @@ bool CGamePersistent::OnKeyboardPress(int dik)
     }
 
     return false;
-}
-
-void CGamePersistent::SetPickableEffectorDOF(bool bSet)
-{
-    m_bPickableDOF = bSet;
-    if (!bSet)
-        RestoreEffectorDOF();
-}
-
-void CGamePersistent::GetCurrentDof(Fvector3& dof) { dof = m_dof[1]; }
-
-void CGamePersistent::SetBaseDof(const Fvector3& dof) { m_dof[0] = m_dof[1] = m_dof[2] = m_dof[3] = dof; }
-
-void CGamePersistent::SetEffectorDOF(const Fvector& needed_dof)
-{
-    if (m_bPickableDOF)
-        return;
-    m_dof[0] = needed_dof;
-    m_dof[2] = m_dof[1]; // current
-}
-
-void CGamePersistent::RestoreEffectorDOF() { SetEffectorDOF(m_dof[3]); }
-
-static BOOL pick_trace_callback(collide::rq_result& result, LPVOID params)
-{
-    collide::rq_result* RQ = (collide::rq_result*)params;
-    if (!result.O)
-    {
-        // получить треугольник и узнать его материал
-        CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + result.element;
-        if (T->material < GMLib.CountMaterial())
-        {
-            if (GMLib.GetMaterialByIdx(T->material)->Flags.is(SGameMtl::flPassable))
-                return TRUE;
-            float vis = GMLib.GetMaterialByIdx(T->material)->fVisTransparencyFactor;
-            if (!fis_zero(vis))
-                return TRUE;
-        }
-    }
-    *RQ = result;
-    return FALSE;
-}
-
-static float GetDofZoomDist()
-{
-    collide::rq_result& RQ = HUD().GetCurrentRayQuery();
-    if (!RQ.O && RQ.valid())
-    {
-        CDB::TRI* T = Level().ObjectSpace.GetStaticTris() + RQ.element;
-        if (T->material < GMLib.CountMaterial())
-        {
-            float vis = GMLib.GetMaterialByIdx(T->material)->fVisTransparencyFactor;
-            if (!fis_zero(vis))
-            {
-                collide::rq_result RQ2;
-                collide::rq_results RQR;
-                RQ2.range = GamePersistent().Environment().CurrentEnv->far_plane * 0.99f;
-                collide::ray_defs RD(Device.vCameraPosition, Device.vCameraDirection, RQ2.range, CDB::OPT_CULL, collide::rqtBoth);
-                if (Level().ObjectSpace.RayQuery(RQR, RD, pick_trace_callback, &RQ2, NULL, Level().CurrentEntity()))
-                {
-                    clamp(RQ2.range, RQ.range, RQ2.range);
-                    return RQ2.range;
-                }
-            }
-        }
-    }
-    return RQ.range;
-}
-
-int g_dof_zoom_far = 100;
-int g_dof_zoom_near = 50;
-//	m_dof		[4];	// 0-dest 1-current 2-from 3-original
-void CGamePersistent::UpdateDof()
-{
-    if (m_bPickableDOF)
-    {
-        Fvector pick_dof;
-        pick_dof.y = GetDofZoomDist();
-        pick_dof.x = pick_dof.y - g_dof_zoom_near;
-        pick_dof.z = pick_dof.y + g_dof_zoom_far;
-        m_dof[0] = pick_dof;
-        m_dof[2] = m_dof[1]; // current
-    }
-    if (m_dof[1].similar(m_dof[0]))
-        return;
-
-    float td = Device.fTimeDelta;
-    Fvector diff;
-    diff.sub(m_dof[0], m_dof[2]);
-    diff.mul(td / 0.2f); // 0.2 sec
-    m_dof[1].add(diff);
-    (m_dof[0].x < m_dof[2].x) ? clamp(m_dof[1].x, m_dof[0].x, m_dof[2].x) : clamp(m_dof[1].x, m_dof[2].x, m_dof[0].x);
-    (m_dof[0].y < m_dof[2].y) ? clamp(m_dof[1].y, m_dof[0].y, m_dof[2].y) : clamp(m_dof[1].y, m_dof[2].y, m_dof[0].y);
-    (m_dof[0].z < m_dof[2].z) ? clamp(m_dof[1].z, m_dof[0].z, m_dof[2].z) : clamp(m_dof[1].z, m_dof[2].z, m_dof[0].z);
 }

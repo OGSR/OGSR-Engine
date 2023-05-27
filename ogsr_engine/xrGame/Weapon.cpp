@@ -885,7 +885,7 @@ void CWeapon::UpdateCL()
 
         if (pActor)
         {
-            if (psActorFlags.test(AF_DOF_ZOOM_NEW))
+            if (psActorFlags.test(AF_DOF_ZOOM))
             {
                 if (m_bZoomMode && dof_zoom_effect < 1.f && !UseScopeTexture())
                     UpdateDof(dof_zoom_effect, dof_params_zoom, false);
@@ -911,7 +911,7 @@ void CWeapon::UpdateCL()
             if (psActorFlags.test(AF_DOF_RELOAD) && dof_reload_effect > 0.f)
                 UpdateDof(dof_reload_effect, dof_params_reload, true);
 
-            if (psActorFlags.test(AF_DOF_ZOOM_NEW) && dof_zoom_effect > 0.f)
+            if (psActorFlags.test(AF_DOF_ZOOM) && dof_zoom_effect > 0.f)
                 UpdateDof(dof_zoom_effect, dof_params_zoom, true);
         }
 
@@ -1633,9 +1633,6 @@ void CWeapon::OnZoomIn()
     else if (!m_bZoomInertionAllow)
         AllowHudInertion(FALSE);
 
-    if (GetHUDmode())
-        GamePersistent().SetPickableEffectorDOF(true);
-
     if (smart_cast<CActor*>(H_Parent()))
         g_actor->callback(GameObject::eOnActorWeaponZoomIn)(lua_game_object());
 
@@ -1658,9 +1655,6 @@ void CWeapon::OnZoomOut()
     }
 
     AllowHudInertion(TRUE);
-
-    if (GetHUDmode())
-        GamePersistent().SetPickableEffectorDOF(false);
 
     ResetSubStateTime();
 

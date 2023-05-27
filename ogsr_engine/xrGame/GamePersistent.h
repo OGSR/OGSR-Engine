@@ -26,11 +26,8 @@ class CGamePersistent : public IGame_Persistent, public IEventReceiver
     float ambient_effect_wind_out_time;
     bool ambient_effect_wind_on;
 
-    bool m_bPickableDOF;
-
     CUISequencer* m_intro;
     EVENT eQuickLoad;
-    Fvector m_dof[4]; // 0-dest 1-current 2-from 3-original
 
     fastdelegate::FastDelegate<void()> m_intro_event;
 
@@ -45,7 +42,6 @@ class CGamePersistent : public IGame_Persistent, public IEventReceiver
 #endif
 
     void WeathersUpdate();
-    void UpdateDof();
 
 public:
     ui_core* m_pUI_core;
@@ -84,13 +80,6 @@ public:
 
     virtual bool CanBePaused();
     bool OnKeyboardPress(int dik);
-
-    void SetPickableEffectorDOF(bool bSet);
-    void SetEffectorDOF(const Fvector& needed_dof);
-    void RestoreEffectorDOF();
-
-    virtual void GetCurrentDof(Fvector3& dof);
-    virtual void SetBaseDof(const Fvector3& dof);
 };
 
 IC CGamePersistent& GamePersistent() { return *((CGamePersistent*)g_pGamePersistent); }

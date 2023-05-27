@@ -20,13 +20,6 @@ void CRenderTarget::phase_dof()
 	p1.set((w + 0.5f) / w, (h + 0.5f) / h);
 #endif
 
-	//DoF vectors
-	Fvector2 vDofKernel;
-	vDofKernel.set(0.5f / Device.dwWidth, 0.5f / Device.dwHeight);
-	vDofKernel.mul(ps_r2_dof_kernel_size);
-	Fvector3 dof;
-	g_pGamePersistent->GetCurrentDof(dof);
-
 	//////////////////////////////////////////////////////////////////////////
 	//Set MSAA/NonMSAA rendertarget
 	u_setrt(rt_dof, 0, 0, HW.pBaseZB);
@@ -44,11 +37,6 @@ void CRenderTarget::phase_dof()
 
 	//Set pass
 	RCache.set_Element(s_dof->E[0]);
-
-	//Set paramterers
-	//RCache.set_c("taa_params", ps_taa_params.x, ps_taa_params.y, 0, 0);
-	RCache.set_c("dof_params", dof.x, dof.y, dof.z, ps_r2_dof_sky);	
-	RCache.set_c("dof_kernel", vDofKernel.x, vDofKernel.y, ps_r2_dof_kernel_size, 0);
 	
 	//Set geometry
 	RCache.set_Geometry(g_combine);
