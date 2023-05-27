@@ -133,16 +133,16 @@ void CHudItem::Load(LPCSTR section)
                                READ_IF_EXISTS(pSettings, r_float, section, "lookout_aim_transition_time", 0.15f), 0.f); // aim-GL
     ////////////////////////////////////////////
     ////////////////////////////////////////////
-    m_jump_offset[0][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "jump_hud_offset_pos", (Fvector{0.f, 0.05f, -0.06f}));
+    m_jump_offset[0][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "jump_hud_offset_pos", (Fvector{0.f, -0.03f, -0.06f}));
     m_jump_offset[1][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "jump_hud_offset_rot", (Fvector{0.f, -10.f, -10.f}));
 
-    m_jump_offset[0][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "jump_aim_hud_offset_pos", (Fvector{0.f, -0.03f, 0.01f}));
+    m_jump_offset[0][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "jump_aim_hud_offset_pos", (Fvector{0.f, 0.03f, 0.01f}));
     m_jump_offset[1][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "jump_aim_hud_offset_rot", (Fvector{0.f, 2.5f, -3.f}));
 
-    m_jump_offset[2][0].set(READ_IF_EXISTS(pSettings, r_bool, section, "jump_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "jump_transition_time", 0.7f),
+    m_jump_offset[2][0].set(READ_IF_EXISTS(pSettings, r_bool, section, "jump_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "jump_transition_time", 0.5f),
                                0.f); // normal
     m_jump_offset[2][1].set(READ_IF_EXISTS(pSettings, r_bool, section, "jump_aim_enabled", true),
-                               READ_IF_EXISTS(pSettings, r_float, section, "jump_aim_transition_time", 0.5f), 0.f); // aim-GL
+                               READ_IF_EXISTS(pSettings, r_float, section, "jump_aim_transition_time", 0.45f), 0.f); // aim-GL
     ////////////////////////////////////////////
     ////////////////////////////////////////////
     m_fall_offset[0][0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "fall_hud_offset_pos", (Fvector{0.f, -0.03f, 0.03f}));
@@ -151,7 +151,7 @@ void CHudItem::Load(LPCSTR section)
     m_fall_offset[0][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "fall_aim_hud_offset_pos", (Fvector{0.f, 0.03f, -0.01f}));
     m_fall_offset[1][1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "fall_aim_hud_offset_rot", (Fvector{0.f, -2.5f, 3.f}));
 
-    m_fall_offset[2][0].set(READ_IF_EXISTS(pSettings, r_bool, section, "fall_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "fall_transition_time", 0.45f),
+    m_fall_offset[2][0].set(READ_IF_EXISTS(pSettings, r_bool, section, "fall_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "fall_transition_time", 1.f),
                             0.f); // normal
     m_fall_offset[2][1].set(READ_IF_EXISTS(pSettings, r_bool, section, "fall_aim_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "fall_aim_transition_time", 0.7f),
                             0.f); // aim-GL
