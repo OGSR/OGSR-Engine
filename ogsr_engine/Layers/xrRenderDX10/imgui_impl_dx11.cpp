@@ -62,8 +62,16 @@ static void ImGui_ImplDX11_CreateFontsTexture()
     // font_config.OversampleH = 1; //or 2 is the same
     // font_config.OversampleV = 1;
     // font_config.PixelSnapH = 1;
-    // io.Fonts->AddFontFromFileTTF("extras/Anonymous Pro.ttf", 13.0f, nullptr, io.Fonts->GetGlyphRangesCyrillic());
-    io.Fonts->AddFontDefault();
+    // io.Fonts->AddFontFromFileTTF("DroidSans.ttf", 13.0f, &font_config, io.Fonts->GetGlyphRangesCyrillic());
+    // io.Fonts->AddFontFromFileTTF("ProggyClean.ttf", 13.0f, nullptr, io.Fonts->GetGlyphRangesCyrillic());
+
+    // io.Fonts->AddFontDefault();
+
+    ImFontConfig font_config;
+    font_config.GlyphOffset.x = +1;
+    font_config.GlyphOffset.y = -1;
+    strcpy(font_config.Name, "Terminuz14.ttf, 14px");
+    io.Fonts->AddFontFromMemoryCompressedBase85TTF(Terminuz14_compressed_data_base85, 14.0f, &font_config, io.Fonts->GetGlyphRangesCyrillic());
 
     unsigned char* pixels;
     int width, height;
@@ -605,13 +613,6 @@ bool ImGui_ImplDX11_Init(void* hwnd, ID3D11Device* device, ID3D11DeviceContext* 
     io.LogFilename = xr_strdup(fName);
 
     io.ImeWindowHandle = g_hWnd;
-
-    // ImFontConfig font_config;
-    // font_config.OversampleH = 1; //or 2 is the same
-    // font_config.OversampleV = 1;
-    // font_config.PixelSnapH = 1;
-    // io.Fonts->AddFontFromFileTTF("DroidSans.ttf", 13.0f, &font_config, io.Fonts->GetGlyphRangesCyrillic());
-    // io.Fonts->AddFontFromFileTTF("ProggyClean.ttf", 13.0f, nullptr, io.Fonts->GetGlyphRangesCyrillic());
 
     ImGui_ImplDX11_CreateDeviceObjects();
 

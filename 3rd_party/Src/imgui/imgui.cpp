@@ -4034,7 +4034,7 @@ bool ImGui::ItemHoverable(const ImRect& bb, ImGuiID id)
         if (g.DebugItemPickerActive && g.HoveredIdPreviousFrame == id)
             GetForegroundDrawList()->AddRect(bb.Min, bb.Max, IM_COL32(255, 255, 0, 255));
         if (g.DebugItemPickerBreakId == id)
-            IM_DEBUG_BREAK();
+            return false;  //IM_DEBUG_BREAK();
     }
 
     if (g.NavDisableMouseHover)
