@@ -211,6 +211,7 @@ public: //
     virtual CPhysicsShell* PhysicsShell(); // aux
     CPHShell* PHShell();
     virtual void set_ParentElement(CPhysicsElement* p) { m_parent_element = (CPHElement*)p; } // aux
+    virtual CPhysicsElement* get_ParentElement() { return m_parent_element; };
     void SetShell(CPHShell* p); // aux
     virtual dBodyID get_body() { return m_body; }; // aux
     virtual const dBodyID get_bodyConst() const { return m_body; }; // aux

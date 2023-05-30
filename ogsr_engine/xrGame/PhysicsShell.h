@@ -113,6 +113,7 @@ public:
     virtual bool has_geoms() = 0;
     virtual void add_Mass(const SBoneShape& shape, const Fmatrix& offset, const Fvector& mass_center, float mass, CPHFracture* fracture = NULL) = 0;
     virtual void set_ParentElement(CPhysicsElement* p) = 0;
+    virtual CPhysicsElement* get_ParentElement() = 0;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     virtual void set_BoxMass(const Fobb& box, float mass) = 0;
     virtual void setInertia(const dMass& M) = 0;
