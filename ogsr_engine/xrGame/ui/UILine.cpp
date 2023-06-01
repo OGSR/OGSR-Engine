@@ -89,18 +89,16 @@ CUILine& CUILine::operator=(const CUILine& other)
 
 void CUILine::AddSubLine(const xr_string& str, u32 color)
 {
-    CUISubLine sline;
+    auto& sline = m_subLines.emplace_back();
     sline.m_color = color;
     sline.m_text = str;
-    m_subLines.push_back(sline);
 }
 
 void CUILine::AddSubLine(LPCSTR str, u32 color)
 {
-    CUISubLine sline;
+    auto& sline = m_subLines.emplace_back();
     sline.m_color = color;
     sline.m_text = str;
-    m_subLines.push_back(sline);
 }
 
 void CUILine::AddSubLine(const CUISubLine* subLine) { m_subLines.push_back(*subLine); }

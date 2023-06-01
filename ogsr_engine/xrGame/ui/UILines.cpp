@@ -176,7 +176,7 @@ void CUILines::ParseText()
     if (!m_text.empty() && !m_pFont)
         R_ASSERT2(false, "can't parse text without font");
 
-    CUILine* line = NULL;
+    CUILine* line{};
 
     if (uFlags.test(flColoringMode))
     {
@@ -184,94 +184,82 @@ void CUILines::ParseText()
     }
     else
     {
-        CUISubLine subline;
-        subline.m_text = m_text;
-        subline.m_color = GetTextColor();
-
         line = xr_new<CUILine>();
-        line->AddSubLine(&subline);
+        line->AddSubLine(m_text, GetTextColor());
     }
 
-    BOOL bNewLines = FALSE;
+    bool bNewLines{};
 
     if (uFlags.test(flRecognizeNewLine))
+    {
         if (m_pFont->IsMultibyte())
         {
             CUILine* ptmp_line = xr_new<CUILine>();
-            int vsz = line->m_subLines.size();
-            VERIFY(vsz);
-            for (int i = 0; i < vsz; i++)
+
+            for (const auto& subline : line->m_subLines)
             {
-                char* pszTemp = NULL;
-                const u32 tcolor = line->m_subLines[i].m_color;
-                char szTempLine[MAX_MB_CHARS], *pszSearch = NULL;
-                VERIFY(strlen(line->m_subLines[i].m_text.c_str()) < MAX_MB_CHARS);
-                strcpy_s(szTempLine, line->m_subLines[i].m_text.c_str());
-                pszSearch = szTempLine;
-                while ((pszTemp = strstr(pszSearch, "\\n")) != NULL)
+                const u32 tcolor = subline.m_color;
+                xr_string szTempLine = subline.m_text;
+                char* pszSearch = szTempLine.data();
+                while (char* pszTemp = strstr(pszSearch, "\\n"))
                 {
-                    bNewLines = TRUE;
+                    bNewLines = true;
                     *pszTemp = '\0';
                     ptmp_line->AddSubLine(pszSearch, tcolor);
                     pszSearch = pszTemp + 2;
                 }
                 ptmp_line->AddSubLine(pszSearch, tcolor);
             }
-            line->Clear();
-            xr_free(line);
+            xr_delete(line);
             line = ptmp_line;
         }
         else
+        {
             line->ProcessNewLines(); // process "\n"
-       
+        }
+    }
+
     if (m_pFont->IsMultibyte())
     {
-#define UBUFFER_SIZE 100
-        u16 aMarkers[UBUFFER_SIZE];
-        CUILine tmp_line;
-        char szTempLine[MAX_MB_CHARS];
         float fTargetWidth = 1.0f;
         UI()->ClientToScreenScaledWidth(fTargetWidth);
         VERIFY((m_wndSize.x > 0) && (fTargetWidth > 0));
         fTargetWidth = m_wndSize.x / fTargetWidth;
-        int vsz = line->m_subLines.size();
-        VERIFY(vsz);
-        if ((vsz > 1) && (!bNewLines))
+
+        if (line->m_subLines.size() > 1 && !bNewLines)
         { // only colored line, pizdets
-            for (int i = 0; i < vsz; i++)
+            auto& tmp_line = m_lines.emplace_back();
+            for (const auto& subline : line->m_subLines)
             {
-                const char* pszText = line->m_subLines[i].m_text.c_str();
-                const u32 tcolor = line->m_subLines[i].m_color;
+                const char* pszText = subline.m_text.c_str();
+                const u32 tcolor = subline.m_color;
                 VERIFY(pszText);
                 tmp_line.AddSubLine(pszText, tcolor);
             }
-            m_lines.push_back(tmp_line);
-            tmp_line.Clear();
         }
         else
         {
-            for (int i = 0; i < vsz; i++)
+            for (const auto& subline : line->m_subLines)
             {
-                const char* pszText = line->m_subLines[i].m_text.c_str();
-                const u32 tcolor = line->m_subLines[i].m_color;
-                u16 uFrom = 0, uPartLen = 0;
+                const char* pszText = subline.m_text.c_str();
                 VERIFY(pszText);
-                u16 nMarkers = m_pFont->SplitByWidth(aMarkers, UBUFFER_SIZE, fTargetWidth, pszText);
+                const u32 tcolor = subline.m_color;
+
+                u16 aMarkers[1000]{};
+                u16 uFrom{}, uPartLen{};
+                const u16 nMarkers = m_pFont->SplitByWidth(aMarkers, std::size(aMarkers), fTargetWidth, pszText);
                 for (u16 j = 0; j < nMarkers; j++)
                 {
                     uPartLen = aMarkers[j] - uFrom;
-                    VERIFY((uPartLen > 0) && (uPartLen < MAX_MB_CHARS));
-                    strncpy_s(szTempLine, pszText + uFrom, uPartLen);
-                    szTempLine[uPartLen] = '\0';
+                    VERIFY(uPartLen > 0);
+                    const xr_string szTempLine{pszText + uFrom, uPartLen};
+                    auto& tmp_line = m_lines.emplace_back();
                     tmp_line.AddSubLine(szTempLine, tcolor);
-                    m_lines.push_back(tmp_line);
-                    tmp_line.Clear();
                     uFrom += uPartLen;
                 }
-                strncpy_s(szTempLine, pszText + uFrom, MAX_MB_CHARS);
+                const xr_string szTempLine{pszText + uFrom};
+                auto& tmp_line = m_lines.emplace_back();
                 tmp_line.AddSubLine(szTempLine, tcolor);
-                m_lines.push_back(tmp_line);
-                tmp_line.Clear();
             }
         }
     }
