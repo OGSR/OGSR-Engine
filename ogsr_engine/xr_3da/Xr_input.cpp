@@ -187,9 +187,7 @@ void CInput::KeyUpdate()
 
 bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
 {
-    //Это всё не нужно на самом деле, тем более что в ориг. ТЧ названия клавиш в настройках и тп. всегда писались английскими буквами.
-    /*  
-    DIPROPSTRING keyname{};
+    DIPROPSTRING keyname;
     keyname.diph.dwSize = sizeof(DIPROPSTRING);
     keyname.diph.dwHeaderSize = sizeof(DIPROPHEADER);
     keyname.diph.dwObj = static_cast<DWORD>(dik);
@@ -202,9 +200,9 @@ bool CInput::get_dik_name(int dik, LPSTR dest_str, int dest_sz)
     if (!wcslen(wct))
         return false;
 
-    return WideCharToMultiByte(utf ? CP_UTF8 : CP_ACP, 0, keyname.wsz, -1, dest_str, dest_sz, 0, 0) != -1;
-    */
-    return false;
+    const size_t cnt = wcstombs(dest_str, wct, dest_sz);
+
+    return cnt != -1;
 }
 
 BOOL CInput::iGetAsyncKeyState(int dik)
