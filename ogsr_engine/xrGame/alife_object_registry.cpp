@@ -23,6 +23,7 @@ CALifeObjectRegistry::~CALifeObjectRegistry()
         (*I).second->on_unregister();
         xr_delete((*I).second);
     }
+    m_objects.clear();
 }
 
 void CALifeObjectRegistry::save(IWriter& memory_stream, CSE_ALifeDynamicObject* object, u32& object_count)
