@@ -159,7 +159,8 @@ void CUIWindow::script_register(lua_State* L)
                   .def("GetMinScrollPos", &CUIScrollView::GetMinScrollPos)
                   .def("GetMaxScrollPos", &CUIScrollView::GetMaxScrollPos)
                   .def("GetCurrentScrollPos", &CUIScrollView::GetCurrentScrollPos)
-                  .def("SetScrollPos", &CUIScrollView::SetScrollPos),
+                  .def("SetScrollPos", &CUIScrollView::SetScrollPos)
+                  .def("ForceUpdate", &CUIScrollView::ForceUpdate),
 
               class_<CIconParams>("CIconParams")
                   .def(constructor<LPCSTR>())
