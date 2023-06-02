@@ -133,15 +133,40 @@ void CUILine::ProcessNewLines()
 
 void CUILine::Draw(CGameFont* pFont, float x, float y) const
 {
-    float length = 0;
-    int size = m_subLines.size();
+    const int size = m_subLines.size();
+
+    float total_w = 0.f;
 
     for (int i = 0; i < size; i++)
     {
-        m_subLines[i].Draw(pFont, x + length, y);
-        float ll = pFont->SizeOf_(m_subLines[i].m_text.c_str()); //. all ok
+        float ll = pFont->SizeOf_(m_subLines[i].m_text.c_str());
         UI()->ClientToScreenScaledWidth(ll);
-        length += ll;
+        total_w += ll;
+    }
+
+    float length = 0;
+
+    for (int i = 0; i < size; i++)
+    {
+        float w = pFont->SizeOf_(m_subLines[i].m_text.c_str());
+        UI()->ClientToScreenScaledWidth(w);
+
+        float d = length;
+
+        if (pFont->GetAligment() == CGameFont::alCenter)
+        {
+            // center align
+            d += (w / 2 - total_w / 2);
+        }
+        else if (pFont->GetAligment() == CGameFont::alRight)
+        {
+            // right align
+            d += (w - total_w);
+        }
+
+        m_subLines[i].Draw(pFont, x + d, y);
+
+        length += w;
     }
 }
 

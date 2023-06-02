@@ -132,12 +132,14 @@ void ui_core::ClientToScreenScaled(Fvector2& src_and_dest)
         src_and_dest.set(ClientToScreenScaledX(src_and_dest.x), ClientToScreenScaledY(src_and_dest.y));
 }
 
+// ScreenToClientScaledWidth ???
 void ui_core::ClientToScreenScaledWidth(float& src_and_dest)
 {
     if (m_currentPointType != IUIRender::pttLIT)
         src_and_dest /= m_current_scale->x;
 }
 
+// ScreenToClientScaledHeight ???
 void ui_core::ClientToScreenScaledHeight(float& src_and_dest)
 {
     if (m_currentPointType != IUIRender::pttLIT)

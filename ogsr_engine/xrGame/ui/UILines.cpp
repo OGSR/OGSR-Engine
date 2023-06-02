@@ -450,12 +450,12 @@ void CUILines::Draw(float x, float y)
     }
     else
     {
-        // if (uFlags.test(flNeedReparse))
         ParseText();
 
         Fvector2 pos;
 
         // get vertical indent
+        pos.x = x + GetIndentByAlign();
         pos.y = y + GetVIndentByAlign();
 
         float height = m_pFont->CurrentHeight_();
@@ -466,8 +466,6 @@ void CUILines::Draw(float x, float y)
         m_pFont->SetAligment((CGameFont::EAligment)m_eTextAlign);
         for (int i = 0; i < (int)size; i++)
         {
-            pos.x = x + GetIndentByAlign();
-
             m_lines[i].Draw(m_pFont, pos.x, pos.y);
 
             pos.y += height + m_interval;

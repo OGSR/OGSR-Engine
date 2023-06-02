@@ -110,6 +110,7 @@ void CUISubLine::FreeBuffer()
 void CUISubLine::Draw(CGameFont* pFont, float x, float y) const
 {
     pFont->SetColor(m_color);
+
     Fvector2 pos;
     pos.set(x, y);
     UI()->ClientToScreenScaled(pos);

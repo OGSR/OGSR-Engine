@@ -82,6 +82,7 @@ public:
     IC const Fvector2& GetInterval() const { return vInterval; }
 
     IC void SetAligment(EAligment aligment) { eCurrentAlignment = aligment; }
+    IC EAligment GetAligment() { return eCurrentAlignment; }
 
     float SizeOf_(LPCSTR s);
     float SizeOf_(const wide_char* wsStr);
