@@ -666,7 +666,7 @@ u32 CUILines::GetColorFromText(const xr_string& str) const
     }
     else
     { // necessary comma not contains
-        Msg("!not valid text-color code detected.");
+        Msg("!not valid text-color code detected. [%s]", str.c_str());
         a = 255;
         r = 200;
         g = 200;
