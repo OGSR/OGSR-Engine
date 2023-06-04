@@ -94,11 +94,11 @@ void CUILine::AddSubLine(const xr_string& str, u32 color)
     sline.m_text = str;
 }
 
-void CUILine::AddSubLine(LPCSTR str, u32 color)
+void CUILine::AddSubLine(xr_string&& str, u32 color)
 {
     auto& sline = m_subLines.emplace_back();
     sline.m_color = color;
-    sline.m_text = str;
+    sline.m_text = std::move(str);
 }
 
 void CUILine::AddSubLine(const CUISubLine* subLine) { m_subLines.push_back(*subLine); }

@@ -1,5 +1,3 @@
-#ifndef GameFontH
-#define GameFontH
 #pragma once
 
 #include "MbHelpers.h"
@@ -62,8 +60,7 @@ public:
         fsForceDWORD = u32(-1)
     };
 
-protected:
-    IC const Fvector& GetCharTC(u16 c) { return TCMap[c]; }
+    IC const Fvector& GetCharTC(u16 c) const { return TCMap[c]; }
 
 public:
     CGameFont(LPCSTR section, u32 flags = 0);
@@ -77,12 +74,12 @@ public:
     void SetHeightI(float S);
     void SetHeight(float S);
 
-    IC float GetHeight() { return fCurrentHeight; };
+    IC float GetHeight() const { return fCurrentHeight; }
 
     IC void SetInterval(float x, float y) { vInterval.set(x, y); };
     IC void SetInterval(const Fvector2& v) { vInterval.set(v); };
 
-    IC Fvector2 GetInterval() { return vInterval; };
+    IC const Fvector2& GetInterval() const { return vInterval; }
 
     IC void SetAligment(EAligment aligment) { eCurrentAlignment = aligment; }
 
@@ -93,7 +90,7 @@ public:
 
     float CurrentHeight_();
 
-    float ScaleHeightDelta() { return (fCurrentHeight * vInterval.y * GetHeightScale() - fCurrentHeight * vInterval.y) / 2; };
+    float ScaleHeightDelta() const { return (fCurrentHeight * vInterval.y * GetHeightScale() - fCurrentHeight * vInterval.y) / 2; }
 
     void OutSetI(float x, float y);
     void OutSet(float x, float y);
@@ -101,7 +98,7 @@ public:
     void MasterOut(BOOL bCheckDevice, BOOL bUseCoords, BOOL bScaleCoords, BOOL bUseSkip, float _x, float _y, float _skip, LPCSTR fmt, va_list p);
 
     u32 smart_strlen(const char* S);
-    BOOL IsMultibyte() { return (uFlags & fsMultibyte); };
+    BOOL IsMultibyte() const { return (uFlags & fsMultibyte); }
     u16 SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, const char* pszText);
     u16 GetCutLengthPos(float fTargetWidth, const char* pszText);
 
@@ -115,8 +112,8 @@ public:
 
     IC void Clear() { strings.clear(); };
 
-    float GetWidthScale();
-    float GetHeightScale();
+    float GetWidthScale() const;
+    float GetHeightScale() const;
 
     void SetWidthScale(float f) { fXScale = f; }
     void SetHeightScale(float f) { fYScale = f; }
@@ -124,5 +121,3 @@ public:
     shared_str m_font_name;
     bool m_bCustom{};
 };
-
-#endif // _XR_GAMEFONT_H_

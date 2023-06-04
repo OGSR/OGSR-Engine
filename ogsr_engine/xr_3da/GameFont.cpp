@@ -373,14 +373,14 @@ void CGameFont::SetHeight(float S)
     fCurrentHeight = S;
 };
 
-float CGameFont::GetWidthScale()
+float CGameFont::GetWidthScale() const
 {
     if (uFlags & fsDeviceIndependent)
         return 1.f;
 
     return g_fontWidthScale * (!fis_zero(fXScale) ? fXScale : 1);
 }
-float CGameFont::GetHeightScale()
+float CGameFont::GetHeightScale() const
 {
     if (uFlags & fsDeviceIndependent)
         return 1.f;
