@@ -527,8 +527,18 @@ bool CActor::InventoryAllowSprint()
     if (pActiveItem && !pActiveItem->IsSprintAllowed())
     {
         return false;
-    };
-    PIItem pOutfitItem = inventory().ItemFromSlot(OUTFIT_SLOT);
+    }
+
+    auto wpn = smart_cast<const CWeapon*>(pActiveItem);
+    if (wpn)
+    {
+        if (Core.Features.test(xrCore::Feature::lock_reload_in_sprint) && wpn->GetState() == CWeapon::eReload)
+        {
+            return false;
+        }
+    }
+
+    const PIItem pOutfitItem = inventory().ItemFromSlot(OUTFIT_SLOT);
     if (pOutfitItem && !pOutfitItem->IsSprintAllowed())
     {
         return false;
