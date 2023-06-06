@@ -280,13 +280,8 @@ void CUILines::ParseText()
 
             for (size_t idx{}; idx < sub_len;)
             {
-                const bool is_wide_char =
+                bool is_wide_char =
                     m_pFont->IsMultibyte() && *reinterpret_cast<const unsigned char*>(&sbl.m_text[idx]) > std::numeric_limits<char>::max() && (idx + 1) < sub_len;
-
-                const bool b_last_ch = (idx == sub_len - (is_wide_char ? 2 : 1));
-
-                if (!is_wide_char && iswspace(sbl.m_text[idx]))
-                    last_space_idx = idx;
 
                 auto get_Wstr_width = [](const CGameFont* pFont, const char* ch) {
                     u16 wchar{};
@@ -298,14 +293,14 @@ void CUILines::ParseText()
                         return 0.f;
                     }
 
-#pragma todo("Simp: Подобрать тут оптимальный рассчет ширины символов")
-                    // Так ширина считалась в старых рассчетах для юникода. С таким рассчетом иногда текст вылезает за границы статиков вправо на одну букву.
-                    // float fDelta = (pFont->GetCharTC(wchar).z * pFont->GetWidthScale()) - 2;
-                    // Так же считается размер не-юникодного текста. В целом норм, но остается многовато пустого места справа. Не очень много, но заметно.
                     float fDelta = pFont->GetCharTC(wchar).z * pFont->GetWidthScale() * pFont->GetInterval().x;
-
                     UI()->ClientToScreenScaledWidth(fDelta);
-
+                    return fDelta;
+                };
+                auto get_space_width = [](const CGameFont* pFont) {
+                    float fDelta = pFont->GetCharTC(0).z * pFont->GetWidthScale() * pFont->GetInterval().x;
+                    fDelta += pFont->GetfXStep();
+                    UI()->ClientToScreenScaledWidth(fDelta);
                     return fDelta;
                 };
                 /*
@@ -314,25 +309,33 @@ void CUILines::ParseText()
                 else
                     Msg("~~Size of A symbol [%d] is [%f], curr_width: [%f], max_width: [%f]", sbl.m_text[idx], get_str_width(m_pFont, sbl.m_text[idx]), curr_width, max_width);
                 */
-                const float char_width = is_wide_char ? get_Wstr_width(m_pFont, &sbl.m_text[idx]) : get_str_width(m_pFont, sbl.m_text[idx]);
-                const bool bOver = (curr_width + char_width + __eps > max_width);
-                bool switched_to_space{};
+                const float char_width = is_wide_char ? get_Wstr_width(m_pFont, &sbl.m_text[idx]) : (m_pFont->IsMultibyte() && iswspace(sbl.m_text[idx]) ? get_space_width(m_pFont) : get_str_width(m_pFont, sbl.m_text[idx]));
+
+                if (!is_wide_char && iswspace(sbl.m_text[idx]))
+                {
+                    last_space_idx = idx;
+                }
+
+                const bool bOver = (curr_width + char_width + __eps) > max_width;
+                const bool b_last_ch = idx == (sub_len - (is_wide_char ? 2 : 1));
 
                 if (bOver || b_last_ch)
                 {
                     if (last_space_idx && !b_last_ch)
                     {
                         idx = last_space_idx;
-                        switched_to_space = true;
+                        is_wide_char = false;
                         last_space_idx = 0;
                     }
 
-                    xr_string buff{sbl.m_text.c_str() + curr_w_pos, idx - curr_w_pos + (is_wide_char && !switched_to_space ? 2 : 1)};
+                    xr_string buff{sbl.m_text.c_str() + curr_w_pos, idx - curr_w_pos + (is_wide_char ? 2 : 1)};
                     tmp_line.AddSubLine(std::move(buff), sbl.m_color);
-                    curr_w_pos = idx + (is_wide_char && !switched_to_space ? 2 : 1);
+                    curr_w_pos = idx + (is_wide_char ? 2 : 1);
                 }
                 else
+                {
                     curr_width += char_width;
+                }
 
                 if (bOver || (b_last_ch && sbl.m_last_in_line))
                 {
@@ -341,7 +344,7 @@ void CUILines::ParseText()
                     curr_width = 0.0f;
                 }
 
-                if (is_wide_char && !switched_to_space)
+                if (is_wide_char)
                 {
                     ++idx;
                     ++idx;

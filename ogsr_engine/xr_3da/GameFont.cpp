@@ -81,6 +81,9 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
     const u32 nNumChars = is_mb ? (std::numeric_limits<unsigned short>::max() + 1) : (std::numeric_limits<unsigned char>::max() + 1);
     TCMap = std::make_unique<Fvector[]>(nNumChars);
 
+    // float fwc = READ_IF_EXISTS(ini, r_float, "width_correction", "value", 0.0f); // Это раньше не работало, теперь работает, и чтоб старые кривые конфиги не работали криво, имя параметра переименовано.
+    float fwc = READ_IF_EXISTS(ini, r_float, "font_width_correction", "value", 0.0f);
+
     if (is_mb)
     {
         uFlags |= fsMultibyte;
@@ -95,7 +98,7 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
         if (ini->line_exist("mb_symbol_coords", "09608"))
         {
             Fvector v = ini->r_fvector3("mb_symbol_coords", "09608");
-            vFirstValid.set(v.x, v.y, 1 + v[2] - v[0]);
+            vFirstValid.set(v.x, v.y, v.z - v.x + fwc);
         }
         else
             for (u32 i = 0; i < nNumChars; i++)
@@ -104,7 +107,7 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
                 if (ini->line_exist("mb_symbol_coords", buf))
                 {
                     Fvector v = ini->r_fvector3("mb_symbol_coords", buf);
-                    vFirstValid.set(v.x, v.y, 1 + v[2] - v[0]);
+                    vFirstValid.set(v.x, v.y, v.z - v.x + fwc);
                     break;
                 }
             }
@@ -117,7 +120,7 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
             if (ini->line_exist("mb_symbol_coords", buf))
             {
                 Fvector v = ini->r_fvector3("mb_symbol_coords", buf);
-                TCMap[i].set(v.x, v.y, 1 + v[2] - v[0]);
+                TCMap[i].set(v.x, v.y, v.z - v.x + fwc);
             }
             else
                 TCMap[i] = vFirstValid; // "unassigned" unprintable characters
@@ -130,16 +133,13 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
     }
     else if (ini->section_exist("symbol_coords"))
     {
-        //float d = READ_IF_EXISTS(ini, r_float, "width_correction", "value", 0.0f); // Это раньше не работало, теперь работает, и чтоб старые кривые конфиги не работали криво, имя параметра переименовано.
-        float d = READ_IF_EXISTS(ini, r_float, "font_width_correction", "value", 0.0f);
-
         fHeight = ini->r_float("symbol_coords", "height");
 
         for (u32 i = 0; i < nNumChars; i++)
         {
             xr_sprintf(buf, sizeof(buf), "%03d", i);
             Fvector v = ini->r_fvector3("symbol_coords", buf);
-            TCMap[i].set(v.x, v.y, v.z - v.x + d);
+            TCMap[i].set(v.x, v.y, v.z - v.x + fwc);
         }
     }
     else
@@ -217,7 +217,7 @@ u16 CGameFont::GetCutLengthPos(float fTargetWidth, const char* pszText)
 
     for (; i <= len; i++)
     {
-        fDelta = GetCharTC(wsStr[i]).z - 2;
+        fDelta = GetCharTC(wsStr[i]).z;
 
         if (IsNeedSpaceCharacter(wsStr[i]))
             fDelta += fXStep;
@@ -243,7 +243,7 @@ u16 CGameFont::SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, 
 
     for (u16 i = 1; i <= len; i++)
     {
-        fDelta = (GetCharTC(wsStr[i]).z * GetWidthScale()) - 2;
+        fDelta = (GetCharTC(wsStr[i]).z * GetWidthScale());
 
         if (IsNeedSpaceCharacter(wsStr[i]))
             fDelta += fXStep;
@@ -350,13 +350,13 @@ float CGameFont::SizeOf_(const wide_char* wsStr)
     if (len)
         for (unsigned int j = 1; j <= len; j++)
         {
-            fDelta = GetCharTC(wsStr[j]).z - 2;
+            fDelta = GetCharTC(wsStr[j]).z;
             if (IsNeedSpaceCharacter(wsStr[j]))
                 fDelta += fXStep;
             X += fDelta;
         }
 
-    return (X * vInterval.x);
+    return (X * vInterval.x) * GetWidthScale();
 }
 
 float CGameFont::CurrentHeight_() { return fCurrentHeight * vInterval.y * GetHeightScale(); }

@@ -119,6 +119,8 @@ public:
     void SetWidthScale(float f) { fXScale = f; }
     void SetHeightScale(float f) { fYScale = f; }
 
+    float GetfXStep() const { return fXStep; }
+
     shared_str m_font_name;
     bool m_bCustom{};
 };

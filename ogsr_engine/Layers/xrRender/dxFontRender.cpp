@@ -150,7 +150,6 @@ void dxFontRender::OnRender(CGameFont& owner)
 
                     if (owner.IsMultibyte())
                     {
-                        X -= 2;
                         if (IsNeedSpaceCharacter(wsStr[1 + j]))
                             X += owner.fXStep;
                     }
