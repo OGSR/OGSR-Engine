@@ -421,8 +421,7 @@ void CWallmarksEngine::Render()
             if (W->ttl <= EPS)
             {
                 static_wm_destroy(W);
-                *w_it = slot->static_items.back();
-                slot->static_items.pop_back();
+                w_it = slot->static_items.erase(w_it);
             }
             else
             {
