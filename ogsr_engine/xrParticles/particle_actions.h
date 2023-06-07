@@ -23,26 +23,30 @@ struct PARTICLES_API ParticleAction
     virtual void Load(IReader& F) = 0;
     virtual void Save(IWriter& F) = 0;
 };
+
 DEFINE_VECTOR(ParticleAction*, PAVec, PAVecIt);
+
 class ParticleActions
 {
-    PAVec actions;
+    PAVec m_actions;
 
 public:
     std::mutex m_bLocked;
-    ParticleActions() { actions.reserve(4); }
+
+    ParticleActions() { m_actions.reserve(4); }
     ~ParticleActions() { clear(); }
+
     IC void clear()
     {
-        for (PAVecIt it = actions.begin(); it != actions.end(); it++)
+        for (PAVecIt it = m_actions.begin(); it != m_actions.end(); it++)
             xr_delete(*it);
-        actions.clear();
+        m_actions.clear();
     }
-    IC void append(ParticleAction* pa) { actions.push_back(pa); }
-    IC bool empty() { return actions.empty(); }
-    IC PAVecIt begin() { return actions.begin(); }
-    IC PAVecIt end() { return actions.end(); }
-    IC int size() { return actions.size(); }
+    IC void append(ParticleAction* pa) { m_actions.push_back(pa); }
+    IC bool empty() { return m_actions.empty(); }
+    IC PAVecIt begin() { return m_actions.begin(); }
+    IC PAVecIt end() { return m_actions.end(); }
+    IC int size() { return m_actions.size(); }
     void copy(ParticleActions* src);
 };
 }; // namespace PAPI

@@ -10,10 +10,13 @@ class CParticleManager : public IParticleManager
 {
     // These are static because all threads access the same effects.
     // All accesses to these should be locked.
-    DEFINE_VECTOR(ParticleEffect*, ParticleEffectVec, ParticleEffectVecIt);
-    DEFINE_VECTOR(ParticleActions*, ParticleActionsVec, ParticleActionsVecIt);
-    ParticleEffectVec effect_vec;
+    using ParticleEffectVec = xr_vector<ParticleEffect*>;
+    using ParticleActionsVec = xr_vector<ParticleActions*>;
+
+    ParticleEffectVec m_effect_vec;
     ParticleActionsVec m_alist_vec;
+
+    std::mutex pm_Locked;
 
 public:
     CParticleManager();

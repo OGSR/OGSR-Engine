@@ -10,8 +10,8 @@ struct Particle;
 struct ParticleEffect;
 struct PAHeader;
 struct ParticleAction;
-DEFINE_VECTOR(ParticleAction*, PAVec, PAVecIt);
 } // namespace PAPI
+
 struct EParticleAction;
 
 namespace PS
