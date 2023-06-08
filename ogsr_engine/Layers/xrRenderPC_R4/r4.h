@@ -222,7 +222,7 @@ public:
         o_hemi = 0.75f * LT.get_hemi();
         // o_hemi						= 0.5f*LT.get_hemi			()	;
         o_sun = 0.75f * LT.get_sun();
-        CopyMemory(o_hemi_cube, LT.get_hemi_cube(), CROS_impl::NUM_FACES * sizeof(float));
+        CopyMemory(o_hemi_cube, LT.get_hemi_cube(), sizeof o_hemi_cube);
     }
     IC void apply_lmaterial()
     {

@@ -42,7 +42,7 @@ public:
     }
     IC SelfRef set(SelfCRef a)
     {
-        CopyMemory(this, &a, 9 * sizeof(float));
+        CopyMemory(this, &a, sizeof(*this));
         return *this;
     }
     IC SelfRef set(const _matrix<T>& a)
@@ -98,10 +98,10 @@ public:
         _33 = matSource._33;
         return *this;
     }
-    IC SelfRef transpose(void) // self transpose - slower
+    IC SelfRef transpose() // self transpose - slower
     {
         _matrix33 a;
-        CopyMemory(&a, this, 9 * sizeof(float)); // save matrix
+        CopyMemory(&a, this, sizeof(*this)); // save matrix
         transpose(a);
         return *this;
     }

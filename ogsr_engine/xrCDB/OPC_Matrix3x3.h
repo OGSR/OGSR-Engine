@@ -37,7 +37,7 @@ public:
         m[2][2] = m22;
     }
     //! Copy constructor
-    inline_ Matrix3x3(const Matrix3x3& mat) { CopyMemory(m, &mat.m, 9 * sizeof(float)); }
+    inline_ Matrix3x3(const Matrix3x3& mat) { CopyMemory(m, &mat.m, sizeof(*this)); }
     //! Destructor
     inline_ ~Matrix3x3() {}
 
@@ -100,7 +100,7 @@ public:
     }
 
     //! Copy from a Matrix3x3
-    inline_ void Copy(const Matrix3x3& source) { CopyMemory(m, source.m, 9 * sizeof(float)); }
+    inline_ void Copy(const Matrix3x3& source) { CopyMemory(m, source.m, sizeof(*this)); }
 
     // Row-column access
     //! Returns a row.

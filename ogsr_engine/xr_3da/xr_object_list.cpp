@@ -162,16 +162,19 @@ void CObjectList::Update(bool bForce)
             Device.Statistic->UpdateClient_total = objects_active.size() + objects_sleeping.size();
 
             u32 objects_count = workload->size();
-            if (objects_count > objects_dup_memsz)
+            if (objects_count > 0)
             {
-                // realloc
-                while (objects_count > objects_dup_memsz)
-                    objects_dup_memsz += 32;
-                objects_dup = (CObject**)xr_realloc(objects_dup, objects_dup_memsz * sizeof(CObject*));
+                if (objects_count > objects_dup_memsz)
+                {
+                    // realloc
+                    while (objects_count > objects_dup_memsz)
+                        objects_dup_memsz += 32;
+                    objects_dup = (CObject**)xr_realloc(objects_dup, objects_dup_memsz * sizeof(CObject*));
+                }
+                CopyMemory(objects_dup, &workload->front(), objects_count * sizeof(CObject*));
+                for (u32 O = 0; O < objects_count; O++)
+                    SingleUpdate(objects_dup[O]);
             }
-            CopyMemory(objects_dup, &*workload->begin(), objects_count * sizeof(CObject*));
-            for (u32 O = 0; O < objects_count; O++)
-                SingleUpdate(objects_dup[O]);
 
             Device.Statistic->UpdateClient.End();
         }

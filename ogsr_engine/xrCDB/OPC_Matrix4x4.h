@@ -49,7 +49,7 @@ public:
         m[3][3] = m33;
     }
     //! Copy constructor
-    inline_ Matrix4x4(const Matrix4x4& mat) { CopyMemory(m, &mat.m, 16 * sizeof(float)); }
+    inline_ Matrix4x4(const Matrix4x4& mat) { CopyMemory(m, &mat.m, sizeof(*this)); }
     //! Destructor.
     inline_ ~Matrix4x4() {}
 
@@ -159,7 +159,7 @@ public:
     }
 
     //! Copy from a Matrix4x4
-    inline_ void Copy(const Matrix4x4& source) { CopyMemory(m, source.m, 16 * sizeof(float)); }
+    inline_ void Copy(const Matrix4x4& source) { CopyMemory(m, source.m, sizeof(*this)); }
 
     // Row-column access
     //! Returns a row.

@@ -277,7 +277,7 @@ void CROS_impl::update(IRenderable* O)
     if (bFirstTime)
     {
         hemi_smooth = hemi_value;
-        CopyMemory(hemi_cube_smooth, hemi_cube, NUM_FACES * sizeof(float));
+        CopyMemory(hemi_cube_smooth, hemi_cube, sizeof hemi_cube);
     }
 
     update_smooth();

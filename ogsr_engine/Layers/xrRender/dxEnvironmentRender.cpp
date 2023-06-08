@@ -217,7 +217,7 @@ void dxEnvironmentRender::RenderSky(CEnvironment& env)
 
     // Fill index buffer
     u16* pib = RCache.Index.Lock(20 * 3, i_offset);
-    CopyMemory(pib, hbox_faces, 20 * 3 * 2);
+    CopyMemory(pib, hbox_faces, sizeof hbox_faces);
     RCache.Index.Unlock(20 * 3);
 
     // Fill vertex buffer
