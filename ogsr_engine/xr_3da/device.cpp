@@ -268,8 +268,7 @@ void CRenderDevice::Run()
     // Start all threads
     mt_bMustExit = false;
 
-    // KRodin: TODO: Use C++20 std::jthread
-    std::thread second_thread(
+    std::jthread second_thread(
         [](void* context) {
             set_current_thread_name("X-RAY Secondary thread");
 
@@ -306,6 +305,8 @@ void CRenderDevice::Run()
         },
         this);
 
+    secondThreadId = second_thread.get_id();
+
     // Message cycle
     seqAppStart.Process(rp_AppStart);
 
@@ -319,7 +320,6 @@ void CRenderDevice::Run()
     mt_bMustExit = true;
     syncProcessFrame.Set();
     syncThreadExit.Wait();
-    second_thread.join();
 }
 
 u32 app_inactive_time = 0;

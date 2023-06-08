@@ -86,6 +86,8 @@ protected:
     CTimer_paused Timer;
     CTimer_paused TimerGlobal;
 
+    std::thread::id secondThreadId;
+
 public:
     // Registrators
     CRegistrator<pureRender> seqRender;
@@ -97,6 +99,8 @@ public:
     CRegistrator<pureScreenResolutionChanged> seqResolutionChanged;
 
     HWND m_hWnd;
+
+    bool OnSecondThread() const { return std::this_thread::get_id() == secondThreadId; }
 };
 
 class ENGINE_API CRenderDeviceBase : public IRenderDevice, public CRenderDeviceData
