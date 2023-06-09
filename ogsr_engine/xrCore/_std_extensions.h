@@ -169,3 +169,53 @@ inline char* xr_strconcat(StrType& dest, const StrType2& arg1, const Args&... ar
 #define xr_strcat strcat_s
 
 XRCORE_API std::string StringToUTF8(const char* in);
+XRCORE_API std::string StringFromUTF8(const char* in);
+// Определяет есть ли в строке юникодные символы
+inline bool StringHasUTF8(const char* str)
+{
+    const unsigned char* p = reinterpret_cast<const unsigned char*>(str);
+    while (*p != 0)
+    {
+        if (*p < 0x80)
+        {
+            // однобайтовый символ в UTF-8, пропускаем
+            p++;
+        }
+        else if (*p < 0xc2 || *p > 0xf4)
+        {
+            // байт не может быть первым байтом в UTF-8, строка содержит ошибку
+            return false;
+        }
+        else if (*p < 0xe0)
+        {
+            // двухбайтовый символ в UTF-8
+            if (*(p + 1) < 0x80 || *(p + 1) > 0xbf)
+            {
+                // неправильный второй байт, строка содержит ошибку
+                return false;
+            }
+            p += 2;
+        }
+        else if (*p < 0xf0)
+        {
+            // трехбайтовый символ в UTF-8
+            if (*(p + 1) < 0x80 || *(p + 1) > 0xbf || *(p + 2) < 0x80 || *(p + 2) > 0xbf)
+            {
+                // неправильные второй и/или третий байты, строка содержит ошибку
+                return false;
+            }
+            p += 3;
+        }
+        else
+        {
+            // четырехбайтовый символ в UTF-8
+            if (*(p + 1) < 0x80 || *(p + 1) > 0xbf || *(p + 2) < 0x80 || *(p + 2) > 0xbf || *(p + 3) < 0x80 || *(p + 3) > 0xbf)
+            {
+                // неправильные второй, третий и/или четвертый байты, строка содержит ошибку
+                return false;
+            }
+            p += 4;
+        }
+    }
+    return true;
+}

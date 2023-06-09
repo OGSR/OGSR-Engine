@@ -140,7 +140,9 @@ void game_sv_GameState::script_register(lua_State* L)
        def("set_hud_anm_time", SetBlendAnmTime),
        //def("set_next_hud_motion_speed", SetNextHudMotionSpeed),
 
-       def("generate_id", &generate_id)
+       def("generate_id", &generate_id),
+
+       def("StringHasUTF8", &StringHasUTF8), def("StringToUTF8", &StringToUTF8), def("StringFromUTF8", &StringFromUTF8)
     ];
 
     module(L)[

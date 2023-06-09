@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "UIStatic.h"
-
-void CUIStatic__set_color_a(CUIStatic* self, u8 alpha) { self->SetColor(subst_alpha(self->GetColor(), alpha)); }
+#include "UILines.h"
 
 using namespace luabind;
 
@@ -14,6 +13,7 @@ void CUIStatic::script_register(lua_State* L)
                   .def("SetText", (void(CUIStatic::*)(LPCSTR))(&CUIStatic::SetText))
                   .def("SetTextST", (void(CUIStatic::*)(LPCSTR))(&CUIStatic::SetTextST))
                   .def("GetText", &CUIStatic::GetText)
+                  .def("IsMultibyteFont", [](CUIStatic* self) -> bool { return self->m_pLines->GetFont()->IsMultibyte(); })
 
                   .def("SetTextX", &CUIStatic::SetTextX)
                   .def("SetTextY", &CUIStatic::SetTextY)
@@ -22,7 +22,7 @@ void CUIStatic::script_register(lua_State* L)
 
                   .def("SetColor", &CUIStatic::SetColor)
                   .def("GetColor", &CUIStatic::GetColor)
-                  .def("SetColorA", &CUIStatic__set_color_a)
+                  .def("SetColorA", [](CUIStatic* self, u8 alpha) { self->SetColor(subst_alpha(self->GetColor(), alpha)); })
                   .def("SetTextColor", &CUIStatic::SetTextColor_script)
                   .def("Init", (void(CUIStatic::*)(float, float, float, float)) & CUIStatic::Init)
                   .def("Init", (void(CUIStatic::*)(LPCSTR, float, float, float, float)) & CUIStatic::Init)

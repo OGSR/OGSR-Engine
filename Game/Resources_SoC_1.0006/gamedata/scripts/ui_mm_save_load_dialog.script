@@ -30,6 +30,9 @@ function fill_savedgames_list( wnd )
 end
 
 local function delete_save_game(filename)
+	if game.StringHasUTF8(filename) then
+		filename = game.StringFromUTF8(filename)
+	end
 	local save_file = filename .. ".sav"
 	local dds_file  = filename .. ".dds"
 	local f = getFS()
@@ -56,7 +59,6 @@ local function file_data(fname)
 		return "no file data"
 	end	
 end
-
 
 class "save_load_item" (CUIListItemEx)
 function save_load_item:__init() super()
@@ -238,6 +240,11 @@ function save_load_dialog:OnListItemClickedLoad()
 
 	local item_text = item.fn:GetText()
 	self.file_caption:SetText(item_text)
+
+	if game.StringHasUTF8(item_text) then
+		item_text = game.StringFromUTF8(item_text)
+	end
+
 	self.file_data:SetText(file_data(item_text))
 
 	if not getFS():exist("$game_saves$", item_text..".sav") then
@@ -300,6 +307,10 @@ function save_load_dialog:load_game_internal()
 	local item = list:GetItem(index)
 	local fname = item.fn:GetText()
 
+	if game.StringHasUTF8(fname) then
+		fname = game.StringFromUTF8(fname)
+	end
+
 	if not alife() then
 		cmd("disconnect")
 		cmd("start server(" .. fname .. "/single/alife/load)")
@@ -323,12 +334,23 @@ function save_load_dialog:OnButton_ok_clicked()
 	end
 end
 
+local function safe_file_name( fname ) --Вырезаем неподдерживаемые FS символы и пробелы по краям.
+  if game.StringHasUTF8(fname) then
+    fname = game.StringFromUTF8(fname)
+  end
+  fname = fname:clear():gsub( '[%(%)]*', "" ):trim()
+  if fname:len() > 60 then
+    fname = fname:sub( 1, 58 ) .. "..."
+  end
+  return fname
+end
+
 function save_load_dialog:OnButton_save_clicked()
 	local message_box = self.message_box
 	local main_frame = self:GetFrameWindow("main_frame")	
 
 	local edit_box = self:GetEditBox("edit_filename")
-	self.new_save = edit_box:GetText():clear():gsub( '[%(%)]*', "" ):trim() --Вырезаем неподдерживаемые FS символы и пробелы по краям
+	self.new_save = safe_file_name(edit_box:GetText())
 	if self.new_save:len() == 0 then
 		self.msgbox_id = 0
 		self.message_box:Init("message_box_empty_file_name")		
@@ -360,6 +382,9 @@ function save_load_dialog:OnButton_load_clicked()
 
 	local item = list:GetItem(index)
 	local fname = item.fn:GetText()
+	if game.StringHasUTF8(fname) then
+		fname = game.StringFromUTF8(fname)
+	end
 
 	if valid_saved_game(fname) then
 		if level.present() and db.actor_proxy.online and db.actor:alive() then
@@ -412,7 +437,7 @@ end
 
 function save_load_dialog:AddItemToList(file_name, date_time)
 	local itm = save_load_item()
-	itm.fn:SetText(file_name)
+	itm.fn:SetText(itm.fn:IsMultibyteFont() and game.StringToUTF8(file_name) or file_name)
 	itm.fage:SetText(date_time)
 	
 	local list_box = self:GetListWnd("list_window")
