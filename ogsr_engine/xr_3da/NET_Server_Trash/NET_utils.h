@@ -34,22 +34,24 @@ public:
     }
     IC void w(const void* p, u32 count)
     {
-        VERIFY(p && count);
-        VERIFY(B.count + count < NET_PacketSizeLimit);
+        R_ASSERT(p && count && (B.count + count < NET_PacketSizeLimit));
+
         CopyMemory(&B.data[B.count], p, count);
         B.count += count;
-        VERIFY(B.count < NET_PacketSizeLimit);
     }
     IC void w_seek(u32 pos, const void* p, u32 count) // random write (only inside allocated region)
     {
-        VERIFY(p && count && (pos + count <= B.count));
+        R_ASSERT(p && count && (pos + count < NET_PacketSizeLimit));
+        //ASSERT_FMT_DBG(pos + count <= B.count, "!![%s] pos: [%u], count [%u], B.count: [%u]", __FUNCTION__, pos, count, B.count);
+
         CopyMemory(&B.data[pos], p, count);
     }
     IC u32 w_tell() { return B.count; }
     IC void w_advance(u32 count)
     {
         B.count += count;
-        VERIFY(B.count < NET_PacketSizeLimit);
+
+        R_ASSERT(B.count < NET_PacketSizeLimit);
     }
 
     // writing - utilities
@@ -88,7 +90,6 @@ public:
         *(s32*)(&B.data[B.count]) = a;
         w_advance(sizeof(s32));
     }; // dword (4b)
-    IC void w_u24(u32 a) { w(&a, 3); } // dword (3b)
     IC void w_u16(u16 a)
     {
         *(u16*)(&B.data[B.count]) = a;
@@ -198,24 +199,29 @@ public:
 
     IC void r_seek(u32 pos)
     {
-        VERIFY(pos < B.count);
+        R_ASSERT(pos < NET_PacketSizeLimit);
+        //ASSERT_FMT_DBG(pos < B.count, "!![%s] pos: [%u], B.count: [%u]", __FUNCTION__, pos, B.count);
+
         r_pos = pos;
     }
     IC u32 r_tell() { return r_pos; }
 
     IC void r(void* p, u32 count)
     {
-        VERIFY(p && count);
+        R_ASSERT(p && count && (r_pos + count < NET_PacketSizeLimit));
+        //ASSERT_FMT_DBG(r_pos + count <= B.count, "!![%s] r_pos: [%u], count [%u], B.count: [%u]", __FUNCTION__, r_pos, count, B.count);
+
         CopyMemory(p, &B.data[r_pos], count);
         r_pos += count;
-        VERIFY(r_pos <= B.count);
     }
     IC BOOL r_eof() { return r_pos >= B.count; }
     IC u32 r_elapsed() { return B.count - r_pos; }
     IC void r_advance(u32 size)
     {
+        R_ASSERT(r_pos + size < NET_PacketSizeLimit);
+        //ASSERT_FMT_DBG(r_pos + size <= B.count, "!![%s] r_pos: [%u], size [%u], B.count: [%u]", __FUNCTION__, r_pos, size, B.count);
+
         r_pos += size;
-        VERIFY(r_pos <= B.count);
     }
 
     // reading - utilities

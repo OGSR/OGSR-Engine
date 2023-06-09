@@ -146,8 +146,7 @@ void CStateAbstract::free_mem()
 TEMPLATE_SPECIALIZATION
 void CStateAbstract::fill_data_with(void* ptr_src, u32 size)
 {
-    VERIFY(ptr_src);
-    VERIFY(_data);
+    R_ASSERT(ptr_src && _data && size);
 
     std::memcpy(_data, ptr_src, size);
 }
