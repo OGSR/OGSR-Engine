@@ -1,0 +1,21 @@
+-- Функции, требующие ANSI кодировки скрипта.
+
+--===================[string.lower и string.upper с поддержкой русских букв]====================
+do
+	local lower = string.lower
+	string.lower = function(s)
+		return lower(s:gsub("([А-Я])",function(c) return string.char(c:byte()+32) end):gsub("Ё", "ё"))
+	end
+	string.lowerW = function(s)
+		return game.StringToUTF8(string.lower(game.StringFromUTF8(s)))
+	end
+	--
+	local upper = string.upper
+	string.upper = function(s)
+		return upper(s:gsub("([а-я])",function(c) return string.char(c:byte()-32) end):gsub("ё", "Ё"))
+	end
+	string.upperW = function(s)
+		return game.StringToUTF8(string.upper(game.StringFromUTF8(s)))
+	end
+end
+--=============================================================================================

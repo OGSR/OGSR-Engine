@@ -11,37 +11,8 @@ math.randomseed(os.time())
 --=======================================[LuaXML]===============================================
 --_luaxml.script должен быть в папке scripts.
 --prefetch("_luaxml")
---===================[string.lower и string.upper с поддержкой русских букв]====================
---[=[--KRodin: Из-за setlocale могут возникать проблемы.
-os.setlocale("", "ctype") --Для старых версий LuaJIT достаточно установить правильную локаль.
-if jit.version_num >= 20000 then --В новых версиях установки локали недостаточно
-	FFI.cdef[[
-		int tolower( int code );
-		int toupper( int code );
-	]]
-	string.lower = function(s)
-		return s:gsub('.', function(x)
-			return string.char( FFI.C.tolower( x:byte() ) )
-		end)
-	end
-	string.upper = function(s)
-		return s:gsub('.', function(x)
-			return string.char( FFI.C.toupper( x:byte() ) )
-		end)
-	end
-end
---]=]
-do
-	local lower = string.lower
-	string.lower = function(s)
-		return lower(s:gsub("([А-Я])",function(c) return string.char(c:byte()+32) end):gsub("Ё", "ё"))
-	end
-	--
-	local upper = string.upper
-	string.upper = function(s)
-		return upper(s:gsub("([а-я])",function(c) return string.char(c:byte()-32) end):gsub("ё", "Ё"))
-	end
-end
+--==============================================================================================
+prefetch("ansi_functions")
 --=================================[Функции из xrLuaFix]========================================
 --Cрезать первое "слово"
 string.trim_w = function(s) return s:gsub("%s-(%S+)%s+", '', 1) end
