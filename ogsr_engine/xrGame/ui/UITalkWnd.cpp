@@ -185,16 +185,26 @@ void CUITalkWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
     inherited::SendMessage(pWnd, msg, pData);
 }
 
+
+#include "../Include/xrRender/Kinematics.h"
+
 //////////////////////////////////////////////////////////////////////////
 void UpdateCameraDirection(CGameObject* pTo)
 {
+    //Fvector des_pt;
+    //pTo->Center(des_pt);
+    //des_pt.y += pTo->Radius() * 0.5f;
+
+    const auto k = smart_cast<IKinematics*>(pTo->Visual());
+    const u16 bone_id = k->LL_BoneID("bip01_head");
+
+    Fmatrix matrix;
+    matrix.mul_43(pTo->XFORM(), k->LL_GetBoneInstance(bone_id).mTransform);
+    const Fvector des_pt = matrix.c;
+
     CCameraBase* cam = Actor()->cam_Active();
 
     Fvector des_dir;
-    Fvector des_pt;
-    pTo->Center(des_pt);
-    des_pt.y += pTo->Radius() * 0.5f;
-
     des_dir.sub(des_pt, cam->vPosition);
 
     float p, h;
