@@ -33,7 +33,7 @@ public:
     virtual void setup(_object_type* object, CPropertyStorage* storage);
     virtual void Load(LPCSTR section);
     virtual _value_type evaluate();
-    IC const _value_type& property(const _condition_type& condition_id) const;
+    IC _value_type property(const _condition_type& condition_id) const;
 
     virtual void save(NET_Packet& packet) {}
     virtual void load(IReader& packet) {}

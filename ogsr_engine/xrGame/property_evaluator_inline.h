@@ -39,7 +39,7 @@ TEMPLATE_SPECIALIZATION
 typename CEvaluator::_value_type CEvaluator::evaluate() { return (0); }
 
 TEMPLATE_SPECIALIZATION
-IC const typename CEvaluator::_value_type& CEvaluator::property(const _condition_type& condition_id) const
+IC typename CEvaluator::_value_type CEvaluator::property(const _condition_type& condition_id) const
 {
     VERIFY(m_storage);
     return (m_storage->property(condition_id));
