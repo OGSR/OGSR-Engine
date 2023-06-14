@@ -253,14 +253,10 @@ void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CIni
                 _splitpath(fn, inc_path, folder, 0, 0);
                 strcat_s(inc_path, folder);
 
-                // IReader* I = FS.r_open(fn);
-                // R_ASSERT(I, "Can't find include file:", inc_name);
-                // Load(I, inc_path);
-                // FS.r_close(I);
-
                 const auto loadFile = [&](const string_path _fn, const string_path name) {
                     IReader* I = FS.r_open(_fn);
                     R_ASSERT(I, "Can't find include file:", name);
+                    I->skip_bom();
                     Load(I, inc_path, allow_dup_sections, override, false);
                     FS.r_close(I);
                 };
@@ -382,7 +378,10 @@ void CInifile::load_file(BOOL allow_dup_sections, const CInifile* f)
     IReader* R = FS.r_open(fName);
     if (R)
     {
+        R->skip_bom();
+
         Load(R, path, allow_dup_sections, f, true);
+
         FS.r_close(R);
     }
 }

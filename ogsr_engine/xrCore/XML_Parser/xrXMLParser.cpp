@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "xrXMLParser.h"
 
 CXml::CXml() : m_root(NULL), m_pLocalRoot(NULL) {}
@@ -12,35 +11,59 @@ void ParseFile(LPCSTR path, CMemoryWriter& W, IReader* F, CXml* xml)
 {
     xr_string str;
 
+    const auto loadFile = [&](LPCSTR file_name) {
+        IReader* I = nullptr;
+
+        if (file_name == strstr(file_name, "ui\\"))
+        {
+            shared_str fn = xml->correct_file_name("ui", strchr(file_name, '\\') + 1);
+            string_path buff;
+            strconcat(sizeof(buff), buff, "ui\\", fn.c_str());
+            I = FS.r_open(path, buff);
+        }
+
+        if (!I)
+        {
+            I = FS.r_open(path, file_name);
+        }
+
+        if (!I)
+        {
+            string1024 str;
+            xr_sprintf(str, "XML file[%s] parsing failed. Can't find include file:[%s]", path, file_name);
+            R_ASSERT(false, str);
+        }
+
+        I->skip_bom();
+
+        ParseFile(path, W, I, xml);
+        FS.r_close(I);
+    };
+
     while (!F->eof())
     {
         F->r_string(str);
 
         if (str[0] && (str[0] == '#') && strstr(str.c_str(), "#include"))
         {
-            string256 inc_name;
-            if (_GetItem(str.c_str(), 1, inc_name, '"'))
+            if (string256 inc_name; _GetItem(str.c_str(), 1, inc_name, '"'))
             {
-                IReader* I = NULL;
-                if (inc_name == strstr(inc_name, "ui\\"))
+                if (strstr(inc_name, "*.xml"))
                 {
-                    shared_str fn = xml->correct_file_name("ui", strchr(inc_name, '\\') + 1);
-                    string_path buff;
-                    strconcat(sizeof(buff), buff, "ui\\", fn.c_str());
-                    I = FS.r_open(path, buff);
+                    FS_FileSet fset;
+                    FS.file_list(fset, path, FS_ListFiles, inc_name);
+
+                    for (FS_FileSet::iterator it = fset.begin(); it != fset.end(); it++)
+                    {
+                        LPCSTR file_name = it->name.c_str();
+
+                        loadFile(file_name);
+                    }
                 }
-
-                if (!I)
-                    I = FS.r_open(path, inc_name);
-
-                if (!I)
+                else 
                 {
-                    string1024 str;
-                    sprintf(str, "XML file[%s] parsing failed. Can't find include file:[%s]", path, inc_name);
-                    R_ASSERT2(false, str);
-                }
-                ParseFile(path, W, I, xml);
-                FS.r_close(I);
+                    loadFile(inc_name);
+                }                
             }
         }
         else
@@ -50,7 +73,7 @@ void ParseFile(LPCSTR path, CMemoryWriter& W, IReader* F, CXml* xml)
 
 bool CXml::Init(LPCSTR path_alias, LPCSTR path, LPCSTR _xml_filename)
 {
-    shared_str fn = correct_file_name(path, _xml_filename);
+    const shared_str fn = correct_file_name(path, _xml_filename);
 
     string_path str;
     sprintf(str, "%s\\%s", path, *fn);
@@ -64,8 +87,11 @@ bool CXml::Init(LPCSTR path, LPCSTR xml_filename)
     // Load and parse xml file
 
     IReader* F = FS.r_open(path, xml_filename);
+
     if (F == NULL)
         return false;
+
+    F->skip_bom();
 
     CMemoryWriter W;
     ParseFile(path, W, F, this);
@@ -77,7 +103,7 @@ bool CXml::Init(LPCSTR path, LPCSTR xml_filename)
     {
         string1024 str;
         sprintf(str, "XML file:%s value:%s errDescr:%s", m_xml_file_name, m_Doc.Value(), m_Doc.ErrorDesc());
-        R_ASSERT2(false, str);
+        R_ASSERT(false, str);
     }
 
     m_root = m_Doc.FirstChildElement();
@@ -87,14 +113,14 @@ bool CXml::Init(LPCSTR path, LPCSTR xml_filename)
 
 XML_NODE* CXml::NavigateToNode(XML_NODE* start_node, LPCSTR path, int node_index)
 {
-    R_ASSERT3(start_node && path, "NavigateToNode failed in XML file ", m_xml_file_name);
+    R_ASSERT(start_node && path, "NavigateToNode failed in XML file ", m_xml_file_name);
     XML_NODE* node = NULL;
     XML_NODE* node_parent = NULL;
     string_path buf_str{};
     VERIFY(xr_strlen(path) < 200);
     strcpy_s(buf_str, path);
 
-    char seps[] = ":";
+    const char seps[] = ":";
     char* token;
     int tmp = 0;
 
@@ -132,7 +158,7 @@ XML_NODE* CXml::NavigateToNode(LPCSTR path, int node_index) { return NavigateToN
 XML_NODE* CXml::NavigateToNodeWithAttribute(LPCSTR tag_name, LPCSTR attrib_name, LPCSTR attrib_value)
 {
     XML_NODE* root = GetLocalRoot() ? GetLocalRoot() : GetRoot();
-    int tabsCount = GetNodesNum(root, tag_name);
+    const int tabsCount = GetNodesNum(root, tag_name);
 
     for (int i = 0; i < tabsCount; ++i)
     {
@@ -169,7 +195,7 @@ LPCSTR CXml::Read(XML_NODE* node, LPCSTR default_str_val)
         if (!node)
             return default_str_val;
 
-        TiXmlText* text = node->ToText();
+        const TiXmlText* text = node->ToText();
         if (text)
             return text->Value();
         else
@@ -262,7 +288,7 @@ LPCSTR CXml::ReadAttrib(XML_NODE* node, LPCSTR attrib, LPCSTR default_str_val)
         LPCSTR result_str = NULL;
         // Кастаем ниже по иерархии
 
-        TiXmlElement* el = node->ToElement();
+        const TiXmlElement* el = node->ToElement();
 
         if (el)
         {
