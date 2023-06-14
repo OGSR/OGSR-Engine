@@ -260,11 +260,6 @@ public:
         A = *(s32*)(&B.data[r_pos]);
         r_advance(sizeof(s32));
     }; // dword (4b)
-    IC void r_u24(u32& A)
-    {
-        A = 0;
-        r(&A, 3);
-    } // dword (3b)
     IC void r_u16(u16& A)
     {
         A = *(u16*)(&B.data[r_pos]);
@@ -347,12 +342,6 @@ public:
         r_advance(sizeof(s32));
         return tmp;
     }; // dword (4b)
-    IC u32 r_u24()
-    {
-        u32 A = 0;
-        r(&A, 3);
-        return (A);
-    } // dword (3b)
     IC u16 r_u16()
     {
         u16 tmp;
