@@ -95,7 +95,7 @@ void HUD_SOUND::PlaySound(HUD_SOUND& hud_snd, const Fvector& position, const COb
         flags |= sm_Looped;
 
     hud_snd.m_activeSnd = &hud_snd.sounds[Random.randI(hud_snd.sounds.size())];
-    // float freq = hud_snd.m_activeSnd->freq;
+    float freq = hud_snd.m_activeSnd->freq;
     Fvector pos = (flags & sm_2D) ? Fvector{} : position;
 
     static const float hud_vol = READ_IF_EXISTS(pSettings, r_float, "hud_sound", "hud_sound_vol_k", 1.0f);
@@ -103,13 +103,13 @@ void HUD_SOUND::PlaySound(HUD_SOUND& hud_snd, const Fvector& position, const COb
 
     if (overlap)
     {
-        hud_snd.m_activeSnd->snd.play_no_feedback(const_cast<CObject*>(parent), flags, hud_snd.m_activeSnd->delay, &pos, &vol /*, &freq*/);
+        hud_snd.m_activeSnd->snd.play_no_feedback(const_cast<CObject*>(parent), flags, hud_snd.m_activeSnd->delay, &pos, &vol , &freq);
     }
     else
     {
         hud_snd.m_activeSnd->snd.play_at_pos(const_cast<CObject*>(parent), pos, flags, hud_snd.m_activeSnd->delay);
         hud_snd.m_activeSnd->snd.set_volume(vol);
-        // hud_snd.m_activeSnd->snd.set_frequency(freq);
+        hud_snd.m_activeSnd->snd.set_frequency(freq);
     }
 }
 
