@@ -77,5 +77,5 @@ void script_rq_result::script_register(lua_State* L)
                .def_readonly("fBounceDamageFactor", &SGameMtl::fBounceDamageFactor)
                .def_readonly("fInjuriousSpeed", &SGameMtl::fInjuriousSpeed)
                .def_readonly("fVisTransparencyFactor", &SGameMtl::fVisTransparencyFactor)
-               .def_readonly("fSndOcclusionFactor", &SGameMtl::fVisTransparencyFactor)];
+               .def_readonly("fSndOcclusionFactor", &SGameMtl::fSndOcclusionFactor)];
 }
