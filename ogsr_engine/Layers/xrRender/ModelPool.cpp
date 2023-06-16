@@ -414,27 +414,31 @@ void CModelPool::Prefetch()
     Logging(FALSE);
     begin_prefetch1(true);
     // prefetch visuals
-    string256 section;
-    strconcat(sizeof(section), section, "prefetch_visuals_", g_pGamePersistent->m_game_params.m_game_type);
-    CInifile::Sect& sect = pSettings->r_section(section);
     CTimer timer;
     timer.Start();
     u32 cnt = 0;
-    for (auto I = sect.Ordered_Data.begin(); I != sect.Ordered_Data.end(); I++)
+
+    string256 section;
+    strconcat(sizeof(section), section, "prefetch_visuals_", g_pGamePersistent->m_game_params.m_game_type);
+    if (pSettings->section_exist(section))
     {
-        const shared_str& low_name = (*I).first;
-        if (!Instance_Find(low_name.c_str()))
+        const auto& sect = pSettings->r_section(section);
+        for (auto I = sect.Ordered_Data.begin(); I != sect.Ordered_Data.end(); I++)
         {
-            shared_str fname;
-            fname.sprintf("%s.ogf", low_name.c_str());
-            if (FS.exist("$game_meshes$", fname.c_str()))
+            const shared_str& low_name = (*I).first;
+            if (!Instance_Find(low_name.c_str()))
             {
-                dxRender_Visual* V = Create(low_name.c_str());
-                Delete(V, FALSE);
-                cnt++;
+                shared_str fname;
+                fname.sprintf("%s.ogf", low_name.c_str());
+                if (FS.exist("$game_meshes$", fname.c_str()))
+                {
+                    dxRender_Visual* V = Create(low_name.c_str());
+                    Delete(V, FALSE);
+                    cnt++;
+                }
+                else
+                    Msg("! [%s]: %s not found in $game_meshes$", __FUNCTION__, fname.c_str());
             }
-            else
-                Msg("! [%s]: %s not found in $game_meshes$", __FUNCTION__, fname.c_str());
         }
     }
     begin_prefetch1(false);
@@ -446,7 +450,7 @@ void CModelPool::Prefetch()
     }
 
     now_prefetch2 = true;
-    sect = vis_prefetch_ini->r_section("prefetch");
+    const auto& sect = vis_prefetch_ini->r_section("prefetch");
     for (const auto& it : sect.Ordered_Data)
     {
         const shared_str& low_name = it.first;
@@ -621,3 +625,5 @@ void CModelPool::process_vis_prefetch()
     for (const auto& s : expired)
         vis_prefetch_ini->remove_line("prefetch", s.c_str());
 }
+
+void CModelPool::begin_prefetch1(bool val) { now_prefetch1 = val; }

@@ -13,7 +13,7 @@ ENGINE_API IGame_Persistent* g_pGamePersistent = NULL;
 
 ENGINE_API bool IsMainMenuActive() { return g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive(); }
 
-ENGINE_API BOOL g_prefetch;
+ENGINE_API BOOL g_prefetch{TRUE};
 
 IGame_Persistent::IGame_Persistent()
 {
