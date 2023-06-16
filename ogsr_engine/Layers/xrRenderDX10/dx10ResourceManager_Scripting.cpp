@@ -288,13 +288,17 @@ bool load_buffer(const char* caBuffer, size_t tSize, const char* caScriptName, c
 
 bool do_file(const char* caScriptName, const char* caNameSpaceName)
 {
-    string_path l_caLuaFileName;
     auto l_tpFileReader = FS.r_open(caScriptName);
     if (!l_tpFileReader)
-    { //заменить на ассерт?
+    {
+        //заменить на ассерт?
         Msg("!![CResourceManager::do_file] Cannot open file [%s]", caScriptName);
         return false;
     }
+
+    l_tpFileReader->skip_bom();
+
+    string_path l_caLuaFileName;
     strconcat(sizeof(l_caLuaFileName), l_caLuaFileName, "@", caScriptName); // KRodin: приводит путь к виду @f:\games\s.t.a.l.k.e.r\gamedata\scripts\class_registrator.script
 
     load_buffer(reinterpret_cast<const char*>(l_tpFileReader->pointer()), (size_t)l_tpFileReader->length(), l_caLuaFileName, caNameSpaceName);
