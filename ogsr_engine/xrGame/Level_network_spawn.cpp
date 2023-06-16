@@ -241,20 +241,11 @@ void CLevel::ProcessGameSpawns()
 
 void CLevel::ProcessGameSpawnsDestroy(u16 dest, u16 type, NET_Packet& P)
 {
-    if (type != GE_DESTROY && type != GE_DESTROY_REJECT)
+    if (type != GE_DESTROY)
         return;
-
-    if (type == GE_DESTROY_REJECT)
-    {
-        u32 pos = P.r_tell();
-        dest = P.r_u16();
-        P.r_seek(pos);
-    }
 
     game_spawn_queue.erase(std::remove_if(game_spawn_queue.begin(), game_spawn_queue.end(),
                                           [&](auto& E) {
-                                              if (type == GE_DESTROY)
-                                              {
                                                   if (E->ID == dest || E->ID_Parent == dest)
                                                   {
                                                       // Msg( "* [CLevel::ProcessGameSpawnsDestroy]: delayed spawn GE_DESTROY dest[%d] ID[%d] ID_Parent[%d] name_replace[%s]", dest,
@@ -262,14 +253,6 @@ void CLevel::ProcessGameSpawnsDestroy(u16 dest, u16 type, NET_Packet& P)
                                                       F_entity_Destroy(E);
                                                       return true;
                                                   }
-                                              }
-                                              else if (E->ID == dest) // type == GE_DESTROY_REJECT
-                                              { 
-                                                  // Msg( "* [CLevel::ProcessGameSpawnsDestroy]: delayed spawn GE_DESTROY_REJECT dest[%d] ID[%d] ID_Parent[%d] name_replace[%s]",
-                                                  // dest, E->ID, E->ID_Parent, E->name_replace() );
-                                                  F_entity_Destroy(E);
-                                                  return true;
-                                              }
                                               return false;
                                           }),
                            game_spawn_queue.end());

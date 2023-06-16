@@ -298,42 +298,12 @@ void CLevel::cl_Process_Event(u16 dest, u16 type, NET_Packet& P)
         Msg("! ERROR: c_EVENT[%d] : non-game-object", dest);
         return;
     }
-    if (type != GE_DESTROY_REJECT)
-    {
-        if (type == GE_DESTROY)
-            Game().OnDestroy(GO);
-        GO->OnEvent(P, type);
-    }
-    else
-    { // handle GE_DESTROY_REJECT here
-        u32 pos = P.r_tell();
-        u16 id = P.r_u16();
-        P.r_seek(pos);
 
-        bool ok = true;
+    if (type == GE_DESTROY)
+        Game().OnDestroy(GO);
 
-        CObject* D = Objects.net_Find(id);
-        if (0 == D)
-        {
-            Msg("! ERROR: c_EVENT[%d] : unknown dest", id);
-            ok = false;
-        }
-
-        CGameObject* GD = smart_cast<CGameObject*>(D);
-        if (!GD)
-        {
-            Msg("! ERROR: c_EVENT[%d] : non-game-object", id);
-            ok = false;
-        }
-
-        GO->OnEvent(P, GE_OWNERSHIP_REJECT);
-        if (ok)
-        {
-            Game().OnDestroy(GD);
-            GD->OnEvent(P, GE_DESTROY);
-        };
-    }
-};
+    GO->OnEvent(P, type);
+}
 
 void CLevel::ProcessGameEvents()
 {

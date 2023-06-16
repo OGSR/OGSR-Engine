@@ -53,7 +53,6 @@ enum
     GE_DIE, //
     GE_ASSIGN_KILLER, //
     GE_DESTROY, // authorative client request for entity-destroy
-    GE_DESTROY_REJECT, // GE_DESTROY + GE_OWNERSHIP_REJECT
     GE_TELEPORT_OBJECT,
 
     GE_ADD_RESTRICTION,
