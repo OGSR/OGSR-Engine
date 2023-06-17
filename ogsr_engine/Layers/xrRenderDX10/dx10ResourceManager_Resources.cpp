@@ -164,7 +164,9 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
         IReader* file = FS.r_open(cname);
         R_ASSERT2(file, cname);
 
-        const std::string_view strbuf{reinterpret_cast<const char*>(file->pointer()), static_cast<size_t>(file->length())};
+        file->skip_bom(cname);
+
+        const std::string_view strbuf{reinterpret_cast<const char*>(file->pointer()), static_cast<size_t>(file->elapsed())};
 
         // Select target
         LPCSTR c_target = "vs_5_0";
@@ -269,7 +271,9 @@ SPS* CResourceManager::_CreatePS(LPCSTR _name)
         IReader* file = FS.r_open(cname);
         R_ASSERT2(file, cname);
 
-        const std::string_view strbuf{reinterpret_cast<const char*>(file->pointer()), static_cast<size_t>(file->length())};
+        file->skip_bom(cname);
+
+        const std::string_view strbuf{reinterpret_cast<const char*>(file->pointer()), static_cast<size_t>(file->elapsed())};
 
         // Select target
         LPCSTR c_target = "ps_5_0";
@@ -339,11 +343,13 @@ SGS* CResourceManager::_CreateGS(LPCSTR name)
         IReader* file = FS.r_open(cname);
         R_ASSERT2(file, cname);
 
+        file->skip_bom(cname);
+
         // Select target
         LPCSTR c_target = "gs_5_0";
         LPCSTR c_entry = "main";
 
-        HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_gs);
+        HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->elapsed(), c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_gs);
 
         FS.r_close(file);
 

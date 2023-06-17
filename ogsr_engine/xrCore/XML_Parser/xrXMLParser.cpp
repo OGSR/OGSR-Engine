@@ -34,7 +34,7 @@ void ParseFile(LPCSTR path, CMemoryWriter& W, IReader* F, CXml* xml)
             R_ASSERT(false, str);
         }
 
-        I->skip_bom();
+        I->skip_bom(file_name);
 
         ParseFile(path, W, I, xml);
         FS.r_close(I);
@@ -91,7 +91,7 @@ bool CXml::Init(LPCSTR path, LPCSTR xml_filename)
     if (F == NULL)
         return false;
 
-    F->skip_bom();
+    F->skip_bom(xml_filename);
 
     CMemoryWriter W;
     ParseFile(path, W, F, this);

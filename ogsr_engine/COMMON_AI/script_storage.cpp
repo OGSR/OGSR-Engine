@@ -268,12 +268,12 @@ bool CScriptStorage::do_file(
         return false;
     }
 
-    l_tpFileReader->skip_bom();
+    l_tpFileReader->skip_bom(caScriptName);
 
     string_path l_caLuaFileName;
     strconcat(sizeof(l_caLuaFileName), l_caLuaFileName, "@", caScriptName); // KRodin: приводит путь к виду @f:\games\s.t.a.l.k.e.r\gamedata\scripts\***.script
 
-    bool loaded = load_buffer(lua(), reinterpret_cast<const char*>(l_tpFileReader->pointer()), (size_t)l_tpFileReader->length(), l_caLuaFileName, caNameSpaceName);
+    bool loaded = load_buffer(lua(), reinterpret_cast<const char*>(l_tpFileReader->pointer()), (size_t)l_tpFileReader->elapsed(), l_caLuaFileName, caNameSpaceName);
 
     FS.r_close(l_tpFileReader);
     if (!loaded)

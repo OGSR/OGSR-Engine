@@ -94,7 +94,8 @@ CSE_Abstract::CSE_Abstract(LPCSTR caSection)
         else
         {
             IReader* reader = FS.r_open(file_name);
-            const xr_string temp{reinterpret_cast<const char*>(reader->pointer()), static_cast<size_t>(reader->length())};
+            reader->skip_bom(file_name);
+            const xr_string temp{reinterpret_cast<const char*>(reader->pointer()), static_cast<size_t>(reader->elapsed())};
             m_ini_string = temp.c_str();
             FS.r_close(reader);
         }

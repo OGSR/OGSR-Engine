@@ -1030,8 +1030,10 @@ public:
                 return E_FAIL;
         }
 
+        R->skip_bom(pFileName);
+
         *ppData = R->pointer();
-        *pBytes = R->length();
+        *pBytes = R->elapsed();
         return D3D_OK;
     }
 

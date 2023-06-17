@@ -193,11 +193,13 @@ void CSCompiler::compile(const char* name)
     IReader* file = FS.r_open(cname);
     R_ASSERT2(file, cname);
 
+    file->skip_bom(cname);
+
     // Select target
     LPCSTR c_target = "cs_5_0";
     LPCSTR c_entry = "main";
 
-    HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)m_cs);
+    HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->elapsed(), c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)m_cs);
 
     FS.r_close(file);
 

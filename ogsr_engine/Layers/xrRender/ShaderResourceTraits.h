@@ -114,12 +114,14 @@ inline T* CResourceManager::CreateShader(const char* name)
         IReader* file = FS.r_open(cname);
         R_ASSERT2(file, cname);
 
+        file->skip_bom(cname);
+
         // Select target
         LPCSTR c_target = ShaderTypeTraits<T>::GetCompilationTarget();
         LPCSTR c_entry = "main";
 
         // Compile
-        HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->length(), c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)sh);
+        HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->elapsed(), c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)sh);
 
         FS.r_close(file);
 

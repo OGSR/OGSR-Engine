@@ -517,7 +517,7 @@ public:
     // iterators
     IReader* open_chunk_iterator(u32& ID, IReader* previous = NULL); // NULL=first
 
-    void skip_bom();
+    void skip_bom(const char* dbg_name);
 
 public:
     void r(void* p, int cnt);

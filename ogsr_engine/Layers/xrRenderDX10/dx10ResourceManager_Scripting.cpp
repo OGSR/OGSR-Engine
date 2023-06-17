@@ -296,12 +296,12 @@ bool do_file(const char* caScriptName, const char* caNameSpaceName)
         return false;
     }
 
-    l_tpFileReader->skip_bom();
+    l_tpFileReader->skip_bom(caScriptName);
 
     string_path l_caLuaFileName;
     strconcat(sizeof(l_caLuaFileName), l_caLuaFileName, "@", caScriptName); // KRodin: приводит путь к виду @f:\games\s.t.a.l.k.e.r\gamedata\scripts\class_registrator.script
 
-    load_buffer(reinterpret_cast<const char*>(l_tpFileReader->pointer()), (size_t)l_tpFileReader->length(), l_caLuaFileName, caNameSpaceName);
+    load_buffer(reinterpret_cast<const char*>(l_tpFileReader->pointer()), (size_t)l_tpFileReader->elapsed(), l_caLuaFileName, caNameSpaceName);
 
     FS.r_close(l_tpFileReader);
 
