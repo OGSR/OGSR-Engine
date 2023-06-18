@@ -86,13 +86,10 @@ void CWeaponShotgun::Fire2Start()
 
             CWeapon::FireStart();
 
-            if (!iAmmoElapsed)
-                SwitchState(eMagEmpty);
-            else
-                SwitchState((iAmmoElapsed < iMagazineSize) ? eFire : eFire2);
+            SwitchState((iAmmoElapsed < iMagazineSize) ? eFire : eFire2);
         }
     }
-    else if (!iAmmoElapsed)
+    else
         SwitchState(eMagEmpty);
 }
 
