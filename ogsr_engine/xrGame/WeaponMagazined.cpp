@@ -573,14 +573,16 @@ void CWeaponMagazined::OnStateSwitch(u32 S, u32 oldState)
         SetPending(TRUE);
     }
     break;
-    case eMagEmpty:
-        switch2_Empty();
+    case eMagEmpty: {
+        const bool need_play_empty_click = oldState != eFire && oldState != eFire2;
+        switch2_Empty(need_play_empty_click);
 
-        if (GetNextState() != eReload)
+        if (GetNextState() != eReload && need_play_empty_click)
         {
             SwitchState(eIdle);
         }
         break;
+    }
     case eReload: switch2_Reload(); break;
     case eShowing: switch2_Showing(); break;
     case eHiding: switch2_Hiding(); break;
@@ -907,11 +909,12 @@ void CWeaponMagazined::switch2_Fire()
             bWorking = false;
         }*/
 }
-void CWeaponMagazined::switch2_Empty()
+void CWeaponMagazined::switch2_Empty(const bool empty_click_anim_play)
 {
     if (!Core.Features.test(xrCore::Feature::autoreload_wpn) && smart_cast<CActor*>(H_Parent()))
     {
-        OnEmptyClick();
+        if (empty_click_anim_play)
+            OnEmptyClick();
         return;
     }
 
@@ -919,7 +922,8 @@ void CWeaponMagazined::switch2_Empty()
 
     if (!TryReload())
     {
-        OnEmptyClick();
+        if (empty_click_anim_play)
+            OnEmptyClick();
     }
     else
     {
