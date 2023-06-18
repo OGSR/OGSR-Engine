@@ -841,10 +841,12 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
         SwitchState(eIdle);
         break; // End of reload animation
     case eHiding: SwitchState(eHidden); break; // End of Hide
-    case eShowing: SwitchState(eIdle); break; // End of Show
     case eIdle: switch2_Idle(); break; // Keep showing idle
-    case eMisfire: SwitchState(eIdle); break; // End of misfire animation
-    case eDeviceSwitch: SwitchState(eIdle); break; // End of device switch animation
+    case eShowing:
+    case eMisfire:
+    case eDeviceSwitch:
+    case eFire:
+    case eFire2: SwitchState(eIdle); break;
     default: inherited::OnAnimationEnd(state);
     }
 }
