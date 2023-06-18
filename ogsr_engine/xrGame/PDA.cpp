@@ -397,6 +397,51 @@ void CPda::OnAnimationEnd(u32 state)
     }
 }
 
+void CPda::PlayAnimIdle()
+{
+    if (auto pActor = smart_cast<CActor*>(H_Parent()); pActor && ThumbAnimsAllowed() && IsZoomed())
+    {
+        const char* moving_postfix{""};
+        const u32 State = pActor->get_state();
+        if ((State & mcAnyMove) && AnmIdleMovingAllowed())
+        {
+            if (!(State & mcCrouch))
+            {
+                if (State & mcAccel) // Ходьба медленная (SHIFT)
+                    moving_postfix = "_moving_slow";
+                else
+                    moving_postfix = "_moving";
+            }
+            else if (State & mcAccel) // Ходьба в присяде (CTRL+SHIFT)
+                moving_postfix = "_moving_crouch_slow";
+            else
+                moving_postfix = "_moving_crouch";
+        }
+        string64 anm_name;
+        xr_strconcat(anm_name, "anm_idle", thumb_anim_name.c_str(), moving_postfix);
+
+        if (AnimationExist(anm_name))
+        {
+            PlayHUDMotion(anm_name, true, GetState());
+            if (thumb_anim_name == "_click")
+            {
+                Fvector C;
+                Center(C);
+                HUD_SOUND::PlaySound(sndBtnPress, C, H_Root(), !!GetHUDmode(), false, false);
+                HUD_SOUND::PlaySound(sndBtnRelease, C, H_Root(), !!GetHUDmode(), false, false);
+            }
+        }
+        else
+        {
+            inherited::PlayAnimIdle();
+        }
+    }
+    else
+    {
+        inherited::PlayAnimIdle();
+    }
+}
+
 // inertion
 constexpr float _inertion(const float _val_cur, const float _val_trgt, const float _friction)
 {

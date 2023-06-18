@@ -73,6 +73,10 @@ public:
     bool Is3DPDA() const { return this_is_3d_pda; }
     virtual void OnStateSwitch(u32 S, u32 oldState) override;
     virtual void OnAnimationEnd(u32 state) override;
+
+    virtual void PlayAnimIdle() override;
+    bool ThumbAnimsAllowed() const { return joystick == BI_NONE; }
+
     virtual void OnMoveToRuck(EItemPlace prevPlace) override;
     virtual void UpdateCL() override;
     virtual void UpdateXForm() override;
@@ -81,8 +85,8 @@ public:
 
     bool m_bZoomed{};
     float m_thumb_rot[2]{};
+    xr_string thumb_anim_name;
 
-protected:
     u8 GetCurrentHudOffsetIdx() const override { return (m_bZoomed || m_fZoomRotationFactor != 0.f) ? 1 : 0; }
     bool IsZoomed() const override { return m_bZoomed; }
 };

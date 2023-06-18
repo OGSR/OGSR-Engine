@@ -206,6 +206,60 @@ void CUIPdaWnd::MouseMovement(float x, float y)
     if (!pda)
         return;
 
+    if (pda->ThumbAnimsAllowed())
+    {
+        if (!pda->IsZoomed() || pda->IsPending())
+            return;
+
+        static u32 DeltaUpdTG{}, SavedClickTime{};
+
+        if (Device.dwTimeGlobal < DeltaUpdTG)
+            return;
+
+        const xr_string last_thumb_anim_name = pda->thumb_anim_name;
+
+        constexpr float PDA_CURSOR_MOVE_TREASURE = 2.f;
+        if (std::abs(x) < PDA_CURSOR_MOVE_TREASURE && std::abs(y) < PDA_CURSOR_MOVE_TREASURE)
+        {
+            pda->thumb_anim_name = (pda->thumb_anim_name.empty() && SavedClickTime != m_dwLastClickTime) ? "_click" : "";
+        }
+        else
+        {
+            const float gyp = std::sqrt(x * x + y * y);
+            float angle = std::asin(std::clamp(y / gyp, -1.0f, 1.0f));
+            if (negative(x))
+                angle = M_PI - angle;
+            if (negative(angle))
+                angle = angle + 2.0f * M_PI;
+
+            if (angle >= 0.393f && angle < 1.18f)
+                pda->thumb_anim_name = "_down_right";
+            else if (angle >= 1.18f && angle < 1.96f)
+                pda->thumb_anim_name = "_down";
+            else if (angle >= 1.96f && angle < 2.74f)
+                pda->thumb_anim_name = "_down_left";
+            else if (angle >= 2.74f && angle < 3.53f)
+                pda->thumb_anim_name = "_left";
+            else if (angle >= 3.53f && angle < 4.32f)
+                pda->thumb_anim_name = "_up_left";
+            else if (angle >= 4.32f && angle < 5.10f)
+                pda->thumb_anim_name = "_up";
+            else if (angle >= 5.10f && angle < 5.89f)
+                pda->thumb_anim_name = "_up_right";
+            else
+                pda->thumb_anim_name = "_right";
+        }
+
+        if (last_thumb_anim_name == pda->thumb_anim_name)
+            return;
+
+        DeltaUpdTG = Device.dwTimeGlobal + 117;
+        SavedClickTime = m_dwLastClickTime;
+
+        pda->PlayAnimIdle();
+        return;
+    }
+
     x *= .1f;
     y *= .1f;
     clamp(x, -.15f, .15f);
