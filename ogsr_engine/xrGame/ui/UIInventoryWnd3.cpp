@@ -146,22 +146,16 @@ void CUIInventoryWnd::ActivatePropertiesBox()
     }
 
     //присоединение аддонов к оружиям в слотах
-    static std::regex addon_re(R"(\{ADDON\})");
-    static std::regex wpn_re(R"(\{WPN\})");
-    for (u8 i = 0; i < SLOTS_TOTAL; ++i)
+    for (u32 i = 0; i < SLOTS_TOTAL; ++i)
     {
         PIItem tgt = m_pInv->m_slots[i].m_pIItem;
         if (tgt && tgt->CanAttach(CurrentIItem()))
         {
-            string128 trans_str;
-            strconcat(sizeof(trans_str), trans_str, "st_attach_addon_to_wpn_in_slot_", std::to_string(i).c_str());
-            string128 str = {0};
             // В локализации должно быть что-то типа 'Прикрепить %s к %s в таком-то слоте'
-            std::snprintf(str, sizeof(str), CStringTable().translate(trans_str).c_str(), CurrentIItem()->m_nameShort.c_str(), tgt->m_nameShort.c_str());
-            std::string s(str);
-            s = std::regex_replace(s, addon_re, CurrentIItem()->m_nameShort.c_str());
-            s = std::regex_replace(s, wpn_re, tgt->m_nameShort.c_str());
-            UIPropertiesBox.AddItem(s.c_str(), (void*)tgt, INVENTORY_ATTACH_ADDON);
+            const std::string trans_str = "st_attach_addon_to_wpn_in_slot_" + std::to_string(i);
+            string256 str{};
+            sprintf_s(str, CStringTable().translate(trans_str.c_str()).c_str(), CurrentIItem()->m_nameShort.c_str(), tgt->m_nameShort.c_str());
+            UIPropertiesBox.AddItem(str, (void*)tgt, INVENTORY_ATTACH_ADDON);
             b_show = true;
         }
     }
