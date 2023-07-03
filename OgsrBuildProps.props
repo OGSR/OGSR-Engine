@@ -23,7 +23,7 @@
       <EnableEnhancedInstructionSet Condition="'$(Platform)'=='Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
 
       <LanguageStandard>stdcpp20</LanguageStandard>
-
+      <BuildStlModules>false</BuildStlModules>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
 
