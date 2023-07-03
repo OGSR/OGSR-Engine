@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+#include <dinput.h>
+
 #include "uigamesp.h"
 #include "actor.h"
 #include "level.h"
@@ -285,9 +288,16 @@ bool CChangeLevelWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
     if (keyboard_action == WINDOW_KEY_PRESSED)
     {
-        if (is_binded(kQUIT, dik))
+        if (dik == DIK_RETURN || dik == DIK_NUMPADENTER)
+        {
+            OnOk();
+            return true;
+        }
+        else if (is_binded(kQUIT, dik))
+        {
             OnCancel();
-        return true;
+            return true;
+        }        
     }
     return inherited::OnKeyboard(dik, keyboard_action);
 }

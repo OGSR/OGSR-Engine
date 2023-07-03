@@ -157,12 +157,13 @@ void CLevel::IR_OnKeyboardPress(int key)
         return;
 
     case kQUIT: {
-        if (b_ui_exist && HUD().GetUI()->MainInputReceiver() && (MainMenu()->IsActive() || !Device.Paused()))
+        if (b_ui_exist && HUD().GetUI()->MainInputReceiver())
         {
             if (HUD().GetUI()->MainInputReceiver()->IR_OnKeyboardPress(key))
                 return; // special case for mp and main_menu
 
-            HUD().GetUI()->StartStopMenu(HUD().GetUI()->MainInputReceiver(), true);
+            if (MainMenu()->IsActive() || !Device.Paused())
+                HUD().GetUI()->StartStopMenu(HUD().GetUI()->MainInputReceiver(), true);
         }
         else
             Console->Execute("main_menu");
