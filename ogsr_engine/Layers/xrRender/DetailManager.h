@@ -6,6 +6,8 @@
 #define DetailManagerH
 #pragma once
 
+#include <future>
+
 #include "../../xrCore/xrpool.h"
 #include "detailformat.h"
 #include "detailmodel.h"
@@ -191,17 +193,12 @@ public:
 
     /// MT stuff
     xrCriticalSection MT;
-    volatile u32 m_frame_calc;
-    volatile u32 m_frame_rendered;
+    void StartAsync();
+    void WaitAsync() const;
+
+    std::future<void> awaiter;
 
     void MT_CALC();
-    ICF void MT_SYNC()
-    {
-        if (m_frame_calc == RDEVICE.dwFrame)
-            return;
-
-        MT_CALC();
-    }
 
     CDetailManager();
     virtual ~CDetailManager();

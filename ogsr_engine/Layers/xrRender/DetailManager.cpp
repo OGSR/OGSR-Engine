@@ -6,6 +6,9 @@
 #pragma hdrstop
 
 #include "DetailManager.h"
+
+#include <future>
+
 #include "cl_intersect.h"
 
 #include "../../xr_3da/igame_persistent.h"
@@ -376,31 +379,63 @@ void CDetailManager::Render()
     if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
         return;
 
-    // MT
-    MT_SYNC();
+    // MT wait
+    if (ps_r2_ls_flags.test((u32)R2FLAG_EXP_MT_DETAILS))
+        WaitAsync();
+    else
+        MT_CALC();
 
     RDEVICE.Statistic->RenderDUMP_DT_Render.Begin();
 
-    float factor = g_pGamePersistent->Environment().wind_strength_factor;
+    const float factor = g_pGamePersistent->Environment().wind_strength_factor;
 
     swing_current.lerp(swing_desc[0], swing_desc[1], factor);
 
     RCache.set_CullMode(CULL_NONE);
     RCache.set_xform_world(Fidentity);
+
     if (UseVS())
         hw_Render();
     else
         soft_Render();
+
     RCache.set_CullMode(CULL_CCW);
     RDEVICE.Statistic->RenderDUMP_DT_Render.End();
-    m_frame_rendered = RDEVICE.dwFrame;
 }
 
 u32 reset_frame = 0;
+
+void CDetailManager::StartAsync()
+{
+    if (!ps_r2_ls_flags.test((u32)R2FLAG_EXP_MT_DETAILS))
+        return;    
+
+    if (reset_frame == Device.dwFrame)
+        return;
+
+    if (!RImplementation.Details)
+        return; // possibly deleted
+    if (!dtFS)
+        return;
+    if (!psDeviceFlags.is(rsDetails))
+        return;
+    if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
+        return;
+
+    awaiter = std::async(std::launch::async, [&](CDetailManager* self) { return self->MT_CALC(); }, this);
+}
+
+void CDetailManager::WaitAsync() const
+{
+    if (awaiter.valid())
+        awaiter.wait();
+}
+
 void CDetailManager::MT_CALC()
 {
     if (reset_frame == Device.dwFrame)
         return;
+
     if (!RImplementation.Details)
         return; // possibly deleted
     if (!dtFS)
@@ -411,20 +446,17 @@ void CDetailManager::MT_CALC()
         return;
 
     MT.Enter();
-    if (m_frame_calc != RDEVICE.dwFrame)
-        if ((m_frame_rendered + 1) == RDEVICE.dwFrame) // already rendered
-        {
-            Fvector EYE = RDEVICE.vCameraPosition_saved;
 
-            int s_x = iFloor(EYE.x / dm_slot_size + .5f);
-            int s_z = iFloor(EYE.z / dm_slot_size + .5f);
+    Fvector EYE = RDEVICE.vCameraPosition_saved;
 
-            RDEVICE.Statistic->RenderDUMP_DT_Cache.Begin();
-            cache_Update(s_x, s_z, EYE, dm_max_decompress);
-            RDEVICE.Statistic->RenderDUMP_DT_Cache.End();
+    int s_x = iFloor(EYE.x / dm_slot_size + .5f);
+    int s_z = iFloor(EYE.z / dm_slot_size + .5f);
 
-            UpdateVisibleM();
-            m_frame_calc = RDEVICE.dwFrame;
-        }
+    RDEVICE.Statistic->RenderDUMP_DT_Cache.Begin();
+    cache_Update(s_x, s_z, EYE, dm_max_decompress);
+    RDEVICE.Statistic->RenderDUMP_DT_Cache.End();
+
+    UpdateVisibleM();
+
     MT.Leave();
 }

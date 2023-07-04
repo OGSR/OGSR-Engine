@@ -503,10 +503,16 @@ void CRender::OnFrame()
     if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))
     {
         // MT-details (@front)
-        Device.seqParallel.insert(Device.seqParallel.begin(), fastdelegate::MakeDelegate(Details, &CDetailManager::MT_CALC));
+        //Device.seqParallel.insert(Device.seqParallel.begin(), fastdelegate::MakeDelegate(Details, &CDetailManager::MT_CALC));
 
-        // MT-HOM (@front)
-        Device.seqParallel.insert(Device.seqParallel.begin(), fastdelegate::MakeDelegate(&HOM, &CHOM::MT_RENDER));
+        if (Details)
+            Details->StartAsync();
+
+        if (!ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_HOM))
+        {
+            // MT-HOM (@front)
+            Device.seqParallel.insert(Device.seqParallel.begin(), fastdelegate::MakeDelegate(&HOM, &CHOM::MT_RENDER));
+        }
     }
 
     g_pGamePersistent->GrassBendersUpdateExplosions();

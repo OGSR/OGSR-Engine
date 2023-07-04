@@ -154,7 +154,7 @@ enum
     R2FLAG_SUN_TSM = (1 << 2),
     R2FLAG_SUN_DETAILS = (1 << 3),
     R2FLAG_TONEMAP = (1 << 4),
-    // = (1<<5),
+    R2FLAG_EXP_MT_DETAILS = 1 << 5,
     R2FLAG_GI = (1 << 6),
     R2FLAG_FASTBLOOM = (1 << 7),
     R2FLAG_GLOBALMATERIAL = (1 << 8),
