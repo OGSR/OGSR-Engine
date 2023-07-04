@@ -561,7 +561,7 @@ void CStats::OnDeviceCreate()
     g_bDisableRedText = strstr(Core.Params, "-xclsx") ? TRUE : FALSE;
 
     pFont = xr_new<CGameFont>("stat_font", CGameFont::fsDeviceIndependent);
-    pFontHW = xr_new<CGameFont>("hud_font_di", CGameFont::fsDeviceIndependent);
+    pFontHW = xr_new<CGameFont>("stat_font", CGameFont::fsDeviceIndependent);
 
 #ifdef DEBUG
     if (!g_bDisableRedText)
