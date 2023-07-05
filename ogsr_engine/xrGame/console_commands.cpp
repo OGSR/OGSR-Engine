@@ -154,10 +154,24 @@ public:
 
         SProcessMemInfo memCounters;
         GetProcessMemInfo(memCounters);
-        Msg("[%I64dMB] physical memory installed, [%I64dMB] available, [%ld] percent of memory in use", memCounters.TotalPhysicalMemory / (1024 * 1024),
-            memCounters.FreePhysicalMemory / (1024 * 1024), memCounters.MemoryLoad);
+        Msg("[%I64dMB] physical memory installed, [%I64dMB] available, [%ld] percent of memory in use", 
+            memCounters.TotalPhysicalMemory / (1024 * 1024),
+            memCounters.FreePhysicalMemory / (1024 * 1024), 
+            memCounters.MemoryLoad);
 
-        Msg("PageFile usage: [%I64dMB], Peak PageFile usage: [%I64dMB]", memCounters.PagefileUsage / (1024 * 1024), memCounters.PeakPagefileUsage / (1024 * 1024));
+        Msg("PageFile total: [%I64dMB]", 
+            memCounters.TotalPageFile / (1024 * 1024));
+
+        //PagefileUsage
+        //
+        //The Commit Charge value in bytes for this process. Commit Charge is the total amount of memory that the memory manager has committed for a running process.
+        //
+        //PeakPagefileUsage
+        //
+        //The peak value in bytes of the Commit Charge during the lifetime of this process.
+
+        Msg("Engine memory usage: [%I64dMB], peak: [%I64dMB]",
+            memCounters.PagefileUsage / (1024 * 1024), memCounters.PeakPagefileUsage / (1024 * 1024));
 
         Log("--------------------------------------------------------------------------------");
 

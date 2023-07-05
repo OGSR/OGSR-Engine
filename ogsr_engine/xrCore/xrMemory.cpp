@@ -103,7 +103,13 @@ void GetProcessMemInfo(SProcessMemInfo& minfo)
 
     minfo.TotalPhysicalMemory = mem.ullTotalPhys;
     minfo.FreePhysicalMemory = mem.ullAvailPhys;
-    minfo.TotalVirtualMemory = mem.ullTotalVirtual;
+
+    SYSTEM_INFO sysInfo;
+    GetSystemInfo(&sysInfo);
+
+    minfo.TotalPageFile = sysInfo.dwPageSize;
+    //minfo.FreePageFile = sysInfo.ullAvailPageFile;
+
     minfo.MemoryLoad = mem.dwMemoryLoad;
 
     PROCESS_MEMORY_COUNTERS pc;
@@ -111,8 +117,9 @@ void GetProcessMemInfo(SProcessMemInfo& minfo)
     pc.cb = sizeof(pc);
     if (GetProcessMemoryInfo(GetCurrentProcess(), &pc, sizeof(pc)))
     {
-        minfo.PeakWorkingSetSize = pc.PeakWorkingSetSize;
         minfo.WorkingSetSize = pc.WorkingSetSize;
+        minfo.PeakWorkingSetSize = pc.PeakWorkingSetSize;
+
         minfo.PagefileUsage = pc.PagefileUsage;
         minfo.PeakPagefileUsage = pc.PeakPagefileUsage;
     }

@@ -90,12 +90,15 @@ struct SProcessMemInfo
 {
     u64 PeakWorkingSetSize;
     u64 WorkingSetSize;
-    u64 PagefileUsage;
+
     u64 PeakPagefileUsage;
+    u64 PagefileUsage;
 
     u64 TotalPhysicalMemory;
-    s64 FreePhysicalMemory;
-    u64 TotalVirtualMemory;
+    u64 FreePhysicalMemory;
+    u64 TotalPageFile;
+    u64 FreePageFile;
+
     u32 MemoryLoad;
 };
 XRCORE_API void GetProcessMemInfo(SProcessMemInfo& minfo);

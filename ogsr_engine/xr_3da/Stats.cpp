@@ -480,7 +480,9 @@ void CStats::Show_HW_Stats()
             // init all variables
             MEMORYSTATUSEX mem;
             PROCESS_MEMORY_COUNTERS_EX pmc;
-            SYSTEM_INFO sysInfo;
+
+            /*SYSTEM_INFO sysInfo;
+            GetSystemInfo(&sysInfo);*/
 
             // Getting info about memory
             mem.dwLength = sizeof(MEMORYSTATUSEX);
@@ -491,13 +493,14 @@ void CStats::Show_HW_Stats()
             AvailablePageFileMem = (float)mem.ullAvailPageFile; // how much pagefile mem available
             AvailablePageFileMem /= (1024 * 1024);
 
-            // Getting info by request
-            GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(PROCESS_MEMORY_COUNTERS_EX));
-            GetSystemInfo(&sysInfo);
-
             PhysMemoryUsedPercent = (float)mem.dwMemoryLoad;
-            PageFileMemUsedByApp = (float)pmc.PagefileUsage;
-            PageFileMemUsedByApp /= (1024 * 1024);
+
+            // Getting info by request
+            if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(PROCESS_MEMORY_COUNTERS_EX)))
+            {
+                PageFileMemUsedByApp = (float)pmc.PagefileUsage;
+                PageFileMemUsedByApp /= (1024 * 1024);
+            }
 
             // Counting CPU load
             CPU::ID.getCPULoad(cpuLoad);
@@ -517,6 +520,7 @@ void CStats::Show_HW_Stats()
 
         // Draw all your stuff
         pFontHW->Out(10, 25, "MEM AVAILABLE: %0.0fMB", AvailableMem); // Physical memory available
+
         pFontHW->Out(10, 40, "PAGE AVAILABLE: %0.0fMB", AvailablePageFileMem); // Pagefile memory available
         pFontHW->Out(10, 55, "PAGE APPUSED: %0.0fMB", PageFileMemUsedByApp); // Physical memory used by app
 
