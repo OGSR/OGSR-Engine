@@ -87,7 +87,7 @@ static Fbox bbCrouchBox;
 static Fvector vFootCenter;
 static Fvector vFootExt;
 
-Flags32 psActorFlags = {AF_3D_SCOPES | AF_KEYPRESS_ON_START | AF_CAM_COLLISION | AF_AI_VOLUMETRIC_LIGHTS | AF_DOF_RELOAD | AF_3D_PDA | AF_ALWAYSRUN};
+Flags32 psActorFlags = {AF_3D_SCOPES | AF_KEYPRESS_ON_START | AF_CAM_COLLISION | AF_AI_VOLUMETRIC_LIGHTS | AF_DOF_RELOAD | AF_3D_PDA | AF_ALWAYSRUN | AF_FIRST_PERSON_DEATH};
 
 static bool updated;
 
@@ -681,7 +681,10 @@ void CActor::Die(CObject* who)
             inventory().Ruck(l_blist.front());
     }
 
-    cam_Set(eacFreeLook);
+    if (!psActorFlags.test(AF_FIRST_PERSON_DEATH))
+    {
+        cam_Set(eacFreeLook);
+    }
     mstate_wishful &= ~mcAnyMove;
     mstate_real &= ~mcAnyMove;
 

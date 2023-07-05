@@ -21,6 +21,7 @@ enum
     AF_3D_PDA = 1 << 16,
     AF_AI_VOLUMETRIC_LIGHTS = 1 << 17,
     AF_EFFECTS_ON_DEMORECORD = 1 << 18,
+    AF_FIRST_PERSON_DEATH = 1 << 19,
 };
 
 //enum

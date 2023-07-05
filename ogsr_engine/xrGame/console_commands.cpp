@@ -1505,6 +1505,8 @@ void CCC_RegisterCommands()
 
     CMD3(CCC_Mask, "g_3d_pda", &psActorFlags, AF_3D_PDA);
 
+    CMD3(CCC_Mask, "g_first_person_death", &psActorFlags, AF_FIRST_PERSON_DEATH);
+
     CMD1(CCC_TimeFactor, "time_factor")
     CMD1(CCC_SetWeather, "set_weather");
     //#endif // MASTER_GOLD
