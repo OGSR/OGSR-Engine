@@ -1164,20 +1164,26 @@ bool CWeapon::Action(s32 cmd, u32 flags)
         return true;
 
     case kWPN_ZOOM: {
-        if (IsZoomEnabled())
+        const u32 state = GetState();
+        if (IsZoomEnabled() && (state == eFire || state == eFire2 || state == eMagEmpty || state == eIdle || !IsPending()))
         {
-            if (flags & CMD_START && !IsPending())
+            if (flags & CMD_START)
             {
                 if (psActorFlags.is(AF_WPN_AIM_TOGGLE) && IsZoomed())
                 {
                     OnZoomOut();
+                    SwitchState(eIdle);
                 }
                 else
+                {
                     OnZoomIn();
+                    SwitchState(eIdle);
+                }
             }
             else if (IsZoomed() && !psActorFlags.is(AF_WPN_AIM_TOGGLE))
             {
                 OnZoomOut();
+                SwitchState(eIdle);
             }
             return true;
         }
