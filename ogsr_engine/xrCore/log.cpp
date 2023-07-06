@@ -14,7 +14,7 @@ string_path logFName{};
 static void AddOne(std::string& split, bool first_line)
 {
     static std::recursive_mutex logCS;
-    std::scoped_lock<decltype(logCS)> lock(logCS);
+    std::scoped_lock lock(logCS);
 
     if (IsDebuggerPresent())
     { //Вывод в отладчик студии
@@ -53,7 +53,7 @@ static void AddOne(std::string& split, bool first_line)
 
     if (last_str == split)
     {
-        std::string tmp = split.c_str();
+        std::string tmp = split;
 
         if (items_count == 0)
             items_count = 2;
@@ -61,7 +61,7 @@ static void AddOne(std::string& split, bool first_line)
             items_count++;
 
         tmp += " [";
-        tmp += std::to_string(items_count).c_str();
+        tmp += std::to_string(items_count);
         tmp += "]";
 
         LogFile.erase(LogFile.end() - 1);
