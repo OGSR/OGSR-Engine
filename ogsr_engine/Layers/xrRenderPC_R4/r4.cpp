@@ -55,6 +55,7 @@ ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float c
     }
     return pVisual->shader->E[id]._get();
 }
+
 //////////////////////////////////////////////////////////////////////////
 ShaderElement* CRender::rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq)
 {
@@ -497,38 +498,36 @@ void CRender::reset_end()
     // that some data is not ready in the first frame (for example device camera position)
     m_bFirstFrameAfterReset = true;
 }
-/*
-void CRender::OnFrame()
-{
-    Models->DeleteQueue			();
-    if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))	{
-        Device.seqParallel.insert	(Device.seqParallel.begin(),fastdelegate::MakeDelegate(&HOM,&CHOM::MT_RENDER));
-    }
-}*/
+
 void CRender::OnFrame()
 {
     Models->DeleteQueue();
-    if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))
+
+    bool b_main_menu_is_active = (g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive());
+
+    if (!b_main_menu_is_active && g_pGameLevel)
     {
-        // MT-details (@front)
-        //Device.seqParallel.insert(Device.seqParallel.begin(), fastdelegate::MakeDelegate(Details, &CDetailManager::MT_CALC));
-
-        if (Details)
-            Details->StartAsync();
-
-        if (!ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_HOM))
+        if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_CALC))
         {
-            // MT-HOM (@front)
-            Device.seqParallel.insert(Device.seqParallel.begin(), fastdelegate::MakeDelegate(&HOM, &CHOM::MT_RENDER));
+            if (Details)
+                Details->StartAsync();
+
+            if (!ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_HOM))
+            {
+                // MT-HOM (@front)
+                Device.seqParallel.insert(Device.seqParallel.begin(), fastdelegate::MakeDelegate(&HOM, &CHOM::MT_RENDER));
+            }
         }
-    }
 
-    if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_RAIN))
-    {
-        g_pGamePersistent->Environment().StartCalculateAsync();
-    }
+        if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_RAIN))
+        {
+            g_pGamePersistent->Environment().StartCalculateAsync();
+        }
 
-    g_pGamePersistent->GrassBendersUpdateExplosions();
+        g_pGamePersistent->GrassBendersUpdateExplosions();
+
+        calculate_sun_async();
+    }
 }
 
 // Перед началом рендера мира --#SM+#-- +SecondVP+

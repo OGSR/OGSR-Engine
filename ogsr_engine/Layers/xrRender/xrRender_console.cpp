@@ -698,6 +698,7 @@ void xrRender_initconsole()
     CMD4(CCC_Float, "r2_slight_fade", &ps_r2_slight_fade, .2f, 2.f);
 
     CMD3(CCC_Mask, "r_mt_details", &ps_r2_ls_flags, R2FLAG_EXP_MT_DETAILS);
+    CMD3(CCC_Mask, "r_mt_sun", &ps_r2_ls_flags, R2FLAG_EXP_MT_SUN);
 
     CMD3(CCC_Mask, "r_mt_rain", &ps_r2_ls_flags, R2FLAG_EXP_MT_RAIN);
 

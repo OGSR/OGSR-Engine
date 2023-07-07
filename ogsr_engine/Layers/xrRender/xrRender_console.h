@@ -188,8 +188,7 @@ enum
     R2FLAG_USE_NVSTENCIL = (1 << 17),
 
     R2FLAG_EXP_MT_CALC = (1 << 18),
-
-    // = 1 << 19,
+    R2FLAG_EXP_MT_SUN = 1 << 19,
     // = 1 << 20,
     R2FLAG_VOLUMETRIC_LIGHTS = (1 << 21),
     R2FLAG_STEEP_PARALLAX = (1 << 22),

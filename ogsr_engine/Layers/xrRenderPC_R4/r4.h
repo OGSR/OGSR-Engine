@@ -171,7 +171,6 @@ private:
     void LoadBuffers(CStreamReader* fs, BOOL _alternative);
     void LoadVisuals(IReader* fs);
     void LoadLights(IReader* fs);
-    void LoadPortals(IReader* fs);
     void LoadSectors(IReader* fs);
     void LoadSWIs(CStreamReader* fs);
     void Load3DFluid();
@@ -182,19 +181,23 @@ private:
     void add_leafs_Static(dxRender_Visual* pVisual); // if detected node's full visibility
 
 public:
-    IRender_Sector* rimp_detectSector(Fvector& P, Fvector& D);
     void render_main(Fmatrix& mCombined, bool _fportals);
     void render_forward();
-    void render_smap_direct(Fmatrix& mCombined);
     void render_indirect(light* L);
     void render_lights(light_Package& LP);
     void render_menu();
     void render_rain();
 
-    void render_sun_cascade(u32 cascade_ind);
     void init_cacades();
     void render_sun_cascades();
+    void render_sun_cascade(u32 cascade_ind);
+
+    void calculate_sun();
     void calculate_sun(sun::cascade& cascade);
+
+    void calculate_sun_async();
+
+    std::future<void> calculate_sun_awaiter;
 
 public:
     ShaderElement* rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq);

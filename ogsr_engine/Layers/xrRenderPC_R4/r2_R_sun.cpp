@@ -61,28 +61,50 @@ void CRender::init_cacades()
 
 void CRender::render_sun_cascades()
 {
-    need_to_render_sunshafts = RImplementation.Target->need_to_render_sunshafts();
-    last_cascade_chain_mode = m_sun_cascades[m_sun_cascades.size() - 1].reset_chain;
-
-    if (need_to_render_sunshafts)
-        m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = true;
-    
-    for (u32 i = 0; i < m_sun_cascades.size(); ++i)
+    if (!ps_r2_ls_flags.test((u32)R2FLAG_EXP_MT_SUN))
     {
-        // Compute volume(s) - something like a frustum for infinite directional light
-        // Also compute virtual light position and sector it is inside
-        sun::cascade& cascade = m_sun_cascades[i];
-        calculate(cascade);
+        calculate_sun();
     }
-
-    if (need_to_render_sunshafts)
-        m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = last_cascade_chain_mode;
+    else
+    {
+        if (calculate_sun_awaiter.valid())
+            calculate_sun_awaiter.wait();
+    }
 
     for (u32 i = 0; i < m_sun_cascades.size(); ++i)
         render_sun_cascade(i);
 }
 
-void CRender::calculate(sun::cascade& cascade)
+void CRender::calculate_sun_async()
+{
+    if (!ps_r2_ls_flags.test((u32)R2FLAG_EXP_MT_SUN))
+        return;    
+
+    calculate_sun_awaiter = TTAPI->submit([this]() { calculate_sun(); });
+}
+
+void CRender::calculate_sun()
+{
+    need_to_render_sunshafts = RImplementation.Target->need_to_render_sunshafts();
+    last_cascade_chain_mode = m_sun_cascades[m_sun_cascades.size() - 1].reset_chain;
+
+    if (need_to_render_sunshafts)
+        m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = true;
+
+    // Compute volume(s) - something like a frustum for infinite directional light
+    // Also compute virtual light position and sector it is inside
+
+    for (u32 i = 0; i < m_sun_cascades.size(); ++i)
+    {
+        sun::cascade& cascade = m_sun_cascades[i];
+        calculate_sun(cascade);
+    }
+
+    if (need_to_render_sunshafts)
+        m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = last_cascade_chain_mode;
+}
+
+void CRender::calculate_sun(sun::cascade& cascade)
 {
     light* fuckingsun = (light*)Lights.sun_adapted._get();
 
@@ -292,6 +314,9 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
     light* fuckingsun = (light*)Lights.sun_adapted._get();
 
+    // Finalize & Cleanup
+    fuckingsun->X.D.combine = cascade.cull_xform;
+
     // Begin SMAP-render
     {
         VERIFY(!(mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size()));
@@ -305,9 +330,6 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
     // Fill the database
     r_dsgraph_render_subspace(cascade.cull_sector, &cascade.cull_frustum, cascade.cull_xform, cascade.cull_COP, TRUE);
-
-    // Finalize & Cleanup
-    fuckingsun->X.D.combine = cascade.cull_xform;
 
     // Render shadow-map
     //. !!! We should clip based on shrinked frustum (again)
