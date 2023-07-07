@@ -45,61 +45,67 @@ void CRender::init_cacades()
 
     float fBias = -0.0000025f;
 
+    m_sun_cascades[0].cascade_ind = 0;
     m_sun_cascades[0].reset_chain = true;
     m_sun_cascades[0].size = ps_ssfx_shadow_cascades.x; //40;
     m_sun_cascades[0].bias = m_sun_cascades[0].size * fBias;
 
+    m_sun_cascades[1].cascade_ind = 1;
     m_sun_cascades[1].size = ps_ssfx_shadow_cascades.y; // 120;
     m_sun_cascades[1].bias = m_sun_cascades[1].size * fBias;
 
+    m_sun_cascades[2].cascade_ind = 2;
     m_sun_cascades[2].size = ps_ssfx_shadow_cascades.z; // 320;
     m_sun_cascades[2].bias = m_sun_cascades[2].size * fBias;
 }
 
 void CRender::render_sun_cascades()
 {
-    bool b_need_to_render_sunshafts = RImplementation.Target->need_to_render_sunshafts();
-    bool last_cascade_chain_mode = m_sun_cascades.back().reset_chain;
-    if (b_need_to_render_sunshafts)
+    need_to_render_sunshafts = RImplementation.Target->need_to_render_sunshafts();
+    last_cascade_chain_mode = m_sun_cascades[m_sun_cascades.size() - 1].reset_chain;
+
+    if (need_to_render_sunshafts)
         m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = true;
+    
+    for (u32 i = 0; i < m_sun_cascades.size(); ++i)
+    {
+        // Compute volume(s) - something like a frustum for infinite directional light
+        // Also compute virtual light position and sector it is inside
+        sun::cascade& cascade = m_sun_cascades[i];
+        calculate(cascade);
+    }
+
+    if (need_to_render_sunshafts)
+        m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = last_cascade_chain_mode;
 
     for (u32 i = 0; i < m_sun_cascades.size(); ++i)
         render_sun_cascade(i);
-
-    if (b_need_to_render_sunshafts)
-        m_sun_cascades[m_sun_cascades.size() - 1].reset_chain = last_cascade_chain_mode;
 }
 
-void CRender::render_sun_cascade(u32 cascade_ind)
+void CRender::calculate(sun::cascade& cascade)
 {
-    auto& cascade = m_sun_cascades[cascade_ind];
-
     light* fuckingsun = (light*)Lights.sun_adapted._get();
 
-    // calculate view-frustum bounds in world space
-    Fmatrix ex_project, ex_full, ex_full_inverse;
-    {
-        ex_project = Device.mProject;
-        ex_full.mul(ex_project, Device.mView);
-        D3DXMatrixInverse((D3DXMATRIXA16*)&ex_full_inverse, 0, (D3DXMATRIXA16*)&ex_full);
-    }
+    CFrustum& cull_frustum = cascade.cull_frustum;
+    Fmatrix& cull_xform = cascade.cull_xform;
+    Fvector3& cull_COP = cascade.cull_COP;
 
-    // Compute volume(s) - something like a frustum for infinite directional light
-    // Also compute virtual light position and sector it is inside
-    CFrustum cull_frustum;
-    xr_vector<Fplane> cull_planes;
-    Fvector3 cull_COP;
-    CSector* cull_sector;
-    Fmatrix cull_xform;
     {
+        // calculate view-frustum bounds in world space
+        Fmatrix ex_project, ex_full, ex_full_inverse;
+        {
+            ex_project = Device.mProject;
+            ex_full.mul(ex_project, Device.mView);
+            D3DXMatrixInverse((D3DXMATRIXA16*)&ex_full_inverse, 0, (D3DXMATRIXA16*)&ex_full);
+        }
+
+        xr_vector<Fplane> cull_planes;
+
         FPU::m64r();
         // Lets begin from base frustum
         Fmatrix fullxform_inv = ex_full_inverse;
-#ifdef DEBUG
-        typedef DumbConvexVolume<true> t_volume;
-#else
+
         typedef DumbConvexVolume<false> t_volume;
-#endif
 
         //******************************* Need to be placed after cuboid built **************************
         // Search for default sector - assume "default" or "outdoor" sector is the largest one
@@ -117,7 +123,8 @@ void CRender::render_sun_cascade(u32 cascade_ind)
                 largest_sector = S;
             }
         }
-        cull_sector = largest_sector;
+
+        cascade.cull_sector = largest_sector;
 
         // COP - 100 km away
         cull_COP.mad(Device.vCameraPosition, fuckingsun->direction, -tweak_COP_initial_offs);
@@ -136,24 +143,16 @@ void CRender::render_sun_cascade(u32 cascade_ind)
         mdir_View.build_camera_dir(L_pos, L_dir, L_up);
 
         //////////////////////////////////////////////////////////////////////////
-#ifdef DEBUG
-        typedef FixedConvexVolume<true> t_cuboid;
-#else
         typedef FixedConvexVolume<false> t_cuboid;
-#endif
 
         t_cuboid light_cuboid;
         {
             // Initialize the first cascade rays, then each cascade will initialize rays for next one.
-            if (cascade_ind == 0 || cascade.reset_chain)
+            if (cascade.cascade_ind == 0 || cascade.reset_chain)
             {
                 Fvector3 near_p, edge_vec;
                 for (int p = 0; p < 4; p++)
                 {
-                    // 					Fvector asd = Device.vCameraDirection;
-                    // 					asd.mul(-2);
-                    // 					asd.add(Device.vCameraPosition);
-                    // 					near_p		= Device.vCameraPosition;//wform		(fullxform_inv,asd); //
                     near_p = wform(fullxform_inv, corners[facetable[4][p]]);
 
                     edge_vec = wform(fullxform_inv, corners[facetable[5][p]]);
@@ -178,7 +177,8 @@ void CRender::render_sun_cascade(u32 cascade_ind)
         float dist = light_top_plane.classify(Device.vCameraPosition);
 
         float map_size = cascade.size;
-        D3DXMatrixOrthoOffCenterLH((D3DXMATRIXA16*)&mdir_Project, -map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1, dist + /*sqrt(2)*/ 1.41421f * map_size);
+        D3DXMatrixOrthoOffCenterLH((D3DXMATRIXA16*)&mdir_Project, -map_size * 0.5f, map_size * 0.5f, -map_size * 0.5f, map_size * 0.5f, 0.1,
+                                   dist + /*sqrt(2)*/ 1.41421f * map_size);
 
         //////////////////////////////////////////////////////////////////////////
 
@@ -217,11 +217,11 @@ void CRender::render_sun_cascade(u32 cascade_ind)
         proj_view.normalize();
 
         // Initialize rays for the next cascade
-        if (cascade_ind < m_sun_cascades.size() - 1)
-            m_sun_cascades[cascade_ind + 1].rays = light_cuboid.view_frustum_rays;
+        if (cascade.cascade_ind < m_sun_cascades.size() - 1)
+            m_sun_cascades[cascade.cascade_ind + 1].rays = light_cuboid.view_frustum_rays;
 
         static bool draw_debug = false;
-        if (draw_debug && cascade_ind == 0)
+        if (draw_debug && cascade.cascade_ind == 0)
             for (u32 it = 0; it < cull_planes.size(); it++)
                 RImplementation.Target->dbg_addplane(cull_planes[it], it * 0xFFF);
 
@@ -275,8 +275,6 @@ void CRender::render_sun_cascade(u32 cascade_ind)
             cull_xform.mulB_44(adjust);
         }
 
-        cascade.xform = cull_xform;
-
         s32 limit = RImplementation.o.smapsize - 1;
         fuckingsun->X.D.minX = 0;
         fuckingsun->X.D.maxX = limit;
@@ -286,6 +284,13 @@ void CRender::render_sun_cascade(u32 cascade_ind)
         // full-xform
         FPU::m24r();
     }
+}
+
+void CRender::render_sun_cascade(u32 cascade_ind)
+{
+    sun::cascade& cascade = m_sun_cascades[cascade_ind];
+
+    light* fuckingsun = (light*)Lights.sun_adapted._get();
 
     // Begin SMAP-render
     {
@@ -296,20 +301,20 @@ void CRender::render_sun_cascade(u32 cascade_ind)
             r_pmask(true, true);
         else
             r_pmask(true, false);
-        //		fuckingsun->svis.begin					();
     }
 
     // Fill the database
-    r_dsgraph_render_subspace(cull_sector, &cull_frustum, cull_xform, cull_COP, TRUE);
+    r_dsgraph_render_subspace(cascade.cull_sector, &cascade.cull_frustum, cascade.cull_xform, cascade.cull_COP, TRUE);
 
     // Finalize & Cleanup
-    fuckingsun->X.D.combine = cull_xform; //*((Fmatrix*)&m_LightViewProj);
+    fuckingsun->X.D.combine = cascade.cull_xform;
 
     // Render shadow-map
     //. !!! We should clip based on shrinked frustum (again)
     {
         bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
         bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
+
         if (bNormal || bSpecial)
         {
             Target->phase_smap_direct(fuckingsun, SE_SUN_FAR);
@@ -325,6 +330,7 @@ void CRender::render_sun_cascade(u32 cascade_ind)
             }
 
             fuckingsun->X.D.transluent = FALSE;
+
             if (bSpecial)
             {
                 fuckingsun->X.D.transluent = TRUE;
@@ -337,7 +343,6 @@ void CRender::render_sun_cascade(u32 cascade_ind)
 
     // End SMAP-render
     {
-        //		fuckingsun->svis.end					();
         r_pmask(true, false);
     }
 
@@ -353,11 +358,11 @@ void CRender::render_sun_cascade(u32 cascade_ind)
     PIX_EVENT(SE_SUN_NEAR);
 
     if (cascade_ind == 0)
-        Target->accum_direct_cascade(SE_SUN_NEAR, cascade.xform, cascade.xform, cascade.bias);
+        Target->accum_direct_cascade(SE_SUN_NEAR, cascade.cull_xform, cascade.cull_xform, cascade.bias);
     else if (cascade_ind < m_sun_cascades.size() - 1)
-        Target->accum_direct_cascade(SE_SUN_MIDDLE, cascade.xform, m_sun_cascades[cascade_ind - 1].xform, cascade.bias);
+        Target->accum_direct_cascade(SE_SUN_MIDDLE, cascade.cull_xform, m_sun_cascades[cascade_ind - 1].cull_xform, cascade.bias);
     else
-        Target->accum_direct_cascade(SE_SUN_FAR, cascade.xform, m_sun_cascades[cascade_ind - 1].xform, cascade.bias);
+        Target->accum_direct_cascade(SE_SUN_FAR, cascade.cull_xform, m_sun_cascades[cascade_ind - 1].cull_xform, cascade.bias);
 
     // Restore XForms
     RCache.set_xform_world(Fidentity);

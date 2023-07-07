@@ -159,7 +159,12 @@ public:
 
     bool m_bMakeAsyncSS;
     bool m_bFirstFrameAfterReset; // Determines weather the frame is the first after resetting device.
+
     xr_vector<sun::cascade> m_sun_cascades;
+
+    bool need_to_render_sunshafts{false};
+    bool last_cascade_chain_mode{false};
+
 
 private:
     // Loading / Unloading
@@ -189,6 +194,7 @@ public:
     void render_sun_cascade(u32 cascade_ind);
     void init_cacades();
     void render_sun_cascades();
+    void calculate_sun(sun::cascade& cascade);
 
 public:
     ShaderElement* rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq);

@@ -16,11 +16,19 @@ struct cascade
 {
     cascade() : reset_chain(false) {}
 
-    Fmatrix xform;
+    u32 cascade_ind;
+
     xr_vector<ray> rays;
+
     float size;
     float bias;
     bool reset_chain;
+
+    CSector* cull_sector{};
+
+    CFrustum cull_frustum{};
+    Fmatrix cull_xform{};
+    Fvector3 cull_COP{};
 };
 
 } // namespace sun
