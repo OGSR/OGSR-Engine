@@ -33,6 +33,7 @@ local adv_vid_opt_params = {
 	{ "detail_density",        "track", 0, hint_colors.red   , "video_settings_name_4" , "video_settings_desc_4"  },
 	{ "detail_distance",       "track", 0, hint_colors.red   , "video_settings_name_5" , "video_settings_desc_5"  },
 	{ "detail_scale",          "track", 0, hint_colors.yellow, "" , ""  },
+	{ "r2_sun_details",        "check", 0, hint_colors.red   , "video_settings_name_12", "video_settings_desc_12" },
 	--
 	{ "r2_steep_parallax",     "check", 0, hint_colors.yellow, "video_settings_name_39", "video_settings_desc_39" },
 	{ "terrain_parallax",      "check", 1, hint_colors.yellow, "video_settings_name_24", "video_settings_desc_24" },
