@@ -276,7 +276,7 @@ bool CWeaponShotgun::Action(s32 cmd, u32 flags)
         {
         case kWPN_FIRE:
         case kWPN_NEXT:
-        case kWPN_RELOAD:
+        //case kWPN_RELOAD:
         case kWPN_ZOOM:
             // остановить перезарядку
             m_stop_triStateReload = true;
