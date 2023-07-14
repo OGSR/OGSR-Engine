@@ -367,6 +367,7 @@ void CConsole::OnRender()
 	if (bVisible)
     {
         LPCSTR s_cursor = ec().str_before_cursor();
+
         LPCSTR s_b_mark = ec().str_before_mark();
         LPCSTR s_mark = ec().str_mark();
         LPCSTR s_mark_a = ec().str_after_mark();
@@ -413,11 +414,26 @@ void CConsole::OnRender()
         pFont->SetColor(cmd_font_color);
         pFont2->SetColor(cmd_font_color);
 
-        pFont->OutI(-1.0f + out_pos * scr_x, ypos, "%s", s_b_mark);
-        out_pos += pFont->SizeOf_(s_b_mark);
-        pFont2->OutI(-1.0f + out_pos * scr_x, ypos, "%s", s_mark);
-        out_pos += pFont2->SizeOf_(s_mark);
-        pFont->OutI(-1.0f + out_pos * scr_x, ypos, "%s", s_mark_a);
+		// из за того что тут строка по факту состоит из 3х, и из за того что ширина строк округляется, при рендере все плянет
+		// переделал тут на символьный вывод. в таком случае оно получше все выглядит
+
+		for (size_t c = 0; c < strlen(s_b_mark); c++)
+        {
+            pFont->OutI(-1.0f + out_pos * scr_x, ypos, "%c", s_b_mark[c]);
+            out_pos += pFont->SizeOf_(s_b_mark[c]);
+        }
+
+		for (size_t c = 0; c < strlen(s_mark); c++)
+        {
+            pFont2->OutI(-1.0f + out_pos * scr_x, ypos, "%c", s_mark[c]);
+            out_pos += pFont2->SizeOf_(s_mark[c]);
+        }
+
+		for (size_t c = 0; c < strlen(s_mark_a); c++)
+        {
+            pFont->OutI(-1.0f + out_pos * scr_x, ypos, "%c", s_mark_a[c]);
+            out_pos += pFont2->SizeOf_(s_mark_a[c]);
+        }
 
         // pFont2->OutI( -1.0f + ioc_d * scr_x, ypos, "%s", editor=all );
 
