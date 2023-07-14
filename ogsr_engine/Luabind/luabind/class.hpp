@@ -919,10 +919,20 @@ namespace luabind
 		}
 
 		template<typename Getter, typename MaybeSetter>
-		class_&& property(const char* name, Getter g, MaybeSetter s) &&
-		{
-			return std::move(*this).property_impl(name, g, s, detail::is_policy_cons<MaybeSetter>());
-		}
+        class_&& property(const char* name, Getter g, MaybeSetter s) &&
+        {
+            if constexpr (!std::is_function_v<std::remove_pointer_t<Getter>> && !std::is_member_function_pointer_v<Getter> &&
+                          !std::is_function_v<std::remove_pointer_t<MaybeSetter>> && !std::is_member_function_pointer_v<MaybeSetter>)
+            {
+                constexpr auto lambda_cast_g = cdecl_cast(g, &Getter::operator());
+                constexpr auto lambda_cast_s = cdecl_cast(s, &MaybeSetter::operator());
+                return std::move(*this).property_impl(name, lambda_cast_g, lambda_cast_s, detail::is_policy_cons<decltype(lambda_cast_s)>());
+            }
+            else
+            {
+                return std::move(*this).property_impl(name, g, s, detail::is_policy_cons<MaybeSetter>());
+            }
+        }
 
 		template<typename Getter, typename Setter, typename... GetPolicies>
 		class_&& property(const char* name, Getter g, Setter s, const detail::policy_cons<GetPolicies...>) &&
