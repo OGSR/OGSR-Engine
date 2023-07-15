@@ -18,11 +18,8 @@
 #define REGISTRY_CHUNK_DATA 0x0009
 // alpet: для сохранения переменных
 #define SCRIPT_VARS_CHUNK_DATA 0x000D
-#define SECTION_HEADER "location_"
 #define SAVE_EXTENSION ".sav"
-#define SPAWN_NAME "game.spawn"
 // inventory rukzak size
-#define MAX_ITEM_VOLUME 100
 #define INVALID_STORY_ID ALife::_STORY_ID(-1)
 #define INVALID_SPAWN_STORY_ID ALife::_SPAWN_STORY_ID(-1)
 
