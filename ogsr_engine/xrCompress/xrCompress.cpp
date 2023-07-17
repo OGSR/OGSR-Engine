@@ -177,14 +177,15 @@ static void Compress(LPCSTR path, LPCSTR base, BOOL bFast)
             {
                 u32 c_size_max = rtc_csize(src->length());
                 u8* c_data = xr_alloc<u8>(c_size_max);
-                c_size_compressed = c_size_max;
 
+                lzo_uint c_size_compressed64 = c_size_max;
                 if (bFast)
                     R_ASSERT(LZO_E_OK ==
-                             lzo1x_1_compress(reinterpret_cast<const lzo_bytep>(src->pointer()), c_size_real, c_data, reinterpret_cast<lzo_uintp>(&c_size_compressed), c_heap));
+                             lzo1x_1_compress(reinterpret_cast<const lzo_bytep>(src->pointer()), c_size_real, c_data, &c_size_compressed64, c_heap));
                 else
                     R_ASSERT(LZO_E_OK ==
-                             lzo1x_999_compress(reinterpret_cast<const lzo_bytep>(src->pointer()), c_size_real, c_data, reinterpret_cast<lzo_uintp>(&c_size_compressed), c_heap));
+                             lzo1x_999_compress(reinterpret_cast<const lzo_bytep>(src->pointer()), c_size_real, c_data, &c_size_compressed64, c_heap));
+                c_size_compressed = static_cast<u32>(c_size_compressed64);
 
                 if ((c_size_compressed + 16) >= c_size_real)
                 {
@@ -200,8 +201,8 @@ static void Compress(LPCSTR path, LPCSTR base, BOOL bFast)
                     if (!bFast)
                     {
                         u8* c_out = xr_alloc<u8>(c_size_real);
-                        u32 c_orig = c_size_real;
-                        R_ASSERT(LZO_E_OK == lzo1x_optimize(c_data, c_size_compressed, c_out, reinterpret_cast<lzo_uintp>(&c_orig), nullptr));
+                        lzo_uint c_orig = c_size_real;
+                        R_ASSERT(LZO_E_OK == lzo1x_optimize(c_data, c_size_compressed, c_out, &c_orig, nullptr));
                         R_ASSERT(c_orig == c_size_real);
                         xr_free(c_out);
                     }
