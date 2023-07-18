@@ -212,8 +212,8 @@ public:
 
 extern XRCORE_API xrCore Core;
 
-#include "Utils/thread_pool.hpp"
-// extern XRCORE_API ThreadPool* TTAPI;
+#include "Utils/task_thread_pool.hpp"
+extern XRCORE_API task_thread_pool::task_thread_pool* TTAPI;
 
 extern XRCORE_API bool gModulesLoaded;
 

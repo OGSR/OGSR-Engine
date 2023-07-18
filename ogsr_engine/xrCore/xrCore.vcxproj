@@ -324,7 +324,7 @@
     <ClInclude Include="Utils\imdexlib\traits.hpp" />
     <ClInclude Include="Utils\imdexlib\typelist.hpp" />
     <ClInclude Include="Utils\imdexlib\utility.hpp" />
-    <ClInclude Include="Utils\thread_pool.hpp" />
+    <ClInclude Include="Utils\task_thread_pool.hpp" />
     <ClInclude Include="XML_Parser\tinyxml.h" />
     <ClInclude Include="XML_Parser\xrXMLParser.h" />
     <ClInclude Include="xrCore.h" />
