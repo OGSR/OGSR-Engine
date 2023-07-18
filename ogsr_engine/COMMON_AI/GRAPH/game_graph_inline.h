@@ -35,7 +35,6 @@ IC CGameGraph::CGameGraph(IReader* stream, bool separatedGraphs)
 
 IC CGameGraph::~CGameGraph()
 {
-    FS.r_close(m_reader);
     xr_delete(m_current_level_cross_table);
     if (m_separated_graphs)
         FS.r_close(m_reader);
