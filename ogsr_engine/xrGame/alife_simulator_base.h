@@ -96,7 +96,7 @@ protected:
     void unload();
     virtual void reload(LPCSTR section);
     IC void setup_command_line(shared_str* command_line);
-    //void assign_death_position(CSE_ALifeCreatureAbstract* tpALifeCreatureAbstract, GameGraph::_GRAPH_ID tGraphID, CSE_ALifeSchedulable* tpALifeSchedulable = 0);
+    void assign_death_position(CSE_ALifeCreatureAbstract* tpALifeCreatureAbstract, GameGraph::_GRAPH_ID tGraphID, CSE_ALifeSchedulable* tpALifeSchedulable = 0);
     virtual void setup_simulator(CSE_ALifeObject* object) = 0;
 
 public:

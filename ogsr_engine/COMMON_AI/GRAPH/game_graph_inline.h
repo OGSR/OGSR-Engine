@@ -125,7 +125,7 @@ IC const GameGraph::_GRAPH_ID& GameGraph::CHeader::vertex_count() const { return
 
 IC const u32& GameGraph::CHeader::edge_count() const { return (m_edge_count); }
 
-//IC const u32& GameGraph::CHeader::death_point_count() const { return (m_death_point_count); }
+IC const u32& GameGraph::CHeader::death_point_count() const { return (m_death_point_count); }
 
 IC const GameGraph::LEVEL_MAP& GameGraph::CHeader::levels() const { return (m_levels); }
 
@@ -188,22 +188,22 @@ IC const u8* GameGraph::CVertex::vertex_type() const { return (tVertexTypes); }
 
 IC const u8& GameGraph::CVertex::edge_count() const { return (tNeighbourCount); }
 
+IC const u8& GameGraph::CVertex::death_point_count() const { return (tDeathPointCount); }
+
 IC const u32& GameGraph::CVertex::edge_offset() const { return (dwEdgeOffset); }
 
-//IC const u8& GameGraph::CVertex::death_point_count() const { return (tDeathPointCount); }
-//
-//IC const u32& GameGraph::CVertex::death_point_offset() const { return (dwPointOffset); }
+IC const u32& GameGraph::CVertex::death_point_offset() const { return (dwPointOffset); }
 
 IC const GameGraph::_GRAPH_ID& GameGraph::CEdge::vertex_id() const { return (m_vertex_id); }
 
 IC const float& GameGraph::CEdge::distance() const { return (m_path_distance); }
 
-//IC void CGameGraph::begin_spawn(const u32& vertex_id, const_spawn_iterator& start, const_spawn_iterator& end) const
-//{
-//    const CVertex* object = vertex(vertex_id);
-//    start = (const_spawn_iterator)((u8*)m_nodes + object->death_point_offset());
-//    end = start + object->death_point_count();
-//}
+IC void CGameGraph::begin_spawn(const u32& vertex_id, const_spawn_iterator& start, const_spawn_iterator& end) const
+{
+    const CVertex* object = vertex(vertex_id);
+    start = (const_spawn_iterator)((u8*)m_nodes + object->death_point_offset());
+    end = start + object->death_point_count();
+}
 
 IC void CGameGraph::set_invalid_vertex(_GRAPH_ID& vertex_id) const
 {
