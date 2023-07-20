@@ -422,7 +422,7 @@ void CDetailManager::StartAsync()
     if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
         return;
 
-    awaiter = std::async(std::launch::async, [&](CDetailManager* self) { return self->MT_CALC(); }, this);
+    awaiter = TTAPI->submit([this]() { MT_CALC(); });
 }
 
 void CDetailManager::WaitAsync() const

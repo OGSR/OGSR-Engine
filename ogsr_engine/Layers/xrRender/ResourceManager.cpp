@@ -327,7 +327,12 @@ void CResourceManager::DeferredUpload()
 
     // Теперь многопоточная загрузка текстур даёт очень существенный прирост скорости, проверено.
     if (ps_r2_ls_flags_ext.test(R2FLAGEXT_MT_TEXLOAD))
-        std::for_each(std::execution::par_unseq, m_textures.begin(), m_textures.end(), [](auto& pair) { pair.second->Load(); });
+    {
+        for (const auto& it : m_textures)
+            TTAPI->submit_detach([&](const auto& pair) { pair.second->Load(); }, it);
+
+        TTAPI->wait_for_tasks();
+    }
     else
         for (auto& pair : m_textures)
             pair.second->Load();
