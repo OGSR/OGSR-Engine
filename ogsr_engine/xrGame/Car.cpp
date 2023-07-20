@@ -405,7 +405,11 @@ void CCar::RestoreNetState(CSE_PHSkeleton* /*po*/)
         PPhysicsShell()->Enable();
     else
         PPhysicsShell()->Disable();
+
     PPhysicsShell()->GetGlobalTransformDynamic(&XFORM());
+
+    // хз почему но фикс в CreateSkeleton пашет не всегда. нужно именно пулять импульс после загруки состояния костей
+    PPhysicsShell()->applyImpulse(Fvector().set(0, -1.f, 0), 0.1); // хит по физ. оболочке, чтобы не висела в воздухе
 }
 
 void CCar::SetDefaultNetState(CSE_PHSkeleton* po)
