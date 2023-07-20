@@ -97,7 +97,6 @@ public:
     CRegistrator<pureScreenResolutionChanged> seqResolutionChanged;
 
     HWND m_hWnd;
-    //	CStats*									Statistic;
 };
 
 class ENGINE_API CRenderDeviceBase : public IRenderDevice, public CRenderDeviceData
@@ -166,45 +165,16 @@ public:
     void DumpResourcesMemoryUsage() { m_pRender->ResourcesDumpMemoryUsage(); }
 
 public:
-    // Registrators
-    // CRegistrator	<pureRender			>			seqRender;
-    //	CRegistrator	<pureAppActivate	>			seqAppActivate;
-    //	CRegistrator	<pureAppDeactivate	>			seqAppDeactivate;
-    //	CRegistrator	<pureAppStart		>			seqAppStart;
-    //	CRegistrator	<pureAppEnd			>			seqAppEnd;
-    // CRegistrator	<pureFrame			>			seqFrame;
     CRegistrator<pureFrame> seqFrameMT;
     CRegistrator<pureDeviceReset> seqDeviceReset;
+
     xr_vector<fastdelegate::FastDelegate<void()>> seqParallel;
 
     CSecondVPParams m_SecondViewport; //--#SM+#-- +SecondVP+
 
-    // Dependent classes
-    // CResourceManager*						Resources;
-
     CStats* Statistic;
 
-    // Engine flow-control
-    // float									fTimeDelta;
-    // float									fTimeGlobal;
-    // u32										dwTimeDelta;
-    // u32										dwTimeGlobal;
-    // u32										dwTimeContinual;
-
-    // Cameras & projection
-    // Fvector									vCameraPosition;
-    // Fvector									vCameraDirection;
-    // Fvector									vCameraTop;
-    // Fvector									vCameraRight;
-
-    // Fmatrix									mView;
-    // Fmatrix									mProject;
-    // Fmatrix									mFullTransform;
-
     Fmatrix mInvFullTransform;
-
-    // float									fFOV;
-    // float									fASPECT;
 
     CRenderDevice()
         : m_pRender(0)
