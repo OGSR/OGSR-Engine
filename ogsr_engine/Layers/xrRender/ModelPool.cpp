@@ -237,9 +237,6 @@ dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
         {
             const bool prefetch = Device.dwPrecacheFrame > 0;
 
-            if (!prefetch)
-                Msg("CModelPool::Create name=%s", low_name);
-
             // 2. If not found
             bAllowChildrenDuplicate = FALSE;
             if (data)
