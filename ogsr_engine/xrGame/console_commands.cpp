@@ -162,6 +162,17 @@ public:
         Msg("PageFile total: [%I64dMB]", 
             memCounters.TotalPageFile / (1024 * 1024));
 
+        //PeakWorkingSetSize
+        //
+        //The peak working set size, in bytes.
+        //
+        //WorkingSetSize
+        //
+        //The current working set size, in bytes.
+
+        Msg("Engine memory usage (Working Set): [%I64dMB], peak: [%I64dMB]",
+            memCounters.WorkingSetSize / (1024 * 1024), memCounters.PeakWorkingSetSize / (1024 * 1024));
+
         //PagefileUsage
         //
         //The Commit Charge value in bytes for this process. Commit Charge is the total amount of memory that the memory manager has committed for a running process.
@@ -170,7 +181,7 @@ public:
         //
         //The peak value in bytes of the Commit Charge during the lifetime of this process.
 
-        Msg("Engine memory usage: [%I64dMB], peak: [%I64dMB]",
+        Msg("Engine memory usage (Commit Charge): [%I64dMB], peak: [%I64dMB]",
             memCounters.PagefileUsage / (1024 * 1024), memCounters.PeakPagefileUsage / (1024 * 1024));
 
         Log("--------------------------------------------------------------------------------");
