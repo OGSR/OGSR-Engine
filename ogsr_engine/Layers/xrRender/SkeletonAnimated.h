@@ -147,11 +147,9 @@ public:
     void DestroyCycle(CBlend& B);
 
     // cycles
-    MotionID ID_Cycle(LPCSTR N);
-    MotionID ID_Cycle_Safe(LPCSTR N);
-    MotionID ID_Cycle(shared_str N);
-    MotionID ID_Cycle_Safe(shared_str N);
-    CBlend* PlayCycle(LPCSTR N, BOOL bMixIn = TRUE, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0);
+    MotionID ID_Cycle(const shared_str& N) override;
+    MotionID ID_Cycle_Safe(const shared_str& N) override;
+    CBlend* PlayCycle(const shared_str& N, BOOL bMixIn = TRUE, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0) override;
     CBlend* PlayCycle(MotionID M, BOOL bMixIn = TRUE, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0);
     CBlend* PlayCycle(u16 partition, MotionID M, BOOL bMixIn = TRUE, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0);
     // fx'es

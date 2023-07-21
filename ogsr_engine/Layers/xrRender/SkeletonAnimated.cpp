@@ -153,7 +153,13 @@ u16 CKinematicsAnimated::LL_PartID(LPCSTR B)
 }
 
 // cycles
-MotionID CKinematicsAnimated::ID_Cycle_Safe(LPCSTR N)
+MotionID CKinematicsAnimated::ID_Cycle(const shared_str& N)
+{
+    MotionID motion_ID = ID_Cycle_Safe(N);
+    ASSERT_FMT(motion_ID.valid(), "! MODEL [%s]: can't find cycle: [%s]", dbg_name.c_str(), N.c_str());
+    return motion_ID;
+}
+MotionID CKinematicsAnimated::ID_Cycle_Safe(const shared_str& N)
 {
     MotionID motion_ID;
     for (int k = int(m_Motions.size()) - 1; k >= 0; --k)
@@ -168,33 +174,7 @@ MotionID CKinematicsAnimated::ID_Cycle_Safe(LPCSTR N)
     }
     return motion_ID;
 }
-MotionID CKinematicsAnimated::ID_Cycle(shared_str N)
-{
-    MotionID motion_ID = ID_Cycle_Safe(N);
-    R_ASSERT3(motion_ID.valid(), "! MODEL: can't find cycle: ", N.c_str());
-    return motion_ID;
-}
-MotionID CKinematicsAnimated::ID_Cycle_Safe(shared_str N)
-{
-    MotionID motion_ID;
-    for (int k = int(m_Motions.size()) - 1; k >= 0; --k)
-    {
-        shared_motions* s_mots = &m_Motions[k].motions;
-        auto I = s_mots->cycle()->find(N);
-        if (I != s_mots->cycle()->end())
-        {
-            motion_ID.set(u16(k), I->second);
-            break;
-        }
-    }
-    return motion_ID;
-}
-MotionID CKinematicsAnimated::ID_Cycle(LPCSTR N)
-{
-    MotionID motion_ID = ID_Cycle_Safe(N);
-    R_ASSERT3(motion_ID.valid(), "! MODEL: can't find cycle: ", N);
-    return motion_ID;
-}
+
 void CKinematicsAnimated::LL_FadeCycle(u16 part, float falloff, u8 mask_channel /*= (1<<0)*/)
 {
     BlendSVec& Blend = blend_cycles[part];
@@ -364,16 +344,10 @@ CBlend* CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL bMi
     VERIFY(m_def);
     return LL_PlayCycle(part, motion_ID, bMixIn, m_def->Accrue(), m_def->Falloff(), m_def->Speed(), m_def->StopAtEnd(), Callback, CallbackParam, channel);
 }
-CBlend* CKinematicsAnimated::PlayCycle(LPCSTR N, BOOL bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel /*= 0*/)
+CBlend* CKinematicsAnimated::PlayCycle(const shared_str& N, BOOL bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel /*= 0*/)
 {
     MotionID motion_ID = ID_Cycle(N);
-    if (motion_ID.valid())
-        return PlayCycle(motion_ID, bMixIn, Callback, CallbackParam, channel);
-    else
-    {
-        Debug.fatal(DEBUG_INFO, "! MODEL: can't find cycle: %s", N);
-        return 0;
-    }
+    return PlayCycle(motion_ID, bMixIn, Callback, CallbackParam, channel);
 }
 CBlend* CKinematicsAnimated::PlayCycle(MotionID motion_ID, BOOL bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel /*= 0*/)
 {
