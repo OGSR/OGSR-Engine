@@ -53,7 +53,8 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
     string_path cTexture;
 
     LPCSTR _lang = pSettings->r_string("string_table", "font_prefix");
-    bool is_di = strstr(cTextureName, "ui_font_hud_01") || strstr(cTextureName, "ui_font_hud_02") || strstr(cTextureName, "ui_font_console_02");
+    const bool is_di = strstr(cTextureName, "ui_font_hud_01") || strstr(cTextureName, "ui_font_hud_02") || strstr(cTextureName, "ui_font_console_02");
+
     if (_lang && !is_di)
         strconcat(sizeof(cTexture), cTexture, cTextureName, _lang);
     else
@@ -81,8 +82,10 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
     const u32 nNumChars = is_mb ? (std::numeric_limits<unsigned short>::max() + 1) : (std::numeric_limits<unsigned char>::max() + 1);
     TCMap = std::make_unique<Fvector[]>(nNumChars);
 
-    // float fwc = READ_IF_EXISTS(ini, r_float, "width_correction", "value", 0.0f); // Это раньше не работало, теперь работает, и чтоб старые кривые конфиги не работали криво, имя параметра переименовано.
-    float fwc = READ_IF_EXISTS(ini, r_float, "font_width_correction", "value", 0.0f);
+    // float fwc = READ_IF_EXISTS(ini, r_float, "width_correction", "value", 0.0f);
+    // Это раньше не работало, теперь работает, и чтоб старые кривые конфиги не работали криво, имя
+    // параметра переименовано.
+    const float fwc = READ_IF_EXISTS(ini, r_float, "font_width_correction", "value", 0.0f);
 
     if (is_mb)
     {
@@ -130,6 +133,18 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
         TCMap[0x0020].set(0, 0, 0);
         // Special case for ideographic space
         TCMap[0x3000].set(0, 0, 0);
+
+        // костыль что б mb font можно было использовать без конвертации ресурсов в utf8
+        static const bool enable_ansi_aupport_for_mb_fonts = READ_IF_EXISTS(pSettings, r_bool, "features", "enable_ansi_aupport_for_mb_fonts", true);
+        if (enable_ansi_aupport_for_mb_fonts)
+        {
+            // add remap for local rus
+            for (u16 i = 0; i < 256; i++)
+                TCMap[0xC0 + i] = TCMap[0x410 + i];
+
+            TCMap[0xA8] = TCMap[0x401];
+            TCMap[0xB8] = TCMap[0x451];
+        }
     }
     else if (ini->section_exist("symbol_coords"))
     {
