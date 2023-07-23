@@ -37,6 +37,7 @@ public:
     void SetCursorColor(u32 color) { m_dwCursorColor = color; }
     void AddCharAtCursor(const u16 ch);
     void DelLeftChar();
+    void DelCurrentChar();
     void MoveCursorToEnd();
 
     void SetTextComplexMode(bool mode = true);

@@ -139,7 +139,26 @@ void CUILines::DelLeftChar()
     {
         m_text.erase(m_text.begin() + m_iCursorPos - 1);
         m_text_mask.erase(m_text_mask.begin() + m_iCursorPos - 1);
-        --m_iCursorPos;
+        m_iCursorPos -= 1;
+    }
+
+    uFlags.set(flNeedReparse, TRUE);
+}
+
+void CUILines::DelCurrentChar()
+{
+    if (m_text.empty() || m_iCursorPos >= m_text.size())
+        return;
+
+    if (m_text_mask.at(m_iCursorPos))
+    {
+        m_text.erase(m_text.begin() + m_iCursorPos, m_text.begin() + m_iCursorPos + 2);
+        m_text_mask.erase(m_text_mask.begin() + m_iCursorPos, m_text_mask.begin() + m_iCursorPos + 2);
+    }
+    else
+    {
+        m_text.erase(m_text.begin() + m_iCursorPos);
+        m_text_mask.erase(m_text_mask.begin() + m_iCursorPos);
     }
 
     uFlags.set(flNeedReparse, TRUE);
@@ -293,7 +312,7 @@ void CUILines::ParseText()
                 bool is_wide_char =
                     m_pFont->IsMultibyte() && *reinterpret_cast<const unsigned char*>(&sbl.m_text[idx]) > std::numeric_limits<char>::max() && (idx + 1) < sub_len;
 
-                auto get_Wstr_width = [](const CGameFont* pFont, const char* ch) {
+                auto get_wstr_width = [](const CGameFont* pFont, const char* ch) {
                     u16 wchar{};
                     const int wchars_num = MultiByteToWideChar(CP_UTF8, 0, ch, 2, reinterpret_cast<LPWSTR>(&wchar), 1);
                     // Msg("--MultiByteToWideChar returned symbol [%u]", wchar);
@@ -319,7 +338,8 @@ void CUILines::ParseText()
                 else
                     Msg("~~Size of A symbol [%d] is [%f], curr_width: [%f], max_width: [%f]", sbl.m_text[idx], get_str_width(m_pFont, sbl.m_text[idx]), curr_width, max_width);
                 */
-                const float char_width = is_wide_char ? get_Wstr_width(m_pFont, &sbl.m_text[idx]) : (m_pFont->IsMultibyte() && iswspace(sbl.m_text[idx]) ? get_space_width(m_pFont) : get_str_width(m_pFont, sbl.m_text[idx]));
+                const float char_width = is_wide_char ? get_wstr_width(m_pFont, &sbl.m_text[idx]) :
+                                                        (m_pFont->IsMultibyte() && iswspace(sbl.m_text[idx]) ? get_space_width(m_pFont) : get_str_width(m_pFont, sbl.m_text[idx]));
 
                 if (!is_wide_char && iswspace(sbl.m_text[idx]))
                 {
@@ -773,7 +793,7 @@ void CUILines::DecCursorPos()
     if (m_text_mask.at(m_iCursorPos - 1))
         m_iCursorPos -= 2;
     else
-        --m_iCursorPos;
+        m_iCursorPos--;
 }
 
 void CUILines::UpdateCursor()
