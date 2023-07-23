@@ -333,30 +333,14 @@ void CConsole::OnRender()
 		pFont2->SetHeightI(0.025f);
 	}
 
-	bool bGame = true;
-	//if ((g_pGameLevel && g_pGameLevel->bReady) ||
-	//	(g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive()))
-	//{
-	//	bGame = true;
-	//}
+    const bool bGame = true;
 
 	if (bVisible)
 		DrawBackgrounds(bGame);
 
-	float fMaxY;
-	float dwMaxY = (float)Device.dwHeight;
+	float fMaxY{0.0f};
 
-	if (bGame)
-	{
-		fMaxY = 0.0f;
-		dwMaxY /= 2;
-	}
-	else
-	{
-		fMaxY = 1.0f;
-	}
-
-	float ypos = fMaxY - lineDistance * 1.1f;
+	float ypos = fMaxY - LDIST; // тут нужно всегда вычитать оригинальную высоту без учета интервала
 	float scr_x = 1.0f / Device.fWidth_2;
 
 	//---------------------------------------------------------------------------------
@@ -386,7 +370,7 @@ void CConsole::OnRender()
         pFont->OutI(-1.0f + out_pos * scr_x, ypos, "%s", ioc_prompt);
         out_pos += ioc_d;
 
-        if (!m_disable_tips && m_tips.size())
+        if (!m_disable_tips && !m_tips.empty())
         {
             pFont->SetColor(tips_font_color);
 
@@ -399,11 +383,15 @@ void CConsole::OnRender()
             case 3: shift_x = scr_x * str_length; break;
             }
 
+			float start = fMaxY;
+
+			start = start - (1.f - pFont->GetInterval().y) * lineDistance; // какая то магия что б первая строка подсказок не прыгала при измении интервала
+
             vecTipsEx::iterator itb = m_tips.begin() + m_start_tip;
             vecTipsEx::iterator ite = m_tips.end();
             for (u32 i = 0; itb != ite; ++itb, ++i) // tips
             {
-                pFont->OutI(-1.0f + shift_x, fMaxY + i * lineDistance, "%s", (*itb).text.c_str());
+                pFont->OutI(-1.0f + shift_x, start + i * lineDistance, "%s", (*itb).text.c_str());
                 if (i >= VIEW_TIPS_COUNT - 1)
                 {
                     break; // for
@@ -466,7 +454,7 @@ void CConsole::OnRender()
 	itoa(log_line, q, 10);
 	u32 qn = xr_strlen(q);
 	pFont->SetColor(total_font_color);
-	pFont->OutI(0.95f - 0.03f * qn, fMaxY - 2.0f * lineDistance, "[%d]", log_line);
+    pFont->OutI(0.95f - 0.03f * qn, fMaxY - 2.0f * (LDIST), "[%d]", log_line);
 
 	pFont->OnRender();
 	pFont2->OnRender();
@@ -485,7 +473,7 @@ void CConsole::DrawBackgrounds(bool bGame)
 
 	DrawRect(r, back_color);
 
-	if (m_tips.size() == 0 || m_disable_tips)
+	if (m_tips.empty() || m_disable_tips)
 	{
 		UIRender->FlushPrimitive();
 		return;
@@ -511,7 +499,7 @@ void CConsole::DrawBackgrounds(bool bGame)
 
 	float font_h = pFont->CurrentHeight_();
     float tips_h = std::min(m_tips.size(), (size_t)VIEW_TIPS_COUNT) * font_h;
-	tips_h += (m_tips.size() > 0) ? 5.0f : 0.0f;
+	//tips_h += (!m_tips.empty()) ? 5.0f : 0.0f; // убрал, хз зачем там 5 пикслелей снизу добовлялось. не красиво )
 
 	Frect pr, sr;
 	pr.x1 = ioc_w + cur_cmd_w;
@@ -521,6 +509,8 @@ void CConsole::DrawBackgrounds(bool bGame)
 	pr.y1 *= float(Device.dwHeight) / UI_BASE_HEIGHT;
 
 	pr.y2 = pr.y1 + tips_h;
+
+	DrawRect(pr, tips_back_color);
 
 	float select_y = 0.0f;
 	float select_h = 0.0f;
@@ -539,7 +529,6 @@ void CConsole::DrawBackgrounds(bool bGame)
 	sr.x2 = pr.x2;
 	sr.y2 = sr.y1 + select_h;
 
-	DrawRect(pr, tips_back_color);
 	DrawRect(sr, tips_select_color);
 
 	// --------------------------- highlight words --------------------
