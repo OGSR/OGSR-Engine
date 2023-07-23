@@ -10,7 +10,7 @@ IC bool pred_area(light* _1, light* _2)
 bool check_grass_shadow(light* L, CFrustum VB)
 {
     // Grass shadows are allowed?
-    if (ps_ssfx_grass_shadows.x < 3 || !ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
+    if (ps_ssfx_grass_shadows.x < 1 || !ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
         return false;
     // Inside the range?
         if (L->vis.distance > ps_ssfx_grass_shadows.z)
