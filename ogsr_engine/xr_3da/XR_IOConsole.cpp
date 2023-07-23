@@ -375,6 +375,7 @@ void CConsole::OnRender()
         // strncpy_s( buf1, cur_pos, editor, MAX_LEN );
         float str_length = ioc_d + pFont->SizeOf_(s_cursor);
         float out_pos = 0.0f;
+
         if (str_length > scr_width)
         {
             out_pos -= (str_length - scr_width);
@@ -417,25 +418,19 @@ void CConsole::OnRender()
 		// из за того что тут строка по факту состоит из 3х, и из за того что ширина строк округляется, при рендере все плянет
 		// переделал тут на символьный вывод. в таком случае оно получше все выглядит
 
-		for (size_t c = 0; c < strlen(s_b_mark); c++)
-        {
-            pFont->OutI(-1.0f + out_pos * scr_x, ypos, "%c", s_b_mark[c]);
-            out_pos += pFont->SizeOf_(s_b_mark[c]);
-        }
+		auto draw_string = [&](LPCSTR str) {
+            for (size_t c = 0; c < strlen(str); c++)
+            {
+                pFont->OutI(-1.0f + out_pos * scr_x, ypos, "%c", str[c]);
+                out_pos += pFont->SizeOf_(str[c]);
+                if (str[c] == ' ' && pFont->IsMultibyte())
+                    out_pos += pFont->GetfXStep();
+            }
+        };
 
-		for (size_t c = 0; c < strlen(s_mark); c++)
-        {
-            pFont2->OutI(-1.0f + out_pos * scr_x, ypos, "%c", s_mark[c]);
-            out_pos += pFont2->SizeOf_(s_mark[c]);
-        }
-
-		for (size_t c = 0; c < strlen(s_mark_a); c++)
-        {
-            pFont->OutI(-1.0f + out_pos * scr_x, ypos, "%c", s_mark_a[c]);
-            out_pos += pFont2->SizeOf_(s_mark_a[c]);
-        }
-
-        // pFont2->OutI( -1.0f + ioc_d * scr_x, ypos, "%s", editor=all );
+		draw_string(s_b_mark);
+        draw_string(s_mark);
+        draw_string(s_mark_a);
 
         if (ec().cursor_view())
         {

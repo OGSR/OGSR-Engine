@@ -327,9 +327,9 @@ void __cdecl CGameFont::OutNext(LPCSTR fmt, ...) { MASTER_OUT(TRUE, FALSE, FALSE
 
 void CGameFont::OutSkip(float val) { fCurrentY += val * CurrentHeight_(); }
 
-float CGameFont::SizeOf_(const char cChar) { return (GetCharTC((u16)(u8)(((IsMultibyte() && cChar == ' ')) ? 0 : cChar)).z * vInterval.x * GetWidthScale()); }
+float CGameFont::SizeOf_(const char cChar) { return GetCharTC((u16)(u8)(/*IsMultibyte() && cChar == ' ' ? 0 :*/ cChar)).z * vInterval.x * GetWidthScale(); }
 
-float CGameFont::SizeOf_(const u16 cChar) { return GetCharTC((IsMultibyte() && cChar == ' ') ? 0 : cChar).z * vInterval.x * GetWidthScale(); }
+float CGameFont::SizeOf_(const u16 cChar) { return GetCharTC(/*IsMultibyte() && cChar == ' ' ? 0 :*/ cChar).z * vInterval.x * GetWidthScale(); }
 
 float CGameFont::SizeOf_(LPCSTR s)
 {

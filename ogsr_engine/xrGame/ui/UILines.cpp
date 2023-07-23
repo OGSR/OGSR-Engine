@@ -168,13 +168,6 @@ LPCSTR CUILines::GetText() { return m_text.c_str(); }
 
 void CUILines::Reset() { m_lines.clear(); }
 
-float get_str_width(CGameFont* pFont, char ch)
-{
-    float ll = pFont->SizeOf_(ch);
-    UI()->ClientToScreenScaledWidth(ll);
-    return ll;
-}
-
 void CUILines::ParseText()
 {
     if (!fsimilar(m_oldWidth, m_wndSize.x))
@@ -294,17 +287,20 @@ void CUILines::ParseText()
     }
     else
     {
+        constexpr float __eps = 5.f;
+
         const float max_width = m_wndSize.x;
-        constexpr float __eps = 0.1f;
-        CUILine tmp_line;
         float curr_width{};
+
+        CUILine tmp_line;
 
         const size_t sbl_cnt = line->m_subLines.size();
         for (size_t sbl_idx{}; sbl_idx < sbl_cnt; ++sbl_idx)
         {
-            const bool b_last_subl = (sbl_idx == sbl_cnt - 1);
+            const bool b_last_subl = sbl_idx == sbl_cnt - 1;
             CUISubLine& sbl = line->m_subLines[sbl_idx];
             const size_t sub_len = sbl.m_text.length();
+
             size_t curr_w_pos{}, last_space_idx{};
 
             for (size_t idx{}; idx < sub_len;)
@@ -312,24 +308,30 @@ void CUILines::ParseText()
                 bool is_wide_char =
                     m_pFont->IsMultibyte() && *reinterpret_cast<const unsigned char*>(&sbl.m_text[idx]) > std::numeric_limits<char>::max() && (idx + 1) < sub_len;
 
-                auto get_wstr_width = [](const CGameFont* pFont, const char* ch) {
+                auto get_str_width = [](CGameFont* pFont, const char ch) {
+                    float fDelta = pFont->SizeOf_(ch);
+                    return fDelta;
+                };
+
+                auto get_wstr_width = [](CGameFont* pFont, const char* ch) {
                     u16 wchar{};
                     const int wchars_num = MultiByteToWideChar(CP_UTF8, 0, ch, 2, reinterpret_cast<LPWSTR>(&wchar), 1);
+
                     // Msg("--MultiByteToWideChar returned symbol [%u]", wchar);
+
                     if (wchars_num < 1) // Такое бывает на неподдерживаемых языках кроме rus/eng, мб ещё в каких то редких случаях
                     {
                         // Msg("!!--MultiByteToWideChar returned 0 symbols. Something strange! String: [%s]", ch);
                         return 0.f;
                     }
 
-                    float fDelta = pFont->GetCharTC(wchar).z * pFont->GetWidthScale() * pFont->GetInterval().x;
-                    UI()->ClientToScreenScaledWidth(fDelta);
+                    float fDelta = pFont->SizeOf_(wchar);
                     return fDelta;
                 };
-                auto get_space_width = [](const CGameFont* pFont) {
-                    float fDelta = pFont->GetCharTC(0).z * pFont->GetWidthScale() * pFont->GetInterval().x;
+
+                auto get_space_width = [](CGameFont* pFont) {
+                    float fDelta = pFont->SizeOf_(' ');
                     fDelta += pFont->GetfXStep();
-                    UI()->ClientToScreenScaledWidth(fDelta);
                     return fDelta;
                 };
                 /*
@@ -338,16 +340,19 @@ void CUILines::ParseText()
                 else
                     Msg("~~Size of A symbol [%d] is [%f], curr_width: [%f], max_width: [%f]", sbl.m_text[idx], get_str_width(m_pFont, sbl.m_text[idx]), curr_width, max_width);
                 */
-                const float char_width = is_wide_char ? get_wstr_width(m_pFont, &sbl.m_text[idx]) :
-                                                        (m_pFont->IsMultibyte() && iswspace(sbl.m_text[idx]) ? get_space_width(m_pFont) : get_str_width(m_pFont, sbl.m_text[idx]));
+
+                float char_width = is_wide_char ? get_wstr_width(m_pFont, &sbl.m_text[idx]) :
+                                                        m_pFont->IsMultibyte() && iswspace(sbl.m_text[idx]) ? get_space_width(m_pFont) : get_str_width(m_pFont, sbl.m_text[idx]);
+
+                UI()->ClientToScreenScaledWidth(char_width);
 
                 if (!is_wide_char && iswspace(sbl.m_text[idx]))
                 {
                     last_space_idx = idx;
                 }
 
-                const bool bOver = (curr_width + char_width + __eps) > max_width;
-                const bool b_last_ch = idx == (sub_len - (is_wide_char ? 2 : 1));
+                const bool bOver = curr_width + char_width + __eps > max_width;
+                const bool b_last_ch = idx == sub_len - (is_wide_char ? 2 : 1);
 
                 if (bOver || b_last_ch)
                 {
@@ -367,7 +372,7 @@ void CUILines::ParseText()
                     curr_width += char_width;
                 }
 
-                if (bOver || (b_last_ch && sbl.m_last_in_line))
+                if (bOver || b_last_ch && sbl.m_last_in_line)
                 {
                     m_lines.push_back(tmp_line);
                     tmp_line.Clear();
