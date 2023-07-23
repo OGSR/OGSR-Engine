@@ -26,26 +26,30 @@ private:
         EAligment align;
     };
 
-protected:
-    Fvector2 vHalfPixel;
-    Ivector2 vTS;
 
+    float fXStep;
+
+    float fTCHeight;
+
+    float fXScale{};
+    float fYScale{};
+
+    IFontRender* pFontRender;
+
+    std::unique_ptr<Fvector[]> TCMap;
     EAligment eCurrentAlignment;
     u32 dwCurrentColor;
     float fCurrentHeight;
     float fCurrentX, fCurrentY;
     Fvector2 vInterval;
 
-    std::unique_ptr<Fvector[]> TCMap;
-    float fHeight;
-    float fXStep;
-    float fYStep;
-    float fTCHeight;
-    float fXScale{};
-    float fYScale{};
-    xr_vector<String> strings;
+protected:
 
-    IFontRender* pFontRender;
+    float fHeight; // оригинальная высота
+
+    xr_vector<String> strings;
+    
+    Ivector2 vTS;
 
     u32 uFlags;
 

@@ -20,7 +20,6 @@ CGameFont::CGameFont(LPCSTR section, u32 flags)
     pFontRender = RenderFactory->CreateFontRender();
     fCurrentHeight = 0.0f;
     fXStep = 0.0f;
-    fYStep = 0.0f;
     uFlags = flags;
 
     Initialize(pSettings->r_string(section, "shader"), pSettings->r_string(section, "texture"));
@@ -42,7 +41,6 @@ CGameFont::CGameFont(LPCSTR shader, LPCSTR texture, u32 flags)
     pFontRender = RenderFactory->CreateFontRender();
     fCurrentHeight = 0.0f;
     fXStep = 0.0f;
-    fYStep = 0.0f;
     uFlags = flags;
 
     Initialize(shader, texture);
@@ -224,18 +222,21 @@ u16 CGameFont::GetCutLengthPos(float fTargetWidth, const char* pszText)
 {
     VERIFY(pszText);
 
-    wide_char wsStr[MAX_MB_CHARS], wsPos[MAX_MB_CHARS];
     float fCurWidth = 0.0f, fDelta = 0.0f;
+
+    // vInterval.x  ???
+
+    wide_char wsStr[MAX_MB_CHARS], wsPos[MAX_MB_CHARS];
 
     u16 len = mbhMulti2Wide(wsStr, wsPos, MAX_MB_CHARS, pszText);
     u16 i = 1;
 
     for (; i <= len; i++)
     {
-        fDelta = GetCharTC(wsStr[i]).z;
+        fDelta = (GetCharTC(wsStr[i]).z * GetWidthScale());
 
         if (IsNeedSpaceCharacter(wsStr[i]))
-            fDelta += fXStep;
+            fDelta += GetfXStep() * GetWidthScale();
 
         if ((fCurWidth + fDelta) > fTargetWidth)
             break;
@@ -252,21 +253,23 @@ u16 CGameFont::SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, 
 
     wide_char wsStr[MAX_MB_CHARS], wsPos[MAX_MB_CHARS];
     float fCurWidth = 0.0f, fDelta = 0.0f;
-    u16 nLines = 0;
 
     u16 len = mbhMulti2Wide(wsStr, wsPos, MAX_MB_CHARS, pszText);
+    u16 nLines = 0;
+
+    // vInterval.x  ???
 
     for (u16 i = 1; i <= len; i++)
     {
-        fDelta = (GetCharTC(wsStr[i]).z * GetWidthScale());
+        fDelta = GetCharTC(wsStr[i]).z * GetWidthScale();
 
         if (IsNeedSpaceCharacter(wsStr[i]))
-            fDelta += fXStep;
+            fDelta += GetfXStep() * GetWidthScale();
 
-        if (((fCurWidth + fDelta) > fTargetWidth) && // overlength
-            (!IsBadStartCharacter(wsStr[i])) && // can start with this character
+        if (fCurWidth + fDelta > fTargetWidth && // overlength
+            !IsBadStartCharacter(wsStr[i]) && // can start with this character
             (i < len) && // is not the last character
-            ((i > 1) && (!IsBadEndCharacter(wsStr[i - 1]))) // && // do not stop the string on a "bad" character
+            (i > 1 && (!IsBadEndCharacter(wsStr[i - 1]))) // && // do not stop the string on a "bad" character
         )
         {
             fCurWidth = fDelta;
@@ -367,7 +370,7 @@ float CGameFont::SizeOf_(const wide_char* wsStr)
         {
             fDelta = GetCharTC(wsStr[j]).z;
             if (IsNeedSpaceCharacter(wsStr[j]))
-                fDelta += fXStep;
+                fDelta += GetfXStep();
             X += fDelta;
         }
 

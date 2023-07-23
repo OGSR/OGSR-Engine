@@ -331,7 +331,7 @@ void CUILines::ParseText()
 
                 auto get_space_width = [](CGameFont* pFont) {
                     float fDelta = pFont->SizeOf_(' ');
-                    fDelta += pFont->GetfXStep();
+                    fDelta += pFont->GetfXStep() * pFont->GetInterval().x * pFont->GetWidthScale();
                     return fDelta;
                 };
                 /*
@@ -467,6 +467,7 @@ void CUILines::Draw(float x, float y)
 
         text_pos.x = x + GetIndentByAlign();
         text_pos.y = y + GetVIndentByAlign();
+
         UI()->ClientToScreenScaled(text_pos);
 
         if (uFlags.test(flPasswordMode))
@@ -525,9 +526,6 @@ void CUILines::DrawCursor(float x, float y)
     float _h = m_pFont->CurrentHeight_();
     UI()->ClientToScreenScaledHeight(_h);
 
-    Fvector2 outXY;
-    outXY.y = y + (_h + m_interval) * m_cursor_pos.y;
-
     float _w_tmp = 0;
 
     if (!m_text.empty())
@@ -564,12 +562,15 @@ void CUILines::DrawCursor(float x, float y)
         }
 
         buff[m_cursor_pos.x] = 0;
+
         _w_tmp = m_pFont->SizeOf_(buff);
     }
 
     UI()->ClientToScreenScaledWidth(_w_tmp);
 
+    Fvector2 outXY;
     outXY.x = x + _w_tmp;
+    outXY.y = y + (_h + m_interval) * m_cursor_pos.y;
 
     UI()->ClientToScreenScaled(outXY);
 
