@@ -418,19 +418,19 @@ void CConsole::OnRender()
 		// из за того что тут строка по факту состоит из 3х, и из за того что ширина строк округляется, при рендере все плянет
 		// переделал тут на символьный вывод. в таком случае оно получше все выглядит
 
-		auto draw_string = [&](LPCSTR str) {
+		auto draw_string = [&](CGameFont* f, LPCSTR str) {
             for (size_t c = 0; c < strlen(str); c++)
             {
-                pFont->OutI(-1.0f + out_pos * scr_x, ypos, "%c", str[c]);
-                out_pos += pFont->SizeOf_(str[c]);
-                if (str[c] == ' ' && pFont->IsMultibyte())
-                    out_pos += pFont->GetfXStep();
+                f->OutI(-1.0f + out_pos * scr_x, ypos, "%c", str[c]);
+                out_pos += f->SizeOf_(str[c]);
+                if (str[c] == ' ' && f->IsMultibyte())
+                    out_pos += f->GetfXStep();
             }
         };
 
-		draw_string(s_b_mark);
-        draw_string(s_mark);
-        draw_string(s_mark_a);
+		draw_string(pFont, s_b_mark);
+        draw_string(pFont2, s_mark);
+        draw_string(pFont, s_mark_a);
 
         if (ec().cursor_view())
         {
