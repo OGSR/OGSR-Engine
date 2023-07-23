@@ -15,7 +15,6 @@
 #include "../../xr_3da/environment.h"
 #include <xmmintrin.h>
 
-
 const float dbgOffset = 0.f;
 const int dbgItems = 128;
 
@@ -410,7 +409,7 @@ u32 reset_frame = 0;
 void CDetailManager::StartAsync()
 {
     if (!ps_r2_ls_flags.test((u32)R2FLAG_EXP_MT_DETAILS))
-        return;    
+        return;
 
     if (reset_frame == Device.dwFrame)
         return;
@@ -464,9 +463,9 @@ void CDetailManager::MT_CALC()
 }
 void CDetailManager::details_clear()
 {
-     // Disable fade, next render will be scene
-        fade_distance = 99999;
-    if (ps_ssfx_grass_shadows.x <= 0) 
+    // Disable fade, next render will be scene
+    fade_distance = 99999;
+    if (ps_ssfx_grass_shadows.x <= 0)
         return;
     for (u32 x = 0; x < 3; x++)
     {
@@ -474,13 +473,10 @@ void CDetailManager::details_clear()
         for (u32 O = 0; O < objects.size(); O++)
         {
             xr_vector<SlotItemVec*>& vis = list[O];
-            if (!vis.empty()) 
+            if (!vis.empty())
             {
                 vis.clear();
             }
-            
         }
-        
     }
-    
 }

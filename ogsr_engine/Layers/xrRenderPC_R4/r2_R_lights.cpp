@@ -13,14 +13,13 @@ bool check_grass_shadow(light* L, CFrustum VB)
     if (ps_ssfx_grass_shadows.x < 1 || !ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
         return false;
     // Inside the range?
-        if (L->vis.distance > ps_ssfx_grass_shadows.z)
+    if (L->vis.distance > ps_ssfx_grass_shadows.z)
         return false;
     // Is in view? L->vis.visible?
-      u32 mask = 0xff;
+    u32 mask = 0xff;
     if (!VB.testSphere(L->position, L->range * 0.6f, mask))
         return false;
     return true;
-    
 }
 
 void CRender::render_lights(light_Package& LP)
@@ -110,7 +109,7 @@ void CRender::render_lights(light_Package& LP)
         while (!source.empty())
         {
             light* L = source.back();
-       
+
             if (L->vis.smap_ID != sid)
                 break;
 
@@ -145,14 +144,14 @@ void CRender::render_lights(light_Package& LP)
                 RCache.set_xform_project(L->X.S.project);
                 r_dsgraph_render_graph(0);
                 if (Details)
+                {
+                    if (check_grass_shadow(L, ViewBase))
                     {
-                        if (check_grass_shadow(L, ViewBase))
-                        {
-                            Details->fade_distance = -1; // Use light position to calc "fade"
-                            Details->light_position.set(L->position);
-                            Details->Render();
-                        }
+                        Details->fade_distance = -1; // Use light position to calc "fade"
+                        Details->light_position.set(L->position);
+                        Details->Render();
                     }
+                }
                 L->X.S.transluent = FALSE;
                 if (bSpecial)
                 {

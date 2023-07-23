@@ -98,7 +98,9 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
                 RCache.set_c(strDir2D, wind);
                 RCache.set_c(strXForm, Device.mFullTransform);
 
-                RCache.set_c(strBendersSetup, Fvector4{ps_ssfx_int_grass_params_1.x, ps_ssfx_int_grass_params_1.y, ps_ssfx_int_grass_params_1.z, ps_r2_ls_flags_ext.test(SSFX_INTER_GRASS) ? ps_ssfx_grass_interactive.y : 0.f});
+                RCache.set_c(strBendersSetup,
+                             Fvector4{ps_ssfx_int_grass_params_1.x, ps_ssfx_int_grass_params_1.y, ps_ssfx_int_grass_params_1.z,
+                                      ps_r2_ls_flags_ext.test(SSFX_INTER_GRASS) ? ps_ssfx_grass_interactive.y : 0.f});
 
                 if (ps_r2_ls_flags_ext.test(SSFX_INTER_GRASS))
                 {
@@ -137,7 +139,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 
                         // Sort of fade using the scale
                         // fade_distance == -1 use light_position to define "fade", anything else uses fade_distance
-                            if (fade_distance <= -1)
+                        if (fade_distance <= -1)
                             scale *= 1.0f - Instance.position.distance_to_xz_sqr(light_position) * 0.005f;
                         else if (Instance.distance > fade_distance)
                             scale *= 1.0f - abs(Instance.distance - fade_distance) * 0.005f;
@@ -175,6 +177,7 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
                         }
                     }
                 }
+
                 // flush if nessecary
                 if (dwBatch)
                 {
@@ -184,18 +187,22 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
                     RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, dwCNT_verts, iOffset, dwCNT_prims);
                     RCache.stat.r.s_details.add(dwCNT_verts);
                 }
+
                 if (ps_ssfx_grass_shadows.x <= 0)
                 {
-                    if (!ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) ||
-                        ((ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && (RImplementation.PHASE_SMAP == RImplementation.phase)) // phase smap with shadows
-                         || (ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && (RImplementation.PHASE_NORMAL == RImplementation.phase) &&
-                             (!RImplementation.is_sun())) // phase normal with shadows without sun
-
-                         || (!ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && (RImplementation.PHASE_NORMAL == RImplementation.phase)))) // phase normal without shadows
+                    if (
+                        !ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) ||
+                        (
+                            ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && RImplementation.PHASE_SMAP == RImplementation.phase // phase smap with shadows
+                         || ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && RImplementation.PHASE_NORMAL == RImplementation.phase && !RImplementation.is_sun() // phase normal with shadows without sun
+                         || !ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && RImplementation.PHASE_NORMAL == RImplementation.phase // phase normal without shadows
+                         )
+                        )
+                    {
                         vis.clear();
+                    }
                 }
             }
-            
         }
         vOffset += hw_BatchSize * Object.number_vertices;
         iOffset += hw_BatchSize * Object.number_indices;
