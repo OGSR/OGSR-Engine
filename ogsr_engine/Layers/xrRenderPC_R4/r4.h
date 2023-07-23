@@ -113,6 +113,7 @@ public:
     } stats;
 
 public:
+    bool is_sun();
     // Sector detection and visibility
     CSector* pLastSector;
     Fvector vLastCameraPos;

@@ -509,8 +509,13 @@ void CRender::render_sun_cascade(u32 cascade_ind)
             RCache.set_xform_view(Fidentity);
             RCache.set_xform_project(fuckingsun->X.D.combine);
             r_dsgraph_render_graph(0);
-            if (ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
+
+            if (ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && cascade_ind <= ps_ssfx_grass_shadows.x)
+            {
+                Details->fade_distance = dm_fade * dm_fade * ps_ssfx_grass_shadows.y;
                 Details->Render();
+            }
+
             fuckingsun->X.D.transluent = FALSE;
             if (bSpecial)
             {

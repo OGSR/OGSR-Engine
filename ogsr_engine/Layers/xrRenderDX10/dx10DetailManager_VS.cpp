@@ -134,6 +134,18 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
 
                         // Build matrix ( 3x4 matrix, last row - color )
                         float scale = Instance.scale_calculated;
+
+                        // Sort of fade using the scale
+                        // fade_distance == -1 use light_position to define "fade", anything else uses fade_distance
+                            if (fade_distance <= -1)
+                            scale *= 1.0f - Instance.position.distance_to_xz_sqr(light_position) * 0.005f;
+                        else if (Instance.distance > fade_distance)
+                            scale *= 1.0f - abs(Instance.distance - fade_distance) * 0.005f;
+                        if (scale <= 0)
+                            break;
+                        // Build matrix ( 3x4 matrix, last row - color )
+                        // float scale = Instance.scale_calculated;
+
                         Fmatrix& M = Instance.mRotY;
                         c_storage[base + 0].set(M._11 * scale, M._21 * scale, M._31 * scale, M._41);
                         c_storage[base + 1].set(M._12 * scale, M._22 * scale, M._32 * scale, M._42);
@@ -172,7 +184,18 @@ void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave
                     RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, dwCNT_verts, iOffset, dwCNT_prims);
                     RCache.stat.r.s_details.add(dwCNT_verts);
                 }
+                if (ps_ssfx_grass_shadows.x <= 0)
+                {
+                    if (!ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) ||
+                        ((ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && (RImplementation.PHASE_SMAP == RImplementation.phase)) // phase smap with shadows
+                         || (ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && (RImplementation.PHASE_NORMAL == RImplementation.phase) &&
+                             (!RImplementation.is_sun())) // phase normal with shadows without sun
+
+                         || (!ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS) && (RImplementation.PHASE_NORMAL == RImplementation.phase)))) // phase normal without shadows
+                        vis.clear();
+                }
             }
+            
         }
         vOffset += hw_BatchSize * Object.number_vertices;
         iOffset += hw_BatchSize * Object.number_indices;

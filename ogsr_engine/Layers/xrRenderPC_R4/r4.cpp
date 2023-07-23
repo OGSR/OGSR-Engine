@@ -36,6 +36,14 @@ public:
     virtual void set_color(float r, float g, float b) {}
 };
 
+bool CRender::is_sun()
+{
+    if (o.sunstatic)
+        return FALSE;
+    Fcolor sun_color = ((light*)Lights.sun_adapted._get())->color;
+    return (ps_r2_ls_flags.test(R2FLAG_SUN) && (u_diffuse2s(sun_color.r, sun_color.g, sun_color.b) > EPS));
+}
+
 float r_dtex_range = 50.f;
 //////////////////////////////////////////////////////////////////////////
 ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float cdist_sq)

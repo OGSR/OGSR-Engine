@@ -503,6 +503,8 @@ void CRender::Render()
         PIX_EVENT(DEFER_LIGHT_COMBINE);
         Target->phase_combine();
     }
+    if (Details)
+        Details->details_clear();
 
     VERIFY(0 == mapDistort.size());
 }

@@ -178,6 +178,7 @@ float ps_r2_slight_fade = 2.0f; // 1.f
 
 // Screen Space Shaders Stuff
 Fvector3 ps_ssfx_shadow_cascades{20.f, 40.f, 160.f};
+Fvector4 ps_ssfx_grass_shadows = {1.0f, .35f, 50.0f, .0f};
 Fvector4 ps_ssfx_grass_interactive{1.f, static_cast<float>(GRASS_SHADER_DATA_COUNT), 2000.f, 1.0f};
 Fvector3 ps_ssfx_int_grass_params_1{2.0f, 1.0f, 1.0f};
 Fvector4 ps_ssfx_int_grass_params_2{1.0f, 5.0f, 1.0f, 1.0f};
@@ -733,6 +734,7 @@ void xrRender_initconsole()
     CMD1(CCC_memory_stats, "render_memory_stats");
 
     // Screen Space Shaders
+    CMD4(CCC_Vector4, "ssfx_grass_shadows", &ps_ssfx_grass_shadows, Fvector4().set(0, 0, 0, 0), Fvector4().set(3, 1, 100, 100));
     CMD4(CCC_ssfx_cascades, "ssfx_shadow_cascades", &ps_ssfx_shadow_cascades, (Fvector3{1.0f, 1.0f, 1.0f}), (Fvector3{300.f, 300.f, 300.f}));
     CMD4(CCC_Float, "ssfx_wpn_dof_2", &ps_ssfx_wpn_dof_2, 0, 1);
     CMD4(CCC_Vector4, "ssfx_grass_interactive", &ps_ssfx_grass_interactive, (Fvector4{}), (Fvector4{1.f, static_cast<float>(GRASS_SHADER_DATA_COUNT), 5000.f, 1.f}));
