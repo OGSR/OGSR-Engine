@@ -313,7 +313,7 @@ void CUILines::ParseText()
                     return fDelta;
                 };
 
-                auto get_wstr_width = [](CGameFont* pFont, const char* ch) {
+                auto get_wstr_width = [&](CGameFont* pFont, const char* ch) {
                     u16 wchar{};
                     const int wchars_num = MultiByteToWideChar(CP_UTF8, 0, ch, 2, reinterpret_cast<LPWSTR>(&wchar), 1);
 
@@ -322,7 +322,8 @@ void CUILines::ParseText()
                     if (wchars_num < 1) // Такое бывает на неподдерживаемых языках кроме rus/eng, мб ещё в каких то редких случаях
                     {
                         // Msg("!!--MultiByteToWideChar returned 0 symbols. Something strange! String: [%s]", ch);
-                        return 0.f;
+                        is_wide_char = false;
+                        return get_str_width(pFont, *ch);
                     }
 
                     float fDelta = pFont->SizeOf_(wchar);
