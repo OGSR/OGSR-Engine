@@ -79,12 +79,11 @@ namespace text_editor
 	void type_pair::on_key_press(line_edit_control* const control)
 	{
 		char c = 0;
-		/* Отключено, чтобы не заморачиваться тут с поддержкой двухбайтовых символов. Пусть всегда англ. язык будет, в консоли другого не надо.
 		if (m_translate)
 		{
             c = static_cast<char>(pInput->DikToChar(m_dik, false));
 		}
-		else*/
+		else
 		{
 			c = m_char;
 			if (control->get_key_state(ks_Shift) != control->get_key_state(ks_CapsLock))
