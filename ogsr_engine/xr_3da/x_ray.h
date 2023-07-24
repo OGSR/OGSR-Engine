@@ -28,7 +28,7 @@ class ENGINE_API CApplication : public pureFrame, public IEventReceiver
     int max_load_stage;
 
 public:
-    // Levels доступные в fs
+    // Levels
     xr_vector<sLevelInfo> Levels;
     u32 Level_Current;
     void Level_Scan();

@@ -17,9 +17,19 @@ CALifeSpawnRegistry::CALifeSpawnRegistry(LPCSTR section)
 {
     m_spawn_name = "";
     seed(u32(CPU::QPC() & 0xffffffff));
+    m_game_graph = nullptr;
+    m_chunk = nullptr;
+    m_file = nullptr;
+    m_separated_graphs = true;
 }
 
-CALifeSpawnRegistry::~CALifeSpawnRegistry() {}
+CALifeSpawnRegistry::~CALifeSpawnRegistry()
+{
+    xr_delete(m_game_graph);
+    if (m_chunk)
+        m_chunk->close();
+    FS.r_close(m_file);
+}
 
 void CALifeSpawnRegistry::save(IWriter& memory_stream)
 {
@@ -58,11 +68,9 @@ void CALifeSpawnRegistry::load(IReader& file_stream, LPCSTR game_name)
     bool file_exists = !!FS.exist(file_name, "$game_spawn$", *m_spawn_name, ".spawn");
     R_ASSERT3(file_exists, "Can't find spawn file:", *m_spawn_name);
 
-    IReader* m_file = 0;
     VERIFY(!m_file);
     m_file = FS.r_open(file_name);
     load(*m_file, &guid);
-    FS.r_close(m_file);
 
     chunk0->close();
 }
@@ -74,11 +82,9 @@ void CALifeSpawnRegistry::load(LPCSTR spawn_name)
     string_path file_name;
     R_ASSERT3(FS.exist(file_name, "$game_spawn$", *m_spawn_name, ".spawn"), "Can't find spawn file:", *m_spawn_name);
 
-    IReader* m_file = 0;
     VERIFY(!m_file);
     m_file = FS.r_open(file_name);
     load(*m_file);
-    FS.r_close(m_file);
 }
 
 struct dummy
@@ -143,7 +149,28 @@ void CALifeSpawnRegistry::load(IReader& file_stream, xrGUID* save_guid)
         }
     }
 
-    R_ASSERT2(header().graph_guid() == ai().game_graph().header().guid(), "Spawn doesn't correspond to the graph : REBUILD SPAWN!");
+    bool separated_graphs = false;
+    VERIFY(!m_chunk);
+    IReader* stream = file_stream.open_chunk(4);
+    if (!stream)
+    {
+        string_path file_name;
+        FS.update_path(file_name, _game_data_, GRAPH_NAME);
+        stream = FS.r_open(file_name);
+        separated_graphs = true;
+    }
+    else
+        m_chunk = stream;
+
+    R_ASSERT(stream, "Spawn version mismatch - REBUILD SPAWN!");
+
+    VERIFY(!m_game_graph);
+    m_game_graph = xr_new<CGameGraph>(stream, separated_graphs);
+    ai().set_game_graph(m_game_graph);
+
+    R_ASSERT(header().graph_guid() == ai().game_graph().header().guid(), "Spawn doesn't correspond to the graph : REBUILD SPAWN!");
+
+    Msg("build_story_spawns start...");
 
     build_story_spawns();
 

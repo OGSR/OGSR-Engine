@@ -29,7 +29,6 @@ private:
 
 private:
     CGameGraph* m_game_graph;
-    CGameLevelCrossTable* m_cross_table;
     CLevelGraph* m_level_graph;
     CGraphEngine* m_graph_engine;
     CEF_Storage* m_ef_storage;
@@ -51,6 +50,7 @@ public:
     void init();
     IC CGameGraph& game_graph() const;
     IC CGameGraph* get_game_graph() const;
+    IC void set_game_graph(CGameGraph* graph);
     IC CLevelGraph& level_graph() const;
     IC const CLevelGraph* get_level_graph() const;
     IC const CGameLevelCrossTable& cross_table() const;

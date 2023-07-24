@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "graph_engine.h"
+
 IC CGameGraph& CAI_Space::game_graph() const
 {
     VERIFY(m_game_graph);
@@ -15,6 +17,23 @@ IC CGameGraph& CAI_Space::game_graph() const
 }
 
 IC CGameGraph* CAI_Space::get_game_graph() const { return (m_game_graph); }
+
+void CAI_Space::set_game_graph(CGameGraph* graph)
+{
+    if (graph)
+    {
+        VERIFY(!m_game_graph);
+        m_game_graph = graph;
+        xr_delete(m_graph_engine);
+        m_graph_engine = xr_new<CGraphEngine>(game_graph().header().vertex_count());
+    }
+    else
+    {
+        VERIFY(m_game_graph);
+        m_game_graph = nullptr;
+        xr_delete(m_graph_engine);
+    }
+}
 
 IC CLevelGraph& CAI_Space::level_graph() const
 {
@@ -24,13 +43,9 @@ IC CLevelGraph& CAI_Space::level_graph() const
 
 IC const CLevelGraph* CAI_Space::get_level_graph() const { return (m_level_graph); }
 
-IC const CGameLevelCrossTable& CAI_Space::cross_table() const
-{
-    VERIFY(m_cross_table);
-    return (*m_cross_table);
-}
+IC const CGameLevelCrossTable& CAI_Space::cross_table() const { return (game_graph().cross_table()); }
 
-IC const CGameLevelCrossTable* CAI_Space::get_cross_table() const { return (m_cross_table); }
+IC const CGameLevelCrossTable* CAI_Space::get_cross_table() const { return (&game_graph().cross_table()); }
 
 IC CEF_Storage& CAI_Space::ef_storage() const
 {

@@ -58,7 +58,8 @@ private:
     IReader* m_chunk;
 
 public:
-    IC CGameLevelCrossTable();
+    IC CGameLevelCrossTable(const void* buffer, const u32& buffer_size);
+    IC CGameLevelCrossTable(LPCSTR fName);
 
 public:
     IC virtual ~CGameLevelCrossTable();
