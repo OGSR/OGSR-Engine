@@ -173,12 +173,13 @@ void CUILine::Draw(CGameFont* pFont, float x, float y, float max_w) const
         add_w = space_w / (float)(size - 1);
 
         float def_add_w = pFont->SizeOf_(' ');
-        UI()->ClientToScreenScaledWidth(def_add_w);
 
         if (pFont->IsMultibyte())
         {
             def_add_w += pFont->GetfXStep() * pFont->GetInterval().x * pFont->GetWidthScale();
         }
+
+        UI()->ClientToScreenScaledWidth(def_add_w);
 
         if (total_w < max_w * 3/4)
         {
