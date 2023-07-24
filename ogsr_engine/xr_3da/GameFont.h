@@ -13,7 +13,8 @@ public:
     {
         alLeft = 0,
         alRight,
-        alCenter
+        alCenter,
+        alJustified
     };
 
 private:

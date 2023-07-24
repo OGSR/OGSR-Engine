@@ -8,7 +8,6 @@ CUIEditBoxEx::CUIEditBoxEx()
     m_pFrameWindow = xr_new<CUIFrameWindow>();
     AttachChild(m_pFrameWindow);
     m_lines.SetTextComplexMode(true);
-    m_lines.SetCutWordsMode(true);
     m_lines.SetUseNewLineMode(false);
     m_lines.SetVTextAlignment(valTop);
 }

@@ -14,9 +14,26 @@ void UIRegistrator::script_register(lua_State* L)
     module(L)[
 
         class_<CGameFont>("CGameFont")
-            .enum_("EAligment")[value("alLeft", int(CGameFont::alLeft)), value("alRight", int(CGameFont::alRight)), value("alCenter", int(CGameFont::alCenter))],
+           .enum_("EAligment")[
+                value("alLeft", int(CGameFont::alLeft)), 
+                value("alRight", int(CGameFont::alRight)), 
+                value("alCenter", int(CGameFont::alCenter)),
+                value("alJustified", int(CGameFont::alJustified))
+            ]
 
-        class_<CUICaption>("CUICaption").def("addCustomMessage", &CUICaption::addCustomMessage).def("setCaption", &CUICaption::setCaption),
+            .enum_("EVAlignment")[
+                value("valTop", int(EVTextAlignment::valTop)), 
+                value("valCenter", int(EVTextAlignment::valCenter)),
+                value("valBotton", int(EVTextAlignment::valBotton))
+            ]
+            .def("SizeOf", (float(CGameFont::*)(LPCSTR)) &CGameFont::SizeOf_)
+            .def("CurrentHeight", & CGameFont::CurrentHeight_)
+            ,
+        // убрал потому что не работает
+        //class_<CUICaption>("CUICaption")
+        //    .def("addCustomMessage", &CUICaption::addCustomMessage)
+        //    .def("setCaption", &CUICaption::setCaption)
+        //    .def("removeCustomMessage", &CUICaption::removeCustomMessage),
 
         class_<CMainMenu, CDialogHolder>("CMainMenu")
             .def("GetGSVer", &CMainMenu::GetGSVer)

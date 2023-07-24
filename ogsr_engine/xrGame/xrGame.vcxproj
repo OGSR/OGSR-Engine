@@ -1553,7 +1553,6 @@
     <ClInclude Include="ui\UICarPanel.h" />
     <ClInclude Include="ui\UIMainIngameWnd.h" />
     <ClInclude Include="ui\UIMessagesWindow.h" />
-    <ClInclude Include="ui\UIMoneyIndicator.h" />
     <ClInclude Include="ui\UIMotionIcon.h" />
     <ClInclude Include="ui\UIPdaMsgListItem.h" />
     <ClInclude Include="UIZoneMap.h" />
@@ -2489,7 +2488,6 @@
     <ClCompile Include="ui\UICarPanel.cpp" />
     <ClCompile Include="ui\UIMainIngameWnd.cpp" />
     <ClCompile Include="ui\UIMessagesWindow.cpp" />
-    <ClCompile Include="ui\UIMoneyIndicator.cpp" />
     <ClCompile Include="ui\UIMotionIcon.cpp" />
     <ClCompile Include="ui\UIPdaMsgListItem.cpp" />
     <ClCompile Include="UIZoneMap.cpp" />

@@ -23,13 +23,14 @@ CUILines::CUILines()
     m_dwCursorColor = 0xAAFFFF00;
 
     m_bShowMe = true;
+
     uFlags.zero();
     uFlags.set(flNeedReparse, FALSE);
     uFlags.set(flComplexMode, FALSE);
     uFlags.set(flPasswordMode, FALSE);
     uFlags.set(flColoringMode, TRUE);
-    uFlags.set(flCutWordsMode, FALSE);
     uFlags.set(flRecognizeNewLine, TRUE);
+
     m_pFont = UI()->Font()->pFontLetterica16Russian;
     m_cursor_pos.set(0, 0);
     m_iCursorPos = 0;
@@ -57,8 +58,6 @@ void CUILines::SetPasswordMode(bool mode)
 }
 
 void CUILines::SetColoringMode(bool mode) { uFlags.set(flColoringMode, mode); }
-
-void CUILines::SetCutWordsMode(bool mode) { uFlags.set(flCutWordsMode, mode); }
 
 void CUILines::SetUseNewLineMode(bool mode) { uFlags.set(flRecognizeNewLine, mode); }
 
@@ -246,7 +245,8 @@ void CUILines::ParseText()
         fTargetWidth = m_wndSize.x / fTargetWidth;
 
         if (line->m_subLines.size() > 1 && !bNewLines)
-        { // only colored line, pizdets
+        {
+            // only colored line, pizdets
             auto& tmp_line = m_lines.emplace_back();
             for (const auto& subline : line->m_subLines)
             {
@@ -275,8 +275,10 @@ void CUILines::ParseText()
                     tmp_line.AddSubLine(std::move(szTempLine), tcolor);
                     uFrom += uPartLen;
                 }
+
                 xr_string szTempLine{pszText + uFrom};
                 _tmp_line.AddSubLine(std::move(szTempLine), tcolor);
+
                 if (subline.m_last_in_line || &subline == &line->m_subLines.back())
                 {
                     m_lines.push_back(_tmp_line);
@@ -335,6 +337,7 @@ void CUILines::ParseText()
                     fDelta += pFont->GetfXStep() * pFont->GetInterval().x * pFont->GetWidthScale();
                     return fDelta;
                 };
+
                 /*
                 if (is_wide_char)
                     Msg("--Size of W symbol [%d] is [%f], curr_width: [%f], max_width: [%f]", sbl.m_text[idx], get_Wstr_width(m_pFont, &sbl.m_text[idx]), curr_width, max_width);
@@ -397,6 +400,16 @@ void CUILines::ParseText()
                 tmp_line.Clear();
                 curr_width = 0.0f;
             }
+        }
+    }
+
+    if (m_eTextAlign == CGameFont::alJustified)
+    {
+        const u32 size = m_lines.size();
+        
+        for (int i = 0; i < (int)size; i++)
+        {
+            m_lines[i].ProcessSpaces();
         }
     }
 
@@ -492,6 +505,8 @@ void CUILines::Draw(float x, float y)
     {
         ParseText();
 
+        const float max_width = m_wndSize.x;
+
         Fvector2 pos;
 
         // get vertical indent
@@ -506,7 +521,7 @@ void CUILines::Draw(float x, float y)
         m_pFont->SetAligment((CGameFont::EAligment)m_eTextAlign);
         for (int i = 0; i < (int)size; i++)
         {
-            m_lines[i].Draw(m_pFont, pos.x, pos.y);
+            m_lines[i].Draw(m_pFont, pos.x, pos.y, max_width);
 
             pos.y += height + m_interval;
         }
@@ -593,18 +608,19 @@ float CUILines::GetIndentByAlign() const
     switch (m_eTextAlign)
     {
     case CGameFont::alCenter: {
-        //			GetFont()->SetAligment(CGameFont::alCenter);
-        return (m_wndSize.x /*- length*/) / 2;
+        return (m_wndSize.x) / 2;
     }
     break;
     case CGameFont::alLeft: {
-        //			GetFont()->SetAligment(CGameFont::alLeft);
         return 0;
     }
     break;
     case CGameFont::alRight: {
-        //			GetFont()->SetAligment(CGameFont::alRight);
-        return (m_wndSize.x /*- length*/);
+        return (m_wndSize.x);
+    }
+    break;
+    case CGameFont::alJustified: {
+        return 0;
     }
     break;
     default: NODEFAULT;

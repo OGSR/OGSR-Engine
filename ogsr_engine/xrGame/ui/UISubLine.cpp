@@ -95,8 +95,10 @@ const CUISubLine* CUISubLine::Cut2Pos(int i)
     //	xr_delete(m_pTempLine);
     if (!m_pTempLine)
         m_pTempLine = xr_new<CUISubLine>();
+
     m_pTempLine->m_color = m_color;
     m_pTempLine->m_text.assign(m_text, 0, i + 1);
+
     m_text.replace(0, i + 1, "");
 
     return m_pTempLine;

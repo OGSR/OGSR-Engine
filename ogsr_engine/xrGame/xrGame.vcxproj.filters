@@ -5340,9 +5340,6 @@
     <ClInclude Include="ui\UIMessagesWindow.h">
       <Filter>AI\AScript\ScriptClasses\UI\Common\MainIngame</Filter>
     </ClInclude>
-    <ClInclude Include="ui\UIMoneyIndicator.h">
-      <Filter>AI\AScript\ScriptClasses\UI\Common\MainIngame</Filter>
-    </ClInclude>
     <ClInclude Include="ui\UIMotionIcon.h">
       <Filter>AI\AScript\ScriptClasses\UI\Common\MainIngame</Filter>
     </ClInclude>
@@ -8447,9 +8444,6 @@
       <Filter>AI\AScript\ScriptClasses\UI\Common\MainIngame</Filter>
     </ClCompile>
     <ClCompile Include="ui\UIMessagesWindow.cpp">
-      <Filter>AI\AScript\ScriptClasses\UI\Common\MainIngame</Filter>
-    </ClCompile>
-    <ClCompile Include="ui\UIMoneyIndicator.cpp">
       <Filter>AI\AScript\ScriptClasses\UI\Common\MainIngame</Filter>
     </ClCompile>
     <ClCompile Include="ui\UIMotionIcon.cpp">

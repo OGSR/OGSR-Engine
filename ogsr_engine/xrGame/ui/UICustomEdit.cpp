@@ -14,7 +14,6 @@ CUICustomEdit::CUICustomEdit()
 
     m_lines.SetVTextAlignment(valCenter);
     m_lines.SetColoringMode(false);
-    m_lines.SetCutWordsMode(true);
     m_lines.SetUseNewLineMode(false);
     SetText("");
     m_textPos.set(3, 0);

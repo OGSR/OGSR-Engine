@@ -44,7 +44,6 @@ public:
     bool GetTextComplexMode() const;
     void SetPasswordMode(bool mode = true);
     void SetColoringMode(bool mode);
-    void SetCutWordsMode(bool mode);
     void SetUseNewLineMode(bool mode);
 
     // IUISimpleWindow methods
@@ -102,7 +101,6 @@ protected:
         flComplexMode = (1 << 1),
         flPasswordMode = (1 << 2),
         flColoringMode = (1 << 3),
-        flCutWordsMode = (1 << 4),
         flRecognizeNewLine = (1 << 5)
     };
 

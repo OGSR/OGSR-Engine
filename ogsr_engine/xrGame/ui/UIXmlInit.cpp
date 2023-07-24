@@ -291,6 +291,8 @@ bool CUIXmlInit::InitText(CUIXml& xml_doc, const char* path, int index, IUITextC
         pWnd->SetTextAlignment(CGameFont::alRight);
     else if (0 == xr_strcmp(al, "l"))
         pWnd->SetTextAlignment(CGameFont::alLeft);
+    else if (0 == xr_strcmp(al, "j"))
+        pWnd->SetTextAlignment(CGameFont::alJustified);
 
     shared_str text = xml_doc.Read(path, index, NULL);
     CStringTable st;

@@ -9,9 +9,6 @@
 #include "StdAfx.h"
 #include "UILine.h"
 #include "uilinestd.h"
-#include "UIColorAnimatorWrapper.h"
-
-CUIColorAnimatorWrapper CUILine::m_animation;
 
 //#define LOG_ALL_LINES
 #ifdef LOG_ALL_LINES
@@ -35,9 +32,7 @@ void dump_list_lines() {}
 
 CUILine::CUILine()
 {
-    m_tmpLine = NULL;
-    m_animation.SetColorAnimation("ui_map_area_anim");
-    m_animation.Cyclic(true);
+    m_tmpLine = nullptr;
 
 #ifdef LOG_ALL_LINES
     ListLinesCount++;
@@ -131,7 +126,31 @@ void CUILine::ProcessNewLines()
     }
 }
 
-void CUILine::Draw(CGameFont* pFont, float x, float y) const
+void CUILine::ProcessSpaces()
+{
+    for (u32 i = 0; i < m_subLines.size(); i++)
+    {
+        const StrSize pos = m_subLines[i].m_text.find(' ');
+        if (pos != npos)
+        {
+            CUISubLine sbLine;
+            if (pos)
+            {
+                sbLine = *m_subLines[i].Cut2Pos((int)pos - 1);
+            }
+
+            m_subLines.insert(m_subLines.begin() + i, sbLine);
+            m_subLines[i + 1].m_text.erase(0, 1); // only one char
+
+            if (m_subLines[i + 1].m_text.empty())
+            {
+                m_subLines.erase(m_subLines.begin() + i + 1);
+            }
+        }
+    }
+}
+
+void CUILine::Draw(CGameFont* pFont, float x, float y, float max_w) const
 {
     const int size = m_subLines.size();
 
@@ -139,9 +158,33 @@ void CUILine::Draw(CGameFont* pFont, float x, float y) const
 
     for (int i = 0; i < size; i++)
     {
-        float ll = pFont->SizeOf_(m_subLines[i].m_text.c_str());
-        UI()->ClientToScreenScaledWidth(ll);
-        total_w += ll;
+        float w = pFont->SizeOf_(m_subLines[i].m_text.c_str());
+        UI()->ClientToScreenScaledWidth(w);
+        total_w += w;
+    }
+
+    float add_w = 0.f;
+    bool use_def_add_w = false;
+
+    if (pFont->GetAligment() == CGameFont::alJustified)
+    {
+        const float space_w = max_w - total_w;
+
+        add_w = space_w / (float)(size - 1);
+
+        float def_add_w = pFont->SizeOf_(' ');
+        UI()->ClientToScreenScaledWidth(def_add_w);
+
+        if (pFont->IsMultibyte())
+        {
+            def_add_w += pFont->GetfXStep() * pFont->GetInterval().x * pFont->GetWidthScale();
+        }
+
+        if (total_w < max_w * 3/4)
+        {
+            add_w = def_add_w;
+            use_def_add_w = true;
+        }
     }
 
     float length = 0;
@@ -163,10 +206,17 @@ void CUILine::Draw(CGameFont* pFont, float x, float y) const
             // right align
             d += (w - total_w);
         }
+        else if (pFont->GetAligment() == CGameFont::alJustified)
+        {
+            if (i == size - 1 && !use_def_add_w)
+            {
+                d += max_w - length - w;
+            }
+        }
 
         m_subLines[i].Draw(pFont, x + d, y);
 
-        length += w;
+        length += w + add_w;
     }
 }
 
@@ -184,312 +234,5 @@ const CUILine* CUILine::GetEmptyLine()
 {
     xr_delete(m_tmpLine);
     m_tmpLine = xr_new<CUILine>();
-
     return m_tmpLine;
-}
-
-const CUILine* CUILine::CutByLength(CGameFont* pFont, float length, BOOL cut_word)
-{
-    R_ASSERT(GetSize() > 0);
-    // if first sub line is void then delete it
-
-    Position pos;
-    InitPos(pos);
-
-    if (!pos.word_1.exist()) // void string
-    {
-        if (m_subLines[0].m_last_in_line)
-        {
-            m_subLines.erase(m_subLines.begin());
-            return GetEmptyLine();
-        }
-        else
-        {
-            m_subLines.erase(m_subLines.begin());
-            InitPos(pos);
-        }
-    }
-
-    float len2w1 = GetLength_inclusiveWord_1(pos, pFont);
-    //.	* scale; bacause of our fonts not scaled
-
-    if (!pos.word_2.exist())
-    {
-        if (cut_word && len2w1 > length)
-            return CutWord(pFont, length);
-        else
-            return Cut2Pos(pos);
-    }
-
-    float len2w2 = GetLength_inclusiveWord_2(pos, pFont);
-
-    if (len2w1 > length)
-    {
-        if (cut_word)
-            return CutWord(pFont, length);
-        else
-            return Cut2Pos(pos);
-    }
-    else if (len2w1 <= length && len2w2 > length)
-    {
-        // cut whole first word
-        return Cut2Pos(pos); // all right :)
-    }
-    else // if (len2w1 > length && len2w2 > length)
-    {
-        while (IncPos(pos))
-        {
-            len2w1 = GetLength_inclusiveWord_1(pos, pFont);
-            if (!pos.word_2.exist())
-            {
-                return Cut2Pos(pos);
-            }
-            len2w2 = GetLength_inclusiveWord_2(pos, pFont);
-            if (len2w1 <= length && len2w2 > length)
-                return Cut2Pos(pos);
-        }
-
-        return Cut2Pos(pos, false);
-    }
-}
-
-bool CUILine::GetWord(Word& w, const xr_string& text, int begin) const
-{
-    if (text.empty())
-        return false;
-
-    StrSize first, last, lastsp /*last space*/;
-    first = text.find_first_not_of(' ', begin);
-    last = text.find_first_of(' ', first);
-
-    if (npos == last && npos == first)
-        return false;
-
-    if (npos == last && npos != first)
-    {
-        w.pos = (int)first;
-        w.len = (int)(text.length() - first);
-        w.len_full = w.len;
-        return true;
-    }
-
-    lastsp = text.find_first_not_of(' ', last);
-
-    if (npos == lastsp && npos == first) // maybe we have string only with spaces
-    {
-        first = text.find_first_of(' ', begin);
-        last = text.find_last_of(' ', begin);
-
-        if (npos == first) // suxxx it is empty string
-            return false;
-
-        w.pos = (int)first;
-        w.len = (int)(last - first + 1);
-        w.len_full = w.len;
-        return true;
-    }
-
-    if (npos == lastsp)
-        lastsp = last;
-    else
-        --lastsp;
-
-    if (npos == last && npos != first)
-        last = text.size() - 1;
-    else
-        --last;
-
-    if (npos == lastsp)
-        lastsp = last;
-
-    first = begin;
-
-    w.pos = (int)first;
-    w.len = (int)(last - first + 1);
-    w.len_full = (int)(lastsp - first + 1);
-
-#ifdef DEBUG
-    if (npos != first && (npos == last || npos == lastsp))
-        R_ASSERT2(false, "CUILine::InitPos -- impossible match");
-#endif
-
-    return true;
-}
-
-bool CUILine::InitPos(Position& pos) const
-{
-    Word w;
-    pos.curr_subline = 0;
-    if (GetWord(w, m_subLines[0].m_text, 0))
-        pos.word_1 = w;
-    else
-        return false;
-
-    if (GetWord(w, m_subLines[0].m_text, w.last_space() + 1))
-        pos.word_2 = w;
-    else if (m_subLines.size() > 1 && GetWord(w, m_subLines[1].m_text, 0))
-        pos.word_2 = w;
-
-    return true;
-}
-
-bool CUILine::IncPos(Position& pos) const
-{
-    u32 totalLinesCount = m_subLines.size();
-    if (totalLinesCount < pos.curr_subline)
-        return false;
-
-    Word w;
-    u32 curLine = pos.curr_subline;
-
-    if (!pos.is_separated())
-    {
-        if (GetWord(w, m_subLines[curLine].m_text, pos.word_2.last_space() + 1))
-        {
-            pos.word_1 = pos.word_2;
-            pos.word_2 = w;
-            return true;
-        }
-        else if (curLine + 1 <= totalLinesCount - 1)
-        {
-            if (GetWord(w, m_subLines[curLine + 1].m_text, 0))
-            {
-                pos.word_1 = pos.word_2;
-                pos.word_2 = w;
-                return true;
-            }
-        }
-        else
-            return false;
-    }
-    else if (curLine + 1 <= totalLinesCount - 1)
-    {
-        if (GetWord(w, m_subLines[curLine + 1].m_text, pos.word_2.last_space() + 1))
-        {
-            pos.word_1 = pos.word_2;
-            pos.word_2 = w;
-            pos.curr_subline = curLine + 1;
-            return true;
-        }
-        else if (curLine + 2 <= totalLinesCount - 1)
-            if (GetWord(w, m_subLines[curLine + 2].m_text, 0))
-            {
-                pos.word_1 = pos.word_2;
-                pos.word_2 = w;
-                pos.curr_subline = curLine + 1;
-                return true;
-            }
-        return false;
-    }
-    return false;
-}
-
-const CUILine* CUILine::Cut2Pos(Position& pos, bool to_first)
-{
-    xr_delete(m_tmpLine);
-    m_tmpLine = xr_new<CUILine>();
-
-    int last;
-
-    if (to_first || !pos.is_separated())
-        last = pos.curr_subline - 1;
-    else
-        last = pos.curr_subline;
-
-    for (int i = 0; i <= last; i++)
-    {
-        m_tmpLine->AddSubLine(&m_subLines[i]);
-
-        if (m_subLines[i].m_last_in_line) // check if this subline must be last in line
-        {
-            for (int j = 0; j <= i; j++)
-                m_subLines.erase(m_subLines.begin());
-            return m_tmpLine;
-        }
-    }
-
-    if (to_first)
-        m_tmpLine->AddSubLine(m_subLines[last + 1].Cut2Pos(pos.word_1.last_space()));
-    else
-        m_tmpLine->AddSubLine(m_subLines[last + 1].Cut2Pos(pos.word_2.last_space()));
-
-    for (int i = 0; i <= last; i++)
-        m_subLines.erase(m_subLines.begin());
-
-    return m_tmpLine;
-}
-
-const CUILine* CUILine::CutWord(CGameFont* pFont, float length)
-{
-    xr_delete(m_tmpLine);
-    m_tmpLine = xr_new<CUILine>();
-
-    float len = 0;
-
-    for (u32 i = 0; i < m_subLines[0].m_text.length(); i++)
-    {
-        float ll = pFont->SizeOf_(m_subLines[0].m_text[i]);
-        UI()->ClientToScreenScaledWidth(ll);
-        len += ll;
-
-        if (len > length)
-        {
-            m_tmpLine->AddSubLine(m_subLines[0].Cut2Pos((i ? i : 1) - 1));
-            return m_tmpLine;
-        }
-    }
-
-    R_ASSERT2(false, "meaningless call of CUILine::CutWord() ):");
-
-    return m_tmpLine;
-}
-
-float CUILine::GetLength_inclusiveWord_1(Position& pos, CGameFont* pFont) const
-{
-    R_ASSERT(pos.word_1.exist());
-    float len = 0;
-
-    for (u32 i = 0; i < pos.curr_subline; ++i)
-    {
-        float ll = pFont->SizeOf_(m_subLines[i].m_text.c_str());
-        UI()->ClientToScreenScaledWidth(ll);
-        len += ll;
-    }
-
-    xr_string str;
-    str.assign(m_subLines[pos.curr_subline].m_text, 0, pos.word_1.pos + pos.word_1.len);
-
-    float ll2 = pFont->SizeOf_(str.c_str());
-    UI()->ClientToScreenScaledWidth(ll2);
-    len += ll2;
-
-    return len;
-}
-
-float CUILine::GetLength_inclusiveWord_2(Position& pos, CGameFont* pFont) const
-{
-    R_ASSERT(pos.word_2.exist());
-    float len = 0;
-    int last;
-
-    if (!pos.is_separated())
-        last = pos.curr_subline - 1;
-    else
-        last = pos.curr_subline;
-
-    for (int i = 0; i <= last; i++)
-    {
-        float ll = pFont->SizeOf_(m_subLines[i].m_text.c_str());
-        UI()->ClientToScreenScaledWidth(ll);
-        len += ll;
-    }
-
-    xr_string str;
-    str.assign(m_subLines[last + 1].m_text, 0, pos.word_2.pos + pos.word_2.len);
-
-    float ll2 = pFont->SizeOf_(str.c_str());
-    UI()->ClientToScreenScaledWidth(ll2);
-    len += ll2;
-
-    return len;
 }
