@@ -178,7 +178,7 @@ float ps_r2_slight_fade = 2.0f; // 1.f
 
 // Screen Space Shaders Stuff
 Fvector3 ps_ssfx_shadow_cascades{20.f, 40.f, 160.f};
-Fvector4 ps_ssfx_grass_shadows = {1.0f, .35f, 50.0f, .0f};
+Fvector4 ps_ssfx_grass_shadows = {1.0f, .25f, 20.0f, .0f};
 Fvector4 ps_ssfx_grass_interactive{1.f, static_cast<float>(GRASS_SHADER_DATA_COUNT), 2000.f, 1.0f};
 Fvector3 ps_ssfx_int_grass_params_1{2.0f, 1.0f, 1.0f};
 Fvector4 ps_ssfx_int_grass_params_2{1.0f, 5.0f, 1.0f, 1.0f};
