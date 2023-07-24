@@ -179,10 +179,13 @@ void CUICustomEdit::AddChar(const u16 c)
     if (xr_strlen(m_lines.GetText()) >= m_max_symb_count)
         return;
 
-    float text_length = m_lines.GetFont()->SizeOf_(m_lines.GetText()) + m_lines.GetFont()->SizeOf_(c) + m_textPos.x;
-    UI()->ClientToScreenScaledWidth(text_length);
+    float text_width = m_lines.GetFont()->SizeOf_(m_lines.GetText()) + m_lines.GetFont()->SizeOf_(c);
+    if (c == ' ' && m_lines.GetFont()->IsMultibyte())
+        text_width += m_lines.GetFont()->GetfXStep() * m_lines.GetFont()->GetInterval().x * m_lines.GetFont()->GetWidthScale();
 
-    if (!m_lines.GetTextComplexMode() && (text_length > m_lines.GetWidth() - 1))
+    UI()->ClientToScreenScaledWidth(text_width);
+
+    if (!m_lines.GetTextComplexMode() && text_width > m_lines.GetWidth() - m_textPos.x - 0.5f) // учитываем смещения текста по ширине
         return;
 
     m_lines.AddCharAtCursor(c);
