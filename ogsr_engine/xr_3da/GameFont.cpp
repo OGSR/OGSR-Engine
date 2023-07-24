@@ -140,8 +140,26 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
             for (u16 i = 0; i < 256; i++)
                 TCMap[0xC0 + i] = TCMap[0x410 + i];
 
+            // Ёё
             TCMap[0xA8] = TCMap[0x401];
             TCMap[0xB8] = TCMap[0x451];
+
+            // №—
+            TCMap[0xB9] = TCMap[0x2116];
+            TCMap[0x97] = TCMap[0x2014];
+
+            // ҐґЄєІіЇї
+            TCMap[0xA5] = TCMap[0x490];
+            TCMap[0x84] = TCMap[0x491];
+
+            TCMap[0xAA] = TCMap[0x404];
+            TCMap[0xBA] = TCMap[0x454];
+
+            TCMap[0xB2] = TCMap[0x406];
+            TCMap[0xB3] = TCMap[0x456];
+
+            TCMap[0xAF] = TCMap[0x407];
+            TCMap[0xBF] = TCMap[0x457];
         }
     }
     else if (ini->section_exist("symbol_coords"))

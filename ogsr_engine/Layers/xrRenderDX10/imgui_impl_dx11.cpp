@@ -1216,8 +1216,26 @@ static void ImGui_ImplDX11_CreateFontsTexture()
     for (ImWchar i = 0; i < 256; i++)
         f->AddRemapChar(0xC0 + i, 0x410 + i, true);
 
+    // Ёё
     f->AddRemapChar(0xA8, 0x401, true);
     f->AddRemapChar(0xB8, 0x451, true);
+
+     // №—
+    f->AddRemapChar(0xB9, 0x2116, true);
+    f->AddRemapChar(0x97, 0x2014, true);
+
+    // ҐґЄєІіЇї
+    f->AddRemapChar(0xA5, 0x490, true);
+    f->AddRemapChar(0x84, 0x491, true);
+
+    f->AddRemapChar(0xAA, 0x404, true);
+    f->AddRemapChar(0xBA, 0x454, true);
+
+    f->AddRemapChar(0xB2, 0x406, true);
+    f->AddRemapChar(0xB3, 0x456, true);
+
+    f->AddRemapChar(0xAF, 0x407, true);
+    f->AddRemapChar(0xBF, 0x457, true);
 
     // Upload texture to graphics system
     {
