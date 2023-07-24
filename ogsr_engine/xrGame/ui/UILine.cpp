@@ -156,23 +156,32 @@ void CUILine::Draw(CGameFont* pFont, float x, float y, float max_w) const
 
     float total_w = 0.f;
 
+    int nonEmptyCount = 0;
+    int last_nonEmpty = 0;
+
     for (int i = 0; i < size; i++)
     {
         float w = pFont->SizeOf_(m_subLines[i].m_text.c_str());
         UI()->ClientToScreenScaledWidth(w);
         total_w += w;
+        if (w > 0.f)
+        {
+            nonEmptyCount++;
+            last_nonEmpty = i;
+        }
     }
 
     float add_w = 0.f;
+    float def_add_w = 0.f; 
     bool use_def_add_w = false;
 
     if (pFont->GetAligment() == CGameFont::alJustified)
     {
         const float space_w = max_w - total_w;
 
-        add_w = space_w / (float)(size - 1);
+        add_w = space_w / (float)(nonEmptyCount - 1);
 
-        float def_add_w = pFont->SizeOf_(' ');
+        def_add_w = pFont->SizeOf_(' ');
 
         if (pFont->IsMultibyte())
         {
@@ -209,7 +218,7 @@ void CUILine::Draw(CGameFont* pFont, float x, float y, float max_w) const
         }
         else if (pFont->GetAligment() == CGameFont::alJustified)
         {
-            if (i == size - 1 && !use_def_add_w)
+            if (i == last_nonEmpty && !use_def_add_w)
             {
                 d += max_w - length - w;
             }
@@ -217,7 +226,7 @@ void CUILine::Draw(CGameFont* pFont, float x, float y, float max_w) const
 
         m_subLines[i].Draw(pFont, x + d, y);
 
-        length += w + add_w;
+        length += w + (w > 0.f ? add_w : def_add_w);
     }
 }
 
