@@ -52,8 +52,6 @@ void CUITextureMaster::ParseShTexInfo(LPCSTR xml_file)
     //	}
 }
 
-bool CUITextureMaster::IsSh(const char* texture_name) { return !strchr(texture_name, '\\'); }
-
 void CUITextureMaster::InitTexture(const char* texture_name, IUISimpleTextureControl* tc)
 {
 #ifdef DEBUG
@@ -170,16 +168,4 @@ TEX_INFO CUITextureMaster::FindItem(LPCSTR texture_name, LPCSTR def_texture_name
         R_ASSERT2(m_textures.find(def_texture_name) != m_textures.end(), texture_name);
         return FindItem(def_texture_name, NULL);
     }
-}
-
-void CUITextureMaster::GetTextureShader(LPCSTR texture_name, ui_shader& sh)
-{
-    xr_map<shared_str, TEX_INFO>::iterator it;
-    it = m_textures.find(texture_name);
-
-    //	R_ASSERT3(it != m_textures.end(), "can't find texture", texture_name);
-    if (it == m_textures.end())
-        Msg("! CUITextureMaster::GetTextureShader Can't find texture", texture_name);
-
-    sh->create("hud\\default", *((*it).second.file));
 }
