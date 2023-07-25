@@ -135,7 +135,7 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
     {
         th_count = dwOverride;
     }
-    TTAPI = new task_thread_pool::task_thread_pool(th_count);
+    TTAPI = xr_new<task_thread_pool::task_thread_pool>(th_count);
     Msg("TTAPI number of threads: [%u]", TTAPI->get_num_threads());
 }
 
@@ -144,6 +144,10 @@ void xrCore::_destroy()
     --init_counter;
     if (0 == init_counter)
     {
+        TTAPI->clear_task_queue();
+        TTAPI->wait_for_tasks();
+        xr_delete(TTAPI);
+
         FS._destroy();
 
         xr_FS.reset();
