@@ -47,12 +47,13 @@ void CUIEventsWnd::Init()
     m_UILeftFrame->AttachChild(m_UILeftHeader);
     xml_init.InitFrameLine(uiXml, "main_wnd:left_frame:left_frame_header", 0, m_UILeftHeader);
 
-    //.	xml_init.InitAutoStaticGroup	(uiXml, "main_wnd:left_frame",m_UILeftFrame);
-
-    m_UIAnimation = xr_new<CUIAnimatedStatic>();
-    m_UIAnimation->SetAutoDelete(true);
-    xml_init.InitAnimatedStatic(uiXml, "main_wnd:left_frame:left_frame_header:anim_static", 0, m_UIAnimation);
-    m_UILeftHeader->AttachChild(m_UIAnimation);
+    if (uiXml.NavigateToNode("main_wnd:left_frame:left_frame_header:anim_static"))
+    {
+        m_UIAnimation = xr_new<CUIAnimatedStatic>();
+        m_UIAnimation->SetAutoDelete(true);
+        xml_init.InitAnimatedStatic(uiXml, "main_wnd:left_frame:left_frame_header:anim_static", 0, m_UIAnimation);
+        m_UILeftHeader->AttachChild(m_UIAnimation);
+    }
 
     m_UIRightWnd = xr_new<CUIWindow>();
     m_UIRightWnd->SetAutoDelete(true);

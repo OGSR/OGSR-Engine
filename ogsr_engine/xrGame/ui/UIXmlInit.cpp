@@ -26,8 +26,6 @@
 
 #include "UIDragDropListEx.h"
 
-extern int keyname_to_dik(LPCSTR);
-
 #define ARIAL14_FONT_NAME "arial_14"
 #define ARIAL21_FONT_NAME "arial_21"
 
@@ -304,7 +302,6 @@ bool CUIXmlInit::InitText(CUIXml& xml_doc, const char* path, int index, IUITextC
     return true;
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
-extern int keyname_to_dik(LPCSTR);
 
 bool CUIXmlInit::Init3tButton(CUIXml& xml_doc, const char* path, int index, CUI3tButton* pWnd)
 {

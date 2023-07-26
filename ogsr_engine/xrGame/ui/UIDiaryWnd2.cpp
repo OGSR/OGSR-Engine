@@ -71,10 +71,13 @@ void CUIDiaryWnd::Init()
     Register(m_FilterTab);
     AddCallback("filter_tab", TAB_CHANGED, fastdelegate::MakeDelegate(this, &CUIDiaryWnd::OnFilterChanged));
 
-    m_UIAnimation = xr_new<CUIAnimatedStatic>();
-    m_UIAnimation->SetAutoDelete(true);
-    xml_init.InitAnimatedStatic(uiXml, "main_wnd:left_frame:left_frame_header:anim_static", 0, m_UIAnimation);
-    m_UILeftHeader->AttachChild(m_UIAnimation);
+    if (uiXml.NavigateToNode("main_wnd:left_frame:left_frame_header:anim_static"))
+    {
+        m_UIAnimation = xr_new<CUIAnimatedStatic>();
+        m_UIAnimation->SetAutoDelete(true);
+        xml_init.InitAnimatedStatic(uiXml, "main_wnd:left_frame:left_frame_header:anim_static", 0, m_UIAnimation);
+        m_UILeftHeader->AttachChild(m_UIAnimation);
+    }
 
     m_UILeftWnd = xr_new<CUIWindow>();
     m_UILeftWnd->SetAutoDelete(true);

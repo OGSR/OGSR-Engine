@@ -55,10 +55,13 @@ void CUIEncyclopediaWnd::Init()
     UIEncyclopediaIdxBkg->AttachChild(UIEncyclopediaIdxHeader);
     xml_init.InitFrameLine(uiXml, "right_frame_line", 0, UIEncyclopediaIdxHeader);
 
-    UIAnimation = xr_new<CUIAnimatedStatic>();
-    UIAnimation->SetAutoDelete(true);
-    UIEncyclopediaIdxHeader->AttachChild(UIAnimation);
-    xml_init.InitAnimatedStatic(uiXml, "a_static", 0, UIAnimation);
+    if (uiXml.NavigateToNode("a_static"))
+    {
+        UIAnimation = xr_new<CUIAnimatedStatic>();
+        UIAnimation->SetAutoDelete(true);
+        UIEncyclopediaIdxHeader->AttachChild(UIAnimation);
+        xml_init.InitAnimatedStatic(uiXml, "a_static", 0, UIAnimation);
+    }
 
     UIEncyclopediaInfoBkg = xr_new<CUIFrameWindow>();
     UIEncyclopediaInfoBkg->SetAutoDelete(true);

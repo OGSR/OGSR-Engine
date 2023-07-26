@@ -56,10 +56,13 @@ void CUIPdaContactsWnd::Init()
     UIRightFrame->AttachChild(UIRightFrameHeader);
     xml_init.InitFrameLine(uiXml, "right_frame_line", 0, UIRightFrameHeader);
 
-    UIAnimation = xr_new<CUIAnimatedStatic>();
-    UIAnimation->SetAutoDelete(true);
-    UIContactsHeader->AttachChild(UIAnimation);
-    xml_init.InitAnimatedStatic(uiXml, "a_static", 0, UIAnimation);
+    if (uiXml.NavigateToNode("a_static"))
+    {
+        UIAnimation = xr_new<CUIAnimatedStatic>();
+        UIAnimation->SetAutoDelete(true);
+        UIContactsHeader->AttachChild(UIAnimation);
+        xml_init.InitAnimatedStatic(uiXml, "a_static", 0, UIAnimation);
+    }
 
     UIListWnd = xr_new<CUIScrollView>();
     UIListWnd->SetAutoDelete(true);

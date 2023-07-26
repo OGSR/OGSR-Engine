@@ -43,10 +43,13 @@ void CUIActorInfoWnd::Init()
     xml_init.InitFrameLine(uiXml, "chicon_frame_line", 0, UICharIconHeader);
     UICharIconFrame->AttachChild(UICharIconHeader);
 
-    UIAnimatedIcon = xr_new<CUIAnimatedStatic>();
-    UIAnimatedIcon->SetAutoDelete(true);
-    xml_init.InitAnimatedStatic(uiXml, "a_static", 0, UIAnimatedIcon);
-    UICharIconHeader->AttachChild(UIAnimatedIcon);
+    if (uiXml.NavigateToNode("a_static"))
+    {
+        UIAnimatedIcon = xr_new<CUIAnimatedStatic>();
+        UIAnimatedIcon->SetAutoDelete(true);
+        xml_init.InitAnimatedStatic(uiXml, "a_static", 0, UIAnimatedIcon);
+        UICharIconHeader->AttachChild(UIAnimatedIcon);
+    }
 
     UIInfoFrame = xr_new<CUIFrameWindow>();
     UIInfoFrame->SetAutoDelete(true);

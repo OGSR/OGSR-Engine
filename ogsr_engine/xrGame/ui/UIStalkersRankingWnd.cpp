@@ -49,10 +49,13 @@ void CUIStalkersRankingWnd::Init()
     UIInfoFrame->AttachChild(UIInfoHeader);
     xml_init.InitFrameLine(uiXml, "info_frame_line", 0, UIInfoHeader);
 
-    UIAnimatedIcon = xr_new<CUIAnimatedStatic>();
-    UIAnimatedIcon->SetAutoDelete(true);
-    UIInfoHeader->AttachChild(UIAnimatedIcon);
-    xml_init.InitAnimatedStatic(uiXml, "a_static", 0, UIAnimatedIcon);
+    if (uiXml.NavigateToNode("a_static"))
+    {
+        UIAnimatedIcon = xr_new<CUIAnimatedStatic>();
+        UIAnimatedIcon->SetAutoDelete(true);
+        UIInfoHeader->AttachChild(UIAnimatedIcon);
+        xml_init.InitAnimatedStatic(uiXml, "a_static", 0, UIAnimatedIcon);
+    }
 
     UIList = xr_new<CUIScrollView>();
     UIList->SetAutoDelete(true);
