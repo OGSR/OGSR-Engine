@@ -150,7 +150,7 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
 
             // ҐґЄєІіЇї
             TCMap[0xA5] = TCMap[0x490];
-            TCMap[0x84] = TCMap[0x491];
+            TCMap[0xB4] = TCMap[0x491];
 
             TCMap[0xAA] = TCMap[0x404];
             TCMap[0xBA] = TCMap[0x454];

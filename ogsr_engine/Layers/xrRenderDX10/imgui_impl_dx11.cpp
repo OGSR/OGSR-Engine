@@ -1226,7 +1226,7 @@ static void ImGui_ImplDX11_CreateFontsTexture()
 
     // ҐґЄєІіЇї
     f->AddRemapChar(0xA5, 0x490, true);
-    f->AddRemapChar(0x84, 0x491, true);
+    f->AddRemapChar(0xB4, 0x491, true);
 
     f->AddRemapChar(0xAA, 0x404, true);
     f->AddRemapChar(0xBA, 0x454, true);
