@@ -405,11 +405,9 @@ void CUILines::ParseText()
 
     if (m_eTextAlign == CGameFont::alJustified)
     {
-        const u32 size = m_lines.size();
-        
-        for (int i = 0; i < (int)size; i++)
+        for (auto& m_line : m_lines)
         {
-            m_lines[i].ProcessSpaces();
+            m_line.ProcessSpaces();
         }
     }
 
