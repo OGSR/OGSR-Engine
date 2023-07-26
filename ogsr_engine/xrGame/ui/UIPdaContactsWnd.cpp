@@ -157,11 +157,22 @@ void CUIPdaContactItem::SetSelected(bool b)
     if (b)
     {
         m_cw->UIDetailsWnd->Clear();
+
         CCharacterInfo chInfo;
         CSE_ALifeTraderAbstract* T = ch_info_get_from_id(UIInfo->OwnerID());
         chInfo.Init(T);
 
-        ADD_TEXT_TO_VIEW2(*(chInfo.Bio()), m_cw->UIDetailsWnd);
+        CUIStatic* pSt = xr_new<CUIStatic>();
+
+        pSt->SetText(*(chInfo.Bio()));
+        pSt->SetTextComplexMode(true);
+        pSt->SetWidth(m_cw->UIDetailsWnd->GetDesiredChildWidth());
+        pSt->AdjustHeightToText();
+
+        if (m_cw->UIDetailsWnd->GetFont())
+            pSt->SetFont(m_cw->UIDetailsWnd->GetFont());
+
+        m_cw->UIDetailsWnd->AddWindow(pSt, true);
 
         g_actor->callback(GameObject::eSelectPdaContact)(UIInfo->OwnerID());
     }
