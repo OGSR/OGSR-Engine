@@ -272,30 +272,31 @@ void CCC_LoadCFG::Execute(LPCSTR args)
     IReader* F = FS.r_open(cfg_full_name);
 
     string1024 str;
-    if (F != NULL)
+    if (F)
     {
         while (!F->eof())
         {
-            if (strstr(cfg_full_name, "user.ltx") && F->tell() == 0)
+            if (F->tell() == 0 && strstr(cfg_full_name, "user.ltx"))
             {
-                if (F->r_u8() == 0) // Костыль от ситуации когда в редких случаях почему-то у игроков бьётся user.ltx - оказывается набит нулями, в результате чего игра не
-                                    // запускается. Не понятно почему так происходит, поэтому сделал тут обработку такой ситуации.
+                // Костыль от ситуации когда в редких случаях почему-то у игроков бьётся user.ltx - оказывается набит нулями, в результате чего игра не
+                // запускается. Не понятно почему так происходит, поэтому сделал тут обработку такой ситуации.
+
+                if (F->r_u8() == 0) 
                 {
                     Msg("!![%s] file [%s] broken!", __FUNCTION__, cfg_full_name);
                     FS.r_close(F);
                     FS.file_delete(cfg_full_name);
                     return;
                 }
-                else
-                {
-                    F->seek(F->tell() - sizeof(u8));
-                }
+
+                F->seek(F->tell() - sizeof(u8));
             }
 
             F->r_string(str, sizeof(str));
             if (allow(str))
                 Console->Execute(str);
         }
+
         FS.r_close(F);
         Msg("[%s] successfully loaded.", cfg_full_name);
     }

@@ -180,6 +180,27 @@ CModelPool::CModelPool()
 
     string_path fname;
     FS.update_path(fname, "$app_data_root$", "vis_prefetch.ltx");
+
+    if (IReader* F = FS.r_open(fname))
+    {
+        // Костыль от ситуации когда в редких случаях почему-то у игроков бьётся vis_prefetch.ltx - оказывается набит нулями, в результате чего игра не
+        // запускается. Не понятно почему так происходит, поэтому сделал тут обработку такой ситуации.
+
+        if (F->r_u8() == 0) 
+        {
+            Msg("!![%s] file [%s] broken!", __FUNCTION__, fname);
+
+            FS.r_close(F);
+
+            FS.file_delete(fname);
+
+            F = nullptr;
+        }
+
+        if (F)
+            FS.r_close(F);
+    }
+
     vis_prefetch_ini = xr_new<CInifile>(fname, FALSE);
     process_vis_prefetch();
 }
