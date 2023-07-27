@@ -5,19 +5,6 @@
 #include "RenderFactory.h"
 #include "../../Include/xrAPI/xrAPI.h"
 
-#define FACTORY_PTR_INSTANCIATE(Class) \
-    template <> \
-    inline void FactoryPtr<I##Class>::CreateObject() \
-    { \
-        m_pObject = RenderFactory->Create##Class(); \
-    } \
-    template <> \
-    inline void FactoryPtr<I##Class>::DestroyObject() \
-    { \
-        RenderFactory->Destroy##Class(m_pObject); \
-        m_pObject = nullptr; \
-    }
-
 template <class T>
 class FactoryPtr
 {
@@ -48,47 +35,202 @@ public:
 private:
     void CreateObject();
     void DestroyObject();
+
     T const* get() const { return m_pObject; }
 
-private:
     T* m_pObject;
 };
 
-
-FACTORY_PTR_INSTANCIATE(UISequenceVideoItem)
-FACTORY_PTR_INSTANCIATE(UIShader)
-FACTORY_PTR_INSTANCIATE(StatGraphRender)
-FACTORY_PTR_INSTANCIATE(ConsoleRender)
-FACTORY_PTR_INSTANCIATE(RenderDeviceRender)
+template <>
+inline void FactoryPtr<IUISequenceVideoItem>::CreateObject()
+{
+    m_pObject = RenderFactory->CreateUISequenceVideoItem();
+}
+template <>
+inline void FactoryPtr<IUISequenceVideoItem>::DestroyObject()
+{
+    RenderFactory->DestroyUISequenceVideoItem(m_pObject);
+    m_pObject = nullptr;
+}
+template <>
+inline void FactoryPtr<IUIShader>::CreateObject()
+{
+    m_pObject = RenderFactory->CreateUIShader();
+}
+template <>
+inline void FactoryPtr<IUIShader>::DestroyObject()
+{
+    RenderFactory->DestroyUIShader(m_pObject);
+    m_pObject = nullptr;
+}
+template <>
+inline void FactoryPtr<IStatGraphRender>::CreateObject()
+{
+    m_pObject = RenderFactory->CreateStatGraphRender();
+}
+template <>
+inline void FactoryPtr<IStatGraphRender>::DestroyObject()
+{
+    RenderFactory->DestroyStatGraphRender(m_pObject);
+    m_pObject = nullptr;
+}
+template <>
+inline void FactoryPtr<IConsoleRender>::CreateObject()
+{
+    m_pObject = RenderFactory->CreateConsoleRender();
+}
+template <>
+inline void FactoryPtr<IConsoleRender>::DestroyObject()
+{
+    RenderFactory->DestroyConsoleRender(m_pObject);
+    m_pObject = nullptr;
+}
+template <>
+inline void FactoryPtr<IRenderDeviceRender>::CreateObject()
+{
+    m_pObject = RenderFactory->CreateRenderDeviceRender();
+}
+template <>
+inline void FactoryPtr<IRenderDeviceRender>::DestroyObject()
+{
+    RenderFactory->DestroyRenderDeviceRender(m_pObject);
+    m_pObject = nullptr;
+}
 #ifdef DEBUG
-FACTORY_PTR_INSTANCIATE(ObjectSpaceRender)
+template <>
+inline void FactoryPtr<IObjectSpaceRender>::CreateObject()
+{
+    m_pObject = RenderFactory->CreateObjectSpaceRender();
+}
+template <>
+inline void FactoryPtr<IObjectSpaceRender>::DestroyObject()
+{
+    RenderFactory->DestroyObjectSpaceRender(m_pObject);
+    m_pObject = nullptr;
+}
 #endif // DEBUG
-FACTORY_PTR_INSTANCIATE(WallMarkArray)
-FACTORY_PTR_INSTANCIATE(StatsRender);
-
-
-
-FACTORY_PTR_INSTANCIATE(FlareRender)
-FACTORY_PTR_INSTANCIATE(ThunderboltRender)
-FACTORY_PTR_INSTANCIATE(ThunderboltDescRender)
-FACTORY_PTR_INSTANCIATE(LensFlareRender)
-FACTORY_PTR_INSTANCIATE(RainRender)
-FACTORY_PTR_INSTANCIATE(EnvironmentRender)
-FACTORY_PTR_INSTANCIATE(EnvDescriptorRender)
-FACTORY_PTR_INSTANCIATE(EnvDescriptorMixerRender)
-
-FACTORY_PTR_INSTANCIATE(FontRender)
-/*
-void FactoryPtr<IStatsRender>::CreateObject(void)
+template <>
+inline void FactoryPtr<IWallMarkArray>::CreateObject()
+{
+    m_pObject = RenderFactory->CreateWallMarkArray();
+}
+template <>
+inline void FactoryPtr<IWallMarkArray>::DestroyObject()
+{
+    RenderFactory->DestroyWallMarkArray(m_pObject);
+    m_pObject = nullptr;
+}
+template <>
+inline void FactoryPtr<IStatsRender>::CreateObject()
 {
     m_pObject = RenderFactory->CreateStatsRender();
 }
-
-void FactoryPtr<IStatsRender>::DestroyObject(void)
+template <>
+inline void FactoryPtr<IStatsRender>::DestroyObject()
 {
     RenderFactory->DestroyStatsRender(m_pObject);
-    m_pObject = NULL;
+    m_pObject = nullptr;
+};
+
+template <>
+inline void FactoryPtr<IFlareRender>::CreateObject()
+{
+    m_pObject = RenderFactory->CreateFlareRender();
 }
-*/
+template <>
+inline void FactoryPtr<IFlareRender>::DestroyObject()
+{
+    RenderFactory->DestroyFlareRender(m_pObject);
+    m_pObject = nullptr;
+}
+template <>
+inline void FactoryPtr<IThunderboltRender>::CreateObject()
+{
+    m_pObject = RenderFactory->CreateThunderboltRender();
+}
+template <>
+inline void FactoryPtr<IThunderboltRender>::DestroyObject()
+{
+    RenderFactory->DestroyThunderboltRender(m_pObject);
+    m_pObject = nullptr;
+}
+template <>
+inline void FactoryPtr<IThunderboltDescRender>::CreateObject()
+{
+    m_pObject = RenderFactory->CreateThunderboltDescRender();
+}
+template <>
+inline void FactoryPtr<IThunderboltDescRender>::DestroyObject()
+{
+    RenderFactory->DestroyThunderboltDescRender(m_pObject);
+    m_pObject = nullptr;
+}
+template <>
+inline void FactoryPtr<ILensFlareRender>::CreateObject()
+{
+    m_pObject = RenderFactory->CreateLensFlareRender();
+}
+template <>
+inline void FactoryPtr<ILensFlareRender>::DestroyObject()
+{
+    RenderFactory->DestroyLensFlareRender(m_pObject);
+    m_pObject = nullptr;
+}
+template <>
+inline void FactoryPtr<IRainRender>::CreateObject()
+{
+    m_pObject = RenderFactory->CreateRainRender();
+}
+template <>
+inline void FactoryPtr<IRainRender>::DestroyObject()
+{
+    RenderFactory->DestroyRainRender(m_pObject);
+    m_pObject = nullptr;
+}
+template <>
+inline void FactoryPtr<IEnvironmentRender>::CreateObject()
+{
+    m_pObject = RenderFactory->CreateEnvironmentRender();
+}
+template <>
+inline void FactoryPtr<IEnvironmentRender>::DestroyObject()
+{
+    RenderFactory->DestroyEnvironmentRender(m_pObject);
+    m_pObject = nullptr;
+}
+template <>
+inline void FactoryPtr<IEnvDescriptorRender>::CreateObject()
+{
+    m_pObject = RenderFactory->CreateEnvDescriptorRender();
+}
+template <>
+inline void FactoryPtr<IEnvDescriptorRender>::DestroyObject()
+{
+    RenderFactory->DestroyEnvDescriptorRender(m_pObject);
+    m_pObject = nullptr;
+}
+template <>
+inline void FactoryPtr<IEnvDescriptorMixerRender>::CreateObject()
+{
+    m_pObject = RenderFactory->CreateEnvDescriptorMixerRender();
+}
+template <>
+inline void FactoryPtr<IEnvDescriptorMixerRender>::DestroyObject()
+{
+    RenderFactory->DestroyEnvDescriptorMixerRender(m_pObject);
+    m_pObject = nullptr;
+}
+
+template <>
+inline void FactoryPtr<IFontRender>::CreateObject()
+{
+    m_pObject = RenderFactory->CreateFontRender();
+}
+template <>
+inline void FactoryPtr<IFontRender>::DestroyObject()
+{
+    RenderFactory->DestroyFontRender(m_pObject);
+    m_pObject = nullptr;
+}
 
 #endif //	FactoryPtr_included

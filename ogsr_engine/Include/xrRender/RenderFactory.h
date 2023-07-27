@@ -31,44 +31,47 @@ class IConsoleRender;
 class IUIShader;
 class IUISequenceVideoItem;
 
-#define RENDER_FACTORY_INTERFACE(Class) \
-    virtual I##Class* Create##Class() = 0; \
-    virtual void Destroy##Class(I##Class* pObject) = 0;
-
 class IRenderFactory
 {
 public:
-
-    /*
-    virtual IStatsRender* CreateStatsRender() = 0;
-    virtual void DestroyStatsRender(IStatsRender *pObject) = 0;
-    */
-    RENDER_FACTORY_INTERFACE(UISequenceVideoItem)
-    RENDER_FACTORY_INTERFACE(UIShader)
-    RENDER_FACTORY_INTERFACE(StatGraphRender)
-    RENDER_FACTORY_INTERFACE(ConsoleRender)
-    RENDER_FACTORY_INTERFACE(RenderDeviceRender)
+    virtual IUISequenceVideoItem* CreateUISequenceVideoItem() = 0;
+    virtual void DestroyUISequenceVideoItem(IUISequenceVideoItem* pObject) = 0;
+    virtual IUIShader* CreateUIShader() = 0;
+    virtual void DestroyUIShader(IUIShader* pObject) = 0;
+    virtual IStatGraphRender* CreateStatGraphRender() = 0;
+    virtual void DestroyStatGraphRender(IStatGraphRender* pObject) = 0;
+    virtual IConsoleRender* CreateConsoleRender() = 0;
+    virtual void DestroyConsoleRender(IConsoleRender* pObject) = 0;
+    virtual IRenderDeviceRender* CreateRenderDeviceRender() = 0;
+    virtual void DestroyRenderDeviceRender(IRenderDeviceRender* pObject) = 0;
 #ifdef DEBUG
-    RENDER_FACTORY_INTERFACE(ObjectSpaceRender)
+    virtual IObjectSpaceRender* CreateObjectSpaceRender() = 0;
+    virtual void DestroyObjectSpaceRender(IObjectSpaceRender* pObject) = 0;
 #endif // DEBUG
-    RENDER_FACTORY_INTERFACE(WallMarkArray)
-    RENDER_FACTORY_INTERFACE(StatsRender)
+    virtual IWallMarkArray* CreateWallMarkArray() = 0;
+    virtual void DestroyWallMarkArray(IWallMarkArray* pObject) = 0;
+    virtual IStatsRender* CreateStatsRender() = 0;
+    virtual void DestroyStatsRender(IStatsRender* pObject) = 0;
 
+    virtual IEnvironmentRender* CreateEnvironmentRender() = 0;
+    virtual void DestroyEnvironmentRender(IEnvironmentRender* pObject) = 0;
+    virtual IEnvDescriptorMixerRender* CreateEnvDescriptorMixerRender() = 0;
+    virtual void DestroyEnvDescriptorMixerRender(IEnvDescriptorMixerRender* pObject) = 0;
+    virtual IEnvDescriptorRender* CreateEnvDescriptorRender() = 0;
+    virtual void DestroyEnvDescriptorRender(IEnvDescriptorRender* pObject) = 0;
+    virtual IRainRender* CreateRainRender() = 0;
+    virtual void DestroyRainRender(IRainRender* pObject) = 0;
+    virtual ILensFlareRender* CreateLensFlareRender() = 0;
+    virtual void DestroyLensFlareRender(ILensFlareRender* pObject) = 0;
+    virtual IThunderboltRender* CreateThunderboltRender() = 0;
+    virtual void DestroyThunderboltRender(IThunderboltRender* pObject) = 0;
+    virtual IThunderboltDescRender* CreateThunderboltDescRender() = 0;
+    virtual void DestroyThunderboltDescRender(IThunderboltDescRender* pObject) = 0;
+    virtual IFlareRender* CreateFlareRender() = 0;
+    virtual void DestroyFlareRender(IFlareRender* pObject) = 0;
 
-
-    RENDER_FACTORY_INTERFACE(EnvironmentRender)
-    RENDER_FACTORY_INTERFACE(EnvDescriptorMixerRender)
-    RENDER_FACTORY_INTERFACE(EnvDescriptorRender)
-    RENDER_FACTORY_INTERFACE(RainRender)
-    RENDER_FACTORY_INTERFACE(LensFlareRender)
-    RENDER_FACTORY_INTERFACE(ThunderboltRender)
-    RENDER_FACTORY_INTERFACE(ThunderboltDescRender)
-    RENDER_FACTORY_INTERFACE(FlareRender)
-
-    RENDER_FACTORY_INTERFACE(FontRender)
-protected:
-    // virtual IEnvDescriptorRender *CreateEnvDescriptorRender() = 0;
-    // virtual void DestroyEnvDescriptorRender(IEnvDescriptorRender *pObject) = 0;
+    virtual IFontRender* CreateFontRender() = 0;
+    virtual void DestroyFontRender(IFontRender* pObject) = 0;
 };
 
 #endif //	RenderFactory_included

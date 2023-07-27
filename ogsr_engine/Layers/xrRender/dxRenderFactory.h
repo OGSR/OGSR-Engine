@@ -4,33 +4,46 @@
 
 #include "..\..\Include\xrRender\RenderFactory.h"
 
-#define RENDER_FACTORY_DECLARE(Class) \
-    virtual I##Class* Create##Class(); \
-    virtual void Destroy##Class(I##Class* pObject);
 
 class dxRenderFactory : public IRenderFactory
 {
-    RENDER_FACTORY_DECLARE(UISequenceVideoItem)
-    RENDER_FACTORY_DECLARE(UIShader)
-    RENDER_FACTORY_DECLARE(StatGraphRender)
-    RENDER_FACTORY_DECLARE(ConsoleRender)
-    RENDER_FACTORY_DECLARE(RenderDeviceRender)
+    virtual IUISequenceVideoItem* CreateUISequenceVideoItem();
+    virtual void DestroyUISequenceVideoItem(IUISequenceVideoItem* pObject);
+    virtual IUIShader* CreateUIShader();
+    virtual void DestroyUIShader(IUIShader* pObject);
+    virtual IStatGraphRender* CreateStatGraphRender();
+    virtual void DestroyStatGraphRender(IStatGraphRender* pObject);
+    virtual IConsoleRender* CreateConsoleRender();
+    virtual void DestroyConsoleRender(IConsoleRender* pObject);
+    virtual IRenderDeviceRender* CreateRenderDeviceRender();
+    virtual void DestroyRenderDeviceRender(IRenderDeviceRender* pObject);
 #ifdef DEBUG
-    RENDER_FACTORY_DECLARE(ObjectSpaceRender)
+    virtual IObjectSpaceRender* CreateObjectSpaceRender();
+    virtual void DestroyObjectSpaceRender(IObjectSpaceRender* pObject);
 #endif // DEBUG
-    RENDER_FACTORY_DECLARE(WallMarkArray)
-    RENDER_FACTORY_DECLARE(StatsRender)
+    virtual IWallMarkArray* CreateWallMarkArray();
+    virtual void DestroyWallMarkArray(IWallMarkArray* pObject);
+    virtual IStatsRender* CreateStatsRender();
+    virtual void DestroyStatsRender(IStatsRender* pObject);
 
-
-    RENDER_FACTORY_DECLARE(FlareRender)
-    RENDER_FACTORY_DECLARE(ThunderboltRender)
-    RENDER_FACTORY_DECLARE(ThunderboltDescRender)
-    RENDER_FACTORY_DECLARE(RainRender)
-    RENDER_FACTORY_DECLARE(LensFlareRender)
-    RENDER_FACTORY_DECLARE(EnvironmentRender)
-    RENDER_FACTORY_DECLARE(EnvDescriptorMixerRender)
-    RENDER_FACTORY_DECLARE(EnvDescriptorRender)
-    RENDER_FACTORY_DECLARE(FontRender)
+    virtual IFlareRender* CreateFlareRender();
+    virtual void DestroyFlareRender(IFlareRender* pObject);
+    virtual IThunderboltRender* CreateThunderboltRender();
+    virtual void DestroyThunderboltRender(IThunderboltRender* pObject);
+    virtual IThunderboltDescRender* CreateThunderboltDescRender();
+    virtual void DestroyThunderboltDescRender(IThunderboltDescRender* pObject);
+    virtual IRainRender* CreateRainRender();
+    virtual void DestroyRainRender(IRainRender* pObject);
+    virtual ILensFlareRender* CreateLensFlareRender();
+    virtual void DestroyLensFlareRender(ILensFlareRender* pObject);
+    virtual IEnvironmentRender* CreateEnvironmentRender();
+    virtual void DestroyEnvironmentRender(IEnvironmentRender* pObject);
+    virtual IEnvDescriptorMixerRender* CreateEnvDescriptorMixerRender();
+    virtual void DestroyEnvDescriptorMixerRender(IEnvDescriptorMixerRender* pObject);
+    virtual IEnvDescriptorRender* CreateEnvDescriptorRender();
+    virtual void DestroyEnvDescriptorRender(IEnvDescriptorRender* pObject);
+    virtual IFontRender* CreateFontRender();
+    virtual void DestroyFontRender(IFontRender* pObject);
 };
 
 extern dxRenderFactory RenderFactoryImpl;
