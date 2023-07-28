@@ -55,4 +55,5 @@ void CUIButtonHint::SetHintText(CUIWindow* w, LPCSTR text)
     float hh = _max(m_text->GetWidth() + 30.0f, 80.0f);
     SetWidth(hh);
     m_border->SetWidth(hh);
+    m_text->SetWidth(hh);
 }
