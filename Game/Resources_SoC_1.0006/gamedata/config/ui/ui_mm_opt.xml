@@ -805,16 +805,16 @@
 		<texture>ui_icons_PDA_tooltips</texture>
 	</frame_hint>
 
-	<hint_name x="55" y="177" width="250" height="35">
-		<text align="l" font="letterica18" r="255" g="255" b="255" complex_mode="1">hint_name_text</text>
+	<hint_name x="55" y="177" width="285" height="35">
+		<text align="c" font="letterica18" r="255" g="255" b="255" complex_mode="1">hint_name_text</text>
 	</hint_name>
 
-	<hint_caption x="55" y="225" width="250" height="350">
-		<text align="l" font="letterica16" r="255" g="255" b="255" complex_mode="1">hint_caption_text</text>
+	<hint_caption x="55" y="225" width="285" height="350">
+		<text align="j" font="letterica16" r="255" g="255" b="255" complex_mode="1">hint_caption_text</text>
 	</hint_caption>
 	
-	<hint_caption_adv x="55" y="225" width="250" height="350">
-		<text align="l" font="letterica16" r="255" g="255" b="255" complex_mode="1">hint_caption_adv_text</text>
+	<hint_caption_adv x="55" y="225" width="285" height="350">
+		<text align="c" font="letterica16" r="255" g="255" b="255" complex_mode="1">hint_caption_adv_text</text>
 	</hint_caption_adv>
 
 </window>
