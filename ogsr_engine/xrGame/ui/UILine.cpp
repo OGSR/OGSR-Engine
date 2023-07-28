@@ -155,14 +155,16 @@ void CUILine::Draw(CGameFont* pFont, float x, float y, float max_w) const
     const int size = m_subLines.size();
 
     float total_w = 0.f;
-
-    int nonEmptyCount = 0;
+    
     int last_nonEmpty = 0;
+    int nonEmptyCount = 0;
 
     for (int i = 0; i < size; i++)
     {
         float w = pFont->SizeOf_(m_subLines[i].m_text.c_str());
+
         UI()->ClientToScreenScaledWidth(w);
+
         total_w += w;
         if (w > 0.f)
         {
@@ -171,24 +173,24 @@ void CUILine::Draw(CGameFont* pFont, float x, float y, float max_w) const
         }
     }
 
-    float add_w = 0.f;
     float def_add_w = 0.f; 
     bool use_def_add_w = false;
 
+    float add_w = 0.f;
+
     if (pFont->GetAligment() == CGameFont::alJustified)
     {
-        const float space_w = max_w - total_w;
-
-        add_w = space_w / (float)(nonEmptyCount - 1);
-
         def_add_w = pFont->SizeOf_(' ');
-
         if (pFont->IsMultibyte())
         {
             def_add_w += pFont->GetfXStep() * pFont->GetInterval().x * pFont->GetWidthScale();
         }
 
         UI()->ClientToScreenScaledWidth(def_add_w);
+
+        const float space_w = max_w - total_w - def_add_w * (size - nonEmptyCount);
+
+        add_w = space_w / (float)(nonEmptyCount - 1);
 
         if (total_w < max_w * 3/4)
         {
