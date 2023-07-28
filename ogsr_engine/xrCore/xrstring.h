@@ -121,14 +121,10 @@ public:
     //Используется в погодном редакторе.
     const char* data() const { return p_ ? p_->value : ""; }
 
-    // misc func
-    u32 size() const
-    {
-        if (0 == p_)
-            return 0;
-        else
-            return p_->dwLength;
-    }
+    u32 size() const { return p_ ? p_->dwLength : 0; }
+
+    bool empty() const { return size() == 0; }
+
     void swap(shared_str& rhs)
     {
         str_value* tmp = p_;
