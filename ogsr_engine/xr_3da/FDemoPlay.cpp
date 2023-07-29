@@ -17,7 +17,7 @@
 CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : CEffectorCam(cefDemo, life_time /*,FALSE*/)
 {
     Msg("*** Playing demo: %s", name);
-    Console->Execute("hud_weapon 0");
+    //Console->Execute("hud_weapon 0");
     if (g_bBenchmark)
         Console->Execute("hud_draw 0");
 
@@ -71,7 +71,7 @@ CDemoPlay::~CDemoPlay()
     stat_Stop();
     xr_delete(m_pMotion);
     xr_delete(m_MParam);
-    Console->Execute("hud_weapon 1");
+    //Console->Execute("hud_weapon 1");
     if (g_bBenchmark)
         Console->Execute("hud_draw 1");
 }
