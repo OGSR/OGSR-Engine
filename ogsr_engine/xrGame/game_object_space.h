@@ -100,6 +100,8 @@ enum ECallbackType
 
     eSelectPdaContact,
 
+    eOnFootstep,
+
     eDummy = u32(-1),
 };
 };

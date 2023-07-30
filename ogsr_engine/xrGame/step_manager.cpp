@@ -8,6 +8,9 @@
 #include "material_manager.h"
 #include "profiler.h"
 #include "IKLimbsController.h"
+#include "actor.h"
+#include "game_object_space.h"
+#include "script_game_object.h"
 
 CStepManager::CStepManager() {}
 
@@ -140,6 +143,8 @@ void CStepManager::update()
                 Fvector sound_pos = m_object->Position();
                 sound_pos.y += 0.5;
                 GET_RANDOM(mtl_pair->StepSounds).play_no_feedback(m_object, 0, 0, &sound_pos, &m_step_info.params.step[i].power);
+                if (auto actor = smart_cast<CActor*>(m_object))
+                    actor->callback(GameObject::eOnFootstep)(actor->lua_game_object(), m_step_info.params.step[i].power);
             }
 
             // Играть партиклы
