@@ -311,12 +311,12 @@ void CScriptGameObject::SetStartDialog(LPCSTR dialog_id)
     pDialogManager->SetStartDialog(dialog_id);
 }
 
-void CScriptGameObject::GetStartDialog()
+const char* CScriptGameObject::GetStartDialog()
 {
     CAI_PhraseDialogManager* pDialogManager = smart_cast<CAI_PhraseDialogManager*>(&object());
     if (!pDialogManager)
         return;
-    pDialogManager->GetStartDialog();
+    return pDialogManager->GetStartDialog().c_str();
 }
 void CScriptGameObject::RestoreDefaultStartDialog()
 {

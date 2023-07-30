@@ -337,7 +337,7 @@ public:
     void ChangeGoodwill(int delta_goodwill, CScriptGameObject* pWhoToSet);
 
     void SetStartDialog(LPCSTR dialog_id);
-    void GetStartDialog();
+    const char* GetStartDialog();
     void RestoreDefaultStartDialog();
 
     void SwitchToTrade();
