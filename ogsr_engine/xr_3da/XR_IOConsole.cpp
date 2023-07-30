@@ -454,7 +454,7 @@ void CConsole::OnRender()
 	itoa(log_line, q, 10);
 	u32 qn = xr_strlen(q);
 	pFont->SetColor(total_font_color);
-    pFont->OutI(0.95f - 0.03f * qn, fMaxY - 2.0f * (LDIST), "[%d]", log_line);
+    pFont->OutI(0.95f - 0.03f * qn, fMaxY - 2.0f * (LDIST), "[%d]", log_line + 1);
 
 	pFont->OnRender();
 	pFont2->OnRender();
