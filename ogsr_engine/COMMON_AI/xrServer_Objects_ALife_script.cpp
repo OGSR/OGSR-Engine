@@ -76,7 +76,8 @@ void CSE_ALifeObject::script_register(lua_State* L)
                   .def("get_weapon", &cse_object_cast<CSE_ALifeItemWeapon>)
                   .def("get_weapon_m", &cse_object_cast<CSE_ALifeItemWeaponMagazined>)
                   .def("get_weapon_gl", &cse_object_cast<CSE_ALifeItemWeaponMagazinedWGL>)
-                  .def("get_trader", &cse_object_cast<CSE_ALifeTraderAbstract>)];
+                  .def("get_trader", &cse_object_cast<CSE_ALifeTraderAbstract>)
+                  .def("get_visual", &cse_object_cast<CSE_Visual>)];
 }
 
 void CSE_ALifeGroupAbstract::script_register(lua_State* L)
