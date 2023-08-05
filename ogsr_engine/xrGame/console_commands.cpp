@@ -157,8 +157,8 @@ public:
             memCounters.FreePhysicalMemory / (1024 * 1024), 
             memCounters.MemoryLoad);
 
-        Msg("PageFile total: [%I64dMB]", 
-            memCounters.TotalPageFile / (1024 * 1024));
+        Msg("PageFile total: [%I64dMB], free~ [%I64dMB]", 
+            memCounters.TotalPageFile / (1024 * 1024), memCounters.FreePageFile / (1024 * 1024));
 
         //PeakWorkingSetSize
         //

@@ -95,13 +95,16 @@ public:
     CStatTimer TEST3; // debug counter
 
 private:
-    float AvailableMem;
-    float AvailablePageFileMem;
-    float PageFileMemUsedByApp;
+
     float PhysMemoryUsedPercent;
 
-    double cpuBefore;
-    double cpuLoad = cpuBefore;
+    float AvailableMem;
+    float AvailablePageFileMem;
+
+    float WorkingSetSize;
+    float PagefileUsage;
+
+    double cpuLoad{};
 
 public:
     void Show();

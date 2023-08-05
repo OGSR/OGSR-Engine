@@ -13,7 +13,6 @@ extern xr_token* vid_quality_token;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-void __cdecl dummy(void){};
 CEngineAPI::CEngineAPI()
 {
     hGame = 0;
@@ -21,8 +20,6 @@ CEngineAPI::CEngineAPI()
     hTuner = 0;
     pCreate = 0;
     pDestroy = 0;
-    tune_pause = dummy;
-    tune_resume = dummy;
 }
 
 CEngineAPI::~CEngineAPI()
