@@ -281,15 +281,18 @@ void CCC_LoadCFG::Execute(LPCSTR args)
                 // Костыль от ситуации когда в редких случаях почему-то у игроков бьётся user.ltx - оказывается набит нулями, в результате чего игра не
                 // запускается. Не понятно почему так происходит, поэтому сделал тут обработку такой ситуации.
 
-                if (F->r_u8() == 0) 
+                if (F->elapsed() >= sizeof(u8))
                 {
-                    Msg("!![%s] file [%s] broken!", __FUNCTION__, cfg_full_name);
-                    FS.r_close(F);
-                    FS.file_delete(cfg_full_name);
-                    return;
-                }
+                    if (F->r_u8() == 0)
+                    {
+                        Msg("!![%s] file [%s] broken!", __FUNCTION__, cfg_full_name);
+                        FS.r_close(F);
+                        FS.file_delete(cfg_full_name);
+                        return;
+                    }
 
-                F->seek(F->tell() - sizeof(u8));
+                    F->seek(F->tell() - sizeof(u8));
+                }
             }
 
             F->r_string(str, sizeof(str));
