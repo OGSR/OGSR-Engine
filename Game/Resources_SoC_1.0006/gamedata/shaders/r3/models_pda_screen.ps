@@ -1,4 +1,5 @@
 #include "common.h"
+#include "screenspace_hud_raindrops.h"
 
 uniform float4 m_affects;
 uniform Texture2D s_vp2;
@@ -6,9 +7,10 @@ uniform Texture2D s_load;
 
 struct v2p
 {
-    float2 tc0 : TEXCOORD0; // base
-    float3 tc1 : TEXCOORD1; // environment
-    float4 c0 : COLOR0; // sun.(fog*fog)
+    float2 tc0 : TEXCOORD0; // main tc for screen
+    float3 RDrops : TEXCOORD1; // Raindrops
+    float4 c0 : COLOR0; // unused shit mb vertex shader idk
+    //float4 hpos : SV_Position;
 };
 
 float get_noise(float2 co) { return (frac(sin(dot(co.xy, float2(12.9898, 78.233))) * 43758.5453)) * 0.5; }
@@ -49,4 +51,35 @@ float4 loading_main(v2p I)
     return float4(t_load.r, t_load.g, t_load.b, 1);
 }
 
-float4 main(v2p I) : SV_Target { return (m_affects.a > 0 && m_affects.x >= 0.08) ? loading_main(I) : problems_main(I); }
+float4 main(v2p I) : SV_Target {
+	// HUD Rain drops - SSS Update 17
+    // https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders/
+
+    //float4 drops = 0; // xy = Normal | z = Overall str | w = reflection str //Simp: WTF???
+    float extra_col = 0;
+    if (ssfx_hud_drops_1.y > 0)
+    {
+        // Calc droplets
+        float4 Layer0 = s_hud_rain.Sample(smp_base, (I.tc0 + float2(0, -ssfx_hud_drops_1.x * 0.01f)) * float2(1.5f, 0.75f)); // Big drops
+        float4 Layer1 = s_hud_rain.Sample(smp_base, I.tc0 * float2(5.0f, 3.0f)); // Small drops [ Static ]
+
+        // Process animation
+        float3 result = ssfx_process_drops(Layer0, 0.1f, 0.2f) + ssfx_process_drops(Layer1, 0.2f, 1.0f);
+        result.xy = clamp(result.xy, -1.0f, 1.0f);
+
+        // Only apply to facing up surfaces [ World Y+ ]
+        result.xyz *= saturate(I.RDrops.y);
+
+        // Intensity from script ( Cover + Rain intensity )
+        result.xyz *= ssfx_hud_drops_1.y;
+
+        // Refraction
+        I.tc0.xy = I.tc0.xy - result.xy * 0.4f;
+
+        // Add a small amount of white.
+        extra_col = saturate(Layer0.x + Layer1.x) * result.z * 0.25f;
+    }
+
+	float4 final_clr = (m_affects.a > 0 && m_affects.x >= 0.08) ? loading_main(I) : problems_main(I);
+	return final_clr + extra_col;
+}

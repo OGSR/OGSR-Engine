@@ -572,7 +572,9 @@ void attachable_hud_item::load(const shared_str& sect_name)
         m_has_separated_hands = true;
     }
 
+    ::Render->hud_loading = true;
     m_model = smart_cast<IKinematics*>(::Render->model_Create(m_visual_name.c_str()));
+    ::Render->hud_loading = false;
 
     m_attach_place_idx = READ_IF_EXISTS(pSettings, r_u16, sect_name, "attach_place_idx", 0);
     m_measures.load(sect_name, m_model);
@@ -768,9 +770,12 @@ void player_hud::load(const shared_str& player_hud_sect, bool force)
 
     m_sect_name = player_hud_sect;
     const char* model_name = pSettings->r_string(player_hud_sect, "visual");
+
+    ::Render->hud_loading = true;
     m_model = smart_cast<IKinematicsAnimated*>(::Render->model_Create(model_name));
     const char* model_name_2 = READ_IF_EXISTS(pSettings, r_string, player_hud_sect, "visual_2", model_name);
     m_model_2 = smart_cast<IKinematicsAnimated*>(::Render->model_Create(model_name_2));
+    ::Render->hud_loading = false;
 
     u16 l_arm = m_model->dcast_PKinematics()->LL_BoneID("l_clavicle");
     ASSERT_FMT(l_arm != BI_NONE, "[%s]: bone [%s] not found in sect [%s] visual [%s]", __FUNCTION__, "l_clavicle", m_sect_name.c_str(), model_name);
@@ -1595,7 +1600,10 @@ u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, b
 
     if (pSettings->line_exist(hud_section, "item_visual"))
     {
+        ::Render->hud_loading = true;
         script_anim_item_model = ::Render->model_Create(pSettings->r_string(hud_section, "item_visual"))->dcast_PKinematicsAnimated();
+        ::Render->hud_loading = false;
+
         item_pos[0] = READ_IF_EXISTS(pSettings, r_fvector3, hud_section, "item_position", def);
         item_pos[1] = READ_IF_EXISTS(pSettings, r_fvector3, hud_section, "item_orientation", def);
         script_anim_item_attached = READ_IF_EXISTS(pSettings, r_bool, hud_section, "item_attached", true);
@@ -1759,7 +1767,9 @@ u32 player_hud::motion_length_script(LPCSTR hud_section, LPCSTR anm_name, float 
 
     if (pSettings->line_exist(hud_section, "item_visual"))
     {
+        ::Render->hud_loading = true;
         animatedHudItem = ::Render->model_Create(pSettings->r_string(hud_section, "item_visual"))->dcast_PKinematicsAnimated();
+        ::Render->hud_loading = false;
     }
 
     player_hud_motion_container* pm = get_hand_motions(hud_section, animatedHudItem);

@@ -54,6 +54,9 @@ public:
     void GrassBendersReset(const size_t idx);
     void GrassBendersSet(const size_t idx, const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity, const float radius, const bool resetTime);
 
+    bool IsActorInHideout() const;
+    void UpdateHudRaindrops() const;
+
     void destroy_particles(const bool& all_particles);
 
     virtual void PreStart(LPCSTR op);

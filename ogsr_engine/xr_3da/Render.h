@@ -182,6 +182,7 @@ public:
 
 public:
     // options
+    bool hud_loading{};
     s32 m_skinning;
     s32 m_MSAASample;
 
@@ -382,3 +383,4 @@ ENGINE_API extern GRASS_SHADER_DATA grass_shader_data;
 
 extern Fvector4 ps_ssfx_grass_interactive;
 extern Fvector4 ps_ssfx_int_grass_params_2;
+extern Fvector4 ps_ssfx_hud_drops_1, ps_ssfx_hud_drops_2, ps_ssfx_hud_drops_1_cfg, ps_ssfx_hud_drops_2_cfg;

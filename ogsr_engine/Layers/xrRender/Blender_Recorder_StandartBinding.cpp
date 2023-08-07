@@ -434,6 +434,7 @@ static class cl_inv_v final : public R_constant_setup
 } binder_inv_v;
 
 // Screen Space Shaders Stuff
+extern Fvector4 ps_ssfx_blood_decals;
 extern float ps_ssfx_wpn_dof_2;
 
 static class ssfx_wpn_dof_1 final : public R_constant_setup
@@ -452,6 +453,22 @@ static class ssfx_wpn_dof_2 final : public R_constant_setup
         RCache.set_c(C, ps_ssfx_wpn_dof_2, 0, 0, 0);    
     }
 } ssfx_wpn_dof_2;
+
+static class ssfx_blood_decals final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_blood_decals); }
+} ssfx_blood_decals;
+
+static class ssfx_hud_drops_1 final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_hud_drops_1); }
+} ssfx_hud_drops_1;
+
+static class ssfx_hud_drops_2 final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_hud_drops_2); }
+} ssfx_hud_drops_2;
+
 
 // Standart constant-binding
 void CBlender_Compile::SetMapping()
@@ -544,6 +561,9 @@ void CBlender_Compile::SetMapping()
 
     r_Constant("ssfx_wpn_dof_1", &ssfx_wpn_dof_1);
     r_Constant("ssfx_wpn_dof_2", &ssfx_wpn_dof_2);
+    r_Constant("ssfx_blood_decals", &ssfx_blood_decals);
+    r_Constant("ssfx_hud_drops_1", &ssfx_hud_drops_1);
+    r_Constant("ssfx_hud_drops_2", &ssfx_hud_drops_2);
 
     // other common
     for (const auto& [name, s] : DEV->v_constant_setup)

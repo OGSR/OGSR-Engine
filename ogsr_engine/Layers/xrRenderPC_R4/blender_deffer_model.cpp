@@ -112,8 +112,16 @@ void CBlender_deffer_model::Compile(CBlender_Compile& C)
                 C.r_End();
             }
 
-            uber_deffer(C, true, "model", "base", bAref, 0, true);
-
+            if (C.HudElement)
+            {
+                //Msg("--[%s] Detected hud element: [%s]", __FUNCTION__, C.L_textures[0].c_str());
+                uber_deffer(C, true, "model_hud", "base_hud", bAref, 0, true);
+                C.r_dx10Texture("s_hud_rain", "fx\\hud_rain");
+            }
+            else
+            {
+                uber_deffer(C, true, "model", "base", bAref, 0, true);
+            }
             C.r_Stencil(TRUE, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
             C.r_StencilRef(0x01);
             if (bUseATOC)

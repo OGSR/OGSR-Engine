@@ -26,6 +26,7 @@ public:
     BOOL bDetail_Bump;
     BOOL bUseSteepParallax;
     int iElement;
+    bool HudElement{};
 
 public:
     CSimulator RS;

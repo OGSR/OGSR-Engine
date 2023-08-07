@@ -51,7 +51,9 @@ ShaderElement* CRender::rimp_select_sh_dynamic(dxRender_Visual* pVisual, float c
     int id = SE_R2_SHADOW;
     if (CRender::PHASE_NORMAL == RImplementation.phase)
     {
-        id = ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range) ? SE_R2_NORMAL_HQ : SE_R2_NORMAL_LQ;
+        //if (RImplementation.val_bHUD)
+        //    Msg("--[%s] Detected hud model: [%s]", __FUNCTION__, pVisual->dbg_name.c_str());
+        id = (RImplementation.val_bHUD || ((_sqrt(cdist_sq) - pVisual->vis.sphere.R) < r_dtex_range)) ? SE_R2_NORMAL_HQ : SE_R2_NORMAL_LQ;
     }
     return pVisual->shader->E[id]._get();
 }

@@ -44,6 +44,8 @@
     output.M3 = M3;
     float3 Normal = normalize(float3(M1.z, M2.z, M3.z));
 
+    output.RDrops = bp[0].RDrops * w + bp[1].RDrops * v + bp[2].RDrops * u;
+
     float3 triPos = output.position.xyz;
 
 #ifdef USE_TDETAIL

@@ -14,7 +14,7 @@ dxWallMarkArray::~dxWallMarkArray()
 void dxWallMarkArray::AppendMark(LPCSTR s_textures)
 {
     ref_shader s;
-    s.create("effects\\wallmark", s_textures);
+    s.create(strstr(s_textures, "wm_blood_") ? "effects\\wallmark_blood" : "effects\\wallmark", s_textures);
     m_CollideMarks.push_back(s);
 }
 

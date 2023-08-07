@@ -30,6 +30,7 @@
 #include "GameTask.h"
 #include "car.h"
 #include "sight_manager_space.h"
+#include "../xr_3da/IGame_Persistent.h"
 
 using namespace luabind;
 
@@ -277,7 +278,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 
         /**************************************************** added by Cribbledirge END ****************************************************/
 
-        .def("is_ActorHide", &CScriptGameObject::addon_IsActorHideout) // проверка что актор под  каким либо укрытием
+        .def("is_ActorHide", [] { return g_pGamePersistent->IsActorInHideout(); }) // проверка что актор под  каким либо укрытием
 
         // KD
         // functions for CInventoryOwner class
