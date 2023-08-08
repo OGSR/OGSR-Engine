@@ -18,7 +18,7 @@ CALifeSpawnRegistry::CALifeSpawnRegistry(LPCSTR section)
     m_spawn_name = "";
     seed(u32(CPU::QPC() & 0xffffffff));
     m_game_graph = nullptr;
-    m_chunk = nullptr;
+    m_spawn_chunk = nullptr;
     m_file = nullptr;
     m_separated_graphs = true;
 }
@@ -26,8 +26,8 @@ CALifeSpawnRegistry::CALifeSpawnRegistry(LPCSTR section)
 CALifeSpawnRegistry::~CALifeSpawnRegistry()
 {
     xr_delete(m_game_graph);
-    if (m_chunk)
-        m_chunk->close();
+    if (m_spawn_chunk)
+        m_spawn_chunk->close();
     FS.r_close(m_file);
 }
 
@@ -102,6 +102,25 @@ void CALifeSpawnRegistry::load(IReader& file_stream, xrGUID* save_guid)
     chunk->close();
     R_ASSERT2(!save_guid || (*save_guid == header().guid()), "Saved game doesn't correspond to the spawn : DELETE SAVED GAME!");
 
+    bool separated_graphs = false;
+    VERIFY(!m_chunk);
+    IReader* stream = file_stream.open_chunk(4);
+    if (!stream)
+    {
+        string_path file_name;
+        FS.update_path(file_name, _game_data_, GRAPH_NAME);
+        stream = FS.r_open(file_name);
+        separated_graphs = true;
+    }
+    else
+        m_spawn_chunk = stream;
+
+    R_ASSERT(stream, "Spawn version mismatch - REBUILD SPAWN!");
+
+    VERIFY(!m_game_graph);
+    m_game_graph = xr_new<CGameGraph>(stream, separated_graphs);
+    ai().set_game_graph(m_game_graph);
+
     chunk = file_stream.open_chunk(1);
     m_spawns.load(*chunk);
     chunk->close();
@@ -148,25 +167,6 @@ void CALifeSpawnRegistry::load(IReader& file_stream, xrGUID* save_guid)
             Msg("End load of custom waypoints...");
         }
     }
-
-    bool separated_graphs = false;
-    VERIFY(!m_chunk);
-    IReader* stream = file_stream.open_chunk(4);
-    if (!stream)
-    {
-        string_path file_name;
-        FS.update_path(file_name, _game_data_, GRAPH_NAME);
-        stream = FS.r_open(file_name);
-        separated_graphs = true;
-    }
-    else
-        m_chunk = stream;
-
-    R_ASSERT(stream, "Spawn version mismatch - REBUILD SPAWN!");
-
-    VERIFY(!m_game_graph);
-    m_game_graph = xr_new<CGameGraph>(stream, separated_graphs);
-    ai().set_game_graph(m_game_graph);
 
     R_ASSERT(header().graph_guid() == ai().game_graph().header().guid(), "Spawn doesn't correspond to the graph : REBUILD SPAWN!");
 

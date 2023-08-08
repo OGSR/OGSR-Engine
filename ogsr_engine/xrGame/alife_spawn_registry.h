@@ -41,7 +41,7 @@ private:
 
 private:
     IReader* m_file;
-    IReader* m_chunk;
+    IReader* m_spawn_chunk;
     CGameGraph* m_game_graph;
     bool m_separated_graphs;
 
