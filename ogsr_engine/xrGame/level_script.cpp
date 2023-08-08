@@ -959,6 +959,7 @@ void CLevel::script_register(lua_State* L)
             def("get_time_days", &get_time_days), def("get_time_hours", &get_time_hours), def("get_time_minutes", &get_time_minutes),
 
             def("cover_in_direction", &cover_in_direction), def("vertex_in_direction", &vertex_in_direction), def("rain_factor", &rain_factor),
+            def("rain_wetness", [] { return g_pGamePersistent->Environment().wetness_factor; }),
             def("patrol_path_exists", &patrol_path_exists), def("vertex_position", &vertex_position), def("name", &get_name), def("prefetch_sound", &prefetch_sound),
 
             def("prefetch_sound", prefetch_sound),
