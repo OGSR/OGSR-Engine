@@ -99,7 +99,10 @@ void CScriptGameObject::script_register(lua_State* L)
                     value("on_inv_box_open", int(GameObject::eOnInvBoxOpen)),
 
                     value("select_pda_contact", int(GameObject::eSelectPdaContact)),
-                    value("on_footstep", int(GameObject::eOnFootstep))],
+
+                    value("on_footstep", int(GameObject::eOnActorFootStep)),
+                    value("on_actor_land", int(GameObject::eOnActorLand)),
+                    value("on_actor_jump", int(GameObject::eOnActorJump))],
 
            def("buy_condition", (void (*)(CScriptIniFile*, LPCSTR))(&::buy_condition)), def("buy_condition", (void (*)(float, float))(&::buy_condition)),
            def("sell_condition", (void (*)(CScriptIniFile*, LPCSTR))(&::sell_condition)), def("sell_condition", (void (*)(float, float))(&::sell_condition)),

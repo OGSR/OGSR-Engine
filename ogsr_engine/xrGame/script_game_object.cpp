@@ -608,7 +608,7 @@ bool CScriptGameObject::IsActorOutdoors() const
 
     // Now do the real check! This is a copy out of another section of code that is also hard coded.
     // I don't know what the proper limit for this is supposed to be, but this seems good enough.
-    return e->renderable_ROS()->get_luminocity_hemi() > 0.04f; //--#SM+#-- [0.05f слишком завышен был]
+    return e->renderable_ROS()->get_luminocity_hemi() >= 0.04f; //--#SM+#-- [0.05f слишком завышен был]
 }
 
 float CScriptGameObject::GetActorJumpSpeed() const
