@@ -183,9 +183,9 @@ Fvector4 ps_ssfx_hud_drops_1{}, ps_ssfx_hud_drops_2{}; // Значениями �
 
 Fvector4 ps_ssfx_blood_decals{0.6f, 0.6f, 0.f, 0.f};
 
-Fvector4 ps_ssfx_rain_1{2.0f, 0.1f, 0.6f, 2.f}; // Len, Width, Speed, Quality
-Fvector4 ps_ssfx_rain_2{0.7f, 0.1f, 1.0f, 0.5f}; // Alpha, Brigthness, Refraction, Reflection
-Fvector4 ps_ssfx_rain_3{0.5f, 1.0f, 0.0f, 0.0f}; // Alpha, Refraction ( Splashes )
+Fvector4 ps_ssfx_rain_1{10.0f, 0.02f, 5.f, 2.f}; // Len, Width, Speed, Quality
+Fvector4 ps_ssfx_rain_2{0.4f, 0.5f, 5.0f, 1.0f}; // Alpha, Brigthness, Refraction, Reflection
+Fvector4 ps_ssfx_rain_3{0.95f, 0.5f, 0.0f, 0.0f}; // Alpha, Refraction ( Splashes )
 
 Fvector3 ps_ssfx_shadow_cascades{20.f, 40.f, 160.f};
 Fvector4 ps_ssfx_grass_shadows = {1.0f, .25f, 20.0f, .0f};
