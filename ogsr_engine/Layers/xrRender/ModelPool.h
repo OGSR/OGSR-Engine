@@ -50,7 +50,7 @@ private:
     string_unordered_map<std::string, bool> m_prefetched;
 
     void Destroy();
-    void refresh_prefetch(LPCSTR low_name);
+    void refresh_prefetch(const char* low_name, const bool is_hud_visual);
     void process_vis_prefetch();
 
     CInifile* vis_prefetch_ini = nullptr;

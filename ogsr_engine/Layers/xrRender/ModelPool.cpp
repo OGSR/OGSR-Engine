@@ -246,7 +246,7 @@ dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
         dxRender_Visual* Model = it->second;
         Model->Spawn();
         Pool.erase(it);
-        refresh_prefetch(low_name);
+        refresh_prefetch(low_name, Model->IsHudVisual);
         return Model;
     }
     else
@@ -269,13 +269,13 @@ dxRender_Visual* CModelPool::Create(const char* name, IReader* data)
         dxRender_Visual* Model = Instance_Duplicate(Base);
         Registry.insert(mk_pair(Model, low_name));
 
-        refresh_prefetch(low_name);
+        refresh_prefetch(low_name, Model->IsHudVisual);
 
         return Model;
     }
 }
 
-void CModelPool::refresh_prefetch(LPCSTR low_name)
+void CModelPool::refresh_prefetch(const char* low_name, const bool is_hud_visual)
 {
     if (now_prefetch2)
         return;
@@ -293,7 +293,7 @@ void CModelPool::refresh_prefetch(LPCSTR low_name)
         shared_str fname;
         bool is_global = !!FS.exist("$game_meshes$", *fname.sprintf("%s.ogf", low_name));
         if (is_global)
-            vis_prefetch_ini->w_float("prefetch", low_name, 2.f);
+            vis_prefetch_ini->w_fvector2("prefetch", low_name, Fvector2{2.f, is_hud_visual ? 2.f : 1.f});
     }
 }
 
@@ -439,9 +439,9 @@ void CModelPool::Prefetch()
     if (pSettings->section_exist(section))
     {
         const auto& sect = pSettings->r_section(section);
-        for (auto I = sect.Ordered_Data.begin(); I != sect.Ordered_Data.end(); I++)
+        for (const auto& pair: sect.Data)
         {
-            const shared_str& low_name = (*I).first;
+            const auto& low_name = pair.first;
             if (!Instance_Find(low_name.c_str()))
             {
                 shared_str fname;
@@ -467,16 +467,22 @@ void CModelPool::Prefetch()
 
     now_prefetch2 = true;
     const auto& sect = vis_prefetch_ini->r_section("prefetch");
-    for (const auto& it : sect.Ordered_Data)
+    for (const auto& [low_name, val] : sect.Data)
     {
-        const shared_str& low_name = it.first;
+        float val1{}, val2{};
+        sscanf(val.c_str(), "%f,%f", &val1, &val2);
+
         if (!Instance_Find(low_name.c_str()))
         {
             shared_str fname;
             fname.sprintf("%s.ogf", low_name.c_str());
             if (FS.exist("$game_meshes$", fname.c_str()))
             {
+                ::Render->hud_loading = val2 == 2.f;
+                //if (::Render->hud_loading)
+                //    Msg("--[%s] loading hud model [%s]", __FUNCTION__, fname.c_str());
                 dxRender_Visual* V = Create(low_name.c_str());
+                ::Render->hud_loading = false;
                 Delete(V, FALSE);
                 cnt++;
             }
@@ -625,21 +631,24 @@ void CModelPool::process_vis_prefetch()
 {
     if (!vis_prefetch_ini->section_exist("prefetch"))
         return;
-    auto& sect = vis_prefetch_ini->r_section("prefetch");
-    std::vector<std::string> expired;
-    for (auto& it : sect.Data)
+    std::vector<const char*> expired;
+    const auto& sect = vis_prefetch_ini->r_section("prefetch");
+    for (const auto& [key, val] : sect.Data)
     {
-        float need = (float)atof(it.second.c_str()) * 0.8f; // скорость уменьшение популярности визуала
+        float val1{}, val2{};
+        sscanf(val.c_str(), "%f,%f", &val1, &val2);
+        //Msg("--[%s] sscanf returns: [%f,%f]", __FUNCTION__, val1, val2);
+        const float need = val1 * 0.8f; // скорость уменьшение популярности визуала
         // -0.5..+0.5 - добавить случайность, чтобы не было общего выключения
-        float rnd = Random.randF() - 0.5f;
-        float val = need + rnd * 0.1f;
-        if (val > 0.1f)
-            vis_prefetch_ini->w_float("prefetch", it.first.c_str(), val);
+        const float rnd = Random.randF() - 0.5f;
+        val1 = need + rnd * 0.1f;
+        if (val1 > 0.1f && val2 > 0.f)
+            vis_prefetch_ini->w_fvector2("prefetch", key.c_str(), Fvector2{val1, val2});
         else
-            expired.emplace_back(it.first.c_str());
+            expired.emplace_back(key.c_str());
     }
-    for (const auto& s : expired)
-        vis_prefetch_ini->remove_line("prefetch", s.c_str());
+    for (const char* s : expired)
+        vis_prefetch_ini->remove_line("prefetch", s);
 }
 
 void CModelPool::begin_prefetch1(bool val) { now_prefetch1 = val; }

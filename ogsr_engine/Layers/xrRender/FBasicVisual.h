@@ -52,6 +52,7 @@ public:
     u32 Type; // visual's type
     vis_data vis; // visibility-data
     ref_shader shader; // pipe state, shared
+    bool IsHudVisual{};
 
     /************************* Add by Zander *******************************/
 private:

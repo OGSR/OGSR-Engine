@@ -87,6 +87,8 @@ static bool replaceShaders(const char* N, char* fnS, u32 fnS_size)
 
 void dxRender_Visual::Load(const char* N, IReader* data, u32)
 {
+    IsHudVisual = ::Render->hud_loading;
+
     dbg_name = N;
 
     // header
@@ -128,4 +130,5 @@ void dxRender_Visual::Copy(dxRender_Visual* pFrom)
     PCOPY(shader);
     PCOPY(vis);
     PCOPY(dbg_name);
+    PCOPY(IsHudVisual);
 }
