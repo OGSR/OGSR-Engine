@@ -9,6 +9,11 @@ class CPHScriptObjectActionN;
 class CPHScriptGameObjectCondition;
 class CPHScriptGameObjectAction;
 class CPHConstForceAction;
+
+class CPHParticlesPlayCall;
+class CPHParticlesCondition;
+class CPHFindParticlesComparer;
+
 class CPHReqComparerV
 {
 public:
@@ -21,4 +26,8 @@ public:
     virtual bool compare(const CPHScriptGameObjectAction* v) const { return false; }
     virtual bool compare(const CPHScriptGameObjectCondition* v) const { return false; }
     virtual bool compare(const CPHConstForceAction* v) const { return false; }
+
+    virtual bool compare(const CPHParticlesPlayCall* v) const { return false; }
+    virtual bool compare(const CPHParticlesCondition* v) const { return false; }
+    virtual bool compare(const CPHFindParticlesComparer* v) const { return false; }
 };

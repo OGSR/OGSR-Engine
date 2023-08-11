@@ -10,7 +10,9 @@
 #include "PhysicsShellHolder.h"
 #include "PHCommander.h"
 #include "MathUtils.h"
+#include "PHReqComparer.h"
 #include "PHWorld.h"
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 static const float PARTICLE_EFFECT_DIST = 70.f;
@@ -18,13 +20,23 @@ static const float SOUND_EFFECT_DIST = 70.f;
 //////////////////////////////////////////////////////////////////////////////////
 static const float SQUARE_PARTICLE_EFFECT_DIST = PARTICLE_EFFECT_DIST * PARTICLE_EFFECT_DIST;
 static const float SQUARE_SOUND_EFFECT_DIST = SOUND_EFFECT_DIST * SOUND_EFFECT_DIST;
-class CPHParticlesPlayCall : public CPHAction
+
+constexpr float minimal_plane_distance_between_liquid_particles = 0.2f;
+
+class CPHParticlesPlayCall : public CPHAction, public CPHReqComparerV
 {
     LPCSTR ps_name;
     dContactGeom c;
 
+    u32 remove_time;
+
+    bool b_called{};
+    int psLifeTime{};
+
+    const CPhysicsShellHolder* m_object;
+
 public:
-    CPHParticlesPlayCall(const dContactGeom& contact, bool invert_n, LPCSTR psn)
+    CPHParticlesPlayCall(const dContactGeom& contact, bool invert_n, LPCSTR psn, const CPhysicsShellHolder* object = nullptr)
     {
         ps_name = psn;
         c = contact;
@@ -34,10 +46,21 @@ public:
             c.normal[1] = -c.normal[1];
             c.normal[2] = -c.normal[2];
         }
+        m_object = object;
+
+        constexpr u32 time_to_call_remove = 3000;
+        remove_time = Device.dwTimeGlobal + time_to_call_remove;
     }
+
     virtual void run()
     {
+        if (b_called)
+            return;
+
+        b_called = true;
+
         CParticlesObject* ps = CParticlesObject::Create(ps_name, TRUE);
+        psLifeTime = ps->LifeTime();
 
         Fmatrix pos;
         Fvector zero_vel = {0.f, 0.f, 0.f};
@@ -47,8 +70,51 @@ public:
 
         ps->UpdateParent(pos, zero_vel);
         GamePersistent().ps_needtoplay.push_back(ps);
+
+        if (m_object && psLifeTime > 0)
+            remove_time = Device.dwTimeGlobal + iFloor(psLifeTime / 2.f);
     };
-    virtual bool obsolete() const { return false; }
+
+    virtual bool obsolete() const noexcept { return Device.dwTimeGlobal > remove_time; }
+
+    const CPhysicsShellHolder* object() const noexcept { return m_object; }
+    const Fvector& position() const noexcept { return cast_fv(c.pos); }
+
+    virtual bool compare(const CPHReqComparerV* v) const { return v->compare(this); }
+};
+
+class CPHParticlesCondition : public CPHCondition, public CPHReqComparerV
+{
+private:
+    virtual bool compare(const CPHReqComparerV* v) const noexcept { return v->compare(this); }
+
+    virtual bool is_true() noexcept override { return true; }
+
+    virtual bool obsolete() const noexcept { return false; }
+};
+
+
+class CPHFindParticlesComparer : public CPHReqComparerV
+{
+    Fvector m_position;
+    const CPhysicsShellHolder* m_object;
+
+public:
+    CPHFindParticlesComparer(const Fvector& position, const CPhysicsShellHolder* object = nullptr) : m_position(position), m_object(object) {}
+
+private:
+    virtual bool compare(const CPHReqComparerV* v) const { return v->compare(this); }
+    virtual bool compare(const CPHParticlesCondition* v) const { return true; }
+    virtual bool compare(const CPHParticlesPlayCall* v) const
+    {
+        VERIFY(v);
+
+        if (m_object)
+            return m_object == v->object();
+
+        Fvector disp = Fvector().sub(m_position, v->position());
+        return disp.x * disp.x + disp.z * disp.z < (minimal_plane_distance_between_liquid_particles * minimal_plane_distance_between_liquid_particles);
+    }
 };
 
 class CPHWallMarksCall : public CPHAction
@@ -66,11 +132,19 @@ public:
     }
     virtual void run()
     {
-        //добавить отметку на материале
+        // добавить отметку на материале
         ::Render->add_StaticWallmark(pWallmarkShader, pos, 0.09f, T, Level().ObjectSpace.GetStaticVerts());
     };
     virtual bool obsolete() const { return false; }
 };
+
+static CPHSoundPlayer* object_snd_player(dxGeomUserData* data) noexcept { return data->ph_ref_object ? data->ph_ref_object->ph_sound_player() : nullptr; }
+
+static void play_object(dxGeomUserData* data, SGameMtlPair* mtl_pair, const dContactGeom* c, bool check_vel = true, float* vol = nullptr) noexcept
+{
+    if (auto sp = object_snd_player(data); sp)
+        sp->Play(mtl_pair, *(Fvector*)c->pos, check_vel, vol);
+}
 
 template <class Pars>
 void TContactShotMark(CDB::TRI* T, dContactGeom* c)
@@ -109,29 +183,21 @@ void TContactShotMark(CDB::TRI* T, dContactGeom* c)
                 Level().ph_commander().add_call(xr_new<CPHOnesCondition>(), xr_new<CPHWallMarksCall>(*((Fvector*)c->pos), T, WallmarkShader));
             }
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            if (square_cam_dist < SQUARE_SOUND_EFFECT_DIST)
+            if (square_cam_dist < SQUARE_SOUND_EFFECT_DIST && !mtl_pair->CollideSounds.empty())
             {
                 SGameMtl* static_mtl = GMLib.GetMaterialByIdx(T->material);
-                if (!static_mtl->Flags.test(SGameMtl::flPassable))
+                VERIFY(static_mtl);
+                if (!static_mtl->Flags.test(SGameMtl::flPassable) && vel_cret > Pars::vel_cret_sound)
                 {
-                    if (vel_cret > Pars::vel_cret_sound)
-                    {
-                        if (!mtl_pair->CollideSounds.empty())
-                        {
-                            float volume = collide_volume_min + vel_cret * (collide_volume_max - collide_volume_min) / (_sqrt(mass_limit) * default_l_limit - Pars::vel_cret_sound);
-                            GET_RANDOM(mtl_pair->CollideSounds).play_no_feedback(0, 0, 0, ((Fvector*)c->pos), &volume);
-                        }
-                    }
+                    float volume = collide_volume_min + vel_cret * (collide_volume_max - collide_volume_min) / (_sqrt(mass_limit) * default_l_limit - Pars::vel_cret_sound);
+                    if (auto sp = object_snd_player(data); sp)
+                        sp->PlayNext(mtl_pair, ((Fvector*)c->pos), true, &volume);
+                    else
+                        GET_RANDOM(mtl_pair->CollideSounds).play_no_feedback(nullptr, 0, 0, ((Fvector*)c->pos), &volume);
                 }
                 else
                 {
-                    if (data->ph_ref_object && !mtl_pair->CollideSounds.empty())
-                    {
-                        CPHSoundPlayer* sp = NULL;
-                        sp = data->ph_ref_object->ph_sound_player();
-                        if (sp)
-                            sp->Play(mtl_pair, *(Fvector*)c->pos);
-                    }
+                    play_object(data, mtl_pair, c);
                 }
             }
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -140,8 +206,16 @@ void TContactShotMark(CDB::TRI* T, dContactGeom* c)
                 if (vel_cret > Pars::vel_cret_particles && !mtl_pair->CollideParticles.empty())
                 {
                     LPCSTR ps_name = *mtl_pair->CollideParticles[::Random.randI(0, mtl_pair->CollideParticles.size())];
-                    //отыграть партиклы столкновения материалов
-                    Level().ph_commander().add_call(xr_new<CPHOnesCondition>(), xr_new<CPHParticlesPlayCall>(*c, b_invert_normal, ps_name));
+
+                    // отыграть партиклы столкновения материалов
+                    CPHFindParticlesComparer find(cast_fv(c->pos), data->ph_ref_object);
+                    if (!Level().ph_commander().has_call(&find, &find))
+                    {
+                        MsgDbg("! Adding collide particle for obj id=%d", data->ph_ref_object->ID());
+                        Level().ph_commander().add_call(xr_new<CPHParticlesCondition>(), xr_new<CPHParticlesPlayCall>(*c, b_invert_normal, ps_name, data->ph_ref_object));
+                    }
+                    else
+                        MsgDbg("~ Skip collide particle...");
                 }
             }
         }

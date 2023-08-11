@@ -20,6 +20,11 @@
 
 CPhysicsShellHolder::CPhysicsShellHolder() { init(); }
 
+CPhysicsShellHolder::~CPhysicsShellHolder()
+{
+    xr_delete(m_ph_sound_player);
+}
+
 void CPhysicsShellHolder::net_Destroy()
 {
     //удалить партиклы из ParticlePlayer
@@ -59,6 +64,12 @@ BOOL CPhysicsShellHolder::net_Spawn(CSE_Abstract* DC)
     return ret;
 }
 
+void CPhysicsShellHolder::Load(LPCSTR section)
+{
+    CGameObject::Load(section);
+    m_collide_snd_dist = READ_IF_EXISTS(pSettings, r_fvector2, section, "collide_snd_dist", Fvector2().set(-1.f, -1.f));
+}
+
 void CPhysicsShellHolder::PHHit(SHit& H)
 {
     if (H.impulse > 0)
@@ -83,6 +94,8 @@ void CPhysicsShellHolder::init()
     m_pPhysicsShell = NULL;
     b_sheduled = false;
     m_activation_speed_is_overriden = false;
+    m_ph_sound_player = xr_new<CPHSoundPlayer>(this);
+    m_collide_snd_dist = {-1.f, -1.f};
 }
 void CPhysicsShellHolder::correct_spawn_pos()
 {
@@ -454,3 +467,5 @@ void CPhysicsShellHolder::SetActivationSpeedOverride(Fvector const& speed)
     m_overriden_activation_speed = speed;
     m_activation_speed_is_overriden = true;
 }
+
+Fvector2 CPhysicsShellHolder::CollideSndDist() const { return m_collide_snd_dist; }

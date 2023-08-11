@@ -5,13 +5,16 @@ class CPhysicsShellHolder;
 
 class CPHSoundPlayer
 {
-    ref_sound m_sound;
+    std::unordered_map<SGameMtlPair*, ref_sound> m_sound;
     CPhysicsShellHolder* m_object;
+    std::unordered_map<SGameMtlPair*, u32> m_next_snd_time;
 
 public:
-    void Play(SGameMtlPair* mtl_pair, const Fvector& pos);
+    void Init(CPhysicsShellHolder* m_object);
+    void Play(SGameMtlPair* mtl_pair, const Fvector& pos, bool check_vel = true, float* vol = nullptr);
+    void PlayNext(SGameMtlPair* mtl_pair, Fvector* pos, bool check_vel = true, float* vol = nullptr);
+
+    CPHSoundPlayer() : m_object(nullptr){};
     CPHSoundPlayer(CPhysicsShellHolder* m_object);
     virtual ~CPHSoundPlayer();
-
-private:
 };
