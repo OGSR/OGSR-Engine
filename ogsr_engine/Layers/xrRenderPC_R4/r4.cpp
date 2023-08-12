@@ -1248,7 +1248,7 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
     {
         Msg("! %s", file_name);
         if (pErrorBuf)
-            Msg("! error: %s", pErrorBuf->GetBufferPointer());
+            Log("! error: " + xr_string{reinterpret_cast<const char*>(pErrorBuf->GetBufferPointer())});
         else
             Msg("Can't compile shader hr=0x%08x", _result);
     }
