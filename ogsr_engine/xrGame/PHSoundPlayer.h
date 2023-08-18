@@ -11,7 +11,8 @@ class CPHSoundPlayer
 
 public:
     void Init(CPhysicsShellHolder* m_object);
-    void Play(SGameMtlPair* mtl_pair, const Fvector& pos, bool check_vel = true, float* vol = nullptr);
+
+    void Play(SGameMtlPair* mtl_pair, Fvector* pos, bool check_vel = true, float* vol = nullptr);
     void PlayNext(SGameMtlPair* mtl_pair, Fvector* pos, bool check_vel = true, float* vol = nullptr);
 
     CPHSoundPlayer() : m_object(nullptr){};

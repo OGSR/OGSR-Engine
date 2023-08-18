@@ -140,12 +140,6 @@ public:
 
 static CPHSoundPlayer* object_snd_player(dxGeomUserData* data) noexcept { return data->ph_ref_object ? data->ph_ref_object->ph_sound_player() : nullptr; }
 
-static void play_object(dxGeomUserData* data, SGameMtlPair* mtl_pair, const dContactGeom* c, bool check_vel = true, float* vol = nullptr) noexcept
-{
-    if (auto sp = object_snd_player(data); sp)
-        sp->Play(mtl_pair, *(Fvector*)c->pos, check_vel, vol);
-}
-
 template <class Pars>
 void TContactShotMark(CDB::TRI* T, dContactGeom* c)
 {
@@ -187,17 +181,24 @@ void TContactShotMark(CDB::TRI* T, dContactGeom* c)
             {
                 SGameMtl* static_mtl = GMLib.GetMaterialByIdx(T->material);
                 VERIFY(static_mtl);
-                if (!static_mtl->Flags.test(SGameMtl::flPassable) && vel_cret > Pars::vel_cret_sound)
+                if (static_mtl->Flags.test(SGameMtl::flPassable))
                 {
-                    float volume = collide_volume_min + vel_cret * (collide_volume_max - collide_volume_min) / (_sqrt(mass_limit) * default_l_limit - Pars::vel_cret_sound);
                     if (auto sp = object_snd_player(data); sp)
-                        sp->PlayNext(mtl_pair, ((Fvector*)c->pos), true, &volume);
-                    else
-                        GET_RANDOM(mtl_pair->CollideSounds).play_no_feedback(nullptr, 0, 0, ((Fvector*)c->pos), &volume);
+                        sp->Play(mtl_pair, (Fvector*)c->pos, true, nullptr);
                 }
                 else
-                {
-                    play_object(data, mtl_pair, c);
+                {                  
+                    float volume = collide_volume_min;
+
+                    if (vel_cret > Pars::vel_cret_sound)
+                    {
+                        volume =+ vel_cret * (collide_volume_max - collide_volume_min) / (_sqrt(mass_limit) * default_l_limit - Pars::vel_cret_sound);
+                    }
+
+                    if (auto sp = object_snd_player(data); sp)
+                        sp->PlayNext(mtl_pair, (Fvector*)c->pos, true, &volume);
+                    else
+                        GET_RANDOM(mtl_pair->CollideSounds).play_no_feedback(nullptr, 0, 0, ((Fvector*)c->pos), &volume);
                 }
             }
             ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

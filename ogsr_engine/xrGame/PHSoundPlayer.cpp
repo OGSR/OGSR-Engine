@@ -14,7 +14,7 @@ CPHSoundPlayer::~CPHSoundPlayer()
 
 void CPHSoundPlayer::Init(CPhysicsShellHolder* obj) { m_object = obj; }
 
-void CPHSoundPlayer::Play(SGameMtlPair* mtl_pair, const Fvector& pos, bool check_vel, float* vol)
+void CPHSoundPlayer::Play(SGameMtlPair* mtl_pair, Fvector* pos, bool check_vel, float* vol)
 {
     if (auto found = m_sound.find(mtl_pair); found != m_sound.end() && found->second._feedback())
         return;
@@ -29,7 +29,7 @@ void CPHSoundPlayer::Play(SGameMtlPair* mtl_pair, const Fvector& pos, bool check
 
     auto& snd = m_sound[mtl_pair];
     CLONE_MTL_SOUND(snd, mtl_pair, CollideSounds);
-    snd.play_at_pos(smart_cast<CPhysicsShellHolder*>(m_object), pos);
+    snd.play_at_pos(smart_cast<CPhysicsShellHolder*>(m_object), *pos);
     if (vol)
         snd._feedback()->set_volume(*vol);
 
