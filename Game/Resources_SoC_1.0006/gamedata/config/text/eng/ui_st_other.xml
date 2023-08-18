@@ -251,4 +251,8 @@
 		<text>RU</text>
 	</string>
 
+	<string id="discord_status_mm">
+		<text>In main menu</text>
+	</string>
+
 </string_table>

@@ -251,4 +251,8 @@
 		<text>РУБ</text>
 	</string>
 
+	<string id="discord_status_mm">
+		<text>В главном меню</text>
+	</string>
+
 </string_table>

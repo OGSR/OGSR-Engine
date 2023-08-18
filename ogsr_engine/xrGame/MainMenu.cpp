@@ -144,7 +144,7 @@ void CMainMenu::Activate(bool bActivate)
 
         if (!g_pGameLevel)
         {
-            Discord.Update("Main Menu");
+            Discord.Update(CStringTable().translate("discord_status_mm").c_str());
             Discord.Set_active_task_text(nullptr);
         }
     }
