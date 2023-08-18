@@ -602,6 +602,8 @@ void CApplication::LoadDraw()
 
 void CApplication::LoadForceFinish() { loadingScreen->ForceFinish(); }
 
+void CApplication::SetLoadingLevelText(const char* name) { loadingScreen->SetLevelText(name); }
+
 void CApplication::SetLoadStageTitle(pcstr _ls_title) { loadingScreen->SetStageTitle(_ls_title); }
 
 void CApplication::LoadTitleInt() { loadingScreen->SetStageTip(); }

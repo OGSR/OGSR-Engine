@@ -94,6 +94,7 @@ bool CLevel::net_start1()
                 return true;
             }
             pApp->Level_Set(id);
+            pApp->SetLoadingLevelText(*m_name);
         }
     }
     return true;
@@ -112,6 +113,7 @@ bool CLevel::net_start2()
         }
         Server->SLS_Default();
         m_name = Server->level_name(m_caServerOptions);
+        pApp->SetLoadingLevelText(*m_name);
     }
     return true;
 }

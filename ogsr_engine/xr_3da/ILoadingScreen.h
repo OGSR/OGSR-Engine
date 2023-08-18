@@ -23,6 +23,7 @@ public:
     virtual void ForceFinish() = 0;
 
     virtual void SetLevelLogo(const char* name) = 0;
+    virtual void SetLevelText(const char* name) = 0;
     virtual void SetStageTitle(const char* title) = 0;
     virtual void SetStageTip() = 0;
 };

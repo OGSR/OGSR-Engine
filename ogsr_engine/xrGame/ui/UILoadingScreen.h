@@ -26,6 +26,9 @@ class UILoadingScreen : public ILoadingScreen, public CUIWindow
     CUIStatic* loadingTipNumber;
     CUIStatic* loadingTip;
 
+    CUIStatic* loadingLevelName;
+    CUIStatic* loadingLevelDescription;
+
     u32 maxTip;
 
 public:
@@ -41,6 +44,7 @@ public:
     void ForceFinish() override;
 
     void SetLevelLogo(const char* name) override;
+    void SetLevelText(const char* name) override;
     void SetStageTitle(const char* title) override;
     void SetStageTip() override;
 };

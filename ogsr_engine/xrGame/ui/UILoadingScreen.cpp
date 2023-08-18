@@ -16,7 +16,8 @@
 #include "string_table.h"
 
 UILoadingScreen::UILoadingScreen()
-    : loadingProgress(nullptr), loadingProgressPercent(nullptr), loadingLogo(nullptr), loadingStage(nullptr), loadingHeader(nullptr), loadingTipNumber(nullptr), loadingTip(nullptr), maxTip(100)
+    : loadingProgress(nullptr), loadingProgressPercent(nullptr), loadingLogo(nullptr), loadingStage(nullptr), loadingHeader(nullptr), loadingTipNumber(nullptr),
+      loadingTip(nullptr), maxTip(100), loadingLevelName(nullptr), loadingLevelDescription(nullptr)
 {
     UILoadingScreen::Initialize();
 }
@@ -52,6 +53,9 @@ void UILoadingScreen::Initialize()
     loadingTip = UIHelper::CreateStatic(uiXml, "loading_tip", this, false);
 
     maxTip = uiXml.ReadAttribInt("loading_tip", 0, "number_of_tips", maxTip);
+
+    loadingLevelName = UIHelper::CreateStatic(uiXml, "loading_level_name", this, false);
+    loadingLevelDescription = UIHelper::CreateStatic(uiXml, "loading_level_description", this, false);
 }
 
 void UILoadingScreen::Update(const int stagesCompleted, const int stagesTotal)
@@ -116,6 +120,22 @@ void UILoadingScreen::SetLevelLogo(const char* name)
 
     if (loadingLogo)
         loadingLogo->InitTexture(name);
+}
+
+void UILoadingScreen::SetLevelText(const char* name)
+{
+    std::scoped_lock<decltype(loadingLock)> lock(loadingLock);
+
+    string512 levelDescription;
+
+    if (loadingLevelName)
+        loadingLevelName->SetText(CStringTable().translate(name).c_str());
+
+    if (loadingLevelDescription)
+    {
+        xr_sprintf(levelDescription, "%s_description", name);
+        loadingLevelDescription->SetText(CStringTable().translate(levelDescription).c_str());
+    }
 }
 
 void UILoadingScreen::SetStageTitle(const char* title)
