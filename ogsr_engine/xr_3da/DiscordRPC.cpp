@@ -59,8 +59,11 @@ void DiscordRPC::Update(const char* level_name_translated, const char* level_nam
 
     presenseInfo.startTimestamp = start_time; //время с момента запуска
 
-    if (IS_OGSR_GA && level_name_translated && level_name)
-        presenseInfo.largeImageKey = level_name; //большая картинка
+    if (level_name)
+        current_level_name = level_name;
+
+    if (IS_OGSR_GA && current_level_name && (level_name || !level_name_translated))
+        presenseInfo.largeImageKey = current_level_name; // большая картинка
     else
         presenseInfo.largeImageKey = "main_image"; //большая картинка
     presenseInfo.smallImageKey = "main_image_small"; //маленькая картинка
@@ -75,11 +78,11 @@ void DiscordRPC::Update(const char* level_name_translated, const char* level_nam
     }
 
     if (level_name_translated)
-        current_level_name = level_name_translated;
+        current_level_name_translated = level_name_translated;
 
-    if (current_level_name)
+    if (current_level_name_translated)
     {
-        lname = StringHasUTF8(current_level_name) ? current_level_name : StringToUTF8(current_level_name);
+        lname = StringHasUTF8(current_level_name_translated) ? current_level_name_translated : StringToUTF8(current_level_name_translated);
         presenseInfo.details = lname.c_str(); //название уровня
     }
 

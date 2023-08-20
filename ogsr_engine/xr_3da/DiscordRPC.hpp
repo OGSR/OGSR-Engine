@@ -51,6 +51,7 @@ class ENGINE_API DiscordRPC final
     pDiscord_RunCallbacks Discord_RunCallbacks{};
     pDiscord_UpdatePresence Discord_UpdatePresence{};
 
+    const char* current_level_name_translated{};
     const char* current_level_name{};
     const char* active_task_text{};
     int64_t start_time{};
