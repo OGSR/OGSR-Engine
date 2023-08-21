@@ -126,6 +126,9 @@ void UILoadingScreen::SetLevelText(const char* name)
 {
     std::scoped_lock<decltype(loadingLock)> lock(loadingLock);
 
+    if (!name)
+        return;
+
     string512 levelDescription;
 
     if (loadingLevelName)
