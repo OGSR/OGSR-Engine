@@ -93,7 +93,6 @@ bool CLevel::net_start1()
                 net_start_result_total = FALSE;
                 return true;
             }
-            pApp->Level_Set(id);
             pApp->SetLoadingLevelText(*m_name);
         }
     }

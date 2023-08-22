@@ -62,7 +62,6 @@ bool CLevel::net_start_client3()
             m_connect_server_err = xrServer::ErrNoLevel;
             return false;
         }
-        pApp->Level_Set(level_id);
         m_name = level_name;
         // Load level
         R_ASSERT2(Load(level_id), "Loading failed.");

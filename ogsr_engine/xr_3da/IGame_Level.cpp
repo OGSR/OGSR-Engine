@@ -61,7 +61,6 @@ void IGame_Level::net_Stop()
 BOOL IGame_Level::Load(u32 dwNum)
 {
     // Initialize level data
-    pApp->Level_Set(dwNum);
     string_path temp;
     if (!FS.exist(temp, "$level$", "level.ltx"))
         Debug.fatal(DEBUG_INFO, "Can't find level configuration file '%s'.", temp);
