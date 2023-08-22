@@ -153,6 +153,8 @@ function save_load_dialog:InitControlsLoad()
 	xml:InitStatic("form:caption", self.form)
 
 	xml:InitStatic("form:picture", self.form):SetWindowName("static_pict")
+    local picture = self:GetStatic("static_pict")
+    picture:SetNoShaderCache(true)
 
 	xml:InitStatic("form:file_info", self.form)
 

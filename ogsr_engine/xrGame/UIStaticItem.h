@@ -29,6 +29,7 @@ public:
 #ifdef DEBUG
     shared_str dbg_tex_name;
 #endif
+
     CUIStaticItem();
     virtual ~CUIStaticItem();
 
@@ -53,6 +54,8 @@ public:
     }
 
     void ResetOriginalRect() { uFlags.set(flValidOriginalRect, FALSE); }
+
+    void SetNoShaderCache(const bool v) { uFlags.set(flNoShaderCache, v); }
 
     void Init(LPCSTR tex, LPCSTR sh, float left, float top, u32 align);
 

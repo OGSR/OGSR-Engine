@@ -59,6 +59,9 @@ public:
     virtual Frect GetOriginalRect() const { return m_UIStaticItem.GetOriginalRect(); }
     //
     void SetVTextAlignment(EVTextAlignment al);
+
+    void SetNoShaderCache(bool v) { m_UIStaticItem.SetNoShaderCache(v); }
+
     virtual void SetColor(u32 color) { m_UIStaticItem.SetColor(color); }
     u32 GetColor() const { return m_UIStaticItem.GetColor(); }
     u32& GetColorRef() { return m_UIStaticItem.GetColorRef(); }

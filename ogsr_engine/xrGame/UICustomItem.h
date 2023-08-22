@@ -19,6 +19,7 @@ protected:
         flValidOriginalRect = (1 << 1),
         flValidHeadingPivot = (1 << 2),
         flFixedLTWhileHeading = (1 << 3),
+        flNoShaderCache = (1 << 4),
     };
 
     //прямоугольник(в пикселях)
@@ -38,6 +39,7 @@ protected:
 public:
     CUICustomItem();
     virtual ~CUICustomItem();
+
     IC void SetRect(float x1, float y1, float x2, float y2)
     {
         iVisRect.set(x1, y1, x2, y2);
@@ -58,6 +60,7 @@ public:
 
     Fvector2 GetHeadingPivot() { return iHeadingPivot; }
     void ResetHeadingPivot();
+
     IC bool GetFixedLTWhileHeading() const { return !!uFlags.test(flFixedLTWhileHeading); }
 
     void Render(const Fvector2& pos, u32 color, float x1, float y1, float x2, float y2);

@@ -32,6 +32,7 @@ void CUIStatic::script_register(lua_State* L)
                   .def("GetOriginalRect", &CUIStatic::GetOriginalRect)
                   .def("SetOriginalRect", (void(CUIStatic::*)(float, float, float, float)) & CUIStatic::SetOriginalRect)
                   .def("ResetOriginalRect", &CUIStatic::ResetOriginalRect)
+                  .def("SetNoShaderCache", &CUIStatic::SetNoShaderCache)
                   .def("SetStretchTexture", &CUIStatic::SetStretchTexture)
                   .def("GetStretchTexture", &CUIStatic::GetStretchTexture)
 
