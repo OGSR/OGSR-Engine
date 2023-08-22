@@ -673,6 +673,32 @@ void CApplication::Level_Scan()
 #endif
 }
 
+// Taken from OpenXray/xray-16 and refactored
+void generate_logo_path(string_path& path, pcstr level_name, int num = -1)
+{
+    strconcat(sizeof(path), path, "intro\\intro_", level_name);
+
+    const auto len = xr_strlen(path);
+    path[len - 1] = 0;
+
+    if (num < 0)
+        return;
+
+    string16 buff;
+    xr_strcat(path, sizeof(path), "_");
+    xr_strcat(path, sizeof(path), itoa(num + 1, buff, 10));
+}
+
+// Taken from OpenXray/xray-16 and refactored
+// Return true if logo exists
+// Always sets the path even if logo doesn't exist
+bool validate_logo_path(string_path& path, pcstr level_name, int num = -1)
+{
+    generate_logo_path(path, level_name, num);
+    string_path temp;
+    return FS.exist(temp, "$game_textures$", path, ".dds") || FS.exist(temp, "$level$", path, ".dds");
+}
+
 void CApplication::Level_Set(u32 L)
 {
     if (L >= Levels.size())
@@ -681,13 +707,31 @@ void CApplication::Level_Set(u32 L)
     Level_Current = L;
     FS.get_path("$level$")->_set(Levels[L].folder);
 
-    string_path temp, temp2;
-    strconcat(sizeof(temp), temp, "intro\\intro_", Levels[L].folder);
-    temp[xr_strlen(temp) - 1] = 0;
-    if (FS.exist(temp2, "$game_textures$", temp, ".dds"))
-        loadingScreen->SetLevelLogo(temp);
-    else
-        loadingScreen->SetLevelLogo("intro\\intro_no_start_picture");
+    static string_path path;
+    path[0] = 0;
+    
+    int count = 0;
+    while (true)
+    {
+        if (validate_logo_path(path, Levels[L].folder, count))
+            count++;
+        else
+            break;
+    }
+
+    if (count)
+    {
+        const int curr = ::Random.randI(count);
+        generate_logo_path(path, Levels[L].folder, curr);
+    }
+    else if (!validate_logo_path(path, Levels[L].folder))
+    {
+        if (!validate_logo_path(path, "no_start_picture"))
+            path[0] = 0;
+    }
+
+    if (path[0])
+        loadingScreen->SetLevelLogo(path);
 }
 
 int CApplication::Level_ID(LPCSTR name)
