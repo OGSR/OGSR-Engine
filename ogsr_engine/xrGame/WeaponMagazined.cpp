@@ -675,6 +675,16 @@ void CWeaponMagazined::UpdateCL()
 
     UpdateSounds();
     TimeLockAnimation();
+
+    if (bHasBulletsToHide)
+    {
+        const int AE = GetAmmoElapsed();
+
+        last_hide_bullet = AE >= bullet_cnt ? bullet_cnt : bullet_cnt - AE - 1;
+
+        if (AE == 0)
+            last_hide_bullet = -1;
+    }
 }
 
 void CWeaponMagazined::UpdateSounds()
@@ -1701,14 +1711,6 @@ void CWeaponMagazined::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_na
 
     string256 sItemName;
     strcpy_s(sItemName, CStringTable().translate(pSettings->r_string(icon_sect_name.c_str(), "inv_name_short")).c_str());
-
-    if (bHasBulletsToHide)
-    {
-        last_hide_bullet = AE >= bullet_cnt ? bullet_cnt : bullet_cnt - AE - 1;
-
-        if (AE == 0)
-            last_hide_bullet = -1;
-    }
 
     if (HasFireModes())
         strcat_s(sItemName, GetCurrentFireModeStr());
