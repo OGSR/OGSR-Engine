@@ -675,16 +675,6 @@ void CWeaponMagazined::UpdateCL()
 
     UpdateSounds();
     TimeLockAnimation();
-
-    if (bHasBulletsToHide)
-    {
-        const int AE = GetAmmoElapsed();
-
-        last_hide_bullet = AE >= bullet_cnt ? bullet_cnt : bullet_cnt - AE - 1;
-
-        if (AE == 0)
-            last_hide_bullet = -1;
-    }
 }
 
 void CWeaponMagazined::UpdateSounds()

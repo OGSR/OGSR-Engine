@@ -680,5 +680,6 @@ public:
     bool bHasBulletsToHide{};
     bool bullet_update = true;
 
+    void UpdateVisualBullets();
     void HUD_VisualBulletUpdate(bool force = false, int force_idx = -1);
 };

@@ -858,8 +858,8 @@ void CWeapon::UpdateCL()
     inherited::UpdateCL();
 
     UpdateHUDAddonsVisibility();
-    if (bullet_update)
-        HUD_VisualBulletUpdate();
+
+    UpdateVisualBullets();
 
     //подсветка от выстрела
     UpdateLight();
@@ -2176,6 +2176,21 @@ void CWeapon::SaveAttachableParams()
     }
 
     Msg("--[%s] data saved to [%s]", __FUNCTION__, pHudCfg.fname());
+}
+
+void CWeapon::UpdateVisualBullets()
+{
+    if (!bullet_update)
+        return;
+
+    if (bHasBulletsToHide)
+    {
+        const int AE = GetAmmoElapsed();
+
+        last_hide_bullet = AE >= bullet_cnt ? bullet_cnt : (AE == 0 ? -1 : bullet_cnt - AE - 1);
+    }
+
+    HUD_VisualBulletUpdate();
 }
 
 void CWeapon::HUD_VisualBulletUpdate(bool force, int force_idx)
