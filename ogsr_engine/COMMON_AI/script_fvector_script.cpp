@@ -90,9 +90,96 @@ void CScriptFvector::script_register(lua_State* L)
                .def("reflect", &Fvector::reflect, return_reference_to<1>())
                .def("slide", &Fvector::slide, return_reference_to<1>()),
 
-           class_<Fbox>("Fbox").def_readwrite("min", &Fbox::min).def_readwrite("max", &Fbox::max).def(constructor<>()),
+           class_<Fvector2>("vector2")
+               .def_readwrite("x", &Fvector2::x)
+               .def_readwrite("y", &Fvector2::y)
+               .def(constructor<>())
 
-           class_<Frect>("Frect")
+               .def("set", (Fvector2 & (Fvector2::*)(float, float))(&Fvector2::set), return_reference_to<1>())
+               .def("set", (Fvector2 & (Fvector2::*)(const Fvector2&))(&Fvector2::set), return_reference_to<1>())
+               .def("add", (Fvector2 & (Fvector2::*)(float))(&Fvector2::add), return_reference_to<1>())
+               .def("add", (Fvector2 & (Fvector2::*)(const Fvector2&))(&Fvector2::add), return_reference_to<1>())
+               .def("add", (Fvector2 & (Fvector2::*)(const Fvector2&, const Fvector2&))(&Fvector2::add), return_reference_to<1>())
+               .def("add", (Fvector2 & (Fvector2::*)(const Fvector2&, float))(&Fvector2::add), return_reference_to<1>())
+               .def("sub", (Fvector2 & (Fvector2::*)(float))(&Fvector2::sub), return_reference_to<1>())
+               .def("sub", (Fvector2 & (Fvector2::*)(const Fvector2&))(&Fvector2::sub), return_reference_to<1>())
+               .def("sub", (Fvector2 & (Fvector2::*)(const Fvector2&, const Fvector2&))(&Fvector2::sub), return_reference_to<1>())
+               .def("sub", (Fvector2 & (Fvector2::*)(const Fvector2&, float))(&Fvector2::sub), return_reference_to<1>())
+               .def("mul", (Fvector2 & (Fvector2::*)(float))(&Fvector2::mul), return_reference_to<1>())
+               .def("mul", (Fvector2 & (Fvector2::*)(const Fvector2&))(&Fvector2::mul), return_reference_to<1>())
+               .def("div", (Fvector2 & (Fvector2::*)(float))(&Fvector2::div), return_reference_to<1>())
+               .def("div", (Fvector2 & (Fvector2::*)(const Fvector2&))(&Fvector2::div), return_reference_to<1>())
+               .def("min", (Fvector2 & (Fvector2::*)(const Fvector2&))(&Fvector2::min), return_reference_to<1>())
+               .def("max", (Fvector2 & (Fvector2::*)(const Fvector2&))(&Fvector2::max), return_reference_to<1>())
+               .def("abs", &Fvector2::abs, return_reference_to<1>())
+               //.def("similar", &Fvector2::similar)
+
+               .def("mad", (Fvector2 & (Fvector2::*)(const Fvector2&, float))(&Fvector2::mad), return_reference_to<1>())
+               .def("mad", (Fvector2 & (Fvector2::*)(const Fvector2&, const Fvector2&, float))(&Fvector2::mad), return_reference_to<1>())
+               .def("mad", (Fvector2 & (Fvector2::*)(const Fvector2&, const Fvector2&))(&Fvector2::mad), return_reference_to<1>())
+               .def("mad", (Fvector2 & (Fvector2::*)(const Fvector2&, const Fvector2&, const Fvector2&))(&Fvector2::mad), return_reference_to<1>())
+
+               .def("magnitude", &Fvector2::magnitude)
+
+               .def("normalize", (Fvector2 & (Fvector2::*)())(&Fvector2::normalize_safe), return_reference_to<1>())
+               .def("normalize", (Fvector2 & (Fvector2::*)(const Fvector2&))(&Fvector2::normalize_safe), return_reference_to<1>())
+               .def("normalize_safe", (Fvector2 & (Fvector2::*)())(&Fvector2::normalize_safe), return_reference_to<1>())
+               .def("normalize_safe", (Fvector2 & (Fvector2::*)(const Fvector2&))(&Fvector2::normalize_safe), return_reference_to<1>())
+
+               .def("dotproduct", &Fvector2::dotproduct)
+               .def("crossproduct", &Fvector2::crossproduct, return_reference_to<1>())
+               .def("distance_to", &Fvector2::distance_to)
+
+               .def("getH", &Fvector2::getH),
+
+            class_<Fvector4>("vector4")
+               .def_readwrite("x", &Fvector4::x)
+               .def_readwrite("y", &Fvector4::y)
+               .def_readwrite("z", &Fvector4::y)
+               .def_readwrite("w", &Fvector4::w)
+               .def(constructor<>())
+
+               .def("set", (Fvector4 & (Fvector4::*)(float, float, float, float))(&Fvector4::set), return_reference_to<1>())
+               .def("set", (Fvector4 & (Fvector4::*)(const Fvector4&))(&Fvector4::set), return_reference_to<1>())
+               .def("add", (Fvector4 & (Fvector4::*)(float))(&Fvector4::add), return_reference_to<1>())
+               .def("add", (Fvector4 & (Fvector4::*)(const Fvector4&))(&Fvector4::add), return_reference_to<1>())
+               .def("add", (Fvector4 & (Fvector4::*)(const Fvector4&, const Fvector4&))(&Fvector4::add), return_reference_to<1>())
+               .def("add", (Fvector4 & (Fvector4::*)(const Fvector4&, float))(&Fvector4::add), return_reference_to<1>())
+               .def("sub", (Fvector4 & (Fvector4::*)(float))(&Fvector4::sub), return_reference_to<1>())
+               .def("sub", (Fvector4 & (Fvector4::*)(const Fvector4&))(&Fvector4::sub), return_reference_to<1>())
+               .def("sub", (Fvector4 & (Fvector4::*)(const Fvector4&, const Fvector4&))(&Fvector4::sub), return_reference_to<1>())
+               .def("sub", (Fvector4 & (Fvector4::*)(const Fvector4&, float))(&Fvector4::sub), return_reference_to<1>())
+               .def("mul", (Fvector4 & (Fvector4::*)(float))(&Fvector4::mul), return_reference_to<1>())
+               .def("mul", (Fvector4 & (Fvector4::*)(const Fvector4&))(&Fvector4::mul), return_reference_to<1>())
+               .def("div", (Fvector4 & (Fvector4::*)(float))(&Fvector4::div), return_reference_to<1>())
+               .def("div", (Fvector4 & (Fvector4::*)(const Fvector4&))(&Fvector4::div), return_reference_to<1>())
+               //.def("min", (Fvector4 & (Fvector4::*)(const Fvector4&))(&Fvector4::min), return_reference_to<1>())
+               //.def("max", (Fvector4 & (Fvector4::*)(const Fvector4&))(&Fvector4::max), return_reference_to<1>())
+               //.def("abs", &Fvector4::abs, return_reference_to<1>())
+               //.def("similar", &Fvector4::similar)
+
+               //.def("mad", (Fvector4 & (Fvector4::*)(const Fvector4&, float))(&Fvector4::mad), return_reference_to<1>())
+               //.def("mad", (Fvector4 & (Fvector4::*)(const Fvector4&, const Fvector4&, float))(&Fvector4::mad), return_reference_to<1>())
+               //.def("mad", (Fvector4 & (Fvector4::*)(const Fvector4&, const Fvector4&))(&Fvector4::mad), return_reference_to<1>())
+               //.def("mad", (Fvector4 & (Fvector4::*)(const Fvector4&, const Fvector4&, const Fvector4&))(&Fvector4::mad), return_reference_to<1>())
+
+               .def("magnitude", &Fvector4::magnitude)
+
+               .def("normalize", (Fvector4 & (Fvector4::*)())(&Fvector4::normalize), return_reference_to<1>())
+               .def("normalize", (Fvector4 & (Fvector4::*)(const Fvector4&))(&Fvector4::normalize), return_reference_to<1>())
+               //.def("normalize_safe", (Fvector4 & (Fvector4::*)())(&Fvector4::normalize_safe), return_reference_to<1>())
+               //.def("normalize_safe", (Fvector4 & (Fvector4::*)(const Fvector4&))(&Fvector4::normalize_safe), return_reference_to<1>())
+
+               //.def("dotproduct", &Fvector4::dotproduct)
+               //.def("crossproduct", &Fvector4::crossproduct, return_reference_to<1>())
+               //.def("distance_to", &Fvector4::distance_to)
+
+               //.def("getH", &Fvector4::getH)
+               ,
+
+            class_<Fbox>("Fbox").def(constructor<>()).def_readwrite("min", &Fbox::min).def_readwrite("max", &Fbox::max),
+
+            class_<Frect>("Frect")
                .def(constructor<>())
                .def("set", (Frect & (Frect::*)(float, float, float, float))(&Frect::set), return_reference_to<1>())
                .def_readwrite("lt", &Frect::lt)
