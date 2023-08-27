@@ -49,6 +49,7 @@
 #include "physicobject.h"
 #endif
 
+#include "physicobject.h"
 #include "UIGameSP.h"
 #include "ui/UIPDAWnd.h"
 #include "ui/UIBtnHint.h"
@@ -462,13 +463,7 @@ void CLevel::OnFrame()
     ShowEditor();
 }
 
-#ifdef DEBUG_PRECISE_PATH
-void test_precise_path();
-#endif
-
-#ifdef DEBUG
 extern Flags32 dbg_net_Draw_Flags;
-#endif
 
 extern void draw_wnds_rects();
 
@@ -541,6 +536,27 @@ void CLevel::OnRender()
             ai().level_graph().render();
     }
 
+    if (dbg_net_Draw_Flags.test(1 << 11)) // draw skeleton
+    {
+        for (u32 I = 0; I < Level().Objects.o_count(); I++)
+        {
+            CObject* _O = Level().Objects.o_get_by_iterator(I);
+
+            CGameObject* pGO = smart_cast<CGameObject*>(_O);
+            if (pGO && pGO != Level().CurrentViewEntity() && !pGO->H_Parent())
+            {
+                if (pGO->Position().distance_to_sqr(Device.vCameraPosition) < 400.0f)
+                {
+                    //CPhysicObject* physic_object = smart_cast<CPhysicObject*>(_O);
+                    //if (physic_object)
+                    //    physic_object->OnRender();
+
+                    pGO->dbg_DrawSkeleton();
+                }
+            }
+        }
+    }
+
 #else
 
     ph_world->OnRender();
@@ -558,37 +574,6 @@ void CLevel::OnRender()
 
     if (bDebug)
     {
-        for (u32 I = 0; I < Level().Objects.o_count(); I++)
-        {
-            CObject* _O = Level().Objects.o_get_by_iterator(I);
-
-            CPhysicObject* physic_object = smart_cast<CPhysicObject*>(_O);
-            if (physic_object)
-                physic_object->OnRender();
-
-            CSpaceRestrictor* space_restrictor = smart_cast<CSpaceRestrictor*>(_O);
-            if (space_restrictor && psActorFlags.test(AF_ZONES_DBG))
-                space_restrictor->OnRender();
-            CClimableObject* climable = smart_cast<CClimableObject*>(_O);
-            if (climable)
-                climable->OnRender();
-
-            if (dbg_net_Draw_Flags.test(1 << 11)) // draw skeleton
-            {
-                CGameObject* pGO = smart_cast<CGameObject*>(_O);
-                if (pGO && pGO != Level().CurrentViewEntity() && !pGO->H_Parent())
-                {
-                    if (pGO->Position().distance_to_sqr(Device.vCameraPosition) < 400.0f)
-                    {
-                        pGO->dbg_DrawSkeleton();
-                    }
-                }
-            };
-        }
-        //  [7/5/2005]
-        if (Server && Server->game)
-            Server->game->OnRender();
-        //  [7/5/2005]
         ObjectSpace.dbgRender();
 
         //---------------------------------------------------------------------

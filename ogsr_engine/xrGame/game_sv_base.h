@@ -47,10 +47,6 @@ public:
     // Signals
     virtual void signal_Syncronize();
 
-#ifdef DEBUG
-    virtual void OnRender();
-#endif
-
     virtual void OnSwitchPhase(u32 old_phase, u32 new_phase);
 
     // Utilities

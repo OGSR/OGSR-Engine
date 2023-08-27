@@ -31,11 +31,8 @@
 #include "ai_object_location.h"
 #include "PHCommander.h"
 #include "PHScriptCall.h"
-
-#ifdef DEBUG
 #include "debug_renderer.h"
-#include "PHDebug.h"
-#endif
+//#include "PHDebug.h"
 
 CGameObject::CGameObject()
 {
@@ -641,7 +638,6 @@ void CGameObject::spatial_move()
     inherited::spatial_move();
 }
 
-#ifdef DEBUG
 void CGameObject::dbg_DrawSkeleton()
 {
     CCF_Skeleton* Skeleton = smart_cast<CCF_Skeleton*>(collidable.model);
@@ -683,7 +679,6 @@ void CGameObject::dbg_DrawSkeleton()
         };
     };
 }
-#endif
 
 void CGameObject::renderable_Render()
 {

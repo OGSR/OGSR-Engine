@@ -182,9 +182,7 @@ public:
     virtual void reload(LPCSTR section);
 
 public:
-#ifdef DEBUG
     virtual void dbg_DrawSkeleton();
-#endif
 
     virtual const SRotation Orientation() const
     {

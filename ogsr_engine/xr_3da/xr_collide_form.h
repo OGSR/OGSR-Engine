@@ -155,14 +155,13 @@ public:
 
     virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R);
     bool _ElementCenter(u16 elem_id, Fvector& e_center);
-#ifdef DEBUG
     const ElementVec& _GetElements() { return elements; }
+
     void _dbg_refresh()
     {
         BuildTopLevel();
         BuildState();
     }
-#endif
 };
 
 class ENGINE_API CCF_EventBox : public ICollisionForm
