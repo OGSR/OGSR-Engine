@@ -173,7 +173,7 @@ void CUIMainIngameWnd::Init()
     UIZoneMap->SetScale(DEFAULT_MAP_SCALE);
 
     xml_init.InitStatic(uiXml, "static_pda_online", 0, &UIPdaOnline);
-    UIZoneMap->Background().AttachChild(&UIPdaOnline);
+    UIZoneMap->Background()->AttachChild(&UIPdaOnline);
 
     //Полоса прогресса здоровья
     UIStaticHealth.AttachChild(&UIHealthBar);
@@ -815,17 +815,17 @@ void GetStaticRaw(CUIMainIngameWnd* wnd, lua_State* L)
     CUIWindow* child = wnd->FindChild(name, 2);
     if (!child)
     {
-        CUIStatic* src = &wnd->GetUIZoneMap()->Background();
+        CUIStatic* src = wnd->GetUIZoneMap()->Background();
         child = src->FindChild(name, 5);
 
         if (!child)
         {
-            src = &wnd->GetUIZoneMap()->ClipFrame();
+            src = wnd->GetUIZoneMap()->ClipFrame();
             child = src->FindChild(name, 5);
         }
         if (!child)
         {
-            src = &wnd->GetUIZoneMap()->Compass();
+            src = wnd->GetUIZoneMap()->Compass();
             child = src->FindChild(name, 5);
         }
     }

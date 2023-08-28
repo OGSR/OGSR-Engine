@@ -42,7 +42,6 @@ protected:
     int m_ttl;
     u32 m_actual_time;
     Fvector m_position_global; // last global position, actual time only current frame
-    Fvector2 m_position_on_map; // last position on parent map, actual time only current frame
 
     struct SCachedValues
     {
@@ -61,7 +60,7 @@ private:
 protected:
     void LoadSpot(LPCSTR type, bool bReload);
     void UpdateSpot(CUICustomMap* map, CMapSpot* sp);
-    void UpdateSpotPointer(CUICustomMap* map, CMapSpotPointer* sp);
+    void UpdateSpotPointer(CUICustomMap* map, CMapSpotPointer* sp, Fvector2 position_on_map);
     CMapSpotPointer* GetSpotPointer(CMapSpot* sp);
     CMapSpot* GetSpotBorder(CMapSpot* sp);
 

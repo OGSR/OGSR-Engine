@@ -179,7 +179,6 @@ void CMapLocation::InitUserSpot(const shared_str& level_name, const Fvector& pos
 {
     m_cached.m_LevelName = level_name;
     m_position_global = pos;
-    m_position_on_map.set(pos.x, pos.z);
     m_cached.m_graphID = GameGraph::_GRAPH_ID(
         -1); //Насколько я вижу в коде, таким меткам геймвертекс вообще не нужен. Он нужен только тем меткам, на которые может указывать стрелка, т.е. квестовым.
     m_cached.m_Position.set(pos.x, pos.z);
@@ -325,6 +324,7 @@ xr_vector<u32> map_point_path;
 
 void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
 {
+    // точка на той же карте где и ГГ
     if (map->MapName() == LevelName())
     {
         CSE_ALifeDynamicObject* obj = NULL;
@@ -348,10 +348,13 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
         // update spot position
         Fvector2 position = Position();
 
-        m_position_on_map = map->ConvertRealToLocal(position, true);
-
-        sp->SetWndPos(m_position_on_map);
+        auto position_on_map = map->ConvertRealToLocal(position, !map->IsRounded());
+        sp->SetWndPos(position_on_map);
         Frect wnd_rect = sp->GetWndRect();
+
+        // позиция для отрисовки
+        auto position_on_map_visible = map->ConvertRealToLocal(position, true);
+        sp->SetWndPos(position_on_map_visible);
 
         if (map->IsRectVisible(wnd_rect))
         {
@@ -367,21 +370,23 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
             Frect clip_rect = map->GetClipperRect();
             sp->SetClipRect(clip_rect);
             map->AttachChild(sp);
-        }
-        if (GetSpotPointer(sp))
-        {
-            CMapSpot* s = GetSpotBorder(sp);
-            if (s)
+
+            if (GetSpotPointer(sp))
             {
-                s->SetWndPos(sp->GetWndPos());
-                map->AttachChild(s);
+                CMapSpot* s = GetSpotBorder(sp);
+                if (s)
+                {
+                    s->SetWndPos(sp->GetWndPos());
+                    map->AttachChild(s);
+                }
             }
         }
         if (GetSpotPointer(sp) && map->NeedShowPointer(wnd_rect))
         {
-            UpdateSpotPointer(map, GetSpotPointer(sp));
+            UpdateSpotPointer(map, GetSpotPointer(sp), position);
         }
     }
+    // точно на другой локации - укажем на блищайщий переход
     else if (Level().name() == map->MapName() && GetSpotPointer(sp))
     {
         GameGraph::_GRAPH_ID dest_graph_id;
@@ -412,7 +417,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
             xr_vector<CLevelChanger*>::iterator lit = g_lchangers.begin();
             xr_vector<CLevelChanger*>::iterator lit_e = g_lchangers.end();
             bool bDone = false;
-            for (; (it != it_e) && (!bDone); ++it)
+            if ((*it) == (*lit)->ai_location().game_vertex_id()) // нашли переход к точке
             {
                 for (lit = g_lchangers.begin(); lit != lit_e; ++lit)
                 {
@@ -423,8 +428,9 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
                     }
                 }
             }
-            static bool bbb = false;
-            if (!bDone && bbb)
+#ifdef DEBUG
+
+            if (!bDone)
             {
                 Msg("Error. Path from actor to selected map spot does not contain level changer :(");
                 Msg("Path:");
@@ -445,38 +451,61 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
                     Fvector p = ai().game_graph().vertex(gid)->level_point();
                     Msg("lch_name=%s pos=%f %f %f", *ai().game_graph().header().level(ai().game_graph().vertex(gid)->level_id()).name(), p.x, p.y, p.z);
                 }
-            };
+            }
+
+#endif // DEBUG
             if (bDone)
             {
                 Fvector2 position;
                 position.set((*lit)->Position().x, (*lit)->Position().z);
-                m_position_on_map = map->ConvertRealToLocal(position, false);
-                UpdateSpotPointer(map, GetSpotPointer(sp));
+
+                // for visibility calculating
+                auto position_on_map = map->ConvertRealToLocal(position, !map->IsRounded());
+
+                Frect r;
+                r.set(position_on_map.x, position_on_map.y, position_on_map.x + 10, position_on_map.y + 10);
+
+                // if (map->NeedShowPointer(r)) // так можно отсекать стрелку если точка уже видна на карте, но надо по хорошему найти Spot для этого lc
+                {
+                    UpdateSpotPointer(map, GetSpotPointer(sp), position);
+                }
             }
         }
     }
 }
 
-void CMapLocation::UpdateSpotPointer(CUICustomMap* map, CMapSpotPointer* sp)
+void CMapLocation::UpdateSpotPointer(CUICustomMap* map, CMapSpotPointer* sp, Fvector2 position_on_map)
 {
     if (sp->GetParent())
         return; // already is child
     float heading;
     Fvector2 pointer_pos;
-    if (map->GetPointerTo(m_position_on_map, sp->GetWidth() / 2, pointer_pos, heading))
+
+    if (map->GetPointerTo(position_on_map, sp->GetWidth() / 2, pointer_pos, heading))
     {
         sp->SetWndPos(pointer_pos);
         sp->SetHeading(heading);
 
         Frect clip_rect = map->GetClipperRect();
         sp->SetClipRect(clip_rect);
+
         map->AttachChild(sp);
 
-        Fvector2 tt = map->ConvertLocalToReal(m_position_on_map);
-        Fvector ttt;
-        ttt.set(tt.x, 0.0f, tt.y);
-        float dist_to_target = Level().CurrentEntity()->Position().distance_to(ttt);
+        Fvector2 t = position_on_map;
+        Fvector target;
+        target.set(t.x, 0.0f, t.y);
+
+        Fvector s = Level().CurrentEntity()->Position();
+        Fvector source;
+        source.set(s.x, 0.0f, s.z);
+
+        float dist_to_target = source.distance_to(target);
         map->SetPointerDistance(dist_to_target);
+
+        // Msg("m_position_on_map x=%f y=%f", m_position_on_map.x, m_position_on_map.y);
+        // Msg("t x=%f y=%f", t.x, t.y);
+        // Msg("CurrentEntity()->Position() x=%f y=%f z=%f", Level().CurrentEntity()->Position().x, Level().CurrentEntity()->Position().y, Level().CurrentEntity()->Position().z);
+        // Msg("dist_to_target = %f", dist_to_target);
     }
 }
 
@@ -550,7 +579,7 @@ void CMapLocation::load(IReader& stream)
     {
         load_data(m_cached.m_LevelName, stream);
         load_data(m_cached.m_Position, stream);
-        m_position_on_map = m_cached.m_Position;
+        auto m_position_on_map = m_cached.m_Position;
         m_position_global.set(m_position_on_map.x, 0.f, m_position_on_map.y);
     }
 }
