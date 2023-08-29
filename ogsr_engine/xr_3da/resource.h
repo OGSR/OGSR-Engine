@@ -4,7 +4,8 @@
 //
 #define IDD_STARTUP 106
 #define IDI_ICON1 111
-#define IDB_BITMAP2 116
+
+#define IDB_PNG1 125
 
 #ifndef IDC_STATIC
 #define IDC_STATIC -1

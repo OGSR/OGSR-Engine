@@ -389,6 +389,7 @@
     <ClInclude Include="os_clipboard.h" />
     <ClInclude Include="ShadersExternalData.h" />
     <ClInclude Include="SkeletonMotionDefs.h" />
+    <ClInclude Include="splash.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="vismask.h" />
     <ClInclude Include="xrSkinXW.hpp" />
@@ -466,6 +467,7 @@
     <ClCompile Include="NET_Server_Trash\NET_Client.cpp" />
     <ClCompile Include="NET_Server_Trash\NET_Server.cpp" />
     <ClCompile Include="os_clipboard.cpp" />
+    <ClCompile Include="splash.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -546,7 +548,6 @@
     <None Include="stalker.ico">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="ui_splash3.bmp" />
     <None Include="ClientServer.txt" />
     <None Include="Effects description.txt" />
     <None Include="features.txt" />
@@ -580,6 +581,9 @@
     <ProjectReference Include="..\..\3rd_party\Src\imgui\imgui.vcxproj">
       <Project>{c8fbc3ce-d6de-4fc3-bc15-7b647614db09}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="ui_splash3.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

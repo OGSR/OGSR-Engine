@@ -13,12 +13,11 @@
 #include "xr_ioconsole.h"
 #include "x_ray.h"
 #include "std_classes.h"
-#include "GameFont.h"
-#include "resource.h"
 #include "LightAnimLibrary.h"
 #include "../xrcdb/ispatial.h"
 #include "ILoadingScreen.h"
 #include "DiscordRPC.hpp"
+#include "splash.h"
 
 #define CORE_FEATURE_SET(feature, section) Core.Features.set(xrCore::Feature::feature, READ_IF_EXISTS(pSettings, r_bool, section, #feature, false))
 
@@ -225,25 +224,6 @@ void Startup()
     destroyEngine();
 }
 
-static INT_PTR CALLBACK logDlgProc(HWND hw, UINT msg, WPARAM wp, LPARAM lp)
-{
-    switch (msg)
-    {
-    case WM_INITDIALOG:
-        if (auto hBMP = LoadImage(nullptr, "splash.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE))
-            SendDlgItemMessage(hw, IDC_STATIC, STM_SETIMAGE, IMAGE_BITMAP, reinterpret_cast<LPARAM>(hBMP));
-        break;
-    case WM_DESTROY: break;
-    case WM_CLOSE: DestroyWindow(hw); break;
-    case WM_COMMAND:
-        if (LOWORD(wp) == IDCANCEL)
-            DestroyWindow(hw);
-        break;
-    default: return FALSE;
-    }
-    return TRUE;
-}
-
 constexpr auto dwStickyKeysStructSize = sizeof(STICKYKEYS);
 constexpr auto dwFilterKeysStructSize = sizeof(FILTERKEYS);
 constexpr auto dwToggleKeysStructSize = sizeof(TOGGLEKEYS);
@@ -346,8 +326,6 @@ struct damn_keys_filter
     }
 };
 
-#include "xr_ioc_cmd.h"
-
 int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nCmdShow)
 {
     HANDLE hCheckPresenceMutex = INVALID_HANDLE_VALUE;
@@ -374,11 +352,8 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
     // SetThreadAffinityMask		(GetCurrentThread(),1);
 
     // Title window
-    logoWindow = CreateDialog(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDD_STARTUP), nullptr, logDlgProc);
-    HWND logoInsertPos = IsDebuggerPresent() ? HWND_NOTOPMOST : HWND_TOPMOST;
 
-    // mmccxvii: захардкорил размер битмапа, чтобы не было бага, связанного с увеличенным масштабом интерфейса винды
-    SetWindowPos(logoWindow, logoInsertPos, 0, 0, 798, 530, SWP_NOMOVE | SWP_SHOWWINDOW);
+    logoWindow = ShowSplash(hInstance, nCmdShow);
 
     LPCSTR fsgame_ltx_name = "-fsltx ";
     string_path fsgame = "";
@@ -426,30 +401,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLi
     ExitFromWinMain = true;
 
     return 0;
-}
-
-LPCSTR _GetFontTexName(LPCSTR section)
-{
-    constexpr const char* tex_names[] = {"texture800", "texture", "texture1600"};
-    int def_idx = 1; // default 1024x768
-    int idx = def_idx;
-
-    u32 h = Device.dwHeight;
-
-    if (h <= 600)
-        idx = 0;
-    else if (h <= 900)
-        idx = 1;
-    else
-        idx = 2;
-
-    while (idx >= 0)
-    {
-        if (pSettings->line_exist(section, tex_names[idx]))
-            return pSettings->r_string(section, tex_names[idx]);
-        --idx;
-    }
-    return pSettings->r_string(section, tex_names[def_idx]);
 }
 
 CApplication::CApplication() : loadingScreen(nullptr)

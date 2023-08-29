@@ -337,6 +337,9 @@
     <ClInclude Include="os_clipboard.h">
       <Filter>Engine\Console</Filter>
     </ClInclude>
+    <ClInclude Include="splash.h">
+      <Filter>General</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">
@@ -565,6 +568,9 @@
     <ClCompile Include="XR_IOConsole_get.cpp">
       <Filter>Engine\Console</Filter>
     </ClCompile>
+    <ClCompile Include="splash.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">
@@ -575,12 +581,14 @@
     <None Include="stalker.ico">
       <Filter>General\Resources</Filter>
     </None>
-    <None Include="ui_splash3.bmp">
-      <Filter>General\Resources</Filter>
-    </None>
     <None Include="ClientServer.txt" />
     <None Include="Effects description.txt" />
     <None Include="features.txt" />
     <None Include="TODO.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="ui_splash3.png">
+      <Filter>General\Resources</Filter>
+    </Image>
   </ItemGroup>
 </Project>

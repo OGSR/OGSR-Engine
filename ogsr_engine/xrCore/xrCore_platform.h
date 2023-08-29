@@ -15,7 +15,7 @@
 #define NOKEYSTATES
 #define NODRAWTEXT
 #define NOMEMMGR
-#define NOMETAFILE
+//#define NOMETAFILE
 #define NOSERVICE
 #define NOCOMM
 #define NOHELP
