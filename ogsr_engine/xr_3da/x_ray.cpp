@@ -602,8 +602,6 @@ void CApplication::LoadDraw()
 
 void CApplication::LoadForceFinish() { loadingScreen->ForceFinish(); }
 
-void CApplication::SetLoadingLevelText(const char* name) { loadingScreen->SetLevelText(name); }
-
 void CApplication::SetLoadStageTitle(pcstr _ls_title) { loadingScreen->SetStageTitle(_ls_title); }
 
 void CApplication::LoadTitleInt() { loadingScreen->SetStageTip(); }
@@ -678,9 +676,6 @@ void generate_logo_path(string_path& path, pcstr level_name, int num = -1)
 {
     strconcat(sizeof(path), path, "intro\\intro_", level_name);
 
-    const auto len = xr_strlen(path);
-    path[len - 1] = 0;
-
     if (num < 0)
         return;
 
@@ -707,13 +702,17 @@ void CApplication::Level_Set(u32 L)
     Level_Current = L;
     FS.get_path("$level$")->_set(Levels[L].folder);
 
+    std::string temp = Levels[L].folder;
+    temp.pop_back();
+    const char* level_name = temp.c_str();
+
     static string_path path;
     path[0] = 0;
     
     int count = 0;
     while (true)
     {
-        if (validate_logo_path(path, Levels[L].folder, count))
+        if (validate_logo_path(path, level_name, count))
             count++;
         else
             break;
@@ -722,9 +721,9 @@ void CApplication::Level_Set(u32 L)
     if (count)
     {
         const int curr = ::Random.randI(count);
-        generate_logo_path(path, Levels[L].folder, curr);
+        generate_logo_path(path, level_name, curr);
     }
-    else if (!validate_logo_path(path, Levels[L].folder))
+    else if (!validate_logo_path(path, level_name))
     {
         if (!validate_logo_path(path, "no_start_picture"))
             path[0] = 0;
@@ -732,6 +731,8 @@ void CApplication::Level_Set(u32 L)
 
     if (path[0])
         loadingScreen->SetLevelLogo(path);
+
+    loadingScreen->SetLevelText(level_name);
 }
 
 int CApplication::Level_ID(LPCSTR name)

@@ -44,7 +44,6 @@ public:
     void LoadForceFinish();
 
     void SetLoadStageTitle(pcstr ls_title);
-    void SetLoadingLevelText(const char* name);
 
     virtual void OnEvent(EVENT E, u64 P1, u64 P2);
 
