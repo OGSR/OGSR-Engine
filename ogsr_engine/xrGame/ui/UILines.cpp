@@ -217,11 +217,7 @@ void CUILines::ParseText()
                 {
                     bNewLines = true;
                     *pszTemp = '\0';
-                    CUISubLine subline;
-                    subline.m_text = pszSearch;
-                    subline.m_color = tcolor;
-                    subline.m_last_in_line = true;
-                    ptmp_line->AddSubLine(&subline);
+                    ptmp_line->AddSubLine(xr_string{pszSearch}, tcolor);
                     pszSearch = pszTemp + 2;
                 }
                 ptmp_line->AddSubLine(xr_string{pszSearch}, tcolor);
@@ -237,8 +233,6 @@ void CUILines::ParseText()
 
     if (!use_new_parse_text && m_pFont->IsMultibyte())
     {
-        CUILine _tmp_line;
-
         float fTargetWidth = 1.0f;
         UI()->ClientToScreenScaledWidth(fTargetWidth);
         VERIFY((m_wndSize.x > 0) && (fTargetWidth > 0));
@@ -277,13 +271,8 @@ void CUILines::ParseText()
                 }
 
                 xr_string szTempLine{pszText + uFrom};
-                _tmp_line.AddSubLine(std::move(szTempLine), tcolor);
-
-                if (subline.m_last_in_line || &subline == &line->m_subLines.back())
-                {
-                    m_lines.push_back(_tmp_line);
-                    _tmp_line.Clear();
-                }
+                auto& tmp_line = m_lines.emplace_back();
+                tmp_line.AddSubLine(std::move(szTempLine), tcolor);
             }
         }
     }
