@@ -421,6 +421,7 @@ void CHW::updateWindowProps(HWND m_hWnd)
             dwWindowStyle = WS_VISIBLE;
             if (bBordersMode)
                 dwWindowStyle |= WS_BORDER | WS_DLGFRAME | WS_SYSMENU | WS_MINIMIZEBOX;
+
             SetWindowLongPtr(m_hWnd, GWL_STYLE, dwWindowStyle);
 
             // When moving from fullscreen to windowed mode, it is important to
@@ -434,8 +435,8 @@ void CHW::updateWindowProps(HWND m_hWnd)
 
             RECT m_rcWindowBounds;
             int fYOffset = 0;
-            static const bool bCenter = !!strstr(Core.Params, "-center_screen");
 
+            static const bool bCenter = !!strstr(Core.Params, "-center_screen");
             if (bCenter)
             {
                 RECT DesktopRect;
@@ -449,10 +450,12 @@ void CHW::updateWindowProps(HWND m_hWnd)
             {
                 if (bBordersMode)
                     fYOffset = GetSystemMetrics(SM_CYCAPTION); // size of the window title bar
-                SetRect(&m_rcWindowBounds, 0, 0, m_ChainDesc.BufferDesc.Width, m_ChainDesc.BufferDesc.Height);
-            };
 
-            AdjustWindowRect(&m_rcWindowBounds, DWORD(dwWindowStyle), FALSE);
+                SetRect(&m_rcWindowBounds, 0, 0, m_ChainDesc.BufferDesc.Width, m_ChainDesc.BufferDesc.Height);
+            }
+
+            if (bBordersMode)
+                AdjustWindowRect(&m_rcWindowBounds, DWORD(dwWindowStyle), FALSE);
 
             SetWindowPos(m_hWnd, HWND_NOTOPMOST, m_rcWindowBounds.left, m_rcWindowBounds.top + fYOffset, (m_rcWindowBounds.right - m_rcWindowBounds.left),
                          (m_rcWindowBounds.bottom - m_rcWindowBounds.top), SWP_SHOWWINDOW | SWP_NOCOPYBITS | SWP_DRAWFRAME);
