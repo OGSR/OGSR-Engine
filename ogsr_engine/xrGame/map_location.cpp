@@ -417,7 +417,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
             xr_vector<CLevelChanger*>::iterator lit = g_lchangers.begin();
             xr_vector<CLevelChanger*>::iterator lit_e = g_lchangers.end();
             bool bDone = false;
-            if ((*it) == (*lit)->ai_location().game_vertex_id()) // нашли переход к точке
+            for (; (it != it_e) && (!bDone); ++it)
             {
                 for (lit = g_lchangers.begin(); lit != lit_e; ++lit)
                 {

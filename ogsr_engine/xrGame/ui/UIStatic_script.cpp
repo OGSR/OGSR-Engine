@@ -26,6 +26,7 @@ void UIMiniMapInit(CUIMiniMap* wnd)
     Frect r;
     parent->GetAbsoluteRect(r);
     wnd->SetClipRect(r);
+    wnd->WorkingArea().set(r);
 
     UIMiniMapZoom(wnd, 1.f);
 }
