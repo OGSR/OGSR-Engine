@@ -20,7 +20,6 @@ static const float lookup_angle_sine = 0.34202014f; // 20
 
 extern CPHWorld* ph_world;
 extern bool g_actor_allow_ladder;
-extern bool g_actor_allow_ladder;
 
 CElevatorState::CElevatorState()
 {
