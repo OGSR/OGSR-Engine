@@ -574,7 +574,7 @@ void CWeaponMagazined::OnStateSwitch(u32 S, u32 oldState)
     }
     break;
     case eMagEmpty: {
-        const bool need_play_empty_click = oldState != eFire && oldState != eFire2;
+        const bool need_play_empty_click = (oldState != eFire && oldState != eFire2) || !dont_interrupt_shot_anm;
         switch2_Empty(need_play_empty_click);
 
         if (GetNextState() != eReload && need_play_empty_click)
