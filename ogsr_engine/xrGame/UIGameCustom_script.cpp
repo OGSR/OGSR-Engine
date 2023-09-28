@@ -6,8 +6,6 @@
 
 using namespace luabind;
 
-CUIGameCustom* get_hud() { return HUD().GetUI()->UIGame(); }
-
 #pragma optimize("s", on)
 void CUIGameCustom::script_register(lua_State* L)
 {
@@ -23,5 +21,5 @@ void CUIGameCustom::script_register(lua_State* L)
                   .def("AddCustomStatic", &CUIGameCustom::AddCustomStatic)
                   .def("RemoveCustomStatic", &CUIGameCustom::RemoveCustomStatic)
                   .def("GetCustomStatic", &CUIGameCustom::GetCustomStatic),
-              def("get_hud", &get_hud)];
+              def("get_hud", [] { return HUD().GetUI()->UIGame(); })];
 }
