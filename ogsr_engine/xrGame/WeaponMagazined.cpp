@@ -1531,7 +1531,7 @@ void CWeaponMagazined::OnMotionMark(u32 state, const motion_marks& M)
                 ae += iAmmoElapsed;
             }
 
-            last_hide_bullet = ae >= bullet_cnt ? bullet_cnt : bullet_cnt - ae - 1;
+            last_hide_bullet = (ae >= bullet_cnt || unlimited_ammo()) ? bullet_cnt : bullet_cnt - ae - 1;
             HUD_VisualBulletUpdate();
         }
         else
