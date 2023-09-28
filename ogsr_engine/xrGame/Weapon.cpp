@@ -889,7 +889,7 @@ void CWeapon::UpdateCL()
         {
             if (psActorFlags.test(AF_DOF_ZOOM))
             {
-                if (m_bZoomMode && dof_zoom_effect < 1.f && !UseScopeTexture())
+                if (m_bZoomMode && dof_zoom_effect < 1.f && !UseScopeTexture() && pActor->active_cam() == ACTOR_DEFS::eacFirstEye)
                     UpdateDof(dof_zoom_effect, dof_params_zoom, false);
                 else if (dof_zoom_effect > 0.f && !m_bZoomMode)
                     UpdateDof(dof_zoom_effect, dof_params_zoom, true);
@@ -901,7 +901,7 @@ void CWeapon::UpdateCL()
     }
     else if (GetState() == eReload)
     {
-        if (pActor && psActorFlags.test(AF_DOF_RELOAD) && dof_reload_effect < 1.f)
+        if (pActor && psActorFlags.test(AF_DOF_RELOAD) && dof_reload_effect < 1.f && pActor->active_cam() == ACTOR_DEFS::eacFirstEye)
             UpdateDof(dof_reload_effect, dof_params_reload, false);
 
         m_idle_state = eIdle;
@@ -913,7 +913,7 @@ void CWeapon::UpdateCL()
             if (psActorFlags.test(AF_DOF_RELOAD) && dof_reload_effect > 0.f)
                 UpdateDof(dof_reload_effect, dof_params_reload, true);
 
-            if (psActorFlags.test(AF_DOF_ZOOM) && dof_zoom_effect > 0.f)
+            if (psActorFlags.test(AF_DOF_ZOOM) && dof_zoom_effect > 0.f && (!m_bZoomMode || pActor->active_cam() != ACTOR_DEFS::eacFirstEye))
                 UpdateDof(dof_zoom_effect, dof_params_zoom, true);
         }
 
@@ -2215,7 +2215,6 @@ void CWeapon::HUD_VisualBulletUpdate(bool force, int force_idx)
         const auto bone_id = HudItemData()->m_model->LL_BoneID(bullets_bones[b]);
 
         if (bone_id != BI_NONE)
-
             HudItemData()->set_bone_visible(bullets_bones[b], !hide);
 
         if (b == last_hide_bullet)
