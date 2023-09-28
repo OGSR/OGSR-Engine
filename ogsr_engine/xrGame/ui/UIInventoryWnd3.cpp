@@ -267,6 +267,9 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked()
                         WpnMagazWgl->PerformSwitchGL();
                     }
                 }
+                // Сделано чтобы мгновенно переключиться в idle_empty
+                if (WpnMagaz->GetState() == CHUDState::eIdle && WpnMagaz->HudItemData())
+                    WpnMagaz->SwitchState(CHUDState::eIdle);
             };
 
             auto itm = CurrentItem();

@@ -328,6 +328,9 @@ void CUICarBodyWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
                             WpnMagazWgl->PerformSwitchGL();
                         }
                     }
+                    // Сделано чтобы мгновенно переключиться в idle_empty
+                    if (WpnMagaz->GetState() == CHUDState::eIdle && WpnMagaz->HudItemData())
+                        WpnMagaz->SwitchState(CHUDState::eIdle);
                 };
 
                 auto itm = CurrentItem();
