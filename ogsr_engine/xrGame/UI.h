@@ -21,6 +21,7 @@ public:
     CHUDManager* m_Parent;
     CUIMainIngameWnd* UIMainIngameWnd;
     CUIMessagesWindow* m_pMessagesWnd;
+    bool hud_disabled_by_user{};
 
 public:
     CUI(CHUDManager* p);

@@ -305,18 +305,19 @@ void CHUDManager::RenderUI()
     if (!b_online)
         return;
 
-    BOOL bAlready = FALSE;
-    if (true || psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
+    if (HUD().GetUI()->GameIndicatorsShown() /*&& psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT)*/)
     {
         HitMarker.Render();
-        bAlready = !(pUI && !pUI->Render());
-        Font().Render();
+
+        if (psHUD_Flags.is(HUD_CROSSHAIR | HUD_CROSSHAIR_RT | HUD_CROSSHAIR_RT2))
+            m_pHUDTarget->Render();
     }
 
-    if (psHUD_Flags.is(HUD_CROSSHAIR | HUD_CROSSHAIR_RT | HUD_CROSSHAIR_RT2) && !bAlready)
-        m_pHUDTarget->Render();
+    if (pUI)
+        pUI->Render();
 
-    // draw_wnds_rects		(); -- вызываеться так же после RenderUI
+    Font().Render();
+
 
     if (Device.Paused() && bShowPauseString)
     {

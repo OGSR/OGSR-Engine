@@ -78,32 +78,31 @@ void CUI::UIOnFrame()
 #include "huditem.h"
 bool CUI::Render()
 {
-    if (GameIndicatorsShown())
+    if (GameIndicatorsShown() /*&& psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT)*/)
     {
         if (pUIGame)
             pUIGame->Render();
     }
 
-    CEntity* pEntity = smart_cast<CEntity*>(Level().CurrentEntity());
-    if (pEntity)
+    if (auto pActor = smart_cast<CActor*>(Level().CurrentEntity()))
     {
-        CActor* pActor = smart_cast<CActor*>(pEntity);
-        if (pActor)
-        {
-            PIItem item = pActor->inventory().ActiveItem();
-            if (item && pActor->HUDview() && smart_cast<CHudItem*>(item))
-                (smart_cast<CHudItem*>(item))->OnDrawUI();
-        }
+        auto item = smart_cast<CHudItem*>(pActor->inventory().ActiveItem());
+        if (item && pActor->HUDview())
+            item->OnDrawUI();
+    }
 
-        if (GameIndicatorsShown() && psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
+    if (psHUD_Flags.is(HUD_DRAW | HUD_DRAW_RT))
+    {
+        if (GameIndicatorsShown())
         {
             UIMainIngameWnd->Draw();
             m_pMessagesWnd->Draw();
         }
-        else
-        { // hack - draw messagess wnd in scope mode
-            CUIGameSP* gSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
-            if (gSP)
+        // Оставил рендер новостей под этим условием чтобы при скриптовом скрытии ui сообщения продолжали быть видны,
+        // а при скрытии с клавиатуры - нет. Способ кривоватый но посмотрим, мб и так пойдет.
+        else if (!HUD().GetUI()->hud_disabled_by_user)
+        {
+            if (auto gSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame()))
             {
                 if (!gSP->PdaMenu->GetVisible())
                     m_pMessagesWnd->Draw();
@@ -112,15 +111,11 @@ bool CUI::Render()
                 m_pMessagesWnd->Draw();
         }
     }
-    else
-        m_pMessagesWnd->Draw();
 
     DoRenderDialogs();
 
     return false;
 }
-//.		if(HUD().GetUI())HUD().GetUI()->HideGameIndicators();
-//.		if(HUD().GetUI())HUD().GetUI()->ShowGameIndicators();
 
 bool CUI::IR_OnMouseWheel(int direction)
 {
@@ -222,7 +217,11 @@ SDrawStaticStruct* CUI::AddInfoMessage(LPCSTR message)
 
 void CUI::ShowGameIndicators() { m_bShowGameIndicators = true; }
 
-void CUI::HideGameIndicators() { m_bShowGameIndicators = false; }
+void CUI::HideGameIndicators()
+{
+    m_bShowGameIndicators = false;
+    hud_disabled_by_user = false;
+}
 
 void CUI::ShowCrosshair() { psHUD_Flags.set(HUD_CROSSHAIR_RT, TRUE); }
 

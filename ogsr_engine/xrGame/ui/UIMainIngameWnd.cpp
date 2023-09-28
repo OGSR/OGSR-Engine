@@ -461,17 +461,27 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
     if (bind == kHIDEHUD)
     {
         if (shift)
+        {
             UIZoneMap->ZoomOut();
+        }
         else
+        {
             HUD().GetUI()->HideGameIndicators();
+            HUD().GetUI()->hud_disabled_by_user = true;
+        }
         return true;
     }
     else if (bind == kSHOWHUD)
     {
         if (shift)
+        {
             UIZoneMap->ZoomIn();
+        }
         else
+        {
             HUD().GetUI()->ShowGameIndicators();
+            HUD().GetUI()->hud_disabled_by_user = false;
+        }
         return true;
     }
 
