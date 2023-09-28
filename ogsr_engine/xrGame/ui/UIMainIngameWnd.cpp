@@ -455,35 +455,24 @@ void CUIMainIngameWnd::Update()
 
 bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 {
-    if (Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT))
+    const bool shift = Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT);
+    const auto bind = get_binded_action(dik);
+
+    if (bind == kHIDEHUD)
     {
-        switch (dik)
-        {
-        case DIK_NUMPADMINUS:
+        if (shift)
             UIZoneMap->ZoomOut();
-            return true;
-            break;
-        case DIK_NUMPADPLUS:
-            UIZoneMap->ZoomIn();
-            return true;
-            break;
-        }
-    }
-    else
-    {
-        switch (dik)
-        {
-        case DIK_NUMPADMINUS:
-            //.HideAll();
+        else
             HUD().GetUI()->HideGameIndicators();
-            return true;
-            break;
-        case DIK_NUMPADPLUS:
-            //.ShowAll();
+        return true;
+    }
+    else if (bind == kSHOWHUD)
+    {
+        if (shift)
+            UIZoneMap->ZoomIn();
+        else
             HUD().GetUI()->ShowGameIndicators();
-            return true;
-            break;
-        }
+        return true;
     }
 
     return false;

@@ -395,21 +395,21 @@ bool CUIMapWnd::OnKeyboard(int dik, EUIMessages keyboard_action)
     if (inherited::OnKeyboard(dik, keyboard_action))
         return true;
 
-    switch (dik)
+    const auto bind = get_binded_action(dik);
+
+    if (bind == kHIDEHUD)
     {
-    case DIK_NUMPADMINUS: {
         SetZoom(GetZoom() / 1.5f);
         ResetActionPlanner();
         return true;
     }
-    break;
-    case DIK_NUMPADPLUS: {
+    else if (bind == kSHOWHUD)
+    {
         SetZoom(GetZoom() * 1.5f);
         ResetActionPlanner();
         return true;
     }
-    break;
-    }
+
     return false;
 }
 

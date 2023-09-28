@@ -48,6 +48,8 @@
 		<command id="kb_drop"						exe="drop"/>		
 	</group>
 	<group name="kb_grp_common">
+		<command id="kb_hide_hud"					exe="hide_hud"/>
+		<command id="kb_show_hud"					exe="show_hud"/>
 		<command id="kb_cam_1"						exe="cam_1"/>
 		<command id="kb_cam_2"						exe="cam_2"/>
 		<command id="kb_cam_3"						exe="cam_3"/>

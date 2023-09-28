@@ -236,6 +236,13 @@
 		<text>Third person view (freelook)</text>
 	</string>
 
+	<string id="kb_hide_hud">
+		<text>Hide HUD</text>
+	</string>
+	<string id="kb_show_hud">
+		<text>Show HUD</text>
+	</string>
+
 	<string id="inventory_item_use_or_drag">
 		<text>Pick up item ($$ACTION_USE$$)\nDrag item (SHIFT+$$ACTION_USE$$)</text>
 	</string>

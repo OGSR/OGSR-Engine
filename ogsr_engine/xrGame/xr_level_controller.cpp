@@ -28,27 +28,19 @@ xr_vector<_action> actions = {
                                                 "wpn_func", kWPN_FUNC) DEF_ACTION("wpn_firemode_prev", kWPN_FIREMODE_PREV) DEF_ACTION("wpn_firemode_next", kWPN_FIREMODE_NEXT)
 
                                                 DEF_ACTION("pause", kPAUSE) DEF_ACTION("drop", kDROP) DEF_ACTION("use", kUSE) DEF_ACTION("scores", kSCORES)
-                                                    DEF_ACTION("flashlight", kFLASHLIGHT) DEF_ACTION("chat_team", kCHAT_TEAM) DEF_ACTION("screenshot", kSCREENSHOT)
-                                                        DEF_ACTION("quit", kQUIT) DEF_ACTION("console", kCONSOLE) DEF_ACTION("inventory", kINVENTORY) DEF_ACTION("buy_menu", kBUY)
-                                                            DEF_ACTION("skin_menu", kSKIN) DEF_ACTION("team_menu", kTEAM) DEF_ACTION("active_jobs", kACTIVE_JOBS)
+                                                    DEF_ACTION("flashlight", kFLASHLIGHT) DEF_ACTION("screenshot", kSCREENSHOT)
+                                                        DEF_ACTION("quit", kQUIT) DEF_ACTION("console", kCONSOLE) DEF_ACTION("inventory", kINVENTORY)
+                                                            DEF_ACTION("active_jobs", kACTIVE_JOBS)
                                                                 DEF_ACTION("map", kMAP) DEF_ACTION("contacts", kCONTACTS) DEF_ACTION("ext_1", kEXT_1)
 
-                                                                    DEF_ACTION("vote_begin", kVOTE_BEGIN) DEF_ACTION("vote", kVOTE) DEF_ACTION("vote_yes", kVOTEYES)
-                                                                        DEF_ACTION("vote_no", kVOTENO)
-
                                                                             DEF_ACTION("next_slot", kNEXT_SLOT) DEF_ACTION("prev_slot", kPREV_SLOT)
-
-                                                                                DEF_ACTION("speech_menu_0", kSPEECH_MENU_0) DEF_ACTION("speech_menu_1", kSPEECH_MENU_1) DEF_ACTION(
-                                                                                    "speech_menu_2", kSPEECH_MENU_2) DEF_ACTION("speech_menu_3", kSPEECH_MENU_3)
-                                                                                    DEF_ACTION("speech_menu_4", kSPEECH_MENU_4) DEF_ACTION("speech_menu_5", kSPEECH_MENU_5)
-                                                                                        DEF_ACTION("speech_menu_6", kSPEECH_MENU_6) DEF_ACTION("speech_menu_7", kSPEECH_MENU_7)
-                                                                                            DEF_ACTION("speech_menu_8", kSPEECH_MENU_8) DEF_ACTION("speech_menu_9", kSPEECH_MENU_9)
 
                                                                                                 DEF_ACTION("use_bandage", kUSE_BANDAGE) DEF_ACTION("use_medkit", kUSE_MEDKIT)
 
                                                                                                     DEF_ACTION("quick_save", kQUICK_SAVE) DEF_ACTION("quick_load", kQUICK_LOAD)
 
-                                                                                                        DEF_ACTION("artefact", kARTEFACT)};
+                                                                                                        DEF_ACTION("hide_hud", kHIDEHUD) DEF_ACTION("show_hud", kSHOWHUD)
+};
 
 xr_vector<_binding> g_key_bindings;
 
