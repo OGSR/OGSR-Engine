@@ -223,9 +223,9 @@ extern BOOL ps_no_scale_on_fade;
 
 void CDetailManager::UpdateVisibleM()
 {
-    // KRodin: Фикс мерцания и прочих глюков травы при активном двойном рендеринге. Это важно, не убирать!
-    if (Device.m_SecondViewport.IsSVPFrame())
-        return;
+    // Фикс мерцания и прочих глюков травы при активном двойном рендеринге. Для теней от травы SSS16 фикс не нужен, наоборот вредит.
+   // if (Device.m_SecondViewport.IsSVPFrame())
+   //     return;
 
     // Clean up
     for (auto& vec : m_visibles)
@@ -461,22 +461,15 @@ void CDetailManager::MT_CALC()
 
     MT.Leave();
 }
+
 void CDetailManager::details_clear()
 {
     // Disable fade, next render will be scene
     fade_distance = 99999;
     if (ps_ssfx_grass_shadows.x <= 0)
         return;
-    for (u32 x = 0; x < 3; x++)
-    {
-        vis_list& list = m_visibles[x];
-        for (u32 O = 0; O < objects.size(); O++)
-        {
-            xr_vector<SlotItemVec*>& vis = list[O];
-            if (!vis.empty())
-            {
-                vis.clear();
-            }
-        }
-    }
+
+    for (auto& list : m_visibles)
+        for (auto& vis : list)
+            vis.clear();
 }
