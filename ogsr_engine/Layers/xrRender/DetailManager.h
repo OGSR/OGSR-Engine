@@ -202,6 +202,7 @@ public:
     void WaitAsync() const;
 
     std::future<void> awaiter;
+    bool async_started{};
 
     void MT_CALC();
 

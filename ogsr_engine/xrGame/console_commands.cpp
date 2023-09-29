@@ -99,8 +99,6 @@ int g_AI_inactive_time = 0;
 extern int g_dof_zoom_far;
 extern int g_dof_zoom_near;
 
-ENGINE_API extern int g_3dscopes_fps_factor;
-
 void get_files_list(xr_vector<shared_str>& files, LPCSTR dir, LPCSTR file_ext)
 {
     VERIFY(dir && file_ext);

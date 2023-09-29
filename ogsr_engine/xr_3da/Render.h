@@ -27,6 +27,7 @@ class CGameFont;
 // class IRenderDetailModel;
 
 extern const float fLightSmoothFactor;
+ENGINE_API extern int g_3dscopes_fps_factor;
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Dynamic Light)

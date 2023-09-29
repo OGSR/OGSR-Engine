@@ -381,10 +381,16 @@ void CDetailManager::Render()
         return;
 
     // MT wait
-    if (ps_r2_ls_flags.test((u32)R2FLAG_EXP_MT_DETAILS))
+    if (ps_r2_ls_flags.test((u32)R2FLAG_EXP_MT_DETAILS) && async_started)
+    {
+        //Msg("--[%s] async! frame №[%u] svpactive:[%d], svpframe:[%d]", __FUNCTION__, Device.dwFrame, Device.m_SecondViewport.IsSVPActive(), Device.m_SecondViewport.IsSVPFrame());
         WaitAsync();
+    }
     else
+    {
+        //Msg("~~[%s] NO async! frame №[%u] svpactive:[%d], svpframe:[%d]", __FUNCTION__, Device.dwFrame, Device.m_SecondViewport.IsSVPActive(), Device.m_SecondViewport.IsSVPFrame());
         MT_CALC();
+    }
 
     RDEVICE.Statistic->RenderDUMP_DT_Render.Begin();
 
@@ -408,8 +414,12 @@ u32 reset_frame = 0;
 
 void CDetailManager::StartAsync()
 {
-    if (!ps_r2_ls_flags.test((u32)R2FLAG_EXP_MT_DETAILS))
+    if (!(ps_r2_ls_flags.test((u32)R2FLAG_EXP_MT_DETAILS) && //костыли чтоб в 3д прицелах не мерцала трава. Фикс не совсем идеальный, иногда всё равно проскакивает, но не критично.
+          (Device.m_SecondViewport.IsSVPFrame() || !Device.m_SecondViewport.IsSVPActive() || (((Device.dwFrame - 1) % g_3dscopes_fps_factor) != 0))))
+    {
+        async_started = false;
         return;
+    }
 
     if (reset_frame == Device.dwFrame)
         return;
@@ -423,7 +433,11 @@ void CDetailManager::StartAsync()
     if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
         return;
 
+    //Заметка: сначала рендерится фрейм для 3д прицела, а уже следующий фрейм для всего мира вне прицела
+    //Msg("##[%s] frame №[%u] svpactive:[%d], svpframe:[%d]", __FUNCTION__, Device.dwFrame, Device.m_SecondViewport.IsSVPActive(), Device.m_SecondViewport.IsSVPFrame());
+
     awaiter = TTAPI->submit([this]() { MT_CALC(); });
+    async_started = true;
 }
 
 void CDetailManager::WaitAsync() const
