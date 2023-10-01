@@ -112,18 +112,17 @@ void ShowEditor()
 }
 
 bool isRControl = false, isLControl = false, isRShift = false, isLShift = false;
+extern bool GetShift();
 
 bool Editor_KeyPress(int key)
 {
-    if (1) // bDeveloperMode ???
+    if (key == DIK_F10)
     {
-        if (key == DIK_F10)
-        {
+        if (GetShift())
             stage = static_cast<EditorStage>((static_cast<int>(stage) + 1) % static_cast<int>(EditorStage::Count));
-        }
-        else if (key == DIK_RALT || key == DIK_LALT)
-            isAlt = true;
     }
+    else if (key == DIK_RALT || key == DIK_LALT)
+        isAlt = true;
 
     if (!IsEditorActive())
         return false;
