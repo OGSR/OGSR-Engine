@@ -4,10 +4,6 @@
 
 #include "stdafx.h"
 
-#pragma warning(disable : 4995)
-#include <d3dx/d3dx9.h>
-#pragma warning(default : 4995)
-
 #include "../../xr_3da/Render.h"
 #include "SkeletonX.h"
 #include "SkeletonCustom.h"

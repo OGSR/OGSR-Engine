@@ -1,10 +1,5 @@
 #include "stdafx.h"
 
-#pragma warning(push)
-#pragma warning(disable : 4995)
-#include <d3dx/d3dx9.h>
-#pragma warning(pop)
-
 #include "ResourceManager.h"
 #include "blenders\Blender_Recorder.h"
 #include "blenders\Blender.h"

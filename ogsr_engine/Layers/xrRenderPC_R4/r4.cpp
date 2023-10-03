@@ -14,8 +14,6 @@
 #include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
 #include "../xrRender/ShaderResourceTraits.h"
 
-#include <d3dx/D3DX10Core.h>
-
 CRender RImplementation;
 
 //////////////////////////////////////////////////////////////////////////

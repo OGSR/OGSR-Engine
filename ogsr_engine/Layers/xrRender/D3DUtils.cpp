@@ -1,7 +1,6 @@
 // file: D3DUtils.cpp
 
 #include "stdafx.h"
-#pragma hdrstop
 
 #include "../../xr_3da/gamefont.h"
 #include "d3dutils.h"
@@ -12,11 +11,6 @@
 #include "du_cylinder.h"
 
 #include "dxRenderDeviceRender.h"
-
-#pragma warning(push)
-#pragma warning(disable : 4995)
-#include <d3dx/d3dx9.h>
-#pragma warning(pop)
 
 CDrawUtilities DUImpl;
 
