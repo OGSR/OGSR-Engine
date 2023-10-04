@@ -75,26 +75,28 @@ float CAI_Stalker::GetWeaponAccuracy() const
     if (!movement().path_completed())
     {
         if (movement().movement_type() == eMovementTypeWalk)
+        {
             if (movement().body_state() == eBodyStateStand)
                 return m_fDispBase + base * m_disp_walk_stand;
-            else
-                return m_fDispBase + base * m_disp_walk_crouch;
-        else if (movement().movement_type() == eMovementTypeRun)
+            return m_fDispBase + base * m_disp_walk_crouch;
+        }
+        if (movement().movement_type() == eMovementTypeRun)
+        {
             if (movement().body_state() == eBodyStateStand)
                 return m_fDispBase + base * m_disp_run_stand;
-            else
-                return m_fDispBase + base * m_disp_run_crouch;
+            return m_fDispBase + base * m_disp_run_crouch;
+        }
     }
 
     if (movement().body_state() == eBodyStateStand)
+    {
         if (zoom_state())
-            return m_fDispBase + base * m_disp_stand_stand;
-        else
             return m_fDispBase + base * m_disp_stand_stand_zoom;
-    else if (zoom_state())
-        return m_fDispBase + base * m_disp_stand_crouch;
-    else
+        return m_fDispBase + base * m_disp_stand_stand;
+    }
+    if (zoom_state())
         return m_fDispBase + base * m_disp_stand_crouch_zoom;
+    return m_fDispBase + base * m_disp_stand_crouch;
 }
 
 void CAI_Stalker::g_fireParams(CHudItem* pHudItem, Fvector& P, Fvector& D, const bool for_cursor)
