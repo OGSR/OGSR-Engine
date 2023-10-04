@@ -13,6 +13,7 @@
 #include "ai_object_location.h"
 #include "level.h"
 #include "xrServer_Object_Base.h"
+#include "xrServer_Objects_ALife.h"
 
 static float min_deficit_factor = .3f;
 
@@ -68,7 +69,7 @@ void CPurchaseList::process(const CGameObject& owner, const shared_str& name, co
 
         if (lua_function)
         {
-            lua_function(owner.lua_game_object(), _abstract);
+            lua_function(owner.lua_game_object(), smart_cast<CSE_ALifeObject*>(_abstract));
         }
 
         NET_Packet P;
