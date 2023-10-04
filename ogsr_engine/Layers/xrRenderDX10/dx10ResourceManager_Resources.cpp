@@ -34,8 +34,6 @@ SCS* CResourceManager::_CreateCS(LPCSTR Name) { return CreateShader<SCS>(Name); 
 void CResourceManager::_DeleteCS(const SCS* CS) { DestroyShader(CS); }
 #endif //	USE_DX10
 
-void fix_texture_name(LPSTR fn);
-
 template <class T>
 BOOL reclaim(xr_vector<T*>& vec, const T* ptr)
 {

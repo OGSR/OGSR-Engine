@@ -349,4 +349,6 @@ protected:
     virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer);
 };
 
+void fix_texture_name(const char* fn);
+
 extern CRender RImplementation;

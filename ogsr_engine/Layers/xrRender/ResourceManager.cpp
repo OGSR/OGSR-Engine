@@ -10,21 +10,6 @@
 #include "blenders\blender_recorder.h"
 #include <execution>
 
-//	Already defined in Texture.cpp
-void fix_texture_name(LPSTR fn);
-/*
-void fix_texture_name(LPSTR fn)
-{
-    LPSTR _ext = strext(fn);
-    if(  _ext					&&
-      (0==stricmp(_ext,".tga")	||
-        0==stricmp(_ext,".dds")	||
-        0==stricmp(_ext,".bmp")	||
-        0==stricmp(_ext,".ogm")	) )
-        *_ext = 0;
-}
-*/
-//--------------------------------------------------------------------------------------------------------------
 template <class T>
 BOOL reclaim(xr_vector<T*>& vec, const T* ptr)
 {
@@ -39,7 +24,7 @@ BOOL reclaim(xr_vector<T*>& vec, const T* ptr)
     return FALSE;
 }
 
-//--------------------------------------------------------------------------------------------------------------
+
 IBlender* CResourceManager::_GetBlender(LPCSTR Name)
 {
     R_ASSERT(Name && Name[0]);

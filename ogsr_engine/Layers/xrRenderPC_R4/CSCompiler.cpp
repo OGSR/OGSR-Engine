@@ -120,8 +120,6 @@ CSCompiler& CSCompiler::defSampler(LPCSTR ResourceName, const D3D_SAMPLER_DESC& 
     return *this;
 }
 
-void fix_texture_name(LPSTR);
-
 CSCompiler& CSCompiler::defOutput(LPCSTR ResourceName, ref_rt rt)
 {
     VERIFY(ResourceName);

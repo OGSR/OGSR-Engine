@@ -1,13 +1,9 @@
 #include "stdafx.h"
-#pragma hdrstop
 
 #include "ResourceManager.h"
 #include "blenders\Blender_Recorder.h"
 #include "blenders\Blender.h"
-
 #include "dxRenderDeviceRender.h"
-
-void fix_texture_name(LPSTR fn);
 
 void CBlender_Compile::r_Pass(LPCSTR _vs, LPCSTR _ps, bool bFog, BOOL bZtest, BOOL bZwrite, BOOL bABlend, D3DBLEND abSRC, D3DBLEND abDST, BOOL aTest, u32 aRef)
 {
