@@ -25,7 +25,7 @@ public:
 
     void CreateD3D();
     void DestroyD3D();
-    void CreateDevice(HWND hw, bool move_window);
+    void CreateDevice(HWND hw);
 
     void DestroyDevice();
 
@@ -115,9 +115,6 @@ public:
     virtual void OnAppActivate();
     virtual void OnAppDeactivate();
 #endif //	USE_DX10
-
-private:
-    bool m_move_window;
 };
 
 extern ECORE_API CHW HW;

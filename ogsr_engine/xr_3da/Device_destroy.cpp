@@ -55,9 +55,6 @@ void CRenderDevice::Destroy(void)
     xr_delete(Statistic);
 }
 
-#include "IGame_Level.h"
-#include "CustomHUD.h"
-extern BOOL bNeed_re_create_env;
 void CRenderDevice::Reset(bool precache)
 {
     u32 dwWidth_before = dwWidth;
@@ -66,23 +63,21 @@ void CRenderDevice::Reset(bool precache)
     pInput->clip_cursor(false);
 
     u32 tm_start = TimerAsync();
-    if (g_pGamePersistent)
-    {
-        //.		g_pGamePersistent->Environment().OnDeviceDestroy();
-    }
 
     m_pRender->Reset(m_hWnd, dwWidth, dwHeight, fWidth_2, fHeight_2);
 
     if (g_pGamePersistent)
     {
-        //.		g_pGamePersistent->Environment().OnDeviceCreate();
-        // bNeed_re_create_env = TRUE;
         g_pGamePersistent->Environment().bNeed_re_create_env = TRUE;
     }
+
     _SetupStates();
+
     if (precache)
         PreCache(20, false, false);
+
     u32 tm_end = TimerAsync();
+
     Msg("*** RESET [%d ms]", tm_end - tm_start);
 
     //	TODO: Remove this! It may hide crash

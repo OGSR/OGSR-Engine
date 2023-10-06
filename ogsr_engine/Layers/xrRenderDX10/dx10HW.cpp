@@ -27,7 +27,7 @@ void free_render_mode_list();
 
 CHW HW;
 
-CHW::CHW() : m_move_window(true)
+CHW::CHW()
 {
     Device.seqAppActivate.Add(this);
     Device.seqAppDeactivate.Add(this);
@@ -67,9 +67,8 @@ void CHW::DestroyD3D()
     _RELEASE(pFactory);
 }
 
-void CHW::CreateDevice(HWND m_hWnd, bool move_window)
+void CHW::CreateDevice(HWND m_hWnd)
 {
-    m_move_window = move_window;
     CreateD3D();
 
     // General - select adapter and device
@@ -408,57 +407,58 @@ BOOL CHW::support(D3DFORMAT fmt, DWORD type, DWORD usage)
 
 void CHW::updateWindowProps(HWND m_hWnd)
 {
-    //	BOOL	bWindowed				= strstr(Core.Params,"-dedicated") ? TRUE : !psDeviceFlags.is	(rsFullscreen);
-    BOOL bWindowed = !psDeviceFlags.is(rsFullscreen);
-
     LONG_PTR dwWindowStyle = 0;
     // Set window properties depending on what mode were in.
-    if (bWindowed)
+    if (!psDeviceFlags.is(rsFullscreen))
     {
-        if (m_move_window)
+        static const bool bBordersMode = !!strstr(Core.Params, "-draw_borders");
+        dwWindowStyle = WS_VISIBLE;
+        if (bBordersMode)
+            dwWindowStyle |= WS_BORDER | WS_DLGFRAME | WS_SYSMENU | WS_MINIMIZEBOX;
+
+        SetWindowLongPtr(m_hWnd, GWL_STYLE, dwWindowStyle);
+
+        // When moving from fullscreen to windowed mode, it is important to
+        // adjust the window size after recreating the device rather than
+        // beforehand to ensure that you get the window size you want.  For
+        // example, when switching from 640x480 fullscreen to windowed with
+        // a 1000x600 window on a 1024x768 desktop, it is impossible to set
+        // the window size to 1000x600 until after the display mode has
+        // changed to 1024x768, because windows cannot be larger than the
+        // desktop.
+
+        RECT m_rcWindowBounds{};
+        int fYOffset = 0;
+
+        static const bool bCenter = !!strstr(Core.Params, "-center_screen");
+        if (bCenter)
         {
-            static const bool bBordersMode = !!strstr(Core.Params, "-draw_borders");
-            dwWindowStyle = WS_VISIBLE;
+            RECT DesktopRect;
+
+            GetClientRect(GetDesktopWindow(), &DesktopRect);
+
+            SetRect(&m_rcWindowBounds, (DesktopRect.right - m_ChainDesc.BufferDesc.Width) / 2, (DesktopRect.bottom - m_ChainDesc.BufferDesc.Height) / 2,
+                    (DesktopRect.right + m_ChainDesc.BufferDesc.Width) / 2, (DesktopRect.bottom + m_ChainDesc.BufferDesc.Height) / 2);
+        }
+        else
+        {
             if (bBordersMode)
-                dwWindowStyle |= WS_BORDER | WS_DLGFRAME | WS_SYSMENU | WS_MINIMIZEBOX;
+                fYOffset = GetSystemMetrics(SM_CYCAPTION); // size of the window title bar
 
-            SetWindowLongPtr(m_hWnd, GWL_STYLE, dwWindowStyle);
+            SetRect(&m_rcWindowBounds, 0, 0, m_ChainDesc.BufferDesc.Width, m_ChainDesc.BufferDesc.Height);
+        }
 
-            // When moving from fullscreen to windowed mode, it is important to
-            // adjust the window size after recreating the device rather than
-            // beforehand to ensure that you get the window size you want.  For
-            // example, when switching from 640x480 fullscreen to windowed with
-            // a 1000x600 window on a 1024x768 desktop, it is impossible to set
-            // the window size to 1000x600 until after the display mode has
-            // changed to 1024x768, because windows cannot be larger than the
-            // desktop.
+        if (bBordersMode)
+        {
+            AdjustWindowRect(&m_rcWindowBounds, DWORD(dwWindowStyle), FALSE);
 
-            RECT m_rcWindowBounds;
-            int fYOffset = 0;
-
-            static const bool bCenter = !!strstr(Core.Params, "-center_screen");
-            if (bCenter)
-            {
-                RECT DesktopRect;
-
-                GetClientRect(GetDesktopWindow(), &DesktopRect);
-
-                SetRect(&m_rcWindowBounds, (DesktopRect.right - m_ChainDesc.BufferDesc.Width) / 2, (DesktopRect.bottom - m_ChainDesc.BufferDesc.Height) / 2,
-                        (DesktopRect.right + m_ChainDesc.BufferDesc.Width) / 2, (DesktopRect.bottom + m_ChainDesc.BufferDesc.Height) / 2);
-            }
-            else
-            {
-                if (bBordersMode)
-                    fYOffset = GetSystemMetrics(SM_CYCAPTION); // size of the window title bar
-
-                SetRect(&m_rcWindowBounds, 0, 0, m_ChainDesc.BufferDesc.Width, m_ChainDesc.BufferDesc.Height);
-            }
-
-            if (bBordersMode)
-                AdjustWindowRect(&m_rcWindowBounds, DWORD(dwWindowStyle), FALSE);
-
-            SetWindowPos(m_hWnd, HWND_NOTOPMOST, m_rcWindowBounds.left, m_rcWindowBounds.top + fYOffset, (m_rcWindowBounds.right - m_rcWindowBounds.left),
-                         (m_rcWindowBounds.bottom - m_rcWindowBounds.top), SWP_SHOWWINDOW | SWP_NOCOPYBITS | SWP_DRAWFRAME);
+            SetWindowPos(m_hWnd, HWND_NOTOPMOST, m_rcWindowBounds.left, m_rcWindowBounds.top + fYOffset, m_rcWindowBounds.right - m_rcWindowBounds.left,
+                         m_rcWindowBounds.bottom - m_rcWindowBounds.top, SWP_SHOWWINDOW | SWP_NOCOPYBITS | SWP_DRAWFRAME);
+        }
+        else
+        {
+            SetWindowPos(m_hWnd, HWND_NOTOPMOST, 0, 0, m_rcWindowBounds.right - m_rcWindowBounds.left, m_rcWindowBounds.bottom - m_rcWindowBounds.top,
+                         SWP_SHOWWINDOW | SWP_NOCOPYBITS | SWP_DRAWFRAME);
         }
     }
     else
@@ -467,6 +467,7 @@ void CHW::updateWindowProps(HWND m_hWnd)
     }
 
     SetForegroundWindow(m_hWnd);
+
     pInput->clip_cursor(true);
 }
 
