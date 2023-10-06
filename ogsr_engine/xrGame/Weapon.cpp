@@ -2150,6 +2150,9 @@ void CWeapon::OnBulletHit()
         ChangeCondition(-conditionDecreasePerShotOnHit);
 }
 
+// По ef_weapon_type тут проверяем, пулемёт ли это. Это костыль чтоб при смене типа патронов не играла анимация reload_empty, которая выглядит в данном случае неправильно.
+bool CWeapon::IsPartlyReloading() const { return (ef_weapon_type() == 10 || m_set_next_ammoType_on_reload == u32(-1)) && GetAmmoElapsed() > 0 && !IsMisfire(); }
+
 void CWeapon::SaveAttachableParams()
 {
     const char* sect_name = cNameSect().c_str();
