@@ -15,7 +15,11 @@
 #include "hmodel.h"
 
 #ifdef SSAO_QUALITY
+#ifdef USE_GTAO
+#include "gtao.h"
+#else
 #include "ssdo.ps"
+#endif
 #endif
 
 struct _input
@@ -77,7 +81,11 @@ _out main(_input I, uint iSample : SV_SAMPLEINDEX)
 #endif
 
 #ifdef SSAO_QUALITY
+#ifdef USE_GTAO
+    float3 occ = calc_gtao(P, N, I.tc0, ISAMPLE);
+#else
     float3 occ = calc_ssdo(P, N, I.tc0, I.pos2d, ISAMPLE);
+#endif
     occ = compute_colored_ao(occ.x, D.xyz);
 #endif
 

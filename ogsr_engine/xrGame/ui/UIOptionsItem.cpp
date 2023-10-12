@@ -76,10 +76,11 @@ void CUIOptionsItem::SaveOptTokenValue(const char* val) { SaveOptStringValue(val
 #pragma todo("KRodin: желательно убрать этот хардкод, как в ЗП, конечно, но пока меня устраивает. Перетаскивать полностью движковые классы опций оттуда я точно не буду.")
 void CUIOptionsItem::SaveValue()
 {
-    if (m_entry == "vid_mode" || m_entry == "rs_fullscreen" || m_entry == "rs_v_sync"  || m_entry == "r2_soft_water" ||
-        m_entry == "r2_dof_enable" || m_entry == "r2_volumetric_lights" || m_entry == "r3_msaa_opt" || m_entry == "r3_dynamic_wet_surfaces" ||
-        m_entry == "r__detail_radius" || m_entry == "r__detail_density" || m_entry == "r__detail_scale" || m_entry == "r__no_scale_on_fade" || m_entry == "r2_sun_quality" || m_entry == "r2_ssao" || m_entry == "r_sslr_enable" ||
-        m_entry == "ssfx_height_fog" || m_entry == "ssfx_sky_debanding" || m_entry == "ssfx_indirect_light" || m_entry == "reflections_only_on_terrain" || m_entry == "reflections_only_on_puddles")
+    if (m_entry == "vid_mode" || m_entry == "rs_fullscreen" || m_entry == "rs_v_sync" || m_entry == "r2_soft_water" || m_entry == "r2_dof_enable" ||
+        m_entry == "r2_volumetric_lights" || m_entry == "r3_msaa_opt" || m_entry == "r3_dynamic_wet_surfaces" || m_entry == "r__detail_radius" || m_entry == "r__detail_density" ||
+        m_entry == "r__detail_scale" || m_entry == "r__no_scale_on_fade" || m_entry == "r2_sun_quality" || m_entry == "r_ao_mode" || m_entry == "r2_ssao" ||
+        m_entry == "r_sslr_enable" || m_entry == "ssfx_height_fog" || m_entry == "ssfx_sky_debanding" || m_entry == "ssfx_indirect_light" ||
+        m_entry == "reflections_only_on_terrain" || m_entry == "reflections_only_on_puddles")
         m_optionsManager.DoVidRestart();
 
     if (m_entry == "snd_efx")

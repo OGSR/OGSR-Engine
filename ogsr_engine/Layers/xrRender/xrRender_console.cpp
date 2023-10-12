@@ -42,6 +42,9 @@ constexpr xr_token qssao_token[] = {{"st_opt_off", 0},
                                     {"st_opt_high", 3},
                                     {0, 0}};
 
+u32 ps_r_ao_mode = AO_MODE_GTAO;
+constexpr xr_token ao_mode_token[] = {{"st_gtao", AO_MODE_GTAO}, {"st_ssdo", AO_MODE_SSDO}, {nullptr, 0}};
+
 u32 ps_r_sun_quality = 1; //	=	0;
 constexpr xr_token qsun_quality_token[] = {{"st_opt_low", 0},
                                            {"st_opt_medium", 1},
@@ -696,6 +699,7 @@ void xrRender_initconsole()
     CMD4(CCC_Float, "r_SunShafts_Radius", &ps_r_prop_ss_radius, 0.5f, 2.0f);
     CMD4(CCC_Float, "r_SunShafts_Blend", &ps_r_prop_ss_blend, 0.01f, 1.0f);
 
+    CMD3(CCC_Token, "r_ao_mode", &ps_r_ao_mode, ao_mode_token);
     CMD3(CCC_Token, "r2_ssao", &ps_r_ssao, qssao_token);
 
     CMD3(CCC_Mask, "r4_enable_tessellation", &ps_r2_ls_flags_ext, R2FLAGEXT_ENABLE_TESSELLATION); // Need restart

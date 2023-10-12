@@ -213,27 +213,18 @@
 	<string id="ui_mm_vis_distance">
 		<text>Дальность видимости</text>
 	</string>
-	<string id="ui_mm_r2_ao">
-		<text>Ambient Occlusion (Затенение окружения)</text>
-	</string>		
-	<string id="ui_mm_r2_ao_intensity">
-		<text>Интенсивность AO</text>
-	</string>
 
-	<string id="ui_mm_ssao_text">
-		<text>Режим SSAO</text>
+	<string id="ui_mm_ao_mode">
+		<text>Тип AO</text>
 	</string>
-	<string id="ui_mm_ssao">
-		<text>по умолчанию</text>
+	<string id="st_gtao">
+		<text>GTAO</text>
 	</string>
-	<string id="ui_mm_hdao">
-		<text>HDAO</text>
-	</string>
-	<string id="ui_mm_hbao">
-		<text>HBAO</text>
+	<string id="st_ssdo">
+		<text>SSDO</text>
 	</string>
 	<string id="ui_mm_ssao_quality">
-		<text>Качество SSDO</text>
+		<text>Качество AO</text>
 	</string>
 
 	<string id="ui_mm_r2_steep_parallax">
@@ -739,10 +730,10 @@
 		<text>Интенсивность предпросчитанного глобального освещения - r2_ao_intensity</text>
 	</string>
 	<string id="video_settings_name_37">
-		<text>SSDO (ScreenSpace Directional Occlusion) - r2_ssao</text>
+		<text>Качество AO - r2_ssao</text>
 	</string>
 	<string id="video_settings_name_38">
-		<text>Режим глобального освещения - r2_ssao_mode</text>
+		<text>Тип AO - r_ao_mode</text>
 	</string>
 	<string id="video_settings_name_39">
 		<text>Улучшенная рельефность поверхностей - r2_steep_parallax</text>
@@ -928,10 +919,10 @@
 		<text>Эта настройка регулирует интенсивность предпросчитанного глобального освещения в игре. Более высокие значения позволяют получить более реалистичную картинку, но приводят к затемнению сцены.</text>
 	</string>
 	<string id="video_settings_desc_37">
-		<text>Эта настройка включает режим глобального освещения в игре. Этот эффект, при включении, производит расчет дополнительно затеняемых геометрией моделей областей, делая освещение более похожим на освещение в реальном мире, на моделях появляются полутени и затенения от элементов снаряжения, одежды, деталей машин, травы и других небольших частей геометрии.</text>
+		<text>Эта настройка регулирует качество AO в игре. Этот эффект, при включении, производит расчет дополнительно затеняемых геометрией моделей областей, делая освещение более похожим на освещение в реальном мире, на моделях появляются полутени и затенения от элементов снаряжения, одежды, деталей машин, травы и других небольших частей геометрии.</text>
 	</string>
 	<string id="video_settings_desc_38">
-		<text>Эта настройка регулирует режим работы эффекта глобального освещения в игре.</text>
+		<text>Эта настройка регулирует режим работы эффекта глобального освещения в игре. Доступны для выбора GTAO (Ground Truth-based Ambient Occlusion) и SSDO (ScreenSpace Directional Occlusion)</text>
 	</string>
 	<string id="video_settings_desc_39">
 		<text>Эта настройка регулирует эффект улучшенной рельефности поверхностей с использованием алгоритма Steep parallax mapping. Этот алгоритм использует для расчета рельефности трассировку лучей в пространтсве карты высот, что дает более реалистичный и качественный эффект.</text>

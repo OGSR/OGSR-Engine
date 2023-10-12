@@ -213,27 +213,18 @@
 	<string id="ui_mm_vis_distance">
 		<text>Vision distance</text>
 	</string>
-	<string id="ui_mm_r2_ao">
-		<text>Ambient Occlusion (Shading the environment)</text>
-	</string>		
-	<string id="ui_mm_r2_ao_intensity">
-		<text>AO Intensity</text>
-	</string>
 
-	<string id="ui_mm_ssao_text">
-		<text>SSAO Mode</text>
+	<string id="ui_mm_ao_mode">
+		<text>AO Mode</text>
 	</string>
-	<string id="ui_mm_ssao">
-		<text>by default</text>
+	<string id="st_gtao">
+		<text>GTAO</text>
 	</string>
-	<string id="ui_mm_hdao">
-		<text>HDAO</text>
-	</string>
-	<string id="ui_mm_hbao">
-		<text>HBAO</text>
+	<string id="st_ssdo">
+		<text>SSDO</text>
 	</string>
 	<string id="ui_mm_ssao_quality">
-		<text>SSDO Quality</text>
+		<text>AO Quality</text>
 	</string>
 
 	<string id="ui_mm_r2_steep_parallax">
@@ -765,10 +756,10 @@
 		<text>Intensity of pre-calculated global illumination - r2_ao_intensity</text>
 	</string>
 	<string id="video_settings_name_37">
-		<text>SSDO (ScreenSpace Directional Occlusion) - r2_ssao</text>
+		<text>AO Quality - r2_ssao</text>
 	</string>
 	<string id="video_settings_name_38">
-		<text>Global lighting mode - r2_ssao_mode</text>
+		<text>AO Mode - r_ao_mode</text>
 	</string>
 	<string id="video_settings_name_39">
 		<text>Improved surface relief - r2_steep_parallax</text>
@@ -962,10 +953,10 @@
 		<text>This setting adjusts the intensity of the pre-calculated global lighting in the game. Higher values allow you to get a more realistic picture, but lead to a darkening of the scene.</text>
 	</string>
 	<string id="video_settings_desc_37">
-		<text>This setting enables global lighting mode in the game. This effect, when enabled, calculates areas that are additionally shaded by the model geometry, making the lighting more similar to that in the real world, with partial shadows and shading from equipment elements, clothing, machine parts, grass, and other small parts of the geometry.</text>
+		<text>This setting adjusts the quality of AO in the game.. This effect, when enabled, calculates areas that are additionally shaded by the model geometry, making the lighting more similar to that in the real world, with partial shadows and shading from equipment elements, clothing, machine parts, grass, and other small parts of the geometry.</text>
 	</string>
 	<string id="video_settings_desc_38">
-		<text>This setting adjusts the mode of operation of the global lighting effect in the game.</text>
+		<text>This setting controls how the AO effect works in the game. GTAO (Ground Truth-based Ambient Occlusion) and SSDO (ScreenSpace Directional Occlusion) are available for selection.</text>
 	</string>
 	<string id="video_settings_desc_39">
 		<text>This setting adjusts the effect of improved surface relief using the Steep parallax mapping algorithm. This algorithm uses ray tracing in the space of the elevation map to calculate the relief, which gives a more realistic and high-quality effect.</text>

@@ -16,6 +16,13 @@ extern ECORE_API float ps_r_prop_ss_sample_step_phase1;
 
 extern ECORE_API u32 ps_r_ssao; //	=	0;
 
+enum : u32
+{
+    AO_MODE_GTAO,
+    AO_MODE_SSDO
+};
+extern u32 ps_r_ao_mode;
+
 extern ECORE_API u32 ps_r_sun_quality; //	=	0;
 
 extern ECORE_API u32 ps_r3_msaa; //	=	0;

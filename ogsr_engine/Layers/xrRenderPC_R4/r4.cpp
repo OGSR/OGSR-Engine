@@ -1143,6 +1143,9 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
         defines.emplace_back("SUN_SHAFTS_QUALITY", c_sun_shafts);
     }
 
+    if (RImplementation.o.advancedpp && ps_r_ao_mode == AO_MODE_GTAO)
+        defines.emplace_back("USE_GTAO", "1");
+
     if (RImplementation.o.advancedpp && ps_r_ssao)
     {
         sprintf_s(c_ssao, "%d", ps_r_ssao);
