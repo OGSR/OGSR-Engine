@@ -721,8 +721,8 @@ void CCC_Register()
     CMD1(CCC_SND_Restart, "snd_restart");
     CMD3(CCC_Mask, "snd_acceleration", &psSoundFlags, ss_Hardware);
     CMD3(CCC_Mask, "snd_efx", &psSoundFlags, ss_EAX);
-    CMD4(CCC_Integer, "snd_targets", &psSoundTargets, 128, 256);
-    CMD4(CCC_Integer, "snd_cache_size", &psSoundCacheSizeMB, 32, 64);
+    CMD4(CCC_Integer, "snd_targets", &psSoundTargets, 128, 1024);
+    CMD4(CCC_Integer, "snd_cache_size", &psSoundCacheSizeMB, 32, 128);
     CMD4(CCC_Float, "snd_linear_fade", &psSoundLinearFadeFactor, 0.1f, 1.f);
 
 #ifdef DEBUG
