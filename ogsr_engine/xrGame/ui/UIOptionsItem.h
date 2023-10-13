@@ -6,8 +6,21 @@ class CUIOptionsItem
     friend class CUIOptionsManager;
 
 public:
+    enum ESystemDepends
+    {
+        sdNothing,
+        sdVidRestart,
+        sdSndRestart,
+        sdSystemRestart,
+    };
+
+
     virtual ~CUIOptionsItem();
     virtual void Register(const char* entry, const char* group);
+    void SetSystemDepends(ESystemDepends val) { m_dep = val; }
+
+    const char* GetEntry() const { return m_entry.c_str(); }
+
     static CUIOptionsManager* GetOptionsManager() { return &m_optionsManager; }
 
 protected:
@@ -39,6 +52,7 @@ protected:
     void SaveOptTokenValue(const char* val);
 
     xr_string m_entry;
+    ESystemDepends m_dep;
 
     static CUIOptionsManager m_optionsManager;
 };

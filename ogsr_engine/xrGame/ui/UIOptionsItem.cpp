@@ -86,4 +86,11 @@ void CUIOptionsItem::SaveValue()
 
     if (m_entry == "snd_efx" || m_entry == "snd_device")
         m_optionsManager.DoSndRestart();
+
+    if (m_dep == sdVidRestart)
+        m_optionsManager.DoVidRestart();
+    else if (m_dep == sdSndRestart)
+        m_optionsManager.DoSndRestart();
+    else if (m_dep == sdSystemRestart)
+        m_optionsManager.DoSystemRestart();
 }

@@ -31,13 +31,6 @@ void CUIOptionsManager::RegisterItem(CUIOptionsItem* item, const char* group)
     }
 }
 
-void CUIOptionsManager::UnRegisterGroup(const char* group)
-{
-    groups_it it = m_groups.find(group);
-
-    if (it != m_groups.end())
-        m_groups.erase(it);
-}
 void CUIOptionsManager::UnRegisterItem(CUIOptionsItem* item)
 {
     groups_it it;
@@ -145,3 +138,9 @@ void CUIOptionsManager::OptionsPostAccept()
 void CUIOptionsManager::DoVidRestart() { m_b_vid_restart = true; }
 
 void CUIOptionsManager::DoSndRestart() { m_b_snd_restart = true; }
+
+void CUIOptionsManager::DoSystemRestart()
+{
+    m_b_snd_restart = true;
+    m_b_vid_restart = true;
+}

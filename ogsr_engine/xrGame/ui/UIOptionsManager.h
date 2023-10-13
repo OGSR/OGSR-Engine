@@ -20,14 +20,15 @@ public:
     void UndoGroup(const char* group);
 
     void OptionsPostAccept();
+
     void DoVidRestart();
     void DoSndRestart();
+    void DoSystemRestart();
 
     void SendMessage2Group(const char* group, const char* message);
 
 protected:
     void RegisterItem(CUIOptionsItem* item, const char* group);
-    void UnRegisterGroup(const char* group);
     void UnRegisterItem(CUIOptionsItem* item);
 
     typedef xr_string group_name;
@@ -37,6 +38,6 @@ protected:
 
     groups m_groups;
 
-    bool m_b_vid_restart;
+    bool m_b_vid_restart{};
     bool m_b_snd_restart{};
 };
