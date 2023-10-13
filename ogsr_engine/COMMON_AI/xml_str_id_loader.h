@@ -162,7 +162,7 @@ typename void CSXML_IdToIndex::InitInternal()
             T_VECTOR::iterator t_it = m_pItemDataVector->begin();
             for (; m_pItemDataVector->end() != t_it; t_it++)
             {
-                if (shared_str((*t_it).id) == shared_str(item_name))
+                if (!xr_strcmp((*t_it).id.c_str(), item_name))
                     break;
             }
 
