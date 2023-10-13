@@ -311,6 +311,7 @@
     <ClInclude Include="..\Include\xrAPI\xrAPI.h" />
     <ClInclude Include="buffer_vector.h" />
     <ClInclude Include="buffer_vector_inline.h" />
+    <ClInclude Include="crc32.h" />
     <ClInclude Include="FTimer.h" />
     <ClInclude Include="stacktrace_collector.h" />
     <ClInclude Include="stdafx.h" />

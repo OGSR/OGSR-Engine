@@ -376,5 +376,8 @@
     <ClInclude Include="trivial_encryptor.h">
       <Filter>FS</Filter>
     </ClInclude>
+    <ClInclude Include="crc32.h">
+      <Filter>shared memory/string library</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
