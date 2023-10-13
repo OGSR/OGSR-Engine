@@ -107,6 +107,7 @@ CInventory::~CInventory() {}
 
 void CInventory::Clear()
 {
+    m_allMap.clear();
     m_all.clear();
     m_ruck.clear();
     m_belt.clear();
@@ -144,6 +145,7 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
     pIItem->SetDropManual(FALSE);
 
     m_all.push_back(pIItem);
+    m_allMap.emplace(pIItem->object().cNameSect(), pIItem);
 
     if (!strict_placement)
         pIItem->m_eItemPlace = eItemPlaceUndefined;
@@ -288,12 +290,29 @@ bool CInventory::DropItem(CGameObject* pObj)
     }
     break;
     default: NODEFAULT;
-    };
+    }
 
-    TIItemContainer::iterator it = std::find(m_all.begin(), m_all.end(), pIItem);
-    if (it != m_all.end())
-        m_all.erase(it);
-    else
+    bool removed = false;
+   
+    const auto map_pair = m_allMap.equal_range(pIItem->object().cNameSect());
+
+    for (auto it2 = map_pair.first; it2 != map_pair.second; ++it2)
+    {
+        if (it2->second == pIItem)
+        {
+            m_allMap.erase(it2);
+
+            const auto it = std::find(m_all.begin(), m_all.end(), pIItem);
+            if (it != m_all.end())
+            {
+                m_all.erase(it);
+            }
+            removed = true;
+            break;
+        }
+    }
+
+    if (!removed)
         Msg("! CInventory::Drop item not found in inventory!!!");
 
     pIItem->m_pCurrentInventory = NULL;
@@ -1021,9 +1040,11 @@ CInventoryItem* CInventory::tpfGetObjectByIndex(int iIndex)
 
 CInventoryItem* CInventory::GetItemFromInventory(LPCSTR SectName)
 {
-    auto It = std::find_if(m_all.begin(), m_all.end(), [SectName](const auto* pInvItm) { return pInvItm->object().cNameSect() == SectName; });
-    if (It != m_all.end())
-        return *It;
+    if (const auto It = m_allMap.find(SectName); It != m_allMap.end())
+    {
+        CInventoryItem* inventory_item = It->second;
+        return inventory_item;
+    }
 
     return nullptr;
 }

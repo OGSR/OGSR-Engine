@@ -118,6 +118,13 @@ public:
     void SetBeltUseful(bool belt_useful) { m_bBeltUseful = belt_useful; }
 
     void SetSlotsBlocked(u16 mask, bool bBlock, bool now = false);
+
+    struct str_pred
+    {
+        IC bool operator()(const shared_str& x, const shared_str& y) const { return xr_strcmp(x, y) < 0; }
+    };
+    xr_multimap<shared_str, PIItem, str_pred> m_allMap;
+
     TIItemContainer m_all;
     TIItemContainer m_ruck, m_belt;
     TISlotArr m_slots;
