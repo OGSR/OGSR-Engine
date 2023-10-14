@@ -351,6 +351,11 @@ public:
     CInifile* m_thunderbolts_config{};
     bool m_dynamic_sun_movement{};
 
+    void StartAsync();
+    void WaitAsync();
+
+    std::future<void> awaiter;
+
 protected:
     INGAME_EDITOR_VIRTUAL CEnvDescriptor* create_descriptor(shared_str const& identifier, CInifile* config);
     INGAME_EDITOR_VIRTUAL CEnvDescriptor* create_descriptor_shoc(LPCSTR exec_tm, LPCSTR S);

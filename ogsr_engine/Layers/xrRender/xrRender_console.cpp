@@ -126,7 +126,7 @@ Flags32 ps_r2_ls_flags = {R2FLAG_SUN
                           R3FLAG_VOLUMETRIC_SMOKE
                           //| R3FLAG_MSAA
                           | R3FLAG_MSAA_OPT | R3FLAG_GBUFFER_OPT |  R2FLAG_STEEP_PARALLAX | R2FLAG_SUN_FOCUS | R2FLAG_SUN_TSM | R2FLAG_TONEMAP | R2FLAG_VOLUMETRIC_LIGHTS |
-                          R2FLAG_EXP_MT_DETAILS}; // r2-only
+                          R2FLAG_EXP_MT_DETAILS | R2FLAG_EXP_MT_RAIN};
 
 Flags32 ps_r2_ls_flags_ext = {R2FLAGEXT_ENABLE_TESSELLATION | R2FLAGEXT_RAIN_DROPS | R2FLAGEXT_RAIN_DROPS_CONTROL | R2FLAGEXT_SSLR | SSFX_HEIGHT_FOG | SSFX_INTER_GRASS};
 
@@ -684,6 +684,8 @@ void xrRender_initconsole()
     CMD4(CCC_Float, "r2_slight_fade", &ps_r2_slight_fade, .2f, 2.f);
 
     CMD3(CCC_Mask, "r_mt_details", &ps_r2_ls_flags, R2FLAG_EXP_MT_DETAILS);
+
+    CMD3(CCC_Mask, "r_mt_rain", &ps_r2_ls_flags, R2FLAG_EXP_MT_RAIN);
 
     CMD3(CCC_Mask, "r2_volumetric_lights", &ps_r2_ls_flags, R2FLAG_VOLUMETRIC_LIGHTS);
 

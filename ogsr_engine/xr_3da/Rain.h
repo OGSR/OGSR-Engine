@@ -110,6 +110,7 @@ public:
     ~CEffect_Rain();
 
     void Render();
+    void Calculate();
     void OnFrame();
     void InvalidateState() { state = stIdle; }
 };
