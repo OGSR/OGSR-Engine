@@ -84,7 +84,12 @@ void CScriptParticlesCustom::remove_owner()
     m_owner = 0;
 }
 
-CScriptParticles::CScriptParticles(LPCSTR caParticlesName) { m_particles = xr_new<CScriptParticlesCustom>(this, caParticlesName); }
+
+CScriptParticles::CScriptParticles(LPCSTR caParticlesName)
+{
+    m_particles = xr_new<CScriptParticlesCustom>(this, caParticlesName);
+    m_transform.identity();
+}
 
 CScriptParticles::~CScriptParticles()
 {
@@ -96,29 +101,36 @@ CScriptParticles::~CScriptParticles()
             m_particles->SetAutoRemove(true);
         else
             m_particles->PSI_destroy();
-        m_particles = 0;
+        m_particles = nullptr;
     }
 }
 
-void CScriptParticles::Play()
+void CScriptParticles::Play(bool bHudMode) const
 {
     VERIFY(m_particles);
-    m_particles->Play();
+
+    m_particles->Play(bHudMode);
 }
 
-void CScriptParticles::PlayAtPos(const Fvector& position)
+void CScriptParticles::PlayAtPos(const Fvector& position, bool bHudMode)
 {
     VERIFY(m_particles);
-    m_particles->play_at_pos(position);
+
+    // m_particles->play_at_pos(position);
+
+    m_transform.translate_over(position);
+    m_particles->UpdateParent(m_transform, zero_vel);
+    m_particles->Play(bHudMode);
+    m_particles->UpdateParent(m_transform, zero_vel);
 }
 
-void CScriptParticles::Stop()
+void CScriptParticles::Stop() const
 {
     VERIFY(m_particles);
     m_particles->Stop(FALSE);
 }
 
-void CScriptParticles::StopDeffered()
+void CScriptParticles::StopDeffered() const
 {
     VERIFY(m_particles);
     m_particles->Stop(TRUE);
@@ -127,9 +139,35 @@ void CScriptParticles::StopDeffered()
 void CScriptParticles::MoveTo(const Fvector& pos, const Fvector& vel)
 {
     VERIFY(m_particles);
-    Fmatrix XF;
-    XF.translate(pos);
-    m_particles->UpdateParent(XF, vel);
+    m_transform.translate_over(pos);
+    m_particles->UpdateParent(m_transform, vel);
+}
+
+void CScriptParticles::XFORMMoveTo(const Fvector& pos)
+{
+    VERIFY(m_particles);
+    m_transform.translate_over(pos);
+    m_particles->SetXFORM(m_transform);
+}
+
+void CScriptParticles::SetDirection(const Fvector& dir)
+{
+    Fmatrix matrix;
+    matrix.identity();
+    matrix.k.set(dir);
+    Fvector::generate_orthonormal_basis_normalized(matrix.k, matrix.j, matrix.i);
+    matrix.translate_over(m_transform.c);
+    m_transform.set(matrix);
+    m_particles->UpdateParent(matrix, zero_vel);
+}
+
+void CScriptParticles::SetOrientation(float yaw, float pitch, float roll)
+{
+    Fmatrix matrix;
+    matrix.setHPB(yaw, pitch, roll); // ?????????? matrix.c
+    matrix.translate_over(m_transform.c);
+    m_transform.set(matrix);
+    m_particles->UpdateParent(matrix, zero_vel);
 }
 
 bool CScriptParticles::IsPlaying() const
@@ -144,20 +182,20 @@ bool CScriptParticles::IsLooped() const
     return m_particles->IsLooped();
 }
 
-void CScriptParticles::LoadPath(LPCSTR caPathName)
+void CScriptParticles::LoadPath(LPCSTR caPathName) const
 {
     VERIFY(m_particles);
     m_particles->LoadPath(caPathName);
 }
-void CScriptParticles::StartPath(bool looped) { m_particles->StartPath(looped); }
-void CScriptParticles::StopPath() { m_particles->StopPath(); }
-void CScriptParticles::PausePath(bool val) { m_particles->PausePath(val); }
+void CScriptParticles::StartPath(bool looped) const { m_particles->StartPath(looped); }
+void CScriptParticles::StopPath() const { m_particles->StopPath(); }
+void CScriptParticles::PausePath(bool val) const { m_particles->PausePath(val); }
 
-int CScriptParticles::LifeTime() { return m_particles->LifeTime(); }
+int CScriptParticles::LifeTime() const { return m_particles->LifeTime(); }
 
-u32 CScriptParticles::Length()
+u32 CScriptParticles::Length() const
 {
     IParticleCustom* V = smart_cast<IParticleCustom*>(m_particles->renderable.visual);
-    float time_limit = V->GetTimeLimit();
+    const float time_limit = V->GetTimeLimit();
     return time_limit > 0.f ? iFloor(time_limit * 1000.f) : 0;
 }

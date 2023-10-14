@@ -36,27 +36,34 @@ public:
 
 class CScriptParticles
 {
+private:
+    Fmatrix m_transform;
+
 public:
     CScriptParticlesCustom* m_particles;
     CScriptParticles(LPCSTR caParticlesName);
     virtual ~CScriptParticles();
 
-    void Play();
-    void PlayAtPos(const Fvector& pos);
-    void Stop();
-    void StopDeffered();
+    void Play(bool bHudMode = false) const;
+    void PlayAtPos(const Fvector& pos, bool bHudMode = false);
+    void Stop() const;
+    void StopDeffered() const;
 
     bool IsPlaying() const;
     bool IsLooped() const;
 
     void MoveTo(const Fvector& pos, const Fvector& vel);
+    void XFORMMoveTo(const Fvector& pos);
+    void SetDirection(const Fvector& dir);
+    void SetOrientation(float yaw, float pitch, float roll);
+    Fvector LastPosition() const { return m_transform.c; }
 
-    void LoadPath(LPCSTR caPathName);
-    void StartPath(bool looped);
-    void StopPath();
-    void PausePath(bool val);
-    int LifeTime();
-    u32 Length();
+    void LoadPath(LPCSTR caPathName) const;
+    void StartPath(bool looped) const;
+    void StopPath() const;
+    void PausePath(bool val) const;
+    int LifeTime() const;
+    u32 Length() const;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION
 };
