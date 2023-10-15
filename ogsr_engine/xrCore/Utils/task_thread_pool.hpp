@@ -203,6 +203,12 @@ namespace task_thread_pool {
             return static_cast<unsigned int>(threads.size());
         }
 
+        NODISCARD bool is_pool_thread() const
+        {
+            const std::lock_guard<std::mutex> threads_lock(thread_mutex);
+            return thread_ids.contains(std::this_thread::get_id());
+        }
+
         /**
          * Stop executing queued tasks. Use `unpause()` to resume. Note: Destroying the pool will implicitly unpause.
          *
@@ -365,6 +371,7 @@ namespace task_thread_pool {
                 threads.emplace_back(&task_thread_pool::worker_main, this);
                 std::string threadName{"TTAPI thread " + std::to_string(i + 1)};
                 set_thread_name(threadName.c_str(), threads.back());
+                thread_ids.insert(threads.back().get_id());
             }
         }
 
@@ -385,6 +392,7 @@ namespace task_thread_pool {
                 thread.join();
             }
             threads.clear();
+            thread_ids.clear();
         }
 
         /**
@@ -393,6 +401,13 @@ namespace task_thread_pool {
          * Access protected by thread_mutex
          */
         std::vector<std::thread> threads;
+
+        /**
+         * The worker thread ids.
+         *
+         * Access protected by thread_mutex
+         */
+        std::set<std::thread::id> thread_ids;
 
         /**
          * A mutex for methods that start/stop threads.

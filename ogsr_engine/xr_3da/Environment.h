@@ -351,10 +351,10 @@ public:
     CInifile* m_thunderbolts_config{};
     bool m_dynamic_sun_movement{};
 
-    void StartAsync();
-    void WaitAsync();
+    void StartCalculateAsync();
 
     std::future<void> awaiter;
+    bool async_started{};
 
 protected:
     INGAME_EDITOR_VIRTUAL CEnvDescriptor* create_descriptor(shared_str const& identifier, CInifile* config);

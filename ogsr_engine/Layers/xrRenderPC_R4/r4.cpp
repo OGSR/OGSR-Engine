@@ -525,7 +525,7 @@ void CRender::OnFrame()
 
     if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_RAIN))
     {
-        g_pGamePersistent->Environment().StartAsync();
+        g_pGamePersistent->Environment().StartCalculateAsync();
     }
 
     g_pGamePersistent->GrassBendersUpdateExplosions();

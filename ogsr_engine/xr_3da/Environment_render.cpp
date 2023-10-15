@@ -45,7 +45,19 @@ void CEnvironment::RenderLast()
     if (0 == g_pGameLevel)
         return;
 
-    WaitAsync();
+    if (async_started)
+    {
+        if (awaiter.valid())
+        {
+            awaiter.get();
+        }
+
+        async_started = false;
+    }
+    else
+    {
+        eff_Rain->Calculate();
+    }
 
     // 2
     eff_Rain->Render();
@@ -105,22 +117,12 @@ void CEnvironment::OnDeviceDestroy()
     CurrentEnv->destroy();
 }
 
-void CEnvironment::StartAsync()
+void CEnvironment::StartCalculateAsync()
 {
     if (0 == g_pGameLevel)
         return;
 
     awaiter = TTAPI->submit([this]() { eff_Rain->Calculate(); });
-}
 
-void CEnvironment::WaitAsync()
-{
-    if (awaiter.valid())
-    {
-        awaiter.get();
-    }
-    else
-    {
-        eff_Rain->Calculate();
-    }
+    async_started = true;
 }

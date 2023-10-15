@@ -8,6 +8,8 @@ extern int psSkeletonUpdate;
 void check_kinematics(CKinematics* _k, LPCSTR s);
 #endif
 
+static std::recursive_mutex UCalc_Mutex;
+
 void CKinematics::CalculateBones(BOOL bForceExact)
 {
     // early out.
@@ -16,12 +18,13 @@ void CKinematics::CalculateBones(BOOL bForceExact)
     if (RDEVICE.dwTimeGlobal == UCalc_Time)
         return; // early out for "fast" update
 
-    static std::recursive_mutex UCalc_Mutex;
-    std::scoped_lock<decltype(UCalc_Mutex)> UCalc_mtlock(UCalc_Mutex);
-
-    OnCalculateBones();
     if (!bForceExact && (RDEVICE.dwTimeGlobal < (UCalc_Time + UCalc_Interval)))
         return; // early out for "slow" update
+
+    std::scoped_lock UCalc_Lock(UCalc_Mutex);
+
+    OnCalculateBones();
+
     if (Update_Visibility)
         Visibility_Update();
 
@@ -116,9 +119,11 @@ void CKinematics::CalculateBones(BOOL bForceExact)
 #endif
     }
 
-    //
-    if (Update_Callback)
-        Update_Callback(this);
+    if (Device.OnMainThread())
+    {
+        if (Update_Callback)
+            Update_Callback(this);
+    }
 }
 
 #ifdef DEBUG

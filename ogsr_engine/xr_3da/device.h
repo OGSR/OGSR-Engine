@@ -86,6 +86,7 @@ protected:
     CTimer_paused Timer;
     CTimer_paused TimerGlobal;
 
+    std::thread::id mainThreadId;
     std::thread::id secondThreadId;
 
 public:
@@ -100,6 +101,7 @@ public:
 
     HWND m_hWnd;
 
+    bool OnMainThread() const { return std::this_thread::get_id() == mainThreadId; }
     bool OnSecondThread() const { return std::this_thread::get_id() == secondThreadId; }
 };
 
