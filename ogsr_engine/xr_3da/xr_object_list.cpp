@@ -21,8 +21,6 @@ public:
 
 CObjectList::CObjectList()
 {
-    objects_dup_memsz = 512;
-    objects_dup = xr_alloc<CObject*>(objects_dup_memsz);
     crows = &crows_0;
 }
 
@@ -32,7 +30,6 @@ CObjectList::~CObjectList()
     R_ASSERT(objects_sleeping.empty());
     R_ASSERT(destroy_queue.empty());
     R_ASSERT(map_NETID.empty());
-    xr_free(objects_dup);
 }
 
 CObject* CObjectList::FindObjectByName(shared_str name)
@@ -161,20 +158,9 @@ void CObjectList::Update(bool bForce)
             Device.Statistic->UpdateClient_active = objects_active.size();
             Device.Statistic->UpdateClient_total = objects_active.size() + objects_sleeping.size();
 
-            u32 objects_count = workload->size();
-            if (objects_count > 0)
-            {
-                if (objects_count > objects_dup_memsz)
-                {
-                    // realloc
-                    while (objects_count > objects_dup_memsz)
-                        objects_dup_memsz += 32;
-                    objects_dup = (CObject**)xr_realloc(objects_dup, objects_dup_memsz * sizeof(CObject*));
-                }
-                CopyMemory(objects_dup, &workload->front(), objects_count * sizeof(CObject*));
-                for (u32 O = 0; O < objects_count; O++)
-                    SingleUpdate(objects_dup[O]);
-            }
+            xr_vector<CObject*> objects_dup(*workload);
+            for (auto* obj_dup : objects_dup)
+                SingleUpdate(obj_dup);
 
             Device.Statistic->UpdateClient.End();
         }

@@ -18,9 +18,6 @@ private:
     xr_vector<CObject*> crows_1;
     xr_vector<CObject*>* crows;
 
-    CObject** objects_dup;
-    u32 objects_dup_memsz;
-
 public:
     using RELCASE_CALLBACK = fastdelegate::FastDelegate<void(CObject*)>;
     struct SRelcasePair
