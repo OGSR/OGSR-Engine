@@ -289,9 +289,9 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
         break;
     }
     case eObjectActionTake: {
-        if (inventory().GetItemFromInventory(*l_tObjectAction.m_tpObject->cName()))
+        if (l_tObjectAction.m_tpObject->H_Parent() == this)
         {
-            ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "item is already in the inventory!");
+            Msg("!![%s] item [%s] is already in the inventory!", __FUNCTION__, l_tObjectAction.m_tpObject->cName().c_str());
             l_tObjectAction.m_bCompleted = true;
             return false;
         }
@@ -300,9 +300,9 @@ bool CAI_Stalker::bfAssignObject(CScriptEntityAction* tpEntityAction)
         break;
     }
     case eObjectActionDrop: {
-        if (!inventory().GetItemFromInventory(*l_tObjectAction.m_tpObject->cName()))
+        if (l_tObjectAction.m_tpObject->H_Parent() != this)
         {
-            ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "item is not in the inventory!");
+            Msg("!![%s] item [%s] is not in the inventory!", __FUNCTION__, l_tObjectAction.m_tpObject->cName().c_str());
             l_tObjectAction.m_bCompleted = true;
             return false;
         }

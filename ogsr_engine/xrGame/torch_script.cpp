@@ -111,18 +111,6 @@ void CTorch::SetVirtualSize(float size, int target)
     }
 }
 
-CTorch* get_torch(CScriptGameObject* script_obj)
-{
-    auto obj = &script_obj->object();
-    auto t = smart_cast<CTorch*>(obj);
-    if (t)
-        return t;
-    script_obj = script_obj->GetObjectByName("device_torch");
-    if (script_obj)
-        return get_torch(script_obj); // рекурсия
-    return nullptr;
-}
-
 using namespace luabind;
 #pragma optimize("s", on)
 void CTorch::script_register(lua_State* L)
@@ -148,5 +136,5 @@ void CTorch::script_register(lua_State* L)
                   .def("switch_nvd", (void(CTorch::*)())(&CTorch::SwitchNightVision))
 
                   ,
-              def("get_torch_obj", &get_torch)];
+              def("get_torch_obj", [](CScriptGameObject* script_obj) { return smart_cast<CTorch*>(&script_obj->object()); })];
 }
