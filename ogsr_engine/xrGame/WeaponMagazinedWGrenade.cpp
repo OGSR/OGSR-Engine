@@ -864,7 +864,7 @@ void CWeaponMagazinedWGrenade::save(NET_Packet& output_packet)
 {
     inherited::save(output_packet);
     save_data(m_bGrenadeMode, output_packet);
-    save_data(m_magazine2.size(), output_packet);
+    save_data(static_cast<u32>(m_magazine2.size()), output_packet);
     save_data(m_ammoType2, output_packet);
     // Msg( "~~[%s][%s] saved: m_bGrenadeMode: [%d], m_magazine2.size(): [%u], m_ammoType2: [%u]", __FUNCTION__, this->Name(), m_bGrenadeMode, m_magazine2.size(), m_ammoType2 );
 }
