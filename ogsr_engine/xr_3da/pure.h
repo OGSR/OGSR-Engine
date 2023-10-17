@@ -63,7 +63,24 @@ public:
     
     void Add(_REG_INFO&& newMessage)
     {
-        R.emplace_back(newMessage);
+        bool found = false;
+
+        for (u32 i = 0; i < R.size(); i++)
+        {
+            if (R[i].Object == newMessage.Object)
+            {
+                if (R[i].Prio == newMessage.Prio)
+                {
+                    return; // found with same priority
+                }
+
+                R[i].Prio = newMessage.Prio;
+                found = true;
+            }
+        }
+
+        if (!found)
+            R.emplace_back(newMessage);
 
         if (in_process)
             changed = true;
