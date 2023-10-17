@@ -73,7 +73,27 @@ void ShowMain()
     if (ImGui::Checkbox("Active", &full))
         stage = full ? EditorStage::Full : EditorStage::Light;
 
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    float framerate = ImGui::GetIO().Framerate;
+
+    static std::vector<float> frames;
+
+    	// Get frames
+    if (frames.size() > 100) // Max seconds to show
+    {
+        for (size_t i = 1; i < frames.size(); i++)
+        {
+            frames[i - 1] = frames[i];
+        }
+        frames[frames.size() - 1] = framerate;
+    }
+    else
+    {
+        frames.push_back(framerate);
+    }
+
+    ImGui::Text("TPS %.3f ms/frame (%.1f FPS)", 1000.0f / framerate, framerate);
+
+    ImGui::PlotHistogram("", &frames[0], frames.size(), 0, NULL, 0.0f, 300.0f, ImVec2(300, 100));
 }
 
 void ShowEditor()
