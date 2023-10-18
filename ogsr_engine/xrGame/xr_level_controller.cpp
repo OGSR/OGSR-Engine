@@ -236,7 +236,7 @@ void initialize_bindings()
         {
             _binding b;
             b.m_action = &actions[idx];
-            g_key_bindings.push_back(b);
+            g_key_bindings.emplace_back(std::move(b));
         }
     }
 }
@@ -345,7 +345,7 @@ _keyboard* keyname_to_ptr(LPCSTR _name)
 
 bool is_binded(EGameActions _action_id, int _dik)
 {
-    _binding* pbinding = &g_key_bindings[_action_id];
+    _binding* pbinding = &g_key_bindings.at(_action_id);
     if (pbinding->m_keyboard[0] && pbinding->m_keyboard[0]->dik == _dik)
         return true;
 
@@ -357,7 +357,7 @@ bool is_binded(EGameActions _action_id, int _dik)
 
 int get_action_dik(EGameActions _action_id)
 {
-    _binding* pbinding = &g_key_bindings[_action_id];
+    _binding* pbinding = &g_key_bindings.at(_action_id);
 
     if (pbinding->m_keyboard[0])
         return pbinding->m_keyboard[0]->dik;
@@ -383,8 +383,18 @@ EGameActions get_binded_action(int _dik)
 
 void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff_sz)
 {
-    int action_id = action_name_to_id(_action);
-    _binding* pbinding = &g_key_bindings[action_id];
+    const EGameActions action_id = action_name_to_id(_action);
+
+    _binding* pbinding{};
+    if (action_id == kNOTBINDED)
+    {
+        Msg("!![%s] Action [%s] not found! Fix it or remove from text!", __FUNCTION__, _action);
+        pbinding = &g_key_bindings.front();
+    }
+    else
+    {
+        pbinding = &g_key_bindings.at(action_id);
+    }
 
     string128 prim;
     string128 sec;
@@ -446,22 +456,20 @@ public:
         if (!pkeyboard)
             return;
 
-        _binding* curr_pbinding = &g_key_bindings[action_id];
+        auto& curr_pbinding = g_key_bindings.at(action_id);
 
-        curr_pbinding->m_keyboard[m_work_idx] = pkeyboard;
+        curr_pbinding.m_keyboard[m_work_idx] = pkeyboard;
 
-        for (size_t idx = 0; idx < g_key_bindings.size(); ++idx)
+        for (auto& binding : g_key_bindings)
         {
-            _binding* binding = &g_key_bindings[idx];
-
-            if (binding == curr_pbinding)
+            if (&binding == &curr_pbinding)
                 continue;
 
-            if (binding->m_keyboard[0] == pkeyboard)
-                binding->m_keyboard[0] = NULL;
+            if (binding.m_keyboard[0] == pkeyboard)
+                binding.m_keyboard[0] = NULL;
 
-            if (binding->m_keyboard[1] == pkeyboard)
-                binding->m_keyboard[1] = NULL;
+            if (binding.m_keyboard[1] == pkeyboard)
+                binding.m_keyboard[1] = NULL;
         }
 
         CStringTable::ReparseKeyBindings();
@@ -486,7 +494,7 @@ public:
     virtual void Execute(LPCSTR args)
     {
         int action_id = action_name_to_id(args);
-        _binding* pbinding = &g_key_bindings[action_id];
+        _binding* pbinding = &g_key_bindings.at(action_id);
         pbinding->m_keyboard[m_work_idx] = NULL;
 
         CStringTable::ReparseKeyBindings();
