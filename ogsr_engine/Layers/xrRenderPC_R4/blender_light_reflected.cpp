@@ -21,6 +21,7 @@ void CBlender_accum_reflected::Compile(CBlender_Compile& C)
     C.r_dx10Texture("s_normal", r2_RT_N);
     C.r_dx10Texture("s_material", r2_material);
     C.r_dx10Texture("s_accumulator", r2_RT_accum);
+    C.r_dx10Texture("s_diffuse", r2_RT_albedo);
 
     C.r_dx10Sampler("smp_nofilter");
     C.r_dx10Sampler("smp_material");
@@ -51,6 +52,7 @@ void CBlender_accum_reflected_msaa::Compile(CBlender_Compile& C)
     C.r_dx10Texture("s_normal", r2_RT_N);
     C.r_dx10Texture("s_material", r2_material);
     C.r_dx10Texture("s_accumulator", r2_RT_accum);
+    C.r_dx10Texture("s_diffuse", r2_RT_albedo);
 
     C.r_dx10Sampler("smp_nofilter");
     C.r_dx10Sampler("smp_material");
