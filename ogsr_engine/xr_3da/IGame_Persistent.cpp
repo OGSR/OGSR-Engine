@@ -135,6 +135,7 @@ void IGame_Persistent::OnFrame()
     {
         Environment().OnFrame();
         UpdateHudRaindrops();
+        UpdateRainGloss();
     }
 
     Device.Statistic->Particles_starting = ps_needtoplay.size();
@@ -207,7 +208,6 @@ void IGame_Persistent::destroy_particles(const bool& all_particles)
 }
 
 void IGame_Persistent::models_savePrefetch() { Render->models_savePrefetch(); }
-
 
 void IGame_Persistent::GrassBendersUpdate(const u16 id, size_t& data_idx, u32& data_frame, const Fvector& position)
 {
@@ -282,7 +282,8 @@ void IGame_Persistent::GrassBendersUpdate(const u16 id, size_t& data_idx, u32& d
     }
 }
 
-void IGame_Persistent::GrassBendersAddExplosion(const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity, const float radius)
+void IGame_Persistent::GrassBendersAddExplosion(const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity,
+                                                const float radius)
 {
     if (ps_ssfx_grass_interactive.y < 1.f)
         return;
@@ -300,7 +301,8 @@ void IGame_Persistent::GrassBendersAddExplosion(const u16 id, const Fvector& pos
     }
 }
 
-void IGame_Persistent::GrassBendersAddShot(const u16 id, const Fvector& position, const Fvector3& dir,const  float fade, const float speed, const float intensity, const float radius)
+void IGame_Persistent::GrassBendersAddShot(const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity,
+                                           const float radius)
 {
     // Is disabled?
     if (ps_ssfx_grass_interactive.y < 1.f || intensity <= 0.0f)
@@ -389,7 +391,8 @@ void IGame_Persistent::GrassBendersRemoveById(const u16 id)
 
 void IGame_Persistent::GrassBendersReset(const size_t idx) { GrassBendersSet(idx, 0, {}, {0.f, -99.f, 0.f}, 0.f, 0.f, 1.f, 0.f, true); }
 
-void IGame_Persistent::GrassBendersSet(const size_t idx, const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity, const float radius, const bool resetTime)
+void IGame_Persistent::GrassBendersSet(const size_t idx, const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity,
+                                       const float radius, const bool resetTime)
 {
     // Set values
     const float saved_radius = grass_shader_data.pos[idx].w;
@@ -492,4 +495,42 @@ void IGame_Persistent::UpdateHudRaindrops() const
     // Update shader data
     ps_ssfx_hud_drops_1.set(drops_anim, drops_int, ssfx_hud_raindrops_refle, ssfx_hud_raindrops_refra);
     // Msg("~~ps_ssfx_hud_drops_1: [%f, %f, %f, %f]", drops_anim, drops_int, ssfx_hud_raindrops_refle, ssfx_hud_raindrops_refra);
+}
+
+void IGame_Persistent::UpdateRainGloss() const
+{
+    const struct // Настройки
+    {
+        bool auto_gloss{!fis_zero(ps_ssfx_lightsetup_1.z)}; // Automatic adjustment of gloss based on wetness.
+        float auto_gloss_max{ps_ssfx_lightsetup_1.w}; // Value to control the maximum value of gloss when full wetness is reached. ( 0 = 0% | 1 = 100% )
+
+        float ripples_size{ps_ssfx_wetsurfaces_1_cfg.x};
+        float ripples_speed{ps_ssfx_wetsurfaces_1_cfg.y};
+        float ripples_min_speed{ps_ssfx_wetsurfaces_1_cfg.z};
+        float ripples_intensity{ps_ssfx_wetsurfaces_1_cfg.w};
+
+        float waterfall_size{ps_ssfx_wetsurfaces_2_cfg.x};
+        float waterfall_speed{ps_ssfx_wetsurfaces_2_cfg.y};
+        float waterfall_min_speed{ps_ssfx_wetsurfaces_2_cfg.z};
+        float waterfall_intensity{ps_ssfx_wetsurfaces_2_cfg.w};
+    } ssfx_default_settings;
+
+    if (ssfx_default_settings.auto_gloss)
+    {
+        const float Wetness_gloss =
+            ps_ssfx_gloss_minmax.x + std::max(ssfx_default_settings.auto_gloss_max - ps_ssfx_gloss_minmax.x, 0.f) * g_pGamePersistent->Environment().wetness_factor;
+
+        ps_ssfx_gloss_factor = Wetness_gloss * 0.96f;
+    }
+    else
+    {
+        ps_ssfx_gloss_factor = 0.f;
+    }
+
+    const float ripples_size = std::max(2.0f - ssfx_default_settings.ripples_size, 0.01f); // Change how the value works to be more intuitive(<1.0 smaller |> 1.0 bigger)
+    ps_ssfx_wetsurfaces_1.set(ripples_size, ssfx_default_settings.ripples_speed, ssfx_default_settings.ripples_min_speed, ssfx_default_settings.ripples_intensity);
+
+    const float waterfall_size =
+        std::max(2.0f - ssfx_default_settings.waterfall_size, 0.01f); // Change how the value works to be more intuitive(<1.0 smaller |> 1.0 bigger)
+    ps_ssfx_wetsurfaces_2.set(waterfall_size, ssfx_default_settings.waterfall_speed, ssfx_default_settings.waterfall_min_speed, ssfx_default_settings.waterfall_intensity);
 }

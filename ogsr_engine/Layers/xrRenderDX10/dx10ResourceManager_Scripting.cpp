@@ -495,6 +495,7 @@ void CResourceManager::LS_Load()
     module(LSVM)[def("log", &LuaLog),
 
                  class_<adopt_dx10options>("_dx10options").def("dx10_msaa_alphatest_atoc", &adopt_dx10options::_dx10_msaa_alphatest_atoc)
+                     .def("getLevel", [](adopt_dx10options*){ return g_pGameLevel->name().c_str(); })
                  //.def("",					&adopt_dx10options::_dx10Options		),	// returns options-object
                  ,
 

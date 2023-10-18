@@ -180,6 +180,20 @@ float ps_r2_lt_smooth = 1.f; // 1.f
 float ps_r2_slight_fade = 2.0f; // 1.f
 
 // Screen Space Shaders Stuff
+Fvector4 ps_ssfx_florafixes_1{0.3f, 0.21f, 0.3f, 0.21f}; // Specular value when the grass is dry, Specular value when the grass is wet, Specular when trees and bushes are dry, Specular when trees and bushes are wet
+Fvector4 ps_ssfx_florafixes_2{2.0f, 1.0f, 0.0f, 0.0f}; // Intensity of the flora SubSurface Scattering, How much sun color is added to the flora SubSurface Scattering (1.0 is 100% sun color)
+
+int ps_ssfx_is_underground{};
+
+int ps_ssfx_gloss_method{1};
+Fvector3 ps_ssfx_gloss_minmax{0.6f, 0.9f, 0.0f}; // Minimum value of gloss, Maximum value of gloss.
+Fvector4 ps_ssfx_lightsetup_1{0.35f, 0.5f, 1.0f, 1.0f}; // intensity of specular lighting, Porcentage of the specular color. ( 0 = 0% | 1 = 100% ), Automatic adjustment of gloss based on wetness (0 or 1), Value to control the maximum value of gloss when full wetness is reached. ( 0 = 0% | 1 = 100% )
+float ps_ssfx_gloss_factor{}; //Управляется из IGame_Persistent::UpdateRainGloss()
+
+Fvector4 ps_ssfx_wetsurfaces_1_cfg{1.5f, 1.4f, 0.7f, 1.25f}; //ripples_size, ripples_speed, ripples_min_speed, ripples_intensity
+Fvector4 ps_ssfx_wetsurfaces_2_cfg{1.2f, 1.5f, 0.2f, 0.7f}; // waterfall_size, waterfall_speed, waterfall_min_speed, waterfall_intensity
+Fvector4 ps_ssfx_wetsurfaces_1{}, ps_ssfx_wetsurfaces_2{}; // Управляется из IGame_Persistent::UpdateRainGloss()
+
 Fvector4 ps_ssfx_hud_drops_1_cfg{3.0f, 1.f, 1.f, 50.f}; // Quantity of drops, Refrelction intensity, Refraction intensity, Speed of the drops animation
 Fvector4 ps_ssfx_hud_drops_2_cfg{50.f, 50.f, 0.75f, 2.f}; // Drops build up speed, Drying speed, Size of the drops, Raindrops gloss intensity
 Fvector4 ps_ssfx_hud_drops_1{}, ps_ssfx_hud_drops_2{}; // Значениями этих векторов управляет IGame_Persistent::UpdateHudRaindrops()
@@ -204,7 +218,7 @@ float ps_r2_dof_kernel_size = 5.0f; //	7.0f
 
 int ps_r3_dyn_wet_surf_opt = 1;
 float ps_r3_dyn_wet_surf_near = 5.f; // 10.0f
-float ps_r3_dyn_wet_surf_far = 20.f; // 30.0f
+float ps_r3_dyn_wet_surf_far = 100.f; // 30.0f
 
 int ps_r3_dyn_wet_surf_sm_res = 1024; // 256
 int ps_r3_dyn_wet_surf_enable_streaks = 0;
@@ -737,19 +751,29 @@ void xrRender_initconsole()
 
     CMD3(CCC_Mask, "r3_dynamic_wet_surfaces", &ps_r2_ls_flags, R3FLAG_DYN_WET_SURF);
     CMD4(CCC_Integer, "r3_dynamic_wet_surfaces_sm_res", &ps_r3_dyn_wet_surf_sm_res, 64, 2048);
-    CMD4(CCC_Integer, "r3_dynamic_wet_surfaces_enable_streaks", &ps_r3_dyn_wet_surf_enable_streaks, 0, 1);
+ //   CMD4(CCC_Integer, "r3_dynamic_wet_surfaces_enable_streaks", &ps_r3_dyn_wet_surf_enable_streaks, 0, 1); //Устарело
 
-#if 0 // KRodin: оно странно выглядит, поэтому выключаю. Чтоб нормально выглядело надо уметь настраивать near/far. Но лучше не разрешать это крутить, во избежание. А то накрутят
-      // себе...
-	CMD4(CCC_Integer, "r3_dynamic_wet_surfaces_opt", &ps_r3_dyn_wet_surf_opt, 0, 1);
+//	CMD4(CCC_Integer, "r3_dynamic_wet_surfaces_opt", &ps_r3_dyn_wet_surf_opt, 0, 1);
 	CMD4(CCC_Float, "r3_dynamic_wet_surfaces_near", &ps_r3_dyn_wet_surf_near, 5, 70);
 	CMD4(CCC_Float,		"r3_dynamic_wet_surfaces_far",	&ps_r3_dyn_wet_surf_far,	30,	100		);
-#endif
 
     CMD3(CCC_Mask, "r3_volumetric_smoke", &ps_r2_ls_flags, R3FLAG_VOLUMETRIC_SMOKE);
     CMD1(CCC_memory_stats, "render_memory_stats");
 
     // Screen Space Shaders
+    CMD4(CCC_Vector4, "ssfx_florafixes_1", &ps_ssfx_florafixes_1, (Fvector4{}), (Fvector4{1.0f, 1.0f, 1.0f, 1.0f}));
+    CMD4(CCC_Vector4, "ssfx_florafixes_2", &ps_ssfx_florafixes_2, (Fvector4{}), (Fvector4{10.0f, 1.0f, 1.0f, 1.0f}));
+    
+    CMD4(CCC_Vector4, "ssfx_wetsurfaces_1", &ps_ssfx_wetsurfaces_1_cfg, (Fvector4{0.01f, 0.01f, 0.01f, 0.01f}), (Fvector4{2.0f, 2.0f, 2.0f, 2.0f}));
+    CMD4(CCC_Vector4, "ssfx_wetsurfaces_2", &ps_ssfx_wetsurfaces_2_cfg, (Fvector4{0.01f, 0.01f, 0.01f, 0.01f}), (Fvector4{2.0f, 2.0f, 2.0f, 2.0f}));
+    
+    CMD4(CCC_Integer, "ssfx_is_underground", &ps_ssfx_is_underground, 0, 1);
+
+    CMD4(CCC_Integer, "ssfx_gloss_method", &ps_ssfx_gloss_method, 0, 1);
+    CMD4(CCC_Vector3, "ssfx_gloss_minmax", &ps_ssfx_gloss_minmax, (Fvector3{}), (Fvector3{1.0, 1.0, 1.0}));
+
+    CMD4(CCC_Vector4, "ssfx_lightsetup_1", &ps_ssfx_lightsetup_1, (Fvector4{}), (Fvector4{1.0f, 1.0f, 1.0f, 1.0f}));
+
     CMD4(CCC_Vector4, "ssfx_hud_drops_1", &ps_ssfx_hud_drops_1_cfg, (Fvector4{}), (Fvector4{100.f, 100.f, 100.f, 100.f}));
     CMD4(CCC_Vector4, "ssfx_hud_drops_2", &ps_ssfx_hud_drops_2_cfg, (Fvector4{}), (Fvector4{100.f, 100.f, 100.f, 100.f}));
 

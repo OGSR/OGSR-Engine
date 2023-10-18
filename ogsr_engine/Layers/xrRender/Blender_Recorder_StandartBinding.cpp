@@ -464,6 +464,41 @@ static class ssfx_hud_drops_2 final : public R_constant_setup
     void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_hud_drops_2); }
 } ssfx_hud_drops_2;
 
+static class ssfx_lightsetup_1 final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_lightsetup_1); }
+} ssfx_lightsetup_1;
+
+static class ssfx_is_underground final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_is_underground ? 1.f : 0.f, 0.f, 0.f, 0.f); }
+} ssfx_is_underground;
+
+static class ssfx_wetsurfaces_1 final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_wetsurfaces_1); }
+} ssfx_wetsurfaces_1;
+
+static class ssfx_wetsurfaces_2 final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_wetsurfaces_2); }
+} ssfx_wetsurfaces_2;
+
+static class ssfx_gloss final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_gloss_minmax.x, ps_ssfx_gloss_minmax.y, ps_ssfx_gloss_factor, 0.f); }
+} ssfx_gloss;
+
+static class ssfx_florafixes_1 final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_florafixes_1); }
+} ssfx_florafixes_1;
+
+static class ssfx_florafixes_2 final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_florafixes_2); }
+} ssfx_florafixes_2;
+
 
 // Standart constant-binding
 void CBlender_Compile::SetMapping()
@@ -559,6 +594,13 @@ void CBlender_Compile::SetMapping()
     r_Constant("ssfx_blood_decals", &ssfx_blood_decals);
     r_Constant("ssfx_hud_drops_1", &ssfx_hud_drops_1);
     r_Constant("ssfx_hud_drops_2", &ssfx_hud_drops_2);
+    r_Constant("ssfx_lightsetup_1", &ssfx_lightsetup_1);
+    r_Constant("ssfx_is_underground", &ssfx_is_underground);
+    r_Constant("ssfx_wetsurfaces_1", &ssfx_wetsurfaces_1);
+    r_Constant("ssfx_wetsurfaces_2", &ssfx_wetsurfaces_2);
+    r_Constant("ssfx_gloss", &ssfx_gloss);
+    r_Constant("ssfx_florafixes_1", &ssfx_florafixes_1);
+    r_Constant("ssfx_florafixes_2", &ssfx_florafixes_2);
 
     // other common
     for (const auto& [name, s] : DEV->v_constant_setup)

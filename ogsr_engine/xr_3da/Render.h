@@ -385,3 +385,7 @@ ENGINE_API extern GRASS_SHADER_DATA grass_shader_data;
 extern Fvector4 ps_ssfx_grass_interactive;
 extern Fvector4 ps_ssfx_int_grass_params_2;
 extern Fvector4 ps_ssfx_hud_drops_1, ps_ssfx_hud_drops_2, ps_ssfx_hud_drops_1_cfg, ps_ssfx_hud_drops_2_cfg;
+extern Fvector4 ps_ssfx_wetsurfaces_1, ps_ssfx_wetsurfaces_2, ps_ssfx_wetsurfaces_1_cfg, ps_ssfx_wetsurfaces_2_cfg;
+extern Fvector4 ps_ssfx_lightsetup_1;
+extern float ps_ssfx_gloss_factor;
+extern Fvector3 ps_ssfx_gloss_minmax;

@@ -128,6 +128,8 @@ extern ECORE_API int ps_r2_dhemi_count; // 5
 extern ECORE_API float ps_r2_slight_fade; // 1.f
 extern ECORE_API int ps_r2_wait_sleep;
 
+extern float ps_r2_gloss_factor;
+
 //	x - min (0), y - focus (1.4), z - max (100)
 extern ECORE_API Fvector3 ps_r2_dof;
 extern ECORE_API float ps_r2_dof_sky; //	distance to sky
@@ -152,6 +154,9 @@ extern Fvector3 ps_ssfx_shadow_cascades;
 extern ECORE_API Fvector4 ps_ssfx_rain_1;
 extern ECORE_API Fvector4 ps_ssfx_rain_2;
 extern ECORE_API Fvector4 ps_ssfx_rain_3;
+extern Fvector4 ps_ssfx_florafixes_1, ps_ssfx_florafixes_2;
+extern int ps_ssfx_is_underground, ps_ssfx_gloss_method;
+
 
 // textures
 extern ECORE_API int psTextureLOD;

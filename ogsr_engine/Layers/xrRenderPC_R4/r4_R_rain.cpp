@@ -22,8 +22,12 @@ static int facetable[6][4] = {
 //////////////////////////////////////////////////////////////////////////
 void CRender::render_rain()
 {
-    // return;
-    float fRainFactor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
+    float fRainFactor{};
+    if (ps_ssfx_gloss_method == 0)
+        fRainFactor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
+    else
+        fRainFactor = g_pGamePersistent->Environment().wetness_factor;
+
     if (fRainFactor < EPS_L)
         return;
 
@@ -45,8 +49,10 @@ void CRender::render_rain()
     // calculate view-frustum bounds in world space
     Fmatrix ex_project, ex_full, ex_full_inverse;
     {
-        //
-        const float fRainFar = ps_r3_dyn_wet_surf_far;
+        float fRainFar = 250.f;
+        if (ps_ssfx_gloss_method == 0)
+            fRainFar = ps_r3_dyn_wet_surf_far;
+
         ex_project.build_projection(deg2rad(Device.fFOV /* *Device.fASPECT*/), Device.fASPECT, VIEWPORT_NEAR, fRainFar);
         ex_full.mul(ex_project, Device.mView);
         D3DXMatrixInverse((D3DXMATRIXA16*)&ex_full_inverse, 0, (D3DXMATRIXA16*)&ex_full);

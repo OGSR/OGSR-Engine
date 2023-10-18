@@ -56,6 +56,7 @@ public:
 
     bool IsActorInHideout() const;
     void UpdateHudRaindrops() const;
+    void UpdateRainGloss() const;
 
     void destroy_particles(const bool& all_particles);
 
