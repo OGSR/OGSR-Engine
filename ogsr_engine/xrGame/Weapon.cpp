@@ -673,6 +673,9 @@ BOOL CWeapon::net_Spawn(CSE_Abstract* DC)
 
     VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
+    if (m_bLightShotEnabled)
+        Light_Create();
+
     return bResult;
 }
 

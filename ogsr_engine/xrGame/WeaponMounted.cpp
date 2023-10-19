@@ -105,7 +105,8 @@ BOOL CWeaponMounted::net_Spawn(CSE_Abstract* DC)
     // правка стац. пулемета
     m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
 
-    CShootingObject::Light_Create();
+    if (m_bLightShotEnabled)
+        CShootingObject::Light_Create();
 
     setVisible(TRUE);
     setEnabled(TRUE);
