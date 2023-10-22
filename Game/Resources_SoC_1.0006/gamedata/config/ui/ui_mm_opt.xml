@@ -116,22 +116,22 @@
 		<cap_gamma x="20" y="110" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_gamma</text>
 		</cap_gamma>
-		<track_gamma x="194" y="105" width="261" height="21">
-			<options_item entry="rs_c_gamma" group="mm_opt_video"/>
+		<track_gamma x="194" y="105" width="261" height="21" step="0.01">
+			<options_item entry="ssfx_gamma" group="mm_opt_video"/>
 		</track_gamma>
 
 		<cap_contrast x="20" y="140" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_contrast</text>
 		</cap_contrast>
-		<track_contrast x="194" y="135" width="261" height="21">
-			<options_item entry="rs_c_contrast" group="mm_opt_video"/>
+		<track_contrast x="194" y="135" width="261" height="21" step="0.01">
+			<options_item entry="ssfx_saturation" group="mm_opt_video"/>
 		</track_contrast>
 
 		<cap_brightness x="20" y="170" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_brightness</text>
 		</cap_brightness>
-		<track_brightness x="194" y="165" width="261" height="21">
-			<options_item entry="rs_c_brightness" group="mm_opt_video"/>
+		<track_brightness x="194" y="165" width="261" height="21" step="0.01">
+			<options_item entry="ssfx_exposure" group="mm_opt_video"/>
 		</track_brightness>
 		
 		<cap_fps_lock x="20" y="200" width="143" height="21">

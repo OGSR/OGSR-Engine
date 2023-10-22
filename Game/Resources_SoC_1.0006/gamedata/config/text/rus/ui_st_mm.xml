@@ -135,15 +135,17 @@
 	<string id="ui_mm_always_active">
 		<text>Не вставать на паузу при переключении на другие окна</text>
 	</string>
+
 	<string id="ui_mm_gamma">
 		<text>Гамма</text>
 	</string>
 	<string id="ui_mm_contrast">
-		<text>Контраст</text>
+		<text>Насыщенность</text>
 	</string>
 	<string id="ui_mm_brightness">
 		<text>Яркость</text>
 	</string>
+
 	<string id="ui_mm_fullscreen">
 		<text>Полный экран</text>
 	</string>

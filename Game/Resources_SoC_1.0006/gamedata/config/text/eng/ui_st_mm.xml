@@ -135,15 +135,17 @@
 	<string id="ui_mm_always_active">
 		<text>Do not pause when switching to other windows</text>
 	</string>
+
 	<string id="ui_mm_gamma">
 		<text>Gamma</text>
 	</string>
 	<string id="ui_mm_contrast">
-		<text>Contrast</text>
+		<text>Saturation</text>
 	</string>
 	<string id="ui_mm_brightness">
-		<text>Brightness</text>
+		<text>Exposure</text>
 	</string>
+
 	<string id="ui_mm_fullscreen">
 		<text>Full screen</text>
 	</string>

@@ -702,9 +702,11 @@ void CCC_Register()
     // CMD4(CCC_Integer,	"rs_skeleton_update",	&psSkeletonUpdate,	2,		128	);
 #endif // DEBUG
 
-    CMD2(CCC_Gamma, "rs_c_gamma", &ps_gamma);
-    CMD2(CCC_Gamma, "rs_c_brightness", &ps_brightness);
-    CMD2(CCC_Gamma, "rs_c_contrast", &ps_contrast);
+//Вместо этих настроек теперь используется ES Color Grading
+//    CMD2(CCC_Gamma, "rs_c_gamma", &ps_gamma);
+//    CMD2(CCC_Gamma, "rs_c_brightness", &ps_brightness);
+//    CMD2(CCC_Gamma, "rs_c_contrast", &ps_contrast);
+
     //	CMD4(CCC_Integer,	"rs_vb_size",			&rsDVB_Size,		32,		4096);
     //	CMD4(CCC_Integer,	"rs_ib_size",			&rsDIB_Size,		32,		4096);
 

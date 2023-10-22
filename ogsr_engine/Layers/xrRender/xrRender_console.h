@@ -130,6 +130,11 @@ extern ECORE_API int ps_r2_wait_sleep;
 
 extern float ps_r2_gloss_factor;
 
+extern ECORE_API float ps_r2_img_exposure; // r2-only
+extern ECORE_API float ps_r2_img_gamma; // r2-only
+extern ECORE_API float ps_r2_img_saturation; // r2-only
+extern ECORE_API Fvector ps_r2_img_cg; // r2-only
+
 //	x - min (0), y - focus (1.4), z - max (100)
 extern ECORE_API Fvector3 ps_r2_dof;
 extern ECORE_API float ps_r2_dof_sky; //	distance to sky

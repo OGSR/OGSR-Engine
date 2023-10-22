@@ -32,6 +32,11 @@ float ps_r_prop_ss_blend = 0.25f; // 0.066f;
 float ps_r_prop_ss_sample_step_phase0 = 0.09f;
 float ps_r_prop_ss_sample_step_phase1 = 0.07f;
 
+float ps_r2_img_exposure = 1.0f;
+float ps_r2_img_gamma = 1.0f;
+float ps_r2_img_saturation = 1.0f;
+Fvector ps_r2_img_cg{0.5f, 0.5f, 0.5f};
+
 u32 ps_Preset = 2;
 constexpr xr_token qpreset_token[] = {{"Minimum", 0}, {"Low", 1}, {"Default", 2}, {"High", 3}, {"Extreme", 4}, {0, 0}};
 
@@ -795,6 +800,10 @@ void xrRender_initconsole()
     CMD3(CCC_Mask, "ssfx_sky_debanding", &ps_r2_ls_flags_ext, SSFX_SKY_DEBANDING);
     CMD3(CCC_Mask, "ssfx_indirect_light", &ps_r2_ls_flags_ext, SSFX_INDIRECT_LIGHT);
     CMD3(CCC_Mask, "ssfx_inter_grass", &ps_r2_ls_flags_ext, SSFX_INTER_GRASS);
+    CMD4(CCC_Float, "ssfx_exposure", &ps_r2_img_exposure, 0.5f, 1.5f);
+    CMD4(CCC_Float, "ssfx_gamma", &ps_r2_img_gamma, 0.5f, 1.5f);
+    CMD4(CCC_Float, "ssfx_saturation", &ps_r2_img_saturation, 0.5f, 1.5f);
+    CMD4(CCC_Vector3, "ssfx_color_grading", &ps_r2_img_cg, (Fvector3{}), (Fvector3{1.f, 1.f, 1.f}));
     CMD3(CCC_Mask, "reflections_only_on_terrain", &ps_r2_ls_flags_ext, REFLECTIONS_ONLY_ON_TERRAIN);
     CMD3(CCC_Mask, "reflections_only_on_puddles", &ps_r2_ls_flags_ext, REFLECTIONS_ONLY_ON_PUDDLES);
 

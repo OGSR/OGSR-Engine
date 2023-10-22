@@ -499,6 +499,15 @@ static class ssfx_florafixes_2 final : public R_constant_setup
     void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_florafixes_2); }
 } ssfx_florafixes_2;
 
+static class pp_image_corrections final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_r2_img_exposure, ps_r2_img_gamma, ps_r2_img_saturation, 1); }
+} pp_image_corrections;
+
+static class pp_color_grading final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_r2_img_cg.x, ps_r2_img_cg.y, ps_r2_img_cg.z, 1); }
+} pp_color_grading;
 
 // Standart constant-binding
 void CBlender_Compile::SetMapping()
@@ -601,6 +610,9 @@ void CBlender_Compile::SetMapping()
     r_Constant("ssfx_gloss", &ssfx_gloss);
     r_Constant("ssfx_florafixes_1", &ssfx_florafixes_1);
     r_Constant("ssfx_florafixes_2", &ssfx_florafixes_2);
+
+    r_Constant("pp_img_corrections", &pp_image_corrections);
+    r_Constant("pp_img_cg", &pp_color_grading);
 
     // other common
     for (const auto& [name, s] : DEV->v_constant_setup)
