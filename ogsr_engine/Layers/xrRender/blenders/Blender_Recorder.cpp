@@ -143,41 +143,6 @@ void CBlender_Compile::PassBegin()
     dwStage = 0;
 }
 
-void CBlender_Compile::PassEnd()
-{
-    // Last Stage - disable
-    RS.SetTSS(Stage(), D3DTSS_COLOROP, D3DTOP_DISABLE);
-    RS.SetTSS(Stage(), D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-
-    SPass proto;
-    // Create pass
-    proto.state = DEV->_CreateState(RS.GetContainer());
-    proto.ps = DEV->_CreatePS(pass_ps);
-    proto.vs = DEV->_CreateVS(pass_vs);
-    ctable.merge(&proto.ps->constants);
-    ctable.merge(&proto.vs->constants);
-#if defined(USE_DX10) || defined(USE_DX11)
-    proto.gs = DEV->_CreateGS(pass_gs);
-    ctable.merge(&proto.gs->constants);
-#ifdef USE_DX11
-    proto.hs = DEV->_CreateHS(pass_hs);
-    ctable.merge(&proto.hs->constants);
-    proto.ds = DEV->_CreateDS(pass_ds);
-    ctable.merge(&proto.ds->constants);
-    proto.cs = DEV->_CreateCS(pass_cs);
-    ctable.merge(&proto.cs->constants);
-#endif
-#endif //	USE_DX10
-    SetMapping();
-    proto.constants = DEV->_CreateConstantTable(ctable);
-    proto.T = DEV->_CreateTextureList(passTextures);
-
-    proto.C = DEV->_CreateConstantList(passConstants);
-
-    ref_pass _pass_ = DEV->_CreatePass(proto);
-    SH->passes.push_back(_pass_);
-}
-
 void CBlender_Compile::PassSET_PS(LPCSTR name)
 {
     xr_strcpy(pass_ps, name);

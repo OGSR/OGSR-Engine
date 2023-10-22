@@ -86,7 +86,6 @@ public:
     void PassSET_LightFog(BOOL bLight, BOOL bFog);
     void PassSET_PS(LPCSTR name);
     void PassSET_VS(LPCSTR name);
-    void PassEnd();
 
     void StageBegin();
     u32 Stage() { return dwStage; }
