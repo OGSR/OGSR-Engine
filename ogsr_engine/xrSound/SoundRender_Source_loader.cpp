@@ -62,18 +62,17 @@ void CSoundRender_Source::LoadWave(LPCSTR pName)
     vorbis_info* ovi = ov_info(&ovf, -1);
     // verify
     R_ASSERT3(ovi, "Invalid source info:", pName);
-    R_ASSERT3(ovi->rate == 44100, "Invalid source rate:", pName);
 
 #ifdef DEBUG
     if (ovi->channels == 2)
     {
         Msg("stereo sound source [%s]", pName);
     }
-#endif // #ifdef DEBUG
+#endif
 
     ZeroMemory(&m_wformat, sizeof(WAVEFORMATEX));
 
-    m_wformat.nSamplesPerSec = (ovi->rate); // 44100;
+    m_wformat.nSamplesPerSec = (ovi->rate);
     m_wformat.wFormatTag = WAVE_FORMAT_PCM;
     m_wformat.nChannels = u16(ovi->channels);
     m_wformat.wBitsPerSample = 16;
