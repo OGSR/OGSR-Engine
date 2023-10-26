@@ -50,8 +50,8 @@ void CCameraLook::Move(int cmd, float val, float factor)
 {
     switch (cmd)
     {
-    case kCAM_ZOOM_IN: dist -= val ? val : (rot_speed.z * Device.fTimeDelta); break;
-    case kCAM_ZOOM_OUT: dist += val ? val : (rot_speed.z * Device.fTimeDelta); break;
+    case kSHOWHUD: dist -= val ? val : (rot_speed.z * Device.fTimeDelta); break;
+    case kHIDEHUD: dist += val ? val : (rot_speed.z * Device.fTimeDelta); break;
     case kDOWN: pitch -= val ? val : (rot_speed.x * Device.fTimeDelta / factor); break;
     case kUP: pitch += val ? val : (rot_speed.x * Device.fTimeDelta / factor); break;
     case kLEFT: yaw -= val ? val : (rot_speed.y * Device.fTimeDelta / factor); break;

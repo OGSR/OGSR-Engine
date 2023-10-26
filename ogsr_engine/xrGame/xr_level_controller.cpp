@@ -18,8 +18,7 @@ xr_vector<_action> actions = {
 
                     DEF_ACTION("turn_engine", kENGINE)
 
-                        DEF_ACTION("cam_1", kCAM_1) DEF_ACTION("cam_2", kCAM_2) DEF_ACTION("cam_3", kCAM_3) DEF_ACTION("cam_4", kCAM_4) DEF_ACTION("cam_zoom_in", kCAM_ZOOM_IN)
-                            DEF_ACTION("cam_zoom_out", kCAM_ZOOM_OUT)
+                        DEF_ACTION("cam_1", kCAM_1) DEF_ACTION("cam_2", kCAM_2) DEF_ACTION("cam_3", kCAM_3)
 
                                 DEF_ACTION("torch", kTORCH) DEF_ACTION("night_vision", kNIGHT_VISION) DEF_ACTION("wpn_1", kWPN_1) DEF_ACTION("wpn_2", kWPN_2)
                                     DEF_ACTION("wpn_3", kWPN_3) DEF_ACTION("wpn_4", kWPN_4) DEF_ACTION("wpn_5", kWPN_5) DEF_ACTION("wpn_6", kWPN_6) DEF_ACTION("wpn_8", kWPN_8)
