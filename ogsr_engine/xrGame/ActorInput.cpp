@@ -465,7 +465,7 @@ void CActor::ActorUse()
 
         collide::rq_result& RQ = HUD().GetCurrentRayQuery();
         CPhysicsShellHolder* object = smart_cast<CPhysicsShellHolder*>(RQ.O);
-        if (object)
+        if (object && object->getVisible())
         {
             if (Level().IR_GetKeyState(DIK_LSHIFT))
             {
