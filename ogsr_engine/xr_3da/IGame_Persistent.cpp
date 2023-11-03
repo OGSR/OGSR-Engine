@@ -435,7 +435,7 @@ void IGame_Persistent::UpdateHudRaindrops() const
         float drying = ps_ssfx_hud_drops_2_cfg.y; // Drying speed
         float size = ps_ssfx_hud_drops_2_cfg.z; // Size of the drops
         float gloss = ps_ssfx_hud_drops_2_cfg.w; // Raindrops gloss intensity
-        float extra_gloss{0.f}; // Extra gloss to the weapons HUD elements when raining
+        float extra_gloss{ps_ssfx_gloss_minmax.z}; // Extra gloss to the weapons HUD elements when raining
     } ssfx_default_settings;
 
     const float ssfx_hud_raindrops_density = ssfx_default_settings.density;
