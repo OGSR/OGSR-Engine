@@ -14,6 +14,8 @@
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
 
+#include <dxgi1_6.h>
+
 void fill_vid_mode_list(CHW* _hw);
 void free_vid_mode_list();
 
@@ -45,10 +47,42 @@ void CHW::CreateD3D()
 {
 #ifdef USE_DX11
     // Минимально поддерживаемая версия Windows => Windows Vista SP2 или Windows 7.
-    R_CHK(CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)(&pFactory)));
-    pFactory->EnumAdapters1(0, &m_pAdapter);
+    R_CHK(CreateDXGIFactory1(IID_PPV_ARGS(&pFactory)));
+
+    
+    UINT i = 0;
+    while (pFactory->EnumAdapters1(i, &m_pAdapter) != DXGI_ERROR_NOT_FOUND)
+    {
+        DXGI_ADAPTER_DESC desc;
+        m_pAdapter->GetDesc(&desc);
+
+        Msg("* Avail GPU [vendor:%X]-[device:%X]: %S", desc.VendorId, desc.DeviceId, desc.Description);
+
+        m_pAdapter->Release();
+        m_pAdapter = 0;
+        ++i;
+    }
+
+    // In the Windows 10 April 2018 Update, there is now a new IDXGIFactory6 interface that supports
+    // a new EnumAdapterByGpuPreference method which lets you enumerate adapters by 'max performance' or 'minimum power'
+    IDXGIFactory6* pFactory6 = nullptr;
+    if (SUCCEEDED(CreateDXGIFactory1(IID_PPV_ARGS(&pFactory6))))
+    {
+        pFactory6->EnumAdapterByGpuPreference(
+            0, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE,IID_PPV_ARGS(&m_pAdapter));
+
+        Msg(" !CHW::CreateD3D() use DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE");
+
+        _RELEASE(pFactory6);
+    }
+    else
+    {
+        Msg(" !CHW::CreateD3D() use EnumAdapters1(0)");
+
+        pFactory->EnumAdapters1(0, &m_pAdapter);
+    }
 #else
-    R_CHK(CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)(&pFactory)));
+    R_CHK(CreateDXGIFactory(IID_PPV_ARGS(&pFactory)));
     pFactory->EnumAdapters(0, &m_pAdapter);
 #endif
 }
@@ -69,8 +103,6 @@ void CHW::CreateDevice(HWND m_hWnd)
     // General - select adapter and device
     BOOL bWindowed = !psDeviceFlags.is(rsFullscreen);
 
-    m_DriverType = Caps.bForceGPU_REF ? D3D_DRIVER_TYPE_REFERENCE : D3D_DRIVER_TYPE_HARDWARE;
-
     // Display the name of video board
 #ifdef USE_DX11
     DXGI_ADAPTER_DESC1 Desc;
@@ -80,7 +112,7 @@ void CHW::CreateDevice(HWND m_hWnd)
     R_CHK(m_pAdapter->GetDesc(&Desc));
 #endif
     //	Warning: Desc.Description is wide string
-    Msg("* GPU [vendor:%X]-[device:%X]: %S", Desc.VendorId, Desc.DeviceId, Desc.Description);
+    Msg("* Selected GPU [vendor:%X]-[device:%X]: %S", Desc.VendorId, Desc.DeviceId, Desc.Description);
 
     Caps.id_vendor = Desc.VendorId;
     Caps.id_device = Desc.DeviceId;
@@ -556,7 +588,7 @@ void CHW::UpdateViews()
     // Create a render target view
     // R_CHK	(pDevice->GetRenderTarget			(0,&pBaseRT));
     ID3DTexture2D* pBuffer;
-    R = m_pSwapChain->GetBuffer(0, __uuidof(ID3DTexture2D), (LPVOID*)&pBuffer);
+    R = m_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBuffer));
     R_CHK(R);
 
     R = pDevice->CreateRenderTargetView(pBuffer, NULL, &pBaseRT);
