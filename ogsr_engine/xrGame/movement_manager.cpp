@@ -50,6 +50,7 @@ CMovementManager::CMovementManager(CCustomMonster* object)
     extrapolate_path(false);
 
     m_wait_for_distributed_computation = false;
+    m_wait_for_distributed_computation_2 = false;
 }
 
 CMovementManager::~CMovementManager()

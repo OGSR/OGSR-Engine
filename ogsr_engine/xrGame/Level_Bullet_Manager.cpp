@@ -399,7 +399,7 @@ void CBulletManager::CommitRenderSet() // @ the end of frame
     m_BulletsRendered = m_Bullets;
     // Msg("!![%s] size of m_BulletsRendered: [%u], m_Bullets: [%u], m_events: [%u]", __FUNCTION__, m_BulletsRendered.size(), m_Bullets.size(), m_Events.size());
     if (g_mt_config.test(mtBullets))
-        Device.seqParallel.push_back(fastdelegate::MakeDelegate(this, &CBulletManager::UpdateWorkload));
+        Device.add_to_seq_parallel(fastdelegate::MakeDelegate(this, &CBulletManager::UpdateWorkload));
     else
         CBulletManager::UpdateWorkload();
 }

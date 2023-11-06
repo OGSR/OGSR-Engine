@@ -129,6 +129,8 @@ private:
     void _Destroy(BOOL bKeepTextures);
     void _SetupStates();
 
+    xr_deque<fastdelegate::FastDelegate<void()>> seqParallel;
+
 public:
     //   HWND									m_hWnd;
     LRESULT MsgProc(HWND, UINT, WPARAM, LPARAM);
@@ -173,8 +175,6 @@ public:
 public:
     CRegistrator<pureFrame> seqFrameMT;
     CRegistrator<pureDeviceReset> seqDeviceReset;
-
-    xr_vector<fastdelegate::FastDelegate<void()>> seqParallel;
 
     CSecondVPParams m_SecondViewport; //--#SM+#-- +SecondVP+
 
@@ -241,6 +241,15 @@ private:
     std::chrono::duration<double, std::milli> SecondThreadTasksElapsedTime;
 
 public:
+    ICF bool add_to_seq_parallel(const fastdelegate::FastDelegate<void()>& delegate)
+    {
+        auto I = std::find(seqParallel.begin(), seqParallel.end(), delegate);
+        if (I != seqParallel.end())
+            return false;
+        seqParallel.push_back(delegate);
+        return true;
+    }
+
     ICF void remove_from_seq_parallel(const fastdelegate::FastDelegate<void()>& delegate)
     {
         seqParallel.erase(std::remove(seqParallel.begin(), seqParallel.end(), delegate), seqParallel.end());

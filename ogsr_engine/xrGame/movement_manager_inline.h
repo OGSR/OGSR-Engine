@@ -110,4 +110,4 @@ IC CDetailPathBuilder& CMovementManager::detail_path_builder() const
     return (*m_detail_path_builder);
 }
 
-IC bool CMovementManager::wait_for_distributed_computation() const { return (m_wait_for_distributed_computation); }
+IC bool CMovementManager::wait_for_distributed_computation() const { return (m_wait_for_distributed_computation || m_wait_for_distributed_computation_2); }

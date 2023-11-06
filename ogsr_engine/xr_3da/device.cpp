@@ -291,9 +291,17 @@ void CRenderDevice::Run()
                 const auto SecondThreadTasksStartTime = std::chrono::high_resolution_clock::now();
 #endif
 
-                for (const auto& Func : device.seqParallel)
-                    Func();
-                device.seqParallel.clear();
+                auto size = device.seqParallel.size();
+
+                while (size > 0)
+                {
+                    device.seqParallel.front()();
+
+                    device.seqParallel.pop_front();
+
+                    size--;
+                }
+
                 device.seqFrameMT.Process(rp_Frame);
 
 #ifdef SHOW_SECOND_THREAD_STATS

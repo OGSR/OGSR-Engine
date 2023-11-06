@@ -153,7 +153,7 @@ void CParticlesObject::shedule_Update(u32 _dt)
         if constexpr (false)
         { //. AlexMX comment this line// NO UNCOMMENT - DON'T WORK PROPERLY
             mt_dt = dt;
-            Device.seqParallel.push_back(fastdelegate::MakeDelegate(this, &CParticlesObject::PerformAllTheWork_mt));
+            Device.add_to_seq_parallel(fastdelegate::MakeDelegate(this, &CParticlesObject::PerformAllTheWork_mt));
         }
         else
         {

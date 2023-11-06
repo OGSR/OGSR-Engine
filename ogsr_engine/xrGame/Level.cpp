@@ -399,7 +399,7 @@ void CLevel::ProcessGameEvents()
     }
 
     if (!is_removing_objects())
-        Device.seqParallel.push_back(fastdelegate::MakeDelegate(this, &CLevel::ProcessGameSpawns));
+        Device.add_to_seq_parallel(fastdelegate::MakeDelegate(this, &CLevel::ProcessGameSpawns));
 }
 
 void CLevel::OnFrame()
@@ -442,12 +442,12 @@ void CLevel::OnFrame()
 
     // update static sounds
     if (g_mt_config.test(mtLevelSounds))
-        Device.seqParallel.push_back(fastdelegate::MakeDelegate(m_level_sound_manager, &CLevelSoundManager::Update));
+        Device.add_to_seq_parallel(fastdelegate::MakeDelegate(m_level_sound_manager, &CLevelSoundManager::Update));
     else
         m_level_sound_manager->Update();
 
     if (!sound_registry_defer.empty())
-        Device.seqParallel.push_back(fastdelegate::MakeDelegate(this, &CLevel::PrefetchDeferredSounds));
+        Device.add_to_seq_parallel(fastdelegate::MakeDelegate(this, &CLevel::PrefetchDeferredSounds));
 
     //-----------------------------------------------------
     if (pStatGraphR)
