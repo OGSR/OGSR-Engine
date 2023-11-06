@@ -201,29 +201,35 @@ void CCF_Skeleton::BuildTopLevel()
 
 BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 {
-    if (dwFrameTL != Device.dwFrame)
-        BuildTopLevel();
-
-    Fsphere w_bv_sphere;
-    owner->XFORM().transform_tiny(w_bv_sphere.P, bv_sphere.P);
-    w_bv_sphere.R = bv_sphere.R;
-
-    //
-    float tgt_dist = Q.range;
-    Fsphere::ERP_Result res = w_bv_sphere.intersect(Q.start, Q.dir, tgt_dist);
-    if (res == Fsphere::rpNone)
-        return FALSE;
-
-    if (dwFrame != Device.dwFrame)
-        BuildState();
-    else
+    // не будет тут обновлять стейт костей если мы не на основном потоке.
+    // он тут или с прошлого кадра уже есть или даже если чуть кривой - не важно
+    // если обновлять - будут дергатся модели
+    if (Device.OnMainThread()) 
     {
-        IKinematics* K = PKinematics(owner->Visual());
-        if (K->LL_GetBonesVisible() != vis_mask)
-        {
-            // Model changed between ray-picks
-            dwFrame = Device.dwFrame - 1;
+        if (dwFrameTL != Device.dwFrame)
+            BuildTopLevel();
+
+        Fsphere w_bv_sphere;
+        owner->XFORM().transform_tiny(w_bv_sphere.P, bv_sphere.P);
+        w_bv_sphere.R = bv_sphere.R;
+
+        //
+        float tgt_dist = Q.range;
+        Fsphere::ERP_Result res = w_bv_sphere.intersect(Q.start, Q.dir, tgt_dist);
+        if (res == Fsphere::rpNone)
+            return FALSE;
+
+        if (dwFrame != Device.dwFrame)
             BuildState();
+        else
+        {
+            IKinematics* K = PKinematics(owner->Visual());
+            if (K->LL_GetBonesVisible() != vis_mask)
+            {
+                // Model changed between ray-picks
+                dwFrame = Device.dwFrame - 1;
+                BuildState();
+            }
         }
     }
 
