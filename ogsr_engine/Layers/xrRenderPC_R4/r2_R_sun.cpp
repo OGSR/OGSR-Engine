@@ -69,7 +69,7 @@ void CRender::render_sun_cascades()
     else
     {
         if (calculate_sun_awaiter.valid())
-            calculate_sun_awaiter.wait();
+            calculate_sun_awaiter.get();
     }
 
     for (u32 i = 0; i < m_sun_cascades.size(); ++i)

@@ -199,7 +199,7 @@ public:
     /// MT stuff
     xrCriticalSection MT;
     void StartAsync();
-    void WaitAsync() const;
+    void WaitAsync();
 
     std::future<void> awaiter;
     bool async_started{};

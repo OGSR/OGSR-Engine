@@ -440,10 +440,10 @@ void CDetailManager::StartAsync()
     async_started = true;
 }
 
-void CDetailManager::WaitAsync() const
+void CDetailManager::WaitAsync()
 {
     if (awaiter.valid())
-        awaiter.wait();
+        awaiter.get();
 }
 
 void CDetailManager::MT_CALC()
