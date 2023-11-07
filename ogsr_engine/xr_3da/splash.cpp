@@ -78,14 +78,19 @@ HWND WINAPI ShowSplash(HINSTANCE hInstance, int nCmdShow)
 
     img.Load(splash_path.c_str()); // загрузка сплеша
 
-    int splashWidth = img.GetWidth(); // фиксируем ширину картинки
-    int splashHeight = img.GetHeight(); // фиксируем высоту картинки
+    int splashWidth; // фиксируем ширину картинки
+    int splashHeight; // фиксируем высоту картинки
 
-    if (splashWidth == 0 || splashHeight == 0) // если картинки нет на диске, то грузим из ресурсов
+    if (img.IsNull()) // если картинки нет на диске, то грузим из ресурсов
     {
         img.Destroy();
 
         img.Load(CreateStreamOnResource(MAKEINTRESOURCE(IDB_PNG1), "PNG")); // загружаем сплеш
+        splashWidth = img.GetWidth();
+        splashHeight = img.GetHeight();
+    }
+    else
+    {
         splashWidth = img.GetWidth();
         splashHeight = img.GetHeight();
     }
