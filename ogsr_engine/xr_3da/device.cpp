@@ -11,8 +11,6 @@
 #include "imgui.h"
 #include "..\Layers\xrRenderDX10\imgui_impl_dx11.h"
 
-//#define SHOW_SECOND_THREAD_STATS
-
 ENGINE_API CRenderDevice Device;
 ENGINE_API CLoadScreenRenderer load_screen_renderer;
 
@@ -164,11 +162,10 @@ void CRenderDevice::on_idle()
     mView_saved = mView;
     mProject_saved = mProject;
 
-#ifdef SHOW_SECOND_THREAD_STATS
     const auto SecondThreadStartTime = std::chrono::high_resolution_clock::now();
-#endif
 
-    syncProcessFrame.Set(); // allow secondary thread to do its job
+    // allow secondary thread to do its job
+    auto awaiter = TTAPI->submit([this] { second_thread(); });
 
     Statistic->RenderTOTAL_Real.FrameStart();
     Statistic->RenderTOTAL_Real.Begin();
@@ -201,7 +198,7 @@ void CRenderDevice::on_idle()
     const u32 curFPSLimit = IsMainMenuActive() ? menuFPSlimit : Device.Paused() ? pauseFPSlimit : g_dwFPSlimit;
     if (curFPSLimit > 0 && !m_SecondViewport.IsSVPFrame())
     {
-        const std::chrono::duration<double, std::milli> FpsLimitMs{std::floor(1000.f / (curFPSLimit + 1))};
+        const std::chrono::duration<double, std::milli> FpsLimitMs{std::floor(1000.f / static_cast<float>(curFPSLimit + 1))};
         if (FrameElapsedTime < FpsLimitMs)
         {
             const auto TimeToSleep = FpsLimitMs - FrameElapsedTime;
@@ -211,18 +208,21 @@ void CRenderDevice::on_idle()
         }
     }
 
-#ifdef SHOW_SECOND_THREAD_STATS
     const auto SecondThreadEndTime = std::chrono::high_resolution_clock::now();
-#endif
 
-    syncFrameDone.WaitEx(66); // wait until secondary thread finish its job
+    bool show_stats{};
+    if (awaiter.wait_for(FrameElapsedTime) == std::future_status::timeout)
+        show_stats = true;
 
-#ifdef SHOW_SECOND_THREAD_STATS
-    const std::chrono::duration<double, std::milli> SecondThreadElapsedTime = SecondThreadEndTime - SecondThreadStartTime;
-    const std::chrono::duration<double, std::milli> SecondThreadFreeTime = SecondThreadElapsedTime - SecondThreadTasksElapsedTime;
-    Msg("##[%s] Second thread work time: [%f]ms, used: [%f]ms, free: [%f]ms", __FUNCTION__, SecondThreadElapsedTime.count(), SecondThreadTasksElapsedTime.count(),
-        SecondThreadFreeTime.count());
-#endif
+    awaiter.get();
+
+    if (show_stats && dwPrecacheFrame == 0)
+    {
+        const std::chrono::duration<double, std::milli> SecondThreadElapsedTime = SecondThreadEndTime - SecondThreadStartTime;
+        const std::chrono::duration<double, std::milli> SecondThreadFreeTime = SecondThreadElapsedTime - SecondThreadTasksElapsedTime;
+        Msg("##[%s] Second thread work time is too long! Avail: [%f]ms, used: [%f]ms, free: [%f]ms", __FUNCTION__, SecondThreadElapsedTime.count(),
+            SecondThreadTasksElapsedTime.count(), SecondThreadFreeTime.count());
+    }
 
     if (!b_is_Active)
         Sleep(1);
@@ -243,6 +243,27 @@ void CRenderDevice::message_loop()
 
         on_idle();
     }
+}
+
+void CRenderDevice::second_thread()
+{
+    const auto SecondThreadTasksStartTime = std::chrono::high_resolution_clock::now();
+
+    auto size = seqParallel.size();
+
+    while (size > 0)
+    {
+        seqParallel.front()();
+
+        seqParallel.pop_front();
+
+        size--;
+    }
+
+    seqFrameMT.Process(rp_Frame);
+
+    const auto SecondThreadTasksEndTime = std::chrono::high_resolution_clock::now();
+    SecondThreadTasksElapsedTime = SecondThreadTasksEndTime - SecondThreadTasksStartTime;
 }
 
 void CRenderDevice::Run()
@@ -266,56 +287,6 @@ void CRenderDevice::Run()
         Timer_MM_Delta = time_system - time_local;
     }
 
-    // Start all threads
-    mt_bMustExit = false;
-
-    std::jthread second_thread(
-        [](void* context) {
-            set_current_thread_name("X-RAY Secondary thread");
-
-            CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-
-            auto& device = *static_cast<CRenderDevice*>(context);
-
-            while (true)
-            {
-                device.syncProcessFrame.Wait();
-
-                if (device.mt_bMustExit)
-                {
-                    device.syncThreadExit.Set();
-                    return;
-                }
-
-#ifdef SHOW_SECOND_THREAD_STATS
-                const auto SecondThreadTasksStartTime = std::chrono::high_resolution_clock::now();
-#endif
-
-                auto size = device.seqParallel.size();
-
-                while (size > 0)
-                {
-                    device.seqParallel.front()();
-
-                    device.seqParallel.pop_front();
-
-                    size--;
-                }
-
-                device.seqFrameMT.Process(rp_Frame);
-
-#ifdef SHOW_SECOND_THREAD_STATS
-                const auto SecondThreadTasksEndTime = std::chrono::high_resolution_clock::now();
-                device.SecondThreadTasksElapsedTime = SecondThreadTasksEndTime - SecondThreadTasksStartTime;
-#endif
-
-                device.syncFrameDone.Set();
-            }
-        },
-        this);
-
-    secondThreadId = second_thread.get_id();
-
     // Message cycle
     seqAppStart.Process(rp_AppStart);
 
@@ -324,11 +295,6 @@ void CRenderDevice::Run()
     message_loop();
 
     seqAppEnd.Process(rp_AppEnd);
-
-    // Stop Balance-Thread
-    mt_bMustExit = true;
-    syncProcessFrame.Set();
-    syncThreadExit.Wait();
 }
 
 u32 app_inactive_time = 0;
@@ -465,20 +431,6 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
             Device.seqAppDeactivate.Process(rp_AppDeactivate);
         }
     }
-}
-
-void CRenderDevice::AddSeqFrame(pureFrame* f, bool mt)
-{
-    if (mt)
-        seqFrameMT.Add(f, REG_PRIORITY_HIGH);
-    else
-        seqFrame.Add(f, REG_PRIORITY_LOW);
-}
-
-void CRenderDevice::RemoveSeqFrame(pureFrame* f)
-{
-    seqFrameMT.Remove(f);
-    seqFrame.Remove(f);
 }
 
 CLoadScreenRenderer::CLoadScreenRenderer() : b_registered(false) {}
