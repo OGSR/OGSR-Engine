@@ -1,14 +1,6 @@
 #include "stdafx.h"
-#pragma hdrstop
-
-#pragma warning(disable : 4995)
-#include <d3dx/d3dx9.h>
 
 #include "../../xr_3da/render.h"
-
-#pragma warning(default : 4995)
-
-#include <d3dx/D3DX10Core.h>
 
 #include "../xrRender/ResourceManager.h"
 #include "../xrRender/tss.h"
@@ -19,6 +11,8 @@
 #include "../xrRenderDX10/dx10ConstantBuffer.h"
 
 #include "../xrRender/ShaderResourceTraits.h"
+
+#include <Utilities\FlexibleVertexFormat.h>
 
 #ifdef USE_DX11
 SHS* CResourceManager::_CreateHS(LPCSTR Name) { return CreateShader<SHS>(Name); }
@@ -374,8 +368,8 @@ void CResourceManager::_DeleteGS(const SGS* gs)
 static BOOL dcl_equal(D3DVERTEXELEMENT9* a, D3DVERTEXELEMENT9* b)
 {
     // check sizes
-    u32 a_size = D3DXGetDeclLength(a);
-    u32 b_size = D3DXGetDeclLength(b);
+    u32 a_size = FVF::GetDeclLength(a);
+    u32 b_size = FVF::GetDeclLength(b);
     if (a_size != b_size)
         return FALSE;
     return 0 == memcmp(a, b, a_size * sizeof(D3DVERTEXELEMENT9));
@@ -394,7 +388,7 @@ SDeclaration* CResourceManager::_CreateDecl(D3DVERTEXELEMENT9* dcl)
 
     // Create _new
     SDeclaration* D = xr_new<SDeclaration>();
-    u32 dcl_size = D3DXGetDeclLength(dcl) + 1;
+    u32 dcl_size = FVF::GetDeclLength(dcl) + 1;
     //	Don't need it for DirectX 10 here
     // CHK_DX					(HW.pDevice->CreateVertexDeclaration(dcl,&D->dcl));
     D->dcl_code.assign(dcl, dcl + dcl_size);
@@ -519,7 +513,7 @@ void CResourceManager::DBG_VerifyGeoms()
     D3DVERTEXELEMENT9		test	[MAX_FVF_DECL_SIZE];
     u32						size	= 0;
     G->dcl->GetDeclaration			(test,(unsigned int*)&size);
-    u32 vb_stride					= D3DXGetDeclVertexSize	(test,0);
+    u32 vb_stride					= ComputeVertexSize(test,0);
     u32 vb_stride_cached			= G->vb_stride;
     R_ASSERT						(vb_stride == vb_stride_cached);
     }
@@ -531,7 +525,7 @@ SGeometry* CResourceManager::CreateGeom(D3DVERTEXELEMENT9* decl, ID3DVertexBuffe
     R_ASSERT(decl && vb);
 
     SDeclaration* dcl = _CreateDecl(decl);
-    u32 vb_stride = D3DXGetDeclVertexSize(decl, 0);
+    u32 vb_stride = FVF::ComputeVertexSize(decl, 0);
 
     // ***** first pass - search already loaded shader
     for (u32 it = 0; it < v_geoms.size(); it++)
@@ -552,9 +546,9 @@ SGeometry* CResourceManager::CreateGeom(D3DVERTEXELEMENT9* decl, ID3DVertexBuffe
 }
 SGeometry* CResourceManager::CreateGeom(u32 FVF, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib)
 {
-    D3DVERTEXELEMENT9 dcl[MAX_FVF_DECL_SIZE];
-    CHK_DX(D3DXDeclaratorFromFVF(FVF, dcl));
-    SGeometry* g = CreateGeom(dcl, vb, ib);
+    auto dcl = std::vector<D3DVERTEXELEMENT9>(MAXD3DDECLLENGTH + 1);
+    CHK_DX(FVF::CreateDeclFromFVF(FVF, dcl));
+    SGeometry* g = CreateGeom(dcl.data(), vb, ib);
     return g;
 }
 

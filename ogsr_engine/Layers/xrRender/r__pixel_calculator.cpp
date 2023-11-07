@@ -1,9 +1,13 @@
 #include "stdafx.h"
-#include "r__pixel_calculator.h"
-#define rt_dimensions 1024
-#include "../xrRender/FBasicVisual.h"
 
 #if !defined(USE_DX10) && !defined(USE_DX11)
+#include "r__pixel_calculator.h"
+#include "../xrRender/FBasicVisual.h"
+
+using namespace DirectX;
+
+#define rt_dimensions 1024
+
 void r_pixel_calculator::begin()
 {
     rt.create("$user$test", rt_dimensions, rt_dimensions, HW.Caps.fTarget);
@@ -47,7 +51,7 @@ r_aabb_ssa r_pixel_calculator::calculate(dxRender_Visual* V)
         // camera - left-to-right
         mView.build_camera_dir(vFrom.invert(cmDir[face]).mul(100.f), cmDir[face], cmNorm[face]);
         aabb.xform(V->vis.box, mView);
-        D3DXMatrixOrthoOffCenterLH((D3DXMATRIXA16*)&mProject, aabb.min.x, aabb.max.x, aabb.min.y, aabb.max.y, aabb.min.z, aabb.max.z);
+        XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mProject), XMMatrixOrthographicOffCenterLH(aabb.min.x, aabb.max.x, aabb.min.y, aabb.max.y, aabb.min.z, aabb.max.z));
         RCache.set_xform_world(Fidentity);
         RCache.set_xform_view(mView);
         RCache.set_xform_project(mProject);

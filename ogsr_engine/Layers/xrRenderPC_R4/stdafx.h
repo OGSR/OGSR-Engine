@@ -14,8 +14,8 @@
 #pragma warning(4 : 4244)
 #pragma warning(disable : 4237)
 
-#include <D3D11.h>
-#include <d3dx/D3Dx11core.h>
+#include <DirectXMath.h>
+#include <d3d11_1.h>
 #include <D3DCompiler.h>
 
 #include "../xrRender/xrD3DDefs.h"

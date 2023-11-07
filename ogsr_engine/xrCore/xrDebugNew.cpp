@@ -5,10 +5,6 @@
 #include <new.h> // for _set_new_mode
 #include <signal.h> // for signals
 
-#include <d3dx/dxerr.h>
-#pragma comment(lib, "dxerr.lib")
-int(WINAPIV* __vsnprintf)(char*, size_t, const char*, va_list) = _vsnprintf;
-
 XRCORE_API xrDebug Debug;
 XRCORE_API HWND gGameWindow = nullptr;
 XRCORE_API bool ExitFromWinMain = false;
@@ -201,12 +197,7 @@ void xrDebug::backend(const char* expression, const char* description, const cha
         DEBUG_INVOKE;
 }
 
-const char* xrDebug::DXerror2string(const HRESULT code) const
-{
-    static string1024 desc_storage;
-    std::snprintf(desc_storage, sizeof(desc_storage), "Error Code: [%d], Error Name: [%s], Error Text: [%s]", code, DXGetErrorString(code), DXGetErrorDescription(code));
-    return desc_storage;
-}
+const char* xrDebug::DXerror2string(const HRESULT code) const { return error2string(code); }
 
 const char* xrDebug::error2string(const DWORD code) const
 {

@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="DirectXTex\DirectXTex\BC.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\BC4BC5.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\BC6HBC7.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\BCDirectCompute.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\DirectXTexCompress.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\DirectXTexCompressGPU.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\DirectXTexConvert.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\DirectXTexD3D11.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\DirectXTexDDS.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\DirectXTexFlipRotate.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\DirectXTexHDR.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\DirectXTexImage.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\DirectXTexMipMaps.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\DirectXTexMisc.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\DirectXTexNormalMaps.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\DirectXTexPMAlpha.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\DirectXTexResize.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\DirectXTexTGA.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\DirectXTexUtil.cpp" />
+    <ClCompile Include="DirectXTex\DirectXTex\DirectXTexWIC.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CLInclude Include="DirectXTex\DirectXTex\BC.h" />
+    <ClInclude Include="DirectXTex\DirectXTex\BCDirectCompute.h" />
+    <CLInclude Include="DirectXTex\DirectXTex\DDS.h" />
+    <ClInclude Include="DirectXTex\DirectXTex\filters.h" />
+    <CLInclude Include="DirectXTex\DirectXTex\scoped.h" />
+    <CLInclude Include="DirectXTex\DirectXTex\DirectXTex.h" />
+    <CLInclude Include="DirectXTex\DirectXTex\DirectXTexP.h" />
+    <CLInclude Include="DirectXTex\DirectXTex\DirectXTex.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DirectXTex\DirectXTex\Shaders\CompileShaders.cmd">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="DirectXTex\DirectXTex\Shaders\BC6HEncode.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="DirectXTex\DirectXTex\Shaders\BC7Encode.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{f8a93fb9-ea65-4433-a082-70d6642460f4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -71,7 +71,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\DirectXMesh\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\DirectXMath\DirectXMath\Inc</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_DX11;WIN32;_WINDOWS;_USRDLL;XRENGINE_STATIC;XRCORE_STATIC;XRCDB_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;XRRENDER_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -86,7 +86,7 @@
       <DisableSpecificWarnings>4456;4457;4458;4459;4315;4267;4324;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xrEngine.lib;d3dx9.lib;d3dx11.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xrEngine.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName />
@@ -112,13 +112,13 @@
       <WarningLevel>Level4</WarningLevel>
       <DisableSpecificWarnings>4456;4457;4458;4459;4315;4267;4324;</DisableSpecificWarnings>
       <StringPooling>false</StringPooling>
-      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\DirectXMesh\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\DirectXMath\DirectXMath\Inc</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OmitFramePointers>false</OmitFramePointers>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xrEngine.lib;d3dx9.lib;d3dx11.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xrEngine.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;</AdditionalDependencies>
       <GenerateMapFile>false</GenerateMapFile>
       <MapFileName>
       </MapFileName>
@@ -137,7 +137,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\DirectXMesh\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\DirectXMath\DirectXMath\Inc</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_DX11;WIN32;NDEBUG;_WINDOWS;_USRDLL;XRENGINE_STATIC;XRCORE_STATIC;XRCDB_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;XRRENDER_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling />
@@ -152,7 +152,7 @@
       <WarningLevel>Level4</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xrEngine.lib;d3dx9.lib;d3dx11.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xrEngine.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;</AdditionalDependencies>
       <MapFileName />
       <SubSystem>NotSet</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -171,7 +171,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\DirectXMesh\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\DirectXMath\DirectXMath\Inc</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_DX11;WIN32;NDEBUG;_WINDOWS;_USRDLL;XRENGINE_STATIC;XRCORE_STATIC;XRCDB_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;XRRENDER_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
@@ -190,7 +190,7 @@
       <DisableSpecificWarnings>4456;4457;4458;4995;4577;4315;4267;4324;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>xrEngine.lib;d3dx9.lib;d3dx11.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xrEngine.lib;d3d11.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;</AdditionalDependencies>
       <MapFileName>
       </MapFileName>
       <SubSystem>Windows</SubSystem>
@@ -614,6 +614,9 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\3rd_party\Src\imgui\imgui.vcxproj">
       <Project>{c8fbc3ce-d6de-4fc3-bc15-7b647614db09}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\3rd_party\Src\DirectXTex\DirectXTex.vcxproj">
+      <Project>{286CC988-2191-467A-9F6D-ABB7954D4F78}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

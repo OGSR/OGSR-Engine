@@ -27,7 +27,8 @@
 
 ### Compilation guide: ###
 * Latest version of Visual Studio 2022 required
-* Open Engine.sln
+* Run `Update_DirectX_Components.cmd`
+* Open `Engine.sln`
 * Set the platform to x64 and the configuration to Release, then select Build -> Build solution
 ### Thanks to: ###
 * [Im-dex](https://github.com/Im-dex)
@@ -62,7 +63,8 @@ And everyone else whose work has been used. If you are not mentioned, send a mes
 
 ### Инструкции по сборке: ###
 * Требуется актуальная версия Visual Studio 2022
-* Открываете Engine.sln
+* Запускаете `Update_DirectX_Components.cmd`
+* Открываете `Engine.sln`
 * В студии выбираете Сборка -> Собрать решение, предварительно выставив платформу x64 и конфигурацию Release
 ### Благодарим: ###
 * [Im-dex](https://github.com/Im-dex)

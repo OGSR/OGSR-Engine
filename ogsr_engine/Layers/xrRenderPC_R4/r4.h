@@ -329,9 +329,6 @@ public:
     virtual void Calculate();
     virtual void Render();
     virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0);
-    virtual void Screenshot(ScreenshotMode mode, CMemoryWriter& memory_writer);
-    virtual void ScreenshotAsyncBegin();
-    virtual void ScreenshotAsyncEnd(CMemoryWriter& memory_writer);
     virtual void _BCL OnFrame();
     virtual void BeforeWorldRender(); //--#SM+#-- +SecondVP+ Вызывается перед началом рендера мира и пост-эффектов
     virtual void AfterWorldRender(const bool save_bb_before_ui); //--#SM+#-- +SecondVP+ Вызывается после рендера мира и перед UI

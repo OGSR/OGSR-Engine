@@ -4,15 +4,13 @@
 
 #include "stdafx.h"
 
-#pragma warning(disable : 4995)
-#include <d3dx/d3dx9.h>
-#pragma warning(default : 4995)
-
 #include "../../xr_3da/fmesh.h"
 #include "FSkinned.h"
 #include "SkeletonX.h"
 #include "../xrRenderDX10/dx10BufferUtils.h"
 #include "../../xr_3da/EnnumerateVertices.h"
+
+#include <Utilities\FlexibleVertexFormat.h>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -355,7 +353,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
             Vertices1W.create(crc, V.vCount, (vertBoned1W*)_verts_);
         }
 
-        u32 vStride = D3DXGetDeclVertexSize(dwDecl_01W, 0);
+        u32 vStride = FVF::ComputeVertexSize(dwDecl_01W, 0);
         VERIFY(vStride == sizeof(vertHW_1W));
         //			BYTE*	bytes		= 0;
         VERIFY(NULL == V.p_rm_Vertices);
@@ -398,7 +396,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
             Vertices2W.create(crc, V.vCount, (vertBoned2W*)_verts_);
         }
 
-        u32 vStride = D3DXGetDeclVertexSize(dwDecl_2W, 0);
+        u32 vStride = FVF::ComputeVertexSize(dwDecl_2W, 0);
         VERIFY(vStride == sizeof(vertHW_2W));
         //			BYTE* bytes			= 0;
         VERIFY(NULL == V.p_rm_Vertices);
@@ -442,7 +440,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
             Vertices3W.create(crc, V.vCount, (vertBoned3W*)_verts_);
         }
 
-        u32 vStride = D3DXGetDeclVertexSize(dwDecl_3W, 0);
+        u32 vStride = FVF::ComputeVertexSize(dwDecl_3W, 0);
         VERIFY(vStride == sizeof(vertHW_3W));
         //			BYTE*	bytes			= 0;
         VERIFY(NULL == V.p_rm_Vertices);
@@ -487,7 +485,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
             Vertices4W.create(crc, V.vCount, (vertBoned4W*)_verts_);
         }
 
-        u32 vStride = D3DXGetDeclVertexSize(dwDecl_4W, 0);
+        u32 vStride = FVF::ComputeVertexSize(dwDecl_4W, 0);
         VERIFY(vStride == sizeof(vertHW_4W));
         //			BYTE*	bytes			= 0;
         VERIFY(NULL == V.p_rm_Vertices);
@@ -543,7 +541,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
         break;
     case RM_SINGLE:
     case RM_SKINNING_1B: {
-        u32 vStride = D3DXGetDeclVertexSize(dwDecl_01W, 0);
+        u32 vStride = FVF::ComputeVertexSize(dwDecl_01W, 0);
         VERIFY(vStride == sizeof(vertHW_1W));
         BYTE* bytes = 0;
         VERIFY(NULL == V.p_rm_Vertices);
@@ -565,7 +563,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
     }
     break;
     case RM_SKINNING_2B: {
-        u32 vStride = D3DXGetDeclVertexSize(dwDecl_2W, 0);
+        u32 vStride = FVF::ComputeVertexSize(dwDecl_2W, 0);
         VERIFY(vStride == sizeof(vertHW_2W));
         BYTE* bytes = 0;
         VERIFY(NULL == V.p_rm_Vertices);
@@ -588,7 +586,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
     }
     break;
     case RM_SKINNING_3B: {
-        u32 vStride = D3DXGetDeclVertexSize(dwDecl_3W, 0);
+        u32 vStride = FVF::ComputeVertexSize(dwDecl_3W, 0);
         VERIFY(vStride == sizeof(vertHW_3W));
         BYTE* bytes = 0;
         VERIFY(NULL == V.p_rm_Vertices);
@@ -611,7 +609,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
     }
     break;
     case RM_SKINNING_4B: {
-        u32 vStride = D3DXGetDeclVertexSize(dwDecl_4W, 0);
+        u32 vStride = FVF::ComputeVertexSize(dwDecl_4W, 0);
         VERIFY(vStride == sizeof(vertHW_4W));
         BYTE* bytes = 0;
         VERIFY(NULL == V.p_rm_Vertices);

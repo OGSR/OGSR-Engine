@@ -153,16 +153,19 @@ void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count
     if (count > HW.Caps.geometry.dwClipPlanes)
         count = HW.Caps.geometry.dwClipPlanes;
 
-    D3DXMATRIXA16 worldToClipMatrixIT;
-    D3DXMatrixInverse(&worldToClipMatrixIT, NULL, (D3DXMATRIXA16*)&RDEVICE.mFullTransform);
-    D3DXMatrixTranspose(&worldToClipMatrixIT, &worldToClipMatrixIT);
+    using namespace DirectX;
+
+    auto worldToClipMatrixIT = XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&Device.mFullTransform)));
+    worldToClipMatrixIT = XMMatrixTranspose(worldToClipMatrixIT);
+    XMFLOAT4 planeClip{};
+    XMVECTOR planeWorld{};
+
     for (u32 it = 0; it < count; it++)
     {
         Fplane& P = _planes[it];
-        D3DXPLANE planeWorld(-P.n.x, -P.n.y, -P.n.z, -P.d), planeClip;
-        D3DXPlaneNormalize(&planeWorld, &planeWorld);
-        D3DXPlaneTransform(&planeClip, &planeWorld, &worldToClipMatrixIT);
-        CHK_DX(HW.pDevice->SetClipPlane(it, planeClip));
+        planeWorld = XMPlaneNormalize(XMVectorSet(-P.n.x, -P.n.y, -P.n.z, -P.d));
+        XMStoreFloat4(&planeClip, XMPlaneTransform(planeWorld, worldToClipMatrixIT));
+        CHK_DX(HW.pDevice->SetClipPlane(it, reinterpret_cast<float*>(&planeClip)));
     }
 
     // Enable them
