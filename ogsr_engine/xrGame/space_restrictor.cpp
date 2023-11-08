@@ -108,6 +108,9 @@ void CSpaceRestrictor::net_Destroy()
 
 bool CSpaceRestrictor::inside(const Fsphere& sphere)
 {
+    if (getDestroy())
+        return false;
+
     if (!actual())
     {
         try
@@ -116,7 +119,7 @@ bool CSpaceRestrictor::inside(const Fsphere& sphere)
         }
         catch (...)
         {
-            Msg("!![%s] FATAL ERROR IN RESTRICTOR %s!", __FUNCTION__, cName().c_str());
+            Msg("!![%s] FATAL ERROR IN RESTRICTOR ID:[%u]!", __FUNCTION__, ID());
             return false;
         }
     }
