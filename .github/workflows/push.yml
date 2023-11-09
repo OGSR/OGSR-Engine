@@ -1,15 +1,13 @@
 name: Main Workflow
 
 on:
-  push:
-  pull_request:
   release:
     types:
       - created
 
 jobs:
   build:
-    if: "!contains(github.event.head_commit.message, '[skip ci]') || github.event_name == 'release'"
+    if: "github.event_name == 'release'"
     runs-on: windows-latest
     strategy:
       fail-fast: false
