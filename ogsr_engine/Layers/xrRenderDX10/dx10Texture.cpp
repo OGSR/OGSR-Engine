@@ -71,9 +71,8 @@ static inline u32 calc_texture_size(const int lod, const size_t mip_cnt, const s
     return iFloor(res);
 }
 
-static inline void Reduce(size_t& w, size_t& h, size_t& l, int skip, const bool compressed)
+static inline void Reduce(size_t& w, size_t& h, size_t& l, int skip)
 {
-    const size_t min_size = compressed ? 4 : 1;
     while ((l > 1) && skip)
     {
         w /= 2;
@@ -82,10 +81,10 @@ static inline void Reduce(size_t& w, size_t& h, size_t& l, int skip, const bool 
 
         skip--;
     }
-    if (w < min_size)
-        w = min_size;
-    if (h < min_size)
-        h = min_size;
+    if (w < 1)
+        w = 1;
+    if (h < 1)
+        h = 1;
 }
 
 ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging)
@@ -121,26 +120,8 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 #endif
 
     DirectX::TexMetadata IMG{};
-    DirectX::DDS_FLAGS dds_flags{DirectX::DDS_FLAGS::DDS_FLAGS_NONE};
-
-    if (FAILED(GetMetadataFromDDSMemory(File->pointer(), File->length(), dds_flags, IMG)))
-    {
-        // В сталкере встречаются кривые текстуры у которых DDS_HEADER == 24 байта
-        dds_flags |= DirectX::DDS_FLAGS::DDS_FLAGS_PERMISSIVE;
-        R_CHK2(GetMetadataFromDDSMemory(File->pointer(), File->length(), dds_flags, IMG), fn);
-    }
-
     DirectX::ScratchImage texture{};
-    R_CHK2(LoadFromDDSMemory(File->pointer(), File->length(), dds_flags, &IMG, texture), fn);
-
-    // DirectX requires compressed texture size to be
-    // a multiple of 4. Make sure to meet this requirement.
-    const bool compressed = DirectX::IsCompressed(IMG.format);
-    if (compressed)
-    {
-        IMG.width = (IMG.width + 3u) & ~0x3u;
-        IMG.height = (IMG.height + 3u) & ~0x3u;
-    }
+    R_CHK2(LoadFromDDSMemory(File->pointer(), File->length(), DirectX::DDS_FLAGS_PERMISSIVE, &IMG, texture), fn);
 
     // Staging control
     static const bool bAllowStaging = !!strstr(Core.Params, "-staging");
@@ -156,13 +137,19 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
     if (img_loaded_lod && !IMG.IsCubemap() /* && !IMG.IsVolumemap()*/)
     {
         const auto old_mipmap_cnt = IMG.mipLevels;
-        Reduce(IMG.width, IMG.height, IMG.mipLevels, img_loaded_lod, compressed);
+        reduce(IMG.width, IMG.height, IMG.mipLevels, img_loaded_lod);
         mip_lod = old_mipmap_cnt - IMG.mipLevels;
     }
 
-    R_CHK2(CreateTextureEx(HW.pDevice, texture.GetImages() + mip_lod, texture.GetImageCount(), IMG, usage, bindFlags, cpuAccessFlags, IMG.miscFlags, DirectX::CREATETEX_DEFAULT,
-                           &pTexture2D),
-           fn);
+    // DirectX requires compressed texture size to be
+    // a multiple of 4. Make sure to meet this requirement.
+    if (DirectX::IsCompressed(IMG.format))
+    {
+        IMG.width = (IMG.width + 3u) & ~0x3u;
+        IMG.height = (IMG.height + 3u) & ~0x3u;
+    }
+    
+    R_CHK2(CreateTextureEx(HW.pDevice, texture.GetImages() + mip_lod, texture.GetImageCount(), IMG, usage, bindFlags, cpuAccessFlags, IMG.miscFlags, DirectX::CREATETEX_DEFAULT, &pTexture2D), fn);
 
     ret_msize = calc_texture_size(img_loaded_lod, IMG.mipLevels, File->length());
 
