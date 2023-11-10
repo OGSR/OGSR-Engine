@@ -71,7 +71,7 @@ static inline u32 calc_texture_size(const int lod, const size_t mip_cnt, const s
     return iFloor(res);
 }
 
-static inline void Reduce(size_t& w, size_t& h, size_t& l, int skip)
+static inline void reduce(size_t& w, size_t& h, size_t& l, int skip)
 {
     while ((l > 1) && skip)
     {
@@ -102,13 +102,14 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
         Msg("! Fallback to default bump map: [%s]", fname);
 
         if (strstr(fname, "_bump#"))
-            R_ASSERT2(FS.exist(fn, "$game_textures$", "ed\\ed_dummy_bump#", ".dds"), "ed_dummy_bump#");
+            R_ASSERT(FS.exist(fn, "$game_textures$", "ed\\ed_dummy_bump#", ".dds"), "ed_dummy_bump#");
         else
-            R_ASSERT2(FS.exist(fn, "$game_textures$", "ed\\ed_dummy_bump", ".dds"), "ed_dummy_bump");
+            R_ASSERT(FS.exist(fn, "$game_textures$", "ed\\ed_dummy_bump", ".dds"), "ed_dummy_bump");
     }
     else if (!FS.exist(fn, "$level$", fname, ".dds") && !FS.exist(fn, "$game_saves$", fname, ".dds") && !FS.exist(fn, "$game_textures$", fname, ".dds"))
     {
         Msg("! Can't find texture [%s]", fname);
+
         R_ASSERT(FS.exist(fn, "$game_textures$", "ed\\ed_not_existing_texture", ".dds"));
     }
 
@@ -118,40 +119,65 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
 #ifdef DEBUG
     Msg("* Loaded: %s[%zu]", fn, File->length());
 #endif
-
-    DirectX::TexMetadata IMG{};
-    DirectX::ScratchImage texture{};
-    R_CHK2(LoadFromDDSMemory(File->pointer(), File->length(), DirectX::DDS_FLAGS_PERMISSIVE, &IMG, texture), fn);
-
-    // Staging control
-    static const bool bAllowStaging = !!strstr(Core.Params, "-staging");
-    bStaging &= bAllowStaging;
-    const D3D11_USAGE usage = bStaging ? D3D_USAGE_STAGING : D3D_USAGE_IMMUTABLE /*D3D_USAGE_DEFAULT*/;
-    const unsigned int bindFlags = bStaging ? 0 : D3D_BIND_SHADER_RESOURCE;
-    const unsigned int cpuAccessFlags = bStaging ? D3D_CPU_ACCESS_WRITE : 0;
+    int img_loaded_lod{};
     ID3DBaseTexture* pTexture2D{};
+    DirectX::TexMetadata IMG{};
+    DirectX::DDS_FLAGS dds_flags{ DirectX::DDS_FLAGS_PERMISSIVE };
+    bool allowFallback = true;
 
-    // Check for LMAP and compress if needed
-    size_t mip_lod{};
-    const int img_loaded_lod = get_texture_load_lod(fn);
-    if (img_loaded_lod && !IMG.IsCubemap() /* && !IMG.IsVolumemap()*/)
+    do
     {
-        const auto old_mipmap_cnt = IMG.mipLevels;
-        reduce(IMG.width, IMG.height, IMG.mipLevels, img_loaded_lod);
-        mip_lod = old_mipmap_cnt - IMG.mipLevels;
-    }
+        DirectX::ScratchImage texture{};
+        if (FAILED(LoadFromDDSMemory(File->pointer(), File->length(), dds_flags, &IMG, texture)))
+        {
+            Msg("! Failed to load DDS texture from memory: %s", fn);
+            break;
+        }
 
-    // DirectX requires compressed texture size to be
-    // a multiple of 4. Make sure to meet this requirement.
-    if (DirectX::IsCompressed(IMG.format))
-    {
-        IMG.width = (IMG.width + 3u) & ~0x3u;
-        IMG.height = (IMG.height + 3u) & ~0x3u;
-    }
-    
-    R_CHK2(CreateTextureEx(HW.pDevice, texture.GetImages() + mip_lod, texture.GetImageCount(), IMG, usage, bindFlags, cpuAccessFlags, IMG.miscFlags, DirectX::CREATETEX_DEFAULT, &pTexture2D), fn);
+        // Staging control
+        static const bool bAllowStaging = !!strstr(Core.Params, "-staging");
+        bStaging &= bAllowStaging;
 
-    ret_msize = calc_texture_size(img_loaded_lod, IMG.mipLevels, File->length());
+        const D3D11_USAGE usage = bStaging ? D3D_USAGE_STAGING : D3D_USAGE_IMMUTABLE /*D3D_USAGE_DEFAULT*/;
+        const unsigned int bindFlags = bStaging ? 0 : D3D_BIND_SHADER_RESOURCE;
+        const unsigned int cpuAccessFlags = bStaging ? D3D_CPU_ACCESS_WRITE : 0;
+
+        // Check for LMAP and compress if needed
+        size_t mip_lod{};
+        img_loaded_lod = get_texture_load_lod(fn);
+        if (img_loaded_lod && !IMG.IsCubemap() /* && !IMG.IsVolumemap()*/)
+        {
+            const auto old_mipmap_cnt = IMG.mipLevels;
+            reduce(IMG.width, IMG.height, IMG.mipLevels, img_loaded_lod);
+            mip_lod = old_mipmap_cnt - IMG.mipLevels;
+        }
+
+        // DirectX requires compressed texture size to be
+        // a multiple of 4. Make sure to meet this requirement.
+        if (DirectX::IsCompressed(IMG.format))
+        {
+            IMG.width = (IMG.width + 3u) & ~0x3u;
+            IMG.height = (IMG.height + 3u) & ~0x3u;
+        }
+
+        const auto hr = CreateTextureEx(HW.pDevice, texture.GetImages() + mip_lod, texture.GetImageCount(),
+            IMG, usage, bindFlags, cpuAccessFlags, IMG.miscFlags, DirectX::CREATETEX_DEFAULT, &pTexture2D);
+
+        if (SUCCEEDED(hr))
+        {
+            // Получилось. Считаем сколько весит текстура и сваливаем.
+            ret_msize = calc_texture_size(img_loaded_lod, IMG.mipLevels, File->length());
+            break;
+        }
+
+        if (!allowFallback)
+            break; // Уже была вторая попытка, прекращаем.
+
+        // Помянем, не получилось загрузить текстуру...
+        // Давай заново, с конвертацией текстур. Может помочь.
+        dds_flags |= DirectX::DDS_FLAGS::DDS_FLAGS_NO_16BPP | DirectX::DDS_FLAGS_FORCE_RGB;
+        allowFallback = false;
+    } while (true);
 
     FS.r_close(File);
 
