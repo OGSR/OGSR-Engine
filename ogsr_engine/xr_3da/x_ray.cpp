@@ -353,6 +353,8 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
 
     // Title window
 
+    DisableProcessWindowsGhosting();
+
     logoWindow = ShowSplash(hInstance, nCmdShow);
 
     LPCSTR fsgame_ltx_name = "-fsltx ";
