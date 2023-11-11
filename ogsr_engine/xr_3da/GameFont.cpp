@@ -90,7 +90,7 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
         uFlags |= fsMultibyte;
         fHeight = ini->r_float("mb_symbol_coords", "height");
 
-        fXStep = ceil(fHeight / 2.0f);
+        fXStep = ceil(fHeight / 2.0f); // условная ширина пробела
 
         // Searching for the first valid character
 
@@ -122,10 +122,14 @@ void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
             {
                 Fvector v = ini->r_fvector3("mb_symbol_coords", buf);
                 TCMap[i].set(v.x, v.y, v.z - v.x + fwc);
+
+                if (i == 0x0020)
+                    fXStep = v.z - v.x + fwc; // реальная ширина пробела в шрифте
             }
             else
                 TCMap[i] = vFirstValid; // "unassigned" unprintable characters
         }
+
 
         // Special case for space
         TCMap[0x0020].set(0, 0, 0);
