@@ -321,12 +321,6 @@ void CUILines::ParseText()
                     return fDelta;
                 };
 
-                auto get_space_width = [](CGameFont* pFont) {
-                    float fDelta = pFont->SizeOf_(' ');
-                    fDelta += pFont->GetfXStep() * pFont->GetInterval().x * pFont->GetWidthScale();
-                    return fDelta;
-                };
-
                 /*
                 if (is_wide_char)
                     Msg("--Size of W symbol [%d] is [%f], curr_width: [%f], max_width: [%f]", sbl.m_text[idx], get_Wstr_width(m_pFont, &sbl.m_text[idx]), curr_width, max_width);
@@ -334,8 +328,8 @@ void CUILines::ParseText()
                     Msg("~~Size of A symbol [%d] is [%f], curr_width: [%f], max_width: [%f]", sbl.m_text[idx], get_str_width(m_pFont, sbl.m_text[idx]), curr_width, max_width);
                 */
 
-                float char_width = is_wide_char ? get_wstr_width(m_pFont, &sbl.m_text[idx]) :
-                                                        m_pFont->IsMultibyte() && iswspace(sbl.m_text[idx]) ? get_space_width(m_pFont) : get_str_width(m_pFont, sbl.m_text[idx]);
+                float char_width = is_wide_char ? get_wstr_width(m_pFont, &sbl.m_text[idx])
+                                                : get_str_width(m_pFont, sbl.m_text[idx]);
 
                 UI()->ClientToScreenScaledWidth(char_width);
 

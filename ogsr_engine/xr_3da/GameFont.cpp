@@ -253,7 +253,7 @@ u16 CGameFont::GetCutLengthPos(float fTargetWidth, const char* pszText)
     {
         fDelta = (GetCharTC(wsStr[i]).z * GetWidthScale());
 
-        if (IsNeedSpaceCharacter(wsStr[i]))
+        if (IsSpaceCharacter(wsStr[i]))
             fDelta += GetfXStep() * GetWidthScale();
 
         if ((fCurWidth + fDelta) > fTargetWidth)
@@ -281,7 +281,7 @@ u16 CGameFont::SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, 
     {
         fDelta = GetCharTC(wsStr[i]).z * GetWidthScale();
 
-        if (IsNeedSpaceCharacter(wsStr[i]))
+        if (IsSpaceCharacter(wsStr[i]))
             fDelta += GetfXStep() * GetWidthScale();
 
         if (fCurWidth + fDelta > fTargetWidth && // overlength
@@ -348,9 +348,21 @@ void __cdecl CGameFont::OutNext(LPCSTR fmt, ...) { MASTER_OUT(TRUE, FALSE, FALSE
 
 void CGameFont::OutSkip(float val) { fCurrentY += val * CurrentHeight_(); }
 
-float CGameFont::SizeOf_(const char cChar) { return GetCharTC((u16)(u8)(/*IsMultibyte() && cChar == ' ' ? 0 :*/ cChar)).z * vInterval.x * GetWidthScale(); }
+float CGameFont::SizeOf_(const char cChar)
+{
+    float x = GetCharTC((u16)(u8)(cChar)).z;
+    if (IsMultibyte() && IsSpaceCharacter((u16)(u8)(cChar)))
+        x += GetfXStep();
+    return x * vInterval.x * GetWidthScale();
+}
 
-float CGameFont::SizeOf_(const u16 cChar) { return GetCharTC(/*IsMultibyte() && cChar == ' ' ? 0 :*/ cChar).z * vInterval.x * GetWidthScale(); }
+float CGameFont::SizeOf_(const u16 cChar)
+{
+    float x = GetCharTC(cChar).z;
+    if (IsMultibyte() && IsSpaceCharacter(cChar))
+        x += GetfXStep();
+    return x * vInterval.x * GetWidthScale();
+}
 
 float CGameFont::SizeOf_(LPCSTR s)
 {
@@ -387,7 +399,8 @@ float CGameFont::SizeOf_(const wide_char* wsStr)
         for (unsigned int j = 1; j <= len; j++)
         {
             fDelta = GetCharTC(wsStr[j]).z;
-            if (IsNeedSpaceCharacter(wsStr[j]))
+
+            if (IsSpaceCharacter(wsStr[j]))
                 fDelta += GetfXStep();
             X += fDelta;
         }

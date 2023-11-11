@@ -181,10 +181,6 @@ void CUILine::Draw(CGameFont* pFont, float x, float y, float max_w) const
     if (pFont->GetAligment() == CGameFont::alJustified)
     {
         def_add_w = pFont->SizeOf_(' ');
-        if (pFont->IsMultibyte())
-        {
-            def_add_w += pFont->GetfXStep() * pFont->GetInterval().x * pFont->GetWidthScale();
-        }
 
         UI()->ClientToScreenScaledWidth(def_add_w);
 

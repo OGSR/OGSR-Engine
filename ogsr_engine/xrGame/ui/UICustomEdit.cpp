@@ -179,8 +179,6 @@ void CUICustomEdit::AddChar(const u16 c)
         return;
 
     float text_width = m_lines.GetFont()->SizeOf_(m_lines.GetText()) + m_lines.GetFont()->SizeOf_(c);
-    if (c == ' ' && m_lines.GetFont()->IsMultibyte())
-        text_width += m_lines.GetFont()->GetfXStep() * m_lines.GetFont()->GetInterval().x * m_lines.GetFont()->GetWidthScale();
 
     UI()->ClientToScreenScaledWidth(text_width);
 

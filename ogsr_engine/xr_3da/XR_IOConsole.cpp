@@ -411,8 +411,6 @@ void CConsole::OnRender()
             {
                 f->OutI(-1.0f + out_pos * scr_x, ypos, "%c", str[c]);
                 out_pos += f->SizeOf_(str[c]);
-                if (str[c] == ' ' && f->IsMultibyte())
-                    out_pos += f->GetfXStep() * pFont->GetInterval().x * pFont->GetWidthScale();
             }
         };
 
