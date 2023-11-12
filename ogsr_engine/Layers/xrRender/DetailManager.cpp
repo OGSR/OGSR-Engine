@@ -7,8 +7,6 @@
 
 #include "DetailManager.h"
 
-#include <future>
-
 #include "cl_intersect.h"
 
 #include "../../xr_3da/igame_persistent.h"

@@ -271,22 +271,20 @@ public:
               >
     NODISCARD std::future<R> submit(F&& func, A&&... args)
     {
-        std::shared_ptr<std::packaged_task<R()>> ptask = std::make_shared<std::packaged_task<R()>>(std::bind(std::forward<F>(func), std::forward<A>(args)...));
-        submit_detach([ptask] { (*ptask)(); });
-        return ptask->get_future();
-    }
-
-    /**
-     * Submit a zero-argument Callable for the pool to execute.
-     *
-     * @param func The Callable to execute. Can be a function, a lambda, std::packaged_task, std::function, etc.
-     */
-    template <typename F>
-    void submit_detach(F&& func)
-    {
         const std::lock_guard<std::mutex> tasks_lock(task_mutex);
-        tasks.emplace(std::forward<F>(func));
+        std::shared_ptr<std::packaged_task<R()>> ptask = std::make_shared<std::packaged_task<R()>>([=] {
+            __try
+            {
+                func(std::forward<A>(args)...);
+            }
+            __except (ExceptStackTrace("TTAPI stack trace:\n"))
+            {
+                Debug.on_exception_in_thread();
+            }
+        });
+        tasks.emplace([ptask] { (*ptask)(); });
         task_cv.notify_one();
+        return ptask->get_future();
     }
 
     /**
@@ -298,7 +296,16 @@ public:
     void submit_detach(F&& func, A&&... args)
     {
         const std::lock_guard<std::mutex> tasks_lock(task_mutex);
-        tasks.emplace(std::bind(std::forward<F>(func), std::forward<A>(args)...));
+        tasks.emplace([=] {
+            __try
+            {
+                func(std::forward<A>(args)...);
+            }
+            __except (ExceptStackTrace("TTAPI stack trace:\n"))
+            {
+                Debug.on_exception_in_thread();
+            }
+        });
         task_cv.notify_one();
     }
 
@@ -365,11 +372,12 @@ protected:
             {
                 task();
             }
-            catch (...)
+            catch (const std::future_error& ferr)
             {
                 // std::packaged_task::operator() may throw in some error
                 // conditions, such as if the task had already been run.
                 // Nothing that the pool can do anything about.
+                Msg("!![%s] Catched std::future_error: [%s]", __FUNCTION__, ferr.what());
             }
 
             finished_task = true;

@@ -27,6 +27,8 @@ public:
     void _cdecl fatal(const char* file, int line, const char* function, const char* F, ...);
     void backend(const char* reason, const char* expression, const char* argument0, const char* argument1, const char* file, int line, const char* function);
     static void do_exit(const std::string& message);
+
+    void on_exception_in_thread();
 };
 
 // warning

@@ -28,7 +28,7 @@ static void ShowErrorMessage(const char* msg, const bool show_msg = false)
         if (show_msg)
             MessageBox(gGameWindow, msg, "FATAL ERROR", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
         else
-            ShellExecute(gGameWindow, "open", logFName, nullptr, nullptr, SW_SHOW);
+            ShellExecute(nullptr, "open", logFName, nullptr, nullptr, SW_SHOW);
     }
 }
 
@@ -235,6 +235,16 @@ void __cdecl xrDebug::fatal(const char* file, int line, const char* function, co
     va_end(args);
 
     backend("FATAL ERROR", strBuf, nullptr, nullptr, file, line, function);
+}
+
+void xrDebug::on_exception_in_thread()
+{
+    if (!IsDebuggerPresent())
+    {
+        ShellExecute(nullptr, "open", logFName, nullptr, nullptr, SW_SHOW);
+
+        quick_exit(EXIT_SUCCESS);
+    }
 }
 
 static int out_of_memory_handler(size_t size)

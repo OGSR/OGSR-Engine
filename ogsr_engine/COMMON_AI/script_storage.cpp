@@ -154,6 +154,9 @@ void CScriptStorage::LogVariable(lua_State* l, const char* name, int level)
 
 static void ScriptCrashHandler(bool dump_lua_locals)
 {
+    if (!Device.OnMainThread())
+        return;
+
     try
     {
         Msg("***************************[ScriptCrashHandler]**********************************");
