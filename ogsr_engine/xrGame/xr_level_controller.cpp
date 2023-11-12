@@ -401,6 +401,7 @@ void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff_sz)
 
     string128 prim;
     string128 sec;
+
     prim[0] = 0;
     sec[0] = 0;
 
@@ -413,7 +414,14 @@ void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff_sz)
         strcpy_s(sec, pbinding->m_keyboard[1]->key_local_name.c_str());
     }
 
-    sprintf_s(dst_buff, dst_buff_sz, "%s%s%s", prim[0] ? prim : "", (sec[0] && prim[0]) ? " , " : "", sec[0] ? sec : "");
+    if (pbinding->m_keyboard[0] || pbinding->m_keyboard[1])
+    {
+        sprintf_s(dst_buff, dst_buff_sz, "%s%s%s", prim[0] ? prim : "", (sec[0] && prim[0]) ? " , " : "", sec[0] ? sec : "");
+    }
+    else
+    {
+        sprintf_s(dst_buff, dst_buff_sz, "%s", "None");
+    }
 }
 
 ConsoleBindCmds bindConsoleCmds;

@@ -1,6 +1,9 @@
 #include "stdafx.h"
 
 #include "UIEditKeyBind.h"
+
+#include <dinput.h>
+
 #include "UIColorAnimatorWrapper.h"
 #include "../xr_level_controller.h"
 #include "../object_broker.h"
@@ -114,6 +117,18 @@ bool CUIEditKeyBind::OnKeyboard(int dik, EUIMessages keyboard_action)
     string64 message;
     if (m_bEditMode)
     {
+        if (dik == DIK_DELETE)
+        {
+            if (m_keyboard)
+            {
+                SetText("---");
+                m_keyboard = nullptr;
+                OnFocusLost();
+                m_bChanged = true;
+                return true;
+            }
+        }
+
         m_keyboard = dik_to_ptr(dik, true);
         if (!m_keyboard)
             return true;
