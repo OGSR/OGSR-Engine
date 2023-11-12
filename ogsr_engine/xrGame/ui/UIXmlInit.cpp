@@ -1112,11 +1112,25 @@ bool CUIXmlInit::InitTexture(CUIXml& xml_doc, const char* path, int index, IUIMu
 bool CUIXmlInit::InitTexture(CUIXml& xml_doc, const char* path, int index, IUISingleTextureOwner* pWnd)
 {
     string256 buf;
-    InitTexture(xml_doc, path, index, (IUIMultiTextureOwner*)pWnd);
+    shared_str texture;
+    shared_str shader;
     strconcat(sizeof(buf), buf, path, ":texture");
 
-    Frect rect;
+    if (xml_doc.NavigateToNode(buf))
+    {
+        texture = xml_doc.Read(buf, index, NULL);
+        shader = xml_doc.ReadAttrib(buf, index, "shader", NULL);
+    }
 
+    if (!!texture)
+    {
+        if (!!shader)
+            pWnd->InitTextureEx(*texture, *shader);
+        else
+            pWnd->InitTexture(*texture);
+    }
+
+    Frect rect;
     rect.x1 = xml_doc.ReadAttribFlt(buf, index, "x", 0);
     rect.y1 = xml_doc.ReadAttribFlt(buf, index, "y", 0);
     rect.x2 = rect.x1 + xml_doc.ReadAttribFlt(buf, index, "width", 0);
