@@ -128,9 +128,9 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
     do
     {
         DirectX::ScratchImage texture{};
-        if (FAILED(LoadFromDDSMemory(File->pointer(), File->length(), dds_flags, &IMG, texture)))
+        if (const auto hr = LoadFromDDSMemory(File->pointer(), File->length(), dds_flags, &IMG, texture); FAILED(hr))
         {
-            Msg("! Failed to load DDS texture from memory: %s", fn);
+            Msg("! Failed to load DDS texture from memory: [%s], hr: [%d]", fn, hr);
             break;
         }
 
@@ -171,7 +171,10 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
         }
 
         if (!allowFallback)
+        {
+            Msg("! Failed CreateTextureEx: [%s], hr: [%d]", fn, hr);
             break; // Уже была вторая попытка, прекращаем.
+        }
 
         // Помянем, не получилось загрузить текстуру...
         // Давай заново, с конвертацией текстур. Может помочь.
