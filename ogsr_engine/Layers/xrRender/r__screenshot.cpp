@@ -31,7 +31,7 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
         if (UseTGA)
             SaveToTGAMemory(*SImage.GetImage(0, 0, 0), TGA_FLAGS::TGA_FLAGS_NONE, SavedBlob);
         else
-            SaveToWICMemory(*SImage.GetImage(0, 0, 0), WIC_FLAGS::WIC_FLAGS_NONE, UsePNG ? GUID_ContainerFormatPng : GUID_ContainerFormatJpeg, SavedBlob);
+            SaveToWICMemory(*SImage.GetImage(0, 0, 0), WIC_FLAGS::WIC_FLAGS_FORCE_SRGB, UsePNG ? GUID_ContainerFormatPng : GUID_ContainerFormatJpeg, SavedBlob);
 
         auto fs = FS.w_open("$screenshots$", buf);
         R_ASSERT(fs);
