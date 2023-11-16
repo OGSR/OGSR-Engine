@@ -2,55 +2,64 @@
 
 XRCORE_API smem_container* g_pSharedMemoryContainer = NULL;
 
-smem_value* smem_container::dock(u32 dwCRC, u32 dwLength, void* ptr)
+smem_value* smem_container::dock(u32 dwSize, void* ptr)
 {
-    VERIFY(dwCRC && dwLength && ptr);
+    smem_value* result = (smem_value*)Memory.mem_alloc(sizeof(smem_value) + dwSize);
+    result->dwReference = 0;
+    result->dwSize = dwSize;
+    result->dwCRC = -1; 
+    CopyMemory(result->value, ptr, dwSize);
 
-    cs.Enter();
-    smem_value* result = 0;
-
-    // search a place to insert
-    u8 storage[4 * sizeof(u32)];
-    smem_value* value = (smem_value*)storage;
-    value->dwReference = 0;
-    value->dwCRC = dwCRC;
-    value->dwLength = dwLength;
-    cdb::iterator it = std::lower_bound(container.begin(), container.end(), value, smem_search);
-    cdb::iterator saved_place = it;
-    if (container.end() != it)
-    {
-        // supposedly found
-        for (;; it++)
-        {
-            if (it == container.end())
-                break;
-            if ((*it)->dwCRC != dwCRC)
-                break;
-            if ((*it)->dwLength != dwLength)
-                break;
-            if (0 == memcmp((*it)->value, ptr, dwLength))
-            {
-                // really found
-                result = *it;
-                break;
-            }
-        }
-    }
-
-    // if not found - create new entry
-    if (0 == result)
-    {
-        result = (smem_value*)Memory.mem_alloc(4 * sizeof(u32) + dwLength);
-        result->dwReference = 0;
-        result->dwCRC = dwCRC;
-        result->dwLength = dwLength;
-        CopyMemory(result->value, ptr, dwLength);
-        container.insert(saved_place, result);
-    }
-
-    // exit
-    cs.Leave();
     return result;
+
+    //VERIFY(dwCRC && dwSize && ptr);
+
+    //cs.Enter();
+    //smem_value* result = 0;
+
+    //// search a place to insert
+    //u8 storage[sizeof(smem_value)];
+    //smem_value* value = (smem_value*)storage;
+    //value->dwReference = 0;
+    //value->dwCRC = dwCRC;
+    //value->dwSize = dwSize;
+    //cdb::iterator it = std::lower_bound(container.begin(), container.end(), value, smem_search);
+    //cdb::iterator saved_place = it;
+    //if (container.end() != it)
+    //{
+    //    // supposedly found
+    //    for (;; it++)
+    //    {
+    //        if (it == container.end())
+    //            break;
+    //        if ((*it)->dwCRC != dwCRC)
+    //            break;
+    //        if ((*it)->dwSize != dwSize)
+    //            break;
+    //        if (0 == memcmp((*it)->value, ptr, dwSize))
+    //        {
+    //            // really found
+    //            result = *it;
+    //            break;
+    //        }
+    //    }
+    //}
+
+    //// if not found - create new entry
+    //if (0 == result)
+    //{
+    //    u32 dwCRC = crc32(ptr, dwSize);
+    //    result = (smem_value*)Memory.mem_alloc(sizeof(smem_value) + dwSize);
+    //    result->dwReference = 0;
+    //    result->dwCRC = dwCRC;
+    //    result->dwSize = dwSize;
+    //    CopyMemory(result->value, ptr, dwSize);
+    //    container.insert(saved_place, result);
+    //}
+
+    //// exit
+    //cs.Leave();
+    //return result;
 }
 
 void smem_container::clean()
@@ -74,7 +83,7 @@ void smem_container::dump()
     cdb::iterator end = container.end();
     FILE* F = fopen("x:\\$smem_dump$.txt", "w");
     for (; it != end; it++)
-        fprintf(F, "%4u : crc[%6x], %u bytes\n", (*it)->dwReference, (*it)->dwCRC, (*it)->dwLength);
+        fprintf(F, "%4u : crc[%6x], %u bytes\n", (*it)->dwReference, (*it)->dwCRC, (*it)->dwSize);
     fclose(F);
     cs.Leave();
 }
@@ -92,7 +101,7 @@ u32 smem_container::stat_economy()
     {
         counter -= 16;
         counter -= node_size;
-        counter += s64((s64((*it)->dwReference) - 1) * s64((*it)->dwLength));
+        counter += s64((s64((*it)->dwReference) - 1) * s64((*it)->dwSize));
     }
     cs.Leave();
 

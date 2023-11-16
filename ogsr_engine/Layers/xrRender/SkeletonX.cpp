@@ -162,7 +162,7 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
 
     u16 sw_bones_cnt = 0;
 
-    u32 dwVertType, size, it, crc;
+    u32 dwVertType, it/*, size, crc*/;
     dwVertType = data->r_u32();
     dwVertCount = data->r_u32();
 
@@ -173,7 +173,7 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
     {
     case OGF_VERTEXFORMAT_FVF_1L: // 1-Link
     case 1: {
-        size = dwVertCount * sizeof(vertBoned1W);
+        //size = dwVertCount * sizeof(vertBoned1W);
         vertBoned1W* pVO = (vertBoned1W*)data->pointer();
 
         for (it = 0; it < dwVertCount; ++it)
@@ -203,15 +203,15 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
         else
         {
             // software
-            crc = crc32(data->pointer(), size);
-            Vertices1W.create(crc, dwVertCount, (vertBoned1W*)data->pointer());
+            //crc = crc32(data->pointer(), size);
+            Vertices1W.create(dwVertCount, (vertBoned1W*)data->pointer());
             Render->shader_option_skinning(-1);
         }
     }
     break;
     case OGF_VERTEXFORMAT_FVF_2L: // 2-Link
     case 2: {
-        size = dwVertCount * sizeof(vertBoned2W);
+        //size = dwVertCount * sizeof(vertBoned2W);
         vertBoned2W* pVO = (vertBoned2W*)data->pointer();
 
         for (it = 0; it < dwVertCount; ++it)
@@ -237,15 +237,15 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
         else
         {
             // software
-            crc = crc32(data->pointer(), size);
-            Vertices2W.create(crc, dwVertCount, (vertBoned2W*)data->pointer());
+            //crc = crc32(data->pointer(), size);
+            Vertices2W.create(dwVertCount, (vertBoned2W*)data->pointer());
             Render->shader_option_skinning(-1);
         }
     }
     break;
     case OGF_VERTEXFORMAT_FVF_3L: // 3-Link
     case 3: {
-        size = dwVertCount * sizeof(vertBoned3W);
+        //size = dwVertCount * sizeof(vertBoned3W);
         vertBoned3W* pVO = (vertBoned3W*)data->pointer();
 
         for (it = 0; it < dwVertCount; ++it)
@@ -268,15 +268,15 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
         }
         else
         {
-            crc = crc32(data->pointer(), size);
-            Vertices3W.create(crc, dwVertCount, (vertBoned3W*)data->pointer());
+            //crc = crc32(data->pointer(), size);
+            Vertices3W.create(dwVertCount, (vertBoned3W*)data->pointer());
             Render->shader_option_skinning(-1);
         }
     }
     break;
     case OGF_VERTEXFORMAT_FVF_4L: // 4-Link
     case 4: {
-        size = dwVertCount * sizeof(vertBoned4W);
+        //size = dwVertCount * sizeof(vertBoned4W);
         vertBoned4W* pVO = (vertBoned4W*)data->pointer();
 
         for (it = 0; it < dwVertCount; ++it)
@@ -300,8 +300,8 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
         }
         else
         {
-            crc = crc32(data->pointer(), size);
-            Vertices4W.create(crc, dwVertCount, (vertBoned4W*)data->pointer());
+            //crc = crc32(data->pointer(), size);
+            Vertices4W.create(dwVertCount, (vertBoned4W*)data->pointer());
             Render->shader_option_skinning(-1);
         }
     }
@@ -310,8 +310,8 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
     }
     if (bids.size() > 1)
     {
-        crc = crc32(&*bids.begin(), bids.size() * sizeof(u16));
-        BonesUsed.create(crc, bids.size(), &*bids.begin());
+        //crc = crc32(&*bids.begin(), bids.size() * sizeof(u16));
+        BonesUsed.create(bids.size(), &*bids.begin());
     }
 }
 
@@ -597,8 +597,8 @@ void CSkeletonX::_DuplicateIndices(const char* N, IReader* data)
     R_ASSERT(data->find_chunk(OGF_INDICES));
     u32 iCount = data->r_u32();
 
-    u32 size = iCount * 2;
-    u32 crc = crc32(data->pointer(), size);
-    m_Indices.create(crc, iCount, (u16*)data->pointer());
+    //u32 size = iCount * 2;
+    //u32 crc = crc32(data->pointer(), size);
+    m_Indices.create(iCount, (u16*)data->pointer());
 }
 #endif //	USE_DX10

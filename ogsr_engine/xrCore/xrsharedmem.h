@@ -7,7 +7,7 @@ struct XRCORE_API smem_value
 {
     u32 dwReference;
     u32 dwCRC;
-    u32 dwLength;
+    u32 dwSize; // size in bytes !!!
     u32 _align_16;
     u8 value[];
 };
@@ -18,11 +18,11 @@ IC bool smem_sort(const smem_value* A, const smem_value* B)
         return true;
     if (A->dwCRC > B->dwCRC)
         return false;
-    if (A->dwLength < B->dwLength)
+    if (A->dwSize < B->dwSize)
         return true;
-    if (A->dwLength > B->dwLength)
+    if (A->dwSize > B->dwSize)
         return false;
-    return memcmp(A->value, B->value, A->dwLength) < 0;
+    return memcmp(A->value, B->value, A->dwSize) < 0;
 };
 
 // predicate for insertion - just a quick estimate
@@ -32,17 +32,17 @@ IC bool smem_search(const smem_value* A, const smem_value* B)
         return true;
     if (A->dwCRC > B->dwCRC)
         return false;
-    return A->dwLength < B->dwLength;
+    return A->dwSize < B->dwSize;
 };
 
 // predicate for exact (byte level) comparition
-IC bool smem_equal(const smem_value* A, u32 dwCRC, u32 dwLength, u8* ptr)
+IC bool smem_equal(const smem_value* A, u32 dwCRC, u32 dwSize, u8* ptr)
 {
     if (A->dwCRC != dwCRC)
         return false;
-    if (A->dwLength != dwLength)
+    if (A->dwSize != dwSize)
         return false;
-    return 0 == memcmp(A->value, ptr, dwLength);
+    return 0 == memcmp(A->value, ptr, dwSize);
 };
 #pragma warning(default : 4200)
 
@@ -55,7 +55,7 @@ private:
     cdb container;
 
 public:
-    smem_value* dock(u32 dwCRC, u32 dwLength, void* ptr);
+    smem_value* dock(u32 dwSize, void* ptr);
     void clean();
     void dump();
     u32 stat_economy();
@@ -105,9 +105,9 @@ public:
     }
     ~ref_smem() { _dec(); }
 
-    void create(u32 dwCRC, u32 dwLength, T* ptr)
+    void create(u32 dwLength, T* ptr)
     {
-        smem_value* v = g_pSharedMemoryContainer->dock(dwCRC, dwLength * sizeof(T), ptr);
+        smem_value* v = g_pSharedMemoryContainer->dock(dwLength * sizeof(T), ptr);
         if (0 != v)
             v->dwReference++;
         _dec();
@@ -130,7 +130,7 @@ public:
         if (0 == p_)
             return 0;
         else
-            return p_->dwLength / sizeof(T);
+            return p_->dwSize / sizeof(T);
     }
     void swap(ref_smem<T>& rhs)
     {

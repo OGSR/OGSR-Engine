@@ -442,26 +442,15 @@ void CBaseMonster::settings_read(CInifile* ini, LPCSTR section, SMonsterSettings
 
 void CBaseMonster::settings_load(LPCSTR section)
 {
-    SMonsterSettings data;
-
-    settings_read(pSettings, section, data);
-
-    u32 crc = crc32(&data, sizeof(SMonsterSettings));
-    m_base_settings.create(crc, 1, &data);
+    settings_read(pSettings, section, m_current_settings);
 }
 
 void CBaseMonster::settings_overrides()
 {
-    SMonsterSettings* data;
-    data = *m_base_settings;
-
     if (spawn_ini() && spawn_ini()->section_exist("settings_overrides"))
     {
-        settings_read(spawn_ini(), "settings_overrides", (*data));
+        settings_read(spawn_ini(), "settings_overrides", m_current_settings);
     }
-
-    u32 crc = crc32(data, sizeof(SMonsterSettings));
-    m_current_settings.create(crc, 1, data);
 }
 
 void CBaseMonster::on_before_sell(CInventoryItem* item)

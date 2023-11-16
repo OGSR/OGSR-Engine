@@ -348,9 +348,9 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
     case RM_SINGLE:
     case RM_SKINNING_1B: {
         { //	Back up vertex data since we can't read vertex buffer in DX10
-            u32 size = V.vCount * sizeof(vertBoned1W);
-            u32 crc = crc32(_verts_, size);
-            Vertices1W.create(crc, V.vCount, (vertBoned1W*)_verts_);
+            //u32 size = V.vCount * sizeof(vertBoned1W);
+            //u32 crc = crc32(_verts_, size);
+            Vertices1W.create(V.vCount, (vertBoned1W*)_verts_);
         }
 
         u32 vStride = FVF::ComputeVertexSize(dwDecl_01W, 0);
@@ -391,9 +391,9 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
     break;
     case RM_SKINNING_2B: {
         { //	Back up vertex data since we can't read vertex buffer in DX10
-            u32 size = V.vCount * sizeof(vertBoned2W);
-            u32 crc = crc32(_verts_, size);
-            Vertices2W.create(crc, V.vCount, (vertBoned2W*)_verts_);
+            //u32 size = V.vCount * sizeof(vertBoned2W);
+            //u32 crc = crc32(_verts_, size);
+            Vertices2W.create(V.vCount, (vertBoned2W*)_verts_);
         }
 
         u32 vStride = FVF::ComputeVertexSize(dwDecl_2W, 0);
@@ -435,9 +435,9 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
     break;
     case RM_SKINNING_3B: {
         { //	Back up vertex data since we can't read vertex buffer in DX10
-            u32 size = V.vCount * sizeof(vertBoned3W);
-            u32 crc = crc32(_verts_, size);
-            Vertices3W.create(crc, V.vCount, (vertBoned3W*)_verts_);
+            //u32 size = V.vCount * sizeof(vertBoned3W);
+            //u32 crc = crc32(_verts_, size);
+            Vertices3W.create(V.vCount, (vertBoned3W*)_verts_);
         }
 
         u32 vStride = FVF::ComputeVertexSize(dwDecl_3W, 0);
@@ -480,9 +480,9 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
     break;
     case RM_SKINNING_4B: {
         { //	Back up vertex data since we can't read vertex buffer in DX10
-            u32 size = V.vCount * sizeof(vertBoned4W);
-            u32 crc = crc32(_verts_, size);
-            Vertices4W.create(crc, V.vCount, (vertBoned4W*)_verts_);
+            //u32 size = V.vCount * sizeof(vertBoned4W);
+            //u32 crc = crc32(_verts_, size);
+            Vertices4W.create(V.vCount, (vertBoned4W*)_verts_);
         }
 
         u32 vStride = FVF::ComputeVertexSize(dwDecl_4W, 0);

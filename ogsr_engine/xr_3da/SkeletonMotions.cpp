@@ -177,27 +177,27 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
             if (M.test_flag(flRKeyAbsent))
             {
                 CKeyQR* r = (CKeyQR*)MS->pointer();
-                u32 crc_q = crc32(r, sizeof(CKeyQR));
-                M._keysR.create(crc_q, 1, r);
+                //u32 crc_q = crc32(r, sizeof(CKeyQR));
+                M._keysR.create(1, r);
                 MS->advance(1 * sizeof(CKeyQR));
             }
             else
             {
-                u32 crc_q = MS->r_u32();
-                M._keysR.create(crc_q, dwLen, (CKeyQR*)MS->pointer());
+                /*u32 crc_q = */MS->r_u32();
+                M._keysR.create(dwLen, (CKeyQR*)MS->pointer());
                 MS->advance(dwLen * sizeof(CKeyQR));
             }
             if (M.test_flag(flTKeyPresent))
             {
-                u32 crc_t = MS->r_u32();
+                /*u32 crc_t = */MS->r_u32();
                 if (M.test_flag(flTKey16IsBit))
                 {
-                    M._keysT16.create(crc_t, dwLen, (CKeyQT16*)MS->pointer());
+                    M._keysT16.create(dwLen, (CKeyQT16*)MS->pointer());
                     MS->advance(dwLen * sizeof(CKeyQT16));
                 }
                 else
                 {
-                    M._keysT8.create(crc_t, dwLen, (CKeyQT8*)MS->pointer());
+                    M._keysT8.create(dwLen, (CKeyQT8*)MS->pointer());
                     MS->advance(dwLen * sizeof(CKeyQT8));
                 };
 
