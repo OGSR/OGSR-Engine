@@ -8,6 +8,8 @@
 
 #pragma once
 
+// не использовать без надобности. основной рендом в _random.h
+
 class CRandom32
 {
 private:

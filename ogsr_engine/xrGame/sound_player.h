@@ -12,7 +12,7 @@
 #include "ai_sounds.h"
 #include "associative_vector.h"
 
-class CSoundPlayer : public CRandom32
+class CSoundPlayer
 {
 public:
     struct CSoundParams
@@ -52,7 +52,7 @@ public:
         CSound_UserDataPtr m_data;
     };
 
-    struct CSoundCollection : public CRandom32
+    struct CSoundCollection
     {
         xr_vector<ref_sound*> m_sounds;
         u32 m_last_sound_id;

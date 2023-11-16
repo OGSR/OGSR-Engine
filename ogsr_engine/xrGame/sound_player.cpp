@@ -23,7 +23,7 @@ CSoundPlayer::CSoundPlayer(CObject* object)
 {
     VERIFY(object);
     m_object = object;
-    seed(u32(CPU::QPC() & 0xffffffff));
+
     m_sound_prefix = "";
 }
 
@@ -216,13 +216,13 @@ void CSoundPlayer::play(u32 internal_type, u32 max_start_time, u32 min_start_tim
     u32 random_time = 0;
 
     if (max_start_time)
-        random_time = (max_start_time > min_start_time) ? random(max_start_time - min_start_time) + min_start_time : max_start_time;
+        random_time = (max_start_time > min_start_time) ? Random.randI(max_start_time - min_start_time) + min_start_time : max_start_time;
 
     sound_single.m_start_time = Device.dwTimeGlobal + random_time;
 
     random_time = 0;
     if (max_stop_time)
-        random_time = (max_stop_time > min_stop_time) ? random(max_stop_time - min_stop_time) + min_stop_time : max_stop_time;
+        random_time = (max_stop_time > min_stop_time) ? Random.randI(max_stop_time - min_stop_time) + min_stop_time : max_stop_time;
 
     sound_single.m_stop_time = sound_single.m_start_time + iFloor(sound_single.m_sound->get_length_sec() * 1000.0f) + random_time;
     m_playing_sounds.push_back(sound_single);
@@ -244,7 +244,6 @@ CSoundPlayer::CSoundCollection::CSoundCollection(const CSoundCollectionParams& p
     m_loaded = false;
     m_params = params;
 
-    seed(u32(CPU::QPC() & 0xffffffff));
     m_sounds.clear();
     for (int j = 0, N = _GetItemCount(m_params.m_sound_prefix.c_str()); j < N; ++j)
     {
@@ -316,14 +315,14 @@ const ref_sound& CSoundPlayer::CSoundCollection::random(const u32& id)
 
     if (m_sounds.size() <= 2)
     {
-        m_last_sound_id = CRandom32::random(m_sounds.size());
+        m_last_sound_id = Random.randI(m_sounds.size());
         return *m_sounds[m_last_sound_id];
     }
 
     u32 result;
     do
     {
-        result = CRandom32::random(m_sounds.size());
+        result = Random.randI(m_sounds.size());
     } while (result == m_last_sound_id);
 
     m_last_sound_id = result;

@@ -8,8 +8,7 @@ void light::gi_generate()
     indirect.clear();
     indirect_photons = ps_r2_ls_flags.test(R2FLAG_GI) ? ps_r2_GI_photons : 0;
 
-    CRandom random;
-    random.seed(0x12071980);
+    CRandom random(0x12071980);
 
     xrXRC& xrc = RImplementation.Sectors_xrc;
     CDB::MODEL* model = g_pGameLevel->ObjectSpace.GetStaticModel();

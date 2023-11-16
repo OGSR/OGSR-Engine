@@ -143,8 +143,6 @@ IC CALifeRegistryContainer& CALifeSimulatorBase::registry() const
     return (*m_registry_container);
 }
 
-IC CRandom32& CALifeSimulatorBase::random() { return (m_random); }
-
 IC void CALifeSimulatorBase::setup_command_line(shared_str* command_line) { m_server_command_line = command_line; }
 
 IC xrServer& CALifeSimulatorBase::server() const

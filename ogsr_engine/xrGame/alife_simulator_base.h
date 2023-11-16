@@ -46,7 +46,6 @@ protected:
     CALifeSmartTerrainRegistry* m_smart_terrains;
     CALifeGroupRegistry* m_groups;
     CALifeRegistryContainer* m_registry_container;
-    CRandom32 m_random;
     bool m_initialized;
     shared_str* m_server_command_line;
     bool m_can_register_objects;
@@ -85,7 +84,6 @@ public:
     IC const CALifeStoryRegistry& story_objects() const;
     IC const CALifeSmartTerrainRegistry& smart_terrains() const;
     IC const CALifeGroupRegistry& groups() const;
-    IC CRandom32& random();
     IC xrServer& server() const;
     IC const CALifeTimeManager& time_manager() const;
     IC shared_str* server_command_line() const;
