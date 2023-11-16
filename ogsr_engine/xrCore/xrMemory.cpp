@@ -105,9 +105,11 @@ void GetProcessMemInfo(SProcessMemInfo& minfo)
     minfo.FreePhysicalMemory = mem.ullAvailPhys;
 
     minfo.TotalPageFile = mem.ullTotalPageFile - mem.ullTotalPhys;
-    if (minfo.TotalPageFile > 0.f)
+
+    if (minfo.TotalPageFile > 0l)
     {
-        minfo.FreePageFile = mem.ullAvailPageFile - mem.ullAvailPhys; // эта херня погоду показывает на самом деле. надо найти способ как получить свободный размер файла подкачки
+        // эта херня погоду показывает на самом деле. надо найти способ как получить свободный размер файла подкачки
+        minfo.FreePageFile = mem.ullAvailPageFile > mem.ullAvailPhys ? mem.ullAvailPageFile - mem.ullAvailPhys : mem.ullAvailPageFile;
     }
 
     minfo.MemoryLoad = mem.dwMemoryLoad;
