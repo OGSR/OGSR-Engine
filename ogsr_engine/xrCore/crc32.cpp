@@ -56,6 +56,8 @@
 #endif
 #endif
 
+#define PREFETCH(location) _mm_prefetch(location, _MM_HINT_T0)
+
 // abort if byte order is undefined
 #if !defined(__BYTE_ORDER)
 #error undefined byte order, compile with -D__BYTE_ORDER=1234 (if little endian) or -D__BYTE_ORDER=4321 (big endian)
