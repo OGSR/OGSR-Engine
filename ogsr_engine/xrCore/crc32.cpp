@@ -929,4 +929,4 @@ const uint32_t Crc32Lookup[MaxSlice][256] = {
 };
 #endif // NO_LUT
 
-u32 crc32(const void* P, u32 len) { return crc32_8bytes(P, len); }
+u32 crc32(const void* P, u32 len) { return crc32_16bytes(P, len); }
