@@ -53,6 +53,7 @@ private:
     typedef xr_vector<smem_value*> cdb;
     xrCriticalSection cs;
     cdb container;
+    bool bDisable{};
 
 public:
     smem_value* dock(u32 dwSize, void* ptr);
@@ -62,6 +63,8 @@ public:
 #ifdef PROFILE_CRITICAL_SECTIONS
     smem_container() : cs(MUTEX_PROFILE_ID(smem_container)) {}
 #endif // PROFILE_CRITICAL_SECTIONS
+
+    smem_container(bool disable) { bDisable = disable; }
     ~smem_container();
 };
 XRCORE_API extern smem_container* g_pSharedMemoryContainer;

@@ -29,8 +29,18 @@ void xrMemory::_initialize()
 {
     stat_calls = 0;
 
+    SProcessMemInfo memCounters;
+    GetProcessMemInfo(memCounters);
+
+    bool disableMemoryPool = memCounters.TotalPhysicalMemory > (32000ull * (1024 * 1024));
+
+    if (disableMemoryPool)
+    {
+        Msg("! memory pool disabled due to available memory limit");
+    }
+
     g_pStringContainer = xr_new<str_container>();
-    g_pSharedMemoryContainer = xr_new<smem_container>();
+    g_pSharedMemoryContainer = xr_new<smem_container>(disableMemoryPool);
 }
 
 void xrMemory::_destroy()
