@@ -145,7 +145,8 @@ void UILoadingScreen::SetStageTitle(const char* title)
 {
     std::scoped_lock<decltype(loadingLock)> lock(loadingLock);
 
-    loadingStage->SetText(title);
+    if (loadingStage)
+        loadingStage->SetText(title);
 }
 
 void UILoadingScreen::SetStageTip()
