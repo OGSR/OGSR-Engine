@@ -60,6 +60,7 @@ public:
     void clean();
     void dump();
     u32 stat_economy();
+    bool disabled() const { return bDisable; }
 #ifdef PROFILE_CRITICAL_SECTIONS
     smem_container() : cs(MUTEX_PROFILE_ID(smem_container)) {}
 #endif // PROFILE_CRITICAL_SECTIONS
@@ -84,7 +85,12 @@ protected:
             return;
         p_->dwReference--;
         if (0 == p_->dwReference)
+        {
+            if (g_pSharedMemoryContainer->disabled())
+                xr_free(p_);
+
             p_ = 0;
+        }
     }
 
 public:
