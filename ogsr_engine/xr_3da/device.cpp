@@ -153,6 +153,7 @@ void CRenderDevice::on_idle()
     }
 
     // Matrices
+    mInvView.invert(mView);
     mFullTransform.mul(mProject, mView);
     m_pRender->SetCacheXform(mView, mProject);
     mInvFullTransform.invert_44(mFullTransform);

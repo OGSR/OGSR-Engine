@@ -118,9 +118,7 @@ void CRenderTarget::phase_combine()
         static Fmatrix m_saved_viewproj;
 
         // (new-camera) -> (world) -> (old_viewproj)
-        Fmatrix m_invview;
-        m_invview.invert(Device.mView);
-        m_previous.mul(m_saved_viewproj, m_invview);
+        m_previous.mul(m_saved_viewproj, Device.mInvView);
         m_current.set(Device.mProject);
         m_saved_viewproj.set(Device.mFullTransform);
         float scale = ps_r2_mblur / 2.f;
@@ -132,8 +130,6 @@ void CRenderTarget::phase_combine()
     {
         PIX_EVENT(combine_1);
         // Compute params
-        Fmatrix m_v2w;
-        m_v2w.invert(Device.mView);
         CEnvDescriptorMixer& envdesc = *g_pGamePersistent->Environment().CurrentEnv;
         const float minamb = 0.001f;
         Fvector4 ambclr = {std::max(envdesc.ambient.x * 2, minamb), std::max(envdesc.ambient.y * 2, minamb), std::max(envdesc.ambient.z * 2, minamb), 0};
@@ -222,7 +218,7 @@ void CRenderTarget::phase_combine()
         m_inv_v.invert(Device.mView);
         RCache.set_c("m_inv_v", m_inv_v);
 
-        RCache.set_c("m_v2w", m_v2w);
+        RCache.set_c("m_v2w", Device.mInvView);
         RCache.set_c("L_ambient", ambclr);
 
         RCache.set_c("Ldynamic_color", sunclr);

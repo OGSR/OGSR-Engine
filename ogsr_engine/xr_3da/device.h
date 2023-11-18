@@ -64,8 +64,10 @@ public:
     Fvector vCameraRight;
 
     Fmatrix mView;
+    Fmatrix mInvView;
     Fmatrix mProject;
     Fmatrix mFullTransform;
+    Fmatrix mInvFullTransform;
 
     // Copies of corresponding members. Used for synchronization.
     Fvector vCameraPosition_saved;
@@ -158,8 +160,6 @@ public:
     CSecondVPParams m_SecondViewport; //--#SM+#-- +SecondVP+
 
     CStats* Statistic;
-
-    Fmatrix mInvFullTransform;
 
     CRenderDevice()
         : m_pRender(0)
