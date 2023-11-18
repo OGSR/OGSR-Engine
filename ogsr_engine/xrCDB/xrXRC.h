@@ -17,37 +17,34 @@ class XRCDB_API xrXRC
     CDB::COLLIDER CL;
 
 public:
-    IC void ray_options(u32 f) { CL.ray_options(f); }
-    IC void ray_query(const CDB::MODEL* m_def, const Fvector& r_start, const Fvector& r_dir, float r_range = 10000.f)
+    IC void ray_query(u32 options, const CDB::MODEL* m_def, const Fvector& r_start, const Fvector& r_dir, float r_range = 10000.f)
     {
 #ifdef DEBUG
         cdb_clRAY->Begin();
 #endif
-        CL.ray_query(m_def, r_start, r_dir, r_range);
+        CL.ray_query(options, m_def, r_start, r_dir, r_range);
 #ifdef DEBUG
         cdb_clRAY->End();
 #endif
     }
 
-    IC void box_options(u32 f) { CL.box_options(f); }
-    IC void box_query(const CDB::MODEL* m_def, const Fvector& b_center, const Fvector& b_dim)
+    IC void box_query(u32 options, const CDB::MODEL* m_def, const Fvector& b_center, const Fvector& b_dim)
     {
 #ifdef DEBUG
         cdb_clBOX->Begin();
 #endif
-        CL.box_query(m_def, b_center, b_dim);
+        CL.box_query(options, m_def, b_center, b_dim);
 #ifdef DEBUG
         cdb_clBOX->End();
 #endif
     }
 
-    IC void frustum_options(u32 f) { CL.frustum_options(f); }
-    IC void frustum_query(const CDB::MODEL* m_def, const CFrustum& F)
+    IC void frustum_query(u32 options, const CDB::MODEL* m_def, const CFrustum& F)
     {
 #ifdef DEBUG
         cdb_clFRUSTUM->Begin();
 #endif
-        CL.frustum_query(m_def, F);
+        CL.frustum_query(options, m_def, F);
 #ifdef DEBUG
         cdb_clFRUSTUM->End();
 #endif

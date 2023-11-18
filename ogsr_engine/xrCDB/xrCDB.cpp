@@ -146,15 +146,6 @@ u32 MODEL::memory()
     return tree->GetUsedBytes() + V + T + sizeof(*this) + sizeof(*tree);
 }
 
-// This is the constructor of a class that has been exported.
-// see xrCDB.h for the class definition
-COLLIDER::COLLIDER()
-{
-    ray_mode = 0;
-    box_mode = 0;
-    frustum_mode = 0;
-}
-
 COLLIDER::~COLLIDER() { r_free(); }
 
 RESULT& COLLIDER::r_add() { return rd.emplace_back(); }

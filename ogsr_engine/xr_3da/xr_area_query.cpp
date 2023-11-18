@@ -36,8 +36,7 @@ bool CObjectSpace::BoxQuery(Fvector const& box_center, Fvector const& box_z_axis
     frustum.CreateFromPlanes(planes, sizeof(planes) / sizeof(planes[0]));
 
     xrXRC xrc;
-    xrc.frustum_options(CDB::OPT_FULL_TEST);
-    xrc.frustum_query(&Static, frustum);
+    xrc.frustum_query(CDB::OPT_FULL_TEST, &Static, frustum);
 
     if (out_tris)
     {

@@ -424,15 +424,12 @@ CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
         // хитрый способ для проверки звуковых зон в 2х направлениях от камеры. но что то он хуже работает. часто не та зона выбираеться. пока убрал
 
         //CDB::COLLIDER geom_DB1;
-        //geom_DB1.ray_options(CDB::OPT_ONLYNEAREST);
-        //geom_DB1.ray_query(geom_ENV, P, dir, 1000.f);
+        //geom_DB1.ray_query(CDB::OPT_ONLYNEAREST, geom_ENV, P, dir, 1000.f);
 
         //CDB::COLLIDER geom_DB2;
-        //geom_DB2.ray_options(CDB::OPT_ONLYNEAREST);
-        //geom_DB2.ray_query(geom_ENV, P, Fvector(dir).invert(), 1000.f);
+        //geom_DB2.ray_query(CDB::OPT_ONLYNEAREST, geom_ENV, P, Fvector(dir).invert(), 1000.f);
 
-        geom_DB.ray_options(CDB::OPT_ONLYNEAREST);
-        geom_DB.ray_query(geom_ENV, P, dir, 1000.f);
+        geom_DB.ray_query(CDB::OPT_ONLYNEAREST, geom_ENV, P, dir, 1000.f);
 
         //if (geom_DB1.r_count() && geom_DB2.r_count())
         if (geom_DB.r_count())

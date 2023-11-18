@@ -222,8 +222,7 @@ float CSoundRender_Core::get_occlusion_to(const Fvector& hear_pt, const Fvector&
         float range = dir.magnitude();
         dir.div(range);
 
-        geom_DB.ray_options(CDB::OPT_CULL);
-        geom_DB.ray_query(geom_SOM, hear_pt, dir, range);
+        geom_DB.ray_query(CDB::OPT_CULL, geom_SOM, hear_pt, dir, range);
         u32 r_cnt = u32(geom_DB.r_count());
         CDB::RESULT* _B = geom_DB.r_begin();
 
@@ -268,8 +267,7 @@ float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
         // 2. Polygon doesn't picked up - real database query
         if (bNeedFullTest)
         {
-            geom_DB.ray_options(CDB::OPT_ONLYNEAREST);
-            geom_DB.ray_query(geom_MODEL, base, dir, range);
+            geom_DB.ray_query(CDB::OPT_ONLYNEAREST, geom_MODEL, base, dir, range);
             if (0 != geom_DB.r_count())
             {
                 // cache polygon
@@ -285,8 +283,7 @@ float CSoundRender_Core::get_occlusion(Fvector& P, float R, Fvector* occ)
     }
     if (0 != geom_SOM)
     {
-        geom_DB.ray_options(CDB::OPT_CULL);
-        geom_DB.ray_query(geom_SOM, base, dir, range);
+        geom_DB.ray_query(CDB::OPT_CULL, geom_SOM, base, dir, range);
         u32 r_cnt = u32(geom_DB.r_count());
         CDB::RESULT* _B = geom_DB.r_begin();
 

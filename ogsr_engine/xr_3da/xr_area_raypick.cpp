@@ -29,7 +29,6 @@ BOOL CObjectSpace::_RayTest(const Fvector& start, const Fvector& dir, float rang
     xr_vector<ISpatial*> r_spatial;
 
     xrXRC xrc;
-    xrc.ray_options(CDB::OPT_ONLYFIRST);
     collide::ray_defs Q(start, dir, range, CDB::OPT_ONLYFIRST, tgt);
 
     // dynamic test
@@ -74,7 +73,7 @@ BOOL CObjectSpace::_RayTest(const Fvector& start, const Fvector& dir, float rang
             }
 
             // 2. Polygon doesn't pick - real database query
-            xrc.ray_query(&Static, start, dir, range);
+            xrc.ray_query(CDB::OPT_ONLYFIRST, &Static, start, dir, range);
             if (0 == xrc.r_count())
             {
                 cache->set(start, dir, range, FALSE);
@@ -95,7 +94,7 @@ BOOL CObjectSpace::_RayTest(const Fvector& start, const Fvector& dir, float rang
         }
         else
         {
-            xrc.ray_query(&Static, start, dir, range);
+            xrc.ray_query(CDB::OPT_ONLYFIRST, &Static, start, dir, range);
             return xrc.r_count();
         }
     }
@@ -123,8 +122,7 @@ BOOL CObjectSpace::_RayPick(const Fvector& start, const Fvector& dir, float rang
     if (tgt & rqtStatic)
     {
         xrXRC xrc;
-        xrc.ray_options(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);
-        xrc.ray_query(&Static, start, dir, range);
+        xrc.ray_query(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL, &Static, start, dir, range);
         if (xrc.r_count())
             R.set_if_less(xrc.r_begin());
     }
@@ -197,8 +195,7 @@ BOOL CObjectSpace::_RayQuery2(collide::rq_results& r_dest, const collide::ray_de
     if (R.tgt & s_mask)
     {
         xrXRC xrc;
-        xrc.ray_options(R.flags);
-        xrc.ray_query(&Static, R.start, R.dir, R.range);
+        xrc.ray_query(R.flags, &Static, R.start, R.dir, R.range);
         if (xrc.r_count())
         {
             CDB::RESULT* _I = xrc.r_begin();
@@ -279,8 +276,7 @@ BOOL CObjectSpace::_RayQuery(collide::rq_results& r_dest, const collide::ray_def
             if (s_rd.range > EPS)
             {
                 xrXRC xrc;
-                xrc.ray_options(s_rd.flags);
-                xrc.ray_query(&Static, s_rd.start, s_rd.dir, s_rd.range);
+                xrc.ray_query(s_rd.flags, &Static, s_rd.start, s_rd.dir, s_rd.range);
                 if (xrc.r_count())
                 {
                     if (s_res.set_if_less(xrc.r_begin()))

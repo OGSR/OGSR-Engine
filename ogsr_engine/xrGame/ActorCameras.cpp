@@ -228,8 +228,7 @@ void CActor::cam_Update(float dt, float fFOV)
             xf.get_CD(bc, bd);
 
             xrXRC xrc;
-            xrc.box_options(0);
-            xrc.box_query(Level().ObjectSpace.GetStaticModel(), bc, bd);
+            xrc.box_query(0, Level().ObjectSpace.GetStaticModel(), bc, bd);
             u32 tri_count = xrc.r_count();
             if (tri_count)
             {
@@ -302,8 +301,7 @@ void CActor::cam_Update(float dt, float fFOV)
         float check_dir = VIEWPORT_NEAR + 0.1f;
 
         xrXRC xrc;
-        xrc.box_options(0);
-        xrc.box_query(Level().ObjectSpace.GetStaticModel(), point, Fvector().set(check_dir, check_dir, check_dir));
+        xrc.box_query(0, Level().ObjectSpace.GetStaticModel(), point, Fvector().set(check_dir, check_dir, check_dir));
         u32 tri_count = xrc.r_count();
         if (tri_count)
         {
