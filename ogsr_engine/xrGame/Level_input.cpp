@@ -104,32 +104,6 @@ void CLevel::IR_OnMouseMove(int dx, int dy)
     }
 }
 
-class vtune_
-{
-    BOOL enabled_;
-
-public:
-    vtune_() { enabled_ = FALSE; }
-    void enable()
-    {
-        if (!enabled_)
-        {
-            Engine.External.tune_resume();
-            enabled_ = TRUE;
-            Msg("vtune : enabled");
-        }
-    }
-    void disable()
-    {
-        if (enabled_)
-        {
-            Engine.External.tune_pause();
-            enabled_ = FALSE;
-            Msg("vtune : disabled");
-        }
-    }
-} vtune;
-
 // Обработка нажатия клавиш
 extern bool g_block_pause;
 extern bool g_block_all_except_movement;

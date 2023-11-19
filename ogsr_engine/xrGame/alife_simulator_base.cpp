@@ -318,7 +318,7 @@ void CALifeSimulatorBase::assign_death_position(CSE_ALifeCreatureAbstract* tpALi
     CGameGraph::const_spawn_iterator i, e;
     ai().game_graph().begin_spawn(tGraphID, i, e);
     VERIFY(e == i + ai().game_graph().vertex(tGraphID)->death_point_count());
-    i += (e != i) ? random().random(s32(e - i)) : 0;
+    i += (e != i) ? ::Random.randI(s32(e - i)) : 0;
     tpALifeCreatureAbstract->m_tGraphID = tGraphID;
 #ifdef DEBUG
     if (psAI_Flags.test(aiALife))
