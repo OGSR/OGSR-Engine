@@ -1,5 +1,3 @@
-#ifndef dxRainRender_included
-#define dxRainRender_included
 #pragma once
 
 #include "..\..\Include\xrRender\RainRender.h"
@@ -9,7 +7,6 @@ class dxRainRender : public IRainRender
 public:
     dxRainRender();
     virtual ~dxRainRender();
-    virtual void Copy(IRainRender& _in);
 
     virtual void Render(CEffect_Rain& owner);
     virtual void Calculate(CEffect_Rain& owner) override;
@@ -25,6 +22,5 @@ private:
     IRender_DetailModel* DM_Drop;
     ref_geom hGeom_Drops;
     ref_shader SH_Splash;
+    std::unique_ptr<CPerlinNoise1D> RainPerlin;
 };
-
-#endif //	RainRender_included

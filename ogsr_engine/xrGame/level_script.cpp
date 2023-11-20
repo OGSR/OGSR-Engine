@@ -485,8 +485,6 @@ void remove_calls_for_object(const luabind::object& lua_object)
 CPHWorld* physics_world() { return ph_world; }
 CEnvironment* environment() { return g_pGamePersistent->pEnvironment; }
 
-CEnvDescriptor* current_environment(CEnvironment* self) { return self->CurrentEnv; }
-
 extern bool g_bDisableAllInput;
 
 void disable_input()
@@ -939,12 +937,13 @@ void CLevel::script_register(lua_State* L)
                   .def_readwrite("fog_distance", &CEnvDescriptor::fog_distance)
                   .def_readwrite("far_plane", &CEnvDescriptor::far_plane)
                   .def_readwrite("sun_dir", &CEnvDescriptor::sun_dir)
-                  .def("load", (void(CEnvDescriptor::*)(float, LPCSTR, CEnvironment&)) & CEnvDescriptor::load_shoc)
+                  .def_readwrite("wind_velocity", &CEnvDescriptor::wind_velocity)
+                  .def_readwrite("wind_direction", &CEnvDescriptor::wind_direction)
+                  .def_readwrite("m_fTreeAmplitudeIntensity", &CEnvDescriptor::m_fTreeAmplitudeIntensity)
+                  .property("m_identifier", [](CEnvDescriptor* self) { return self->m_identifier.c_str(); })
                   .def("set_env_ambient", &CEnvDescriptor::setEnvAmbient),
               class_<CEnvironment>("CEnvironment")
-                  .def("current", current_environment)
-                  .def("ForceReselectEnvs", &CEnvironment::ForceReselectEnvs)
-                  .def("getCurrentWeather", &CEnvironment::getCurrentWeather),
+                  .def("getCurrentWeather", [](CEnvironment* self, const size_t idx) { R_ASSERT(idx < 2); return self->Current[idx]; }),
 
               class_<CPHCall>("CPHCall").def("set_pause", &CPHCall::setPause),
 

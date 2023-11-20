@@ -157,6 +157,7 @@ public:
 
     float wind_velocity;
     float wind_direction;
+    Fvector2 wind_anim{};
 
     Fvector3 ambient;
     Fvector4 hemi_color; // w = R2 correction
@@ -337,9 +338,6 @@ public:
 
     void OnDeviceCreate();
     void OnDeviceDestroy();
-
-    CEnvDescriptor* getCurrentWeather(size_t idx) const { return CurrentWeather->at(idx); };
-    void ForceReselectEnvs();
 
     bool m_paused;
 

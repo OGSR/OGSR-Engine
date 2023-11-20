@@ -10,7 +10,6 @@
 #include "xr_object.h"
 
 
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -47,25 +46,25 @@ CEffect_Rain::~CEffect_Rain()
 }
 
 // Born
-void CEffect_Rain::Born(Item& dest, const float radius, const float speed)
+void CEffect_Rain::Born(Item& dest, const float radius, const float speed, const Fvector2& offset, const Fvector3& axis)
 {
-    Fvector axis;
-    axis.set(0, -1, 0);
-    float gust = g_pGamePersistent->Environment().wind_strength_factor / 10.f;
-    float k = g_pGamePersistent->Environment().CurrentEnv->wind_velocity * gust / drop_max_wind_vel;
-    clamp(k, 0.f, 1.f);
-    float pitch = drop_max_angle * k - PI_DIV_2;
-    axis.setHP(g_pGamePersistent->Environment().CurrentEnv->wind_direction, pitch);
-
     Fvector& view = Device.vCameraPosition;
-    float angle = ::Random.randF(0, PI_MUL_2);
-    float dist = ::Random.randF();
-    dist = _sqrt(dist) * radius;
-    float x = dist * _cos(angle);
-    float z = dist * _sin(angle);
-    dest.D.random_dir(axis, deg2rad(drop_angle));
-    dest.P.set(x + view.x - dest.D.x * source_offset, source_offset + view.y, z + view.z - dest.D.z * source_offset);
-    dest.fSpeed = ::Random.randF(drop_speed_min, drop_speed_max) * speed;
+
+    // Wind Velocity [ From 0 ~ 1000 to 0 ~ 1 ]
+    float Wind_Velocity = g_pGamePersistent->Environment().CurrentEnv->wind_velocity * 0.001f;
+    clamp(Wind_Velocity, 0.0f, 1.0f);
+    // Random Position
+    const float r = radius * 0.5f;
+    const Fvector2 RandomP{::Random.randF(-r, r), ::Random.randF(-r, r)};
+    // Aim ahead of where the player is facing
+    const Fvector FinalView = Fvector{}.mad(view, Device.vCameraDirection, 5.0f);
+    // Random direction. Higher angle at lower velocity
+    dest.D.random_dir(axis, ::Random.randF(-drop_angle, drop_angle) * (1.5f - Wind_Velocity));
+    // Set final destination
+    dest.P.set(offset.x + FinalView.x + RandomP.x, source_offset + view.y, offset.y + FinalView.z + RandomP.y);
+    // Set speed
+    dest.fSpeed = ::Random.randF(drop_speed_min, drop_speed_max) * speed * clampr(Wind_Velocity * 1.5f, 0.5f, 1.0f);
+    // Born
 
     float height = max_distance;
     const BOOL b_hit = RayPick(dest.P, dest.D, height, collide::rqtBoth);
@@ -105,7 +104,12 @@ void CEffect_Rain::OnFrame()
         return;
 
     // Parse states
-    float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
+    const float rain_density = g_pGamePersistent->Environment().CurrentEnv->rain_density;
+    float wind_velocity = g_pGamePersistent->Environment().CurrentEnv->wind_velocity * 0.001f;
+    clamp(wind_velocity, 0.0f, 1.0f);
+    wind_velocity *= (rain_density > 0.0f ? 1.0f : 0.0f); // Only when raining
+    // 50% of the volume is by rain_density and 50% wind_velocity;
+    const float factor = rain_density * 0.5f + wind_velocity * 0.5f;
     static float hemi_factor = 0.f;
 
     CObject* E = g_pGameLevel->CurrentViewEntity();

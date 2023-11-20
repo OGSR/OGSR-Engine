@@ -1,10 +1,14 @@
 #include "stdafx.h"
 #include "dxRainRender.h"
+#include "../../xr_3da/perlin.h"
 
 #include "../../xr_3da/Rain.h"
 
 dxRainRender::dxRainRender()
 {
+    RainPerlin = std::make_unique<CPerlinNoise1D>(Random.randI(0, 0xFFFF));
+    RainPerlin->SetOctaves(2);
+    RainPerlin->SetAmplitude(0.66666f);
     IReader* F = FS.r_open("$game_meshes$", "dm\\rain.dm");
     VERIFY3(F, "Can't open file.", "dm\\rain.dm");
 
@@ -20,8 +24,6 @@ dxRainRender::dxRainRender()
 }
 
 dxRainRender::~dxRainRender() { ::RImplementation.model_Delete(DM_Drop); }
-
-void dxRainRender::Copy(IRainRender& _in) { *this = *(dxRainRender*)&_in; }
 
 #include "../../xr_3da/iGame_persistent.h"
 
@@ -204,17 +206,53 @@ void dxRainRender::Calculate(CEffect_Rain& owner)
 
     float _drop_speed = ps_ssfx_rain_1.z;
 
-    u32 desired_items = iFloor(0.5f * (1.f + factor) * float(max_desired_items));
+    // Prepare correct angle and distance to hit the player
+    Fvector Rain_Axis{0.f, -1.f, 0.f};
+    Fvector2 Rain_Offset;
+    auto Prepare = [&] {
+        // Wind direction
+        const float Wind_Direction = -g_pGamePersistent->Environment().CurrentEnv->wind_direction;
+
+        // Wind gust, to add variation.
+        const float Wind_Gust = RainPerlin->GetContinious(Device.fTimeGlobal * 0.3f) * 2.0f;
+
+        // Wind velocity [ 0 ~ 1 ]
+        float Wind_Velocity = g_pGamePersistent->Environment().CurrentEnv->wind_velocity * 0.001f + Wind_Gust;
+
+        //    if (ps_ssfx_wind.x > 0) // Debug
+        //        Wind_Velocity = ps_ssfx_wind.x;
+
+        clamp(Wind_Velocity, 0.0f, 1.0f);
+
+        // Wind velocity controles the angle
+        const float pitch = drop_max_angle * Wind_Velocity;
+        Rain_Axis.setHP(Wind_Direction, pitch - PI_DIV_2);
+
+        // Get distance
+        float dist = _sin(pitch) * source_offset;
+        const float C = PI_DIV_2 - pitch;
+        dist /= _sin(C);
+
+        // 0 is North
+        const float fixNorth = Wind_Direction - PI_DIV_2;
+
+        // Set offset
+        Rain_Offset.set(dist * _cos(fixNorth), dist * _sin(fixNorth));
+    };
+
+    Prepare();
+
+    const u32 desired_items = iFloor(0.01f * (1.f + factor * 99.0f) * float(max_desired_items));
 
     // born _new_ if needed
-    float b_radius_wrap_sqr = _sqr((source_radius + .5f));
+    float b_radius_wrap_sqr = _sqr((source_radius * 1.5f));
     if (owner.items.size() < desired_items)
     {
         // owner.items.reserve		(desired_items);
         while (owner.items.size() < desired_items)
         {
             CEffect_Rain::Item one;
-            owner.Born(one, source_radius, _drop_speed);
+            owner.Born(one, source_radius, _drop_speed, Rain_Offset, Rain_Axis);
             owner.items.push_back(one);
         }
     }
@@ -237,7 +275,7 @@ void dxRainRender::Calculate(CEffect_Rain& owner)
             owner.Hit(one.Phit);
 
         if (one.dwTime_Life < Device.dwTimeGlobal)
-            owner.Born(one, source_radius, _drop_speed);
+            owner.Born(one, source_radius, _drop_speed, Rain_Offset, Rain_Axis);
 
         float dt = Device.fTimeDelta;
         one.P.mad(one.D, one.fSpeed * dt);

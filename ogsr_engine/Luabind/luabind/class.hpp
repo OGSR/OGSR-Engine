@@ -914,7 +914,15 @@ namespace luabind
 		class_&& property(const char* name, Getter g) &&
 		{
             using namespace std::placeholders;
-			add_getter(name, std::bind(detail::get_caller<T, Getter>(), _1, _2, g));
+            if constexpr (!std::is_function_v<std::remove_pointer_t<Getter>> && !std::is_member_function_pointer_v<Getter>)
+            {
+                constexpr auto lambda_cast_g = cdecl_cast(g, &Getter::operator());
+                add_getter(name, std::bind(detail::get_caller<T, decltype(lambda_cast_g)>(), _1, _2, std::move(lambda_cast_g)));
+            }
+            else
+            {
+                add_getter(name, std::bind(detail::get_caller<T, Getter>(), _1, _2, g));
+            }
             return std::move(*this);
 		}
 

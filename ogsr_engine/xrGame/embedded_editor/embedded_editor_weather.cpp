@@ -499,7 +499,7 @@ void ShowWeatherEditor(bool& show)
 
     ImGui::Text("Wind parameters");
 
-    if (ImGui::SliderFloat("wind_velocity", &cur->wind_velocity, 0.0f, 100.0f))
+    if (ImGui::SliderFloat("wind_velocity", &cur->wind_velocity, 0.0f, 1000.0f))
         changed = true;
     if (ImGui::SliderFloat("wind_direction", &cur->wind_direction, 0.0f, 360.0f))
         changed = true;

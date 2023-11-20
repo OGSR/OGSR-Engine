@@ -153,9 +153,12 @@ extern ECORE_API float ps_r2_visor_refl_intensity;
 extern ECORE_API float ps_r2_visor_refl_radius;
 
 extern ECORE_API float ps_ssfx_wpn_dof_2;
+extern Fvector4 ps_ssfx_blood_decals;
 extern Fvector3 ps_ssfx_int_grass_params_1;
 extern ECORE_API Fvector4 ps_ssfx_grass_shadows;
 extern Fvector3 ps_ssfx_shadow_cascades;
+extern ECORE_API Fvector4 ps_ssfx_wind;
+extern ECORE_API Fvector4 ps_ssfx_wind_gust;
 extern ECORE_API Fvector4 ps_ssfx_rain_1;
 extern ECORE_API Fvector4 ps_ssfx_rain_2;
 extern ECORE_API Fvector4 ps_ssfx_rain_3;

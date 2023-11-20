@@ -445,6 +445,16 @@ void CEnvironment::OnFrame()
 {
     if (!g_pGameLevel)
         return;
+
+    float WindVel = CurrentEnv->wind_velocity * 0.001f;
+//    extern Fvector4 ps_ssfx_wind; // DEBUG
+//    if (ps_ssfx_wind.x > 0) // DEBUG
+//        WindVel = ps_ssfx_wind.x;
+    const float WindDir = -CurrentEnv->wind_direction + PI_DIV_2;
+    const Fvector2 WDir{_cos(WindDir), _sin(WindDir)};
+    CurrentEnv->wind_anim.x += WindVel * WDir.x * Device.fTimeDelta;
+    CurrentEnv->wind_anim.y += WindVel * WDir.y * Device.fTimeDelta;
+
     float current_weight;
     lerp(current_weight);
 
@@ -619,20 +629,6 @@ CLensFlareDescriptor* CEnvironment::add_flare(xr_vector<CLensFlareDescriptor*>& 
 
     collection.push_back(result);
     return result;
-}
-
-void CEnvironment::ForceReselectEnvs()
-{
-    CEnvDescriptor** current_env_desc0 = &(*CurrentWeather)[0];
-    CEnvDescriptor** current_env_desc1 = &(*CurrentWeather)[1];
-    if ((*current_env_desc0)->exec_time > (*current_env_desc1)->exec_time)
-    {
-        CEnvDescriptor* tmp_desc = *current_env_desc0;
-        *current_env_desc0 = *current_env_desc1;
-        *current_env_desc1 = tmp_desc;
-    }
-    SelectEnvs(CurrentWeather, Current[0], Current[1], fGameTime);
-    // eff_Rain->InvalidateState(); //Тоже самое делается в CEnvironment::Invalidate, здесь не нужно.
 }
 
 void CEnvironment::SetWeatherNext(shared_str name)
