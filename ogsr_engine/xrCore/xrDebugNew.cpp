@@ -18,14 +18,19 @@ static bool error_after_dialog = false;
 
 static void ShowErrorMessage(const char* msg, const bool show_msg = false)
 {
-    ShowWindow(gGameWindow, SW_HIDE);
+    const bool on_ttapi_thread = (TTAPI && TTAPI->is_pool_thread());
 
-    while (ShowCursor(TRUE) < 0)
-        ;
+    if (!on_ttapi_thread)
+    {
+        ShowWindow(gGameWindow, SW_HIDE);
+
+        while (ShowCursor(TRUE) < 0)
+            ;
+    }
 
     if (!IsDebuggerPresent())
     {
-        if (show_msg)
+        if (show_msg && !on_ttapi_thread)
             MessageBox(gGameWindow, msg, "FATAL ERROR", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
         else
             ShellExecute(nullptr, "open", logFName, nullptr, nullptr, SW_SHOW);
