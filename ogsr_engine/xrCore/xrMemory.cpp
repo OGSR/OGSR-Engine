@@ -32,11 +32,14 @@ void xrMemory::_initialize()
     SProcessMemInfo memCounters;
     GetProcessMemInfo(memCounters);
 
-    bool disableMemoryPool = memCounters.TotalPhysicalMemory > (32000ull * (1024 * 1024));
+    u64 disableMemoryTotalMb = 32000ull;
+    if (char* str = strstr(Core.Params, "-smem_disable_limit "))
+        sscanf(str + 20, "%llu", &disableMemoryTotalMb);
+    bool disableMemoryPool = memCounters.TotalPhysicalMemory > (disableMemoryTotalMb * (1024ull * 1024ull));
 
     if (disableMemoryPool)
     {
-        Msg("! memory pool disabled due to available memory limit");
+        Msg("--[%s] memory pool disabled due to available memory limit: [%u MB]", __FUNCTION__, disableMemoryTotalMb);
     }
 
     g_pStringContainer = xr_new<str_container>();

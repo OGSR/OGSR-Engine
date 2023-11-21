@@ -4,14 +4,14 @@ XRCORE_API smem_container* g_pSharedMemoryContainer = NULL;
 
 smem_value* smem_container::dock(u32 dwSize, void* ptr)
 {
-    VERIFY(dwCRC && dwSize && ptr);
+    VERIFY(dwSize && ptr);
 
     if (bDisable)
     {
         smem_value* result = (smem_value*)Memory.mem_alloc(sizeof(smem_value) + dwSize);
         result->dwReference = 0;
         result->dwSize = dwSize;
-        result->dwCRC = -1;
+        result->dwCRC = u32(-1);
         CopyMemory(result->value, ptr, dwSize);
 
         return result;

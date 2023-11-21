@@ -67,12 +67,11 @@ HWND WINAPI ShowSplash(HINSTANCE hInstance, int nCmdShow)
     // image
     CImage img; // объект изображения
 
-    WCHAR path[MAX_PATH];
+    CHAR path[MAX_PATH];
 
-    GetModuleFileNameW(nullptr, path, MAX_PATH);
-    std::wstring ws(path);
+    GetModuleFileName(nullptr, path, MAX_PATH);
 
-    std::string splash_path(ws.begin(), ws.end());
+    std::string splash_path{path};
     splash_path = splash_path.erase(splash_path.find_last_of('\\'), splash_path.size() - 1);
     splash_path += "\\splash.png";
 

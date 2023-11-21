@@ -5,6 +5,7 @@
 #include "SoundRender_Source.h"
 
 XRSOUND_API extern float psSoundCull;
+constexpr float TIME_TO_STOP_INFINITE = static_cast<float>(0xffffffff);
 
 inline u32 calc_cursor(const float& fTimeStarted, float& fTime, const float& fTimeTotal, const float& fFreq, const WAVEFORMATEX& wfx)
 {
@@ -74,7 +75,7 @@ void CSoundRender_Emitter::update(float dt)
         if (iPaused)
             break;
         fTimeStarted = fTime;
-        fTimeToStop = 0xffffffff;
+        fTimeToStop = TIME_TO_STOP_INFINITE;
         fTimeToPropagade = fTime;
         fade_volume = 1.f;
         occluder_volume = SoundRender->get_occlusion(p_source.position, .2f, occluder);

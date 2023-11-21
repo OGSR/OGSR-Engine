@@ -11,19 +11,6 @@ struct XRCORE_API smem_value
     u32 _align_16;
     u8 value[];
 };
-// generic predicate for "less"
-IC bool smem_sort(const smem_value* A, const smem_value* B)
-{
-    if (A->dwCRC < B->dwCRC)
-        return true;
-    if (A->dwCRC > B->dwCRC)
-        return false;
-    if (A->dwSize < B->dwSize)
-        return true;
-    if (A->dwSize > B->dwSize)
-        return false;
-    return memcmp(A->value, B->value, A->dwSize) < 0;
-};
 
 // predicate for insertion - just a quick estimate
 IC bool smem_search(const smem_value* A, const smem_value* B)
@@ -33,16 +20,6 @@ IC bool smem_search(const smem_value* A, const smem_value* B)
     if (A->dwCRC > B->dwCRC)
         return false;
     return A->dwSize < B->dwSize;
-};
-
-// predicate for exact (byte level) comparition
-IC bool smem_equal(const smem_value* A, u32 dwCRC, u32 dwSize, u8* ptr)
-{
-    if (A->dwCRC != dwCRC)
-        return false;
-    if (A->dwSize != dwSize)
-        return false;
-    return 0 == memcmp(A->value, ptr, dwSize);
 };
 #pragma warning(default : 4200)
 

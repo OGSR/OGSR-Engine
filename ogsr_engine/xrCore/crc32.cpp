@@ -36,7 +36,7 @@
 #if defined(__MINGW32__) || defined(__clang__)
 #define PREFETCH(location) __builtin_prefetch(location)
 #else
-#if defined(__SSE2__)
+#if 1// defined(__SSE2__)
 #include <xmmintrin.h>
 #define PREFETCH(location) _mm_prefetch(location, _MM_HINT_T0)
 #else
@@ -55,8 +55,6 @@
 #define PREFETCH(location) ;
 #endif
 #endif
-
-#define PREFETCH(location) _mm_prefetch(location, _MM_HINT_T0)
 
 // abort if byte order is undefined
 #if !defined(__BYTE_ORDER)
