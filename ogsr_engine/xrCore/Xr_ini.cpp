@@ -126,7 +126,7 @@ CInifile::CInifile(IReader* F, LPCSTR path)
     bReadOnly = true;
     bSaveAtEnd = FALSE;
 
-    Load(F, path, FALSE, NULL, true);
+    Load(F, path, FALSE, NULL, true, "");
 }
 
 CInifile::CInifile(LPCSTR szFileName, BOOL ReadOnly, BOOL bLoad, BOOL SaveAtEnd)
@@ -178,7 +178,7 @@ void insert_item(CInifile::Sect* tgt, const CInifile::Item& I)
     }
 }
 
-void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CInifile* override, bool root_level)
+void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CInifile* override, bool root_level, LPCSTR current_file)
 {
     R_ASSERT(F);
 
@@ -256,11 +256,11 @@ void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CIni
                 _splitpath(fn, inc_path, folder, 0, 0);
                 strcat_s(inc_path, folder);
 
-                const auto loadFile = [&](const string_path _fn, const string_path name) {
+                const auto loadFile = [&](const string_path _fn) {
                     IReader* I = FS.r_open(_fn);
-                    R_ASSERT(I, "Can't find include file:", name);
+                    R_ASSERT(I, "Can't find include file:", _fn);
                     I->skip_bom(_fn);
-                    Load(I, inc_path, allow_dup_sections, override, false);
+                    Load(I, inc_path, allow_dup_sections, override, false, _fn);
                     FS.r_close(I);
                 };
 
@@ -274,11 +274,15 @@ void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CIni
                         LPCSTR _name = it->name.c_str();
                         string_path _fn;
                         strconcat(sizeof(_fn), _fn, path, _name);
-                        loadFile(_fn, _name);
+
+                        if (strcmp(current_file, _fn) == 0)
+                            continue;
+                        
+                        loadFile(_fn);
                     }
                 }
                 else
-                    loadFile(fn, inc_name);
+                    loadFile(fn);
             }
         }
         else if (str[0] && (str[0] == '['))
@@ -383,7 +387,7 @@ void CInifile::load_file(BOOL allow_dup_sections, const CInifile* f)
     {
         R->skip_bom(fName);
 
-        Load(R, path, allow_dup_sections, f, true);
+        Load(R, path, allow_dup_sections, f, true, fName);
 
         FS.r_close(R);
     }

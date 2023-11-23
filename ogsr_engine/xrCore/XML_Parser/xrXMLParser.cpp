@@ -7,7 +7,7 @@ CXml::~CXml() { ClearInternal(); }
 
 void CXml::ClearInternal() { m_Doc.Clear(); }
 
-void ParseFile(LPCSTR path, CMemoryWriter& W, IReader* F, CXml* xml)
+void ParseFile(LPCSTR path, CMemoryWriter& W, IReader* F, CXml* xml, LPCSTR current_xml_filename)
 {
     xr_string str;
 
@@ -36,7 +36,7 @@ void ParseFile(LPCSTR path, CMemoryWriter& W, IReader* F, CXml* xml)
 
         I->skip_bom(file_name);
 
-        ParseFile(path, W, I, xml);
+        ParseFile(path, W, I, xml, file_name);
         FS.r_close(I);
     };
 
@@ -56,6 +56,9 @@ void ParseFile(LPCSTR path, CMemoryWriter& W, IReader* F, CXml* xml)
                     for (FS_FileSet::iterator it = fset.begin(); it != fset.end(); it++)
                     {
                         LPCSTR file_name = it->name.c_str();
+
+                        if (strcmp(current_xml_filename, file_name) == 0)
+                            continue;
 
                         loadFile(file_name);
                     }
@@ -94,7 +97,7 @@ bool CXml::Init(LPCSTR path, LPCSTR xml_filename)
     F->skip_bom(xml_filename);
 
     CMemoryWriter W;
-    ParseFile(path, W, F, this);
+    ParseFile(path, W, F, this, xml_filename);
     W.w_stringZ("");
     FS.r_close(F);
 

@@ -43,7 +43,7 @@ protected:
 
     Sect* Current{}; // for use during load only
 
-    void Load(IReader*, LPCSTR, BOOL, const CInifile*, bool root_level);
+    void Load(IReader*, LPCSTR, BOOL, const CInifile*, bool root_level, LPCSTR current_file);
 
 public:
     bool bReadOnly;
