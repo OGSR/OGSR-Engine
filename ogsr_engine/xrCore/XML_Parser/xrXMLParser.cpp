@@ -114,7 +114,7 @@ bool CXml::Init(LPCSTR path, LPCSTR xml_filename)
     return true;
 }
 
-XML_NODE* CXml::NavigateToNode(XML_NODE* start_node, LPCSTR path, int node_index)
+XML_NODE* CXml::NavigateToNode(XML_NODE* start_node, LPCSTR path, int index)
 {
     R_ASSERT(start_node && path, "NavigateToNode failed in XML file ", m_xml_file_name);
     XML_NODE* node = NULL;
@@ -134,7 +134,7 @@ XML_NODE* CXml::NavigateToNode(XML_NODE* start_node, LPCSTR path, int node_index
     {
         node = start_node->FirstChild(token);
 
-        while (tmp++ < node_index && node)
+        while (tmp++ < index && node)
         {
             node = start_node->IterateChildren(token, node);
         }
@@ -156,7 +156,7 @@ XML_NODE* CXml::NavigateToNode(XML_NODE* start_node, LPCSTR path, int node_index
     return node;
 }
 
-XML_NODE* CXml::NavigateToNode(LPCSTR path, int node_index) { return NavigateToNode(GetLocalRoot() ? GetLocalRoot() : GetRoot(), path, node_index); }
+XML_NODE* CXml::NavigateToNode(LPCSTR path, int index) { return NavigateToNode(GetLocalRoot() ? GetLocalRoot() : GetRoot(), path, index); }
 
 XML_NODE* CXml::NavigateToNodeWithAttribute(LPCSTR tag_name, LPCSTR attrib_name, LPCSTR attrib_value)
 {
@@ -172,6 +172,19 @@ XML_NODE* CXml::NavigateToNodeWithAttribute(LPCSTR tag_name, LPCSTR attrib_name,
         }
     }
     return NULL;
+}
+
+bool CXml::HasNode(LPCSTR path, int index)
+{
+    const XML_NODE* node = NavigateToNode(path, index);
+    return !!node;
+}
+
+bool CXml::HasNodeAttribute(LPCSTR path, int index, LPCSTR attrib)
+{
+    XML_NODE* node = NavigateToNode(path, index);
+    const LPCSTR result = ReadAttrib(node, attrib, NULL);
+    return !!result;
 }
 
 LPCSTR CXml::Read(LPCSTR path, int index, LPCSTR default_str_val)

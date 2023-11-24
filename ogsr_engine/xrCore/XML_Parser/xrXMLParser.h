@@ -64,9 +64,11 @@ public:
     //переместиться по XML дереву
     //путь задается в форме PARENT:CHILD:CHIDLS_CHILD
     // node_index - номер, если узлов с одним именем несколько
-    XML_NODE* NavigateToNode(LPCSTR path, int node_index = 0);
-    XML_NODE* NavigateToNode(XML_NODE* start_node, LPCSTR path, int node_index = 0);
+    XML_NODE* NavigateToNode(LPCSTR path, int index = 0);
+    XML_NODE* NavigateToNode(XML_NODE* start_node, LPCSTR path, int index = 0);
     XML_NODE* NavigateToNodeWithAttribute(LPCSTR tag_name, LPCSTR attrib_name, LPCSTR attrib_value);
+    bool HasNode(LPCSTR path, int index);
+    bool HasNodeAttribute(LPCSTR path, int index, LPCSTR attrib);
 
     void SetLocalRoot(XML_NODE* pLocalRoot) { m_pLocalRoot = pLocalRoot; }
     XML_NODE* GetLocalRoot() { return m_pLocalRoot; }
