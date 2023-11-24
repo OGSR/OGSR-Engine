@@ -70,17 +70,18 @@ void CMainMenu::ReadTextureInfo()
 {
     if (pSettings->section_exist("texture_desc"))
     {
-        xr_string itemsList;
-        string256 single_item;
-
-        itemsList = pSettings->r_string("texture_desc", "files");
-        int itemsCount = _GetItemCount(itemsList.c_str());
-
-        for (int i = 0; i < itemsCount; i++)
+        const LPCSTR itemsList = pSettings->r_string("texture_desc", "files");
+        if (itemsList)
         {
-            _GetItem(itemsList.c_str(), i, single_item);
-            strcat_s(single_item, ".xml");
-            CUITextureMaster::ParseShTexInfo(single_item);
+            const int itemsCount = _GetItemCount(itemsList);
+
+            string256 single_item;
+            for (int i = 0; i < itemsCount; i++)
+            {
+                _GetItem(itemsList, i, single_item);
+                strcat_s(single_item, ".xml");
+                CUITextureMaster::ParseShTexInfo(single_item);
+            }
         }
     }
 
