@@ -84,7 +84,7 @@ struct FTreeVisual_setup
         wind.set(_sin(tm_rot), 0, _cos(tm_rot), 0);
         wind.normalize();
         wind.mul(env.m_fTreeAmplitudeIntensity); // dir1*amplitude
-        scale = 1.f / float(FTreeVisual_quant);
+        scale = 1.f / FTreeVisual_quant;
 
         // setup constants
         wave.set(ps_r__Tree_Wave.x, ps_r__Tree_Wave.y, ps_r__Tree_Wave.z, Device.fTimeGlobal * ps_r__Tree_w_speed); // wave
@@ -130,6 +130,17 @@ void FTreeVisual::Render(float LOD)
             std::memcpy(c_grass + std::size(grass_shader_data.pos), &grass_shader_data.dir, sizeof grass_shader_data.dir);
         }
     }
+
+    bool is_bugged_flora{};
+    if (const R_constant* C = &*RCache.get_c(CRender::c_sbase))
+    {
+        if (const CTexture* T = RCache.get_ActiveTexture(u32(C->samp.index)))
+        {
+            const char* tex = T->cName.c_str();
+            is_bugged_flora = ps_ssfx_wind.w == 0.f && (strstr(tex, "trees\\trees_elka") || strstr(tex, "trees\\trees_kamysh"));
+        }
+    }
+    RCache.set_c("is_bugged_flora", static_cast<float>(is_bugged_flora));
 }
 
 #define PCOPY(a) a = pFrom->a

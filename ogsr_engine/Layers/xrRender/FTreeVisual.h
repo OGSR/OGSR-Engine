@@ -45,7 +45,7 @@ public:
 
 private:
     FTreeVisual_ST(const FTreeVisual_ST& other);
-    void operator=(const FTreeVisual_ST& other);
+    void operator=(const FTreeVisual_ST& other) = delete;
 };
 
 class FTreeVisual_PM : public FTreeVisual
@@ -67,8 +67,8 @@ public:
 
 private:
     FTreeVisual_PM(const FTreeVisual_PM& other);
-    void operator=(const FTreeVisual_PM& other);
+    void operator=(const FTreeVisual_PM& other) = delete;
 };
 
-const int FTreeVisual_tile = 16;
-const int FTreeVisual_quant = 32768 / FTreeVisual_tile;
+constexpr float FTreeVisual_tile = 16.f;
+constexpr float FTreeVisual_quant = 32768.f / FTreeVisual_tile;

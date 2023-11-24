@@ -23,4 +23,5 @@ private:
     ref_geom hGeom_Drops;
     ref_shader SH_Splash;
     std::unique_ptr<CPerlinNoise1D> RainPerlin;
+//    u32 current_items{};
 };

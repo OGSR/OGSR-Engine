@@ -530,8 +530,8 @@ static class ssfx_wind_anim final : public R_constant_setup
 {
     void setup(R_constant* C) override
     {
-        CEnvDescriptor& Env = *g_pGamePersistent->Environment().CurrentEnv;
-        RCache.set_c(C, Env.wind_anim.x, Env.wind_anim.y, 0.f, 0.f);
+        const Fvector3& WindAni = g_pGamePersistent->Environment().wind_anim;
+        RCache.set_c(C, WindAni.x, WindAni.y, WindAni.z, 0.f);
     }
 } ssfx_wind_anim;
 

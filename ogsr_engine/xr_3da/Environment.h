@@ -157,7 +157,6 @@ public:
 
     float wind_velocity;
     float wind_direction;
-    Fvector2 wind_anim{};
 
     Fvector3 ambient;
     Fvector4 hemi_color; // w = R2 correction
@@ -260,6 +259,7 @@ public:
     float wind_strength_factor;
     float wind_gust_factor;
     float wetness_factor;
+    Fvector3 wind_anim{};
 
     // wind blast params
     float wind_blast_strength;

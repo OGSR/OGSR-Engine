@@ -44,20 +44,20 @@ IC BOOL dis_zero(double val, double cmp = EPS_S) { return _abs(val) < cmp; }
 namespace implement
 {
 template <class T>
-ICF T deg2rad(T val)
+constexpr T deg2rad(T val)
 {
     return (val * T(M_PI) / T(180));
 };
 template <class T>
-ICF T rad2deg(T val)
+constexpr T rad2deg(T val)
 {
     return (val * T(180) / T(M_PI));
 };
 }; // namespace implement
-ICF float deg2rad(float val) { return implement::deg2rad(val); }
-ICF double deg2rad(double val) { return implement::deg2rad(val); }
-ICF float rad2deg(float val) { return implement::rad2deg(val); }
-ICF double rad2deg(double val) { return implement::rad2deg(val); }
+constexpr float deg2rad(float val) { return implement::deg2rad(val); }
+constexpr double deg2rad(double val) { return implement::deg2rad(val); }
+constexpr float rad2deg(float val) { return implement::rad2deg(val); }
+constexpr double rad2deg(double val) { return implement::rad2deg(val); }
 
 // clamping/snapping
 template <typename T>

@@ -39,7 +39,7 @@ void dxRainRender::Render(CEffect_Rain& owner)
     ref_shader& _splash_SH = SH_Splash;
     static shared_str s_shader_setup = "ssfx_rain_setup";
 
-    u32 desired_items = iFloor(0.5f * (1.f + factor) * float(max_desired_items));
+    u32 desired_items = iFloor(0.5f * (1.f + factor) * max_desired_items);
 
     // visual
     float factor_visual = factor / 2.f + .5f;
@@ -80,7 +80,7 @@ void dxRainRender::Render(CEffect_Rain& owner)
         if (!::Render->ViewBase.testSphere_dirty(sC, sR))
             continue;
 
-        static Fvector2 UV[2][4] = {{{0, 1}, {0, 0}, {1, 1}, {1, 0}}, {{1, 0}, {1, 1}, {0, 0}, {0, 1}}};
+        constexpr Fvector2 UV[2][4] = {{{0, 1}, {0, 0}, {1, 1}, {1, 0}}, {{1, 0}, {1, 1}, {0, 0}, {0, 1}}};
 
         // Everything OK - build vertices
         Fvector P, lineTop, camDir;
@@ -131,7 +131,7 @@ void dxRainRender::Render(CEffect_Rain& owner)
         RCache.set_c(s_shader_setup, ps_ssfx_rain_3); // Alpha, Refraction
 
         Fmatrix mXform, mScale;
-        int pcount = 0;
+        u32 pcount = 0;
         u32 v_offset, i_offset;
         u32 vCount_Lock = particles_cache * DM_Drop->number_vertices;
         u32 iCount_Lock = particles_cache * DM_Drop->number_indices;
@@ -209,23 +209,29 @@ void dxRainRender::Calculate(CEffect_Rain& owner)
     // Prepare correct angle and distance to hit the player
     Fvector Rain_Axis{0.f, -1.f, 0.f};
     Fvector2 Rain_Offset;
+
+    const float Wind_Direction = -g_pGamePersistent->Environment().CurrentEnv->wind_direction;
+
+    // Wind Velocity [ From 0 ~ 1000 to 0 ~ 1 ]
+    float Wind_Velocity = g_pGamePersistent->Environment().CurrentEnv->wind_velocity * 0.001f;
+    clamp(Wind_Velocity, 0.0f, 1.0f);
+
     auto Prepare = [&] {
         // Wind direction
-        const float Wind_Direction = -g_pGamePersistent->Environment().CurrentEnv->wind_direction;
 
         // Wind gust, to add variation.
         const float Wind_Gust = RainPerlin->GetContinious(Device.fTimeGlobal * 0.3f) * 2.0f;
 
         // Wind velocity [ 0 ~ 1 ]
-        float Wind_Velocity = g_pGamePersistent->Environment().CurrentEnv->wind_velocity * 0.001f + Wind_Gust;
+        float _Wind_Velocity = Wind_Velocity + Wind_Gust;
 
-        //    if (ps_ssfx_wind.x > 0) // Debug
-        //        Wind_Velocity = ps_ssfx_wind.x;
+        if (ps_ssfx_wind.x > 0) // Debug
+            _Wind_Velocity = ps_ssfx_wind.x;
 
-        clamp(Wind_Velocity, 0.0f, 1.0f);
+        clamp(_Wind_Velocity, 0.0f, 1.0f);
 
         // Wind velocity controles the angle
-        const float pitch = drop_max_angle * Wind_Velocity;
+        const float pitch = drop_max_angle * _Wind_Velocity;
         Rain_Axis.setHP(Wind_Direction, pitch - PI_DIV_2);
 
         // Get distance
@@ -242,17 +248,20 @@ void dxRainRender::Calculate(CEffect_Rain& owner)
 
     Prepare();
 
-    const u32 desired_items = iFloor(0.01f * (1.f + factor * 99.0f) * float(max_desired_items));
+    const u32 desired_items = iFloor(0.01f * (1.f + factor * 99.0f) * max_desired_items);
+
+    // Get to the desired items
+//    if (current_items < desired_items)
+//        current_items += desired_items - current_items;
 
     // born _new_ if needed
     float b_radius_wrap_sqr = _sqr((source_radius * 1.5f));
-    if (owner.items.size() < desired_items)
+    if (owner.items.size() < desired_items /* current_items*/)
     {
-        // owner.items.reserve		(desired_items);
-        while (owner.items.size() < desired_items)
+        while (owner.items.size() < desired_items /* current_items*/)
         {
             CEffect_Rain::Item one;
-            owner.Born(one, source_radius, _drop_speed, Rain_Offset, Rain_Axis);
+            owner.Born(one, source_radius, _drop_speed, Wind_Velocity, Rain_Offset, Rain_Axis);
             owner.items.push_back(one);
         }
     }
@@ -266,16 +275,24 @@ void dxRainRender::Calculate(CEffect_Rain& owner)
 
     const Fvector& vEye = Device.vCameraPosition;
 
-    for (u32 I = 0; I < owner.items.size(); I++)
+    for (u32 I = 0; I < owner.items.size() /* current_items*/; I++)
     {
         // physics and time control
-        CEffect_Rain::Item& one = owner.items[I];
+        CEffect_Rain::Item& one = owner.items.at(I);
 
         if (one.dwTime_Hit < Device.dwTimeGlobal)
+        {
             owner.Hit(one.Phit);
+//            if (current_items > desired_items)
+//                current_items--; // Hit something
+        }
 
         if (one.dwTime_Life < Device.dwTimeGlobal)
-            owner.Born(one, source_radius, _drop_speed, Rain_Offset, Rain_Axis);
+        {
+            owner.Born(one, source_radius, _drop_speed, Wind_Velocity, Rain_Offset, Rain_Axis);
+//            if (current_items > desired_items)
+//                current_items--; // Out of life ( invalidated, never hit something, etc. )
+        }
 
         float dt = Device.fTimeDelta;
         one.P.mad(one.D, one.fSpeed * dt);

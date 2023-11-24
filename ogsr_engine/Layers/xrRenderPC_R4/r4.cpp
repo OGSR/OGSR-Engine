@@ -379,9 +379,6 @@ void CRender::create()
     dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("pos_decompression_params2", &binder_pos_decompress_params2);
     dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("triLOD", &binder_LOD);
 
-    c_lmaterial = "L_material";
-    c_sbase = "s_base";
-
     m_bMakeAsyncSS = false;
 
     Target = xr_new<CRenderTarget>(); // Main target

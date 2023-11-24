@@ -149,8 +149,8 @@ public:
 
     xr_vector<Fbox3> main_coarse_structure;
 
-    shared_str c_sbase;
-    shared_str c_lmaterial;
+    static constexpr const char* c_sbase = "s_base";
+
     float o_hemi;
     float o_hemi_cube[CROS_impl::NUM_FACES];
     float o_sun;

@@ -446,14 +446,18 @@ void CEnvironment::OnFrame()
     if (!g_pGameLevel)
         return;
 
-    float WindVel = CurrentEnv->wind_velocity * 0.001f;
-//    extern Fvector4 ps_ssfx_wind; // DEBUG
-//    if (ps_ssfx_wind.x > 0) // DEBUG
-//        WindVel = ps_ssfx_wind.x;
+    // Limit min at 200 to avoid slow-mo at extremly low speed.
+    float WindVel = std::max(CurrentEnv->wind_velocity, 200.f) * 0.001f;
+
+    extern Fvector4 ps_ssfx_wind; // DEBUG
+    if (ps_ssfx_wind.x > 0) // DEBUG
+         WindVel = ps_ssfx_wind.x;
+
     const float WindDir = -CurrentEnv->wind_direction + PI_DIV_2;
     const Fvector2 WDir{_cos(WindDir), _sin(WindDir)};
-    CurrentEnv->wind_anim.x += WindVel * WDir.x * Device.fTimeDelta;
-    CurrentEnv->wind_anim.y += WindVel * WDir.y * Device.fTimeDelta;
+    wind_anim.x += WindVel * WDir.x * Device.fTimeDelta;
+    wind_anim.y += WindVel * WDir.y * Device.fTimeDelta;
+    wind_anim.z += clampr(WindVel * 1.33f, 0.0f, 1.0f) * Device.fTimeDelta;
 
     float current_weight;
     lerp(current_weight);

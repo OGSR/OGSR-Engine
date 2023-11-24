@@ -46,26 +46,27 @@ CEffect_Rain::~CEffect_Rain()
 }
 
 // Born
-void CEffect_Rain::Born(Item& dest, const float radius, const float speed, const Fvector2& offset, const Fvector3& axis)
+void CEffect_Rain::Born(Item& dest, const float radius, const float speed, const float Wind_Velocity, const Fvector2& Rain_Offset, const Fvector3& Rain_Axis)
 {
-    Fvector& view = Device.vCameraPosition;
+    const Fvector& view = Device.vCameraPosition;
 
-    // Wind Velocity [ From 0 ~ 1000 to 0 ~ 1 ]
-    float Wind_Velocity = g_pGamePersistent->Environment().CurrentEnv->wind_velocity * 0.001f;
-    clamp(Wind_Velocity, 0.0f, 1.0f);
     // Random Position
     const float r = radius * 0.5f;
     const Fvector2 RandomP{::Random.randF(-r, r), ::Random.randF(-r, r)};
+
     // Aim ahead of where the player is facing
     const Fvector FinalView = Fvector{}.mad(view, Device.vCameraDirection, 5.0f);
+
     // Random direction. Higher angle at lower velocity
-    dest.D.random_dir(axis, ::Random.randF(-drop_angle, drop_angle) * (1.5f - Wind_Velocity));
+    dest.D.random_dir(Rain_Axis, ::Random.randF(-drop_angle, drop_angle) * (1.5f - Wind_Velocity));
+
     // Set final destination
-    dest.P.set(offset.x + FinalView.x + RandomP.x, source_offset + view.y, offset.y + FinalView.z + RandomP.y);
+    dest.P.set(Rain_Offset.x + FinalView.x + RandomP.x, source_offset + view.y, Rain_Offset.y + FinalView.z + RandomP.y);
+
     // Set speed
     dest.fSpeed = ::Random.randF(drop_speed_min, drop_speed_max) * speed * clampr(Wind_Velocity * 1.5f, 0.5f, 1.0f);
-    // Born
 
+    // Born
     float height = max_distance;
     const BOOL b_hit = RayPick(dest.P, dest.D, height, collide::rqtBoth);
     RenewItem(dest, height, b_hit);
@@ -107,7 +108,9 @@ void CEffect_Rain::OnFrame()
     const float rain_density = g_pGamePersistent->Environment().CurrentEnv->rain_density;
     float wind_velocity = g_pGamePersistent->Environment().CurrentEnv->wind_velocity * 0.001f;
     clamp(wind_velocity, 0.0f, 1.0f);
+
     wind_velocity *= (rain_density > 0.0f ? 1.0f : 0.0f); // Only when raining
+
     // 50% of the volume is by rain_density and 50% wind_velocity;
     const float factor = rain_density * 0.5f + wind_velocity * 0.5f;
     static float hemi_factor = 0.f;
