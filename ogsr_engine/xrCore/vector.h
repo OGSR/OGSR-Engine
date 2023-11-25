@@ -68,16 +68,9 @@ constexpr void clamp(T& val, const T& _low, const T& _high) noexcept
     else if (val > _high)
         val = _high;
 };
-template <typename T>
-constexpr T clampr(const T& val, const T& _low, const T& _high) noexcept
-{
-    if (val < _low)
-        return _low;
-    else if (val > _high)
-        return _high;
-    else
-        return val;
-};
+
+#define clampr std::clamp
+
 constexpr float snapto(float value, float snap) noexcept
 {
     if (snap <= 0.f)
