@@ -83,22 +83,28 @@ void CScriptIniFile::script_register(lua_State* L)
 
                   .def_readwrite("readonly", &CScriptIniFile::bReadOnly)
 
-                  .def("r_clsid", &CScriptIniFile::r_clsid)
+                  .def("r_line", &::r_line, pure_out_value<4>() + pure_out_value<5>())
+
                   .def("r_bool", &CScriptIniFile::r_bool)
-                  .def("r_string_wq", &CScriptIniFile::r_string_wb)
                   .def("r_string", &CScriptIniFile::r_string)
                   .def("r_u32", &CScriptIniFile::r_u32)
                   .def("r_s32", &CScriptIniFile::r_s32)
                   .def("r_float", &CScriptIniFile::r_float)
+                  .def("r_vector2", &CScriptIniFile::r_fvector2)
                   .def("r_vector", &CScriptIniFile::r_fvector3)
-                  .def("r_line", &::r_line, pure_out_value<4>() + pure_out_value<5>())
+                  .def("r_vector4", &CScriptIniFile::r_fvector4)
+
+                  .def("r_clsid", &CScriptIniFile::r_clsid)
+                  .def("r_string_wq", &CScriptIniFile::r_string_wb)
 
                   .def("w_bool", &CScriptIniFile::w_bool)
                   .def("w_string", &CScriptIniFile::w_string)
                   .def("w_u32", &CScriptIniFile::w_u32)
                   .def("w_s32", &CScriptIniFile::w_s32)
                   .def("w_float", &CScriptIniFile::w_float)
-                  .def("w_vector", &CScriptIniFile::w_fvector3),
+                  .def("w_vector2", &CScriptIniFile::w_fvector2)
+                  .def("w_vector", &CScriptIniFile::w_fvector3)
+                  .def("w_vector4", &CScriptIniFile::w_fvector4),
 
               def("system_ini", [] { return reinterpret_cast<CScriptIniFile*>(pSettings); }), def("game_ini", [] { return reinterpret_cast<CScriptIniFile*>(pGameIni); }),
               def(
