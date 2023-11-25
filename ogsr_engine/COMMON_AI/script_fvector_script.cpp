@@ -9,10 +9,21 @@
 #include "stdafx.h"
 #include "script_fvector.h"
 
-// KRodin: костыль от проблемы, когда вектор в скриптах инитится с случайными значениями, что приводит к проблемам. Пока так, потом может более нормальное решение придумаю.
+// KRodin: костыль от проблемы, когда вектор в скриптах инитится с случайными значениями, что приводит к проблемам.
+// Пока так, потом может более нормальное решение придумаю.
 inline decltype(auto) initialize_vector()
 {
     Fvector vect = {0, 0, 0};
+    return vect;
+}
+inline decltype(auto) initialize_vector2()
+{
+    const Fvector2 vect = {0, 0};
+    return vect;
+}
+inline decltype(auto) initialize_vector4()
+{
+    const Fvector4 vect = {0, 0, 0, 0};
     return vect;
 }
 
@@ -21,8 +32,11 @@ using namespace luabind;
 #pragma optimize("s", on)
 void CScriptFvector::script_register(lua_State* L)
 {
-    module(
-        L)[def("vector", &initialize_vector),
+    module(L)[
+           def("vector", &initialize_vector), 
+           def("vector2", &initialize_vector2), 
+           def("vector4", &initialize_vector4),
+
            class_<Fvector>("___VECTOR")
                .def_readwrite("x", &Fvector::x)
                .def_readwrite("y", &Fvector::y)
@@ -90,7 +104,7 @@ void CScriptFvector::script_register(lua_State* L)
                .def("reflect", &Fvector::reflect, return_reference_to<1>())
                .def("slide", &Fvector::slide, return_reference_to<1>()),
 
-           class_<Fvector2>("vector2")
+           class_<Fvector2>("___VECTOR2")
                .def_readwrite("x", &Fvector2::x)
                .def_readwrite("y", &Fvector2::y)
                .def(constructor<>())
@@ -132,7 +146,7 @@ void CScriptFvector::script_register(lua_State* L)
 
                .def("getH", &Fvector2::getH),
 
-            class_<Fvector4>("vector4")
+            class_<Fvector4>("___VECTOR4")
                .def_readwrite("x", &Fvector4::x)
                .def_readwrite("y", &Fvector4::y)
                .def_readwrite("z", &Fvector4::y)
