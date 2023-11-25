@@ -43,7 +43,8 @@
 * [S.T.A.L.K.E.R. Anomaly Engine](https://bitbucket.org/anomalymod/xray-monolith)
 * [X-Ray Engine by Alpet & KD](https://github.com/joye-ramone/xray_xp_dev)
 * [CoC-Xray](https://github.com/revolucas/CoC-Xray)
-* [ScreenSpaceShaders](https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders)
+* [SCREEN SPACE SHADERS](https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders)
+* [ENHANCED SHADERS AND COLOR GRADING](https://www.moddb.com/mods/stalker-anomaly/addons/enhanced-shaders-and-color-grading-for-151)
 
 And everyone else whose work has been used. If you are not mentioned, send a message and you will be added.
 
@@ -79,6 +80,7 @@ And everyone else whose work has been used. If you are not mentioned, send a mes
 * [S.T.A.L.K.E.R. Anomaly Engine](https://bitbucket.org/anomalymod/xray-monolith)
 * [X-Ray Engine by Alpet & KD](https://github.com/joye-ramone/xray_xp_dev)
 * [CoC-Xray](https://github.com/revolucas/CoC-Xray)
-* [ScreenSpaceShaders](https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders)
+* [SCREEN SPACE SHADERS](https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders)
+* [ENHANCED SHADERS AND COLOR GRADING](https://www.moddb.com/mods/stalker-anomaly/addons/enhanced-shaders-and-color-grading-for-151)
 
 И всех остальных, чьи работы я использовал. Пишите, если забыл кого-то, добавлю в список.
