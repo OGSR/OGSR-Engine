@@ -39,16 +39,21 @@ void CCF_Skeleton::SElement::center(Fvector& center) const
     default: NODEFAULT;
     }
 }
+
 bool pred_find_elem(const CCF_Skeleton::SElement& E, u16 elem) { return E.elem_id < elem; }
+
 bool CCF_Skeleton::_ElementCenter(u16 elem_id, Fvector& e_center)
 {
+    bool r = false;
+    elements_lock.lock();
     ElementVecIt it = std::lower_bound(elements.begin(), elements.end(), elem_id, pred_find_elem);
     if (it->elem_id == elem_id)
     {
         it->center(e_center);
-        return true;
+        r = true;
     }
-    return false;
+    elements_lock.unlock();
+    return r;
 }
 
 IC bool RAYvsOBB(const Fmatrix& IM, const Fvector& b_hsize, const Fvector& S, const Fvector& D, float& R, BOOL bCull)
@@ -110,7 +115,10 @@ void CCF_Skeleton::BuildState()
     if (vis_mask != K->LL_GetBonesVisible())
     {
         vis_mask = K->LL_GetBonesVisible();
+
+        elements_lock.lock();
         elements.clear();
+
         bv_box.set(pVisual->getVisData().box);
         bv_box.getsphere(bv_sphere.P, bv_sphere.R);
         for (u16 i = 0; i < K->LL_BoneCount(); i++)
@@ -122,8 +130,10 @@ void CCF_Skeleton::BuildState()
                 continue;
             if (shape.flags.is(SBoneShape::sfNoPickable))
                 continue;
+
             elements.emplace_back(i, shape.type);
         }
+        elements_lock.unlock();
     }
 
     for (ElementVecIt I = elements.begin(); I != elements.end(); I++)
@@ -186,7 +196,6 @@ void CCF_Skeleton::BuildState()
 
 void CCF_Skeleton::BuildTopLevel()
 {
-    dwFrameTL = Device.dwFrame;
     IRenderVisual* K = owner->Visual();
     vis_data& vis = K->getVisData();
     Fbox& B = vis.box;
@@ -207,7 +216,11 @@ BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
     if (Device.OnMainThread()) 
     {
         if (dwFrameTL != Device.dwFrame)
+        {
             BuildTopLevel();
+
+            dwFrameTL = Device.dwFrame;
+        }
 
         Fsphere w_bv_sphere;
         owner->XFORM().transform_tiny(w_bv_sphere.P, bv_sphere.P);
@@ -219,42 +232,52 @@ BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
         if (res == Fsphere::rpNone)
             return FALSE;
 
-        if (dwFrame != Device.dwFrame)
-            BuildState();
-        else
+        IKinematics* K = PKinematics(owner->Visual());
+
+        if (dwFrame != Device.dwFrame || K->LL_GetBonesVisible() != vis_mask)
         {
-            IKinematics* K = PKinematics(owner->Visual());
-            if (K->LL_GetBonesVisible() != vis_mask)
-            {
-                // Model changed between ray-picks
-                dwFrame = Device.dwFrame - 1;
-                BuildState();
-            }
+            // Model changed between ray-picks
+            BuildState();
         }
     }
 
-    BOOL bHIT = FALSE;
-    for (ElementVecIt I = elements.begin(); I != elements.end(); I++)
+    auto iterate_elements = [&](const ElementVec& elements_vec) {
+        BOOL bHIT {};
+        for (const auto& elem : elements_vec)
+        {
+            if (!elem.valid())
+                continue;
+            bool res = false;
+            float range = Q.range;
+            switch (elem.type)
+            {
+            case SBoneShape::stBox: res = RAYvsOBB(elem.b_IM, elem.b_hsize, Q.start, Q.dir, range, Q.flags & CDB::OPT_CULL); break;
+            case SBoneShape::stSphere: res = RAYvsSPHERE(elem.s_sphere, Q.start, Q.dir, range, Q.flags & CDB::OPT_CULL); break;
+            case SBoneShape::stCylinder: res = RAYvsCYLINDER(elem.c_cylinder, Q.start, Q.dir, range, Q.flags & CDB::OPT_CULL); break;
+            }
+            if (res)
+            {
+                bHIT = TRUE;
+                R.append_result(owner, range, elem.elem_id, Q.flags & CDB::OPT_ONLYNEAREST);
+                if (Q.flags & CDB::OPT_ONLYFIRST)
+                    break;
+            }
+        }
+        return bHIT;
+    };
+
+    #pragma todo("xrSimpodin: может быть всегда использовать копирование?")
+    if (!Device.OnMainThread())
     {
-        if (!I->valid())
-            continue;
-        bool res = false;
-        float range = Q.range;
-        switch (I->type)
-        {
-        case SBoneShape::stBox: res = RAYvsOBB(I->b_IM, I->b_hsize, Q.start, Q.dir, range, Q.flags & CDB::OPT_CULL); break;
-        case SBoneShape::stSphere: res = RAYvsSPHERE(I->s_sphere, Q.start, Q.dir, range, Q.flags & CDB::OPT_CULL); break;
-        case SBoneShape::stCylinder: res = RAYvsCYLINDER(I->c_cylinder, Q.start, Q.dir, range, Q.flags & CDB::OPT_CULL); break;
-        }
-        if (res)
-        {
-            bHIT = TRUE;
-            R.append_result(owner, range, I->elem_id, Q.flags & CDB::OPT_ONLYNEAREST);
-            if (Q.flags & CDB::OPT_ONLYFIRST)
-                break;
-        }
+        elements_lock.lock();
+        ElementVec copy_elements{elements};
+        elements_lock.unlock();
+        return iterate_elements(copy_elements);
     }
-    return bHIT;
+    else
+    {
+        return iterate_elements(elements);
+    }
 }
 
 //----------------------------------------------------------------------------------
