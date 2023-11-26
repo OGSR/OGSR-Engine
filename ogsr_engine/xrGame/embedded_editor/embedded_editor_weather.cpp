@@ -70,6 +70,8 @@ bool enumIni(void* data, int idx, const char** item)
 
 bool s_ScriptWeather{};
 bool s_ScriptTime{};
+bool s_ScriptWeatheParams{};
+bool s_ScriptNoMixer{};
 
 xr_set<shared_str> modifiedWeathers;
 
@@ -344,7 +346,10 @@ void ShowWeatherEditor(bool& show)
 
     ImGui::BeginDisabled(!s_ScriptWeather);
     if (ImGui::Combo("Weather cycle", &iCycle, enumCycle, &cycles, env.WeatherCycles.size()))
+    {
         env.SetWeather(cycles[iCycle], true);
+    }
+
     ImGui::EndDisabled();
 
     ImGui::Checkbox("Script time", &s_ScriptTime);
@@ -362,6 +367,8 @@ void ShowWeatherEditor(bool& show)
     ImGui::EndDisabled();
 
     ImGui::Separator();
+
+    ImGui::Checkbox("Disable weather mixer", &s_ScriptNoMixer);
 
     bool changed = false;
     sel = -1;
@@ -414,7 +421,7 @@ void ShowWeatherEditor(bool& show)
 
     ImGui::Text("Rain parameters");
 
-    if (ImGui::SliderFloat("rain_density", &cur->rain_density, 0.0f, 10.0f))
+    if (ImGui::SliderFloat("rain_density", &cur->rain_density, 0.0f, 1.0f))
         changed = true;
     if (ImGui::ColorEdit3("rain_color", (float*)&cur->rain_color))
         changed = true;
@@ -542,14 +549,31 @@ void ShowWeatherEditor(bool& show)
     //     changed = true;
 
     if (changed)
+    {
         modifiedWeathers.insert(env.CurrentWeatherName);
+        s_ScriptWeatheParams = true;
+    }
 
-    if (ImGui::Button("Save"))
+    if (s_ScriptWeatheParams && ImGui::Button("Save"))
     {
         for (auto& name : modifiedWeathers)
             saveWeather(name, env.WeatherCycles[name]);
 
         modifiedWeathers.clear();
+
+        s_ScriptWeatheParams = false;
     }
+
+    ImGui::SameLine();
+
+    if (s_ScriptWeatheParams && ImGui::Button("Reset"))
+    {
+        s_ScriptWeatheParams = false;
+
+        env.SetWeather(env.CurrentWeatherName, true);        
+
+        modifiedWeathers.clear();
+    }
+
     ImGui::End();
 }

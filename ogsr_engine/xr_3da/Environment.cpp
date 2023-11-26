@@ -437,6 +437,11 @@ void CEnvironment::lerp(float& current_weight)
     for (xr_vector<CEnvModifier>::iterator mit = Modifiers.begin(); mit != Modifiers.end(); mit++)
         mpower += EM.sum(*mit, view);
 
+    extern bool s_ScriptNoMixer;
+
+    if (s_ScriptNoMixer)
+        current_weight = 0;
+
     // final lerp
     CurrentEnv->lerp(this, *Current[0], *Current[1], current_weight, EM, mpower);
 }
