@@ -248,7 +248,7 @@ IC void MixInterlerp(CKey& Result, const CKey* R, const CBlend* const BA[MAX_BLE
             else
                 d = S[cnt].w / total;
 
-            clampr(d, 0.f, 1.f);
+            clamp(d, 0.f, 1.f);
 
 #ifdef DEBUG
             //.						if ((total==0) || (!_valid(S[cnt].w/total))){
