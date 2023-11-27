@@ -164,8 +164,8 @@ void CRenderTarget::phase_pp()
     RCache.Vertex.Unlock(4, g_postprocess.stride());
 
     // Actual rendering
-    static shared_str s_brightness = "c_brightness";
-    static shared_str s_colormap = "c_colormap";
+    constexpr const char* s_brightness = "c_brightness";
+    constexpr const char* s_colormap = "c_colormap";
     RCache.set_c(s_brightness, p_brightness.x, p_brightness.y, p_brightness.z, 0);
     RCache.set_c(s_colormap, param_color_map_influence, param_color_map_interpolate, 0, 0);
     RCache.set_Geometry(g_postprocess);

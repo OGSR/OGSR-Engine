@@ -55,13 +55,13 @@ void CDetailManager::hw_Render()
 
 void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, u32 var_id, u32 lod_id)
 {
-    static shared_str strConsts("consts");
-    static shared_str strWave("wave");
-    static shared_str strDir2D("dir2D");
-    static shared_str strArray("array");
-    static shared_str strXForm("xform");
-    static shared_str strBendersSetup("benders_setup");
-    static shared_str strBendersPos("benders_pos");
+    constexpr const char* strConsts = "consts";
+    constexpr const char* strWave = "wave";
+    constexpr const char* strDir2D = "dir2D";
+    constexpr const char* strArray = "array";
+    constexpr const char* strXForm = "xform";
+    constexpr const char* strBendersSetup = "benders_setup";
+    constexpr const char* strBendersPos = "benders_pos";
 
     Device.Statistic->RenderDUMP_DT_Count = 0;
 

@@ -532,7 +532,7 @@ void CRenderTarget::accum_volumetric(light* L)
 
         //	Set up user clip planes
         {
-            static shared_str strFrustumClipPlane("FrustumClipPlane");
+            constexpr const char* strFrustumClipPlane = "FrustumClipPlane";
             //	TODO: DX10: Check if it's equivalent to the previouse code.
             // RCache.set_ClipPlanes (TRUE,ClipFrustum.planes,ClipFrustum.p_count);
 

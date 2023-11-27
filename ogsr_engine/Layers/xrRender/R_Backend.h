@@ -245,7 +245,7 @@ public:
     }
 
 #if defined(USE_DX10) || defined(USE_DX11)
-    IC void get_ConstantDirect(shared_str& n, u32 DataSize, void** pVData, void** pGData, void** pPData);
+    IC void get_ConstantDirect(const char* n, u32 DataSize, void** pVData, void** pGData, void** pPData);
 #else // USE_DX10
     IC R_constant_array& get_ConstantCache_Vertex() { return constants.a_vertex; }
     IC R_constant_array& get_ConstantCache_Pixel() { return constants.a_pixel; }

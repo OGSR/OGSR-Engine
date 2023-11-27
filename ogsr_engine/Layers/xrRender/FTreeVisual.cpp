@@ -115,8 +115,8 @@ void FTreeVisual::Render(float LOD)
 
     RCache.tree.set_c_sun(s * c_scale.sun, s * c_bias.sun, 0, 0); // sun
 
-    static shared_str strBendersPos{"benders_pos"};
-    static shared_str strBendersSetup{"benders_setup"};
+    constexpr const char* strBendersPos{"benders_pos"};
+    constexpr const char* strBendersSetup{"benders_setup"};
 
     RCache.set_c(strBendersSetup, Fvector4{ps_ssfx_int_grass_params_1.x, ps_ssfx_int_grass_params_1.y, ps_ssfx_int_grass_params_1.z, ps_r2_ls_flags_ext.test(SSFX_INTER_GRASS) ? ps_ssfx_grass_interactive.y : 0.f});
 

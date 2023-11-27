@@ -226,15 +226,13 @@ MotionVec* motions_value::bone_motions(shared_str bone_name)
 }
 //-----------------------------------
 motions_container::motions_container() {}
-// extern shared_str s_bones_array_const;
+
 motions_container::~motions_container()
 {
     //	clean	(false);
     //	clean	(true);
     //	dump	();
     VERIFY(container.empty());
-    //	Igor:
-    // s_bones_array_const = 0;
 }
 
 bool motions_container::has(shared_str key) { return (container.find(key) != container.end()); }
