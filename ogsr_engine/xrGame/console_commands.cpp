@@ -1638,13 +1638,12 @@ void CCC_RegisterCommands()
 
     CMD3(CCC_Mask, "dbg_draw_skeleton", &dbg_net_Draw_Flags, (1 << 11));
 
-#ifdef DEBUG
-    CMD4(CCC_Integer, "string_table_error_msg", &CStringTable::m_bWriteErrorsToLog, 0, 1);
+    CMD4(CCC_Integer, "dbg_string_table_error_msg", &CStringTable::WriteErrorsToLog, 0, 1);
 
+#ifdef DEBUG
     CMD1(CCC_DumpInfos, "dump_infos");
     CMD1(CCC_DumpMap, "dump_map");
     CMD1(CCC_DumpCreatures, "dump_creatures");
-
 #endif
 
     CMD3(CCC_Mask, "cl_dynamiccrosshair", &psHUD_Flags, HUD_CROSSHAIR_DYNAMIC);
