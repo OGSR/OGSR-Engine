@@ -160,7 +160,7 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view, int limit)
 
     // Task performer
     BOOL bFullUnpack = FALSE;
-    if (cache_task.size() == dm_cache_size)
+    if (cache_task.size() == dm_cache_size || Device.dwPrecacheFrame == 1) // на последнем кадре префетча
     {
         limit = dm_cache_size;
         bFullUnpack = TRUE;
