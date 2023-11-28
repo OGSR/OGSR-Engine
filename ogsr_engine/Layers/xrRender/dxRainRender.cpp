@@ -29,43 +29,34 @@ dxRainRender::~dxRainRender() { ::RImplementation.model_Delete(DM_Drop); }
 
 void dxRainRender::Render(CEffect_Rain& owner)
 {
-    float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
+    const float factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
     if (factor < EPS_L)
         return;
 
-    float _drop_len = ps_ssfx_rain_1.x;
-    float _drop_width = ps_ssfx_rain_1.y;
-
     ref_shader& _splash_SH = SH_Splash;
-    static shared_str s_shader_setup = "ssfx_rain_setup";
-
-    u32 desired_items = iFloor(0.5f * (1.f + factor) * max_desired_items);
+    constexpr const char* s_shader_setup = "ssfx_rain_setup";
 
     // visual
-    float factor_visual = factor / 2.f + .5f;
-    Fvector3 f_rain_color = g_pGamePersistent->Environment().CurrentEnv->rain_color;
-    u32 u_rain_color = color_rgba_f(f_rain_color.x, f_rain_color.y, f_rain_color.z, factor_visual);
+    const float factor_visual = factor / 2.f + .5f;
+    const Fvector3& f_rain_color = g_pGamePersistent->Environment().CurrentEnv->rain_color;
+    const u32 u_rain_color = color_rgba_f(f_rain_color.x, f_rain_color.y, f_rain_color.z, factor_visual);
 
-    // build source plane
-    Fplane src_plane;
-    Fvector norm = {0.f, -1.f, 0.f};
-    Fvector upper;
-    upper.set(Device.vCameraPosition.x, Device.vCameraPosition.y + source_offset, Device.vCameraPosition.z);
-    src_plane.build(upper, norm);
+    if (!owner.items.empty())
+    {
+
+    const float _drop_len = ps_ssfx_rain_1.x;
+    const float _drop_width = ps_ssfx_rain_1.y;
 
     // perform update
     u32 vOffset;
-    FVF::LIT* verts = (FVF::LIT*)RCache.Vertex.Lock(desired_items * 4, hGeom_Rain->vb_stride, vOffset);
+    FVF::LIT* verts = (FVF::LIT*)RCache.Vertex.Lock(owner.items.size() * 4, hGeom_Rain->vb_stride, vOffset);
     FVF::LIT* start = verts;
     const Fvector& vEye = Device.vCameraPosition;
 
-    for (u32 I = 0; I < owner.items.size(); I++)
+    for (const auto& one : owner.items)
     {
-        // physics and time control
-        CEffect_Rain::Item& one = owner.items[I];
-
         // Build line
-        Fvector& pos_head = one.P;
+        const Fvector& pos_head = one.P;
         Fvector pos_trail;
         pos_trail.mad(pos_head, one.D, -_drop_len * factor_visual);
 
@@ -102,6 +93,7 @@ void dxRainRender::Render(CEffect_Rain& owner)
         verts->set(P, u_rain_color, UV[s][3].x, UV[s][3].y);
         verts++;
     }
+
     u32 vCount = (u32)(verts - start);
     RCache.Vertex.Unlock(vCount, hGeom_Rain->vb_stride);
 
@@ -117,6 +109,8 @@ void dxRainRender::Render(CEffect_Rain& owner)
         // HW.pDevice->SetRenderState	(D3DRS_CULLMODE,D3DCULL_CCW);
         RCache.set_CullMode(CULL_CCW);
         RCache.set_c(s_shader_setup, ps_ssfx_rain_2); // Alpha, Brigthness, Refraction, Reflection
+    }
+
     }
 
     // Particles
@@ -248,25 +242,25 @@ void dxRainRender::Calculate(CEffect_Rain& owner)
 
     Prepare();
 
-    const u32 desired_items = iFloor(0.01f * (1.f + factor * 99.0f) * max_desired_items);
+    const size_t desired_items = iFloor(min_desired_items + (factor * (max_desired_items - min_desired_items)));
 
-    // Get to the desired items
-//    if (current_items < desired_items)
-//        current_items += desired_items - current_items;
-
-    // born _new_ if needed
-    float b_radius_wrap_sqr = _sqr((source_radius * 1.5f));
-    if (owner.items.size() < desired_items /* current_items*/)
+    if (size_t sz = owner.items.size(); sz < desired_items)
     {
-        while (owner.items.size() < desired_items /* current_items*/)
+        // born _new_ if needed
+        for (; sz < desired_items; sz++)
         {
             CEffect_Rain::Item one;
             owner.Born(one, source_radius, _drop_speed, Wind_Velocity, Rain_Offset, Rain_Axis);
-            owner.items.push_back(one);
+            owner.items.emplace_back(std::move(one));
         }
+    }
+    else
+    {
+        owner.items.resize(desired_items);
     }
 
     // build source plane
+    float b_radius_wrap_sqr = _sqr((source_radius * 1.5f));
     Fplane src_plane;
     Fvector norm = {0.f, -1.f, 0.f};
     Fvector upper;
@@ -275,23 +269,16 @@ void dxRainRender::Calculate(CEffect_Rain& owner)
 
     const Fvector& vEye = Device.vCameraPosition;
 
-    for (u32 I = 0; I < owner.items.size() /* current_items*/; I++)
+    for (auto& one : owner.items)
     {
-        // physics and time control
-        CEffect_Rain::Item& one = owner.items.at(I);
-
         if (one.dwTime_Hit < Device.dwTimeGlobal)
         {
             owner.Hit(one.Phit);
-//            if (current_items > desired_items)
-//                current_items--; // Hit something
         }
 
         if (one.dwTime_Life < Device.dwTimeGlobal)
         {
             owner.Born(one, source_radius, _drop_speed, Wind_Velocity, Rain_Offset, Rain_Axis);
-//            if (current_items > desired_items)
-//                current_items--; // Out of life ( invalidated, never hit something, etc. )
         }
 
         float dt = Device.fTimeDelta;

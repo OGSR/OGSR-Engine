@@ -5,10 +5,11 @@
 
 #include "../xrcdb/xr_collide_defs.h"
 
-constexpr float max_desired_items = 2500.f;
+constexpr float max_desired_items = 3500.f; // 2500.f
+constexpr float min_desired_items = max_desired_items / 10.f;
 
-constexpr float source_radius = 15; // 12.5f;
-constexpr float source_offset = 20.f; // 40
+constexpr float source_radius = 15.f; // 12.5f;
+constexpr float source_offset = 40.f;
 
 constexpr float max_distance = source_offset * 1.5f; // 1.25f;
 constexpr float sink_offset = -(max_distance - source_offset);
