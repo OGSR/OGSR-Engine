@@ -55,26 +55,6 @@ void CEliteDetector::render_item_3d_ui()
     UIRender->CacheSetCullMode(IUIRender::cmCCW);
 }
 
-static void fix_ws_wnd_size(CUIWindow* w, float kx)
-{
-    Fvector2 p = w->GetWndSize();
-    p.x /= kx;
-    w->SetWndSize(p);
-
-    p = w->GetWndPos();
-    p.x /= kx;
-    w->SetWndPos(p);
-
-    auto it = w->GetChildWndList().begin();
-    auto it_e = w->GetChildWndList().end();
-
-    for (; it != it_e; ++it)
-    {
-        CUIWindow* w2 = *it;
-        fix_ws_wnd_size(w2, kx);
-    }
-}
-
 void CUIArtefactDetectorElite::construct(CEliteDetector* p)
 {
     m_parent = p;

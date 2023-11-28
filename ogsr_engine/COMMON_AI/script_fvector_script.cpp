@@ -9,33 +9,16 @@
 #include "stdafx.h"
 #include "script_fvector.h"
 
-// KRodin: костыль от проблемы, когда вектор в скриптах инитится с случайными значениями, что приводит к проблемам.
-// Пока так, потом может более нормальное решение придумаю.
-inline decltype(auto) initialize_vector()
-{
-    Fvector vect = {0, 0, 0};
-    return vect;
-}
-inline decltype(auto) initialize_vector2()
-{
-    const Fvector2 vect = {0, 0};
-    return vect;
-}
-inline decltype(auto) initialize_vector4()
-{
-    const Fvector4 vect = {0, 0, 0, 0};
-    return vect;
-}
-
 using namespace luabind;
 
 #pragma optimize("s", on)
 void CScriptFvector::script_register(lua_State* L)
 {
     module(L)[
-           def("vector", &initialize_vector), 
-           def("vector2", &initialize_vector2), 
-           def("vector4", &initialize_vector4),
+//Для инициализации векторов нулями
+           def("vector", [] { return Fvector{}; }), 
+           def("vector2", [] { return Fvector2{}; }), 
+           def("vector4", [] { return Fvector4{}; }),
 
            class_<Fvector>("___VECTOR")
                .def_readwrite("x", &Fvector::x)
