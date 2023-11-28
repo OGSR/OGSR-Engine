@@ -17,7 +17,6 @@ typedef struct _PROCESSOR_POWER_INFORMATION
 
 // Initialized on startup
 XRCORE_API Fmatrix Fidentity;
-XRCORE_API CRandom Random;
 
 /*
 Функции управления точностью вычислений с плавающей точкой.
@@ -86,8 +85,6 @@ void initialize()
     //	m64r();
     // else
     m24r();
-
-    ::Random.seed(u32(CPU::GetCLK() % (1i64 << 32i64)));
 }
 } // namespace FPU
 

@@ -1,29 +1,28 @@
 #pragma once
+#include <random>
 
-class CRandom
+class CRandom final
 {
-private:
-    volatile s32 holdrand;
+    static constexpr s32 maxI = 32767;
 
-    IC s32 maxI() { return 32767; }
+    std::mt19937 generator{std::random_device()()}; // mt19937 is a standard mersenne_twister_engine
+
+    inline s32 nextValue(const s32 max) { return std::uniform_int_distribution<s32>{0, max - 1}(generator); }
 
 public:
-    CRandom() : holdrand(1){};
-    CRandom(s32 _seed) : holdrand(_seed){};
+    CRandom() = default;
 
-    IC void seed(s32 val) { holdrand = val; }
+    [[nodiscard]] inline s32 randI() { return nextValue(maxI); }
+    [[nodiscard]] inline s32 randI(const s32 max) { return !max ? max : nextValue(max); }
+    [[nodiscard]] inline s32 randI(const s32 min, const s32 max) { return min + randI(max - min); }
+    [[nodiscard]] inline s32 randIs(const s32 range) { return randI(-range, range); }
+    [[nodiscard]] inline s32 randIs(const s32 range, const s32 offs) { return offs + randIs(range); }
 
-    ICN s32 randI() { return (((holdrand = holdrand * 214013L + 2531011L) >> 16) & maxI()); }
-    IC s32 randI(s32 max) { return !max ? max : (randI() % max); }
-    IC s32 randI(s32 min, s32 max) { return min + randI(max - min); }
-    IC s32 randIs(s32 range) { return randI(-range, range); }
-    IC s32 randIs(s32 range, s32 offs) { return offs + randIs(range); }
-
-    IC float randF() { return static_cast<float>(randI()) / static_cast<float>(maxI()); }
-    IC float randF(float max) { return randF() * max; }
-    IC float randF(float min, float max) { return min + randF(max - min); }
-    IC float randFs(float range) { return randF(-range, range); }
-    IC float randFs(float range, float offs) { return offs + randFs(range); }
+    [[nodiscard]] inline float randF() { return static_cast<float>(randI()) / static_cast<float>(maxI - 1); }
+    [[nodiscard]] inline float randF(const float max) { return randF() * max; }
+    [[nodiscard]] inline float randF(const float min, const float max) { return min + randF(max - min); }
+    [[nodiscard]] inline float randFs(const float range) { return randF(-range, range); }
+    [[nodiscard]] inline float randFs(const float range, const float offs) { return offs + randFs(range); }
 };
 
-XRCORE_API extern CRandom Random;
+inline thread_local CRandom Random{};
