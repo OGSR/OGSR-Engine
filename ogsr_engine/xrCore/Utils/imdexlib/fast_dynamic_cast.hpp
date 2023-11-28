@@ -10,8 +10,8 @@ namespace imdexlib
 using class_ptr = const uintptr_t*;
 using vtable_ptr = const uintptr_t*;
 
-static constexpr ptrdiff_t Uncached = PTRDIFF_MAX;
-static constexpr ptrdiff_t Bad = PTRDIFF_MAX - 1;
+constexpr ptrdiff_t Uncached = PTRDIFF_MAX;
+constexpr ptrdiff_t Bad = PTRDIFF_MAX - 1;
 
 template <typename T>
 vtable_ptr getVTable(const T* obj) noexcept

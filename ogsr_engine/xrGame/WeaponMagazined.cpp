@@ -1561,7 +1561,6 @@ void CWeaponMagazined::OnZoomIn()
             S = (CEffectorZoomInertion*)pActor->Cameras().AddCamEffector(xr_new<CEffectorZoomInertion>());
             S->Init(this);
         }
-        S->SetRndSeed(pActor->GetZoomRndSeed());
         R_ASSERT(S);
 
         if (m_bVision && !m_binoc_vision)

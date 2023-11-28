@@ -16,7 +16,6 @@
 CALifeSpawnRegistry::CALifeSpawnRegistry(LPCSTR section)
 {
     m_spawn_name = "";
-    seed(u32(CPU::QPC() & 0xffffffff));
     m_game_graph = nullptr;
     m_spawn_chunk = nullptr;
     m_file = nullptr;

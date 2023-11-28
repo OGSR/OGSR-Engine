@@ -34,7 +34,7 @@ void CSE_ALifeMonsterBase::on_spawn()
                 string128 tmp;
                 spawn_prob = atof(_GetItem(item_section, i + 1, tmp));
             }
-            float probability = randF();
+            float probability = ::Random.randF();
             if (probability < spawn_prob || fsimilar(spawn_prob, 1.f))
             {
                 alife().spawn_item(item, o_Position, m_tNodeID, m_tGraphID, ID)->ID_Parent = ID;

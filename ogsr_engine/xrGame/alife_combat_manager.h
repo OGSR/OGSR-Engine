@@ -11,7 +11,7 @@
 #include "alife_simulator_base.h"
 //#include "game_graph_space.h"
 
-class CALifeCombatManager : public virtual CALifeSimulatorBase, CRandom
+class CALifeCombatManager : public virtual CALifeSimulatorBase
 {
     /**
     protected:

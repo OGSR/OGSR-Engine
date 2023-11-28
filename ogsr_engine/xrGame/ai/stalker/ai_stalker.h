@@ -378,7 +378,6 @@ public:
 
 private:
     CWeaponShotEffector* m_weapon_shot_effector;
-    s32 m_weapon_shot_random_seed;
 
 public:
     virtual void on_weapon_shot_start(CWeapon* weapon);

@@ -26,5 +26,5 @@ inline dSurfaceParameters* SURFACE(dContactGeom* ptr, const int stride)
 
 #define NUMC_MASK (0xffff)
 
-static constexpr float M_SIN_PI_3 = REAL(0.8660254037844386467637231707529362);
-static constexpr float M_COS_PI_3 = REAL(0.5000000000000000000000000000000000);
+constexpr float M_SIN_PI_3 = REAL(0.8660254037844386467637231707529362);
+constexpr float M_COS_PI_3 = REAL(0.5000000000000000000000000000000000);

@@ -146,8 +146,6 @@ void CAI_Stalker::reinit()
     m_pick_distance = 0.f;
     m_pick_frame_id = 0;
 
-    m_weapon_shot_random_seed = s32(Level().timeServer_Async());
-
     m_best_cover = 0;
     m_best_cover_actual = false;
     m_best_cover_value = flt_max;

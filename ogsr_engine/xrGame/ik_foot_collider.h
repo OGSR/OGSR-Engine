@@ -59,4 +59,4 @@ public:
     void collide(SIKCollideData& cld, const ik_foot_geom& foot_geom, CGameObject* O, bool foot_step);
 };
 
-static const float collide_dist = 0.5f;
+constexpr float collide_dist = 0.5f;

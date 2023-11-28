@@ -206,8 +206,6 @@ void CLevelGraph::draw_restrictions()
     CSpaceRestrictionManager::SPACE_RESTRICTIONS::const_iterator I = Level().space_restriction_manager().restrictions().begin();
     CSpaceRestrictionManager::SPACE_RESTRICTIONS::const_iterator E = Level().space_restriction_manager().restrictions().end();
 
-    CRandom R;
-
     for (; I != E; ++I)
     {
         if (!(*I).second->m_ref_count)
@@ -215,9 +213,9 @@ void CLevelGraph::draw_restrictions()
         if (!(*I).second->initialized())
             continue;
 
-        u8 b = u8(R.randI(255));
-        u8 g = u8(R.randI(255));
-        u8 r = u8(R.randI(255));
+        const u8 b = u8(::Random.randI(255));
+        const u8 g = u8(::Random.randI(255));
+        const u8 r = u8(::Random.randI(255));
 
         xr_vector<u32>::const_iterator i = (*I).second->border().begin();
         xr_vector<u32>::const_iterator e = (*I).second->border().end();

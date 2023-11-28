@@ -189,8 +189,6 @@ protected:
 
     bool m_drop_last_frame;
 
-    void SendActionEvent(s32 cmd, u32 flags);
-
 private:
     u32 UpdatesCount{};
 };

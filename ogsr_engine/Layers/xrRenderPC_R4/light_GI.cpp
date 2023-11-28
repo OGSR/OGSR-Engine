@@ -8,8 +8,6 @@ void light::gi_generate()
     indirect.clear();
     indirect_photons = ps_r2_ls_flags.test(R2FLAG_GI) ? ps_r2_GI_photons : 0;
 
-    CRandom random(0x12071980);
-
     xrXRC& xrc = RImplementation.Sectors_xrc;
     CDB::MODEL* model = g_pGameLevel->ObjectSpace.GetStaticModel();
     CDB::TRI* tris = g_pGameLevel->ObjectSpace.GetStaticTris();
@@ -20,9 +18,9 @@ void light::gi_generate()
         Fvector dir, idir;
         switch (flags.type)
         {
-        case IRender_Light::POINT: dir.random_dir(random); break;
-        case IRender_Light::SPOT: dir.random_dir(direction, cone, random); break;
-        case IRender_Light::OMNIPART: dir.random_dir(direction, cone, random); break;
+        case IRender_Light::POINT: dir.random_dir(); break;
+        case IRender_Light::SPOT: dir.random_dir(direction, cone); break;
+        case IRender_Light::OMNIPART: dir.random_dir(direction, cone); break;
         }
         dir.normalize();
         xrc.ray_query(CDB::OPT_CULL | CDB::OPT_ONLYNEAREST, model, position, dir, range);

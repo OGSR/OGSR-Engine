@@ -103,7 +103,6 @@ CSE_ALifeObject::CSE_ALifeObject(LPCSTR caSection) : CSE_Abstract(caSection)
     m_alife_simulator = 0;
 #endif
     m_flags.set(flOfflineNoMove, FALSE);
-    seed(u32(CPU::QPC() & 0xffffffff));
 }
 
 #ifdef XRGAME_EXPORTS

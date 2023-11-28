@@ -55,15 +55,6 @@ float CWeapon::GetFireDispersion(float cartridge_k)
 void CWeapon::AddShotEffector()
 {
     inventory_owner().on_weapon_shot_start(this);
-    /**
-        CActor* pActor = smart_cast<CActor*>(H_Parent());
-        if(pActor){
-            CCameraShotEffector* S	= smart_cast<CCameraShotEffector*>	(pActor->EffectorManager().GetEffector(eCEShot));
-            if (!S)	S				= (CCameraShotEffector*)pActor->EffectorManager().AddEffector(xr_new<CCameraShotEffectorX> (camMaxAngle,camRelaxSpeed, camMaxAngleHorz,
-    camStepAngleHorz, camDispertionFrac)); R_ASSERT				(S); S->SetRndSeed(pActor->GetShotRndSeed()); S->SetActor(pActor); S->Shot
-    (camDispersion+camDispersionInc*float(ShotsFired()));
-        }
-    /**/
 }
 
 void CWeapon::RemoveShotEffector()

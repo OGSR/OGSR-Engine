@@ -4,7 +4,7 @@
 
 #pragma once
 
-static constexpr auto CFS_CompressMark = 1ul << 31ul;
+constexpr auto CFS_CompressMark = 1ul << 31ul;
 
 XRCORE_API void VerifyPath(const std::string_view path);
 

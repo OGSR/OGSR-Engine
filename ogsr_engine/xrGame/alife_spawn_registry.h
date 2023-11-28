@@ -18,7 +18,7 @@
 class CServerEntityWrapper;
 class CGameGraph;
 
-class CALifeSpawnRegistry : CRandom
+class CALifeSpawnRegistry
 {
 public:
     typedef CGameGraph::LEVEL_POINT_VECTOR ARTEFACT_SPAWNS;

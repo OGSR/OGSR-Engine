@@ -171,7 +171,6 @@ void CActor::on_weapon_shot_start(CWeapon* weapon)
         }
     };
 
-    effector->SetRndSeed(GetShotRndSeed());
     effector->SetActor(this);
     effector->Shot(weapon->camDispersion + weapon->camDispersionInc * float(weapon->ShotsFired()));
 

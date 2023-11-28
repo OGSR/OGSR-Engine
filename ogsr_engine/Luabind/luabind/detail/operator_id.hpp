@@ -59,7 +59,7 @@ namespace luabind { namespace detail {
 
 	inline const char* get_operator_name(int i)
 	{
-		static const char* a[number_of_operators] = {
+		constexpr const char* a[number_of_operators] = {
             "__add", "__sub", "__mul", "__div", "__pow", 
             "__lt", "__le", "__eq", "__call", "__unm", 
             "__tostring", "__concat" };
@@ -68,7 +68,7 @@ namespace luabind { namespace detail {
 
 	inline const char* get_operator_symbol(int i)
 	{
-		static const char* a[number_of_operators] = {
+		constexpr const char* a[number_of_operators] = {
             "+", "-", "*", "/", "^", "<", 
             "<=", "==", "()", "- (unary)", 
             "tostring", ".." };

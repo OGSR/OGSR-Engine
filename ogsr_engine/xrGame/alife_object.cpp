@@ -60,7 +60,7 @@ void CSE_ALifeObject::spawn_supplies(LPCSTR ini_string)
             }
             for (u32 i = 0; i < j; ++i)
             {
-                if (randF(1.f) < p)
+                if (::Random.randF(1.f) < p)
                 {
                     CSE_Abstract* E = alife().spawn_item(N, o_Position, m_tNodeID, m_tGraphID, ID);
                     //подсоединить аддоны к оружию, если включены соответствующие флажки

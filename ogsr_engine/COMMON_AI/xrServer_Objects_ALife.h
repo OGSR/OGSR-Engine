@@ -72,7 +72,7 @@ SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeGraphPoint)
 #define script_type_list save_type_list(CSE_ALifeGraphPoint)
 
-    SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObject, CSE_Abstract, CRandom) enum {
+    SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeObject, CSE_Abstract) enum {
         flUseSwitches = u32(1) << 0,
         flSwitchOnline = u32(1) << 1,
         flSwitchOffline = u32(1) << 2,

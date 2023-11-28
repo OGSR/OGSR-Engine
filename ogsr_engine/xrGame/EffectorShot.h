@@ -27,10 +27,6 @@ protected:
     BOOL bSingleShoot;
     BOOL bSSActive;
 
-private:
-    CRandom m_Random;
-    s32 m_LastSeed;
-
 public:
     CWeaponShotEffector();
     virtual ~CWeaponShotEffector(){};
@@ -41,8 +37,6 @@ public:
     IC BOOL IsSingleShot() { return bSingleShoot; }
     virtual void SetSingleShoot(BOOL Single) { bSingleShoot = Single; };
     void Update();
-
-    void SetRndSeed(s32 Seed);
 
     virtual void Shot(float angle);
     virtual void GetDeltaAngle(Fvector& delta_angle);

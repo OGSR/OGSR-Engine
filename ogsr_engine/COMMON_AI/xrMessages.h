@@ -45,7 +45,6 @@ enum
 
 enum
 {
-    GE_RESPAWN,
     GE_OWNERSHIP_TAKE, // DUAL: Client request for ownership of an item
     GE_OWNERSHIP_REJECT, // DUAL: Client request ownership rejection
     GE_TRANSFER_AMMO, // DUAL: Take ammo out of weapon for our weapon
@@ -68,7 +67,6 @@ enum
     GE_WPN_STATE_CHANGE,
 
     GE_GRENADE_EXPLODE,
-    GE_INV_ACTION, // a action beign taken on inventory
 
     GE_ZONE_STATE_CHANGE,
 

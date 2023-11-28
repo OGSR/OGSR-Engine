@@ -58,7 +58,7 @@ void CSE_ALifeAnomalousZone::spawn_artefacts()
     if (m_min_artefact_count == m_max_artefact_count)
         m_artefact_count = m_min_artefact_count;
     else
-        m_artefact_count = randI(m_min_artefact_count, m_max_artefact_count);
+        m_artefact_count = ::Random.randI(m_min_artefact_count, m_max_artefact_count);
 
     if (m_artefact_count == 0)
         return;
@@ -109,7 +109,7 @@ void CSE_ALifeAnomalousZone::spawn_artefacts()
 
     for (u32 i = 0; i < m_artefact_count; ++i)
     {
-        float fProbability = randF(1.f);
+        const float fProbability = ::Random.randF(1.f);
         float fSum = 0.f;
 
         u16 item = 0;
@@ -128,8 +128,8 @@ void CSE_ALifeAnomalousZone::spawn_artefacts()
 
             art_pos.y = art_pos.y + 1;
 
-            art_pos.x = art_pos.x + randF(-0.5, 0.5);
-            art_pos.z = art_pos.z + randF(-0.5, 0.5);
+            art_pos.x = art_pos.x + ::Random.randF(-0.5, 0.5);
+            art_pos.z = art_pos.z + ::Random.randF(-0.5, 0.5);
 
             CSE_Abstract* l_tpSE_Abstract = alife().spawn_item(*m_weights[item].first, art_pos, m_tNodeID, m_tGraphID, 0xffff);
             R_ASSERT3(l_tpSE_Abstract, "Can't spawn artefact ", *m_weights[item].first);

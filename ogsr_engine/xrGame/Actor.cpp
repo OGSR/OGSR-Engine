@@ -1669,22 +1669,6 @@ float CActor::HitArtefactsOnBelt(float hit_power, ALife::EHitType hit_type, bool
     return res_hit_power_k > 0 ? res_hit_power_k * hit_power : 0;
 }
 
-void CActor::SetZoomRndSeed(s32 Seed)
-{
-    if (0 != Seed)
-        m_ZoomRndSeed = Seed;
-    else
-        m_ZoomRndSeed = s32(Level().timeServer_Async());
-};
-
-void CActor::SetShotRndSeed(s32 Seed)
-{
-    if (0 != Seed)
-        m_ShotRndSeed = Seed;
-    else
-        m_ShotRndSeed = s32(Level().timeServer_Async());
-};
-
 Fvector CActor::GetMissileOffset() const { return m_vMissileOffset; }
 
 void CActor::SetMissileOffset(const Fvector& vNewOffset) { m_vMissileOffset.set(vNewOffset); }

@@ -35,8 +35,6 @@ public:
     //время через которое эффектор меняет направление движения
     u32 m_dwDeltaTime;
 
-    CRandom m_Random;
-
     void CalcNextPoint();
     void LoadParams(LPCSTR Section, LPCSTR Prefix);
 
@@ -48,7 +46,6 @@ public:
     void SetParams(float disp);
 
     virtual BOOL ProcessCam(SCamEffectorInfo& info);
-    virtual void SetRndSeed(s32 Seed) { m_Random.seed(Seed); };
     virtual void Init(CWeaponMagazined* pWeapon);
 
     virtual CEffectorZoomInertion* cast_effector_zoom_inertion() { return this; }

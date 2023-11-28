@@ -577,40 +577,8 @@ PIItem CInventory::ItemFromSlot(u32 slot) const
     return m_slots[slot].m_pIItem;
 }
 
-void CInventory::SendActionEvent(s32 cmd, u32 flags)
-{
-    CActor* pActor = smart_cast<CActor*>(m_pOwner);
-    if (!pActor)
-        return;
-
-    NET_Packet P;
-    pActor->u_EventGen(P, GE_INV_ACTION, pActor->ID());
-    P.w_s32(cmd);
-    P.w_u32(flags);
-    P.w_s32(pActor->GetZoomRndSeed());
-    P.w_s32(pActor->GetShotRndSeed());
-    pActor->u_EventSend(P, net_flags(TRUE, TRUE, FALSE, TRUE));
-};
-
 bool CInventory::Action(s32 cmd, u32 flags)
 {
-    CActor* pActor = smart_cast<CActor*>(m_pOwner);
-
-    if (pActor)
-    {
-        switch (cmd)
-        {
-        case kWPN_FIRE: {
-            pActor->SetShotRndSeed();
-        }
-        break;
-        case kWPN_ZOOM: {
-            pActor->SetZoomRndSeed();
-        }
-        break;
-        };
-    };
-
     if (m_iActiveSlot < m_slots.size() && m_slots[m_iActiveSlot].m_pIItem && m_slots[m_iActiveSlot].m_pIItem->Action(cmd, flags))
         return true;
     bool b_send_event = false;

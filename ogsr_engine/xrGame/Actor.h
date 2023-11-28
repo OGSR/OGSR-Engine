@@ -253,11 +253,6 @@ protected:
     BOOL b_DropActivated;
     float f_DropPower;
 
-    // random seed для Zoom mode
-    s32 m_ZoomRndSeed;
-    // random seed для Weapon Effector Shot
-    s32 m_ShotRndSeed;
-
     bool m_bOutBorder;
     //сохраняет счетчик объектов в feel_touch, для которых необходимо обновлять размер колижена с актером
     u32 m_feel_touch_characters;
@@ -268,14 +263,6 @@ protected:
 
 private:
     void SwitchOutBorder(bool new_border_state);
-
-public:
-    ////////////////////////////////////////////////////////
-    void SetZoomRndSeed(s32 Seed = 0);
-    s32 GetZoomRndSeed() { return m_ZoomRndSeed; };
-    ////////////////////////////////////////////////////////
-    void SetShotRndSeed(s32 Seed = 0);
-    s32 GetShotRndSeed() { return m_ShotRndSeed; };
 
 public:
     void detach_Vehicle();

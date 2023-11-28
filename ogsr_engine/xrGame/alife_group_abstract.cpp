@@ -71,7 +71,7 @@ void CSE_ALifeGroupAbstract::switch_offline()
             u16 wNeighbourCount = ai().game_graph().vertex(tpGroup->m_tGraphID)->edge_count();
             CGameGraph::const_iterator i, e;
             ai().game_graph().begin(tpGroup->m_tGraphID, i, e);
-            tpGroup->m_tPrevGraphID = (*(i + object->randI(0, wNeighbourCount))).vertex_id();
+            tpGroup->m_tPrevGraphID = (*(i + ::Random.randI(0, wNeighbourCount))).vertex_id();
         }
         object->alife().remove_online(tpGroupMember, false);
         ++I;

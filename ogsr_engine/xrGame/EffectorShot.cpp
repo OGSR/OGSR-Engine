@@ -15,7 +15,6 @@ CWeaponShotEffector::CWeaponShotEffector()
     bActive = FALSE;
     bSingleShoot = FALSE;
     bSSActive = FALSE;
-    m_LastSeed = 0;
     fRelaxSpeed = EPS_L;
     fAngleVertMax = 0.f;
     fAngleVertFrac = 1.f;
@@ -41,13 +40,13 @@ void CWeaponShotEffector::Shot(float angle)
 {
     float OldAngleVert = fAngleVert, OldAngleHorz = fAngleHorz;
 
-    fAngleVert += (angle * fAngleVertFrac + m_Random.randF(-1, 1) * angle * (1 - fAngleVertFrac));
+    fAngleVert += (angle * fAngleVertFrac + ::Random.randF(-1, 1) * angle * (1 - fAngleVertFrac));
     //	VERIFY(!fis_zero(fAngleVertMax));
     clamp(fAngleVert, -fAngleVertMax, fAngleVertMax);
     if (fis_zero(fAngleVert - fAngleVertMax))
-        fAngleVert *= m_Random.randF(0.9f, 1.1f);
+        fAngleVert *= ::Random.randF(0.9f, 1.1f);
 
-    fAngleHorz = fAngleHorz + (fAngleVert / fAngleVertMax) * m_Random.randF(-1, 1) * fAngleHorzStep;
+    fAngleHorz = fAngleHorz + (fAngleVert / fAngleVertMax) * ::Random.randF(-1, 1) * fAngleHorzStep;
     //	VERIFY(_valid(fAngleHorz));
 
     clamp(fAngleHorz, -fAngleHorzMax, fAngleHorzMax);
@@ -123,7 +122,6 @@ void CWeaponShotEffector::Update()
         {
             fAngleVert = 0.f;
             fAngleHorz = 0.f;
-            m_LastSeed = 0;
             bSSActive = FALSE;
         }
         //-------------------------------------------------------
@@ -144,7 +142,6 @@ void CWeaponShotEffector::Clear()
     bActive = false;
     fAngleVert = 0.f;
     fAngleHorz = 0.f;
-    m_LastSeed = 0;
 };
 
 void CWeaponShotEffector::GetDeltaAngle(Fvector& delta_angle)
@@ -159,15 +156,6 @@ void CWeaponShotEffector::GetLastDelta(Fvector& delta_angle)
     delta_angle.x = -fLastDeltaVert;
     delta_angle.y = -fLastDeltaHorz;
     delta_angle.z = 0.0f;
-};
-
-void CWeaponShotEffector::SetRndSeed(s32 Seed)
-{
-    if (m_LastSeed == 0)
-    {
-        m_LastSeed = Seed;
-        m_Random.seed(Seed);
-    };
 };
 
 void CWeaponShotEffector::ApplyLastAngles(float* pitch, float* yaw)

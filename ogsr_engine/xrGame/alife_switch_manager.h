@@ -10,7 +10,7 @@
 
 #include "alife_simulator_base.h"
 
-class CALifeSwitchManager : public virtual CALifeSimulatorBase, CRandom
+class CALifeSwitchManager : public virtual CALifeSimulatorBase
 {
 protected:
     typedef CALifeSimulatorBase inherited;

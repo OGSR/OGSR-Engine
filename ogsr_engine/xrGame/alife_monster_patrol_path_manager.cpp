@@ -160,7 +160,7 @@ void CALifeMonsterPatrolPathManager::navigate()
         };
     }
 
-    u32 chosen = use_randomness() ? object().randI(branching_factor) : 0;
+    const u32 chosen = use_randomness() ? ::Random.randI(branching_factor) : 0;
     u32 branch = 0;
     for (I = B; I != E; ++I)
     {

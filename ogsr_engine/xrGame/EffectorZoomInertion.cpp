@@ -32,7 +32,6 @@ CEffectorZoomInertion* FindEffectorZoomInertion()
 CEffectorZoomInertion::CEffectorZoomInertion() : CEffectorCam(eCEZoom, 100000.f)
 {
     Load();
-    SetRndSeed(Device.dwTimeContinual);
     m_dwTimePassed = 0;
 }
 
@@ -100,8 +99,8 @@ void CEffectorZoomInertion::CalcNextPoint()
     //	m_fEpsilon = 2*m_fFloatSpeed;
 
     float half_disp_radius = m_fDispRadius / 2.f;
-    m_vTargetPoint.x = m_Random.randF(-half_disp_radius, half_disp_radius);
-    m_vTargetPoint.y = m_Random.randF(-half_disp_radius, half_disp_radius);
+    m_vTargetPoint.x = ::Random.randF(-half_disp_radius, half_disp_radius);
+    m_vTargetPoint.y = ::Random.randF(-half_disp_radius, half_disp_radius);
 
     m_vTargetVel.sub(m_vTargetPoint, m_vLastPoint);
 };
