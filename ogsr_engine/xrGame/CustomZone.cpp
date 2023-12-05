@@ -27,8 +27,6 @@
 
 CCustomZone::CCustomZone(void)
 {
-    m_zone_flags.zero();
-
     m_fMaxPower = 100.f;
     m_fAttenuation = 1.f;
     m_dwPeriod = 1100;
@@ -86,16 +84,16 @@ void CCustomZone::Load(LPCSTR section)
     m_fEffectiveRadius = pSettings->r_float(section, "effective_radius");
     m_eHitTypeBlowout = ALife::g_tfString2HitType(pSettings->r_string(section, "hit_type"));
 
-    m_zone_flags.set(eIgnoreAny, READ_IF_EXISTS(pSettings, r_bool, section, "ignore_any", false));
-    m_zone_flags.set(eIgnoreNonAlive, pSettings->r_bool(section, "ignore_nonalive"));
-    m_zone_flags.set(eIgnoreSmall, pSettings->r_bool(section, "ignore_small"));
-    m_zone_flags.set(eIgnoreArtefact, pSettings->r_bool(section, "ignore_artefacts"));
-    m_zone_flags.set(eVisibleByDetector, pSettings->r_bool(section, "visible_by_detector"));
+    IgnoreAny = READ_IF_EXISTS(pSettings, r_bool, section, "ignore_any", false);
+    IgnoreNonAlive = pSettings->r_bool(section, "ignore_nonalive");
+    IgnoreSmall = pSettings->r_bool(section, "ignore_small");
+    IgnoreArtefact = pSettings->r_bool(section, "ignore_artefacts");
+    VisibleDetector = pSettings->r_bool(section, "visible_by_detector");
 
     // bak
-    m_zone_flags.set(eBirthOnNonAlive, READ_IF_EXISTS(pSettings, r_bool, section, "birth_on_nonalive", false));
-    m_zone_flags.set(eBirthOnAlive, READ_IF_EXISTS(pSettings, r_bool, section, "birth_on_alive", false));
-    m_zone_flags.set(eBirthOnDead, READ_IF_EXISTS(pSettings, r_bool, section, "birth_on_dead", false));
+    BirthOnNonAlive = READ_IF_EXISTS(pSettings, r_bool, section, "birth_on_nonalive", false);
+    BirthOnAlive = READ_IF_EXISTS(pSettings, r_bool, section, "birth_on_alive", false);
+    BirthOnDead = READ_IF_EXISTS(pSettings, r_bool, section, "birth_on_dead", false);
 
     //загрузить времена для зоны
     m_StateTime[eZoneStateIdle] = -1;
@@ -228,8 +226,8 @@ void CCustomZone::Load(LPCSTR section)
     else
         m_dwBlowoutExplosionTime = 0;
 
-    m_zone_flags.set(eBlowoutWind, pSettings->r_bool(section, "blowout_wind"));
-    if (m_zone_flags.test(eBlowoutWind))
+    BlowoutWind = pSettings->r_bool(section, "blowout_wind");
+    if (BlowoutWind)
     {
         m_dwBlowoutWindTimeStart = pSettings->r_u32(section, "blowout_wind_time_start");
         m_dwBlowoutWindTimePeak = pSettings->r_u32(section, "blowout_wind_time_peak");
@@ -247,10 +245,10 @@ void CCustomZone::Load(LPCSTR section)
     }
 
     //загрузить параметры световой вспышки от взрыва
-    m_zone_flags.set(eBlowoutLight, pSettings->r_bool(section, "blowout_light"));
-    m_zone_flags.set(eBlowoutLightShadow, READ_IF_EXISTS(pSettings, r_bool, section, "blowout_light_shadow", true));
+    BlowoutLight = pSettings->r_bool(section, "blowout_light");
+    BlowoutLightShadow = READ_IF_EXISTS(pSettings, r_bool, section, "blowout_light_shadow", true);
 
-    if (m_zone_flags.test(eBlowoutLight))
+    if (BlowoutLight)
     {
         sscanf(pSettings->r_string(section, "light_color"), "%f,%f,%f", &m_LightColor.r, &m_LightColor.g, &m_LightColor.b);
         m_fLightRange = pSettings->r_float(section, "light_range");
@@ -258,25 +256,50 @@ void CCustomZone::Load(LPCSTR section)
         m_fLightTimeLeft = 0;
 
         m_fLightHeight = pSettings->r_float(section, "light_height");
+
+        BlowLightVolumetric = READ_IF_EXISTS(pSettings, r_bool, section, "light_volumetric_enable", false);
+        if (BlowLightVolumetric)
+        {
+            BlowLightVolumetricQuality = READ_IF_EXISTS(pSettings, r_float, section, "light_volumetric_quality", 1.0f);
+            BlowLightVolumetricQuality = std::clamp(BlowLightVolumetricQuality, 0.f, 1.f);
+
+            BlowLightVolumetricIntensity = READ_IF_EXISTS(pSettings, r_float, section, "light_volumetric_intensity", 0.15f);
+            BlowLightVolumetricIntensity = std::clamp(BlowLightVolumetricIntensity, 0.f, 10.f);
+
+            BlowLightVolumetricDistance = READ_IF_EXISTS(pSettings, r_float, section, "light_volumetric_distance", 0.45f);
+            BlowLightVolumetricDistance = std::clamp(BlowLightVolumetricDistance, 0.f, 1.f);
+        }
     }
 
     //загрузить параметры idle подсветки
-    m_zone_flags.set(eIdleLight, pSettings->r_bool(section, "idle_light"));
-    if (m_zone_flags.test(eIdleLight))
+    IdleLight = pSettings->r_bool(section, "idle_light");
+    if (IdleLight)
     {
         m_fIdleLightRange = pSettings->r_float(section, "idle_light_range");
         m_fIdleLightRangeDelta = pSettings->r_float(section, "idle_light_range_delta");
         LPCSTR light_anim = pSettings->r_string(section, "idle_light_anim");
         m_pIdleLAnim = LALib.FindItem(light_anim);
         m_fIdleLightHeight = pSettings->r_float(section, "idle_light_height");
-        m_zone_flags.set(eIdleLightVolumetric, READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_volumetric", false));
-        m_zone_flags.set(eIdleLightShadow, READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_shadow", true));
-        m_zone_flags.set(eIdleLightR1, READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_r1", false));
+
+        IdleLightVolumetric = READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_volumetric_enable", false);
+        if (IdleLightVolumetric)
+        {
+            IdleLightVolumetricQuality = READ_IF_EXISTS(pSettings, r_float, section, "idle_light_volumetric_quality", 1.0f);
+            IdleLightVolumetricQuality = std::clamp(IdleLightVolumetricQuality, 0.f, 1.f);
+
+            IdleLightVolumetricIntensity = READ_IF_EXISTS(pSettings, r_float, section, "idle_light_volumetric_intensity", 0.15f);
+            IdleLightVolumetricIntensity = std::clamp(IdleLightVolumetricIntensity, 0.f, 10.f);
+
+            IdleLightVolumetricDistance = READ_IF_EXISTS(pSettings, r_float, section, "idle_light_volumetric_distance", 0.45f);
+            IdleLightVolumetricDistance = std::clamp(IdleLightVolumetricDistance, 0.f, 1.f);
+        }
+
+        IdleLightShadow = READ_IF_EXISTS(pSettings, r_bool, section, "idle_light_shadow", true);
     }
 
     //загрузить параметры для разбрасывания артефактов
-    m_zone_flags.set(eSpawnBlowoutArtefacts, pSettings->r_bool(section, "spawn_blowout_artefacts"));
-    if (m_zone_flags.test(eSpawnBlowoutArtefacts))
+    SpawnBlowoutArtefacts = pSettings->r_bool(section, "spawn_blowout_artefacts");
+    if (SpawnBlowoutArtefacts)
     {
         m_fArtefactSpawnProbability = pSettings->r_float(section, "artefact_spawn_probability");
         m_fArtefactSpawnOnDeathProbability = READ_IF_EXISTS(pSettings, r_float, section, "birth_on_death_probability", 0.0f);
@@ -350,29 +373,37 @@ BOOL CCustomZone::net_Spawn(CSE_Abstract* DC)
     m_TimeToEnable = Z->m_enabled_time * 1000;
     m_TimeShift = Z->m_start_time_shift * 1000;
     m_StartTime = Device.dwTimeGlobal;
-    m_zone_flags.set(eUseOnOffTime, (m_TimeToDisable != 0) && (m_TimeToEnable != 0));
+    UseOnOffTime = (m_TimeToDisable != 0) && (m_TimeToEnable != 0);
 
     //добавить источники света
-    bool br1 = (0 == psDeviceFlags.test(rsR2 | rsR3 | rsR4));
-    bool render_ver_allowed = !br1 || (br1 && m_zone_flags.test(eIdleLightR1));
-    if (m_zone_flags.test(eIdleLight) && render_ver_allowed)
+    if (IdleLight)
     {
         m_pIdleLight = ::Render->light_create();
-        m_pIdleLight->set_shadow(!!m_zone_flags.test(eIdleLightShadow));
+        m_pIdleLight->set_shadow(IdleLightShadow);
 
-        if (m_zone_flags.test(eIdleLightVolumetric))
+        if (IdleLightVolumetric)
         {
-            // m_pIdleLight->set_type				(IRender_Light::SPOT);
             m_pIdleLight->set_volumetric(true);
+            m_pIdleLight->set_volumetric_quality(IdleLightVolumetricQuality);
+            m_pIdleLight->set_volumetric_intensity(IdleLightVolumetricIntensity);
+            m_pIdleLight->set_volumetric_distance(IdleLightVolumetricDistance);
         }
     }
     else
         m_pIdleLight = NULL;
 
-    if (m_zone_flags.test(eBlowoutLight))
+    if (BlowoutLight)
     {
         m_pLight = ::Render->light_create();
-        m_pLight->set_shadow(!!m_zone_flags.test(eBlowoutLightShadow));
+        m_pLight->set_shadow(BlowoutLightShadow);
+
+        if (BlowLightVolumetric)
+        {
+            m_pLight->set_volumetric(true);
+            m_pLight->set_volumetric_quality(BlowLightVolumetricQuality);
+            m_pLight->set_volumetric_intensity(BlowLightVolumetricIntensity);
+            m_pLight->set_volumetric_distance(BlowLightVolumetricDistance);
+        }
     }
     else
         m_pLight = NULL;
@@ -635,11 +666,11 @@ void CCustomZone::feel_touch_new(CObject* O)
     else
         object_info.small_object = false;
 
-    if (m_zone_flags.test(eIgnoreAny) || (object_info.small_object && m_zone_flags.test(eIgnoreSmall)) || (object_info.nonalive_object && m_zone_flags.test(eIgnoreNonAlive)) ||
-        (pArtefact && m_zone_flags.test(eIgnoreArtefact)))
+    if (IgnoreAny || (object_info.small_object && IgnoreSmall) || (object_info.nonalive_object && IgnoreNonAlive) || (pArtefact && IgnoreArtefact))
         object_info.zone_ignore = true;
     else
         object_info.zone_ignore = false;
+
     enter_Zone(object_info);
     m_ObjectInfoMap.push_back(object_info);
 
@@ -1044,7 +1075,7 @@ void CCustomZone::UpdateBlowout()
     if (m_dwBlowoutSoundTime >= (u32)m_iPreviousStateTime && m_dwBlowoutSoundTime < (u32)m_iStateTime)
         m_blowout_sound.play_at_pos(0, Position());
 
-    if (m_zone_flags.test(eBlowoutWind) && m_dwBlowoutWindTimeStart >= (u32)m_iPreviousStateTime && m_dwBlowoutWindTimeStart < (u32)m_iStateTime)
+    if (BlowoutWind && m_dwBlowoutWindTimeStart >= (u32)m_iPreviousStateTime && m_dwBlowoutWindTimeStart < (u32)m_iStateTime)
         StartWind();
 
     UpdateWind();
@@ -1248,7 +1279,7 @@ void CCustomZone::BornArtefact(bool forced)
 #ifdef DEBUG
     Msg("BornArtefact[%s] prob %f cnt2 %f forced %d", cName().c_str(), m_fArtefactSpawnProbability, (float)m_ArtefactSpawn.size(), forced);
 #endif
-    if (!m_zone_flags.test(eSpawnBlowoutArtefacts) || m_ArtefactSpawn.empty())
+    if (!SpawnBlowoutArtefacts || m_ArtefactSpawn.empty())
         return;
     if (Device.dwPrecacheFrame)
         return;
@@ -1271,7 +1302,7 @@ void CCustomZone::BornArtefact(bool forced)
             {
                 if (info.nonalive_object == true)
                 {
-                    if (m_zone_flags.test(eBirthOnNonAlive))
+                    if (BirthOnNonAlive)
                     {
                         can_birth = true;
                         break;
@@ -1287,13 +1318,13 @@ void CCustomZone::BornArtefact(bool forced)
                     CEntityAlive* pEntityAlive = smart_cast<CEntityAlive*>(info.object);
                     if (pEntityAlive && pEntityAlive->g_Alive())
                     {
-                        if (m_zone_flags.test(eBirthOnAlive))
+                        if (BirthOnAlive)
                         {
                             can_birth = true;
                             break;
                         }
                     }
-                    else if (m_zone_flags.test(eBirthOnDead))
+                    else if (BirthOnDead)
                     {
                         can_birth = true;
                         break;
@@ -1472,7 +1503,7 @@ void CCustomZone::PlayAwakingParticles()
 
 void CCustomZone::UpdateOnOffState()
 {
-    if (!m_zone_flags.test(eUseOnOffTime))
+    if (!UseOnOffTime)
         return;
 
     bool dest_state;

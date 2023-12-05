@@ -91,29 +91,20 @@ public:
     } EZoneState;
 
 protected:
-    enum EZoneFlags
-    {
-        eIgnoreNonAlive = (1 << 0),
-        eIgnoreSmall = (1 << 1),
-        eIgnoreArtefact = (1 << 2),
-        eVisibleByDetector = (1 << 3),
-        eBlowoutWind = (1 << 4),
-        eBlowoutLight = (1 << 5),
-        eIdleLight = (1 << 6),
-        eSpawnBlowoutArtefacts = (1 << 7),
-        eUseOnOffTime = (1 << 8),
-        eBirthOnNonAlive = (1 << 9),
-        eBirthOnAlive = (1 << 10),
-        eBirthOnDead = (1 << 11),
-        eIdleLightR1 = 1 << 12,
-        eIdleLightShadow = 1 << 13,
-        eIdleLightVolumetric = 1 << 14,
-        eIgnoreAny = (1 << 15),
-        eBlowoutLightShadow = (1 << 16),
-    };
+    bool IgnoreAny{};
+    bool IgnoreNonAlive{};
+    bool IgnoreSmall{};
+    bool IgnoreArtefact{};
+    bool BirthOnNonAlive{};
+    bool BirthOnAlive{};
+    bool BirthOnDead{};
+    bool VisibleDetector{};
+    bool BlowoutWind{};
+    bool SpawnBlowoutArtefacts{};
+    bool UseOnOffTime{};
+
     u32 m_owner_id; // if created from artefact
     u32 m_ttl;
-    Flags32 m_zone_flags;
     //список объетков, находящихся в зоне
     CActor* m_pLocalActor;
 
@@ -251,23 +242,35 @@ protected:
     ref_light m_pIdleLight;
     Fcolor m_IdleLightColor;
     float m_fIdleLightRange;
-    float m_fIdleLightHeight;
     float m_fIdleLightRangeDelta;
+    float m_fIdleLightHeight;
     CLAItem* m_pIdleLAnim;
-    bool bIdleLightShadow;
-    bool bIdleLightVolumetric;
+
+    // подсветка выброса
+    ref_light m_pLight;
+    Fcolor m_LightColor;
+    float m_fLightRange;
+    float m_fLightHeight;
+    float m_fLightTime;
+    float m_fLightTimeLeft;
+
+    bool IdleLight{};
+    bool IdleLightShadow{};
+    bool IdleLightVolumetric{};
+    float IdleLightVolumetricQuality{};
+    float IdleLightVolumetricIntensity{};
+    float IdleLightVolumetricDistance{};
+
+    bool BlowoutLight{};
+    bool BlowoutLightShadow{};
+    bool BlowLightVolumetric{};
+    float BlowLightVolumetricQuality{};
+    float BlowLightVolumetricIntensity{};
+    float BlowLightVolumetricDistance{};
 
     void StartIdleLight();
     void StopIdleLight();
     void UpdateIdleLight();
-
-    //подсветка выброса
-    ref_light m_pLight;
-    float m_fLightRange;
-    Fcolor m_LightColor;
-    float m_fLightTime;
-    float m_fLightTimeLeft;
-    float m_fLightHeight;
 
     void StartBlowoutLight();
     void StopBlowoutLight();
@@ -307,7 +310,7 @@ protected:
 
     //видимость зоны детектором
 public:
-    bool VisibleByDetector() { return !!m_zone_flags.test(eVisibleByDetector); }
+    bool VisibleByDetector() { return VisibleDetector; }
 
     //////////////////////////////////////////////////////////////////////////
     // список артефактов
