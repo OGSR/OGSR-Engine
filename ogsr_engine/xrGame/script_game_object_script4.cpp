@@ -182,8 +182,11 @@ class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>
         .def("get_torch", &script_game_object_cast<CTorch>)
         .def("get_weapon", &script_game_object_cast<CWeapon>)
         .def("get_weapon_m", &script_game_object_cast<CWeaponMagazined>)
+        .def("is_weapon_magazined", &script_game_object_cast<CWeaponMagazined>)
         .def("get_weapon_mwg", &script_game_object_cast<CWeaponMagazinedWGrenade>)
+        .def("get_weapon_gl", &script_game_object_cast<CWeaponMagazinedWGrenade>)
         .def("get_weapon_sg", &script_game_object_cast<CWeaponShotgun>)
+        .def("get_weapon_shotgun", &script_game_object_cast<CWeaponShotgun>)
 
         .def("ph_capture_object", (void(CScriptGameObject::*)(CScriptGameObject*))(&CScriptGameObject::PHCaptureObject))
         .def("ph_capture_object", (void(CScriptGameObject::*)(CScriptGameObject*, LPCSTR))(&CScriptGameObject::PHCaptureObject))
