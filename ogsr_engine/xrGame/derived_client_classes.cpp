@@ -273,7 +273,7 @@ SRotation& CWeaponScript::FireDeviation(CWeapon* wpn) { return wpn->constDeviati
 
 luabind::object CWeaponScript::get_fire_modes(CWeaponMagazined* wpn)
 {
-    lua_State* L = wpn->lua_game_object()->lua_state();
+    lua_State* L = ai().script_engine().lua();
     luabind::object t = newtable(L);
     auto& vector = wpn->m_aFireModes;
     int index = 1;
@@ -298,7 +298,7 @@ void CWeaponScript::set_fire_modes(CWeaponMagazined* wpn, luabind::object const&
 
 luabind::object CWeaponScript::get_hit_power(CWeapon* wpn)
 {
-    lua_State* L = wpn->lua_game_object()->lua_state();
+    lua_State* L = ai().script_engine().lua();
     luabind::object t = newtable(L);
     auto& vector = wpn->fvHitPower;
 
