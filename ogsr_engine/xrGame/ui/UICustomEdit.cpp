@@ -122,6 +122,12 @@ bool CUICustomEdit::KeyPressed(int dik)
 
     switch (dik)
     {
+    case DIK_TAB: {
+        // Табы нельзя добавлять здесь, такого символа в шрифтах нет, он не отображается в игре.
+        // А проблемы доставить может при получении введенного текста через GetText() в скрипте,
+        // когда полученный текст будет отличаться от отображаемого из-за наличия в нём табов.
+        return true;
+    }
     case DIK_LEFT:
     case DIKEYBOARD_LEFT: m_lines.DecCursorPos(); break;
     case DIK_RIGHT:
