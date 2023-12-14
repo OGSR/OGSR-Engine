@@ -940,6 +940,7 @@ void CLevel::script_register(lua_State* L)
                   .def_readwrite("wind_velocity", &CEnvDescriptor::wind_velocity)
                   .def_readwrite("wind_direction", &CEnvDescriptor::wind_direction)
                   .def_readwrite("m_fTreeAmplitudeIntensity", &CEnvDescriptor::m_fTreeAmplitudeIntensity)
+                  .def_readwrite("m_fSunShaftsIntensity", &CEnvDescriptor::m_fSunShaftsIntensity)
                   .property("m_identifier", [](CEnvDescriptor* self) { return self->m_identifier.c_str(); })
                   .def("set_env_ambient", &CEnvDescriptor::setEnvAmbient),
               class_<CEnvironment>("CEnvironment")
