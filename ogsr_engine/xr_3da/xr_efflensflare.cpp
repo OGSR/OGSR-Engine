@@ -16,8 +16,6 @@
 #include "xr_object.h"
 #include "igame_level.h"
 
-#define FAR_DIST g_pGamePersistent->Environment().CurrentEnv->far_plane
-
 //#define MAX_Flares	24
 //////////////////////////////////////////////////////////////////////////////
 // Globals ///////////////////////////////////////////////////////////////////
@@ -351,7 +349,7 @@ void CLensFlare::OnFrame(shared_str id)
         bRender = true;
 
     // Calculate the point directly in front of us, on the far clip plane
-    float fDistance = FAR_DIST * 0.75f;
+    float fDistance = g_pGamePersistent->Environment().CurrentEnv->far_plane * 0.75f;
     vecCenter.mul(vecDir, fDistance);
     vecCenter.add(vecPos);
     // Calculate position of light on the far clip plane

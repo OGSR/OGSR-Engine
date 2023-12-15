@@ -2,9 +2,9 @@
 #include "dxLensFlareRender.h"
 #include "../../xr_3da/xr_efflensflare.h"
 #include "../../xr_3da/iGame_persistent.h"
+
 #define MAX_Flares 24
 
-#define FAR_DIST g_pGamePersistent->Environment().CurrentEnv->far_plane
 
 void dxFlareRender::Copy(IFlareRender& _in) { *this = *(dxFlareRender*)&_in; }
 
@@ -31,7 +31,7 @@ void dxLensFlareRender::Render(CLensFlare& owner, BOOL bSun, BOOL bFlares, BOOL 
     u32 VS_Offset;
     FVF::LIT* pv = (FVF::LIT*)RCache.Vertex.Lock(MAX_Flares * 4, hGeom.stride(), VS_Offset);
 
-    float fDistance = FAR_DIST * 0.75f;
+    float fDistance = g_pGamePersistent->Environment().CurrentEnv->far_plane * 0.75f;
 
     if (bSun)
     {

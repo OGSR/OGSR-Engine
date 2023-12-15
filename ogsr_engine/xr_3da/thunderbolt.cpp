@@ -244,7 +244,6 @@ BOOL CEffect_Thunderbolt::RayPick(const Fvector& s, const Fvector& d, float& dis
 
     return bRes;
 }
-#define FAR_DIST g_pGamePersistent->Environment().CurrentEnv->far_plane
 
 void CEffect_Thunderbolt::Bolt(shared_str id, float period, float lt)
 {
@@ -256,6 +255,8 @@ void CEffect_Thunderbolt::Bolt(shared_str id, float period, float lt)
     current = g_pGamePersistent->Environment().thunderbolt_collection(collection, id)->GetRandomDesc();
     VERIFY(current);
 
+    float far_plane = g_pGamePersistent->Environment().CurrentEnv->far_plane;
+
     Fmatrix XF, S;
     Fvector pos, dev;
     float sun_h, sun_p;
@@ -263,7 +264,7 @@ void CEffect_Thunderbolt::Bolt(shared_str id, float period, float lt)
     environment.CurrentEnv->sun_dir.getHP(sun_h, sun_p);
     float alt = environment.p_var_alt; // Random.randF(environment.p_var_alt.x,environment.p_var_alt.y);
     float lng = Random.randF(sun_h - environment.p_var_long + PI, sun_h + environment.p_var_long + PI);
-    float dist = Random.randF(FAR_DIST * environment.p_min_dist, FAR_DIST * .95f);
+    float dist = Random.randF(far_plane * environment.p_min_dist, far_plane * .95f);
     current_direction.setHP(lng, alt);
     pos.mad(Device.vCameraPosition, current_direction, dist);
     dev.x = Random.randF(-environment.p_tilt, environment.p_tilt);
@@ -273,7 +274,7 @@ void CEffect_Thunderbolt::Bolt(shared_str id, float period, float lt)
 
     Fvector light_dir = {0.f, -1.f, 0.f};
     XF.transform_dir(light_dir);
-    lightning_size = FAR_DIST * 2.f;
+    lightning_size = far_plane * 2.f;
     RayPick(pos, light_dir, lightning_size);
 
     lightning_center.mad(pos, light_dir, lightning_size * 0.5f);
