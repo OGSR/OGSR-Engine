@@ -263,10 +263,10 @@ public:
                 return it;
         return materials.end();
     }
-    IC GameMtlIt GetMaterialItByID(int id)
+    IC GameMtlIt GetMaterialItByID(int ID)
     {
         for (GameMtlIt it = materials.begin(); materials.end() != it; ++it)
-            if ((*it)->ID == id)
+            if ((*it)->ID == ID)
                 return it;
         return materials.end();
     }

@@ -101,6 +101,8 @@ void CGameMtlLibrary::Load()
         OBJ->close();
     }
 
+    //const u32 actor_material_idx = GetMaterialID(pSettings->r_string("actor", "material"));
+
     OBJ = F->open_chunk(GAMEMTLS_CHUNK_MTLS_PAIR);
     if (OBJ)
     {
@@ -110,6 +112,19 @@ void CGameMtlLibrary::Load()
             SGameMtlPair* M = xr_new<SGameMtlPair>(this);
             M->Load(*O);
             material_pairs.push_back(M);
+
+            /*if (M->mtl0 == actor_material_idx)
+            {
+                if (!M->StepSoundNames.empty())
+                {
+                    Msg("~ MtlPair with step ID0=%d, ID1=%d [%s]", M->mtl0, M->mtl1, (*GetMaterialItByID(M->mtl1))->m_Name.c_str());
+
+                    for (const auto& step_sound_name : M->StepSoundNames)
+                    {
+                        Msg("~ MtlPair step sound [%s]", step_sound_name.c_str());
+                    }
+                }
+            }*/
         }
         OBJ->close();
     }

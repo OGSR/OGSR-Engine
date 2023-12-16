@@ -138,12 +138,25 @@ void CStepManager::update()
         if (offset_time <= cur_time)
         {
             // Играть звук
-            if (!mtl_pair->StepSounds.empty() && is_on_ground())
+            if (is_on_ground())
             {
+                auto actor = smart_cast<CActor*>(m_object);
+
+                if (mtl_pair->StepSounds.empty())
+                {
+                    if (actor)
+                    {
+                        Msg("!![%s] no sound for steps pair id0:[%d], id1:[%d]", __FUNCTION__, mtl_pair->GetMtl0(), mtl_pair->GetMtl1());
+                    }
+
+                    return;
+                }
+
                 Fvector sound_pos = m_object->Position();
                 sound_pos.y += 0.5;
                 GET_RANDOM(mtl_pair->StepSounds).play_no_feedback(m_object, 0, 0, &sound_pos, &m_step_info.params.step[i].power);
-                if (auto actor = smart_cast<CActor*>(m_object))
+
+                if (actor)
                     actor->callback(GameObject::eOnActorFootStep)(actor->lua_game_object(), m_step_info.params.step[i].power);
             }
 
