@@ -32,6 +32,8 @@ XRSOUND_API extern xr_token* snd_devices_token;
 XRSOUND_API extern u32 snd_device_id;
 XRSOUND_API extern float psSoundTimeFactor; //--#SM+#--
 
+XRSOUND_API extern BOOL snd_enable_float_pcm;
+
 // Flags
 enum
 {

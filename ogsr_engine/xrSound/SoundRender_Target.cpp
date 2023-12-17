@@ -16,26 +16,6 @@ CSoundRender_Target::~CSoundRender_Target(void) { VERIFY(wave == 0); }
 
 BOOL CSoundRender_Target::_initialize()
 {
-    /*
-    // Calc format
-    wfx.wFormatTag			= WAVE_FORMAT_PCM;
-    wfx.nChannels			= 2; //1;
-    wfx.nSamplesPerSec		= SoundRender->wfm.nSamplesPerSec;
-    wfx.wBitsPerSample		= 16;
-    wfx.nBlockAlign			= wfx.nChannels * wfx.wBitsPerSample / 8;
-    wfx.nAvgBytesPerSec		= wfx.nSamplesPerSec * wfx.nBlockAlign;
-    wfx.cbSize				= 0;
-
-    */
-    /*
-            wfx.wFormatTag=WAVE_FORMAT_PCM;
-            wfx.nChannels=2;
-            wfx.wBitsPerSample=16;
-            wfx.nBlockAlign=4;
-            wfx.nSamplesPerSec=44100;
-            wfx.nAvgBytesPerSec=176400;
-            wfx.cbSize=0;
-    */
     return TRUE;
 }
 

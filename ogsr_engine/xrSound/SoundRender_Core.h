@@ -59,6 +59,8 @@ protected:
     int m_iPauseCounter{};
 
 public:
+    bool supports_float_pcm{};
+
     // Cache
     CSoundRender_Cache cache{};
     u32 cache_bytes_per_line{};

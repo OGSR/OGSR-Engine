@@ -24,6 +24,8 @@ float psSoundTimeFactor = 1.0f; //--#SM+#--
 float psSoundVMusic = 1.f;
 int psSoundCacheSizeMB = 32;
 
+BOOL snd_enable_float_pcm{TRUE};
+
 CSoundRender_Core* SoundRender = 0;
 CSound_manager_interface* Sound = 0;
 
@@ -96,7 +98,7 @@ void CSoundRender_Core::_initialize(int stage)
     env_load();
 
     // Cache
-    cache_bytes_per_line = (sdef_target_block / 8) * 276400 / 1000;
+    cache_bytes_per_line = (sdef_target_block / 8) * 352800 / 1000;
     cache.initialize(psSoundCacheSizeMB * 1024, cache_bytes_per_line);
 }
 

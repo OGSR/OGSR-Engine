@@ -24,7 +24,9 @@ public:
     u32 m_uGameType;
 
 private:
-    void i_decompress_fr(OggVorbis_File* ovf, char* dest, u32 size);
+    void i_decompress(OggVorbis_File* ovf, char* dest, u32 size) const;
+    void i_decompress(OggVorbis_File* ovf, float* dest, u32 size) const; // this overload clamps denormalized sounds
+
     void LoadWave(LPCSTR name);
 
 public:

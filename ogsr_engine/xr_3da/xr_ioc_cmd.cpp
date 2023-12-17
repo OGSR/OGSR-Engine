@@ -579,7 +579,7 @@ void CCC_Register()
     CMD4(CCC_Float, "snd_occ_scale", &psSoundOcclusionScale, 0.1f, 1.f);
     //CMD4(CCC_Float, "snd_occ_hf", &psSoundOcclusionHf, 0.f, 1.f);
     //CMD4(CCC_Float, "snd_occ_mtl", &psSoundOcclusionMtl, 0.f, 1.f);
-    //CMD2(CCC_Bool, "snd_enable_float_pcm", &snd_enable_float_pcm);
+    CMD2(CCC_Bool, "snd_enable_float_pcm", &snd_enable_float_pcm);
 
 #ifdef DEBUG
     CMD1(CCC_DumpOpenFiles, "dump_open_files");

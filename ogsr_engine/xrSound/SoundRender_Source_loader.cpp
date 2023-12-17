@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include <msacm.h>
-
 #include "soundrender_core.h"
 #include "soundrender_source.h"
 
@@ -34,8 +32,7 @@ void CSoundRender_Source::decompress(u32 line, OggVorbis_File* ovf)
     VERIFY(ovf);
     // decompression of one cache-line
     u32 line_size = SoundRender->cache.get_linesize();
-    char* dest = (char*)SoundRender->cache.get_dataptr(CAT, line);
-    u32 buf_offs = (line * line_size) / 2 / m_wformat.nChannels;
+    u32 buf_offs = (line * line_size) / (m_wformat.wBitsPerSample / 8) / m_wformat.nChannels;
     u32 left_file = dwBytesTotal - buf_offs;
     u32 left = (u32)_min(left_file, line_size);
 
@@ -44,8 +41,12 @@ void CSoundRender_Source::decompress(u32 line, OggVorbis_File* ovf)
     if (cur_pos != buf_offs)
         ov_pcm_seek(ovf, buf_offs);
 
-    // decompress
-    i_decompress_fr(ovf, dest, left);
+     // decompress
+    const auto dest = SoundRender->cache.get_dataptr(CAT, line);
+    if (m_wformat.wFormatTag == WAVE_FORMAT_IEEE_FLOAT)
+        i_decompress(ovf, static_cast<float*>(dest), left);
+    else
+        i_decompress(ovf, static_cast<char*>(dest), left);
 }
 
 void CSoundRender_Source::LoadWave(LPCSTR pName)
@@ -73,9 +74,18 @@ void CSoundRender_Source::LoadWave(LPCSTR pName)
     ZeroMemory(&m_wformat, sizeof(WAVEFORMATEX));
 
     m_wformat.nSamplesPerSec = (ovi->rate);
-    m_wformat.wFormatTag = WAVE_FORMAT_PCM;
     m_wformat.nChannels = u16(ovi->channels);
-    m_wformat.wBitsPerSample = 16;
+
+    if (SoundRender->supports_float_pcm)
+    {
+        m_wformat.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;
+        m_wformat.wBitsPerSample = 32;
+    }
+    else
+    {
+        m_wformat.wFormatTag = WAVE_FORMAT_PCM;
+        m_wformat.wBitsPerSample = 16;
+    }
 
     m_wformat.nBlockAlign = m_wformat.wBitsPerSample / 8 * m_wformat.nChannels;
     m_wformat.nAvgBytesPerSec = m_wformat.nSamplesPerSec * m_wformat.nBlockAlign;

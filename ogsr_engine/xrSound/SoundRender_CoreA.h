@@ -3,6 +3,7 @@
 #include "SoundRender_Core.h"
 #include "OpenALDeviceList.h"
 #include <eax.h>
+#include <alext.h>
 
 //#include "NotificationClient.h"
 

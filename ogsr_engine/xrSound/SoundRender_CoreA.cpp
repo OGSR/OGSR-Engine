@@ -276,6 +276,13 @@ void CSoundRender_CoreA::_initialize(int stage)
     A_CHK(alListenerfv(AL_ORIENTATION, &orient[0].x));
     A_CHK(alListenerf(AL_GAIN, 1.f));
 
+#ifdef AL_EXT_float32
+    supports_float_pcm = snd_enable_float_pcm && alIsExtensionPresent("AL_EXT_FLOAT32");
+#endif
+
+    if (supports_float_pcm)
+        Msg("~ xrSound has supports_float_pcm!");
+
     alDisable(AL_STOP_SOURCES_ON_DISCONNECT_SOFT); // not in public yet
 
     ALenum err = alGetError();
