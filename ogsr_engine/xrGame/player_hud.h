@@ -372,7 +372,7 @@ public:
     xr_vector<hand_motions*> m_hand_motions;
     player_hud_motion_container* get_hand_motions(LPCSTR section, IKinematicsAnimated* animatedHudItem);
 
-	void PlayBlendAnm(LPCSTR name, u8 part = 0, float speed = 1.f, float power = 1.f, bool bLooped = true, bool no_restart = false);
+    float PlayBlendAnm(LPCSTR name, u8 part = 0, float speed = 1.f, float power = 1.f, bool bLooped = true, bool no_restart = false);
     void StopBlendAnm(LPCSTR name, bool bForce = false);
     void StopAllBlendAnms(bool bForce);
     float SetBlendAnmTime(LPCSTR name, float time);

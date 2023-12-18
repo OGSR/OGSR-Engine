@@ -53,7 +53,7 @@ float MotionLength(LPCSTR hud_section, LPCSTR anm_name, float speed) { return g_
 
 bool AllowHudMotion() { return g_player_hud->allow_script_anim(); }
 
-void PlayBlendAnm(LPCSTR name, u8 part, float speed, float power, bool bLooped, bool no_restart) { g_player_hud->PlayBlendAnm(name, part, speed, power, bLooped, no_restart); }
+float PlayBlendAnm(LPCSTR name, u8 part, float speed, float power, bool bLooped, bool no_restart) { return g_player_hud->PlayBlendAnm(name, part, speed, power, bLooped, no_restart); }
 
 void StopBlendAnm(LPCSTR name, bool bForce) { g_player_hud->StopBlendAnm(name, bForce); }
 

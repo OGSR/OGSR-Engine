@@ -1847,7 +1847,7 @@ void player_hud::updateMovementLayerState()
 }
 
 
-void player_hud::PlayBlendAnm(LPCSTR name, u8 part, float speed, float power, bool bLooped, bool no_restart)
+float player_hud::PlayBlendAnm(LPCSTR name, u8 part, float speed, float power, bool bLooped, bool no_restart)
 {
     for (script_layer* anm : m_script_layers)
     {
@@ -1868,12 +1868,13 @@ void player_hud::PlayBlendAnm(LPCSTR name, u8 part, float speed, float power, bo
             anm->anm->Speed() = speed;
             anm->m_power = power;
             anm->active = true;
-            return;
+            return (anm->anm->m_MParam.max_t - anm->anm->m_MParam.t) / anm->anm->Speed();
         }
     }
 
     script_layer* anm = xr_new<script_layer>(name, part, speed, power, bLooped);
     m_script_layers.push_back(anm);
+    return (anm->anm->m_MParam.max_t - anm->anm->m_MParam.t) / anm->anm->Speed();
 }
 
 void player_hud::StopBlendAnm(LPCSTR name, bool bForce)
