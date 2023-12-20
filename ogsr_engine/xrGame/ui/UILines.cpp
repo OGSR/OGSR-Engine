@@ -617,11 +617,7 @@ float CUILines::GetVIndentByAlign()
 
     switch (m_eVTextAlign)
     {
-    case valTop: {
-        float delta_h = m_pFont->ScaleHeightDelta();
-        UI()->ClientToScreenScaledHeight(delta_h);
-        return delta_h * -1;
-    }
+    case valTop: r = 0; break;
     case valCenter: r = (m_wndSize.y - GetVisibleHeight()) / 2; break;
     case valBotton: r = m_wndSize.y - GetVisibleHeight(); break;
     default: NODEFAULT;
