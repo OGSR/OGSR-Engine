@@ -58,7 +58,7 @@ static void draw_rect(const Frect& r, const u32 color, const shared_str& name)
     {
         CGameFont* F = UI()->Font()->pFontDI;
         const float x = r.lt.x - (r.lt.x >= 20 ? 20 : 0);
-        const float y = r.lt.y > Device.dwHeight / 2 ? r.lt.y - F->GetHeight() - 20 : r.rb.y + 20;
+        const float y = r.lt.y > Device.dwHeight / 2 ? r.lt.y - F->CurrentHeight_() - 20 : r.rb.y + 20;
         F->Out(x, y, name.c_str());
         F->SetColor(D3DCOLOR_XRGB(255, 0, 255));
     }

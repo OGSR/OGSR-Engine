@@ -149,16 +149,9 @@ void CUIMMShniaga::CreateList(xr_vector<CUIStatic*>& lst, CUIXml& xml_doc, LPCST
     XML_NODE* tab_node = xml_doc.NavigateToNode(path, 0);
     xml_doc.SetLocalRoot(tab_node);
 
-    CUIStatic* st;
-
     for (int i = 0; i < nodes_num; ++i)
     {
-        //		if (0 == xr_strcmp("btn_lastsave",xml_doc.ReadAttrib("btn", i, "name")))
-        //		{
-        //			if (g_actor && Actor()->g_Alive())
-        //				continue;
-        //		}
-        st = xr_new<CUIStatic>();
+        CUIStatic* st = xr_new<CUIStatic>();
         st->Init(0, 0, m_view->GetDesiredChildWidth(), height);
         st->SetTextComplexMode(false);
         st->SetTextST(xml_doc.ReadAttrib("btn", i, "caption"));
@@ -166,7 +159,6 @@ void CUIMMShniaga::CreateList(xr_vector<CUIStatic*>& lst, CUIXml& xml_doc, LPCST
             st->SetFont(pF);
         st->SetTextColor(color);
         st->SetTextAlignment(CGameFont::alCenter);
-        //		st->SetTextAlignment(CGameFont::alLeft);
         st->SetVTextAlignment(valCenter);
         st->SetWindowName(xml_doc.ReadAttrib("btn", i, "name"));
         st->SetMessageTarget(this);

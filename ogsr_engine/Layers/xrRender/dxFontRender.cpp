@@ -107,33 +107,24 @@ void dxFontRender::OnRender(CGameFont& owner)
                     clr2 = color_rgba(_R, _G, _B, _A);
                 }
 
-#if defined(USE_DX10) || defined(USE_DX11) //	Vertex shader will cancel a DX9 correction, so make fake offset
                 X -= 0.5f;
                 Y -= 0.5f;
                 Y2 -= 0.5f;
-#endif //	USE_DX10
 
-                float tu, tv;
                 for (int j = 0; j < len; j++)
                 {
                     Fvector l;
 
                     l = owner.IsMultibyte() ? owner.GetCharTC(wsStr[1 + j]) : owner.GetCharTC((u16)(u8)PS.string[j]);
 
-                    float scw = l.z * g_current_font_scale.x * owner.GetWidthScale();
+                    const float scw = l.z * g_current_font_scale.x * owner.GetWidthScale();
 
-                    float fTCWidth = l.z / owner.vTS.x;
+                    const float fTCWidth = l.z / owner.vTS.x;
 
                     if (!fis_zero(l.z))
                     {
-                        tu = (l.x / owner.vTS.x);
-                        tv = (l.y / owner.vTS.y);
-
-#if !(defined(USE_DX10) || defined(USE_DX11))
-                        //	Make half pixel offset for 1 to 1 mapping
-                        tu += (0.5f / owner.vTS.x);
-                        tv += (0.5f / owner.vTS.y);
-#endif //	USE_DX10
+                        const float tu = (l.x / owner.vTS.x);
+                        const float tv = (l.y / owner.vTS.y);
 
                         v->set(X, Y2, clr2, tu, tv + owner.fTCHeight);
                         v++;
