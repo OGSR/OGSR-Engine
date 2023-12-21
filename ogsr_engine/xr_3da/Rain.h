@@ -5,8 +5,8 @@
 
 #include "../xrcdb/xr_collide_defs.h"
 
-constexpr float max_desired_items = 3500.f; // 2500.f
-constexpr float min_desired_items = max_desired_items / 10.f;
+inline const float max_desired_items = std::thread::hardware_concurrency() < 3u ? 1500.f : 2500.f;
+inline const float min_desired_items = max_desired_items / 10.f;
 
 constexpr float source_radius = 15.f; // 12.5f;
 constexpr float source_offset = 40.f;
