@@ -58,13 +58,14 @@ float4 main(v2p_volume I) : SV_Target
 
     float4 _P = float4(gbd.P, gbd.mtl);
     float4 _N = float4(gbd.N, gbd.hemi);
+    float4 _C = float4(gbd.C, gbd.gloss);
 
     // ----- light-model
     float m = xmaterial;
 #ifndef USE_R2_STATIC_SUN
     m = _P.w;
 #endif
-    float4 light = plight_infinity(m, _P, _N, Ldynamic_dir);
+    float4 light = plight_infinity(m, _P, _N, _C, Ldynamic_dir);
 
     // ----- shadow
     float4 P4 = float4(_P.x, _P.y, _P.z, 1.0);
@@ -87,7 +88,10 @@ float4 main(v2p_volume I) : SV_Target
     shadows *= s;
 
 #ifdef SSFX_ENHANCED_SHADERS
-    return blend(float4(SRGBToLinear(Ldynamic_color.rgb * shadows.xxx), 1.0f) * light, I.tc);
+    float3 result = SRGBToLinear(s);
+    result *= light * SRGBToLinear(Ldynamic_color.rgb);
+
+    return blend(float4(result, 0), I.tc);
 #else
     return blend(Ldynamic_color * light * shadows, I.tc);
 #endif

@@ -1,3 +1,11 @@
+/**
+ * @ Version: SCREEN SPACE SHADERS - UPDATE 19
+ * @ Description: Trees - Branches/Bushes
+ * @ Modified time: 2023-11-07 13:27
+ * @ Author: https://www.moddb.com/members/ascii1457
+ * @ Mod: https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders
+ */
+
 #include "common.h"
 #include "check_screenspace.h"
 
@@ -10,6 +18,8 @@ uniform float4 consts; // {1/quant,1/quant,???,???}
 uniform float4 c_scale, c_bias, wind, wave;
 uniform float2 c_sun; // x=*, y=+
 
+#include "screenspace_wind.h"
+
 v2p_bumped main(v_tree I)
 {
     I.Nh = unpack_D3DCOLOR(I.Nh);
@@ -19,18 +29,13 @@ v2p_bumped main(v_tree I)
     // Transform to world coords
     float3 pos = mul(m_xform, I.P);
 
-    //
-    float base = m_xform._24; // take base height from matrix
-    float dp = calc_cyclic(wave.w + dot(pos, (float3)wave));
-    float H = pos.y - base; // height of vertex (scaled, rotated, etc.)
-    float frac = I.tc.z * consts.x; // fractional (or rigidity)
-    float inten = H * dp; // intensity
-    float2 result = calc_xz_wave(wind.xz * inten * 2.0f, frac);
-#ifdef USE_TREEWAVE
-    result = 0;
-#endif
-    float4 w_pos = float4(pos.x + result.x, pos.y, pos.z + result.y, 1);
+    float H = pos.y - m_xform._24; // height of vertex
     float2 tc = (I.tc * consts).xy;
+    float3 wind_result = ssfx_wind_tree_branches(pos, H, tc.y, ssfx_wind_setup());
+#ifdef USE_TREEWAVE
+    wind_result = 0;
+#endif
+    float4 w_pos = float4(pos.xyz + wind_result.xyz, 1);
 
     // INTERACTIVE GRASS ( Bushes ) - SSS Update 15.4
     // https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders/

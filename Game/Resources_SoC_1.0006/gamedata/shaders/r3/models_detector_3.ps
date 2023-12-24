@@ -108,14 +108,19 @@ float4 main(p_flat I) : SV_Target
     float4 up_color = s_numbers.Sample(smp_linear, num_tc).aaaa * ID_DETECTOR_3_NUM_COLOR;
     color = lerp(color, up_color, ogse_c_detector.x);
 
+    color.rgb *= ID_DETECTOR_3_POWER;
+
     // Шум при выбросе
-    float noise = get_noise(I.tcdh.xy * timers.z) * m_affects.x * m_affects.x * 20;
+    float noise = get_noise(I.tcdh.xy * timers.z) * m_affects.x * m_affects.x * 15;
     color.r += noise;
     color.g += noise;
     color.b += noise;
 
-    //отключение экрана
-    color = (m_affects.x > 0.41) ? 0 : color;
+    color.a = 1.0 - m_affects.x - m_affects.x;
 
-    return any(color) ? (saturate(color) * ID_DETECTOR_3_POWER) : (float4(1.0f, 1.0f, 1.0f, 0.0f) * 1.0f);
+    const bool turn_off = m_affects.x > 0.41; //отключение экрана
+
+    color = turn_off ? 0.0 : saturate(color);
+
+    return (any(color) || turn_off) ? float4(SRGBToLinear(color.rgb), color.a) : float4(SRGBToLinear(s_base.Sample(smp_base, I.tcdh).rgb), 1.0);
 }

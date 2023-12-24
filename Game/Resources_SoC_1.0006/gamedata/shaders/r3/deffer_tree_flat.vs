@@ -29,13 +29,35 @@ v2p_flat main(v_tree I)
 #endif
     float4 f_pos = float4(pos.x + result.x, pos.y, pos.z + result.y, 1);
 
+    // Normal mapping
+    float3 N = unpack_bx2(I.Nh);
+    float3 sphereOffset = float3(0.0, 1.0, 0.0);
+    float3 sphereScale = float3(1.0, 2.0, 1.0);
+    float3 sphereN = normalize(sphereScale * I.P.xyz + sphereOffset); // Spherical normals trick
+    float3 flatN = (float3(0, 1, 0));
+    /*
+    float3 camFacingN = normalize((f_pos - eye_position.xyz) * float3(-1,0,-1));
+    sphereN = lerp(camFacingN, sphereN, saturate(H)); //roots face the camera, the tips face the sky
+
+    sphereN.xz *= 0.5;
+    sphereN.y = sqrt(1 - saturate(dot(sphereN.xz, sphereN.xz)));
+    sphereN = normalize(sphereN);
+    */
+    // foliage
+    float foliageMat = 0.5; // foliage
+    // float foliageMask = saturate(abs(xmaterial-foliageMat)-0.02); //foliage
+    float foliageMask = (abs(xmaterial - foliageMat) >= 0.2) ? 1 : 0; // foliage
+    // float foliageMask = 1; //foliage
+    N = normalize(lerp(N, sphereN, foliageMask)); // blend to foliage normals
+
     // Final xform(s)
     // Final xform
     float3 Pe = mul(m_V, f_pos);
+    // float3 Pe = mul(m_V, float4(pos.xyz,1));
     float hemi = I.Nh.w * c_scale.w + c_bias.w;
-    // float 	hemi 	= I.Nh.w;
+    // float hemi 	= I.Nh.w;
     o.hpos = mul(m_VP, f_pos);
-    o.N = mul((float3x3)m_xform_v, unpack_bx2(I.Nh));
+    o.N = mul((float3x3)m_xform_v, N);
     o.tcdh = float4((I.tc * consts).xyyy);
     o.position = float4(Pe, hemi);
 

@@ -1,5 +1,6 @@
 #include "common.h"
 #include "mblur.h"
+#include "img_corrections.h"
 #include "visor.h"
 
 // Check Screen Space Shaders modules
@@ -88,17 +89,32 @@ c2_out main(v2p_aa_AA I)
         img = ssfx_debanding(img, I.Tex0.xy);
 #endif
 
-    float4 bloom = s_bloom.Sample(smp_rtlinear, center);
-
     if (addon_VControl.w == 1)
         img = visor_reflection(img, center);
+
+    float4 bloom = s_bloom.Sample(smp_rtlinear, center);
+
+#ifdef SSFX_BEEFS_NVG
+    // NVG CHANGE TO PREVENT WEIRD COLORS, ONLY APPLY BLOOM WHEN WE'RE NOT IN NVG MASK
+    float lua_param_nvg_generation = floor(shader_param_8.x); // 1, 2, or 3
+    float lua_param_nvg_num_tubes = frac(shader_param_8.x) * 10.0f; // 1, 2, 4, 1.1, or 1.2
+    if (lua_param_nvg_generation < 0.01f && compute_lens_mask(aspect_ratio_correction(I.Tex0), lua_param_nvg_num_tubes) == 0.0f)
+    {
+        img = blend_soft(img, bloom.xyz * bloom.w);
+    }
+#else
+    img = blend_soft(img, bloom.xyz * bloom.w);
+#endif
+
+    img = img_corrections(img);
 
 #ifdef USE_DISTORT
     float3 blurred = bloom * def_hdr;
     img = lerp(img, blurred, distort.z);
 #endif
 
-    res.Color += combine_bloom(img, bloom);
+    res.Color = float4(img, 1.0);
+
 #ifdef USE_MSAA
     float4 ptp = mul(m_P, float4(gbd.P, 1));
     res.Depth = ptp.w == 0 ? 1 : ptp.z / ptp.w;

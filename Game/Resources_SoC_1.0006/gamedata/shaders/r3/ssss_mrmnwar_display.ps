@@ -11,6 +11,8 @@ float4 blendSoftLight(float4 a, float4 b)
     return (b < 0.5) ? c : d;
 }
 
+float4 sun_shafts_intensity;
+
 float4 main(p_screen I) : SV_Target
 {
     float4 cScreen = s_image.Load(int3(I.tc0.xy * screen_res.xy, 0), 0);
@@ -18,8 +20,17 @@ float4 main(p_screen I) : SV_Target
 
     float fShaftsMask = saturate(1.00001f - cSunShafts.w) * ssss_params.y * 2;
 
-    // normalize suncolor
-    float4 sunColor = float4(normalize(L_sun_color.xyz), 1);
+    float4 sunColor;
+    if (any(L_sun_color.r) && any(L_sun_color.g) && any(L_sun_color.b))
+    {
+        sunColor = float4(normalize(L_sun_color.rgb), 1);
+    }
+    else
+    {
+        // normalize suncolor
+        sunColor = float4(pow(L_sun_color.rgb, 1.0 / 1.5) * 10.0, 1.f);
+        cSunShafts.rgb *= saturate((sun_shafts_intensity) / (sun_shafts_intensity + 1.0));
+    }
 
     float4 outColor = cScreen + cSunShafts.xyzz * ssss_params.x * sunColor * (1 - cScreen);
     outColor = blendSoftLight(outColor, sunColor * fShaftsMask * 0.5f + 0.5f);

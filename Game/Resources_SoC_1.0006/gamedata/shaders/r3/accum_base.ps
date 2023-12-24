@@ -33,6 +33,7 @@ float4 main(p_volume I, float4 pos2d : SV_Position) : SV_Target
 
     float4 _P = float4(gbd.P, gbd.mtl);
     float4 _N = float4(gbd.N, gbd.hemi);
+    float4 _C = float4(gbd.C, gbd.gloss);
 
     float m = xmaterial;
 #ifndef USE_R2_STATIC_SUN
@@ -43,12 +44,15 @@ float4 main(p_volume I, float4 pos2d : SV_Position) : SV_Target
     // Fix Flora ilumination ( Align normal to light )
 #ifdef SSFX_FLORAFIX
     if (abs(m - MAT_FLORA) <= 0.05)
+    {
         _N.rgb = -normalize(_P - Ldynamic_pos.xyz);
+        _C.w *= 0.3f;
+    }
 #endif
 
     // ----- light-model
     float rsqr;
-    float4 light = plight_local(m, _P, _N, Ldynamic_pos, Ldynamic_pos.w, rsqr);
+    float4 light = plight_local(m, _P, _N, _C, Ldynamic_pos, Ldynamic_pos.w, rsqr);
 
     // ----- shadow
     float4 P4 = float4(_P.x, _P.y, _P.z, 1);
@@ -71,7 +75,9 @@ float4 main(p_volume I, float4 pos2d : SV_Position) : SV_Target
 #endif
 
 #ifdef SSFX_ENHANCED_SHADERS
-    return float4(SRGBToLinear(Ldynamic_color.rgb * lightmap.rgb * s.xxx), 1) * light;
+    float3 result = SRGBToLinear(lightmap.rgb) * SRGBToLinear(s);
+    result *= light * SRGBToLinear(Ldynamic_color.rgb);
+    return float4(result.rgb, 0);
 #else
     return float4(Ldynamic_color * light * s * lightmap);
 #endif

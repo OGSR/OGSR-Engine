@@ -1,12 +1,21 @@
 #ifndef common_functions_h_included
 #define common_functions_h_included
 
+#include "srgb.h"
+
 uniform float4 m_actor_params;
 
-float3 vibrance(float3 img, half val)
+float3 vibrance(float3 img, float val)
 {
     float luminance = dot(float3(img.rgb), LUMINANCE_VECTOR);
     return float3(lerp(luminance, float3(img.rgb), val));
+}
+
+float2 hash22(float2 p)
+{
+    float3 p3 = frac(float3(p.xyx) * float3(.1031, .1030, .0973));
+    p3 += dot(p3, p3.yzx + 19.19);
+    return frac((p3.xx + p3.yz) * p3.zy);
 }
 
 float noise(float2 tc) { return frac(sin(dot(tc, float2(12.0, 78.0) + (timers.x))) * 43758.0) * 0.25f; }
@@ -24,26 +33,53 @@ float Contrast(float Input, float ContrastPower)
 
 void tonemap(out float4 low, out float4 high, float3 rgb, float scale)
 {
+    rgb = SRGBToLinear(rgb);
     rgb = rgb * scale;
+    rgb = LinearTosRGB(rgb);
 
-    if (m_actor_params.a > 0.0f)
-    {
-        const float fWhiteIntensity = 1.7;
+    const float fWhiteIntensity = 11.2;
 
-        const float fWhiteIntensitySQR = fWhiteIntensity * fWhiteIntensity;
-
-        low = ((rgb * (1 + rgb / fWhiteIntensitySQR)) / (rgb + 1)).xyzz;
-
-        high = rgb.xyzz / def_hdr; // 8x dynamic range
-    }
-    else
-    {
-        low = rgb.xyzz;
-        high = low / def_hdr; // 8x dynamic range
-    }
+    low = float4(tonemap_sRGB(rgb, fWhiteIntensity), 0);
+    high = float4(rgb / def_hdr, 0);
 }
 
-float4 combine_bloom(float3 low, float4 high) { return float4(low + high * high.a, 1.h); }
+void tonemap_hipri(out float4 low, out float4 high, float3 rgb, float scale) { tonemap(low, high, rgb, scale); }
+
+// CUSTOM
+float3 blend_soft(float3 a, float3 b)
+{
+    // return 1.0 - (1.0 - a) * (1.0 - b);
+
+    // gamma correct and inverse tonemap to add bloom
+    a = SRGBToLinear(a); // post tonemap render
+    a = a / max(0.004, 1 - a); // inverse tonemap
+    // a = a / max(0.001, 1-a); //inverse tonemap
+    b = SRGBToLinear(b); // bloom
+
+    // constrast reduction of ACES output
+    float Contrast_Amount = 0.7;
+    const float mid = 0.18;
+    a = pow(a, Contrast_Amount) * mid / pow(mid, Contrast_Amount);
+
+    ACES_LMT(b); // color grading bloom
+    a += b; // bloom add
+
+    // Boost the contrast to match ACES RRT
+    float Contrast_Boost = 1.42857;
+    a = pow(a, Contrast_Boost) * mid / pow(mid, Contrast_Boost);
+
+    a = a / (1 + a); // tonemap
+
+    a = LinearTosRGB(a);
+    return a;
+}
+
+/*float4 combine_bloom(float3 low, float4 high)
+{
+    // return	float4(low + high*high.a, 1); //add
+    high.rgb *= high.a;
+    return float4(blend_soft(low.rgb, high.rgb), 1); // screen
+}*/
 
 float calc_fogging(float4 w_pos) { return dot(w_pos, fog_plane); }
 

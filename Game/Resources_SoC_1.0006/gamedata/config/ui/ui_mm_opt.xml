@@ -470,7 +470,7 @@
         <cap_ao_mode x="5" y="5" width="143" height="21">
             <text font="letterica16" r="215" g="195" b="170">ui_mm_ao_mode</text>
         </cap_ao_mode>
-        <list_ao_mode x="300" y="0" width="190" height="21" always_show_scroll="1">
+        <list_ao_mode x="249" y="0" width="190" height="21" always_show_scroll="1">
             <options_item entry="r_ao_mode" group="mm_opt_video" depend="restart"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>

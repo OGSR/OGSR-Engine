@@ -21,7 +21,7 @@
 
 float4 calc_night_vision_effect(float2 tc0, float4 color, float3 NV_COLOR)
 {
-    float lum = dot(color.rgb, float3(0.3f, 0.38f, 0.22f) * NV_BRIGHTNESS); // instead of float3 use LUMINANCE_floatTOR in stalker
+    float lum = dot(color.rgb, LUMINANCE_VECTOR * NV_BRIGHTNESS); // instead of float3 use LUMINANCE_floatTOR in stalker
     color.rgb = NV_COLOR * lum;
 
     // cheap noise function

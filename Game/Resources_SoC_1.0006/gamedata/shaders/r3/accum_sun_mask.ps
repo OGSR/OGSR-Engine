@@ -29,8 +29,7 @@ float4 main(p_TL I) : SV_Target
 
     //	L = 1;
 
-    if (m_actor_params.a > 0.0f)
-        clip(L - CLIP_THRESHOLD);
+    clip(L - CLIP_THRESHOLD);
 
     return float4(L, L, L, L);
 }

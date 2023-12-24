@@ -19,14 +19,13 @@ float4 main(float4 tc : TEXCOORD0) : SV_Target
     const float bias_mul = 0.999f;
 
     // Sample the fat framebuffer:
-    //	float4 _P		= tex2Dproj 	(s_position, tc);
-    //	float4 _N		= tex2Dproj 	(s_normal,   tc);
     float2 tcProj = tc.xy / tc.w;
 
     gbuffer_data gbd = gbuffer_load_data(GLD_P(tcProj, pos2d, ISAMPLE));
 
     float4 _P = float4(gbd.P, gbd.mtl);
     float4 _N = float4(gbd.N, gbd.hemi);
+    float4 _C = float4(gbd.C, gbd.gloss);
 
     float m = xmaterial;
 #ifndef USE_R2_STATIC_SUN
@@ -36,9 +35,17 @@ float4 main(float4 tc : TEXCOORD0) : SV_Target
     // FLORA FIXES & IMPROVEMENTS - SSS Update 14.2
     // Fix Flora ilumination ( Align normal to light )
     if (abs(m - MAT_FLORA) <= 0.05)
+    {
         _N.rgb = -normalize(_P - Ldynamic_pos.xyz);
+        _C.w *= 0.3f;
+    }
 
     float rsqr;
-    float4 light = plight_local(m, _P, _N, Ldynamic_pos, Ldynamic_pos.w, rsqr);
+    float4 light = plight_local(m, _P, _N, _C, Ldynamic_pos, Ldynamic_pos.w, rsqr);
+
+#ifdef SSFX_ENHANCED_SHADERS
+    return float4(SRGBToLinear(Ldynamic_color.rgb), 0) * light;
+#else
     return float4(Ldynamic_color * light);
+#endif
 }

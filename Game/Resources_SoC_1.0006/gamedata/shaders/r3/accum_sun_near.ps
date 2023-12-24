@@ -56,13 +56,14 @@ float4 main(v2p_volume I) : SV_Target
 
     float4 _P = float4(gbd.P, gbd.mtl);
     float4 _N = float4(gbd.N, gbd.hemi);
+    float4 _C = float4(gbd.C, gbd.gloss);
 
     // ----- light-model
     float m = xmaterial;
 #ifndef USE_R2_STATIC_SUN
     m = _P.w;
 #endif
-    float4 light = plight_infinity(m, _P, _N, Ldynamic_dir);
+    float4 light = plight_infinity(m, _P, _N, _C, Ldynamic_dir);
 
     // ----- shadow
     float4 P4 = float4(_P.x, _P.y, _P.z, 1.0);
@@ -73,7 +74,9 @@ float4 main(v2p_volume I) : SV_Target
     s *= SSFX_ScreenSpaceShadows(_P, I.hpos, ISAMPLE);
 
 #ifdef SSFX_ENHANCED_SHADERS // We have Enhanced Shaders installed
-    return float4(SRGBToLinear(Ldynamic_color.rgb * s.xxx), 1) * light;
+    float3 result = SRGBToLinear(s);
+    result.rgb *= light * SRGBToLinear(Ldynamic_color.rgb);
+    return float4(result.rgb, 0);
 #else
     return float4(Ldynamic_color * light * s);
 #endif
