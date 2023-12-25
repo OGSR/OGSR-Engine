@@ -68,7 +68,12 @@ public:
         VERIFY(idx == 0 || idx == 1);
         return m_uAccelerator[idx];
     }
-    IC bool IsAccelerator(int iAccel) const { return (m_uAccelerator[0] == iAccel) || (m_uAccelerator[1] == iAccel); }
+    IC bool IsAccelerator(int dik) const { return (m_uAccelerator[0] == dik) || m_uAccelerator[1] == dik || is_binded(m_uAcceleratorAction, dik); }
+
+    void SetAcceleratorAction(EGameActions a)
+    {
+        m_uAcceleratorAction = a;
+    }
 
     void SetPressMode(E_PRESS_MODE ePressMode) { m_ePressMode = ePressMode; }
     E_PRESS_MODE GetPressMode() { return m_ePressMode; }
@@ -85,6 +90,7 @@ protected:
     E_PRESS_MODE m_ePressMode;
     Fvector2 m_PushOffset;
     int m_uAccelerator[2];
+    EGameActions m_uAcceleratorAction{kNOTBINDED};
     Fvector2 m_ShadowOffset;
 
     DECLARE_SCRIPT_REGISTER_FUNCTION

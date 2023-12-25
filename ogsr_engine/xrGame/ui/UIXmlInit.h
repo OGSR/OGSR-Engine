@@ -118,4 +118,6 @@ public:
 
 private:
     static ColorDefs* m_pColorDefs;
+
+    static void InitAccel(CUIXml& xml_doc, const char* path, int index, CUIButton* pWnd);
 };
