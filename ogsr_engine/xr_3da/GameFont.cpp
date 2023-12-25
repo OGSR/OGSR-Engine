@@ -232,7 +232,7 @@ void CGameFont::OutSet(float x, float y)
 
 void CGameFont::OutSetI(float x, float y) { OutSet(DI2PX(x), DI2PY(y)); }
 
-u32 CGameFont::smart_strlen(const char* S) { return (IsMultibyte() ? mbhMulti2Wide(NULL, NULL, 0, S) : xr_strlen(S)); }
+u32 CGameFont::SmartLength(const char* S) { return (IsMultibyte() ? mbhMulti2Wide(NULL, NULL, 0, S) : xr_strlen(S)); }
 
 void CGameFont::OnRender()
 {
@@ -316,7 +316,7 @@ void CGameFont::MasterOut(BOOL bCheckDevice, BOOL bUseCoords, BOOL bScaleCoords,
 
     rs.x = (bUseCoords ? (bScaleCoords ? (DI2PX(_x)) : _x) : fCurrentX);
     rs.y = (bUseCoords ? (bScaleCoords ? (DI2PY(_y)) : _y) : fCurrentY);
-    rs.c = dwCurrentColor;
+    rs.color = dwCurrentColor;
     rs.height = fCurrentHeight;
     rs.align = eCurrentAlignment;
 
