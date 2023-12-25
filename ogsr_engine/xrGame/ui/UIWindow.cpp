@@ -46,9 +46,9 @@ static void draw_rect(const Frect& r, const u32 color, const shared_str& name)
     UIRender->StartPrimitive(5, IUIRender::ptLineStrip, UI()->m_currentPointType);
 
     UIRender->PushPoint(r.lt.x, r.lt.y, 0, color, 0, 0);
-    UIRender->PushPoint(r.rb.x, r.lt.y, 0, color, 0, 0);
-    UIRender->PushPoint(r.rb.x, r.rb.y, 0, color, 0, 0);
-    UIRender->PushPoint(r.lt.x, r.rb.y, 0, color, 0, 0);
+    UIRender->PushPoint(r.rb.x - 1, r.lt.y, 0, color, 0, 0);
+    UIRender->PushPoint(r.rb.x - 1, r.rb.y - 1, 0, color, 0, 0);
+    UIRender->PushPoint(r.lt.x, r.rb.y - 1, 0, color, 0, 0);
     UIRender->PushPoint(r.lt.x, r.lt.y, 0, color, 0, 0);
 
     //.	UIRender->FlushLineStrip();
