@@ -197,6 +197,10 @@ void CGameObject::OnEvent(NET_Packet& P, u16 type)
             Msg("GE_DESTROY arrived, but H_Parent() exist. object[%d][%s] parent[%d][%s] [%d]", ID(), cName().c_str(), H_Parent()->ID(), H_Parent()->cName().c_str(),
                 Device.dwFrame);
         }
+        if (!Level().is_removing_objects())
+        {
+            ASSERT_FMT(ID() != 0, "![%s] cannot destory actor!", __FUNCTION__);
+        }
         setDestroy(TRUE);
     }
     break;
