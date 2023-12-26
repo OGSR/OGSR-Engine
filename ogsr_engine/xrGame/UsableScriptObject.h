@@ -7,6 +7,7 @@ class CUsableScriptObject
 public:
     CUsableScriptObject();
     ~CUsableScriptObject();
+
     virtual bool use(CGameObject* who_use);
 
     //строчка появляющаяся при наведении на объект (если NULL, то нет)

@@ -214,6 +214,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
         .def("set_tip_text", &CScriptGameObject::SetTipText)
         .def("set_tip_text_default", &CScriptGameObject::SetTipTextDefault)
         .def("set_nonscript_usable", &CScriptGameObject::SetNonscriptUsable)
+        .def("get_nonscript_usable", &CScriptGameObject::GetNonscriptUsable)
 
         // Script Zone
         .def("active_zone_contact", &CScriptGameObject::active_zone_contact)

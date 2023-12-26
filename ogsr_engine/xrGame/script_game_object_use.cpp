@@ -43,6 +43,18 @@ void CScriptGameObject::SetNonscriptUsable(bool nonscript_usable)
         l_tpUseableScriptObject->set_nonscript_usable(nonscript_usable);
 }
 
+bool CScriptGameObject::GetNonscriptUsable() const
+{
+    CUsableScriptObject* l_tpUseableScriptObject = smart_cast<CUsableScriptObject*>(&object());
+    if (!l_tpUseableScriptObject)
+    {
+        ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "SetNonscriptUsable . Reason: the object is not usable");
+        return false;
+    }
+    else
+        return l_tpUseableScriptObject->nonscript_usable();
+}
+
 Fvector CScriptGameObject::GetCurrentDirection()
 {
     CProjector* obj = smart_cast<CProjector*>(&object());
