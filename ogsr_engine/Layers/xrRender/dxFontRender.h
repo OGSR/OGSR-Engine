@@ -17,7 +17,7 @@ private:
     ref_shader pShader;
     ref_geom pGeom;
 
-    void RenderFragment(CGameFont& owner, u32& i, u32 color_override, float dX, float dY, u32 length, u32 last);
+    void RenderFragment(CGameFont& owner, u32& i, bool shadow_mode, float dX, float dY, u32 length, u32 last);
 };
 
 #endif //	FontRender_included

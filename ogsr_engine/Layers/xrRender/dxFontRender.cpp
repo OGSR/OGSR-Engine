@@ -20,7 +20,7 @@ void dxFontRender::Initialize(LPCSTR cShader, LPCSTR cTexture)
 extern ENGINE_API BOOL g_bRendering;
 extern ENGINE_API Fvector2 g_current_font_scale;
 
-void dxFontRender::RenderFragment(CGameFont& owner, u32& i, u32 color_override, float dX, float dY, u32 length, u32 last)
+void dxFontRender::RenderFragment(CGameFont& owner, u32& i, bool shadow_mode, float dX, float dY, u32 length, u32 last)
 {
     // fill vertices
 
@@ -76,10 +76,21 @@ void dxFontRender::RenderFragment(CGameFont& owner, u32& i, u32 color_override, 
                 clr2 = color_rgba(_R, _G, _B, _A);
             }
 
-            if (color_override != (u32)-1)
+            if (shadow_mode)
             {
-                const u32 min_alpha = _min(color_get_A(clr), color_get_A(color_override));
-                clr2 = clr = subst_alpha(color_override, min_alpha);
+                // color_argb(220, 20, 20, 20)
+
+                const u32 min_alpha = _min(color_get_A(clr), (u32)220);
+
+                u32 _R = color_get_R(clr);
+                u32 _G = color_get_G(clr);
+                u32 _B = color_get_B(clr);
+
+                float Y = 0.299f * _R + 0.587f * _G + 0.114f * _B;
+
+                u32 c = Y > 40 ? 20 : 120;
+
+                clr2 = clr = color_argb(min_alpha, c, c, c);
             }
 
             X -= 0.5f;
@@ -169,7 +180,7 @@ void dxFontRender::OnRender(CGameFont& owner)
         const u32 last = i + count;
 
         u32 di = i;
-        RenderFragment(owner, di, color_argb(220, 20, 20, 20), 2, 2, length, last);
-        RenderFragment(owner, i, (u32)-1, 0, 0, length, last);
+        RenderFragment(owner, di, true, 2, 2, length, last);
+        RenderFragment(owner, i, false, 0, 0, length, last);
     }
 }
