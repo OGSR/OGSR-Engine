@@ -183,6 +183,7 @@ public:
 
         Log("--------------------------------------------------------------------------------");
 
+        Msg("* [ D3D ]: textures count [%d]", (c_base + c_lmaps));
         Msg("* [ D3D ]: textures[%d K]", (m_base + m_lmaps) / 1024);
         Msg("* [x-ray]: process heap[%d K], render[%d K]", _process_heap / 1024, _render / 1024);
         Msg("* [x-ray]: economy: strings[%d K], smem[%d K]", _eco_strings / 1024, _eco_smem);

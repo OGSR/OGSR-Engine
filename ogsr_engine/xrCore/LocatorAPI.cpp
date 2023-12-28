@@ -913,6 +913,7 @@ void CLocatorAPI::file_from_archive(IReader*& R, LPCSTR fname, const file& desc)
 {
     // Archived one
     archive& A = archives[desc.vfs];
+
     u32 start = (desc.ptr / dwAllocGranularity) * dwAllocGranularity;
     u32 end = (desc.ptr + desc.size_compressed) / dwAllocGranularity;
     if ((desc.ptr + desc.size_compressed) % dwAllocGranularity)
@@ -920,13 +921,15 @@ void CLocatorAPI::file_from_archive(IReader*& R, LPCSTR fname, const file& desc)
     end *= dwAllocGranularity;
     if (end > A.size)
         end = A.size;
-    u32 sz = (end - start);
+    u32 sz = end - start;
+
     u8* ptr = (u8*)MapViewOfFile(A.hSrcMap, FILE_MAP_READ, 0, start, sz);
     VERIFY3(ptr, "cannot create file mapping on file", fname);
 
+#ifdef DEBUG
     string512 temp;
     sprintf_s(temp, "%s:%s", *A.path, fname);
-#ifdef DEBUG
+
     register_file_mapping(ptr, sz, temp);
 #endif // DEBUG
 
@@ -939,9 +942,12 @@ void CLocatorAPI::file_from_archive(IReader*& R, LPCSTR fname, const file& desc)
 
     // Compressed
     u8* dest = xr_alloc<u8>(desc.size_real);
+
     rtc_decompress(dest, desc.size_real, ptr + ptr_offs, desc.size_compressed);
+
     R = xr_new<CTempReader>(dest, desc.size_real, 0);
     UnmapViewOfFile(ptr);
+
 #ifdef DEBUG
     unregister_file_mapping(ptr, sz);
 #endif // DEBUG

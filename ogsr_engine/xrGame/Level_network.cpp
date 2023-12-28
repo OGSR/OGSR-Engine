@@ -25,6 +25,13 @@ void CLevel::remove_objects()
     m_is_removing_objects = true;
     BOOL b_stored = psDeviceFlags.test(rsDisableObjectsAsCrows);
 
+    u32 m_base, c_base, m_lmaps, c_lmaps;
+    Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+
+    Msg("~ ObjectResources unload...");
+    Msg("~ ObjectResources - base: %d, %d K", c_base, m_base / 1024);
+    Msg("~ ObjectResources - lmap: %d, %d K", c_lmaps, m_lmaps / 1024);
+
     Game().reset_ui();
 
     {
@@ -89,6 +96,13 @@ void CLevel::remove_objects()
     g_ScriptVars.clear();
 
     shader_exports.set_dof_params(0.f, 0.f, 0.f, 0.f);
+
+    //u32 m_base, c_base, m_lmaps, c_lmaps;
+    Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+
+    Msg("~ ObjectResources unload completed!");
+    Msg("~ ObjectResources - base: %d, %d K", c_base, m_base / 1024);
+    Msg("~ ObjectResources - lmap: %d, %d K", c_lmaps, m_lmaps / 1024);
 
     m_is_removing_objects = false;
 }

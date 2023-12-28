@@ -22,9 +22,17 @@ void CRender::level_Load(IReader* fs)
     R_ASSERT(0 != g_pGameLevel);
     R_ASSERT(!b_loaded);
 
+    u32 m_base, c_base, m_lmaps, c_lmaps;
+    Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+
+    Msg("~ LevelResources load...");
+    Msg("~ LevelResources - base: %d, %d K", c_base, m_base / 1024);
+    Msg("~ LevelResources - lmap: %d, %d K", c_lmaps, m_lmaps / 1024);
+
     // Begin
     pApp->LoadBegin();
-    dxRenderDeviceRender::Instance().Resources->DeferredLoad(TRUE);
+    Device.m_pRender->DeferredLoad(TRUE);
+
     IReader* chunk;
 
     // Shaders
@@ -101,6 +109,13 @@ void CRender::level_Load(IReader* fs)
     // End
     pApp->LoadEnd();
 
+    //u32 m_base, c_base, m_lmaps, c_lmaps;
+    Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+
+    Msg("~ LevelResources load completed!");
+    Msg("~ LevelResources - base: %d, %d K", c_base, m_base / 1024);
+    Msg("~ LevelResources - lmap: %d, %d K", c_lmaps, m_lmaps / 1024);
+
     // sanity-clear
     lstLODs.clear();
     lstLODgroups.clear();
@@ -114,8 +129,17 @@ void CRender::level_Unload()
 {
     if (0 == g_pGameLevel)
         return;
+
     if (!b_loaded)
         return;
+
+    
+    u32 m_base, c_base, m_lmaps, c_lmaps;
+    Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+
+    Msg("~ LevelResources unload...");
+    Msg("~ LevelResources - base: %d, %d K", c_base, m_base / 1024);
+    Msg("~ LevelResources - lmap: %d, %d K", c_lmaps, m_lmaps / 1024);
 
     u32 I;
 
@@ -178,6 +202,14 @@ void CRender::level_Unload()
 
     //*** Shaders
     Shaders.clear();
+
+    // u32 m_base, c_base, m_lmaps, c_lmaps;
+    Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+
+    Msg("~ LevelResources unload completed!");
+    Msg("~ LevelResources - base: %d, %d K", c_base, m_base / 1024);
+    Msg("~ LevelResources - lmap: %d, %d K", c_lmaps, m_lmaps / 1024);
+
     b_loaded = FALSE;
 }
 

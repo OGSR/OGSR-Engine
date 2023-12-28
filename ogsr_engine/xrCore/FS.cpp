@@ -401,6 +401,7 @@ void IReader::skip_stringZ()
 //---------------------------------------------------
 // temp stream
 CTempReader::~CTempReader() { xr_free(data); };
+
 //---------------------------------------------------
 // pack stream
 CPackReader::~CPackReader()
