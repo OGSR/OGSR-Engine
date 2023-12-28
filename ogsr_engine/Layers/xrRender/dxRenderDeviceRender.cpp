@@ -234,7 +234,7 @@ void dxRenderDeviceRender::ResourcesGetMemoryUsage(u32& m_base, u32& c_base, u32
         Resources->_GetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
 }
 
-void dxRenderDeviceRender::ResourcesDumpMemoryUsage() { dxRenderDeviceRender::Instance().Resources->_DumpMemoryUsage(); }
+void dxRenderDeviceRender::ResourcesDumpMemoryUsage() { Resources->_DumpMemoryUsage(); }
 
 dxRenderDeviceRender::DeviceState dxRenderDeviceRender::GetDeviceState()
 {

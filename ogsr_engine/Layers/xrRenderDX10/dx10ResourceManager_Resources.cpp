@@ -652,11 +652,7 @@ void CResourceManager::_DeleteMatrix(const CMatrix* M)
     }
     Msg("! ERROR: Failed to find xform-def '%s'", *M->cName);
 }
-void CResourceManager::ED_UpdateMatrix(LPCSTR Name, CMatrix* data)
-{
-    CMatrix* M = _CreateMatrix(Name);
-    *M = *data;
-}
+
 //--------------------------------------------------------------------------------------------------------------
 CConstant* CResourceManager::_CreateConstant(LPCSTR Name)
 {
@@ -689,12 +685,6 @@ void CResourceManager::_DeleteConstant(const CConstant* C)
         return;
     }
     Msg("! ERROR: Failed to find R1-constant-def '%s'", *C->cName);
-}
-
-void CResourceManager::ED_UpdateConstant(LPCSTR Name, CConstant* data)
-{
-    CConstant* C = _CreateConstant(Name);
-    *C = *data;
 }
 
 //--------------------------------------------------------------------------------------------------------------

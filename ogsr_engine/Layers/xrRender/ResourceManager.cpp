@@ -62,21 +62,6 @@ IBlender* CResourceManager::_FindBlender(LPCSTR Name)
         return I->second;
 }
 
-void CResourceManager::ED_UpdateBlender(LPCSTR Name, IBlender* data)
-{
-    LPSTR N = LPSTR(Name);
-    map_Blender::iterator I = m_blenders.find(N);
-    if (I != m_blenders.end())
-    {
-        R_ASSERT(data->getDescription().CLS == I->second->getDescription().CLS);
-        xr_delete(I->second);
-        I->second = data;
-    }
-    else
-    {
-        m_blenders.insert(mk_pair(xr_strdup(Name), data));
-    }
-}
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction

@@ -66,13 +66,13 @@ void CResourceManager::OnDeviceCreate()
 
         //Msg("Loading shader file: [%s]", fname);
 
-        LoadSharedFile(fname);
+        LoadShaderFile(fname);
     }
 
     m_textures_description.Load();
 }
 
-void CResourceManager::LoadSharedFile(LPCSTR fname)
+void CResourceManager::LoadShaderFile(LPCSTR fname)
 {
     // Check if file is compressed already
     string32 ID = "shENGINE";

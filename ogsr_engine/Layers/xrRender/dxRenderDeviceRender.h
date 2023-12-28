@@ -62,6 +62,7 @@ public:
 
 public:
     CResourceManager* Resources;
+
     ref_shader m_WireShader;
     ref_shader m_SelectionShader;
 
