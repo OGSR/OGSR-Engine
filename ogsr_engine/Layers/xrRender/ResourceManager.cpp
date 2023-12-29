@@ -305,6 +305,18 @@ void CResourceManager::DeferredUpload()
 
     Msg("CResourceManager::DeferredUpload [%s] -> START, size = [%u]", ps_r2_ls_flags_ext.test(R2FLAGEXT_MT_TEXLOAD) ? "MT" : "NO MT", m_textures.size());
 
+    Msg("CResourceManager::DeferredUpload VRAM usage before:");
+    
+    u32 m_base = 0;
+    u32 c_base = 0;
+    u32 m_lmaps = 0;
+    u32 c_lmaps = 0;
+
+    _GetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+    Msg("textures loaded size %f MB (%f bytes)", (float)(m_base + m_lmaps) / 1024 / 1024, (float)(m_base + m_lmaps));
+
+    HW.DumpVideoMemoryUsage();
+
     // Теперь многопоточная загрузка текстур даёт очень существенный прирост скорости, проверено.
     if (ps_r2_ls_flags_ext.test(R2FLAGEXT_MT_TEXLOAD))
     {
@@ -316,6 +328,13 @@ void CResourceManager::DeferredUpload()
     else
         for (auto& pair : m_textures)
             pair.second->Load();
+
+    Msg("CResourceManager::DeferredUpload VRAM usage after:");
+
+    _GetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
+    Msg("textures loaded size %f MB (%f bytes)", (float)(m_base + m_lmaps) / 1024 / 1024, (float)(m_base + m_lmaps));
+
+    HW.DumpVideoMemoryUsage();
 
     Msg("CResourceManager::DeferredUpload -> END");
 }

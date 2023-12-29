@@ -51,7 +51,7 @@ void CHW::CreateD3D()
 
     
     UINT i = 0;
-    while (pFactory->EnumAdapters1(i, &m_pAdapter) != DXGI_ERROR_NOT_FOUND)
+    while (pFactory->EnumAdapters1(i, reinterpret_cast<IDXGIAdapter1**>(&m_pAdapter)) != DXGI_ERROR_NOT_FOUND)
     {
         DXGI_ADAPTER_DESC desc;
         m_pAdapter->GetDesc(&desc);
@@ -79,7 +79,7 @@ void CHW::CreateD3D()
     {
         Msg(" !CHW::CreateD3D() use EnumAdapters1(0)");
 
-        pFactory->EnumAdapters1(0, &m_pAdapter);
+        pFactory->EnumAdapters1(0, reinterpret_cast<IDXGIAdapter1**>(&m_pAdapter));
     }
 #else
     R_CHK(CreateDXGIFactory(IID_PPV_ARGS(&pFactory)));
@@ -104,13 +104,11 @@ void CHW::CreateDevice(HWND m_hWnd)
     BOOL bWindowed = !psDeviceFlags.is(rsFullscreen);
 
     // Display the name of video board
-#ifdef USE_DX11
     DXGI_ADAPTER_DESC1 Desc;
     R_CHK(m_pAdapter->GetDesc1(&Desc));
-#else
-    DXGI_ADAPTER_DESC Desc;
-    R_CHK(m_pAdapter->GetDesc(&Desc));
-#endif
+
+    DumpVideoMemoryUsage();
+
     //	Warning: Desc.Description is wide string
     Msg("* Selected GPU [vendor:%X]-[device:%X]: %S", Desc.VendorId, Desc.DeviceId, Desc.Description);
 
@@ -430,6 +428,23 @@ BOOL CHW::support(D3DFORMAT fmt, DWORD type, DWORD usage)
     else			return TRUE;
     */
     return TRUE;
+}
+
+void CHW::DumpVideoMemoryUsage() const
+{
+    DXGI_ADAPTER_DESC1 Desc;
+    R_CHK(m_pAdapter->GetDesc1(&Desc));
+
+    DXGI_QUERY_VIDEO_MEMORY_INFO videoMemoryInfo;
+    R_CHK(m_pAdapter->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo));
+
+    Msg("\n\tDedicated VRAM: %zu MB (%zu bytes)\n\tDedicated Memory: %zu MB (%zu bytes)\n\tShared Memory: %zu MB (%zu bytes)\n\tCurrentUsage: %zu MB (%zu bytes)\n\tBudget: %zu MB (%zu bytes)",
+        Desc.DedicatedVideoMemory / 1024 / 1024, Desc.DedicatedVideoMemory, 
+        Desc.DedicatedSystemMemory / 1024 / 1024, Desc.DedicatedSystemMemory,
+        Desc.SharedSystemMemory / 1024 / 1024, Desc.SharedSystemMemory,
+        videoMemoryInfo.CurrentUsage / 1024 / 1024, videoMemoryInfo.CurrentUsage,
+        videoMemoryInfo.Budget/ 1024 / 1024, videoMemoryInfo.Budget
+    );
 }
 
 void CHW::updateWindowProps(HWND m_hWnd)
