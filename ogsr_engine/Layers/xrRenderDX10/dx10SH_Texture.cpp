@@ -103,7 +103,10 @@ void CTexture::surface_set(ID3DBaseTexture* surf)
                 m_pSRView = 0;
         }
         else
+        {
+            _RELEASE(m_pSRView)
             CHK_DX(HW.pDevice->CreateShaderResourceView(pSurface, NULL, &m_pSRView));
+        }
     }
 }
 
