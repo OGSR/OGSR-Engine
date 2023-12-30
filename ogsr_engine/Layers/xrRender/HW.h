@@ -50,8 +50,8 @@ public:
     ID3D11RenderTargetView* pBaseRT = nullptr; // base render target
     ID3D11DepthStencilView* pBaseZB = nullptr; // base depth-stencil buffer
 
-    IDXGIFactory4* pFactory = nullptr;
-    IDXGIAdapter3* m_pAdapter = nullptr;
+    IDXGIFactory1* pFactory = nullptr;
+    IDXGIAdapter1* m_pAdapter = nullptr;
     ID3D11DeviceContext* pContext = nullptr;
     IDXGISwapChain* m_pSwapChain = nullptr;
 
@@ -71,6 +71,9 @@ public:
 
     virtual void OnAppActivate();
     virtual void OnAppDeactivate();
+
+private:
+    bool b_modern{};
 };
 
 extern ECORE_API CHW HW;
