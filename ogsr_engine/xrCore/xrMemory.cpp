@@ -138,6 +138,12 @@ void GetProcessMemInfo(SProcessMemInfo& minfo)
         minfo.PagefileUsage = pc.PagefileUsage;
         minfo.PeakPagefileUsage = pc.PeakPagefileUsage;
     }
+
+#ifdef USE_MIMALLOC
+    Log("####################[+MIMALLOC+]####################");
+    mi_stats_print_out([](const char* msg, void*) { Log(msg); }, nullptr);
+    Log("####################[-MIMALLOC-]####################");
+#endif
 }
 
 size_t mem_usage_impl(u32* pBlocksUsed, u32* pBlocksFree)
