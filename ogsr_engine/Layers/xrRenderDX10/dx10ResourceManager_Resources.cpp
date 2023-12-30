@@ -14,7 +14,6 @@
 
 #include <Utilities\FlexibleVertexFormat.h>
 
-#ifdef USE_DX11
 SHS* CResourceManager::_CreateHS(LPCSTR Name) { return CreateShader<SHS>(Name); }
 
 void CResourceManager::_DeleteHS(const SHS* HS) { DestroyShader(HS); }
@@ -26,7 +25,6 @@ void CResourceManager::_DeleteDS(const SDS* DS) { DestroyShader(DS); }
 SCS* CResourceManager::_CreateCS(LPCSTR Name) { return CreateShader<SCS>(Name); }
 
 void CResourceManager::_DeleteCS(const SCS* CS) { DestroyShader(CS); }
-#endif //	USE_DX10
 
 template <class T>
 BOOL reclaim(xr_vector<T*>& vec, const T* ptr)
@@ -58,11 +56,7 @@ SState* CResourceManager::_CreateState(SimulatorStates& state_code)
     // Create New
     v_states.push_back(xr_new<SState>());
     v_states.back()->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-#if defined(USE_DX10) || defined(USE_DX11)
     v_states.back()->state = ID3DState::Create(state_code);
-#else //	USE_DX10
-    v_states.back()->state = state_code.record();
-#endif //	USE_DX10
     v_states.back()->state_code = state_code;
     return v_states.back();
 }
@@ -88,11 +82,9 @@ SPass* CResourceManager::_CreatePass(const SPass& proto)
     P->ps = proto.ps;
     P->vs = proto.vs;
     P->gs = proto.gs;
-#ifdef USE_DX11
     P->hs = proto.hs;
     P->ds = proto.ds;
     P->cs = proto.cs;
-#endif
     P->constants = proto.constants;
     P->T = proto.T;
     P->C = proto.C;

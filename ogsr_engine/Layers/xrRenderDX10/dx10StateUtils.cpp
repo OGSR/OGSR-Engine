@@ -159,7 +159,7 @@ void ResetDescription(D3D_DEPTH_STENCIL_DESC& desc)
     desc.BackFace.StencilFunc = D3D_COMPARISON_ALWAYS;
 }
 
-#ifdef USE_DX11
+
 void ResetDescription(D3D_BLEND_DESC& desc)
 {
     ZeroMemory(&desc, sizeof(desc));
@@ -179,26 +179,6 @@ void ResetDescription(D3D_BLEND_DESC& desc)
         desc.RenderTarget[i].RenderTargetWriteMask = D3D_COLOR_WRITE_ENABLE_ALL;
     }
 }
-#else
-void ResetDescription(D3D_BLEND_DESC& desc)
-{
-    ZeroMemory(&desc, sizeof(desc));
-
-    desc.AlphaToCoverageEnable = FALSE;
-    desc.SrcBlend = D3D_BLEND_ONE;
-    desc.DestBlend = D3D_BLEND_ZERO;
-    desc.BlendOp = D3D_BLEND_OP_ADD;
-    desc.SrcBlendAlpha = D3D_BLEND_ONE;
-    desc.DestBlendAlpha = D3D_BLEND_ZERO;
-    desc.BlendOpAlpha = D3D_BLEND_OP_ADD;
-
-    for (int i = 0; i < 8; ++i)
-    {
-        desc.BlendEnable[i] = FALSE;
-        desc.RenderTargetWriteMask[i] = D3D_COLOR_WRITE_ENABLE_ALL;
-    }
-}
-#endif
 
 void ResetDescription(D3D_SAMPLER_DESC& desc)
 {
@@ -289,7 +269,6 @@ bool operator==(const D3D_DEPTH_STENCIL_DESC& desc1, const D3D_DEPTH_STENCIL_DES
     return true;
 }
 
-#ifdef USE_DX11
 bool operator==(const D3D_BLEND_DESC& desc1, const D3D_BLEND_DESC& desc2)
 {
     if (desc1.AlphaToCoverageEnable != desc2.AlphaToCoverageEnable)
@@ -319,35 +298,6 @@ bool operator==(const D3D_BLEND_DESC& desc1, const D3D_BLEND_DESC& desc2)
 
     return true;
 }
-#else
-bool operator==(const D3D_BLEND_DESC& desc1, const D3D_BLEND_DESC& desc2)
-{
-    if (desc1.AlphaToCoverageEnable != desc2.AlphaToCoverageEnable)
-        return false;
-    if (desc1.SrcBlend != desc2.SrcBlend)
-        return false;
-    if (desc1.DestBlend != desc2.DestBlend)
-        return false;
-    if (desc1.BlendOp != desc2.BlendOp)
-        return false;
-    if (desc1.SrcBlendAlpha != desc2.SrcBlendAlpha)
-        return false;
-    if (desc1.DestBlendAlpha != desc2.DestBlendAlpha)
-        return false;
-    if (desc1.BlendOpAlpha != desc2.BlendOpAlpha)
-        return false;
-
-    for (int i = 0; i < 8; ++i)
-    {
-        if (desc1.BlendEnable[i] != desc2.BlendEnable[i])
-            return false;
-        if (desc1.RenderTargetWriteMask[i] != desc2.RenderTargetWriteMask[i])
-            return false;
-    }
-
-    return true;
-}
-#endif
 
 bool operator==(const D3D_SAMPLER_DESC& desc1, const D3D_SAMPLER_DESC& desc2)
 {
@@ -424,7 +374,6 @@ u32 GetHash(const D3D_DEPTH_STENCIL_DESC& desc)
     return Hash.GetHash();
 }
 
-#ifdef USE_DX11
 u32 GetHash(const D3D_BLEND_DESC& desc)
 {
     dxHashHelper Hash;
@@ -446,28 +395,6 @@ u32 GetHash(const D3D_BLEND_DESC& desc)
 
     return Hash.GetHash();
 }
-#else
-u32 GetHash(const D3D_BLEND_DESC& desc)
-{
-    dxHashHelper Hash;
-
-    Hash.AddData(&desc.AlphaToCoverageEnable, sizeof(desc.AlphaToCoverageEnable));
-    Hash.AddData(&desc.SrcBlend, sizeof(desc.SrcBlend));
-    Hash.AddData(&desc.DestBlend, sizeof(desc.DestBlend));
-    Hash.AddData(&desc.BlendOp, sizeof(desc.BlendOp));
-    Hash.AddData(&desc.SrcBlendAlpha, sizeof(desc.SrcBlendAlpha));
-    Hash.AddData(&desc.DestBlendAlpha, sizeof(desc.DestBlendAlpha));
-    Hash.AddData(&desc.BlendOpAlpha, sizeof(desc.BlendOpAlpha));
-
-    for (int i = 0; i < 8; ++i)
-    {
-        Hash.AddData(&desc.BlendEnable[i], sizeof(desc.BlendEnable[i]));
-        Hash.AddData(&desc.RenderTargetWriteMask[i], sizeof(desc.RenderTargetWriteMask[i]));
-    }
-
-    return Hash.GetHash();
-}
-#endif
 
 u32 GetHash(const D3D_SAMPLER_DESC& desc)
 {
@@ -522,7 +449,6 @@ void ValidateState(D3D_DEPTH_STENCIL_DESC& desc)
     }
 }
 
-#ifdef USE_DX11
 void ValidateState(D3D_BLEND_DESC& desc)
 {
     BOOL bBlendEnable = FALSE;
@@ -568,50 +494,6 @@ void ValidateState(D3D_BLEND_DESC& desc)
         }
     }
 }
-#else
-void ValidateState(D3D_BLEND_DESC& desc)
-{
-    BOOL bBlendEnable = FALSE;
-
-    for (int i = 0; i < 8; ++i)
-    {
-        VERIFY((desc.BlendEnable[i] == 0) || (desc.BlendEnable[i] == 1));
-        bBlendEnable |= desc.BlendEnable[i];
-    }
-
-    if (!bBlendEnable)
-    {
-        desc.SrcBlend = D3D_BLEND_ONE;
-        desc.DestBlend = D3D_BLEND_ZERO;
-        desc.BlendOp = D3D_BLEND_OP_ADD;
-        desc.SrcBlendAlpha = D3D_BLEND_ONE;
-        desc.DestBlendAlpha = D3D_BLEND_ZERO;
-        desc.BlendOpAlpha = D3D_BLEND_OP_ADD;
-    }
-    else
-    {
-        switch (desc.SrcBlendAlpha)
-        {
-        case D3D_BLEND_SRC_COLOR: desc.SrcBlendAlpha = D3D_BLEND_SRC_ALPHA; break;
-        case D3D_BLEND_INV_SRC_COLOR: desc.SrcBlendAlpha = D3D_BLEND_INV_SRC_ALPHA; break;
-        case D3D_BLEND_DEST_COLOR: desc.SrcBlendAlpha = D3D_BLEND_DEST_ALPHA; break;
-        case D3D_BLEND_INV_DEST_COLOR: desc.SrcBlendAlpha = D3D_BLEND_INV_DEST_ALPHA; break;
-        case D3D_BLEND_SRC1_COLOR: desc.SrcBlendAlpha = D3D_BLEND_SRC1_ALPHA; break;
-        case D3D_BLEND_INV_SRC1_COLOR: desc.SrcBlendAlpha = D3D_BLEND_INV_SRC1_ALPHA; break;
-        }
-
-        switch (desc.DestBlendAlpha)
-        {
-        case D3D_BLEND_SRC_COLOR: desc.DestBlendAlpha = D3D_BLEND_SRC_ALPHA; break;
-        case D3D_BLEND_INV_SRC_COLOR: desc.DestBlendAlpha = D3D_BLEND_INV_SRC_ALPHA; break;
-        case D3D_BLEND_DEST_COLOR: desc.DestBlendAlpha = D3D_BLEND_DEST_ALPHA; break;
-        case D3D_BLEND_INV_DEST_COLOR: desc.DestBlendAlpha = D3D_BLEND_INV_DEST_ALPHA; break;
-        case D3D_BLEND_SRC1_COLOR: desc.DestBlendAlpha = D3D_BLEND_SRC1_ALPHA; break;
-        case D3D_BLEND_INV_SRC1_COLOR: desc.DestBlendAlpha = D3D_BLEND_INV_SRC1_ALPHA; break;
-        }
-    }
-}
-#endif
 
 void ValidateState(D3D_SAMPLER_DESC& desc)
 {

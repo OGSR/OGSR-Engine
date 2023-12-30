@@ -39,11 +39,9 @@ private:
     tSamplerHArray m_VSSamplers;
     tSamplerHArray m_PSSamplers;
     tSamplerHArray m_GSSamplers;
-#ifdef USE_DX11
     tSamplerHArray m_CSSamplers;
     tSamplerHArray m_HSSamplers;
     tSamplerHArray m_DSSamplers;
-#endif
 
     UINT m_uiStencilRef;
     UINT m_uiAlphaRef;

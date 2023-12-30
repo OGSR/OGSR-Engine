@@ -45,7 +45,6 @@ CHW::~CHW()
 //////////////////////////////////////////////////////////////////////
 void CHW::CreateD3D()
 {
-#ifdef USE_DX11
     // Минимально поддерживаемая версия Windows => Windows Vista SP2 или Windows 7.
     R_CHK(CreateDXGIFactory1(IID_PPV_ARGS(&pFactory)));
 
@@ -83,10 +82,7 @@ void CHW::CreateD3D()
 
         pFactory->EnumAdapters1(0, &m_pAdapter);
     }
-#else
-    R_CHK(CreateDXGIFactory(IID_PPV_ARGS(&pFactory)));
-    pFactory->EnumAdapters(0, &m_pAdapter);
-#endif
+
 }
 
 void CHW::DestroyD3D()
@@ -180,7 +176,6 @@ void CHW::CreateDevice(HWND m_hWnd)
         createDeviceFlags |= D3D_CREATE_DEVICE_DEBUG;
 #endif
 
-#ifdef USE_DX11
     const auto createDevice = [&](const D3D_FEATURE_LEVEL* level, const u32 levels) {
         return D3D11CreateDevice(m_pAdapter, D3D_DRIVER_TYPE_UNKNOWN, // Если мы выбираем конкретный адаптер, то мы обязаны использовать D3D_DRIVER_TYPE_UNKNOWN.
                                  nullptr, createDeviceFlags, level, levels, D3D11_SDK_VERSION, &pDevice, &FeatureLevel, &pContext);
@@ -197,26 +192,7 @@ void CHW::CreateDevice(HWND m_hWnd)
     R_CHK(pDevice->QueryInterface(IID_PPV_ARGS(&pDeviceDXGI)));
     R_CHK(pDeviceDXGI->SetMaximumFrameLatency(1));
     _RELEASE(pDeviceDXGI);
-#else
-    HRESULT R = D3DX10CreateDeviceAndSwapChain(m_pAdapter, m_DriverType, NULL, createDeviceFlags, &sd, &m_pSwapChain, &pDevice);
 
-    pContext = pDevice;
-    FeatureLevel = D3D_FEATURE_LEVEL_10_0;
-    if (!FAILED(R))
-    {
-        D3DX10GetFeatureLevel1(pDevice, &pDevice1);
-        FeatureLevel = D3D_FEATURE_LEVEL_10_1;
-    }
-    pContext1 = pDevice1;
-
-    if (FAILED(R))
-    {
-        // Fatal error! Cannot create rendering device AT STARTUP !!!
-        Msg("Failed to initialize graphics hardware.\nPlease try to restart the game.\nCreateDevice returned 0x%08x", R);
-        CHECK_OR_EXIT(!FAILED(R), "Failed to initialize graphics hardware.\nPlease try to restart the game.");
-    }
-    R_CHK(R);
-#endif
 
     _SHOW_REF("* CREATE: DeviceREF:", HW.pDevice);
 
@@ -259,13 +235,9 @@ void CHW::DestroyDevice()
     _SHOW_REF("refCount:m_pSwapChain", m_pSwapChain);
     _RELEASE(m_pSwapChain);
 
-#ifdef USE_DX11
-    _RELEASE(pContext);
-#endif
 
-#ifndef USE_DX11
-    _RELEASE(HW.pDevice1);
-#endif
+    _RELEASE(pContext);
+
     _SHOW_REF("DeviceREF:", HW.pDevice);
     _RELEASE(HW.pDevice);
 

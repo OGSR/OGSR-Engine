@@ -32,7 +32,6 @@ dx10ConstantBuffer& R_constants::GetCBuffer(R_constant* C, BufferType BType)
         VERIFY(RCache.m_aGeometryConstants[iBufferIndex]);
         return *RCache.m_aGeometryConstants[iBufferIndex];
     }
-#ifdef USE_DX11
     else if (BType == BT_HullBuffer)
     {
         //	Decode index
@@ -60,7 +59,6 @@ dx10ConstantBuffer& R_constants::GetCBuffer(R_constant* C, BufferType BType)
         VERIFY(RCache.m_aComputeConstants[iBufferIndex]);
         return *RCache.m_aComputeConstants[iBufferIndex];
     }
-#endif
 
     FATAL("Unreachable code");
     // Just hack to avoid warning;
@@ -81,7 +79,6 @@ void R_constants::flush_cache()
         if (RCache.m_aGeometryConstants[i])
             RCache.m_aGeometryConstants[i]->Flush();
 
-#ifdef USE_DX11
         if (RCache.m_aHullConstants[i])
             RCache.m_aHullConstants[i]->Flush();
 
@@ -90,6 +87,5 @@ void R_constants::flush_cache()
 
         if (RCache.m_aComputeConstants[i])
             RCache.m_aComputeConstants[i]->Flush();
-#endif
     }
 }

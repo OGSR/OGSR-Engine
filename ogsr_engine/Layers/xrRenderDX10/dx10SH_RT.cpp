@@ -12,9 +12,7 @@ CRT::CRT()
     pSurface = NULL;
     pRT = NULL;
     pZRT = NULL;
-#ifdef USE_DX11
     pUAView = NULL;
-#endif
     dwWidth = 0;
     dwHeight = 0;
     fmt = D3DFMT_UNKNOWN;
@@ -27,11 +25,7 @@ CRT::~CRT()
     DEV->_DeleteRT(this);
 }
 
-#ifdef USE_DX11
 void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount, bool useUAV)
-#else
-void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount)
-#endif
 {
     if (pSurface)
         return;
@@ -137,10 +131,8 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount)
         }
     }
 
-#ifdef USE_DX11
     if (HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0 && !bUseAsDepth && SampleCount == 1 && useUAV)
         desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
-#endif
 
     CHK_DX(HW.pDevice->CreateTexture2D(&desc, NULL, &pSurface));
     HW.stats_manager.increment_stats_rtarget(pSurface);
@@ -177,7 +169,6 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount)
     else
         CHK_DX(HW.pDevice->CreateRenderTargetView(pSurface, 0, &pRT));
 
-#ifdef USE_DX11
     if (HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0 && !bUseAsDepth && SampleCount == 1 && useUAV)
     {
         D3D11_UNORDERED_ACCESS_VIEW_DESC UAVDesc;
@@ -188,7 +179,6 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount)
         UAVDesc.Buffer.NumElements = dwWidth * dwHeight;
         CHK_DX(HW.pDevice->CreateUnorderedAccessView(pSurface, &UAVDesc, &pUAView));
     }
-#endif
 
     pTexture = DEV->_CreateTexture(Name);
     pTexture->surface_set(pSurface);
@@ -206,18 +196,12 @@ void CRT::destroy()
 
     HW.stats_manager.decrement_stats_rtarget(pSurface);
     _RELEASE(pSurface);
-#ifdef USE_DX11
     _RELEASE(pUAView);
-#endif
 }
 void CRT::reset_begin() { destroy(); }
 void CRT::reset_end() { create(*cName, dwWidth, dwHeight, fmt); }
 
-#ifdef USE_DX11
 void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount, bool useUAV) { _set(DEV->_CreateRT(Name, w, h, f, SampleCount, useUAV)); }
-#else
-void resptrcode_crt::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount) { _set(DEV->_CreateRT(Name, w, h, f, SampleCount)); }
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 /*	DX10 cut

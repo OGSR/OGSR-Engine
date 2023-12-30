@@ -250,13 +250,10 @@ void dx103DFluidRenderer::CreateJitterTexture()
     desc.SampleDesc.Count = 1;
     desc.SampleDesc.Quality = 0;
     // desc.Usage = D3D_USAGE_IMMUTABLE;
-#ifdef USE_DX11
+
     desc.Usage = D3D11_USAGE_DEFAULT;
     desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-#else
-    desc.Usage = D3D_USAGE_DEFAULT;
-    desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
-#endif
+
 
     desc.CPUAccessFlags = 0;
     desc.MiscFlags = 0;
@@ -352,13 +349,10 @@ void dx103DFluidRenderer::CreateHHGGTexture()
     // desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
     desc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
     // desc.Usage = D3D_USAGE_IMMUTABLE;
-#ifdef USE_DX11
+
     desc.Usage = D3D11_USAGE_DEFAULT;
     desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-#else
-    desc.Usage = D3D_USAGE_DEFAULT;
-    desc.BindFlags = D3D_BIND_SHADER_RESOURCE;
-#endif
+
     desc.CPUAccessFlags = 0;
     desc.MiscFlags = 0;
 

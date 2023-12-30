@@ -251,7 +251,6 @@ void CTexture::Apply(u32 dwStage)
         // HW.pDevice->GSSetShaderResources(dwStage-rstGeometry, 1, &m_pSRView);
         SRVSManager.SetGSResource(dwStage - rstGeometry, m_pSRView);
     }
-#ifdef USE_DX11
     else if (dwStage < rstDomain) //	Geometry shader stage resources
     {
         SRVSManager.SetHSResource(dwStage - rstHull, m_pSRView);
@@ -264,7 +263,6 @@ void CTexture::Apply(u32 dwStage)
     {
         SRVSManager.SetCSResource(dwStage - rstCompute, m_pSRView);
     }
-#endif
     else
         VERIFY("Invalid stage");
 }
@@ -287,22 +285,15 @@ void CTexture::apply_theora(u32 dwStage)
         u32 _w = pTheora->Width(false);
 
         // R_CHK				(T2D->LockRect(0,&R,&rect,0));
-#ifdef USE_DX11
+
         R_CHK(HW.pContext->Map(T2D, 0, D3D_MAP_WRITE_DISCARD, 0, &mapData));
-#else
-        R_CHK(T2D->Map(0, D3D_MAP_WRITE_DISCARD, 0, &mapData));
-#endif
         // R_ASSERT			(R.Pitch == int(pTheora->Width(false)*4));
         R_ASSERT(mapData.RowPitch == int(pTheora->Width(false) * 4));
         int _pos = 0;
         pTheora->DecompressFrame((u32*)mapData.pData, _w - rect.right, _pos);
         VERIFY(u32(_pos) == rect.bottom * _w);
         // R_CHK				(T2D->UnlockRect(0));
-#ifdef USE_DX11
         HW.pContext->Unmap(T2D, 0);
-#else
-        T2D->Unmap(0);
-#endif
     }
     Apply(dwStage);
     // CHK_DX(HW.pDevice->SetTexture(dwStage,pSurface));
@@ -319,21 +310,14 @@ void CTexture::apply_avi(u32 dwStage)
 
         // AVI
         // R_CHK	(T2D->LockRect(0,&R,NULL,0));
-#ifdef USE_DX11
+
         R_CHK(HW.pContext->Map(T2D, 0, D3D_MAP_WRITE_DISCARD, 0, &mapData));
-#else
-        R_CHK(T2D->Map(0, D3D_MAP_WRITE_DISCARD, 0, &mapData));
-#endif
         R_ASSERT(mapData.RowPitch == int(pAVI->m_dwWidth * 4));
         BYTE* ptr;
         pAVI->GetFrame(&ptr);
         CopyMemory(mapData.pData, ptr, pAVI->m_dwWidth * pAVI->m_dwHeight * 4);
         // R_CHK	(T2D->UnlockRect(0));
-#ifdef USE_DX11
         HW.pContext->Unmap(T2D, 0);
-#else
-        T2D->Unmap(0);
-#endif
     }
     // CHK_DX(HW.pDevice->SetTexture(dwStage,pSurface));
     Apply(dwStage);

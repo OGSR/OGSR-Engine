@@ -38,7 +38,6 @@ public:
         {
             set(C, C->gs, A, BT_GeometryBuffer);
         } //  a_vertex.b_dirty=TRUE;		}
-#ifdef USE_DX11
         if (C->destination & RC_dest_hull)
         {
             set(C, C->hs, A, BT_HullBuffer);
@@ -51,7 +50,6 @@ public:
         {
             set(C, C->cs, A, BT_Compute);
         } //  a_vertex.b_dirty=TRUE;		}
-#endif
     }
 
     template <typename T>
@@ -69,7 +67,6 @@ public:
         {
             seta(C, C->gs, e, A, BT_GeometryBuffer);
         } //  a_vertex.b_dirty=TRUE;	}
-#ifdef USE_DX11
         if (C->destination & RC_dest_hull)
         {
             seta(C, C->hs, e, A, BT_HullBuffer);
@@ -82,7 +79,6 @@ public:
         {
             seta(C, C->cs, e, A, BT_Compute);
         } //  a_vertex.b_dirty=TRUE;		}
-#endif
     }
     // ICF void				set		(R_constant* C, const Fmatrix& A)		{
     //	if (C->destination&RC_dest_pixel)	{ set	(C,C->ps,A, BT_PixelBuffer); }	// a_pixel.b_dirty=TRUE;		}

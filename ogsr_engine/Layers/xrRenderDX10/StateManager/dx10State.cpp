@@ -29,11 +29,9 @@ dx10State* dx10State::Create(SimulatorStates& state_code)
         InitSamplers(pState->m_VSSamplers, state_code, CTexture::rstVertex);
         InitSamplers(pState->m_PSSamplers, state_code, CTexture::rstPixel);
         InitSamplers(pState->m_GSSamplers, state_code, CTexture::rstGeometry);
-#ifdef USE_DX11
         InitSamplers(pState->m_HSSamplers, state_code, CTexture::rstHull);
         InitSamplers(pState->m_DSSamplers, state_code, CTexture::rstDomain);
         InitSamplers(pState->m_CSSamplers, state_code, CTexture::rstCompute);
-#endif
     }
 
     return pState;
@@ -54,11 +52,9 @@ HRESULT dx10State::Apply()
     SSManager.GSApplySamplers(m_GSSamplers);
     SSManager.VSApplySamplers(m_VSSamplers);
     SSManager.PSApplySamplers(m_PSSamplers);
-#ifdef USE_DX11
     SSManager.HSApplySamplers(m_HSSamplers);
     SSManager.DSApplySamplers(m_DSSamplers);
     SSManager.CSApplySamplers(m_CSSamplers);
-#endif
 
     //	static const FLOAT BlendFactor[4] = {0.000f, 0.000f, 0.000f, 0.000f};
     //	static const UINT SampleMask = 0xffffffff;
