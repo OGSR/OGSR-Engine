@@ -70,11 +70,10 @@ void CRenderDevice::End(void)
             
             ::Sound->set_master_volume(1.f);
 
-            m_pRender->ResourcesDestroyNecessaryTextures();
             Memory.mem_compact();
+
             Msg("* MEMORY USAGE: %d K", Memory.mem_usage() / 1024);
             Msg("* End of synchronization A[%d] R[%d]", b_is_Active, b_is_Ready);
-
         }
     }
 

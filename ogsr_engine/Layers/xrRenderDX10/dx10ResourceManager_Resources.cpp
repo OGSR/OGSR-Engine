@@ -568,6 +568,7 @@ CTexture* CResourceManager::_CreateTexture(LPCSTR _Name)
     if (0 == xr_strcmp(_Name, "null"))
         return 0;
     R_ASSERT(_Name && _Name[0]);
+
     string_path Name;
     xr_strcpy(Name, _Name); //. andy if (strext(Name)) *strext(Name)=0;
     fix_texture_name(Name);

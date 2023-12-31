@@ -161,27 +161,3 @@ void CResourceManager::LoadSharedFile(LPCSTR fname)
 
     FS.r_close(F);
 }
-
-void CResourceManager::StoreNecessaryTextures()
-{
-    if (!m_necessary.empty())
-        return;
-
-    map_TextureIt it = m_textures.begin();
-    map_TextureIt it_e = m_textures.end();
-
-    for (; it != it_e; ++it)
-    {
-        LPCSTR texture_name = it->first;
-        if (strstr(texture_name, "\\levels\\"))
-            continue;
-        if (!strchr(texture_name, '\\'))
-            continue;
-
-        ref_texture T;
-        T.create(texture_name);
-        m_necessary.push_back(T);
-    }
-}
-
-void CResourceManager::DestroyNecessaryTextures() { m_necessary.clear(); }

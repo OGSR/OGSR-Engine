@@ -27,17 +27,12 @@ IGame_Level::IGame_Level()
 
 IGame_Level::~IGame_Level()
 {
-    /*
-    if(strstr(Core.Params,"-nes_texture_storing") )
-        Device.Resources->StoreNecessaryTextures();
-    */
-
-    //.	DEL_INSTANCE				( pHUD			);
     xr_delete(pLevel);
 
     // Render-level unload
     Render->level_Unload();
     xr_delete(m_pCameras);
+
     // Unregister
     Device.seqRender.Remove(this);
     Device.seqFrame.Remove(this);

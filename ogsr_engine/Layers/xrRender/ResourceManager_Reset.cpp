@@ -108,7 +108,6 @@ void mdump(C c)
 
 CResourceManager::~CResourceManager()
 {
-    DestroyNecessaryTextures();
     Dump(false);
 }
 
