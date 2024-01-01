@@ -62,8 +62,8 @@ void CWeaponShotgun::OnShot()
 {
     inherited::OnShot();
 
-    if (/*!m_sndBreechJammed.sounds.empty() ||*/ !m_sndBreech.sounds.empty())
-        PlaySound(/*(IsMisfire() && !m_sndBreechJammed.sounds.empty()) ? m_sndBreechJammed :*/ m_sndBreech, get_LastFP());
+    if (!m_sndBreech.sounds.empty())
+        PlaySound((IsMisfire() && !m_sndBreechJammed.sounds.empty()) ? m_sndBreechJammed : m_sndBreech, get_LastFP());
 }
 
 void CWeaponShotgun::Fire2Start()
@@ -315,8 +315,6 @@ void CWeaponShotgun::OnAnimationEnd(u32 state)
         if (IsMisfire())
         {
             SwitchMisfire(false);
-            if (iAmmoElapsed > 0) //
-                SetAmmoElapsed(iAmmoElapsed - 1); //
         }
         m_sub_state = eSubstateReloadBegin;
         SwitchState(eIdle);

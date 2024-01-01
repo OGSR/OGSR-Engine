@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include "weaponBM16.h"
 
-CWeaponBM16::~CWeaponBM16() { HUD_SOUND::DestroySound(m_sndReload1); }
+CWeaponBM16::~CWeaponBM16() 
+{ 
+    HUD_SOUND::DestroySound(m_sndReload1);
+}
 
 void CWeaponBM16::Load(LPCSTR section)
 {
@@ -24,6 +27,33 @@ void CWeaponBM16::UpdateSounds()
 
     if (m_sndReload1.playing())
         m_sndReload1.set_position(get_LastFP());
+}
+
+void CWeaponBM16::OnShot()
+{
+    // Если актор бежит - останавливаем его
+    if (ParentIsActor())
+        Actor()->set_state_wishful(Actor()->get_state_wishful() & (~mcSprint));
+
+    AddShotEffector();
+    PlayAnimShoot();
+
+    if (IsMisfire())
+    {
+        if (!m_sndBreechJammed.sounds.empty())
+            PlaySound(m_sndBreechJammed, get_LastFP());
+    }
+    else
+    {
+        PlaySound(*m_pSndShotCurrent, get_LastFP(), true);
+
+        Fvector vel;
+        PHGetLinearVell(vel);
+        OnShellDrop(get_LastSP(), vel);
+        StartFlameParticles();
+        ForceUpdateFireParticles();
+        StartSmokeParticles(get_LastFP(), vel);
+    }
 }
 
 void CWeaponBM16::PlayAnimShoot()
@@ -80,7 +110,9 @@ void CWeaponBM16::PlayAnimHide()
 void CWeaponBM16::PlayAnimReload()
 {
     if (m_magazine.size() == 1 || !HaveCartridgeInInventory(2))
-        PlayHUDMotion({IsMisfire() ? "anm_reload_jammed_1" : "nullptr", "anim_reload_1", "anm_reload_1"}, true, GetState());
+        PlayHUDMotion(
+            {IsMisfire() ? "anm_reload_jammed_1" : (m_magazine.size() == 0 ? "anm_reload_only_0" : "nullptr"), "anim_reload_1", "anm_reload_1"},
+            true, GetState());
     else
         PlayHUDMotion({IsMisfire() ? "anm_reload_jammed_2" : "nullptr", "anim_reload", "anm_reload_2"}, true, GetState());
 }

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "hudmanager.h"
 #include "WeaponMagazined.h"
+#include "weaponBM16.h"
 #include "entity.h"
 #include "actor.h"
 #include "torch.h"
@@ -419,8 +420,6 @@ void CWeaponMagazined::ReloadMagazine()
     if (IsMisfire() && !IsGrenadeMode())
     {
         SwitchMisfire(false);
-        if (GetAmmoElapsed() > 0)
-            SetAmmoElapsed(GetAmmoElapsed() - 1);
         return;
     }
 
@@ -569,8 +568,6 @@ void CWeaponMagazined::OnStateSwitch(u32 S, u32 oldState)
     case eFire2: switch2_Fire2(); break;
     case eMisfire: {
         PlayAnimCheckMisfire();
-        PlaySound(sndEmptyClick, get_LastFP());
-        SetPending(TRUE);
     }
     break;
     case eMagEmpty: {
@@ -589,7 +586,6 @@ void CWeaponMagazined::OnStateSwitch(u32 S, u32 oldState)
     case eHidden: switch2_Hidden(); break;
     case eDeviceSwitch:
         PlayAnimDeviceSwitch();
-        SetPending(TRUE);
         break;
     }
 }
@@ -647,12 +643,12 @@ void CWeaponMagazined::UpdateCL()
                 fTime = 0;
             break;
         case eFire:
-            if (iAmmoElapsed > 0)
+            if (!IsMisfire() && iAmmoElapsed > 0)
                 state_Fire(dt);
 
             if (fTime <= 0)
             {
-                if (iAmmoElapsed == 0)
+                if (!IsMisfire() && GetAmmoElapsed() == 0)
                     OnMagazineEmpty();
                 StopShooting();
             }
@@ -757,13 +753,6 @@ void CWeaponMagazined::state_Fire(float dt)
     //	Msg("%d && %d && (%d || %d) && (%d || %d)", !m_magazine.empty(), fTime<=0, IsWorking(), m_bFireSingleShot, m_iQueueSize < 0, m_iShotNum < m_iQueueSize);
     while (!m_magazine.empty() && fTime <= 0 && (IsWorking() || m_bFireSingleShot) && (m_iQueueSize < 0 || m_iShotNum < m_iQueueSize))
     {
-        if (CheckForMisfire())
-        {
-            OnEmptyClick();
-            StopShooting();
-            return;
-        }
-
         m_bFireSingleShot = false;
 
         VERIFY(fTimeToFire > 0.f);
@@ -779,7 +768,11 @@ void CWeaponMagazined::state_Fire(float dt)
 
         ++m_iShotNum;
 
+        CheckForMisfire();
         OnShot();
+
+        if (smart_cast<CWeaponBM16*>(this) && IsMisfire())
+            return;
 
         if (m_iShotNum > m_iShootEffectorStart)
             FireTrace(p1, d);
@@ -1467,7 +1460,8 @@ void CWeaponMagazined::PlayAnimIdle()
 void CWeaponMagazined::PlayAnimShoot()
 {
     string128 guns_shoot_anm;
-    xr_strconcat(guns_shoot_anm, "anm_shoot", (IsZoomed() && !IsRotatingToZoom()) ? (IsScopeAttached() ? "_aim_scope" : "_aim") : "", iAmmoElapsed == 1 ? "_last" : "",
+    xr_strconcat(guns_shoot_anm, "anm_shoot", (IsZoomed() && !IsRotatingToZoom()) ? (IsScopeAttached() ? "_aim_scope" : "_aim") : "",
+                 IsMisfire() ? "_jammed" : (GetAmmoElapsed() == 1 ? "_last" : ""),
                  IsSilencerAttached() ? "_sil" : "");
 
     PlayHUDMotion({guns_shoot_anm, "anim_shoot", "anm_shots"}, false, GetState());
@@ -1490,9 +1484,15 @@ void CWeaponMagazined::PlayAnimCheckMisfire()
     string128 guns_fakeshoot_anm;
     xr_strconcat(guns_fakeshoot_anm, "anm_fakeshoot", IsMisfire() ? "_jammed" : "", IsGrenadeLauncherAttached() ? (!IsGrenadeMode() ? "_w_gl" : "_g") : "");
     if (AnimationExist(guns_fakeshoot_anm))
+    {
         PlayHUDMotion(guns_fakeshoot_anm, true, GetState());
+        
+        SetPending(TRUE);
+    }
     else
+    {
         SwitchState(eIdle);
+    }
 }
 
 void CWeaponMagazined::PlayAnimDeviceSwitch()
@@ -1507,7 +1507,11 @@ void CWeaponMagazined::PlayAnimDeviceSwitch()
                                                                                                                             "",
                  (IsGrenadeLauncherAttached()) ? (!IsGrenadeMode() ? "_w_gl" : "_g") : "");
     if (AnimationExist(guns_device_anm))
+    {
         PlayHUDMotion(guns_device_anm, true, GetState());
+
+        SetPending(TRUE);
+    }
     else
     {
         DeviceUpdate();

@@ -1402,15 +1402,11 @@ BOOL CWeapon::CheckForMisfire()
     if (rnd < mp)
     {
         FireEnd();
-
         SwitchMisfire(true);
-
         return TRUE;
     }
     else
-    {
         return FALSE;
-    }
 }
 
 void CWeapon::Reload() { OnZoomOut(); }
