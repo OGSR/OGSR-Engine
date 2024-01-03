@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <numeric>
 #include "UIGameCustom.h"
 #include "ui.h"
 #include "level.h"

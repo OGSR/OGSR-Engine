@@ -51,13 +51,9 @@ void CHangingLamp::RespawnInit()
 void CHangingLamp::Center(Fvector& C) const
 {
     if (renderable.visual)
-    {
         renderable.xform.transform_tiny(C, renderable.visual->getVisData().sphere.P);
-    }
     else
-    {
         C.set(XFORM().c);
-    }
 }
 
 float CHangingLamp::Radius() const { return (renderable.visual) ? renderable.visual->getVisData().sphere.R : EPS; }
@@ -209,7 +205,10 @@ void CHangingLamp::UpdateCL()
     if (m_pPhysicsShell)
         m_pPhysicsShell->InterpolateGlobalTransform(&XFORM());
 
-    if (Alive() && light_render->get_active())
+    if (!Alive())
+        return;
+
+    if (light_render->get_active())
     {
         if (Visual())
             PKinematics(Visual())->CalculateBones();
@@ -268,10 +267,31 @@ void CHangingLamp::UpdateCL()
             }
         }
     }
+
+    //Эффект мигания при выбросе
+    bool light_status{lights_turned_on};
+    const float surge_progress = shader_exports.get_pda_params().x;
+
+    if (light_status && !fis_zero(surge_progress))
+    {
+        const float mig = 1.f - (surge_progress * 2.f);
+        const float time[]{Device.fTimeGlobal, Device.fTimeGlobal / 10.f};
+        light_status = Device.NoiseRandom(time) <= mig;
+    }
+
+    if (light_render)
+        light_render->set_active(light_status);
+
+    if (glow_render)
+        glow_render->set_active(light_status);
+
+    if (light_ambient)
+        light_ambient->set_active(light_status);
 }
 
 void CHangingLamp::TurnOn()
 {
+    lights_turned_on = true;
     light_render->set_active(true);
     if (glow_render)
         glow_render->set_active(true);
@@ -289,6 +309,7 @@ void CHangingLamp::TurnOn()
 
 void CHangingLamp::TurnOff()
 {
+    lights_turned_on = false;
     light_render->set_active(false);
     if (glow_render)
         glow_render->set_active(false);
@@ -305,7 +326,7 @@ void CHangingLamp::Hit(SHit* pHDS)
 {
     SHit HDS = *pHDS;
     callback(GameObject::eHit)(lua_game_object(), HDS.power, HDS.dir, smart_cast<const CGameObject*>(HDS.who)->lua_game_object(), HDS.bone());
-    BOOL bWasAlive = Alive();
+    bool bWasAlive = Alive();
 
     if (m_pPhysicsShell)
         m_pPhysicsShell->applyHit(pHDS->p_in_bone_space, pHDS->dir, pHDS->impulse, pHDS->boneID, pHDS->hit_type);

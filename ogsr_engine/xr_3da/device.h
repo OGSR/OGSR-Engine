@@ -6,6 +6,7 @@
 #include "pure.h"
 #include "../xrcore/ftimer.h"
 #include "stats.h"
+#include <numeric>
 
 extern u32 g_dwFPSlimit;
 
@@ -78,6 +79,26 @@ public:
 
     float fFOV;
     float fASPECT;
+
+    // Генерирует псевдо-рандомное число в диапазоне от 0 до 1 https://stackoverflow.com/a/10625698
+    template <typename T, size_t sizeDest>
+    inline T NoiseRandom(const T (&args)[sizeDest]) const
+    {
+        constexpr double consts[]{23.14069263277926, 2.665144142690225};
+
+        static_assert(sizeDest == std::size(consts));
+        static_assert(std::is_floating_point_v<T>);
+
+        constexpr auto frac = [](const double& x) {
+            double res = x - std::floor(x);
+            if constexpr (std::is_same_v<double, T>)
+                return res;
+            else
+                return static_cast<T>(res);
+        };
+
+        return frac(std::cos(std::inner_product(std::begin(args), std::end(args), std::begin(consts), 0.0)) * 12345.6789);
+    }
 
 protected:
     u32 Timer_MM_Delta;

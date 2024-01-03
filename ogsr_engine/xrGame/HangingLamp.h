@@ -32,6 +32,7 @@ private:
 
     float fHealth;
     float fBrightness;
+    bool lights_turned_on{};
     void CreateBody(CSE_ALifeObjectHangingLamp* lamp);
     void Init();
     void RespawnInit();
