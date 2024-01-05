@@ -29,9 +29,7 @@ void __fastcall mapNormal_Render(mapNormalItems& N)
     for (auto& Ni : N)
     {
         float LOD = calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R);
-#ifdef USE_DX11
         RCache.LOD.set_LOD(LOD);
-#endif
         Ni.pVisual->Render(LOD);
     }
 }
@@ -50,9 +48,7 @@ void __fastcall mapMatrix_Render(mapMatrixItems& N)
         RImplementation.apply_lmaterial();
 
         float LOD = calcLOD(Ni.ssa, Ni.pVisual->vis.sphere.R);
-#ifdef USE_DX11
         RCache.LOD.set_LOD(LOD);
-#endif
         Ni.pVisual->Render(LOD);
     }
     N.clear();
@@ -70,9 +66,7 @@ void __fastcall sorted_L1(mapSorted_Node* N)
     RImplementation.apply_lmaterial();
 
     const float LOD = calcLOD(N->key, V->vis.sphere.R);
-#ifdef USE_DX11
     RCache.LOD.set_LOD(LOD);
-#endif
     V->Render(LOD);
 }
 
@@ -81,25 +75,15 @@ IC bool cmp_vs_mat(mapMatrixVS::TNode* N1, mapMatrixVS::TNode* N2) { return (N1-
 
 IC bool cmp_ps_nrm(mapNormalPS::TNode* N1, mapNormalPS::TNode* N2)
 {
-#ifdef USE_DX11
     return (N1->val.mapCS.ssa > N2->val.mapCS.ssa);
-#else
-    return (N1->val.ssa > N2->val.ssa);
-#endif
 }
 IC bool cmp_ps_mat(mapMatrixPS::TNode* N1, mapMatrixPS::TNode* N2)
 {
-#ifdef USE_DX11
     return (N1->val.mapCS.ssa > N2->val.mapCS.ssa);
-#else
-    return (N1->val.ssa > N2->val.ssa);
-#endif
 }
 
-#if defined(USE_DX10) || defined(USE_DX11)
 IC bool cmp_gs_nrm(mapNormalGS::TNode* N1, mapNormalGS::TNode* N2) { return (N1->val.ssa > N2->val.ssa); }
 IC bool cmp_gs_mat(mapMatrixGS::TNode* N1, mapMatrixGS::TNode* N2) { return (N1->val.ssa > N2->val.ssa); }
-#endif //	USE_DX10
 
 IC bool cmp_cs_nrm(mapNormalCS::TNode* N1, mapNormalCS::TNode* N2) { return (N1->val.ssa > N2->val.ssa); }
 IC bool cmp_cs_mat(mapMatrixCS::TNode* N1, mapMatrixCS::TNode* N2) { return (N1->val.ssa > N2->val.ssa); }
@@ -305,7 +289,6 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
                 mapNormalVS::TNode* Nvs = nrmVS[vs_id];
                 RCache.set_VS(Nvs->key);
 
-#if defined(USE_DX10) || defined(USE_DX11)
                 //	GS setup
                 mapNormalGS& gs = Nvs->val;
                 gs.ssa = 0;
@@ -319,26 +302,17 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 
                     mapNormalPS& ps = Ngs->val;
                     ps.ssa = 0;
-#else //	USE_DX10
-                mapNormalPS& ps = Nvs->val;
-                ps.ssa = 0;
-#endif //	USE_DX10
-
                     ps.getANY_P(nrmPS);
                     std::sort(nrmPS.begin(), nrmPS.end(), cmp_ps_nrm);
                     for (u32 ps_id = 0; ps_id < nrmPS.size(); ps_id++)
                     {
                         mapNormalPS::TNode* Nps = nrmPS[ps_id];
                         RCache.set_PS(Nps->key);
-#ifdef USE_DX11
                         mapNormalCS& cs = Nps->val.mapCS;
                         cs.ssa = 0;
                         RCache.set_HS(Nps->val.hs);
                         RCache.set_DS(Nps->val.ds);
-#else
-                    mapNormalCS& cs = Nps->val;
-                    cs.ssa = 0;
-#endif
+
                         cs.getANY_P(nrmCS);
                         std::sort(nrmCS.begin(), nrmCS.end(), cmp_cs_nrm);
                         for (u32 cs_id = 0; cs_id < nrmCS.size(); cs_id++)
@@ -386,12 +360,10 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
                     nrmPS.clear();
                     if (_clear)
                         ps.clear();
-#if defined(USE_DX10) || defined(USE_DX11)
                 }
                 nrmGS.clear();
                 if (_clear)
                     gs.clear();
-#endif //	USE_DX10
             }
             nrmVS.clear();
             if (_clear)
@@ -414,7 +386,6 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
             mapMatrixVS::TNode* Nvs = matVS[vs_id];
             RCache.set_VS(Nvs->key);
 
-#if defined(USE_DX10) || defined(USE_DX11)
             mapMatrixGS& gs = Nvs->val;
             gs.ssa = 0;
 
@@ -427,10 +398,6 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 
                 mapMatrixPS& ps = Ngs->val;
                 ps.ssa = 0;
-#else //	USE_DX10
-            mapMatrixPS& ps = Nvs->val;
-            ps.ssa = 0;
-#endif //	USE_DX10
 
                 ps.getANY_P(matPS);
                 std::sort(matPS.begin(), matPS.end(), cmp_ps_mat);
@@ -439,15 +406,11 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
                     mapMatrixPS::TNode* Nps = matPS[ps_id];
                     RCache.set_PS(Nps->key);
 
-#ifdef USE_DX11
                     mapMatrixCS& cs = Nps->val.mapCS;
                     cs.ssa = 0;
                     RCache.set_HS(Nps->val.hs);
                     RCache.set_DS(Nps->val.ds);
-#else
-                mapMatrixCS& cs = Nps->val;
-                cs.ssa = 0;
-#endif
+
                     cs.getANY_P(matCS);
                     std::sort(matCS.begin(), matCS.end(), cmp_cs_mat);
                     for (u32 cs_id = 0; cs_id < matCS.size(); cs_id++)
@@ -493,12 +456,10 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
                 matPS.clear();
                 if (_clear)
                     ps.clear();
-#if defined(USE_DX10) || defined(USE_DX11)
             }
             matGS.clear();
             if (_clear)
                 gs.clear();
-#endif //	USE_DX10
         }
         matVS.clear();
         if (_clear)

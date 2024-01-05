@@ -105,17 +105,8 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
     }
 
     bUseSteepParallax = DEV->m_textures_description.UseSteepParallax(base) && BT->canUseSteepParallax();
-/*
-    if (DEV->m_textures_description.UseSteepParallax(base))
-    {
-        bool bSteep = BT->canUseSteepParallax();
-        DEV->m_textures_description.UseSteepParallax(base);
-        bUseSteepParallax = true;
-    }
-*/
-#ifdef USE_DX11
+
     TessMethod = 0;
-#endif
 
     // Compile
     BT->Compile(*this);
@@ -176,14 +167,12 @@ void CBlender_Compile::PassSET_ablend_mode(BOOL bABlend, u32 abSRC, u32 abDST)
     RS.SetRS(D3DRS_SRCBLEND, bABlend ? abSRC : D3DBLEND_ONE);
     RS.SetRS(D3DRS_DESTBLEND, bABlend ? abDST : D3DBLEND_ZERO);
 
-#if defined(USE_DX10) || defined(USE_DX11)
     //	Since in our engine D3DRS_SEPARATEALPHABLENDENABLE state is
     //	always set to false and in DirectX 10 blend functions for
     //	color and alpha are always independent, assign blend options for
     //	alpha in DX10 identical to color.
     RS.SetRS(D3DRS_SRCBLENDALPHA, bABlend ? abSRC : D3DBLEND_ONE);
     RS.SetRS(D3DRS_DESTBLENDALPHA, bABlend ? abDST : D3DBLEND_ZERO);
-#endif //	USE_DX10
 }
 void CBlender_Compile::PassSET_ablend_aref(BOOL bATest, u32 aRef)
 {

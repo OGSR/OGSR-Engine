@@ -3,10 +3,8 @@
 
 dxConsoleRender::dxConsoleRender()
 {
-#if defined(USE_DX10) || defined(USE_DX11)
     m_Shader.create("hud\\crosshair");
     m_Geom.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.QuadIB);
-#endif
 }
 
 void dxConsoleRender::Copy(IConsoleRender& _in) { *this = *(dxConsoleRender*)&_in; }
@@ -20,7 +18,6 @@ void dxConsoleRender::OnRender(bool bGame)
     if (bGame)
         R.y2 /= 2;
 
-#if defined(USE_DX10) || defined(USE_DX11)
     u32 vOffset = 0;
     //	TODO: DX10: Implement console background clearing for DX10
     FVF::TL* verts = (FVF::TL*)RCache.Vertex.Lock(4, m_Geom->vb_stride, vOffset);
@@ -38,7 +35,4 @@ void dxConsoleRender::OnRender(bool bGame)
     RCache.set_Geometry(m_Geom);
 
     RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, 4, 0, 2);
-#else //	USE_DX10
-    CHK_DX(HW.pDevice->Clear(1, &R, D3DCLEAR_TARGET, D3DCOLOR_XRGB(32, 32, 32), 1, 0));
-#endif //	USE_DX10
 }

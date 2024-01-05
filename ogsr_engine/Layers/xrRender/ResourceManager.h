@@ -117,11 +117,7 @@ public:
     SInputSignature* _CreateInputSignature(ID3DBlob* pBlob);
     void _DeleteInputSignature(const SInputSignature* pSignature);
 
-#ifdef USE_DX11
     CRT* _CreateRT(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount = 1, bool useUAV = false);
-#else
-    CRT* _CreateRT(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount = 1);
-#endif
     void _DeleteRT(const CRT* RT);
 
     SGS* _CreateGS(LPCSTR Name);
@@ -197,7 +193,6 @@ public:
     xr_vector<ITexture*> FindTexture(const char* Name) const override;
 
 private:
-#ifdef USE_DX11
     map_DS m_ds;
     map_HS m_hs;
     map_CS m_cs;
@@ -210,6 +205,4 @@ private:
 
     template <typename T>
     void DestroyShader(const T* sh);
-
-#endif //	USE_DX10
 };

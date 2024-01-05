@@ -72,7 +72,7 @@
       <Optimization>Disabled</Optimization>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\DirectXMesh\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\DirectXMath\DirectXMath\Inc</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_DX11;WIN32;_WINDOWS;_USRDLL;XRENGINE_STATIC;XRCORE_STATIC;XRCDB_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;XRRENDER_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;XRENGINE_STATIC;XRCORE_STATIC;XRCDB_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;XRRENDER_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -99,7 +99,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
-      <PreprocessorDefinitions>USE_DX11;WIN32;_WINDOWS;_USRDLL;XRENGINE_STATIC;XRCORE_STATIC;XRCDB_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;XRRENDER_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;XRENGINE_STATIC;XRCORE_STATIC;XRCDB_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;XRRENDER_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>
       </ExceptionHandling>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -138,7 +138,7 @@
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\DirectXMesh\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\DirectXMath\DirectXMath\Inc</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_DX11;WIN32;NDEBUG;_WINDOWS;_USRDLL;XRENGINE_STATIC;XRCORE_STATIC;XRCDB_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;XRRENDER_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;XRENGINE_STATIC;XRCORE_STATIC;XRCDB_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;XRRENDER_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling />
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -172,7 +172,7 @@
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>./;$(SolutionDir)\3rd_party\Src\d3dx;..\..\xrCore;..\..\Luabind;..\..\LuaJIT\src;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\DirectXMesh\DirectXMesh;$(SolutionDir)\3rd_party\Src\DirectXTex\DirectXTex\DirectXTex;$(SolutionDir)\3rd_party\Src\DirectXMath\DirectXMath\Inc</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_DX11;WIN32;NDEBUG;_WINDOWS;_USRDLL;XRENGINE_STATIC;XRCORE_STATIC;XRCDB_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;XRRENDER_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;XRENGINE_STATIC;XRCORE_STATIC;XRCDB_STATIC;XR_PARTICLES_STATIC;LUABIND_STATIC;XRRENDER_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -333,7 +333,6 @@
     <ClInclude Include="..\xrRender\r__dsgraph_structure.h" />
     <ClInclude Include="..\xrRender\r__dsgraph_types.h" />
     <ClInclude Include="..\xrRender\r__occlusion.h" />
-    <ClInclude Include="..\xrRender\r__pixel_calculator.h" />
     <ClInclude Include="..\xrRender\r__sector.h" />
     <ClInclude Include="..\xrRender\Shader.h" />
     <ClInclude Include="..\xrRender\ShaderResourceTraits.h" />
@@ -512,7 +511,6 @@
     <ClCompile Include="..\xrRender\r__dsgraph_render.cpp" />
     <ClCompile Include="..\xrRender\r__dsgraph_render_lods.cpp" />
     <ClCompile Include="..\xrRender\r__occlusion.cpp" />
-    <ClCompile Include="..\xrRender\r__pixel_calculator.cpp" />
     <ClCompile Include="..\xrRender\r__screenshot.cpp" />
     <ClCompile Include="..\xrRender\r__sector.cpp" />
     <ClCompile Include="..\xrRender\r__sector_traversal.cpp" />

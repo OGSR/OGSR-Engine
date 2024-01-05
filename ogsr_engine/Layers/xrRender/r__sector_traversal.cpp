@@ -135,10 +135,9 @@ void CPortalTraverser::dbg_draw()
     RCache.set_xform_world(Fidentity);
     RCache.set_xform_view(Fidentity);
     RCache.set_xform_project(Fidentity);
-#if defined(USE_DX10) || defined(USE_DX11)
     RCache.set_Shader(dxRenderDeviceRender::Instance().m_WireShader);
     RCache.set_c("tfactor", 1.f, 1.f, 1.f, 1.f);
-#endif
+
     for (u32 s = 0; s < dbg_sectors.size(); s++)
     {
         CSector* S = (CSector*)dbg_sectors[s];

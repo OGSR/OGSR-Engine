@@ -16,9 +16,7 @@
 #include "r_backend_hemi.h"
 #include "r_backend_tree.h"
 
-#ifdef USE_DX11
 #include "..\xrRenderPC_R4\r_backend_lod.h"
-#endif
 
 #include "fvf.h"
 
@@ -57,30 +55,20 @@ struct R_statistics
 class ECORE_API CBackend
 {
 public:
-#if defined(USE_DX10) || defined(USE_DX11)
     enum MaxTextures
     {
         //	Actually these values are 128
         mtMaxPixelShaderTextures = 16,
         mtMaxVertexShaderTextures = 4,
         mtMaxGeometryShaderTextures = 16,
-#ifdef USE_DX11
         mtMaxHullShaderTextures = 16,
         mtMaxDomainShaderTextures = 16,
         mtMaxComputeShaderTextures = 16,
-#endif
     };
     enum
     {
         MaxCBuffers = 14
     };
-#else //	USE_DX10
-    enum MaxTextures
-    {
-        mtMaxPixelShaderTextures = 16,
-        mtMaxVertexShaderTextures = 4,
-    };
-#endif //	USE_DX10
 
 public:
     // Dynamic geometry streams
@@ -92,36 +80,27 @@ public:
     R_xforms xforms;
     R_hemi hemi;
     R_tree tree;
-#ifdef USE_DX11
     R_LOD LOD;
-#endif
 
-#if defined(USE_DX10) || defined(USE_DX11)
     ref_cbuffer m_aVertexConstants[MaxCBuffers];
     ref_cbuffer m_aPixelConstants[MaxCBuffers];
     ref_cbuffer m_aGeometryConstants[MaxCBuffers];
-#ifdef USE_DX11
     ref_cbuffer m_aHullConstants[MaxCBuffers];
     ref_cbuffer m_aDomainConstants[MaxCBuffers];
     ref_cbuffer m_aComputeConstants[MaxCBuffers];
-#endif
     D3D_PRIMITIVE_TOPOLOGY m_PrimitiveTopology;
     ID3DInputLayout* m_pInputLayout;
     DWORD dummy0; //	Padding to avoid warning
     DWORD dummy1; //	Padding to avoid warning
     DWORD dummy2; //	Padding to avoid warning
-#endif
+
 private:
     // Render-targets
     ID3DRenderTargetView* pRT[4];
     ID3DDepthStencilView* pZB;
 
     // Vertices/Indices/etc
-#if defined(USE_DX10) || defined(USE_DX11)
     SDeclaration* decl;
-#else //	USE_DX10
-    IDirect3DVertexDeclaration9* decl;
-#endif //	USE_DX10
     ID3DVertexBuffer* vb;
     ID3DIndexBuffer* ib;
     u32 vb_stride;
@@ -134,26 +113,18 @@ private:
     ID3DState* state;
     ID3DPixelShader* ps;
     ID3DVertexShader* vs;
-#if defined(USE_DX10) || defined(USE_DX11)
     ID3DGeometryShader* gs;
-#ifdef USE_DX11
     ID3D11HullShader* hs;
     ID3D11DomainShader* ds;
     ID3D11ComputeShader* cs;
-#endif
-#endif //	USE_DX10
 
 #ifdef DEBUG
     LPCSTR ps_name;
     LPCSTR vs_name;
-#if defined(USE_DX10) || defined(USE_DX11)
     LPCSTR gs_name;
-#ifdef USE_DX11
     LPCSTR hs_name;
     LPCSTR ds_name;
     LPCSTR cs_name;
-#endif
-#endif //	USE_DX10
 #endif
     u32 stencil_enable;
     u32 stencil_func;
@@ -179,14 +150,10 @@ private:
     CTexture* textures_ps[mtMaxPixelShaderTextures]; // stages
     // CTexture*						textures_vs	[5	];	// dmap + 4 vs
     CTexture* textures_vs[mtMaxVertexShaderTextures]; // 4 vs
-#if defined(USE_DX10) || defined(USE_DX11)
     CTexture* textures_gs[mtMaxGeometryShaderTextures]; // 4 vs
-#ifdef USE_DX11
     CTexture* textures_hs[mtMaxHullShaderTextures]; // 4 vs
     CTexture* textures_ds[mtMaxDomainShaderTextures]; // 4 vs
     CTexture* textures_cs[mtMaxComputeShaderTextures]; // 4 vs
-#endif
-#endif //	USE_DX10
 
     void Invalidate();
 
@@ -221,10 +188,6 @@ public:
             return textures_ps[stage];
         else if (stage < CTexture::rstGeometry)
             return textures_vs[stage - CTexture::rstVertex];
-#ifdef USE_DX10
-        else
-            return textures_gs[stage - CTexture::rstGeometry];
-#elif USE_DX11
         else if (stage < CTexture::rstHull)
             return textures_gs[stage - CTexture::rstGeometry];
         else if (stage < CTexture::rstDomain)
@@ -238,18 +201,9 @@ public:
             VERIFY(!"Invalid texture stage");
             return 0;
         }
-#else //	USE_DX10
-        VERIFY(!"Invalid texture stage");
-        return 0;
-#endif //	USE_DX10
     }
 
-#if defined(USE_DX10) || defined(USE_DX11)
     IC void get_ConstantDirect(const char* n, u32 DataSize, void** pVData, void** pGData, void** pPData);
-#else // USE_DX10
-    IC R_constant_array& get_ConstantCache_Vertex() { return constants.a_vertex; }
-    IC R_constant_array& get_ConstantCache_Pixel() { return constants.a_pixel; }
-#endif //	USE_DX10
 
     // API
     IC void set_xform(u32 ID, const Fmatrix& M);
@@ -280,20 +234,14 @@ public:
     ICF void set_States(ID3DState* _state);
     ICF void set_States(ref_state& _state) { set_States(_state->state); }
 
-#if defined(USE_DX10) || defined(USE_DX11)
     ICF void set_Format(SDeclaration* _decl);
-#else //	USE_DX10
-    ICF void set_Format(IDirect3DVertexDeclaration9* _decl);
-#endif //	USE_DX10
 
     ICF void set_PS(ID3DPixelShader* _ps, LPCSTR _n = 0);
     ICF void set_PS(ref_ps& _ps) { set_PS(_ps->ps, _ps->cName.c_str()); }
 
-#if defined(USE_DX10) || defined(USE_DX11)
     ICF void set_GS(ID3DGeometryShader* _gs, LPCSTR _n = 0);
     ICF void set_GS(ref_gs& _gs) { set_GS(_gs->gs, _gs->cName.c_str()); }
 
-#ifdef USE_DX11
     ICF void set_HS(ID3D11HullShader* _hs, LPCSTR _n = 0);
     ICF void set_HS(ref_hs& _hs) { set_HS(_hs->sh, _hs->cName.c_str()); }
 
@@ -302,26 +250,15 @@ public:
 
     ICF void set_CS(ID3D11ComputeShader* _cs, LPCSTR _n = 0);
     ICF void set_CS(ref_cs& _cs) { set_CS(_cs->sh, _cs->cName.c_str()); }
-#endif
 
-#endif //	USE_DX10
-
-#ifdef USE_DX11
     ICF bool is_TessEnabled();
-#else
-    ICF bool is_TessEnabled() { return false; }
-#endif
 
     ICF void set_VS(ref_vs& _vs);
-#if defined(USE_DX10) || defined(USE_DX11)
     ICF void set_VS(SVS* _vs);
 
 protected: //	In DX10 we need input shader signature which is stored in ref_vs
-#endif //	USE_DX10
     ICF void set_VS(ID3DVertexShader* _vs, LPCSTR _n = 0);
-#if defined(USE_DX10) || defined(USE_DX11)
 public:
-#endif //	USE_DX10
 
     ICF void set_Vertices(ID3DVertexBuffer* _vb, u32 _vb_stride);
     ICF void set_Indices(ID3DIndexBuffer* _ib);
@@ -387,7 +324,6 @@ public:
         if (C)
             constants.seta(C, e, x, y, z, w);
     }
-#if defined(USE_DX10) || defined(USE_DX11)
     ICF void set_c(R_constant* C, float A)
     {
         if (C)
@@ -398,7 +334,6 @@ public:
         if (C)
             constants.set(C, A);
     }
-#endif //	USE_DX10
 
     // constants - LPCSTR (slow)
     ICF void set_c(LPCSTR n, const Fmatrix& A)
@@ -431,7 +366,6 @@ public:
         if (ctable)
             set_ca(&*ctable->get(n), e, x, y, z, w);
     }
-#if defined(USE_DX10) || defined(USE_DX11)
     ICF void set_c(LPCSTR n, float A)
     {
         if (ctable)
@@ -442,7 +376,6 @@ public:
         if (ctable)
             set_c(&*ctable->get(n), A);
     }
-#endif //	USE_DX10
 
     // constants - shared_str (average)
     ICF void set_c(shared_str& n, const Fmatrix& A)
@@ -475,7 +408,6 @@ public:
         if (ctable)
             set_ca(&*ctable->get(n), e, x, y, z, w);
     }
-#if defined(USE_DX10) || defined(USE_DX11)
     ICF void set_c(shared_str& n, float A)
     {
         if (ctable)
@@ -486,7 +418,6 @@ public:
         if (ctable)
             set_c(&*ctable->get(n), A);
     }
-#endif //	USE_DX10
 
     inline void Clear(u32 Count, const D3DRECT* pRects, u32 Flags, u32 Color, float Z, u32 Stencil);
 

@@ -12,16 +12,7 @@ const float PS::fDT_STEP = float(uDT_STEP) / 1000.f;
 static void ApplyTexgen(const Fmatrix& mVP)
 {
     Fmatrix mTexgen;
-
-#if defined(USE_DX10) || defined(USE_DX11)
     Fmatrix mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f};
-#else //	USE_DX10
-    float _w = float(RDEVICE.dwWidth);
-    float _h = float(RDEVICE.dwHeight);
-    float o_w = (.5f / _w);
-    float o_h = (.5f / _h);
-    Fmatrix mTexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f + o_w, 0.5f + o_h, 0.0f, 1.0f};
-#endif //	USE_DX10
 
     mTexgen.mul(mTexelAdjust, mVP);
     RCache.set_c("mVPTexgen", mTexgen);

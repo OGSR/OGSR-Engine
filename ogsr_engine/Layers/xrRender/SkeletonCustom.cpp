@@ -36,9 +36,7 @@ const char* CKinematics::LL_BoneName_dbg(const u16 ID) const
 #ifdef DEBUG
 void CKinematics::DebugRender(Fmatrix& XFORM)
 {
-#if defined(USE_DX10) || defined(USE_DX11)
     RCache.set_Shader(dxRenderDeviceRender::Instance().m_WireShader);
-#endif
 
     CalculateBones();
 

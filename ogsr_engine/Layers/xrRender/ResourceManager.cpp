@@ -33,13 +33,11 @@ IBlender* CResourceManager::_GetBlender(LPCSTR Name)
     map_Blender::iterator I = m_blenders.find(N);
 
 //	TODO: DX10: When all shaders are ready switch to common path
-#if defined(USE_DX10) || defined(USE_DX11)
     if (I == m_blenders.end())
     {
         Msg("DX10: Shader '%s' not found in library.", Name);
         return 0;
     }
-#endif
     if (I == m_blenders.end())
     {
         Debug.fatal(DEBUG_INFO, "Shader '%s' not found in library.", Name);
@@ -223,14 +221,10 @@ Shader* CResourceManager::_cpp_Create(LPCSTR s_shader, LPCSTR s_textures, LPCSTR
 {
     {
         //	TODO: DX10: When all shaders are ready switch to common path
-#if defined(USE_DX10) || defined(USE_DX11)
         IBlender* pBlender = _GetBlender(s_shader ? s_shader : "null");
         if (!pBlender)
             return NULL;
         return _cpp_Create(pBlender, s_shader, s_textures, s_constants, s_matrices);
-#else //	USE_DX10
-        return _cpp_Create(_GetBlender(s_shader ? s_shader : "null"), s_shader, s_textures, s_constants, s_matrices);
-#endif //	USE_DX10
     }
 }
 
@@ -246,7 +240,6 @@ Shader* CResourceManager::Create(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_co
 {
     {
         //	TODO: DX10: When all shaders are ready switch to common path
-#if defined(USE_DX10) || defined(USE_DX11)
         if (_lua_HasShader(s_shader))
             return _lua_Create(s_shader, s_textures);
         else
@@ -265,12 +258,6 @@ Shader* CResourceManager::Create(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_co
                 }
             }
         }
-#else //	USE_DX10
-        if (_lua_HasShader(s_shader))
-            return _lua_Create(s_shader, s_textures);
-        else
-            return _cpp_Create(s_shader, s_textures, s_constants, s_matrices);
-#endif //	USE_DX10
     }
 }
 
@@ -370,27 +357,7 @@ void CResourceManager::_DumpMemoryUsage()
     }
 }
 
-void CResourceManager::Evict()
-{
-    //	TODO: DX10: check if we really need this method
-#if !defined(USE_DX10) && !defined(USE_DX11)
-    CHK_DX(HW.pDevice->EvictManagedResources());
-#endif //	USE_DX10
-}
-/*
-BOOL	CResourceManager::_GetDetailTexture(LPCSTR Name,LPCSTR& T, R_constant_setup* &CS)
-{
-    LPSTR N = LPSTR(Name);
-    map_TD::iterator I = m_td.find	(N);
-    if (I!=m_td.end())
-    {
-        T	= I->second.T;
-        CS	= I->second.cs;
-        return TRUE;
-    } else {
-        return FALSE;
-    }
-}*/
+void CResourceManager::Evict() {}
 
 xr_vector<ITexture*> CResourceManager::FindTexture(const char* Name) const
 {

@@ -14,13 +14,7 @@ void CRenderTarget::RenderScreenQuad(const u32 w, const u32 h, ID3DRenderTargetV
     RCache.set_Stencil(FALSE);
 
     // Half-pixel offset (DX9 only)
-#if defined(USE_DX10) || defined(USE_DX11)
     constexpr Fvector2 p0{0.0f, 0.0f}, p1{1.0f, 1.0f};
-#else
-    Fvector2 p0, p1;
-    p0.set(0.5f / w, 0.5f / h);
-    p1.set((w + 0.5f) / w, (h + 0.5f) / h);
-#endif
 
     FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, Offset);
     pv->set(0, float(h), d_Z, d_W, C, p0.x, p1.y);

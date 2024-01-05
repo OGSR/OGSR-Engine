@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#if defined(USE_DX10) || defined(USE_DX11)
 extern IC u32 GetIndexCount(D3DPRIMITIVETYPE T, u32 iPrimitiveCount);
 
 void CBackend::InitializeDebugDraw()
@@ -14,7 +13,6 @@ void CBackend::DestroyDebugDraw()
     vs_L.destroy();
     vs_TL.destroy();
 }
-#endif
 
 void CBackend::dbg_DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc)
 {

@@ -15,14 +15,9 @@ void dxDebugRender::Render()
         for (auto& [color, vert_vec] : m_line_vertices)
         {
             auto& ind_vec = m_line_indices.at(color);
-
             RCache.set_xform_world(Fidentity);
-
-#if defined(USE_DX10) || defined(USE_DX11)
             RCache.set_Shader(dxRenderDeviceRender::Instance().m_WireShader);
             RCache.set_c("tfactor", float(color_get_R(color)) / 255.f, float(color_get_G(color)) / 255.f, float(color_get_B(color)) / 255.f, float(color_get_A(color)) / 255.f);
-#endif
-
             RCache.dbg_Draw(D3DPT_LINELIST, &vert_vec.front(), static_cast<int>(vert_vec.size()), &ind_vec.front(), static_cast<int>(ind_vec.size() / 2));
         }
 
@@ -48,14 +43,9 @@ void dxDebugRender::Render()
         for (auto& [color, vert_vec] : m_line_vertices_hud)
         {
             auto& ind_vec = m_line_indices_hud.at(color);
-
             RCache.set_xform_world(Fidentity);
-
-#if defined(USE_DX10) || defined(USE_DX11)
             RCache.set_Shader(dxRenderDeviceRender::Instance().m_WireShader);
             RCache.set_c("tfactor", float(color_get_R(color)) / 255.f, float(color_get_G(color)) / 255.f, float(color_get_B(color)) / 255.f, float(color_get_A(color)) / 255.f);
-#endif
-
             RCache.dbg_Draw_Near(D3DPT_LINELIST, &vert_vec.front(), static_cast<int>(vert_vec.size()), &ind_vec.front(), static_cast<int>(ind_vec.size() / 2));
         }
 
@@ -129,18 +119,10 @@ void dxDebugRender::OnFrameEnd() { RCache.OnFrameEnd(); }
 
 void dxDebugRender::SetShader(const debug_shader& shader) { RCache.set_Shader(((dxUIShader*)&*shader)->hShader); }
 
-//void dxDebugRender::CacheSetXformWorld(const Fmatrix& M) { RCache.set_xform_world(M); }
-//
-//void dxDebugRender::CacheSetCullMode(CullMode m) { RCache.set_CullMode(CULL_NONE + m); }
-
 void dxDebugRender::SetAmbient(u32 colour)
 {
-#if defined(USE_DX10) || defined(USE_DX11)
     //	TODO: DX10: Check if need this for DX10
     VERIFY(!"Not implemented for DX10");
-#else //	USE_DX10
-    CHK_DX(HW.pDevice->SetRenderState(D3DRS_AMBIENT, colour));
-#endif //	USE_DX10
 }
 
 void dxDebugRender::SetDebugShader(dbgShaderHandle shdHandle)

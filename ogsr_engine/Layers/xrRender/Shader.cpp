@@ -41,18 +41,14 @@ BOOL SPass::equal(const SPass& other)
         return FALSE;
     if (vs != other.vs)
         return FALSE;
-#if defined(USE_DX10) || defined(USE_DX11)
     if (gs != other.gs)
         return FALSE;
-#ifdef USE_DX11
     if (hs != other.hs)
         return FALSE;
     if (ds != other.ds)
         return FALSE;
     if (cs != other.cs)
         return FALSE;
-#endif
-#endif //	USE_DX10
     if (constants != other.constants)
         return FALSE; // is this nessesary??? (ps+vs already combines)
 

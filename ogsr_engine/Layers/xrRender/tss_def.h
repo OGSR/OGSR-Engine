@@ -44,12 +44,10 @@ public:
     BOOL equal(SimulatorStates& S);
     void clear();
     IDirect3DStateBlock9* record();
-#if defined(USE_DX10) || defined(USE_DX11)
     void UpdateState(dx10State& state) const;
     void UpdateDesc(D3D_RASTERIZER_DESC& desc) const;
     void UpdateDesc(D3D_DEPTH_STENCIL_DESC& desc) const;
     void UpdateDesc(D3D_BLEND_DESC& desc) const;
     void UpdateDesc(D3D_SAMPLER_DESC descArray[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT], bool SamplerUsed[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT], int iBaseSamplerIndex) const;
-#endif //	USE_DX10
 };
 #endif

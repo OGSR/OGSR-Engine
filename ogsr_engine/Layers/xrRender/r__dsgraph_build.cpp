@@ -181,26 +181,15 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
         mapMatrix_T& map = mapMatrixPasses[sh->flags.iPriority / 2][iPass];
 
 #ifdef USE_RESOURCE_DEBUGGER
-#if defined(USE_DX10) || defined(USE_DX11)
         mapMatrixVS::TNode* Nvs = map.insert(pass.vs);
         mapMatrixGS::TNode* Ngs = Nvs->val.insert(pass.gs);
         mapMatrixPS::TNode* Nps = Ngs->val.insert(pass.ps);
-#else //	USE_DX10
-        mapMatrixVS::TNode* Nvs = map.insert(pass.vs);
-        mapMatrixPS::TNode* Nps = Nvs->val.insert(pass.ps);
-#endif //	USE_DX10
 #else
-#if defined(USE_DX10) || defined(USE_DX11)
         mapMatrixVS::TNode* Nvs = map.insert(&*pass.vs);
         mapMatrixGS::TNode* Ngs = Nvs->val.insert(pass.gs->gs);
         mapMatrixPS::TNode* Nps = Ngs->val.insert(pass.ps->ps);
-#else //	USE_DX10
-        mapMatrixVS::TNode* Nvs = map.insert(pass.vs->vs);
-        mapMatrixPS::TNode* Nps = Nvs->val.insert(pass.ps->ps);
-#endif //	USE_DX10
 #endif
 
-#ifdef USE_DX11
 #ifdef USE_RESOURCE_DEBUGGER
         Nps->val.hs = pass.hs;
         Nps->val.ds = pass.ds;
@@ -210,9 +199,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
         Nps->val.ds = pass.ds->sh;
         mapMatrixCS::TNode* Ncs = Nps->val.mapCS.insert(pass.constants._get());
 #endif
-#else
-        mapMatrixCS::TNode* Ncs = Nps->val.insert(pass.constants._get());
-#endif
+
         mapMatrixStates::TNode* Nstate = Ncs->val.insert(pass.state->state);
         mapMatrixTextures::TNode* Ntex = Nstate->val.insert(pass.T._get());
         mapMatrixItems& items = Ntex->val;
@@ -228,37 +215,21 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fve
                 if (SSA > Ncs->val.ssa)
                 {
                     Ncs->val.ssa = SSA;
-#ifdef USE_DX11
                     if (SSA > Nps->val.mapCS.ssa)
                     {
                         Nps->val.mapCS.ssa = SSA;
-#else
-                    if (SSA > Nps->val.ssa)
-                    {
-                        Nps->val.ssa = SSA;
-#endif
-#if defined(USE_DX10) || defined(USE_DX11)
                         if (SSA > Ngs->val.ssa)
                         {
                             Ngs->val.ssa = SSA;
-#endif //	USE_DX10
                             if (SSA > Nvs->val.ssa)
                             {
                                 Nvs->val.ssa = SSA;
-#if defined(USE_DX10) || defined(USE_DX11)
                             }
                         }
                     }
                 }
             }
         }
-#else //	USE_DX10
-                        }
-                    }
-                }
-            }
-        }
-#endif //	USE_DX10
     }
 
 
@@ -355,39 +326,16 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
         SPass& pass = *sh->passes[iPass];
         mapNormal_T& map = mapNormalPasses[sh->flags.iPriority / 2][iPass];
 
-        //#ifdef USE_RESOURCE_DEBUGGER
-        //	mapNormalVS::TNode*			Nvs		= map.insert		(pass.vs);
-        //	mapNormalPS::TNode*			Nps		= Nvs->val.insert	(pass.ps);
-        //#else
-        //#if defined(USE_DX10) || defined(USE_DX11)
-        //	mapNormalVS::TNode*			Nvs		= map.insert		(&*pass.vs);
-        //#else	//	USE_DX10
-        //	mapNormalVS::TNode*			Nvs		= map.insert		(pass.vs->vs);
-        //#endif	//	USE_DX10
-        //	mapNormalPS::TNode*			Nps		= Nvs->val.insert	(pass.ps->ps);
-        //#endif
-
 #ifdef USE_RESOURCE_DEBUGGER
-#if defined(USE_DX10) || defined(USE_DX11)
         mapNormalVS::TNode* Nvs = map.insert(pass.vs);
         mapNormalGS::TNode* Ngs = Nvs->val.insert(pass.gs);
         mapNormalPS::TNode* Nps = Ngs->val.insert(pass.ps);
-#else //	USE_DX10
-        mapNormalVS::TNode* Nvs = map.insert(pass.vs);
-        mapNormalPS::TNode* Nps = Nvs->val.insert(pass.ps);
-#endif //	USE_DX10
 #else // USE_RESOURCE_DEBUGGER
-#if defined(USE_DX10) || defined(USE_DX11)
         mapNormalVS::TNode* Nvs = map.insert(&*pass.vs);
         mapNormalGS::TNode* Ngs = Nvs->val.insert(pass.gs->gs);
         mapNormalPS::TNode* Nps = Ngs->val.insert(pass.ps->ps);
-#else //	USE_DX10
-        mapNormalVS::TNode* Nvs = map.insert(pass.vs->vs);
-        mapNormalPS::TNode* Nps = Nvs->val.insert(pass.ps->ps);
-#endif //	USE_DX10
 #endif // USE_RESOURCE_DEBUGGER
 
-#ifdef USE_DX11
 #ifdef USE_RESOURCE_DEBUGGER
         Nps->val.hs = pass.hs;
         Nps->val.ds = pass.ds;
@@ -397,9 +345,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
         Nps->val.ds = pass.ds->sh;
         mapNormalCS::TNode* Ncs = Nps->val.mapCS.insert(pass.constants._get());
 #endif
-#else
-        mapNormalCS::TNode* Ncs = Nps->val.insert(pass.constants._get());
-#endif
+
         mapNormalStates::TNode* Nstate = Ncs->val.insert(pass.state->state);
         mapNormalTextures::TNode* Ntex = Nstate->val.insert(pass.T._get());
         mapNormalItems& items = Ntex->val;
@@ -415,39 +361,21 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
                 if (SSA > Ncs->val.ssa)
                 {
                     Ncs->val.ssa = SSA;
-#ifdef USE_DX11
                     if (SSA > Nps->val.mapCS.ssa)
                     {
                         Nps->val.mapCS.ssa = SSA;
-#else
-                    if (SSA > Nps->val.ssa)
-                    {
-                        Nps->val.ssa = SSA;
-#endif
-//	if (SSA>Nvs->val.ssa)		{ Nvs->val.ssa = SSA;
-//	} } } } }
-#if defined(USE_DX10) || defined(USE_DX11)
                         if (SSA > Ngs->val.ssa)
                         {
                             Ngs->val.ssa = SSA;
-#endif //	USE_DX10
                             if (SSA > Nvs->val.ssa)
                             {
                                 Nvs->val.ssa = SSA;
-#if defined(USE_DX10) || defined(USE_DX11)
                             }
                         }
                     }
                 }
             }
         }
-#else //	USE_DX10
-                        }
-                    }
-                }
-            }
-        }
-#endif //	USE_DX10
     }
 
 

@@ -52,9 +52,7 @@ public:
 
     // Runtime structures
     xr_vector<R_dsgraph::mapNormalVS::TNode*> nrmVS;
-#if defined(USE_DX10) || defined(USE_DX11)
     xr_vector<R_dsgraph::mapNormalGS::TNode*> nrmGS;
-#endif //	USE_DX10
     xr_vector<R_dsgraph::mapNormalPS::TNode*> nrmPS;
     xr_vector<R_dsgraph::mapNormalCS::TNode*> nrmCS;
     xr_vector<R_dsgraph::mapNormalStates::TNode*> nrmStates;
@@ -62,9 +60,7 @@ public:
     xr_vector<R_dsgraph::mapNormalTextures::TNode*> nrmTexturesTemp;
 
     xr_vector<R_dsgraph::mapMatrixVS::TNode*> matVS;
-#if defined(USE_DX10) || defined(USE_DX11)
     xr_vector<R_dsgraph::mapMatrixGS::TNode*> matGS;
-#endif //	USE_DX10
     xr_vector<R_dsgraph::mapMatrixPS::TNode*> matPS;
     xr_vector<R_dsgraph::mapMatrixCS::TNode*> matCS;
     xr_vector<R_dsgraph::mapMatrixStates::TNode*> matStates;
