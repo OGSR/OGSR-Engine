@@ -456,6 +456,8 @@ CRenderTarget::CRenderTarget()
     s_blur.create(b_blur, "r2\\blur");
     s_dof.create(b_dof, "r2\\dof");
 
+    s_lut.create("ogsr_lut");
+
     // DIRECT (spot)
     D3DFORMAT depth_format = (D3DFORMAT)RImplementation.o.HW_smap_FORMAT;
 

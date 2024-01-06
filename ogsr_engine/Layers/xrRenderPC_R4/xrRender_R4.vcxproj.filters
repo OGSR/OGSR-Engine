@@ -1346,5 +1346,8 @@
     <ClCompile Include="..\xrRenderDX10\imgui_impl_dx11.cpp">
       <Filter>imgui_render</Filter>
     </ClCompile>
+    <ClCompile Include="..\xrRender\rendertarget_phase_lut.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

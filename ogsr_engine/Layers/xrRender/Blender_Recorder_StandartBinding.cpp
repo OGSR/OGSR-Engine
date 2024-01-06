@@ -535,6 +535,11 @@ static class ssfx_wind_anim final : public R_constant_setup
     }
 } ssfx_wind_anim;
 
+static class ssfx_lut final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_lut); }
+} ssfx_lut;
+
 
 // Standart constant-binding
 void CBlender_Compile::SetMapping()
@@ -641,6 +646,7 @@ void CBlender_Compile::SetMapping()
     r_Constant("ssfx_wind_anim", &ssfx_wind_anim);
     r_Constant("ssfx_wsetup_grass", &ssfx_wind_grass);
     r_Constant("ssfx_wsetup_trees", &ssfx_wind_trees);
+    r_Constant("ssfx_lut", &ssfx_lut);
 
     r_Constant("pp_img_corrections", &pp_image_corrections);
     r_Constant("pp_img_cg", &pp_color_grading);

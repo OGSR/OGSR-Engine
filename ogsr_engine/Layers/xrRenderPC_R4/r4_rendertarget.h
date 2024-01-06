@@ -194,6 +194,7 @@ private:
     ref_shader s_dof;
 
     ref_shader s_rain_drops;
+    ref_shader s_lut;
 
 public:
     ref_shader s_postprocess;
@@ -270,6 +271,7 @@ public:
     void shadow_direct(light* L, u32 dls_phase);
     void phase_blur();
     void phase_dof();
+    void phase_lut();
 
     //	Generates min/max sm
     void create_minmax_SM();

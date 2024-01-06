@@ -220,6 +220,7 @@ Fvector3 ps_ssfx_int_grass_params_1{2.0f, 1.0f, 1.0f};
 Fvector4 ps_ssfx_int_grass_params_2{1.0f, 5.0f, 1.0f, 1.0f};
 float ps_ssfx_wpn_dof_2 = 0.5f;
 
+Fvector4 ps_ssfx_lut{}; //x - интенсивность, y - номер эффекта
 //	x - min (0), y - focus (1.4), z - max (100)
 Fvector3 ps_r2_dof = Fvector3().set(-1.25f, 1.4f, 600.f);
 float ps_r2_dof_sky = 30; //	distance to sky
@@ -774,6 +775,7 @@ void xrRender_initconsole()
     CMD4(CCC_Vector4, "ssfx_wind_trees", &ps_ssfx_wind_trees, (Fvector4{}), (Fvector4{20.0f, 5.0f, 5.0f, 1.0f}));
     CMD4(CCC_Integer, "ssfx_wind_bugged_trees_enable", &ps_ssfx_wind_bugged_flora_enable, 0, 1);
 
+    CMD4(CCC_Vector4, "ssfx_lut", &ps_ssfx_lut, (Fvector4{}), (Fvector4{100.f, 100.f, 100.f, 100.f}));
     CMD4(CCC_Vector4, "ssfx_florafixes_1", &ps_ssfx_florafixes_1, (Fvector4{}), (Fvector4{1.0f, 1.0f, 1.0f, 1.0f}));
     CMD4(CCC_Vector4, "ssfx_florafixes_2", &ps_ssfx_florafixes_2, (Fvector4{}), (Fvector4{10.0f, 1.0f, 1.0f, 1.0f}));
     

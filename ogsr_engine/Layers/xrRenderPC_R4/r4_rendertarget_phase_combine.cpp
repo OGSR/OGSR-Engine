@@ -357,8 +357,8 @@ void CRenderTarget::phase_combine()
     {
         // Compute blur textures
         phase_blur();
-
         phase_dof();
+        phase_lut();	
 
         // Rain droplets on screen
         if (ps_r2_ls_flags_ext.test(R2FLAGEXT_RAIN_DROPS))
