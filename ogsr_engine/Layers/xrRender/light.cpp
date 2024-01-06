@@ -332,7 +332,7 @@ void light::export_to(light_Package& package)
                 L->set_shadow(true);
                 L->set_position(position);
                 L->set_rotation(cmDir[f], R);
-                L->set_cone(PI_DIV_2);
+                L->set_cone(PI_DIV_2 + 0.5f); // Add some extra angle to avoid problems with the shadow map frustum.
                 L->set_range(range);
                 // надо еще экспортировать
                 L->set_virtual_size(virtual_size);
