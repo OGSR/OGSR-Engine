@@ -67,11 +67,13 @@ void CLight_Compute_XFORM_and_VIS::compute_xf_spot(light* L)
     float factor = ps_r2_ls_squality * factor0 * factor1 * factor2 * factor3 * factor4;
 
     // final size calc
+    const u32 ssfx_smap_min{static_cast<u32>(ps_ssfx_shadows.x)}, ssfx_smap_max{static_cast<u32>(ps_ssfx_shadows.y)};
+    u32 max_size = RImplementation.o.smapsize <= ssfx_smap_max ? RImplementation.o.smapsize : ssfx_smap_max;
     u32 _size = iFloor(factor * SMAP_adapt_optimal);
-    if (_size < SMAP_adapt_min)
-        _size = SMAP_adapt_min;
-    if (_size > SMAP_adapt_max)
-        _size = SMAP_adapt_max;
+    if (_size < ssfx_smap_min)
+        _size = ssfx_smap_min;
+    if (_size > max_size)
+        _size = max_size;
     int _epsilon = iCeil(float(_size) * 0.01f);
     int _diff = _abs(int(_size) - int(_cached_size));
     L->X.S.size = (_diff >= _epsilon) ? _size : _cached_size;

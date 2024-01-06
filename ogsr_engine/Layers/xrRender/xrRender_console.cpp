@@ -156,8 +156,10 @@ int ps_r2_GI_photons = 16; // 8..64
 float ps_r2_GI_clip = EPS_L; // EPS
 float ps_r2_GI_refl = .9f; // .9f
 float ps_r2_ls_depth_scale = 1.00001f; // 1.00001f
-float ps_r2_ls_depth_bias = -0.0003f; // -0.0001f
-float ps_r2_ls_squality = 1.0f; // 1.00f
+
+float ps_r2_ls_depth_bias = -0.00005f; // SSS19 Edited
+float ps_r2_ls_squality = 1.0f; // Base shadow map quality. The higher the value the higher the base shadow resolution and resolution through distance.
+
 float ps_r2_sun_tsm_projection = 0.3f; // 0.18f
 float ps_r2_sun_tsm_bias = -0.01f; //
 float ps_r2_sun_near = 20.f; // 12.0f
@@ -221,6 +223,7 @@ Fvector4 ps_ssfx_int_grass_params_2{1.0f, 5.0f, 1.0f, 1.0f};
 float ps_ssfx_wpn_dof_2 = 0.5f;
 
 Fvector4 ps_ssfx_lut{}; //x - интенсивность, y - номер эффекта
+Fvector3 ps_ssfx_shadows{256.f, 1536.f, 0.0f}; // x - Minimum shadow map resolution. When lights are away from the player the resolution of shadows drop to improve performance ( at the cost of image quality ), y - Maximum shadow map resolution. When lights are closer, the resolution increases to improve the image quality of shadows ( at the cost of performance ).
 //	x - min (0), y - focus (1.4), z - max (100)
 Fvector3 ps_r2_dof = Fvector3().set(-1.25f, 1.4f, 600.f);
 float ps_r2_dof_sky = 30; //	distance to sky
@@ -620,7 +623,7 @@ void xrRender_initconsole()
     CMD4(CCC_Float, "r2_ls_dsm_kernel", &ps_r2_ls_dsm_kernel, .1f, 3.f);
     CMD4(CCC_Float, "r2_ls_psm_kernel", &ps_r2_ls_psm_kernel, .1f, 3.f);
     CMD4(CCC_Float, "r2_ls_ssm_kernel", &ps_r2_ls_ssm_kernel, .1f, 3.f);
-    CMD4(CCC_Float, "r2_ls_squality", &ps_r2_ls_squality, .5f, 1.f);
+    CMD4(CCC_Float, "r2_ls_squality", &ps_r2_ls_squality, .5f, 3.f);
 
     CMD3(CCC_Mask, "r2_zfill", &ps_r2_ls_flags, R2FLAG_ZFILL);
     CMD4(CCC_Float, "r2_zfill_depth", &ps_r2_zfill, .001f, .5f);
@@ -776,6 +779,7 @@ void xrRender_initconsole()
     CMD4(CCC_Integer, "ssfx_wind_bugged_trees_enable", &ps_ssfx_wind_bugged_flora_enable, 0, 1);
 
     CMD4(CCC_Vector4, "ssfx_lut", &ps_ssfx_lut, (Fvector4{}), (Fvector4{100.f, 100.f, 100.f, 100.f}));
+    CMD4(CCC_Vector3, "ssfx_shadows", &ps_ssfx_shadows, (Fvector3{128.f, 1536.f, 0.f}), (Fvector3{1536.f, 4096.f, 0.f}));
     CMD4(CCC_Vector4, "ssfx_florafixes_1", &ps_ssfx_florafixes_1, (Fvector4{}), (Fvector4{1.0f, 1.0f, 1.0f, 1.0f}));
     CMD4(CCC_Vector4, "ssfx_florafixes_2", &ps_ssfx_florafixes_2, (Fvector4{}), (Fvector4{10.0f, 1.0f, 1.0f, 1.0f}));
     
