@@ -219,9 +219,6 @@ void dxRainRender::Calculate(CEffect_Rain& owner)
         // Wind velocity [ 0 ~ 1 ]
         float _Wind_Velocity = Wind_Velocity + Wind_Gust;
 
-        if (ps_ssfx_wind.x > 0) // Debug
-            _Wind_Velocity = ps_ssfx_wind.x;
-
         clamp(_Wind_Velocity, 0.0f, 1.0f);
 
         // Wind velocity controles the angle

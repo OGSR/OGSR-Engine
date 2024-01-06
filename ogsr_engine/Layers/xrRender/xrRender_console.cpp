@@ -185,9 +185,9 @@ float ps_r2_lt_smooth = 1.f; // 1.f
 float ps_r2_slight_fade = 2.0f; // 1.f
 
 // Screen Space Shaders Stuff
-#pragma todo("Убрать в релизе эту команду? Используется только для отладки и экспериментов")
-Fvector4 ps_ssfx_wind{0.0f, 0.0f, 0.0f, 0.0f}; // DBG: X: Intensity Y: North Dir - Z: South Dir, W: enable for bugged trees
-Fvector4 ps_ssfx_wind_gust{1.0f, 0.0f, 0.0f, 0.0f}; // X: Intensity
+Fvector4 ps_ssfx_wind_grass{9.5f, 1.4f, 1.5f, 0.4f}; // Anim Speed, Turbulence, Push, Wave
+Fvector4 ps_ssfx_wind_trees{11.0f, 0.15f, 0.5f, 0.1f}; // Branches Speed, Trunk Speed, Bending, Min Wind Speed
+int ps_ssfx_wind_bugged_flora_enable{1}; //Включать ли ветер на багованых елках, камышах олд тч-стайл. Оставлено как костыль для OGSR GA потому что там локи уже правиться не будут, а в новых модах лучше править саму флору, и не использовать этот костыль.
 
 Fvector4 ps_ssfx_florafixes_1{0.3f, 0.21f, 0.3f, 0.21f}; // Specular value when the grass is dry, Specular value when the grass is wet, Specular when trees and bushes are dry, Specular when trees and bushes are wet
 Fvector4 ps_ssfx_florafixes_2{2.0f, 1.0f, 0.0f, 0.0f}; // Intensity of the flora SubSurface Scattering, How much sun color is added to the flora SubSurface Scattering (1.0 is 100% sun color)
@@ -770,8 +770,9 @@ void xrRender_initconsole()
     CMD1(CCC_VideoMemoryStats, "video_memory_stats");
 
     // Screen Space Shaders
-    CMD4(CCC_Vector4, "ssfx_wind", &ps_ssfx_wind, (Fvector4{0.0f, -1.0f, -1.0f, 0.0f}), (Fvector4{1.0f, 1.0f, 1.0f, 1.0f}));
-    CMD4(CCC_Vector4, "ssfx_wind_gust", &ps_ssfx_wind_gust, (Fvector4{0.0f, 0.0f, 0.0f, 0.0f}), (Fvector4{10.0f, 10.0f, 10.0f, 10.0f}));
+    CMD4(CCC_Vector4, "ssfx_wind_grass", &ps_ssfx_wind_grass, (Fvector4{}), (Fvector4{20.0f, 5.0f, 5.0f, 5.0f}));
+    CMD4(CCC_Vector4, "ssfx_wind_trees", &ps_ssfx_wind_trees, (Fvector4{}), (Fvector4{20.0f, 5.0f, 5.0f, 1.0f}));
+    CMD4(CCC_Integer, "ssfx_wind_bugged_trees_enable", &ps_ssfx_wind_bugged_flora_enable, 0, 1);
 
     CMD4(CCC_Vector4, "ssfx_florafixes_1", &ps_ssfx_florafixes_1, (Fvector4{}), (Fvector4{1.0f, 1.0f, 1.0f, 1.0f}));
     CMD4(CCC_Vector4, "ssfx_florafixes_2", &ps_ssfx_florafixes_2, (Fvector4{}), (Fvector4{10.0f, 1.0f, 1.0f, 1.0f}));

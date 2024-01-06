@@ -132,12 +132,15 @@ void FTreeVisual::Render(float LOD)
     }
 
     bool is_bugged_flora{};
-    if (const R_constant* C = &*RCache.get_c(CRender::c_sbase))
+    if (!ps_ssfx_wind_bugged_flora_enable)
     {
-        if (const CTexture* T = RCache.get_ActiveTexture(u32(C->samp.index)))
+        if (const R_constant* C = &*RCache.get_c(CRender::c_sbase))
         {
-            const char* tex = T->cName.c_str();
-            is_bugged_flora = ps_ssfx_wind.w == 0.f && (strstr(tex, "trees\\trees_elka") || strstr(tex, "trees\\trees_kamysh"));
+            if (const CTexture* T = RCache.get_ActiveTexture(u32(C->samp.index)))
+            {
+                const char* tex = T->cName.c_str();
+                is_bugged_flora = (strstr(tex, "trees\\trees_elka") || strstr(tex, "trees\\trees_kamysh"));
+            }
         }
     }
     RCache.set_c("is_bugged_flora", static_cast<float>(is_bugged_flora));

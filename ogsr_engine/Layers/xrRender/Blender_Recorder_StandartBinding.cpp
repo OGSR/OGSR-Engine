@@ -516,15 +516,15 @@ static class cl_wind_params final : public R_constant_setup
     }
 } binder_wind_params;
 
-static class ssfx_wind final : public R_constant_setup
+static class ssfx_wind_grass final : public R_constant_setup
 {
-    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_wind); }
-} ssfx_wind;
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_wind_grass); }
+} ssfx_wind_grass;
 
-static class ssfx_wind_gust final : public R_constant_setup
+static class ssfx_wind_trees final : public R_constant_setup
 {
-    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_wind_gust); }
-} ssfx_wind_gust;
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_wind_trees); }
+} ssfx_wind_trees;
 
 static class ssfx_wind_anim final : public R_constant_setup
 {
@@ -639,8 +639,8 @@ void CBlender_Compile::SetMapping()
     r_Constant("ssfx_florafixes_2", &ssfx_florafixes_2);
     r_Constant("wind_params", &binder_wind_params);
     r_Constant("ssfx_wind_anim", &ssfx_wind_anim);
-    r_Constant("ssfx_wind", &ssfx_wind);
-    r_Constant("ssfx_wind_gust", &ssfx_wind_gust);
+    r_Constant("ssfx_wsetup_grass", &ssfx_wind_grass);
+    r_Constant("ssfx_wsetup_trees", &ssfx_wind_trees);
 
     r_Constant("pp_img_corrections", &pp_image_corrections);
     r_Constant("pp_img_cg", &pp_color_grading);
