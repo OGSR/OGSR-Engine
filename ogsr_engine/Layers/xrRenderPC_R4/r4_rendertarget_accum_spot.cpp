@@ -397,7 +397,7 @@ void CRenderTarget::accum_volumetric(light* L)
         ClipFrustum.CreateFromMatrix(mFrustumSrc, FRUSTUM_P_ALL);
         //	Adjust frustum far plane
         //	4 - far, 5 - near
-        ClipFrustum.planes[4].d -= (ClipFrustum.planes[4].d + ClipFrustum.planes[5].d) * (1 - L->m_volumetric_distance);
+        ClipFrustum.planes[4].d -= (ClipFrustum.planes[4].d + ClipFrustum.planes[5].d) * (1 - std::min(L->m_volumetric_distance, ps_ssfx_volumetric_limits.x));
     }
 
     //	Calculate camera space AABB
@@ -421,12 +421,11 @@ void CRenderTarget::accum_volumetric(light* L)
     //	Adjust AABB according to the adjusted distance for the light volume
     Fbox aabb;
 
-    // float	scaledRadius = L->spatial.sphere.R * (1+L->m_volumetric_distance)*0.5f;
-    float scaledRadius = L->spatial.sphere.R * L->m_volumetric_distance;
+    float scaledRadius = L->spatial.sphere.R * std::min(L->m_volumetric_distance, ps_ssfx_volumetric_limits.x);
     Fvector rr = Fvector().set(scaledRadius, scaledRadius, scaledRadius);
     Fvector pt = L->spatial.sphere.P;
     pt.sub(L->position);
-    pt.mul(L->m_volumetric_distance);
+    pt.mul(std::min(L->m_volumetric_distance, ps_ssfx_volumetric_limits.x));
     pt.add(L->position);
     //	Don't adjust AABB
     // float	scaledRadius = L->spatial.sphere.R;
@@ -450,17 +449,32 @@ void CRenderTarget::accum_volumetric(light* L)
         }
     */
     // Common constants
-    float fQuality = L->m_volumetric_quality;
-    int iNumSlises = (int)(VOLUMETRIC_SLICES * fQuality);
-    //			min 10 surfaces
-    iNumSlises = _max(10, iNumSlises);
+    float fQuality{};
+    int iNumSlices{};
+    if (!ps_ssfx_use_new_volumetric_method)
+    {
+        // Vanilla Method
+        fQuality = L->m_volumetric_quality;
+        iNumSlices = static_cast<int>(static_cast<float>(VOLUMETRIC_SLICES) * fQuality);
+        //min 10 surfaces
+        iNumSlices = std::max(10, iNumSlices);
+    }
+    else
+    {
+        // SSS Method
+        fQuality = std::min(L->m_volumetric_quality, ps_ssfx_volumetric_limits.z);
+        iNumSlices = static_cast<int>(24.f * fQuality);
+        if (L->flags.type == IRender_Light::OMNIPART)
+            iNumSlices = static_cast<int>(16.f * fQuality);
+    }
+    
     //	Adjust slice intensity
-    fQuality = ((float)iNumSlises) / VOLUMETRIC_SLICES;
+    fQuality = static_cast<float>(iNumSlices) / static_cast<float>(VOLUMETRIC_SLICES);
     Fvector L_dir, L_clr, L_pos;
     float L_spec;
     L_clr.set(L->color.r, L->color.g, L->color.b);
-    L_clr.mul(L->m_volumetric_intensity);
-    L_clr.mul(L->m_volumetric_distance);
+    L_clr.mul(std::min(L->m_volumetric_intensity, ps_ssfx_volumetric_limits.y));
+    L_clr.mul(std::min(L->m_volumetric_distance, ps_ssfx_volumetric_limits.x));
     L_clr.mul(1 / fQuality);
     L_clr.mul(L->get_LOD());
     L_spec = u_diffuse2s(L_clr);
@@ -517,7 +531,7 @@ void CRenderTarget::accum_volumetric(light* L)
         RCache.set_Element(shader->E[0]);
 
         // Constants
-        float att_R = L->m_volumetric_distance * L->range * .95f;
+        float att_R = std::min(L->m_volumetric_distance, ps_ssfx_volumetric_limits.x) * L->range * .95f;
         float att_factor = 1.f / (att_R * att_R);
         RCache.set_c("Ldynamic_pos", L_pos.x, L_pos.y, L_pos.z, att_factor);
         RCache.set_c("Ldynamic_color", L_clr.x, L_clr.y, L_clr.z, L_spec);

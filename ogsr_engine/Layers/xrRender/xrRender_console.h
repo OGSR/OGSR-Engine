@@ -167,6 +167,8 @@ extern int ps_ssfx_is_underground, ps_ssfx_gloss_method;
 extern Fvector4 ps_ssfx_lut;
 extern Fvector3 ps_ssfx_shadows;
 extern Fvector3 ps_ssfx_shadow_bias;
+extern Fvector3 ps_ssfx_volumetric_limits;
+extern int ps_ssfx_use_new_volumetric_method;
 
 // textures
 extern ECORE_API int psTextureLOD;

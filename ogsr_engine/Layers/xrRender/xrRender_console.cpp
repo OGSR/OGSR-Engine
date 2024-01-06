@@ -226,6 +226,9 @@ Fvector4 ps_ssfx_lut{}; //x - интенсивность, y - номер эфф�
 Fvector3 ps_ssfx_shadows{256.f, 1536.f, 0.0f}; // x - Minimum shadow map resolution. When lights are away from the player the resolution of shadows drop to improve performance ( at the cost of image quality ), y - Maximum shadow map resolution. When lights are closer, the resolution increases to improve the image quality of shadows ( at the cost of performance ).
 Fvector3 ps_ssfx_shadow_bias{0.4f, 0.03f, 0.0f};
 
+Fvector3 ps_ssfx_volumetric_limits{100.f, 1.0f, 5.f}; //{1.f, 0.1f, 1.5f} //Ограничения для настроек объемного света. Настройки источников света будут ограничиваться сверху до этих значений. volumetric_distance, volumetric_intensity, volumetric_quality.
+int ps_ssfx_use_new_volumetric_method{0};
+
 //	x - min (0), y - focus (1.4), z - max (100)
 Fvector3 ps_r2_dof = Fvector3().set(-1.25f, 1.4f, 600.f);
 float ps_r2_dof_sky = 30; //	distance to sky
@@ -783,6 +786,9 @@ void xrRender_initconsole()
     CMD4(CCC_Vector4, "ssfx_lut", &ps_ssfx_lut, (Fvector4{}), (Fvector4{100.f, 100.f, 100.f, 100.f}));
     CMD4(CCC_Vector3, "ssfx_shadows", &ps_ssfx_shadows, (Fvector3{128.f, 1536.f, 0.f}), (Fvector3{1536.f, 4096.f, 0.f}));
     CMD4(CCC_Vector3, "ssfx_shadow_bias", &ps_ssfx_shadow_bias, (Fvector3{}), (Fvector3{1.0f, 1.0f, 1.0f}));
+    CMD4(CCC_Vector3, "ssfx_volumetric_limits", &ps_ssfx_volumetric_limits, (Fvector3{0.f, 0.f, 1.0f}), (Fvector3{100.0f, 1.0f, 5.0f}));
+    CMD4(CCC_Integer, "ssfx_use_new_volumetric_method", &ps_ssfx_use_new_volumetric_method, 0, 1);
+    
     CMD4(CCC_Vector4, "ssfx_florafixes_1", &ps_ssfx_florafixes_1, (Fvector4{}), (Fvector4{1.0f, 1.0f, 1.0f, 1.0f}));
     CMD4(CCC_Vector4, "ssfx_florafixes_2", &ps_ssfx_florafixes_2, (Fvector4{}), (Fvector4{10.0f, 1.0f, 1.0f, 1.0f}));
     
