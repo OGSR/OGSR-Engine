@@ -540,6 +540,11 @@ static class ssfx_lut final : public R_constant_setup
     void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_lut); }
 } ssfx_lut;
 
+static class ssfx_shadow_bias final : public R_constant_setup
+{
+    void setup(R_constant* C) override { RCache.set_c(C, ps_ssfx_shadow_bias.x, ps_ssfx_shadow_bias.y, 0.f, 0.f); }
+} ssfx_shadow_bias;
+
 
 // Standart constant-binding
 void CBlender_Compile::SetMapping()
@@ -647,6 +652,7 @@ void CBlender_Compile::SetMapping()
     r_Constant("ssfx_wsetup_grass", &ssfx_wind_grass);
     r_Constant("ssfx_wsetup_trees", &ssfx_wind_trees);
     r_Constant("ssfx_lut", &ssfx_lut);
+    r_Constant("ssfx_shadow_bias", &ssfx_shadow_bias);
 
     r_Constant("pp_img_corrections", &pp_image_corrections);
     r_Constant("pp_img_cg", &pp_color_grading);
