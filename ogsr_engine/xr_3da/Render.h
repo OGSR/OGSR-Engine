@@ -45,6 +45,7 @@ public:
 
 public:
     virtual void set_type(LT type) = 0;
+    virtual u32 get_type() const = 0;
     virtual void set_active(bool) = 0;
     virtual bool get_active() = 0;
     virtual void set_shadow(bool) = 0;

@@ -106,6 +106,7 @@ public:
 
 public:
     virtual void set_type(LT type) { flags.type = type; }
+    virtual u32 get_type() const override { return flags.type; }
     virtual void set_active(bool b);
     virtual bool get_active() { return flags.bActive; }
     virtual void set_shadow(bool b) { flags.bShadow = b; }
