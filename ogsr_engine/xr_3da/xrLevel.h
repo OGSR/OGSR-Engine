@@ -1,6 +1,3 @@
-#ifndef xrLevelH
-#define xrLevelH
-
 #pragma once
 
 struct xrGUID
@@ -74,7 +71,6 @@ struct hdrNODES
 #pragma pack(pop)
 
 #pragma pack(push, 1)
-#pragma pack(1)
 class NodePosition
 {
     u8 data[5];
@@ -197,5 +193,3 @@ const u32 CFORM_CURRENT_VERSION = 4;
 const u32 MAX_NODE_BIT_COUNT = 23;
 
 const u32 XRAI_CURRENT_VERSION = 8;
-
-#endif // xrLevelH
