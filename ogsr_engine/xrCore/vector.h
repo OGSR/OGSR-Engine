@@ -78,14 +78,14 @@ constexpr float snapto(float value, float snap) noexcept
     return float(iFloor((value + (snap * 0.5f)) / snap)) * snap;
 };
 
+#include "_random.h"
+
 // pre-definitions
 template <class T>
 struct _quaternion;
 
 #pragma pack(push)
 #pragma pack(1)
-
-#include "_random.h"
 
 #include "_color.h"
 #include "_vector3d.h"
@@ -100,7 +100,6 @@ struct _quaternion;
 #include "_obb.h"
 #include "_sphere.h"
 #include "_cylinder.h"
-#include "_random.h"
 #include "_compressed_normal.h"
 #include "_plane.h"
 #include "_plane2.h"
