@@ -109,7 +109,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;4324;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -170,7 +170,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;4324;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;</DisableSpecificWarnings>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <ResourceCompile>
@@ -235,7 +235,7 @@
       <CompileAsManaged>
       </CompileAsManaged>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;4324;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -295,7 +295,7 @@
       <CompileAsManaged>
       </CompileAsManaged>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;4324;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;</DisableSpecificWarnings>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <ResourceCompile>

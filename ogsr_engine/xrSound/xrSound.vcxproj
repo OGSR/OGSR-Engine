@@ -98,7 +98,7 @@
       <AdditionalIncludeDirectories>..\..\3rd_party\Src\OpenAL_Soft\include\AL;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;4324;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;</DisableSpecificWarnings>
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
@@ -147,7 +147,7 @@
       <AdditionalIncludeDirectories>..\..\3rd_party\Src\OpenAL_Soft\include\AL;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;4324;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;</DisableSpecificWarnings>
       <CompileAs>Default</CompileAs>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
@@ -198,7 +198,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>..\..\3rd_party\Src\OpenAL_Soft\include\AL;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;4324;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <AdditionalDependencies>OpenAL32.lib;libvorbis_static.lib;libvorbisfile_static.lib;libogg_static.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -243,7 +243,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>..\..\3rd_party\Src\OpenAL_Soft\include\AL;..\..\3rd_party\Src\eax\Include;..\..\3rd_party\Src\Xiph\libogg\include;..\..\3rd_party\Src\Xiph\libvorbis\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;4324;</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4456;4457;4458;4995;4577;4267;</DisableSpecificWarnings>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <Link>
