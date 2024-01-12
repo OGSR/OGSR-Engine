@@ -73,7 +73,8 @@ public:
     {
         if (--m_refCount == 0)
         {
-            Memory.mem_free(this);
+            auto ptr = this;
+            xr_delete(ptr);
         }
     }
 
