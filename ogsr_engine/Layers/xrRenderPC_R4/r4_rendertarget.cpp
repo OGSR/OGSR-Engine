@@ -1037,6 +1037,9 @@ CRenderTarget::~CRenderTarget()
 
     if (RImplementation.o.dx10_msaa)
     {
+        xr_delete(b_bloom_msaa);
+        xr_delete(b_postprocess_msaa);
+
         int bound = RImplementation.o.dx10_msaa_samples;
 
         if (RImplementation.o.dx10_msaa_opt)
