@@ -26,7 +26,7 @@
 // NOTE_4: The rotation sequence is ZXY
 
 template <class T>
-struct alignas(16) _matrix
+struct _matrix
 {
 public:
     typedef T TYPE;
@@ -909,6 +909,7 @@ public:
 };
 
 typedef _matrix<float> Fmatrix;
+static_assert(sizeof(Fmatrix) == 64);
 
 template <class T>
 BOOL _valid(const _matrix<T>& m)
