@@ -73,4 +73,4 @@ void CSE_Motion::motion_read(NET_Packet& tNetPacket) { tNetPacket.r_stringZ(moti
 
 void CSE_Motion::motion_write(NET_Packet& tNetPacket) { tNetPacket.w_stringZ(motion_name); }
 
-#pragma pack(pop, 4)
+#pragma pack(pop)
