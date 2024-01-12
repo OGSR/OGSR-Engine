@@ -188,8 +188,8 @@ void CRT::destroy()
 {
     if (pTexture._get())
     {
-        pTexture->surface_set(0);
-        pTexture = NULL;
+        pTexture.destroy();
+        pTexture = nullptr;	
     }
     _RELEASE(pRT);
     _RELEASE(pZRT);
