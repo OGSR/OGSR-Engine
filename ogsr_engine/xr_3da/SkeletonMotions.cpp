@@ -91,7 +91,7 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
                 MP->r_stringZ(buf, sizeof(buf));
                 u16 m_idx = u16(MP->r_u32());
                 *b_it = find_bone_id(bones, buf);
-                ASSERT_FMT_DBG(*b_it != BI_NONE, "!![%s] Can't find bone: [%s]", __FUNCTION__, buf);
+                ASSERT_FMT_DBG(*b_it != BI_NONE, "!![%s][%s] Can't find bone: [%s]", __FUNCTION__, N, buf);
                 if (bRes)
                     rm_bones[m_idx] = u16(*b_it);
             }
@@ -145,7 +145,7 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
 
     u32 dwCNT = 0;
     MS->r_chunk_safe(0, &dwCNT, sizeof(dwCNT));
-    ASSERT_FMT_DBG(dwCNT < 0x3FFF, "!![%s] dwCNT is [%u]", __FUNCTION__, dwCNT); // MotionID 2 bit - slot, 14 bit - motion index
+    ASSERT_FMT_DBG(dwCNT < 0x3FFF, "!![%s][%s] dwCNT is [%u]", __FUNCTION__, N, dwCNT); // MotionID 2 bit - slot, 14 bit - motion index
 
     m_motions.reserve(bones->size());
 
@@ -163,14 +163,14 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
         // sanity check
         xr_strlwr(mname);
         auto I = m_motion_map.find(mname);
-        ASSERT_FMT_DBG(I != m_motion_map.end(), "!![%s] Can't find motion: [%s]", __FUNCTION__, mname);
-        ASSERT_FMT_DBG(I->second == m_idx, "!![%s] Invalid motion index: [%s]", __FUNCTION__, mname);
+        ASSERT_FMT_DBG(I != m_motion_map.end(), "!![%s][%s] Can't find motion: [%s]", __FUNCTION__, N, mname);
+        ASSERT_FMT_DBG(I->second == m_idx, "!![%s][%s] Invalid motion index: [%s]", __FUNCTION__, N, mname);
 
         u32 dwLen = MS->r_u32();
         for (u32 i = 0; i < bones->size(); i++)
         {
             u16 bone_id = rm_bones[i];
-            ASSERT_FMT_DBG(bone_id != BI_NONE, "!![%s] Invalid remap index!", __FUNCTION__);
+            ASSERT_FMT(bone_id != BI_NONE, "!![%s][%s] Invalid remap index!", __FUNCTION__, N);
             CMotion& M = m_motions[bones->at(bone_id)->name][m_idx];
             M.set_count(dwLen);
             M.set_flags(MS->r_u8());
