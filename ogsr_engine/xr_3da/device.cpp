@@ -10,6 +10,7 @@
 
 #include "imgui.h"
 #include "..\Layers\xrRenderDX10\imgui_impl_dx11.h"
+#include <winternl.h>
 
 ENGINE_API CRenderDevice Device;
 ENGINE_API CLoadScreenRenderer load_screen_renderer;
@@ -266,10 +267,31 @@ void CRenderDevice::second_thread()
     SecondThreadTasksElapsedTime = SecondThreadTasksEndTime - SecondThreadTasksStartTime;
 }
 
+static void LogOsVersion()
+{
+    static auto RtlGetVersion = reinterpret_cast<NTSTATUS(WINAPI*)(LPOSVERSIONINFOEXW)>(GetProcAddress(GetModuleHandle("ntdll"), "RtlGetVersion"));
+
+    if (RtlGetVersion)
+    {
+        OSVERSIONINFOEXW osInfo{};
+        osInfo.dwOSVersionInfoSize = sizeof(osInfo);
+
+        if (NT_SUCCESS(RtlGetVersion(&osInfo)))
+        {
+            Msg("--OS Version major: [%d] minor: [%d], build: [%d]. Server OS: [%s]", osInfo.dwMajorVersion, osInfo.dwMinorVersion, osInfo.dwBuildNumber,
+                osInfo.wProductType != VER_NT_WORKSTATION ? "yes" : "no");
+            return;
+        }
+    }
+    Msg("!![%s] Can't get RtlGetVersion", __FUNCTION__);
+}
+
 void CRenderDevice::Run()
 {
     //	DUMP_PHASE;
     g_bLoaded = FALSE;
+
+    LogOsVersion();
 
     Log("Starting engine...");
     set_current_thread_name("X-RAY Primary thread");
