@@ -44,7 +44,7 @@ dx10SamplerStateCache::SHandle dx10SamplerStateCache::GetState(D3D_SAMPLER_DESC&
     return hResult;
 }
 
-void dx10SamplerStateCache::CreateState(StateDecs desc, IDeviceState** ppIState) { CHK_DX(HW.pDevice->CreateSamplerState(&desc, ppIState)); }
+void dx10SamplerStateCache::CreateState(StateDecs desc, IDeviceState** ppIState) { R_CHK(HW.pDevice->CreateSamplerState(&desc, ppIState)); }
 
 dx10SamplerStateCache::SHandle dx10SamplerStateCache::FindState(const StateDecs& desc, u32 StateCRC)
 {
