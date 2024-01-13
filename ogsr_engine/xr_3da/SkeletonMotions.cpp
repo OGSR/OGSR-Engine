@@ -91,14 +91,15 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
                 MP->r_stringZ(buf, sizeof(buf));
                 u16 m_idx = u16(MP->r_u32());
                 *b_it = find_bone_id(bones, buf);
-                VERIFY3(*b_it != BI_NONE, "Can't find bone:", buf);
+                ASSERT_FMT_DBG(*b_it != BI_NONE, "!![%s] Can't find bone: [%s]", __FUNCTION__, buf);
                 if (bRes)
                     rm_bones[m_idx] = u16(*b_it);
             }
             part_bone_cnt = u16(part_bone_cnt + (u16)PART.bones.size());
         }
 
-        VERIFY3(part_bone_cnt == (u16)bones->size(), "Different bone count '%s'", N);
+        ASSERT_FMT_DBG(part_bone_cnt == (u16)bones->size(), "!![%s] Different bone count for [%s]! part_bone_cnt: [%u], bones->size(): [%u]", __FUNCTION__, N, part_bone_cnt,
+                       bones->size());
 
         if (bRes)
         {
@@ -144,7 +145,7 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
 
     u32 dwCNT = 0;
     MS->r_chunk_safe(0, &dwCNT, sizeof(dwCNT));
-    VERIFY(dwCNT < 0x3FFF); // MotionID 2 bit - slot, 14 bit - motion index
+    ASSERT_FMT_DBG(dwCNT < 0x3FFF, "!![%s] dwCNT is [%u]", __FUNCTION__, dwCNT); // MotionID 2 bit - slot, 14 bit - motion index
 
     m_motions.reserve(bones->size());
 
@@ -158,18 +159,18 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
         string128 mname;
         R_ASSERT(MS->find_chunk(m_idx + 1));
         MS->r_stringZ(mname, sizeof(mname));
-#ifdef DEBUG
+
         // sanity check
         xr_strlwr(mname);
         auto I = m_motion_map.find(mname);
-        VERIFY3(I != m_motion_map.end(), "Can't find motion:", mname);
-        VERIFY3(I->second == m_idx, "Invalid motion index:", mname);
-#endif
+        ASSERT_FMT_DBG(I != m_motion_map.end(), "!![%s] Can't find motion: [%s]", __FUNCTION__, mname);
+        ASSERT_FMT_DBG(I->second == m_idx, "!![%s] Invalid motion index: [%s]", __FUNCTION__, mname);
+
         u32 dwLen = MS->r_u32();
         for (u32 i = 0; i < bones->size(); i++)
         {
             u16 bone_id = rm_bones[i];
-            VERIFY2(bone_id != BI_NONE, "Invalid remap index.");
+            ASSERT_FMT_DBG(bone_id != BI_NONE, "!![%s] Invalid remap index!", __FUNCTION__);
             CMotion& M = m_motions[bones->at(bone_id)->name][m_idx];
             M.set_count(dwLen);
             M.set_flags(MS->r_u8());
