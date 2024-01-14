@@ -421,7 +421,7 @@ bool CPhysicsShellHolder::ActorCanCapture() const
         return true;
     
     std::string p{cNameVisual().c_str()};
-    while (SplitFilename(p))
+    while (xr_string_utils::SplitFilename(p))
     {
         if (pSettings->line_exist("ph_capture_visuals", p.c_str()))
             return true;

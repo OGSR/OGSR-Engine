@@ -75,7 +75,7 @@ static bool replaceShaders(const char* N, char* fnS, u32 fnS_size)
             return true;
     }
 
-    while (SplitFilename(s))
+    while (xr_string_utils::SplitFilename(s))
     {
         if (replaceShadersLine(N, fnS, fnS_size, s.c_str()))
             return true;

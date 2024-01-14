@@ -141,7 +141,13 @@ void GetProcessMemInfo(SProcessMemInfo& minfo)
 
 #ifdef USE_MIMALLOC
     Log("####################[+MIMALLOC+]####################");
-    mi_stats_print_out([](const char* msg, void*) { Log(msg); }, nullptr);
+    mi_stats_print_out(
+        [](const char* msg, void*) {
+            std::string str{msg};
+            xr_string_utils::rtrim(str);
+            Log(str);
+        },
+        nullptr);
     Log("####################[-MIMALLOC-]####################");
 #endif
 }
