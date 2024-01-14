@@ -442,7 +442,6 @@
     <ClInclude Include="Stats.h" />
     <ClInclude Include="WaveForm.h" />
     <ClInclude Include="tntQAVI.h" />
-    <ClInclude Include="xrImage_Resampler.h" />
     <ClInclude Include="xrTheora_Stream.h" />
     <ClInclude Include="xrTheora_Surface.h" />
     <ClInclude Include="Properties.h" />
@@ -530,7 +529,6 @@
     <ClCompile Include="StatGraph.cpp" />
     <ClCompile Include="Stats.cpp" />
     <ClCompile Include="tntQAVI.cpp" />
-    <ClCompile Include="xrImage_Resampler.cpp" />
     <ClCompile Include="xrTheora_Stream.cpp" />
     <ClCompile Include="xrTheora_Surface.cpp" />
     <ClCompile Include="pure.cpp" />
