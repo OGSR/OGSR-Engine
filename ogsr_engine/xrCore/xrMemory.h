@@ -43,17 +43,11 @@ IC void xr_free(T*& P)
         P = nullptr;
     }
 }
+
 #define xr_malloc Memory.mem_alloc
 #define xr_realloc Memory.mem_realloc
 
-template <typename T, typename... Args>
-T* xr_new(Args&&... args)
-{
-    T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
-    return new (ptr) T(std::forward<Args>(args)...);
-}
-
-template <bool _is_pm, typename T>
+template <bool, typename T>
 struct xr_special_free
 {
     IC void operator()(T*& ptr)
@@ -73,6 +67,13 @@ struct xr_special_free<false, T>
         Memory.mem_free(ptr);
     }
 };
+
+template <typename T, typename... Args>
+T* xr_new(Args&&... args)
+{
+    T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
+    return new (ptr) T(std::forward<Args>(args)...);
+}
 
 template <class T>
 IC void xr_delete(T*& ptr)
