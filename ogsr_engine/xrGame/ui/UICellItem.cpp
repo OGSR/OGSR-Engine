@@ -331,6 +331,8 @@ void CUICellItem::ColorizeItems(std::initializer_list<CUIDragDropListEx*> args)
     static const bool colorize_ammo = Core.Features.test(xrCore::Feature::colorize_ammo);
     static const u32 Color = READ_IF_EXISTS(pSettings, r_color, "dragdrop", "color_ammo", color_argb(255, 0, 128, 0));
 
+    inventoryitem->m_cell_item->SetClrLightAnim(NULL);
+
     auto ProcessColorize = [](CUICellItem* Itm, u32 Clr) {
         Itm->SetTextureColor(Clr);
         if (auto WpnCell = smart_cast<CUIWeaponCellItem*>(Itm))

@@ -49,6 +49,7 @@ void CUIStatic::script_register(lua_State* L)
                   .def("GetTextY", &CUIStatic::GetTextY)
 
                   .def("SetColor", &CUIStatic::SetColor)
+                  .def("SetLightAnim", &CUIStatic::SetClrLightAnim)
                   .def("GetColor", &CUIStatic::GetColor)
                   .def("SetColorA", [](CUIStatic* self, u8 alpha) { self->SetColor(subst_alpha(self->GetColor(), alpha)); })
                   .def("SetTextColor", &CUIStatic::SetTextColor_script)
