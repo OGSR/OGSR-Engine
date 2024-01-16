@@ -27,6 +27,7 @@
 #define R_R3 3
 #define R_R4 4
 #define RENDER R_R4
+#define USE_DX11 //оставлено на случай пояаления кода откуда-то в котором будут нужны эти макросы.
 
 #include "../../xrParticles/psystem.h"
 

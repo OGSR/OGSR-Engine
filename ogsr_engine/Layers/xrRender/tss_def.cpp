@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma hdrstop
+
 
 #include "tss_def.h"
 #include "../xrRenderDX10/dx10StateUtils.h"
