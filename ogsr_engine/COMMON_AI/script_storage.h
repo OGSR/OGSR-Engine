@@ -37,6 +37,7 @@ protected:
     bool object(const char* caNamespaceName, const char* caIdentifier, int type);
     luabind::object name_space(const char* namespace_name);
     void reinit(lua_State* LSVM);
+    void close();
 
 public:
     lua_State* lua() { return m_virtual_machine; };

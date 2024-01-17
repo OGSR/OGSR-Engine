@@ -1,11 +1,13 @@
 #include "stdafx.h"
 
 #include "../../xr_3da/Render.h"
+
 #include "../xrRender/ResourceManager.h"
 #include "../xrRender/tss.h"
 #include "../xrRender/blenders/blender.h"
 #include "../xrRender/blenders/blender_recorder.h"
 #include "../xrRender/dxRenderDeviceRender.h"
+
 #include <format>
 
 class adopt_dx10options
@@ -201,6 +203,7 @@ public:
 #include "../../xr_3da/ai_script_space.h"
 
 lua_State* LSVM = nullptr;
+
 constexpr const char* GlobalNamespace = "_G";
 static constexpr const char* FILE_HEADER =
     "\

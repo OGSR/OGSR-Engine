@@ -9,6 +9,7 @@
 #include "stdafx.h"
 #include "script_engine.h"
 #include "ai_space.h"
+#include "MainMenu.h"
 #include "object_factory.h"
 
 void export_classes(lua_State* L);
@@ -21,9 +22,22 @@ CScriptEngine::CScriptEngine()
     m_reload_modules = false;
 }
 
+extern void destroy_lua_wpn_params();
+
 void CScriptEngine::unload()
 {
-    lua_settop(lua(), m_stack_level);
+    //lua_settop(lua(), m_stack_level);
+
+    destroy_lua_wpn_params();
+    if (MainMenu())
+    {
+        MainMenu()->DestroyInternal(true);
+    }
+
+    xr_delete(g_object_factory);
+
+    close(); // вызовем тут явно
+
     no_files.clear();
 }
 

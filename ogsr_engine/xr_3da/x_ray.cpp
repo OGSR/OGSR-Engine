@@ -470,6 +470,7 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
             g_pGamePersistent->PreStart(op_server);
             //-----------------------------------------------------------
             g_pGameLevel = (IGame_Level*)NEW_INSTANCE(CLSID_GAME_LEVEL);
+
             pApp->LoadBegin();
             g_pGamePersistent->Start(op_server);
             g_pGameLevel->net_Start(op_server, op_client);
@@ -482,17 +483,20 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
     {
         if (g_pGameLevel)
         {
+            Console->Execute("main_menu off");
             Console->Hide();
+
             g_pGameLevel->net_Stop();
+
             DEL_INSTANCE(g_pGameLevel);
             Console->Show();
 
             if ((FALSE == Engine.Event.Peek("KERNEL:quit")) && (FALSE == Engine.Event.Peek("KERNEL:start")))
             {
-                Console->Execute("main_menu off");
                 Console->Execute("main_menu on");
             }
         }
+
         R_ASSERT(0 != g_pGamePersistent);
         g_pGamePersistent->Disconnect();
     }

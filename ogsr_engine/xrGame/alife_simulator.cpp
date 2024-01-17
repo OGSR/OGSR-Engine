@@ -12,19 +12,13 @@
 #include "ai_space.h"
 #include "..\xr_3da\IGame_Persistent.h"
 #include "script_engine.h"
-#include "mainmenu.h"
-#include "object_factory.h"
 #include "relation_registry.h"
 
 LPCSTR alife_section = "alife";
 
-extern void destroy_lua_wpn_params();
-
 void restart_all()
 {
-    destroy_lua_wpn_params();
-    MainMenu()->DestroyInternal(true);
-    xr_delete(g_object_factory);
+    ai().script_engine().unload();
     ai().script_engine().init();
 }
 

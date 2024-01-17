@@ -23,16 +23,17 @@ void CAI_Space::set_game_graph(CGameGraph* graph)
     if (graph)
     {
         VERIFY(!m_game_graph);
-        m_game_graph = graph;
-        xr_delete(m_graph_engine);
-        m_graph_engine = xr_new<CGraphEngine>(game_graph().header().vertex_count());
     }
     else
     {
         VERIFY(m_game_graph);
-        m_game_graph = nullptr;
-        xr_delete(m_graph_engine);
     }
+
+    m_game_graph = graph;
+    xr_delete(m_graph_engine);
+
+    if (m_game_graph)
+        m_graph_engine = xr_new<CGraphEngine>(game_graph().header().vertex_count());
 }
 
 IC CLevelGraph& CAI_Space::level_graph() const

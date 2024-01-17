@@ -171,22 +171,28 @@ static void ScriptCrashHandler(bool dump_lua_locals)
     }
 }
 
+void CScriptStorage::close()
+{
+    if (m_virtual_machine)
+    {
+        // Msg("[CScriptStorage] Closing LuaJIT - start");
+        lua_close(m_virtual_machine); // Вот тут закрывается LuaJIT.
+        // Msg("[CScriptStorage] Closing LuaJIT - end");
+        m_virtual_machine = nullptr;
+    }
+}
+
 CScriptStorage::~CScriptStorage()
 {
-    // Msg("[CScriptStorage] Closing LuaJIT - start");
-    if (m_virtual_machine)
-        lua_close(m_virtual_machine); //Вот тут закрывается LuaJIT.
-    // Msg("[CScriptStorage] Closing LuaJIT - end");
+    close();
+
     Debug.set_crashhandler(nullptr);
 }
 
 void CScriptStorage::reinit(lua_State* LSVM)
 {
-    if (m_virtual_machine) //Как выяснилось, такое происходит при загрузке игры на этапе старта сервера
-    {
-        // Msg("[CScriptStorage] Found working LuaJIT WM! Close it!");
-        lua_close(m_virtual_machine);
-    }
+    close();
+
     m_virtual_machine = LSVM;
 
     Debug.set_crashhandler(ScriptCrashHandler);
