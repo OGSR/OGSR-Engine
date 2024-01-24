@@ -261,8 +261,6 @@
     <ClInclude Include="..\xrRender\blenders\Blender_Recorder.h" />
     <ClInclude Include="..\xrRender\Blender_BmmD.h" />
     <ClInclude Include="..\xrRender\Blender_detail_still.h" />
-    <ClInclude Include="..\xrRender\Blender_Editor_Selection.h" />
-    <ClInclude Include="..\xrRender\Blender_Editor_Wire.h" />
     <ClInclude Include="..\xrRender\Blender_Lm(EbB).h" />
     <ClInclude Include="..\xrRender\Blender_Model_EbB.h" />
     <ClInclude Include="..\xrRender\Blender_Particle.h" />
@@ -427,8 +425,6 @@
     <ClCompile Include="..\xrRender\blenders\Blender_Recorder.cpp" />
     <ClCompile Include="..\xrRender\Blender_BmmD.cpp" />
     <ClCompile Include="..\xrRender\Blender_detail_still.cpp" />
-    <ClCompile Include="..\xrRender\Blender_Editor_Selection.cpp" />
-    <ClCompile Include="..\xrRender\Blender_Editor_Wire.cpp" />
     <ClCompile Include="..\xrRender\Blender_Lm(EbB).cpp" />
     <ClCompile Include="..\xrRender\Blender_Model_EbB.cpp" />
     <ClCompile Include="..\xrRender\Blender_Particle.cpp" />

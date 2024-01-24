@@ -26,32 +26,26 @@ private:
     };
 
 public:
-    DEFINE_MAP_PRED(const char*, IBlender*, map_Blender, map_BlenderIt, str_pred);
-    DEFINE_MAP_PRED(const char*, CTexture*, map_Texture, map_TextureIt, str_pred);
-    DEFINE_MAP_PRED(const char*, CMatrix*, map_Matrix, map_MatrixIt, str_pred);
-    DEFINE_MAP_PRED(const char*, CConstant*, map_Constant, map_ConstantIt, str_pred);
-    DEFINE_MAP_PRED(const char*, CRT*, map_RT, map_RTIt, str_pred);
-    DEFINE_MAP_PRED(const char*, SVS*, map_VS, map_VSIt, str_pred);
-    DEFINE_MAP_PRED(const char*, SGS*, map_GS, map_GSIt, str_pred);
-    DEFINE_MAP_PRED(const char*, SHS*, map_HS, map_HSIt, str_pred);
-    DEFINE_MAP_PRED(const char*, SDS*, map_DS, map_DSIt, str_pred);
-    DEFINE_MAP_PRED(const char*, SCS*, map_CS, map_CSIt, str_pred);
-    DEFINE_MAP_PRED(const char*, SPS*, map_PS, map_PSIt, str_pred);
-    DEFINE_MAP_PRED(const char*, texture_detail, map_TD, map_TDIt, str_pred);
+    DEFINE_MAP_PRED(const char*, IBlenderXr*, map_Blender, map_BlenderIt, pred_str);
+    DEFINE_MAP_PRED(const char*, CTexture*, map_Texture, map_TextureIt, pred_str);
+    DEFINE_MAP_PRED(const char*, CRT*, map_RT, map_RTIt, pred_str);
+    DEFINE_MAP_PRED(const char*, SVS*, map_VS, map_VSIt, pred_str);
+    DEFINE_MAP_PRED(const char*, SGS*, map_GS, map_GSIt, pred_str);
+    DEFINE_MAP_PRED(const char*, SHS*, map_HS, map_HSIt, pred_str);
+    DEFINE_MAP_PRED(const char*, SDS*, map_DS, map_DSIt, pred_str);
+    DEFINE_MAP_PRED(const char*, SCS*, map_CS, map_CSIt, pred_str);
+    DEFINE_MAP_PRED(const char*, SPS*, map_PS, map_PSIt, pred_str);
+    DEFINE_MAP_PRED(const char*, texture_detail, map_TD, map_TDIt, pred_str);
 
 private:
     // data
     map_Blender m_blenders;
     map_Texture m_textures;
-    map_Matrix m_matrices;
-    map_Constant m_constants;
     map_RT m_rtargets;
 
     map_VS m_vs;
     map_PS m_ps;
     map_GS m_gs;
-
-    map_TD m_td;
 
     xr_vector<SState*> v_states;
     xr_vector<SDeclaration*> v_declarations;
@@ -81,9 +75,17 @@ private:
     void LS_Unload();
 
     // Miscelaneous
-    void _ParseList(sh_list& dest, LPCSTR names);
+    static void _ParseList(sh_list& dest, LPCSTR names);
     IBlender* _GetBlender(LPCSTR Name);
-    IBlender* _FindBlender(LPCSTR Name);
+
+    Shader* _cpp_Create(LPCSTR s_shader, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
+    Shader* _cpp_Create(IBlender* B, LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
+
+    Shader* _lua_Create(LPCSTR s_shader, LPCSTR s_textures);
+    static BOOL _lua_HasShader(LPCSTR s_shader);
+
+    void LoadShaderFile(LPCSTR name);
+    void LoadShaderLtxFile(LPCSTR name);
 
 public:
     CResourceManager() : bDeferredLoad(TRUE) {}
@@ -92,8 +94,6 @@ public:
     void _GetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps);
     void _DumpMemoryUsage();
 
-    map_Blender& _GetBlenders() { return m_blenders; }
-
     // Debug
     void DBG_VerifyGeoms();
     void DBG_VerifyTextures();
@@ -101,12 +101,6 @@ public:
     // Low level resource creation
     CTexture* _CreateTexture(LPCSTR Name);
     void _DeleteTexture(const CTexture* T);
-
-    CMatrix* _CreateMatrix(LPCSTR Name);
-    void _DeleteMatrix(const CMatrix* M);
-
-    CConstant* _CreateConstant(LPCSTR Name);
-    void _DeleteConstant(const CConstant* C);
 
     R_constant_table* _CreateConstantTable(R_constant_table& C);
     void _DeleteConstantTable(const R_constant_table* C);
@@ -160,16 +154,8 @@ public:
     ShaderElement* _CreateElement(ShaderElement& L);
     void _DeleteElement(const ShaderElement* L);
 
-    Shader* _cpp_Create(LPCSTR s_shader, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
-    Shader* _cpp_Create(IBlender* B, LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
-
-    Shader* _lua_Create(LPCSTR s_shader, LPCSTR s_textures);
-    BOOL _lua_HasShader(LPCSTR s_shader);
-
     void OnDeviceCreate();
     void OnDeviceDestroy(BOOL bKeepTextures);
-
-    void LoadShaderFile(LPCSTR name);
 
     void reset_begin();
     void reset_end();

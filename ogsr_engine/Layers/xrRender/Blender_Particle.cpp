@@ -15,9 +15,6 @@ CBlender_Particle::CBlender_Particle()
     description.version = 0;
     oBlend.Count = oBlendCount;
     oBlend.IDselected = 0;
-    oAREF.value = 32;
-    oAREF.min = 0;
-    oAREF.max = 255;
     oClamp.value = TRUE;
 }
 
@@ -25,11 +22,12 @@ CBlender_Particle::~CBlender_Particle() {}
 
 void CBlender_Particle::Save(IWriter& fs)
 {
-    IBlender::Save(fs);
+    IBlenderXr::Save(fs);
 
     // Blend mode
-    xrP_TOKEN::Item I;
     xrPWRITE_PROP(fs, "Blending", xrPID_TOKEN, oBlend);
+
+    xrP_TOKEN::Item I;
     I.ID = 0;
     xr_strcpy(I.str, "SET");
     fs.w(&I, sizeof(I));
@@ -51,17 +49,35 @@ void CBlender_Particle::Save(IWriter& fs)
 
     // Params
     xrPWRITE_PROP(fs, "Texture clamp", xrPID_BOOL, oClamp);
+    xrP_INTEGER oAREF;
     xrPWRITE_PROP(fs, "Alpha ref", xrPID_INTEGER, oAREF);
 }
 
 void CBlender_Particle::Load(IReader& fs, u16 version)
 {
-    IBlender::Load(fs, version);
+    IBlenderXr::Load(fs, version);
 
     xrPREAD_PROP(fs, xrPID_TOKEN, oBlend);
     oBlend.Count = oBlendCount;
     xrPREAD_PROP(fs, xrPID_BOOL, oClamp);
+    xrP_INTEGER oAREF;
     xrPREAD_PROP(fs, xrPID_INTEGER, oAREF);
+}
+
+void CBlender_Particle::SaveIni(CInifile* ini_file, LPCSTR section)
+{
+    IBlenderXr::SaveIni(ini_file, section);
+
+    WriteToken(ini_file, section, "blending", oBlend);
+    WriteBool(ini_file, section, "texture_clamp", oClamp);
+}
+
+void CBlender_Particle::LoadIni(CInifile* ini_file, LPCSTR section)
+{
+    IBlenderXr::LoadIni(ini_file, section);
+
+    ReadToken(ini_file, section, "blending", oBlend);
+    ReadBool(ini_file, section, "texture_clamp", oClamp);
 }
 
 void CBlender_Particle::Compile(CBlender_Compile& C)

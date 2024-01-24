@@ -6,10 +6,10 @@
 #define AFX_BLENDER_SCREEN_SET_H__A215FA40_D885_4D06_9032_ED934AE295E3__INCLUDED_
 #pragma once
 
-class CBlender_Screen_SET : public IBlender
+class CBlender_Screen_SET : public IBlenderXr
 {
     xrP_TOKEN oBlend;
-    xrP_Integer oAREF;
+    xrP_INTEGER oAREF;
     xrP_BOOL oZTest;
     xrP_BOOL oZWrite;
     xrP_BOOL oLighting;
@@ -18,10 +18,12 @@ class CBlender_Screen_SET : public IBlender
 
 public:
     virtual LPCSTR getComment() { return "basic (simple)"; }
-    virtual BOOL canBeLMAPped() { return FALSE; }
 
     virtual void Save(IWriter& fs);
     virtual void Load(IReader& fs, u16 version);
+
+    virtual void SaveIni(CInifile* ini_file, LPCSTR section);
+    virtual void LoadIni(CInifile* ini_file, LPCSTR section);
 
     virtual void Compile(CBlender_Compile& C);
 

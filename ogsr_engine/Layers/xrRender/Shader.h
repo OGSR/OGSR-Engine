@@ -16,8 +16,11 @@
 #include "sh_rt.h"
 
 typedef xr_vector<shared_str> sh_list;
+
 class CBlender_Compile;
 class IBlender;
+class IBlenderXr;
+
 #define SHADER_PASSES_MAX 2
 #define SHADER_ELEMENTS_MAX 16
 

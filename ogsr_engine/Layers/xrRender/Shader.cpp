@@ -12,11 +12,17 @@
 
 //
 STextureList::~STextureList() { DEV->_DeleteTextureList(this); }
+
 SMatrixList::~SMatrixList() { DEV->_DeleteMatrixList(this); }
+
 SConstantList::~SConstantList() { DEV->_DeleteConstantList(this); }
+
 SPass::~SPass() { DEV->_DeletePass(this); }
+
 ShaderElement::~ShaderElement() { DEV->_DeleteElement(this); }
+
 SGeometry::~SGeometry() { DEV->DeleteGeom(this); }
+
 Shader::~Shader() { DEV->Delete(this); }
 
 //////////////////////////////////////////////////////////////////////////
@@ -51,7 +57,6 @@ BOOL SPass::equal(const SPass& other)
         return FALSE;
     if (constants != other.constants)
         return FALSE; // is this nessesary??? (ps+vs already combines)
-
     if (T != other.T)
         return FALSE;
     if (C != other.C)

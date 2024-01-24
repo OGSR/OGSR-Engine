@@ -137,74 +137,10 @@ void CRender::create()
     o.mrt = (HW.Caps.raster.dwMRT_count >= 3);
     o.mrtmixdepth = (HW.Caps.raster.b_MRT_mixdepth);
 
-    // Check for NULL render target support
-    //	DX10 disabled
-    // D3DFORMAT	nullrt	= (D3DFORMAT)MAKEFOURCC('N','U','L','L');
-    // o.nullrt			= HW.support	(nullrt,			D3DRTYPE_SURFACE, D3DUSAGE_RENDERTARGET);
-    o.nullrt = false;
-    /*
-    if (o.nullrt)		{
-    Msg				("* NULLRT supported and used");
-    };
-    */
-    if (o.nullrt)
-    {
-        Msg("* NULLRT supported");
-
-        //.	    _tzset			();
-        //.		??? _strdate	( date, 128 );	???
-        //.		??? if (date < 22-march-07)
-        if (0)
-        {
-            u32 device_id = HW.Caps.id_device;
-            bool disable_nullrt = false;
-            switch (device_id)
-            {
-            case 0x190:
-            case 0x191:
-            case 0x192:
-            case 0x193:
-            case 0x194:
-            case 0x197:
-            case 0x19D:
-            case 0x19E: {
-                disable_nullrt = true; // G80
-                break;
-            }
-            case 0x400:
-            case 0x401:
-            case 0x402:
-            case 0x403:
-            case 0x404:
-            case 0x405:
-            case 0x40E:
-            case 0x40F: {
-                disable_nullrt = true; // G84
-                break;
-            }
-            case 0x420:
-            case 0x421:
-            case 0x422:
-            case 0x423:
-            case 0x424:
-            case 0x42D:
-            case 0x42E:
-            case 0x42F: {
-                disable_nullrt = true; // G86
-                break;
-            }
-            }
-            if (disable_nullrt)
-                o.nullrt = false;
-        };
-        if (o.nullrt)
-            Msg("* ...and used");
-    };
-
     // SMAP / DST
     o.HW_smap_FETCH4 = FALSE;
+
     //	DX10 disabled
-    // o.HW_smap			= HW.support	(D3DFMT_D24X8,			D3DRTYPE_TEXTURE,D3DUSAGE_DEPTHSTENCIL);
     o.HW_smap = true;
     o.HW_smap_PCF = o.HW_smap;
     if (o.HW_smap)

@@ -5,8 +5,6 @@ class CBlender_rain : public IBlender
 {
 public:
     virtual LPCSTR getComment() { return "INTERNAL: DX10 rain blender"; }
-    virtual BOOL canBeDetailed() { return FALSE; }
-    virtual BOOL canBeLMAPped() { return FALSE; }
 
     virtual void Compile(CBlender_Compile& C);
 };
@@ -20,8 +18,6 @@ public:
         Definition = 0;
     }
     virtual LPCSTR getComment() { return "INTERNAL: DX10 MSAA rain blender"; }
-    virtual BOOL canBeDetailed() { return FALSE; }
-    virtual BOOL canBeLMAPped() { return FALSE; }
 
     virtual void Compile(CBlender_Compile& C);
     virtual void SetDefine(LPCSTR Name, LPCSTR Definition);

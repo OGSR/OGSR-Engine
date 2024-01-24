@@ -17,18 +17,35 @@ CBlender_deffer_aref::~CBlender_deffer_aref() {}
 
 void CBlender_deffer_aref::Save(IWriter& fs)
 {
-    IBlender::Save(fs);
+    IBlenderXr::Save(fs);
     xrPWRITE_PROP(fs, "Alpha ref", xrPID_INTEGER, oAREF);
     xrPWRITE_PROP(fs, "Alpha-blend", xrPID_BOOL, oBlend);
 }
+
 void CBlender_deffer_aref::Load(IReader& fs, u16 version)
 {
-    IBlender::Load(fs, version);
+    IBlenderXr::Load(fs, version);
     if (1 == version)
     {
         xrPREAD_PROP(fs, xrPID_INTEGER, oAREF);
         xrPREAD_PROP(fs, xrPID_BOOL, oBlend);
     }
+}
+
+void CBlender_deffer_aref::SaveIni(CInifile* ini_file, LPCSTR section)
+{
+    IBlenderXr::SaveIni(ini_file, section);
+
+    WriteInteger(ini_file, section, "alpha_ref", oAREF);
+    WriteBool(ini_file, section, "alpha_blend", oBlend);
+}
+
+void CBlender_deffer_aref::LoadIni(CInifile* ini_file, LPCSTR section)
+{
+    IBlenderXr::LoadIni(ini_file, section);
+
+    ReadInteger(ini_file, section, "alpha_ref", oAREF);
+    ReadBool(ini_file, section, "alpha_blend", oBlend);
 }
 
 void CBlender_deffer_aref::Compile(CBlender_Compile& C)

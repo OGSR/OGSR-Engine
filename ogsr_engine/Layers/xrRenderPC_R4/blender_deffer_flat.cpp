@@ -16,9 +16,10 @@ CBlender_deffer_flat::~CBlender_deffer_flat() {}
 
 void CBlender_deffer_flat::Save(IWriter& fs)
 {
-    IBlender::Save(fs);
-    xrP_TOKEN::Item I;
+    IBlenderXr::Save(fs);
     xrPWRITE_PROP(fs, "Tessellation", xrPID_TOKEN, oTessellation);
+
+    xrP_TOKEN::Item I;
     I.ID = 0;
     xr_strcpy(I.str, "NO_TESS");
     fs.w(&I, sizeof(I));
@@ -32,14 +33,29 @@ void CBlender_deffer_flat::Save(IWriter& fs)
     xr_strcpy(I.str, "TESS_PN+HM");
     fs.w(&I, sizeof(I));
 }
+
 void CBlender_deffer_flat::Load(IReader& fs, u16 version)
 {
-    IBlender::Load(fs, version);
+    IBlenderXr::Load(fs, version);
     if (version > 0)
     {
         xrPREAD_PROP(fs, xrPID_TOKEN, oTessellation);
         oTessellation.Count = 4;
     }
+}
+
+void CBlender_deffer_flat::SaveIni(CInifile* ini_file, LPCSTR section)
+{
+    IBlenderXr::SaveIni(ini_file, section);
+
+    WriteToken(ini_file, section, "tesselation", oTessellation);
+}
+
+void CBlender_deffer_flat::LoadIni(CInifile* ini_file, LPCSTR section)
+{
+    IBlenderXr::LoadIni(ini_file, section);
+
+    ReadToken(ini_file, section, "tesselation", oTessellation);
 }
 
 void CBlender_deffer_flat::Compile(CBlender_Compile& C)

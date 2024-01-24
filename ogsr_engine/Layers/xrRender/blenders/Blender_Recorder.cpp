@@ -120,10 +120,8 @@ void CBlender_Compile::SetParams(int iPriority, bool bStrictB2F)
     {
         VERIFY(1 == (SH->flags.iPriority / 2));
     }
-    // SH->Flags.bLighting		= FALSE;
 }
 
-//
 void CBlender_Compile::PassBegin()
 {
     RS.Invalidate();
@@ -174,6 +172,7 @@ void CBlender_Compile::PassSET_ablend_mode(BOOL bABlend, u32 abSRC, u32 abDST)
     RS.SetRS(D3DRS_SRCBLENDALPHA, bABlend ? abSRC : D3DBLEND_ONE);
     RS.SetRS(D3DRS_DESTBLENDALPHA, bABlend ? abDST : D3DBLEND_ZERO);
 }
+
 void CBlender_Compile::PassSET_ablend_aref(BOOL bATest, u32 aRef)
 {
     clamp(aRef, 0u, 255u);
@@ -199,58 +198,21 @@ void CBlender_Compile::PassSET_LightFog(BOOL bLight, BOOL bFog)
 {
     RS.SetRS(D3DRS_LIGHTING, BC(bLight));
     RS.SetRS(D3DRS_FOGENABLE, BC(bFog));
-    // SH->Flags.bLighting				|= !!bLight;
 }
 
-//
 void CBlender_Compile::StageBegin()
 {
     StageSET_Address(D3DTADDRESS_WRAP); // Wrapping enabled by default
 }
+
 void CBlender_Compile::StageEnd() { dwStage++; }
+
 void CBlender_Compile::StageSET_Address(u32 adr)
 {
     RS.SetSAMP(Stage(), D3DSAMP_ADDRESSU, adr);
     RS.SetSAMP(Stage(), D3DSAMP_ADDRESSV, adr);
 }
-void CBlender_Compile::StageSET_XForm(u32 tf, u32 tc)
-{
 
-}
 void CBlender_Compile::StageSET_Color(u32 a1, u32 op, u32 a2) { RS.SetColor(Stage(), a1, op, a2); }
 void CBlender_Compile::StageSET_Color3(u32 a1, u32 op, u32 a2, u32 a3) { RS.SetColor3(Stage(), a1, op, a2, a3); }
 void CBlender_Compile::StageSET_Alpha(u32 a1, u32 op, u32 a2) { RS.SetAlpha(Stage(), a1, op, a2); }
-
-void CBlender_Compile::Stage_Matrix(LPCSTR name, int iChannel)
-{
-    sh_list& lst = L_matrices;
-    int id = ParseName(name);
-    CMatrix* M = DEV->_CreateMatrix((id >= 0) ? *lst[id] : name);
-    passMatrices.push_back(M);
-
-    // Setup transform pipeline
-    u32 ID = Stage();
-    if (M)
-    {
-        switch (M->dwMode)
-        {
-        case CMatrix::modeProgrammable: StageSET_XForm(D3DTTFF_COUNT3, D3DTSS_TCI_CAMERASPACEPOSITION | ID); break;
-        case CMatrix::modeTCM: StageSET_XForm(D3DTTFF_COUNT2, D3DTSS_TCI_PASSTHRU | iChannel); break;
-        case CMatrix::modeC_refl: StageSET_XForm(D3DTTFF_COUNT3, D3DTSS_TCI_CAMERASPACEREFLECTIONVECTOR | ID); break;
-        case CMatrix::modeS_refl: StageSET_XForm(D3DTTFF_COUNT2, D3DTSS_TCI_CAMERASPACENORMAL | ID); break;
-        default: StageSET_XForm(D3DTTFF_DISABLE, D3DTSS_TCI_PASSTHRU | iChannel); break;
-        }
-    }
-    else
-    {
-        // No XForm at all
-        StageSET_XForm(D3DTTFF_DISABLE, D3DTSS_TCI_PASSTHRU | iChannel);
-    }
-}
-
-void CBlender_Compile::Stage_Constant(LPCSTR name)
-{
-    sh_list& lst = L_constants;
-    int id = ParseName(name);
-    passConstants.push_back(DEV->_CreateConstant((id >= 0) ? *lst[id] : name));
-}

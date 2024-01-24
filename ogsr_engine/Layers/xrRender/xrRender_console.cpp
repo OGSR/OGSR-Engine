@@ -834,4 +834,7 @@ void xrRender_initconsole()
 
     CMD1(CCC_PART_Export, "particles_export");
     CMD1(CCC_PART_Import, "particles_import");
+
+    extern BOOL bShadersXrExport;
+    CMD4(CCC_Integer, "shaders_xr_export", &bShadersXrExport, FALSE, TRUE);
 }

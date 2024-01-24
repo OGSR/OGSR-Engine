@@ -288,12 +288,6 @@
     <ClInclude Include="blender_deffer_model.h">
       <Filter>Shading templates</Filter>
     </ClInclude>
-    <ClInclude Include="..\xrRender\Blender_Editor_Selection.h">
-      <Filter>Shading templates</Filter>
-    </ClInclude>
-    <ClInclude Include="..\xrRender\Blender_Editor_Wire.h">
-      <Filter>Shading templates</Filter>
-    </ClInclude>
     <ClInclude Include="blender_light_direct.h">
       <Filter>Shading templates</Filter>
     </ClInclude>
@@ -879,12 +873,6 @@
       <Filter>Shading templates</Filter>
     </ClCompile>
     <ClCompile Include="blender_deffer_model.cpp">
-      <Filter>Shading templates</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\Blender_Editor_Selection.cpp">
-      <Filter>Shading templates</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRender\Blender_Editor_Wire.cpp">
       <Filter>Shading templates</Filter>
     </ClCompile>
     <ClCompile Include="blender_light_direct.cpp">

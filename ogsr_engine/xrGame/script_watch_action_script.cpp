@@ -17,10 +17,16 @@ using namespace luabind;
 void CScriptWatchAction::script_register(lua_State* L)
 {
     module(L)[class_<CScriptWatchAction>("look")
-                  .enum_("look")[value("path_dir", int(SightManager::eSightTypePathDirection)), value("search", int(SightManager::eSightTypeSearch)),
-                                 value("danger", int(SightManager::eSightTypeCover)), value("point", int(SightManager::eSightTypePosition)),
-                                 value("fire_point", int(SightManager::eSightTypeFirePosition)), value("cur_dir", int(SightManager::eSightTypeCurrentDirection)),
-                                 value("direction", int(SightManager::eSightTypeDirection))]
+                  .enum_("look")[
+                        value("path_dir", int(SightManager::eSightTypePathDirection))
+                        , value("search", int(SightManager::eSightTypeSearch))
+                        , value("danger", int(SightManager::eSightTypeCover))
+                        , value("point", int(SightManager::eSightTypePosition))
+                        , value("fire_point", int(SightManager::eSightTypeFirePosition))
+                        , value("cur_dir", int(SightManager::eSightTypeCurrentDirection))
+                        , value("direction", int(SightManager::eSightTypeDirection))
+                  ]
+
                   .def(constructor<>())
                   .def(constructor<SightManager::ESightType>())
                   .def(constructor<SightManager::ESightType, Fvector&>())

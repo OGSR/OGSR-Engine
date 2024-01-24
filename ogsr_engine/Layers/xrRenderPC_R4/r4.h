@@ -71,8 +71,6 @@ public:
         u32 nvstencil : 1;
         u32 nvdbt : 1;
 
-        u32 nullrt : 1;
-
         u32 distortion : 1;
         u32 distortion_enabled : 1;
         u32 mblur : 1;
@@ -293,8 +291,8 @@ public:
     virtual void add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size);
 
     //
-    virtual IBlender* blender_create(CLASS_ID cls);
-    virtual void blender_destroy(IBlender*&);
+    virtual IBlenderXr* blender_create(CLASS_ID cls);
+    virtual void blender_destroy(IBlenderXr*&);
 
     //
     virtual IRender_ObjectSpecific* ros_create(IRenderable* parent);

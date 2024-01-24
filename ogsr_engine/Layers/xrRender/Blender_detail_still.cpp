@@ -21,14 +21,26 @@ CBlender_Detail_Still::~CBlender_Detail_Still() {}
 
 void CBlender_Detail_Still::Save(IWriter& fs)
 {
-    IBlender::Save(fs);
+    IBlenderXr::Save(fs);
+    xrP_BOOL oBlend;
     xrPWRITE_PROP(fs, "Alpha-blend", xrPID_BOOL, oBlend);
 }
 
 void CBlender_Detail_Still::Load(IReader& fs, u16 version)
 {
-    IBlender::Load(fs, version);
+    IBlenderXr::Load(fs, version);
+    xrP_BOOL oBlend;
     xrPREAD_PROP(fs, xrPID_BOOL, oBlend);
+}
+
+void CBlender_Detail_Still::SaveIni(CInifile* ini_file, LPCSTR section)
+{
+    IBlenderXr::SaveIni(ini_file, section);
+}
+
+void CBlender_Detail_Still::LoadIni(CInifile* ini_file, LPCSTR section)
+{
+    IBlenderXr::LoadIni(ini_file, section);
 }
 
 

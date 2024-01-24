@@ -73,7 +73,7 @@ class adopt_compiler
     CBlender_Compile* C;
     bool& m_bFirstPass;
 
-    void TryEndPass()
+    void TryEndPass() const
     {
         if (!m_bFirstPass)
             C->r_End();

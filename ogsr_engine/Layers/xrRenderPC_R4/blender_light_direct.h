@@ -4,8 +4,6 @@ class CBlender_accum_direct : public IBlender
 {
 public:
     virtual LPCSTR getComment() { return "INTERNAL: accumulate direct light"; }
-    virtual BOOL canBeDetailed() { return FALSE; }
-    virtual BOOL canBeLMAPped() { return FALSE; }
 
     virtual void Compile(CBlender_Compile& C);
 
@@ -17,8 +15,6 @@ class CBlender_accum_direct_msaa : public IBlender
 {
 public:
     virtual LPCSTR getComment() { return "INTERNAL: accumulate direct light"; }
-    virtual BOOL canBeDetailed() { return FALSE; }
-    virtual BOOL canBeLMAPped() { return FALSE; }
 
     virtual void Compile(CBlender_Compile& C);
     virtual void SetDefine(LPCSTR Name, LPCSTR Definition)
@@ -26,6 +22,7 @@ public:
         this->Name = Name;
         this->Definition = Definition;
     }
+
     LPCSTR Name;
     LPCSTR Definition;
 
@@ -37,8 +34,6 @@ class CBlender_accum_direct_volumetric_msaa : public IBlender
 {
 public:
     virtual LPCSTR getComment() { return "INTERNAL: accumulate direct light"; }
-    virtual BOOL canBeDetailed() { return FALSE; }
-    virtual BOOL canBeLMAPped() { return FALSE; }
 
     virtual void Compile(CBlender_Compile& C);
     virtual void SetDefine(LPCSTR Name, LPCSTR Definition)
@@ -49,6 +44,7 @@ public:
 
     CBlender_accum_direct_volumetric_msaa();
     virtual ~CBlender_accum_direct_volumetric_msaa();
+
     LPCSTR Name;
     LPCSTR Definition;
 };
@@ -57,8 +53,6 @@ class CBlender_accum_direct_volumetric_sun_msaa : public IBlender
 {
 public:
     virtual LPCSTR getComment() { return "INTERNAL: accumulate direct light"; }
-    virtual BOOL canBeDetailed() { return FALSE; }
-    virtual BOOL canBeLMAPped() { return FALSE; }
 
     virtual void Compile(CBlender_Compile& C);
     virtual void SetDefine(LPCSTR Name, LPCSTR Definition)
@@ -69,6 +63,7 @@ public:
 
     CBlender_accum_direct_volumetric_sun_msaa();
     virtual ~CBlender_accum_direct_volumetric_sun_msaa();
+
     LPCSTR Name;
     LPCSTR Definition;
 };

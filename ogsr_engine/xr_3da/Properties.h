@@ -1,6 +1,3 @@
-#ifndef xrPROPERTIES_H
-#define xrPROPERTIES_H
-
 #pragma once
 #pragma pack(push, 4)
 
@@ -28,27 +25,19 @@ enum xrProperties
     xrPID_FORCEDWORD = u32(-1)
 };
 
-struct xrP_Integer
+struct xrP_INTEGER
 {
     int value;
     int min;
     int max;
 
-    xrP_Integer() : value(0), min(0), max(255) {}
-};
-
-struct xrP_Float
-{
-    float value;
-    float min;
-    float max;
-
-    xrP_Float() : value(0), min(0), max(1) {}
+    xrP_INTEGER() : value(0), min(0), max(255) {}
 };
 
 struct xrP_BOOL
 {
     BOOL value;
+
     xrP_BOOL() : value(FALSE) {}
 };
 
@@ -63,36 +52,18 @@ struct xrP_TOKEN
     u32 IDselected;
     u32 Count;
 
-    //--- elements:		(ID,string64)
-
     xrP_TOKEN() : IDselected(0), Count(0) {}
-};
-
-struct xrP_CLSID
-{
-    CLASS_ID Selected;
-    u32 Count;
-    //--- elements:		(...)
-
-    xrP_CLSID() : Selected(0), Count(0) {}
-};
-
-struct xrP_Template
-{
-    u32 Type;
-    u32 Limit;
 };
 
 // Base class
 class CPropertyBase
 {
-protected:
 public:
-    virtual LPCSTR getName() = 0;
-    virtual LPCSTR getComment() = 0;
-
     virtual void Save(IWriter& fs) = 0;
     virtual void Load(IReader& fs, u16 version) = 0;
+
+    virtual void SaveIni(CInifile* ini_file, LPCSTR section) = 0;
+    virtual void LoadIni(CInifile* ini_file, LPCSTR section) = 0;
 };
 
 // Writers
@@ -126,25 +97,7 @@ IC void xrPREAD_MARKER(IReader& fs) { R_ASSERT(xrPID_MARKER == xrPREAD(fs)); }
         switch (ID) \
         { \
         case xrPID_TOKEN: fs.advance(((xrP_TOKEN*)&data)->Count * sizeof(xrP_TOKEN::Item)); break; \
-        case xrPID_CLSID: fs.advance(((xrP_CLSID*)&data)->Count * sizeof(CLASS_ID)); break; \
         }; \
     }
 
-// template <class T>
-// IC void		xrPWRITE_PROP	(IWriter& FS, LPCSTR name, u32 ID, T& data)
-//{
-//	xrPWRITE	(FS,ID,name,&data,sizeof(data));
-// }
-
-// template <class T>
-// IC void		xrPREAD_PROP	(IReader& FS, u32 ID, T& data)
-//{
-//	R_ASSERT(ID==xrPREAD(FS)); FS.Read(&data,sizeof(data));
-//	switch (ID)
-//	{
-//	case xrPID_TOKEN:	FS.Advance(((xrP_TOKEN*)&data)->Count * sizeof(xrP_TOKEN::Item));	break;
-//	case xrPID_CLSID:	FS.Advance(((xrP_CLSID*)&data)->Count * sizeof(CLASS_ID));			break;
-//	};
-// }
 #pragma pack(pop)
-#endif // xrPROPERTIES_H

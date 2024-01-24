@@ -689,6 +689,13 @@ BOOL CInifile::r_line(LPCSTR S, int L, const char** N, const char** V)
 
 BOOL CInifile::r_line(const shared_str& S, int L, const char** N, const char** V) { return r_line(S.c_str(), L, N, V); }
 
+void CInifile::w_clsid(LPCSTR S, LPCSTR L, CLASS_ID V)
+{
+    string16 temp;
+    CLSID2TEXT(V, temp);
+    w_string(S, L, temp);
+}
+
 void CInifile::w_string(LPCSTR S, LPCSTR L, LPCSTR V)
 {
     R_ASSERT(!bReadOnly);

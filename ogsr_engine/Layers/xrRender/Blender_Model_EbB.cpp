@@ -16,7 +16,6 @@ CBlender_Model_EbB::CBlender_Model_EbB()
     description.CLS = B_MODEL_EbB;
     description.version = 0x1;
     xr_strcpy(oT2_Name, "$null");
-    xr_strcpy(oT2_xform, "$null");
     oBlend.value = FALSE;
 }
 
@@ -24,19 +23,21 @@ CBlender_Model_EbB::~CBlender_Model_EbB() {}
 
 void CBlender_Model_EbB::Save(IWriter& fs)
 {
-    description.version = 0x1;
-    IBlender::Save(fs);
+    //description.version = 0x1;
+    IBlenderXr::Save(fs);
     xrPWRITE_MARKER(fs, "Environment map");
     xrPWRITE_PROP(fs, "Name", xrPID_TEXTURE, oT2_Name);
+    string64 oT2_xform; // xform for secondary texture
     xrPWRITE_PROP(fs, "Transform", xrPID_MATRIX, oT2_xform);
     xrPWRITE_PROP(fs, "Alpha-Blend", xrPID_BOOL, oBlend);
 }
 
 void CBlender_Model_EbB::Load(IReader& fs, u16 version)
 {
-    IBlender::Load(fs, version);
+    IBlenderXr::Load(fs, version);
     xrPREAD_MARKER(fs);
     xrPREAD_PROP(fs, xrPID_TEXTURE, oT2_Name);
+    string64 oT2_xform; // xform for secondary texture
     xrPREAD_PROP(fs, xrPID_MATRIX, oT2_xform);
     if (version >= 0x1)
     {
@@ -44,8 +45,26 @@ void CBlender_Model_EbB::Load(IReader& fs, u16 version)
     }
 }
 
+void CBlender_Model_EbB::SaveIni(CInifile* ini_file, LPCSTR section)
+{
+    IBlenderXr::SaveIni(ini_file, section);
+
+    ini_file->w_string(section, "detail_name", oT2_Name);
+
+    WriteBool(ini_file, section, "alpha_blend", oBlend);
+}
+
+void CBlender_Model_EbB::LoadIni(CInifile* ini_file, LPCSTR section)
+{
+    IBlenderXr::LoadIni(ini_file, section);
+
+    strcpy_s(oT2_Name, ini_file->r_string(section, "detail_name"));
+
+    ReadBool(ini_file, section, "alpha_blend", oBlend);
+}
 
 #include "uber_deffer.h"
+
 void CBlender_Model_EbB::Compile(CBlender_Compile& C)
 {
     IBlender::Compile(C);

@@ -23,19 +23,35 @@ CBlender_Tree::~CBlender_Tree() {}
 
 void CBlender_Tree::Save(IWriter& fs)
 {
-    IBlender::Save(fs);
+    IBlenderXr::Save(fs);
     xrPWRITE_PROP(fs, "Alpha-blend", xrPID_BOOL, oBlend);
     xrPWRITE_PROP(fs, "Object LOD", xrPID_BOOL, oNotAnTree);
 }
 
 void CBlender_Tree::Load(IReader& fs, u16 version)
 {
-    IBlender::Load(fs, version);
+    IBlenderXr::Load(fs, version);
     xrPREAD_PROP(fs, xrPID_BOOL, oBlend);
     if (version >= 1)
     {
         xrPREAD_PROP(fs, xrPID_BOOL, oNotAnTree);
     }
+}
+
+void CBlender_Tree::SaveIni(CInifile* ini_file, LPCSTR section)
+{
+    IBlenderXr::SaveIni(ini_file, section);
+
+    WriteBool(ini_file, section, "alpha_blend", oBlend);
+    WriteBool(ini_file, section, "object_lod", oNotAnTree);
+}
+
+void CBlender_Tree::LoadIni(CInifile* ini_file, LPCSTR section)
+{
+    IBlenderXr::LoadIni(ini_file, section);
+
+    ReadBool(ini_file, section, "alpha_blend", oBlend);
+    ReadBool(ini_file, section, "object_lod", oNotAnTree);
 }
 
 

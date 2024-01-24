@@ -31,11 +31,12 @@ CBlender_Screen_SET::~CBlender_Screen_SET() {}
 
 void CBlender_Screen_SET::Save(IWriter& fs)
 {
-    IBlender::Save(fs);
+    IBlenderXr::Save(fs);
 
     // Blend mode
-    xrP_TOKEN::Item I;
     xrPWRITE_PROP(fs, "Blending", xrPID_TOKEN, oBlend);
+
+    xrP_TOKEN::Item I;
     I.ID = 0;
     xr_strcpy(I.str, "SET");
     fs.w(&I, sizeof(I));
@@ -78,7 +79,7 @@ void CBlender_Screen_SET::Save(IWriter& fs)
 
 void CBlender_Screen_SET::Load(IReader& fs, u16 version)
 {
-    IBlender::Load(fs, version);
+    IBlenderXr::Load(fs, version);
 
     switch (version)
     {
@@ -112,6 +113,34 @@ void CBlender_Screen_SET::Load(IReader& fs, u16 version)
         xrPREAD_PROP(fs, xrPID_BOOL, oFog);
         break;
     }
+}
+
+void CBlender_Screen_SET::SaveIni(CInifile* ini_file, LPCSTR section)
+{
+    IBlenderXr::SaveIni(ini_file, section);
+
+    WriteToken(ini_file, section, "blending", oBlend);
+
+    WriteBool(ini_file, section, "texture_clamp", oClamp);
+    WriteInteger(ini_file, section, "alpha_ref", oAREF);
+    WriteBool(ini_file, section, "z_test", oZTest);
+    WriteBool(ini_file, section, "z_write", oZWrite);
+    WriteBool(ini_file, section, "lighting", oLighting);
+    WriteBool(ini_file, section, "fog", oFog);
+}
+
+void CBlender_Screen_SET::LoadIni(CInifile* ini_file, LPCSTR section)
+{
+    IBlenderXr::LoadIni(ini_file, section);
+
+    ReadToken(ini_file, section, "blending", oBlend);
+
+    ReadBool(ini_file, section, "texture_clamp", oClamp);
+    ReadInteger(ini_file, section, "alpha_ref", oAREF);
+    ReadBool(ini_file, section, "z_test", oZTest);
+    ReadBool(ini_file, section, "z_write", oZWrite);
+    ReadBool(ini_file, section, "lighting", oLighting);
+    ReadBool(ini_file, section, "fog", oFog);
 }
 
 void CBlender_Screen_SET::Compile(CBlender_Compile& C)
