@@ -9,7 +9,7 @@
 
 <h3 align="center"> <a href="#english"><b>English</b></a>/<a href="#русский"><b>Русский</b></a></h3>
 
-![logo](https://github.com/OGSR/OGSR_Engine_private/assets/16670637/be5782bc-4b4c-4f4d-ad36-503b973f569e)
+![logo](https://github.com/OGSR/OGSR-Engine/assets/16670637/980c7b2c-03cb-4c89-b132-424254faa398)
 
 ## English ##
 
