@@ -837,4 +837,7 @@ void xrRender_initconsole()
 
     extern BOOL bShadersXrExport;
     CMD4(CCC_Integer, "shaders_xr_export", &bShadersXrExport, FALSE, TRUE);
+
+    extern BOOL bSenvironmentXrExport;
+    CMD4(CCC_Integer, "senvironment_xr_export", &bSenvironmentXrExport, FALSE, TRUE);
 }

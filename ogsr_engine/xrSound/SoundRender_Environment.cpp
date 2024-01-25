@@ -115,14 +115,17 @@ bool CSoundRender_Environment::load(IReader* fs)
         EnvironmentSize = fs->r_float();
         EnvironmentDiffusion = fs->r_float();
         AirAbsorptionHF = fs->r_float();
+
         if (version > 0x0003)
             Environment = fs->r_u32();
+
         return true;
     }
+
     return false;
 }
 
-void CSoundRender_Environment::save(IWriter* fs)
+void CSoundRender_Environment::save(IWriter* fs) const
 {
     fs->w_u32(sdef_env_version);
     fs->w_stringZ(name);
@@ -143,26 +146,69 @@ void CSoundRender_Environment::save(IWriter* fs)
     fs->w_u32(Environment);
 }
 
-//////////////////////////////////////////////////////////////////////////
-void SoundEnvironment_LIB::Load(LPCSTR name)
+void CSoundRender_Environment::loadIni(CInifile* ini, LPCSTR name)
 {
-    R_ASSERT(library.empty());
-    IReader* F = FS.r_open(name);
+    this->name = name;
+
+    Room = ini->r_float(name, "root");
+    RoomHF = ini->r_float(name, "room_hf");
+    RoomRolloffFactor = ini->r_float(name, "room_rolloff_factor");
+    DecayTime = ini->r_float(name, "decay_time");
+    DecayHFRatio = ini->r_float(name, "decay_hf_ratio");
+    Reflections = ini->r_float(name, "reflections");
+    ReflectionsDelay = ini->r_float(name, "reflections_delay");
+    Reverb = ini->r_float(name, "reverb");
+    ReverbDelay = ini->r_float(name, "reverb_delay");
+    EnvironmentSize = ini->r_float(name, "environment_size");
+    EnvironmentDiffusion = ini->r_float(name, "environment_diffusion");
+    AirAbsorptionHF = ini->r_float(name, "air_absorption_hf");
+
+    Environment = ini->r_u32(name, "environment");
+}
+
+void CSoundRender_Environment::saveIni(CInifile* ini, LPCSTR name) const
+{
+    ini->w_float(name, "root", Room);
+    ini->w_float(name, "room_hf", RoomHF);
+    ini->w_float(name, "room_rolloff_factor", RoomRolloffFactor);
+    ini->w_float(name, "decay_time", DecayTime);
+    ini->w_float(name, "decay_hf_ratio", DecayHFRatio);
+    ini->w_float(name, "reflections", Reflections);
+    ini->w_float(name, "reflections_delay", ReflectionsDelay);
+    ini->w_float(name, "reverb", Reverb);
+    ini->w_float(name, "reverb_delay", ReverbDelay);
+    ini->w_float(name, "environment_size", EnvironmentSize);
+    ini->w_float(name, "environment_diffusion", EnvironmentDiffusion);
+    ini->w_float(name, "air_absorption_hf", AirAbsorptionHF);
+
+    ini->w_u32(name, "environment", Environment);
+}
+
+//////////////////////////////////////////////////////////////////////////
+void SoundEnvironment_LIB::Load(LPCSTR f_name)
+{
+    // R_ASSERT(library.empty());
+
+    IReader* F = FS.r_open(f_name);
     IReader* C;
-    library.reserve(256);
+
     for (u32 chunk = 0; 0 != (C = F->open_chunk(chunk)); chunk++)
     {
         CSoundRender_Environment* E = xr_new<CSoundRender_Environment>();
         if (E->load(C))
             library.push_back(E);
+        else
+            xr_delete(E);
+
         C->close();
     }
+
     FS.r_close(F);
 }
 
-bool SoundEnvironment_LIB::Save(LPCSTR name)
+bool SoundEnvironment_LIB::Save(LPCSTR f_name) const
 {
-    IWriter* F = FS.w_open(name);
+    IWriter* F = FS.w_open(f_name);
     if (F)
     {
         for (u32 chunk = 0; chunk < library.size(); chunk++)
@@ -177,6 +223,29 @@ bool SoundEnvironment_LIB::Save(LPCSTR name)
     return false;
 }
 
+void SoundEnvironment_LIB::LoadIni(CInifile* ini)
+{
+    for (const auto& it : ini->sections_ordered())
+    {
+        CSoundRender_Environment* E = xr_new<CSoundRender_Environment>();
+
+        auto& name = it.first;
+
+        E->loadIni(ini, name.c_str());
+
+        library.push_back(E);
+    }
+}
+
+bool SoundEnvironment_LIB::SaveIni(CInifile* ini) const
+{
+    for (u32 chunk = 0; chunk < library.size(); chunk++)
+    {
+        library[chunk]->saveIni(ini, library[chunk]->name.c_str());
+    }
+    return true;
+}
+
 void SoundEnvironment_LIB::Unload()
 {
     for (u32 chunk = 0; chunk < library.size(); chunk++)
@@ -186,42 +255,13 @@ void SoundEnvironment_LIB::Unload()
 
 int SoundEnvironment_LIB::GetID(LPCSTR name)
 {
-    for (SE_IT it = library.begin(); it != library.end(); it++)
+    for (SE_IT it = library.begin(); it != library.end(); ++it)
         if (0 == stricmp(name, *(*it)->name))
             return int(it - library.begin());
+
     return -1;
 }
 
-CSoundRender_Environment* SoundEnvironment_LIB::Get(LPCSTR name)
-{
-    for (SE_IT it = library.begin(); it != library.end(); it++)
-        if (0 == stricmp(name, *(*it)->name))
-            return *it;
-    return NULL;
-}
-
-CSoundRender_Environment* SoundEnvironment_LIB::Get(int id) { return library[id]; }
-
-CSoundRender_Environment* SoundEnvironment_LIB::Append(CSoundRender_Environment* parent)
-{
-    library.push_back(parent ? xr_new<CSoundRender_Environment>(*parent) : xr_new<CSoundRender_Environment>());
-    return library.back();
-}
-
-void SoundEnvironment_LIB::Remove(LPCSTR name)
-{
-    for (SE_IT it = library.begin(); it != library.end(); it++)
-        if (0 == stricmp(name, *(*it)->name))
-        {
-            xr_delete(*it);
-            library.erase(it);
-            break;
-        }
-}
-void SoundEnvironment_LIB::Remove(int id)
-{
-    xr_delete(library[id]);
-    library.erase(library.begin() + id);
-}
+CSoundRender_Environment* SoundEnvironment_LIB::Get(int id) const { return library[id]; }
 
 SoundEnvironment_LIB::SE_VEC& SoundEnvironment_LIB::Library() { return library; }

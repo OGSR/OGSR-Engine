@@ -52,7 +52,7 @@ public:
 
 public:
     CInifile(IReader*, LPCSTR = 0);
-    CInifile(LPCSTR, BOOL = TRUE, BOOL = TRUE, BOOL = TRUE);
+    CInifile(LPCSTR, BOOL ReadOnly = TRUE, BOOL bLoad = TRUE, BOOL SaveAtEnd = TRUE);
 
     virtual ~CInifile();
 

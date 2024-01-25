@@ -10,6 +10,7 @@
 #include <eax.h>
 #pragma warning(pop)
 
+BOOL bSenvironmentXrExport{};
 int psSoundTargets = 256; // 512; //--#SM+#-- //32;
 Flags32 psSoundFlags = {ss_Hardware};
 float psSoundOcclusionScale = 0.5f;
@@ -134,17 +135,37 @@ int CSoundRender_Core::pause_emitters(bool val)
     return m_iPauseCounter;
 }
 
+#define SNDENV_FILENAME_XR "senvironment.xr"
+#define SNDENV_FILENAME_LTX "senvironment.ltx"
+
 void CSoundRender_Core::env_load()
 {
     // Load environment
     string_path fn;
-    if (FS.exist(fn, "$game_data$", SNDENV_FILENAME))
+    if (FS.exist(fn, "$game_data$", SNDENV_FILENAME_LTX))
     {
-        Msg("Loading of [%s]", SNDENV_FILENAME);
+        Msg("Loading of [%s]", SNDENV_FILENAME_LTX);
 
-        s_environment = xr_new<SoundEnvironment_LIB>();
+        if (!s_environment)
+            s_environment = xr_new<SoundEnvironment_LIB>();
+
+        CInifile inifile{fn, 1, 1, 0};
+
+        s_environment->LoadIni(&inifile);
+    }
+
+    if (FS.exist(fn, "$game_data$", SNDENV_FILENAME_XR))
+    {
+        Msg("Loading of [%s]", SNDENV_FILENAME_XR);
+
+        if (!s_environment)
+            s_environment = xr_new<SoundEnvironment_LIB>();
+
         s_environment->Load(fn);
+    }
 
+    if (s_environment)
+    {
         for (u32 chunk = 0; chunk < s_environment->Library().size(); chunk++)
         {
             shared_str name = s_environment->Library()[chunk]->name;
@@ -162,7 +183,20 @@ void CSoundRender_Core::env_unload()
 {
     // Unload
     if (s_environment)
+    {
+        if (bSenvironmentXrExport)
+        {
+            string_path fn;
+            FS.update_path(fn, "$game_data$", SNDENV_FILENAME_LTX);
+
+            CInifile inifile{fn, 0, 1, 1};
+
+            s_environment->SaveIni(&inifile);
+        }
+
         s_environment->Unload();
+    }
+
     xr_delete(s_environment);
 
     // Unload geometry
@@ -423,22 +457,22 @@ CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
 
         // хитрый способ для проверки звуковых зон в 2х направлениях от камеры. но что то он хуже работает. часто не та зона выбираеться. пока убрал
 
-        //CDB::COLLIDER geom_DB1;
-        //geom_DB1.ray_query(CDB::OPT_ONLYNEAREST, geom_ENV, P, dir, 1000.f);
+        // CDB::COLLIDER geom_DB1;
+        // geom_DB1.ray_query(CDB::OPT_ONLYNEAREST, geom_ENV, P, dir, 1000.f);
 
-        //CDB::COLLIDER geom_DB2;
-        //geom_DB2.ray_query(CDB::OPT_ONLYNEAREST, geom_ENV, P, Fvector(dir).invert(), 1000.f);
+        // CDB::COLLIDER geom_DB2;
+        // geom_DB2.ray_query(CDB::OPT_ONLYNEAREST, geom_ENV, P, Fvector(dir).invert(), 1000.f);
 
         geom_DB.ray_query(CDB::OPT_ONLYNEAREST, geom_ENV, P, dir, 1000.f);
 
-        //if (geom_DB1.r_count() && geom_DB2.r_count())
+        // if (geom_DB1.r_count() && geom_DB2.r_count())
         if (geom_DB.r_count())
         {
-            //CDB::RESULT* r = geom_DB1.r_begin();
-            //CDB::RESULT* r2 = geom_DB2.r_begin();
+            // CDB::RESULT* r = geom_DB1.r_begin();
+            // CDB::RESULT* r2 = geom_DB2.r_begin();
 
-            //if (r2->range < r->range)
-            //    r = r2;
+            // if (r2->range < r->range)
+            //     r = r2;
 
             CDB::RESULT* r = geom_DB.r_begin();
 

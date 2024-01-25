@@ -8,7 +8,6 @@
 #define XRSOUND_API __declspec(dllimport)
 #endif
 
-#define SNDENV_FILENAME "sEnvironment.xr"
 #define OGG_COMMENT_VERSION 0x0003
 
 // refs

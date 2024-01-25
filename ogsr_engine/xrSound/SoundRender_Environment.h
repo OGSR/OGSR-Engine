@@ -27,8 +27,12 @@ public:
     void set_default();
     void clamp();
     void lerp(CSoundRender_Environment& A, CSoundRender_Environment& B, float f);
+
     bool load(IReader* fs);
-    void save(IWriter* fs);
+    void save(IWriter* fs) const;
+
+    void loadIni(CInifile* ini, LPCSTR name);
+    void saveIni(CInifile* ini, LPCSTR name) const;
 };
 
 class SoundEnvironment_LIB
@@ -40,14 +44,19 @@ private:
     SE_VEC library;
 
 public:
-    void Load(LPCSTR name);
-    bool Save(LPCSTR name);
+    SoundEnvironment_LIB() { library.reserve(16); }
+
+    void Load(LPCSTR f_name);
+    bool Save(LPCSTR f_name) const;
+
+    void LoadIni(CInifile* ini);
+    bool SaveIni(CInifile* ini) const;
+
     void Unload();
+
     int GetID(LPCSTR name);
-    CSoundRender_Environment* Get(LPCSTR name);
-    CSoundRender_Environment* Get(int id);
-    CSoundRender_Environment* Append(CSoundRender_Environment* parent = 0);
-    void Remove(LPCSTR name);
-    void Remove(int id);
+
+    CSoundRender_Environment* Get(int id) const;
+
     SE_VEC& Library();
 };
