@@ -732,6 +732,9 @@
     <ClInclude Include="..\xrRenderDX10\imgui_impl_dx11.h">
       <Filter>imgui_render</Filter>
     </ClInclude>
+    <ClInclude Include="..\xrRender\ParticleEffectActions.h">
+      <Filter>Models\Visuals</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -1342,6 +1345,9 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\rendertarget_phase_lut.cpp">
       <Filter>Core_Target</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\ParticleEffectActions.cpp">
+      <Filter>Models\Visuals</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

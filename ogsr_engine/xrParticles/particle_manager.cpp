@@ -262,6 +262,7 @@ ParticleAction* CParticleManager::CreateAction(PActionEnum type)
     pa->type = type;
     return pa;
 }
+
 u32 CParticleManager::LoadActions(int alist_id, IReader& R, bool copFormat)
 {
     // Execute the specified action list.
@@ -277,6 +278,7 @@ u32 CParticleManager::LoadActions(int alist_id, IReader& R, bool copFormat)
 			u32 type = R.r_u32();
 			if (type == (u32)-1)
 				continue;
+
 			ParticleAction* act = CreateAction((PActionEnum)type);
             act->m_copFormat = copFormat;
             act->Load(R);

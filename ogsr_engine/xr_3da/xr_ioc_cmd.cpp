@@ -339,6 +339,7 @@ public:
     CCC_Disconnect(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
     virtual void Execute(LPCSTR args) { Engine.Event.Defer("KERNEL:disconnect"); }
 };
+
 //-----------------------------------------------------------------------
 class CCC_VID_Reset : public IConsole_Command
 {

@@ -216,6 +216,7 @@
     <ClInclude Include="..\..\Include\xrRender\LensFlareRender.h" />
     <ClInclude Include="..\..\Include\xrRender\ObjectSpaceRender.h" />
     <ClInclude Include="..\..\Include\xrRender\ParticleCustom.h" />
+    <ClInclude Include="..\xrRender\ParticleEffectActions.h" />
     <ClInclude Include="..\..\Include\xrRender\RainRender.h" />
     <ClInclude Include="..\..\Include\xrRender\RenderDetailModel.h" />
     <ClInclude Include="..\..\Include\xrRender\RenderDeviceRender.h" />
@@ -389,6 +390,7 @@
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\xrRender\ParticleEffectActions.cpp" />
     <ClCompile Include="..\xrRenderDX10\3DFluid\dx103DFluidBlenders.cpp" />
     <ClCompile Include="..\xrRenderDX10\3DFluid\dx103DFluidData.cpp" />
     <ClCompile Include="..\xrRenderDX10\3DFluid\dx103DFluidEmitters.cpp" />

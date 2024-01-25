@@ -113,7 +113,13 @@ public:
 
     void Save2(CInifile& ini);
     BOOL Load2(CInifile& ini);
+
+    DEFINE_VECTOR(EParticleAction*, EPAVec, EPAVecIt);
+    EPAVec m_EActionList;
+
+    void Compile(EPAVec& v);
 };
+
 }; // namespace PS
 #define PED_VERSION 0x0001
 #define PED_CHUNK_VERSION 0x0001

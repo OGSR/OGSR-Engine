@@ -514,6 +514,36 @@ public:
     }
 };
 
+class CCC_PART_Export : public IConsole_Command
+{
+public:
+    CCC_PART_Export(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+
+    virtual void Execute(LPCSTR args)
+    {
+        Msg("Exporting particles...");
+        RImplementation.PSLibrary.Reload();
+        RImplementation.PSLibrary.Save2(0 == xr_strcmp(args, "1"));
+        Msg("Exporting particles Done!");
+    }
+};
+
+class CCC_PART_Import : public IConsole_Command
+{
+public:
+    CCC_PART_Import(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+
+    virtual void Execute(LPCSTR args)
+    {
+        Msg("Importing particles...");
+        RImplementation.PSLibrary.OnDestroy();
+        RImplementation.PSLibrary.Load2();
+        RImplementation.PSLibrary.ExportAllAsNew();
+        RImplementation.PSLibrary.OnCreate();
+        Msg("Importing particles Done!");
+    }
+};
+
 
 void xrRender_initconsole()
 {
@@ -801,4 +831,7 @@ void xrRender_initconsole()
     CMD3(CCC_Mask, "reflections_only_on_puddles", &ps_r2_ls_flags_ext, REFLECTIONS_ONLY_ON_PUDDLES);
 
     //	CMD3(CCC_Mask,		"r2_sun_ignore_portals",		&ps_r2_ls_flags,			R2FLAG_SUN_IGNORE_PORTALS);
+
+    CMD1(CCC_PART_Export, "particles_export");
+    CMD1(CCC_PART_Import, "particles_import");
 }
