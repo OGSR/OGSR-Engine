@@ -15,6 +15,7 @@
 #include "xr_object.h"
 #include "SkeletonMotions.h"
 #include "IGame_Persistent.h"
+#include "LightAnimLibrary.h"
 
 xr_token* vid_quality_token = nullptr;
 
@@ -116,6 +117,13 @@ class CCC_DbgStrDump : public IConsole_Command
 public:
     CCC_DbgStrDump(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
     virtual void Execute(LPCSTR args) { g_pStringContainer->dump(); }
+};
+
+class CCC_DbgLALibDump : public IConsole_Command
+{
+public:
+    CCC_DbgLALibDump(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    virtual void Execute(LPCSTR args) { LALib.DbgDumpInfo(); }
 };
 
 //-----------------------------------------------------------------------
@@ -780,4 +788,6 @@ void CCC_Register()
     CMD4(CCC_Float, "rain_puddles_wetting", &puddles_wetting, 0.1f, 20.0f);
 
     CMD4(CCC_Integer, "g_prefetch", &g_prefetch, 0, 1);
+
+    CMD1(CCC_DbgLALibDump, "dbg_lalib_dump");
 };

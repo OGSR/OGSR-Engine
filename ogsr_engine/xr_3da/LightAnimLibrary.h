@@ -57,6 +57,8 @@ public:
     void Unload();
     CLAItem* AppendItem(LPCSTR name, CLAItem* src);
     LAItemVec& Objects() { return Items; }
+
+    void DbgDumpInfo() const;
 };
 
 extern ENGINE_API ELightAnimLibrary LALib;

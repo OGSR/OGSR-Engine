@@ -206,6 +206,18 @@ void ELightAnimLibrary::Unload()
     Items.clear();
 }
 
+void ELightAnimLibrary::DbgDumpInfo() const
+{
+    LAItemVec tmp{Items};
+
+    std::sort(tmp.begin(), tmp.end(), [](const CLAItem* a, const CLAItem* b) { return xr_strcmp(a->cName, b->cName) < 0; });
+
+    for (auto& Item : tmp)
+    {
+        Msg("~ ELightAnimLibrary Item [%s] FPS: %.2f, FrameCount: %d, KeyCount: %d", Item->cName.c_str(), Item->fFPS, Item->iFrameCount, Item->Keys.size());
+    }
+}
+
 void ELightAnimLibrary::Load()
 {
     string_path fn;
