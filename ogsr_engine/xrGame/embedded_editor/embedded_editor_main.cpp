@@ -12,6 +12,7 @@
 #include "embedded_editor_weather.h"
 #include "embedded_editor_hud.h"
 #include "embedded_editor_pos_informer.h"
+#include "embedded_editor_sound_env.h"
 
 bool bShowWindow = true;
 
@@ -19,6 +20,7 @@ bool show_test_window = false;
 bool show_weather_window = false;
 bool show_hud_editor = false;
 bool show_position_informer = false;
+bool show_sound_env_window = false;
 
 /*
 bool show_info_window = false;
@@ -60,6 +62,8 @@ void ShowMain()
         show_position_informer = !show_position_informer;
     if (ImGui::Button("HUD Editor"))
         show_hud_editor = !show_hud_editor;
+    if (ImGui::Button("Sound Env Editor"))
+        show_sound_env_window = !show_sound_env_window;
 
     if (ImGui::Button("Test Window"))
         show_test_window = !show_test_window;
@@ -98,6 +102,8 @@ void ShowMain()
 
 void ShowEditor()
 {
+    ::Sound->DbgCurrentEnvPaused(false);
+
     if (!IsEditor())
         return;
 
@@ -123,6 +129,8 @@ void ShowEditor()
         ShowPositionInformer(show_position_informer);
     if (show_hud_editor)
         ShowHudEditor(show_hud_editor);
+    if (show_sound_env_window)
+        ShowSoundEnvEditor(show_sound_env_window);
     //if (show_prop_window)
     //    ShowPropEditor(show_prop_window);
     //if (show_lua_binder)

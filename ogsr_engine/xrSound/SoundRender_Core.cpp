@@ -53,7 +53,7 @@ CSoundRender_Core::CSoundRender_Core()
     s_targets_pu = 0;
     s_emitters_u = 0;
     e_current.set_identity();
-    e_target.set_identity();
+    e_target = get_environment_def();
     bListenerMoved = FALSE;
     bReady = FALSE;
     bLocked = FALSE;
@@ -186,12 +186,7 @@ void CSoundRender_Core::env_unload()
     {
         if (bSenvironmentXrExport)
         {
-            string_path fn;
-            FS.update_path(fn, "$game_data$", SNDENV_FILENAME_LTX);
-
-            CInifile inifile{fn, 0, 1, 1};
-
-            s_environment->SaveIni(&inifile);
+            env_save_all();
         }
 
         s_environment->Unload();
@@ -200,6 +195,16 @@ void CSoundRender_Core::env_unload()
     xr_delete(s_environment);
 
     // Unload geometry
+}
+
+void CSoundRender_Core::env_save_all() const
+{
+    string_path fn;
+    FS.update_path(fn, "$game_data$", SNDENV_FILENAME_LTX);
+
+    CInifile inifile{fn, 0, 1, 1};
+
+    s_environment->SaveIni(&inifile);
 }
 
 void CSoundRender_Core::_restart()
@@ -447,10 +452,15 @@ void CSoundRender_Core::_destroy_data(ref_sound_data& S)
     S.handle = NULL;
 }
 
-CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
+CSoundRender_Environment* CSoundRender_Core::get_environment_def()
 {
     static CSoundRender_Environment identity;
+    identity.set_identity();
+    return &identity;
+}
 
+CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
+{
     if (geom_ENV)
     {
         Fvector dir = {0, -1, 0};
@@ -498,8 +508,7 @@ CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
         }
     }
 
-    identity.set_identity();
-    return &identity;
+    return get_environment_def();
 }
 
 void CSoundRender_Core::env_apply()
@@ -626,8 +635,8 @@ void CSoundRender_Core::i_eax_listener_set(CSound_environment* _E)
     ep.flReflectionsDelay = E->ReflectionsDelay; // initial reflection delay time
     ep.lReverb = iFloor(E->Reverb); // late reverberation level relative to room effect
     ep.flReverbDelay = E->ReverbDelay; // late reverberation delay time relative to initial reflection
-    ep.dwEnvironment = EAXLISTENER_DEFAULTENVIRONMENT; // sets all listener properties
-    ep.flEnvironmentSize = E->EnvironmentSize; // environment size in meters
+    //ep.dwEnvironment = EAXLISTENER_DEFAULTENVIRONMENT; // sets all listener properties
+    //ep.flEnvironmentSize = E->EnvironmentSize; // environment size in meters
     ep.flEnvironmentDiffusion = E->EnvironmentDiffusion; // environment diffusion
     ep.flAirAbsorptionHF = E->AirAbsorptionHF; // change in level per meter at 5 kHz
     ep.dwFlags = EAXLISTENER_DEFAULTFLAGS; // modifies the behavior of properties

@@ -110,16 +110,19 @@ void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector
         if (bListenerMoved)
         {
             bListenerMoved = FALSE;
-            e_target = *get_environment(P);
+            e_target = get_environment(P);
 
-            if (!curr_env.size() || curr_env != e_target.name)
+            if (!curr_env.size() || curr_env != e_target->name)
             {
-                curr_env = e_target.name;
+                curr_env = e_target->name;
                 Msg("~ current environment sound zone name [%s]", curr_env.c_str());
             }
         }
 
-        e_current.lerp(e_current, e_target, dt_sec);
+        if (!e_currentPaused)
+            e_current.lerp(e_current, *e_target, dt_sec);
+        else
+            e_current.set_from(*e_target);
 
         if (bEAX)
         {
