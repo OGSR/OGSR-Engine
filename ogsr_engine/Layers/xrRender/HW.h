@@ -55,6 +55,8 @@ public:
     ID3D11DeviceContext* pContext = nullptr;
     IDXGISwapChain* m_pSwapChain = nullptr;
 
+    ID3DUserDefinedAnnotation* pAnnotation{};
+
     CHWCaps Caps;
 
     DXGI_SWAP_CHAIN_DESC m_ChainDesc; //	DevPP equivalent

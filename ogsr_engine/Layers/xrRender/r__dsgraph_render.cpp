@@ -268,7 +268,7 @@ void sort_tlist_mat(xr_vector<mapMatrixTextures::TNode*>& lst,
 
 void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 {
-    // PIX_EVENT(r_dsgraph_render_graph);
+    PIX_EVENT(r_dsgraph_render_graph);
     Device.Statistic->RenderDUMP.Begin();
 
     // **************************************************** NORMAL
@@ -473,7 +473,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority, bool _clear)
 // HUD render
 void R_dsgraph_structure::r_dsgraph_render_hud()
 {
-    // PIX_EVENT(r_dsgraph_render_hud);
+    PIX_EVENT(r_dsgraph_render_hud);
 
     // Change projection
     Fmatrix Pold = Device.mProject;

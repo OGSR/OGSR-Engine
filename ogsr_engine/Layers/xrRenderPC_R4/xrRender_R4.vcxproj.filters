@@ -1304,9 +1304,6 @@
     <ClCompile Include="..\xrRenderDX10\3DFluid\dx103DFluidRenderer.cpp">
       <Filter>3DFluid</Filter>
     </ClCompile>
-    <ClCompile Include="..\xrRender\Debug\dxPixEventWrapper.cpp">
-      <Filter>Debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\xrRender\RenderTargetPhaseRainDrops.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>

@@ -206,6 +206,8 @@ void CHW::CreateDevice(HWND m_hWnd)
     fill_vid_mode_list(this);
 
     ImGui_ImplDX11_Init(m_hWnd, pDevice, pContext);
+
+    pContext->QueryInterface(IID_PPV_ARGS(&pAnnotation));
 }
 
 void CHW::DestroyDevice()
@@ -221,6 +223,8 @@ void CHW::DestroyDevice()
 
     _SHOW_REF("refCount:pBaseZB", pBaseZB);
     _RELEASE(pBaseZB);
+
+    _RELEASE(pAnnotation);
 
     _SHOW_REF("refCount:pBaseRT", pBaseRT);
     _RELEASE(pBaseRT);
