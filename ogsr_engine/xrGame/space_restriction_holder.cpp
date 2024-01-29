@@ -179,11 +179,12 @@ bool try_remove_string(shared_str& search_string, const shared_str& string_to_se
 void CSpaceRestrictionHolder::unregister_restrictor(CSpaceRestrictor* space_restrictor)
 {
     shared_str restrictor_id = space_restrictor->cName();
+
     auto I = m_restrictions.find(restrictor_id);
-    bool found = I != m_restrictions.end();
-    ASSERT_FMT_DBG(found, "!![" __FUNCTION__ "] restrictor [%s] not found!", restrictor_id.c_str());
-    if (found)
-        m_restrictions.erase(I);
+    ASSERT_FMT(I != m_restrictions.end(), "!![" __FUNCTION__ "] restrictor [%s] not found!", restrictor_id.c_str());
+
+    CSpaceRestrictionBridge* bridge = (*I).second;
+    m_restrictions.erase(I);
 
     if (try_remove_string(m_default_out_restrictions, restrictor_id))
         on_default_restrictions_changed();
@@ -194,7 +195,7 @@ void CSpaceRestrictionHolder::unregister_restrictor(CSpaceRestrictor* space_rest
     }
 
     CSpaceRestrictionBase* composition = xr_new<CSpaceRestrictionComposition>(this, restrictor_id);
-    CSpaceRestrictionBridge* bridge = xr_new<CSpaceRestrictionBridge>(composition);
+    bridge->change_implementation(composition);
     m_restrictions.insert(std::make_pair(restrictor_id, bridge));
 
     collect_garbage();
@@ -206,7 +207,7 @@ IC void CSpaceRestrictionHolder::collect_garbage()
     RESTRICTIONS::iterator E = m_restrictions.end();
     for (; I != E;)
     {
-        if (!(*I).second->shape() && !(*I).second->m_ref_count && (Device.dwTimeGlobal >= (*I).second->m_last_time_dec + time_to_delete))
+        if (!(*I).second->shape() && (*I).second->released() && (Device.dwTimeGlobal >= (*I).second->m_last_time_dec + time_to_delete))
         {
             J = I;
             ++I;

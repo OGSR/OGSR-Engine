@@ -378,7 +378,6 @@
     <ClInclude Include="xrsharedmem.h" />
     <ClInclude Include="xrstring.h" />
     <ClInclude Include="intrusive_ptr.h" />
-    <ClInclude Include="intrusive_ptr_inline.h" />
     <ClInclude Include="rt_compressor.h" />
     <ClInclude Include="lzhuf.h" />
     <ClInclude Include="xrSyncronize.h" />

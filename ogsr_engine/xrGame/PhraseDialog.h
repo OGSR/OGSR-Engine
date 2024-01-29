@@ -38,7 +38,9 @@ DEFINE_VECTOR(CPhrase*, PHRASE_VECTOR, PHRASE_VECTOR_IT);
 class CPhraseDialog;
 class CPhraseDialogManager;
 
-class CPhraseDialog : public CSharedClass<SPhraseDialogData, shared_str, false>, public CXML_IdToIndex<CPhraseDialog>, public intrusive_base
+class CPhraseDialog : public CSharedClass<SPhraseDialogData, shared_str, false>,
+                      public CXML_IdToIndex<CPhraseDialog>,
+                      public intrusive_base
 {
 private:
     typedef CSharedClass<SPhraseDialogData, shared_str, false> inherited_shared;

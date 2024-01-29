@@ -208,7 +208,7 @@ void CLevelGraph::draw_restrictions()
 
     for (; I != E; ++I)
     {
-        if (!(*I).second->m_ref_count)
+        if ((*I).second->released())
             continue;
         if (!(*I).second->initialized())
             continue;

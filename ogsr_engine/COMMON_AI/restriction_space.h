@@ -17,10 +17,12 @@ struct CTimeIntrusiveBase : public intrusive_base
     IC CTimeIntrusiveBase() : m_last_time_dec(0) {}
 
     template <typename T>
-    IC void _release(T* object)
+    IC void release(T*)
     {
         m_last_time_dec = Device.dwTimeGlobal;
     }
+
+    using intrusive_base::release;
 };
 
 enum ERestrictorTypes

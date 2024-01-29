@@ -78,23 +78,21 @@ void CSpaceRestrictionComposition::initialize()
 
     for (u32 i = 0; i < n; ++i)
     {
-        if (auto Restr = m_space_restriction_holder->restriction(_GetItem(*m_space_restrictors, i, element)))
-        {
-            if (!Restr->initialized())
-            {
-                return;
-            }
-        }
-        else
+        LPSTR space_restrictors = _GetItem(*m_space_restrictors, i, element);
+        //Msg("space_restrictors = [%s]", space_restrictors);
+        if (!m_space_restriction_holder->restriction(space_restrictors)->initialized())
         {
             return;
         }
     }
 
     Fsphere* spheres = (Fsphere*)_alloca(n * sizeof(Fsphere));
+
     for (u32 i = 0; i < n; ++i)
     {
-        SpaceRestrictionHolder::CBaseRestrictionPtr restriction = m_space_restriction_holder->restriction(_GetItem(*m_space_restrictors, i, element));
+        LPSTR space_restrictors = _GetItem(*m_space_restrictors, i, element);
+        //Msg("space_restrictors 2 = [%s]", space_restrictors);
+        SpaceRestrictionHolder::CBaseRestrictionPtr restriction = m_space_restriction_holder->restriction(space_restrictors);
 
         merge(restriction);
 

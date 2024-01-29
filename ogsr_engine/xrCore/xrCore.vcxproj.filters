@@ -309,9 +309,6 @@
     <ClInclude Include="intrusive_ptr.h">
       <Filter>intrusive_ptr</Filter>
     </ClInclude>
-    <ClInclude Include="intrusive_ptr_inline.h">
-      <Filter>intrusive_ptr</Filter>
-    </ClInclude>
     <ClInclude Include="rt_compressor.h">
       <Filter>Compression\rt</Filter>
     </ClInclude>
