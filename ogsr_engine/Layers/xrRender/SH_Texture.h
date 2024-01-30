@@ -41,18 +41,15 @@ public:
     //	void								Apply			(u32 dwStage);
 
     void surface_set(ID3DBaseTexture* surf);
-    ID3DBaseTexture* surface_get();
+    ID3DBaseTexture* surface_get() const;
 
-    IC BOOL isUser() { return flags.bUser; }
-    IC u32 get_Width()
+    inline u32 get_Width()
     {
-        desc_enshure();
-        return desc.Width;
+        return desc_Width;
     }
-    IC u32 get_Height()
+    inline u32 get_Height()
     {
-        desc_enshure();
-        return desc.Height;
+        return desc_Height;
     }
 
     void video_Sync(u32 _time) { m_play_time = _time; }
@@ -67,26 +64,16 @@ public:
     ID3DShaderResourceView* get_SRView() { return m_pSRView; }
 
 private:
-    IC BOOL desc_valid() { return pSurface == desc_cache; }
-    IC void desc_enshure()
-    {
-        if (!desc_valid())
-            desc_update();
-    }
-    void desc_update();
+
     void Apply(u32 dwStage);
-    void ProcessStaging();
-    D3D_USAGE GetUsage();
 
     //	Class data
 public: //	Public class members (must be encapsulated furthur)
     struct
     {
         u32 bLoaded : 1;
-        u32 bUser : 1;
         u32 seqCycles : 1;
-        u32 MemoryUsage : 28;
-        u32 bLoadedAsStaging : 1;
+        u32 memUsage : 28;
     } flags;
 
     fastdelegate::FastDelegate<void(u32)> bind;
@@ -103,18 +90,18 @@ public: //	Public class members (must be encapsulated furthur)
     };
 
 private:
-    ID3DBaseTexture* pSurface;
+    ID3DBaseTexture* pSurface{};
     // Sequence data
     xr_vector<ID3DBaseTexture*> seqDATA;
 
-    // Description
-    ID3DBaseTexture* desc_cache;
-    D3D_TEXTURE2D_DESC desc;
-
-    ID3DShaderResourceView* m_pSRView;
+    ID3DShaderResourceView* m_pSRView{};
     // Sequence view data
     xr_vector<ID3DShaderResourceView*> m_seqSRView;
+
+    u32 desc_Width{};
+    u32 desc_Height{};
 };
+
 struct resptrcode_texture : public resptr_base<CTexture>
 {
     void create(LPCSTR _name);

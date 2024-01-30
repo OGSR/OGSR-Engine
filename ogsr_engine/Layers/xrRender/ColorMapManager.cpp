@@ -22,14 +22,13 @@ void ColorMapManager::UpdateTexture(const shared_str& strTexName, int iTex)
 
     m_strCMap[iTex] = strTexName;
 
-    if (strTexName.size())
+    if (!strTexName.empty())
     {
         map_TexIt I = m_TexCache.find(strTexName);
         if (I != m_TexCache.end())
         {
             ID3DBaseTexture* e0 = I->second->surface_get();
             m_CMap[iTex]->surface_set(e0);
-            _RELEASE(e0);
         }
         else
         {
@@ -40,11 +39,10 @@ void ColorMapManager::UpdateTexture(const shared_str& strTexName, int iTex)
 
             ID3DBaseTexture* e0 = tmp->surface_get();
             m_CMap[iTex]->surface_set(e0);
-            _RELEASE(e0);
         }
     }
     else
     {
-        m_CMap[iTex]->surface_set(0);
+        m_CMap[iTex]->surface_set(nullptr);
     }
 }

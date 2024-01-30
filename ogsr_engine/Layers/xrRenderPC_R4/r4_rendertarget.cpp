@@ -970,13 +970,9 @@ CRenderTarget::~CRenderTarget()
     ID3DBaseTexture* pSurf = 0;
 
     pSurf = t_envmap_0->surface_get();
-    if (pSurf)
-        pSurf->Release();
     _SHOW_REF("t_envmap_0 - #small", pSurf);
 
     pSurf = t_envmap_1->surface_get();
-    if (pSurf)
-        pSurf->Release();
     _SHOW_REF("t_envmap_1 - #small", pSurf);
     //_SHOW_REF("t_envmap_0 - #small",t_envmap_0->pSurface);
     //_SHOW_REF("t_envmap_1 - #small",t_envmap_1->pSurface);

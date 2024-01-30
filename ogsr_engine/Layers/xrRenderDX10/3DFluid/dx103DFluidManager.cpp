@@ -375,7 +375,6 @@ void dx103DFluidManager::DetachAndSwapFluidData(dx103DFluidData& FluidData)
     ID3DTexture3D* pTSrc = FluidData.GetTexture(dx103DFluidData::VP_COLOR);
     FluidData.SetTexture(dx103DFluidData::VP_COLOR, pTTarg);
     pRTTextures[RENDER_TARGET_COLOR]->surface_set(pTSrc);
-    _RELEASE(pTTarg);
     _RELEASE(pTSrc);
 
     ID3DRenderTargetView* pV = FluidData.GetView(dx103DFluidData::VP_COLOR);

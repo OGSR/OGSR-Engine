@@ -87,7 +87,7 @@ static inline void reduce(size_t& w, size_t& h, size_t& l, int skip)
         h = 1;
 }
 
-ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStaging)
+ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 {
     // validation
     R_ASSERT(fRName && fRName[0]);
@@ -122,7 +122,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
     int img_loaded_lod{};
     ID3DBaseTexture* pTexture2D{};
     DirectX::TexMetadata IMG{};
-    DirectX::DDS_FLAGS dds_flags{ DirectX::DDS_FLAGS_PERMISSIVE };
+    DirectX::DDS_FLAGS dds_flags{DirectX::DDS_FLAGS_PERMISSIVE};
     bool allowFallback = true;
 
     do
@@ -133,14 +133,6 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
             Msg("! Failed to load DDS texture from memory: [%s], hr: [%d]", fn, hr);
             break;
         }
-
-        // Staging control
-        static const bool bAllowStaging = !!strstr(Core.Params, "-staging");
-        bStaging &= bAllowStaging;
-
-        const D3D11_USAGE usage = bStaging ? D3D_USAGE_STAGING : D3D_USAGE_IMMUTABLE /*D3D_USAGE_DEFAULT*/;
-        const unsigned int bindFlags = bStaging ? 0 : D3D_BIND_SHADER_RESOURCE;
-        const unsigned int cpuAccessFlags = bStaging ? D3D_CPU_ACCESS_WRITE : 0;
 
         // Check for LMAP and compress if needed
         size_t mip_lod{};
@@ -160,8 +152,8 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize, bool bStag
             IMG.height = (IMG.height + 3u) & ~0x3u;
         }
 
-        const auto hr = CreateTextureEx(HW.pDevice, texture.GetImages() + mip_lod, texture.GetImageCount(),
-            IMG, usage, bindFlags, cpuAccessFlags, IMG.miscFlags, DirectX::CREATETEX_DEFAULT, &pTexture2D);
+        const auto hr = CreateTextureEx(HW.pDevice, texture.GetImages() + mip_lod, texture.GetImageCount(), IMG, D3D_USAGE_IMMUTABLE, D3D_BIND_SHADER_RESOURCE, 0, IMG.miscFlags,
+                                        DirectX::CREATETEX_DEFAULT, &pTexture2D);
 
         if (SUCCEEDED(hr))
         {

@@ -161,9 +161,7 @@ void dxEnvironmentRender::OnFrame(CEnvironment& env)
     ID3DBaseTexture* e1 = mixRen.sky_r_textures[1].second->surface_get();
 
     tsky0->surface_set(e0);
-    _RELEASE(e0);
     tsky1->surface_set(e1);
-    _RELEASE(e1);
 }
 
 void dxEnvironmentRender::OnLoad()

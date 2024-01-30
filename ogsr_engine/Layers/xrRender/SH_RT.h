@@ -16,10 +16,10 @@ public:
     IC BOOL valid() { return !!pTexture; }
 
 public:
-    ID3DTexture2D* pSurface;
-    ID3DRenderTargetView* pRT;
-    ID3DDepthStencilView* pZRT;
-    ID3D11UnorderedAccessView* pUAView;
+    ID3DTexture2D* pSurface{};
+    ID3DRenderTargetView* pRT{};
+    ID3DDepthStencilView* pZRT{};
+    ID3D11UnorderedAccessView* pUAView{};
 
     ref_texture pTexture;
 
