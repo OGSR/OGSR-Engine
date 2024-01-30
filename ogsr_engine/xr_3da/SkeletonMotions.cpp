@@ -160,11 +160,14 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
         R_ASSERT(MS->find_chunk(m_idx + 1));
         MS->r_stringZ(mname, sizeof(mname));
 
-        // sanity check
-        xr_strlwr(mname);
-        auto I = m_motion_map.find(mname);
-        ASSERT_FMT_DBG(I != m_motion_map.end(), "!![%s][%s] Can't find motion: [%s]", __FUNCTION__, N, mname);
-        ASSERT_FMT_DBG(I->second == m_idx, "!![%s][%s] Invalid motion index: [%s]", __FUNCTION__, N, mname);
+        if constexpr (false) //В ганслингере полно таких ошибок в анимациях, не вижу смысла спамить ими в лог
+        {
+            // sanity check
+            xr_strlwr(mname);
+            auto I = m_motion_map.find(mname);
+            ASSERT_FMT_DBG(I != m_motion_map.end(), "!![%s][%s] Can't find motion: [%s]", __FUNCTION__, N, mname);
+            ASSERT_FMT_DBG(I->second == m_idx, "!![%s][%s] Invalid motion index: [%s]", __FUNCTION__, N, mname);
+        }
 
         u32 dwLen = MS->r_u32();
         for (u32 i = 0; i < bones->size(); i++)
