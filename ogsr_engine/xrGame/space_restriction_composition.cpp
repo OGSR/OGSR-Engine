@@ -46,19 +46,19 @@ bool CSpaceRestrictionComposition::inside(const Fsphere& sphere)
     {
         initialize();
         if (!initialized())
-            return (true);
+            return true;
     }
 
     if (!m_sphere.intersect(sphere))
-        return (false);
+        return false;
 
     RESTRICTIONS::iterator I = m_restrictions.begin();
     RESTRICTIONS::iterator E = m_restrictions.end();
     for (; I != E; ++I)
-        if ((*I)->inside(sphere))
-            return (true);
+        if ((*I) && (*I)->inside(sphere))
+            return true;
 
-    return (false);
+    return false;
 }
 
 void CSpaceRestrictionComposition::initialize()
