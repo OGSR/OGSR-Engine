@@ -609,7 +609,7 @@ void CModelPool::process_vis_prefetch()
 {
     if (!vis_prefetch_ini->section_exist("prefetch"))
         return;
-    std::vector<const char*> expired;
+    xr_vector<const char*> expired;
     const auto& sect = vis_prefetch_ini->r_section("prefetch");
     for (const auto& [key, val] : sect.Data)
     {

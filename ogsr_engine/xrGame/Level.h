@@ -144,7 +144,7 @@ private:
     // preload sounds registry
     DEFINE_MAP(shared_str, ref_sound, SoundRegistryMap, SoundRegistryMapIt);
     SoundRegistryMap sound_registry;
-    std::deque<std::string> sound_registry_defer;
+    xr_deque<std::string> sound_registry_defer;
 
 public:
     bool PrefetchSound(LPCSTR name);

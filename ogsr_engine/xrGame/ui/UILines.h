@@ -86,7 +86,7 @@ protected:
     bool m_bDrawCursor;
 
     Text m_text;
-    std::vector<bool> m_text_mask;
+    xr_vector<bool> m_text_mask;
 
     ETextAlignment m_eTextAlign;
     EVTextAlignment m_eVTextAlign;

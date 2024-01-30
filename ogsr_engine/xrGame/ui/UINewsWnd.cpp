@@ -120,5 +120,6 @@ void CUINewsWnd::Show(bool status)
 void CUINewsWnd::Reset()
 {
     inherited::Reset();
+    UIScrollWnd->Clear();
     m_flags.set(eNeedAdd, TRUE);
 }

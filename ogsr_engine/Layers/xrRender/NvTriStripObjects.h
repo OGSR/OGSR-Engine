@@ -69,13 +69,13 @@ public:
     }
 
     // ref and unref
-    void Unref()
+    bool Unref()
     {
         if (--m_refCount == 0)
         {
-            auto ptr = this;
-            xr_delete(ptr);
+            return true;
         }
+        return false;
     }
 
     // data members are left public

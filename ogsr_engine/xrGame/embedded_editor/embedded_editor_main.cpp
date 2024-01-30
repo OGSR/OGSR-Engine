@@ -75,7 +75,7 @@ void ShowMain()
 
     float framerate = ImGui::GetIO().Framerate;
 
-    static std::vector<float> frames;
+    static xr_vector<float> frames;
 
     	// Get frames
     if (frames.size() > 100) // Max seconds to show

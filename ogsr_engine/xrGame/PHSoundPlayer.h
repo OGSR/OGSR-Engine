@@ -5,9 +5,9 @@ class CPhysicsShellHolder;
 
 class CPHSoundPlayer
 {
-    std::unordered_map<SGameMtlPair*, ref_sound> m_sound;
+    xr_unordered_map<SGameMtlPair*, ref_sound> m_sound;
     CPhysicsShellHolder* m_object;
-    std::unordered_map<SGameMtlPair*, u32> m_next_snd_time;
+    xr_unordered_map<SGameMtlPair*, u32> m_next_snd_time;
 
 public:
     void Init(CPhysicsShellHolder* m_object);

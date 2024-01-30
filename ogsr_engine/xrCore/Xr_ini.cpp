@@ -151,11 +151,12 @@ CInifile::~CInifile()
 
     xr_free(fName);
 
+    Ordered_DATA.clear();
+
     for (auto& I : DATA)
         xr_delete(I.second);
 
     DATA.clear();
-    Ordered_DATA.clear();
 }
 
 void insert_item(CInifile::Sect* tgt, const CInifile::Item& I)
@@ -201,6 +202,8 @@ void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CIni
             {
                 FATAL("Duplicate section '%s' found.", Current->Name.c_str());
             }
+
+            xr_delete(Current);
         }
         else
         {
@@ -222,7 +225,7 @@ void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CIni
 
             Current->Index = DATA.size();
             DATA.emplace(Current->Name, Current);
-            Ordered_DATA.push_back({Current->Name, Current});
+            Ordered_DATA.emplace_back(Current->Name, Current);
         }
     };
 
@@ -399,7 +402,7 @@ bool CInifile::save_as(LPCSTR new_fname)
     IWriter* F = FS.w_open_ex(fName);
     if (F)
     {
-        std::vector<Sect*> sorted_List;
+        xr_vector<Sect*> sorted_List;
 
         for (const auto& r_it : DATA)
         {

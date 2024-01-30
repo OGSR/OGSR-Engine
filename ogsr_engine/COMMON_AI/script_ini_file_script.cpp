@@ -106,12 +106,13 @@ void CScriptIniFile::script_register(lua_State* L)
                   .def("w_vector", &CScriptIniFile::w_fvector3)
                   .def("w_vector4", &CScriptIniFile::w_fvector4),
 
-              def("system_ini", [] { return reinterpret_cast<CScriptIniFile*>(pSettings); }), def("game_ini", [] { return reinterpret_cast<CScriptIniFile*>(pGameIni); }),
+              def("system_ini", [] { return reinterpret_cast<CScriptIniFile*>(pSettings); }), 
+              def("game_ini", [] { return reinterpret_cast<CScriptIniFile*>(pGameIni); }),
               def(
                   "create_ini_file", // чтение ini как текста, без возможности сохранить
                   [](const char* ini_string) {
                       IReader reader((void*)ini_string, strlen(ini_string));
-                      return static_cast<CScriptIniFile*>(xr_new<CInifile>(&reader, FS.get_path("$game_config$")->m_Path));
+                      return xr_new<CScriptIniFile>(&reader, FS.get_path("$game_config$")->m_Path);
                   },
                   adopt<result>()),
               def("reload_system_ini", &reload_system_ini)];

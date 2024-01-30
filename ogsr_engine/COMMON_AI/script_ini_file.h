@@ -15,6 +15,8 @@ class CScriptIniFile : public CInifile
 protected:
     typedef CInifile inherited;
 
+    static LPCSTR update(LPCSTR file_name);
+
 public:
     CScriptIniFile(IReader* F, LPCSTR path = 0);
     CScriptIniFile(LPCSTR szFileName, bool updatePath = true);
@@ -22,8 +24,6 @@ public:
 
     bool line_exist(LPCSTR S, LPCSTR L);
     bool section_exist_script(LPCSTR S);
-
-    LPCSTR update(LPCSTR file_name);
     u32 line_count(LPCSTR S);
 
     int r_clsid(LPCSTR S, LPCSTR L);

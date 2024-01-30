@@ -104,6 +104,8 @@ void CLevel::remove_objects()
     Msg("~ ObjectResources - base: %d, %d K", c_base, m_base / 1024);
     Msg("~ ObjectResources - lmap: %d, %d K", c_lmaps, m_lmaps / 1024);
 
+    ai().script_engine().collect_all_garbage();
+
     m_is_removing_objects = false;
 }
 
