@@ -376,5 +376,8 @@
     <ClInclude Include="crc32.h">
       <Filter>shared memory/string library</Filter>
     </ClInclude>
+    <ClInclude Include="xalloc.h">
+      <Filter>Memory manager</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

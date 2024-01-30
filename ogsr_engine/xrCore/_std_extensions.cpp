@@ -34,7 +34,7 @@ char* xr_strdup(const char* string)
 {
     VERIFY(string);
     size_t len = strlen(string) + 1;
-    char* memory = (char*)Memory.mem_alloc(len);
+    char* memory = (char*)xr_malloc(len);
     CopyMemory(memory, string, len);
     return memory;
 }

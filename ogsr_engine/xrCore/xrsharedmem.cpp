@@ -8,7 +8,7 @@ smem_value* smem_container::dock(u32 dwSize, void* ptr)
 
     if (bDisable)
     {
-        smem_value* result = (smem_value*)Memory.mem_alloc(sizeof(smem_value) + dwSize);
+        smem_value* result = (smem_value*)xr_malloc(sizeof(smem_value) + dwSize);
         result->dwReference = 0;
         result->dwSize = dwSize;
         result->dwCRC = u32(-1);
@@ -53,7 +53,7 @@ smem_value* smem_container::dock(u32 dwSize, void* ptr)
     // if not found - create new entry
     if (0 == result)
     {
-        result = (smem_value*)Memory.mem_alloc(sizeof(smem_value) + dwSize);
+        result = (smem_value*)xr_malloc(sizeof(smem_value) + dwSize);
         result->dwReference = 0;
         result->dwCRC = dwCRC;
         result->dwSize = dwSize;

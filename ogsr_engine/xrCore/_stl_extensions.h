@@ -1,28 +1,12 @@
 #pragma once
 
+#include <queue>
+
+#include "xalloc.h"
+
 using std::swap; // TODO: Убрать!
 
-
-struct xr_allocator
-{
-    template <typename T>
-    struct helper
-    {
-        typedef std::allocator<T> result;
-    };
-
-    static void* alloc(const u32& n) { return Memory.mem_alloc(n); }
-    template <typename T>
-    static void dealloc(T*& p)
-    {
-        xr_free(p);
-    }
-};
-
-// string(char)
-using xr_string = std::basic_string<char, std::char_traits<char>, std::allocator<char>>;
-
-template <typename T, typename allocator = std::allocator<T>>
+template <typename T, typename allocator = xr_allocator<T>>
 using xr_vector = std::vector<T, allocator>;
 
 template <typename T>
@@ -38,28 +22,31 @@ void clear_and_reserve(xr_vector<T>& vec)
     }
 }
 
-template <typename T, typename allocator = std::allocator<T>>
+template <typename T, typename allocator = xr_allocator<T>>
 using xr_deque = std::deque<T, allocator>;
 
 template <typename T, class C = xr_deque<T>>
 using xr_stack = std::stack<T, C>;
 
-template <typename T, typename allocator = std::allocator<T>>
+template <typename T, class C = xr_deque<T>>
+using xr_queue = std::queue<T, C>;
+
+template <typename T, typename allocator = xr_allocator<T>>
 using xr_list = std::list<T, allocator>;
 
-template <typename K, class P = std::less<K>, typename allocator = std::allocator<K>>
+template <typename K, class P = std::less<K>, typename allocator = xr_allocator<K>>
 using xr_set = std::set<K, P, allocator>;
 
-template <typename K, class P = std::less<K>, typename allocator = std::allocator<K>>
+template <typename K, class P = std::less<K>, typename allocator = xr_allocator<K>>
 using xr_multiset = std::multiset<K, P, allocator>;
 
-template <typename K, class V, class P = std::less<K>, typename allocator = std::allocator<std::pair<const K, V>>>
+template <typename K, class V, class P = std::less<K>, typename allocator = xr_allocator<std::pair<const K, V>>>
 using xr_map = std::map<K, V, P, allocator>;
 
-template <typename K, class V, class P = std::less<K>, typename allocator = std::allocator<std::pair<const K, V>>>
+template <typename K, class V, class P = std::less<K>, typename allocator = xr_allocator<std::pair<const K, V>>>
 using xr_multimap = std::multimap<K, V, P, allocator>;
 
-template <typename K, typename V, class _Hasher = std::hash<K>, class _Keyeq = std::equal_to<K>, class _Alloc = std::allocator<std::pair<const K, V>>>
+template <typename K, typename V, class _Hasher = std::hash<K>, class _Keyeq = std::equal_to<K>, class _Alloc = xr_allocator<std::pair<const K, V>>>
 using xr_unordered_map = std::unordered_map<K, V, _Hasher, _Keyeq, _Alloc>;
 
 #define mk_pair std::make_pair // TODO: Везде заменить, а это убрать.
@@ -85,6 +72,9 @@ struct pred_stri
     typedef N::iterator N##_it;
 #define DEF_MAP(N, K, T) \
     typedef xr_map<K, T> N; \
+    typedef N::iterator N##_it;
+#define DEFINE_STACK(T, N) \
+    typedef xr_stack<T> N; \
     typedef N::iterator N##_it;
 
 #define DEFINE_DEQUE(T, N, I) \
@@ -114,7 +104,6 @@ struct pred_stri
 #define DEFINE_SET_PRED(T, N, I, P) \
     typedef xr_set<T, P> N; \
     typedef N::iterator I;
-#define DEFINE_STACK(T, N) typedef xr_stack<T> N;
 
 #include "FixedVector.h"
 
@@ -132,7 +121,6 @@ DEFINE_VECTOR(Fcolor, FcolorVec, FcolorIt);
 DEFINE_VECTOR(Fcolor*, LPFcolorVec, LPFcolorIt);
 DEFINE_VECTOR(LPSTR, LPSTRVec, LPSTRIt);
 DEFINE_VECTOR(LPCSTR, LPCSTRVec, LPCSTRIt);
-DEFINE_VECTOR(xr_string, SStringVec, SStringVecIt);
 
 DEFINE_VECTOR(s8, S8Vec, S8It);
 DEFINE_VECTOR(s8*, LPS8Vec, LPS8It);

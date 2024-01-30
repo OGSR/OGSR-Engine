@@ -1,6 +1,17 @@
 #pragma once
 
-template <class K, class T, class allocator = xr_allocator>
+struct xr_allocator_legacy
+{
+    static void* alloc(const u32& n) { return xr_malloc(n); }
+
+    template <typename T>
+    static void dealloc(T*& p)
+    {
+        xr_free(p);
+    }
+};
+
+template <class K, class T, class allocator = xr_allocator_legacy>
 class FixedMAP
 {
     enum

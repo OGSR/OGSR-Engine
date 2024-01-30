@@ -1,7 +1,17 @@
 #pragma once
 
+struct PointerInfo
+{
+public:
+    std::string identity;
+    unsigned int line{};
+    bool is_class{};
+    bool is_contaner{};
+    size_t size{};
+};
+
 template <typename T>
-class PointerAllocator
+struct PointerAllocator
 {
 public:
     using size_type = size_t;
@@ -15,35 +25,34 @@ public:
     pointer address(reference ref) const { return &ref; }
     const_pointer address(const_reference ref) const { return &ref; }
 
-    PointerAllocator() = default;
-    PointerAllocator(const PointerAllocator<T>&) = default;
+    //PointerAllocator() = default;
+    //PointerAllocator(const PointerAllocator<T>&) = default;
 
-    template <class Other>
-    PointerAllocator(const PointerAllocator<Other>&)
-    {}
+    //template <class Other>
+    //PointerAllocator(const PointerAllocator<Other>&)
+    //{}
 
     template <class Other>
     PointerAllocator& operator=(const PointerAllocator<Other>&)
     {
         return *this;
     }
-#pragma warning(push)
-#pragma warning(disable : 4267)
-    pointer allocate(const size_type n, const void* p = nullptr) const
+
+    pointer allocate(const size_type n, const void* = nullptr) const
     {
-        size_t MemoryRequired = sizeof(T) * n;
-        return (pointer)malloc(MemoryRequired);
+        size_t size = sizeof(T) * n;
+        return (pointer)malloc(size);
     }
-#pragma warning(pop)
 
     void deallocate(pointer p, const size_type) const { free(p); }
 
-    void deallocate(void* p, const size_type) const { free(p); }
-
-    void construct(pointer p, const T& _Val) { new (p) T(_Val); }
+    void construct(pointer p, const T& val) { new (p) T(val); }
 
     void destroy(pointer p) { p->~T(); }
 };
 
-void RegisterPointer(void* ptr);
-void UnregisterPointer(void* ptr);
+void PointerRegistryAdd(void* ptr, PointerInfo&& info);
+void PointerRegistryRelease(const void* ptr, const std::source_location& loc, bool is_class = false);
+void PointerRegistryClear();
+void PointerRegistryDump(float thresholdInKb = 1.f);
+void PointerRegistryInfo();

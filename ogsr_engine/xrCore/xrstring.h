@@ -149,6 +149,11 @@ public:
     }
 };
 
+// string(char)
+using xr_string = std::basic_string<char, std::char_traits<char>, xr_allocator<char>>;
+
+DEFINE_VECTOR(xr_string, SStringVec, SStringVecIt);
+
 // externally visible standart functionality
 IC void swap(shared_str& lhs, shared_str& rhs) { lhs.swap(rhs); }
 
@@ -199,7 +204,7 @@ struct transparent_string_equal
     [[nodiscard]] bool operator()(const char* lhs, const char* rhs) const { return !strcmp(lhs, rhs); }
 };
 
-template <typename Key, typename Value, class _Alloc = std::allocator<std::pair<const Key, Value>>>
+template <typename Key, typename Value, class _Alloc = xr_allocator<std::pair<const Key, Value>>>
 using string_unordered_map = std::unordered_map<Key, Value, transparent_string_hash, transparent_string_equal, _Alloc>;
 
 namespace xr_string_utils

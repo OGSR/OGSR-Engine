@@ -19,10 +19,6 @@
 #pragma comment(lib, "mimalloc-static")
 #endif
 
-#ifdef USE_MEMORY_VALIDATOR
-#include "xrMemoryDebug.h"
-#endif
-
 xrMemory Memory;
 
 void xrMemory::_initialize()
@@ -76,9 +72,7 @@ void* xrMemory::mem_alloc(size_t size)
     stat_calls++;
 
     void* ptr = malloc(size);
-#ifdef USE_MEMORY_VALIDATOR
-    RegisterPointer(ptr);
-#endif
+
     return ptr;
 }
 
@@ -86,9 +80,6 @@ void xrMemory::mem_free(void* P)
 {
     stat_calls++;
 
-#ifdef USE_MEMORY_VALIDATOR
-    UnregisterPointer(P);
-#endif
     free(P);
 }
 
@@ -96,15 +87,12 @@ void* xrMemory::mem_realloc(void* P, size_t size)
 {
     stat_calls++;
 
-#ifdef USE_MEMORY_VALIDATOR
-    UnregisterPointer(P);
-#endif
     void* ptr = realloc(P, size);
-#ifdef USE_MEMORY_VALIDATOR
-    RegisterPointer(ptr);
-#endif
+
     return ptr;
 }
+
+u32 xrMemory::mem_usage(u32* pBlocksUsed, u32* pBlocksFree) { return u32(mem_usage_impl(pBlocksUsed, pBlocksFree)); }
 
 void GetProcessMemInfo(SProcessMemInfo& minfo)
 {
@@ -191,5 +179,3 @@ size_t mem_usage_impl(u32* pBlocksUsed, u32* pBlocksFree)
     }
     return total;
 }
-
-u32 xrMemory::mem_usage(u32* pBlocksUsed, u32* pBlocksFree) { return u32(mem_usage_impl(pBlocksUsed, pBlocksFree)); }

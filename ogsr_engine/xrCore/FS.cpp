@@ -80,9 +80,9 @@ void CMemoryWriter::w(const void* ptr, u32 count)
         while (mem_size <= (position + count))
             mem_size *= 2;
         if (0 == data)
-            data = (BYTE*)Memory.mem_alloc(mem_size);
+            data = (BYTE*)xr_malloc(mem_size);
         else
-            data = (BYTE*)Memory.mem_realloc(data, mem_size);
+            data = (BYTE*)xr_realloc(data, mem_size);
     }
     CopyMemory(data + position, ptr, count);
     position += count;
@@ -93,7 +93,7 @@ void CMemoryWriter::w(const void* ptr, u32 count)
 void CMemoryWriter::reserve(const size_t count)
 {
     mem_size = count;
-    data = (BYTE*)Memory.mem_alloc(mem_size);
+    data = (BYTE*)xr_malloc(mem_size);
 }
 
 bool CMemoryWriter::save_to(LPCSTR fn)
