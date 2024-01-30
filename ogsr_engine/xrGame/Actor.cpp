@@ -1855,9 +1855,9 @@ bool CActor::is_actor_running()
 
 bool CActor::is_actor_sprinting()
 {
-    return mstate_real & (mcJump | mcFall | mcLanding | mcLanding2 | mcLookout | mcCrouch | mcAccel | mcClimb | mcLStrafe | mcRStrafe) ? false :
-        (mstate_real & mcFwd && mstate_real & mcSprint)                                                                                ? true :
-                                                                                                                                         false;
+    return mstate_real & (mcJump | mcFall | mcLanding | mcLanding2 | mcLookout | mcCrouch | mcAccel | mcClimb) ? false :
+        (mstate_real & (mcFwd | mcLStrafe | mcRStrafe) && mstate_real & mcSprint)                              ? true :
+                                                                                                                 false;
 }
 
 bool CActor::is_actor_crouching()
