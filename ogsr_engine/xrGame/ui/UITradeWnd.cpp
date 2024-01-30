@@ -458,7 +458,7 @@ void CUITradeWnd::PerformTrade()
     int delta_price = int(m_iOurTradePrice - m_iOthersTradePrice);
 
     our_money += delta_price;
-    others_money -= delta_price;
+    others_money -= (m_pOthersInvOwner->InfinitiveMoney()) ? 0 : delta_price;
 
     if (our_money >= 0 && others_money >= 0 && (m_iOurTradePrice >= 0 || m_iOthersTradePrice > 0))
     {
