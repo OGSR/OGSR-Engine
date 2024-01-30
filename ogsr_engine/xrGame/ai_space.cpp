@@ -68,7 +68,6 @@ CAI_Space::~CAI_Space()
     VERIFY(!m_game_graph);
 
     xr_delete(m_script_engine);
-
     xr_delete(m_cover_manager);
 }
 
@@ -169,6 +168,7 @@ void CAI_Space::patrol_path_storage(IReader& stream)
 {
     xr_delete(m_patrol_path_storage);
     m_patrol_path_storage = xr_new<CPatrolPathStorage>();
+
     m_patrol_path_storage->load(stream);
 }
 

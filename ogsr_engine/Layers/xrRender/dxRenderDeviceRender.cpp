@@ -163,8 +163,6 @@ void dxRenderDeviceRender::Clear()
     }
 }
 
-void DoAsyncScreenshot();
-
 void dxRenderDeviceRender::End()
 {
     VERIFY(HW.pDevice);
@@ -173,8 +171,6 @@ void dxRenderDeviceRender::End()
         overdrawEnd();
 
     RCache.OnFrameEnd();
-
-    DoAsyncScreenshot();
 
     bool bUseVSync = psDeviceFlags.is(rsFullscreen) && psDeviceFlags.test(rsVSync); // xxx: weird tearing glitches when VSync turned on for windowed mode in DX10\11
     if (!Device.m_SecondViewport.IsSVPFrame() &&

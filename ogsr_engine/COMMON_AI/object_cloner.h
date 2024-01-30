@@ -51,26 +51,6 @@ struct CCloner
             clone(*I, *J);
     }
 
-    template <typename T1, typename T2>
-    IC static void clone(const std::queue<T1, T2>& __1, std::queue<T1, T2>& __2)
-    {
-        std::queue<T1, T2> _1 = __1;
-        std::queue<T1, T2> _2;
-
-        for (; !_1.empty(); _1.pop())
-            _2.push(_1.front());
-
-        while (!__2.empty())
-            __2.pop();
-
-        for (; !_2.empty(); _2.pop())
-        {
-            typename std::queue<T1, T2>::value_type t;
-            CCloner::clone(_2.front(), t);
-            __2.push(t);
-        }
-    }
-
     template <template <typename _1, typename _2> class T1, typename T2, typename T3>
     IC static void clone(const T1<T2, T3>& __1, T1<T2, T3>& __2, bool)
     {
@@ -117,11 +97,6 @@ struct CCloner
         return (clone(_1, _2, true));
     }
 
-    template <typename T1, typename T2, typename T3>
-    IC static void clone(const std::priority_queue<T1, T2, T3>& _1, std::priority_queue<T1, T2, T3>& _2)
-    {
-        return (clone(_1, _2, true));
-    }
 
     struct CHelper3
     {

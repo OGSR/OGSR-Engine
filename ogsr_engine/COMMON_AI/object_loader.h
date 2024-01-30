@@ -186,27 +186,6 @@ struct CLoader
         }
     }
 
-    template <typename T1, typename T2>
-    IC static void load_data(std::queue<T1, T2>& data, M& stream, const P& p)
-    {
-        if (p.can_clear())
-        {
-            while (!data.empty())
-                data.pop();
-        }
-        std::queue<T1, T2> temp;
-        u32 count = stream.r_u32();
-        for (u32 i = 0; i < count; ++i)
-        {
-            typename std::queue<T1, T2>::value_type t;
-            CLoader<M, P>::load_data(t, stream, p);
-            if (p(temp, t))
-                temp.push(t);
-        }
-        for (; !temp.empty(); temp.pop())
-            data.push(temp.front());
-    }
-
     template <template <typename _1, typename _2> class T1, typename T2, typename T3>
     IC static void load_data(T1<T2, T3>& data, M& stream, const P& p, bool)
     {
@@ -255,11 +234,6 @@ struct CLoader
         load_data(data, stream, p, true);
     }
 
-    template <typename T1, typename T2, typename T3>
-    IC static void load_data(std::priority_queue<T1, T2, T3>& data, M& stream, const P& p)
-    {
-        load_data(data, stream, p, true);
-    }
 
     template <typename T>
     IC static void load_data(T& data, M& stream, const P& p)

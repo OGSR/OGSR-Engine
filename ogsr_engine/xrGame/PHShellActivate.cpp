@@ -232,7 +232,7 @@ void CPHShell::Deactivate()
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
     if (m_pPhysicsShellAnimatorC)
     {
-        xr_delete<CPhysicsShellAnimator>(m_pPhysicsShellAnimatorC);
+        xr_delete(m_pPhysicsShellAnimatorC);
     }
 #endif
 

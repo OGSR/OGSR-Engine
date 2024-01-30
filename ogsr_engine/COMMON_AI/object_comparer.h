@@ -53,21 +53,6 @@ struct CComparer
         return (true);
     }
 
-    template <typename T1, typename T2>
-    IC static bool compare(const std::queue<T1, T2>& __1, const std::queue<T1, T2>& __2, const P& p)
-    {
-        std::queue<T1, T2> _1 = __1;
-        std::queue<T1, T2> _2 = __2;
-
-        if (_1.size() != _2.size())
-            return (p());
-
-        for (; !_1.empty(); _1.pop(), _2.pop())
-            if (!compare(_1.front(), _2.front(), p))
-                return (false);
-        return (true);
-    }
-
     template <template <typename _1, typename _2> class T1, typename T2, typename T3>
     IC static bool compare(const T1<T2, T3>& __1, const T1<T2, T3>& __2, const P& p, bool)
     {
@@ -104,11 +89,6 @@ struct CComparer
         return (compare(_1, _2, p, true));
     }
 
-    template <typename T1, typename T2, typename T3>
-    IC static bool compare(const std::priority_queue<T1, T2, T3>& _1, const std::priority_queue<T1, T2, T3>& _2, const P& p)
-    {
-        return (compare(_1, _2, p, true));
-    }
 
     struct CHelper3
     {

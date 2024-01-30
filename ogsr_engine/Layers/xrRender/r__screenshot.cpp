@@ -80,5 +80,3 @@ void CRender::ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* me
 }
 
 void CRender::Screenshot(ScreenshotMode mode, LPCSTR name) { ScreenshotImpl(mode, name, nullptr); }
-
-void DoAsyncScreenshot() { RImplementation.Target->DoAsyncScreenshot(); }

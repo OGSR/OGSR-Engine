@@ -6,32 +6,6 @@
 
 #define STENCIL_CULL 0
 
-void CRenderTarget::DoAsyncScreenshot()
-{
-    //	Igor: screenshot will not have postprocess applied.
-    //	TODO: fox that later
-    if (RImplementation.m_bMakeAsyncSS)
-    {
-        HRESULT hr;
-
-        //	HACK: unbind RT. CopyResourcess needs src and targetr to be unbound.
-        // u_setrt				( Device.dwWidth,Device.dwHeight,HW.pBaseRT,NULL,NULL,HW.pBaseZB);
-
-        // ID3DTexture2D *pTex = 0;
-        // if (RImplementation.o.dx10_msaa)
-        //	pTex = rt_Generic->pSurface;
-        // else
-        //	pTex = rt_Color->pSurface;
-
-        // HW.pDevice->CopyResource( t_ss_async, pTex );
-        ID3DTexture2D* pBuffer;
-        hr = HW.m_pSwapChain->GetBuffer(0, __uuidof(ID3D10Texture2D), (LPVOID*)&pBuffer);
-        HW.pContext->CopyResource(t_ss_async, pBuffer);
-
-        RImplementation.m_bMakeAsyncSS = false;
-    }
-}
-
 float hclip(float v, float dim) { return 2.f * v / dim - 1.f; }
 void CRenderTarget::phase_combine()
 {
@@ -340,14 +314,8 @@ void CRenderTarget::phase_combine()
        }
        */
 
-    // PP enabled ?
-    //	Render to RT texture to be able to copy RT even in windowed mode.
-    BOOL PP_Complex = u_need_PP() | (BOOL)RImplementation.m_bMakeAsyncSS;
-    if (_menu_pp)
-        PP_Complex = FALSE;
-
     // HOLGER - HACK
-    PP_Complex = TRUE;
+    BOOL PP_Complex = TRUE;
 
     // Postprocess anti-aliasing
     if (ps_r_pp_aa_mode)

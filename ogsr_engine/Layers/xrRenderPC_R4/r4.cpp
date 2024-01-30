@@ -379,8 +379,6 @@ void CRender::create()
     dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("pos_decompression_params2", &binder_pos_decompress_params2);
     dxRenderDeviceRender::Instance().Resources->RegisterConstantSetup("triLOD", &binder_LOD);
 
-    m_bMakeAsyncSS = false;
-
     Target = xr_new<CRenderTarget>(); // Main target
 
     Models = xr_new<CModelPool>();
@@ -408,7 +406,6 @@ void CRender::create()
 
 void CRender::destroy()
 {
-    m_bMakeAsyncSS = false;
 #ifdef DX10_FLUID_ENABLE
     FluidManager.Destroy();
 #endif
@@ -1192,7 +1189,7 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
     {
         Msg("! %s", file_name);
         if (pErrorBuf)
-            Log("! error: " + xr_string{reinterpret_cast<const char*>(pErrorBuf->GetBufferPointer())});
+            Log("! error: " + std::string{reinterpret_cast<const char*>(pErrorBuf->GetBufferPointer())});
         else
             Msg("Can't compile shader hr=0x%08x", _result);
     }

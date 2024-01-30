@@ -941,7 +941,7 @@ void CPHMovementControl::DestroyCharacter()
 
     m_character->Destroy();
     xr_delete(m_capture);
-    // xr_delete<CPHSimpleCharacter>(m_character);
+    // xr_delete(m_character);
 }
 
 void CPHMovementControl::DeleteCharacterObject()

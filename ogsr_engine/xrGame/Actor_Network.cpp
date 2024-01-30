@@ -257,8 +257,8 @@ void CActor::net_Destroy()
     if (m_pPhysicsShell)
     {
         m_pPhysicsShell->Deactivate();
-        xr_delete<CPhysicsShell>(m_pPhysicsShell);
-    };
+        xr_delete(m_pPhysicsShell);
+    }
     m_pPhysics_support->in_NetDestroy();
 
     xr_delete(m_sndShockEffector);

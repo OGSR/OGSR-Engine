@@ -126,16 +126,6 @@ struct CSaver
                 CSaver<M, P>::save_data(*I, stream, p);
     }
 
-    template <typename T1, typename T2>
-    IC static void save_data(const std::queue<T1, T2>& data, M& stream, const P& p)
-    {
-        std::queue<T1, T2> temp = data;
-        stream.w_u32((u32)data.size());
-        for (; !temp.empty(); temp.pop())
-            if (p(temp, temp.front()))
-                CSaver<M, P>::save_data(temp.front(), stream, p);
-    }
-
     template <template <typename _1, typename _2> class T1, typename T2, typename T3>
     IC static void save_data(const T1<T2, T3>& data, M& stream, const P& p, bool)
     {
@@ -162,11 +152,6 @@ struct CSaver
         save_data(data, stream, p, true);
     }
 
-    template <typename T1, typename T2, typename T3>
-    IC static void save_data(const std::priority_queue<T1, T2, T3>& data, M& stream, const P& p)
-    {
-        save_data(data, stream, p, true);
-    }
 
     template <typename T>
     IC static void save_data(const T& data, M& stream, const P& p)
