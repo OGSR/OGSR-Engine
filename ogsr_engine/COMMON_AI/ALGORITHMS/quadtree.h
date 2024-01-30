@@ -7,7 +7,6 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-
 #include "profiler.h"
 
 template <typename _object_type>
@@ -19,65 +18,68 @@ public:
         CQuadNode* m_neighbours[4];
 
         IC CQuadNode*& next() { return (m_neighbours[0]); }
+
+        ~CQuadNode() { }
     };
 
     struct CListItem
     {
-        _object_type* m_object;
-        CListItem* m_next;
+        _object_type* m_object{};
+        CListItem* m_next{};
 
         IC CListItem*& next() { return (m_next); }
+
+        ~CListItem()
+        {
+            xr_delete(m_object);
+        }
     };
 
     template <typename T>
-    struct CFixedStorage
+    struct CPool
     {
-        T* m_objects;
-        T* m_free;
-        u32 m_max_object_count;
+        CPool(u32 max_object_count) : m_max_object_count(max_object_count), m_free(0) {}
 
-        IC CFixedStorage(u32 max_object_count) : m_max_object_count(max_object_count)
+        T* get_object()
         {
-            m_objects = xr_alloc<T>(m_max_object_count);
-            T* B = 0;
-            T* I = m_objects;
-            T* E = m_objects + m_max_object_count;
-            for (; I != E; B = I, ++I)
-                I->next() = B;
-            m_free = E - 1;
-        }
-
-        virtual ~CFixedStorage() { xr_free(m_objects); }
-
-        IC T* get_object()
-        {
-            VERIFY(m_free);
+            if (!m_free)
+                createBlock();
             T* node = m_free;
             m_free = m_free->next();
             ZeroMemory(node, sizeof(T));
-            return (node);
+            return node;
         }
 
-        IC void clear()
-        {
-            T* B = 0;
-            T* I = m_objects;
-            T* E = m_objects + m_max_object_count;
-            m_free = E - 1;
-            for (; I != E; ++I)
-                I->next() = B;
-        }
+        void clear() { m_blocks.clear(); }
 
-        IC void remove(T*& node)
+        void remove(T*& node)
         {
             node->next() = m_free;
             m_free = node;
             node = 0;
         }
+
+        void createBlock()
+        {
+            m_blocks.emplace_back(xr_alloc<T>(m_max_object_count), [](T* p) {
+                p->~T();
+                xr_free(p);
+            });
+            T* B = 0;
+            T* I = m_blocks.back().get();
+            T* E = I + m_max_object_count;
+            for (; I != E; B = I, ++I)
+                I->next() = B;
+            m_free = E - 1;
+        }
+
+        xr_vector<std::unique_ptr<T, void (*)(T*)>> m_blocks;
+        T* m_free;
+        u32 m_max_object_count;
     };
 
-    typedef CFixedStorage<CQuadNode> CQuadNodeStorage;
-    typedef CFixedStorage<CListItem> CListItemStorage;
+    typedef CPool<CQuadNode> CQuadNodeStorage;
+    typedef CPool<CListItem> CListItemStorage;
 
 protected:
     Fvector m_center;
@@ -90,7 +92,8 @@ protected:
 
 protected:
     IC u32 neighbour_index(const Fvector& position, Fvector& center, float distance) const;
-    IC void nearest(const Fvector& position, float radius, xr_vector<_object_type*>& objects, CQuadNode* node, Fvector center, float distance, int depth) const;
+    IC void nearest(const Fvector& position, float radius, xr_vector<_object_type*>& objects, CQuadNode* node,
+        Fvector center, float distance, int depth) const;
     IC _object_type* remove(const _object_type* object, CQuadNode*& node, Fvector center, float distance, int depth);
     IC void all(xr_vector<_object_type*>& objects, CQuadNode* node, int depth) const;
 
@@ -100,10 +103,11 @@ public:
     IC void clear();
     IC void insert(_object_type* object);
     IC _object_type* remove(const _object_type* object);
-    IC _object_type* find(const Fvector& position);
+    IC _object_type* find(const Fvector& position) const;
     IC void nearest(const Fvector& position, float radius, xr_vector<_object_type*>& objects, bool clear = true) const;
     IC void all(xr_vector<_object_type*>& objects, bool clear = true) const;
     IC size_t size() const;
+    IC bool empty() const;
 };
 
 #include "quadtree_inline.h"

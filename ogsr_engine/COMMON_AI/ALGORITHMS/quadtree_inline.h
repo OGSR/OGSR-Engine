@@ -48,7 +48,8 @@ IC void CSQuadTree::clear()
 
 TEMPLATE_SPECIALIZATION
 IC size_t CSQuadTree::size() const { return (m_leaf_count); }
-
+TEMPLATE_SPECIALIZATION
+IC bool CSQuadTree::empty() const { return (!size()); }
 TEMPLATE_SPECIALIZATION
 IC u32 CSQuadTree::neighbour_index(const Fvector& position, Fvector& center, float distance) const
 {
@@ -111,7 +112,7 @@ IC void CSQuadTree::insert(_object_type* object)
 }
 
 TEMPLATE_SPECIALIZATION
-IC _object_type* CSQuadTree::find(const Fvector& position)
+IC _object_type* CSQuadTree::find(const Fvector& position) const
 {
     Fvector center = m_center;
     float distance = m_radius;
@@ -119,7 +120,7 @@ IC _object_type* CSQuadTree::find(const Fvector& position)
     for (int depth = 0;; ++depth)
     {
         if (!node)
-            return (0);
+            return (nullptr);
 
         distance *= .5f;
         u32 index = neighbour_index(position, center, distance);
@@ -131,7 +132,7 @@ IC _object_type* CSQuadTree::find(const Fvector& position)
             for (; leaf; leaf = leaf->m_next)
                 if (leaf->m_object->position().similar(position))
                     return (leaf->m_object);
-            return (0);
+            return (nullptr);
         }
 
         node = node->m_neighbours[index];
@@ -175,10 +176,14 @@ IC void CSQuadTree::nearest(const Fvector& position, float radius, xr_vector<_ob
         {
             if (_sqr(position.z - center.z) + _sqr(position.x - center.x) < _sqr(radius))
             {
-                nearest(position, radius, objects, node->m_neighbours[0], next_center.set(center.x - distance, center.y, center.z - distance), distance, depth + 1);
-                nearest(position, radius, objects, node->m_neighbours[1], next_center.set(center.x - distance, center.y, center.z + distance), distance, depth + 1);
-                nearest(position, radius, objects, node->m_neighbours[2], next_center.set(center.x + distance, center.y, center.z - distance), distance, depth + 1);
-                nearest(position, radius, objects, node->m_neighbours[3], next_center.set(center.x + distance, center.y, center.z + distance), distance, depth + 1);
+                nearest(position, radius, objects, node->m_neighbours[0],
+                    next_center.set(center.x - distance, center.y, center.z - distance), distance, depth + 1);
+                nearest(position, radius, objects, node->m_neighbours[1],
+                    next_center.set(center.x - distance, center.y, center.z + distance), distance, depth + 1);
+                nearest(position, radius, objects, node->m_neighbours[2],
+                    next_center.set(center.x + distance, center.y, center.z - distance), distance, depth + 1);
+                nearest(position, radius, objects, node->m_neighbours[3],
+                    next_center.set(center.x + distance, center.y, center.z + distance), distance, depth + 1);
                 return;
             }
 
@@ -188,21 +193,25 @@ IC void CSQuadTree::nearest(const Fvector& position, float radius, xr_vector<_ob
             {
                 if (index & 1)
                     nearest(position, radius, objects, node->m_neighbours[index == 1 ? 0 : 2],
-                            next_center.set(center.x + (index == 1 ? -1 : 1) * distance, center.y, center.z - distance), distance, depth + 1);
+                        next_center.set(center.x + (index == 1 ? -1 : 1) * distance, center.y, center.z - distance),
+                        distance, depth + 1);
             }
             else if (!(index & 1))
-                nearest(position, radius, objects, node->m_neighbours[!index ? 1 : 3], next_center.set(center.x + (!index ? -1 : 1) * distance, center.y, center.z + distance),
-                        distance, depth + 1);
+                nearest(position, radius, objects, node->m_neighbours[!index ? 1 : 3],
+                    next_center.set(center.x + (!index ? -1 : 1) * distance, center.y, center.z + distance), distance,
+                    depth + 1);
 
             if (position.x > center.x)
             {
                 if (index > 1)
                     nearest(position, radius, objects, node->m_neighbours[index == 2 ? 0 : 1],
-                            next_center.set(center.x - distance, center.y, center.z + (index == 2 ? -1 : 1) * distance), distance, depth + 1);
+                        next_center.set(center.x - distance, center.y, center.z + (index == 2 ? -1 : 1) * distance),
+                        distance, depth + 1);
             }
             else if (index < 2)
-                nearest(position, radius, objects, node->m_neighbours[!index ? 2 : 3], next_center.set(center.x + distance, center.y, center.z + (!index ? -1 : 1) * distance),
-                        distance, depth + 1);
+                nearest(position, radius, objects, node->m_neighbours[!index ? 2 : 3],
+                    next_center.set(center.x + distance, center.y, center.z + (!index ? -1 : 1) * distance), distance,
+                    depth + 1);
 
             return;
         }
@@ -214,11 +223,13 @@ IC void CSQuadTree::nearest(const Fvector& position, float radius, xr_vector<_ob
             {
                 if (index & 1)
                     nearest(position, radius, objects, node->m_neighbours[index == 1 ? 0 : 2],
-                            next_center.set(center.x + (index == 1 ? -1 : 1) * distance, center.y, center.z - distance), distance, depth + 1);
+                        next_center.set(center.x + (index == 1 ? -1 : 1) * distance, center.y, center.z - distance),
+                        distance, depth + 1);
             }
             else if (!(index & 1))
-                nearest(position, radius, objects, node->m_neighbours[!index ? 1 : 3], next_center.set(center.x + (!index ? -1 : 1) * distance, center.y, center.z + distance),
-                        distance, depth + 1);
+                nearest(position, radius, objects, node->m_neighbours[!index ? 1 : 3],
+                    next_center.set(center.x + (!index ? -1 : 1) * distance, center.y, center.z + distance), distance,
+                    depth + 1);
 
             return;
         }
@@ -232,11 +243,13 @@ IC void CSQuadTree::nearest(const Fvector& position, float radius, xr_vector<_ob
             {
                 if (index > 1)
                     nearest(position, radius, objects, node->m_neighbours[index == 2 ? 0 : 1],
-                            next_center.set(center.x - distance, center.y, center.z + (index == 2 ? -1 : 1) * distance), distance, depth + 1);
+                        next_center.set(center.x - distance, center.y, center.z + (index == 2 ? -1 : 1) * distance),
+                        distance, depth + 1);
             }
             else if (index < 2)
-                nearest(position, radius, objects, node->m_neighbours[!index ? 2 : 3], next_center.set(center.x + distance, center.y, center.z + (!index ? -1 : 1) * distance),
-                        distance, depth + 1);
+                nearest(position, radius, objects, node->m_neighbours[!index ? 2 : 3],
+                    next_center.set(center.x + distance, center.y, center.z + (!index ? -1 : 1) * distance), distance,
+                    depth + 1);
     }
 }
 
@@ -255,13 +268,14 @@ IC _object_type* CSQuadTree::remove(const _object_type* object, CQuadNode*& node
     VERIFY(node);
     if (depth == m_max_depth)
     {
-        CListItem* leaf = ((CListItem*)((void*)(node)));
-        CListItem* leaf_prev = 0;
+        CListItem*& node_leaf = ((CListItem*&)((void*&)(node)));
+        CListItem* leaf = ((CListItem*)((void*&)(node)));
+        CListItem* leaf_prev = nullptr;
         for (; leaf; leaf_prev = leaf, leaf = leaf->m_next)
             if (leaf->m_object == object)
             {
                 if (!leaf_prev)
-                    node = 0;
+                    node_leaf = leaf->m_next;
                 else
                     leaf_prev->m_next = leaf->m_next;
                 _object_type* _object = leaf->m_object;
