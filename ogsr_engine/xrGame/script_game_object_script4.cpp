@@ -127,6 +127,9 @@ bool actor_can_take(CScriptGameObject* O)
     if (obj->getDestroy())
         return false;
 
+    if (!obj->getVisible())
+        return false;
+
     CInventoryItem* pIItem = smart_cast<CInventoryItem*>(obj);
     if (0 == pIItem)
         return false;
