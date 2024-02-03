@@ -69,7 +69,7 @@ CObjectItemScript::CObjectItemScript(luabind::object client_creator, luabind::ob
     m_server_creator = server_creator;
 }
 
-CObjectItemScript::CObjectItemScript(luabind::object unknown_creator, const CLASS_ID& clsid, LPCSTR script_clsid) : inherited(clsid, script_clsid)
-{
-    m_client_creator = m_server_creator = unknown_creator;
-}
+//CObjectItemScript::CObjectItemScript(luabind::object unknown_creator, const CLASS_ID& clsid, LPCSTR script_clsid) : inherited(clsid, script_clsid)
+//{
+//    m_client_creator = m_server_creator = unknown_creator;
+//}
