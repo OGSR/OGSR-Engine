@@ -208,6 +208,8 @@ void CBlender_Compile::r_Pass(LPCSTR _vs, LPCSTR _gs, LPCSTR _ps, bool bFog, BOO
     dest.gs = gs;
     dest.hs = DEV->_CreateHS("null");
     dest.ds = DEV->_CreateDS("null");
+    dest.cs = DEV->_CreateCS("null");
+
     ctable.merge(&ps->constants);
     ctable.merge(&vs->constants);
     ctable.merge(&gs->constants);
