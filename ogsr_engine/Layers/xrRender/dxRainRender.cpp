@@ -10,7 +10,7 @@ dxRainRender::dxRainRender()
     RainPerlin->SetOctaves(2);
     RainPerlin->SetAmplitude(0.66666f);
     IReader* F = FS.r_open("$game_meshes$", "dm\\rain.dm");
-    VERIFY3(F, "Can't open file.", "dm\\rain.dm");
+    ASSERT_FMT(F, "Can't open file [dm\\rain.dm]!");
 
     DM_Drop = ::RImplementation.model_CreateDM(F);
 
