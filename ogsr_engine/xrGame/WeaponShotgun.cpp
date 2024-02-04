@@ -396,7 +396,7 @@ void CWeaponShotgun::OnStateSwitch(u32 S, u32 oldState)
         {
             if (IsMisfire())
             {
-                const char* Anm = iAmmoElapsed == 1 ? "anm_reload_jammed_last" : "anm_reload_jammed";
+                const char* Anm = (iAmmoElapsed == 1 && AnimationExist("anm_reload_jammed_last")) ? "anm_reload_jammed_last" : "anm_reload_jammed";
                 has_anm_reload_jammed = AnimationExist(Anm);
                 if (has_anm_reload_jammed)
                 {
