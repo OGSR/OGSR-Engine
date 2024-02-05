@@ -226,20 +226,10 @@ void dx103DFluidRenderer::CalculateRenderTextureSize(int screenWidth, int screen
     int maxProjectedSide = int(3.0 * _sqrt(3.0) * m_fMaxDim);
     int maxScreenDim = _max(screenWidth, screenHeight);
 
-    float screenAspectRatio = ((float)screenWidth) / screenHeight;
-
     if (maxScreenDim > maxProjectedSide)
     {
-        if (screenHeight > screenWidth)
-        {
-            m_iRenderTextureHeight = maxProjectedSide;
-            m_iRenderTextureWidth = (int)(screenAspectRatio * maxProjectedSide);
-        }
-        else
-        {
-            m_iRenderTextureWidth = maxProjectedSide;
-            m_iRenderTextureHeight = (int)((1.0f / screenAspectRatio) * maxProjectedSide);
-        }
+        m_iRenderTextureWidth = screenWidth / 8;
+        m_iRenderTextureHeight = screenHeight / 8;
     }
     else
     {
