@@ -87,9 +87,9 @@ void CControlAnimation::play()
             m_saved_global_speed = m_data.global.blend->speed;
     }
 
-    if (!m_data.legs.actual)
+    if (!m_data.legs.actual && m_data.legs.get_motion().valid())
         play_part(m_data.legs, legs_animation_end_callback);
-    if (!m_data.torso.actual)
+    if (!m_data.torso.actual && m_data.torso.get_motion().valid())
         play_part(m_data.torso, torso_animation_end_callback);
 
     // speed only for global
