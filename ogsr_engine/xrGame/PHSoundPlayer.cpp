@@ -50,7 +50,7 @@ void CPHSoundPlayer::PlayNext(SGameMtlPair* mtl_pair, Fvector* pos, bool check_v
     {
         Fvector vel;
         m_object->PHGetLinearVell(vel);
-        if (vel.square_magnitude() <= 0.01f)
+        if (vel.square_magnitude() <= 0.05f)
             return;
     }
 
