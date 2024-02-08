@@ -3,7 +3,7 @@
 
 class CRandom final
 {
-    static constexpr s32 maxI = 32767;
+    static constexpr s32 maxI = RAND_MAX;
 
     std::mt19937 generator{std::random_device()()}; // mt19937 is a standard mersenne_twister_engine
 
@@ -26,3 +26,5 @@ public:
 };
 
 inline thread_local CRandom Random{};
+
+#define rand Random.randI
