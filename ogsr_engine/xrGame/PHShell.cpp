@@ -896,7 +896,10 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id, Fmatrix glob
     {
         CODEGeom* added_geom = E->last_geom();
         if (added_geom)
+        {
             added_geom->set_bone_id(id);
+            added_geom->set_shape_flags(bone_data.shape.flags);
+        }
     }
 #ifdef DEBUG
     if (E->last_geom())
@@ -1434,6 +1437,16 @@ CODEGeom* CPHShell::get_GeomByID(u16 bone_id)
     }
     return NULL;
 }
+
+void CPHShell::SetAnimated(bool v)
+{
+    ELEMENT_I i, e;
+    i = elements.begin();
+    e = elements.end();
+    for (; i != e; ++i)
+        (*i)->SetAnimated(v);
+}
+
 void CPHShell::PureStep(float step)
 {
     CPHObject::Island().Step(step);
@@ -1459,7 +1472,7 @@ void CPHShell::SetIgnoreRagDoll() { CPHCollideValidator::SetRagDollClassNotColli
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
 //Делает данный физический объек анимированным
-void CPHShell::SetAnimated()
+void CPHShell::CreateShellAnimator()
 {
     //Для фильтра коллизий относим данный объект к классу анимированных
     CPHCollideValidator::SetAnimatedClass(*this);

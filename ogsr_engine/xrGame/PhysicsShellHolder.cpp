@@ -29,6 +29,9 @@ void CPhysicsShellHolder::net_Destroy()
 {
     //удалить партиклы из ParticlePlayer
     CParticlesPlayer::net_DestroyParticles();
+    CCharacterPhysicsSupport* char_support = character_physics_support();
+    if (char_support)
+        char_support->destroy_imotion();
     inherited::net_Destroy();
     b_sheduled = false;
     deactivate_physics_shell();
@@ -214,6 +217,35 @@ void CPhysicsShellHolder::PHSetMaterial(LPCSTR m)
         m_pPhysicsShell->SetMaterial(m);
 }
 
+IPhysicsShell* CPhysicsShellHolder::physics_shell() const
+{
+    if (m_pPhysicsShell)
+        return m_pPhysicsShell;
+    const CCharacterPhysicsSupport* char_support = character_physics_support();
+    if (!char_support || !char_support->animation_collision())
+        return 0;
+    return char_support->animation_collision()->shell();
+}
+
+IPhysicsElement* CPhysicsShellHolder::physics_character() const
+{
+    const CCharacterPhysicsSupport* char_support = character_physics_support();
+    if (!char_support)
+        return 0;
+    const CPHMovementControl* mov = character_physics_support()->movement();
+    VERIFY(mov);
+    return mov->IElement();
+}
+
+const IObjectPhysicsCollision* CPhysicsShellHolder::physics_collision()
+{
+    CCharacterPhysicsSupport* char_support = character_physics_support();
+    if (char_support)
+        char_support->create_animation_collision();
+
+    return this;
+}
+
 void CPhysicsShellHolder::PHGetLinearVell(Fvector& velocity)
 {
     if (!m_pPhysicsShell)
@@ -267,6 +299,10 @@ void CPhysicsShellHolder::OnChangeVisual()
     inherited::OnChangeVisual();
     if (0 == renderable.visual)
     {
+        CCharacterPhysicsSupport* char_support = character_physics_support();
+        if (char_support)
+            char_support->destroy_imotion();
+
         if (m_pPhysicsShell)
             m_pPhysicsShell->Deactivate();
         xr_delete(m_pPhysicsShell);

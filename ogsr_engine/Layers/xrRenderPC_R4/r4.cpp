@@ -284,7 +284,6 @@ void CRender::create()
     //.	o.sunstatic			= (strstr(Core.Params,"-sunstatic"))?	TRUE	:FALSE	;
     o.sunstatic = r2_sun_static;
     o.advancedpp = r2_advanced_pp;
-    o.volumetricfog = ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE);
     o.sjitter = (strstr(Core.Params, "-sjitter")) ? TRUE : FALSE;
     o.depth16 = (strstr(Core.Params, "-depth16")) ? TRUE : FALSE;
     o.noshadows = (strstr(Core.Params, "-noshadows")) ? TRUE : FALSE;
@@ -397,18 +396,15 @@ void CRender::create()
     */
 
     ::PortalTraverser.initialize();
-#ifdef DX10_FLUID_ENABLE
+
     FluidManager.Initialize(70, 70, 70);
-    //	FluidManager.Initialize( 100, 100, 100 );
     FluidManager.SetScreenSize(Device.dwWidth, Device.dwHeight);
-#endif
 }
 
 void CRender::destroy()
 {
-#ifdef DX10_FLUID_ENABLE
     FluidManager.Destroy();
-#endif
+
     ::PortalTraverser.destroy();
     /*
     for (u32 i=0; i<HW.Caps.iGPUNum; ++i)
@@ -484,9 +480,7 @@ void CRender::reset_end()
     }
     //-AVO
 
-#ifdef DX10_FLUID_ENABLE
     FluidManager.SetScreenSize(Device.dwWidth, Device.dwHeight);
-#endif
 
     // Set this flag true to skip the first render frame,
     // that some data is not ready in the first frame (for example device camera position)

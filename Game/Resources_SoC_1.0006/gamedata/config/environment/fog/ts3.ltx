@@ -1,0 +1,63 @@
+[volume]
+EmittersNum                              = 4
+Hemi                                     = 0.0
+ConfinementScale                         = 0.3 ;0.06;		Турбулентность. 0 - поток гладкий, default - 0.6 (off)
+GravityBuoyancy                          = 0.009 ;0.003	;0.0015;	Вес положительный/отрицательный дыма
+Decay                                    = 0.994 ;Затухание дыма. 1 - дым не затухает, default - 0.994 (off)
+
+[emitter03]
+Type                                     = SimpleGaussian
+Position                                 = 45.0, 10.0, 40.0
+
+; Radius   = 0.15
+Radius                                   = 0.1 ;0.22
+Sigma                                    = 1
+FlowSpeed                                = 0.05 ;0.4	; скорость потока
+FlowDirection                            = -1.2, 1.5, -0.8
+Density                                  = 0.5
+
+ApplyDensity                             = 1
+ApplyImpulse                             = 1
+
+[emitter02]
+Type                                     = SimpleGaussian
+Position                                 = 40.0, 10.0, 40.0
+
+; Radius   = 0.15
+Radius                                   = 0.2 ;0.22
+Sigma                                    = 1
+FlowSpeed                                = 0.05 ;0.4	; скорость потока
+FlowDirection                            = -1.2, 1.5, -0.8
+Density                                  = 1.0
+
+ApplyDensity                             = 1
+ApplyImpulse                             = 1
+
+[emitter01]
+Type                                     = SimpleGaussian
+Position                                 = 49.0, 10.0, 54.0 ;в локальных координатах
+Radius                                   = 0.25 ;размер источника.чем больше число,тем меньше источник default - 0.15
+Sigma                                    = 1
+FlowSpeed                                = 0.05 ;0.4	; скорость потока
+FlowDirection                            = -0.7, 1.5, -0.8 ;направление потока в локальных координатах
+Density                                  = 1.0 ;плотность дыма
+
+; DraughtPeriod = 10.0 ; период колебаний скорости в секундах
+; DraughtPhase = 0.0 ; фаза колебаний скорости [0..1]
+; DraughtAmp  = 0.5 ; aмплитуда колебаний [FlowSpeed*(1-DraughtAmp)..FlowSpeed*(1+DraughtAmp)]
+ApplyDensity                             = 1 ;источник генерирует вещество
+ApplyImpulse                             = 1 ;источник применяет скорость
+
+[emitter00]
+Type                                     = SimpleGaussian
+Position                                 = 35.0, 10.0, 40.0
+
+; Radius   = 0.15
+Radius                                   = 0.22
+Sigma                                    = 1
+FlowSpeed                                = 0.05 ;0.4	; скорость потока
+FlowDirection                            = -1.2, 1.5, -0.8
+Density                                  = 1.0
+
+ApplyDensity                             = 1
+ApplyImpulse                             = 1

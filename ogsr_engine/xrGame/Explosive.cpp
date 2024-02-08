@@ -72,6 +72,7 @@ void CExplosive::LightCreate()
 {
     m_pLight = ::Render->light_create();
     m_pLight->set_shadow(true);
+    m_pLight->set_moveable(true);
 }
 
 void CExplosive::LightDestroy() { m_pLight.destroy(); }

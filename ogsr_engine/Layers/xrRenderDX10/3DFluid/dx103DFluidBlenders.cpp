@@ -1,74 +1,63 @@
 #include "stdafx.h"
-
-#ifdef DX10_FLUID_ENABLE
-
 #include "dx103DFluidBlenders.h"
-
 #include "dx103DFluidManager.h"
 #include "dx103DFluidRenderer.h"
 
-namespace
-{
 // Volume texture width
-class cl_textureWidth : public R_constant_setup
+static class cl_textureWidth final : public R_constant_setup
 {
-    virtual void setup(R_constant* C)
+    void setup(R_constant* C) override
     {
         float tW = (float)FluidManager.GetTextureWidth();
         RCache.set_c(C, tW);
     }
-};
-static cl_textureWidth binder_textureWidth;
+} binder_textureWidth;
 
 // Volume texture height
-class cl_textureHeight : public R_constant_setup
+static class cl_textureHeight final : public R_constant_setup
 {
-    virtual void setup(R_constant* C)
+    void setup(R_constant* C) override
     {
         float tH = (float)FluidManager.GetTextureHeight();
         RCache.set_c(C, tH);
     }
-};
-static cl_textureHeight binder_textureHeight;
+} binder_textureHeight;
 
 // Volume texture depth
-class cl_textureDepth : public R_constant_setup
+static class cl_textureDepth final : public R_constant_setup
 {
-    virtual void setup(R_constant* C)
+    void setup(R_constant* C) override
     {
         float tD = (float)FluidManager.GetTextureDepth();
         RCache.set_c(C, tD);
     }
-};
-static cl_textureDepth binder_textureDepth;
+} binder_textureDepth;
 
-class cl_gridDim : public R_constant_setup
+static class cl_gridDim final : public R_constant_setup
 {
-    virtual void setup(R_constant* C)
+    void setup(R_constant* C) override
     {
         float tW = (float)FluidManager.GetTextureWidth();
         float tH = (float)FluidManager.GetTextureHeight();
         float tD = (float)FluidManager.GetTextureDepth();
         RCache.set_c(C, tW, tH, tD, 0.0f);
     }
-};
-static cl_gridDim binder_gridDim;
+} binder_gridDim;
 
-class cl_recGridDim : public R_constant_setup
+static class cl_recGridDim final : public R_constant_setup
 {
-    virtual void setup(R_constant* C)
+    void setup(R_constant* C) override
     {
         float tW = (float)FluidManager.GetTextureWidth();
         float tH = (float)FluidManager.GetTextureHeight();
         float tD = (float)FluidManager.GetTextureDepth();
         RCache.set_c(C, 1.0f / tW, 1.0f / tH, 1.0f / tD, 0.0f);
     }
-};
-static cl_recGridDim binder_recGridDim;
+} binder_recGridDim;
 
-class cl_maxDim : public R_constant_setup
+static class cl_maxDim final : public R_constant_setup
 {
-    virtual void setup(R_constant* C)
+    void setup(R_constant* C) override
     {
         int tW = FluidManager.GetTextureWidth();
         int tH = FluidManager.GetTextureHeight();
@@ -76,80 +65,20 @@ class cl_maxDim : public R_constant_setup
         float tMax = (float)_max(tW, _max(tH, tD));
         RCache.set_c(C, (float)tMax);
     }
-};
-static cl_maxDim binder_maxDim;
+} binder_maxDim;
 
-/*
-//  decay simulation option
-class cl_decay		: public R_constant_setup
-{
-    virtual void setup(R_constant* C)
-    {
-        float fDecay = FluidManager.GetDecay();
-        RCache.set_c( C, fDecay );
-    }
-};
-static cl_decay		binder_decay;
-
-//  decay simulation ImpulseSize
-class cl_impulseSize		: public R_constant_setup
-{
-    virtual void setup(R_constant* C)
-    {
-        float fIS = FluidManager.GetImpulseSize();
-        RCache.set_c( C, fIS );
-    }
-};
-static cl_impulseSize		binder_impulseSize;
-*/
 
 void BindConstants(CBlender_Compile& C)
 {
-    //	Bind constants here
-
-    //	TextureWidthShaderVariable = pEffect->GetVariableByName( "textureWidth")->AsScalar();
     C.r_Constant("textureWidth", &binder_textureWidth);
-    //	TextureHeightShaderVariable = pEffect->GetVariableByName( "textureHeight")->AsScalar();
     C.r_Constant("textureHeight", &binder_textureHeight);
-    //	TextureDepthShaderVariable = pEffect->GetVariableByName( "textureDepth")->AsScalar();
     C.r_Constant("textureDepth", &binder_textureDepth);
 
-    //	Renderer constants
-    // D3DXVECTOR3 recGridDim(1.0f/gridDim[0], 1.0f/gridDim[1], 1.0f/gridDim[2]);
-    // pEffect->GetVariableByName("gridDim")->AsVector()->SetFloatVector(gridDim);
     C.r_Constant("gridDim", &binder_gridDim);
-    // pEffect->GetVariableByName("recGridDim")->AsVector()->SetFloatVector(recGridDim);
     C.r_Constant("recGridDim", &binder_recGridDim);
-    // pEffect->GetVariableByName("maxGridDim")->AsScalar()->SetFloat(maxDim);
     C.r_Constant("maxGridDim", &binder_maxDim);
-
-    //	Each technique should set up these variables itself
-    /*
-    // For project, advect
-    //ModulateShaderVariable = pEffect->GetVariableByName( "modulate")->AsScalar();
-    //C.r_Constant( "modulate",		&binder_decay);
-
-    // For gaussian
-    // Used to apply external impulse
-    //ImpulseSizeShaderVariable = pEffect->GetVariableByName( "size")->AsScalar();
-    //C.r_Constant( "size",		&binder_impulseSize);
-    //	Setup manually by technique
-    //ImpulseCenterShaderVariable = pEffect->GetVariableByName( "center")->AsVector();
-    //SplatColorShaderVariable = pEffect->GetVariableByName( "splatColor")->AsVector();
-
-    // For confinement
-    EpsilonShaderVariable = pEffect->GetVariableByName( "epsilon")->AsScalar();
-    // For confinement, advect
-    TimeStepShaderVariable = pEffect->GetVariableByName( "timestep")->AsScalar();
-    // For advect BFECC
-    ForwardShaderVariable = pEffect->GetVariableByName( "forward")->AsScalar();
-    HalfVolumeDimShaderVariable = pEffect->GetVariableByName( "halfVolumeDim")->AsVector();
-
-
-    // For render call
-    //DrawTextureShaderVariable = pEffect->GetVariableByName( "textureNumber")->AsScalar();
-    */
 }
+
 void SetupSamplers(CBlender_Compile& C)
 {
     int smp = C.r_dx10Sampler("samPointClamp");
@@ -180,31 +109,24 @@ void SetupSamplers(CBlender_Compile& C)
         C.i_dx10Filter(smp, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
     }
 }
+
 void SetupTextures(CBlender_Compile& C)
 {
-    LPCSTR* TNames = FluidManager.GetEngineTextureNames();
-    LPCSTR* RNames = FluidManager.GetShaderTextureNames();
-
     for (int i = 0; i < dx103DFluidManager::NUM_RENDER_TARGETS; ++i)
-        C.r_dx10Texture(RNames[i], TNames[i]);
+        C.r_dx10Texture(dx103DFluidConsts::m_pShaderTextureNames[i], dx103DFluidConsts::m_pEngineTextureNames[i]);
 
     //	Renderer
     C.r_dx10Texture("sceneDepthTex", r2_RT_P);
-    // C.r_dx10Texture("colorTex", "Texture_color");
-    C.r_dx10Texture("colorTex", TNames[dx103DFluidManager::RENDER_TARGET_COLOR_IN]);
+    C.r_dx10Texture("colorTex", dx103DFluidConsts::m_pEngineTextureNames[dx103DFluidManager::RENDER_TARGET_COLOR_IN]);
     C.r_dx10Texture("jitterTex", "$user$NVjitterTex");
 
     C.r_dx10Texture("HHGGTex", "$user$NVHHGGTex");
 
     C.r_dx10Texture("fireTransferFunction", "internal\\internal_fireTransferFunction");
 
-    TNames = dx103DFluidRenderer::GetRTNames();
-    RNames = dx103DFluidRenderer::GetResourceRTNames();
-
     for (int i = 0; i < dx103DFluidRenderer::RRT_NumRT; ++i)
-        C.r_dx10Texture(RNames[i], TNames[i]);
+        C.r_dx10Texture(dx103DFluidConsts::m_pResourceRTNames[i], dx103DFluidConsts::m_pRTNames[i]);
 }
-} // namespace
 
 void CBlender_fluid_advect::Compile(CBlender_Compile& C)
 {
@@ -304,8 +226,6 @@ void CBlender_fluid_obst::Compile(CBlender_Compile& C)
     switch (C.iElement)
     {
     case 0: // ObstStaticBox
-        //	AABB
-        // C.r_Pass	("fluid_grid", "fluid_array", "fluid_obststaticbox", false,FALSE,FALSE,FALSE);
         //	OOBB
         C.r_Pass("fluid_grid_oobb", "fluid_array_oobb", "fluid_obst_static_oobb", false, FALSE, FALSE, FALSE);
         break;
@@ -357,9 +277,6 @@ void CBlender_fluid_obstdraw::Compile(CBlender_Compile& C)
     case 0: // DrawTexture
         C.r_Pass("fluid_grid", "null", "fluid_draw_texture", false, FALSE, FALSE, FALSE);
         break;
-        //		TechniqueDrawWhiteTriangles = pEffect->GetTechniqueByName( "DrawWhiteTriangles" );
-        //		TechniqueDrawWhiteLines = pEffect->GetTechniqueByName( "DrawWhiteLines" );
-        //		TechniqueDrawBox = pEffect->GetTechniqueByName( "DrawBox" );
     }
 
     C.r_CullMode(D3DCULL_NONE);
@@ -381,7 +298,6 @@ void CBlender_fluid_raydata::Compile(CBlender_Compile& C)
     case 0: // CompRayData_Back
         C.r_Pass("fluid_raydata_back", "null", "fluid_raydata_back", false, FALSE, FALSE, FALSE);
         C.r_CullMode(D3DCULL_CW); //	Front
-        // C.r_CullMode(D3DCULL_CCW);	//	Front
         break;
     case 1: // CompRayData_Front
         C.r_Pass("fluid_raydata_front", "null", "fluid_raydata_front", false, FALSE, FALSE, TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
@@ -398,15 +314,12 @@ void CBlender_fluid_raydata::Compile(CBlender_Compile& C)
         C.RS.SetRS(D3DRS_BLENDOPALPHA, D3DBLENDOP_REVSUBTRACT); // DST - SRC
 
         C.r_CullMode(D3DCULL_CCW); //	Back
-        // C.r_CullMode(D3DCULL_CW);	//	Back
         break;
     case 2: // QuadDownSampleRayDataTexture
         C.r_Pass("fluid_raycast_quad", "null", "fluid_raydatacopy_quad", false, FALSE, FALSE, FALSE);
         C.r_CullMode(D3DCULL_CCW); //	Back
         break;
     }
-
-    // C.PassSET_ZB(FALSE,FALSE);
 
     BindConstants(C);
     SetupSamplers(C);
@@ -453,5 +366,3 @@ void CBlender_fluid_raycast::Compile(CBlender_Compile& C)
     //	Constants must be bound before r_End()
     C.r_End();
 }
-
-#endif

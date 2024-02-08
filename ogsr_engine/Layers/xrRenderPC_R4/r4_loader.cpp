@@ -433,11 +433,8 @@ void CRender::LoadSWIs(CStreamReader* base_fs)
 
 void CRender::Load3DFluid()
 {
-    // if (strstr(Core.Params,"-no_volumetric_fog"))
-    if (!RImplementation.o.volumetricfog)
+    if (!ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE))
         return;
-
-#ifdef DX10_FLUID_ENABLE
 
     string_path fn_game;
     if (FS.exist(fn_game, "$level$", "level.fog_vol"))
@@ -453,15 +450,29 @@ void CRender::Load3DFluid()
                 dx103DFluidVolume* pVolume = xr_new<dx103DFluidVolume>();
                 pVolume->Load("", F, 0);
 
+                const auto& v = pVolume->getVisData().sphere.P;
+
+                Msg("~ Loading fog volume with profile [%s]. Position x=[%f] y=[%f] z=[%f]", pVolume->getProfileName().c_str(), v.x, v.y, v.z);
+
                 //	Attach to sector's static geometry
                 CSector* pSector = (CSector*)detectSector(pVolume->getVisData().sphere.P);
+
+                if (!pSector)
+                {
+                    Msg("!!Cannot find sector for fog volume. Position x=[%f] y=[%f] z=[%f]!", v.x, v.y, v.z);
+
+                    xr_delete(pVolume);
+
+                    continue;
+                }
+
                 //	3DFluid volume must be in render sector
-                VERIFY(pSector);
+                R_ASSERT(pSector);
 
                 dxRender_Visual* pRoot = pSector->root();
                 //	Sector must have root
-                VERIFY(pRoot);
-                VERIFY(pRoot->getType() == MT_HIERRARHY);
+                R_ASSERT(pRoot);
+                R_ASSERT(pRoot->getType() == MT_HIERRARHY);
 
                 ((FHierrarhyVisual*)pRoot)->children.push_back(pVolume);
             }
@@ -469,6 +480,4 @@ void CRender::Load3DFluid()
 
         FS.r_close(F);
     }
-
-#endif
 }

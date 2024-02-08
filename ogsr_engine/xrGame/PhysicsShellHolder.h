@@ -13,13 +13,15 @@ class ICollisionDamageInfo;
 class CIKLimbsController;
 class CPHCapture;
 
+#include "../xr_3da/IPhysicsDefinitions.h"
+
 class ICollisionHitCallback
 {
 public:
     virtual void call(CPhysicsShellHolder* obj, float min_cs, float max_cs, float& cs, float& hl, ICollisionDamageInfo* di) = 0;
     virtual ~ICollisionHitCallback() {}
 };
-class CPhysicsShellHolder : public CGameObject, public CParticlesPlayer
+class CPhysicsShellHolder : public CGameObject, public CParticlesPlayer, public IObjectPhysicsCollision
 
 {
     bool b_sheduled;
@@ -64,6 +66,11 @@ public:
     virtual ICollisionHitCallback* get_collision_hit_callback() { return nullptr; }
     virtual void set_collision_hit_callback(ICollisionHitCallback* cc) { ; }
     virtual void enable_notificate() { ; }
+
+    virtual IPhysicsShell* physics_shell() const override;
+    virtual IPhysicsElement* physics_character() const override;
+
+    virtual const IObjectPhysicsCollision* physics_collision() override;
 
 public:
     virtual void PHGetLinearVell(Fvector& velocity);

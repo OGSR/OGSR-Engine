@@ -138,6 +138,43 @@ void CODEGeom::get_global_form_bt(Fmatrix& form)
     // PHDynamicData::DMXtoFMX((dReal*)(&form),form);
 }
 
+void CODEGeom::get_xform(Fmatrix& form)
+{
+    VERIFY(m_geom_transform);
+    const dReal* rot = nullptr;
+    const dReal* pos = nullptr;
+    dVector3 p;
+    dMatrix3 r;
+    get_final_tx_bt(pos, rot, p, r);
+
+    PHDynamicData::DMXPStoFMX(rot, pos, form);
+}
+
+template <typename geom_type>
+void t_get_box(geom_type* shell, const Fmatrix& form, Fvector& sz, Fvector& c)
+{
+    c.set(0, 0, 0);
+    VERIFY(sizeof(form.i) + sizeof(form._14_) == 4 * sizeof(float));
+    for (int i = 0; 3 > i; ++i)
+    {
+        float lo, hi;
+        const Fvector& ax = cast_fv(((const float*)&form + i * 4));
+        shell->get_extensions_bt(ax, 0, lo, hi);
+        sz[i] = hi - lo;
+        c.add(Fvector().mul(ax, (lo + hi) / 2));
+    }
+}
+
+void CODEGeom::get_Box(Fmatrix& form, Fvector& sz)
+{
+    get_xform(form);
+    Fvector c;
+    t_get_box(this, form, sz, c);
+    form.c = c;
+}
+
+bool CODEGeom::collide_fluids() { return !m_flags.test(SBoneShape::sfNoFogCollider); }
+
 void CODEGeom::set_static_ref_form(const Fmatrix& form)
 {
     dGeomSetPosition(geometry_transform(), form.c.x, form.c.y, form.c.z);

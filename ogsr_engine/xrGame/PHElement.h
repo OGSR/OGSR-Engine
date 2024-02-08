@@ -1,7 +1,7 @@
-/////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+#pragma once
+
 ///////////////////////////Implemetation//for//CPhysicsElement//////////////////
-////////////////////////////////////////////////////////////////////////////////
+
 #include "Geometry.h"
 #include "phdefs.h"
 #include "PhysicsCommon.h"
@@ -9,13 +9,13 @@
 #include "PHDisabling.h"
 #include "PHGeometryOwner.h"
 #include "PHInterpolation.h"
-#ifndef PH_ELEMENT
-#define PH_ELEMENT
+
 class CPHElement;
 class CPHShell;
 class CPHFracture;
 struct SPHImpact;
 class CPHFracturesHolder;
+
 class CPHElement : public CPhysicsElement, public CPHSynchronize, public CPHDisablingFull, public CPHGeometryOwner
 {
     friend class CPHFracturesHolder;
@@ -48,7 +48,8 @@ class CPHElement : public CPhysicsElement, public CPHSynchronize, public CPHDisa
         flUpdate = 1 << 2,
         flWasEnabledBeforeFreeze = 1 << 3,
         flEnabledOnStep = 1 << 4,
-        flFixed = 1 << 5
+        flFixed = 1 << 5,
+        flAnimated = 1 << 6
     };
     //	bool						was_enabled_before_freeze;
     //	bool						bUpdate;					//->to shell ??		//st
@@ -93,7 +94,7 @@ public:
     virtual CPhysicsShellHolder* PhysicsRefObject() { return m_phys_ref_object; } // aux
     virtual void SetMaterial(u16 m); // aux
     virtual void SetMaterial(LPCSTR m) { CPHGeometryOwner::SetMaterial(m); } // aux
-    virtual u16 numberOfGeoms(); // aux
+    virtual u16 numberOfGeoms() override; // aux
     virtual const Fvector& local_mass_Center() { return CPHGeometryOwner::local_mass_Center(); } // aux
     virtual float getVolume() { return CPHGeometryOwner::get_volume(); } // aux
     virtual void get_Extensions(const Fvector& axis, float center_prg, float& lo_ext, float& hi_ext); // aux
@@ -107,7 +108,7 @@ private:
     void calc_it_fract_data_use_density(const Fvector& mc, float density); // sets element mass and fractures parts mass	//aux
     dMass recursive_mass_summ(u16 start_geom, FRACTURE_I cur_fracture); // aux
 public: //
-    virtual const Fvector& mass_Center(); // aux
+    virtual const Fvector& mass_Center() override; // aux
     virtual void setDensity(float M); // aux
     virtual float getDensity() { return m_mass.mass / m_volume; } // aux
     virtual void setMassMC(float M, const Fvector& mass_center); // aux
@@ -178,8 +179,8 @@ public: //
     virtual void applyGravityAccel(const Fvector& accel);
     virtual void getForce(Fvector& force);
     virtual void getTorque(Fvector& torque);
-    virtual void get_LinearVel(Fvector& velocity); // aux
-    virtual void get_AngularVel(Fvector& velocity); // aux
+    virtual void get_LinearVel(Fvector& velocity) override;  // aux
+    virtual void get_AngularVel(Fvector& velocity) override; // aux
     virtual void set_LinearVel(const Fvector& velocity); // called anywhere ph state influent
     virtual void set_AngularVel(const Fvector& velocity); // called anywhere ph state influent
     virtual void setForce(const Fvector& force); //
@@ -229,7 +230,7 @@ public: //
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     virtual void Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool disable = false); // some isues not to be aux
     virtual void Activate(const Fmatrix& transform, const Fvector& lin_vel, const Fvector& ang_vel, bool disable = false); // some isues not to be aux
-    virtual void Activate(bool disable = false); // some isues not to be aux
+    virtual void Activate(bool disable = false, bool not_set_bone_callbacks = false); // some isues not to be aux
     virtual void Activate(const Fmatrix& start_from, bool disable = false); // some isues not to be aux
     virtual void Deactivate(); // aux //aux
     void CreateSimulBase(); // create body & cpace																//aux
@@ -246,9 +247,11 @@ public: //
     //		bool						CheckBreakConsistent					()
     CPHElement(); // aux
     virtual ~CPHElement(); // aux
+
+    virtual IPhysicsGeometry* geometry(u16 i) const override { return CPHGeometryOwner::Geom(i); };
+    virtual void SetAnimated(bool v) override { m_flags.set(flAnimated, BOOL(v)); }
 };
 
 IC CPHElement* cast_PHElement(CPhysicsElement* e) { return static_cast<CPHElement*>(static_cast<CPhysicsElement*>(e)); }
 IC CPHElement* cast_PHElement(void* e) { return static_cast<CPHElement*>(static_cast<CPhysicsElement*>(e)); }
 IC CPhysicsElement* cast_PhysicsElement(CPHElement* e) { return static_cast<CPhysicsElement*>(static_cast<CPHElement*>(e)); }
-#endif

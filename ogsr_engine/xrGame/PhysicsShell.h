@@ -1,11 +1,11 @@
-#ifndef PhysicsShellH
-#define PhysicsShellH
 #pragma once
 
 #include "PHDefs.h"
 #include "PhysicsCommon.h"
 #include "alife_space.h"
 #include "script_export_space.h"
+
+#include "../xr_3da/IPhysicsDefinitions.h"
 
 class CPhysicsJoint;
 class CPhysicsElement;
@@ -23,6 +23,14 @@ class IKinematics;
 typedef u32 CLClassBits;
 typedef u32 CLBits;
 typedef u32 CGID;
+
+/*enum motion_history_state
+{
+    mh_clear = 0,
+    mh_unspecified,
+    mh_not_clear,
+};*/
+
 struct physicsBone
 {
     CPhysicsJoint* joint;
@@ -43,7 +51,7 @@ public:
 public:
     virtual void Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool disable = false) = 0;
     virtual void Activate(const Fmatrix& transform, const Fvector& lin_vel, const Fvector& ang_vel, bool disable = false) = 0;
-    virtual void Activate(bool disable = false) = 0;
+    virtual void Activate(bool disable = false, bool not_set_bone_callbacks = false) = 0;
     virtual void Activate(const Fmatrix& form, bool disable = false) = 0;
     virtual void InterpolateGlobalTransform(Fmatrix* m) = 0;
     virtual void GetGlobalTransformDynamic(Fmatrix* m) = 0;
@@ -80,24 +88,26 @@ public:
     virtual void set_CallbackData(void* cd) = 0;
     virtual void* get_CallbackData() = 0;
     virtual void set_PhysicsRefObject(CPhysicsShellHolder* ref_object) = 0;
-    virtual void get_LinearVel(Fvector& velocity) = 0;
-    virtual void get_AngularVel(Fvector& velocity) = 0;
     virtual void set_LinearVel(const Fvector& velocity) = 0;
     virtual void set_AngularVel(const Fvector& velocity) = 0;
     virtual void TransformPosition(const Fmatrix& form) = 0;
     virtual void set_ApplyByGravity(bool flag) = 0;
     virtual bool get_ApplyByGravity() = 0;
+    virtual const Fmatrix& XFORM() const { return mXFORM; }
 
     virtual void SetMaterial(u16 m) = 0;
     virtual void SetMaterial(LPCSTR m) = 0;
     virtual void set_DisableParams(const SAllDDOParams& params) = 0;
     virtual void SetTransform(const Fmatrix& m0) = 0;
+
+    virtual void SetAnimated(bool v) = 0;
+
     virtual ~CPhysicsBase(){};
 };
 
 // ABSTRACT:
 // Element is fully Rigid and consists of one or more forms, such as sphere, box, cylinder, etc.
-class CPhysicsElement : public CPhysicsBase
+class CPhysicsElement : public CPhysicsBase, public IPhysicsElement
 {
 public:
     u16 m_SelfID;
@@ -127,9 +137,7 @@ public:
     virtual u16 setGeomFracturable(CPHFracture& fracture) = 0;
     virtual CPHFracture& Fracture(u16 num) = 0;
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    virtual u16 numberOfGeoms() = 0;
     virtual dBodyID get_body() = 0;
-    virtual const Fvector& mass_Center() = 0;
     virtual const Fvector& local_mass_Center() = 0;
     virtual float getRadius() = 0;
     virtual dMass* getMassTensor() = 0;
@@ -138,6 +146,9 @@ public:
     virtual void Fix() = 0;
     virtual void ReleaseFixed() = 0;
     virtual bool isFixed() = 0;
+
+    virtual const Fmatrix& XFORM() const override { return CPhysicsBase::XFORM(); }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     virtual ~CPhysicsElement(){};
     DECLARE_SCRIPT_REGISTER_FUNCTION
@@ -229,7 +240,7 @@ add_to_type_list(CPhysicsJoint)
 class CPhysicsShellAnimator;
 #endif
 
-class CPhysicsShell : public CPhysicsBase
+class CPhysicsShell : public CPhysicsBase, public IPhysicsShell
 {
 protected:
     IKinematics* m_pKinematics;
@@ -240,6 +251,9 @@ public:
 #endif
 public:
     IC IKinematics* PKinematics() { return m_pKinematics; }
+
+    virtual const Fmatrix& XFORM() const override { return CPhysicsBase::XFORM(); }
+    virtual IPhysicsElement& IElement(u16 index) override { return *get_ElementByStoreOrder(index); };
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
     virtual CPhysicsShellAnimator* PPhysicsShellAnimator() = 0;
@@ -260,7 +274,7 @@ public:
     virtual void SetIgnoreRagDoll() = 0;
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
-    virtual void SetAnimated() = 0;
+    virtual void CreateShellAnimator() = 0;
     virtual void SetIgnoreAnimated() = 0;
     virtual bool Animated() = 0;
 #endif
@@ -279,7 +293,10 @@ public:
     virtual BoneCallbackFun* GetBonesCallback() = 0;
     virtual BoneCallbackFun* GetStaticObjectBonesCallback() = 0;
     virtual void Update() = 0;
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    virtual void get_LinearVel(Fvector& velocity) = 0;
+    virtual void get_AngularVel(Fvector& velocity) = 0;
+
     virtual void setMass1(float M) = 0;
     virtual void SmoothElementsInertia(float k) = 0;
     virtual void setEquelInertiaForEls(const dMass& M) = 0;
@@ -289,7 +306,6 @@ public:
     virtual CPhysicsElement* get_Element(const shared_str& bone_name) = 0;
     virtual CPhysicsElement* get_Element(LPCSTR bone_name) = 0;
     virtual CPhysicsElement* get_ElementByStoreOrder(u16 num) = 0;
-    virtual u16 get_ElementsNumber() = 0;
     virtual CPHSynchronize* get_ElementSync(u16 element) = 0;
     virtual CPhysicsJoint* get_Joint(u16 bone_id) = 0;
     virtual CPhysicsJoint* get_Joint(const shared_str& bone_name) = 0;
@@ -346,8 +362,8 @@ CPhysicsShell* P_create_splited_Shell();
 CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, LPCSTR fixed_bones);
 CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, U16Vec& fixed_bones);
 CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, BONE_P_MAP* bone_map, LPCSTR fixed_bones);
-CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, BONE_P_MAP* bone_map = NULL);
+CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, BONE_P_MAP* bone_map = nullptr, bool not_set_bone_callbacks = false);
 CPhysicsShell* P_build_SimpleShell(CGameObject* obj, float mass, bool not_active_state);
+
 void ApplySpawnIniToPhysicShell(CInifile* ini, CPhysicsShell* physics_shell, bool fixed);
 void fix_bones(LPCSTR fixed_bones, CPhysicsShell* shell);
-#endif // PhysicsShellH

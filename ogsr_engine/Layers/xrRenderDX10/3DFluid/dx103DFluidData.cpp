@@ -1,23 +1,9 @@
 #include "stdafx.h"
-
-#ifdef DX10_FLUID_ENABLE
-
 #include "dx103DFluidData.h"
-
 #include "dx103DFluidManager.h"
 
-namespace
-{
-const xr_token simulation_type_token[] = {{"Fog", dx103DFluidData::ST_FOG}, {"Fire", dx103DFluidData::ST_FIRE}, {0, 0}};
-
-const xr_token emitter_type_token[] = {{"SimpleGaussian", dx103DFluidEmitters::ET_SimpleGausian}, {"SimpleDraught", dx103DFluidEmitters::ET_SimpleDraught}, {0, 0}};
-} // namespace
-
-DXGI_FORMAT dx103DFluidData::m_VPRenderTargetFormats[VP_NUM_TARGETS] = {
-    DXGI_FORMAT_R16G16B16A16_FLOAT, //	VP_VELOCITY0
-    DXGI_FORMAT_R16_FLOAT, //	VP_PRESSURE
-    DXGI_FORMAT_R16_FLOAT //	VP_COLOR
-};
+constexpr xr_token simulation_type_token[] = {{"Fog", dx103DFluidData::ST_FOG}, {"Fire", dx103DFluidData::ST_FIRE}, {0, 0}};
+constexpr xr_token emitter_type_token[] = {{"SimpleGaussian", dx103DFluidEmitters::ET_SimpleGausian}, {"SimpleDraught", dx103DFluidEmitters::ET_SimpleDraught}, {0, 0}};
 
 dx103DFluidData::dx103DFluidData()
 {
@@ -31,16 +17,15 @@ dx103DFluidData::dx103DFluidData()
     desc.Height = FluidManager.GetTextureHeight();
     desc.Depth = FluidManager.GetTextureDepth();
 
-    D3D_SHADER_RESOURCE_VIEW_DESC SRVDesc;
-    ZeroMemory(&SRVDesc, sizeof(SRVDesc));
+    D3D_SHADER_RESOURCE_VIEW_DESC SRVDesc{};
     SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE3D;
     SRVDesc.Texture3D.MipLevels = 1;
     SRVDesc.Texture3D.MostDetailedMip = 0;
 
     for (int rtIndex = 0; rtIndex < VP_NUM_TARGETS; rtIndex++)
     {
-        desc.Format = m_VPRenderTargetFormats[rtIndex];
-        SRVDesc.Format = m_VPRenderTargetFormats[rtIndex];
+        desc.Format = dx103DFluidConsts::m_VPRenderTargetFormats[rtIndex];
+        SRVDesc.Format = dx103DFluidConsts::m_VPRenderTargetFormats[rtIndex];
         CreateRTTextureAndViews(rtIndex, desc);
     }
 }
@@ -73,7 +58,7 @@ void dx103DFluidData::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC Te
 
     CHK_DX(HW.pDevice->CreateRenderTargetView(m_pRTTextures[rtIndex], &DescRT, &m_pRenderTargetViews[rtIndex]));
 
-    float color[4] = {0, 0, 0, 0};
+    constexpr float color[4] = {0, 0, 0, 0};
 
     HW.pContext->ClearRenderTargetView(m_pRenderTargetViews[rtIndex], color);
 }
@@ -112,6 +97,8 @@ void dx103DFluidData::ParseProfile(const xr_string& Profile)
     string_path fn;
     FS.update_path(fn, "$game_config$", Profile.c_str());
 
+    dbg_name = Profile.c_str();
+
     CInifile ini(fn, TRUE, TRUE, FALSE);
 
     Msg("Reading fog volume config: %s", fn);
@@ -128,10 +115,7 @@ void dx103DFluidData::ParseProfile(const xr_string& Profile)
         Fmatrix Scale;
         Fmatrix Translate;
         Fmatrix TranslateScale;
-        //	Convert to 0..intDim space since it is used by simulation
-        // Scale.scale((float)m_iTextureWidth-1, (float)m_iTextureHeight-1, (float)m_iTextureDepth-1);
-        // Translate.translate(0.5, 0.5, 0.5);
-        // It seems that y axis is inverted in fluid simulation, so shange maths a bit
+
         Fvector vGridDim;
         vGridDim.set((float)FluidManager.GetTextureWidth(), (float)FluidManager.GetTextureHeight(), (float)FluidManager.GetTextureDepth());
         Scale.scale(vGridDim.x - 1, -(vGridDim.y - 1), vGridDim.z - 1);
@@ -161,13 +145,14 @@ void dx103DFluidData::ParseProfile(const xr_string& Profile)
 
     u32 iEmittersNum = ini.r_u32("volume", "EmittersNum");
 
-    m_Emitters.resize(iEmittersNum);
+    m_Emitters.clear();
+    m_Emitters.reserve(iEmittersNum);
 
     for (u32 i = 0; i < iEmittersNum; ++i)
     {
-        string32 EmitterSectionName;
-        CEmitter& Emitter = m_Emitters[i];
-        ZeroMemory(&Emitter, sizeof(Emitter));
+        string32 EmitterSectionName{};
+        CEmitter& Emitter = m_Emitters.emplace_back();
+
         xr_sprintf(EmitterSectionName, "emitter%02d", i);
 
         Emitter.m_eType = (dx103DFluidEmitters::EmitterType)ini.r_token(EmitterSectionName, "Type", emitter_type_token);
@@ -217,9 +202,6 @@ void dx103DFluidData::ParseProfile(const xr_string& Profile)
 #ifdef DEBUG
 void dx103DFluidData::ReparseProfile(const xr_string& Profile)
 {
-    m_Emitters.clear();
     ParseProfile(Profile);
 }
 #endif //	DEBUG
-
-#endif

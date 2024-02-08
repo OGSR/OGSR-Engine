@@ -35,6 +35,8 @@ void SCarLight::ParseDefinitions(LPCSTR section)
     light_render = ::Render->light_create();
     light_render->set_type(IRender_Light::SPOT);
     light_render->set_shadow(true);
+    light_render->set_moveable(true);
+
     glow_render = ::Render->glow_create();
     //	lanim					= 0;
     //	time2hide				= 0;

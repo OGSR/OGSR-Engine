@@ -49,7 +49,7 @@ local adv_vid_opt_params = {
 	{ "r2_rain_drops",         "check", 0, hint_colors.green , "video_settings_name_47", "video_settings_desc_47" },
 	{ "r2_visor_refl",         "check", 0, hint_colors.green , "video_settings_name_65", "",                      },
 	--
---	{ "r3_volumetric_smoke",   "check", 0, hint_colors.green , "video_settings_name_55", "video_settings_desc_55" }, --Вообще выключен в движке, до лучших времен.
+	{ "r3_volumetric_smoke",   "check", 0, hint_colors.green , "video_settings_name_55", ""--[["video_settings_desc_55"]] },
 }
 
 local control_init_funs = {

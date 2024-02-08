@@ -93,6 +93,7 @@ void CShootingObject::Light_Create()
         light_render->set_shadow(true);
     else
         light_render->set_shadow(false);
+    light_render->set_moveable(true);
 }
 
 void CShootingObject::Light_Destroy() { light_render.destroy(); }

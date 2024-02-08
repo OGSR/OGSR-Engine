@@ -1,8 +1,4 @@
-#ifndef dx103DFluidVolume_included
-#define dx103DFluidVolume_included
 #pragma once
-
-#ifdef DX10_FLUID_ENABLE
 
 #include "dx103DFluidData.h"
 #include "../../xrRender/FBasicVisual.h"
@@ -18,13 +14,11 @@ public:
     virtual void Copy(dxRender_Visual* pFrom);
     virtual void Release();
 
+    shared_str getProfileName() { return m_FluidData.dbg_name; }
+
 private:
     //	For debug purpose only
     ref_geom m_Geom;
 
     dx103DFluidData m_FluidData;
 };
-
-#endif //	dx103DFluidVolume_included
-
-#endif

@@ -6077,6 +6077,9 @@
     <ClInclude Include="embedded_editor\embedded_editor_pos_informer.h">
       <Filter>EmbeddedEditor</Filter>
     </ClInclude>
+    <ClInclude Include="physics_shell_animated.h">
+      <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -8869,6 +8872,9 @@
     </ClCompile>
     <ClCompile Include="embedded_editor\embedded_editor_pos_informer.cpp">
       <Filter>EmbeddedEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="physics_shell_animated.cpp">
+      <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

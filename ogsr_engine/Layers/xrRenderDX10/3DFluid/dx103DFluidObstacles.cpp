@@ -1,59 +1,23 @@
 #include "stdafx.h"
-
-#ifdef DX10_FLUID_ENABLE
-
 #include "dx103DFluidObstacles.h"
-
 #include "../../xrRender/dxRenderDeviceRender.h"
 #include "../../../xr_3da/xr_object.h"
-#include "../../../xr_3da/IPhysicsShell.h"
-#include "../../../xr_3da/IObjectPhysicsCollision.h"
-#include "../../../xr_3da/IPhysicsGeometry.h"
-
+#include "../xr_3da/IPhysicsDefinitions.h"
 #include "dx103DFluidBlenders.h"
 #include "dx103DFluidData.h"
 #include "dx103DFluidGrid.h"
 
-/*
-#ifdef	DEBUG
-#include "../../xrRender/dxDebugRender.h"
-#endif
-
-static void draw_obb		( const Fmatrix &matrix, const u32 &color )
-{
-    Fvector							aabb[8];
-    matrix.transform_tiny			(aabb[0],Fvector().set( -1, -1, -1)); // 0
-    matrix.transform_tiny			(aabb[1],Fvector().set( -1, +1, -1)); // 1
-    matrix.transform_tiny			(aabb[2],Fvector().set( +1, +1, -1)); // 2
-    matrix.transform_tiny			(aabb[3],Fvector().set( +1, -1, -1)); // 3
-    matrix.transform_tiny			(aabb[4],Fvector().set( -1, -1, +1)); // 4
-    matrix.transform_tiny			(aabb[5],Fvector().set( -1, +1, +1)); // 5
-    matrix.transform_tiny			(aabb[6],Fvector().set( +1, +1, +1)); // 6
-    matrix.transform_tiny			(aabb[7],Fvector().set( +1, -1, +1)); // 7
-
-    u16								aabb_id[12*2] = {
-        0,1,  1,2,  2,3,  3,0,  4,5,  5,6,  6,7,  7,4,  1,5,  2,6,  3,7,  0,4
-    };
-
-    rdebug_render->add_lines						(aabb, sizeof(aabb)/sizeof(Fvector), &aabb_id[0], sizeof(aabb_id)/(2*sizeof(u16)), color);
-}
-*/
-
-namespace
-{
 //	For OOBB
-//	shared_str	strBoxLBDcorner("boxLBDcorner");
-//	shared_str	strBoxRTUcorner("boxRTUcorner");
-shared_str strOOBBClipPlane("OOBBClipPlane");
+constexpr const char* strOOBBClipPlane("OOBBClipPlane");
 
 //	For velocity calculation
-shared_str strWorldToLocal("WorldToLocal");
-shared_str strLocalToWorld("LocalToWorld");
-shared_str strMassCenter("MassCenter");
-shared_str strOOBBWorldAngularVelocity("OOBBWorldAngularVelocity");
-shared_str strOOBBWorldTranslationVelocity("OOBBWorldTranslationVelocity");
+constexpr const char* strWorldToLocal("WorldToLocal");
+constexpr const char* strLocalToWorld("LocalToWorld");
+constexpr const char* strMassCenter("MassCenter");
+constexpr const char* strOOBBWorldAngularVelocity("OOBBWorldAngularVelocity");
+constexpr const char* strOOBBWorldTranslationVelocity("OOBBWorldTranslationVelocity");
 
-Fvector4 UnitClipPlanes[] = {
+constexpr Fvector4 UnitClipPlanes[] = {
     {-1.f, 0.0f, 0.0f, 0.5f}, //
     {1.f, 0.0f, 0.0f, 0.5f}, //
     {0.0f, -1.f, 0.0f, 0.5f}, //	Top
@@ -61,7 +25,6 @@ Fvector4 UnitClipPlanes[] = {
     {0.0f, 0.0f, -1.f, 0.5f}, //
     {0.0f, 0.0f, 1.f, 0.5f}, //
 };
-} // namespace
 
 dx103DFluidObstacles::dx103DFluidObstacles(int gridWidth, int gridHeight, int gridDepth, dx103DFluidGrid* pGrid) : m_pGrid(pGrid)
 {
@@ -112,11 +75,7 @@ void dx103DFluidObstacles::ProcessObstacles(const dx103DFluidData& FluidData, fl
         Fmatrix Scale;
         Fmatrix Translate;
         Fmatrix TranslateScale;
-        //	Convert to 0..intDim space since it is used by simulation
-        // Scale.scale((float)m_iTextureWidth-1, (float)m_iTextureHeight-1, (float)m_iTextureDepth-1);
-        // Translate.translate(0.5, 0.5, 0.5);
-        // It seems that y axis is inverted in fluid simulation, so shange maths a bit
-        //		Scale.scale(m_vGridDim.x-1, -(m_vGridDim.y-1), m_vGridDim.z-1 );
+
         Scale.scale(m_vGridDim.x, -(m_vGridDim.y), m_vGridDim.z);
         Translate.translate(0.5, -0.5, 0.5);
         //	Actually it is mul(Translate, Scale).
@@ -177,8 +136,8 @@ void dx103DFluidObstacles::ProcessDynamicObstacles(const dx103DFluidData& FluidD
     m_lstElements.clear();
 
     Fbox box;
-    box.min = Fvector3().set(-0.5f, -0.5f, -0.5f);
-    box.max = Fvector3().set(0.5f, 0.5f, 0.5f);
+    box.min.set(-0.5f, -0.5f, -0.5f);
+    box.max.set(0.5f, 0.5f, 0.5f);
     box.xform(FluidData.GetTransform());
     Fvector3 center;
     Fvector3 size;
@@ -194,14 +153,7 @@ void dx103DFluidObstacles::ProcessDynamicObstacles(const dx103DFluidData& FluidD
     for (u32 i = 0; i < m_lstRenderables.size(); ++i)
     {
         ISpatial* spatial = m_lstRenderables[i];
-        //	Can use to optimize invisible dynamic objects if necessary
-        // CSector*	sector		= (CSector*)spatial->spatial.sector;
-        // if	(0==sector)										continue;	// disassociated from S/P structure
-        // if	(PortalTraverser.i_marker != sector->r_marker)	continue;	// inactive (untouched) sector
 
-        // renderable
-        // IRenderable*	renderable		= spatial->dcast_Renderable	();
-        // if (0==renderable)				continue;					// unknown, but renderable object (r1_glow???)
         CObject* pObject = spatial->dcast_CObject();
         if (!pObject)
             continue;
@@ -210,8 +162,8 @@ void dx103DFluidObstacles::ProcessDynamicObstacles(const dx103DFluidData& FluidD
         if (!pCollision)
             continue;
 
-        const IPhysicsShell* pShell = pCollision->physics_shell();
-        const IPhysicsElement* pElement = pCollision->physics_character();
+        IPhysicsShell* pShell = pCollision->physics_shell();
+        IPhysicsElement* pElement = pCollision->physics_character();
         if (pShell)
         {
             //	Push shell here
@@ -248,18 +200,18 @@ void dx103DFluidObstacles::ProcessDynamicObstacles(const dx103DFluidData& FluidD
 }
 
 //	TODO: DX10: Do it using instancing.
-void dx103DFluidObstacles::RenderPhysicsShell(const IPhysicsShell* pShell, const Fmatrix& WorldToFluid, float timestep)
+void dx103DFluidObstacles::RenderPhysicsShell(IPhysicsShell* pShell, const Fmatrix& WorldToFluid, float timestep)
 {
     u16 iObstNum = pShell->get_ElementsNumber();
     for (u16 i = 0; i < iObstNum; ++i)
     {
-        const IPhysicsElement& Element = pShell->Element(i);
+        IPhysicsElement& Element = pShell->IElement(i);
 
         RenderPhysicsElement(Element, WorldToFluid, timestep);
     }
 }
 
-void dx103DFluidObstacles::RenderPhysicsElement(const IPhysicsElement& Element, const Fmatrix& WorldToFluid, float timestep)
+void dx103DFluidObstacles::RenderPhysicsElement(IPhysicsElement& Element, const Fmatrix& WorldToFluid, float timestep)
 {
     //	Shader must be already set up!
     const Fvector3& MassCenter3 = Element.mass_Center();
@@ -284,18 +236,10 @@ void dx103DFluidObstacles::RenderPhysicsElement(const IPhysicsElement& Element, 
     //	Convert speed
     fVelocityScale /= 30.0f * 2.0f;
 
-    // fVelocityScale *= Device.fTimeDelta;
-
-    //	Emphasize velocity influence on the fog
-    // fVelocityScale *= 10;
-    // fVelocityScale *= 4;	//	Good for the beginning
     fVelocityScale *= 6;
 
     AngularVelocity.mul(fVelocityScale);
     TranslationVelocity.mul(fVelocityScale);
-
-    //	Emphasize velocity influence on the fog
-    // TranslationVelocity.mul( 2.0f );
 
     RCache.set_c(strMassCenter, MassCenter);
     RCache.set_c(strOOBBWorldAngularVelocity, AngularVelocity);
@@ -310,84 +254,11 @@ void dx103DFluidObstacles::RenderPhysicsElement(const IPhysicsElement& Element, 
     }
 }
 
-/*
-void dx103DFluidObstacles::RenderDynamicOOBB( const IPhysicsElement &Element, const Fmatrix &WorldToFluid, float timestep)
+void dx103DFluidObstacles::RenderDynamicOOBB(IPhysicsGeometry& Geometry, const Fmatrix& WorldToFluid, float timestep)
 {
     PIX_EVENT(RenderDynamicObstacle);
 
-    //	dsdad;
-
     Fmatrix Transform;
-    //Transform.mul(WorldToFluid, Element.XFORM());
-
-    Fvector3 BoxSize;
-    Fvector3 BoxCenter;
-    Element.get_Box( BoxSize, BoxCenter );
-
-    //	Get bone transform
-    Fmatrix OOBBTransform = Element.XFORM();
-    //	Overwrite bone position with oobb world position
-    OOBBTransform.c = BoxCenter;
-
-    Transform.mul(WorldToFluid, OOBBTransform);
-
-    //	Shader must be already set up!
-    Fmatrix	InvTransform;
-    Fmatrix ClipTransform;
-    InvTransform.invert(Transform);
-    ClipTransform.transpose(InvTransform);
-
-    for ( int i=0; i<6; ++i)
-    {
-        Fvector4	UpdatedPlane = UnitClipPlanes[i];
-        UpdatedPlane.w *= BoxSize[i/2];
-        //UpdatedPlane.w += (i%2) ? (-BoxCenter[i/2]) : BoxCenter[i/2];
-        Fvector4	TransformedPlane;
-        ClipTransform.transform(TransformedPlane, UpdatedPlane);
-        TransformedPlane.normalize_as_plane();
-        RCache.set_ca(strOOBBClipPlane, i, TransformedPlane);
-    }
-
-    const Fvector3	&MassCenter3 = Element.mass_Center();
-    Fvector3	AngularVelocity3;
-    Fvector3	TranslationVelocity3;
-    Element.get_AngularVel(AngularVelocity3);
-    Element.get_LinearVel(TranslationVelocity3);
-
-    Fvector4	MassCenter;
-    Fvector4	AngularVelocity;
-    Fvector4	TranslationVelocity;
-    MassCenter.set( MassCenter3.x, MassCenter3.y, MassCenter3.z, 0.0f);
-    AngularVelocity.set( AngularVelocity3.x, AngularVelocity3.y, AngularVelocity3.z, 0.0f);
-    TranslationVelocity.set( TranslationVelocity3.x, TranslationVelocity3.y, TranslationVelocity3.z, 0.0f);
-
-    float	fVelocityScale;
-
-    VERIFY(timestep!=0);
-
-    fVelocityScale = 1/timestep;
-
-    fVelocityScale *= Device.fTimeDelta;
-
-    AngularVelocity.mul( fVelocityScale );
-    TranslationVelocity.mul( fVelocityScale );
-
-    RCache.set_c(strMassCenter, MassCenter);
-    RCache.set_c(strOOBBWorldAngularVelocity, AngularVelocity);
-    RCache.set_c(strOOBBWorldTranslationVelocity, TranslationVelocity);
-
-    m_pGrid->DrawSlices();
-}
-*/
-
-void dx103DFluidObstacles::RenderDynamicOOBB(const IPhysicsGeometry& Geometry, const Fmatrix& WorldToFluid, float timestep)
-{
-    PIX_EVENT(RenderDynamicObstacle);
-
-    //	dsdad;
-
-    Fmatrix Transform;
-    // Transform.mul(WorldToFluid, Element.XFORM());
 
     Fvector3 BoxSize;
     Fmatrix OOBBTransform;
@@ -406,7 +277,6 @@ void dx103DFluidObstacles::RenderDynamicOOBB(const IPhysicsGeometry& Geometry, c
     {
         Fvector4 UpdatedPlane = UnitClipPlanes[i];
         UpdatedPlane.w *= BoxSize[i / 2];
-        // UpdatedPlane.w += (i%2) ? (-BoxCenter[i/2]) : BoxCenter[i/2];
         Fvector4 TransformedPlane;
         ClipTransform.transform(TransformedPlane, UpdatedPlane);
         TransformedPlane.normalize_as_plane();
@@ -415,5 +285,3 @@ void dx103DFluidObstacles::RenderDynamicOOBB(const IPhysicsGeometry& Geometry, c
 
     m_pGrid->DrawSlices();
 }
-
-#endif

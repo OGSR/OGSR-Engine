@@ -1,8 +1,11 @@
 #pragma once
+
 #include "PHObject.h"
 #include "PHInterpolation.h"
 #include "PHSynchronize.h"
 #include "PHDisabling.h"
+#include "PhysicsShell.h"
+
 class CPhysicsShellHolder;
 class CClimableObject;
 class CGameObject;
@@ -10,6 +13,7 @@ class ICollisionDamageInfo;
 class CElevatorState;
 class CPHActorCharacter;
 class CPHAICharacter;
+
 /* static*/ enum EEnvironment
 {
     peOnGround,
@@ -19,7 +23,8 @@ class CPHAICharacter;
 
 class CPHCharacter : public CPHObject,
                      public CPHSynchronize,
-                     public CPHDisablingTranslational
+                     public CPHDisablingTranslational,
+                     public IPhysicsElement
 #ifdef DEBUG
     ,
                      public pureRender
@@ -172,6 +177,13 @@ public:
         return static_cast<CPHSynchronize*>(this);
     };
     virtual CElevatorState* ElevatorState() = 0;
+
+    virtual const Fmatrix& XFORM() const override;
+    virtual void get_LinearVel(Fvector& velocity) override;
+    virtual void get_AngularVel(Fvector& velocity) override;
+    virtual u16 numberOfGeoms() override { return 0; }
+    virtual IPhysicsGeometry* geometry(u16 i) const override { return 0; }
+    virtual const Fvector& mass_Center() override;
 
 public:
     virtual void step(float dt) = 0; //{ step( dt ); }

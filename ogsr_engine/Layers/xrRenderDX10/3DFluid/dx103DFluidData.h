@@ -1,8 +1,4 @@
-#ifndef dx103DFluidData_included
-#define dx103DFluidData_included
 #pragma once
-
-#ifdef DX10_FLUID_ENABLE
 
 #include "dx103DFluidEmitters.h"
 
@@ -66,6 +62,8 @@ public:
     const xr_vector<dx103DFluidEmitters::CEmitter>& GetEmittersList() const { return m_Emitters; }
     const Settings& GetSettings() const { return m_Settings; }
 
+    shared_str dbg_name;
+
     //	Allow real-time config reload
 #ifdef DEBUG
     void ReparseProfile(const xr_string& Profile);
@@ -81,19 +79,13 @@ private:
     void ParseProfile(const xr_string& Profile);
 
 private:
-    Fmatrix m_Transform;
+    Fmatrix m_Transform{};
 
     xr_vector<Fmatrix> m_Obstacles;
     xr_vector<CEmitter> m_Emitters;
 
-    Settings m_Settings;
+    Settings m_Settings{};
 
-    static DXGI_FORMAT m_VPRenderTargetFormats[VP_NUM_TARGETS];
-
-    ID3DRenderTargetView* m_pRenderTargetViews[VP_NUM_TARGETS];
-    ID3DTexture3D* m_pRTTextures[VP_NUM_TARGETS];
+    ID3DRenderTargetView* m_pRenderTargetViews[VP_NUM_TARGETS]{};
+    ID3DTexture3D* m_pRTTextures[VP_NUM_TARGETS]{};
 };
-
-#endif //	dx103DFluidData_included
-
-#endif

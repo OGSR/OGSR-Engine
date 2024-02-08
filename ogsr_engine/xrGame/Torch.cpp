@@ -35,9 +35,11 @@ CTorch::CTorch(void)
     light_render = ::Render->light_create();
     light_render->set_type(IRender_Light::SPOT);
     light_render->set_shadow(true);
+    light_render->set_moveable(true);
     light_omni = ::Render->light_create();
     light_omni->set_type(IRender_Light::POINT);
     light_omni->set_shadow(false);
+    light_omni->set_moveable(true);
 
     m_switched_on = false;
     glow_render = ::Render->glow_create();

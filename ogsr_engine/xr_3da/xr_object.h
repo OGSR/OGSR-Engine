@@ -7,6 +7,7 @@
 #include "irenderable.h"
 #include "icollidable.h"
 
+class IObjectPhysicsCollision;
 // refs
 class ENGINE_API IRender_Sector;
 class ENGINE_API IRender_ObjectSpecific;
@@ -188,6 +189,8 @@ public:
     virtual void OnH_B_Independent(bool just_before_destroy);
     virtual void OnH_A_Chield(); // after
     virtual void OnH_A_Independent();
+
+    virtual const IObjectPhysicsCollision* physics_collision() { return 0; }
 
 public:
     virtual bool register_schedule() const { return true; }

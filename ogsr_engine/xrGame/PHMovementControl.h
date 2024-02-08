@@ -35,6 +35,7 @@ public:
     void PHCaptureObject(CPhysicsShellHolder* object, u16 element, LPCSTR = nullptr, bool = false);
     CPHCapture* PHCapture() { return m_capture; }
     CPHCharacter* PHCharacter() { return m_character; }
+    IPhysicsElement* IElement() const;
     void PHReleaseObject();
     Fvector PHCaptureGetNearestElemPos(const CPhysicsShellHolder* object);
     Fmatrix PHCaptureGetNearestElemTransform(CPhysicsShellHolder* object);
@@ -368,7 +369,7 @@ public:
         return m_character->CollisionDamageInfo();
     }
     void GetDesiredPos(Fvector& dpos) { m_character->GetDesiredPosition(dpos); }
-    bool CharacterExist() { return (m_character && m_character->b_exist); }
+    bool CharacterExist() const { return (m_character && m_character->b_exist); }
     CPHMovementControl(CObject* parent);
     ~CPHMovementControl(void);
 

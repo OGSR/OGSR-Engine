@@ -1,8 +1,48 @@
-#ifndef dx103DFluidRenderer_included
-#define dx103DFluidRenderer_included
 #pragma once
 
-#ifdef DX10_FLUID_ENABLE
+namespace dx103DFluidConsts
+{
+inline constexpr const char* m_pRTNames[]{"$user$rayDataTex", "$user$rayDataTexSmall", "$user$rayCastTex", "$user$edgeTex"};
+inline constexpr const char* m_pResourceRTNames[]{"rayDataTex", "rayDataTexSmall", "rayCastTex", "edgeTex"};
+inline constexpr D3DFORMAT RTFormats[]{D3DFMT_A32B32G32R32F, D3DFMT_A32B32G32R32F, D3DFMT_A32B32G32R32F, D3DFMT_R32F};
+
+inline constexpr DXGI_FORMAT RenderTargetFormats[]{DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16_FLOAT, DXGI_FORMAT_R8_UNORM,
+                                                   DXGI_FORMAT_R16G16B16A16_FLOAT, DXGI_FORMAT_R16_FLOAT, DXGI_FORMAT_R16G16B16A16_FLOAT};
+
+inline constexpr const char* m_pEngineTextureNames[]{
+    "$user$Texture_velocity1", //	RENDER_TARGET_VELOCITY1 = 0,
+    "$user$Texture_color_out", //	RENDER_TARGET_COLOR,	//	Swap with object's
+    "$user$Texture_obstacles", //	RENDER_TARGET_OBSTACLES,
+    "$user$Texture_obstvelocity", //	RENDER_TARGET_OBSTVELOCITY,
+    "$user$Texture_tempscalar", //	RENDER_TARGET_TEMPSCALAR,
+    "$user$Texture_tempvector", //	 RENDER_TARGET_TEMPVECTOR,
+    "$user$Texture_velocity0", //	RENDER_TARGET_VELOCITY0 = NUM_OWN_RENDER_TARGETS,	//	For textures generated from local data
+    "$user$Texture_pressure", //	RENDER_TARGET_PRESSURE,
+    "$user$Texture_color", //	RENDER_TARGET_COLOR_IN,
+};
+inline constexpr const char* m_pShaderTextureNames[]{
+    "Texture_velocity1", //	RENDER_TARGET_VELOCITY1 = 0,
+    "Texture_color_out", //	RENDER_TARGET_COLOR,	//	Swap with object's
+    "Texture_obstacles", //	RENDER_TARGET_OBSTACLES,
+    "Texture_obstvelocity", //	RENDER_TARGET_OBSTVELOCITY,
+    "Texture_tempscalar", //	RENDER_TARGET_TEMPSCALAR,
+    "Texture_tempvector", //	 RENDER_TARGET_TEMPVECTOR,
+    "Texture_velocity0", //	RENDER_TARGET_VELOCITY0 = NUM_OWN_RENDER_TARGETS,	//	For textures generated from local data
+    "Texture_pressure", //	RENDER_TARGET_PRESSURE,
+    "Texture_color", //	RENDER_TARGET_COLOR_IN,
+};
+
+inline constexpr Fvector3 vertices[] = {{0, 0, 0}, {0, 0, 1}, {0, 1, 0}, {0, 1, 1}, {1, 0, 0}, {1, 0, 1}, {1, 1, 0}, {1, 1, 1}};
+inline constexpr u32 m_iGridBoxVertNum = sizeof(vertices) / sizeof(vertices[0]);
+inline constexpr u16 indices[] = {0, 4, 1, 1, 4, 5, 0, 1, 2, 2, 1, 3, 4, 6, 5, 6, 7, 5, 2, 3, 6, 3, 7, 6, 1, 5, 3, 3, 5, 7, 0, 2, 4, 2, 6, 4};
+inline constexpr u32 m_iGridBoxFaceNum = (sizeof(indices) / sizeof(indices[0])) / 3;
+
+inline constexpr DXGI_FORMAT m_VPRenderTargetFormats[]{
+    DXGI_FORMAT_R16G16B16A16_FLOAT, // VP_VELOCITY0
+    DXGI_FORMAT_R16_FLOAT, // VP_PRESSURE
+    DXGI_FORMAT_R16_FLOAT // VP_COLOR
+};
+} // namespace dx103DFluidConsts
 
 class dx103DFluidData;
 
@@ -29,9 +69,6 @@ public:
 
     void Draw(const dx103DFluidData& FluidData);
 
-    static LPCSTR* GetRTNames() { return m_pRTNames; }
-    static LPCSTR* GetResourceRTNames() { return m_pResourceRTNames; }
-
 private:
     enum RendererShader
     {
@@ -50,9 +87,9 @@ private:
 
     struct FogLighting
     {
-        Fvector3 m_vLightIntencity;
+        Fvector3 m_vLightIntencity{};
 
-        void Reset() { ZeroMemory(this, sizeof(*this)); }
+        void Reset() { m_vLightIntencity.set(0.f, 0.f, 0.f); }
     };
 
 private:
@@ -66,9 +103,10 @@ private:
 
     void CalculateRenderTextureSize(int screenWidth, int screenHeight);
     void CreateRayDataResources(int width, int height);
+    void PrepareCBuffer(const dx103DFluidData& FluidData, u32 RTWidth, u32 RTHeight);
 
-    void ComputeRayData();
-    void ComputeEdgeTexture();
+    void ComputeRayData(const dx103DFluidData& FluidData);
+    void ComputeEdgeTexture(const dx103DFluidData& FluidData);
 
     void DrawScreenQuad();
     void DrawBox();
@@ -76,21 +114,17 @@ private:
     void CalculateLighting(const dx103DFluidData& FluidData, FogLighting& LightData);
 
 private:
-    bool m_bInited;
+    bool m_bInited{};
 
-    Fvector3 m_vGridDim;
-    float m_fMaxDim;
+    Fvector3 m_vGridDim{};
+    float m_fMaxDim{};
 
-    int m_iRenderTextureWidth;
-    int m_iRenderTextureHeight;
+    int m_iRenderTextureWidth{};
+    int m_iRenderTextureHeight{};
 
-    D3DXMATRIXA16 m_gridMatrix;
-    // Fmatrix		m_gridMatrix;
+    DirectX::XMMATRIX m_gridMatrix{};
 
-    D3DFORMAT RTFormats[RRT_NumRT];
     ref_rt RT[RRT_NumRT];
-    static LPCSTR m_pRTNames[RRT_NumRT];
-    static LPCSTR m_pResourceRTNames[RRT_NumRT];
 
     ref_selement m_RendererTechnique[RS_NumShaders];
 
@@ -98,19 +132,13 @@ private:
     ref_texture m_HHGGTexture;
 
     ref_geom m_GeomGridBox;
-    ID3DVertexBuffer* m_pGridBoxVertexBuffer;
-    ID3DIndexBuffer* m_pGridBoxIndexBuffer;
-    int m_iGridBoxVertNum;
-    int m_iGridBoxFaceNum;
+    ID3DVertexBuffer* m_pGridBoxVertexBuffer{};
+    ID3DIndexBuffer* m_pGridBoxIndexBuffer{};
 
     ref_geom m_GeomQuadVertex;
-    ID3DVertexBuffer* m_pQuadVertexBuffer;
+    ID3DVertexBuffer* m_pQuadVertexBuffer{};
 
     //	Cache vectors to avoid memory reallocations
     //	TODO: DX10: Reserve memory on object creation
     xr_vector<ISpatial*> m_lstRenderables;
 };
-
-#endif //	dx103DFluidRenderer_included
-
-#endif

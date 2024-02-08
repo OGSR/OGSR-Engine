@@ -1,8 +1,4 @@
-#ifndef dx103DFluidManager_included
-#define dx103DFluidManager_included
 #pragma once
-
-#ifdef DX10_FLUID_ENABLE
 
 class dx103DFluidData;
 class dx103DFluidGrid;
@@ -51,11 +47,7 @@ public:
     int GetTextureHeight() const { return m_iTextureHeight; }
     int GetTextureDepth() const { return m_iTextureDepth; }
 
-    //	float	GetDecay() { return m_fDecay; }
     float GetImpulseSize() const { return m_fImpulseSize; }
-
-    static LPCSTR* GetEngineTextureNames() { return m_pEngineTextureNames; }
-    static LPCSTR* GetShaderTextureNames() { return m_pShaderTextureNames; }
 
     //	Allow real-time config reload
 #ifdef DEBUG
@@ -111,35 +103,31 @@ private:
     void UpdateObstacles(const dx103DFluidData& FluidData, float timestep);
 
 private:
-    bool m_bInited;
+    bool m_bInited{};
 
-    DXGI_FORMAT RenderTargetFormats[NUM_RENDER_TARGETS];
-    ID3DRenderTargetView* pRenderTargetViews[NUM_RENDER_TARGETS];
+    ID3DRenderTargetView* pRenderTargetViews[NUM_RENDER_TARGETS]{};
     ref_texture pRTTextures[NUM_RENDER_TARGETS];
-    static LPCSTR m_pEngineTextureNames[NUM_RENDER_TARGETS];
-    static LPCSTR m_pShaderTextureNames[NUM_RENDER_TARGETS];
 
     ref_selement m_SimulationTechnique[SS_NumShaders];
 
-    //
-    dx103DFluidGrid* m_pGrid;
-    dx103DFluidRenderer* m_pRenderer;
-    dx103DFluidObstacles* m_pObstaclesHandler;
-    dx103DFluidEmitters* m_pEmittersHandler;
+    dx103DFluidGrid* m_pGrid{};
+    dx103DFluidRenderer* m_pRenderer{};
+    dx103DFluidObstacles* m_pObstaclesHandler{};
+    dx103DFluidEmitters* m_pEmittersHandler{};
 
     //	Simulation options
-    int m_nIterations;
-    bool m_bUseBFECC;
-    float m_fSaturation;
-    bool m_bAddDensity;
-    float m_fImpulseSize;
-    float m_fConfinementScale;
-    float m_fDecay;
+    int m_nIterations{6};
+    bool m_bUseBFECC{true};
+    float m_fSaturation{0.78f};
+    bool m_bAddDensity{true};
+    float m_fImpulseSize{0.15f};
+    float m_fConfinementScale{};
+    float m_fDecay{1.0f};
 
     //	Volume textures dimensions
-    int m_iTextureWidth;
-    int m_iTextureHeight;
-    int m_iTextureDepth;
+    int m_iTextureWidth{};
+    int m_iTextureHeight{};
+    int m_iTextureDepth{};
 
 //	Allow real-time config reload
 #ifdef DEBUG
@@ -153,7 +141,3 @@ private:
 };
 
 extern dx103DFluidManager FluidManager;
-
-#endif //	dx103DFluidManager_included
-
-#endif

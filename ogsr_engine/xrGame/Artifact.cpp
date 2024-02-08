@@ -133,6 +133,7 @@ BOOL CArtefact::net_Spawn(CSE_Abstract* DC)
     VERIFY(m_pTrailLight == NULL);
     m_pTrailLight = ::Render->light_create();
     m_pTrailLight->set_shadow(true);
+    m_pTrailLight->set_moveable(true);
 
     StartLights();
     /////////////////////////////////////////
@@ -479,6 +480,7 @@ SArtefactActivation::SArtefactActivation(CArtefact* af, u32 owner_id)
     m_af = af;
     Load();
     m_light = ::Render->light_create();
+    m_light->set_moveable(true);
     m_light->set_shadow(true);
     m_owner_id = owner_id;
 }

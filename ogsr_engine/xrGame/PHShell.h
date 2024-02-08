@@ -1,7 +1,4 @@
-///////////////////////////////////////////////////////////////////////
-
-#ifndef PH_SHELL
-#define PH_SHELL
+#pragma once
 
 class CPHShell;
 class CPHShellSplitterHolder;
@@ -72,8 +69,9 @@ public:
 
     virtual void Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool disable = false);
     virtual void Activate(const Fmatrix& transform, const Fvector& lin_vel, const Fvector& ang_vel, bool disable = false);
-    virtual void Activate(bool disable = false);
-    virtual void Activate(const Fmatrix& start_from, bool disable = false){};
+
+    virtual void Activate(bool disable = false, bool not_set_bone_callbacks = false);
+    virtual void Activate(const Fmatrix& start_from, bool disable = false){}
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
     virtual CPhysicsShellAnimator* PPhysicsShellAnimator() { return m_pPhysicsShellAnimatorC; };
@@ -98,7 +96,7 @@ public:
     virtual void SetIgnoreRagDoll();
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
-    virtual void SetAnimated();
+    virtual void CreateShellAnimator();
     virtual void SetIgnoreAnimated();
     virtual bool Animated();
 #endif
@@ -158,8 +156,8 @@ public:
     }
     virtual bool IsBreakingBlocked() { return m_spliter_holder && m_spliter_holder->IsUnbreakable(); }
     ///////	////////////////////////////////////////////////////////////////////////////////////////////
-    virtual void get_LinearVel(Fvector& velocity);
-    virtual void get_AngularVel(Fvector& velocity);
+    virtual void get_LinearVel(Fvector& velocity) override;
+    virtual void get_AngularVel(Fvector& velocity) override;
     virtual void set_LinearVel(const Fvector& velocity);
     virtual void set_AngularVel(const Fvector& velocity);
     virtual void TransformPosition(const Fmatrix& form);
@@ -173,7 +171,7 @@ public:
     virtual CPhysicsElement* get_Element(const shared_str& bone_name);
     virtual CPhysicsElement* get_Element(LPCSTR bone_name);
     virtual CPhysicsElement* get_ElementByStoreOrder(u16 num);
-    virtual u16 get_ElementsNumber() { return (u16)elements.size(); }
+    virtual u16 get_ElementsNumber() override { return (u16)elements.size(); }
     virtual CPHSynchronize* get_ElementSync(u16 element);
     virtual u16 get_elements_number() { return get_ElementsNumber(); }
     virtual CPHSynchronize* get_element_sync(u16 element) { return get_ElementSync(element); }
@@ -184,6 +182,8 @@ public:
     virtual CPhysicsJoint* get_JointByStoreOrder(u16 num);
     virtual u16 get_JointsNumber();
     virtual CODEGeom* get_GeomByID(u16 bone_id);
+
+    virtual void SetAnimated(bool v) override;
 
     virtual void Enable();
     virtual void Disable();
@@ -268,4 +268,3 @@ private:
     void ExplosionHit(const Fvector& pos, const Fvector& dir, float val, const u16 id);
     void ClearBreakInfo();
 };
-#endif

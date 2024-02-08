@@ -321,7 +321,7 @@ void CPHElement::Activate(const Fmatrix& m0, float dt01, const Fmatrix& m2, bool
     Activate(m0, lvel, avel, disable);
 }
 
-void CPHElement::Activate(bool disable)
+void CPHElement::Activate(bool disable, bool)
 {
     Fvector lvel, avel;
     lvel.set(0.f, 0.f, 0.f);
@@ -968,7 +968,7 @@ void CPHElement::addInertia(const dMass& M)
 }
 void CPHElement::get_LinearVel(Fvector& velocity)
 {
-    if (!isActive() || !dBodyIsEnabled(m_body))
+    if (!isActive() || (!m_flags.test(flAnimated) && !dBodyIsEnabled(m_body)))
     {
         velocity.set(0, 0, 0);
         return;
@@ -977,7 +977,7 @@ void CPHElement::get_LinearVel(Fvector& velocity)
 }
 void CPHElement::get_AngularVel(Fvector& velocity)
 {
-    if (!isActive() || !dBodyIsEnabled(m_body))
+    if (!isActive() || (!m_flags.test(flAnimated) && !dBodyIsEnabled(m_body)))
     {
         velocity.set(0, 0, 0);
         return;

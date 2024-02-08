@@ -1,0 +1,32 @@
+[volume]
+EmittersNum                              = 4
+Hemi                                     = 1.0
+ConfinementScale                         = 0.1 ;0.3 ;Турбулентность. 0 - поток гладкий, default - 0.6 (off)
+GravityBuoyancy                          = 0.009 ;Вес положительный/отрицательный дыма
+Decay                                    = 0.994 ;Затухание дыма. 1 - дым не затухает, default - 0.994 (off)
+
+[emitter00]
+Type                                     = SimpleGaussian
+Radius                                   = 0.06; 0.09 ;размер источника.чем больше число,тем меньше источник default - 0.15
+Sigma                                    = 1
+FlowSpeed                                = 0.05 ;скорость потока
+Density                                  = 0.5; 0.6 ;плотность дыма
+ApplyDensity                             = 1 ;источник генерирует вещество
+ApplyImpulse                             = 1 ;источник применяет скорость
+
+Position                                 = 35.5, 7.0, 37.0 ;в локальных координатах
+; FlowDirection = 0.0, 1.8, 0.8
+FlowDirection                            = 0.0, 1.8, 0.4 ;направление потока в локальных координатах
+
+[emitter01]:emitter00
+Position                                 = 35.5, 7.0, 39.0
+; WorldPosition  = 76.736, -16.126, 75.767
+FlowDirection                            = 0.0, 1.8, -0.4
+
+[emitter02]:emitter00
+Position                                 = 39, 7.0, 35.0
+FlowDirection                            = -0.4, 1.8, 0.0
+
+[emitter03]:emitter00
+Position                                 = 33, 7.0, 35.0
+FlowDirection                            = 0.4, 1.8, 0.0

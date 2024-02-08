@@ -68,6 +68,9 @@ public:
 
     virtual void set_hud_mode(bool b) = 0;
     virtual bool get_hud_mode() = 0;
+
+    virtual void set_moveable(bool) = 0;
+
     virtual ~IRender_Light();
 };
 struct ENGINE_API resptrcode_light : public resptr_base<IRender_Light>

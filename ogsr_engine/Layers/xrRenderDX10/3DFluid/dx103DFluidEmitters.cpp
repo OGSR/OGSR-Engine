@@ -1,19 +1,12 @@
 #include "stdafx.h"
-
-#ifdef DX10_FLUID_ENABLE
-
 #include "dx103DFluidEmitters.h"
-
 #include "dx103DFluidBlenders.h"
 #include "dx103DFluidData.h"
 #include "dx103DFluidGrid.h"
 
-namespace
-{
-shared_str strImpulseSize("size");
-shared_str strImpulseCenter("center");
-shared_str strSplatColor("splatColor");
-} // namespace
+constexpr const char* strImpulseSize("size");
+constexpr const char* strImpulseCenter("center");
+constexpr const char* strSplatColor("splatColor");
 
 dx103DFluidEmitters::dx103DFluidEmitters(int gridWidth, int gridHeight, int gridDepth, dx103DFluidGrid* pGrid) : m_pGrid(pGrid)
 {
@@ -86,18 +79,7 @@ void dx103DFluidEmitters::ApplyDensity(const CEmitter& Emitter)
 
     float fRadius = Emitter.m_fRadius;
 
-    switch (Emitter.m_eType)
-    {
-    case ET_SimpleDraught:
-        // fRadius += (0.1f - fRadius) * (1.0f + 0.5f * _sin( (1.0f/30.0f) * t * (2.0f * float(PI))) );
-        // float fFactor = 1.0f + 0.5f * _sin(t * (2.0f * float(PI)) / 30 );
-        // FlowVelocity.mul( fFactor );
-        break;
-    }
-
     // Color is the density of the smoke. We use a sinusoidal function of 't' to make it more interesting.
-    // static float t = 0.0f;
-    // t += 0.05f;
     const float fMiddleIntencity = 1;
     const float saturation = Emitter.m_fSaturation;
     FLOAT density = 1.5f * (((_sin(t * 1.5f + 2.0f * float(PI) / 3.0f) * 0.5f + 0.5f)) * saturation + fMiddleIntencity * (1.0f - saturation));
@@ -131,8 +113,6 @@ void dx103DFluidEmitters::ApplyVelocity(const CEmitter& Emitter)
     switch (Emitter.m_eType)
     {
     case ET_SimpleDraught:
-        // fRadius += (0.1f - fRadius) * (1.0f + 0.5f * _sin( (1.0f/30.0f) * t * (2.0f * float(PI))) );
-        // float fFactor = 1.0f + 0.5f * _sin(t * (2.0f * float(PI)) / 10 );
         float fPeriod = Emitter.m_DraughtParams.m_fPeriod;
         if (fPeriod < 0.0001f)
             fPeriod = 0.0001f;
@@ -154,5 +134,3 @@ void dx103DFluidEmitters::ApplyVelocity(const CEmitter& Emitter)
 
     m_pGrid->DrawSlices();
 }
-
-#endif

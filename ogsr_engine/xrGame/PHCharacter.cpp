@@ -4,7 +4,8 @@
 #include "PHDynamicData.h"
 #include "Physics.h"
 #include "ExtendedGeom.h"
-#include "tri-colliderKNoOPC\__aabb_tri.h"
+#include "PhysicsShellHolder.h"
+#include "tri-colliderKNoOPC/__aabb_tri.h"
 #include "ode/src/util.h"
 #include "../xr_3da/gamemtllib.h"
 
@@ -133,6 +134,18 @@ void CPHCharacter::CutVelocity(float l_limit, float /*a_limit*/)
         dBodySetLinearVel(m_body, limitedl[0], limitedl[1], limitedl[2]);
     }
 }
+
+const Fmatrix& CPHCharacter::XFORM() const
+{
+    return m_phys_ref_object->XFORM();
+}
+
+void CPHCharacter::get_LinearVel(Fvector& velocity) { GetVelocity(velocity); }
+
+void CPHCharacter::get_AngularVel(Fvector& velocity) { velocity.set(0, 0, 0); }
+
+const Fvector& CPHCharacter::mass_Center() { return cast_fv(dBodyGetLinearVel(m_body)); }
+
 
 void virtual_move_collide_callback(bool& do_collide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2)
 {

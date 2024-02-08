@@ -1,6 +1,4 @@
-
-#ifndef CHARACTER_PHYSICS_SUPPORT
-#define CHARACTER_PHYSICS_SUPPORT
+#pragma once
 
 #include "alife_space.h"
 #include "PHSkeleton.h"
@@ -10,6 +8,7 @@
 #include "character_hit_animations.h"
 #include "PHMovementControl.h"
 #include "death_anims.h"
+#include "physics_shell_animated.h"
 
 class CPhysicsShell;
 class CIKLimbsController;
@@ -67,6 +66,8 @@ private:
     character_hit_animation_controller m_hit_animations;
     death_anims m_death_anims;
 
+    physics_shell_animated* m_physics_shell_animated{};
+
     interactive_motion* m_interactive_motion;
     // skeleton modell(!share?)
     float skel_airr_lin_factor;
@@ -94,6 +95,9 @@ private:
     float m_time_delta;
     float pelvis_factor_low_pose_detect;
     BOOL character_have_wounded_state;
+
+    u32 m_physics_shell_animated_time_destroy{u32(-1)};
+
     // gray_wolf<
 public:
     // gray_wolf>
@@ -133,6 +137,9 @@ public:
     void in_Hit(SHit& H, bool is_killing = false);
     void in_NetSave(NET_Packet& P);
     void in_ChangeVisual();
+
+    void destroy_imotion();
+
     void on_create_anim_mov_ctrl();
     void on_destroy_anim_mov_ctrl();
     void PHGetLinearVell(Fvector& velocity);
@@ -141,8 +148,15 @@ public:
     /////////////////////////////////////////////////////////////////
     CCharacterPhysicsSupport& operator=(CCharacterPhysicsSupport& /**asup/**/) { R_ASSERT2(false, "Can not assign it"); }
     void SyncNetState();
+
     CCharacterPhysicsSupport(EType atype, CEntityAlive* aentity);
     virtual ~CCharacterPhysicsSupport();
+
+    IC physics_shell_animated* animation_collision() { return m_physics_shell_animated; }
+    IC const physics_shell_animated* animation_collision() const { return m_physics_shell_animated; }
+
+    void create_animation_collision();
+    void destroy_animation_collision();
 
 private:
     void CreateSkeleton(CPhysicsShell*& pShell);
@@ -159,5 +173,6 @@ private:
     IC void UpdateDeathAnims();
     IC void CalculateTimeDelta();
     IC bool DoCharacterShellCollide();
+
+    void update_animation_collision();
 };
-#endif // CHARACTER_PHYSICS_SUPPORT

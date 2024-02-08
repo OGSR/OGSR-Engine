@@ -1,8 +1,4 @@
-#ifndef dx103DFluidGrid_included
-#define dx103DFluidGrid_included
 #pragma once
-
-#ifdef DX10_FLUID_ENABLE
 
 struct VS_INPUT_FLUIDSIM_STRUCT;
 
@@ -21,6 +17,7 @@ public:
 
 private:
     void CreateVertexBuffers();
+    void DestroyVertexBuffers();
 
     void InitScreenSlice(VS_INPUT_FLUIDSIM_STRUCT** vertices, int z, int& index);
     void InitSlice(int z, VS_INPUT_FLUIDSIM_STRUCT** vertices, int& index);
@@ -29,27 +26,23 @@ private:
     void InitBoundaryLines(VS_INPUT_FLUIDSIM_STRUCT** vertices, int& index);
 
 private:
-    Ivector3 m_vDim;
-    int m_iMaxDim;
-    int m_iCols;
-    int m_iRows;
+    Ivector3 m_vDim{};
+    int m_iMaxDim{};
+    int m_iCols{};
+    int m_iRows{};
 
     ref_geom m_GeomRenderQuad;
     ref_geom m_GeomSlices;
     ref_geom m_GeomBoundarySlices;
     ref_geom m_GeomBoundaryLines;
 
-    ID3DBuffer* m_pRenderQuadBuffer;
-    ID3DBuffer* m_pSlicesBuffer;
-    ID3DBuffer* m_pBoundarySlicesBuffer;
-    ID3DBuffer* m_pBoundaryLinesBuffer;
+    ID3DBuffer* m_pRenderQuadBuffer{};
+    ID3DBuffer* m_pSlicesBuffer{};
+    ID3DBuffer* m_pBoundarySlicesBuffer{};
+    ID3DBuffer* m_pBoundaryLinesBuffer{};
 
-    int m_iNumVerticesRenderQuad;
-    int m_iNumVerticesSlices;
-    int m_iNumVerticesBoundarySlices;
-    int m_iNumVerticesBoundaryLines;
+    int m_iNumVerticesRenderQuad{};
+    int m_iNumVerticesSlices{};
+    int m_iNumVerticesBoundarySlices{};
+    int m_iNumVerticesBoundaryLines{};
 };
-
-#endif //	dx103DFluidGrid_included
-
-#endif

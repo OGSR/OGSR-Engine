@@ -539,6 +539,7 @@ void CWeapon::Load(LPCSTR section)
         laser_light_render = ::Render->light_create();
         laser_light_render->set_type(IRender_Light::SPOT);
         laser_light_render->set_shadow(true);
+        laser_light_render->set_moveable(true);
 
         const Fcolor clr = READ_IF_EXISTS(pSettings, r_fcolor, m_light_section, b_r2 ? "color_r2" : "color", (Fcolor{1.0f, 0.0f, 0.0f, 1.0f}));
         laser_fBrightness = clr.intensity();
@@ -573,6 +574,7 @@ void CWeapon::Load(LPCSTR section)
         flashlight_render = ::Render->light_create();
         flashlight_render->set_type(IRender_Light::SPOT);
         flashlight_render->set_shadow(true);
+        flashlight_render->set_moveable(true);
 
         const Fcolor clr = READ_IF_EXISTS(pSettings, r_fcolor, m_light_section, b_r2 ? "color_r2" : "color", (Fcolor{0.6f, 0.55f, 0.55f, 1.0f}));
         flashlight_fBrightness = clr.intensity();
@@ -587,6 +589,7 @@ void CWeapon::Load(LPCSTR section)
             (IRender_Light::LT)(READ_IF_EXISTS(pSettings, r_u8, m_light_section, "omni_type",
                                                2))); // KRodin: вообще omni это обычно поинт, но поинт светит во все стороны от себя, поэтому тут спот используется по умолчанию.
         flashlight_omni->set_shadow(false);
+        flashlight_omni->set_moveable(true);
 
         const Fcolor oclr = READ_IF_EXISTS(pSettings, r_fcolor, m_light_section, b_r2 ? "omni_color_r2" : "omni_color", (Fcolor{1.0f, 1.0f, 1.0f, 0.0f}));
         flashlight_omni->set_color(oclr);

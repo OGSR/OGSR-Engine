@@ -43,7 +43,7 @@ CPhysicsJoint* P_create_Joint(CPhysicsJoint::enumType type, CPhysicsElement* fir
     return joint;
 }
 
-CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, BONE_P_MAP* bone_map)
+CPhysicsShell* P_build_Shell(CGameObject* obj, bool not_active_state, BONE_P_MAP* bone_map, bool not_set_bone_callbacks)
 {
     IKinematics* pKinematics = smart_cast<IKinematics*>(obj->Visual());
 
@@ -235,7 +235,7 @@ void ApplySpawnIniToPhysicShell(CInifile* ini, CPhysicsShell* physics_shell, boo
     if (ini->section_exist("animated_object"))
     {
         // Show that given "PhysicShell" animated
-        physics_shell->SetAnimated();
+        physics_shell->CreateShellAnimator();
     }
 #endif
 }

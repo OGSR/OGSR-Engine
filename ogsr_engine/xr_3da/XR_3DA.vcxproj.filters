@@ -103,6 +103,9 @@
     <Filter Include="Discord">
       <UniqueIdentifier>{43bfe79c-eeb5-4f94-934d-a536c732336c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interfaces\Physics">
+      <UniqueIdentifier>{9b31ebb8-00c7-4243-a366-4ea137bf7023}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -336,6 +339,9 @@
     </ClInclude>
     <ClInclude Include="splash.h">
       <Filter>General</Filter>
+    </ClInclude>
+    <ClInclude Include="IPhysicsDefinitions.h">
+      <Filter>Interfaces\Physics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

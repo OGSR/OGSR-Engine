@@ -4,18 +4,21 @@ class CPhysicsShell;
 class interactive_motion
 {
     MotionID motion;
+    CPhysicsShell* shell{};
 
 protected:
     Flags8 flags;
     enum Flag
     {
         fl_use_death_motion = 1 << 4,
-        fl_switch_dm_toragdoll = 1 << 5
+        fl_switch_dm_toragdoll = 1 << 5,
+        fl_started = 1 << 6,
     };
 
 public:
     interactive_motion();
     void init();
+    void destroy();
     void setup(LPCSTR m, CPhysicsShell* s);
     void setup(MotionID m, CPhysicsShell* s);
     void update(CPhysicsShell* s);
@@ -28,6 +31,7 @@ private:
     virtual void collide(CPhysicsShell* s) = 0;
 
 protected:
+    void state_end();
     virtual void state_end(CPhysicsShell* s);
     virtual void state_start(CPhysicsShell* s);
 
@@ -35,6 +39,16 @@ private:
     void switch_to_free(CPhysicsShell* s);
     static void anim_callback(CBlend* B);
 };
+
+IC void destroy_motion(interactive_motion*& im)
+{
+    if (!im)
+        return;
+
+    im->destroy();
+
+    xr_delete(im);
+}
 
 class imotion_velocity : public interactive_motion
 {

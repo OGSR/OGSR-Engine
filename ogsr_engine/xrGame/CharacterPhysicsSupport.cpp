@@ -282,6 +282,7 @@ void CCharacterPhysicsSupport::in_NetDestroy()
     CPHDestroyable::RespawnInit();
     m_eState = esAlive;
     xr_delete(m_interactive_motion);
+    destroy_animation_collision();
     DestroyIKController();
 }
 
@@ -490,6 +491,7 @@ void CCharacterPhysicsSupport::in_UpdateCL()
     {
         return;
     }
+    update_animation_collision();
     CalculateTimeDelta();
     if (m_pPhysicsShell)
     {
@@ -656,7 +658,11 @@ void CCharacterPhysicsSupport::set_movement_position(const Fvector& pos)
 
 void CCharacterPhysicsSupport::ActivateShell(CObject* who)
 {
+
     DestroyIKController();
+
+    destroy_animation_collision();
+
     IKinematics* K = smart_cast<IKinematics*>(m_EntityAlife.Visual());
 
     // animation movement controller issues
@@ -793,6 +799,9 @@ void CCharacterPhysicsSupport::in_ChangeVisual()
         CreateIKController();
     }
 
+    destroy_animation_collision();
+    destroy_motion(m_interactive_motion);
+
     if (!m_physics_skeleton && !m_pPhysicsShell)
         return;
 
@@ -818,6 +827,8 @@ void CCharacterPhysicsSupport::in_ChangeVisual()
         m_death_anims.setup(ka, m_EntityAlife.cNameSect().c_str(), pSettings);
     }
 }
+
+void CCharacterPhysicsSupport::destroy_imotion() { destroy_motion(m_interactive_motion); }
 
 bool CCharacterPhysicsSupport::CanRemoveObject()
 {
@@ -1022,3 +1033,30 @@ void CCharacterPhysicsSupport::on_destroy_anim_mov_ctrl()
 }
 
 void CCharacterPhysicsSupport::SyncNetState() { CPHSkeleton::SyncNetState(); }
+
+constexpr u32 physics_shell_animated_destroy_delay = 3000;
+
+void CCharacterPhysicsSupport::destroy_animation_collision()
+{
+    xr_delete(m_physics_shell_animated);
+    m_physics_shell_animated_time_destroy = u32(-1);
+}
+
+void CCharacterPhysicsSupport::create_animation_collision()
+{
+    m_physics_shell_animated_time_destroy = Device.dwTimeGlobal + physics_shell_animated_destroy_delay;
+    if (m_physics_shell_animated)
+        return;
+    m_physics_shell_animated = xr_new<physics_shell_animated>(&m_EntityAlife, true);
+}
+
+void CCharacterPhysicsSupport::update_animation_collision()
+{
+    if (animation_collision())
+    {
+        animation_collision()->update(mXFORM);
+        // animation_collision( )->shell()->set_LinearVel( movement()->GetVelocity() );
+        if (Device.dwTimeGlobal > m_physics_shell_animated_time_destroy)
+            destroy_animation_collision();
+    }
+}

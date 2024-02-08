@@ -63,6 +63,7 @@ void CCustomRocket::reinit()
     m_pTrailLight.destroy();
     m_pTrailLight = ::Render->light_create();
     m_pTrailLight->set_shadow(true);
+    m_pTrailLight->set_moveable(true);
 
     m_pEngineParticles = NULL;
     m_pFlyParticles = NULL;

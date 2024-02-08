@@ -118,16 +118,22 @@ void CPHShell::Activate(const Fmatrix& transform, const Fvector& lin_vel, const 
     // set_AngularVel(ang_vel);
 }
 
-void CPHShell::Activate(bool disable)
+void CPHShell::Activate(bool disable, bool not_set_bone_callbacks)
 {
     if (isActive())
         return;
 
     activate(disable);
     {
+        IKinematics* K = m_pKinematics;
+        if (not_set_bone_callbacks)
+            m_pKinematics = 0;
+
         ELEMENT_I i = elements.begin(), e = elements.end();
         for (; i != e; ++i)
             (*i)->Activate(mXFORM, disable);
+
+        m_pKinematics = K;
     }
 
     {
@@ -136,7 +142,7 @@ void CPHShell::Activate(bool disable)
             (*i)->Activate();
     }
 
-    if (PKinematics())
+    if (PKinematics() && !not_set_bone_callbacks)
     {
         SetCallbacks(GetBonesCallback());
     }

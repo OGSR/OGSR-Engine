@@ -11,12 +11,21 @@ interactive_motion::interactive_motion() { init(); }
 
 void interactive_motion::init() { flags.assign(0); }
 
+void interactive_motion::destroy()
+{
+    if (flags.test(fl_started))
+        state_end();
+
+    flags.assign(0);
+}
+
 void interactive_motion::setup(LPCSTR m, CPhysicsShell* s)
 {
     VERIFY(s);
     motion = smart_cast<IKinematicsAnimated*>(s->PKinematics())->LL_MotionID(m);
     if (motion.valid())
         flags.set(fl_use_death_motion, TRUE);
+    shell = s;
 }
 
 void interactive_motion::setup(MotionID m, CPhysicsShell* s)
@@ -25,6 +34,7 @@ void interactive_motion::setup(MotionID m, CPhysicsShell* s)
     motion = m;
     if (motion.valid())
         flags.set(fl_use_death_motion, TRUE);
+    shell = s;
 }
 
 void interactive_motion::anim_callback(CBlend* B)
@@ -65,7 +75,15 @@ void interactive_motion::state_end(CPhysicsShell* s)
     s->AnimToVelocityState(Device.fTimeDelta, default_l_limit * 10, default_w_limit * 10);
 }
 
-void interactive_motion::update(CPhysicsShell* s)
+void interactive_motion::state_end()
+{
+    if (!shell || shell->get_ElementsNumber() <= 0)
+        return;
+
+    state_end(shell);
+}
+
+    void interactive_motion::update(CPhysicsShell* s)
 {
     IKinematics* K = s->PKinematics();
     VERIFY(K);
@@ -97,6 +115,8 @@ void interactive_motion::switch_to_free(CPhysicsShell* s)
 void imotion_position::state_start(CPhysicsShell* s)
 {
     inherited::state_start(s);
+    flags.set(fl_started, true);
+
     if (!is_enabled())
         return;
     s->Disable();
@@ -106,6 +126,8 @@ void imotion_position::state_start(CPhysicsShell* s)
 void imotion_position::state_end(CPhysicsShell* s)
 {
     inherited::state_end(s);
+    flags.set(fl_started, false);
+
     s->ToAnimBonesPositions();
     s->EnabledCallbacks(TRUE);
 }
