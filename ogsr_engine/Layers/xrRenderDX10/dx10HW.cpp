@@ -19,9 +19,6 @@
 void fill_vid_mode_list(CHW* _hw);
 void free_vid_mode_list();
 
-void fill_render_mode_list();
-void free_render_mode_list();
-
 CHW HW;
 
 CHW::CHW()
@@ -48,17 +45,15 @@ void CHW::CreateD3D()
     // Минимально поддерживаемая версия Windows => Windows Vista SP2 или Windows 7.
     R_CHK(CreateDXGIFactory1(IID_PPV_ARGS(&pFactory)));
 
-    
     UINT i = 0;
     while (pFactory->EnumAdapters1(i, &m_pAdapter) != DXGI_ERROR_NOT_FOUND)
     {
-        DXGI_ADAPTER_DESC desc;
+        DXGI_ADAPTER_DESC desc{};
         m_pAdapter->GetDesc(&desc);
 
         Msg("* Avail GPU [vendor:%X]-[device:%X]: %S", desc.VendorId, desc.DeviceId, desc.Description);
 
-        m_pAdapter->Release();
-        m_pAdapter = 0;
+        _RELEASE(m_pAdapter);
         ++i;
     }
 
@@ -73,8 +68,6 @@ void CHW::CreateD3D()
         Msg(" !CHW::CreateD3D() use DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE");
 
         _RELEASE(pFactory6);
-
-        b_modern = true;
     }
     else
     {
@@ -83,10 +76,14 @@ void CHW::CreateD3D()
         pFactory->EnumAdapters1(0, &m_pAdapter);
     }
 
+    m_pAdapter->QueryInterface(&m_pAdapter3);
 }
 
 void CHW::DestroyD3D()
 {
+    _SHOW_REF("refCount:m_pAdapter3", m_pAdapter3);
+    _RELEASE(m_pAdapter3);
+
     _SHOW_REF("refCount:m_pAdapter", m_pAdapter);
     _RELEASE(m_pAdapter);
 
@@ -102,7 +99,7 @@ void CHW::CreateDevice(HWND m_hWnd)
     BOOL bWindowed = !psDeviceFlags.is(rsFullscreen);
 
     // Display the name of video board
-    DXGI_ADAPTER_DESC1 Desc;
+    DXGI_ADAPTER_DESC1 Desc{};
     R_CHK(m_pAdapter->GetDesc1(&Desc));
 
     DumpVideoMemoryUsage();
@@ -410,21 +407,23 @@ BOOL CHW::support(D3DFORMAT fmt, DWORD type, DWORD usage)
 
 void CHW::DumpVideoMemoryUsage() const
 {
-    if (b_modern)
+    DXGI_ADAPTER_DESC1 Desc{};
+    R_CHK(m_pAdapter->GetDesc1(&Desc));
+
+    DXGI_QUERY_VIDEO_MEMORY_INFO videoMemoryInfo{};
+
+    if (SUCCEEDED(m_pAdapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo)))
     {
-        DXGI_ADAPTER_DESC1 Desc;
-        R_CHK(m_pAdapter->GetDesc1(&Desc));
-
-        DXGI_QUERY_VIDEO_MEMORY_INFO videoMemoryInfo;
-        R_CHK(reinterpret_cast<IDXGIAdapter3*>(m_pAdapter)->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo));
-
-        Msg("\n\tDedicated VRAM: %zu MB (%zu bytes)\n\tDedicated Memory: %zu MB (%zu bytes)\n\tShared Memory: %zu MB (%zu bytes)\n\tCurrentUsage: %zu MB (%zu bytes)\n\tBudget: %zu MB (%zu bytes)",
-            Desc.DedicatedVideoMemory / 1024 / 1024, Desc.DedicatedVideoMemory, 
-            Desc.DedicatedSystemMemory / 1024 / 1024, Desc.DedicatedSystemMemory,
-            Desc.SharedSystemMemory / 1024 / 1024, Desc.SharedSystemMemory,
-            videoMemoryInfo.CurrentUsage / 1024 / 1024, videoMemoryInfo.CurrentUsage,
-            videoMemoryInfo.Budget/ 1024 / 1024, videoMemoryInfo.Budget
-        );
+        Msg("\n\tDedicated VRAM: %zu MB (%zu bytes)\n\tDedicated Memory: %zu MB (%zu bytes)\n\tShared Memory: %zu MB (%zu bytes)\n\tCurrentUsage: %zu MB (%zu bytes)\n\tBudget: "
+            "%zu MB (%zu bytes)",
+            Desc.DedicatedVideoMemory / 1024 / 1024, Desc.DedicatedVideoMemory, Desc.DedicatedSystemMemory / 1024 / 1024, Desc.DedicatedSystemMemory,
+            Desc.SharedSystemMemory / 1024 / 1024, Desc.SharedSystemMemory, videoMemoryInfo.CurrentUsage / 1024 / 1024, videoMemoryInfo.CurrentUsage,
+            videoMemoryInfo.Budget / 1024 / 1024, videoMemoryInfo.Budget);
+    }
+    else
+    {
+        Msg("\n\tDedicated VRAM: %zu MB (%zu bytes)\n\tDedicated Memory: %zu MB (%zu bytes)\n\tShared Memory: %zu MB (%zu bytes)", Desc.DedicatedVideoMemory / 1024 / 1024,
+            Desc.DedicatedVideoMemory, Desc.DedicatedSystemMemory / 1024 / 1024, Desc.DedicatedSystemMemory, Desc.SharedSystemMemory / 1024 / 1024, Desc.SharedSystemMemory);
     }
 }
 

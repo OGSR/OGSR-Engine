@@ -52,6 +52,7 @@ public:
 
     IDXGIFactory1* pFactory = nullptr;
     IDXGIAdapter1* m_pAdapter = nullptr;
+    IDXGIAdapter3* m_pAdapter3{};
     ID3D11DeviceContext* pContext = nullptr;
     IDXGISwapChain* m_pSwapChain = nullptr;
 
@@ -73,9 +74,6 @@ public:
 
     virtual void OnAppActivate();
     virtual void OnAppDeactivate();
-
-private:
-    bool b_modern{};
 };
 
 extern ECORE_API CHW HW;
