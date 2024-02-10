@@ -25,11 +25,14 @@
 ### [Write here](https://github.com/OGSR/OGSR-Engine/issues) to report bugs ###
 ### [Write here](https://github.com/OGSR/OGSR-Engine/discussions) your suggestions, questions and everything else ###
 
+### Build requirements:
+* Latest version of Visual Studio 2022 with Desktop C++ workload setup
+* [Git](https://git-scm.com/)
 ### Compilation guide: ###
-* Latest version of Visual Studio 2022 required
-* Run `Update_DirectX_Components.cmd`
-* Open `Engine.sln`
-* Set the platform to x64 and the configuration to Release, then select Build -> Build solution
+* Clone repository locally
+* Run `Update_DirectX_Components.cmd` to get pinned versions of engine dependencies
+* Open `Engine.sln` in Visual Studio
+* Set the platform to `x64` and the configuration to `Release`, then select `Build` -> `Build solution`
 ### Thanks to: ###
 * [Im-dex](https://github.com/Im-dex)
 * [SkyLoader](https://github.com/SkyLoaderr)
@@ -60,13 +63,16 @@ And everyone else whose work has been used. If you are not mentioned, send a mes
 ### [>>Wiki, cписок изменений и прочая информация<<](https://github.com/OGSR/OGSR-Engine/wiki) ###
 ### [>>Свежий релиз<<](https://github.com/OGSR/OGSR-Engine/releases/latest) ###
 ### Баги можно присылать [сюда](https://github.com/OGSR/OGSR-Engine/issues) ###
-### Предложения, вопросы и тп можно писать [сюда](https://github.com/OGSR/OGSR-Engine/discussions) ###
+### Предложения, вопросы и прочее можно писать [сюда](https://github.com/OGSR/OGSR-Engine/discussions) ###
 
+### Требования для сборки:
+* Актуальная версия Visual Studio 2022 с рабочей нагрузкой "Разработка классических приложений на C++"
+* [Git](https://git-scm.com/)
 ### Инструкции по сборке: ###
-* Требуется актуальная версия Visual Studio 2022
-* Запускаете `Update_DirectX_Components.cmd`
-* Открываете `Engine.sln`
-* В студии выбираете Сборка -> Собрать решение, предварительно выставив платформу x64 и конфигурацию Release
+* Склонировать репозиторий локально
+* Запустить `Update_DirectX_Components.cmd`
+* Открыть `Engine.sln` в Visual Studio
+* Выбрать пункт `Сборка` -> `Собрать решение`, предварительно выставив платформу `x64` и конфигурацию `Release`
 ### Благодарим: ###
 * [Im-dex](https://github.com/Im-dex)
 * [SkyLoader](https://github.com/SkyLoaderr)
