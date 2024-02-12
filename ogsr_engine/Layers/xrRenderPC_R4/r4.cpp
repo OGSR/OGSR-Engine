@@ -321,15 +321,6 @@ void CRender::create()
 
     rmNormal();
     marker = 0;
-    /*
-    D3D_QUERY_DESC			qdesc;
-    qdesc.MiscFlags				= 0;
-    qdesc.Query					= D3D_QUERY_EVENT;
-    ZeroMemory(q_sync_point, sizeof(q_sync_point));
-    for (u32 i=0; i<HW.Caps.iGPUNum; ++i)
-        R_CHK(HW.pDevice->CreateQuery(&qdesc,&q_sync_point[i]));
-    HW.pContext->End(q_sync_point[0]);
-    */
 
     ::PortalTraverser.initialize();
 
@@ -397,16 +388,6 @@ void CRender::reset_begin()
 
 void CRender::reset_end()
 {
-    /*
-    D3D_QUERY_DESC			qdesc;
-    qdesc.MiscFlags				= 0;
-    qdesc.Query					= D3D_QUERY_EVENT;
-    for (u32 i=0; i<HW.Caps.iGPUNum; ++i)
-        R_CHK(HW.pDevice->CreateQuery(&qdesc,&q_sync_point[i]));
-    //	Prevent error on first get data
-    HW.pContext->End(q_sync_point[0]);
-    */
-
     Target = xr_new<CRenderTarget>();
 
     if (b_loaded /*&& ((dm_current_size != dm_size) || (ps_r__Detail_density != ps_current_detail_density))*/)

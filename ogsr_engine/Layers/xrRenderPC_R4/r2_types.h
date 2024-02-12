@@ -38,11 +38,7 @@
 #define r2_RT_smap_depth "$user$smap_depth" // ---directional
 #define r2_RT_smap_depth_minmax "$user$smap_depth_minmax"
 
-#define r2_material "$user$material" // ---
-#define r2_ds2_fade "$user$ds2_fade" // ---
-
 #define r2_jitter "$user$jitter_" // --- dither
-#define r2_jitter_mipped "$user$jitter_mipped" // --- dither
 #define r2_sunmask "sunmask"
 
 // SMAA
@@ -77,11 +73,8 @@ const u32 SMAP_adapt_min = 768; // 32	;
 const u32 SMAP_adapt_optimal = 768;
 const u32 SMAP_adapt_max = 1536;
 
-const u32 TEX_material_LdotN = 128; // diffuse,		X, almost linear = small res
-const u32 TEX_material_LdotH = 256; // specular,	Y
-const u32 TEX_material_Count = 4; // Number of materials,	Z
 const u32 TEX_jitter = 64;
-const u32 TEX_jitter_count = 5; // for HBAO
+const u32 TEX_jitter_count = 2; //Simp: реально в шейдерах используется только jitter0 и jitter1. Не понятно зачем вообще столько текстур шума, одной было бы достаточно.
 
 const u32 BLOOM_size_X = 256;
 const u32 BLOOM_size_Y = 256;

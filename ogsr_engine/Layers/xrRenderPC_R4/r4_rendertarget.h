@@ -102,13 +102,8 @@ public:
     ref_rt rt_smap_surf; // 32bit,		color
     ref_rt rt_smap_depth; // 24(32) bit,	depth
     ref_rt rt_smap_depth_minmax; //	is used for min/max sm
-    //	TODO: DX10: CHeck if we need old-style SMAP
-    //	IDirect3DSurface9*			rt_smap_ZB;		//
 
     // Textures
-    ID3DTexture3D* t_material_surf;
-    ref_texture t_material;
-
     ID3DTexture2D* t_noise_surf[TEX_jitter_count];
     ref_texture t_noise[TEX_jitter_count];
 
