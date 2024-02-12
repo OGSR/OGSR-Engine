@@ -2,7 +2,7 @@
 
 IC HRESULT CreateQuery(ID3DQuery** ppQuery, D3DQUERYTYPE Type)
 {
-    D3D_QUERY_DESC desc;
+    D3D_QUERY_DESC desc{};
     desc.MiscFlags = 0;
 
     switch (Type)

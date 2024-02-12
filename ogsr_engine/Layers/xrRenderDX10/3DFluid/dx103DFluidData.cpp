@@ -7,7 +7,7 @@ constexpr xr_token emitter_type_token[] = {{"SimpleGaussian", dx103DFluidEmitter
 
 dx103DFluidData::dx103DFluidData()
 {
-    D3D_TEXTURE3D_DESC desc;
+    D3D_TEXTURE3D_DESC desc{};
     desc.BindFlags = D3D10_BIND_SHADER_RESOURCE | D3D10_BIND_RENDER_TARGET;
     desc.CPUAccessFlags = 0;
     desc.MipLevels = 1;
@@ -49,7 +49,7 @@ void dx103DFluidData::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC Te
     CHK_DX(HW.pDevice->CreateTexture3D(&TexDesc, NULL, &m_pRTTextures[rtIndex]));
     // Create the render target view
 
-    D3D_RENDER_TARGET_VIEW_DESC DescRT;
+    D3D_RENDER_TARGET_VIEW_DESC DescRT{};
     DescRT.Format = TexDesc.Format;
     DescRT.ViewDimension = D3D_RTV_DIMENSION_TEXTURE3D;
     DescRT.Texture3D.FirstWSlice = 0;

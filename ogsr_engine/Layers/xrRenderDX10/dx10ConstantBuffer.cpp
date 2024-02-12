@@ -14,7 +14,7 @@ dx10ConstantBuffer::~dx10ConstantBuffer()
 
 dx10ConstantBuffer::dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable) : m_bChanged(true)
 {
-    D3D_SHADER_BUFFER_DESC Desc;
+    D3D_SHADER_BUFFER_DESC Desc{};
 
     CHK_DX(pTable->GetDesc(&Desc));
 
@@ -30,7 +30,7 @@ dx10ConstantBuffer::dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTabl
         ID3DShaderReflectionVariable* pVar;
         ID3DShaderReflectionType* pType;
 
-        D3D_SHADER_VARIABLE_DESC var_desc;
+        D3D_SHADER_VARIABLE_DESC var_desc{};
 
         pVar = pTable->GetVariableByIndex(i);
         VERIFY(pVar);

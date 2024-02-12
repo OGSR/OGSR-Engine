@@ -594,7 +594,7 @@ void CHW::UpdateViews()
     //	HACK: DX10: hard depth buffer format
     // R_CHK	(pDevice->GetDepthStencilSurface	(&pBaseZB));
     ID3DTexture2D* pDepthStencil = NULL;
-    D3D_TEXTURE2D_DESC descDepth;
+    D3D_TEXTURE2D_DESC descDepth{};
     descDepth.Width = sd.BufferDesc.Width;
     descDepth.Height = sd.BufferDesc.Height;
     descDepth.MipLevels = 1;

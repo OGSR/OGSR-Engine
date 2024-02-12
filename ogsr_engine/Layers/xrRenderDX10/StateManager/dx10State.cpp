@@ -77,8 +77,8 @@ void dx10State::Release()
 
 void dx10State::InitSamplers(tSamplerHArray& SamplerArray, SimulatorStates& state_code, int iBaseSamplerIndex)
 {
-    D3D_SAMPLER_DESC descArray[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT];
-    bool SamplerUsed[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT];
+    D3D_SAMPLER_DESC descArray[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT]{};
+    bool SamplerUsed[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT]{};
 
     for (int i = 0; i < D3D_COMMONSHADER_SAMPLER_SLOT_COUNT; ++i)
     {

@@ -6,7 +6,7 @@ namespace dx10BufferUtils
 
 HRESULT IC CreateBuffer(ID3DBuffer** ppBuffer, const void* pData, UINT DataSize, bool bImmutable, bool bIndexBuffer)
 {
-    D3D_BUFFER_DESC desc;
+    D3D_BUFFER_DESC desc{};
     desc.ByteWidth = DataSize;
     // desc.Usage = bImmutable ? D3D_USAGE_IMMUTABLE : D3D_USAGE_DEFAULT;
     desc.Usage = D3D_USAGE_DEFAULT;
@@ -14,7 +14,7 @@ HRESULT IC CreateBuffer(ID3DBuffer** ppBuffer, const void* pData, UINT DataSize,
     desc.CPUAccessFlags = 0;
     desc.MiscFlags = 0;
 
-    D3D_SUBRESOURCE_DATA subData;
+    D3D_SUBRESOURCE_DATA subData{};
     subData.pSysMem = pData;
 
     HRESULT res = HW.pDevice->CreateBuffer(&desc, &subData, ppBuffer);
@@ -28,7 +28,7 @@ HRESULT CreateIndexBuffer(ID3DIndexBuffer** ppBuffer, const void* pData, UINT Da
 
 HRESULT CreateConstantBuffer(ID3DBuffer** ppBuffer, UINT DataSize)
 {
-    D3D_BUFFER_DESC desc;
+    D3D_BUFFER_DESC desc{};
     desc.ByteWidth = DataSize;
     desc.Usage = D3D_USAGE_DYNAMIC;
     desc.BindFlags = D3D_BIND_CONSTANT_BUFFER;

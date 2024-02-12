@@ -19,8 +19,7 @@ CSCompiler& CSCompiler::begin(const char* name)
 
 CSCompiler& CSCompiler::defSampler(LPCSTR ResourceName)
 {
-    D3D11_SAMPLER_DESC desc;
-    ZeroMemory(&desc, sizeof(desc));
+    D3D11_SAMPLER_DESC desc{};
 
     //	Use D3DTADDRESS_CLAMP,	D3DTEXF_POINT,			D3DTEXF_NONE,	D3DTEXF_POINT
     if (0 == xr_strcmp(ResourceName, "smp_nofilter"))

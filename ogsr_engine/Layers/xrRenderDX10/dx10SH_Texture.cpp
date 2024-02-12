@@ -62,7 +62,7 @@ void CTexture::surface_set(ID3DBaseTexture* surf)
 
         if (D3D_RESOURCE_DIMENSION_TEXTURE2D == type)
         {
-            D3D_TEXTURE2D_DESC desc;
+            D3D_TEXTURE2D_DESC desc{};
 
             ID3DTexture2D* T = (ID3DTexture2D*)pSurface;
             T->GetDesc(&desc);
@@ -301,7 +301,7 @@ void CTexture::Load(const char* Name)
             // Now create texture
             ID3DTexture2D* pTexture = 0;
 
-            D3D_TEXTURE2D_DESC desc;
+            D3D_TEXTURE2D_DESC desc{};
             desc.Width = pTheora->Width(false);
             desc.Height = pTheora->Height(false);
             desc.MipLevels = 1;
@@ -346,7 +346,7 @@ void CTexture::Load(const char* Name)
 
             ID3DTexture2D* pTexture = 0;
 
-            D3D_TEXTURE2D_DESC desc;
+            D3D_TEXTURE2D_DESC desc{};
             desc.Width = pAVI->m_dwWidth;
             desc.Height = pAVI->m_dwHeight;
             desc.MipLevels = 1;
@@ -423,7 +423,7 @@ void CTexture::Load(const char* Name)
 
             if (D3D_RESOURCE_DIMENSION_TEXTURE2D == type)
             {
-                D3D_TEXTURE2D_DESC desc;
+                D3D_TEXTURE2D_DESC desc{};
 
                 ID3DTexture2D* T = (ID3DTexture2D*)pSurface;
                 T->GetDesc(&desc);
@@ -457,7 +457,7 @@ void CTexture::Load(const char* Name)
 
         if (D3D_RESOURCE_DIMENSION_TEXTURE2D == type)
         {
-            D3D_TEXTURE2D_DESC desc;
+            D3D_TEXTURE2D_DESC desc{};
 
             ID3DTexture2D* T = (ID3DTexture2D*)pSurface;
             T->GetDesc(&desc);

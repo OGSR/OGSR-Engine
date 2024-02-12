@@ -20,7 +20,7 @@ void CBackend::CreateQuadIB()
     // if (HW.Caps.geometry.bSoftware)	dwUsage|=D3DUSAGE_SOFTWAREPROCESSING;
     // R_CHK(HW.pDevice->CreateIndexBuffer(dwIdxCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&QuadIB,NULL));
 
-    D3D_BUFFER_DESC desc;
+    D3D_BUFFER_DESC desc{};
     desc.ByteWidth = dwIdxCount * 2;
     // desc.Usage = D3D_USAGE_IMMUTABLE;
     desc.Usage = D3D_USAGE_DEFAULT;
@@ -28,7 +28,7 @@ void CBackend::CreateQuadIB()
     desc.CPUAccessFlags = 0;
     desc.MiscFlags = 0;
 
-    D3D_SUBRESOURCE_DATA subData;
+    D3D_SUBRESOURCE_DATA subData{};
     subData.pSysMem = IndexBuffer;
 
     // R_CHK(QuadIB->Lock(0,0,(void**)&Indices,0));

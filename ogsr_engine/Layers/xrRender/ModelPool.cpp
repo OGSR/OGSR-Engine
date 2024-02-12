@@ -580,8 +580,8 @@ void CModelPool::memory_stats(u32& vb_mem_video, u32& vb_mem_system, u32& ib_mem
         if (vis_ptr == NULL)
             continue;
 
-        D3D_BUFFER_DESC IB_desc;
-        D3D_BUFFER_DESC VB_desc;
+        D3D_BUFFER_DESC IB_desc{};
+        D3D_BUFFER_DESC VB_desc{};
 
         vis_ptr->m_fast->p_rm_Indices->GetDesc(&IB_desc);
 

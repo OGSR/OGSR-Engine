@@ -19,7 +19,7 @@ void _VertexStream::Create()
 
     mSize = rsDVB_Size * 1024;
 
-    D3D_BUFFER_DESC bufferDesc;
+    D3D_BUFFER_DESC bufferDesc{};
     bufferDesc.ByteWidth = mSize;
     bufferDesc.Usage = D3D_USAGE_DYNAMIC;
     bufferDesc.BindFlags = D3D_BIND_VERTEX_BUFFER;
@@ -138,7 +138,7 @@ void _IndexStream::Create()
 
     mSize = rsDIB_Size * 1024;
 
-    D3D_BUFFER_DESC bufferDesc;
+    D3D_BUFFER_DESC bufferDesc{};
     bufferDesc.ByteWidth = mSize;
     bufferDesc.Usage = D3D_USAGE_DYNAMIC;
     bufferDesc.BindFlags = D3D_BIND_INDEX_BUFFER;

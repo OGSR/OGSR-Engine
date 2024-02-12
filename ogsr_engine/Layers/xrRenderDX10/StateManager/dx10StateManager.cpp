@@ -409,7 +409,7 @@ void dx10StateManager::OverrideScissoring(bool bOverride, BOOL bValue)
     {
         if (m_bRSChanged)
         {
-            D3D_RASTERIZER_DESC tmpDesc;
+            D3D_RASTERIZER_DESC tmpDesc{};
 
             if (m_pRState)
                 m_pRState->GetDesc(&tmpDesc);

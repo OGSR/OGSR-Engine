@@ -131,7 +131,7 @@ void dx103DFluidRenderer::CreateJitterTexture()
         data[i] = (unsigned char)(rand() / float(RAND_MAX) * 256);
     }
 
-    D3D_TEXTURE2D_DESC desc;
+    D3D_TEXTURE2D_DESC desc{};
     desc.Width = 256;
     desc.Height = 256;
     desc.MipLevels = 1;
@@ -145,7 +145,7 @@ void dx103DFluidRenderer::CreateJitterTexture()
     desc.CPUAccessFlags = 0;
     desc.MiscFlags = 0;
 
-    D3D_SUBRESOURCE_DATA dataDesc;
+    D3D_SUBRESOURCE_DATA dataDesc{};
     dataDesc.pSysMem = data;
     dataDesc.SysMemPitch = 256;
 
@@ -196,7 +196,7 @@ void dx103DFluidRenderer::CreateHHGGTexture()
     DirectX::PackedVector::HALF converted[std::size(hhgg_tex.data)];
     DirectX::PackedVector::XMConvertFloatToHalfStream(converted, sizeof(converted[0]), hhgg_tex.data, sizeof(hhgg_tex.data[0]), std::size(hhgg_tex.data));
 
-    D3D_TEXTURE1D_DESC desc;
+    D3D_TEXTURE1D_DESC desc{};
     desc.Width = iNumSamples;
     desc.MipLevels = 1;
     desc.ArraySize = 1;
@@ -206,7 +206,7 @@ void dx103DFluidRenderer::CreateHHGGTexture()
     desc.CPUAccessFlags = 0;
     desc.MiscFlags = 0;
 
-    D3D_SUBRESOURCE_DATA dataDesc;
+    D3D_SUBRESOURCE_DATA dataDesc{};
     dataDesc.pSysMem = converted;
     dataDesc.SysMemPitch = sizeof(converted);
 

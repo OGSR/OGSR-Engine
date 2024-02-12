@@ -276,12 +276,12 @@ void SimulatorStates::UpdateDesc(D3D_BLEND_DESC& desc) const
 void SimulatorStates::UpdateDesc(D3D_SAMPLER_DESC descArray[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT], bool SamplerUsed[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT],
                                  int iBaseSamplerIndex) const
 {
-    const int MipfilterLinear = 0x01;
-    const int MagfilterLinear = 0x04;
-    const int MinfilterLinear = 0x10;
-    const int AllfilterLinear = 0x15;
-    const int FilterAnisotropic = 0x40;
-    const int FilterComparison = 0x80;
+    constexpr int MipfilterLinear = 0x01;
+    constexpr int MagfilterLinear = 0x04;
+    constexpr int MinfilterLinear = 0x10;
+    constexpr int AllfilterLinear = 0x15;
+    constexpr int FilterAnisotropic = 0x40;
+    constexpr int FilterComparison = 0x80;
 
     for (u32 it = 0; it < States.size(); it++)
     {

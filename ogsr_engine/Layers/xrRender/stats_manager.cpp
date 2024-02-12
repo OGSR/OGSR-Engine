@@ -36,7 +36,7 @@ void stats_manager::increment_stats(u32 size, enum_stats_buffer_type type, _D3DP
 void stats_manager::increment_stats_rtarget(ID3DTexture2D* buff)
 {
     _D3DPOOL pool = D3DPOOL_MANAGED;
-    D3D_TEXTURE2D_DESC desc;
+    D3D_TEXTURE2D_DESC desc{};
     buff->GetDesc(&desc);
 
     u32 size = desc.Height * desc.Width * get_format_pixel_size(desc.Format);
@@ -45,14 +45,14 @@ void stats_manager::increment_stats_rtarget(ID3DTexture2D* buff)
 
 void stats_manager::increment_stats_vb(ID3DVertexBuffer* buff)
 {
-    D3D_BUFFER_DESC desc;
+    D3D_BUFFER_DESC desc{};
     buff->GetDesc(&desc);
     increment_stats(desc.ByteWidth, enum_stats_buffer_type_vertex, D3DPOOL_MANAGED, buff);
 }
 
 void stats_manager::increment_stats_ib(ID3DIndexBuffer* buff)
 {
-    D3D_BUFFER_DESC desc;
+    D3D_BUFFER_DESC desc{};
     buff->GetDesc(&desc);
     increment_stats(desc.ByteWidth, enum_stats_buffer_type_index, D3DPOOL_MANAGED, buff);
 }
@@ -68,7 +68,7 @@ void stats_manager::decrement_stats_rtarget(ID3DTexture2D* buff)
         return;
 
     _D3DPOOL pool = D3DPOOL_MANAGED;
-    D3D_TEXTURE2D_DESC desc;
+    D3D_TEXTURE2D_DESC desc{};
     buff->GetDesc(&desc);
 
     u32 size = desc.Height * desc.Width * get_format_pixel_size(desc.Format);
@@ -85,7 +85,7 @@ void stats_manager::decrement_stats_vb(ID3DVertexBuffer* buff)
     if ((refcnt = buff->Release()) > 1)
         return;
 
-    D3D_BUFFER_DESC desc;
+    D3D_BUFFER_DESC desc{};
     buff->GetDesc(&desc);
     decrement_stats(desc.ByteWidth, enum_stats_buffer_type_vertex, D3DPOOL_MANAGED, buff);
 }
@@ -100,7 +100,7 @@ void stats_manager::decrement_stats_ib(ID3DIndexBuffer* buff)
     if ((refcnt = buff->Release()) > 1)
         return;
 
-    D3D_BUFFER_DESC desc;
+    D3D_BUFFER_DESC desc{};
     buff->GetDesc(&desc);
     decrement_stats(desc.ByteWidth, enum_stats_buffer_type_index, D3DPOOL_MANAGED, buff);
 }

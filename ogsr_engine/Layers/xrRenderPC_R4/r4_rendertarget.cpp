@@ -26,7 +26,7 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3
     }
     else
     {
-        D3D_DEPTH_STENCIL_VIEW_DESC desc;
+        D3D_DEPTH_STENCIL_VIEW_DESC desc{};
         zb->GetDesc(&desc);
 
         if (!RImplementation.o.dx10_msaa)
@@ -38,7 +38,7 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, const ref_rt& _3
 
         ID3DTexture2D* pTex = (ID3DTexture2D*)pRes;
 
-        D3D_TEXTURE2D_DESC TexDesc;
+        D3D_TEXTURE2D_DESC TexDesc{};
 
         pTex->GetDesc(&TexDesc);
 
@@ -73,7 +73,7 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, ID3DDepthStencil
     }
     else
     {
-        D3D_DEPTH_STENCIL_VIEW_DESC desc;
+        D3D_DEPTH_STENCIL_VIEW_DESC desc{};
         zb->GetDesc(&desc);
         if (!RImplementation.o.dx10_msaa)
             VERIFY(desc.ViewDimension == D3D_DSV_DIMENSION_TEXTURE2D);
@@ -84,7 +84,7 @@ void CRenderTarget::u_setrt(const ref_rt& _1, const ref_rt& _2, ID3DDepthStencil
 
         ID3DTexture2D* pTex = (ID3DTexture2D*)pRes;
 
-        D3D_TEXTURE2D_DESC TexDesc;
+        D3D_TEXTURE2D_DESC TexDesc{};
 
         pTex->GetDesc(&TexDesc);
 

@@ -82,9 +82,9 @@ private:
 
     //	Cached state descriptions
     //	Valid only if *Valid flag is set
-    D3D_RASTERIZER_DESC m_RDesc;
-    D3D_DEPTH_STENCIL_DESC m_DSDesc;
-    D3D_BLEND_DESC m_BDesc;
+    D3D_RASTERIZER_DESC m_RDesc{};
+    D3D_DEPTH_STENCIL_DESC m_DSDesc{};
+    D3D_BLEND_DESC m_BDesc{};
 
     bool m_bOverrideScissoring;
     BOOL m_bOverrideScissoringValue;

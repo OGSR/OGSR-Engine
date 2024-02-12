@@ -60,7 +60,7 @@ public:
 
     CHWCaps Caps;
 
-    DXGI_SWAP_CHAIN_DESC m_ChainDesc; //	DevPP equivalent
+    DXGI_SWAP_CHAIN_DESC m_ChainDesc{}; //	DevPP equivalent
     D3D_FEATURE_LEVEL FeatureLevel;
 
 

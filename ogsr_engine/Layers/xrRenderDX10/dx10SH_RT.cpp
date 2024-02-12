@@ -111,8 +111,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount, bool u
     //_hr = HW.pDevice->CreateTexture		(w, h, 1, usage, f, D3DPOOL_DEFAULT, &pSurface,NULL);
     // if (FAILED(_hr) || (0==pSurface))	return;
     // Create the render target texture
-    D3D_TEXTURE2D_DESC desc;
-    ZeroMemory(&desc, sizeof(desc));
+    D3D_TEXTURE2D_DESC desc{};
     desc.Width = dwWidth;
     desc.Height = dwHeight;
     desc.MipLevels = 1;
@@ -143,8 +142,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount, bool u
     // R_CHK		(pSurface->GetSurfaceLevel	(0,&pRT));
     if (bUseAsDepth)
     {
-        D3D_DEPTH_STENCIL_VIEW_DESC ViewDesc;
-        ZeroMemory(&ViewDesc, sizeof(ViewDesc));
+        D3D_DEPTH_STENCIL_VIEW_DESC ViewDesc{};
 
         ViewDesc.Format = DXGI_FORMAT_UNKNOWN;
         if (SampleCount <= 1)
@@ -171,8 +169,7 @@ void CRT::create(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount, bool u
 
     if (HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0 && !bUseAsDepth && SampleCount == 1 && useUAV)
     {
-        D3D11_UNORDERED_ACCESS_VIEW_DESC UAVDesc;
-        ZeroMemory(&UAVDesc, sizeof(D3D11_UNORDERED_ACCESS_VIEW_DESC));
+        D3D11_UNORDERED_ACCESS_VIEW_DESC UAVDesc{};
         UAVDesc.Format = dx10FMT;
         UAVDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
         UAVDesc.Buffer.FirstElement = 0;
