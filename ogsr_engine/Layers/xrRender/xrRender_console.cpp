@@ -521,6 +521,12 @@ public:
 
     virtual void Execute(LPCSTR args)
     {
+        if (g_pGameLevel)
+        {
+            Log("Error: Unload level first!");
+            return;
+        }
+
         Msg("Exporting particles...");
         RImplementation.PSLibrary.Reload();
         RImplementation.PSLibrary.Save2(0 == xr_strcmp(args, "1"));
@@ -535,6 +541,12 @@ public:
 
     virtual void Execute(LPCSTR args)
     {
+        if (g_pGameLevel)
+        {
+            Log("Error: Unload level first!");
+            return;
+        }
+
         Msg("Importing particles...");
         RImplementation.PSLibrary.OnDestroy();
         RImplementation.PSLibrary.Load2();
