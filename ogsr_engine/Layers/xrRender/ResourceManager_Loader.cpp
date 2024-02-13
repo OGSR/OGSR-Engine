@@ -32,38 +32,24 @@ void CResourceManager::OnDeviceCreate()
     // scripting
     LS_Load();
 
-    FS_FileSet flist;
-    FS.file_list(flist, _game_data_, FS_ListFiles | FS_RootOnly, "*shaders*.xr");
-
-    if (!flist.empty()) // legacy mode with convert
+    string_path fname;
+    if (FS.exist(fname, _game_data_, "shaders.ltx"))
     {
-        Msg("[%s] count of *shaders*.xr files: [%u]", __FUNCTION__, flist.size());
-
-        for (const auto& file : flist)
-        {
-            string_path fname;
-            FS.update_path(fname, _game_data_, file.name.c_str());
-
-            // Msg("Loading shader file: [%s]", fname);
-
-            LoadShaderFile(fname);
-        }
+        Msg("Loading shader file: [%s]", fname);
+        LoadShaderLtxFile(fname);
     }
     else
     {
-        FS_FileSet flist2;
-        FS.file_list(flist2, _game_data_, FS_ListFiles | FS_RootOnly, "*shaders*.ltx");
-
-        Msg("[%s] count of *shaders*.ltx files: [%u]", __FUNCTION__, flist2.size());
-
-        for (const auto& file : flist2)
+        if (FS.exist(fname, _game_data_, "shaders.xr"))
         {
-            string_path fname;
-            FS.update_path(fname, _game_data_, file.name.c_str());
+            Msg("Loading shader file: [%s]", fname);
+            LoadShaderFile(fname);
+        }
 
-            // Msg("Loading shader file: [%s]", fname);
-
-            LoadShaderLtxFile(fname);
+        if (FS.exist(fname, _game_data_, "shaders_cop.xr"))
+        {
+            Msg("Loading shader file: [%s]", fname);
+            LoadShaderFile(fname);
         }
     }
 
@@ -91,7 +77,7 @@ void CResourceManager::LoadShaderFile(LPCSTR fname)
         *strext(ini_path) = 0;
     strcat_s(ini_path, ".ltx");
 
-    CInifile ini(ini_path, 0, 1, 1);
+    CInifile ini(ini_path, 0, 1, bShadersXrExport);
 
     // Load blenders
     if (IReader* fs = F->open_chunk(2))
@@ -121,8 +107,13 @@ void CResourceManager::LoadShaderFile(LPCSTR fname)
                 B->Load(*chunk, desc.version);
 
                 // для конвертации в ltx
-                if (bShadersXrExport && !ini.section_exist(desc.cName))
+                if (bShadersXrExport)
                 {
+                    if (ini.section_exist(desc.cName))
+                    {
+                        Msg("~~Found existing section [%s] in [%s]. Replacing!", desc.cName, ini_path);
+                        ini.remove_section(desc.cName);
+                    }
                     B->SaveIni(&ini, desc.cName);
                 }
 
@@ -146,9 +137,9 @@ void CResourceManager::LoadShaderLtxFile(LPCSTR fname)
     string_path ini_path;
     strcpy_s(ini_path, fname);
 
-    CInifile ini(ini_path, 0, 1, 0);
+    CInifile ini(ini_path);
 
-    for (const auto& it : ini.sections_ordered())
+    for (const auto& it : ini.sections())
     {
         auto& name = it.first;
 

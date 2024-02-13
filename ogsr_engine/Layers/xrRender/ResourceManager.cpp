@@ -8,7 +8,6 @@
 #include "tss.h"
 #include "blenders\blender.h"
 #include "blenders\blender_recorder.h"
-#include <execution>
 
 template <class T>
 BOOL reclaim(xr_vector<T*>& vec, const T* ptr)
@@ -28,14 +27,12 @@ IBlender* CResourceManager::_GetBlender(LPCSTR Name)
 {
     R_ASSERT(Name && Name[0]);
 
-    LPSTR N = LPSTR(Name);
-    map_Blender::iterator I = m_blenders.find(N);
+    auto I = m_blenders.find(Name);
 
-    //	TODO: DX10: When all shaders are ready switch to common path
     if (I == m_blenders.end())
     {
-        Msg("DX10: Shader '%s' not found in library.", Name);
-        return 0;
+        FATAL("!![%s] DX10: Shader [%s] not found in library.", __FUNCTION__, Name);
+        return nullptr;
     }
 
     return I->second;

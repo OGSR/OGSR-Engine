@@ -153,8 +153,7 @@ void CSoundRender_Core::env_load()
 
         s_environment->LoadIni(&inifile);
     }
-
-    if (FS.exist(fn, "$game_data$", SNDENV_FILENAME_XR))
+    else if (FS.exist(fn, "$game_data$", SNDENV_FILENAME_XR))
     {
         Msg("Loading of [%s]", SNDENV_FILENAME_XR);
 

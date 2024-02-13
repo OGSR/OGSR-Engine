@@ -26,44 +26,20 @@ void CPSLibrary::OnCreate()
 
 void CPSLibrary::LoadAll() 
 {
-    Load2(); // load ltx pg and pe
-
-    FS_FileSet flist;
-    FS.file_list(flist, _game_data_, FS_ListFiles | FS_RootOnly, "*particles*.xr");
-    Msg("[%s] count of *particles*.xr files: [%u]", __FUNCTION__, flist.size());
-
-    //for (const auto& file : flist)
-    //{
-    //    string_path fn;
-    //    FS.update_path(fn, _game_data_, file.name.c_str());
-
-    //    if (!FS.exist(fn))
-    //    {
-    //        Msg("Can't find file: '%s'", fn);
-    //    }
-
-    //    if (!Load(fn))
-    //    {
-    //        Msg("CPSLibrary: Cannot load file: '%s'", fn);
-    //    }
-    //}
-
-    string_path fn;
-
-    FS.update_path(fn, _game_data_, "particles_cop.xr");
-    if (FS.exist(fn))
+    if (!Load2()) // load ltx pg and pe
     {
-        Msg("Load [%s]", fn);
+        string_path fn;
+        if (FS.exist(fn, _game_data_, "particles.xr"))
+        {
+            Msg("Load [%s]", fn);
+            Load(fn);
+        }
 
-        Load(fn);
-    }
-
-    FS.update_path(fn, _game_data_, "particles.xr");
-    if (FS.exist(fn))
-    {
-        Msg("Load [%s]", fn);
-
-        Load(fn);
+        if (FS.exist(fn, _game_data_, "particles_cop.xr"))
+        {
+            Msg("Load [%s]", fn);
+            Load(fn);
+        }
     }
 
     std::sort(m_PEDs.begin(), m_PEDs.end(), ped_sort_pred);
@@ -169,8 +145,6 @@ bool CPSLibrary::Load(LPCSTR nm)
 
     if (F->length() == 0)
         return true;
-
-    Msg("Load [%s]", nm);
 
     R_ASSERT(F->find_chunk(PS_CHUNK_VERSION));
     u16 ver = F->r_u16();
@@ -348,9 +322,10 @@ bool CPSLibrary::Load2()
 {
     if (!FS.path_exist("$game_particles$"))
     {
-        return true;
+        return false;
     }
 
+    bool something_loaded{};
     Msg("Start load particle files...");
 
     FS_FileSet files;
@@ -371,6 +346,7 @@ bool CPSLibrary::Load2()
         CInifile ini(_path, TRUE, TRUE, FALSE);
 
         xr_sprintf(_path, sizeof(_path), "%s%s", p_path, p_name);
+        something_loaded = true;
         if (0 == stricmp(p_ext, ".pe"))
         {
             PS::CPEDef* def = xr_new<PS::CPEDef>();
@@ -398,7 +374,7 @@ bool CPSLibrary::Load2()
 
     Msg("Loaded particle files: %d", files.size());
 
-    return true;
+    return something_loaded;
 }
 
 bool CPSLibrary::Save2(bool override)
