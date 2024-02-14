@@ -67,6 +67,8 @@ protected:
     HUD_SOUND m_NightVisionOffSnd;
     HUD_SOUND m_NightVisionIdleSnd;
     HUD_SOUND m_NightVisionBrokenSnd;
+    HUD_SOUND sndTurnOn;
+    HUD_SOUND sndTurnOff;
 
     enum EStats
     {

@@ -73,12 +73,19 @@ CTorch::~CTorch(void)
     HUD_SOUND::DestroySound(m_NightVisionOffSnd);
     HUD_SOUND::DestroySound(m_NightVisionIdleSnd);
     HUD_SOUND::DestroySound(m_NightVisionBrokenSnd);
+    HUD_SOUND::DestroySound(sndTurnOn);
+    HUD_SOUND::DestroySound(sndTurnOff);
 }
 
 void CTorch::Load(LPCSTR section)
 {
     inherited::Load(section);
     light_trace_bone = pSettings->r_string(section, "light_trace_bone");
+
+    if (pSettings->line_exist(section, "snd_turn_on"))
+        HUD_SOUND::LoadSound(section, "snd_turn_on", sndTurnOn, SOUND_TYPE_ITEM_USING);
+    if (pSettings->line_exist(section, "snd_turn_off"))
+        HUD_SOUND::LoadSound(section, "snd_turn_off", sndTurnOff, SOUND_TYPE_ITEM_USING);
 
     m_bNightVisionEnabled = !!pSettings->r_bool(section, "night_vision");
     if (m_bNightVisionEnabled)
@@ -187,6 +194,20 @@ void CTorch::Switch()
 
 void CTorch::Switch(bool light_on)
 {
+    if (auto pActor = smart_cast<CActor*>(H_Parent()); pActor && pActor->g_Alive())
+    {
+        if (light_on && !m_switched_on)
+        {
+            if (!sndTurnOn.sounds.empty())
+                HUD_SOUND::PlaySound(sndTurnOn, pActor->Position(), pActor, !!pActor->HUDview());
+        }
+        else if (!light_on && m_switched_on)
+        {
+            if (!sndTurnOff.sounds.empty())
+                HUD_SOUND::PlaySound(sndTurnOff, pActor->Position(), pActor, !!pActor->HUDview());
+        }
+    }
+
     m_switched_on = light_on;
     light_render->set_active(light_on);
     light_omni->set_active(light_on);
@@ -304,6 +325,8 @@ void CTorch::OnH_B_Independent(bool just_before_destroy)
     HUD_SOUND::StopSound(m_NightVisionOnSnd);
     HUD_SOUND::StopSound(m_NightVisionOffSnd);
     HUD_SOUND::StopSound(m_NightVisionIdleSnd);
+    HUD_SOUND::StopSound(sndTurnOn);
+    HUD_SOUND::StopSound(sndTurnOff);
 
     // m_NightVisionChargeTime		= m_NightVisionRechargeTime;
 }
@@ -352,7 +375,7 @@ void CTorch::UpdateCL()
             M.c.y += H_Parent()->Radius() * 2.f / 3.f;
         }
 
-        if (actor)
+        if (actor && actor->g_Alive())
         {
             if (actor->active_cam() == eacLookAt)
             {
