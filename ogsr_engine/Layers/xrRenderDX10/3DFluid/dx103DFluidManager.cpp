@@ -215,7 +215,7 @@ void dx103DFluidManager::Update(dx103DFluidData& FluidData, float timestep)
     UpdateObstacles(FluidData, timestep);
 
     // Set vorticity confinment and decay parameters
-    if (m_bUseBFECC)
+    /*if (m_bUseBFECC)
     {
         if (bSimulateFire)
         {
@@ -232,7 +232,7 @@ void dx103DFluidManager::Update(dx103DFluidData& FluidData, float timestep)
     {
         m_fConfinementScale = 0.12f;
         m_fDecay = 0.9995f;
-    }
+    }*/
 
     m_fConfinementScale = VolumeSettings.m_fConfinementScale;
     m_fDecay = VolumeSettings.m_fDecay;

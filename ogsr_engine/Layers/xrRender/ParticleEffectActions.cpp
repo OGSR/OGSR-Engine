@@ -1,8 +1,6 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
-#pragma hdrstop
-
 #include "ParticleEffectActions.h"
 
 #include "../../COMMON_AI/smart_cast.h"
@@ -86,7 +84,7 @@ bool EParticleAction::Load(IReader& F)
 
         float_index++;
 
-        if (needFix && float_index == 2) // for EPATargetColor COP format
+        if (needFix && float_index == 2) // for EPATargetColor COP format //
             break;
     }
 

@@ -66,7 +66,6 @@ public:
     virtual void RenderClouds(CEnvironment& env);
     virtual void OnDeviceCreate();
     virtual void OnDeviceDestroy();
-    virtual particles_systems::library_interface const& particles_systems_library();
 
 private:
     CBlender_skybox m_b_skybox;

@@ -1,11 +1,4 @@
-#ifndef EnvironmentRender_included
-#define EnvironmentRender_included
 #pragma once
-
-namespace particles_systems
-{
-class library_interface;
-} // namespace particles_systems
 
 class CEnvironment;
 class CEnvDescriptor;
@@ -43,7 +36,4 @@ public:
     virtual void RenderClouds(CEnvironment& env) = 0;
     virtual void OnDeviceCreate() = 0;
     virtual void OnDeviceDestroy() = 0;
-    virtual particles_systems::library_interface const& particles_systems_library() = 0;
 };
-
-#endif //	EnvironmentRender_included

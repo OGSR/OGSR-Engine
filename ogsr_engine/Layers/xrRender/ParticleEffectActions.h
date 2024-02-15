@@ -145,8 +145,8 @@ struct EParticleAction
         flDraw = (1 << 1),
     };
 
-    Flags32 flags;
-    PAPI::PActionEnum type;
+    Flags32 flags{};
+    PAPI::PActionEnum type{};
 
     PDomainMap domains;
     PBoolMap bools;
@@ -165,7 +165,7 @@ struct EParticleAction
 
     struct SOrder
     {
-        EValType type;
+        EValType type{};
         std::string name;
 
         SOrder(EValType _type, std::string _name) : type(_type), name(_name) {}

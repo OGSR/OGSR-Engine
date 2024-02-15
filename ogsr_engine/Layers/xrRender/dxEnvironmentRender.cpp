@@ -61,8 +61,6 @@ void dxEnvDescriptorMixerRender::Copy(IEnvDescriptorMixerRender& _in) { *this = 
 
 void dxEnvironmentRender::Copy(IEnvironmentRender& _in) { *this = *(dxEnvironmentRender*)&_in; }
 
-particles_systems::library_interface const& dxEnvironmentRender::particles_systems_library() { return (RImplementation.PSLibrary); }
-
 void dxEnvDescriptorMixerRender::Destroy()
 {
     sky_r_textures.clear();

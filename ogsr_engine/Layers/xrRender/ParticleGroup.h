@@ -1,6 +1,4 @@
-//---------------------------------------------------------------------------
-#ifndef ParticleGroupH
-#define ParticleGroupH
+#pragma once
 
 #include "../xrRender/dxParticleCustom.h"
 
@@ -12,8 +10,8 @@ class ECORE_API CPGDef
 {
 public:
     shared_str m_Name;
-    Flags32 m_Flags;
-    float m_fTimeLimit;
+    Flags32 m_Flags{};
+    float m_fTimeLimit{};
     struct SEffect
     {
         enum
@@ -25,19 +23,14 @@ public:
             flOnBirthChild = (1 << 5),
             flOnDeadChild = (1 << 6),
         };
-        Flags32 m_Flags;
+        Flags32 m_Flags{};
         shared_str m_EffectName;
         shared_str m_OnPlayChildName;
         shared_str m_OnBirthChildName;
         shared_str m_OnDeadChildName;
-        float m_Time0;
-        float m_Time1;
-        SEffect()
-        {
-            m_Flags.zero(); /*set(flEnabled)*/
-            m_Time0 = 0;
-            m_Time1 = 0;
-        }
+        float m_Time0{};
+        float m_Time1{};
+        //SEffect() { m_Flags.zero(); /*set(flEnabled)*/ }
 
     };
     DEFINE_VECTOR(SEffect*, EffectVec, EffectIt);
@@ -149,7 +142,7 @@ public:
 };
 
 } // namespace PS
-//----------------------------------------------------
+
 #define PGD_VERSION 0x0003
 #define PGD_CHUNK_VERSION 0x0001
 #define PGD_CHUNK_NAME 0x0002
@@ -157,6 +150,3 @@ public:
 #define PGD_CHUNK_EFFECTS 0x0004 // obsolete
 #define PGD_CHUNK_TIME_LIMIT 0x0005
 #define PGD_CHUNK_EFFECTS2 0x0007
-
-//---------------------------------------------------------------------------
-#endif
