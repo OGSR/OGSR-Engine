@@ -39,7 +39,6 @@ public:
 public:
     CPGDef();
     ~CPGDef();
-    void SetName(LPCSTR name);
 
     void Save(IWriter& F);
     BOOL Load(IReader& F);

@@ -47,7 +47,6 @@ void CPEDef::CreateShader()
 }
 
 void CPEDef::DestroyShader() { m_CachedShader.destroy(); }
-void CPEDef::SetName(LPCSTR name) { m_Name = name; }
 
 void CPEDef::ExecuteAnimate(Particle* particles, u32 p_cnt, float dt)
 {
