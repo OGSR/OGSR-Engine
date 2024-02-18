@@ -2,8 +2,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_)
-#define AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_
 #pragma once
 
 #include <dxgi1_4.h>
@@ -40,8 +38,6 @@ public:
     void updateWindowProps(HWND hw);
     BOOL support(D3DFORMAT fmt, DWORD type, DWORD usage);
 
-    void Validate(void){};
-
     void DumpVideoMemoryUsage() const;
 
 //	Variables section
@@ -63,10 +59,9 @@ public:
     DXGI_SWAP_CHAIN_DESC m_ChainDesc{}; //	DevPP equivalent
     D3D_FEATURE_LEVEL FeatureLevel;
 
-
-#ifndef _MAYA_EXPORT
     stats_manager stats_manager{};
-#endif
+
+    bool doPresentTest{};
 
     void UpdateViews();
 
@@ -77,5 +72,3 @@ public:
 };
 
 extern ECORE_API CHW HW;
-
-#endif // !defined(AFX_HW_H__0E25CF4A_FFEC_11D3_B4E3_4854E82A090D__INCLUDED_)

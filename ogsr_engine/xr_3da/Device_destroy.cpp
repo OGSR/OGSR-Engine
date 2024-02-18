@@ -30,8 +30,6 @@ void CRenderDevice::Destroy(void)
 
     pInput->clip_cursor(false);
 
-    m_pRender->ValidateHW();
-
     _Destroy(FALSE);
 
     // real destroy

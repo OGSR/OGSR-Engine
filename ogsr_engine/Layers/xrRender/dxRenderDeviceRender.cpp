@@ -24,8 +24,6 @@ void dxRenderDeviceRender::OnDeviceDestroy(BOOL bKeepTextures)
     RCache.OnDeviceDestroy();
 }
 
-void dxRenderDeviceRender::ValidateHW() { HW.Validate(); }
-
 void dxRenderDeviceRender::DestroyHW()
 {
     xr_delete(Resources);
@@ -127,16 +125,27 @@ void dxRenderDeviceRender::ResourcesDumpMemoryUsage() { Resources->_DumpMemoryUs
 
 dxRenderDeviceRender::DeviceState dxRenderDeviceRender::GetDeviceState()
 {
-    HW.Validate();
-
-    const auto result = HW.m_pSwapChain->Present(0, DXGI_PRESENT_TEST);
-    switch (result)
+    if (HW.doPresentTest)
     {
-    // Check if the device is ready to be reset
-    case DXGI_ERROR_DEVICE_RESET: return dsNeedReset;
+        switch (HW.m_pSwapChain->Present(0, DXGI_PRESENT_TEST))
+        {
+        case S_OK: HW.doPresentTest = false; break;
+
+        case DXGI_STATUS_OCCLUDED:
+            // Do not render until we become visible again
+            return DeviceState::dsLost;
+
+        case DXGI_ERROR_DEVICE_RESET: return DeviceState::dsNeedReset;
+
+        case DXGI_ERROR_DEVICE_REMOVED:
+            FATAL(
+                "Graphics driver was updated or GPU was physically removed from computer.\n"
+                "Please, restart the game.");
+            break;
+        }
     }
 
-    return dsOK;
+    return DeviceState::dsOK;
 }
 
 BOOL dxRenderDeviceRender::GetForceGPU_REF() { return HW.Caps.bForceGPU_REF; }
@@ -173,10 +182,15 @@ void dxRenderDeviceRender::End()
     RCache.OnFrameEnd();
 
     bool bUseVSync = psDeviceFlags.is(rsFullscreen) && psDeviceFlags.test(rsVSync); // xxx: weird tearing glitches when VSync turned on for windowed mode in DX10\11
-    if (!Device.m_SecondViewport.IsSVPFrame() &&
-        !Device.m_SecondViewport.m_bCamReady) //--#SM+#-- +SecondVP+ Не выводим кадр из второго вьюпорта на экран (на практике у нас экранная картинка обновляется минимум в два
-                                              //раза реже) [don't flush image into display for SecondVP-frame]
-        HW.m_pSwapChain->Present(bUseVSync ? 1 : 0, 0);
+    if (!Device.m_SecondViewport.IsSVPFrame() && !Device.m_SecondViewport.m_bCamReady)
+    { //--#SM+#-- +SecondVP+ Не выводим кадр из второго вьюпорта на экран (на практике у нас экранная картинка обновляется минимум в два
+      // раза реже) [don't flush image into display for SecondVP-frame]
+        switch (HW.m_pSwapChain->Present(bUseVSync ? 1 : 0, 0))
+        {
+        case DXGI_STATUS_OCCLUDED:
+        case DXGI_ERROR_DEVICE_REMOVED: HW.doPresentTest = true; break;
+        }
+    }
 }
 
 void dxRenderDeviceRender::ClearTarget()
