@@ -1,7 +1,13 @@
 #include "stdafx.h"
 #include "dxRenderDeviceRender.h"
-
 #include "ResourceManager.h"
+
+#define USE_RENDERDOC
+
+#ifdef USE_RENDERDOC
+#include <../RenderDoc/renderdoc_app.h>
+RENDERDOC_API_1_0_0* g_renderdoc_api{};
+#endif
 
 dxRenderDeviceRender::dxRenderDeviceRender() : Resources(0) { ; }
 
@@ -81,6 +87,43 @@ void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
 
 void dxRenderDeviceRender::Create(HWND hWnd, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2)
 {
+#ifdef USE_RENDERDOC
+    if (!g_renderdoc_api)
+    {
+        static HMODULE hModule = GetModuleHandle("renderdoc.dll");
+        if (!hModule)
+            hModule = LoadLibrary("renderdoc.dll");
+
+        if (hModule)
+        {
+            const auto RENDERDOC_GetAPI = reinterpret_cast<pRENDERDOC_GetAPI>(GetProcAddress(hModule, "RENDERDOC_GetAPI"));
+            const auto Result = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_0_0, reinterpret_cast<void**>(&g_renderdoc_api));
+
+            if (Result == 1)
+            {
+                g_renderdoc_api->UnloadCrashHandler();
+
+                string_path FolderName{};
+                FS.update_path(FolderName, "$app_data_root$", "renderdoc_captures\\");
+                VerifyPath(FolderName);
+                g_renderdoc_api->SetCaptureFilePathTemplate(FolderName);
+                Msg("~~[%s] RenderDoc folder: [%s]", __FUNCTION__, FolderName);
+
+                RENDERDOC_InputButton CaptureButton[] = {eRENDERDOC_Key_Home};
+                g_renderdoc_api->SetCaptureKeys(CaptureButton, std::size(CaptureButton));
+                g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_AllowVSync, 0);
+                g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_DebugOutputMute, 0);
+
+                g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_RefAllResources, 1);
+                g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_CaptureCallstacks, 1);
+                g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_VerifyBufferAccess, 1);
+                g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_APIValidation, 1);
+                g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_CaptureAllCmdLists, 1);
+            }
+        }
+    }
+#endif
+
     HW.CreateDevice(hWnd);
 
     dwWidth = HW.m_ChainDesc.BufferDesc.Width;

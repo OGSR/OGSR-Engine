@@ -48,6 +48,11 @@ dx10ConstantBuffer::dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTabl
     VERIFY(m_pBuffer);
     m_pBufferData = xr_malloc(Desc.Size);
     VERIFY(m_pBufferData);
+
+    if (m_pBuffer)
+    {
+        m_pBuffer->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(Desc.Name), Desc.Name);
+    }
 }
 
 bool dx10ConstantBuffer::Similar(dx10ConstantBuffer& _in)

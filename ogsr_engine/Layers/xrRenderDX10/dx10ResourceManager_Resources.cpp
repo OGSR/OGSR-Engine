@@ -167,8 +167,14 @@ SVS* CResourceManager::_CreateVS(LPCSTR _name)
             c_entry = "main_vs_4_1";
         }
 
-        HRESULT const _hr = ::Render->shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target,
-                                                     D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_vs);
+        DWORD Flags{D3DCOMPILE_PACK_MATRIX_ROW_MAJOR};
+        if (strstr(Core.Params, "-shadersdbg"))
+        {
+            Flags |= D3DCOMPILE_DEBUG;
+            Flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+        }
+
+        HRESULT const _hr = ::Render->shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target, Flags, (void*&)_vs);
 
         FS.r_close(file);
 
@@ -274,8 +280,14 @@ SPS* CResourceManager::_CreatePS(LPCSTR _name)
             c_entry = "main_ps_4_1";
         }
 
-        HRESULT const _hr = ::Render->shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target,
-                                                     D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_ps);
+        DWORD Flags{D3DCOMPILE_PACK_MATRIX_ROW_MAJOR};
+        if (strstr(Core.Params, "-shadersdbg"))
+        {
+            Flags |= D3DCOMPILE_DEBUG;
+            Flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+        }
+
+        HRESULT const _hr = ::Render->shader_compile(name, reinterpret_cast<DWORD const*>(strbuf.data()), static_cast<UINT>(strbuf.size()), c_entry, c_target, Flags, (void*&)_ps);
 
         FS.r_close(file);
 
@@ -330,7 +342,14 @@ SGS* CResourceManager::_CreateGS(LPCSTR name)
         LPCSTR c_target = "gs_5_0";
         LPCSTR c_entry = "main";
 
-        HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->elapsed(), c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)_gs);
+        DWORD Flags{D3DCOMPILE_PACK_MATRIX_ROW_MAJOR};
+        if (strstr(Core.Params, "-shadersdbg"))
+        {
+            Flags |= D3DCOMPILE_DEBUG;
+            Flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+        }
+
+        HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->elapsed(), c_entry, c_target, Flags, (void*&)_gs);
 
         FS.r_close(file);
 

@@ -118,8 +118,15 @@ inline T* CResourceManager::CreateShader(const char* name)
         LPCSTR c_target = ShaderTypeTraits<T>::GetCompilationTarget();
         LPCSTR c_entry = "main";
 
+        DWORD Flags{D3DCOMPILE_PACK_MATRIX_ROW_MAJOR};
+        if (strstr(Core.Params, "-shadersdbg"))
+        {
+            Flags |= D3DCOMPILE_DEBUG;
+            Flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+        }
+
         // Compile
-        HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->elapsed(), c_entry, c_target, D3D10_SHADER_PACK_MATRIX_ROW_MAJOR, (void*&)sh);
+        HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->elapsed(), c_entry, c_target, Flags, (void*&)sh);
 
         FS.r_close(file);
 

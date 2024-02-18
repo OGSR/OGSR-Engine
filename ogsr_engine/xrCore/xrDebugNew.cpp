@@ -435,6 +435,7 @@ static void termination_handler(int signal) { handler_base("termination with exi
   handler_base( "Segment violation error" );
 }*/
 
+/*
 // http://qaru.site/questions/441696/what-actions-do-i-need-to-take-to-get-a-crash-dump-in-all-error-scenarios
 static BOOL PreventSetUnhandledExceptionFilter()
 {
@@ -462,6 +463,7 @@ static BOOL PreventSetUnhandledExceptionFilter()
     BOOL bRet = WriteProcessMemory(GetCurrentProcess(), pOrgEntry, szExecute, sizeof(szExecute), &bytesWritten);
     return bRet;
 }
+*/
 
 void xrDebug::_initialize()
 {
@@ -488,7 +490,7 @@ void xrDebug::_initialize()
 
     ::SetUnhandledExceptionFilter(UnhandledFilter);
 
-    PreventSetUnhandledExceptionFilter();
+    //PreventSetUnhandledExceptionFilter();
 
     // Выключаем окно "Прекращена работа программы...". У нас своё окно для сообщений об ошибках есть.
     // SetErrorMode(GetErrorMode() | SEM_NOGPFAULTERRORBOX);

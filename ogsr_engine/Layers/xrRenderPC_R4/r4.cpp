@@ -697,15 +697,6 @@ void CRender::Statistics(CGameFont* _F)
 #endif
 }
 
-/////////
-
-/*
-extern "C"
-{
-LPCSTR WINAPI	D3DXGetPixelShaderProfile	(LPDIRECT3DDEVICE9  pDevice);
-LPCSTR WINAPI	D3DXGetVertexShaderProfile	(LPDIRECT3DDEVICE9	pDevice);
-};
-*/
 
 void CRender::addShaderOption(const char* name, const char* value)
 {
@@ -714,9 +705,14 @@ void CRender::addShaderOption(const char* name, const char* value)
 }
 
 template <typename T>
-static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffer_size, LPCSTR const file_name, T*& result, bool const disasm)
+static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffer_size, LPCSTR const file_name, T*& result, bool const disasm, const char* dbg_name)
 {
     result->sh = ShaderTypeTraits<T>::CreateHWShader(buffer, buffer_size);
+
+    if (result->sh)
+    {
+        result->sh->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(dbg_name), dbg_name);
+    }
 
     ID3DShaderReflection* pReflection = 0;
 
@@ -738,6 +734,10 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
 
 static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 const buffer_size, LPCSTR const file_name, void*& result, bool const disasm)
 {
+    string128 dbg_name{}, dbg_ext{};
+    _splitpath(file_name, nullptr, nullptr, dbg_name, dbg_ext);
+    strcat_s(dbg_name, dbg_ext);
+
     HRESULT _result = E_FAIL;
     if (pTarget[0] == 'p')
     {
@@ -748,6 +748,11 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
             Msg("! PS: [%s]", file_name);
             Msg("! CreatePixelShader hr == 0x%08x", _result);
             return E_FAIL;
+        }
+
+        if (sps_result->ps)
+        {
+            sps_result->ps->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(dbg_name), dbg_name);
         }
 
         ID3DShaderReflection* pReflection = 0;
@@ -780,6 +785,11 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
             Msg("! VS: [%s]", file_name);
             Msg("! CreatePixelShader hr == 0x%08x", _result);
             return E_FAIL;
+        }
+
+        if (svs_result->vs)
+        {
+            svs_result->vs->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(dbg_name), dbg_name);
         }
 
         ID3DShaderReflection* pReflection = 0;
@@ -824,6 +834,11 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
             return E_FAIL;
         }
 
+        if (sgs_result->gs)
+        {
+            sgs_result->gs->SetPrivateData(WKPDID_D3DDebugObjectName, strlen(dbg_name), dbg_name);
+        }
+
         ID3DShaderReflection* pReflection = 0;
 
         _result = D3DReflect(buffer, buffer_size, IID_ID3DShaderReflection, (void**)&pReflection);
@@ -845,15 +860,15 @@ static HRESULT create_shader(LPCSTR const pTarget, DWORD const* buffer, u32 cons
     }
     else if (pTarget[0] == 'c')
     {
-        _result = create_shader(pTarget, buffer, buffer_size, file_name, (SCS*&)result, disasm);
+        _result = create_shader(pTarget, buffer, buffer_size, file_name, (SCS*&)result, disasm, dbg_name);
     }
     else if (pTarget[0] == 'h')
     {
-        _result = create_shader(pTarget, buffer, buffer_size, file_name, (SHS*&)result, disasm);
+        _result = create_shader(pTarget, buffer, buffer_size, file_name, (SHS*&)result, disasm, dbg_name);
     }
     else if (pTarget[0] == 'd')
     {
-        _result = create_shader(pTarget, buffer, buffer_size, file_name, (SDS*&)result, disasm);
+        _result = create_shader(pTarget, buffer, buffer_size, file_name, (SDS*&)result, disasm, dbg_name);
     }
     else
     {
