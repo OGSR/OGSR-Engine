@@ -550,18 +550,28 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 
         if (!pFSltx)
         {
-            string_path tmpAppPath{};
-            strcpy_s(tmpAppPath, Core.ApplicationPath);
-            if (xr_strlen(tmpAppPath))
+            if (strstr(Core.Params, "-use-work-dir"))
             {
-                tmpAppPath[xr_strlen(tmpAppPath) - 1] = 0;
-                if (strrchr(tmpAppPath, '\\'))
-                    *(strrchr(tmpAppPath, '\\') + 1) = 0;
-
-                append_path("$fs_root$", tmpAppPath, 0, FALSE);
+                string_path currentDir;
+                GetCurrentDirectory(std::size(currentDir) - 1, currentDir);
+                currentDir[std::size(currentDir) - 1] = '\0';
+                append_path("$fs_root$", currentDir, 0, FALSE);
             }
             else
-                append_path("$fs_root$", "", 0, FALSE);
+            {
+                string_path tmpAppPath{};
+                strcpy_s(tmpAppPath, Core.ApplicationPath);
+                if (xr_strlen(tmpAppPath))
+                {
+                    tmpAppPath[xr_strlen(tmpAppPath) - 1] = 0;
+                    if (strrchr(tmpAppPath, '\\'))
+                        *(strrchr(tmpAppPath, '\\') + 1) = 0;
+
+                    append_path("$fs_root$", tmpAppPath, 0, FALSE);
+                }
+                else
+                    append_path("$fs_root$", "", 0, FALSE);
+            }
 
             pFSltx = r_open("$fs_root$", fs_ltx);
         }

@@ -63,11 +63,16 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
         _splitpath(fn, dr, di, nullptr, nullptr);
         strconcat(sizeof(ApplicationPath), ApplicationPath, dr, di);
 
-        // KRodin: рабочий каталог для процесса надо устанавливать принудительно
-        // в папку с движком, независимо откуда запустили. Иначе начинаются
-        // чудеса типа игнорирования движком символов для стектрейсинга.
-        SetCurrentDirectory(ApplicationPath);
-        GetCurrentDirectory(sizeof(WorkingPath), WorkingPath);
+        // -use-work-dir используется, когда при отладке в Working Directory указывают путь к ресурсам игры
+        // в таком случае не надо вызывать SetCurrentDirectory :)
+        if (strstr(Core.Params, "-use-work-dir") == nullptr)
+        {
+            // Рабочий каталог для процесса надо устанавливать принудительно
+            // в папку с движком, независимо откуда запустили. Иначе начинаются
+            // чудеса типа игнорирования движком символов для стектрейсинга.
+            SetCurrentDirectory(ApplicationPath);
+            GetCurrentDirectory(sizeof(WorkingPath), WorkingPath);
+        }
 
         // User/Comp Name
         DWORD sz_user = sizeof(UserName);
