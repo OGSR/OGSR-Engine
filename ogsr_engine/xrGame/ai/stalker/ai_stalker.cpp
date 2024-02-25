@@ -393,10 +393,11 @@ BOOL CAI_Stalker::net_Spawn(CSE_Abstract* DC)
 
     CHARACTER_RANK_VALUE rank = Rank();
     clamp(rank, 0, 1000);
-    const float rank_k = float(rank) / 1000.f;
+    float rank_k = float(rank) / 1000.f;
+    clamp(rank_k, 0.f, 1.f);
     m_fRankImmunity = novice_rank_immunity + (expirienced_rank_immunity - novice_rank_immunity) * rank_k;
     m_fRankVisibility = novice_rank_visibility + (expirienced_rank_visibility - novice_rank_visibility) * rank_k;
-    m_fRankDisperison = expirienced_rank_dispersion + (expirienced_rank_dispersion - novice_rank_dispersion) * (1 - rank_k);
+    m_fRankDisperison = expirienced_rank_dispersion + (novice_rank_dispersion - expirienced_rank_dispersion) * (1 - rank_k);
 
     if (!fis_zero(SpecificCharacter().panic_threshold()))
         m_panic_threshold = SpecificCharacter().panic_threshold();
