@@ -181,6 +181,7 @@ float ps_r2_dhemi_light_scale = 0.2f;
 float ps_r2_dhemi_light_flow = 0.1f;
 int ps_r2_dhemi_count = 5; // 5
 int ps_r2_wait_sleep = 0;
+int ps_lens_flare{};
 
 float ps_r2_lt_smooth = 1.f; // 1.f
 float ps_r2_slight_fade = 2.0f; // 1.f
@@ -852,4 +853,6 @@ void xrRender_initconsole()
 
     extern BOOL bSenvironmentXrExport;
     CMD4(CCC_Integer, "senvironment_xr_export", &bSenvironmentXrExport, FALSE, TRUE);
+
+    CMD4(CCC_Integer, "r_lens_flare", &ps_lens_flare, FALSE, TRUE);
 }
