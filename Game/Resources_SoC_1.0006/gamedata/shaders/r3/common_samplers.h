@@ -49,8 +49,6 @@ Texture2D s_position; //	smp_nofilter or Load
 Texture2D s_normal; //	smp_nofilter or Load
 #endif
 Texture2D s_lmap; // 2D/???cube projector lightmap
-Texture3D s_material; //	smp_material
-// uniform sampler1D       s_attenuate;        	//
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Combine phase                                //

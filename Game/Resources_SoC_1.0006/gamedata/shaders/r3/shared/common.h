@@ -6,51 +6,53 @@
 #define SHARED_COMMON_H
 
 //	Used by VS
-cbuffer dynamic_transforms
-{
-    uniform float4x4 m_WVP; //	World View Projection composition
-    uniform float3x4 m_WV;
-    uniform float3x4 m_W;
-    uniform float3x4 m_invW;
-    //	Used by VS only
-    uniform float4 L_material; // 0,0,0,mid
-    uniform float4 hemi_cube_pos_faces;
-    uniform float4 hemi_cube_neg_faces;
-    uniform float4 dt_params; //	Detail params
-}
+// cbuffer dynamic_transforms
+//{
+uniform float4x4 m_WVP; //	World View Projection composition
+uniform float3x4 m_WV;
+uniform float3x4 m_W;
+uniform float3x4 m_invW;
+//	Used by VS only
+uniform float4 L_material; // 0,0,0,mid
+uniform float4 hemi_cube_pos_faces;
+uniform float4 hemi_cube_neg_faces;
+uniform float4 dt_params; //	Detail params
+//}
 
-cbuffer shader_params { float m_AlphaRef; }
+// cbuffer shader_params {
+uniform float m_AlphaRef;
+// }
 
-cbuffer static_globals
-{
-    uniform float3x4 m_V;
-    uniform float3x4 m_inv_V;
-    uniform float4x4 m_P;
-    uniform float4x4 m_VP;
+// cbuffer static_globals
+//{
+uniform float3x4 m_V;
+uniform float3x4 m_inv_V;
+uniform float4x4 m_P;
+uniform float4x4 m_VP;
 
-    uniform float4 timers;
+uniform float4 timers;
 
-    uniform float4 fog_plane;
-    uniform float4 fog_params; // x=near*(1/(far-near)), ?,?, w = -1/(far-near)
-    uniform float4 fog_color;
+uniform float4 fog_plane;
+uniform float4 fog_params; // x=near*(1/(far-near)), ?,?, w = -1/(far-near)
+uniform float4 fog_color;
 
-    uniform float4 L_ambient; // L_ambient.w = skynbox-lerp-factor
-    uniform float3 L_sun_color;
-    uniform float3 L_sun_dir_w;
-    uniform float4 L_hemi_color;
+uniform float4 L_ambient; // L_ambient.w = skynbox-lerp-factor
+uniform float3 L_sun_color;
+uniform float3 L_sun_dir_w;
+uniform float4 L_hemi_color;
 
-    uniform float3 eye_position;
+uniform float3 eye_position;
 
-    uniform float4 pos_decompression_params;
-    uniform float4 pos_decompression_params2;
+uniform float4 pos_decompression_params;
+uniform float4 pos_decompression_params2;
 
-    uniform float4 parallax;
-    uniform float4 rain_params; // x = raindensity, y = wetness
-    uniform float4 screen_res; // Screen resolution (x-Width,y-Height, zw - 1/resolution)
+uniform float4 parallax;
+uniform float4 rain_params; // x = raindensity, y = wetness
+uniform float4 screen_res; // Screen resolution (x-Width,y-Height, zw - 1/resolution)
 
-    uniform float4 pp_img_corrections;
-    uniform float4 pp_img_cg;
-}
+uniform float4 pp_img_corrections;
+uniform float4 pp_img_cg;
+//}
 
 float calc_cyclic(float x)
 {

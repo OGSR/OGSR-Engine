@@ -1,0 +1,80 @@
+/**
+ * @ Version: SCREEN SPACE SHADERS - UPDATE 19
+ * @ Description: LUT shader
+ * @ Modified time: 2023-12-19 18:58
+ * @ Author: https://www.moddb.com/members/ascii1457
+ * @ Mod: https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders
+ */
+
+#include "common.h"
+
+// Check Addons
+#include "check_screenspace.h"
+
+#include "img_corrections.h"
+
+#ifndef SSFX_ENHANCED_SHADERS
+#include "tonemapping.h"
+#endif
+
+// LUT texture setup
+#define LUT_SIZE_W 1024.0 // Width of your LUT texture
+
+#define CELLS_SIZE 32 // Width/Height of your cell
+#define CELLS_GROUPS 4 // Quantity of tables in your texture
+
+// Internal --
+#define LUT_GROUPS max(1, CELLS_GROUPS)
+#define TEXEL_SIZE float2(1.0f / LUT_SIZE_W, 1.0f / (CELLS_SIZE * LUT_GROUPS))
+#define TEXEL_HALF float2(TEXEL_SIZE.xy / 2.0f)
+#define TEXEL_FIX TEXEL_SIZE.y* LUT_GROUPS
+
+uniform float4 ssfx_lut;
+uniform Texture2D s_lut_atlas; // shaders\\lut_atlas
+
+//#define ADVANCE_TRANSITION	// Note for Modders: You can enable this option to do smooth transitions between tables in realtime. Check the script
+
+float4 main(p_screen I) : SV_Target
+{
+    // Sample color
+    float3 base_col = s_image.Sample(smp_nofilter, I.tc0);
+
+    // Vanilla modifications
+#ifndef SSFX_ENHANCED_SHADERS
+    if (tnmp_onoff == 1.0)
+    {
+        base_col = Uncharted2ToneMapping(base_col);
+    }
+#endif
+
+    base_col = img_corrections(base_col); // Anomaly color grading ( Exposure, saturation and gamma )
+    // ---------------------
+
+    // Prepare LUT UVs
+    float3 cells = base_col * CELLS_SIZE - base_col;
+    float lut_frac = frac(cells.b);
+    cells.rg = TEXEL_HALF + cells.rg * TEXEL_SIZE;
+    cells.r += (cells.b - lut_frac) * TEXEL_FIX;
+
+    // Final LUT UVs
+    float4 uvs = float4(cells.rg, cells.r + TEXEL_FIX, cells.g);
+
+    // Group offset
+    float2 grp_offset = float2(0.0, ssfx_lut.y / LUT_GROUPS);
+
+    // Sample LUTs
+    float3 lut_col = lerp(s_lut_atlas.Sample(smp_linear, uvs.xy + grp_offset).rgb, s_lut_atlas.Sample(smp_linear, uvs.zw + grp_offset).rgb, lut_frac);
+
+#ifdef ADVANCE_TRANSITION
+
+    // Group2 offset
+    grp_offset = float2(0.0, ssfx_lut.z / LUT_GROUPS);
+
+    // Sample transition LUTs
+    float3 SecondLUT = lerp(s_lut_atlas.Sample(smp_linear, uvs.xy + grp_offset).rgb, s_lut_atlas.Sample(smp_linear, uvs.zw + grp_offset).rgb, lut_frac);
+
+    lut_col = lerp(lut_col, SecondLUT, ssfx_lut.w);
+#endif
+
+    return float4(lerp(base_col.rgb, lut_col.rgb, ssfx_lut.x), 1.0f);
+}

@@ -1,68 +1,55 @@
+/*
+    Edge detection pass
+    Author: LVutner (Discord: @lvutner)
+
+
+This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
+
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+For more information, please refer to <https://unlicense.org>
+*/
+
 #include "fluid_common_render.h"
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//	Pixel
-// A full-screen edge detection pass to locate artifacts
-//	these artifacts are located on a downsized version of the rayDataTexture
-// We use a smaller texture both to accurately find all the depth artifacts
-//  when raycasting to this smaller size and to save on the cost of this pass
-// Use col.a to find depth edges of objects occluding the smoke
-// Use col.g to find the edges where the camera near plane cuts the smoke volume
-//
-float4 main(VS_OUTPUT_EDGE vIn) : SV_Target
+#define fs_edge_threshold 0.97 // Higher = more strict edge detection
+
+float main(float4 hpos : SV_Position) : SV_Target
 {
-    // We need eight samples (the centre has zero weight in both kernels).
-    float4 col;
-    col = rayDataTexSmall.Sample(samPointClamp, vIn.textureUV00);
-    float g00 = col.a;
-    if (col.g < 0)
-        g00 *= -1;
-    col = rayDataTexSmall.Sample(samPointClamp, vIn.textureUV01);
-    float g01 = col.a;
-    if (col.g < 0)
-        g01 *= -1;
-    col = rayDataTexSmall.Sample(samPointClamp, vIn.textureUV02);
-    float g02 = col.a;
-    if (col.g < 0)
-        g02 *= -1;
-    col = rayDataTexSmall.Sample(samPointClamp, vIn.textureUV10);
-    float g10 = col.a;
-    if (col.g < 0)
-        g10 *= -1;
-    col = rayDataTexSmall.Sample(samPointClamp, vIn.textureUV12);
-    float g12 = col.a;
-    if (col.g < 0)
-        g12 *= -1;
-    col = rayDataTexSmall.Sample(samPointClamp, vIn.textureUV20);
-    float g20 = col.a;
-    if (col.g < 0)
-        g20 *= -1;
-    col = rayDataTexSmall.Sample(samPointClamp, vIn.textureUV21);
-    float g21 = col.a;
-    if (col.g < 0)
-        g21 *= -1;
-    col = rayDataTexSmall.Sample(samPointClamp, vIn.textureUV22);
-    float g22 = col.a;
-    if (col.g < 0)
-        g22 *= -1;
+    // Dimensions
+    float4 sc_res = float4(RTWidth, RTHeight, 1.0 / RTWidth, 1.0 / RTHeight);
 
-    // Sobel in horizontal dir.
-    float sx = 0;
-    sx -= g00;
-    sx -= g01 * 2;
-    sx -= g02;
-    sx += g20;
-    sx += g21 * 2;
-    sx += g22;
-    // Sobel in vertical dir - weights are just rotated 90 degrees.
-    float sy = 0;
-    sy -= g00;
-    sy += g02;
-    sy -= g10 * 2;
-    sy += g12 * 2;
-    sy -= g20;
-    sy += g22;
+    // Screen UV
+    float2 texcoord = hpos.xy * sc_res.zw;
 
-    float e = EdgeDetectScalar(sx, sy, edgeThreshold);
-    return float4(e, e, e, 1);
+    // 3x3 neighborhood
+    float4 tap0 = rayDataTexSmall.GatherAlpha(samPointClamp, texcoord);
+    float4 tap1 = rayDataTexSmall.GatherAlpha(samPointClamp, texcoord, int2(-1, -1));
+    float4 tap2 = rayDataTexSmall.GatherAlpha(samPointClamp, texcoord, int2(-1, 1));
+    float4 tap3 = rayDataTexSmall.GatherAlpha(samPointClamp, texcoord, int2(1, -1));
+
+    float4 delta0 = abs(float4(tap1.xzw, tap2.w) - tap0.wwww);
+    float4 delta1 = abs(float4(tap3.wx, tap0.xy) - tap0.wwww);
+
+    // Get da edges
+    return step(fs_edge_threshold, dot((delta0 + delta1), 0.5));
 }

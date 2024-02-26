@@ -1,3 +1,5 @@
+#define SSFX_WIND_ISGRASS
+
 #include "common.h"
 #include "check_screenspace.h"
 
@@ -9,9 +11,9 @@ float4 wave; // cx,cy,cz,tm
 float4 dir2D;
 float4 array[61 * 4];
 
-#define SSFX_WIND_ISGRASS
-
+#ifdef SSFX_WIND
 #include "screenspace_wind.h"
+#endif
 
 v2p_bumped main(v_detail v)
 {
@@ -30,10 +32,19 @@ v2p_bumped main(v_detail v)
     P.z = dot(m2, v.pos);
     P.w = 1;
 
-    // Wave effect
     float H = P.y - m1.w; // height of vertex (scaled)
+
+#ifndef SSFX_WIND
+    float dp = calc_cyclic(dot(P, wave));
+    float frac = v.misc.z * consts.x; // fractional
+    float inten = H * dp;
+    float2 result = calc_xz_wave(dir2D.xz * inten, frac);
+
+    float4 pos = float4(P.x + result.x, P.y, P.z + result.y, 1);
+#else
     float3 wind_result = ssfx_wind_grass(P.xyz, H, ssfx_wind_setup());
     float4 pos = float4(P.xyz + wind_result.xyz, 1);
+#endif
 
     // INTERACTIVE GRASS - SSS Update 15.4
     // https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders/
@@ -68,7 +79,6 @@ v2p_bumped main(v_detail v)
 
     // FLORA FIXES & IMPROVEMENTS - SSS Update 14.6
     // https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders/
-
     // Fake Normal, Bi-Normal and Tangent
     float3 N = normalize(float3(P.x - m0.w, P.y - m1.w + 1.0f, P.z - m2.w));
 

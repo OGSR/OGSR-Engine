@@ -15,8 +15,12 @@
 
 #include "shadow.h"
 
-// SSS Implementation
+// Check Screen Space Shaders modules & addons
+#include "check_screenspace.h"
+
+#ifdef SSFX_SSS
 #include "screenspace_shadows.h"
+#endif
 
 #ifdef USE_SUNFILTER
 #ifdef MSAA_OPTIMIZATION
@@ -71,7 +75,9 @@ float4 main(v2p_volume I) : SV_Target
     float s = sunmask(P4);
     s *= shadow(PS);
 
+#ifdef SSFX_SSS
     s *= SSFX_ScreenSpaceShadows(_P, I.hpos, ISAMPLE);
+#endif
 
 #ifdef SSFX_ENHANCED_SHADERS // We have Enhanced Shaders installed
     float3 result = SRGBToLinear(s);

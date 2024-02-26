@@ -107,7 +107,6 @@ void hmodel(out float3 hdiffuse, out float3 hspecular, float m, float h, float4 
 
     // TODO - make hscale normal mapped
     float4 light = float4(hscale, hscale, hscale, hscale);
-    // float4	light	= s_material.SampleLevel( smp_material, float3( hscale, hspec, m ), 0 ).xxxy;
 
     // tint color
     // float3 env_col = 1.0;

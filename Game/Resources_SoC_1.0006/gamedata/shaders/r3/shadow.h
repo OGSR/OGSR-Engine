@@ -16,7 +16,6 @@ sampler smp_jitter;
 
 Texture2D jitter0;
 Texture2D jitter1;
-Texture2D jitterMipped;
 
 #ifndef USE_ULTRA_SHADOWS
 #define KERNEL 0.6f

@@ -15,10 +15,6 @@ struct v2p
 float4 m_lmap[2];
 Texture2D s_noise;
 
-#define USE_LMAP
-#define USE_LMAPXFORM
-#define USE_SHADOW
-
 //////////////////////////////////////////////////////////////////////////////////////////
 // Pixel
 #ifndef MSAA_OPTIMIZATION
@@ -30,48 +26,32 @@ float4 main(v2p I, uint iSample : SV_SAMPLEINDEX) : SV_Target
     // ----- shadow
     float4 P4 = float4(I.vPos, 1);
     float4 PS = mul(m_shadow, P4);
-    float s = 1.h;
-#ifdef USE_SHADOW
-    s = shadow_hw(PS);
-#endif
+    PS.xyz /= PS.w;
 
-    // ----- lightmap
-    float4 lightmap = 1.h;
-#ifdef USE_LMAP
-#ifdef USE_LMAPXFORM
+    // Sample shadow map, remove any filtering to save performance, there's no need.
+    float s = s_smap.SampleCmpLevelZero(smp_smap, PS.xy, PS.z).x;
+
+    // ----- lightmap ( Texture mask )
     PS.x = dot(P4, m_lmap[0]);
     PS.y = dot(P4, m_lmap[1]);
-#endif
-    lightmap = s_lmap.Sample(smp_rtlinear, PS.xy / PS.w);
-#endif
+    PS.xy /= PS.w;
+    float4 lightmap = s_lmap.Sample(smp_jitter, PS.xy);
 
-    // ----- attenuate
+    // ----- attenuate ( Vanilla light attenuation )
     float rsqr = dot(I.lightToPos, I.lightToPos); // distance 2 light (squared)
-    float att = saturate(1 - rsqr * Ldynamic_pos.w); // q-linear attenuate
+    float att = saturate(1.0f - rsqr * Ldynamic_pos.w); // q-linear attenuate
 
     // ----- noise
-    PS.xy /= PS.w;
-    float time = timers.z * 0.1;
-    PS.xy /= 3;
-    PS.x += time;
-    //	TODO: DX10: Can use sampler with point mip filter
-    float4 t_noise = s_noise.Sample(smp_linear, PS);
-    PS.x -= time;
-    PS.y -= time * 0.70091;
-    //	TODO: DX10: Can use sampler with point mip filter
-    t_noise *= s_noise.Sample(smp_linear, PS);
-    t_noise = t_noise * 0.5 + 0.5;
+    PS.xy /= 0.5f;
+    PS.x += timers.x * 15;
 
-    s = max(0, s);
-    att = max(0, att);
-    lightmap = max(0, lightmap);
-    t_noise = max(0, t_noise);
+    float4 t_noise = s_noise.Sample(smp_linear, PS.xy);
+    t_noise = t_noise * 0.5f + 0.5f;
 
-    // matches vanilla?
-    float maxIntens = I.fDensity;
-    float3 result = maxIntens * s * att;
+    // out
+    float3 result = I.fDensity * s * att;
     result *= lightmap;
     result *= Ldynamic_color * t_noise;
-    return float4(result, 0); // srgb
-    // return  float4( SRGBToLinear(result), 0);
+
+    return float4(result, 0);
 }
