@@ -183,7 +183,8 @@ void CInventoryOwner::load(IReader& input_packet)
     }
 
     CharacterInfo().load(input_packet);
-    load_data(m_game_name, input_packet);
+    xr_string tmp;
+    load_data(tmp/*m_game_name*/, input_packet); // не будем грузить из клиента имя НПЦ. 
     load_data(m_money, input_packet);
 }
 
