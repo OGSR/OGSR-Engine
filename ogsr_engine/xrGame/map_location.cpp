@@ -474,7 +474,7 @@ void CMapLocation::UpdateSpot(CUICustomMap* map, CMapSpot* sp)
     }
 }
 
-void CMapLocation::UpdateSpotPointer(CUICustomMap* map, CMapSpotPointer* sp, Fvector2 position_on_map)
+void CMapLocation::UpdateSpotPointer(CUICustomMap* map, CMapSpotPointer* sp, const Fvector2& position_on_map)
 {
     if (sp->GetParent())
         return; // already is child
