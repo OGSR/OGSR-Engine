@@ -15,7 +15,7 @@ jobs:
         Configuration: [Debug, Release]
         Platform: [x64]
     steps:
-    - uses: actions/checkout@v3.5.2
+    - uses: actions/checkout@v4.1.1
       with:
         fetch-depth: 0
 
@@ -24,7 +24,7 @@ jobs:
         ${{ github.workspace }}/Update_DirectX_Components.cmd
 
     - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.3.1
+      uses: microsoft/setup-msbuild@v2
     - name: MSBuild
       shell: cmd
       run: |
@@ -51,14 +51,14 @@ jobs:
         
         7z a -t7z -m0=LZMA2:d=96m:fb=273 -mx=9 -mmt=2 ..\..\%OGSR_ARTIFACT_NAME% .\
     - name: Upload OGSR artifact
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@v4.3.1
       with:
         name: OGSR_Engine_SHOC_EDITION_${{ matrix.Platform }}_2.1.${{ github.run_number }}_${{ matrix.Configuration }}.7z
         path: .\OGSR_Engine_SHOC_EDITION_${{ matrix.Platform }}_2.1.${{ github.run_number }}_${{ matrix.Configuration }}.7z
 
     - name: Upload release asset
       if: github.event_name == 'release'
-      uses: tanyagray/action-upload-release-asset@v1.1.3
+      uses: Czuz/upload-release-asset@v1.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
