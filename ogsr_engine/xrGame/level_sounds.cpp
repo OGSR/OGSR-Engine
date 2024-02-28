@@ -209,7 +209,7 @@ void CLevelSoundManager::Load()
 
     CInifile& gameLtx = *pGameIni;
 
-    if (gameLtx.section_exist(Level().name()) && psActorFlags.test(AF_MUSIC_TRACKS))
+    if (gameLtx.section_exist(Level().name()))
     {
         if (gameLtx.line_exist(Level().name(), "music_tracks"))
         {
@@ -255,6 +255,23 @@ void CLevelSoundManager::Update()
     // music track
     if (!m_MusicTracks.empty())
     {
+        if (!psActorFlags.test(AF_MUSIC_TRACKS))
+        {
+            if (m_CurrentTrack >= 0)
+            {
+                SMusicTrack& T = m_MusicTracks[m_CurrentTrack];
+                if (T.IsPlaying())
+                {
+                    T.Stop();
+                }
+
+                m_CurrentTrack = -1;
+                m_NextTrackTime = 0;
+            }
+
+            return;
+        }
+
         if (m_CurrentTrack < 0 && engine_time > m_NextTrackTime)
         {
             U32Vec indices;

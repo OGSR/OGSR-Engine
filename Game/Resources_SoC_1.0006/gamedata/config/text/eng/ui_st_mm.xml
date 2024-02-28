@@ -563,7 +563,7 @@
 	</string>
 
 	<string id="ui_mm_ambient">
-		<text>Ambient Music (requires reloading the current location to take effect)</text>
+		<text>Ambient Music</text>
 	</string>
 
 	<string id="ui_mm_ammunition_on_belt">
