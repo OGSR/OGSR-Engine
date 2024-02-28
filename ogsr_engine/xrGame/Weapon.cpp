@@ -607,6 +607,7 @@ void CWeapon::Load(LPCSTR section)
     dof_params_reload = (READ_IF_EXISTS(pSettings, r_fvector4, section, "dof_reload_params", (Fvector4{0, 0, 1, 0})));
 
     dont_interrupt_shot_anm = READ_IF_EXISTS(pSettings, r_bool, section, "dont_interrupt_shot_anm", false);
+    is_gunslinger_weapon = READ_IF_EXISTS(pSettings, r_bool, section, "is_gunslinger_weapon", false);
 }
 
 void CWeapon::LoadFireParams(LPCSTR section, LPCSTR prefix)
@@ -1772,7 +1773,7 @@ void CWeapon::create_physic_shell()
 {
     // xrKrodin: Временный? "фикс" для оружия из ганслингера, валяющегося на земле. По непонятным причинам (много костей или хз от чего ещё) в некоторых случаях при рассчетах
     // физики происходят краши в ode которые исправить невозможно.
-    if (IS_OGSR_GA)
+    if (is_gunslinger_weapon || IS_OGSR_GA)
     {
         auto vis = smart_cast<IKinematics*>(Visual());
         auto& rootBoneData = vis->LL_GetData(vis->LL_GetBoneRoot());
