@@ -210,7 +210,10 @@ void CInventoryItem::Hit(SHit* pHDS)
     float hit_power = pHDS->damage();
     hit_power *= m_HitTypeK[pHDS->hit_type];
 
-    ChangeCondition(-hit_power);
+    if (hit_power > 0)
+    {
+        ChangeCondition(-hit_power);
+    }
 }
 
 const char* CInventoryItem::Name() { return *m_name; }

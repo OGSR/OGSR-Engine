@@ -208,7 +208,10 @@ void CHelicopter::Hit(SHit* pHDS)
         float hit_power = pHDS->damage();
         hit_power *= m_HitTypeK[pHDS->hit_type];
 
-        SetfHealth(GetfHealth() - hit_power);
+        if (hit_power > 0.f)
+        {
+            SetfHealth(GetfHealth() - hit_power);
+        }
 #ifdef DEBUG
         if (bDebug)
             Log("----Helicopter::Hit(). health=", GetfHealth());

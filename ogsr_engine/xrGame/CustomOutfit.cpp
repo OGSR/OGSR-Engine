@@ -92,6 +92,7 @@ void CCustomOutfit::Load(LPCSTR section)
 void CCustomOutfit::Hit(float hit_power, ALife::EHitType hit_type)
 {
     hit_power *= m_HitTypeK[hit_type];
+
     if (hit_power > 0)
     {
         ChangeCondition(-hit_power);
