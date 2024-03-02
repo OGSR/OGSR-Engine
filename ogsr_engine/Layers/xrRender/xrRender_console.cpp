@@ -81,7 +81,6 @@ int ps_r__LightSleepFrames = 10;
 
 float ps_r__Detail_l_ambient = 0.9f;
 float ps_r__Detail_l_aniso = 0.25f;
-float ps_r__Detail_density = 0.3f;
 float ps_r__Detail_rainbow_hemi = 0.75f;
 
 float ps_r__Tree_w_rot = 10.0f;
@@ -292,6 +291,24 @@ public:
         apply();
     }
     virtual void Status(TStatus& S) { CCC_Integer::Status(S); }
+};
+
+class CCC_detail_reset : public CCC_Float
+{
+public:
+    void apply()
+    {
+        if (RImplementation.Details)
+            RImplementation.Details->need_init = true;
+    }
+
+    CCC_detail_reset(LPCSTR N, float* V, float _min = 0, float _max = 1) : CCC_Float(N, V, _min, _max) {}
+    virtual void Execute(LPCSTR args)
+    {
+        CCC_Float::Execute(args);
+        apply();
+    }
+    virtual void Status(TStatus& S) { CCC_Float::Status(S); }
 };
 
 class CCC_tf_Aniso : public CCC_Integer
@@ -597,8 +614,8 @@ void xrRender_initconsole()
     CMD4(CCC_Float, "r__geometry_lod", &ps_r__LOD, 1.f, 3.f); // AVO: extended from 1.2f to 3.f
     //.	CMD4(CCC_Float,		"r__geometry_lod_pow",	&ps_r__LOD_Power,			0,		2		);
 
-    CMD4(CCC_Float, "r__detail_density", &ps_current_detail_density, 0.06f /*0.2f*/, 1.0f);
-    CMD4(CCC_Float, "r__detail_scale", &ps_current_detail_scale, 0.2f, 3.0f);
+    CMD4(CCC_detail_reset, "r__detail_density", &ps_current_detail_density, 0.06f /*0.2f*/, 1.0f);
+    CMD4(CCC_detail_reset, "r__detail_scale", &ps_current_detail_scale, 0.2f, 3.0f);
 
 #ifdef DEBUG
     CMD4(CCC_Float, "r__detail_l_ambient", &ps_r__Detail_l_ambient, .5f, .95f);

@@ -200,6 +200,8 @@ public:
 
     void MT_CALC();
 
+    bool need_init{};
+
     CDetailManager();
     virtual ~CDetailManager();
 };

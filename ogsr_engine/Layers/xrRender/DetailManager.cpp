@@ -78,7 +78,6 @@ CDetailManager::CDetailManager()
     dm_cache1_line = dm_current_cache1_line;
     dm_cache_size = dm_current_cache_size;
     dm_fade = dm_current_fade;
-    ps_r__Detail_density = ps_current_detail_density;
     
     cache_level1 = (CacheSlot1**)xr_malloc(dm_cache1_line * sizeof(CacheSlot1*));
     for (u32 i = 0; i < dm_cache1_line; ++i)
@@ -460,6 +459,12 @@ void CDetailManager::MT_CALC()
         return;
 
     MT.Enter();
+
+    if (need_init)
+    {
+        need_init = false;
+        cache_Initialize();
+    }
 
     Fvector EYE = RDEVICE.vCameraPosition_saved;
 
