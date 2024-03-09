@@ -53,12 +53,13 @@ protected:
     ESoundTypes m_eSoundAddCartridge;
     ESoundTypes m_eSoundClose;
     HUD_SOUND m_sndOpen;
-    HUD_SOUND m_sndAddCartridge, m_sndAddCartridgeEmpty;
+    HUD_SOUND m_sndAddCartridge, m_sndAddCartridgeSecond, m_sndAddCartridgeStart, m_sndAddCartridgeEmpty;
     HUD_SOUND m_sndClose, m_sndCloseEmpty, m_sndBreech, m_sndBreechJammed;
 
-    bool is_reload_empty{};
     bool m_stop_triStateReload{};
     bool has_anm_reload_jammed{};
+    bool SecondCartridge{};
+    bool StartCartridge{};
 
     DECLARE_SCRIPT_REGISTER_FUNCTION
 };

@@ -21,6 +21,8 @@ CWeaponShotgun::~CWeaponShotgun(void)
     HUD_SOUND::DestroySound(sndShotBoth);
     HUD_SOUND::DestroySound(m_sndOpen);
     HUD_SOUND::DestroySound(m_sndAddCartridge);
+    HUD_SOUND::DestroySound(m_sndAddCartridgeSecond);
+    HUD_SOUND::DestroySound(m_sndAddCartridgeStart);
     HUD_SOUND::DestroySound(m_sndAddCartridgeEmpty);
     HUD_SOUND::DestroySound(m_sndClose);
     HUD_SOUND::DestroySound(m_sndCloseEmpty);
@@ -46,8 +48,12 @@ void CWeaponShotgun::Load(LPCSTR section)
     {
         HUD_SOUND::LoadSound(section, "snd_open_weapon", m_sndOpen, m_eSoundOpen);
         HUD_SOUND::LoadSound(section, "snd_add_cartridge", m_sndAddCartridge, m_eSoundAddCartridge);
+        if (pSettings->line_exist(section, "snd_add_cartridge_second"))
+            HUD_SOUND::LoadSound(section, "snd_add_cartridge_second", m_sndAddCartridgeSecond, m_eSoundAddCartridge);
         if (pSettings->line_exist(section, "snd_add_cartridge_empty"))
             HUD_SOUND::LoadSound(section, "snd_add_cartridge_empty", m_sndAddCartridgeEmpty, m_eSoundAddCartridge);
+        if (pSettings->line_exist(section, "snd_add_cartridge_start"))
+            HUD_SOUND::LoadSound(section, "snd_add_cartridge_start", m_sndAddCartridgeStart, m_eSoundAddCartridge);
         HUD_SOUND::LoadSound(section, "snd_close_weapon", m_sndClose, m_eSoundClose);
         if (pSettings->line_exist(section, "snd_close_weapon_empty"))
             HUD_SOUND::LoadSound(section, "snd_close_weapon_empty", m_sndCloseEmpty, m_eSoundClose);
@@ -226,8 +232,12 @@ void CWeaponShotgun::UpdateSounds()
         m_sndOpen.set_position(get_LastFP());
     if (m_sndAddCartridge.playing())
         m_sndAddCartridge.set_position(get_LastFP());
+    if (m_sndAddCartridgeSecond.playing())
+        m_sndAddCartridgeSecond.set_position(get_LastFP());
     if (m_sndAddCartridgeEmpty.playing())
         m_sndAddCartridgeEmpty.set_position(get_LastFP());
+    if (m_sndAddCartridgeStart.playing())
+        m_sndAddCartridgeStart.set_position(get_LastFP());
     if (m_sndClose.playing())
         m_sndClose.set_position(get_LastFP());
     if (m_sndCloseEmpty.playing())
@@ -328,7 +338,6 @@ void CWeaponShotgun::OnAnimationEnd(u32 state)
         else
         {
             m_sub_state = IsMisfire() ? eSubstateReloadEnd : eSubstateReloadInProcess;
-            is_reload_empty = iAmmoElapsed == 0;
             SwitchState(eReload);
         }
         break;
@@ -364,7 +373,8 @@ void CWeaponShotgun::TriStateReload()
 {
     if (HaveCartridgeInInventory(1) || IsMisfire())
     {
-        m_sub_state = eSubstateReloadBegin;
+        StartCartridge = true;
+        m_sub_state = is_gunslinger_weapon ? eSubstateReloadInProcess : eSubstateReloadBegin;
         SwitchState(eReload);
     }
 }
@@ -401,10 +411,7 @@ void CWeaponShotgun::OnStateSwitch(u32 S, u32 oldState)
                 }
             }
             PlaySound(m_sndOpen, get_LastFP());
-            if (ParentIsActor())
-                PlayHUDMotion({"anim_open_weapon", "anm_open"}, true, GetState());
-            else //Временно заткнул баг с неперезарядкой винчестера у нпс, надо фиксить анимацию, но это будет сделано позже, потом этот код убрать!
-                PlayHUDMotion({"anim_add_cartridge", "anm_add_cartridge"}, true, GetState());
+            PlayHUDMotion({"anim_open_weapon", "anm_open"}, true, GetState());
             SetPending(TRUE);
         }
         break;
@@ -412,15 +419,31 @@ void CWeaponShotgun::OnStateSwitch(u32 S, u32 oldState)
     case eSubstateReloadInProcess: {
         if (HaveCartridgeInInventory(1))
         {
-            PlaySound(iAmmoElapsed == 0 && !m_sndAddCartridgeEmpty.sounds.empty() ? m_sndAddCartridgeEmpty : m_sndAddCartridge, get_LastFP());
-            PlayHUDMotion({iAmmoElapsed == 0 ? "anm_add_cartridge_empty" : "nullptr", "anim_add_cartridge", "anm_add_cartridge"}, true, GetState());
+            if (GetAmmoElapsed() < 1)
+            {
+                PlaySound(!m_sndAddCartridgeEmpty.sounds.empty() ? m_sndAddCartridgeEmpty : m_sndAddCartridge, get_LastFP());
+                PlayHUDMotion({"anm_add_cartridge_empty", "anim_add_cartridge", "anm_add_cartridge"}, true, GetState());
+                StartCartridge = false;
+            }
+            else if (SecondCartridge)
+            {
+                PlaySound(!m_sndAddCartridgeSecond.sounds.empty() ? m_sndAddCartridgeSecond : m_sndAddCartridge, get_LastFP());
+                PlayHUDMotion({"anm_add_cartridge_second", "anim_add_cartridge", "anm_add_cartridge"}, true, GetState());
+            }
+            else
+            {
+                PlaySound(StartCartridge && !m_sndAddCartridgeStart.sounds.empty() ? m_sndAddCartridgeStart : m_sndAddCartridge, get_LastFP());
+                PlayHUDMotion({StartCartridge ? "anm_add_cartridge_start" : "anm_add_cartridge", "anim_add_cartridge", "anm_add_cartridge"}, true, GetState());
+                StartCartridge = false;
+            }
             SetPending(TRUE);
+            SecondCartridge = GetAmmoElapsed() < 1;
         }
         break;
     }
     case eSubstateReloadEnd: {
-        PlayHUDMotion({IsMisfire() ? "anm_close_jammed" : (is_reload_empty ? "anm_close_empty" : "nullptr"), "anim_close_weapon", "anm_close"}, true, GetState());
-        PlaySound(((IsMisfire() || is_reload_empty) && !m_sndCloseEmpty.sounds.empty()) ? m_sndCloseEmpty : m_sndClose, get_LastFP());
+        PlayHUDMotion({IsMisfire() ? "anm_close_jammed" : (SecondCartridge ? "anm_close_empty" : "nullptr"), "anim_close_weapon", "anm_close"}, true, GetState());
+        PlaySound(((IsMisfire() || SecondCartridge) && !m_sndCloseEmpty.sounds.empty()) ? m_sndCloseEmpty : m_sndClose, get_LastFP());
         SetPending(TRUE);
         break;
     }
@@ -550,6 +573,8 @@ void CWeaponShotgun::StopHUDSounds()
 {
     HUD_SOUND::StopSound(m_sndOpen);
     HUD_SOUND::StopSound(m_sndAddCartridge);
+    HUD_SOUND::StopSound(m_sndAddCartridgeSecond);
+    HUD_SOUND::StopSound(m_sndAddCartridgeStart);
     HUD_SOUND::StopSound(m_sndAddCartridgeEmpty);
     HUD_SOUND::StopSound(m_sndClose);
     HUD_SOUND::StopSound(m_sndCloseEmpty);
