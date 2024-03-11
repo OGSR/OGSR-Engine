@@ -96,9 +96,6 @@ void CWeapon::UpdateXForm()
     {
         dwXF_Frame = Device.dwFrame;
 
-        if (0 == H_Parent())
-            return;
-
         // Get access to entity and its visual
         CEntityAlive* E = smart_cast<CEntityAlive*>(H_Parent());
 
@@ -112,7 +109,6 @@ void CWeapon::UpdateXForm()
         if (parent->attached(this))
             return;
 
-        R_ASSERT(E);
         IKinematics* V = smart_cast<IKinematics*>(E->Visual());
         VERIFY(V);
 
@@ -128,12 +124,19 @@ void CWeapon::UpdateXForm()
         if (boneL == BI_NONE || boneR == BI_NONE)
             return;
 
-        // от mortan:
-        // https://www.gameru.net/forum/index.php?s=&showtopic=23443&view=findpost&p=1677678
-        V->CalculateBones_Invalidate();
-        V->CalculateBones(true); // V->CalculateBones	();
-        Fmatrix& mL = V->LL_GetTransform(u16(boneL));
-        Fmatrix& mR = V->LL_GetTransform(u16(boneR));
+        if (auto pActor = smart_cast<CActor*>(H_Parent()); pActor && pActor->cam_Active() != pActor->cam_FirstEye())
+        {
+            // https://www.gameru.net/forum/index.php?s=&showtopic=23443&view=findpost&p=1677678
+            V->CalculateBones_Invalidate();
+            V->CalculateBones(true);
+        }
+        else
+        {
+            V->CalculateBones();
+        }
+
+        const Fmatrix& mL = V->LL_GetTransform(u16(boneL));
+        const Fmatrix& mR = V->LL_GetTransform(u16(boneR));
         // Calculate
         Fmatrix mRes;
         Fvector R, D, N;
@@ -2041,24 +2044,9 @@ float CWeapon::GetConditionToShow() const
     return (GetCondition()); // powf(GetCondition(),4.0f));
 }
 
-BOOL CWeapon::ParentMayHaveAimBullet()
+bool CWeapon::ParentIsActor() const
 {
-    CObject* O = H_Parent();
-    if (!O)
-        return FALSE;
-    CEntityAlive* EA = smart_cast<CEntityAlive*>(O);
-    return EA->cast_actor() != 0;
-}
-
-BOOL CWeapon::ParentIsActor()
-{
-    CObject* O = H_Parent();
-    if (!O)
-        return FALSE;
-    CEntityAlive* EA = smart_cast<CEntityAlive*>(O);
-    if (!EA)
-        return FALSE;
-    return EA->cast_actor() != 0;
+    return smart_cast<const CActor*>(H_Parent()) != nullptr;
 }
 
 const float& CWeapon::hit_probability() const

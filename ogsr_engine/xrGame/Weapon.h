@@ -552,8 +552,7 @@ public:
     virtual bool use_crosshair() const { return true; }
     bool show_crosshair();
     bool show_indicators();
-    virtual BOOL ParentMayHaveAimBullet();
-    virtual BOOL ParentIsActor();
+    virtual bool ParentIsActor() const override;
 
 private:
     float m_hit_probability[egdCount];
