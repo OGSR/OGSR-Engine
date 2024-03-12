@@ -1008,6 +1008,9 @@ void CActor::shedule_Update(u32 DT)
     if (Level().CurrentControlEntity() == this && !m_holder)
     //------------------------------------------------
     {
+        CCF_Skeleton* skeleton = smart_cast<CCF_Skeleton*>(CFORM());
+        skeleton->Calculate();
+
         g_cl_CheckControls(mstate_wishful, NET_SavedAccel, NET_Jump, dt);
 
         g_cl_Orientate(mstate_real, dt);
