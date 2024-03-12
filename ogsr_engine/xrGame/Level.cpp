@@ -543,7 +543,7 @@ void CLevel::OnRender()
             CObject* _O = Level().Objects.o_get_by_iterator(I);
 
             CGameObject* pGO = smart_cast<CGameObject*>(_O);
-            if (pGO && pGO != Level().CurrentViewEntity() && !pGO->H_Parent())
+            if (pGO /*&& pGO != Level().CurrentViewEntity()*/ && !pGO->H_Parent())
             {
                 if (pGO->Position().distance_to_sqr(Device.vCameraPosition) < 400.0f)
                 {

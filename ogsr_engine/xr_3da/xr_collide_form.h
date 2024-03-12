@@ -205,7 +205,9 @@ public:
 
     void add_sphere(Fsphere& S);
     void add_box(Fmatrix& B);
+
     void ComputeBounds();
+
     BOOL Contact(CObject* O);
     xr_vector<shape_def>& Shapes() { return shapes; }
 };

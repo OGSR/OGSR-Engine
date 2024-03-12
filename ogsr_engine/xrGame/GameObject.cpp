@@ -647,36 +647,37 @@ void CGameObject::dbg_DrawSkeleton()
     CCF_Skeleton* Skeleton = smart_cast<CCF_Skeleton*>(collidable.model);
     if (!Skeleton)
         return;
+
     Skeleton->_dbg_refresh();
 
-    const CCF_Skeleton::ElementVec& Elements = Skeleton->_GetElements();
-    for (CCF_Skeleton::ElementVec::const_iterator I = Elements.begin(); I != Elements.end(); I++)
+    for (const auto& Element : Skeleton->_GetElements())
     {
-        if (!I->valid())
+        if (!Element.valid())
             continue;
-        switch (I->type)
+
+        switch (Element.type)
         {
         case SBoneShape::stBox: {
             Fmatrix M;
-            M.invert(I->b_IM);
-            Fvector h_size = I->b_hsize;
+            M.invert(Element.b_IM);
+            Fvector h_size = Element.b_hsize;
             Level().debug_renderer().draw_obb(M, h_size, color_rgba(0, 255, 0, 255));
         }
         break;
         case SBoneShape::stCylinder: {
             Fmatrix M;
-            M.c.set(I->c_cylinder.m_center);
-            M.k.set(I->c_cylinder.m_direction);
+            M.c.set(Element.c_cylinder.m_center);
+            M.k.set(Element.c_cylinder.m_direction);
             Fvector h_size;
-            h_size.set(I->c_cylinder.m_radius, I->c_cylinder.m_radius, I->c_cylinder.m_height * 0.5f);
+            h_size.set(Element.c_cylinder.m_radius, Element.c_cylinder.m_radius, Element.c_cylinder.m_height * 0.5f);
             Fvector::generate_orthonormal_basis(M.k, M.j, M.i);
-            Level().debug_renderer().draw_obb(M, h_size, color_rgba(0, 127, 255, 255));
+            Level().debug_renderer().draw_obb(M, h_size, color_rgba(255, 127, 0, 255));
         }
         break;
         case SBoneShape::stSphere: {
             Fmatrix l_ball;
-            l_ball.scale(I->s_sphere.R, I->s_sphere.R, I->s_sphere.R);
-            l_ball.translate_add(I->s_sphere.P);
+            l_ball.scale(Element.s_sphere.R, Element.s_sphere.R, Element.s_sphere.R);
+            l_ball.translate_add(Element.s_sphere.P);
             Level().debug_renderer().draw_ellipse(l_ball, color_rgba(0, 255, 0, 255));
         }
         break;
