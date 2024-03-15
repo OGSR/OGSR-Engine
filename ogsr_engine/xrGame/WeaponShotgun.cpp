@@ -374,7 +374,7 @@ void CWeaponShotgun::TriStateReload()
     if (HaveCartridgeInInventory(1) || IsMisfire())
     {
         StartCartridge = true;
-        m_sub_state = is_gunslinger_weapon ? eSubstateReloadInProcess : eSubstateReloadBegin;
+        m_sub_state = is_gunslinger_weapon && !IsMisfire() ? eSubstateReloadInProcess : eSubstateReloadBegin;
         SwitchState(eReload);
     }
 }
