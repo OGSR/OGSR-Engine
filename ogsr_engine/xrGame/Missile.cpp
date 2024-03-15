@@ -525,8 +525,6 @@ void CMissile::Throw()
     else
         m_fake_missile->m_fThrowForce = inventory_owner->missile_throw_force();
 
-    m_fThrowForce = m_fMinForce;
-
     if (Local() && H_Parent())
     {
         NET_Packet P;
