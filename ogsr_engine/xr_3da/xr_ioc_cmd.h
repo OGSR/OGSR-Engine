@@ -308,7 +308,7 @@ public:
     {
         Fvector v;
         // Fixed parsing FVector for user.ltx
-        if ((3 != sscanf(args, "%f,%f,%f", &v.x, &v.y, &v.z)) && (3 != sscanf(args, "(%f, %f, %f)", &v.x, &v.y, &v.z)))
+        if ((3 != sscanf(args, "%g,%g,%g", &v.x, &v.y, &v.z)) && (3 != sscanf(args, "(%g, %g, %g)", &v.x, &v.y, &v.z)))
         {
             InvalidSyntax();
             return;
@@ -325,12 +325,12 @@ public:
         }
         value->set(v);
     }
-    virtual void Status(TStatus& S) { xr_sprintf(S, sizeof(S), "(%f, %f, %f)", value->x, value->y, value->z); }
-    virtual void Info(TInfo& I) { xr_sprintf(I, sizeof(I), "vector3 in range [%e,%e,%e]-[%e,%e,%e]", min.x, min.y, min.z, max.x, max.y, max.z); }
+    virtual void Status(TStatus& S) { xr_sprintf(S, sizeof(S), "(%g, %g, %g)", value->x, value->y, value->z); }
+    virtual void Info(TInfo& I) { xr_sprintf(I, sizeof(I), "vector3 in range [%g, %g, %g]-[%g, %g, %g]", min.x, min.y, min.z, max.x, max.y, max.z); }
     virtual void fill_tips(vecTips& tips, u32 mode)
     {
         TStatus str;
-        xr_sprintf(str, sizeof(str), "(%e, %e, %e)  (current)  [(%e,%e,%e)-(%e,%e,%e)]", value->x, value->y, value->z, min.x, min.y, min.z, max.x, max.y, max.z);
+        xr_sprintf(str, sizeof(str), "(%g, %g, %g)  (current)  [(%g, %g, %g)-(%g, %g, %g)]", value->x, value->y, value->z, min.x, min.y, min.z, max.x, max.y, max.z);
         tips.push_back(str);
         IConsole_Command::fill_tips(tips, mode);
     }
@@ -430,9 +430,9 @@ public:
     virtual void Execute(LPCSTR args) override
     {
         Fvector4 v;
-        if (4 != sscanf(args, "%f,%f,%f,%f", &v.x, &v.y, &v.z, &v.w))
+        if (4 != sscanf(args, "%g,%g,%g,%g", &v.x, &v.y, &v.z, &v.w))
         {
-            if (4 != sscanf(args, "(%f,%f,%f,%f)", &v.x, &v.y, &v.z, &v.w))
+            if (4 != sscanf(args, "(%g,%g,%g,%g)", &v.x, &v.y, &v.z, &v.w))
             {
                 InvalidSyntax();
                 return;
@@ -452,14 +452,14 @@ public:
         value->set(v);
     }
 
-    virtual void Status(TStatus& S) override { xr_sprintf(S, sizeof(S), "(%f, %f, %f, %f)", value->x, value->y, value->z, value->w); }
+    virtual void Status(TStatus& S) override { xr_sprintf(S, sizeof(S), "(%g, %g, %g, %g)", value->x, value->y, value->z, value->w); }
 
-    virtual void Info(TInfo& I) override { xr_sprintf(I, sizeof(I), "vector4 in range [%e,%e,%e,%e]-[%e,%e,%e,%e]", min.x, min.y, min.z, min.w, max.x, max.y, max.z, max.w); }
+    virtual void Info(TInfo& I) override { xr_sprintf(I, sizeof(I), "vector4 in range [%g, %g, %g, %g]-[%g, %g, %g, %g]", min.x, min.y, min.z, min.w, max.x, max.y, max.z, max.w); }
 
     virtual void fill_tips(vecTips& tips, u32 mode) override
     {
         TStatus str;
-        xr_sprintf(str, sizeof(str), "(%e, %e, %e, %e) (current) [(%e,%e,%e,%e)-(%e,%e,%e,%e)]", value->x, value->y, value->z, value->w, min.x, min.y, min.z, min.w, max.x, max.y,
+        xr_sprintf(str, sizeof(str), "(%g, %g, %g, %g) (current) [(%g, %g, %g, %g)-(%g, %g, %g, %g)]", value->x, value->y, value->z, value->w, min.x, min.y, min.z, min.w, max.x, max.y,
                    max.z, max.w);
         tips.push_back(str);
         IConsole_Command::fill_tips(tips, mode);
