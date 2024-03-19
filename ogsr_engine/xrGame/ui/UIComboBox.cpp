@@ -217,6 +217,12 @@ void CUIComboBox::OnFocusReceive()
         SetState(S_Highlighted);
 }
 
+void CUIComboBox::SetFont(CGameFont* pFont)
+{
+    CUIWindow::SetFont(pFont);
+    m_text.SetFont(pFont);
+}
+
 bool CUIComboBox::OnKeyboard(int dik, EUIMessages keyboard_action)
 {
     if (CUIWindow::OnKeyboard(dik, keyboard_action))

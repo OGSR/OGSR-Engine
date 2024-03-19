@@ -53,6 +53,7 @@ CUIListBoxItem* CUIListBox::AddItem(LPCSTR text)
     else
         pItem->InitTexture(*m_selection_texture);
 
+    pItem->SetFont(GetFont());
     pItem->SetSelected(false);
     pItem->SetText(*CStringTable().translate(text));
     pItem->SetTextColor(m_text_color, m_text_color_s);

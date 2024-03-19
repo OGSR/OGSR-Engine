@@ -56,6 +56,8 @@ public:
 
     int CurrentID() { return m_itoken_id; }
 
+    virtual void SetFont(CGameFont* pFont);
+
 protected:
     virtual void SetState(UIState state);
     virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
