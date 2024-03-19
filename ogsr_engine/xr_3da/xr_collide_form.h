@@ -150,32 +150,22 @@ private:
     void BuildState();
     void BuildTopLevel();
 
+
 public:
     CCF_Skeleton(CObject* _owner);
 
     virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R);
+
     bool _ElementCenter(u16 elem_id, Fvector& e_center);
     const ElementVec& _GetElements() { return elements; }
+
+    void Calculate();
 
     void _dbg_refresh()
     {
         BuildTopLevel();
         BuildState();
     }
-};
-
-class ENGINE_API CCF_EventBox : public ICollisionForm
-{
-private:
-    Fplane Planes[6];
-
-public:
-    CCF_EventBox(CObject* _owner);
-
-    virtual BOOL _RayQuery(const collide::ray_defs& Q, collide::rq_results& R);
-    // virtual void	_BoxQuery		( const Fbox& B, const Fmatrix& M, u32 flags);
-
-    BOOL Contact(CObject* O);
 };
 
 class ENGINE_API CCF_Shape : public ICollisionForm

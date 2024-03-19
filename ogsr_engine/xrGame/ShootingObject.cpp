@@ -433,7 +433,7 @@ void CShootingObject::FireBullet(const Fvector& pos, const Fvector& shot_dir, fl
     bool aim_bullet;
     if (m_bUseAimBullet)
     {
-        if (ParentMayHaveAimBullet())
+        if (ParentIsActor())
         {
             if (m_fPredBulletTime == 0.0)
             {

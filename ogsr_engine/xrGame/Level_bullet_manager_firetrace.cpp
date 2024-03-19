@@ -27,7 +27,6 @@
 
 //расстояния не пролетев которого пуля не трогает того кто ее пустил
 #define PARENT_IGNORE_DIST 3.f
-extern float gCheckHitK;
 
 // test callback функция
 //   object - object for testing
@@ -39,7 +38,9 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 
     if ((object->ID() == bullet->parent_id) && //-V595
         (bullet->fly_dist < PARENT_IGNORE_DIST) && (!bullet->flags.ricochet_was))
+    {
         return FALSE;
+    }
 
     BOOL bRes = TRUE;
     if (object)

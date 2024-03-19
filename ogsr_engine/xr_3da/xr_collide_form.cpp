@@ -208,41 +208,44 @@ void CCF_Skeleton::BuildTopLevel()
     VERIFY(_valid(bv_sphere));
 }
 
+void CCF_Skeleton::Calculate()
+{
+    if (dwFrameTL != Device.dwFrame)
+    {
+        BuildTopLevel();
+
+        dwFrameTL = Device.dwFrame;
+    }
+
+    IKinematics* K = PKinematics(owner->Visual());
+    if (dwFrame != Device.dwFrame || K->LL_GetBonesVisible() != vis_mask)
+    {
+        // Model changed between ray-picks
+        BuildState();
+    }
+}
+
 BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 {
     // не будет тут обновлять стейт костей если мы не на основном потоке.
     // он тут или с прошлого кадра уже есть или даже если чуть кривой - не важно
     // если обновлять - будут дергатся модели
-    if (Device.OnMainThread()) 
+    if (Device.OnMainThread())
     {
-        if (dwFrameTL != Device.dwFrame)
-        {
-            BuildTopLevel();
-
-            dwFrameTL = Device.dwFrame;
-        }
-
-        Fsphere w_bv_sphere;
-        owner->XFORM().transform_tiny(w_bv_sphere.P, bv_sphere.P);
-        w_bv_sphere.R = bv_sphere.R;
-
-        //
-        float tgt_dist = Q.range;
-        Fsphere::ERP_Result res = w_bv_sphere.intersect(Q.start, Q.dir, tgt_dist);
-        if (res == Fsphere::rpNone)
-            return FALSE;
-
-        IKinematics* K = PKinematics(owner->Visual());
-
-        if (dwFrame != Device.dwFrame || K->LL_GetBonesVisible() != vis_mask)
-        {
-            // Model changed between ray-picks
-            BuildState();
-        }
+        Calculate();
     }
 
+    Fsphere w_bv_sphere;
+    owner->XFORM().transform_tiny(w_bv_sphere.P, bv_sphere.P);
+    w_bv_sphere.R = bv_sphere.R;
+
+    float tgt_dist = Q.range;
+    Fsphere::ERP_Result res = w_bv_sphere.intersect(Q.start, Q.dir, tgt_dist);
+    if (res == Fsphere::rpNone)
+        return FALSE;
+
     auto iterate_elements = [&](const ElementVec& elements_vec) {
-        BOOL bHIT {};
+        BOOL bHIT{};
         for (const auto& elem : elements_vec)
         {
             if (!elem.valid())
@@ -266,11 +269,10 @@ BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
         return bHIT;
     };
 
-    #pragma todo("xrSimpodin: может быть всегда использовать копирование?")
     if (!Device.OnMainThread())
     {
         elements_lock.lock();
-        ElementVec copy_elements{elements};
+        const ElementVec copy_elements{elements};
         elements_lock.unlock();
         return iterate_elements(copy_elements);
     }
@@ -280,64 +282,7 @@ BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
     }
 }
 
-//----------------------------------------------------------------------------------
-CCF_EventBox::CCF_EventBox(CObject* O) : ICollisionForm(O, cftShape)
-{
-    Fvector A[8], B[8];
-    A[0].set(-1, -1, -1);
-    A[1].set(-1, -1, +1);
-    A[2].set(-1, +1, +1);
-    A[3].set(-1, +1, -1);
-    A[4].set(+1, +1, +1);
-    A[5].set(+1, +1, -1);
-    A[6].set(+1, -1, +1);
-    A[7].set(+1, -1, -1);
 
-    const Fmatrix& T = O->XFORM();
-    for (int i = 0; i < 8; i++)
-    {
-        A[i].mul(.5f);
-        T.transform_tiny(B[i], A[i]);
-    }
-    bv_box.set(-.5f, -.5f, -.5f, +.5f, +.5f, +.5f);
-    Fvector R;
-    R.set(bv_box.min);
-    T.transform_dir(R);
-    bv_sphere.R = R.magnitude();
-
-    Planes[0].build(B[0], B[3], B[5]);
-    Planes[1].build(B[1], B[2], B[3]);
-    Planes[2].build(B[6], B[5], B[4]);
-    Planes[3].build(B[4], B[2], B[1]);
-    Planes[4].build(B[3], B[2], B[4]);
-    Planes[5].build(B[1], B[0], B[6]);
-}
-
-BOOL CCF_EventBox::Contact(CObject* O)
-{
-    IRenderVisual* V = O->Visual();
-    vis_data& vis = V->getVisData();
-    Fvector& P = vis.sphere.P;
-    float R = vis.sphere.R;
-
-    Fvector PT;
-    O->XFORM().transform_tiny(PT, P);
-
-    for (int i = 0; i < 6; i++)
-    {
-        if (Planes[i].classify(PT) > R)
-            return FALSE;
-    }
-    return TRUE;
-}
-BOOL CCF_EventBox::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R) { return FALSE; }
-/*
-void CCF_EventBox::_BoxQuery(const Fbox& B, const Fmatrix& M, u32 flags)
-{   return; }
-*/
-
-//----------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------
 CCF_Shape::CCF_Shape(CObject* _owner) : ICollisionForm(_owner, cftShape) {}
 BOOL CCF_Shape::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
