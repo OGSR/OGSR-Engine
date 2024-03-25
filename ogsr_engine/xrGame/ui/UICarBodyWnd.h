@@ -106,6 +106,7 @@ protected:
         eInvDropItem,
         eInvDetachAddon,
         eInvItemUse,
+        eInvItemMove,
         eInvSndMax
     };
 

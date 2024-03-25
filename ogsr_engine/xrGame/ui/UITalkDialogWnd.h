@@ -63,6 +63,17 @@ public:
     void SetOsoznanieMode(bool b);
 
 private:
+    enum eSndAction
+    {
+        eTalkSndOpen = 0,
+        eTalkSndClose,
+        eTalkSndSay,
+        eTalkSndMax
+    };
+
+    ref_sound sounds[eTalkSndMax];
+    void PlaySnd(eSndAction a);
+
     CUIScrollView* UIQuestionsList;
     CUIScrollView* UIAnswersList;
 

@@ -88,6 +88,19 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
     Register(&UIToTradeButton);
     AddCallback("question_item", LIST_ITEM_CLICKED, fastdelegate::MakeDelegate(this, &CUITalkDialogWnd::OnQuestionClicked));
     AddCallback("trade_btn", BUTTON_CLICKED, fastdelegate::MakeDelegate(this, &CUITalkDialogWnd::OnTradeClicked));
+
+    // Load sounds
+    if (m_uiXml->NavigateToNode("action_sounds", 0))
+    {
+        XML_NODE* stored_root = m_uiXml->GetLocalRoot();
+        m_uiXml->SetLocalRoot(m_uiXml->NavigateToNode("action_sounds", 0));
+
+        create_ui_snd(sounds[eTalkSndOpen], m_uiXml->Read("snd_open", 0, nullptr));
+        create_ui_snd(sounds[eTalkSndClose], m_uiXml->Read("snd_close", 0, nullptr));
+        create_ui_snd(sounds[eTalkSndSay], m_uiXml->Read("snd_say", 0, nullptr));
+
+        m_uiXml->SetLocalRoot(stored_root);
+    }
 }
 
 #include "UIInventoryUtilities.h"
@@ -99,6 +112,7 @@ void CUITalkDialogWnd::Show()
     inherited::Enable(true);
 
     ResetAll();
+    PlaySnd(eTalkSndOpen);
 }
 
 void CUITalkDialogWnd::Hide()
@@ -106,10 +120,12 @@ void CUITalkDialogWnd::Hide()
     InventoryUtilities::SendInfoToActor("ui_talk_hide");
     inherited::Show(false);
     inherited::Enable(false);
+    PlaySnd(eTalkSndClose);
 }
 
 void CUITalkDialogWnd::OnQuestionClicked(CUIWindow* w, void*)
 {
+    PlaySnd(eTalkSndSay);
     m_ClickedQuestionID = ((CUIQuestionItem*)w)->m_s_value;
     GetMessageTarget()->SendMessage(this, TALK_DIALOG_QUESTION_CLICKED);
 }
@@ -208,6 +224,12 @@ void CUITalkDialogWnd::SetOsoznanieMode(bool b)
     UIDialogFrame.Show(!b);
 
     UIToTradeButton.Show(!b);
+}
+
+void CUITalkDialogWnd::PlaySnd(eSndAction a)
+{
+    if (sounds[a]._handle() && (!sounds[a]._feedback() /* || sounds[a].play_progress() > 0.3f*/))
+        sounds[a].play_no_feedback(nullptr, sm_2D);
 }
 
 void CUIQuestionItem::SendMessage(CUIWindow* pWnd, s16 msg, void* pData) { CUIWndCallback::OnEvent(pWnd, msg, pData); }
