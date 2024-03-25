@@ -240,10 +240,14 @@ void CUIScrollBar::ClampByViewRect()
 
 void CUIScrollBar::SetPosScrollFromView(float view_pos, int view_size, int view_offs)
 {
-    int scroll_size = ScrollSize();
-    float pos = view_pos - view_offs;
-    int work_size = m_ScrollWorkArea - view_size;
-    SetScrollPosClamped(work_size ? iFloor(((pos / work_size) * (scroll_size) + m_iMinPos)) : 0);
+    const float work_size = m_ScrollWorkArea - view_size;
+
+    const float pos = view_pos - view_offs;
+    const int new_pos = iFloor(pos / work_size * ScrollSize() + m_iMinPos);
+    if (new_pos != m_iScrollPos)
+    {
+        SetScrollPosClamped(new_pos);
+    }
 }
 
 int CUIScrollBar::PosViewFromScroll(int view_size, int view_offs)
