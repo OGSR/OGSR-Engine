@@ -64,6 +64,7 @@ public:
     virtual void SetSelected(CUIWindow*);
     CUIWindow* GetSelected();
     void ForceUpdate();
+    void ForceScrollPosition();
     int GetMinScrollPos();
     int GetMaxScrollPos();
     int GetCurrentScrollPos();

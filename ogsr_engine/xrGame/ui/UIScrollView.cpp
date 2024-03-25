@@ -29,6 +29,15 @@ void CUIScrollView::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUIScrollView::ForceUpdate() { m_flags.set(eNeedRecalc, TRUE); }
 
+void CUIScrollView::ForceScrollPosition()
+{
+    if (m_flags.test(eNeedRecalc))
+        RecalcSize();
+
+    const Fvector2 w_pos = m_pad->GetWndPos();
+    m_pad->SetWndPos(w_pos.x, m_targetScrollPosition);
+}
+
 void CUIScrollView::Init()
 {
     if (!m_pad)

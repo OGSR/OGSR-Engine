@@ -27,12 +27,20 @@ CUIGameLog::~CUIGameLog() {}
 // initialization of item's height, text static and icon still necessary
 CUIPdaMsgListItem* CUIGameLog::AddPdaMessage(LPCSTR msg, float delay)
 {
+    u32 curr_size = GetSize();
+
     CUIPdaMsgListItem* pItem = xr_new<CUIPdaMsgListItem>();
     pItem->Init(0, 0, GetDesiredChildWidth(), 10); // fake height
     pItem->UIMsgText.SetTextST(msg);
     pItem->SetClrAnimDelay(delay);
     pItem->SetClrLightAnim(CHAT_LOG_ITEMS_ANIMATION, false, true, true, true);
     AddWindow(pItem, true);
+
+    if (curr_size == 0)
+    {
+        const Fvector2 w_pos = m_pad->GetWndPos();
+        m_pad->SetWndPos(w_pos.x, GetHeight());
+    }
 
     return pItem;
 }
@@ -64,18 +72,23 @@ void CUIGameLog::Update()
             toDelList.push_back(pItem);
     }
 
-    // Delete elements
+    if (!toDelList.empty())
     {
-        xr_vector<CUIWindow*>::iterator it;
-        for (it = toDelList.begin(); it != toDelList.end(); it++)
-            RemoveWindow(*it);
+        // Delete elements
+        {
+            for (const auto& it : toDelList)
+                RemoveWindow(it);
+        }
+
+        // REMOVE INVISIBLE AND PART VISIBLE ITEMS
+        // if (m_flags.test(eNeedRecalc))
+        //    RecalcSize();
+
+        ForceScrollPosition();
+
+        toDelList.clear();
     }
 
-    // REMOVE INVISIBLE AND PART VISIBLE ITEMS
-    if (m_flags.test(eNeedRecalc))
-        RecalcSize();
-
-    toDelList.clear();
     /* dsh: не могу понять, для чего это нужно. Но из-за этого, в
        некоторых случаях, не показываются некоторые сообщения.
 
