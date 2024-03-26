@@ -263,6 +263,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="NotificationClient.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SoundRender.h" />
     <ClInclude Include="stdafx.h" />
@@ -287,6 +288,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="NotificationClient.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

@@ -103,18 +103,19 @@ void CSoundRender_TargetA::update()
 {
     inherited::update();
 
-    // Msg("--[%s] alsoft_flag is [%d]", __FUNCTION__, this->alsoft_flag);
+    // Msg("--[%s] bEFX is [%d]", __FUNCTION__, this->bEFX);
 
-    if (this->alsoft_flag)
+    if (bAlSoft)
     {
         ALint processed, state;
 
         /* Get relevant source info */
         alGetSourcei(pSource, AL_SOURCE_STATE, &state);
         alGetSourcei(pSource, AL_BUFFERS_PROCESSED, &processed);
-        if (alGetError() != AL_NO_ERROR)
+        ALenum error = alGetError();
+        if (error != AL_NO_ERROR)
         {
-            Msg("!![%s]Error checking source state!", __FUNCTION__);
+            Msg("!![%s]Error checking source state! OpenAL Error: [%s]", __FUNCTION__, alGetString(error));
             return;
         }
 
@@ -125,9 +126,10 @@ void CSoundRender_TargetA::update()
             fill_block(BufferID);
             A_CHK(alSourceQueueBuffers(pSource, 1, &BufferID));
             processed--;
-            if (alGetError() != AL_NO_ERROR)
+            ALenum error = alGetError();
+            if (error != AL_NO_ERROR)
             {
-                Msg("!![%s]Error buffering data", __FUNCTION__);
+                Msg("!![%s]Error buffering data! OpenAL Error: [%s]", __FUNCTION__, alGetString(error));
                 return;
             }
         }
@@ -143,9 +145,10 @@ void CSoundRender_TargetA::update()
                 return;
 
             alSourcePlay(pSource);
-            if (alGetError() != AL_NO_ERROR)
+            ALenum error = alGetError();
+            if (error != AL_NO_ERROR)
             {
-                Msg("!![%s]Error restarting playback", __FUNCTION__);
+                Msg("!![%s]Error restarting playback! OpenAL Error: [%s]", __FUNCTION__, alGetString(error));
                 return;
             }
         }
@@ -182,14 +185,14 @@ void CSoundRender_TargetA::update()
     }
 }
 
-void CSoundRender_TargetA::fill_parameters()
+void CSoundRender_TargetA::fill_parameters(CSoundRender_Core* core)
 {
 #ifdef DEBUG
     CSoundRender_Emitter* SE = m_pEmitter;
     VERIFY(SE);
 #endif
 
-    inherited::fill_parameters();
+    inherited::fill_parameters(core);
 
     // 3D params
     VERIFY2(m_pEmitter, SE->source()->file_name());

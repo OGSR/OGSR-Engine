@@ -33,8 +33,8 @@ class ENGINE_API IConsole_Command
 {
 public:
     friend class CConsole;
-    typedef char TInfo[256];
-    typedef char TStatus[256];
+    using TInfo = string2048;
+    using TStatus = string2048;
     typedef xr_vector<shared_str> vecTips;
     typedef xr_vector<shared_str> vecLRU;
 

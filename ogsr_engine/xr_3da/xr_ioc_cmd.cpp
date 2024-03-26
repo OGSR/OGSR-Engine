@@ -730,7 +730,7 @@ void CCC_Register()
     CMD2(CCC_Float, "snd_volume_eff", &psSoundVEffects);
     CMD2(CCC_Float, "snd_volume_music", &psSoundVMusic);
     CMD1(CCC_SND_Restart, "snd_restart");
-    CMD3(CCC_Mask, "snd_acceleration", &psSoundFlags, ss_Hardware);
+    //CMD3(CCC_Mask, "snd_acceleration", &psSoundFlags, ss_Hardware);
     CMD3(CCC_Mask, "snd_efx", &psSoundFlags, ss_EAX);
     CMD4(CCC_Integer, "snd_targets", &psSoundTargets, 128, 1024);
     CMD4(CCC_Integer, "snd_cache_size", &psSoundCacheSizeMB, 32, 128);
@@ -760,6 +760,7 @@ void CCC_Register()
 
 
     CMD1(CCC_soundDevice, "snd_device");
+    //CMD3(CCC_Mask, "snd_device_default", &psSoundFlags, ss_UseDefaultDevice);
 
     // psSoundRolloff	= pSettings->r_float	("sound","rolloff");		clamp(psSoundRolloff,			EPS_S,	2.f);
     psSoundOcclusionScale = pSettings->r_float("sound", "occlusion_scale");

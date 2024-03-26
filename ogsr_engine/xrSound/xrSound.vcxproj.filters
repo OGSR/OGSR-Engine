@@ -63,6 +63,9 @@
     <ClInclude Include="SoundRender_Cache.h">
       <Filter>Cache</Filter>
     </ClInclude>
+    <ClInclude Include="NotificationClient.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="guids.cpp">
@@ -121,6 +124,9 @@
     </ClCompile>
     <ClCompile Include="SoundRender_Cache.cpp">
       <Filter>Cache</Filter>
+    </ClCompile>
+    <ClCompile Include="NotificationClient.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -22,7 +22,6 @@ function opt_sound:InitControls(x, y, xml, handler)
 	xml:InitStatic("tab_sound:cap_snd_device", self)
 	local ctl = xml:InitComboBox("tab_sound:list_snd_device", self)
 	handler:Register(ctl, "tab_sound:list_snd_device")
-	handler:AddCallback( "tab_sound:list_snd_device", ui_events.LIST_ITEM_SELECT, handler.show_need_restart_wnd, handler )
 
 	local ctl = xml:InitCheck("tab_sound:check_eax", self)
 	handler:Register(ctl, "tab_sound:check_eax")

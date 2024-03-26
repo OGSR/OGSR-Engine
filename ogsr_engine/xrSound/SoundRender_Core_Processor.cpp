@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include <efx.h>
+
 #include "../xr_3da/cl_intersect.h"
 #include "SoundRender_Core.h"
 #include "SoundRender_Emitter.h"
@@ -16,12 +18,15 @@ CSoundRender_Emitter* CSoundRender_Core::i_play(ref_sound* S, BOOL _loop, float 
     return E;
 }
 
-void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector& N)
+void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector& N) // called on seqFrameMT
 {
     u32 it;
 
     if (0 == bReady)
         return;
+
+    std::scoped_lock m{m_bLocked};
+
     bLocked = TRUE;
     Timer.time_factor(psSoundTimeFactor); //--#SM+#--
     float new_tm = Timer.GetElapsed_sec();
@@ -85,7 +90,7 @@ void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector
             // Has emmitter, maybe just not started rendering
             if (T->get_Rendering())
             {
-                /*if	(PU == it)*/ T->fill_parameters();
+                T->fill_parameters(this);
                 T->update();
             }
             else
@@ -99,7 +104,7 @@ void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector
         // Msg	("! update: start render - commit");
         s_targets_defer.erase(std::unique(s_targets_defer.begin(), s_targets_defer.end()), s_targets_defer.end());
         for (it = 0; it < s_targets_defer.size(); it++)
-            s_targets_defer[it]->fill_parameters();
+            s_targets_defer[it]->fill_parameters(this);
     }
 
     // update EAX or EFX
@@ -129,10 +134,24 @@ void CSoundRender_Core::update(const Fvector& P, const Fvector& D, const Fvector
             i_eax_listener_set(&e_current);
             i_eax_commit_setting();
         }
-        else
+        else if (bEFX)
         {
             i_efx_listener_set(&e_current);
             bEFX = i_efx_commit_setting();
+
+            if (!bEFX)
+            {
+                for (u32 it = 0; it < s_targets.size(); it++)
+                {
+                    CSoundRender_Target* T = s_targets[it];
+
+                    T->alAuxInit(AL_EFFECTSLOT_NULL);
+
+                    T->bEFX = false;
+                }
+
+                release_efx_objects();
+            }
         }
     }
 

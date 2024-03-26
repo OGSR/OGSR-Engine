@@ -641,7 +641,7 @@
 		<cap_snd_device x="20" y="70" width="143" height="21">
             <text font="letterica16" r="215" g="195" b="170">ui_mm_snd_device</text>
         </cap_snd_device>
-        <list_snd_device x="194" y="65" width="245" height="21" list_length="3" always_show_scroll="1">
+        <list_snd_device x="194" y="65" width="245" height="21" list_length="5" always_show_scroll="1">
             <options_item entry="snd_device" group="mm_opt_sound"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>

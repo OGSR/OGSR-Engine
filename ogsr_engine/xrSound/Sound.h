@@ -35,8 +35,9 @@ XRSOUND_API extern float psSoundTimeFactor; //--#SM+#--
 // Flags
 enum
 {
-    ss_Hardware = (1ul << 1ul), //!< Use hardware mixing only
-    ss_EAX = (1ul << 2ul), //!< Use EAX or EFX
+    //ss_Hardware = (1ul << 1ul), // Use hardware mixing only
+    ss_EAX = (1ul << 2ul), // Use EAX or EFX
+    ss_UseDefaultDevice = (1ul << 3ul),
     ss_forcedword = u32(-1)
 };
 
@@ -291,7 +292,6 @@ public:
     static void _destroy();
 
     virtual void _restart() = 0;
-    virtual BOOL i_locked() = 0;
 
     virtual void create(ref_sound& S, LPCSTR fName, esound_type sound_type, int game_type) = 0;
     virtual void attach_tail(ref_sound& S, LPCSTR fName) = 0;

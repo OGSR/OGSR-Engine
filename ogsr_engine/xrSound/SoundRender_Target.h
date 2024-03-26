@@ -11,7 +11,8 @@ protected:
 
 public:
     float priority{};
-    bool alsoft_flag = false;
+    bool bAlSoft = false;
+    bool bEFX = false;
 
 protected:
     OggVorbis_File ovf{};
@@ -43,6 +44,8 @@ public:
     virtual void rewind() = 0;
     virtual void stop() = 0;
     virtual void update() = 0;
-    virtual void fill_parameters() = 0;
+
     virtual void alAuxInit(ALuint slot) = 0;
+
+    virtual void fill_parameters(CSoundRender_Core* core) = 0;
 };

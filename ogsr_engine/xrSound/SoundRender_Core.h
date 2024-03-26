@@ -10,63 +10,65 @@
 
 class CSoundRender_Core : public CSound_manager_interface
 {
-    volatile BOOL bLocked;
+    volatile BOOL bLocked{};
 
 protected:
     virtual void _create_data(ref_sound_data& S, LPCSTR fName, esound_type sound_type, int game_type);
     virtual void _destroy_data(ref_sound_data& S);
 
 protected:
-    BOOL bListenerMoved;
+    BOOL bListenerMoved{};
 
     bool e_currentPaused{false};
 
     CSoundRender_Environment e_current;
-    CSoundRender_Environment* e_target;
+    CSoundRender_Environment* e_target{};
 
 public:
     typedef std::pair<ref_sound_data_ptr, float> event;
     xr_vector<event> s_events;
 
 public:
-    BOOL bPresent;
-    BOOL bEAX; // Boolean variable to indicate presence of EAX Extension
-    BOOL bDeferredEAX;
-    bool bEFX; // boolean variable to indicate presence of EFX Extension
-    BOOL bReady;
+    BOOL bPresent{};
+    BOOL bEAX{}; // Boolean variable to indicate presence of EAX Extension
+    BOOL bDeferredEAX{};
+    bool bEFX{}; // boolean variable to indicate presence of EFX Extension
+    BOOL bReady{};
 
-    CTimer Timer;
-    float fTimer_Value;
-    float fTimer_Delta;
-    sound_event* Handler;
+    CTimer Timer{};
+    float fTimer_Value{};
+    float fTimer_Delta{};
+    sound_event* Handler{};
 
 protected:
     // Collider
-    CDB::COLLIDER geom_DB;
-    CDB::MODEL* geom_SOM;
-    CDB::MODEL* geom_MODEL;
-    CDB::MODEL* geom_ENV;
+    CDB::COLLIDER geom_DB{};
+    CDB::MODEL* geom_SOM{};
+    CDB::MODEL* geom_MODEL{};
+    CDB::MODEL* geom_ENV{};
 
     // Containers
     xr_vector<CSoundRender_Source*> s_sources;
     xr_vector<CSoundRender_Emitter*> s_emitters;
-    u32 s_emitters_u; // emitter update marker
+    u32 s_emitters_u{}; // emitter update marker
     xr_vector<CSoundRender_Target*> s_targets;
     xr_vector<CSoundRender_Target*> s_targets_defer;
-    u32 s_targets_pu; // parameters update
-    SoundEnvironment_LIB* s_environment;
+    u32 s_targets_pu{}; // parameters update
+    SoundEnvironment_LIB* s_environment{};
     xr_vector<u16> s_environment_ids;
 
-    int m_iPauseCounter;
+    int m_iPauseCounter{};
 
 public:
     // Cache
-    CSoundRender_Cache cache;
+    CSoundRender_Cache cache{};
     u32 cache_bytes_per_line{};
 
 protected:
     virtual void i_eax_set(const GUID* guid, u32 prop, void* val, u32 sz) = 0;
     virtual void i_eax_get(const GUID* guid, u32 prop, void* val, u32 sz) = 0;
+
+    std::mutex m_bLocked;
 
 public:
     CSoundRender_Core();
@@ -123,7 +125,6 @@ public:
     void i_stop(CSoundRender_Emitter* E);
     void i_rewind(CSoundRender_Emitter* E);
     BOOL i_allow_play(CSoundRender_Emitter* E);
-    virtual BOOL i_locked() { return bLocked; }
 
     virtual void object_relcase(CObject* obj);
 
@@ -138,11 +139,14 @@ public:
     void env_apply();
 
 protected: // EFX
-    EFXEAXREVERBPROPERTIES efx_reverb;
-    ALuint effect;
-    ALuint slot;
+    EFXEAXREVERBPROPERTIES efx_reverb{};
+    ALuint effect{};
+    ALuint slot{};
+
     bool EFXTestSupport();
     void InitAlEFXAPI();
+
+    void release_efx_objects() const;
 };
 
 extern XRSOUND_API CSoundRender_Core* SoundRender;

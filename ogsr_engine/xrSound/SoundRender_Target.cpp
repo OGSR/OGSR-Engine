@@ -65,7 +65,7 @@ void CSoundRender_Target::rewind() { R_ASSERT(rendering); }
 
 void CSoundRender_Target::update() { R_ASSERT(m_pEmitter); }
 
-void CSoundRender_Target::fill_parameters()
+void CSoundRender_Target::fill_parameters(CSoundRender_Core* core)
 {
     VERIFY(m_pEmitter);
     //.	if (pEmitter->b2D){
