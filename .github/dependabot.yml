@@ -5,4 +5,4 @@ updates:
     schedule:
       # Check for updates to GitHub Actions every week
       # See https://docs.github.com/en/code-security/dependabot/working-with-dependabot/keeping-your-actions-up-to-date-with-dependabot
-      interval: "weekly"
+      interval: "monthly"
