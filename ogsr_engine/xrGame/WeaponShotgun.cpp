@@ -422,18 +422,18 @@ void CWeaponShotgun::OnStateSwitch(u32 S, u32 oldState)
             if (GetAmmoElapsed() < 1)
             {
                 PlaySound(!m_sndAddCartridgeEmpty.sounds.empty() ? m_sndAddCartridgeEmpty : m_sndAddCartridge, get_LastFP());
-                PlayHUDMotion({"anm_add_cartridge_empty", "anim_add_cartridge", "anm_add_cartridge"}, true, GetState());
+                PlayHUDMotion({"anm_add_cartridge_empty", "anim_add_cartridge", "anm_add_cartridge"}, false, GetState());
                 StartCartridge = false;
             }
             else if (SecondCartridge)
             {
                 PlaySound(!m_sndAddCartridgeSecond.sounds.empty() ? m_sndAddCartridgeSecond : m_sndAddCartridge, get_LastFP());
-                PlayHUDMotion({"anm_add_cartridge_second", "anim_add_cartridge", "anm_add_cartridge"}, true, GetState());
+                PlayHUDMotion({"anm_add_cartridge_second", "anim_add_cartridge", "anm_add_cartridge"}, false, GetState());
             }
             else
             {
                 PlaySound(StartCartridge && !m_sndAddCartridgeStart.sounds.empty() ? m_sndAddCartridgeStart : m_sndAddCartridge, get_LastFP());
-                PlayHUDMotion({StartCartridge ? "anm_add_cartridge_start" : "anm_add_cartridge", "anim_add_cartridge", "anm_add_cartridge"}, true, GetState());
+                PlayHUDMotion({StartCartridge ? "anm_add_cartridge_start" : "anm_add_cartridge", "anim_add_cartridge", "anm_add_cartridge"}, false, GetState());
                 StartCartridge = false;
             }
             SetPending(TRUE);
