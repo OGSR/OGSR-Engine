@@ -394,14 +394,7 @@ void CUIInventoryWnd::AttachAddon(PIItem item_to_upgrade)
 
     item_to_upgrade->Attach(CurrentIItem(), true);
 
-    //спрятать вещь из активного слота в инвентарь на время вызова менюшки
-    CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
-    if (pActor && item_to_upgrade == pActor->inventory().ActiveItem())
-    {
-        m_iCurrentActiveSlot = pActor->inventory().GetActiveSlot();
-        pActor->inventory().Activate(NO_ACTIVE_SLOT);
-    }
-    SetCurrentItem(NULL);
+    SetCurrentItem(nullptr);
 }
 
 void CUIInventoryWnd::DetachAddon(const char* addon_name)
@@ -409,14 +402,6 @@ void CUIInventoryWnd::DetachAddon(const char* addon_name)
     PlaySnd(eInvDetachAddon);
 
     CurrentIItem()->Detach(addon_name, true);
-
-    //спрятать вещь из активного слота в инвентарь на время вызова менюшки
-    CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
-    if (pActor && CurrentIItem() == pActor->inventory().ActiveItem())
-    {
-        m_iCurrentActiveSlot = pActor->inventory().GetActiveSlot();
-        pActor->inventory().Activate(NO_ACTIVE_SLOT);
-    }
 }
 
 void CUIInventoryWnd::SendEvent_ActivateSlot(PIItem pItem)
