@@ -36,6 +36,12 @@ Fvector CVertex__game_point(const CGameGraph::CVertex* vertex)
 
 const CGameLevelCrossTable* get_cross_table() { return &ai().cross_table(); }
 
+Fvector4 CVertex__mask_(const CGameGraph::CVertex* vertex)
+{
+    const u8* mask = vertex->vertex_type();
+    return Fvector4{(float)mask[0], (float)mask[1], (float)mask[2], (float)mask[3]};
+}
+
 #pragma optimize("s", on)
 void CGameGraph::script_register(lua_State* L)
 {
@@ -53,7 +59,8 @@ void CGameGraph::script_register(lua_State* L)
                   .def("level_point", &CVertex__level_point)
                   .def("game_point", &CVertex__game_point)
                   .def("level_id", &CVertex::level_id)
-                  .def("level_vertex_id", &CVertex::level_vertex_id),
+                  .def("level_vertex_id", &CVertex::level_vertex_id)
+                  .def("mask", &CVertex__mask_),
 
               def("cross_table", &get_cross_table),
 
