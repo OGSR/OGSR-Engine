@@ -30,6 +30,7 @@ public:
     bool r_bool(LPCSTR S, LPCSTR L);
     LPCSTR r_string_wb(LPCSTR S, LPCSTR L);
     LPCSTR r_string(LPCSTR S, LPCSTR L);
+    LPCSTR name();
     u32 r_u32(LPCSTR S, LPCSTR L);
     int r_s32(LPCSTR S, LPCSTR L);
     float r_float(LPCSTR S, LPCSTR L);

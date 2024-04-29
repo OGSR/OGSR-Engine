@@ -34,6 +34,8 @@ bool CScriptIniFile::r_bool(LPCSTR S, LPCSTR L) { return (!!inherited::r_bool(S,
 
 LPCSTR CScriptIniFile::r_string_wb(LPCSTR S, LPCSTR L) { return (*inherited::r_string_wb(S, L)); }
 
+LPCSTR CScriptIniFile::name() { return inherited::fname(); }
+
 u32 CScriptIniFile::line_count(LPCSTR S)
 {
     THROW3(inherited::section_exist(S), "Cannot find section", S);

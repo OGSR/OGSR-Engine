@@ -78,6 +78,7 @@ void CScriptIniFile::script_register(lua_State* L)
                   .def("remove_line", &CScriptIniFile::remove_line)
                   .def("remove_section", &CScriptIniFile::remove_section)
                   .def("get_as_string", &CScriptIniFile::get_as_string)
+                  .def("name", &CScriptIniFile::name)
                   .def("save", &CScriptIniFile::save_as)
                   .def("iterate_sections", &iterate_sections)
 
