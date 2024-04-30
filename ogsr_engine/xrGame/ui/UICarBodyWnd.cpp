@@ -281,7 +281,7 @@ void CUICarBodyWnd::UpdateLists()
     ruck_list.clear();
     if (m_pOthersObject)
         m_pOthersObject->inventory().AddAvailableItems(ruck_list, false);
-    else
+    else if (m_pInventoryBox && m_pInventoryBox->m_in_use)
         m_pInventoryBox->AddAvailableItems(ruck_list);
 
     std::sort(ruck_list.begin(), ruck_list.end(), InventoryUtilities::GreaterRoomInRuck);
