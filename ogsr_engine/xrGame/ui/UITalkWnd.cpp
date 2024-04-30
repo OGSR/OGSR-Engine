@@ -434,6 +434,12 @@ void CUITalkWnd::StopSnd()
         m_sound.stop();
 }
 
+void CUITalkWnd::AddAnswerScript(LPCSTR text, bool is_actor)
+{ 
+   LPCSTR name = (is_actor) ? m_pOurInvOwner->Name() : m_pOthersInvOwner->Name();
+   UITalkDialogWnd->AddAnswer(name, text, is_actor);
+}
+
 void CUITalkWnd::AddIconedMessage(LPCSTR text, LPCSTR texture_name, Frect texture_rect, LPCSTR templ_name)
 {
     UITalkDialogWnd->AddIconedAnswer(text, texture_name, texture_rect, templ_name);

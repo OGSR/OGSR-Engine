@@ -55,7 +55,7 @@ public:
     CUICharacterInfo UICharacterInfoRight;
 
     void AddQuestion(LPCSTR str, LPCSTR value, int);
-    void AddAnswer(LPCSTR SpeakerName, const char* str, bool bActor);
+    void AddAnswer(LPCSTR SpeakerName, LPCSTR str, bool bActor);
     void AddIconedAnswer(LPCSTR text, LPCSTR texture_name, Frect texture_rect, LPCSTR templ_name);
     void ClearAll();
     void ClearQuestions();

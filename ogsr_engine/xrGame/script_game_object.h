@@ -840,6 +840,7 @@ extern void buy_condition(CScriptIniFile* ini_file, LPCSTR section);
 extern void buy_condition(float friend_factor, float enemy_factor);
 extern void show_condition(CScriptIniFile* ini_file, LPCSTR section);
 
+void AddTalkMessage(CScriptGameObject*, LPCSTR text, bool is_actor = false);
 void AddIconedTalkMessage(CScriptGameObject*, LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, LPCSTR templ_name);
 bool GiveGameNews(CScriptGameObject*, LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, int delay, int show_time);
 

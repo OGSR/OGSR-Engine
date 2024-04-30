@@ -58,6 +58,16 @@ bool CScriptGameObject::DisableInfoPortion(LPCSTR info_id)
     return true;
 }
 
+void AddTalkMessage(CScriptGameObject*, LPCSTR text, bool is_actor) 
+{
+    CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+    if (!pGameSP)
+        return;
+
+    if (pGameSP->TalkMenu->IsShown())
+        pGameSP->TalkMenu->AddAnswerScript(text, is_actor);
+}
+
 void AddIconedTalkMessage(CScriptGameObject*, LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, LPCSTR templ_name)
 {
     CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());

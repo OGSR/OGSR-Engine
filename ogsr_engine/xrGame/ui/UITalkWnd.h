@@ -50,6 +50,7 @@ public:
     virtual bool IR_OnKeyboardPress(int dik);
     virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
     void SwitchToTrade();
+    void AddAnswerScript(LPCSTR text, bool is_actor = false);
     void AddIconedMessage(LPCSTR text, LPCSTR texture_name, Frect texture_rect, LPCSTR templ_name);
 
 protected:
