@@ -1420,7 +1420,7 @@ void CCC_RegisterCommands()
 {
     CMD1(CCC_MemStats, "stat_memory");
     // game
-    CMD3(CCC_Mask, "g_always_run", &psActorFlags, AF_ALWAYSRUN);
+    //CMD3(CCC_Mask, "g_always_run", &psActorFlags, AF_ALWAYSRUN);
     CMD1(CCC_GameDifficulty, "g_game_difficulty");
 
     CMD3(CCC_Mask, "g_dof_zoom", &psActorFlags, AF_DOF_ZOOM);
