@@ -301,6 +301,22 @@ void CUIScrollView::ScrollToEnd()
     OnScrollV(NULL, NULL);
 }
 
+void CUIScrollView::SetWndSize(const Fvector2& size) 
+{
+    m_wndSize = size;
+    m_VScrollBar->SetStepSize(_max(1, iFloor(size.y / 10)));
+    m_VScrollBar->SetPageSize(iFloor(size.y));
+    m_flags.set(eNeedRecalc, TRUE);
+}
+
+void CUIScrollView::SetHeight(float height) 
+{ 
+    m_wndSize.y = height; 
+    m_VScrollBar->SetStepSize(_max(1, iFloor(height / 10)));
+    m_VScrollBar->SetPageSize(iFloor(height));
+    m_flags.set(eNeedRecalc, TRUE);
+}
+
 void CUIScrollView::SetRightIndention(float val)
 {
     m_rightIndent = val;

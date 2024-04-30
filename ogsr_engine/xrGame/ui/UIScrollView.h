@@ -66,6 +66,8 @@ public:
     int GetMinScrollPos();
     int GetMaxScrollPos();
     int GetCurrentScrollPos();
+    virtual void SetWndSize(const Fvector2& size) override;
+    virtual void SetHeight(float height) override;
     void SetScrollPos(int value);
     void SetScrollBarProfile(LPCSTR profile);
     IC bool NeedShowScrollBar(); // no comment
