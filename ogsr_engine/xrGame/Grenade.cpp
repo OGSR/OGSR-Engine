@@ -343,3 +343,11 @@ void CGrenade::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_s
     str_count = stmp;
     icon_sect_name = *cNameSect();
 }
+
+bool CGrenade::CanTake() const
+{
+    if (!inherited::CanTake())
+        return false;
+
+    return !m_explosion_flags.test(flExploding) && !m_explosion_flags.test(flExploded);
+}

@@ -45,6 +45,8 @@ public:
     virtual void GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count);
     virtual bool StopSprintOnFire() { return false; }
 
+    virtual bool CanTake() const override;
+
 protected:
     HUD_SOUND sndCheckout;
     ESoundTypes m_eSoundCheckout;
