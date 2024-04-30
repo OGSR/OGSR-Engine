@@ -132,7 +132,7 @@ void CScriptFvector::script_register(lua_State* L)
             class_<Fvector4>("___VECTOR4")
                .def_readwrite("x", &Fvector4::x)
                .def_readwrite("y", &Fvector4::y)
-               .def_readwrite("z", &Fvector4::y)
+               .def_readwrite("z", &Fvector4::z)
                .def_readwrite("w", &Fvector4::w)
                .def(constructor<>())
 
