@@ -1271,6 +1271,10 @@ void CCustomZone::SpawnArtefact()
 #endif
     Fvector pos;
     Center(pos);
+    pos.y = pos.y + 1;
+
+    pos.x = pos.x + ::Random.randF(-0.5, 0.5);
+    pos.z = pos.z + ::Random.randF(-0.5, 0.5);
     Level().spawn_item(*m_ArtefactSpawn[i].section, pos, ai_location().level_vertex_id(), ID());
 }
 
