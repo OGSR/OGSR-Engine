@@ -1619,6 +1619,8 @@ u32 player_hud::script_anim_play(u8 hand, LPCSTR hud_section, LPCSTR anm_name, b
             m_item_pos = attach_offs;
         }
     }
+    else
+        script_anim_item_model = nullptr;
 
     script_anim_offset[0] = offs;
     script_anim_offset[1] = rrot;
