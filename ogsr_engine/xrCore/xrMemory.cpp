@@ -23,8 +23,6 @@ xrMemory Memory;
 
 void xrMemory::_initialize()
 {
-    stat_calls = 0;
-
     SProcessMemInfo memCounters;
     GetProcessMemInfo(memCounters);
 
@@ -69,8 +67,6 @@ void xrMemory::mem_compact()
 
 void* xrMemory::mem_alloc(size_t size)
 {
-    stat_calls++;
-
     void* ptr = malloc(size);
 
     return ptr;
@@ -78,15 +74,11 @@ void* xrMemory::mem_alloc(size_t size)
 
 void xrMemory::mem_free(void* P)
 {
-    stat_calls++;
-
     free(P);
 }
 
 void* xrMemory::mem_realloc(void* P, size_t size)
 {
-    stat_calls++;
-
     void* ptr = realloc(P, size);
 
     return ptr;

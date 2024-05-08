@@ -19,8 +19,6 @@ public:
     void _initialize();
     static void _destroy();
 
-    u32 stat_calls{};
-
     static u32 mem_usage(u32* pBlocksUsed = nullptr, u32* pBlocksFree = nullptr);
     void mem_compact();
 

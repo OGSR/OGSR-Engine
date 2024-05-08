@@ -34,7 +34,6 @@ CStats::CStats()
     fRFPS = 30.f;
     fTPS = 0;
     pFont = 0;
-    fMem_calls = 0;
     RenderDUMP_DT_Count = 0;
     Device.seqRender.Add(this, REG_PRIORITY_LOW - 1000);
 }
@@ -133,14 +132,6 @@ void CStats::Show()
             fRFPS = fInv * fRFPS + fOne * 1000.f / RenderTOTAL.result;
         }
     }
-    {
-        float mem_count = float(Memory.stat_calls);
-        if (mem_count > fMem_calls)
-            fMem_calls = mem_count;
-        else
-            fMem_calls = .9f * fMem_calls + .1f * mem_count;
-        Memory.stat_calls = 0;
-    }
 
     CGameFont& F = *pFont;
     float f_base_size = 0.01f;
@@ -180,7 +171,6 @@ void CStats::Show()
 
 #define PPP(a) (100.f * float(a) / float(EngineTOTAL.result))
         F.OutNext("*** ENGINE:  %2.2fms", EngineTOTAL.result);
-        F.OutNext("Memory:      %2.2fa", fMem_calls);
         F.OutNext("uClients:    %2.2fms, %2.1f%%, crow(%d)/active(%d)/total(%d)", UpdateClient.result, PPP(UpdateClient.result), UpdateClient_crows, UpdateClient_active,
                   UpdateClient_total);
         F.OutNext("uSheduler:   %2.2fms, %2.1f%%", Sheduler.result, PPP(Sheduler.result));
@@ -317,7 +307,6 @@ void CStats::Show()
             if (RenderDUMP_DT_Count > 1000)
                 F.OutNext("DT_count  > 1000: %u", RenderDUMP_DT_Count);
             F.OutSkip();
-            // if (fMem_calls>1500)			F.OutNext	("MMGR calls > 1500:%3.1f",	fMem_calls);
             if (Sheduler.result > 3.f)
                 F.OutNext("Update     > 3ms:	%3.1f", Sheduler.result);
             if (UpdateClient.result > 3.f)
