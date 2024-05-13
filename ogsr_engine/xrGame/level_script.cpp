@@ -728,9 +728,9 @@ void send_event_mouse_wheel(int vol) //Вращение колеса мыши
 // Real Wolf 07.07.2014
 u32 vertex_id(const Fvector& vec) { return ai().level_graph().vertex_id(vec); }
 
-u32 vertex_id(u32 node, const Fvector& vec) { return ai().level_graph().vertex(node, vec); }
+u32 vertex_id(u32 node, const Fvector& vec) { return ai().level_graph().vertex_id(node, vec); }
 
-u32 nearest_vertex_id(const Fvector& vec) { return ai().level_graph().vertex(vec); }
+u32 nearest_vertex_id(const Fvector& vec) { return ai().level_graph().nearest_vertex_id(vec); }
 
 void update_inventory_window() { HUD().GetUI()->UIGame()->ReInitShownUI(); }
 

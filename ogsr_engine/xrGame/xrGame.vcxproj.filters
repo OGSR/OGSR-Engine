@@ -8867,6 +8867,9 @@
     <ClCompile Include="embedded_editor\embedded_editor_sound_env.cpp">
       <Filter>EmbeddedEditor</Filter>
     </ClCompile>
+    <ClCompile Include="level_graph_script.cpp">
+      <Filter>AI\ANavigation\LevelGraph</Filter>
+    </ClCompile>
     <ClCompile Include="LevelDebugScript.cpp">
       <Filter>Core\Client\Level</Filter>
     </ClCompile>

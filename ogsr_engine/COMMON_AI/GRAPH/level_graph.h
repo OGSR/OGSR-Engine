@@ -14,6 +14,9 @@
 #include "level_graph_space.h"
 #include "game_graph_space.h"
 #include "../Include/xrRender/DebugShader.h"
+#include "script_export_space.h"
+
+#define LEVEL_GRAPH_NAME "level.ai"
 
 namespace LevelGraph
 {
@@ -58,7 +61,7 @@ private:
     u32 m_max_z;
 
 public:
-    u32 vertex(const Fvector& position) const;
+    u32 nearest_vertex_id(const Fvector& position) const;
 
 public:
     typedef u32 const_iterator;
@@ -75,8 +78,9 @@ private:
     };
 
 public:
-    CLevelGraph();
+    CLevelGraph(LPCSTR fName);
     virtual ~CLevelGraph();
+
     IC const_vertex_iterator begin() const;
     IC const_vertex_iterator end() const;
     IC void set_mask(const xr_vector<u32>& mask);
@@ -153,7 +157,6 @@ public:
     IC void contour(SContour& contour, u32 vertex_id) const;
     IC void contour(SContour& contour, const CVertex* vertex) const;
     IC void nearest(Fvector& destination, const Fvector& position, const SContour& contour) const;
-    IC bool intersect(Fvector& destination, const Fvector& v1, const Fvector& v2, const Fvector& v3, const Fvector& v4) const;
     IC float square(float a1, float b1, float alpha = PI_DIV_2) const;
     IC float compute_square(float angle, float AOV, float b0, float b1, float b2, float b3) const;
     IC float compute_square(float angle, float AOV, const CVertex* vertex) const;
@@ -169,33 +172,22 @@ public:
     IC void set_invalid_vertex(u32& vertex_id, CVertex** vertex = NULL) const;
     IC const u32 vertex_id(const CLevelGraph::CVertex* vertex) const;
     u32 vertex_id(const Fvector& position) const;
-    u32 vertex(u32 current_vertex_id, const Fvector& position) const;
+    u32 vertex_id(u32 current_node_id, const Fvector& position) const;
     void choose_point(const Fvector& start_point, const Fvector& finish_point, const SContour& contour, int vertex_id, Fvector& temp_point, int& saved_index) const;
     IC bool check_vertex_in_direction(u32 start_vertex_id, const Fvector& start_position, u32 finish_vertex_id) const;
     IC u32 check_position_in_direction(u32 start_vertex_id, const Fvector& start_position, const Fvector& finish_position) const;
-    float check_position_in_direction(u32 start_vertex_id, const Fvector& start_position, const Fvector& finish_position, const float max_distance) const;
-    float mark_nodes_in_direction(u32 start_vertex_id, const Fvector& start_position, const Fvector& direction, float distance, xr_vector<u32>& vertex_stack,
-                                  xr_vector<bool>* vertex_marks) const;
-    float mark_nodes_in_direction(u32 start_vertex_id, const Fvector& start_position, u32 finish_node, xr_vector<u32>& vertex_stack, xr_vector<bool>* vertex_marks) const;
-    float mark_nodes_in_direction(u32 start_vertex_id, const Fvector& start_position, const Fvector& finish_point, xr_vector<u32>& vertex_stack,
-                                  xr_vector<bool>* vertex_marks) const;
-    float farthest_vertex_in_direction(u32 start_vertex_id, const Fvector& start_point, const Fvector& finish_point, u32& finish_vertex_id, xr_vector<bool>* tpaMarks,
-                                       bool check_accessability = false) const;
-    bool create_straight_path(u32 start_vertex_id, const Fvector& start_point, const Fvector& finish_point, xr_vector<Fvector>& tpaOutputPoints, xr_vector<u32>& tpaOutputNodes,
-                              bool bAddFirstPoint, bool bClearPath = true) const;
-    bool create_straight_path(u32 start_vertex_id, const Fvector2& start_point, const Fvector2& finish_point, xr_vector<Fvector>& tpaOutputPoints, xr_vector<u32>& tpaOutputNodes,
-                              bool bAddFirstPoint, bool bClearPath = true) const;
+    float farthest_vertex_in_direction(u32 start_vertex_id, const Fvector& start_point, const Fvector& finish_point, u32& finish_vertex_id, xr_vector<bool>* tpaMarks, bool check_accessability = false) const;
+
     template <bool bAssignY, typename T>
     IC bool create_straight_path(u32 start_vertex_id, const Fvector2& start_point, const Fvector2& finish_point, xr_vector<T>& tpaOutputPoints, const T& example,
                                  bool bAddFirstPoint, bool bClearPath = true) const;
+
     template <typename T>
     IC void assign_y_values(xr_vector<T>& path);
     template <typename P>
     IC void iterate_vertices(const Fvector& min_position, const Fvector& max_position, const P& predicate) const;
     IC bool check_vertex_in_direction(u32 start_vertex_id, const Fvector2& start_position, u32 finish_vertex_id) const;
     IC u32 check_position_in_direction(u32 start_vertex_id, const Fvector2& start_position, const Fvector2& finish_position) const;
-    bool check_vertex_in_direction_slow(u32 start_vertex_id, const Fvector2& start_position, u32 finish_vertex_id) const;
-    u32 check_position_in_direction_slow(u32 start_vertex_id, const Fvector2& start_position, const Fvector2& finish_position) const;
     IC Fvector v3d(const Fvector2& vector2d) const;
     IC Fvector2 v2d(const Fvector& vector3d) const;
     IC bool valid_vertex_position(const Fvector& position) const;
@@ -205,6 +197,9 @@ public:
 
 private:
     debug_shader sh_debug;
+
+    bool check_vertex_in_direction_slow(u32 start_vertex_id, const Fvector2& start_position, u32 finish_vertex_id) const;
+    u32 check_position_in_direction_slow(u32 start_vertex_id, const Fvector2& start_position, const Fvector2& finish_position) const;
 
 public:
     void render();
@@ -243,6 +238,8 @@ private:
     void draw_debug_node();
 
 #endif
+
+    DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 
 IC bool operator<(const CLevelGraph::CVertex& vertex, const u32& vertex_xz);
@@ -257,6 +254,10 @@ extern BOOL g_bDebugNode;
 extern u32 g_dwDebugNodeSource;
 extern u32 g_dwDebugNodeDest;
 #endif
+
+add_to_type_list(CLevelGraph)
+#undef script_type_list
+#define script_type_list save_type_list(CLevelGraph)
 
 #include "level_graph_inline.h"
 #include "level_graph_vertex_inline.h"

@@ -64,7 +64,7 @@ void CALifeSwitchManager::add_online(CSE_ALifeDynamicObject* object, bool update
     if (object->used_ai_locations() && !ai().level_graph().valid_vertex_id(object->m_tNodeID))
     {
         Msg("Trying to correct invalid vertex %u for object %s", object->m_tNodeID, object->name_replace());
-        object->m_tNodeID = ai().level_graph().vertex(object->m_tNodeID, object->o_Position);
+        object->m_tNodeID = ai().level_graph().vertex_id(object->m_tNodeID, object->o_Position);
         Msg("  new vertex: %u", object->m_tNodeID);
     }
     ASSERT_FMT(!object->used_ai_locations() || ai().level_graph().valid_vertex_id(object->m_tNodeID), "Invalid vertex %u for object %s", object->m_tNodeID, object->name_replace());

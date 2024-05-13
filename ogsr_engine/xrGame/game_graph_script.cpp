@@ -36,12 +36,35 @@ Fvector CVertex__game_point(const CGameGraph::CVertex* vertex)
 
 const CGameLevelCrossTable* get_cross_table() { return &ai().cross_table(); }
 
+CGameLevelCrossTable* get_cross_table_for_level(LPCSTR level_name)
+{
+    const GameGraph::SLevel* level = ai().game_graph().header().level(level_name, true);
+    if (!level)
+    {
+        Msg("! Unknown level {%}!", level_name);
+        return nullptr;
+    }
+
+    u32 level_id = level->id();
+
+    CGameLevelCrossTable* result = ai().game_graph().find_cross_table_for_level(level_id);
+
+    if (result)
+        return result;
+
+    string_path fn;
+    strconcat(sizeof(fn), fn, level_name, "\\", CROSS_TABLE_NAME);
+
+    string_path fName;
+    FS.update_path(fName, "$game_levels$", fn);
+    return xr_new<CGameLevelCrossTable>(fName);
+}
+
 Fvector4 CVertex__mask_(const CGameGraph::CVertex* vertex)
 {
     const u8* mask = vertex->vertex_type();
     return Fvector4{(float)mask[0], (float)mask[1], (float)mask[2], (float)mask[3]};
 }
-
 
 void CGameGraph::script_register(lua_State* L)
 {
@@ -63,6 +86,7 @@ void CGameGraph::script_register(lua_State* L)
                   .def("mask", &CVertex__mask_),
 
               def("cross_table", &get_cross_table),
+              def("cross_table", &get_cross_table_for_level, adopt<result>()),
 
               class_<CGameLevelCrossTable>("CGameLevelCrossTable").def("vertex", &CGameLevelCrossTable::vertex),
 

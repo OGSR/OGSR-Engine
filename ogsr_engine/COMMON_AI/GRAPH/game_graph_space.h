@@ -81,8 +81,6 @@ public:
     IC const u8* vertex_type() const;
     IC const u8& edge_count() const;
     IC const u32& edge_offset() const;
-    IC const u8& death_point_count() const;
-    IC const u32& death_point_offset() const;
     friend class CGameGraph;
 };
 

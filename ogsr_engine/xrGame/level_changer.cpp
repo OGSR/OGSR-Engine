@@ -58,7 +58,7 @@ BOOL CLevelChanger::net_Spawn(CSE_Abstract* DC)
     if (ai().get_level_graph())
     {
         //. this information should be computed in xrAI
-        ai_location().level_vertex(ai().level_graph().vertex(u32(-1), Position()));
+        ai_location().level_vertex(ai().level_graph().vertex_id(u32(-1), Position()));
         ai_location().game_vertex(ai().cross_table().vertex(ai_location().level_vertex_id()).game_vertex_id());
     }
 

@@ -50,14 +50,6 @@ IC bool CGameGraph::mask(const svector<_LOCATION_ID, GameGraph::LOCATION_TYPE_CO
     return (true);
 }
 
-IC bool CGameGraph::mask(const _LOCATION_ID M[GameGraph::LOCATION_TYPE_COUNT], const _LOCATION_ID E[GameGraph::LOCATION_TYPE_COUNT]) const
-{
-    for (int i = 0; i < GameGraph::LOCATION_TYPE_COUNT; ++i)
-        if ((M[i] != E[i]) && (255 != M[i]))
-            return (false);
-    return (true);
-}
-
 IC float CGameGraph::distance(const _GRAPH_ID tGraphID0, const _GRAPH_ID tGraphID1) const
 {
     const_iterator i, e;
@@ -187,22 +179,11 @@ IC const u8* GameGraph::CVertex::vertex_type() const { return (tVertexTypes); }
 
 IC const u8& GameGraph::CVertex::edge_count() const { return (tNeighbourCount); }
 
-IC const u8& GameGraph::CVertex::death_point_count() const { return (tDeathPointCount); }
-
 IC const u32& GameGraph::CVertex::edge_offset() const { return (dwEdgeOffset); }
-
-IC const u32& GameGraph::CVertex::death_point_offset() const { return (dwPointOffset); }
 
 IC const GameGraph::_GRAPH_ID& GameGraph::CEdge::vertex_id() const { return (m_vertex_id); }
 
 IC const float& GameGraph::CEdge::distance() const { return (m_path_distance); }
-
-IC void CGameGraph::begin_spawn(const u32& vertex_id, const_spawn_iterator& start, const_spawn_iterator& end) const
-{
-    const CVertex* object = vertex(vertex_id);
-    start = (const_spawn_iterator)((u8*)m_nodes + object->death_point_offset());
-    end = start + object->death_point_count();
-}
 
 IC void CGameGraph::set_invalid_vertex(_GRAPH_ID& vertex_id) const
 {
@@ -276,9 +257,8 @@ IC void GameGraph::CHeader::save(IWriter* writer)
         (*I).second.save(writer);
 }
 
-IC void CGameGraph::set_current_level(const u32& level_id)
+IC CGameLevelCrossTable* CGameGraph::find_cross_table_for_level(const u32& level_id)
 {
-    xr_delete(m_current_level_cross_table);
     if (m_cross_tables)
     {
         u32* current_cross_table = m_cross_tables;
@@ -290,9 +270,19 @@ IC void CGameGraph::set_current_level(const u32& level_id)
                 continue;
             }
 
-            m_current_level_cross_table = xr_new<CGameLevelCrossTable>(current_cross_table + 1, *current_cross_table);
-            break;
+            return xr_new<CGameLevelCrossTable>(current_cross_table + 1, *current_cross_table);
         }
+    }
+    return nullptr;
+}
+
+IC void CGameGraph::set_current_level(const u32& level_id)
+{
+    xr_delete(m_current_level_cross_table);
+
+    if (m_cross_tables) // build in COP mode
+    {
+        m_current_level_cross_table = find_cross_table_for_level(level_id);
     }
     else
     {

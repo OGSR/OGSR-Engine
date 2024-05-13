@@ -825,7 +825,7 @@ void CMissile::ExitContactCallback(bool& do_colide, bool bo1, dContact& c, SGame
                     CActor* pActor = smart_cast<CActor*>(l_this->m_pOwner);
                     if (pActor)
                     {
-                        u32 lvid = l_this->UsedAI_Locations() ? l_this->ai_location().level_vertex_id() : ai().level_graph().vertex(l_pos);
+                        u32 lvid = l_this->UsedAI_Locations() ? l_this->ai_location().level_vertex_id() : ai().level_graph().vertex_id(l_pos);
                         CSE_Abstract* object = Level().spawn_item(l_this->cNameSect().c_str(), l_pos, lvid, 0xffff, true);
 
                         NET_Packet P;

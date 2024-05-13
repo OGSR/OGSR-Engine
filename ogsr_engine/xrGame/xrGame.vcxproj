@@ -1517,6 +1517,7 @@
     <ClCompile Include="ik_object_shift.cpp" />
     <ClCompile Include="InventoryContainer.cpp" />
     <ClCompile Include="LevelDebugScript.cpp" />
+    <ClCompile Include="level_graph_script.cpp" />
     <ClCompile Include="physics_shell_animated.cpp" />
     <ClCompile Include="player_hud.cpp" />
     <ClCompile Include="player_hud_tune.cpp" />

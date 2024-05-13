@@ -411,58 +411,6 @@ IC void CLevelGraph::nearest(Fvector& destination, const Fvector& position, cons
 
 const float corner_r = 0.05f;
 
-IC bool CLevelGraph::intersect(Fvector& dst, const Fvector& v1, const Fvector& v2, const Fvector& v3, const Fvector& v4) const
-{
-    // corner check (v4 - end, v1-v2 - segm)
-    if (v4.similar(v1, corner_r))
-    {
-        dst.set(v1);
-        return (true);
-    }
-
-    if (v4.similar(v2, corner_r))
-    {
-        dst.set(v2);
-        return (true);
-    }
-
-    if (v3.similar(v1, corner_r))
-    {
-        dst.set(v1);
-        return (true);
-    }
-
-    if (v3.similar(v2, corner_r))
-    {
-        dst.set(v2);
-        return (true);
-    }
-
-    // projected intersection
-    Fvector T;
-    if (eLineIntersectionIntersect != intersect(v1.x, v1.z, v2.x, v2.z, v3.x, v3.z, v4.x, v4.z, &T.x, &T.z))
-        return (false);
-
-    // unproject into 3D
-    float lx = (v2.x - v1.x);
-    float lz = (v2.z - v1.z);
-    float bary1 = (T.x - v1.x) / lx;
-    float bary2 = (T.z - v1.z) / lz;
-
-    if (fis_zero(lx, EPS_L))
-        bary1 = bary2;
-
-    if (fis_zero(lz, EPS_L))
-        bary2 = bary1;
-
-    float bary = (bary1 + bary2) / 2;
-    dst.x = T.x;
-    dst.y = v1.y + bary * (v2.y - v1.y);
-    dst.z = T.z;
-
-    return (true);
-}
-
 IC float CLevelGraph::square(float a1, float b1, float fAlpha) const
 {
     float a = 2 * (b1 - a1) / PI, b = a1;

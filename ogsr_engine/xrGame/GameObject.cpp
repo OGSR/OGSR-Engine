@@ -603,22 +603,12 @@ void CGameObject::validate_ai_locations(bool decrement_reference)
     Center(center);
     center.x = Position().x;
     center.z = Position().z;
-    u32 l_dwNewLevelVertexID = ai().level_graph().vertex(ai_location().level_vertex_id(), center);
+    u32 l_dwNewLevelVertexID = ai().level_graph().vertex_id(ai_location().level_vertex_id(), center);
 
 #ifdef DEBUG
 //	Msg								("%6d Searching for node for object %s (%.5f seconds)",Device.dwTimeGlobal,*cName(),timer.GetElapsed_sec());
 #endif
     VERIFY(ai().level_graph().valid_vertex_id(l_dwNewLevelVertexID));
-
-#if 0
-	if (decrement_reference && (ai_location().level_vertex_id() != l_dwNewLevelVertexID)) {
-		Fvector						new_position = ai().level_graph().vertex_position(l_dwNewLevelVertexID);
-		if (Position().y - new_position.y >= 1.5f) {
-			u32						new_vertex_id = ai().level_graph().vertex(ai_location().level_vertex_id(),center);
-			new_vertex_id			= new_vertex_id;
-		}
-	}
-#endif
 
     if (decrement_reference && (ai_location().level_vertex_id() == l_dwNewLevelVertexID))
         return;
@@ -635,9 +625,9 @@ void CGameObject::validate_ai_locations(bool decrement_reference)
 void CGameObject::spatial_move()
 {
     if (H_Parent())
-        setup_parent_ai_locations();
+        setup_parent_ai_locations(true);
     else if (Visual())
-        validate_ai_locations();
+        validate_ai_locations(true);
 
     inherited::spatial_move();
 }

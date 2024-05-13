@@ -114,10 +114,6 @@ void generate_story_ids(STORY_PAIRS& result, _id_type INVALID_ID, LPCSTR section
     result.insert(std::make_pair(INVALID_ID_STRING, INVALID_ID));
 }
 
-void kill_entity0(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster, const GameGraph::_GRAPH_ID& game_vertex_id) { alife->kill_entity(monster, game_vertex_id, 0); }
-
-void kill_entity1(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster) { alife->kill_entity(monster, monster->m_tGraphID, 0); }
-
 void add_in_restriction(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster, ALife::_OBJECT_ID id)
 {
     alife->add_restriction(monster->ID, id, RestrictionSpace::eRestrictorTypeIn);
@@ -141,8 +137,6 @@ void remove_out_restriction(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* mo
 }
 
 void remove_out_restrictions(CALifeSimulator* alife, CSE_ALifeMonsterAbstract* monster) { alife->remove_all_restrictions(monster->ID, RestrictionSpace::eRestrictorTypeOut); }
-
-u32 get_level_id(CALifeSimulator* self) { return (self->graph().level().level_id()); }
 
 CSE_ALifeDynamicObject* CALifeSimulator__create(CALifeSimulator* self, ALife::_SPAWN_ID spawn_id)
 {
@@ -323,9 +317,21 @@ void FAKE_CALifeSimulator__teleport_object(CALifeSimulator*, const char*, Fvecto
     FATAL("INCORRECT ARGUMENTS! Must be: alife():teleport_object(id, position, lvid, gvid)");
 }
 
+u32 get_level_id(CALifeSimulator* self) { return (self->graph().level().level_id()); }
+
+u32 get_level_id_by_name(CALifeSimulator* self, LPCSTR level_name)
+{
+    const GameGraph::SLevel* level = ai().game_graph().header().level(level_name, true);
+    if (level)
+    {
+        return level->id();
+    }
+    return (u32)-1;
+}
+
 LPCSTR get_level_name(const CALifeSimulator* self, int level_id)
 {
-    LPCSTR result = *ai().game_graph().header().level((GameGraph::_LEVEL_ID)level_id).name();
+    const LPCSTR result = ai().game_graph().header().level((GameGraph::_LEVEL_ID)level_id).name().c_str();
     return (result);
 }
 
@@ -370,16 +376,6 @@ bool dont_has_info(const CALifeSimulator* self, const ALife::_OBJECT_ID& id, LPC
     return (!has_info(self, id, info_id));
 }
 
-// void disable_info_portion						(const CALifeSimulator *self, const ALife::_OBJECT_ID &id)
-//{
-//	THROW								(self);
-// }
-
-// void give_info_portion							(const CALifeSimulator *self, const ALife::_OBJECT_ID &id)
-//{
-//	THROW								(self);
-// }
-
 LPCSTR get_save_name(CALifeSimulator* sim)
 {
     // alpet: обертка предотвращает вылет, при обращении к свойству на ранней стадии  инициализации
@@ -405,6 +401,7 @@ void CALifeSimulator::script_register(lua_State* L)
     module(L)[class_<CALifeSimulator>("alife_simulator")
                   .def("valid_object_id", &valid_object_id)
                   .def("level_id", &get_level_id)
+                  .def("level_id", &get_level_id_by_name)
                   .def("level_name", &get_level_name)
                   .def("objects", &alife_objects, return_stl_pair_iterator)
                   .def("object", (CSE_ALifeDynamicObject * (*)(const CALifeSimulator*, ALife::_OBJECT_ID))(alife_object))
@@ -415,9 +412,6 @@ void CALifeSimulator::script_register(lua_State* L)
                   .def("set_switch_online", (void(CALifeSimulator::*)(ALife::_OBJECT_ID, bool))(&CALifeSimulator::set_switch_online))
                   .def("set_switch_offline", (void(CALifeSimulator::*)(ALife::_OBJECT_ID, bool))(&CALifeSimulator::set_switch_offline))
                   .def("set_interactive", (void(CALifeSimulator::*)(ALife::_OBJECT_ID, bool))(&CALifeSimulator::set_interactive))
-                  .def("kill_entity", &CALifeSimulator::kill_entity)
-                  .def("kill_entity", &kill_entity0)
-                  .def("kill_entity", &kill_entity1)
                   .def("add_in_restriction", &add_in_restriction)
                   .def("add_out_restriction", &add_out_restriction)
                   .def("remove_in_restriction", &remove_in_restriction)

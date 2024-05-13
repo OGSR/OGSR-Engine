@@ -10,16 +10,11 @@
 #include "level_graph.h"
 
 
-LPCSTR LEVEL_GRAPH_NAME = "level.ai";
-
-CLevelGraph::CLevelGraph()
+CLevelGraph::CLevelGraph(LPCSTR fName)
 {
     sh_debug->create("editor\\wire"); // sh_debug->create("debug\\ai_nodes", "$null");
 
-    string_path file_name;
-    FS.update_path(file_name, "$level$", LEVEL_GRAPH_NAME);
-
-    m_reader = FS.r_open(file_name);
+    m_reader = FS.r_open(fName);
 
     // m_header & data
     m_header = (CHeader*)m_reader->pointer();
@@ -41,7 +36,7 @@ CLevelGraph::CLevelGraph()
 
 CLevelGraph::~CLevelGraph() { FS.r_close(m_reader); }
 
-u32 CLevelGraph::vertex(const Fvector& position) const
+u32 CLevelGraph::nearest_vertex_id(const Fvector& position) const
 {
     CLevelGraph::CPosition _node_position;
     vertex_position(_node_position, position);
@@ -62,12 +57,10 @@ u32 CLevelGraph::vertex(const Fvector& position) const
     return (selected);
 }
 
-u32 CLevelGraph::vertex(u32 current_node_id, const Fvector& position) const
+u32 CLevelGraph::vertex_id(u32 current_node_id, const Fvector& position) const
 {
     START_PROFILE("Level_Graph::find vertex")
     Device.Statistic->AI_Node.Begin();
-
-    u32 id;
 
     if (valid_vertex_position(position))
     {
@@ -132,7 +125,7 @@ u32 CLevelGraph::vertex(u32 current_node_id, const Fvector& position) const
     {
         // so, we do not have a correct current node
         // performing very slow full search
-        id = vertex(position);
+        const u32 id = nearest_vertex_id(position);
         VERIFY(valid_vertex_id(id));
         Device.Statistic->AI_Node.End();
         return (id);

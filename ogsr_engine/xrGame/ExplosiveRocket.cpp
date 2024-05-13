@@ -60,7 +60,7 @@ void CExplosiveRocket::Contact(const Fvector& pos, const Fvector& normal)
                 CActor* pActor = smart_cast<CActor*>(m_pOwner);
                 if (pActor)
                 {
-                    u32 lvid = UsedAI_Locations() ? ai_location().level_vertex_id() : ai().level_graph().vertex(pos);
+                    u32 lvid = UsedAI_Locations() ? ai_location().level_vertex_id() : ai().level_graph().nearest_vertex_id(pos);
                     CSE_Abstract* object = Level().spawn_item(real_grenade_name.c_str(), pos, lvid, 0xffff, true);
 
                     CSE_ALifeItemAmmo* ammo = smart_cast<CSE_ALifeItemAmmo*>(object);

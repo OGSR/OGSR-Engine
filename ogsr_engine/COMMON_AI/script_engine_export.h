@@ -122,6 +122,7 @@
 #include "alife_monster_patrol_path_manager.h"
 #include "alife_monster_detail_path_manager.h"
 #include "alife_smart_terrain_task.h"
+#include "level_graph.h"
 #include "game_graph.h"
 #include "smart_zone.h"
 #include "F1.h"
