@@ -271,7 +271,7 @@ void IGame_Persistent::GrassBendersUpdate(const u16 id, size_t& data_idx, u32& d
             grass_shader_data.pos[idx].w = -1.0f;
         }
         // Back to 0 when the array limit is reached
-        grass_shader_data.index = idx < static_cast<size_t>(ps_ssfx_grass_interactive.y) ? idx : 0;
+        grass_shader_data.index = idx < (std::min(static_cast<size_t>(ps_ssfx_grass_interactive.y), std::size(grass_shader_data.id) - 1)) ? idx : 0;
     }
     else
     {
