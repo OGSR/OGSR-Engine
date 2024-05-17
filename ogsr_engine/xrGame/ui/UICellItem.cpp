@@ -224,8 +224,8 @@ void CUICellItem::UpdateConditionProgressBar()
             if (m_pParentList->GetVerticalPlacement())
                 std::swap(itm_grid_size.x, itm_grid_size.y);
 
-            Ivector2 cell_size = m_pParentList->CellSize();
-            Ivector2 cell_space = m_pParentList->CellsSpacing();
+            const Ivector2& cell_size = m_pParentList->CellSize();
+            const Ivector2& cell_space = m_pParentList->CellsSpacing();
             float x = 1.f;
             if (m_condition_auto_width || fis_zero(m_pConditionState->GetWidth()))
             {
@@ -236,7 +236,7 @@ void CUICellItem::UpdateConditionProgressBar()
             else
                 m_condition_auto_width = false;
             float y = itm_grid_size.y * (cell_size.y + cell_space.y) - m_pConditionState->GetHeight() - 2.f;
-            m_pConditionState->SetWndPos(Fvector2().set(x, y));
+            m_pConditionState->SetWndPos({x, y});
             m_pConditionState->SetProgressPos(itm->GetCondition() * 100.0f);
             m_pConditionState->Show(true);
             return;
