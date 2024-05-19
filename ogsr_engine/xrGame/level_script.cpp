@@ -34,6 +34,7 @@
 #include "monster_community.h"
 #include "GamePersistent.h"
 #include "EffectorBobbing.h"
+#include "LevelDebugScript.h"
 
 using namespace luabind;
 
@@ -938,6 +939,43 @@ float is_ray_intersect_sphere(Fvector pos, Fvector dir, Fvector C, float R)
     return sphere.intersect_ray(pos, dir, dist) == Fsphere::rpNone ? -1.0f : dist;
 }
 
+DBG_ScriptObject* get_object(u16 id)
+{
+    xr_map<u16, DBG_ScriptObject*>::iterator it = Level().getScriptRenderQueue()->find(id);
+    if (it == Level().getScriptRenderQueue()->end())
+        return nullptr;
+
+    return it->second;
+}
+
+void remove_object(u16 id)
+{
+    DBG_ScriptObject* dbg_obj = get_object(id);
+    if (!dbg_obj)
+        return;
+
+    xr_delete(dbg_obj);
+    Level().getScriptRenderQueue()->erase(id);
+}
+
+DBG_ScriptObject* add_object(u16 id, DebugRenderType type)
+{
+    remove_object(id);
+    DBG_ScriptObject* dbg_obj;
+
+    switch (type)
+    {
+    case eDBGSphere: dbg_obj = xr_new<DBG_ScriptSphere>(); break;
+    case eDBGBox: dbg_obj = xr_new<DBG_ScriptBox>(); break;
+    case eDBGLine: dbg_obj = xr_new<DBG_ScriptLine>(); break;
+    default: R_ASSERT(false, "Wrong debug object type used!");
+    }
+
+    R_ASSERT(dbg_obj);
+    Level().getScriptRenderQueue()->emplace(mk_pair(id, dbg_obj));
+
+    return dbg_obj;
+}
 
 #pragma optimize("s", on)
 void CLevel::script_register(lua_State* L)
@@ -964,7 +1002,35 @@ void CLevel::script_register(lua_State* L)
                   .def_readwrite("limp_amplitude", &CEffectorBobbing::m_fAmplitudeLimp)
                   .def_readwrite("run_speed", &CEffectorBobbing::m_fSpeedRun)
                   .def_readwrite("walk_speed", &CEffectorBobbing::m_fSpeedWalk)
-                  .def_readwrite("limp_speed", &CEffectorBobbing::m_fSpeedLimp)],
+                  .def_readwrite("limp_speed", &CEffectorBobbing::m_fSpeedLimp),
+
+        class_<DBG_ScriptObject>("DBG_ScriptObject")
+                  .enum_("dbg_type")[
+                      value("line", (int)DebugRenderType::eDBGLine), 
+                      value("sphere", (int)DebugRenderType::eDBGSphere), 
+                      value("box", (int)DebugRenderType::eDBGBox)
+                  ]
+                  .def("cast_dbg_sphere", &DBG_ScriptObject::cast_dbg_sphere)
+                  .def("cast_dbg_box", &DBG_ScriptObject::cast_dbg_box)
+                  .def("cast_dbg_line", &DBG_ScriptObject::cast_dbg_line)
+                  .def_readwrite("color", &DBG_ScriptObject::m_color)
+                  .def_readwrite("hud", &DBG_ScriptObject::m_hud)
+                  .def_readwrite("visible", &DBG_ScriptObject::m_visible),
+
+              class_<DBG_ScriptSphere, DBG_ScriptObject>("DBG_ScriptSphere")
+                .def_readwrite("matrix", &DBG_ScriptSphere::m_mat),
+              class_<DBG_ScriptBox, DBG_ScriptObject>("DBG_ScriptBox")
+                .def_readwrite("matrix", &DBG_ScriptBox::m_mat)
+                .def_readwrite("size", &DBG_ScriptBox::m_size),
+              class_<DBG_ScriptLine, DBG_ScriptObject>("DBG_ScriptLine")
+                .def_readwrite("point_a", &DBG_ScriptLine::m_point_a)
+                .def_readwrite("point_b", &DBG_ScriptLine::m_point_b)];
+
+        module(L, "debug_render")[
+            def("add_object", add_object), 
+            def("remove_object", remove_object), 
+            def("get_object", get_object)
+        ];
 
         module(L, "level")[
             // obsolete\deprecated

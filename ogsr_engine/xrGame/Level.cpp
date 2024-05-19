@@ -49,6 +49,9 @@
 #include "physicobject.h"
 #endif
 
+#include <execution>
+
+#include "LevelDebugScript.h"
 #include "physicobject.h"
 #include "UIGameSP.h"
 #include "ui/UIPDAWnd.h"
@@ -239,6 +242,13 @@ CLevel::~CLevel()
     // because they should be new for each saved/loaded game
     // and I didn't find better place to put this code in
     CTradeParameters::clean();
+
+    for (auto& i : m_debug_render_queue)
+    {
+        xr_delete(i.second);
+    }
+
+    m_debug_render_queue.clear();
 }
 
 shared_str CLevel::name() const { return (m_name); }
@@ -589,7 +599,9 @@ void CLevel::OnRender()
         //---------------------------------------------------------------------
     }
 
-    if (bDebug)
+    ScriptDebugRender();
+
+    if (psActorFlags.test(AF_ZONES_DBG))
     {
         DBG().draw_object_info();
         DBG().draw_text();
@@ -691,6 +703,30 @@ float CLevel::GetGameDayTimeSec() { return (float(s64(GetGameTime() % (24 * 60 *
 u32 CLevel::GetGameDayTimeMS() { return (u32(s64(GetGameTime() % (24 * 60 * 60 * 1000)))); }
 
 float CLevel::GetEnvironmentGameDayTimeSec() { return (float(s64(GetEnvironmentGameTime() % (24 * 60 * 60 * 1000))) / 1000.f); }
+
+void CLevel::ScriptDebugRender()
+{
+    if (!m_debug_render_queue.size())
+        return;
+
+    bool hasVisibleObj = false;
+
+    xr_map<u16, DBG_ScriptObject*>::iterator it = m_debug_render_queue.begin();
+    xr_map<u16, DBG_ScriptObject*>::iterator it_e = m_debug_render_queue.end();
+    for (; it != it_e; ++it)
+    {
+        DBG_ScriptObject* obj = (*it).second;
+        if (obj->m_visible)
+        {
+            obj->Render();
+            hasVisibleObj = true;
+        }
+    }
+
+	// demonized: fix of showing console window when there are no visible gizmos
+    if (hasVisibleObj)
+        DRender->OnFrameEnd();
+}
 
 void CLevel::GetGameDateTime(u32& year, u32& month, u32& day, u32& hours, u32& mins, u32& secs, u32& milisecs)
 {

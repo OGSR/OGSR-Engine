@@ -451,6 +451,7 @@
     <ClInclude Include="ik_limb_state_predict.h" />
     <ClInclude Include="ik_object_shift.h" />
     <ClInclude Include="InventoryContainer.h" />
+    <ClInclude Include="LevelDebugScript.h" />
     <ClInclude Include="matrix_utils.h" />
     <ClInclude Include="mt_config.h" />
     <ClInclude Include="damage_manager.h" />
@@ -1675,6 +1676,7 @@
     <ClCompile Include="ik_limb_state.cpp" />
     <ClCompile Include="ik_object_shift.cpp" />
     <ClCompile Include="InventoryContainer.cpp" />
+    <ClCompile Include="LevelDebugScript.cpp" />
     <ClCompile Include="physics_shell_animated.cpp" />
     <ClCompile Include="player_hud.cpp" />
     <ClCompile Include="player_hud_tune.cpp" />

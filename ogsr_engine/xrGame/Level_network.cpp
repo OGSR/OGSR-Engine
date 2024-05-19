@@ -14,6 +14,7 @@
 #include "client_spawn_manager.h"
 #include "seniority_hierarchy_holder.h"
 #include "script_vars_storage.h"
+#include "LevelDebugScript.h"
 
 constexpr int max_objects_size = 2 * 1024;
 constexpr int max_objects_size_in_save = 6 * 1024;
@@ -105,6 +106,13 @@ void CLevel::remove_objects()
     Msg("~ ObjectResources - lmap: %d, %d K", c_lmaps, m_lmaps / 1024);
 
     ai().script_engine().collect_all_garbage();
+
+    for (auto& i : m_debug_render_queue)
+    {
+        xr_delete(i.second);
+    }
+
+    m_debug_render_queue.clear();
 
     m_is_removing_objects = false;
 }

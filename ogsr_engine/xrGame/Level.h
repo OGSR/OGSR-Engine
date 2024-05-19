@@ -35,11 +35,13 @@ const int maxRP = 64;
 const int maxTeams = 32;
 
 // class CFogOfWar;
-class CFogOfWarMngr;
+// class CFogOfWarMngr;
 class CBulletManager;
 class CMapManager;
 
-#include "..\xr_3da\feel_touch.h"
+class DBG_ScriptObject;
+
+#include "../xr_3da/feel_touch.h"
 
 class GlobalFeelTouch : public Feel::Touch
 {
@@ -267,10 +269,16 @@ public:
     float GetGameDayTimeSec();
     float GetEnvironmentGameDayTimeSec();
 
+    xr_map<u16, DBG_ScriptObject*>* getScriptRenderQueue() { return &m_debug_render_queue; }
+
 protected:
     //	CFogOfWarMngr*		m_pFogOfWarMngr;
 protected:
     CMapManager* m_map_manager;
+
+    xr_map<u16, DBG_ScriptObject*> m_debug_render_queue;
+
+    void ScriptDebugRender();
 
 public:
     CMapManager& MapManager() { return *m_map_manager; }
