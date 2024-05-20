@@ -176,7 +176,7 @@ void CCustomZone::Load(LPCSTR section)
     {
         m_effector = xr_new<CZoneEffector>();
         m_effector->Load(pSettings->r_string(section, "postprocess"));
-    };
+    }
 
     if (pSettings->line_exist(section, "blowout_particles_time"))
     {
@@ -1183,12 +1183,6 @@ void CCustomZone::OnStateSwitch(EZoneState new_state)
     else
         Enable();
 
-    if (m_eZoneState == eZoneStateIdle)
-        StopIdleParticles();
-
-    if (new_state == eZoneStateIdle)
-        PlayIdleParticles();
-
     if (new_state == eZoneStateAccumulate)
         PlayAccumParticles();
 
@@ -1225,6 +1219,8 @@ bool CCustomZone::Enable()
         PlayEntranceParticles(pObject);
         PlayObjectIdleParticles(pObject);
     }
+
+    PlayIdleParticles();
     return true;
 };
 
@@ -1240,6 +1236,8 @@ bool CCustomZone::Disable()
             continue;
         StopObjectIdleParticles(pObject);
     }
+
+    StopIdleParticles();
     return false;
 };
 
