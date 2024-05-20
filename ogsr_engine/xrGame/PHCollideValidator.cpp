@@ -51,6 +51,9 @@ void CPHCollideValidator::RestoreGroupObject(const CPHObject& obj) {}
 void CPHCollideValidator::SetStaticNotCollide(CPHObject& obj) { obj.collide_class_bits().set(cbNCStatic, TRUE); }
 void CPHCollideValidator::SetDynamicNotCollide(CPHObject& obj) { obj.collide_class_bits().set(cbNCClassDynamic, TRUE); }
 
+void CPHCollideValidator::SetStaticCollide(CPHObject& obj) { obj.collide_class_bits().set(cbNCStatic, FALSE); }
+void CPHCollideValidator::SetDynamicCollide(CPHObject& obj) { obj.collide_class_bits().set(cbNCClassDynamic, FALSE); }
+
 void CPHCollideValidator::SetNonDynamicObject(CPHObject& obj) { obj.collide_class_bits().set(cbClassDynamic, FALSE); }
 
 void CPHCollideValidator::SetCharacterClass(CPHObject& obj) { obj.collide_class_bits().set(cbClassCharacter, TRUE); }

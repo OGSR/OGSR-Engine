@@ -92,6 +92,9 @@ public:
     virtual bool IsGroupObject();
     virtual void SetIgnoreStatic();
     virtual void SetIgnoreDynamic();
+    virtual void SetStatic();
+    virtual void SetDynamic();
+    
     virtual void SetRagDoll();
     virtual void SetIgnoreRagDoll();
 

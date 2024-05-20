@@ -1466,6 +1466,10 @@ void CPHShell::SetIgnoreStatic() { CPHCollideValidator::SetStaticNotCollide(*thi
 
 void CPHShell::SetIgnoreDynamic() { CPHCollideValidator::SetDynamicNotCollide(*this); }
 
+void CPHShell::SetStatic() { CPHCollideValidator::SetStaticCollide(*this); }
+
+void CPHShell::SetDynamic() { CPHCollideValidator::SetDynamicCollide(*this); }
+
 void CPHShell::SetRagDoll() { CPHCollideValidator::SetRagDollClass(*this); }
 
 void CPHShell::SetIgnoreRagDoll() { CPHCollideValidator::SetRagDollClassNotCollide(*this); }
