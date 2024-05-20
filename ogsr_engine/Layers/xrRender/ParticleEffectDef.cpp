@@ -9,12 +9,16 @@
 using namespace PAPI;
 using namespace PS;
 
+extern float ps_particle_update_coeff;
+
 //------------------------------------------------------------------------------
 // class CParticleEffectDef
 //------------------------------------------------------------------------------
 CPEDef::CPEDef()
 {
     m_Frame.InitDefault();
+    m_uStep = 33;
+    m_fStep = float(m_uStep) / 1000.f;
     m_MaxParticles = 0;
     m_CachedShader = 0;
     m_fTimeLimit = 0.f;
@@ -35,6 +39,11 @@ CPEDef::~CPEDef()
     for (EPAVecIt it = m_EActionList.begin(); it != m_EActionList.end(); it++)
         xr_delete(*it);
 }
+
+u32 CPEDef::GetUStep() { return m_uStep * ps_particle_update_coeff; }
+
+float CPEDef::GetFStep() { return m_fStep * ps_particle_update_coeff; }
+
 
 void CPEDef::CreateShader()
 {
@@ -249,6 +258,11 @@ void PS::CPEDef::Compile(EPAVec& v)
 BOOL CPEDef::Load2(CInifile& ini)
 {
     //.	u16 version		= ini.r_u16("_effect", "version");
+    if (ini.line_exist("_effect", "update_step"))
+    {
+        m_uStep = ini.r_u32("_effect", "update_step");
+        m_fStep = float(m_uStep) / 1000.f;
+    }
     m_MaxParticles = ini.r_u32("_effect", "max_particles");
     m_Flags.assign(ini.r_u32("_effect", "flags"));
 

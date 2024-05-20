@@ -272,6 +272,8 @@ u32 psCurrentBPP = 32;
 
 #include "../xrRenderDX10/StateManager/dx10SamplerStateCache.h"
 
+float ps_particle_update_coeff = 0.3f;
+
 //-----------------------------------------------------------------------
 class CCC_detail_radius : public CCC_Integer
 {
@@ -872,4 +874,6 @@ void xrRender_initconsole()
     CMD4(CCC_Integer, "senvironment_xr_export", &bSenvironmentXrExport, FALSE, TRUE);
 
     CMD4(CCC_Integer, "r_lens_flare", &ps_lens_flare, FALSE, TRUE);
+
+    CMD4(CCC_Float, "particle_update_mod", &ps_particle_update_coeff, 0.04f, 10.f);
 }

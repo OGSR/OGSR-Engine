@@ -84,7 +84,11 @@ public:
             P.size = size;
             P.rot.x = rot.x;
             P.vel = vel;
-            P.color = color;
+            float f = float(1.0) / float(255.0);
+            P.colorA = f * ((color >> 24) & 0xff);
+            P.colorR = f * ((color >> 16) & 0xff);
+            P.colorG = f * ((color >> 8) & 0xff);
+            P.colorB = f * ((color >> 0) & 0xff);
             P.age = age;
             P.frame = frame;
             P.flags.assign(flags);

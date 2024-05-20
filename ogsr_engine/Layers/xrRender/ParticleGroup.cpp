@@ -188,7 +188,7 @@ void CParticleGroup::SItem::StartRelatedChild(CParticleEffect* emitter, LPCSTR e
     M.identity();
     Fvector vel;
     vel.sub(m.pos, m.posB);
-    vel.div(fDT_STEP);
+    vel.div(C->m_Def->GetFStep());
     if (emitter->m_RT_Flags.is(CParticleEffect::flRT_XFORM))
     {
         M.set(emitter->m_XFORM);
@@ -222,7 +222,7 @@ void CParticleGroup::SItem::StartFreeChild(CParticleEffect* emitter, LPCSTR nm, 
         M.identity();
         Fvector vel;
         vel.sub(m.pos, m.posB);
-        vel.div(fDT_STEP);
+        vel.div(C->m_Def->GetFStep());
         if (emitter->m_RT_Flags.is(CParticleEffect::flRT_XFORM))
         {
             M.set(emitter->m_XFORM);
@@ -352,7 +352,7 @@ void CParticleGroup::SItem::OnFrame(u32 u_dt, const CPGDef::SEffect& def, Fbox& 
                         M.translate(m.pos);
                         Fvector vel;
                         vel.sub(m.pos, m.posB);
-                        vel.div(fDT_STEP);
+                        vel.div(C->m_Def->GetFStep());
                         C->UpdateParent(M, vel, FALSE);
                     }
                 }

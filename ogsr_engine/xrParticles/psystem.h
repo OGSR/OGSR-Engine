@@ -101,11 +101,14 @@ public:
 		pVector posB; // 12
 		pVector vel; // 12
 		pVector size; // 12
-		u32 color; // 4
+        float colorR; // 4
+        float colorG; // 4
+        float colorB; // 4
+        float colorA; // 4
 		float age; // 4
 		u16 frame; // 2
 		Flags16 flags; // 2
-	}; // = 64
+	}; // = 76
 
 typedef void (*OnBirthParticleCB)(void* owner, u32 param, PAPI::Particle& P, u32 idx);
 typedef void (*OnDeadParticleCB)(void* owner, u32 param, PAPI::Particle& P, u32 idx);
