@@ -1846,12 +1846,11 @@ bool CWeapon::ready_to_kill() const { return (!IsMisfire() && ((GetState() == eI
 // Получить индекс текущих координат худа
 u8 CWeapon::GetCurrentHudOffsetIdx() const
 {
-    const bool b_aiming = ((IsZoomed() && m_fZoomRotationFactor <= 1.f) || (!IsZoomed() && m_fZoomRotationFactor > 0.f));
-
-    if (b_aiming)
+    if (IsZoomed())
     {
         const bool has_gl = GrenadeLauncherAttachable() && IsGrenadeLauncherAttached();
         const bool has_scope = ScopeAttachable() && IsScopeAttached();
+        //const bool has_aim_alt = AimAlt && is_second_zoom_offset_enabled;
 
         if (IsGrenadeMode())
         {
@@ -1871,10 +1870,15 @@ u8 CWeapon::GetCurrentHudOffsetIdx() const
         {
             if (m_bUseScopeZoom && has_scope)
                 return hud_item_measures::m_hands_offset_type_aim_scope;
+            //else if (has_aim_alt)
+            //    return hud_item_measures::m_hands_offset_type_alt_aim;
             else
                 return hud_item_measures::m_hands_offset_type_aim;
         }
     }
+
+    //if (LoweredActive && !(g_actor->get_state() & mcSprint))
+    //    return hud_item_measures::m_hands_offset_type_lowered;
 
     return hud_item_measures::m_hands_offset_type_normal;
 }

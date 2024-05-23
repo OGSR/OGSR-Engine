@@ -91,10 +91,10 @@ protected: //чтоб нельзя было вызвать на прямую
     u32 m_dwMotionEndTm;
     u32 m_startedMotionState;
 
-    bool m_bStopAtEndAnimIsRunning;
+    bool m_bStopAtEndAnimIsRunning{};
     bool SprintType{};
     bool BobbingEnable{};
-    u32 m_dwStateTime;
+    u32 m_dwStateTime{};
 
 public:
     virtual void Load(LPCSTR section);
@@ -180,6 +180,8 @@ public:
     IC BOOL IsPending() const { return !!m_huditem_flags.test(fl_pending); }
     IC void RenderHud(BOOL B) { m_huditem_flags.set(fl_renderhud, B); }
     IC BOOL RenderHud() { return m_huditem_flags.test(fl_renderhud); }
+
+    void PlayBlendAnm(LPCSTR name, float speed = 1.f, float power = 1.f, bool stop_old = true);
 
     virtual void render_hud_mode(){};
     virtual bool need_renderable() { return true; };
@@ -290,6 +292,8 @@ protected:
     virtual Fvector GetDirectionForCollision() { return Device.vCameraDirection; }
     float m_fZoomRotationFactor{}; //от 0 до 1, показывает насколько процентов мы перемещаем HUD
     float m_fZoomRotateTime{}; //время приближения
+    //bool is_second_zoom_offset_enabled{};
+    //bool AimAlt{};
     u32 skip_updated_frame{};
     bool HudInertionAllowed() const { return m_huditem_flags.test(fl_inertion_allow); }
     void AllowHudInertion(BOOL B) { m_huditem_flags.set(fl_inertion_allow, B); }
@@ -309,10 +313,9 @@ private:
     Fvector m_nearwall_target_hud_offset{}, m_nearwall_target_hud_rotate{};
     float saved_rq_range{};
     Fvector m_nearwall_last_pos{}, m_nearwall_last_rot{};
-    u32 m_nearwall_last_call{};
 
-    float m_fLR_MovingFactor{}, m_fLookout_MovingFactor{}, m_fAimLookout_MovingFactor{}, m_fJump_MovingFactor{}, m_fFall_MovingFactor{};
-    Fvector m_strafe_offset[3][2]{}, m_lookout_offset[3][2]{}, m_jump_offset[3][2]{}, m_fall_offset[3][2]{};
+    Fvector m_strafe_offset[3][2]{}, m_lookout_offset[3][2]{}, m_jump_offset[3][2]{}, m_fall_offset[2][2]{}, m_landing_offset[2][2]{}, m_move_offset[3]{};
+    Fvector current_difference[2]{}, current_strafe[2]{}, current_lookout[2]{}, current_jump[2]{}, current_move[2]{};
 
     float m_base_fov{};
 
@@ -336,7 +339,7 @@ private:
     Fvector inert_st_last_dir{};
     void UpdateInertion(Fmatrix& trans);
     float GetInertionFactor() const { return 1.f; } //--#SM+#--
-    float GetInertionPowerFactor() const { return 1.f; } //--#SM+#--
+    float GetInertionPowerFactor() const { return 0.3f; } //--#SM+#--
     bool HudInertionEnabled() const { return m_huditem_flags.test(fl_inertion_enable); }
     void EnableHudInertion(BOOL B) { m_huditem_flags.set(fl_inertion_enable, B); }
 };
