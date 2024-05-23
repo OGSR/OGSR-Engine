@@ -20,6 +20,9 @@
 #include "HudManager.h"
 #include "UIGameSP.h"
 
+#include "patrol_path.h"
+#include "patrol_path_storage.h"
+
 xr_vector<CLevelChanger*> g_lchangers;
 
 CLevelChanger::~CLevelChanger() {}
@@ -100,8 +103,9 @@ void CLevelChanger::shedule_Update(u32 dt)
 
     update_actor_invitation();
 }
-#include "patrol_path.h"
-#include "patrol_path_storage.h"
+
+extern bool g_block_all_except_movement;
+
 void CLevelChanger::feel_touch_new(CObject* tpObject)
 {
     CActor* l_tpActor = smart_cast<CActor*>(tpObject);
@@ -109,9 +113,9 @@ void CLevelChanger::feel_touch_new(CObject* tpObject)
     if (!l_tpActor->g_Alive())
         return;
 
-    if (m_SilentMode)
+    if (m_SilentMode || g_block_all_except_movement)
     {
-        if (m_SilentMode == 2)
+        if (m_SilentMode == 2 || g_block_all_except_movement)
         {
             Fvector p, r;
             if (get_reject_pos(p, r))
