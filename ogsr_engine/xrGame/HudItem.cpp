@@ -13,6 +13,7 @@
 #include "ActorCondition.h"
 #include "Missile.h"
 #include "../xr_3da/x_ray.h"
+#include "../../xr_3da/igame_persistent.h"
 
 ENGINE_API extern float psHUD_FOV_def;
 
@@ -1271,16 +1272,17 @@ void CHudItem::GetBoneOffsetPosDir(const shared_str& bone_name, Fvector& dest_po
 
 extern ENGINE_API float psHUD_FOV;
 
-void CHudItem::CorrectDirFromWorldToHud(Fvector& dir)
+void CHudItem::CorrectDirFromWorldToHud(Fvector& worldPos)
 {
-    const float Fov = Device.fFOV;
-    const float HudFov = psHUD_FOV <= 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV;
-    const float diff = hud_recalc_koef * Fov / HudFov;
-    const auto& CamDir = Device.vCameraDirection;
-    dir.sub(CamDir);
-    dir.mul(diff);
-    dir.add(CamDir);
-    dir.normalize();
+    Fmatrix hud_project;
+    hud_project.build_projection(deg2rad(psHUD_FOV <= 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV), Device.fASPECT, HUD_VIEWPORT_NEAR,
+                                 g_pGamePersistent->Environment().CurrentEnv->far_plane);
+
+    Device.mView.transform_dir(worldPos);
+    hud_project.transform_dir(worldPos);
+
+    Fmatrix{Device.mProject}.invert().transform_dir(worldPos);
+    Fmatrix{Device.mView}.invert().transform_dir(worldPos);
 }
 
 void CHudItem::TimeLockAnimation()
