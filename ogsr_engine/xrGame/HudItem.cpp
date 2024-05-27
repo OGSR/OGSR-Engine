@@ -95,9 +95,9 @@ void CHudItem::Load(LPCSTR section)
     }
 
     //if (pSettings->line_exist(hud_sect, "hud_fov"))
-        m_base_fov = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov", 0.0f);
+    //    m_base_fov = READ_IF_EXISTS(pSettings, r_float, hud_sect, "hud_fov", 0.0f);
     //else
-    //    m_base_fov = READ_IF_EXISTS(pSettings, r_float, section, "hud_fov", 0.0f);
+        m_base_fov = READ_IF_EXISTS(pSettings, r_float, section, "hud_fov", 0.0f);
 
     m_nearwall_last_hud_fov = m_base_fov > 0.0f ? m_base_fov : psHUD_FOV_def;
 
