@@ -195,16 +195,15 @@ void CUITreeViewItem::AddItem(CUITreeViewItem* pItem)
 
 //////////////////////////////////////////////////////////////////////////
 
+// вызывается из деструктора
 void CUITreeViewItem::DeleteAllSubItems()
 {
-    for (SubItems_it it = vSubItems.begin(); it != vSubItems.end(); ++it)
+    for (auto* vSubItem : vSubItems)
     {
-        CUIWindow* pWindow = (*it)->GetParent();
-
-        if (pWindow)
-            pWindow->DetachChild(*it);
-
-        xr_delete(*it);
+        if (!vSubItem->GetParent()) // удалям явно только если у саб айтема нету родителя, иначе он будет удален самим родителем
+        {
+            xr_delete(vSubItem);
+        }
     }
 
     vSubItems.clear();
