@@ -670,7 +670,6 @@ void CWeaponMagazined::UpdateCL()
         m_binoc_vision->Update();
 
     UpdateSounds();
-    TimeLockAnimation();
 }
 
 void CWeaponMagazined::UpdateSounds()
@@ -814,6 +813,8 @@ void CWeaponMagazined::OnShot()
     //дым из ствола
     ForceUpdateFireParticles();
     StartSmokeParticles(get_LastFP(), vel);
+
+    update_visual_bullet_textures();
 }
 
 void CWeaponMagazined::OnEmptyClick()
@@ -837,7 +838,11 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
         break; // End of reload animation
     case eHiding: SwitchState(eHidden); break; // End of Hide
     case eIdle: switch2_Idle(); break; // Keep showing idle
-    case eShowing:
+    case eShowing: {
+        update_visual_bullet_textures(true);
+        SwitchState(eIdle);
+        break;
+    }
     case eMisfire:
     case eDeviceSwitch:
     case eFire:

@@ -686,4 +686,12 @@ public:
 
     void UpdateVisualBullets();
     void HUD_VisualBulletUpdate(bool force = false, int force_idx = -1);
+
+private:
+    xr_string current_bullet_texture;
+    xr_vector<xr_string> bullet_textures_in_model;
+    string_unordered_map<xr_string, xr_string> bullet_textures_for_ammos;
+
+public:
+    void update_visual_bullet_textures(const bool forced = false);
 };

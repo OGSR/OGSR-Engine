@@ -197,8 +197,6 @@ void CMissile::UpdateCL()
 {
     inherited::UpdateCL();
 
-    TimeLockAnimation();
-
     if (!Core.Features.test(xrCore::Feature::stop_anim_playing))
     {
         CActor* pActor = smart_cast<CActor*>(H_Parent());

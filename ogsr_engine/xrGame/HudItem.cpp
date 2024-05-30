@@ -310,6 +310,8 @@ void CHudItem::UpdateCL()
     }
 
     AllowHudBobbing((Core.Features.test(xrCore::Feature::wpn_bobbing) && allow_bobbing) || Actor()->PsyAuraAffect);
+
+    TimeLockAnimation();
 }
 
 void CHudItem::OnH_A_Chield() {}
@@ -1283,15 +1285,26 @@ void CHudItem::CorrectDirFromWorldToHud(Fvector& dir)
 
 void CHudItem::TimeLockAnimation()
 {
-    if (GetState() != eDeviceSwitch)
-        return;
-
-    string128 anm_time_param;
-    xr_strconcat(anm_time_param, "lock_time_end_", m_current_motion.c_str());
-    const float time = READ_IF_EXISTS(pSettings, r_float, HudSection(), anm_time_param, 0) * 1000.f; // Читаем с конфига время анимации (например, lock_time_end_anm_reload)
-    const float current_time = Device.dwTimeGlobal - m_dwMotionStartTm;
-    if (time && current_time >= time)
-        DeviceUpdate();
+    const u32 state = GetState();
+    if ((state == eDeviceSwitch || state == eReload) && GetHUDmode())
+    {
+        string128 anm_time_param;
+        xr_strconcat(anm_time_param, "lock_time_end_", m_current_motion.c_str());
+        const float time = READ_IF_EXISTS(pSettings, r_float, HudSection(), anm_time_param, 0) * 1000.f; // Читаем с конфига время анимации (например, lock_time_end_anm_reload)
+        const float current_time = Device.dwTimeGlobal - m_dwMotionStartTm;
+        if (time && current_time >= time)
+        {
+            if (state == eDeviceSwitch)
+            {
+                DeviceUpdate();
+            }
+            else if (state == eReload)
+            {
+                if (auto wpn = smart_cast<CWeapon*>(this))
+                    wpn->update_visual_bullet_textures();
+            }
+        }
+    }
 }
 
 void CHudItem::OnAnimationEnd(u32 state)

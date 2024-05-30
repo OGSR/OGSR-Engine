@@ -611,6 +611,29 @@ void CWeapon::Load(LPCSTR section)
 
     dont_interrupt_shot_anm = READ_IF_EXISTS(pSettings, r_bool, section, "dont_interrupt_shot_anm", false);
     is_gunslinger_weapon = READ_IF_EXISTS(pSettings, r_bool, section, "is_gunslinger_weapon", false);
+
+    if (pSettings->line_exist(section, "bullet_textures_in_model"))
+    {
+        const char* str = pSettings->r_string(section, "bullet_textures_in_model");
+        for (int i{}, count = _GetItemCount(str); i < count;)
+        {
+            xr_string bullet_tex;
+            _GetItem(str, i++, bullet_tex);
+            bullet_textures_in_model.emplace_back(std::move(bullet_tex));
+        }
+    }
+    if (pSettings->line_exist(section, "bullet_textures_for_ammos"))
+    {
+        const char* str = pSettings->r_string(section, "bullet_textures_for_ammos");
+        for (int i{}, count = _GetItemCount(str); i < count;)
+        {
+            xr_string ammo_section, bullet_tex;
+            _GetItem(str, i++, ammo_section);
+            ASSERT_FMT(i < count, "Incorrect [bullet_textures_for_ammos] in section [%s]", section);
+            _GetItem(str, i++, bullet_tex);
+            bullet_textures_for_ammos.emplace(std::move(ammo_section), std::move(bullet_tex));
+        }
+    }
 }
 
 void CWeapon::LoadFireParams(LPCSTR section, LPCSTR prefix)
@@ -2224,3 +2247,38 @@ void CWeapon::HUD_VisualBulletUpdate(bool force, int force_idx)
 }
 
 void CWeapon::ParseCurrentItem(CGameFont* F) { F->OutNext("WEAPON IN STRAPPED MODE: [%d]", m_strapped_mode); }
+
+void CWeapon::update_visual_bullet_textures(const bool forced)
+{
+    if (bullet_textures_in_model.empty())
+        return;
+
+    if (!GetHUDmode())
+        return;
+
+    const u32 id = m_set_next_ammoType_on_reload != u32(-1) ? m_set_next_ammoType_on_reload : m_ammoType;
+    const auto& current_ammo_sect = m_ammoTypes[id];
+    const auto bullet_texrure_find_it = bullet_textures_for_ammos.find(current_ammo_sect);
+    ASSERT_FMT(bullet_texrure_find_it != bullet_textures_for_ammos.end(), "!!Can't find [%s] in [bullet_textures_for_ammos] of [%s]", current_ammo_sect.c_str(),
+               cNameSect().c_str());
+    const auto& bullet_texrure_name = bullet_texrure_find_it->second;
+
+    if (!forced && current_bullet_texture == bullet_texrure_name)
+        return;
+
+    for (const auto& tex_name : bullet_textures_in_model)
+    {
+        const auto textures = Device.m_pRender->GetResourceManager()->FindTexture(tex_name.c_str());
+        if (textures.empty())
+        {
+            Msg("!![%s] can't find texture [%s] for [%s]", __FUNCTION__, tex_name.c_str(), cNameSect().c_str());
+            continue;
+        }
+
+        auto* tex = textures.front();
+        tex->Unload();
+        tex->Load(bullet_texrure_name.c_str());
+        current_bullet_texture = bullet_texrure_name;
+        //Msg("--[%s] replaced texture [%s] --> [%s] for [%s]", __FUNCTION__, tex_name.c_str(), current_bullet_texture.c_str(), cNameSect().c_str());
+    }
+}

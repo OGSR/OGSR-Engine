@@ -330,7 +330,6 @@ void CWeaponKnife::DeviceUpdate()
 void CWeaponKnife::UpdateCL()
 {
     inherited::UpdateCL();
-    TimeLockAnimation();
 }
 
 void CWeaponKnife::LoadFireParams(LPCSTR section, LPCSTR prefix)
