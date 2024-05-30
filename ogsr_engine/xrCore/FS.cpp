@@ -338,7 +338,7 @@ void IReader::r_stringZ(char* dest, u32 tgt_sz)
     {
         sz++;
 
-        R_ASSERT2(sz < (tgt_sz - 1), "Dest string less than needed.");
+        ASSERT_FMT(sz < (tgt_sz - 1), "!![%s] Dest string less than needed for: [%s]", __FUNCTION__, src);
 
         *dest++ = src[Pos++];
     }
