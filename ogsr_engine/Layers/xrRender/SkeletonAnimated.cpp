@@ -654,7 +654,7 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
     }
     else if (data->find_chunk(OGF_S_MOTION_REFS))
     {
-        string_path items_nm;
+        string4096 items_nm;
         data->r_stringZ(items_nm, sizeof(items_nm));
         u32 set_cnt = _GetItemCount(items_nm);
         for (u32 k = 0; k < set_cnt; ++k)
