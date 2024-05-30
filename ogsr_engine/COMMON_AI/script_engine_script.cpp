@@ -111,5 +111,5 @@ void CScriptEngine::script_register(lua_State* L)
 
            def("GetShift", &GetShift), def("GetLAlt", &GetLAlt), def("GetRAlt", &GetRAlt), def("GetAlt", &GetAlt),
 
-           def("device", [] { return &Device; })];
+           def("device", [] { return &Device; }), def("__debugbreak", [] { __debugbreak(); })];
 }
