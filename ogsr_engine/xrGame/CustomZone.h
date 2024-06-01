@@ -232,6 +232,28 @@ protected:
     ref_sound m_hit_sound;
     ref_sound m_entrance_sound;
 
+    // Interactive grass Settings
+    u32 m_fBlowoutTimeLeft{};
+
+    s8 m_BendGrass_idle_anim{};
+    float m_BendGrass_idle_radius{};
+    float m_BendGrass_idle_speed{};
+    float m_BendGrass_idle_str{};
+
+    s8 m_BendGrass_whenactive_anim{};
+    float m_BendGrass_whenactive_speed{};
+    float m_BendGrass_whenactive_str{};
+
+    bool m_BendGrass_Blowout{};
+    u32 m_BendGrass_Blowout_time{};
+    float m_BendGrass_Blowout_speed{};
+    float m_BendGrass_Blowout_radius{};
+
+    size_t grassbender_id{};
+    u32 grassbender_frame{};
+
+    void GrassZoneUpdate();
+
     //объект партиклов обычного состояния зоны
     CParticlesObject* m_pIdleParticles;
 

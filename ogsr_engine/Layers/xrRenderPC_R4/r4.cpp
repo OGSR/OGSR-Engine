@@ -429,7 +429,8 @@ void CRender::OnFrame()
             g_pGamePersistent->Environment().StartCalculateAsync();
         }
 
-        g_pGamePersistent->GrassBendersUpdateExplosions();
+        if (Details)
+            g_pGamePersistent->GrassBendersUpdateAnimations();
 
         calculate_sun_async();
     }

@@ -322,7 +322,7 @@ void CMovementManager::on_frame(CPHMovementControl* movement_control, Fvector& d
     move_along_path(movement_control, dest_position, object().client_update_fdelta());
 
     // Update Grass benders
-    g_pGamePersistent->GrassBendersUpdate(object().ID(), grassbender_id, grassbender_frame, object().Position());
+    g_pGamePersistent->GrassBendersUpdate(object().ID(), grassbender_id, grassbender_frame, object().Position(), -1.0f, 1.0f);
 }
 
 void CMovementManager::on_travel_point_change(const u32& previous_travel_point_index) { detail().on_travel_point_change(previous_travel_point_index); }

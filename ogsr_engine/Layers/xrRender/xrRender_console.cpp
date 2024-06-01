@@ -217,7 +217,7 @@ Fvector4 ps_ssfx_rain_3{0.95f, 0.5f, 0.0f, 0.0f}; // Alpha, Refraction ( Splashe
 Fvector3 ps_ssfx_shadow_cascades{20.f, 40.f, 160.f};
 Fvector4 ps_ssfx_grass_shadows = {1.0f, .25f, 20.0f, .0f};
 Fvector4 ps_ssfx_grass_interactive{1.f, static_cast<float>(GRASS_SHADER_DATA_COUNT), 2000.f, 1.0f};
-Fvector3 ps_ssfx_int_grass_params_1{2.0f, 1.0f, 1.0f};
+Fvector4 ps_ssfx_int_grass_params_1{2.0f, 1.0f, 1.0f, 25.f};
 Fvector4 ps_ssfx_int_grass_params_2{1.0f, 5.0f, 1.0f, 1.0f};
 float ps_ssfx_wpn_dof_2 = 0.5f;
 
@@ -848,7 +848,7 @@ void xrRender_initconsole()
     CMD4(CCC_ssfx_cascades, "ssfx_shadow_cascades", &ps_ssfx_shadow_cascades, (Fvector3{1.0f, 1.0f, 1.0f}), (Fvector3{300.f, 300.f, 300.f}));
     CMD4(CCC_Float, "ssfx_wpn_dof_2", &ps_ssfx_wpn_dof_2, 0, 1);
     CMD4(CCC_Vector4, "ssfx_grass_interactive", &ps_ssfx_grass_interactive, (Fvector4{}), (Fvector4{1.f, static_cast<float>(GRASS_SHADER_DATA_COUNT), 5000.f, 1.f}));
-    CMD4(CCC_Vector3, "ssfx_int_grass_params_1", &ps_ssfx_int_grass_params_1, (Fvector3{}), (Fvector3{5.f, 5.f, 5.f}));
+    CMD4(CCC_Vector4, "ssfx_int_grass_params_1", &ps_ssfx_int_grass_params_1, (Fvector4{}), (Fvector4{5.f, 5.f, 5.f, 60.f}));
     CMD4(CCC_Vector4, "ssfx_int_grass_params_2", &ps_ssfx_int_grass_params_2, (Fvector4{}), (Fvector4{5.f, 20.f, 1.f, 5.f}));
 
     CMD3(CCC_Mask, "ssfx_height_fog", &ps_r2_ls_flags_ext, SSFX_HEIGHT_FOG);

@@ -45,14 +45,26 @@ public:
     xr_set<CPS_Instance*> ps_active, ps_destroy;
     xr_vector<CPS_Instance*> ps_needtoplay;
 
-    void GrassBendersUpdateExplosions();
+    enum GrassBenders_Anim
+    {
+        BENDER_ANIM_EXPLOSION = 0,
+        BENDER_ANIM_DEFAULT = 1,
+        BENDER_ANIM_WAVY = 2,
+        BENDER_ANIM_SUCK = 3,
+        BENDER_ANIM_BLOW = 4,
+        BENDER_ANIM_PULSE = 5,
+    }; 
+
+  	void GrassBendersUpdateAnimations();
     void GrassBendersAddExplosion(const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity, const float radius);
     void GrassBendersAddShot(const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity, const float radius);
     void GrassBendersRemoveById(const u16 id);
     void GrassBendersRemoveByIndex(size_t& idx);
-    void GrassBendersUpdate(const u16 id, size_t& data_idx, u32& data_frame, const Fvector& position);
+    float GrassBenderToValue(float& current, const float go_to, const float intensity, const bool use_easing);
+    void GrassBendersUpdate(const u16 id, size_t& data_idx, u32& data_frame, const Fvector& position, const float init_radius, const float init_str);
     void GrassBendersReset(const size_t idx);
-    void GrassBendersSet(const size_t idx, const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity, const float radius, const bool resetTime);
+    void GrassBendersSet(const size_t idx, const u16 id, const Fvector& position, const Fvector3& dir, const float fade, const float speed, const float intensity, const float radius, const GrassBenders_Anim anim, const bool resetTime);
+    CPerlinNoise1D* PerlinNoise1D{};
 
     bool IsActorInHideout() const;
     void UpdateHudRaindrops() const;
