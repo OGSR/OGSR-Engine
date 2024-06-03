@@ -239,9 +239,9 @@ IPhysicsElement* CPhysicsShellHolder::physics_character() const
 
 const IObjectPhysicsCollision* CPhysicsShellHolder::physics_collision()
 {
-    CCharacterPhysicsSupport* char_support = character_physics_support();
+    /*CCharacterPhysicsSupport* char_support = character_physics_support();
     if (char_support)
-        char_support->create_animation_collision();
+        char_support->create_animation_collision();*/
 
     return this;
 }

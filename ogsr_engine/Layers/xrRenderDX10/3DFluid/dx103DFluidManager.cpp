@@ -35,8 +35,9 @@ dx103DFluidManager::~dx103DFluidManager() { Destroy(); }
 
 void dx103DFluidManager::Initialize(int width, int height, int depth)
 {
-    if (!ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE))
-        return;
+    // if (strstr(Core.Params,"-no_volumetric_fog"))
+    /*if (!ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE))
+        return;*/
 
     Destroy();
 
