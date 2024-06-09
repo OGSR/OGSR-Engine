@@ -31,10 +31,10 @@ struct wm_slot
 
 // #include "xr_effsun.h"
 
-const float W_DIST_FADE = 15.f;
-const float W_DIST_FADE_SQR = W_DIST_FADE * W_DIST_FADE;
-const float I_DIST_FADE_SQR = 1.f / W_DIST_FADE_SQR;
-const int MAX_TRIS = 1024;
+constexpr float W_DIST_FADE = 15.f;
+constexpr float W_DIST_FADE_SQR = W_DIST_FADE * W_DIST_FADE;
+constexpr float I_DIST_FADE_SQR = 1.f / W_DIST_FADE_SQR;
+constexpr u32 MAX_TRIS = 1024 * 16;
 
 IC bool operator==(const CWallmarksEngine::wm_slot* slot, const ref_shader& shader) { return slot->shader == shader; }
 CWallmarksEngine::wm_slot* CWallmarksEngine::FindSlot(ref_shader shader)
