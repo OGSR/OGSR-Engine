@@ -25,6 +25,9 @@ public:
 
     STRING_VALUE translate(const STRING_ID& str_id) const;
 
+    void ReloadLanguage();
+    void SetLanguage();
+
     static void ReparseKeyBindings();
     static shared_str GetLanguage();
 

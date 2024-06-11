@@ -217,6 +217,60 @@ public:
     virtual void Info(TInfo& I) { strcpy_s(I, "game difficulty"); }
 };
 
+static xr_vector<xr_token>* pLanguagesToken{};
+static u32 LanguageID{};
+const xr_token* GetLanguagesToken() { return &pLanguagesToken->at(LanguageID); }
+
+class CCC_GameLanguage : public CCC_Token
+{
+    xr_vector<xr_token> LanguagesToken;
+
+public:
+    CCC_GameLanguage(LPCSTR N) : CCC_Token(N, &LanguageID, LanguagesToken.data())
+    {
+        pLanguagesToken = &LanguagesToken;
+        const char* str = pSettings->r_string("string_table", "language");
+        for (int i{}, count = _GetItemCount(str); i < count;)
+        {
+            auto& tok = LanguagesToken.emplace_back();
+            tok.id = i;
+            string64 temp{};
+            _GetItem(str, i++, temp);
+            tok.name = xr_strdup(temp);
+        }
+        LanguagesToken.emplace_back();
+        tokens = LanguagesToken.data();
+    };
+
+    void Execute(LPCSTR args) override
+    {
+        CCC_Token::Execute(args);
+        CStringTable().ReloadLanguage();
+
+        if (IsMainMenuActive())
+            MainMenu()->SetLanguageChanged(true);
+
+        if (!g_pGameLevel)
+            return;
+
+        if (g_pGamePersistent && MainMenu() && MainMenu()->IsActive())
+        {
+            MainMenu()->Activate(FALSE);
+            MainMenu()->Activate(TRUE);
+        }
+
+        for (u16 id = 0; id < 0xffff; id++)
+        {
+            auto gameObj = Level().Objects.net_Find(id);
+            if (gameObj)
+            {
+                if (auto invItem = smart_cast<CInventoryItem*>(gameObj))
+                    invItem->ReloadNames();
+            }
+        }
+    }
+};
+
 #ifdef DEBUG
 class CCC_ALifePath : public IConsole_Command
 {
@@ -1416,9 +1470,11 @@ public:
 void CCC_RegisterCommands()
 {
     CMD1(CCC_MemStats, "stat_memory");
+
     // game
     //CMD3(CCC_Mask, "g_always_run", &psActorFlags, AF_ALWAYSRUN);
     CMD1(CCC_GameDifficulty, "g_game_difficulty");
+    CMD1(CCC_GameLanguage, "g_language");
 
     CMD3(CCC_Mask, "g_dof_zoom", &psActorFlags, AF_DOF_ZOOM);
     CMD3(CCC_Mask, "g_dof_reload", &psActorFlags, AF_DOF_RELOAD);

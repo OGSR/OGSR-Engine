@@ -42,8 +42,8 @@ CMainMenu::CMainMenu()
 
     g_btnHint = NULL;
     m_deactivated_frame = 0;
+    languageChanged = false;
 
-    //---------------------------------------------------------------
     m_NeedErrDialog = ErrNoError;
     m_start_time = 0;
 
@@ -222,6 +222,9 @@ void CMainMenu::Activate(bool bActivate)
 bool CMainMenu::IsActive() { return !!m_Flags.test(flActive); }
 
 bool CMainMenu::CanSkipSceneRendering() { return IsActive() && !m_Flags.test(flGameSaveScreenshot); }
+
+bool CMainMenu::IsLanguageChanged() const { return languageChanged; }
+void CMainMenu::SetLanguageChanged(bool status) { languageChanged = status; }
 
 // IInputReceiver
 static int mouse_button_2_key[] = {MOUSE_1, MOUSE_2, MOUSE_3};
@@ -402,6 +405,11 @@ void CMainMenu::OnFrame()
 
     if (IsActive())
         CheckForErrorDlg();
+
+    if (languageChanged)
+    {
+        languageChanged = false;
+    }
 }
 
 void CMainMenu::OnDeviceCreate() {}
