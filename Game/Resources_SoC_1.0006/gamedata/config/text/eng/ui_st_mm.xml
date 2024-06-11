@@ -591,8 +591,8 @@
 	<string id="ui_mm_dyn_crosshair">
 		<text>Dynamic crosshair</text>
 	</string>
-	<string id="ui_mm_show_weapon">
-		<text>Show weapon</text>
+	<string id="ui_mm_lock_reload">
+		<text>Ban on overloading while running</text>
 	</string>
 	<string id="ui_mm_crosshair_distance">
 		<text>Crosshair target distance</text>

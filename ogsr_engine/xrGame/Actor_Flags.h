@@ -22,6 +22,7 @@ enum
     AF_AI_VOLUMETRIC_LIGHTS = 1 << 17,
     AF_EFFECTS_ON_DEMORECORD = 1 << 18,
     AF_FIRST_PERSON_DEATH = 1 << 19,
+    AF_LOCK_RELOAD = 1 << 20,
 };
 
 //enum

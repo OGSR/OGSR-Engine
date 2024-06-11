@@ -533,7 +533,7 @@ bool CActor::InventoryAllowSprint()
     auto wpn = smart_cast<const CWeapon*>(pActiveItem);
     if (wpn)
     {
-        if (Core.Features.test(xrCore::Feature::lock_reload_in_sprint) && wpn->GetState() == CWeapon::eReload)
+        if (psActorFlags.test(AF_LOCK_RELOAD) && wpn->GetState() == CWeapon::eReload)
         {
             return false;
         }

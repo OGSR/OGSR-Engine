@@ -571,8 +571,8 @@
 	<string id="ui_mm_dyn_crosshair">
 		<text>Динамический прицел</text>
 	</string>
-	<string id="ui_mm_show_weapon">
-		<text>Показывать оружие</text>
+	<string id="ui_mm_lock_reload">
+		<text>Запрет перезарядки во время бега</text>
 	</string>
 	<string id="ui_mm_crosshair_distance">
 		<text>Дистанция до цели</text>

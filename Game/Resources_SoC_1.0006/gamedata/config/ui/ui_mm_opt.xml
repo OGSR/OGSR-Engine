@@ -686,10 +686,10 @@
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_dyn_crosshair</text>
 		</check_dyn_crosshair>
 
-		<check_show_weapon x="20" y="130" width="243" height="21">
-			<options_item entry="hud_weapon" group="mm_opt_gameplay"/>
-			<text font="letterica16" r="215" g="195" b="170">ui_mm_show_weapon</text>
-		</check_show_weapon>
+		<check_lock_reload x="20" y="130" width="243" height="21">
+			<options_item entry="g_lock_reload" group="mm_opt_gameplay"/>
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_lock_reload</text>
+		</check_lock_reload>
 
 		<check_dist x="20" y="155" width="243" height="21">
 			<options_item entry="hud_crosshair_dist" group="mm_opt_gameplay"/>
