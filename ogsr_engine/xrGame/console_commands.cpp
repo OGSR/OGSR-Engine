@@ -1467,9 +1467,21 @@ public:
 
 #endif
 
+class CCC_UI_Reload : public IConsole_Command
+{
+public:
+    CCC_UI_Reload(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
+    virtual void Execute(LPCSTR args)
+    {
+        if (g_pGamePersistent && g_pGameLevel && Level().game)
+            HUD().OnScreenRatioChanged();
+    }
+};
+
 void CCC_RegisterCommands()
 {
     CMD1(CCC_MemStats, "stat_memory");
+    CMD1(CCC_UI_Reload, "ui_reload");
 
     // game
     //CMD3(CCC_Mask, "g_always_run", &psActorFlags, AF_ALWAYSRUN);
