@@ -109,18 +109,15 @@ void CActor::IR_OnKeyboardPress(int cmd)
     case kCAM_1: cam_Set(eacFirstEye); break;
     case kCAM_2: cam_Set(eacLookAt); break;
     case kCAM_3: cam_Set(eacFreeLook); break;
-    case kNIGHT_VISION: {
-        auto act_it = inventory().ActiveItem();
-        auto pTorch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
-        if (pTorch && !smart_cast<CWeaponMagazined*>(act_it) && !smart_cast<CWeaponKnife*>(act_it) && !smart_cast<CMissile*>(act_it))
-            pTorch->SwitchNightVision();
-    }
-    break;
+    case kNIGHT_VISION:
     case kTORCH: {
         auto act_it = inventory().ActiveItem();
+        auto active_hud = smart_cast<CHudItem*>(act_it);
+        if (active_hud && active_hud->GetState() != CHudItem::eIdle)
+            return;
         auto pTorch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
         if (pTorch && !smart_cast<CWeaponMagazined*>(act_it) && !smart_cast<CWeaponKnife*>(act_it) && !smart_cast<CMissile*>(act_it))
-            pTorch->Switch();
+            cmd == kNIGHT_VISION ? pTorch->SwitchNightVision() : pTorch->Switch();
     }
     break;
     case kWPN_8: {
@@ -144,6 +141,10 @@ void CActor::IR_OnKeyboardPress(int cmd)
 
     case kUSE_BANDAGE:
     case kUSE_MEDKIT: {
+        auto active_hud = smart_cast<CHudItem*>(inventory().ActiveItem());
+        if (active_hud && active_hud->GetState() != CHudItem::eIdle)
+            return;
+
         if (!(GetTrade()->IsInTradeState()))
         {
             PIItem itm = inventory().item((cmd == kUSE_BANDAGE) ? CLSID_IITEM_BANDAGE : CLSID_IITEM_MEDKIT);
@@ -395,6 +396,10 @@ void CActor::ActorUse()
 {
     auto pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
     if (auto Pda = GetPDA(); Pda && Pda->Is3DPDA() && psActorFlags.test(AF_3D_PDA) && pGameSP->PdaMenu->IsShown())
+        return;
+
+    auto active_hud = smart_cast<CHudItem*>(inventory().ActiveItem());
+    if (active_hud && active_hud->GetState() != CHudItem::eIdle)
         return;
 
     if (g_bDisableAllInput || HUD().GetUI()->MainInputReceiver())

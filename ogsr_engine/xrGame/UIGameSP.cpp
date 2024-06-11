@@ -22,6 +22,9 @@
 #include "ui/UICarBodyWnd.h"
 #include "ui/UIMessageBox.h"
 
+#include "inventory.h"
+#include "HudItem.h"
+
 CUIGameSP::CUIGameSP()
 {
     m_game = NULL;
@@ -93,6 +96,10 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
     hud_adjust_mode_keyb(dik);
     if (attach_adjust_mode_keyb(dik))
         return true;
+
+    auto active_hud = smart_cast<CHudItem*>(pActor->inventory().ActiveItem());
+    if (active_hud && active_hud->GetState() != CHudItem::eIdle)
+        return false;
 
     auto bind = get_binded_action(dik);
     switch (bind)
