@@ -37,7 +37,7 @@ float3 SSFX_ssr_water_ray(float3 ray_start_vs, float3 ray_dir_vs, float noise, u
 	float ray_depthstart = SSFX_get_depth(ssr_ray.r_start, iSample);
 
 	// Ray-march
-	[unroll (q_steps[G_SSR_WATER_QUALITY].x)]
+	[unroll (q_steps[G_SSR_WATER_QUALITY].x)] //[loop]
 	for (int st = 1; st <= q_steps[G_SSR_WATER_QUALITY].x; st++)
 	{
 		// Ray out of screen...
@@ -71,6 +71,7 @@ float3 SSFX_ssr_water_ray(float3 ray_start_vs, float3 ray_dir_vs, float noise, u
 			prev_sign = -1;
 
 			// Binary Search
+			[unroll (q_steps[G_SSR_WATER_QUALITY].y)] //[loop]
 			for (int x = 0; x < q_steps[G_SSR_WATER_QUALITY].y; x++)
 			{
 				// Half and flip depending on depth difference sign
