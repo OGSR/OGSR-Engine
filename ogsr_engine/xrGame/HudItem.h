@@ -314,8 +314,8 @@ private:
     float saved_rq_range{};
     Fvector m_nearwall_last_pos{}, m_nearwall_last_rot{};
 
-    Fvector m_strafe_offset[3][2]{}, m_lookout_offset[3][2]{}, m_jump_offset[3][2]{}, m_fall_offset[2][2]{}, m_landing_offset[2][2]{}, m_move_offset[3]{};
-    Fvector current_difference[2]{}, current_strafe[2]{}, current_lookout[2]{}, current_jump[2]{}, current_move[2]{};
+    Fvector m_strafe_offset[3][2]{}, m_lookout_offset[3][2]{}, m_jump_offset[3][2]{}, m_fall_offset[2][2]{}, m_landing_offset[2][2]{}, m_move_offset[3]{}, m_walk_offset[3]{};
+    Fvector current_difference[2]{}, current_strafe[2]{}, current_lookout[2]{}, current_jump[2]{}, current_move[2]{}, current_walk[2]{};
 
     float m_base_fov{};
 
@@ -339,7 +339,7 @@ private:
     Fvector inert_st_last_dir{};
     void UpdateInertion(Fmatrix& trans);
     float GetInertionFactor() const { return 1.f; } //--#SM+#--
-    float GetInertionPowerFactor() const { return 0.3f; } //--#SM+#--
+    float GetInertionPowerFactor() const { return 0.5f; } //--#SM+#--
     bool HudInertionEnabled() const { return m_huditem_flags.test(fl_inertion_enable); }
     void EnableHudInertion(BOOL B) { m_huditem_flags.set(fl_inertion_enable, B); }
 };

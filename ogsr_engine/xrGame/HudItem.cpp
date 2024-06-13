@@ -14,6 +14,7 @@
 #include "Missile.h"
 #include "../xr_3da/x_ray.h"
 #include "../../xr_3da/igame_persistent.h"
+#include "Pda.h"
 
 ENGINE_API extern float psHUD_FOV_def;
 
@@ -151,6 +152,11 @@ void CHudItem::Load(LPCSTR section)
     m_move_offset[0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "stay_hud_offset_pos", (Fvector{0.f, -0.03f, 0.f}));
     m_move_offset[1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "stay_hud_offset_rot", (Fvector{0.f, 0.5f, -3.f}));
     m_move_offset[2].set(READ_IF_EXISTS(pSettings, r_bool, section, "move_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "move_transition_time", 0.25f), 0.f);
+    ////////////////////////////////////////////
+    ////////////////////////////////////////////
+    m_walk_offset[0] = READ_IF_EXISTS(pSettings, r_fvector3, section, "walk_hud_offset_pos", (Fvector{-0.02f, -0.02f, -0.03f}));
+    m_walk_offset[1] = READ_IF_EXISTS(pSettings, r_fvector3, section, "walk_hud_offset_rot", (Fvector{0.f, 0.05f, -1.f}));
+    m_walk_offset[2].set(READ_IF_EXISTS(pSettings, r_bool, section, "walk_enabled", true), READ_IF_EXISTS(pSettings, r_float, section, "walk_transition_time", 0.25f), 0.f);
 
     //Загрузка параметров инерции --#SM+# Begin--
     constexpr float PITCH_OFFSET_R = 0.0f; // Насколько сильно ствол смещается вбок (влево) при вертикальных поворотах камеры
@@ -1053,10 +1059,15 @@ void CHudItem::UpdateHudAdditional(Fmatrix& trans, const bool need_update_collis
                 current_move_rot.set(Fvector{});
             }
 
+            auto pda = smart_cast<CPda*>(this);
+            auto missile = smart_cast<CMissile*>(this);
+
             current_move_offs.mul(koef);
             current_move_rot.mul(koef);
             current_move_offs.mul(!IsZoomed());
             current_move_rot.mul(!IsZoomed());
+            current_move_offs.mul(!pda && !missile);
+            current_move_rot.mul(!pda && !missile);
             current_move_rot.mul(-PI / 180.f); // Преобразуем углы в радианы
 
             if (!current_move_offs.similar(current_move[0], EPS))
@@ -1067,6 +1078,63 @@ void CHudItem::UpdateHudAdditional(Fmatrix& trans, const bool need_update_collis
 
             summary_offset.add(current_move[0]);
             summary_rotate.add(current_move[1]);
+        }
+    }
+
+    //=============== Эффекты ходьбы ===================//
+    {
+        const bool bEnabled = m_walk_offset[2].x;
+        if (bEnabled)
+        {
+            float fWalkMaxTime = m_walk_offset[2].y; // Макс. время в секундах, за которое мы наклонимся из центрального положения
+            if (fWalkMaxTime <= EPS)
+                fWalkMaxTime = 0.01f;
+
+            const float fStepPerUpd = Device.fTimeDelta / fWalkMaxTime; // Величина изменение фактора поворота
+
+            float koef{1.f};
+            if ((iMovingState & mcCrouch) && (iMovingState & mcAccel))
+                koef = 0.5; // во сколько раз менять амплитуду при полном присяде
+            else if (iMovingState & mcCrouch)
+                koef = 0.7; // во сколько раз менять амплитуду при присяде
+
+            Fvector current_walk_offs{}, current_walk_rot{};
+
+            if (iMovingState & mcFwd)
+            {
+                current_walk_offs.set(m_walk_offset[0]);
+                current_walk_rot.set(m_walk_offset[1]);
+            }
+            else if (iMovingState & mcBack)
+            {
+                current_walk_offs.set(m_walk_offset[0].x, m_walk_offset[0].y, -m_walk_offset[0].z);
+                current_walk_rot.set(m_walk_offset[1]);
+            }
+            else
+            {
+                current_walk_offs.set(Fvector{});
+                current_walk_rot.set(Fvector{});
+            }
+
+            auto pda = smart_cast<CPda*>(this);
+            auto missile = smart_cast<CMissile*>(this);
+
+            current_walk_offs.mul(koef);
+            current_walk_rot.mul(koef);
+            current_walk_offs.mul(!IsZoomed());
+            current_walk_rot.mul(!IsZoomed());
+            current_walk_offs.mul(!pda && !missile);
+            current_walk_rot.mul(!pda && !missile);
+            current_walk_rot.mul(-PI / 180.f); // Преобразуем углы в радианы
+
+            if (!current_walk_offs.similar(current_walk[0], EPS))
+                current_walk[0].lerp(current_walk[0], current_walk_offs, fStepPerUpd);
+
+            if (!current_walk_rot.similar(current_walk[1], EPS))
+                current_walk[1].lerp(current_walk[1], current_walk_rot, fStepPerUpd);
+
+            summary_offset.add(current_walk[0]);
+            summary_rotate.add(current_walk[1]);
         }
     }
 
