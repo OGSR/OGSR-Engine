@@ -420,7 +420,7 @@ void CSpaceRestrictor::OnRender()
 
         HUD().Font().pFontMedium->SetColor(Color);
         HUD().Font().pFontMedium->OutSet(x, y -= delta_height);
-        HUD().Font().pFontMedium->OutNext(Name());
+        HUD().Font().pFontMedium->OutNext("%s id=%d", Name(), ID());
         CCustomZone* z = smart_cast<CCustomZone*>(this);
         if (z)
         {
