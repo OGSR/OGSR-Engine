@@ -69,10 +69,10 @@ public:
 
 public:
     CGameFont(LPCSTR section, u32 flags = 0);
-    CGameFont(LPCSTR shader, LPCSTR texture, u32 flags = 0);
+    CGameFont(LPCSTR shader, LPCSTR texture, const char* section, u32 flags = 0);
     ~CGameFont();
 
-    void Initialize(LPCSTR shader, LPCSTR texture);
+    void Initialize(LPCSTR shader, LPCSTR texture, const char* sect);
 
     IC void SetColor(u32 C) { dwCurrentColor = C; };
 

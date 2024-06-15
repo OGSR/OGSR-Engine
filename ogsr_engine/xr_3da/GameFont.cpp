@@ -22,7 +22,7 @@ CGameFont::CGameFont(LPCSTR section, u32 flags)
     fXStep = 0.0f;
     uFlags = flags;
 
-    Initialize(pSettings->r_string(section, "shader"), pSettings->r_string(section, "texture"));
+    Initialize(pSettings->r_string(section, "shader"), pSettings->r_string(section, "texture"), section);
 
     if (pSettings->line_exist(section, "size"))
     {
@@ -36,24 +36,25 @@ CGameFont::CGameFont(LPCSTR section, u32 flags)
         SetInterval(pSettings->r_fvector2(section, "interval"));
 }
 
-CGameFont::CGameFont(LPCSTR shader, LPCSTR texture, u32 flags)
+CGameFont::CGameFont(LPCSTR shader, LPCSTR texture, const char* section, u32 flags)
 {
     pFontRender = RenderFactory->CreateFontRender();
     fCurrentHeight = 0.0f;
     fXStep = 0.0f;
     uFlags = flags;
 
-    Initialize(shader, texture);
+    Initialize(shader, texture, section);
 }
 
-void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName)
+void CGameFont::Initialize(LPCSTR cShader, LPCSTR cTextureName, const char* sect)
 {
     string_path cTexture;
 
     LPCSTR _lang = pSettings->r_string("string_table", "font_prefix");
-    const bool is_di = strstr(cTextureName, "ui_font_hud_01") || strstr(cTextureName, "ui_font_hud_02") || strstr(cTextureName, "ui_font_console_02");
+    const bool skip_prefix = READ_IF_EXISTS(pSettings, r_bool, sect, "skip_prefix", false) || strstr(cTextureName, "ui_font_hud_01") || strstr(cTextureName, "ui_font_hud_02") ||
+        strstr(cTextureName, "ui_font_console_02");
 
-    if (_lang && !is_di)
+    if (_lang && !skip_prefix)
         strconcat(sizeof(cTexture), cTexture, cTextureName, _lang);
     else
         xr_strcpy(cTexture, sizeof(cTexture), cTextureName);
