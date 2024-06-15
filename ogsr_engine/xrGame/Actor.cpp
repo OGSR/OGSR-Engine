@@ -1433,8 +1433,8 @@ void CActor::OnItemSlot(CInventoryItem* inventory_item, EItemPlace previous_plac
 
 void CActor::UpdateArtefactPanel()
 {
-    if (Level().CurrentViewEntity() && Level().CurrentViewEntity() == this) //Оно надо вообще без мультиплеера?
-        HUD().GetUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(inventory().m_belt);
+    if (auto* art_pan = HUD().GetUI()->UIMainIngameWnd->m_artefactPanel)
+        art_pan->InitIcons(inventory().m_belt);
 }
 
 void CActor::ApplyArtefactEffects(ActorRestoreParams& r, CArtefact* artefact)
