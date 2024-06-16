@@ -6,3 +6,5 @@ git clone --branch dec2023 --depth 1 https://github.com/microsoft/DirectXMesh.gi
 
 RD /s /q 3rd_party\Src\DirectXMath\DirectXMath
 git clone --branch dec2023 --depth 1 https://github.com/microsoft/DirectXMath.git 3rd_party/Src/DirectXMath/DirectXMath
+
+pause
