@@ -2,8 +2,6 @@
 
 #include "xrMessages.h"
 
-extern BOOL g_bCheckTime;
-
 class NET_Event
 {
 public:
@@ -67,7 +65,6 @@ IC bool operator<(const NET_Event& A, const NET_Event& B) { return A.timestamp <
 class NET_Queue_Event
 {
 public:
-    //	xr_multiset<NET_Event>	queue;
     xr_deque<NET_Event> queue;
 
 public:
@@ -75,44 +72,13 @@ public:
     {
         NET_Event E;
         E.import(P);
-        //		queue.insert	(E);
         queue.push_back(E);
-        /*
-        //-------------------------------------------
-#ifdef DEBUG
-        shared_str EventName;
-        string16 tmp;
-
-        switch (E.type)
-        {
-        case 1: EventName = "GE_OWNERSHIP_TAKE [1]"; break;
-        case 2: EventName = "GE_OWNERSHIP_REJECT [2]"; break;
-        case 5: EventName = "GE_DIE [5]"; break;
-        case 7: EventName = "GE_DESTROY [7]"; break;
-        default: EventName = itoa(E.type, tmp, 10); break;
-        }
-
-        Msg("Event %s to %d - at %d", *EventName, E.destination, E.timestamp);
-#endif
-        //-------------------------------------------
-        //*/
     }
     IC BOOL available(u32 T)
     {
-        //		if (queue.empty()/* || (T<queue.begin()->timestamp)*/)	return FALSE;
-        //		else												return TRUE;
         if (queue.empty())
             return FALSE;
-        /**
-        else
-        {
-            if (!g_bCheckTime) return TRUE;
-#ifdef DEBUG
-            if (T<queue.begin()->timestamp) return FALSE;
-#endif
-            return TRUE;
-        }
-        /**/
+
         return TRUE;
     }
     IC void get(u16& ID, u16& dest, u16& type, NET_Packet& P)
@@ -122,7 +88,6 @@ public:
         dest = E.destination;
         type = E.type;
         E.implication(P);
-        //		queue.erase			(queue.begin());
         queue.pop_front();
     }
 };
