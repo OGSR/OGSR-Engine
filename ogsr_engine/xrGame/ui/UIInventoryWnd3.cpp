@@ -153,8 +153,8 @@ void CUIInventoryWnd::ActivatePropertiesBox()
         {
             // В локализации должно быть что-то типа 'Прикрепить %s к %s в таком-то слоте'
             const std::string trans_str = "st_attach_addon_to_wpn_in_slot_" + std::to_string(i);
-            string256 str{};
-            sprintf_s(str, CStringTable().translate(trans_str.c_str()).c_str(), CurrentIItem()->m_nameShort.c_str(), tgt->m_nameShort.c_str());
+            string512 str{};
+            std::snprintf(str, sizeof str, CStringTable().translate(trans_str.c_str()).c_str(), CurrentIItem()->m_nameShort.c_str(), tgt->m_nameShort.c_str());
             UIPropertiesBox.AddItem(str, (void*)tgt, INVENTORY_ATTACH_ADDON);
             b_show = true;
         }
