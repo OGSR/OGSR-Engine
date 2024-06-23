@@ -145,9 +145,9 @@ void dx103DFluidObstacles::ProcessDynamicObstacles(const dx103DFluidData& FluidD
     box.getradius(size);
 
     // Traverse object database
-    //g_SpatialSpace->q_box(m_lstRenderables,
-    //                      0, // ISpatial_DB::O_ORDERED,
-    //                      STYPE_RENDERABLE, center, size);
+    g_SpatialSpace->q_box(m_lstRenderables,
+                          0, // ISpatial_DB::O_ORDERED,
+                          STYPE_RENDERABLE, center, size);
 
     // Determine visibility for dynamic part of scene
     for (u32 i = 0; i < m_lstRenderables.size(); ++i)

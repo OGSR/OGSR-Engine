@@ -49,8 +49,6 @@
 #include "physicobject.h"
 #endif
 
-#include <execution>
-
 #include "LevelDebugScript.h"
 #include "physicobject.h"
 #include "UIGameSP.h"

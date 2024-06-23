@@ -399,7 +399,7 @@ void IGame_Persistent::GrassBendersUpdateAnimations()
                 grass_shader_data.time[idx] += Device.fTimeDelta * grass_shader_data.speed[idx];
 
                 // Perlin Noise
-                float curve = std::clamp(PerlinNoise1D->GetContinious(grass_shader_data.time[idx]) + 0.5f, 0.f, 1.f) * -1.0;
+                float curve = std::clamp(PerlinNoise1D->GetContinious(grass_shader_data.time[idx]) + 0.5f, 0.f, 1.f) * -1.0f;
 
                 // Intensity using Perlin
                 grass_shader_data.dir[idx].w = curve * grass_shader_data.str_target[idx];

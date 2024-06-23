@@ -45,7 +45,7 @@ public:
     xr_set<CPS_Instance*> ps_active, ps_destroy;
     xr_vector<CPS_Instance*> ps_needtoplay;
 
-    enum GrassBenders_Anim
+    enum GrassBenders_Anim : s8
     {
         BENDER_ANIM_EXPLOSION = 0,
         BENDER_ANIM_DEFAULT = 1,
