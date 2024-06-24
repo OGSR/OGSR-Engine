@@ -35,7 +35,7 @@ public:
     CUIAmmoCellItem(CWeaponAmmo* itm);
     virtual void Update();
     virtual bool EqualTo(CUICellItem* itm);
-    CWeaponAmmo* object() { return (CWeaponAmmo*)m_pData; }
+    CWeaponAmmo* object() { return static_cast<CWeaponAmmo*>(m_pData); }
 };
 
 class CUIWeaponCellItem : public CUIInventoryCellItem

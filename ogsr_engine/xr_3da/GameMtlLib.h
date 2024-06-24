@@ -281,19 +281,40 @@ public:
     IC u16 GetMaterialIdx(int ID)
     {
         GameMtlIt it = GetMaterialItByID(ID);
-        VERIFY(materials.end() != it);
-        return (u16)(it - materials.begin());
+        if (materials.end() != it)
+        {
+            return static_cast<u16>(std::distance(materials.begin(), it));
+        }
+        else
+        {
+            Msg("!![%s] material id [%d] not found!", __FUNCTION__, ID);
+            return 0;
+        }
     }
     IC u16 GetMaterialIdx(LPCSTR name)
     {
         GameMtlIt it = GetMaterialIt(name);
-        VERIFY(materials.end() != it);
-        return (u16)(it - materials.begin());
+        if (materials.end() != it)
+        {
+            return static_cast<u16>(std::distance(materials.begin(), it));
+        }
+        else
+        {
+            Msg("!![%s] material name [%s] not found!", __FUNCTION__, name);
+            return 0;
+        }
     }
     IC SGameMtl* GetMaterialByIdx(u16 idx)
     {
-        VERIFY(idx < (u16)materials.size());
-        return materials[idx];
+        if (idx < static_cast<u16>(materials.size()))
+        {
+            return materials[idx];
+        }
+        else
+        {
+            Msg("!![%s] material id [%u] not found!", __FUNCTION__, idx);
+            return materials.front();
+        }
     }
 
     IC GameMtlIt FirstMaterial() { return materials.begin(); }

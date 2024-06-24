@@ -174,14 +174,15 @@ void CUIAmmoCellItem::Update()
 
 void CUIAmmoCellItem::UpdateItemText()
 {
-    if (NULL == m_custom_draw)
+    if (!m_custom_draw)
     {
-        xr_vector<CUICellItem*>::iterator it = m_childs.begin();
-        xr_vector<CUICellItem*>::iterator it_e = m_childs.end();
+        u16 total{};
+        if (auto* curr_obj = object())
+            total = curr_obj->m_boxCurr;
 
-        u16 total = object()->m_boxCurr;
-        for (; it != it_e; ++it)
-            total = total + ((CUIAmmoCellItem*)(*it))->object()->m_boxCurr;
+        for (auto* child : m_childs)
+            if (auto* child_obj = smart_cast<CUIAmmoCellItem*>(child)->object())
+                total += child_obj->m_boxCurr;
 
         string32 str;
         sprintf_s(str, "%d", total);

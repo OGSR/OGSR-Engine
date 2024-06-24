@@ -205,8 +205,8 @@ int compare_naturally(const void* a_ptr, const void* b_ptr)
 
 bool SelectTexture(const char* label, shared_str& texName)
 {
-    char tex[100];
-    strncpy(tex, texName.data(), 100);
+    string1024 tex;
+    strcpy_s(tex, texName.data());
 
     bool changed = false;
     static shared_str prevValue;
@@ -438,8 +438,8 @@ void ShowWeatherEditor(bool& show)
 
     if (SelectTexture("sky_texture", cur->sky_texture_name))
     {
-        char buf[100];
-        strconcat(sizeof(buf), buf, cur->sky_texture_name.data(), "#small");
+        string1024 buf;
+        xr_strconcat(buf, cur->sky_texture_name.data(), "#small");
         cur->sky_texture_env_name = buf;
         cur->on_device_create();
         changed = true;
