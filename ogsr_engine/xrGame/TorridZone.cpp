@@ -19,6 +19,8 @@ BOOL CTorridZone::net_Spawn(CSE_Abstract* DC)
     m_animator->Load(zone->get_motion());
     m_animator->Play(true);
 
+    m_b_always_fastmode = true;
+
     return (TRUE);
 }
 
