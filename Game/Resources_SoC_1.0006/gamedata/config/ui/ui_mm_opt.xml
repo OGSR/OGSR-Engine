@@ -648,7 +648,7 @@
 				<d r="227" g="199" b="178"/>
 			</text_color>
 			<list_font_s r="240" g="217" b="182"/>
-			<list_font r="216" g="186" b="140" font="letterica16"/>
+			<list_font r="216" g="186" b="140" font="ui_font_utf"/>
         </list_snd_device>
 
 		<btn_default_set x="342" y="325" width="111" height="29">

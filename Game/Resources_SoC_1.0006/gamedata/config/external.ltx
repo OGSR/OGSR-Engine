@@ -19,7 +19,7 @@ slots_extend_menu = true
 
 ; Эффект раскачки оружия при движении.
 ; Для работы требуется секция с названием wpn_bobbing_effector. Пример настроек находится чуть ниже.
-wpn_bobbing = false
+wpn_bobbing = true
 
 ; Показывать полоску состояния предметов в инвентаре, на его иконке.
 ; Включает поддержку аттрибута condition_progress_bar для dragdrop элементов
@@ -325,3 +325,11 @@ movement_layer_3        = movement\newwalk.anm,      1,      0.1
 movement_layer_4        = movement\newwalk.anm,      1.25,     0.125
 movement_layer_5        = movement\newrunreload.anm, 1,      0.15
 
+
+;Пример конфига шрифта с поддержкой юникода. Используется в меню настройки звукового устройства.
+[ui_font_utf]
+skip_prefix = true
+shader    = font
+texture   = ui\fonts\Bender-Bold
+scale_x   = 0.35
+scale_y   = 0.35
