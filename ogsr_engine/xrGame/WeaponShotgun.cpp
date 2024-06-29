@@ -411,7 +411,14 @@ void CWeaponShotgun::OnStateSwitch(u32 S, u32 oldState)
                 }
             }
             PlaySound(m_sndOpen, get_LastFP());
-            PlayHUDMotion({"anim_open_weapon", "anm_open"}, true, GetState());
+            if (GetAmmoElapsed() < 1 && AnimationExist("anm_open_empty"))
+            {
+                PlayHUDMotion({"anm_open_empty"}, true, GetState());
+            }
+            else
+            {
+                PlayHUDMotion({"anim_open_weapon", "anm_open"}, true, GetState());
+            }
             SetPending(TRUE);
         }
         break;
