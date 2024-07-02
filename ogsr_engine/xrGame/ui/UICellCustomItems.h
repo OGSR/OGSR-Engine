@@ -14,7 +14,7 @@ public:
     virtual void Update();
     virtual bool EqualTo(CUICellItem* itm);
     virtual CUIDragItem* CreateDragItem();
-    CInventoryItem* object() { return (CInventoryItem*)m_pData; }
+    CInventoryItem* object() { return static_cast<CInventoryItem*>(m_pData); }
 
     // Real Wolf: Для коллбеков. 25.07.2014.
     virtual void OnFocusReceive();
