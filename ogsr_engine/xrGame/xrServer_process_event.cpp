@@ -46,7 +46,6 @@ void xrServer::Process_event(NET_Packet& P, ClientID sender)
     {
     case GE_INFO_TRANSFER:
     case GE_WPN_STATE_CHANGE:
-    case GE_ZONE_STATE_CHANGE:
     case GEG_PLAYER_ATTACH_HOLDER:
     case GEG_PLAYER_DETACH_HOLDER:
     case GEG_PLAYER_ACTIVATEARTEFACT:

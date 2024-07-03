@@ -97,8 +97,15 @@ BOOL CAnomalyDetector::feel_touch_contact(CObject* obj)
 
 void CAnomalyDetector::on_contact(CObject* obj)
 {
+    if (obj->getDestroy())
+        return;
+
     auto custom_zone = smart_cast<CCustomZone*>(obj);
+
     ASSERT_FMT(custom_zone, "[%s]: %s not a CCUstomZone", __FUNCTION__, obj->cName().c_str());
+
+    if (custom_zone->ZoneState() == CCustomZone::eZoneStateDisabled)
+        return;
 
     auto it = std::find_if(m_storage.begin(), m_storage.end(), [custom_zone](const auto& it) { return it.id == custom_zone->ID(); });
     if (it != m_storage.end())

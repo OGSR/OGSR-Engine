@@ -1194,12 +1194,6 @@ void CCustomZone::OnEvent(NET_Packet& P, u16 type)
 {
     switch (type)
     {
-    case GE_ZONE_STATE_CHANGE: {
-        u8 S;
-        P.r_u8(S);
-        OnStateSwitch(EZoneState(S));
-        break;
-    }
     case GE_OWNERSHIP_TAKE: {
         u16 id;
         P.r_u16(id);
@@ -1265,13 +1259,7 @@ void CCustomZone::OnStateSwitch(EZoneState new_state)
 
 void CCustomZone::SwitchZoneState(EZoneState new_state)
 {
-    {
-        // !!! Just single entry for given state !!!
-        NET_Packet P;
-        u_EventGen(P, GE_ZONE_STATE_CHANGE, ID());
-        P.w_u8(u8(new_state));
-        u_EventSend(P);
-    };
+    OnStateSwitch(new_state);
 
     m_iPreviousStateTime = m_iStateTime = 0;
 }
@@ -1603,10 +1591,7 @@ void CCustomZone::UpdateOnOffState()
 void CCustomZone::GoDisabledState()
 {
     // switch to disable
-    NET_Packet P;
-    u_EventGen(P, GE_ZONE_STATE_CHANGE, ID());
-    P.w_u8(u8(eZoneStateDisabled));
-    u_EventSend(P);
+    OnStateSwitch(eZoneStateDisabled);
 
     OBJECT_INFO_VEC_IT it = m_ObjectInfoMap.begin();
     OBJECT_INFO_VEC_IT it_e = m_ObjectInfoMap.end();
@@ -1621,10 +1606,7 @@ void CCustomZone::GoDisabledState()
 void CCustomZone::GoEnabledState()
 {
     // switch to idle
-    NET_Packet P;
-    u_EventGen(P, GE_ZONE_STATE_CHANGE, ID());
-    P.w_u8(u8(eZoneStateIdle));
-    u_EventSend(P);
+    OnStateSwitch(eZoneStateIdle);
 }
 
 BOOL CCustomZone::feel_touch_on_contact(CObject* O)
