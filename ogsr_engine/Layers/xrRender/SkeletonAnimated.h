@@ -136,7 +136,7 @@ public:
     void LL_SetChannelFactor(u16 channel, float factor);
     CBlendInstance& LL_GetBlendInstance(u16 bone_id)
     {
-        VERIFY(bone_id < LL_BoneCount());
+        ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", __FUNCTION__, dbg_name.c_str(), bone_id);
         return blend_instances[bone_id];
     }
 

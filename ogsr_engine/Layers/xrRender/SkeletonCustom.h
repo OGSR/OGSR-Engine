@@ -191,7 +191,7 @@ public:
 
     CBoneData& _BCL LL_GetData(u16 bone_id)
     {
-        VERIFY(bone_id < LL_BoneCount());
+        ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", __FUNCTION__, dbg_name.c_str(), bone_id);
         VERIFY(bones);
         CBoneData& bd = *((*bones)[bone_id]);
         return bd;
@@ -199,14 +199,14 @@ public:
 
     virtual const IBoneData& _BCL GetBoneData(u16 bone_id) const
     {
-        VERIFY(bone_id < LL_BoneCount());
+        ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", __FUNCTION__, dbg_name.c_str(), bone_id);
         VERIFY(bones);
         CBoneData& bd = *((*bones)[bone_id]);
         return bd;
     }
     CBoneData* _BCL LL_GetBoneData(u16 bone_id)
     {
-        VERIFY(bone_id < LL_BoneCount());
+        ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", __FUNCTION__, dbg_name.c_str(), bone_id);
         VERIFY(bones);
         u32 sz = sizeof(vecBones);
         u32 sz1 = sizeof(((*bones)[bone_id])->children);
@@ -222,7 +222,7 @@ public:
     ICF Fmatrix& LL_GetTransform_R(u16 bone_id) { return LL_GetBoneInstance(bone_id).mRenderTransform; } // rendering only
     Fobb& LL_GetBox(u16 bone_id)
     {
-        VERIFY(bone_id < LL_BoneCount());
+        ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", __FUNCTION__, dbg_name.c_str(), bone_id);
         return (*bones)[bone_id]->obb;
     }
     const Fbox& _BCL GetBox() const { return vis.box; }

@@ -185,7 +185,8 @@ void CKinematics::CLBone(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* 
 
 void CKinematics::Bone_GetAnimPos(Fmatrix& pos, u16 id, u8 mask_channel, bool ignore_callbacks)
 {
-    R_ASSERT(id < LL_BoneCount());
+    ASSERT_FMT(id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", __FUNCTION__, dbg_name.c_str(), id);
+
     CBoneInstance bi = LL_GetBoneInstance(id);
     Fvector last_c = bi.mTransform.c;
     BoneChain_Calculate(&LL_GetData(id), bi, mask_channel, ignore_callbacks);
