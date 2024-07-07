@@ -305,14 +305,15 @@ void CRender::Render()
     //******* Main calc - DEFERRER RENDERER
     // Main calc
     Device.Statistic->RenderCALC.Begin();
-    r_pmask(true, true, true); // enable priority "0,1",+ capture wmarks
-
+    r_pmask(true, false, true); // enable priority "0",+ capture wmarks
     if (bSUN)
         set_Recorder(&main_coarse_structure);
     else
         set_Recorder(NULL);
     phase = PHASE_NORMAL;
     render_main(Device.mFullTransform, true);
+    set_Recorder(NULL);
+    r_pmask(true, false); // disable priority "1"
     Device.Statistic->RenderCALC.End();
 
     BOOL split_the_scene_to_minimize_wait = FALSE;
@@ -527,4 +528,6 @@ void CRender::render_forward()
         r_dsgraph_render_sorted(); // strict-sorted geoms
         g_pGamePersistent->Environment().RenderLast(); // rain/thunder-bolts
     }
+
+    RImplementation.o.distortion = FALSE; // disable distorion
 }
