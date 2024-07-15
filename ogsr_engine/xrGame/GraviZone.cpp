@@ -289,6 +289,20 @@ float CBaseGraviZone ::RelativePower(float dist)
     return power < 0 ? 0 : power;
 }
 
+void CBaseGraviZone::exit_Zone(SZoneObjectInfo& io)
+{
+    CPhysicsShellHolder* GO = smart_cast<CPhysicsShellHolder*>(io.object);
+    CEntityAlive* Alive = smart_cast<CEntityAlive*>(io.object);
+
+    if (!Alive && GO && GO->PPhysicsShell() && Telekinesis().is_active_object(GO))
+    {
+        Telekinesis().deactivate(GO);
+        StopTeleParticles(GO);
+    }
+
+    inherited::exit_Zone(io);
+}
+
 void CBaseGraviZone::net_Relcase(CObject* O)
 {
     inherited::net_Relcase(O);
