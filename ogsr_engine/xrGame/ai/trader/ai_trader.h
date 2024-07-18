@@ -55,7 +55,6 @@ public:
     virtual void Die(CObject* who);
     virtual void Think();
     virtual void HitSignal(float /**P/**/, Fvector& /**local_dir/**/, CObject* /**who/**/, s16 /**element/**/){};
-    virtual void HitImpulse(float /**P/**/, Fvector& /**vWorldDir/**/, Fvector& /**vLocalDir/**/){};
     virtual void Hit(SHit* pHDS);
     virtual void UpdateCL();
 

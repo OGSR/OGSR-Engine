@@ -36,7 +36,6 @@ void CRenderTarget::accum_point(CBackend& cmd_list, light* L)
     cmd_list.set_xform_world(L->m_xform);
     cmd_list.set_xform_view(Device.mView);
     cmd_list.set_xform_project(Device.mProject);
-    enable_scissor(L);
 
     // *****************************	Mask by stencil		*************************************
     // *** similar to "Carmack's reverse", but assumes convex, non intersecting objects,

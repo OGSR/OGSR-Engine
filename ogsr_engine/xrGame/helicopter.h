@@ -310,7 +310,6 @@ public:
     virtual void PHHit(SHit& H);
     // CEntity
     virtual void HitSignal(float P, Fvector& local_dir, CObject* who, s16 element) { ; }
-    virtual void HitImpulse(float P, Fvector& vWorldDir, Fvector& vLocalDir) { ; }
 
     virtual const Fmatrix& get_ParticlesXFORM();
     virtual const Fvector& get_CurrentFirePoint();

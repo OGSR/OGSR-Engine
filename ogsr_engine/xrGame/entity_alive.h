@@ -56,7 +56,6 @@ public:
     virtual void create_anim_mov_ctrl(CBlend* b);
     virtual void destroy_anim_mov_ctrl();
 
-    virtual void HitImpulse(float amount, Fvector& vWorldDir, Fvector& vLocalDir);
     virtual void Hit(SHit* pHDS);
     virtual void Die(CObject* who);
     virtual void g_WeaponBones(int& L, int& R1, int& R2) = 0;

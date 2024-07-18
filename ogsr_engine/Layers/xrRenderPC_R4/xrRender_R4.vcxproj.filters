@@ -825,9 +825,6 @@
     <ClCompile Include="r4_rendertarget_draw_volume.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
-    <ClCompile Include="r4_rendertarget_enable_scissor.cpp">
-      <Filter>Core_Target</Filter>
-    </ClCompile>
     <ClCompile Include="r4_rendertarget_phase_accumulator.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>

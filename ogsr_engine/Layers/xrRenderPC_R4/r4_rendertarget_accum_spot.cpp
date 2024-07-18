@@ -32,7 +32,6 @@ void CRenderTarget::accum_spot(CBackend& cmd_list, light* L)
         cmd_list.set_xform_world(L->m_xform);
         cmd_list.set_xform_view(Device.mView);
         cmd_list.set_xform_project(Device.mProject);
-        enable_scissor(L);
 
         // *** similar to "Carmack's reverse", but assumes convex, non intersecting objects,
         // *** thus can cope without stencil clear with 127 lights
@@ -202,7 +201,6 @@ void CRenderTarget::accum_volumetric(CBackend& cmd_list, light* L)
         cmd_list.set_xform_world(L->m_xform);
         cmd_list.set_xform_view(Device.mView);
         cmd_list.set_xform_project(Device.mProject);
-        enable_scissor(L);
     }
 
     cmd_list.set_ColorWriteEnable();

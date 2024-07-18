@@ -348,7 +348,6 @@ void CRenderTarget::phase_combine(CBackend& cmd_list)
 #endif
 
 #ifdef DEBUG
-    dbg_spheres.clear();
     dbg_lines.clear();
     dbg_planes.clear();
 #endif

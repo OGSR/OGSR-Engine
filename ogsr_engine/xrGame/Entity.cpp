@@ -113,10 +113,6 @@ void CEntity::Hit(SHit* pHDS)
     mInvXForm.transform_dir(vLocalDir, pHDS->dir);
     vLocalDir.invert();
 
-    // hit impulse
-    if (pHDS->impulse)
-        HitImpulse(pHDS->impulse, pHDS->dir, vLocalDir); // @@@: WT
-
     // Calc amount (correct only on local player)
     float lost_health = CalcCondition(pHDS->damage());
 

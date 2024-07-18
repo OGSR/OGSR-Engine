@@ -89,7 +89,6 @@
       <ExceptionHandling>
       </ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <FloatingPointModel>Fast</FloatingPointModel>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -427,7 +426,6 @@
     <ClCompile Include="r4_rendertarget_accum_spot_geom.cpp" />
     <ClCompile Include="r4_rendertarget_draw_rain.cpp" />
     <ClCompile Include="r4_rendertarget_draw_volume.cpp" />
-    <ClCompile Include="r4_rendertarget_enable_scissor.cpp" />
     <ClCompile Include="r4_rendertarget_phase_accumulator.cpp" />
     <ClCompile Include="r4_rendertarget_phase_bloom.cpp" />
     <ClCompile Include="r4_rendertarget_phase_combine.cpp" />

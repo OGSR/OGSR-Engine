@@ -31,7 +31,6 @@ public:
         Fvector P0, P1;
         u32 color;
     };
-    xr_vector<std::pair<Fsphere, Fcolor>> dbg_spheres;
     xr_vector<dbg_line_t> dbg_lines;
     xr_vector<Fplane> dbg_planes;
 #endif
@@ -260,8 +259,6 @@ public:
     void draw_rain(CBackend& cmd_list, light& RainSetup);
 
     bool need_to_render_sunshafts();
-
-    BOOL enable_scissor(light* L); // true if intersects near plane
 
     void draw_volume(CBackend& cmd_list, light* L);
     void accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, Fmatrix& xform, Fmatrix& xform_prev, float fBias);
