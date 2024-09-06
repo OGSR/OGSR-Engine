@@ -14,7 +14,6 @@
 #include "script_callback_ex.h"
 #include "script_game_object.h"
 
-const float default_grenade_detonation_threshold_hit = 100;
 CGrenade::CGrenade(void)
 {
     m_destroy_callback.clear();
@@ -30,7 +29,7 @@ void CGrenade::Load(LPCSTR section)
 
     HUD_SOUND::LoadSound(section, "snd_checkout", sndCheckout, m_eSoundCheckout);
 
-    m_grenade_detonation_threshold_hit = READ_IF_EXISTS(pSettings, r_float, section, "detonation_threshold_hit", default_grenade_detonation_threshold_hit);
+    m_grenade_detonation_threshold_hit = READ_IF_EXISTS(pSettings, r_float, section, "detonation_threshold_hit", 100);
 }
 
 void CGrenade::Hit(SHit* pHDS)
@@ -170,9 +169,7 @@ void CGrenade::Destroy()
 
 bool CGrenade::Useful() const
 {
-    bool res = (/* !m_throw && */ m_dwDestroyTime == 0xffffffff && CExplosive::Useful() && TestServerFlag(CSE_ALifeObject::flCanSave));
-
-    return res;
+    return m_dwDestroyTime == 0xffffffff && CExplosive::Useful() && TestServerFlag(CSE_ALifeObject::flCanSave);
 }
 
 void CGrenade::OnEvent(NET_Packet& P, u16 type)
@@ -215,7 +212,30 @@ void CGrenade::PutNextToSlot()
             if (pActor)
                 pActor->OnPrevWeaponSlot();
         }
-        /////	m_thrown				= false;
+    }
+}
+
+void CGrenade::TrySwitchGrenade(CGrenade* grenade)
+{  
+    static CGrenade* target{}; 
+    static bool need_next{};
+
+    if (!need_next && grenade)
+    {
+        target = grenade;
+        need_next = true;
+        SwitchState(eHiding);
+    }
+    else if (need_next)
+    {
+        need_next = false;
+        if (m_pCurrentInventory && target)
+        {
+            m_pCurrentInventory->Ruck(this);
+            m_pCurrentInventory->SetActiveSlot(NO_ACTIVE_SLOT);
+            m_pCurrentInventory->Slot(target);
+        }
+        target = nullptr;
     }
 }
 
@@ -224,6 +244,12 @@ void CGrenade::OnAnimationEnd(u32 state)
     switch (state)
     {
     case eThrowEnd: SwitchState(eHidden); break;
+    case eHiding: {
+        TrySwitchGrenade();
+        setVisible(FALSE);
+        SwitchState(eHidden);
+        break;
+    }
     default: inherited::OnAnimationEnd(state);
     }
 }
@@ -246,42 +272,21 @@ bool CGrenade::Action(s32 cmd, u32 flags)
         if (flags & CMD_START)
         {
             const u32 state = GetState();
-            if (state == eHidden || state == eIdle || state == eBore)
+            if (m_pCurrentInventory && (state == eHidden || state == eIdle || state == eBore))
             {
-                if (m_pCurrentInventory)
+                xr_map<shared_str, CGrenade*> tmp;
+                tmp.insert(mk_pair(cNameSect(), this));
+                for (auto it : m_pCurrentInventory->m_ruck)
                 {
-                    TIItemContainer::iterator it = m_pCurrentInventory->m_ruck.begin();
-                    TIItemContainer::iterator it_e = m_pCurrentInventory->m_ruck.end();
-                    /*	for(;it!=it_e;++it)
-                        {
-                            CGrenade *pGrenade = smart_cast<CGrenade*>(*it);
-                            if(pGrenade && xr_strcmp(pGrenade->cNameSect(), cNameSect()))
-                            {
-                                m_pCurrentInventory->Ruck(this);
-                                m_pCurrentInventory->SetActiveSlot(NO_ACTIVE_SLOT);
-                                m_pCurrentInventory->Slot(pGrenade);
-                                return true;
-                            }
-                        }*/
-                    xr_map<shared_str, CGrenade*> tmp;
-                    tmp.insert(mk_pair(cNameSect(), this));
-                    for (; it != it_e; ++it)
-                    {
-                        CGrenade* pGrenade = smart_cast<CGrenade*>(*it);
-                        if (pGrenade && (tmp.find(pGrenade->cNameSect()) == tmp.end()))
-                            tmp.insert(mk_pair(pGrenade->cNameSect(), pGrenade));
-                    }
-                    xr_map<shared_str, CGrenade*>::iterator curr_it = tmp.find(cNameSect());
-                    curr_it++;
-                    CGrenade* tgt;
-                    if (curr_it != tmp.end())
-                        tgt = curr_it->second;
-                    else
-                        tgt = tmp.begin()->second;
-                    m_pCurrentInventory->Ruck(this);
-                    m_pCurrentInventory->SetActiveSlot(NO_ACTIVE_SLOT);
-                    m_pCurrentInventory->Slot(tgt);
+                    CGrenade* pGrenade = smart_cast<CGrenade*>(it);
+                    if (pGrenade && (tmp.find(pGrenade->cNameSect()) == tmp.end()))
+                        tmp.insert(mk_pair(pGrenade->cNameSect(), pGrenade));
                 }
+                xr_map<shared_str, CGrenade*>::iterator curr_it = tmp.find(cNameSect());
+                curr_it++;
+                CGrenade* tgt = curr_it != tmp.end() ? curr_it->second : tmp.begin()->second;
+                if (tgt->cNameSect() != this->cNameSect()) // prxphet: Если тот же тип, ничего не делаем
+                    TrySwitchGrenade(tgt);
             }
         }
         return true;
