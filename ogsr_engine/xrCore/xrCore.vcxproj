@@ -143,6 +143,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\3rd_party\Src\tracy\public\TracyClient.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\Layers\xrAPI\xrAPI.cpp" />
     <ClCompile Include="FTimer.cpp" />
     <ClCompile Include="stacktrace_collector.cpp" />

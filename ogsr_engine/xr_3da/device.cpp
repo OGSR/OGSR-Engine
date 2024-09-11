@@ -112,6 +112,8 @@ ENGINE_API xr_list<fastdelegate::FastDelegate<bool()>> g_loading_events;
 
 void CRenderDevice::on_idle()
 {
+    ZoneScoped;
+
     if (!b_is_Ready)
     {
         Sleep(100);
@@ -196,6 +198,8 @@ void CRenderDevice::on_idle()
 
     if (b_is_Active)
     {
+        ZoneScoped;
+
         if (Begin())
         {
             seqRender.Process(rp_Render);
@@ -255,6 +259,8 @@ void CRenderDevice::on_idle()
 
     if (!b_is_Active)
         Sleep(1);
+
+    FrameMark;
 }
 
 void CRenderDevice::message_loop()

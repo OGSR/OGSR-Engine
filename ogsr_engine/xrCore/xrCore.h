@@ -91,6 +91,8 @@
 #endif
 #endif
 
+#include <tracy/Tracy.hpp>
+
 #include "xrDebug.h"
 #include "vector.h"
 

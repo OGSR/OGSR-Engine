@@ -12,6 +12,8 @@
 #include "MainMenu.h"
 #include "object_factory.h"
 
+#include <tracy/TracyLua.hpp>
+
 void export_classes(lua_State* L);
 
 CScriptEngine::CScriptEngine()
@@ -111,6 +113,9 @@ void CScriptEngine::init()
     R_ASSERT2(LSVM, "! ERROR : Cannot initialize LUA VM!");
     reinit(LSVM);
     luabind::open(LSVM); //Запуск луабинда
+
+    tracy::LuaRegister(LSVM);
+
     //--------------Установка калбеков------------------//
 #ifdef LUABIND_NO_EXCEPTIONS
     luabind::set_error_callback(lua_error);

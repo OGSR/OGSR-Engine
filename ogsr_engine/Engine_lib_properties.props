@@ -13,6 +13,14 @@
       <ObjectFileName>$(SolutionDir)\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</ObjectFileName>
       <ProgramDataBaseFileName>$(SolutionDir)\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</ProgramDataBaseFileName>
       <AdditionalOptions>/source-charset:utf-8 /we4566 /we4828 /we4715 /we4189 /we4595 /we4834 /we4018 /we4101 /we4552 %(AdditionalOptions)</AdditionalOptions>
+      <PreprocessorDefinitions>
+        <!-- comment to disable
+        TRACY_ENABLE;
+        TRACY_NO_FRAME_IMAGE;
+        TRACY_ON_DEMAND;  -->
+        %(PreprocessorDefinitions)
+      </PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\tracy\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <ImportLibrary>$(SolutionDir)\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\$(TargetName).lib</ImportLibrary>

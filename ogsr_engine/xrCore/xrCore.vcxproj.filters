@@ -58,6 +58,9 @@
     <Filter Include="Utils\imdexlib">
       <UniqueIdentifier>{58baf96e-ab86-4e39-8fab-60b26515b38c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Profiler">
+      <UniqueIdentifier>{03acac38-71f4-48a3-833f-d74066591de7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FTimer.cpp">
@@ -156,6 +159,9 @@
     </ClCompile>
     <ClCompile Include="trivial_encryptor.cpp">
       <Filter>FS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\3rd_party\Src\tracy\public\TracyClient.cpp">
+      <Filter>Profiler</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
