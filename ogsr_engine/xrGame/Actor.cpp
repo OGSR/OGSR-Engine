@@ -1234,7 +1234,7 @@ void CActor::g_PerformDrop()
     b_DropActivated = FALSE;
 
     PIItem pItem = inventory().ActiveItem();
-    if (0 == pItem)
+    if (!pItem || pItem->IsQuestItem())
         return;
 
     u32 s = inventory().GetActiveSlot();
