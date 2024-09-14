@@ -136,7 +136,23 @@ extern float adj_delta_pos, adj_delta_rot;
 
 void CAttachableItem::ParseCurrentItem(CGameFont* F) {}
 
-void CAttachableItem::SaveAttachableParams() { Msg("!![%s] It's not implemented now", __FUNCTION__); }
+void CAttachableItem::SaveAttachableParams() 
+{ 
+    const char* sect_name = object().cNameSect().c_str();
+    string_path buff;
+    FS.update_path(buff, "$logs$", make_string("_world\\%s.ltx", sect_name).c_str());
+
+    CInifile pCfg(buff, FALSE, FALSE, TRUE);
+
+    pCfg.w_fvector3(sect_name, "attach_position_offset", m_offset.c);
+
+    Fvector ypr;
+    m_offset.getHPB(ypr.x, ypr.y, ypr.z);
+    sprintf_s(buff, "%f,%f,%f", ypr.y, ypr.x, ypr.z);
+    pCfg.w_string(sect_name, "attach_angle_offset", buff);
+
+    Msg("--[%s] data saved to [%s]", __FUNCTION__, pCfg.fname());
+}
 
 bool attach_adjust_mode_keyb(int dik)
 {
@@ -213,6 +229,6 @@ void attach_draw_adjust_mode()
     F->OutNext(_text);
 
     const Fvector _ang = CAttachableItem::m_dbgItem->get_angle_offset();
-    sprintf_s(_text, "attach_angle_offset IS [%3.3f][%3.3f][%3.3f]", _ang.x, _ang.y, _ang.z);
+    sprintf_s(_text, "attach_angle_offset IS [%3.3f][%3.3f][%3.3f]", _ang.y, _ang.x, _ang.z);
     F->OutNext(_text);
 }
