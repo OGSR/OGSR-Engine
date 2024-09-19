@@ -35,27 +35,41 @@ u32 CPatrolPathParams::count() const { return (m_path->vertices().size()); }
 
 const Fvector& CPatrolPathParams::point(u32 index) const
 {
-    VERIFY(m_path);
-    VERIFY(!m_path->vertices().empty());
+    ASSERT_FMT(m_path, "!![%s] Empty path [%s]", __FUNCTION__, m_path_name.c_str());
+    ASSERT_FMT(!m_path->vertices().empty(), "!![%s] Empty vertices in [%s]", __FUNCTION__, m_path_name.c_str());
     if (!m_path->vertex(index))
     {
-        ai().script_engine().script_log(eLuaMessageTypeError, "Can't get information about patrol point number %d in the patrol way %s", index, *m_path_name);
+        Msg("!![%s] Can't get information about patrol point number [%u] in the patrol way [%s]", __FUNCTION__, index, m_path_name.c_str());
         index = (*m_path->vertices().begin()).second->vertex_id();
     }
-    VERIFY(m_path->vertex(index));
-    return (m_path->vertex(index)->data().position());
+    ASSERT_FMT(m_path->vertex(index), "!![%s] Can't get information about patrol point number [%u] in the patrol way [%s]", __FUNCTION__, index, m_path_name.c_str());
+    return m_path->vertex(index)->data().position();
 }
 
 u32 CPatrolPathParams::level_vertex_id(u32 index) const
 {
-    VERIFY(m_path->vertex(index));
-    return (m_path->vertex(index)->data().level_vertex_id());
+    ASSERT_FMT(m_path, "!![%s] Empty path [%s]", __FUNCTION__, m_path_name.c_str());
+    ASSERT_FMT(!m_path->vertices().empty(), "!![%s] Empty vertices in [%s]", __FUNCTION__, m_path_name.c_str());
+    if (!m_path->vertex(index))
+    {
+        Msg("!![%s] Can't get information about patrol point number [%u] in the patrol way [%s]", __FUNCTION__, index, m_path_name.c_str());
+        index = (*m_path->vertices().begin()).second->vertex_id();
+    }
+    ASSERT_FMT(m_path->vertex(index), "!![%s] Can't get information about patrol point number [%u] in the patrol way [%s]", __FUNCTION__, index, m_path_name.c_str());
+    return m_path->vertex(index)->data().level_vertex_id();
 }
 
 GameGraph::_GRAPH_ID CPatrolPathParams::game_vertex_id(u32 index) const
 {
-    VERIFY(m_path->vertex(index));
-    return (m_path->vertex(index)->data().game_vertex_id());
+    ASSERT_FMT(m_path, "!![%s] Empty path [%s]", __FUNCTION__, m_path_name.c_str());
+    ASSERT_FMT(!m_path->vertices().empty(), "!![%s] Empty vertices in [%s]", __FUNCTION__, m_path_name.c_str());
+    if (!m_path->vertex(index))
+    {
+        Msg("!![%s] Can't get information about patrol point number [%u] in the patrol way [%s]", __FUNCTION__, index, m_path_name.c_str());
+        index = (*m_path->vertices().begin()).second->vertex_id();
+    }
+    ASSERT_FMT(m_path->vertex(index), "!![%s] Can't get information about patrol point number [%u] in the patrol way [%s]", __FUNCTION__, index, m_path_name.c_str());
+    return m_path->vertex(index)->data().game_vertex_id();
 }
 
 u32 CPatrolPathParams::point(LPCSTR name) const
