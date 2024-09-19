@@ -1,17 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
@@ -70,9 +62,7 @@
       <ExceptionHandling>
       </ExceptionHandling>
       <FunctionLevelLinking Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</FunctionLevelLinking>
-      <FunctionLevelLinking Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</FunctionLevelLinking>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -83,12 +73,6 @@
       <AdditionalDependencies>xrCore.lib;</AdditionalDependencies>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <LinkTimeCodeGeneration />
-    </Link>
-    <Link Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      <TargetMachine>MachineX86</TargetMachine>
-    </Link>
-    <Link Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <Link Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       <TargetMachine>MachineX64</TargetMachine>
@@ -119,10 +103,7 @@
       </ExceptionHandling>
       <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">EnableFastChecks</BasicRuntimeChecks>
       <FunctionLevelLinking Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</FunctionLevelLinking>
-      <FunctionLevelLinking Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</FunctionLevelLinking>
-      <BasicRuntimeChecks Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">EnableFastChecks</BasicRuntimeChecks>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <DebugInformationFormat Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
@@ -136,12 +117,6 @@
       <AdditionalDependencies>xrCore.lib;</AdditionalDependencies>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <LinkTimeCodeGeneration />
-    </Link>
-    <Link Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      <TargetMachine>MachineX86</TargetMachine>
-    </Link>
-    <Link Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <Link Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       <TargetMachine>MachineX64</TargetMachine>
