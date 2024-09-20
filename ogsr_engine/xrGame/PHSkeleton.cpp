@@ -88,16 +88,17 @@ bool CPHSkeleton::Spawn(CSE_Abstract* D)
     else
     {
         CPhysicsShellHolder* obj = PPhysicsShellHolder();
-        IKinematics* K = NULL;
+
+        IKinematics* k = nullptr;
         if (obj->Visual())
         {
-            K = smart_cast<IKinematics*>(obj->Visual());
-            if (K)
+            k = smart_cast<IKinematics*>(obj->Visual());
+            if (k)
             {
-                K->LL_SetBoneRoot(po->saved_bones.root_bone);
-                K->LL_SetBonesVisible(po->saved_bones.bones_mask);
+                k->LL_SetBoneRoot(po->saved_bones.root_bone);
             }
         }
+
         SpawnInitPhysics(D);
         RestoreNetState(po);
         if (obj->PPhysicsShell() && obj->PPhysicsShell()->isFullActive())
@@ -105,9 +106,9 @@ bool CPHSkeleton::Spawn(CSE_Abstract* D)
 
         CPHDestroyableNotificate::spawn_notificate(D);
 
-        if (K)
+        if (k)
         {
-            CInifile* ini = K->LL_UserData();
+            CInifile* ini = k->LL_UserData();
             if (ini && ini->section_exist("collide"))
             {
                 if (ini->line_exist("collide", "not_collide_parts"))
@@ -127,6 +128,8 @@ bool CPHSkeleton::Spawn(CSE_Abstract* D)
                     obj->PPhysicsShell()->SetIgnoreSmall();
                 }
             }
+
+            k->LL_SetBonesVisible(po->saved_bones.bones_mask);
         }
     }
     return false;
