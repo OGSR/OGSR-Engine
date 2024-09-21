@@ -257,7 +257,6 @@ public:
 
 private:
     void message_loop();
-    void second_thread();
 };
 
 extern ENGINE_API CRenderDevice Device;

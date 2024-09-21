@@ -33,7 +33,7 @@ void R_occlusion::cleanup_lost()
         }
     }
     if (cnt > 0)
-        Msg("! [%s]: cleanup %u lost queries", __FUNCTION__, cnt);
+        MsgDbg("! [%s]: cleanup %u lost queries", __FUNCTION__, cnt);
 }
 
 u32 R_occlusion::occq_begin(u32& ID)

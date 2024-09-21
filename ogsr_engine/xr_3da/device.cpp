@@ -163,10 +163,33 @@ void CRenderDevice::on_idle()
     mView_saved = mView;
     mProject_saved = mProject;
 
+#ifdef LOG_SECOND_THREAD_STATS
     const auto SecondThreadStartTime = std::chrono::high_resolution_clock::now();
+#endif
 
     // allow secondary thread to do its job
-    auto awaiter = TTAPI->submit([this] { second_thread(); });
+    auto awaiter = TTAPI->submit([this] {
+#ifdef LOG_SECOND_THREAD_STATS
+        const auto SecondThreadTasksStartTime = std::chrono::high_resolution_clock::now();
+#endif
+        auto size = seqParallel.size();
+
+        while (size > 0)
+        {
+            seqParallel.front()();
+
+            seqParallel.pop_front();
+
+            size--;
+        }
+
+        seqFrameMT.Process(rp_Frame);
+
+#ifdef LOG_SECOND_THREAD_STATS
+        const auto SecondThreadTasksEndTime = std::chrono::high_resolution_clock::now();
+        SecondThreadTasksElapsedTime = SecondThreadTasksEndTime - SecondThreadTasksStartTime;
+#endif
+    });
 
     Statistic->RenderTOTAL_Real.FrameStart();
     Statistic->RenderTOTAL_Real.Begin();
@@ -209,14 +232,18 @@ void CRenderDevice::on_idle()
         }
     }
 
+#ifdef LOG_SECOND_THREAD_STATS
     const auto SecondThreadEndTime = std::chrono::high_resolution_clock::now();
 
     bool show_stats{};
     if (awaiter.wait_for(FrameElapsedTime) == std::future_status::timeout)
         show_stats = true;
+#else
+    if (awaiter.valid())
+#endif
+        awaiter.get();
 
-    awaiter.get();
-
+#ifdef LOG_SECOND_THREAD_STATS
     if (show_stats && dwPrecacheFrame == 0)
     {
         const std::chrono::duration<double, std::milli> SecondThreadElapsedTime = SecondThreadEndTime - SecondThreadStartTime;
@@ -224,6 +251,7 @@ void CRenderDevice::on_idle()
         Msg("##[%s] Second thread work time is too long! Avail: [%f]ms, used: [%f]ms, free: [%f]ms", __FUNCTION__, SecondThreadElapsedTime.count(),
             SecondThreadTasksElapsedTime.count(), SecondThreadFreeTime.count());
     }
+#endif
 
     if (!b_is_Active)
         Sleep(1);
@@ -244,27 +272,6 @@ void CRenderDevice::message_loop()
 
         on_idle();
     }
-}
-
-void CRenderDevice::second_thread()
-{
-    const auto SecondThreadTasksStartTime = std::chrono::high_resolution_clock::now();
-
-    auto size = seqParallel.size();
-
-    while (size > 0)
-    {
-        seqParallel.front()();
-
-        seqParallel.pop_front();
-
-        size--;
-    }
-
-    seqFrameMT.Process(rp_Frame);
-
-    const auto SecondThreadTasksEndTime = std::chrono::high_resolution_clock::now();
-    SecondThreadTasksElapsedTime = SecondThreadTasksEndTime - SecondThreadTasksStartTime;
 }
 
 static void LogOsVersion()

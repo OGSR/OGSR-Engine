@@ -129,15 +129,20 @@ DEFINE_VECTOR(xr_rtoken, RTokenVec, RTokenVecIt);
 #include "xr_trims.h"
 #include "xr_ini.h"
 
-#ifdef OGSR_TOTAL_DBG
+#if defined(_DEBUG) || defined(OGSR_TOTAL_DBG)
 #define LogDbg Log
 #define MsgDbg Msg
 #define FuncDbg(...) __VA_ARGS__
-#define ASSERT_FMT_DBG ASSERT_FMT
+#define LOG_SECOND_THREAD_STATS
 #else
 #define LogDbg __noop
 #define MsgDbg __noop
 #define FuncDbg __noop
+#endif
+
+#ifdef OGSR_TOTAL_DBG
+#define ASSERT_FMT_DBG ASSERT_FMT
+#else
 #define ASSERT_FMT_DBG(cond, ...) \
     do \
     { \
