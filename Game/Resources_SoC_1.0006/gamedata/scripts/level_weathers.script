@@ -1,0 +1,103 @@
+
+
+local MIN_WIND, MAX_WIND, WIND_STEP, WIND_UPDATE_MINUTES = 300, 900, 50, 1
+
+if not math.clamp then
+	math.clamp = function( n, min, max )
+		if min>max then min,max=max,min end
+		return (n>max and max) or (n<min and min) or n
+	end
+end
+
+
+class "WeatherManager"
+function WeatherManager:__init()
+	--printf					("WeatherManager:WeatherManager()")
+	self.weather_change_day = 0
+	self.update_time = 0
+	self.update_level = ""
+end
+
+function WeatherManager:reset()
+	--printf					("WeatherManager:WeatherManager():Reset()")
+	-- Загрузить кондлист с погодой.
+	local ini = ini_file("game.ltx")
+	local weather = utils.cfg_get_string(ini, level.name(), "weathers", db.actor, false, "", "default")
+	local postprocess = utils.cfg_get_string(ini, level.name(), "postprocess", db.actor, false, "")
+	if postprocess ~= nil then
+		printf("LEVEL POSTPROCESS: level: [%s], postprocess: [%s]", level.name(), postprocess)
+		level.add_pp_effector(postprocess, 999, true)	
+	else
+		printf("LEVEL POSTPROCESS: level: [%s], postprocess: [none]", level.name())
+		level.remove_pp_effector(999)
+	end	
+
+	if weather == "default" then
+		-- сетим дефолтовую погоду
+		self.weather_list = xr_logic.parse_condlist(db.actor, level.name(), "weather", "default")
+	else		
+		self.weather_list = xr_logic.parse_condlist(db.actor, level.name(), "weather", weather)
+	end	
+	self:select_weather(true)
+end
+
+function WeatherManager:select_weather(forced)
+	self.weather_change_day = level.get_time_days()
+	self.update_level = level.name()
+	local weather = xr_logic.pick_section_from_condlist(db.actor, db.actor, self.weather_list)
+	printf("WEATHER: '%s' now '%s'", weather, tostring(forced))
+	level.set_weather(weather,forced);
+	--
+	local env = level.environment()
+	for idx = 0 , 1 do
+		local env_desc = env:getCurrentWeather( idx )
+		env_desc.wind_velocity = math.random(MIN_WIND, MAX_WIND)
+		--
+		env_desc.wind_direction = utils.deg2rad(math.random(360)) --Рандомный угол ветра
+		--
+		env_desc.m_fSunShaftsIntensity = math.random(3000) * 0.0001 --Рандомная интенсивность лучей
+		--
+		--log3("--[%s][%s] wind_velocity: [%s], wind_direction: [%s], m_fSunShaftsIntensity: [%s]", script_name(), idx, env_desc.wind_velocity, env_desc.wind_direction, env_desc.m_fSunShaftsIntensity)
+	end
+	--
+	if not self.lcall then
+		self.lcall = level.add_call(function()
+			for idx = 0 , 1 do
+				local env_desc = level.environment():getCurrentWeather( idx )
+				if env_desc.wind_velocity < MIN_WIND then
+					env_desc.wind_velocity = math.random(MIN_WIND, MAX_WIND)
+				end
+				env_desc.wind_velocity = math.clamp(env_desc.wind_velocity + math.random(-WIND_STEP, WIND_STEP), MIN_WIND, MAX_WIND)
+				--
+				--log3("--[%s][%s] new wind_velocity: [%s]", script_name(), idx, env_desc.wind_velocity)
+			end
+			self.lcall:set_pause( WIND_UPDATE_MINUTES * 60 * 1000 )
+			return false
+		end, function() end )
+	end
+end
+
+function WeatherManager:load(F)
+	self.update_level 		= F:r_stringZ();
+	self.update_time 		= F:r_u32();
+end
+
+function WeatherManager:save(F)
+	F:w_stringZ				(self.update_level);
+	F:w_u32					(self.update_time);
+end
+
+function WeatherManager:update()
+	if self.update_time <= time_global() then
+		printf("weather_update day [%s]", level.get_time_days())
+		
+		if self.update_level ~= level.name() then
+			self:select_weather(true)			
+		end
+		
+		if self.weather_change_day ~= level.get_time_days() then
+			self:select_weather(false)
+		end
+		self.update_time = self.update_time + 10000
+	end
+end
