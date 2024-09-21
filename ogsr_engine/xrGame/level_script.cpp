@@ -1126,8 +1126,10 @@ void CLevel::script_register(lua_State* L)
 
             //--#SM+# Begin --
             def("set_blender_mode_main", &set_blender_mode_main), def("get_blender_mode_main", &get_blender_mode_main), def("set_shader_params", &set_shader_params),
-            def("get_shader_params", &get_shader_params)
+            def("get_shader_params", &get_shader_params),
             //--#SM+# End --
+            def("block_action", [](EGameActions action) { Level().block_action(action); }),
+            def("unblock_action", [](EGameActions action) { Level().unblock_action(action); })
     ],
 
         module(L, "actor_stats")[def("add_points", &add_actor_points), def("add_points_str", &add_actor_points_str), def("get_points", &get_actor_points),

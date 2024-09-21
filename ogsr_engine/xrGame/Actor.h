@@ -709,7 +709,6 @@ public:
 private:
     ALife::_OBJECT_ID m_holder_id;
 
-    xr_map<EGameActions, bool> m_blocked_actions; // Вектор с заблокированными действиями. Real Wolf. 14.10.2014.
 public:
     virtual bool register_schedule() const { return false; }
     IC u32 get_state() const { return this->mstate_real; }
@@ -719,11 +718,6 @@ public:
     IC u32 get_state_wishful() const { return this->mstate_wishful; }
 
     IC void set_state_wishful(u32 state) { mstate_wishful = state; }
-
-    // Real Wolf. Start. 14.10.2014
-    void block_action(EGameActions cmd);
-    void unblock_action(EGameActions cmd);
-    // Real Wolf. End. 14.10.2014
 
     bool is_actor_normal();
     bool is_actor_crouch();

@@ -47,9 +47,6 @@ void CActor::IR_OnKeyboardPress(int cmd)
         return;
     }
 
-    if (m_blocked_actions.find((EGameActions)cmd) != m_blocked_actions.end())
-        return; // Real Wolf. 14.10.2014
-
     if (Remote())
         return;
 
@@ -198,9 +195,6 @@ void CActor::IR_OnKeyboardRelease(int cmd)
     if (g_bHudAdjustMode && pInput->iGetAsyncKeyState(DIK_LSHIFT))
         return;
 
-    if (m_blocked_actions.find((EGameActions)cmd) != m_blocked_actions.end())
-        return; // Real Wolf. 14.10.2014
-
     if (Remote())
         return;
 
@@ -257,9 +251,6 @@ void CActor::IR_OnKeyboardHold(int cmd)
             g_player_hud->tune(Ivector{0, 0, -1});
         return;
     }
-
-    if (m_blocked_actions.find((EGameActions)cmd) != m_blocked_actions.end())
-        return; // Real Wolf. 14.10.2014
 
     if (Remote() || !g_Alive())
         return;

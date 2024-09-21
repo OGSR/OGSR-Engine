@@ -185,8 +185,6 @@ void CScriptActor::script_register(lua_State* L)
                .property("orientation", &get_actor_orientation)
 
                // Real Wolf. Start. 14.10.2014.
-               .def("block_action", &CActor::block_action)
-               .def("unblock_action", &CActor::unblock_action)
                .def("press_action", &CActor::IR_OnKeyboardPress)
                .def("hold_action", &CActor::IR_OnKeyboardHold)
                .def("release_action", &CActor::IR_OnKeyboardRelease)

@@ -12,6 +12,7 @@
 #include "alife_space.h"
 #include "xrDebug.h"
 #include "xrServer.h"
+#include "xr_level_controller.h"
 
 class CHUDManager;
 class CParticlesObject;
@@ -148,6 +149,8 @@ private:
     SoundRegistryMap sound_registry;
     xr_deque<std::string> sound_registry_defer;
 
+    xr_set<EGameActions> m_blocked_actions; // Вектор с заблокированными действиями. Real Wolf. 14.10.2014.
+
 public:
     bool PrefetchSound(LPCSTR name);
     bool PrefetchManySounds(LPCSTR prefix);
@@ -218,6 +221,11 @@ public:
     virtual void IR_OnMouseStop(int, int);
     virtual void IR_OnMouseWheel(int direction);
     virtual void IR_OnActivate(void);
+
+   // Real Wolf. Start. 14.10.2014
+    void block_action(EGameActions cmd);
+    void unblock_action(EGameActions cmd);
+    // Real Wolf. End. 14.10.2014
 
     int get_RPID(LPCSTR name);
 
