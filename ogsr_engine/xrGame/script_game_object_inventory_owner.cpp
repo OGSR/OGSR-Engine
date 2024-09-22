@@ -1170,61 +1170,61 @@ u8 CScriptGameObject::GetSlot() const
     return inventory_item->GetSlot();
 }
 
-void CScriptGameObject::MoveToRuck(CScriptGameObject* obj)
+bool CScriptGameObject::MoveToRuck(CScriptGameObject* obj)
 {
     CInventoryItem* inventory_item = smart_cast<CInventoryItem*>(&(obj->object()));
     if (!inventory_item)
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CInventoryItem : cannot access class member move_to_ruck!");
-        return;
+        return false;
     }
 
     CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(&object());
     if (!inventory_owner)
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CInventoryOwner : cannot access class member move_to_ruck!");
-        return;
+        return false;
     }
 
-    inventory_owner->inventory().Ruck(inventory_item);
+    return inventory_owner->inventory().Ruck(inventory_item);
 }
 
-void CScriptGameObject::MoveToSlot(CScriptGameObject* obj, bool bNotActivate)
+bool CScriptGameObject::MoveToSlot(CScriptGameObject* obj, bool bNotActivate)
 {
     CInventoryItem* inventory_item = smart_cast<CInventoryItem*>(&(obj->object()));
     if (!inventory_item)
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CInventoryItem : cannot access class member move_to_slot!");
-        return;
+        return false;
     }
 
     CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(&object());
     if (!inventory_owner)
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CInventoryOwner : cannot access class member move_to_slot!");
-        return;
+        return false;
     }
 
-    inventory_owner->inventory().Slot(inventory_item, bNotActivate);
+    return inventory_owner->inventory().Slot(inventory_item, bNotActivate);
 }
 
-void CScriptGameObject::MoveToBelt(CScriptGameObject* obj)
+bool CScriptGameObject::MoveToBelt(CScriptGameObject* obj)
 {
     CInventoryItem* inventory_item = smart_cast<CInventoryItem*>(&(obj->object()));
     if (!inventory_item)
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CInventoryItem : cannot access class member move_to_belt!");
-        return;
+        return false;
     }
 
     CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(&object());
     if (!inventory_owner)
     {
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CInventoryOwner : cannot access class member move_to_belt!");
-        return;
+        return false;
     }
 
-    inventory_owner->inventory().Belt(inventory_item);
+    return inventory_owner->inventory().Belt(inventory_item);
 }
 
 u32 CScriptGameObject::BeltSize() const
