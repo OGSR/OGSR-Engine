@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#if __cpp_lib_stacktrace
+#if 0 //__cpp_lib_stacktrace
 
 #include <stacktrace>
 
