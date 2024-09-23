@@ -1,8 +1,7 @@
-#ifndef __XR_AREA_H__
-#define __XR_AREA_H__
+#pragma once
 
 #include "xr_collide_form.h"
-#include "..\xrCDB\xr_collide_defs.h"
+#include "../xrCDB/xr_collide_defs.h"
 
 // refs
 class ENGINE_API ISpatial;
@@ -18,6 +17,7 @@ private:
     // Debug
     CDB::MODEL Static;
     Fbox m_BoundingVolume;
+
 public:
 #ifdef DEBUG
     ref_shader sh_debug;
@@ -26,10 +26,10 @@ public:
 #endif
 
 private:
-    BOOL _RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::ray_cache* cache, CObject* ignore_object);
-    BOOL _RayPick(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::rq_result& R, CObject* ignore_object);
-    BOOL _RayQuery(collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, LPVOID user_data, collide::test_callback* tb, CObject* ignore_object);
-    BOOL _RayQuery2(collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, LPVOID user_data, collide::test_callback* tb, CObject* ignore_object);
+    BOOL _RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::ray_cache* cache, const CObject* ignore_object);
+    BOOL _RayPick(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::rq_result& R, const CObject* ignore_object) const;
+    BOOL _RayQuery(collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, LPVOID user_data, collide::test_callback* tb,
+                   const CObject* ignore_object) const;
 
 public:
     CObjectSpace();
@@ -38,15 +38,16 @@ public:
     void Load();
 
     // Occluded/No
-    BOOL RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::ray_cache* cache, CObject* ignore_object);
+    BOOL RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::ray_cache* cache, const CObject* ignore_object);
 
     // Game raypick (nearest) - returns object and addititional params
-    BOOL RayPick(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::rq_result& R, CObject* ignore_object);
+    BOOL RayPick(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::rq_result& R, const CObject* ignore_object) const;
 
     // General collision query
-    BOOL RayQuery(collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, LPVOID user_data, collide::test_callback* tb, CObject* ignore_object);
-    BOOL RayQuery(collide::rq_results& dest, ICollisionForm* target, const collide::ray_defs& rq);
-    bool BoxQuery(Fvector const& box_center, Fvector const& box_z_axis, Fvector const& box_y_axis, Fvector const& box_sizes, xr_vector<Fvector>* out_tris);
+    BOOL RayQuery(collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, LPVOID user_data, collide::test_callback* tb,
+                  const CObject* ignore_object) const;
+
+    bool BoxQuery(Fvector const& box_center, Fvector const& box_z_axis, Fvector const& box_y_axis, Fvector const& box_sizes, xr_vector<Fvector>* out_tris) const;
 
     int GetNearest(xr_vector<CObject*>& q_nearest, ICollisionForm* obj, float range);
     int GetNearest(xr_vector<CObject*>& q_nearest, const Fvector& point, float range, CObject* ignore_object);
@@ -56,7 +57,7 @@ public:
     Fvector* GetStaticVerts() { return Static.get_verts(); }
     CDB::MODEL* GetStaticModel() { return &Static; }
 
-    const Fbox& GetBoundingVolume() { return m_BoundingVolume; }
+    const Fbox& GetBoundingVolume() const { return m_BoundingVolume; }
 
     // Debugging
 #ifdef DEBUG
@@ -64,5 +65,3 @@ public:
     ref_shader dbgGetShader() { return sh_debug; }
 #endif
 };
-
-#endif //__XR_AREA_H__

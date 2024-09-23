@@ -20,10 +20,10 @@ void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range)
         return;
     if (S->g_object && S->g_object->getDestroy())
     {
-        S->g_object = 0;
+        S->g_object = nullptr;
         return;
     }
-    if (0 == S->feedback)
+    if (nullptr == S->feedback)
         return;
 
     clamp(range, 0.1f, 500.f);
@@ -51,7 +51,7 @@ void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range)
     for (; it != end; it++)
     {
         Feel::Sound* L = (*it)->dcast_FeelSound();
-        if (0 == L)
+        if (nullptr == L)
             continue;
         CObject* CO = (*it)->dcast_CObject();
         VERIFY(CO);
@@ -64,12 +64,12 @@ void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range)
         if (dist > p->max_ai_distance)
             continue;
         VERIFY(_valid(dist));
-        VERIFY2(!fis_zero(p->max_ai_distance), S->handle->file_name());
+        VERIFY(!fis_zero(p->max_ai_distance), S->handle->file_name());
         float Power = (1.f - dist / p->max_ai_distance) * p->volume;
         VERIFY(_valid(Power));
         if (Power > EPS_S)
         {
-            float occ = Sound->get_occlusion_to((*it)->spatial.sphere.P, snd_position);
+            const float occ = Sound->get_occlusion_to((*it)->spatial.sphere.P, snd_position);
             VERIFY(_valid(occ));
             Power *= occ;
             if (Power > EPS_S)
@@ -88,7 +88,7 @@ void IGame_Level::SoundEvent_Dispatch()
     {
         _esound_delegate& D = snd_Events.back();
         VERIFY(D.dest && D.source);
-        if (D.source->feedback)
+        if (D.source->feedback && D.source->g_object)
         {
             D.dest->feel_sound_new(D.source->g_object, D.source->g_type, D.source->g_userdata,
                                    D.source->feedback->is_2D() ? Device.vCameraPosition : D.source->feedback->get_params()->position, D.power);
@@ -126,8 +126,10 @@ CObjectSpace::CObjectSpace()
 //----------------------------------------------------------------------
 CObjectSpace::~CObjectSpace()
 {
-    Sound->set_geometry_occ(NULL);
-    Sound->set_handler(NULL);
+    Sound->set_geometry_occ(nullptr);
+    Sound->set_geometry_som(nullptr);
+    Sound->set_geometry_env(nullptr);
+    Sound->set_handler(nullptr);
 #ifdef DEBUG
     sh_debug.destroy();
 #endif
@@ -150,7 +152,7 @@ int CObjectSpace::GetNearest(xr_vector<ISpatial*>& q_spatial, xr_vector<CObject*
     for (; it != end; it++)
     {
         CObject* O = (*it)->dcast_CObject();
-        if (0 == O)
+        if (nullptr == O)
             continue;
         if (O == ignore_object)
             continue;

@@ -24,7 +24,7 @@ float CMeleeChecker::distance_to_enemy(const CEntity* enemy)
     collide::ray_defs r_query(my_head_pos, dir, MAX_TRACE_ENEMY_RANGE, CDB::OPT_CULL | CDB::OPT_ONLYNEAREST, collide::rqtObject);
     r_res.r_clear();
 
-    if (m_object->CFORM()->_RayQuery(r_query, r_res))
+    if (m_object->CFORM() && m_object->CFORM()->RayQuery(r_res, r_query))
     {
         if (r_res.r_begin()->O == enemy)
             dist = r_res.r_begin()->range;

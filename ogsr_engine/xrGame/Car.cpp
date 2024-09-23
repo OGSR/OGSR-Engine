@@ -1454,7 +1454,7 @@ bool CCar::Use(const Fvector& pos, const Fvector& dir, const Fvector& foot_pos)
     RQR.r_clear();
     collide::ray_defs Q(pos, dir, 3.f, CDB::OPT_CULL, collide::rqtObject); // CDB::OPT_ONLYFIRST CDB::OPT_ONLYNEAREST
     VERIFY(!fis_zero(Q.dir.square_magnitude()));
-    if (g_pGameLevel->ObjectSpace.RayQuery(RQR, collidable.model, Q))
+    if (collidable.model && collidable.model->RayQuery(RQR, Q))
     {
         collide::rq_results& R = RQR;
         int y = R.r_count();
