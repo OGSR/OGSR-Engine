@@ -659,12 +659,12 @@ void CWeaponMagazined::UpdateCL()
                 fTime = 0;
             break;
         case eFire:
-            if (!IsMisfire() && iAmmoElapsed > 0)
+            if ((!IsMisfire() || IsGrenadeMode()) && GetAmmoElapsed() > 0)
                 state_Fire(dt);
 
             if (fTime <= 0)
             {
-                if (!IsMisfire() && GetAmmoElapsed() == 0)
+                if ((!IsMisfire() || IsGrenadeMode()) && GetAmmoElapsed() == 0)
                     OnMagazineEmpty();
                 StopShooting();
             }
@@ -783,7 +783,9 @@ void CWeaponMagazined::state_Fire(float dt)
 
         ++m_iShotNum;
 
-        CheckForMisfire();
+        if (!IsGrenadeMode())
+            CheckForMisfire();
+
         OnShot();
 
         if (smart_cast<CWeaponBM16*>(this) && IsMisfire())

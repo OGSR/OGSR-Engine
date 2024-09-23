@@ -48,6 +48,10 @@ void CRocketLauncher::SpawnRocket(LPCSTR rocket_section, CGameObject* parent_roc
 void CRocketLauncher::AttachRocket(u16 rocket_id, CGameObject* parent_rocket_launcher)
 {
     CCustomRocket* pRocket = smart_cast<CCustomRocket*>(Level().Objects.net_Find(rocket_id));
+
+    if (!pRocket)
+        return;
+
     pRocket->m_pOwner = smart_cast<CGameObject*>(parent_rocket_launcher->H_Root());
     VERIFY(pRocket->m_pOwner);
     pRocket->H_SetParent(parent_rocket_launcher);
@@ -58,13 +62,14 @@ void CRocketLauncher::DetachRocket(u16 rocket_id, bool bLaunch)
 {
     CCustomRocket* pRocket = smart_cast<CCustomRocket*>(Level().Objects.net_Find(rocket_id));
 
+    if (!pRocket)
+        return;
+
     VERIFY(pRocket);
     ROCKETIT It = std::find(m_rockets.begin(), m_rockets.end(), pRocket);
     ROCKETIT It_l = std::find(m_launched_rockets.begin(), m_launched_rockets.end(), pRocket);
 
-    {
-        VERIFY((It != m_rockets.end()) || (It_l != m_launched_rockets.end()));
-    };
+    VERIFY((It != m_rockets.end()) || (It_l != m_launched_rockets.end()));
 
     if (It != m_rockets.end())
     {
