@@ -40,7 +40,6 @@ public:
     IC bool operator==(const CGraphAbstract& obj) const;
     IC void clear();
     IC void add_vertex(const _data_type& data, const _vertex_id_type& vertex_id);
-    IC void remove_vertex(const _vertex_id_type& vertex_id);
     IC void add_edge(const _vertex_id_type& vertex_id0, const _vertex_id_type& vertex_id1, const _edge_weight_type& edge_weight);
     IC void add_edge(const _vertex_id_type& vertex_id0, const _vertex_id_type& vertex_id1, const _edge_weight_type& edge_weight0, const _edge_weight_type& edge_weight1);
     IC void remove_edge(const _vertex_id_type& vertex_id0, const _vertex_id_type& vertex_id1);

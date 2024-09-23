@@ -22,17 +22,7 @@ TEMPLATE_SPECIALIZATION
 IC void CAbstractGraph::add_vertex(const _data_type& data, const _vertex_id_type& vertex_id)
 {
     VERIFY(!vertex(vertex_id));
-    m_vertices.insert(std::make_pair(vertex_id, xr_new<CVertex>(data, vertex_id, &m_edge_count)));
-}
-
-TEMPLATE_SPECIALIZATION
-IC void CAbstractGraph::remove_vertex(const _vertex_id_type& vertex_id)
-{
-    vertex_iterator I = m_vertices.find(vertex_id);
-    VERIFY(m_vertices.end() != I);
-    auto v = *I;
-    delete_data(v);
-    m_vertices.erase(I);
+    m_vertices.emplace(vertex_id, xr_new<CVertex>(data, vertex_id, &m_edge_count));
 }
 
 TEMPLATE_SPECIALIZATION
@@ -73,8 +63,10 @@ IC bool CAbstractGraph::empty() const { return (m_vertices.empty()); }
 TEMPLATE_SPECIALIZATION
 IC void CAbstractGraph::clear()
 {
-    while (!vertices().empty())
-        remove_vertex(vertices().begin()->first);
+    std::erase_if(m_vertices, [](auto& pair) {
+        xr_delete(pair.second);
+        return true;
+    });
     VERIFY(!m_edge_count);
 }
 
