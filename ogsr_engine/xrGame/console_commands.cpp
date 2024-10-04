@@ -565,63 +565,39 @@ public:
 class CCC_ALifeLoadFrom : public IConsole_Command
 {
 public:
-    CCC_ALifeLoadFrom(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
-    virtual void Execute(LPCSTR args)
+    CCC_ALifeLoadFrom(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; }
+
+    void Execute(LPCSTR args) override
     {
-        if (!ai().get_alife())
+        if (!CSavedGameWrapper::valid_saved_game(args))
         {
-            Log("! ALife simulator has not been started yet");
+            Msg("! Cannot load saved game [%s]: not found or version mismatch or corrupted", args ? args : "nullptr");
             return;
         }
 
-        string256 saved_game;
-        saved_game[0] = 0;
-        //.		sscanf						(args,"%s",saved_game);
-        strcpy_s(saved_game, args);
-        if (!xr_strlen(saved_game))
+        if (ai().get_alife())
         {
-            Log("! Specify file name!");
-            return;
-        }
+            if (MainMenu()->IsActive())
+                MainMenu()->Activate(false);
 
-        if (!CSavedGameWrapper::saved_game_exist(saved_game))
+            Console->Hide();
+
+            ::Sound->set_master_volume(0.f);
+
+            if (Device.Paused())
+                Device.Pause(FALSE, TRUE, TRUE, "CCC_ALifeLoadFrom");
+
+            NET_Packet net_packet;
+            net_packet.w_begin(M_LOAD_GAME);
+            net_packet.w_stringZ(args);
+            Level().Send(net_packet, net_flags(TRUE));
+        }
+        else
         {
-            Msg("! Cannot find saved game %s", saved_game);
-            return;
+            string_path command;
+            xr_strconcat(command, "start server(", args, "/single/alife/load)");
+            Console->Execute(command);
         }
-
-        if (!CSavedGameWrapper::valid_saved_game(saved_game))
-        {
-            Msg("! Cannot load saved game %s, version mismatch or saved game is corrupted", saved_game);
-            return;
-        }
-        /*     moved to level_network_messages.cpp
-                CSavedGameWrapper			wrapper(args);
-                if (wrapper.level_id() == ai().level_graph().level_id()) {
-                    if (Device.Paused())
-                        Device.Pause		(FALSE, TRUE, TRUE, "CCC_ALifeLoadFrom");
-
-                    Level().remove_objects	();
-
-                    game_sv_Single			*game = smart_cast<game_sv_Single*>(Level().Server->game);
-                    R_ASSERT				(game);
-                    game->restart_simulator	(saved_game);
-
-                    return;
-                }
-        */
-        if (MainMenu()->IsActive())
-            MainMenu()->Activate(false);
-
-        Console->Hide();
-
-        if (Device.Paused())
-            Device.Pause(FALSE, TRUE, TRUE, "CCC_ALifeLoadFrom");
-
-        NET_Packet net_packet;
-        net_packet.w_begin(M_LOAD_GAME);
-        net_packet.w_stringZ(saved_game);
-        Level().Send(net_packet, net_flags(TRUE));
     }
 
     virtual void fill_tips(vecTips& tips, u32 mode) { get_files_list(tips, "$game_saves$", SAVE_EXTENSION); }
