@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+#include <sstream>
+#include <iostream>
+#include <iomanip>
+
 #include "fs_internal.h"
 
 XRCORE_API CInifile* pSettings = nullptr;
@@ -552,16 +556,34 @@ u8 CInifile::r_u8(LPCSTR S, LPCSTR L)
     return u8(atoi(C));
 }
 
+u8 CInifile::r_u8_hex(LPCSTR S, LPCSTR L)
+{
+    LPCSTR C = r_string(S, L);
+    return u8(std::stoi(C, nullptr, 16));
+}
+
 u16 CInifile::r_u16(LPCSTR S, LPCSTR L)
 {
     LPCSTR C = r_string(S, L);
     return u16(atoi(C));
 }
 
+u16 CInifile::r_u16_hex(LPCSTR S, LPCSTR L)
+{
+    LPCSTR C = r_string(S, L);
+    return u16(std::stol(C, nullptr, 16));
+}
+
 u32 CInifile::r_u32(LPCSTR S, LPCSTR L)
 {
     LPCSTR C = r_string(S, L);
     return u32(atoi(C));
+}
+
+u32 CInifile::r_u32_hex(LPCSTR S, LPCSTR L)
+{
+    LPCSTR C = r_string(S, L);
+    return u32(std::stoll(C, nullptr, 16));
 }
 
 s8 CInifile::r_s8(LPCSTR S, LPCSTR L)
@@ -741,6 +763,13 @@ void CInifile::w_u8(LPCSTR S, LPCSTR L, u8 V)
     w_string(S, L, temp);
 }
 
+void CInifile::w_u8_hex(LPCSTR S, LPCSTR L, u8 V)
+{
+    std::stringstream ss;
+    ss << "0x" << std::hex << +V;
+    w_string(S, L, ss.str().c_str());
+}
+
 void CInifile::w_u16(LPCSTR S, LPCSTR L, u16 V)
 {
     string128 temp;
@@ -748,11 +777,25 @@ void CInifile::w_u16(LPCSTR S, LPCSTR L, u16 V)
     w_string(S, L, temp);
 }
 
+void CInifile::w_u16_hex(LPCSTR S, LPCSTR L, u16 V)
+{
+    std::stringstream ss;
+    ss << "0x" << std::hex << +V;
+    w_string(S, L, ss.str().c_str());
+}
+
 void CInifile::w_u32(LPCSTR S, LPCSTR L, u32 V)
 {
     string128 temp;
     sprintf_s(temp, "%d", V);
     w_string(S, L, temp);
+}
+
+void CInifile::w_u32_hex(LPCSTR S, LPCSTR L, u32 V)
+{
+    std::stringstream ss;
+    ss << "0x" << std::hex << +V;
+    w_string(S, L, ss.str().c_str());
 }
 
 void CInifile::w_s8(LPCSTR S, LPCSTR L, s8 V)
