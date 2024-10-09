@@ -409,6 +409,9 @@ bool CVisualMemoryManager::visible(const CGameObject* game_object, float time_de
 
 void CVisualMemoryManager::add_visible_object(const CObject* object, float time_delta, bool fictitious)
 {
+    if (object && object->getDestroy())
+        return;
+
 #ifndef MASTER_GOLD
     if (object && (object->CLS_ID == CLSID_OBJECT_ACTOR) && psAI_Flags.test(aiIgnoreActor))
         return;
