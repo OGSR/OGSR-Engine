@@ -412,7 +412,7 @@ void CHangingLamp::SetLSFParams(float _speed, float _amount, float _jit)
     // light_render->set_lsf_params(_speed, _amount, _jit);
 }
 
-#pragma optimize("s", on)
+
 void CHangingLamp::script_register(lua_State* L)
 {
     luabind::module(L)[luabind::class_<CHangingLamp, CGameObject>("hanging_lamp")

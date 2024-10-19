@@ -17,7 +17,7 @@ struct CGlobalFlags
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 
 #pragma todo("KRodin: так и хочется порезать четыре говнофункции ниже. Какой-то недоэкспорт непонятно для чего нужный.")
 

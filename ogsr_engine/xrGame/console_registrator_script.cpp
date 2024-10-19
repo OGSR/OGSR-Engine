@@ -53,7 +53,7 @@ void enable_cmd(CConsole* c, LPCSTR cmd)
         icmd->SetEnabled(true);
 }
 
-#pragma optimize("s", on)
+
 void console_registrator::script_register(lua_State* L)
 {
     module(L)[def("get_console", &console),

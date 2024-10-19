@@ -17,7 +17,7 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 void CScriptMovementAction::script_register(lua_State* L)
 {
     module(L)[class_<CScriptMovementAction>("move")

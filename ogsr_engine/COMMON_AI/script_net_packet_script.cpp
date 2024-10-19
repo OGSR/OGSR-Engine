@@ -34,7 +34,7 @@ ClientID r_clientID(NET_Packet* self)
 
 extern u16 script_server_object_version();
 
-#pragma optimize("s", on)
+
 void CScriptNetPacket::script_register(lua_State* L)
 {
     module(L)[def("script_server_object_version", &script_server_object_version),

@@ -80,7 +80,7 @@ LPCSTR generate_id()
     return r.c_str();
 }
 
-#pragma optimize("s", on)
+
 void game_sv_GameState::script_register(lua_State* L)
 {
     module(L,"game")[

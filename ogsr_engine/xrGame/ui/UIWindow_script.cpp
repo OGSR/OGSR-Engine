@@ -56,7 +56,7 @@ T* wnd_object_cast(CUIWindow* wnd)
 #include "UIButton.h"
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 
 void CUIWindow::create_ui_snd(ref_sound& S, LPCSTR fName)
 {

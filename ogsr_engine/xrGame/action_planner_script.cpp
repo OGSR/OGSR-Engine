@@ -16,7 +16,7 @@ void set_goal_world_state(CScriptActionPlanner* action_planner, CScriptActionPla
 
 bool get_actual(const CScriptActionPlanner* action_planner) { return (action_planner->actual()); }
 
-#pragma optimize("s", on)
+
 void CActionPlanner<CScriptGameObject>::script_register(lua_State* L)
 {
     module(L)[class_<CScriptActionPlanner, CScriptActionPlannerWrapper>("action_planner")

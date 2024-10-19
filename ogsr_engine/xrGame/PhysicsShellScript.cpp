@@ -30,7 +30,7 @@ void unfreeze(CPhysicsShell* self)
     self->SetStatic();
 }
 
-#pragma optimize("s", on)
+
 void CPhysicsShell::script_register(lua_State* L)
 {
     module(L)[class_<CPhysicsShell>("physics_shell")

@@ -14,7 +14,7 @@ struct CUIListItemWrapper : public CUIListItem, public luabind::wrap_base
 struct CUIListItemExWrapper : public CUIListItemEx, public luabind::wrap_base
 {};
 
-#pragma optimize("s", on)
+
 void CUIListWnd::script_register(lua_State* L)
 {
     module(L)[

@@ -72,7 +72,7 @@ void CObjectFactory::register_script() const
     lua_setglobal(L, "clsid_table"); // это представление можно обработать как таблицу :)
 }
 
-#pragma optimize("s", on)
+
 void CObjectFactory::script_register(lua_State* L)
 {
     module(L)[class_<CObjectFactory>("object_factory")

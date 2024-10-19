@@ -12,7 +12,7 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 void CScriptZone::script_register(lua_State* L) { module(L)[class_<CScriptZone, DLL_Pure>("ce_script_zone").def(constructor<>())]; }
 
 void CSmartZone::script_register(lua_State* L) { module(L)[class_<CSmartZone, DLL_Pure>("ce_smart_zone").def(constructor<>())]; }

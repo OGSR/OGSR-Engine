@@ -12,7 +12,7 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 void CSE_ALifeCreatureActor::script_register(lua_State* L)
 {
     module(L)[luabind_class_creature3(CSE_ALifeCreatureActor, "cse_alife_creature_actor", CSE_ALifeCreatureAbstract, CSE_ALifeTraderAbstract, CSE_PHSkeleton)];

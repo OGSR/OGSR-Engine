@@ -977,7 +977,7 @@ DBG_ScriptObject* add_object(u16 id, DebugRenderType type)
     return dbg_obj;
 }
 
-#pragma optimize("s", on)
+
 void CLevel::script_register(lua_State* L)
 {
     module(L)[class_<CEnvDescriptor>("CEnvDescriptor")

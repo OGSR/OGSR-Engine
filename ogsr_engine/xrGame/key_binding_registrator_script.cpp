@@ -9,7 +9,7 @@ int dik_to_bind(int dik) { return get_binded_action(dik); }
 
 int bind_to_dik(EGameActions bind) { return get_action_dik(bind); }
 
-#pragma optimize("s", on)
+
 void key_binding_registrator::script_register(lua_State* L)
 {
     auto game_actions = class_<enum_exporter<EGameActions>>("key_bindings");

@@ -11,7 +11,7 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 void CPropertyStorage::script_register(lua_State* L)
 {
     module(L)[class_<CPropertyStorage>("property_storage").def(constructor<>()).def("set_property", &CPropertyStorage::set_property).def("property", &CPropertyStorage::property)];

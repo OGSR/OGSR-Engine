@@ -12,7 +12,7 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 void CScriptWorldStateWrapper::script_register(lua_State* L)
 {
     module(L)[class_<CScriptWorldState>("world_state")

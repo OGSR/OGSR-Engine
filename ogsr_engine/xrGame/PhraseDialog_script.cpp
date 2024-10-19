@@ -11,7 +11,7 @@ void CPhraseScript::AddDontHasInfo(LPCSTR str) { m_DontHasInfo.push_back(str); }
 void CPhraseScript::AddGiveInfo(LPCSTR str) { m_GiveInfo.push_back(str); }
 void CPhraseScript::AddDisableInfo(LPCSTR str) { m_DisableInfo.push_back(str); }
 
-#pragma optimize("s", on)
+
 void CPhraseDialogExporter::script_register(lua_State* L)
 {
     module(L)[class_<CPhrase>("CPhrase").def("GetPhraseScript", &CPhrase::GetPhraseScript).def("GetText", &CPhrase::GetText).def("SetText", &CPhrase::SetText),

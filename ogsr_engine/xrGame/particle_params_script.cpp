@@ -11,7 +11,7 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 void CParticleParams::script_register(lua_State* L)
 {
     module(L)[class_<CParticleParams>("particle_params")

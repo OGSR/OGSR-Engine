@@ -12,7 +12,7 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 void CScriptHit::script_register(lua_State* L)
 {
     module(L)[class_<CScriptHit>("hit")

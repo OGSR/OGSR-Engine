@@ -9,7 +9,7 @@ using namespace luabind;
 u8 CCar__IsLightsOn(CCar* self) { return self->IsLightsOn() ? 1 : 0; }
 u8 CCar__IsEngineOn(CCar* self) { return self->IsEngineOn() ? 1 : 0; }
 
-#pragma optimize("s", on)
+
 void CCar::script_register(lua_State* L)
 {
     module(L)[class_<CCar, bases<CGameObject, CHolderCustom>>("CCar")

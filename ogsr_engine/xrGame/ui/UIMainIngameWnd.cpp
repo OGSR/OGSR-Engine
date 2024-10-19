@@ -827,7 +827,7 @@ void GetStaticRaw(CUIMainIngameWnd* wnd, lua_State* L)
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 void CUIMainIngameWnd::script_register(lua_State* L)
 {
     module(L)[

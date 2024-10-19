@@ -18,7 +18,7 @@ Fvector CALifeMonsterPatrolPathManager__target_position(CALifeMonsterPatrolPathM
     return (self->target_position());
 }
 
-#pragma optimize("s", on)
+
 void CALifeMonsterPatrolPathManager::script_register(lua_State* L)
 {
     module(L)[class_<CALifeMonsterPatrolPathManager>("CALifeMonsterPatrolPathManager")

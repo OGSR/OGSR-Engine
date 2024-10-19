@@ -18,7 +18,7 @@ void add_effector(CScriptEffector* self) { self->Add(); }
 
 void remove_effector(CScriptEffector* self) { self->Remove(); }
 
-#pragma optimize("s", on)
+
 void CScriptEffector::script_register(lua_State* L)
 {
     module(L)[class_<SPPInfo::SDuality>("duality")

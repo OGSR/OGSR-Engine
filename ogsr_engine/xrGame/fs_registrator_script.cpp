@@ -227,7 +227,7 @@ static std::string get_last_write_time_string(const stdfs::directory_entry& file
 //Время последнего изменения файла в формате [02:01:2018 14:03:32]
 static std::string get_last_write_time_string_short(const stdfs::directory_entry& file) { return format_last_write_time(file, "[%d:%m:%Y %T]"); }
 
-#pragma optimize("s", on)
+
 void script_register_stdfs(lua_State* L)
 {
     using self = stdfs::directory_entry;
@@ -253,7 +253,7 @@ void script_register_stdfs(lua_State* L)
 ////////////////////////////// SCRIPT C++17 FILESYSTEM - END ///////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-#pragma optimize("s", on)
+
 void fs_registrator::script_register(lua_State* L)
 {
     //

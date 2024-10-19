@@ -8,7 +8,7 @@ using namespace luabind;
 
 CMainMenu* MainMenu();
 
-#pragma optimize("s", on)
+
 void UIRegistrator::script_register(lua_State* L)
 {
     module(L)[

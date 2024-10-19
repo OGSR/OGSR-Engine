@@ -49,7 +49,7 @@ ALife::_OBJECT_ID smart_terrain_id(CSE_ALifeMonsterAbstract* monster)
     return (monster->m_smart_terrain_id);
 }
 
-#pragma optimize("s", on)
+
 void CSE_ALifeMonsterAbstract::script_register(lua_State* L)
 {
     module(L)[luabind_class_monster2(CSE_ALifeMonsterAbstract, "cse_alife_monster_abstract", CSE_ALifeCreatureAbstract, CSE_ALifeSchedulable)

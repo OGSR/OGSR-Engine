@@ -19,7 +19,7 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 export_class script_register_ui_window2(export_class&& instance)
 {
     return std::move(instance)

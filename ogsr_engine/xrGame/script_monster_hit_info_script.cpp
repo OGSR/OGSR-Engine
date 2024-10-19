@@ -9,7 +9,7 @@ using namespace luabind;
 struct CMonsterSpace
 {};
 
-#pragma optimize("s", on)
+
 void CScriptMonsterHitInfo::script_register(lua_State* L)
 {
     module(L)[class_<CScriptMonsterHitInfo>("MonsterHitInfo")

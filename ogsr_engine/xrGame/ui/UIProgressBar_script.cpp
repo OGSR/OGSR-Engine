@@ -3,7 +3,7 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 void CUIProgressBar::script_register(lua_State* L)
 {
     module(L)[class_<CUIProgressBar, CUIWindow>("CUIProgressBar")

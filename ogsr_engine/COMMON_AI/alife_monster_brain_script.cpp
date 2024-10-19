@@ -14,7 +14,7 @@ using namespace luabind;
 
 CALifeMonsterMovementManager* get_movement(const CALifeMonsterBrain* brain) { return (&brain->movement()); }
 
-#pragma optimize("s", on)
+
 void CALifeMonsterBrain::script_register(lua_State* L)
 {
     module(L)[class_<CALifeMonsterBrain>("CALifeMonsterBrain")

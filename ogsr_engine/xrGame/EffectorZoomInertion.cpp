@@ -157,7 +157,7 @@ void set_current_point(CEffectorZoomInertion* E, const Fvector src) { E->m_vCurr
 void set_last_point(CEffectorZoomInertion* E, const Fvector src) { E->m_vLastPoint.set(src); }
 void set_target_point(CEffectorZoomInertion* E, const Fvector src) { E->m_vTargetPoint.set(src); }
 
-#pragma optimize("s", on)
+
 void CEffectorZoomInertion::script_register(lua_State* L)
 {
     module(L)[

@@ -4,7 +4,7 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 void CUIMessageBox::script_register(lua_State* L)
 {
     module(L)[class_<CUIMessageBox, CUIStatic>("CUIMessageBox")

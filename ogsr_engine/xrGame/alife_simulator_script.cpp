@@ -390,7 +390,7 @@ LPCSTR get_loaded_save(CALifeSimulator* sim)
 
 bool is_unloading(CALifeSimulator* sim) { return sim->is_unloading(); }
 
-#pragma optimize("s", on)
+
 void CALifeSimulator::script_register(lua_State* L)
 {
     module(L)[class_<CALifeSimulator>("alife_simulator")

@@ -6,7 +6,7 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 void CUIGameCustom::script_register(lua_State* L)
 {
     module(L)[class_<SDrawStaticStruct>("SDrawStaticStruct").def_readwrite("m_endTime", &SDrawStaticStruct::m_endTime).def("wnd", &SDrawStaticStruct::wnd),

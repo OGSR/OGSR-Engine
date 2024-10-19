@@ -44,7 +44,7 @@ LPCSTR get_desc(const SGameMtl* self) { return (*self->m_Desc); }
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 
 void script_rq_result::script_register(lua_State* L)
 {

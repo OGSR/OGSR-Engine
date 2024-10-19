@@ -42,7 +42,7 @@ Fvector4 CVertex__mask_(const CGameGraph::CVertex* vertex)
     return Fvector4{(float)mask[0], (float)mask[1], (float)mask[2], (float)mask[3]};
 }
 
-#pragma optimize("s", on)
+
 void CGameGraph::script_register(lua_State* L)
 {
     module(L)[def("game_graph", &get_game_graph),

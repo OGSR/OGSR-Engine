@@ -66,7 +66,7 @@ CScriptIniFile* reload_system_ini()
 }
 
 using namespace luabind;
-#pragma optimize("s", on)
+
 void CScriptIniFile::script_register(lua_State* L)
 {
     module(L)[class_<CScriptIniFile>("ini_file")

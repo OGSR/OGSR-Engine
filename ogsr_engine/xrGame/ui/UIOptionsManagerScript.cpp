@@ -18,7 +18,7 @@ void CUIOptionsManagerScript::OptionsPostAccept() { CUIOptionsItem::GetOptionsMa
 
 void CUIOptionsManagerScript::SendMessage2Group(const char* group, const char* message) { CUIOptionsItem::GetOptionsManager()->SendMessage2Group(group, message); }
 
-#pragma optimize("s", on)
+
 void CUIOptionsManagerScript::script_register(lua_State* L)
 {
     module(L)[class_<CUIOptionsManagerScript>("COptionsManager")

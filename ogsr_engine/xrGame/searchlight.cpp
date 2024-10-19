@@ -241,7 +241,7 @@ void CProjector::Hit(SHit* pHDS)
     callback(GameObject::eHit)(lua_game_object(), HDS.power, HDS.dir, smart_cast<const CGameObject*>(HDS.who)->lua_game_object(), HDS.bone());
 }
 
-#pragma optimize("s", on)
+
 void CProjector::script_register(lua_State* L)
 {
     luabind::module(L)[luabind::class_<CProjector, CGameObject>("projector")

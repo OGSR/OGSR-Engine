@@ -13,7 +13,7 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 void CPropertyEvaluator<CScriptGameObject>::script_register(lua_State* L)
 {
     module(L)[class_<CScriptPropertyEvaluator, CScriptPropertyEvaluatorWrapper>("property_evaluator")

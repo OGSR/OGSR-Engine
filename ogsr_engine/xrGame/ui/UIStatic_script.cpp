@@ -33,7 +33,7 @@ void UIMiniMapInit(CUIMiniMap* wnd)
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 void CUIStatic::script_register(lua_State* L)
 {
     module(L)[class_<CUIStatic, CUIWindow>("CUIStatic")

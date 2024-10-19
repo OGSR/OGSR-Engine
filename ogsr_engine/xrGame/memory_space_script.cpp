@@ -50,7 +50,7 @@ Fvector CDangerObject__position(const CDangerObject* self)
     return (self->position());
 }
 
-#pragma optimize("s", on)
+
 void CMemoryInfo::script_register(lua_State* L)
 {
     module(L)[

@@ -24,7 +24,7 @@ u32 time_global(const CRenderDevice* self)
     return (self->dwTimeGlobal);
 }
 
-#pragma optimize("s", on)
+
 void CScriptRenderDevice::script_register(lua_State* L)
 {
     module(L)[class_<CRenderDevice>("render_device")

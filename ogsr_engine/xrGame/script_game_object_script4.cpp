@@ -158,7 +158,7 @@ u32 obj_level_id(CScriptGameObject* O) { return get_level_id(O->object().ai_loca
 
 LPCSTR obj_level_name(CScriptGameObject* O) { return get_level_name_by_id(obj_level_id(O)); }
 
-#pragma optimize("s", on)
+
 using namespace luabind;
 
 class_<CScriptGameObject> script_register_game_object3(class_<CScriptGameObject>&& instance)

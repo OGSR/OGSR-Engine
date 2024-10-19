@@ -15,7 +15,7 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 void CAI_Stalker::script_register(lua_State* L)
 {
     module(

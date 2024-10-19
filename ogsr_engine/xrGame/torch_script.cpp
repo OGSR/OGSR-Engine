@@ -112,7 +112,7 @@ void CTorch::SetVirtualSize(float size, int target)
 }
 
 using namespace luabind;
-#pragma optimize("s", on)
+
 void CTorch::script_register(lua_State* L)
 {
     module(L)[class_<CTorch, CGameObject /*CInventoryItemObject*/>("CTorch")

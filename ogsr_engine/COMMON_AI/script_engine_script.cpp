@@ -82,7 +82,7 @@ bool GetRAlt() { return !!pInput->iGetAsyncKeyState(DIK_RMENU); }
 bool GetAlt() { return !!pInput->iGetAsyncKeyState(DIK_LMENU) || !!pInput->iGetAsyncKeyState(DIK_RMENU); }
 
 using namespace luabind;
-#pragma optimize("s", on)
+
 
 void CScriptEngine::script_register(lua_State* L)
 {

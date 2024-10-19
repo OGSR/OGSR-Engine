@@ -4,7 +4,7 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 void CSE_PHSkeleton::script_register(lua_State* L) { module(L)[class_<CSE_PHSkeleton>("cse_ph_skeleton")]; }
 
 void CSE_AbstractVisual::script_register(lua_State* L)

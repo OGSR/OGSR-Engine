@@ -11,7 +11,7 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 void CClientSpawnManager::script_register(lua_State* L)
 {
     module(

@@ -12,7 +12,7 @@
 #include "script_export_space.h"
 #include "script_engine_export.h"
 
-#pragma optimize("s", on)
+
 template <typename TList>
 struct Register
 {

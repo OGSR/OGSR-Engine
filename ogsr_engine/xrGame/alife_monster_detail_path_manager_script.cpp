@@ -12,7 +12,7 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 void CALifeMonsterDetailPathManager::script_register(lua_State* L)
 {
     module(L)[class_<CALifeMonsterDetailPathManager>("CALifeMonsterDetailPathManager")

@@ -12,7 +12,7 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 void CSE_ALifeInventoryItem::script_register(lua_State* L)
 {
     module(L)[class_<CSE_ALifeInventoryItem>("cse_alife_inventory_item")

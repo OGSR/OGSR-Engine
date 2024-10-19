@@ -23,7 +23,7 @@
 */
 
 using namespace luabind;
-#pragma optimize("s", on)
+
 
 // ================================ ANOMALY ZONE SCRIPT EXPORT =================== //
 Fvector get_restrictor_center(CSpaceRestrictor* SR)

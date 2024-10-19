@@ -3,7 +3,7 @@
 
 using namespace luabind;
 
-#pragma optimize("s", on)
+
 void CUIPropertiesBox::script_register(lua_State* L)
 {
     module(L)[class_<CUIPropertiesBox, CUIFrameWindow>("CUIPropertiesBox")
