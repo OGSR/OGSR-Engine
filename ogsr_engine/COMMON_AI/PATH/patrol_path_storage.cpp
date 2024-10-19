@@ -42,18 +42,18 @@ void CPatrolPathStorage::load_raw(const CLevelGraph* level_graph, const CGameLev
 
 void CPatrolPathStorage::append_from_ini(CInifile& way_inifile)
 {
-    PATROL_REGISTRY::value_type pair;
-
-    int i = 0;
-    int r = 0;
+    int i{}, r{};
     for (const auto& it : way_inifile.sections())
     {
-        const shared_str patrol_name = it.first;
+        const shared_str& patrol_name = it.first;
 
-        if (m_registry.erase(patrol_name))
+        if (auto it = m_registry.find(patrol_name); it != m_registry.end())
         {
+            xr_delete(it->second);
+            m_registry.erase(it);
             r++;
         }
+
         if (it.second->line_count() == 0)
             continue;
 
