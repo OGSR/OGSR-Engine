@@ -533,7 +533,7 @@ void CCustomZone::UpdateWorkload(u32 dt)
 
     if (!IsEnabled())
     {
-        if (m_effector && EnableEffector())
+        if (m_effector)
             m_effector->Stop();
         // KRodin: чуть переделал фикс неотключения света после отключения аномалии. Это более оптимальный вариант, на мой взгляд.
         if (m_pIdleLight && m_pIdleLight->get_active())
@@ -570,7 +570,7 @@ void CCustomZone::UpdateWorkload(u32 dt)
     {
         m_fDistanceToCurEntity = Level().CurrentEntity()->Position().distance_to(Position());
 
-        if (m_effector && EnableEffector())
+        if (m_effector)
             m_effector->Update(m_fDistanceToCurEntity);
     }
 

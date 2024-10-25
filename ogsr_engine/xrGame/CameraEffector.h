@@ -15,6 +15,7 @@
 #define effControllerAura (eStartEffectorID + 7)
 #define effControllerAura2 (eStartEffectorID + 8)
 #define effBigMonsterHit (eStartEffectorID + 9)
+#define effZone (eStartEffectorID + 10)
 
 #define effPoltergeistTeleDetectStartEffect 2048
 // warning: ~50 constants after effPoltergeistTeleDetectStartEffect are reserved for poltergeists

@@ -12,7 +12,6 @@ public:
 
     virtual void Load(LPCSTR section);
     virtual void Affect(SZoneObjectInfo* O);
-    virtual bool EnableEffector() { return true; }
 
     virtual void feel_touch_new(CObject* O);
     virtual void UpdateWorkload(u32 dt); // related to fast-mode optimizations
