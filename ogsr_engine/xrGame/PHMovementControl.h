@@ -135,7 +135,6 @@ private:
     int m_start_index;
 
     float m_path_distance;
-    u16 m_material;
 
     float fLastMotionMag;
 

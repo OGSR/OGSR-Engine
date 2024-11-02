@@ -39,7 +39,6 @@ CPHMovementControl::CPHMovementControl(CObject* parent)
 
 #endif
 
-    m_material = 0;
     m_capture = nullptr;
     b_exect_position = true;
     m_start_index = 0;
@@ -1020,17 +1019,13 @@ void CPHMovementControl::GetJumpParam(Fvector& velocity, JumpType& type, const F
 
 void CPHMovementControl::SetMaterial(u16 material)
 {
-    m_material = material;
-    if (m_character)
-    {
-        m_character->SetMaterial(material);
-    }
+    m_character->SetMaterial(material);
 }
+
 void CPHMovementControl::CreateCharacter()
 {
     dVector3 size = {aabb.x2 - aabb.x1, aabb.y2 - aabb.y1, aabb.z2 - aabb.z1};
     m_character->Create(size);
-    m_character->SetMaterial(m_material);
     m_character->SetAirControlFactor(fAirControlParam);
 #ifdef DEBUG
     if (ph_dbg_draw_mask1.test(ph_m1_DbgTrackObject) && (!!pObject->cName()) && stricmp(PH_DBG_ObjectTrack(), *pObject->cName()) == 0)

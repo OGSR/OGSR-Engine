@@ -11,6 +11,7 @@
 #include "alife_space.h"
 #include "phmovementcontrol.h"
 #include "entity_alive.h"
+#include "ai/monsters/basemonster/base_monster.h"
 #include "CharacterPhysicsSupport.h"
 #include "../Include/xrRender/Kinematics.h"
 
@@ -43,13 +44,8 @@ void CMaterialManager::reinit()
     CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(m_object);
     if (entity_alive)
     {
-        if (entity_alive->character_physics_support()->movement()->CharacterExist())
+        if (!smart_cast<CBaseMonster*>(entity_alive)) // для мобов не нужно устанавливть реальный материал, у них нет эти настроек материалов
             entity_alive->character_physics_support()->movement()->SetPLastMaterialIDX(&m_last_material_idx);
-
-        //		if (entity_alive->use_simplified_visual()) {
-        //			IKinematics			*kinematics = smart_cast<IKinematics*>(entity_alive->Visual());
-        //			m_my_material_idx	= kinematics->LL_GetData(kinematics->LL_GetBoneRoot()).game_mtl_idx;
-        //		}
 
         entity_alive->character_physics_support()->movement()->SetMaterial(m_my_material_idx);
     }
