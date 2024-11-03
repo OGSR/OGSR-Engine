@@ -575,6 +575,9 @@ public:
         inherited::processing_deactivate();
     }
 
+    virtual void on_a_hud_attach() override;
+    virtual void on_b_hud_detach() override;
+
     Fvector laserdot_attach_offset{}, laser_pos{};
 
 protected:
