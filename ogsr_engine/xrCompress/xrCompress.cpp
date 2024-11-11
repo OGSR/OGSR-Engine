@@ -187,15 +187,7 @@ static void Compress(LPCSTR path, LPCSTR base, BOOL bFast)
                              lzo1x_999_compress(reinterpret_cast<const lzo_bytep>(src->pointer()), c_size_real, c_data, &c_size_compressed64, c_heap));
                 c_size_compressed = static_cast<u32>(c_size_compressed64);
 
-                if ((c_size_compressed + 16) >= c_size_real)
-                {
-                    // Failed to compress - revert to VFS
-                    filesVFS++;
-                    c_size_compressed = c_size_real;
-                    fs->w(src->pointer(), c_size_real);
-                    Msg("~~[%s] - VFS (R)", path);
-                }
-                else
+                if (float(c_size_compressed) / float(src->length()) <= 0.8f)
                 {
                     // Compressed OK - optimize
                     if (!bFast)
@@ -208,6 +200,14 @@ static void Compress(LPCSTR path, LPCSTR base, BOOL bFast)
                     }
                     fs->w(c_data, c_size_compressed);
                     Msg("--[%s] - OK (%3.1f%%)", path, 100.f * float(c_size_compressed) / float(src->length()));
+                }
+                else
+                {
+                    // Failed to compress - revert to VFS
+                    filesVFS++;
+                    c_size_compressed = c_size_real;
+                    fs->w(src->pointer(), c_size_real);
+                    Msg("~~[%s] - VFS (R)", path);
                 }
 
                 // cleanup
