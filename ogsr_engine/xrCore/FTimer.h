@@ -1,5 +1,7 @@
 #pragma once
 
+#include <chrono>
+
 class CTimer_paused;
 
 class XRCORE_API pauseMngr

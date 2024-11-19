@@ -66,7 +66,7 @@ IC bool RAYvsOBB(const Fmatrix& IM, const Fvector& b_hsize, const Fvector& S, co
     IM.transform_dir(DL, D);
 
     // Actual test
-    Fbox::ERP_Result rp_res = E.Pick2(SL, DL, PL);
+    Fbox::ERP_Result rp_res = E.Pick(SL, DL, PL);
     if ((rp_res == Fbox::rpOriginOutside) || (!bCull && (rp_res == Fbox::rpOriginInside)))
     {
         float d = PL.distance_to_sqr(SL);
@@ -323,7 +323,7 @@ BOOL CCF_Shape::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
             Fvector S1, D1, P;
             B.transform_tiny(S1, dS);
             B.transform_dir(D1, dD);
-            Fbox::ERP_Result rp_res = box.Pick2(S1, D1, P);
+            Fbox::ERP_Result rp_res = box.Pick(S1, D1, P);
             if ((rp_res == Fbox::rpOriginOutside) || (!(Q.flags & CDB::OPT_CULL) && (rp_res == Fbox::rpOriginInside)))
             {
                 float d = P.distance_to_sqr(dS);

@@ -1,5 +1,35 @@
 #pragma once
 
+namespace fsgame
+{
+constexpr LPCSTR app_data_root = "$app_data_root$";
+
+constexpr LPCSTR game_data = "$game_data$";
+constexpr LPCSTR game_ai = "$game_ai$";
+constexpr LPCSTR game_spawn = "$game_spawn$";
+constexpr LPCSTR game_anims = "$game_anims$";
+constexpr LPCSTR game_levels = "$game_levels$";
+constexpr LPCSTR game_meshes = "$game_meshes$";
+constexpr LPCSTR game_shaders = "$game_shaders$";
+constexpr LPCSTR game_sounds = "$game_sounds$";
+constexpr LPCSTR game_textures = "$game_textures$";
+constexpr LPCSTR game_scripts = "$game_scripts$";
+constexpr LPCSTR game_configs = "$game_config$";
+constexpr LPCSTR game_particles = "$game_particles$";
+constexpr LPCSTR game_weathers = "$game_weathers$";
+constexpr LPCSTR game_weather_effects = "$game_weather_effects$";
+
+constexpr LPCSTR level = "$level$";
+constexpr LPCSTR game_saves = "$game_saves$";
+constexpr LPCSTR screenshots = "$screenshots$";
+constexpr LPCSTR logs = "$logs$";
+constexpr LPCSTR mod_dir = "$mod_dir$";
+
+constexpr LPCSTR game_sounds_reference = "$game_sounds_reference$";
+constexpr LPCSTR game_textures_reference = "$game_textures_reference$";
+constexpr LPCSTR game_meshes_reference = "$game_meshes_reference$";
+}
+
 enum FS_List
 {
     FS_ListFiles = (1 << 0),

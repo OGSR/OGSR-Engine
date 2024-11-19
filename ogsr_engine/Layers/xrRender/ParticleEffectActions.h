@@ -417,8 +417,6 @@ public:
     virtual void Compile(IWriter& F);
 };
 
-extern xr_token2 actions_token[];
-
 typedef EParticleAction* (*_CreateEAction)(PAPI::PActionEnum type);
 extern ECORE_API _CreateEAction pCreateEAction;
 
