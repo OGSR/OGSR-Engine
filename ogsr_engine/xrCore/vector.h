@@ -243,6 +243,25 @@ IC float angle_inertion_var(float src, float tgt, float min_speed, float max_spe
     return src;
 }
 
+// linear interpolation
+#define _lerp std::lerp
+
+#define _lerpc(_val_a, _val_b, _factor) std::lerp(_val_a, _val_b, std::clamp(_factor, 0.0f, 1.0f))
+
+// inertion
+constexpr float inertion(const float _val_cur, const float _val_trgt, const float _friction)
+{
+    const float friction_i = 1.f - _friction;
+    return _val_cur * _friction + _val_trgt * friction_i;
+}
+
+template <class T>
+constexpr T smoothstep(const T min, const T max, T res, const T min_range = 0, const T max_range = 1)
+{
+    res = clampr((res - min) / (max - min), min_range, max_range);
+    return res * res * (3 - 2 * res);
+}
+
 template <class T>
 IC _matrix<T>& _matrix<T>::rotation(const _quaternion<T>& Q)
 {
