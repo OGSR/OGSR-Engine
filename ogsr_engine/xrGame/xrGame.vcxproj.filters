@@ -7168,9 +7168,6 @@
     <ClCompile Include="script_hit_script.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptHit</Filter>
     </ClCompile>
-    <ClCompile Include="..\COMMON_AI\script_ini_file.cpp">
-      <Filter>AI\AScript\ScriptClasses\ScriptIniFile</Filter>
-    </ClCompile>
     <ClCompile Include="..\COMMON_AI\script_ini_file_script.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptIniFile</Filter>
     </ClCompile>

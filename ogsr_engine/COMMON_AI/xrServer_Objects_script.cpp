@@ -18,7 +18,7 @@ LPCSTR get_section_name(const CSE_Abstract* abstract) { return (abstract->name()
 
 LPCSTR get_name(const CSE_Abstract* abstract) { return (abstract->name_replace()); }
 
-CScriptIniFile* get_spawn_ini(CSE_Abstract* abstract) { return ((CScriptIniFile*)&abstract->spawn_ini()); }
+CInifile* get_spawn_ini(CSE_Abstract* abstract) { return ((CInifile*)&abstract->spawn_ini()); }
 
 void save_spawn_ini(CSE_Abstract* abstract)
 {

@@ -231,10 +231,10 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
 
         .def("make_object_visible_somewhen", &CScriptGameObject::make_object_visible_somewhen)
 
-        .def("buy_condition", (void(CScriptGameObject::*)(CScriptIniFile*, LPCSTR))(&CScriptGameObject::buy_condition))
+        .def("buy_condition", (void(CScriptGameObject::*)(CInifile*, LPCSTR))(&CScriptGameObject::buy_condition))
         .def("buy_condition", (void(CScriptGameObject::*)(float, float))(&CScriptGameObject::buy_condition))
         .def("show_condition", &CScriptGameObject::show_condition)
-        .def("sell_condition", (void(CScriptGameObject::*)(CScriptIniFile*, LPCSTR))(&CScriptGameObject::sell_condition))
+        .def("sell_condition", (void(CScriptGameObject::*)(CInifile*, LPCSTR))(&CScriptGameObject::sell_condition))
         .def("sell_condition", (void(CScriptGameObject::*)(float, float))(&CScriptGameObject::sell_condition))
         .def("buy_supplies", &CScriptGameObject::buy_supplies)
 

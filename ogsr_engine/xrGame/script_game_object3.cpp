@@ -874,7 +874,7 @@ void CScriptGameObject::make_object_visible_somewhen(CScriptGameObject* object)
     stalker->memory().make_object_visible_somewhen(entity_alive);
 }
 
-void CScriptGameObject::sell_condition(CScriptIniFile* ini_file, LPCSTR section)
+void CScriptGameObject::sell_condition(CInifile* ini_file, LPCSTR section)
 {
     CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(&object());
     if (!inventory_owner)
@@ -898,7 +898,7 @@ void CScriptGameObject::sell_condition(float friend_factor, float enemy_factor)
     inventory_owner->trade_parameters().default_factors(CTradeParameters::action_sell(0), CTradeFactors(friend_factor, enemy_factor));
 }
 
-void CScriptGameObject::buy_condition(CScriptIniFile* ini_file, LPCSTR section)
+void CScriptGameObject::buy_condition(CInifile* ini_file, LPCSTR section)
 {
     CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(&object());
     if (!inventory_owner)
@@ -922,7 +922,7 @@ void CScriptGameObject::buy_condition(float friend_factor, float enemy_factor)
     inventory_owner->trade_parameters().default_factors(CTradeParameters::action_buy(0), CTradeFactors(friend_factor, enemy_factor));
 }
 
-void CScriptGameObject::show_condition(CScriptIniFile* ini_file, LPCSTR section)
+void CScriptGameObject::show_condition(CInifile* ini_file, LPCSTR section)
 {
     CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(&object());
     if (!inventory_owner)
@@ -934,7 +934,7 @@ void CScriptGameObject::show_condition(CScriptIniFile* ini_file, LPCSTR section)
     inventory_owner->trade_parameters().process(CTradeParameters::action_show(0), *ini_file, section);
 }
 
-void CScriptGameObject::buy_supplies(CScriptIniFile* ini_file, LPCSTR section)
+void CScriptGameObject::buy_supplies(CInifile* ini_file, LPCSTR section)
 {
     CInventoryOwner* inventory_owner = smart_cast<CInventoryOwner*>(&object());
     if (!inventory_owner)
@@ -946,21 +946,21 @@ void CScriptGameObject::buy_supplies(CScriptIniFile* ini_file, LPCSTR section)
     inventory_owner->buy_supplies(*ini_file, section);
 }
 
-void sell_condition(CScriptIniFile* ini_file, LPCSTR section) { default_trade_parameters().process(CTradeParameters::action_sell(0), *ini_file, section); }
+void sell_condition(CInifile* ini_file, LPCSTR section) { default_trade_parameters().process(CTradeParameters::action_sell(0), *ini_file, section); }
 
 void sell_condition(float friend_factor, float enemy_factor)
 {
     default_trade_parameters().default_factors(CTradeParameters::action_sell(0), CTradeFactors(friend_factor, enemy_factor));
 }
 
-void buy_condition(CScriptIniFile* ini_file, LPCSTR section) { default_trade_parameters().process(CTradeParameters::action_buy(0), *ini_file, section); }
+void buy_condition(CInifile* ini_file, LPCSTR section) { default_trade_parameters().process(CTradeParameters::action_buy(0), *ini_file, section); }
 
 void buy_condition(float friend_factor, float enemy_factor)
 {
     default_trade_parameters().default_factors(CTradeParameters::action_buy(0), CTradeFactors(friend_factor, enemy_factor));
 }
 
-void show_condition(CScriptIniFile* ini_file, LPCSTR section) { default_trade_parameters().process(CTradeParameters::action_show(0), *ini_file, section); }
+void show_condition(CInifile* ini_file, LPCSTR section) { default_trade_parameters().process(CTradeParameters::action_show(0), *ini_file, section); }
 
 LPCSTR CScriptGameObject::sound_prefix() const
 {

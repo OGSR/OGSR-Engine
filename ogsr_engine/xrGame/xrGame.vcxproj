@@ -1900,7 +1900,6 @@
     <ClCompile Include="script_game_object_use2.cpp" />
     <ClCompile Include="script_hit.cpp" />
     <ClCompile Include="script_hit_script.cpp" />
-    <ClCompile Include="..\COMMON_AI\script_ini_file.cpp" />
     <ClCompile Include="..\COMMON_AI\script_ini_file_script.cpp" />
     <ClCompile Include="script_monster_hit_info_script.cpp" />
     <ClCompile Include="..\COMMON_AI\script_net_packet_script.cpp" />

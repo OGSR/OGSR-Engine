@@ -99,7 +99,7 @@ class CScriptSoundInfo;
 class CScriptMonsterHitInfo;
 class CScriptBinderObject;
 class CCoverPoint;
-class CScriptIniFile;
+class CInifile;
 class CPhysicsShell;
 class CHelicopter;
 class CHangingLamp;
@@ -522,7 +522,7 @@ public:
     const CCoverPoint* ambush_cover(const Fvector& position, const Fvector& enemy_position, float radius, float min_distance, const luabind::functor<bool>&);
     const CCoverPoint* angle_cover(const Fvector&, float, const Fvector&, float, float, u32);
     const CCoverPoint* angle_cover(const Fvector&, float, const Fvector&, float, float, u32, const luabind::functor<bool>&);
-    CScriptIniFile* spawn_ini() const;
+    CInifile* spawn_ini() const;
     bool active_zone_contact(u16 id);
 
     ///
@@ -601,12 +601,12 @@ public:
     void debug_planner(const script_planner* planner);
 #endif
 
-    void sell_condition(CScriptIniFile* ini_file, LPCSTR section);
+    void sell_condition(CInifile* ini_file, LPCSTR section);
     void sell_condition(float friend_factor, float enemy_factor);
-    void buy_condition(CScriptIniFile* ini_file, LPCSTR section);
+    void buy_condition(CInifile* ini_file, LPCSTR section);
     void buy_condition(float friend_factor, float enemy_factor);
-    void show_condition(CScriptIniFile* ini_file, LPCSTR section);
-    void buy_supplies(CScriptIniFile* ini_file, LPCSTR section);
+    void show_condition(CInifile* ini_file, LPCSTR section);
+    void buy_supplies(CInifile* ini_file, LPCSTR section);
 
     LPCSTR sound_prefix() const;
     void sound_prefix(LPCSTR sound_prefix);
@@ -691,7 +691,7 @@ public:
 
     const char* GetVisualName() const;
 
-    CScriptIniFile* GetVisIni();
+    CInifile* GetVisIni();
     void SetBoneVisible(LPCSTR _bone_name, BOOL _visible);
     BOOL GetBoneVisible(LPCSTR _bone_name);
     void SetHudBoneVisible(LPCSTR _bone_name, BOOL _visible);
@@ -834,11 +834,11 @@ add_to_type_list(CScriptGameObject)
 #undef script_type_list
 #define script_type_list save_type_list(CScriptGameObject)
 
-    extern void sell_condition(CScriptIniFile* ini_file, LPCSTR section);
+    extern void sell_condition(CInifile* ini_file, LPCSTR section);
 extern void sell_condition(float friend_factor, float enemy_factor);
-extern void buy_condition(CScriptIniFile* ini_file, LPCSTR section);
+extern void buy_condition(CInifile* ini_file, LPCSTR section);
 extern void buy_condition(float friend_factor, float enemy_factor);
-extern void show_condition(CScriptIniFile* ini_file, LPCSTR section);
+extern void show_condition(CInifile* ini_file, LPCSTR section);
 
 void AddTalkMessage(CScriptGameObject*, LPCSTR text, bool is_actor = false);
 void AddIconedTalkMessage(CScriptGameObject*, LPCSTR text, LPCSTR texture_name, const Frect& tex_rect, LPCSTR templ_name);
