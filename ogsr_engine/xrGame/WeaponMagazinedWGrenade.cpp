@@ -392,7 +392,7 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
         d.normalize();
         d.mul(CRocketLauncher::m_fLaunchSpeed);
         VERIFY2(_valid(launch_matrix), "CWeaponMagazinedWGrenade::SwitchState. Invalid launch_matrix!");
-        CRocketLauncher::LaunchRocket(launch_matrix, d, zero_vel);
+        CRocketLauncher::LaunchRocket(launch_matrix, d, {});
 
         CExplosiveRocket* pGrenade = smart_cast<CExplosiveRocket*>(getCurrentRocket() /*m_pRocket*/);
         VERIFY(pGrenade);

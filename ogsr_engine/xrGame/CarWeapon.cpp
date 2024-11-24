@@ -227,8 +227,8 @@ void CCarWeapon::OnShot()
         Light_Start();
 
     StartFlameParticles();
-    StartSmokeParticles(m_fire_pos, zero_vel);
-    //	OnShellDrop				(m_fire_pos, zero_vel);
+    StartSmokeParticles(m_fire_pos, {});
+    //	OnShellDrop				(m_fire_pos, {});
 
     HUD_SOUND::PlaySound(m_sndShot, m_fire_pos, m_object, false);
 }

@@ -131,7 +131,7 @@ void CWeaponRPG7::switch2_Fire()
         d.normalize();
         d.mul(m_fLaunchSpeed);
 
-        CRocketLauncher::LaunchRocket(launch_matrix, d, zero_vel);
+        CRocketLauncher::LaunchRocket(launch_matrix, d, {});
 
         CExplosiveRocket* pGrenade = smart_cast<CExplosiveRocket*>(getCurrentRocket());
         VERIFY(pGrenade);

@@ -62,7 +62,7 @@ CParticlesPlayer::CParticlesPlayer()
 
     m_Bones.emplace_back(0, Fvector().set(0, 0, 0));
 
-    SetParentVel(zero_vel);
+    SetParentVel({});
     m_self_object = 0;
 }
 
@@ -144,7 +144,7 @@ void CParticlesPlayer::StartParticles(const shared_str& particles_name, u16 bone
     Fmatrix m;
     m.setHPB(particles_info.angles.x, particles_info.angles.y, particles_info.angles.z);
     GetBonePos(object, pBoneInfo->index, pBoneInfo->offset, m.c);
-    particles_info.ps->UpdateParent(m, zero_vel);
+    particles_info.ps->UpdateParent(m, {});
     if (!particles_info.ps->IsPlaying())
         particles_info.ps->Play();
 
@@ -167,7 +167,7 @@ void CParticlesPlayer::StartParticles(const shared_str& ps_name, const Fmatrix& 
         Fmatrix m;
         m.set(xform);
         GetBonePos(object, it->index, it->offset, m.c);
-        particles_info.ps->UpdateParent(m, zero_vel);
+        particles_info.ps->UpdateParent(m, {});
         if (!particles_info.ps->IsPlaying())
             particles_info.ps->Play();
     }

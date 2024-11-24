@@ -43,13 +43,6 @@ IC int get_token_id(xr_token* tokens, LPCSTR key)
     return -1;
 }
 
-struct XRCORE_API xr_token2
-{
-    LPCSTR name;
-    LPCSTR info;
-    int id;
-};
-
 // generic
 template <class T>
 IC T _min(T a, T b)

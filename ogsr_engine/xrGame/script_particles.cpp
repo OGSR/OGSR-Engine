@@ -119,9 +119,9 @@ void CScriptParticles::PlayAtPos(const Fvector& position, bool bHudMode)
     // m_particles->play_at_pos(position);
 
     m_transform.translate_over(position);
-    m_particles->UpdateParent(m_transform, zero_vel);
+    m_particles->UpdateParent(m_transform, {});
     m_particles->Play(bHudMode);
-    m_particles->UpdateParent(m_transform, zero_vel);
+    m_particles->UpdateParent(m_transform, {});
 }
 
 void CScriptParticles::Stop() const
@@ -158,7 +158,7 @@ void CScriptParticles::SetDirection(const Fvector& dir)
     Fvector::generate_orthonormal_basis_normalized(matrix.k, matrix.j, matrix.i);
     matrix.translate_over(m_transform.c);
     m_transform.set(matrix);
-    m_particles->UpdateParent(matrix, zero_vel);
+    m_particles->UpdateParent(matrix, {});
 }
 
 void CScriptParticles::SetOrientation(float yaw, float pitch, float roll)
@@ -167,7 +167,7 @@ void CScriptParticles::SetOrientation(float yaw, float pitch, float roll)
     matrix.setHPB(yaw, pitch, roll); // ?????????? matrix.c
     matrix.translate_over(m_transform.c);
     m_transform.set(matrix);
-    m_particles->UpdateParent(matrix, zero_vel);
+    m_particles->UpdateParent(matrix, {});
 }
 
 bool CScriptParticles::IsPlaying() const

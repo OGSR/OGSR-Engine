@@ -313,8 +313,8 @@ void CWeaponMounted::OnShot()
         Light_Start();
 
     StartFlameParticles();
-    StartSmokeParticles(fire_pos, zero_vel);
-    OnShellDrop(fire_pos, zero_vel);
+    StartSmokeParticles(fire_pos, {});
+    OnShellDrop(fire_pos, {});
 
     bool b_hud_mode = (Level().CurrentEntity() == smart_cast<CObject*>(Owner()));
     HUD_SOUND::PlaySound(sndShot, fire_pos, Owner(), b_hud_mode);

@@ -34,7 +34,6 @@ BOOL CLevel::Load_GameSpecific_After()
         CParticlesObject* pStaticParticles;
         LPCSTR ref_name;
         Fmatrix transform;
-        Fvector zero_vel = {0.f, 0.f, 0.f};
         for (const auto& it : ltXfile.sections())
         {
             ref_name = it.second->r_string("particle_name");
@@ -44,7 +43,7 @@ BOOL CLevel::Load_GameSpecific_After()
             transform.c = it.second->r_fvector3("matrix_4");
 
             pStaticParticles = CParticlesObject::Create(ref_name, FALSE, false);
-            pStaticParticles->UpdateParent(transform, zero_vel);
+            pStaticParticles->UpdateParent(transform, {});
             pStaticParticles->Play();
             m_StaticParticles.push_back(pStaticParticles);
         }
@@ -56,7 +55,6 @@ BOOL CLevel::Load_GameSpecific_After()
         u32 chunk = 0;
         string256 ref_name;
         Fmatrix transform;
-        Fvector zero_vel = {0.f, 0.f, 0.f};
         for (IReader* OBJ = F->open_chunk_iterator(chunk); OBJ; OBJ = F->open_chunk_iterator(chunk, OBJ))
         {
             OBJ->r_stringZ(ref_name, sizeof(ref_name));
@@ -64,7 +62,7 @@ BOOL CLevel::Load_GameSpecific_After()
             transform.c.y += 0.01f;
 
             pStaticParticles = CParticlesObject::Create(ref_name, FALSE, false);
-            pStaticParticles->UpdateParent(transform, zero_vel);
+            pStaticParticles->UpdateParent(transform, {});
             pStaticParticles->Play();
             m_StaticParticles.push_back(pStaticParticles);
         }

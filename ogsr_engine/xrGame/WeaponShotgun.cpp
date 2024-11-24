@@ -136,9 +136,9 @@ void CWeaponShotgun::OnShotBoth()
     if (ParentIsActor())
     {
         CParticlesObject* pSmokeParticles = NULL;
-        CShootingObject::StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, get_LastFP(), zero_vel, true);
+        CShootingObject::StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, get_LastFP(), {}, true);
         pSmokeParticles = NULL;
-        CShootingObject::StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, get_LastFP2(), zero_vel, true);
+        CShootingObject::StartParticles(pSmokeParticles, *m_sSmokeParticlesCurrent, get_LastFP2(), {}, true);
     }
 }
 

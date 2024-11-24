@@ -335,8 +335,8 @@ void CCustomRocket::PlayContact()
     //дективировать физическую оболочку,чтоб ракета не летела дальше
     if (m_pPhysicsShell)
     {
-        m_pPhysicsShell->set_LinearVel(zero_vel);
-        m_pPhysicsShell->set_AngularVel(zero_vel);
+        m_pPhysicsShell->set_LinearVel({});
+        m_pPhysicsShell->set_AngularVel({});
         m_pPhysicsShell->set_ObjectContactCallback(NULL);
         m_pPhysicsShell->Disable();
     }

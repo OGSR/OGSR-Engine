@@ -352,7 +352,7 @@ void CBurer::UpdateGraviObject()
     Fvector::generate_orthonormal_basis_normalized(pos.k, pos.j, pos.i);
     pos.translate_over(m_gravi_object.cur_pos);
 
-    ps->UpdateParent(pos, zero_vel);
+    ps->UpdateParent(pos, {});
     ps->Play(); // ps->Play(false);
 
     // hit objects
