@@ -20,13 +20,16 @@ protected:
     bool Load(LPCSTR xml_name);
 
 public:
+    CUIDialogWndEx();
+    virtual ~CUIDialogWndEx();
+
     void Register(CUIWindow* pChild);
     void Register(CUIWindow* pChild, LPCSTR name);
-    CUIDialogWndEx();
-    virtual ~CUIDialogWndEx() = default;
+
     void AddCallback(LPCSTR control_id, s16 event, const luabind::functor<void>& lua_function);
     void AddCallback(LPCSTR control_id, s16 event, const luabind::functor<void>& functor, const luabind::object& object);
     void ClearCallbacks();
+
     virtual void Update();
     virtual bool OnKeyboard(int dik, EUIMessages keyboard_action);
     virtual bool Dispatch(int cmd, int param) { return true; }
