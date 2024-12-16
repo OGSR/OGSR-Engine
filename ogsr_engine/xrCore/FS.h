@@ -284,7 +284,7 @@ public:
         if (m_last_pos != 0)
         {
             impl().seek(m_last_pos);
-            if (impl().elapsed() >= static_cast<int>(sizeof u32 * 2))
+            if (impl().elapsed() >= static_cast<int>(sizeof(u32) * 2))
             {
                 dwType = r_u32();
                 dwSize = r_u32();
@@ -299,7 +299,7 @@ public:
         if (!success)
         {
             rewind();
-            while (impl().elapsed() >= static_cast<int>(sizeof u32 * 2)) // while (!eof())
+            while (impl().elapsed() >= static_cast<int>(sizeof(u32) * 2)) // while (!eof())
             {
                 dwType = r_u32();
                 dwSize = r_u32();
@@ -353,7 +353,7 @@ public:
         if (m_last_pos != 0)
         {
             impl().seek(m_last_pos);
-            if (impl().elapsed() >= static_cast<int>(sizeof u32 * 2))
+            if (impl().elapsed() >= static_cast<int>(sizeof(u32) * 2))
             {
                 dwType = r_u32();
                 dwSize = r_u32();
@@ -367,7 +367,7 @@ public:
         if (!success)
         {
             rewind();
-            while (impl().elapsed() >= static_cast<int>(sizeof u32 * 2)) // while (!eof())
+            while (impl().elapsed() >= static_cast<int>(sizeof(u32) * 2)) // while (!eof())
             {
                 dwType = r_u32();
                 dwSize = r_u32();
