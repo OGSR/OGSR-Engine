@@ -8,7 +8,6 @@
 
 #pragma once
 
-#pragma pack(push, 4)
 #include "xrServer_Space.h"
 #ifdef XRGAME_EXPORTS
 #include "../../xrCDB/xrCDB.h"
@@ -28,6 +27,8 @@ class CDUInterface;
 
 #pragma warning(push)
 #pragma warning(disable : 4005)
+
+#pragma pack(push, 4)
 
 class ISE_Shape
 {
