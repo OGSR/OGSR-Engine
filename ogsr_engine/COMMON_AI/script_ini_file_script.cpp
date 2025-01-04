@@ -89,6 +89,27 @@ LPCSTR update_ini_path(LPCSTR file_name)
 inline CInifile* initialize_ini_file_full(LPCSTR szFileName, bool updatePath)
 {
     LPCSTR path = updatePath ? update_ini_path(szFileName) : szFileName;
+
+    if (IReader* F = FS.r_open(path))
+    {
+        // Костыль от ситуации когда в редких случаях почему-то у игроков бьётся создание новых файлов движком - оказывается набит нулями
+        // Не понятно почему так происходит, поэтому сделал тут обработку такой ситуации.
+
+        if (F->elapsed() >= sizeof(u8) && F->r_u8() == 0)
+        {
+            Msg("!![%s] file [%s] broken!", __FUNCTION__, path);
+
+            FS.r_close(F);
+
+            FS.file_delete(path);
+
+            F = nullptr;
+        }
+
+        if (F)
+            FS.r_close(F);
+    }
+
     return xr_new<CInifile>(path, TRUE, TRUE, TRUE);
 }
 
