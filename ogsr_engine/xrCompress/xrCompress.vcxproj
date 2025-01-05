@@ -129,6 +129,7 @@ copy /Y "$(ProjectDir)xrCompress_Readme.txt" "$(OutDir)xrCompress_Readme.txt"
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalIncludeDirectories>..\xrCore;..\..\3rd_party\Src\lzo;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>XRCORE_STATIC;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>

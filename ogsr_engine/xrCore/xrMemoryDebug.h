@@ -25,12 +25,12 @@ public:
     pointer address(reference ref) const { return &ref; }
     const_pointer address(const_reference ref) const { return &ref; }
 
-    //PointerAllocator() = default;
-    //PointerAllocator(const PointerAllocator<T>&) = default;
+    PointerAllocator() = default;
+    PointerAllocator(const PointerAllocator<T>&) = default;
 
-    //template <class Other>
-    //PointerAllocator(const PointerAllocator<Other>&)
-    //{}
+    template <class Other>
+    PointerAllocator(const PointerAllocator<Other>&)
+    {}
 
     template <class Other>
     PointerAllocator& operator=(const PointerAllocator<Other>&)
