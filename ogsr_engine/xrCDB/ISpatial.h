@@ -49,7 +49,6 @@ enum
 //		physical-decorations	- renderable, collideable
 //		lights					- lightsource
 //		particles(temp-objects)	- renderable
-//		glow					- renderable
 //		sound					- ???
 //////////////////////////////////////////////////////////////////////////
 

@@ -19,6 +19,7 @@ public:
 public:
     IRenderable();
     virtual ~IRenderable();
+
     IRender_ObjectSpecific* renderable_ROS();
 
     virtual void renderable_Render(u32 context_id, IRenderable* root) = 0;

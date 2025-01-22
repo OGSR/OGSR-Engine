@@ -65,7 +65,6 @@ public:
     CStatTimer RenderDUMP_RT; // ...render-targets
     CStatTimer RenderDUMP_SKIN; // ...skinning
     CStatTimer RenderDUMP_HUD; // ...hud rendering
-    CStatTimer RenderDUMP_Glows; // ...glows vis-testing,sorting,render
     CStatTimer RenderDUMP_Lights; // ...d-lights building/rendering
     CStatTimer RenderDUMP_WM; // ...wallmark sorting, rendering
     u32 RenderDUMP_WMS_Count; // ...number of static wallmark

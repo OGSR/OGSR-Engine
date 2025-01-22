@@ -91,20 +91,11 @@ void dxThunderboltRender::Render(CBackend& cmd_list, CEffect_Thunderbolt& owner)
     //	Hack. Since lightning gradient uses sun shader override z write settings manually
     cmd_list.set_Z(TRUE);
     cmd_list.set_ZFunc(D3DCMP_LESSEQUAL);
-    //	Hack. Since lightning gradient uses sun shader override z write settings manually
-    cmd_list.set_Z(TRUE);
-    cmd_list.set_ZFunc(D3DCMP_LESSEQUAL);
-
     cmd_list.Render(D3DPT_TRIANGLELIST, VS_Offset, 0, 4, 0, 2);
     cmd_list.set_Shader(((dxFlareRender*)&*owner.current->m_GradientCenter->m_pFlare)->hShader);
 
     //	Hack. Since lightning gradient uses sun shader override z write settings manually
     cmd_list.set_Z(TRUE);
     cmd_list.set_ZFunc(D3DCMP_LESSEQUAL);
-
-    //	Hack. Since lightning gradient uses sun shader override z write settings manually
-    cmd_list.set_Z(TRUE);
-    cmd_list.set_ZFunc(D3DCMP_LESSEQUAL);
-
     cmd_list.Render(D3DPT_TRIANGLELIST, VS_Offset + 4, 0, 4, 0, 2);
 }

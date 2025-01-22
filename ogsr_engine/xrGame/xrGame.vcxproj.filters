@@ -8846,9 +8846,6 @@
     <ClCompile Include="EliteDetector.cpp">
       <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors</Filter>
     </ClCompile>
-    <ClCompile Include="ui\ArtefactDetectorUI.cpp">
-      <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors</Filter>
-    </ClCompile>
     <ClCompile Include="SimpleDetectorSHOC.cpp">
       <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors</Filter>
     </ClCompile>

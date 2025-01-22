@@ -1550,7 +1550,6 @@
     <ClCompile Include="sound_memory_manager.cpp" />
     <ClCompile Include="steering_behaviour.cpp" />
     <ClCompile Include="trajectories.cpp" />
-    <ClCompile Include="ui\ArtefactDetectorUI.cpp" />
     <ClCompile Include="ui\UIHelper.cpp" />
     <ClCompile Include="ui\UIIconParams.cpp" />
     <ClCompile Include="ui\UILoadingScreen.cpp" />

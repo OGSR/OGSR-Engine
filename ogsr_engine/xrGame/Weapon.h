@@ -613,7 +613,7 @@ private:
     shared_str flashlight_attach_bone;
     ref_light flashlight_render;
     ref_light flashlight_omni;
-    ref_glow flashlight_glow;
+
     CLAItem* flashlight_lanim{};
     float flashlight_fBrightness{1.f};
 

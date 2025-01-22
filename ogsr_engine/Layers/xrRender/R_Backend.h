@@ -286,9 +286,6 @@ public:
     IC void set_CullMode(u32 _mode);
     IC void set_FillMode(u32 _mode);
 
-    void set_ClipPlanes(u32 _enable, Fplane* _planes = nullptr, u32 count = 0);
-    void set_ClipPlanes(u32 _enable, Fmatrix* _xform = nullptr, u32 fmask = 0xff);
-
     IC void set_Scissor(Irect* rect = nullptr);
 
     IC void SetViewport(const D3D_VIEWPORT& viewport) const;

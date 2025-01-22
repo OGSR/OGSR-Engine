@@ -130,7 +130,11 @@ const Fbox& CObject::BoundingBox() const
 //----------------------------------------------------------------------
 CObject::CObject() : ISpatial(g_SpatialSpace)
 {
-    spatial.dbg_name = "CObject";
+    spatial.type |= STYPE_COLLIDEABLE;
+    spatial.type |= STYPE_RENDERABLE;
+
+    //dwFrame_AsCrow = (u32)-1;
+    spatial.dbg_name = "object";
 
     // Transform
     Props.storage = 0;
@@ -327,8 +331,6 @@ void CObject::shedule_Update(u32 T)
 {
     ZoneScoped;
 
-    // consistency check
-    // Msg						("-SUB-:[%x][%s] CObject::shedule_Update",dynamic_cast<void*>(this),*cName());
     ISheduled::shedule_Update(T);
     spatial_update(base_spu_epsP * 1, base_spu_epsR * 1);
 

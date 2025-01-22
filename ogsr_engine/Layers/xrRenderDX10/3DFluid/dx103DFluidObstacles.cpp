@@ -176,9 +176,9 @@ void dx103DFluidObstacles::ProcessDynamicObstacles(CBackend& cmd_list, const dx1
         // if	(PortalTraverser.i_marker != sector->r_marker)
         // continue;	// inactive (untouched) sector
 
-        // renderable
         // IRenderable*	renderable		= spatial->dcast_Renderable	();
-        // if (0==renderable)				continue;					// unknown, but renderable object (r1_glow???)
+        // if (0==renderable)
+        //      continue;
 
         CObject* pObject = spatial->dcast_CObject();
         if (!pObject)

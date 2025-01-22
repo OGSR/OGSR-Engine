@@ -28,7 +28,6 @@ void CHangingLamp::Init()
     ambient_power = 0.f;
     light_render = 0;
     light_ambient = 0;
-    glow_render = 0;
 }
 
 void CHangingLamp::RespawnInit()
@@ -64,7 +63,6 @@ void CHangingLamp::net_Destroy()
 {
     light_render.destroy();
     light_ambient.destroy();
-    glow_render.destroy();
     RespawnInit();
     if (Visual())
         CPHSkeleton::RespawnInit();
@@ -119,14 +117,6 @@ BOOL CHangingLamp::net_Spawn(CSE_Abstract* DC)
     light_render->set_volumetric_quality(1.f);
     light_render->set_volumetric_intensity(0.1f);
     light_render->set_volumetric_distance(1.f);
-
-    if (lamp->glow_texture.size())
-    {
-        glow_render = ::Render->glow_create();
-        glow_render->set_texture(*lamp->glow_texture);
-        glow_render->set_color(clr);
-        glow_render->set_radius(lamp->glow_radius);
-    }
 
     if (lamp->flags.is(CSE_ALifeObjectHangingLamp::flPointAmbient))
     {
@@ -235,8 +225,6 @@ void CHangingLamp::UpdateCL()
         }
         light_render->set_rotation(xf.k, xf.i);
         light_render->set_position(xf.c);
-        if (glow_render)
-            glow_render->set_position(xf.c);
 
         // update T&R from ambient bone
         if (light_ambient)
@@ -266,8 +254,7 @@ void CHangingLamp::UpdateCL()
             fclr.set((float)color_get_B(clr), (float)color_get_G(clr), (float)color_get_R(clr), 1.f);
             fclr.mul_rgb(fBrightness / 255.f);
             light_render->set_color(fclr);
-            if (glow_render)
-                glow_render->set_color(fclr);
+
             if (light_ambient)
             {
                 fclr.mul_rgb(ambient_power);
@@ -290,9 +277,6 @@ void CHangingLamp::UpdateCL()
     if (light_render)
         light_render->set_active(light_status);
 
-    if (glow_render)
-        glow_render->set_active(light_status);
-
     if (light_ambient)
         light_ambient->set_active(light_status);
 }
@@ -301,8 +285,6 @@ void CHangingLamp::TurnOn()
 {
     lights_turned_on = true;
     light_render->set_active(true);
-    if (glow_render)
-        glow_render->set_active(true);
     if (light_ambient)
         light_ambient->set_active(true);
     if (Visual())
@@ -319,8 +301,6 @@ void CHangingLamp::TurnOff()
 {
     lights_turned_on = false;
     light_render->set_active(false);
-    if (glow_render)
-        glow_render->set_active(false);
     if (light_ambient)
         light_ambient->set_active(false);
     if (Visual())

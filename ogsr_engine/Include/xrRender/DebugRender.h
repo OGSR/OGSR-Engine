@@ -27,12 +27,10 @@ public:
 
     virtual void add_lines(Fvector const* vertices, u32 const& vertex_count, u16 const* pairs, u32 const& pair_count, u32 const& color, bool hud_mode = false) = 0;
 
-    virtual void ZEnable(bool bEnable) = 0;
     virtual void OnFrameEnd() = 0;
     virtual void SetShader(const debug_shader& shader) = 0;
     virtual void CacheSetXformWorld(const Fmatrix& M) = 0;
     virtual void CacheSetCullMode(CullMode) = 0;
-    virtual void SetAmbient(u32 colour) = 0;
 
     // Shaders
     virtual void SetDebugShader(dbgShaderHandle shdHandle) = 0;

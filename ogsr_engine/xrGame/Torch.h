@@ -25,7 +25,7 @@ protected:
     bool m_switched_on;
     ref_light light_render;
     ref_light light_omni;
-    ref_glow glow_render;
+
     Fvector m_focus;
     Fcolor m_color;
     bool m_bind_to_camera;

@@ -371,9 +371,6 @@ float spot_cone_angle;
 float m_ambient_radius;
 float m_ambient_power;
 shared_str m_ambient_texture;
-// glow
-shared_str glow_texture;
-float glow_radius;
 // game
 float m_health;
 

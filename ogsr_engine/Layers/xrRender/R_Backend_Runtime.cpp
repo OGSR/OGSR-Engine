@@ -92,31 +92,6 @@ void CBackend::Invalidate()
         textures_vs[vs_it++] = nullptr;
 }
 
-void CBackend::set_ClipPlanes(u32 _enable, Fplane* _planes /*=NULL */, u32 count /* =0*/)
-{
-    //	TODO: DX10: Implement in the corresponding vertex shaders
-    //	Use this to set up location, were shader setup code will get data
-    // VERIFY(!"CBackend::set_ClipPlanes not implemented!");
-    return;
-}
-
-void CBackend::set_ClipPlanes(u32 _enable, Fmatrix* _xform /*=NULL */, u32 fmask /* =0xff */)
-{
-    if (0 == HW.Caps.geometry.dwClipPlanes)
-        return;
-    if (!_enable)
-    {
-        //	TODO: DX10: Implement in the corresponding vertex shaders
-        //	Use this to set up location, were shader setup code will get data
-        // VERIFY(!"CBackend::set_ClipPlanes not implemented!");
-        return;
-    }
-    VERIFY(_xform && fmask);
-    CFrustum F;
-    F.CreateFromMatrix(*_xform, fmask);
-    set_ClipPlanes(_enable, F.planes, F.p_count);
-}
-
 void CBackend::set_Textures(STextureList* _T)
 {
     // TODO: expose T invalidation method

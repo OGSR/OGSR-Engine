@@ -16,7 +16,6 @@ class CProjector : public CScriptObject
     CLAItem* lanim;
     Fvector m_pos;
     ref_light light_render;
-    ref_glow glow_render;
 
     u16 guid_bone{};
 

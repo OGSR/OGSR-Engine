@@ -18,7 +18,6 @@ CProjector::CProjector()
     light_render = ::Render->light_create();
     light_render->set_type(IRender_Light::SPOT);
     light_render->set_shadow(true);
-    glow_render = ::Render->glow_create();
     lanim = 0;
     bone_x.id = BI_NONE;
     bone_y.id = BI_NONE;
@@ -27,7 +26,6 @@ CProjector::CProjector()
 CProjector::~CProjector()
 {
     light_render.destroy();
-    glow_render.destroy();
 }
 
 void CProjector::Load(LPCSTR section) { inherited::Load(section); }
@@ -88,9 +86,6 @@ BOOL CProjector::net_Spawn(CSE_Abstract* DC)
     light_render->set_volumetric_intensity(0.15f);
     light_render->set_volumetric_distance(1.f);
 */
-    glow_render->set_texture(pUserData->r_string("projector_definition", "glow_texture"));
-    glow_render->set_color(clr);
-    glow_render->set_radius(pUserData->r_float("projector_definition", "glow_radius"));
 
     setVisible(TRUE);
     setEnabled(TRUE);
@@ -120,7 +115,6 @@ void CProjector::TurnOn()
         return;
 
     light_render->set_active(true);
-    glow_render->set_active(true);
 
     IKinematics* visual = smart_cast<IKinematics*>(Visual());
 
@@ -135,7 +129,6 @@ void CProjector::TurnOff()
         return;
 
     light_render->set_active(false);
-    glow_render->set_active(false);
 
     smart_cast<IKinematics*>(Visual())->LL_SetBoneVisible(guid_bone, FALSE, TRUE);
 }
@@ -158,7 +151,6 @@ void CProjector::UpdateCL()
             fclr.set((float)color_get_B(clr), (float)color_get_G(clr), (float)color_get_R(clr), 1.f);
             fclr.mul_rgb(fBrightness / 255.f);
             light_render->set_color(fclr);
-            glow_render->set_color(fclr);
         }
 
         CBoneInstance& BI = smart_cast<IKinematics*>(Visual())->LL_GetBoneInstance(guid_bone);
@@ -168,8 +160,6 @@ void CProjector::UpdateCL()
 
         light_render->set_rotation(M.k, M.i);
         light_render->set_position(M.c);
-        glow_render->set_position(M.c);
-        glow_render->set_direction(M.k);
     }
 
     // Update searchlight

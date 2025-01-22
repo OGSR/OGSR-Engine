@@ -27,8 +27,6 @@ private:
     CLAItem* lanim;
     float ambient_power;
 
-    ref_glow glow_render;
-
     float fHealth;
     float fBrightness;
     bool lights_turned_on{};

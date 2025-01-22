@@ -604,7 +604,6 @@ CSE_ALifeObjectHangingLamp::CSE_ALifeObjectHangingLamp(LPCSTR caSection) : CSE_A
     m_ambient_radius = 10.f;
     m_ambient_power = 0.1f;
     spot_cone_angle = deg2rad(120.f);
-    glow_radius = 0.7f;
 }
 
 CSE_ALifeObjectHangingLamp::~CSE_ALifeObjectHangingLamp() {}
@@ -678,8 +677,10 @@ void CSE_ALifeObjectHangingLamp::STATE_Read(NET_Packet& tNetPacket, u16 size)
         tNetPacket.r_stringZ(light_texture);
         tNetPacket.r_stringZ(light_main_bone);
         tNetPacket.r_float(spot_cone_angle);
-        tNetPacket.r_stringZ(glow_texture);
-        tNetPacket.r_float(glow_radius);
+        shared_str trash;
+        float trash2;
+        tNetPacket.r_stringZ(trash);
+        tNetPacket.r_float(trash2);
     }
     if (m_wVersion > 96)
     {
@@ -720,8 +721,8 @@ void CSE_ALifeObjectHangingLamp::STATE_Write(NET_Packet& tNetPacket)
     tNetPacket.w_stringZ(light_texture);
     tNetPacket.w_stringZ(light_main_bone);
     tNetPacket.w_float(spot_cone_angle);
-    tNetPacket.w_stringZ(glow_texture);
-    tNetPacket.w_float(glow_radius);
+    tNetPacket.w_stringZ("");
+    tNetPacket.w_float(0);
 
     tNetPacket.w_stringZ(light_ambient_bone);
 

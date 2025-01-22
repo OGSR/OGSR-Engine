@@ -85,7 +85,6 @@ CWeapon::~CWeapon()
     laser_light_render.destroy();
     flashlight_render.destroy();
     flashlight_omni.destroy();
-    flashlight_glow.destroy();
 }
 
 void CWeapon::Hit(SHit* pHDS) { inherited::Hit(pHDS); }
@@ -597,11 +596,6 @@ void CWeapon::Load(LPCSTR section)
         flashlight_omni->set_color(oclr);
         const float orange = READ_IF_EXISTS(pSettings, r_float, m_light_section, b_r2 ? "omni_range_r2" : "omni_range", 0.25f);
         flashlight_omni->set_range(orange);
-
-        flashlight_glow = ::Render->glow_create();
-        flashlight_glow->set_texture(READ_IF_EXISTS(pSettings, r_string, m_light_section, "glow_texture", "glow\\glow_torch_r2"));
-        flashlight_glow->set_color(clr);
-        flashlight_glow->set_radius(READ_IF_EXISTS(pSettings, r_float, m_light_section, "glow_radius", 0.3f));
     }
 
     dof_transition_time = READ_IF_EXISTS(pSettings, r_float, section, "dof_transition_time", 0.6f);
@@ -1045,14 +1039,12 @@ void CWeapon::UpdateFlashlight()
         {
             flashlight_render->set_active(true);
             flashlight_omni->set_active(true);
-            flashlight_glow->set_active(true);
             UpdateAddonsVisibility();
         }
         else if (flashlight_render->get_active() && (!IsFlashlightOn() || !(!H_Parent() || (io && this == io->inventory().ActiveItem()))))
         {
             flashlight_render->set_active(false);
             flashlight_omni->set_active(false);
-            flashlight_glow->set_active(false);
             UpdateAddonsVisibility();
         }
 
@@ -1084,9 +1076,6 @@ void CWeapon::UpdateFlashlight()
             flashlight_render->set_position(flashlight_pos);
             flashlight_render->set_rotation(flashlightXForm.k, flashlightXForm.i);
 
-            flashlight_glow->set_position(flashlight_pos);
-            flashlight_glow->set_direction(flashlightXForm.k);
-
             Fmatrix flashlightomniXForm;
             flashlightomniXForm.identity();
             flashlightomniXForm.k.set(flashlight_dir_omni);
@@ -1104,7 +1093,6 @@ void CWeapon::UpdateFlashlight()
                 fclr.mul_rgb(flashlight_fBrightness / 255.f);
                 flashlight_render->set_color(fclr);
                 flashlight_omni->set_color(fclr);
-                flashlight_glow->set_color(fclr);
             }
         }
     }

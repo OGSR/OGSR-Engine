@@ -43,7 +43,6 @@ CTorch::CTorch(void)
     light_omni->set_moveable(true);
 
     m_switched_on = false;
-    glow_render = ::Render->glow_create();
     lanim = 0;
     time2hide = 0;
     fBrightness = 1.f;
@@ -74,7 +73,6 @@ CTorch::~CTorch(void)
 {
     light_render.destroy();
     light_omni.destroy();
-    glow_render.destroy();
     HUD_SOUND::DestroySound(m_NightVisionOnSnd);
     HUD_SOUND::DestroySound(m_NightVisionOffSnd);
     HUD_SOUND::DestroySound(m_NightVisionIdleSnd);
@@ -222,7 +220,6 @@ void CTorch::Switch(bool light_on)
     m_switched_on = light_on;
     light_render->set_active(light_on);
     light_omni->set_active(light_on);
-    glow_render->set_active(light_on);
 
     if (*light_trace_bone)
     {
@@ -293,10 +290,6 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
 
     light_render->set_cone(deg2rad(pUserData->r_float("torch_definition", "spot_angle")));
     light_render->set_texture(pUserData->r_string("torch_definition", "spot_texture"));
-
-    glow_render->set_texture(pUserData->r_string("torch_definition", "glow_texture"));
-    glow_render->set_color(m_color);
-    glow_render->set_radius(pUserData->r_float("torch_definition", "glow_radius"));
 
     //включить/выключить фонарик
     Switch(torch->m_active);
@@ -446,11 +439,8 @@ void CTorch::UpdateCL()
                 light_omni->set_position(offset);
             }
 
-			glow_render->set_position( pos );
-
 			light_render->set_rotation( dir, right );
 			light_omni->set_rotation( dir, right );
-			glow_render->set_direction( dir );
 		}// if(actor)
 		else 
 		{
@@ -463,9 +453,6 @@ void CTorch::UpdateCL()
             offset.mad(M.k, OMNI_OFFSET.z);
             light_omni->set_position(M.c);
             light_omni->set_rotation(M.k, M.i);
-
-            glow_render->set_position(M.c);
-            glow_render->set_direction(M.k);
         }
     }
     else
@@ -481,8 +468,6 @@ void CTorch::UpdateCL()
             // but m_switched_on is true?
             //			light_render->set_rotation	(M.k,M.i);
             //			light_render->set_position	(M.c);
-            //			glow_render->set_position	(M.c);
-            //			glow_render->set_direction	(M.k);
             //
             //			time2hide					-= Device.fTimeDelta;
             //			if (time2hide<0)
@@ -490,7 +475,6 @@ void CTorch::UpdateCL()
                 m_switched_on = false;
                 light_render->set_active(false);
                 light_omni->set_active(false);
-                glow_render->set_active(false);
             }
         } // if (getVisible() && m_pPhysicsShell)
     }
@@ -512,7 +496,6 @@ void CTorch::UpdateCL()
 
     light_render->set_color(fclr);
     light_omni->set_color(fclr);
-    glow_render->set_color(fclr);
 }
 
 void CTorch::create_physic_shell() { CPhysicsShellHolder::create_physic_shell(); }

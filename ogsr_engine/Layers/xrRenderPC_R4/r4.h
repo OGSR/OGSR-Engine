@@ -265,7 +265,6 @@ public:
 
     // Lighting
     virtual IRender_Light* light_create();
-    virtual IRender_Glow* glow_create();
 
     virtual float GetParticlesTimeLimit(LPCSTR name);
 

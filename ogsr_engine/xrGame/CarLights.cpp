@@ -16,7 +16,6 @@ extern CPHWorld* ph_world;
 SCarLight::SCarLight()
 {
     light_render = NULL;
-    glow_render = NULL;
     bone_id = BI_NONE;
     m_holder = NULL;
 }
@@ -24,7 +23,6 @@ SCarLight::SCarLight()
 SCarLight::~SCarLight()
 {
     light_render.destroy();
-    glow_render.destroy();
     bone_id = BI_NONE;
 }
 
@@ -37,7 +35,6 @@ void SCarLight::ParseDefinitions(LPCSTR section)
     light_render->set_shadow(true);
     light_render->set_moveable(true);
 
-    glow_render = ::Render->glow_create();
     //	lanim					= 0;
     //	time2hide				= 0;
 
@@ -54,12 +51,7 @@ void SCarLight::ParseDefinitions(LPCSTR section)
     light_render->set_cone(deg2rad(ini->r_float(section, "cone_angle")));
     light_render->set_texture(ini->r_string(section, "spot_texture"));
 
-    glow_render->set_texture(ini->r_string(section, "glow_texture"));
-    glow_render->set_color(clr);
-    glow_render->set_radius(ini->r_float(section, "glow_radius"));
-
     bone_id = pKinematics->LL_BoneID(ini->r_string(section, "bone"));
-    glow_render->set_active(false);
     light_render->set_active(false);
     pKinematics->LL_SetBoneVisible(bone_id, FALSE, TRUE);
 
@@ -83,7 +75,6 @@ void SCarLight::TurnOn()
     K->LL_SetBoneVisible(bone_id, TRUE, TRUE);
     K->CalculateBones_Invalidate();
     K->CalculateBones();
-    glow_render->set_active(true);
     light_render->set_active(true);
     Update();
 }
@@ -92,15 +83,14 @@ void SCarLight::TurnOff()
     VERIFY(!ph_world->Processing());
     if (!isOn())
         return;
-    glow_render->set_active(false);
     light_render->set_active(false);
+
     smart_cast<IKinematics*>(m_holder->PCar()->Visual())->LL_SetBoneVisible(bone_id, FALSE, TRUE);
 }
 
 bool SCarLight::isOn()
 {
     VERIFY(!ph_world->Processing());
-    VERIFY(light_render->get_active() == glow_render->get_active());
     return light_render->get_active();
 }
 
@@ -114,8 +104,6 @@ void SCarLight::Update()
     Fmatrix M;
     M.mul(pcar->XFORM(), BI.mTransform);
     light_render->set_rotation(M.k, M.i);
-    glow_render->set_direction(M.k);
-    glow_render->set_position(M.c);
     light_render->set_position(M.c);
 }
 

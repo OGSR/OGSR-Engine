@@ -193,7 +193,6 @@ void CRender::level_Unload()
     }
 
     //*** Lights
-    // Glows.Unload			();
     Lights.Unload();
 
     //*** Visuals

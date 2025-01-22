@@ -8,7 +8,6 @@ class CCar;
 struct SCarLight
 {
     ref_light light_render;
-    ref_glow glow_render;
     u16 bone_id;
     CCarLights* m_holder;
     SCarLight();
