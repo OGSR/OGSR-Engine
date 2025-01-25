@@ -19,6 +19,7 @@
 #include "alife_registry_container.h"
 #include "xrServer.h"
 #include "level.h"
+#include "GameObject.h"
 
 namespace detail
 {
@@ -263,13 +264,21 @@ void CALifeSimulator__release(CALifeSimulator* self, CSE_Abstract* object, bool)
         return;
     }
 
-    // awful hack, for stohe only
-    NET_Packet packet;
-    packet.w_begin(M_EVENT);
-    packet.w_u32(Level().timeServer());
-    packet.w_u16(GE_DESTROY);
-    packet.w_u16(object->ID);
-    Level().Send(packet, net_flags(TRUE, TRUE));
+    CGameObject* pGameObject = smart_cast<CGameObject*>(Level().Objects.net_Find(alife_object->ID));
+    if (pGameObject)
+    {
+        pGameObject->DestroyObject();
+    }
+    else
+    {
+        // awful hack, for stohe only
+        NET_Packet packet;
+        packet.w_begin(M_EVENT);
+        packet.w_u32(Level().timeServer());
+        packet.w_u16(GE_DESTROY);
+        packet.w_u16(object->ID);
+        Level().Send(packet, net_flags(TRUE, TRUE));
+    }
 }
 
 void CALifeSimulator__assign_story_id(CALifeSimulator* self, ALife::_OBJECT_ID _id, ALife::_STORY_ID _story_id)
