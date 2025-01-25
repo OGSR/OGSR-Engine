@@ -129,6 +129,7 @@ void CLevel::g_sv_Spawn(CSE_Abstract* E)
     //	T.Start		();
     if (0 == O || (!O->net_Spawn(E)))
     {
+        O->setDestroy(TRUE);
         O->net_Destroy();
         client_spawn_manager().clear(O->ID());
         Objects.Destroy(O);
