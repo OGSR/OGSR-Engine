@@ -137,6 +137,10 @@ void FS_file_list_ex::Sort(u32 flags)
         std::sort(m_file_items.begin(), m_file_items.end(), modifSorter<false>);
 }
 
+void r_close_script(CLocatorAPI* fs, IReader* S) { fs->r_close(S); }
+
+void w_close_script(CLocatorAPI* fs, IWriter* S) { fs->w_close(S); }
+
 FS_file_list_ex file_list_open_ex(CLocatorAPI* fs, LPCSTR path, u32 flags, LPCSTR mask) { return FS_file_list_ex(path, flags, mask); }
 
 FS_file_list file_list_open_script(CLocatorAPI* fs, LPCSTR initial, u32 flags) { return FS_file_list(fs->file_list_open(initial, flags)); }
@@ -322,10 +326,11 @@ void fs_registrator::script_register(lua_State* L)
 
                   .def("r_open", (IReader * (CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::r_open))
                   .def("r_open", (IReader * (CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::r_open))
-                  .def("r_close", (void(CLocatorAPI::*)(IReader*&))(&CLocatorAPI::r_close))
+                  .def("r_close", &r_close_script)
 
                   .def("w_open", (IWriter * (CLocatorAPI::*)(LPCSTR, LPCSTR))(&CLocatorAPI::w_open))
-                  .def("w_close", &CLocatorAPI::w_close)
+                  .def("w_open", (IWriter * (CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::w_open))
+                  .def("w_close", &w_close_script)
 
                   .def("file_list_open", &file_list_open_script)
                   .def("file_list_open", &file_list_open_script_2)

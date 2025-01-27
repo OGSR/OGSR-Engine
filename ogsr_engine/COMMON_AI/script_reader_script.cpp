@@ -24,10 +24,12 @@ bool r_bool(IReader* self) { return (!!self->r_u8()); }
 
 void r_fvector3(IReader* self, Fvector* arg0) { self->r_fvector3(*arg0); }
 
+u32 find_chunk_script(IReader* self, u32 id) { return self->find_chunk(id); }
 
 void CScriptReader::script_register(lua_State* L)
 {
     module(L)[class_<IReader>("reader")
+                  .def("find_chunk", &find_chunk_script)
                   .def("r_seek", &IReader::seek)
                   .def("r_tell", &IReader::tell)
                   .def("r_vec3", &::r_fvector3)
