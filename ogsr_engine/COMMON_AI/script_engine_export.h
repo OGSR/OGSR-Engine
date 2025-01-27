@@ -15,6 +15,7 @@
 #include "script_engine.h"
 #include "script_ini_file.h"
 #include "script_reader.h"
+#include "script_writer.h"
 #include "script_net_packet.h"
 #include "object_factory.h"
 #include "script_sound_type.h"

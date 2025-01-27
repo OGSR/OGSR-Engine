@@ -2107,6 +2107,9 @@
     <Filter Include="EmbeddedEditor">
       <UniqueIdentifier>{2ae8c39f-5f30-4c34-b654-7b159e43244b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AI\AScript\ScriptClasses\ScriptWriter">
+      <UniqueIdentifier>{aa3b1cb8-4167-4170-b6cf-7f27304a9431}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6080,6 +6083,9 @@
     <ClInclude Include="LevelDebugScript.h">
       <Filter>Core\Client\Level</Filter>
     </ClInclude>
+    <ClInclude Include="..\COMMON_AI\script_writer.h">
+      <Filter>AI\AScript\ScriptClasses\ScriptWriter</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -8875,6 +8881,9 @@
     </ClCompile>
     <ClCompile Include="LevelDebugScript.cpp">
       <Filter>Core\Client\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="..\COMMON_AI\script_writer_script.cpp">
+      <Filter>AI\AScript\ScriptClasses\ScriptWriter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
