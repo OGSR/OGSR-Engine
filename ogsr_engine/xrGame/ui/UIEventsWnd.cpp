@@ -187,8 +187,17 @@ void CUIEventsWnd::ReloadList(bool bClearOnly)
 void CUIEventsWnd::Show(bool status)
 {
     inherited::Show(status);
+
+    // хз почему, но если сделать Show для m_UIMapWnd, который не приаттачен к родителю - на нём пропадают LevelMap, причину не нашел, будет пока костыль
+
+    if (!GetDescriptionMode())
+        m_UIRightWnd->AttachChild(m_UIMapWnd);
+
     m_UIMapWnd->Show(status);
     m_UITaskInfoWnd->Show(status);
+
+    if (!GetDescriptionMode())
+        m_UIRightWnd->DetachChild(m_UIMapWnd);
 
     ReloadList(status == false);
 }
