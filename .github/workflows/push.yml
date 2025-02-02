@@ -17,7 +17,7 @@ jobs:
         Configuration: [Debug, Release]
         Platform: [x64]
     steps:
-    - uses: actions/checkout@v4.1.7
+    - uses: actions/checkout@v4.2.2
       with:
         fetch-depth: 0
 
@@ -53,7 +53,7 @@ jobs:
         
         7z a -t7z -m0=LZMA2:d=96m:fb=273 -mx=9 -mmt=2 ..\..\%OGSR_ARTIFACT_NAME% .\
     - name: Upload OGSR artifact
-      uses: actions/upload-artifact@v4.3.3
+      uses: actions/upload-artifact@v4.6.0
       with:
         name: OGSR_Engine_SHOC_EDITION_${{ matrix.Platform }}_2.1.${{ github.run_number }}_${{ matrix.Configuration }}.7z
         path: .\OGSR_Engine_SHOC_EDITION_${{ matrix.Platform }}_2.1.${{ github.run_number }}_${{ matrix.Configuration }}.7z
