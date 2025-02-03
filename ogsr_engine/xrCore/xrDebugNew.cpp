@@ -250,6 +250,10 @@ void xrDebug::on_exception_in_thread()
 
         quick_exit(EXIT_SUCCESS);
     }
+    else
+    {
+        DEBUG_INVOKE;
+    }
 }
 
 static int out_of_memory_handler(size_t size)
