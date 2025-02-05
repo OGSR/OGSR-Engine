@@ -32,7 +32,7 @@ game_cl_GameState::~game_cl_GameState()
         xr_delete(I->second);
     players.clear();
 
-    shedule_unregister();
+    shedule_unregister(true);
 }
 
 void game_cl_GameState::net_import_GameTime(NET_Packet& P)

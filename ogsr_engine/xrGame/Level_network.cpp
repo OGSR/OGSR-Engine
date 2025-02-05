@@ -37,10 +37,12 @@ void CLevel::remove_objects()
 
     {
         VERIFY(Server);
-        Server->SLS_Clear();
+        Server->SLS_Clear(); // generate GE_DESTROY for all game objects
     }
 
     snd_Events.clear();
+
+    // process destroy queue 
     for (int i = 0; i < 6; ++i)
     {
         // ugly hack for checks that update is twice on frame
@@ -113,6 +115,9 @@ void CLevel::remove_objects()
     }
 
     m_debug_render_queue.clear();
+
+    // clean up scheduler queues
+    Engine.Sheduler.Destroy();
 
     m_is_removing_objects = false;
 }

@@ -30,7 +30,7 @@ CPS_Instance::~CPS_Instance()
         g_pGamePersistent->ps_destroy.erase(it);
 
     spatial_unregister();
-    shedule_unregister();
+    shedule_unregister(true);
 }
 //----------------------------------------------------
 void CPS_Instance::shedule_Update(u32 dt)

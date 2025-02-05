@@ -22,6 +22,8 @@ private:
 
 public:
     CActorMemory(CActor* actor);
+    virtual ~CActorMemory() = default;
+
     virtual BOOL feel_vision_isRelevant(CObject* object);
     virtual void camera(Fvector& position, Fvector& direction, Fvector& normal, float& field_of_view, float& aspect_ratio, float& near_plane, float& far_plane);
 };

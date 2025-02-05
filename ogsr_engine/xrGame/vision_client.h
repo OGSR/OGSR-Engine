@@ -21,13 +21,14 @@ private:
     typedef ISheduled inherited;
 
 private:
-    CEntity* m_object;
-    CVisualMemoryManager* m_visual;
+    CEntity* m_object{};
+    CVisualMemoryManager* m_visual{};
 
 private:
-    u32 m_state;
-    u32 m_time_stamp;
-    Fvector m_position;
+    u32 m_state{};
+    u32 m_time_stamp{};
+
+    Fvector m_position{};
 
 private:
     IC const CEntity& object() const;

@@ -63,7 +63,7 @@ CParticlesObject::~CParticlesObject()
     VERIFY(0 == mt_dt);
 
     //	we do not need this since CPS_Instance does it
-    //	shedule_unregister		();
+    //	shedule_unregister(true);
 }
 
 void CParticlesObject::UpdateSpatial()

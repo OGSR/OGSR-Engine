@@ -10,7 +10,7 @@ namespace Feel
 {
 
 Vision::Vision() : pure_relcase(&Vision::feel_vision_relcase) {}
-Vision::~Vision() {}
+Vision::~Vision() { feel_vision_clear(); }
 
 struct SFeelParam
 {
@@ -103,8 +103,12 @@ void Vision::feel_vision_query(Fmatrix& mFull, Fvector& P)
         ISpatial* spatial = r_spatial[o_it];
         CObject* object = spatial->dcast_CObject();
         if (object && feel_vision_isRelevant(object))
+        {
             seen.push_back(object);
+        }
     }
+    r_spatial.clear();
+
     if (seen.size() > 1)
     {
         std::sort(seen.begin(), seen.end());

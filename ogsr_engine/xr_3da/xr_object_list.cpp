@@ -244,11 +244,11 @@ void CObjectList::Load() { R_ASSERT(map_NETID.empty() && objects_active.empty() 
 
 void CObjectList::Unload()
 {
-    if (objects_sleeping.size() || objects_active.size())
+    if (!objects_sleeping.empty() || !objects_active.empty())
         Msg("! objects-leaked: %d", objects_sleeping.size() + objects_active.size());
 
     // Destroy objects
-    while (objects_sleeping.size())
+    while (!objects_sleeping.empty())
     {
         CObject* O = objects_sleeping.back();
         Msg("! [%x] s[%4d]-[%s]-[%s]", O, O->ID(), *O->cNameSect(), *O->cName());
@@ -260,7 +260,8 @@ void CObjectList::Unload()
         O->net_Destroy();
         Destroy(O);
     }
-    while (objects_active.size())
+
+    while (!objects_active.empty())
     {
         CObject* O = objects_active.back();
         Msg("! [%x] a[%4d]-[%s]-[%s]", O, O->ID(), *O->cNameSect(), *O->cName());

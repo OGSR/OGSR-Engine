@@ -23,8 +23,9 @@ private:
     xr_vector<CObject*> seen;
     xr_vector<CObject*> query;
     xr_vector<CObject*> diff;
-    collide::rq_results RQR;
+
     xr_vector<ISpatial*> r_spatial;
+    collide::rq_results RQR;
 
     void o_new(CObject* E);
     void o_delete(CObject* E);
@@ -35,15 +36,19 @@ public:
     virtual ~Vision();
     struct feel_visible_Item
     {
-        float fuzzy; // note range: (-1[no]..1[yes])
-        CObject* O;
-        collide::ray_cache Cache;
-        float Cache_vis;
-        Fvector cp_LP;
-        Fvector cp_LR_src;
-        Fvector cp_LR_dst;
-        Fvector cp_LAST; // last point found to be visible
-        float trans;
+        float fuzzy{}; // note range: (-1[no]..1[yes])
+        CObject* O{};
+
+        collide::ray_cache Cache{};
+        float Cache_vis{};
+
+        Fvector cp_LP{};
+        Fvector cp_LR_src{};
+        Fvector cp_LR_dst{};
+
+        Fvector cp_LAST{}; // last point found to be visible
+
+        float trans{};
     };
     xr_vector<feel_visible_Item> feel_visible;
 

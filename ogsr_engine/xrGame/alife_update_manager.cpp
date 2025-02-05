@@ -64,7 +64,7 @@ CALifeUpdateManager::CALifeUpdateManager(xrServer* server, LPCSTR section)
 
 CALifeUpdateManager::~CALifeUpdateManager()
 {
-    shedule_unregister();
+    shedule_unregister(true);
     Device.remove_from_seq_parallel(fastdelegate::MakeDelegate(this, &CALifeUpdateManager::update));
 }
 

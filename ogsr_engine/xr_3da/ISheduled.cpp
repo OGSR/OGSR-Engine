@@ -27,7 +27,7 @@ ISheduled::~ISheduled()
 
 void ISheduled::shedule_register() { Engine.Sheduler.Register(this); }
 
-void ISheduled::shedule_unregister() { Engine.Sheduler.Unregister(this); }
+void ISheduled::shedule_unregister(bool force) { Engine.Sheduler.Unregister(this, force); }
 
 void ISheduled::shedule_Update(u32 dt)
 {

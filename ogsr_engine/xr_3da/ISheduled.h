@@ -20,7 +20,7 @@ public:
     virtual ~ISheduled();
 
     void shedule_register();
-    void shedule_unregister();
+    void shedule_unregister(bool force = false);
 
     virtual float shedule_Scale() = 0;
     virtual void shedule_Update(u32 dt);

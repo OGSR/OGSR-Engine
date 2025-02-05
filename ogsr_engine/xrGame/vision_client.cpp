@@ -32,7 +32,7 @@ vision_client::vision_client(CEntity* object, const u32& update_interval) : m_ob
 
 vision_client::~vision_client()
 {
-    shedule_unregister();
+    shedule_unregister(true);
     xr_delete(m_visual);
 }
 

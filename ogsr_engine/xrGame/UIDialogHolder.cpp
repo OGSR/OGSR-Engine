@@ -33,9 +33,10 @@ CDialogHolder::CDialogHolder()
 
 CDialogHolder::~CDialogHolder()
 {
-    shedule_unregister();
+    shedule_unregister(true);
     Device.seqFrame.Remove(this);
 }
+
 #include "HUDManager.h"
 
 void CDialogHolder::StartMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)

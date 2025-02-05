@@ -51,7 +51,6 @@ BOOL CBreakableObject::net_Spawn(CSE_Abstract* DC)
     // CreateBroken			();
     bRemoved = false;
     // Break					();
-    //	shedule_unregister		();
     return (TRUE);
 }
 

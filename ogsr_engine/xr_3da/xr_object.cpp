@@ -220,6 +220,7 @@ void CObject::net_Destroy()
 //////////////////////////////////////////////////////////////////////////
 const float base_spu_epsP = 0.05f;
 const float base_spu_epsR = 0.05f;
+
 void CObject::spatial_update(float eps_P, float eps_R)
 {
     //
