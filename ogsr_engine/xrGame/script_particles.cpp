@@ -192,10 +192,4 @@ void CScriptParticles::StopPath() const { m_particles->StopPath(); }
 void CScriptParticles::PausePath(bool val) const { m_particles->PausePath(val); }
 
 int CScriptParticles::LifeTime() const { return m_particles->LifeTime(); }
-
-u32 CScriptParticles::Length() const
-{
-    IParticleCustom* V = smart_cast<IParticleCustom*>(m_particles->renderable.visual);
-    const float time_limit = V->GetTimeLimit();
-    return time_limit > 0.f ? iFloor(time_limit * 1000.f) : 0;
-}
+u32 CScriptParticles::Length() const { return LifeTime(); }
