@@ -28,7 +28,6 @@ protected:
     Fvector2 m_cell_size;
     ICustomDrawCell* m_custom_draw;
     int m_accelerator;
-    virtual void UpdateItemText();
 
     CUIProgressBar* m_pConditionState;
     bool m_condition_auto_width;
@@ -43,13 +42,14 @@ public:
     virtual bool OnMouse(float x, float y, EUIMessages mouse_action);
     virtual void Draw();
     virtual void Update();
+    virtual void UpdateItemText();
 
     virtual void OnAfterChild(CUIDragDropListEx* parent_list){};
 
     u32 ChildsCount();
     void PushChild(CUICellItem*);
     CUICellItem* PopChild();
-    CUICellItem* Child(u32 idx) { return m_childs[idx]; };
+    CUICellItem* Child(u32 idx) { return m_childs.at(idx); };
     bool HasChild(CUICellItem* item);
     virtual bool EqualTo(CUICellItem* itm);
     IC const Ivector2& GetGridSize() { return m_grid_size; }; // size in grid

@@ -570,6 +570,7 @@ CUICellItem* CUICellContainer::RemoveItem(CUICellItem* itm, bool force_root)
         {
             CUICellItem* iii = i->PopChild();
             R_ASSERT(0 == iii->ChildsCount());
+            i->UpdateItemText();
             return iii;
         }
     }
@@ -578,6 +579,7 @@ CUICellItem* CUICellContainer::RemoveItem(CUICellItem* itm, bool force_root)
     {
         CUICellItem* iii = itm->PopChild();
         R_ASSERT(0 == iii->ChildsCount());
+        itm->UpdateItemText();
         return iii;
     }
 

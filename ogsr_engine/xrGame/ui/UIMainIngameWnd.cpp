@@ -709,26 +709,25 @@ void CUIMainIngameWnd::UpdatePickUpItem()
     UIPickUpItemIcon.SetColor(color_rgba(255, 255, 255, 192));
     if (auto wpn = m_pPickUpItem->cast_weapon())
     {
-        auto cell_item = xr_new<CUIWeaponCellItem>(wpn);
+        CUIWeaponCellItem cell_item{wpn};
 
         if (wpn->SilencerAttachable() && wpn->IsSilencerAttached())
         {
-            auto sil = init_addon(cell_item, *wpn->GetSilencerName(), scale, UI()->get_current_kx(), eAddonType::eSilencer);
+            auto sil = init_addon(&cell_item, *wpn->GetSilencerName(), scale, UI()->get_current_kx(), eAddonType::eSilencer);
             UIPickUpItemIcon.AttachChild(sil);
         }
 
         if (wpn->ScopeAttachable() && wpn->IsScopeAttached())
         {
-            auto scope = init_addon(cell_item, *wpn->GetScopeName(), scale, UI()->get_current_kx(), eAddonType::eScope);
+            auto scope = init_addon(&cell_item, *wpn->GetScopeName(), scale, UI()->get_current_kx(), eAddonType::eScope);
             UIPickUpItemIcon.AttachChild(scope);
         }
 
         if (wpn->GrenadeLauncherAttachable() && wpn->IsGrenadeLauncherAttached())
         {
-            auto launcher = init_addon(cell_item, *wpn->GetGrenadeLauncherName(), scale, UI()->get_current_kx(), eAddonType::eLauncher);
+            auto launcher = init_addon(&cell_item, *wpn->GetGrenadeLauncherName(), scale, UI()->get_current_kx(), eAddonType::eLauncher);
             UIPickUpItemIcon.AttachChild(launcher);
         }
-        delete_data(cell_item);
     }
 
     // Real Wolf: Колбек для скриптового добавления своих иконок. 10.08.2014.

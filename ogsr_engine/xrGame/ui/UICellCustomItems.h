@@ -28,12 +28,10 @@ class CUIAmmoCellItem : public CUIInventoryCellItem
 {
     typedef CUIInventoryCellItem inherited;
 
-protected:
-    virtual void UpdateItemText();
-
 public:
     CUIAmmoCellItem(CWeaponAmmo* itm);
     virtual void Update();
+    virtual void UpdateItemText() override;
     virtual bool EqualTo(CUICellItem* itm);
     CWeaponAmmo* object() { return static_cast<CWeaponAmmo*>(m_pData); }
 };
