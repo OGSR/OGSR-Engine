@@ -1210,9 +1210,6 @@
     <Filter Include="AI\AScript\ScriptEngine">
       <UniqueIdentifier>{ec7b39b3-95cf-47f3-aeed-a40ec9c722cc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="AI\AScript\ScriptStorage">
-      <UniqueIdentifier>{0ac542c4-3a17-41af-90ff-0d988b494e6d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="AI\ASound">
       <UniqueIdentifier>{6a79ab5a-f675-4b39-8c96-b7dc473c8e21}</UniqueIdentifier>
     </Filter>
@@ -4115,9 +4112,6 @@
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\script_engine_export.h">
       <Filter>AI\AScript\ScriptEngine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\script_storage.h">
-      <Filter>AI\AScript\ScriptStorage</Filter>
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\ai_sounds.h">
       <Filter>AI\ASound</Filter>
@@ -7236,9 +7230,6 @@
     </ClCompile>
     <ClCompile Include="..\COMMON_AI\script_engine_script.cpp">
       <Filter>AI\AScript\ScriptEngine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\COMMON_AI\script_storage.cpp">
-      <Filter>AI\AScript\ScriptStorage</Filter>
     </ClCompile>
     <ClCompile Include="..\COMMON_AI\ai_sounds.cpp">
       <Filter>AI\ASound</Filter>

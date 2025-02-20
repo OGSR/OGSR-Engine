@@ -986,7 +986,6 @@
     <ClInclude Include="script_particles_inline.h" />
     <ClInclude Include="..\COMMON_AI\script_engine.h" />
     <ClInclude Include="..\COMMON_AI\script_engine_export.h" />
-    <ClInclude Include="..\COMMON_AI\script_storage.h" />
     <ClInclude Include="..\COMMON_AI\ai_sounds.h" />
     <ClInclude Include="ai_space.h" />
     <ClInclude Include="ai_space_inline.h" />
@@ -1923,7 +1922,6 @@
     <ClCompile Include="..\COMMON_AI\script_engine_export.cpp" />
     <ClCompile Include="script_engine_help.cpp" />
     <ClCompile Include="..\COMMON_AI\script_engine_script.cpp" />
-    <ClCompile Include="..\COMMON_AI\script_storage.cpp" />
     <ClCompile Include="..\COMMON_AI\ai_sounds.cpp" />
     <ClCompile Include="ai_space.cpp" />
     <ClCompile Include="StdAfx.cpp">
