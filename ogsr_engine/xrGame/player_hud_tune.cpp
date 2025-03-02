@@ -141,8 +141,8 @@ void attachable_hud_item::tune(const Ivector& values)
         {
             Log("####################################");
             Msg("[%s]", m_sect_name.c_str());
-            Msg("item_position = %f,%f,%f", m_measures.m_item_attach[0].x, m_measures.m_item_attach[0].y, m_measures.m_item_attach[0].z);
-            Msg("item_orientation = %f,%f,%f", m_measures.m_item_attach[1].x, m_measures.m_item_attach[1].y, m_measures.m_item_attach[1].z);
+            Msg("item_position = %g,%g,%g", m_measures.m_item_attach[0].x, m_measures.m_item_attach[0].y, m_measures.m_item_attach[0].z);
+            Msg("item_orientation = %g,%g,%g", m_measures.m_item_attach[1].x, m_measures.m_item_attach[1].y, m_measures.m_item_attach[1].z);
             Log("####################################");
         }
     }
@@ -178,13 +178,13 @@ void attachable_hud_item::tune(const Ivector& values)
         {
             Log("####################################");
             Msg("[%s]", m_sect_name.c_str());
-            Msg("fire_point = %f,%f,%f", m_measures.m_fire_point_offset.x, m_measures.m_fire_point_offset.y, m_measures.m_fire_point_offset.z);
-            Msg("fire_point2 = %f,%f,%f", m_measures.m_fire_point2_offset.x, m_measures.m_fire_point2_offset.y, m_measures.m_fire_point2_offset.z);
-            Msg("shell_point = %f,%f,%f", m_measures.m_shell_point_offset.x, m_measures.m_shell_point_offset.y, m_measures.m_shell_point_offset.z);
+            Msg("fire_point = %g,%g,%g", m_measures.m_fire_point_offset.x, m_measures.m_fire_point_offset.y, m_measures.m_fire_point_offset.z);
+            Msg("fire_point2 = %g,%g,%g", m_measures.m_fire_point2_offset.x, m_measures.m_fire_point2_offset.y, m_measures.m_fire_point2_offset.z);
+            Msg("shell_point = %g,%g,%g", m_measures.m_shell_point_offset.x, m_measures.m_shell_point_offset.y, m_measures.m_shell_point_offset.z);
             if (auto Wpn = smart_cast<CWeapon*>(m_parent_hud_item))
             {
-                Msg("laserdot_attach_offset = %f,%f,%f", Wpn->laserdot_attach_offset.x, Wpn->laserdot_attach_offset.y, Wpn->laserdot_attach_offset.z);
-                Msg("torch_attach_offset = %f,%f,%f", Wpn->flashlight_attach_offset.x, Wpn->flashlight_attach_offset.y, Wpn->flashlight_attach_offset.z);
+                Msg("laserdot_attach_offset = %g,%g,%g", Wpn->laserdot_attach_offset.x, Wpn->laserdot_attach_offset.y, Wpn->laserdot_attach_offset.z);
+                Msg("torch_attach_offset = %g,%g,%g", Wpn->flashlight_attach_offset.x, Wpn->flashlight_attach_offset.y, Wpn->flashlight_attach_offset.z);
             }
             Log("####################################");
         }
@@ -281,60 +281,60 @@ void player_hud::tune(const Ivector& _values)
             {
                 Log("####################################");
                 Msg("[%s]", m_attached_items[g_bHudAdjustItemIdx]->m_sect_name.c_str());
-                Msg("hands_position%s = %f,%f,%f", is_16x9 ? "_16x9" : "", pos_.x, pos_.y, pos_.z);
-                Msg("hands_orientation%s = %f,%f,%f", is_16x9 ? "_16x9" : "", rot_.x, rot_.y, rot_.z);
+                Msg("hands_position%s = %g,%g,%g", is_16x9 ? "_16x9" : "", pos_.x, pos_.y, pos_.z);
+                Msg("hands_orientation%s = %g,%g,%g", is_16x9 ? "_16x9" : "", rot_.x, rot_.y, rot_.z);
                 Log("####################################");
             }
             else if (idx == hud_item_measures::m_hands_offset_type_aim)
             {
                 Log("####################################");
                 Msg("[%s]", m_attached_items[g_bHudAdjustItemIdx]->m_sect_name.c_str());
-                Msg("aim_hud_offset_pos%s = %f,%f,%f", is_16x9 ? "_16x9" : "", pos_.x, pos_.y, pos_.z);
-                Msg("aim_hud_offset_rot%s = %f,%f,%f", is_16x9 ? "_16x9" : "", rot_.x, rot_.y, rot_.z);
+                Msg("aim_hud_offset_pos%s = %g,%g,%g", is_16x9 ? "_16x9" : "", pos_.x, pos_.y, pos_.z);
+                Msg("aim_hud_offset_rot%s = %g,%g,%g", is_16x9 ? "_16x9" : "", rot_.x, rot_.y, rot_.z);
                 Log("####################################");
             }
             else if (idx == hud_item_measures::m_hands_offset_type_gl)
             {
                 Log("####################################");
                 Msg("[%s]", m_attached_items[g_bHudAdjustItemIdx]->m_sect_name.c_str());
-                Msg("gl_hud_offset_pos%s = %f,%f,%f", is_16x9 ? "_16x9" : "", pos_.x, pos_.y, pos_.z);
-                Msg("gl_hud_offset_rot%s	 = %f,%f,%f", is_16x9 ? "_16x9" : "", rot_.x, rot_.y, rot_.z);
+                Msg("gl_hud_offset_pos%s = %g,%g,%g", is_16x9 ? "_16x9" : "", pos_.x, pos_.y, pos_.z);
+                Msg("gl_hud_offset_rot%s	 = %g,%g,%g", is_16x9 ? "_16x9" : "", rot_.x, rot_.y, rot_.z);
                 Log("####################################");
             }
             else if (idx == hud_item_measures::m_hands_offset_type_aim_scope)
             {
                 Log("####################################");
                 Msg("[%s]", m_attached_items[g_bHudAdjustItemIdx]->m_sect_name.c_str());
-                Msg("scope_zoom_offset%s = %f,%f,%f", is_16x9 ? "_16x9" : "", pos_.x, pos_.y, pos_.z);
-                Msg("scope_zoom_rotate_x%s = %f", is_16x9 ? "_16x9" : "", rot_.x);
-                Msg("scope_zoom_rotate_y%s = %f", is_16x9 ? "_16x9" : "", rot_.y);
+                Msg("scope_zoom_offset%s = %g,%g,%g", is_16x9 ? "_16x9" : "", pos_.x, pos_.y, pos_.z);
+                Msg("scope_zoom_rotate_x%s = %g", is_16x9 ? "_16x9" : "", rot_.x);
+                Msg("scope_zoom_rotate_y%s = %g", is_16x9 ? "_16x9" : "", rot_.y);
                 Log("####################################");
             }
             else if (idx == hud_item_measures::m_hands_offset_type_gl_scope)
             {
                 Log("####################################");
                 Msg("[%s]", m_attached_items[g_bHudAdjustItemIdx]->m_sect_name.c_str());
-                Msg("scope_grenade_zoom_offset%s = %f,%f,%f", is_16x9 ? "_16x9" : "", pos_.x, pos_.y, pos_.z);
-                Msg("scope_grenade_zoom_rotate_x%s = %f", is_16x9 ? "_16x9" : "", rot_.x);
-                Msg("scope_grenade_zoom_rotate_y%s = %f", is_16x9 ? "_16x9" : "", rot_.y);
+                Msg("scope_grenade_zoom_offset%s = %g,%g,%g", is_16x9 ? "_16x9" : "", pos_.x, pos_.y, pos_.z);
+                Msg("scope_grenade_zoom_rotate_x%s = %g", is_16x9 ? "_16x9" : "", rot_.x);
+                Msg("scope_grenade_zoom_rotate_y%s = %g", is_16x9 ? "_16x9" : "", rot_.y);
                 Log("####################################");
             }
             else if (idx == hud_item_measures::m_hands_offset_type_aim_gl_normal)
             {
                 Log("####################################");
                 Msg("[%s]", m_attached_items[g_bHudAdjustItemIdx]->m_sect_name.c_str());
-                Msg("grenade_normal_zoom_offset%s = %f,%f,%f", is_16x9 ? "_16x9" : "", pos_.x, pos_.y, pos_.z);
-                Msg("grenade_normal_zoom_rotate_x%s = %f", is_16x9 ? "_16x9" : "", rot_.x);
-                Msg("grenade_normal_zoom_rotate_y%s = %f", is_16x9 ? "_16x9" : "", rot_.y);
+                Msg("grenade_normal_zoom_offset%s = %g,%g,%g", is_16x9 ? "_16x9" : "", pos_.x, pos_.y, pos_.z);
+                Msg("grenade_normal_zoom_rotate_x%s = %g", is_16x9 ? "_16x9" : "", rot_.x);
+                Msg("grenade_normal_zoom_rotate_y%s = %g", is_16x9 ? "_16x9" : "", rot_.y);
                 Log("####################################");
             }
             else if (idx == hud_item_measures::m_hands_offset_type_gl_normal_scope)
             {
                 Log("####################################");
                 Msg("[%s]", m_attached_items[g_bHudAdjustItemIdx]->m_sect_name.c_str());
-                Msg("scope_grenade_normal_zoom_offset%s = %f,%f,%f", is_16x9 ? "_16x9" : "", pos_.x, pos_.y, pos_.z);
-                Msg("scope_grenade_normal_zoom_rotate_x%s = %f", is_16x9 ? "_16x9" : "", rot_.x);
-                Msg("scope_grenade_normal_zoom_rotate_y%s = %f", is_16x9 ? "_16x9" : "", rot_.y);
+                Msg("scope_grenade_normal_zoom_offset%s = %g,%g,%g", is_16x9 ? "_16x9" : "", pos_.x, pos_.y, pos_.z);
+                Msg("scope_grenade_normal_zoom_rotate_x%s = %g", is_16x9 ? "_16x9" : "", rot_.x);
+                Msg("scope_grenade_normal_zoom_rotate_y%s = %g", is_16x9 ? "_16x9" : "", rot_.y);
                 Log("####################################");
             }
         }
@@ -375,7 +375,7 @@ void hud_draw_adjust_mode()
         F->OutNext(_text);
         F->OutNext("for item: [%d] [%s]", g_bHudAdjustItemIdx,
                    g_player_hud->attached_item(u16(g_bHudAdjustItemIdx)) ? g_player_hud->attached_item(u16(g_bHudAdjustItemIdx))->m_sect_name.c_str() : "NOT FOUND");
-        F->OutNext("delta values: dP=[%f], dR=[%f]", g_bHudAdjustDeltaPos, g_bHudAdjustDeltaRot);
+        F->OutNext("delta values: dP=[%g], dR=[%g]", g_bHudAdjustDeltaPos, g_bHudAdjustDeltaRot);
         F->OutNext("[Z]-x axis, [X]-y axis, [C]-z axis    ||||||    [<---LEFT/RIGHT--->]-x axis, [UP/DOWN]-y axis, [PageUP/PageDown]-z axis");
     }
 }
