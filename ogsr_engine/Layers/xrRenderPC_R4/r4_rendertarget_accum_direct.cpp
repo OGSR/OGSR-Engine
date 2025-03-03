@@ -442,7 +442,6 @@ void CRenderTarget::accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix&
         Fmatrix m_TexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, fRange, 0.0f, 0.5f, 0.5f, fBias, 1.0f};
 
         // compute xforms
-        FPU::m64r();
 
         // shadow xform
         Fmatrix m_shadow;
@@ -460,7 +459,6 @@ void CRenderTarget::accum_direct_cascade(u32 sub_phase, Fmatrix& xform, Fmatrix&
                 bias_t.translate(bias);
                 m_shadow.mulB_44(bias_t);
             }
-            FPU::m24r();
         }
 
         // clouds xform

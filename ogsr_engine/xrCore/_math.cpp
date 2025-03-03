@@ -2,6 +2,7 @@
 
 #include "cpuid.h"
 #include <powerbase.h>
+
 #pragma comment(lib, "PowrProf.lib")
 #include <VersionHelpers.h>
 
@@ -17,76 +18,6 @@ typedef struct _PROCESSOR_POWER_INFORMATION
 
 // Initialized on startup
 XRCORE_API Fmatrix Fidentity;
-
-/*
-Функции управления точностью вычислений с плавающей точкой.
-Более подробную информацию можно получить здесь:
-https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/control87-controlfp-control87-2
-Число 24, 53 и 64 - определяют ограничение точности в битах.
-Наличие 'r' - включает округление результатов.
-Реально в движке используются только m24r и m64r.
-*/
-namespace FPU
-{
-void m24()
-{
-#ifdef _M_IX86
-    _controlfp(_PC_24, MCW_PC);
-#endif
-    _controlfp(_RC_CHOP, MCW_RC);
-}
-
-void m24r()
-{
-#ifdef _M_IX86
-    _controlfp(_PC_24, MCW_PC);
-#endif
-    _controlfp(_RC_NEAR, MCW_RC);
-}
-
-void m53()
-{
-#ifdef _M_IX86
-    _controlfp(_PC_53, MCW_PC);
-#endif
-    _controlfp(_RC_CHOP, MCW_RC);
-}
-
-void m53r()
-{
-#ifdef _M_IX86
-    _controlfp(_PC_53, MCW_PC);
-#endif
-    _controlfp(_RC_NEAR, MCW_RC);
-}
-
-void m64()
-{
-#ifdef _M_IX86
-    _controlfp(_PC_64, MCW_PC);
-#endif
-    _controlfp(_RC_CHOP, MCW_RC);
-}
-
-void m64r()
-{
-#ifdef _M_IX86
-    _controlfp(_PC_64, MCW_PC);
-#endif
-    _controlfp(_RC_NEAR, MCW_RC);
-}
-
-void initialize()
-{
-    _clearfp();
-
-    // По-умолчанию для плагинов экспорта из 3D-редакторов включена высокая точность вычислений с плавающей точкой
-    // if (Core.PluginMode)
-    //	m64r();
-    // else
-    m24r();
-}
-} // namespace FPU
 
 namespace CPU
 {
@@ -122,7 +53,6 @@ void _initialize_cpu()
         strcat(features, ", SSE");
     if (CPU::ID.hasSSE2())
         strcat(features, ", SSE2");
-    R_ASSERT(CPU::ID.hasSSE2());
     if (CPU::ID.hasSSE3())
         strcat(features, ", SSE3");
     if (CPU::ID.hasMWAIT())
@@ -139,8 +69,11 @@ void _initialize_cpu()
         strcat(features, ", AVX");
     if (CPU::ID.hasAVX2())
         strcat(features, ", AVX2");
+
     Msg("* CPU features: %s", features);
     Msg("* CPU cores: [%u], threads: [%u]", CPU::ID.coresCount, CPU::ID.threadCount);
+
+    R_ASSERT(CPU::ID.hasSSE2());
 
     SYSTEM_INFO sysInfo;
     GetSystemInfo(&sysInfo);
@@ -161,11 +94,10 @@ void _initialize_cpu()
 
     Fidentity.identity(); // Identity matrix
     pvInitializeStatics(); // Lookup table for compressed normals
-    FPU::initialize();
 }
 
 #pragma pack(push, 8)
-typedef struct tagTHREADNAME_INFO
+typedef struct
 {
     DWORD dwType; // Must be 0x1000.
     LPCSTR szName; // Pointer to name (in user addr space).

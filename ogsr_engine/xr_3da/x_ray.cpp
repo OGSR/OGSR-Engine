@@ -372,7 +372,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
         damn_keys_filter filter;
         (void)filter;
 
-        FPU::m24r();
         InitEngine();
         InitInput();
         InitConsole();

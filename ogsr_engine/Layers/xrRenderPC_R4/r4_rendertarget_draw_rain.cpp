@@ -109,7 +109,6 @@ void CRenderTarget::draw_rain(light& RainSetup)
                                  1.0f};
 
         // compute xforms
-        FPU::m64r();
 
         // shadow xform
         Fmatrix m_shadow;
@@ -117,8 +116,6 @@ void CRenderTarget::draw_rain(light& RainSetup)
             Fmatrix xf_project;
             xf_project.mul(m_TexelAdjust, RainSetup.X.D.combine);
             m_shadow.mul(xf_project, Device.mInvView);
-
-            FPU::m24r();
         }
 
         /*
