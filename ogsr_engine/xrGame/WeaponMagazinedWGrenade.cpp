@@ -24,6 +24,7 @@
 #include "script_game_object.h"
 #include "alife_registry_wrappers.h"
 #include "alife_simulator_header.h"
+#include "../xr_3da/x_ray.h"
 
 constexpr const char* grenade_launcher_def_bone_cop = "grenade";
 
@@ -819,14 +820,14 @@ void CWeaponMagazinedWGrenade::PlayAnimShoot()
         //анимация стрельбы из подствольника
         string128 guns_shoot_anm;
         xr_strconcat(guns_shoot_anm, "anm_shoot", (IsZoomed() && !IsRotatingToZoom()) ? "_aim" : "", IsMisfire() ? "_jammed" : (iAmmoElapsed2 == 0 ? "_empty" : ""), "_g");
-        PlayHUDMotion({guns_shoot_anm, "anim_shoot_g", "anm_shots_g"}, false, GetState());
+        PlayHUDMotion({guns_shoot_anm, "anim_shoot_g", "anm_shots_g"}, IS_OGSR_GA, GetState());
     }
     else if (IsGrenadeLauncherAttached())
     {
         string128 guns_shoot_anm;
         xr_strconcat(guns_shoot_anm, "anm_shoot", (IsZoomed() && !IsRotatingToZoom()) ? (IsScopeAttached() ? "_aim_scope" : "_aim") : "",
                      IsMisfire() ? "_jammed" : (iAmmoElapsed == 1 ? "_last" : ""), IsSilencerAttached() ? "_sil" : "", "_w_gl");
-        PlayHUDMotion({guns_shoot_anm, "anim_shoot_gl", "anm_shots_w_gl"}, false, GetState());
+        PlayHUDMotion({guns_shoot_anm, "anim_shoot_gl", "anm_shots_w_gl"}, IS_OGSR_GA, GetState());
     }
     else
         inherited::PlayAnimShoot();

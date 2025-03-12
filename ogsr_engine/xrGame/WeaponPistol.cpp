@@ -2,6 +2,7 @@
 #include "weaponpistol.h"
 #include "ParticlesObject.h"
 #include "actor.h"
+#include "../xr_3da/x_ray.h"
 
 CWeaponPistol::CWeaponPistol(LPCSTR name) : CWeaponCustomPistol(name)
 {
@@ -175,19 +176,19 @@ void CWeaponPistol::PlayAnimShoot()
 
     if (AnimationExist(guns_shoot_anm))
     {
-        PlayHUDMotion(guns_shoot_anm, false, GetState());
+        PlayHUDMotion(guns_shoot_anm, IS_OGSR_GA, GetState());
         m_opened = iAmmoElapsed < 2;
         return;
     }
 
     if (iAmmoElapsed > 1)
     {
-        PlayHUDMotion({"anim_shoot", "anm_shots"}, false, GetState());
+        PlayHUDMotion({"anim_shoot", "anm_shots"}, IS_OGSR_GA, GetState());
         m_opened = false;
     }
     else
     {
-        PlayHUDMotion({"anim_shot_last", "anm_shot_l"}, false, GetState());
+        PlayHUDMotion({"anim_shot_last", "anm_shot_l"}, IS_OGSR_GA, GetState());
         m_opened = true;
     }
 }
