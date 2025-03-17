@@ -151,6 +151,7 @@ float get_time_factor() { return (Level().GetGameTimeFactor()); }
 
 void set_game_difficulty(ESingleGameDifficulty dif)
 {
+    R_ASSERT(dif < egdCount);
     g_SingleGameDifficulty = dif;
     game_cl_Single* game = smart_cast<game_cl_Single*>(Level().game);
     VERIFY(game);

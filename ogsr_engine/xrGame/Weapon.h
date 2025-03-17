@@ -555,7 +555,7 @@ private:
     float m_hit_probability[egdCount];
 
 public:
-    const float& hit_probability() const;
+    float hit_probability() const;
     float GetZRotatingFactor() const { return m_fZoomRotationFactor; } //--#SM+#--
     bool Is3dssEnabled() const;
     float GetHudFov() override;

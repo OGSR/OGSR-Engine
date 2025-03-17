@@ -2078,12 +2078,7 @@ bool CWeapon::ParentIsActor() const
     return smart_cast<const CActor*>(H_Parent()) != nullptr;
 }
 
-const float& CWeapon::hit_probability() const
-{
-    VERIFY((g_SingleGameDifficulty >= egdNovice) && (g_SingleGameDifficulty <= egdMaster));
-#pragma todo("WTF???")
-    return (m_hit_probability[egdNovice]);
-}
+float CWeapon::hit_probability() const { return m_hit_probability[g_SingleGameDifficulty]; }
 
 bool CWeapon::Is3dssEnabled() const
 {
