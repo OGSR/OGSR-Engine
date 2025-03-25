@@ -72,13 +72,3 @@ public:
     CUIStatic* get_addon_static(u32 idx) { return m_addons[idx]; }
     Fvector2 get_addon_offset(u32 idx) { return m_addon_offset[idx]; }
 };
-
-class CBuyItemCustomDrawCell : public ICustomDrawCell
-{
-    CGameFont* m_pFont;
-    string16 m_string;
-
-public:
-    CBuyItemCustomDrawCell(LPCSTR str, CGameFont* pFont);
-    virtual void OnDraw(CUICellItem* cell);
-};

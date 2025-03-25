@@ -174,7 +174,6 @@ void CUIAmmoCellItem::Update()
 
 void CUIAmmoCellItem::UpdateItemText()
 {
-    if (!m_custom_draw)
     {
         u16 total{};
         if (auto* curr_obj = object())
@@ -194,16 +193,6 @@ void CUIAmmoCellItem::UpdateItemText()
         }
         else
             SetText(str);
-    }
-    else
-    {
-        if (Core.Features.test(xrCore::Feature::show_inv_item_condition))
-        {
-            m_text->SetText("");
-            m_text->Show(false);
-        }
-        else
-            SetText("");
     }
 }
 
@@ -490,20 +479,4 @@ bool CUIWeaponCellItem::EqualTo(CUICellItem* itm)
     bool b_place = ((object()->m_eItemPlace == ci->object()->m_eItemPlace));
 
     return b_addons && b_place;
-}
-
-CBuyItemCustomDrawCell::CBuyItemCustomDrawCell(LPCSTR str, CGameFont* pFont)
-{
-    m_pFont = pFont;
-    VERIFY(xr_strlen(str) < 16);
-    strcpy_s(m_string, str);
-}
-
-void CBuyItemCustomDrawCell::OnDraw(CUICellItem* cell)
-{
-    Fvector2 pos;
-    cell->GetAbsolutePos(pos);
-    UI()->ClientToScreenScaled(pos, pos.x, pos.y);
-    m_pFont->Out(pos.x, pos.y, m_string);
-    m_pFont->OnRender();
 }

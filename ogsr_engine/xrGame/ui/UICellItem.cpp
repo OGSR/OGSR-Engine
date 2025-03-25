@@ -20,10 +20,8 @@ CUICellItem::CUICellItem()
 {
     m_pParentList = NULL;
     m_pData = NULL;
-    m_custom_draw = NULL;
     m_b_already_drawn = false;
     SetAccelerator(0);
-    m_b_destroy_childs = true;
     if (Core.Features.test(xrCore::Feature::show_inv_item_condition))
     {
         m_text = NULL;
@@ -39,18 +37,13 @@ CUICellItem::CUICellItem()
 
 CUICellItem::~CUICellItem()
 {
-    if (m_b_destroy_childs)
-        delete_data(m_childs);
-
-    delete_data(m_custom_draw);
+    delete_data(m_childs);
 }
 
 void CUICellItem::Draw()
 {
     m_b_already_drawn = true;
     inherited::Draw();
-    if (m_custom_draw)
-        m_custom_draw->OnDraw(this);
 };
 
 bool CUICellItem::OnMouse(float x, float y, EUIMessages mouse_action)
@@ -173,13 +166,6 @@ void CUICellItem::UpdateItemText()
 
         SetText(str);
     }
-}
-
-void CUICellItem::SetCustomDraw(ICustomDrawCell* c)
-{
-    if (m_custom_draw)
-        xr_delete(m_custom_draw);
-    m_custom_draw = c;
 }
 
 void CUICellItem::init()

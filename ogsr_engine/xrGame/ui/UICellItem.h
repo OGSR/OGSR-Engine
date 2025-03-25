@@ -8,13 +8,6 @@ class CUIDragDropListEx;
 class CUICellItem;
 class CUIProgressBar;
 
-class ICustomDrawCell
-{
-public:
-    virtual ~ICustomDrawCell(){};
-    virtual void OnDraw(CUICellItem* cell) = 0;
-};
-
 class CUICellItem : public CUIStatic
 {
 private:
@@ -26,7 +19,6 @@ protected:
     CUIDragDropListEx* m_pParentList;
     Ivector2 m_grid_size;
     Fvector2 m_cell_size;
-    ICustomDrawCell* m_custom_draw;
     int m_accelerator;
 
     CUIProgressBar* m_pConditionState;
@@ -61,11 +53,9 @@ public:
     CUIDragDropListEx* OwnerList() { return m_pParentList; }
     static CUICellItem* m_mouse_selected_item;
     void SetOwnerList(CUIDragDropListEx* p);
-    void SetCustomDraw(ICustomDrawCell* c);
     void* m_pData;
     int m_index;
     bool m_b_already_drawn;
-    bool m_b_destroy_childs;
     void ColorizeItems(std::initializer_list<CUIDragDropListEx*>);
     void UpdateConditionProgressBar();
     bool m_selected;
