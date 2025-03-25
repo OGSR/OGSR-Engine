@@ -123,7 +123,9 @@ u32 CUICellItem::ChildsCount() { return m_childs.size(); }
 void CUICellItem::PushChild(CUICellItem* c)
 {
     R_ASSERT(c->ChildsCount() == 0);
-    VERIFY(this != c);
+    R_ASSERT(!c->GetParent());
+    R_ASSERT(this != c);
+
     m_childs.push_back(c);
     UpdateItemText();
 }
@@ -133,8 +135,14 @@ CUICellItem* CUICellItem::PopChild()
     CUICellItem* itm = m_childs.back();
     m_childs.pop_back();
     std::swap(itm->m_pData, m_pData);
+
     R_ASSERT(itm->ChildsCount() == 0);
-    itm->SetOwnerList(NULL);
+    R_ASSERT(!itm->GetParent());
+    R_ASSERT(this != itm);
+ 
+    itm->SetOwnerList(nullptr);
+    itm->SetParent(nullptr);
+
     return itm;
 }
 

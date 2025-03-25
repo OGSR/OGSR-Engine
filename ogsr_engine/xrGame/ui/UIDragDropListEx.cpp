@@ -764,7 +764,7 @@ void CUICellContainer::ClearAll(bool bDestroy)
     {
         CUIWindow* w = m_ChildWndList.back();
         CUICellItem* wc = smart_cast<CUICellItem*>(w);
-        VERIFY(!wc->IsAutoDelete());
+        R_ASSERT(!wc->IsAutoDelete());
         DetachChild(wc);
 
         while (wc->ChildsCount())
@@ -773,12 +773,12 @@ void CUICellContainer::ClearAll(bool bDestroy)
             R_ASSERT(ci->ChildsCount() == 0);
 
             if (bDestroy)
-                delete_data(ci);
+                xr_delete(ci);
         }
 
         if (bDestroy)
         {
-            delete_data(wc);
+            xr_delete(wc);
         }
     }
 }

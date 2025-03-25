@@ -30,6 +30,8 @@ class CUIAmmoCellItem : public CUIInventoryCellItem
 
 public:
     CUIAmmoCellItem(CWeaponAmmo* itm);
+    virtual ~CUIAmmoCellItem() = default;
+
     virtual void Update();
     virtual void UpdateItemText() override;
     virtual bool EqualTo(CUICellItem* itm);
