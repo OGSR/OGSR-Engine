@@ -3,9 +3,9 @@
   <a href="https://github.com/OGSR/OGSR-Engine/releases/latest"><img src="https://img.shields.io/github/downloads/OGSR/OGSR-Engine/total.svg?style=flat-square" alt="Total downloads"></a>
   <a href="https://github.com/OGSR/OGSR-Engine/actions?query=event:push+workflow:%22Main+Workflow%22"><img src="https://img.shields.io/github/actions/workflow/status/OGSR/OGSR-Engine/push.yml?branch=main&label=build&logo=github&style=flat-square" alt="Build Status"></a>
 <p align="center">
-  <a href="https://discord.gg/Q6QDxbNcfR"><img src="https://img.shields.io/discord/508530704674455562.svg?style=for-the-badge&label=DISCORD&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)" alt="Discord"></a>
+  <a href="https://discord.com/servers/ogsr-508530704674455562"><img src="https://img.shields.io/discord/508530704674455562.svg?style=for-the-badge&label=DISCORD&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)" alt="Discord"></a>
 
-<h3 align="center"> <a href="https://discord.gg/Q6QDxbNcfR"><b>!THIS IS FOR DEVELOPERS ONLY, IF YOU'RE LOOKING FOR OGSR MOD/OGSR:GUNSLINGER, JOIN THE DISCORD ABOVE!</b></a></h3>
+<h3 align="center"> <a href="https://discord.com/servers/ogsr-508530704674455562"><b>!THIS IS FOR DEVELOPERS ONLY, IF YOU'RE LOOKING FOR OGSR MOD/OGSR:GUNSLINGER, JOIN THE DISCORD ABOVE!</b></a></h3>
 
 <h3 align="center"> <a href="#english"><b>English</b></a>/<a href="#русский"><b>Русский</b></a></h3>
 
@@ -37,8 +37,9 @@
 * [Im-dex](https://github.com/Im-dex)
 * [SkyLoader](https://github.com/SkyLoaderr)
 * [Shoker](https://github.com/ShokerStlk)
-* [xrOxygen](https://github.com/xrOxygen/xray-oxygen)
 * [OpenXRay](https://github.com/OpenXRay/xray-16)
+* [vTurbine](https://github.com/vTurbine)
+* [solbjorn](https://github.com/solbjorn)
 * [abramcumner](https://github.com/abramcumner)
 * [ForserX](https://github.com/ForserX)
 * [Xottab-DUTY](https://github.com/Xottab-DUTY)
@@ -48,6 +49,7 @@
 * [CoC-Xray](https://github.com/revolucas/CoC-Xray)
 * [SCREEN SPACE SHADERS](https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders)
 * [ENHANCED SHADERS AND COLOR GRADING](https://www.moddb.com/mods/stalker-anomaly/addons/enhanced-shaders-and-color-grading-for-151)
+* [Shader 3D Scopes](https://www.moddb.com/mods/stalker-anomaly/addons/shader-3d-scopes)
 
 And everyone else whose work has been used. If you are not mentioned, send a message and you will be added.
 
@@ -77,8 +79,9 @@ And everyone else whose work has been used. If you are not mentioned, send a mes
 * [Im-dex](https://github.com/Im-dex)
 * [SkyLoader](https://github.com/SkyLoaderr)
 * [Shoker](https://github.com/ShokerStlk)
-* [xrOxygen](https://github.com/xrOxygen/xray-oxygen)
 * [OpenXRay](https://github.com/OpenXRay/xray-16)
+* [vTurbine](https://github.com/vTurbine)
+* [solbjorn](https://github.com/solbjorn)
 * [abramcumner](https://github.com/abramcumner)
 * [ForserX](https://github.com/ForserX)
 * [Xottab-DUTY](https://github.com/Xottab-DUTY)
@@ -88,5 +91,6 @@ And everyone else whose work has been used. If you are not mentioned, send a mes
 * [CoC-Xray](https://github.com/revolucas/CoC-Xray)
 * [SCREEN SPACE SHADERS](https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders)
 * [ENHANCED SHADERS AND COLOR GRADING](https://www.moddb.com/mods/stalker-anomaly/addons/enhanced-shaders-and-color-grading-for-151)
+* [Shader 3D Scopes](https://www.moddb.com/mods/stalker-anomaly/addons/shader-3d-scopes)
 
 И всех остальных, чьи работы я использовал. Пишите, если забыл кого-то, добавлю в список.
