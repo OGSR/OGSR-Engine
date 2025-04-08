@@ -155,6 +155,7 @@ void InitConsole()
     CORE_FEATURE_SET(no_progress_bar_animation, "features");
     CORE_FEATURE_SET(disable_dialog_break, "features");
     CORE_FEATURE_SET(busy_actor_restrictions, "features");
+    CORE_FEATURE_SET(dont_switch_active_task_by_prio, "features");
 }
 
 void InitInput() { pInput = xr_new<CInput>(); }

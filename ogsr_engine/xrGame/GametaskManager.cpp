@@ -92,7 +92,7 @@ CGameTask* CGameTaskManager::GiveGameTaskToActor(CGameTask* t, u32 timeToComplet
         }
     }
     CGameTask* _at = ActiveTask();
-    if (!_at /*|| (_at->m_priority > t->m_priority)*/)
+    if (!_at || (_at->m_priority > t->m_priority))
     {
         SetActiveTask(t->m_ID, 1, true);
     }
@@ -136,9 +136,18 @@ void CGameTaskManager::SetTaskState(CGameTask* t, u16 objective_num, ETaskState 
         SetActiveTask("", 1);
     }
     // not last
-    else if (!isRoot && bActive && objective_num < (t->m_Objectives.size() - 1))
+    else if (!isRoot && bActive /*&& objective_num < (t->m_Objectives.size() - 1)*/)
     {
-        SetActiveTask(t->m_ID, objective_num + 1);
+        //SetActiveTask(t->m_ID, objective_num + 1);
+
+        for (size_t i{1}; i < t->m_Objectives.size(); ++i)
+        {
+            if (t->Objective(i).TaskState() == eTaskStateInProgress)
+            {
+                SetActiveTask(t->m_ID, static_cast<u16>(i));
+                break;
+            }
+        }
     }
 
     // setState for task and all sub-tasks
@@ -197,6 +206,9 @@ void CGameTaskManager::UpdateTasks()
     auto act_task = ActiveTask();
     bool need_update_active_task = !act_task || act_task->Objective(0).TaskState() != eTaskStateInProgress;
 
+    CGameTask* max_prio_task{};
+    u16 max_prio_task_obj{};
+
     size_t processed{};
     auto iter = tasks.rbegin();
     while (iter != tasks.rend()) //Реверсивный перебор тасков из-за того что походу внутри SetTaskState таски могут удалиться, из-за этого обычный итератор тут крашится.
@@ -213,7 +225,10 @@ void CGameTaskManager::UpdateTasks()
             if (obj.TaskState() != eTaskStateInProgress)
             {
                 if (i == 0)
+                {
+                    //need_update_active_task = true;
                     break;
+                }
                 else
                     continue;
             }
@@ -222,15 +237,27 @@ void CGameTaskManager::UpdateTasks()
             if (state == eTaskStateFail || state == eTaskStateCompleted || state == eTaskStateSkiped)
             {
                 SetTaskState(t, i, state);
-                // Тут проверяем заново, потому что в функции выше активный таск может обновиться
-                act_task = ActiveTask();
-                need_update_active_task = !act_task || act_task->Objective(0).TaskState() != eTaskStateInProgress;
+
+                if (i == 0)
+                {
+                    need_update_active_task = true;
+                }
+
+                if (!need_update_active_task)
+                {
+                    // Тут проверяем заново, потому что в функции выше активный таск может обновиться
+                    act_task = ActiveTask();
+                    need_update_active_task = !act_task || act_task->Objective(0).TaskState() != eTaskStateInProgress;
+                }
             }
             // Тут ставим активным только первый objective если он один либо второй, чтоб тут случайно не назначился тот который скрыт опцией show_objectives_ondemand.
-            else if (need_update_active_task && ((i == 0 && t->m_Objectives.size() == 1) || (i == 1 && t->Objective(0).TaskState() == eTaskStateInProgress)))
+            else if ((i == 0 && t->m_Objectives.size() == 1) || (i == 1 && t->Objective(0).TaskState() == eTaskStateInProgress))
             {
-                SetActiveTask(t->m_ID, i);
-                need_update_active_task = false;
+                if (!max_prio_task || max_prio_task->m_priority > t->m_priority)
+                {
+                    max_prio_task = t;
+                    max_prio_task_obj = i;
+                }
             }
         }
 
@@ -243,6 +270,20 @@ void CGameTaskManager::UpdateTasks()
         else
         {
             processed++;
+        }
+    }
+
+    if (need_update_active_task && max_prio_task && !Core.Features.test(xrCore::Feature::dont_switch_active_task_by_prio))
+    {
+        //SetActiveTask(max_prio_task->m_ID, max_prio_task_obj);
+
+        for (size_t i{1}; i < max_prio_task->m_Objectives.size(); ++i)
+        {
+            if (max_prio_task->Objective(i).TaskState() == eTaskStateInProgress)
+            {
+                SetActiveTask(max_prio_task->m_ID, static_cast<u16>(i));
+                break;
+            }
         }
     }
 
