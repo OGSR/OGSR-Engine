@@ -224,8 +224,8 @@ void CSoundMemoryManager::add(CSoundObject& sound_object, bool check_for_existan
     if (m_max_sound_count <= m_sounds->size())
     {
         auto I = std::min_element(m_sounds->begin(), m_sounds->end(), SLevelTimePredicate<CGameObject>());
-        VERIFY(m_sounds->end() != I);
-        m_sounds->erase(I);
+        if (m_sounds->end() != I)
+            m_sounds->erase(I);
     }
     m_sounds->push_front(sound_object);
 }
