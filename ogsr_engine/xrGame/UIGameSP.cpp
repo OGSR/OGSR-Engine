@@ -98,7 +98,7 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
         return true;
 
     auto active_hud = smart_cast<CHudItem*>(pActor->inventory().ActiveItem());
-    if (active_hud && active_hud->GetState() != CHudItem::eIdle)
+    if (active_hud && active_hud->GetState() != CHudItem::eIdle && Core.Features.test(xrCore::Feature::busy_actor_restrictions))
         return false;
 
     auto bind = get_binded_action(dik);

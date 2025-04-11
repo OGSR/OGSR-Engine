@@ -191,8 +191,7 @@ public:
     {
         static constexpr u64 equipped_untradable = 1ull << 0, highlight_equipped = 1ull << 1, af_radiation_immunity_mod = 1ull << 2, condition_jump_weight_mod = 1ull << 3,
                              forcibly_equivalent_slots = 1ull << 4, slots_extend_menu = 1ull << 5, dynamic_sun_movement = 1ull << 6, wpn_bobbing = 1ull << 7,
-                             show_inv_item_condition = 1ull << 8, remove_alt_keybinding = 1ull << 9, binoc_firing = 1ull << 10,
-                             //!!МЕСТО СВОБОДНО!! = 1ull << 11,
+                             show_inv_item_condition = 1ull << 8, remove_alt_keybinding = 1ull << 9, binoc_firing = 1ull << 10, busy_actor_restrictions = 1ull << 11,
             stop_anim_playing = 1ull << 12, corpses_collision = 1ull << 13, more_hide_weapon = 1ull << 14, keep_inprogress_tasks_only = 1ull << 15,
                              show_dialog_numbers = 1ull << 16, objects_radioactive = 1ull << 17, af_zero_condition = 1ull << 18, af_satiety = 1ull << 19,
                              af_psy_health = 1ull << 20, outfit_af = 1ull << 21, gd_master_only = 1ull << 22, scope_textures_autoresize = 1ull << 23, ogse_new_slots = 1ull << 24,

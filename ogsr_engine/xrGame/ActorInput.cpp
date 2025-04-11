@@ -113,7 +113,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
     case kTORCH: {
         auto act_it = inventory().ActiveItem();
         auto active_hud = smart_cast<CHudItem*>(act_it);
-        if (active_hud && active_hud->GetState() != CHudItem::eIdle)
+        if (active_hud && active_hud->GetState() != CHudItem::eIdle && Core.Features.test(xrCore::Feature::busy_actor_restrictions))
             return;
         auto pTorch = smart_cast<CTorch*>(inventory().ItemFromSlot(TORCH_SLOT));
         if (pTorch && !smart_cast<CWeaponMagazined*>(act_it) && !smart_cast<CWeaponKnife*>(act_it) && !smart_cast<CMissile*>(act_it))
@@ -142,7 +142,7 @@ void CActor::IR_OnKeyboardPress(int cmd)
     case kUSE_BANDAGE:
     case kUSE_MEDKIT: {
         auto active_hud = smart_cast<CHudItem*>(inventory().ActiveItem());
-        if (active_hud && active_hud->GetState() != CHudItem::eIdle)
+        if (active_hud && active_hud->GetState() != CHudItem::eIdle && Core.Features.test(xrCore::Feature::busy_actor_restrictions))
             return;
 
         if (!(GetTrade()->IsInTradeState()))
@@ -399,7 +399,7 @@ void CActor::ActorUse()
         return;
 
     auto active_hud = smart_cast<CHudItem*>(inventory().ActiveItem());
-    if (active_hud && active_hud->GetState() != CHudItem::eIdle)
+    if (active_hud && active_hud->GetState() != CHudItem::eIdle && Core.Features.test(xrCore::Feature::busy_actor_restrictions))
         return;
 
     if (g_bDisableAllInput || HUD().GetUI()->MainInputReceiver())
