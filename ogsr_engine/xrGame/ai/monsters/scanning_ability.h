@@ -3,14 +3,14 @@
 template <typename _Object>
 class CScanningAbility
 {
-    _Object* object;
+    _Object* object{};
 
     // external members
-    float critical_value;
-    float scan_radius;
-    float velocity_threshold;
-    float decrease_value;
-    float scan_trace_time_freq;
+    float critical_value{};
+    float scan_radius{};
+    float velocity_threshold{};
+    float decrease_value{};
+    float scan_trace_time_freq{};
 
     ref_sound sound_scan;
 
@@ -20,18 +20,18 @@ class CScanningAbility
         eStateDisabled,
         eStateNotActive,
         eStateScanning
-    } state;
+    } state{};
 
-    float scan_value;
+    float scan_value{};
 
     SPPInfo m_effector_info;
-    float m_effector_time;
-    float m_effector_time_attack;
-    float m_effector_time_release;
+    float m_effector_time{};
+    float m_effector_time_attack{};
+    float m_effector_time_release{};
 
-    u32 time_last_trace;
+    u32 time_last_trace{};
 
-    bool m_this_scan;
+    bool m_this_scan{};
 
 public:
     void init_external(_Object* obj) { object = obj; }

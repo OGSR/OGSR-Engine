@@ -24,10 +24,10 @@ public:
     Fmatrix mTransform; // final x-form matrix (local to model)
     Fmatrix mRenderTransform; // final x-form matrix (model_base -> bone -> model)
 private:
-    BoneCallback Callback;
-    void* Callback_Param;
-    BOOL Callback_overwrite; // performance hint - don't calc anims
-    u32 Callback_type;
+    BoneCallback Callback{};
+    void* Callback_Param{};
+    BOOL Callback_overwrite{}; // performance hint - don't calc anims
+    u32 Callback_type{};
 
 public:
     float param[MAX_BONE_PARAMS]; //

@@ -20,9 +20,9 @@ protected:
     typedef typename CPathManager<_Graph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type> inherited;
 
 protected:
-    int x0, y0;
-    u32 max_range_sqr;
-    float m_cell_dist;
+    int x0{}, y0{};
+    u32 max_range_sqr{};
+    float m_cell_dist{};
 
 public:
     virtual ~CPathManager();

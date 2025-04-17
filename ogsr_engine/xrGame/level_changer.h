@@ -18,13 +18,13 @@ private:
     typedef CGameObject inherited;
 
 private:
-    GameGraph::_GRAPH_ID m_game_vertex_id;
-    u32 m_level_vertex_id;
-    Fvector m_position;
-    Fvector m_angles;
-    float m_entrance_time;
+    GameGraph::_GRAPH_ID m_game_vertex_id{};
+    u32 m_level_vertex_id{};
+    Fvector m_position{};
+    Fvector m_angles{};
+    float m_entrance_time{};
     void update_actor_invitation();
-    u8 m_SilentMode;
+    u8 m_SilentMode{};
     bool get_reject_pos(Fvector& p, Fvector& r);
     void ChangeLevel();
 

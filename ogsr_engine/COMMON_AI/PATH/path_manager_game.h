@@ -22,7 +22,7 @@ protected:
     using inherited::graph;
 
 protected:
-    const _Graph::CVertex* goal_vertex;
+    const _Graph::CVertex* goal_vertex{};
 
 public:
     virtual ~CPathManager();

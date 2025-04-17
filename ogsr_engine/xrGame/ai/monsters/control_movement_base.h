@@ -10,8 +10,8 @@ class CControlMovementBase : public CControl_ComBase
     using VELOCITY_MAP = xr_map<u32, SVelocityParam>;
     VELOCITY_MAP m_velocities;
 
-    float m_velocity;
-    float m_accel;
+    float m_velocity{};
+    float m_accel{};
 
 public:
     virtual void load(LPCSTR section);

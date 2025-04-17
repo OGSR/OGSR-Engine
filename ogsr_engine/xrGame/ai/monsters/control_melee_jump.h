@@ -12,7 +12,7 @@ class CControlMeleeJump : public CControl_ComCustom<SControlMeleeJumpData>
 {
     typedef CControl_ComCustom<SControlMeleeJumpData> inherited;
 
-    u32 m_time_next_melee_jump;
+    u32 m_time_next_melee_jump{};
 
 public:
     virtual void reinit();

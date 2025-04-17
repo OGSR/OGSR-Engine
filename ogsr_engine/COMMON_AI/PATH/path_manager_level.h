@@ -24,20 +24,20 @@ protected:
     using inherited::start_node_index;
 
 protected:
-    int x1;
+    int x1{};
     //	float				y1;
-    int z1;
-    int x2;
+    int z1{};
+    int x2{};
     //	float				y2;
-    int z2;
-    int x3;
+    int z2{};
+    int x3{};
     //	float				y3;
-    int z3;
+    int z3{};
     //	float				square_size_y;
     //	float				size_y;
-    float m_sqr_distance_xz;
-    float m_distance_xz;
-    _Graph::CVertex* best_node;
+    float m_sqr_distance_xz{};
+    float m_distance_xz{};
+    _Graph::CVertex* best_node{};
 
 public:
     virtual ~CPathManager();

@@ -24,11 +24,11 @@ public:
 #pragma pack(push, 2)
     class CHeader
     {
-        u32 dwVersion;
-        u32 dwNodeCount;
-        u32 dwGraphPointCount;
-        xrGUID m_level_guid;
-        xrGUID m_game_guid;
+        u32 dwVersion{};
+        u32 dwNodeCount{};
+        u32 dwGraphPointCount{};
+        xrGUID m_level_guid{};
+        xrGUID m_game_guid{};
 
     public:
         IC u32 version() const;
@@ -40,8 +40,8 @@ public:
 
     class CCell
     {
-        GameGraph::_GRAPH_ID tGraphIndex;
-        float fDistance;
+        GameGraph::_GRAPH_ID tGraphIndex{};
+        float fDistance{};
 
     public:
         IC GameGraph::_GRAPH_ID game_vertex_id() const;

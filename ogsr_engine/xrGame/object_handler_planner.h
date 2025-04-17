@@ -37,13 +37,13 @@ public:
     typedef CActionBase<CAI_Stalker> CSActionBase;
 
 private:
-    u32 m_min_queue_size;
-    u32 m_max_queue_size;
-    u32 m_min_queue_interval;
-    u32 m_max_queue_interval;
-    u32 m_queue_size;
-    u32 m_queue_interval;
-    u32 m_next_time_change;
+    u32 m_min_queue_size{};
+    u32 m_max_queue_size{};
+    u32 m_min_queue_interval{};
+    u32 m_max_queue_interval{};
+    u32 m_queue_size{};
+    u32 m_queue_interval{};
+    u32 m_next_time_change{};
 
 private:
     void add_evaluators(CWeapon* weapon);

@@ -20,7 +20,7 @@ protected:
     typedef typename CPathManager<_Graph, _DataStorage, SBaseParameters<_dist_type, _index_type, _iteration_type>, _dist_type, _index_type, _iteration_type> inherited;
 
 protected:
-    _Parameters* m_parameters;
+    _Parameters* m_parameters{};
 
 public:
     virtual ~CPathManager();

@@ -48,7 +48,7 @@ typedef svector<S2DVert, UI_FRUSTUM_SAFE> sPoly2D;
 class C2DFrustum
 { // only rect form
     svector<Fplane2, FRUSTUM_MAXPLANES> planes;
-    Frect m_rect;
+    Frect m_rect{};
 
 public:
     void CreateFromRect(const Frect& rect);

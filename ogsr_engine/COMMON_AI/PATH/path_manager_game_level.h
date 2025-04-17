@@ -25,7 +25,7 @@ protected:
     using inherited::path;
 
 protected:
-    _Parameters* m_evaluator;
+    _Parameters* m_evaluator{};
 
 public:
     virtual ~CPathManager();

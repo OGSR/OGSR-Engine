@@ -119,7 +119,7 @@ public:
 
 class ENGINE_API CMotionDef
 {
-    float speed, power, accrue, falloff;
+    float speed{}, power{}, accrue{}, falloff{};
 
 public:
     u16 bone_or_part;

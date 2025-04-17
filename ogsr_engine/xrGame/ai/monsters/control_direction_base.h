@@ -5,8 +5,8 @@ class CControlDirectionBase : public CControl_ComBase
 {
     typedef CControl_ComBase inherited;
 
-    u32 m_time_last_faced;
-    u32 m_delay;
+    u32 m_time_last_faced{};
+    u32 m_delay{};
 
 public:
     struct SAxis

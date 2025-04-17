@@ -38,7 +38,7 @@ protected:
     const char* GetAnimAimName() override;
 
 private:
-    string128 guns_bm_aim_anm;
+    string128 guns_bm_aim_anm{};
 
     DECLARE_SCRIPT_REGISTER_FUNCTION
 };

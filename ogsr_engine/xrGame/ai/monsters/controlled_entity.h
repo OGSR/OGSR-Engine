@@ -41,7 +41,7 @@ public:
 template <typename _Object>
 class CControlledEntity : public CControlledEntityBase
 {
-    SControlledInfo m_data;
+    SControlledInfo m_data{};
 
     struct SGroupID
     {
@@ -50,8 +50,8 @@ class CControlledEntity : public CControlledEntityBase
         int group_id;
     } saved_id;
 
-    _Object* m_object;
-    CController* m_controller;
+    _Object* m_object{};
+    CController* m_controller{};
 
 public:
     virtual bool is_under_control() { return (m_controller != 0); }

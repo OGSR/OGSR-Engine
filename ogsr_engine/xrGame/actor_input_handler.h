@@ -15,5 +15,5 @@ public:
     virtual float mouse_scale_factor() { return 1.f; }
 
 protected:
-    CActor* m_actor;
+    CActor* m_actor{};
 };

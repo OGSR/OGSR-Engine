@@ -10,7 +10,7 @@ class CControllerAnimation : public CControlAnimationBase
 {
     typedef CControlAnimationBase inherited;
 
-    CController* m_controller;
+    CController* m_controller{};
 
 public:
     enum ELegsActionType
@@ -62,8 +62,8 @@ public:
     };
 
 private:
-    ELegsActionType m_current_legs_action;
-    ETorsoActionType m_current_torso_action;
+    ELegsActionType m_current_legs_action{};
+    ETorsoActionType m_current_torso_action{};
 
     using LEGS_MOTION_MAP = xr_map<ELegsActionType, MotionID>;
     using TORSO_MOTION_MAP = xr_map<ETorsoActionType, MotionID>;
@@ -81,7 +81,7 @@ private:
     using PATH_ROTATIONS_MAP = xr_map<ELegsActionType, PATH_ROTATIONS_VEC>;
     PATH_ROTATIONS_MAP m_path_rotations;
 
-    bool m_wait_torso_anim_end;
+    bool m_wait_torso_anim_end{};
 
 public:
     virtual void reinit();

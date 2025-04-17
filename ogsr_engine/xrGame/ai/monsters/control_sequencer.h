@@ -10,7 +10,7 @@ struct SAnimationSequencerData : public ControlCom::IComData
 
 class CAnimationSequencer : public CControl_ComCustom<SAnimationSequencerData>
 {
-    u32 m_index;
+    u32 m_index{};
 
 public:
     virtual void reset_data();

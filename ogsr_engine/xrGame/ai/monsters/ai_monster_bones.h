@@ -34,14 +34,14 @@ struct bonesBone
 class bonesManipulation
 {
     xr_vector<bonesBone> m_Bones;
-    u32 freeze_time;
+    u32 freeze_time{};
 
-    bool in_return_state; // если идёт возврат к исходному положению
-    u32 time_started;
-    u32 time_last_update;
-    u32 time_last_delta;
+    bool in_return_state{}; // если идёт возврат к исходному положению
+    u32 time_started{};
+    u32 time_last_update{};
+    u32 time_last_delta{};
 
-    bool bActive;
+    bool bActive{};
 
 public:
     void Reset();

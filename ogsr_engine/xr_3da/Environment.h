@@ -87,7 +87,7 @@ protected:
     shared_str m_load_section;
 
     EffectVec m_effects;
-    Ivector2 m_effect_period;
+    Ivector2 m_effect_period{};
 
     SSndChannelVec m_sound_channels;
     shared_str m_ambients_config_filename;
@@ -95,9 +95,9 @@ protected:
     shared_str section;
     xr_vector<SEffect> effects;
     xr_vector<ref_sound> sounds;
-    Fvector2 sound_dist;
-    Ivector2 sound_period;
-    Ivector2 effect_period;
+    Fvector2 sound_dist{};
+    Ivector2 sound_period{};
+    Ivector2 effect_period{};
 
 public:
     IC const shared_str& name() { return m_load_section.size() == 0 ? section : m_load_section; }

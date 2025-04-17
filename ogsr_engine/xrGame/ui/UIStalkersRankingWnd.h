@@ -20,16 +20,16 @@ public:
     void ShowHumanDetails();
 
 protected:
-    CUIFrameWindow* UIInfoFrame;
-    CUIFrameWindow* UICharIconFrame;
-    CUIFrameLineWnd* UIInfoHeader;
-    CUIFrameLineWnd* UICharIconHeader;
-    CUIAnimatedStatic* UIAnimatedIcon;
+    CUIFrameWindow* UIInfoFrame{};
+    CUIFrameWindow* UICharIconFrame{};
+    CUIFrameLineWnd* UIInfoHeader{};
+    CUIFrameLineWnd* UICharIconHeader{};
+    CUIAnimatedStatic* UIAnimatedIcon{};
     // информация о персонаже
-    CUIWindow* UICharacterWindow;
-    CUICharacterInfo* UICharacterInfo;
+    CUIWindow* UICharacterWindow{};
+    CUICharacterInfo* UICharacterInfo{};
     void FillList();
-    CUIScrollView* UIList;
+    CUIScrollView* UIList{};
     void AddStalkerItem(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t);
     void AddActorItem(CUIXml* xml, int num, CSE_ALifeTraderAbstract* t);
 

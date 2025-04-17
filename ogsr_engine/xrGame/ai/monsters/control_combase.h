@@ -85,8 +85,8 @@ public:
     void set_capturer(CControl_Com* com) { m_capturer = com; }
 
 private:
-    CControl_Com* m_capturer;
-    bool m_locked;
+    CControl_Com* m_capturer{};
+    bool m_locked{};
 };
 
 //////////////////////////////////////////////////////////////////////////

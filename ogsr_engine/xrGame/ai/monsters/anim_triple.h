@@ -33,8 +33,8 @@ struct SAnimationTripleData : public ControlCom::IComData
 
 class CAnimationTriple : public CControl_ComCustom<SAnimationTripleData>
 {
-    EStateAnimTriple m_current_state;
-    EStateAnimTriple m_previous_state;
+    EStateAnimTriple m_current_state{};
+    EStateAnimTriple m_previous_state{};
 
 public:
     virtual void reset_data();

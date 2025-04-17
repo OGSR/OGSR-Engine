@@ -21,7 +21,7 @@ protected:
 class CDamagableHealthItem : public CDamagableItem
 {
     typedef CDamagableItem inherited;
-    float m_health;
+    float m_health{};
 
 public:
     virtual void Init(float max_health, u16 level_num);

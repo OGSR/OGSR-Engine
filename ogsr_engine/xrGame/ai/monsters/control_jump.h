@@ -61,37 +61,37 @@ class CControlJump : public CControl_ComCustom<SControlJumpData>
     };
 
     // loadable parameters
-    u32 m_delay_after_jump;
-    float m_jump_factor;
-    float m_trace_ground_range;
-    float m_hit_trace_range;
-    float m_build_line_distance;
-    float m_min_distance;
-    float m_max_distance;
-    float m_max_angle;
-    float m_max_height;
-    float m_auto_aim_factor;
-    Fvector m_jump_start_pos;
+    u32 m_delay_after_jump{};
+    float m_jump_factor{};
+    float m_trace_ground_range{};
+    float m_hit_trace_range{};
+    float m_build_line_distance{};
+    float m_min_distance{};
+    float m_max_distance{};
+    float m_max_angle{};
+    float m_max_height{};
+    float m_auto_aim_factor{};
+    Fvector m_jump_start_pos{};
 
     // run-time params
-    u32 m_time_next_allowed;
-    u32 m_time_started; // time jump started
-    float m_jump_time; // physical-counted time of jump
-    float m_blend_speed; // current anim blend speed
-    Fvector m_target_position; // save target position for internal needs
+    u32 m_time_next_allowed{};
+    u32 m_time_started{}; // time jump started
+    float m_jump_time{}; // physical-counted time of jump
+    float m_blend_speed{}; // current anim blend speed
+    Fvector m_target_position{}; // save target position for internal needs
 
-    u32 m_last_saved_pos_time;
-    Fvector m_last_saved_pos;
+    u32 m_last_saved_pos_time{};
+    Fvector m_last_saved_pos{};
 
     // state flags
-    bool m_object_hitted;
-    bool m_velocity_bounced;
+    bool m_object_hitted{};
+    bool m_velocity_bounced{};
 
     // animation
-    EStateAnimJump m_anim_state_prev;
-    EStateAnimJump m_anim_state_current;
+    EStateAnimJump m_anim_state_prev{};
+    EStateAnimJump m_anim_state_current{};
 
-    u32 m_last_time_added_impulse;
+    u32 m_last_time_added_impulse{};
 
 public:
     virtual void load(LPCSTR section);

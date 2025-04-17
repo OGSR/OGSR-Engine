@@ -101,7 +101,7 @@ public:
     }
 
 protected:
-    u32 Timer_MM_Delta;
+    u32 Timer_MM_Delta{};
     CTimer_paused Timer;
     CTimer_paused TimerGlobal;
 

@@ -12,7 +12,7 @@ class CControlMovement : public CControl_ComPure<SControlMovementData>
 {
     typedef CControl_ComPure<SControlMovementData> inherited;
 
-    float m_velocity_current;
+    float m_velocity_current{};
 
 public:
     virtual void reinit();
