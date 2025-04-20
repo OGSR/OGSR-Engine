@@ -8,8 +8,6 @@
 
 #pragma once
 
-IC CPatrolPathStorage::CPatrolPathStorage() {}
-
 IC const CPatrolPathStorage::PATROL_REGISTRY& CPatrolPathStorage::patrol_paths() const { return (m_registry); }
 
 IC const CPatrolPath* CPatrolPathStorage::path(shared_str patrol_name, bool no_assert) const

@@ -15,7 +15,6 @@ class associative_vector : protected xr_vector<std::pair<_key_type, _data_type>>
 {
 private:
     typedef associative_vector<_key_type, _data_type, _compare_predicate_type> self_type;
-
     typedef xr_vector<std::pair<_key_type, _data_type>> inherited;
 
 public:
@@ -49,18 +48,25 @@ public:
     IC associative_vector(_iterator_type first, _iterator_type last, const key_compare& predicate = key_compare(), const allocator_type& allocator = allocator_type());
     IC associative_vector(const key_compare& predicate = key_compare(), const allocator_type& allocator = allocator_type());
     IC explicit associative_vector(const key_compare& predicate);
+
     IC iterator begin();
     IC iterator end();
     IC reverse_iterator rbegin();
     IC iterator rend();
+
     IC insert_result insert(const value_type& value);
     IC iterator insert(iterator where, const value_type& value);
     template <class _iterator_type>
     IC void insert(_iterator_type first, _iterator_type last);
+
     IC void erase(iterator element);
     IC void erase(iterator first, iterator last);
     IC size_type erase(const key_type& key);
+
     IC void clear();
+
+    IC void reserve(size_type capacity) { inherited::reserve(capacity); }
+
     IC iterator find(const key_type& key);
     IC iterator lower_bound(const key_type& key);
     IC iterator upper_bound(const key_type& key);
@@ -78,7 +84,6 @@ public:
     IC const_equal_range_result equal_range(const key_type& key) const;
     IC size_type count(const key_type& key) const;
     IC size_type max_size() const;
-    //	IC		size_type					size				() const;
     IC u32 size() const;
     IC bool empty() const;
     IC key_compare key_comp() const;

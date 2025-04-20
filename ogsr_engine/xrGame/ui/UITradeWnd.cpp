@@ -832,13 +832,13 @@ void CUITradeWnd::ColorizeItem(CUICellItem* itm, bool canTrade, bool highlighted
     {
         if (highlight_cop_enabled)
             itm->m_select_untradable = true;
-        itm->SetColor(reinterpret_cast<CInventoryItem*>(itm->m_pData)->ClrUntradable);
+        itm->SetColor(static_cast<CInventoryItem*>(itm->m_pData)->ClrUntradable);
     }
     else
     {
         if (highlight_cop_enabled)
             itm->m_select_untradable = false;
         if (highlighted)
-            itm->SetColor(reinterpret_cast<CInventoryItem*>(itm->m_pData)->ClrEquipped);
+            itm->SetColor(static_cast<CInventoryItem*>(itm->m_pData)->ClrEquipped);
     }
 }

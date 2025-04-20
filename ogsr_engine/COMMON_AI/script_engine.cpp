@@ -329,8 +329,24 @@ void CScriptEngine::dump_state()
     for (int i = 0; lua_getstack(L, i, &l_tDebugInfo); ++i)
     {
         lua_getinfo(L, "nSlu", &l_tDebugInfo);
-        Msg("\tLocals: ");
-        const char* name = nullptr;
+
+        if (!xr_strcmp(l_tDebugInfo.what, "C"))
+        {
+            Msg("%2d : [C  ] %s", i, l_tDebugInfo.name ? l_tDebugInfo.name : "");
+        }
+        else
+        {
+            string_path temp;
+            if (l_tDebugInfo.name)
+                xr_sprintf(temp, "%s(%d)", l_tDebugInfo.name, l_tDebugInfo.linedefined);
+            else
+                xr_sprintf(temp, "function <%s:%d>", l_tDebugInfo.short_src, l_tDebugInfo.linedefined);
+
+            Msg("%2d : [%3s] %s(%d) : %s", i, l_tDebugInfo.what, l_tDebugInfo.short_src, l_tDebugInfo.currentline, temp);
+        }
+
+        Msg("\tLocals:");
+        const char* name;
         int VarID = 1;
         while ((name = lua_getlocal(L, &l_tDebugInfo, VarID++)) != NULL)
         {

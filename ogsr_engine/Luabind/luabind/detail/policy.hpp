@@ -124,30 +124,6 @@ namespace luabind { namespace detail
         static constexpr bool value = decltype(is_lua_functor_test(std::declval<T>()))::value;
 	};
 
-	namespace
-	{
-		static char msvc_fix[64];
-	}
-
-	template<class T>
-	struct indirect_type
-	{
-        using result_type = std::conditional_t<
-            is_primitive<T>::value,
-            const type<T>&,
-            std::conditional_t<
-                std::is_reference_v<T> || std::is_pointer_v<T>,
-                typename identity<T>::type,
-                std::add_lvalue_reference_t<T>
-            >
-        >;
-
-		static result_type get()
-		{
-			return reinterpret_cast<result_type>(msvc_fix);
-		}
-	};
-
 	template<class T>
 	struct is_primitive
 	{

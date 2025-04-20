@@ -30,7 +30,7 @@ protected:
     PATROL_REGISTRY m_registry;
 
 public:
-    IC CPatrolPathStorage();
+    CPatrolPathStorage();
     virtual ~CPatrolPathStorage();
     virtual void load(IReader& stream);
     virtual void save(IWriter& stream);

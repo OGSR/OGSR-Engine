@@ -274,7 +274,7 @@ void CUICarBodyWnd::UpdateLists()
         if (inv_item->m_highlight_equipped)
         {
             itm->m_select_equipped = true;
-            itm->SetColor(reinterpret_cast<CInventoryItem*>(itm->m_pData)->ClrEquipped);
+            itm->SetColor(static_cast<CInventoryItem*>(itm->m_pData)->ClrEquipped);
         }
         m_pUIOurBagList->SetItem(itm);
     }

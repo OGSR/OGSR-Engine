@@ -79,16 +79,15 @@ bool r_bool_script(CInifile* self, LPCSTR S, LPCSTR L) { return (!!self->r_bool(
 
 LPCSTR r_string_wb_script(CInifile* self, LPCSTR S, LPCSTR L) { return (self->r_string_wb(S, L).c_str()); }
 
-LPCSTR update_ini_path(LPCSTR file_name)
-{
-    string_path S1;
-    FS.update_path(S1, fsgame::game_configs, file_name);
-    return (*shared_str(S1));
-}
-
 inline CInifile* initialize_ini_file_full(LPCSTR szFileName, bool updatePath)
 {
-    LPCSTR path = updatePath ? update_ini_path(szFileName) : szFileName;
+    LPCSTR path{szFileName};
+    string_path path_upd{};
+    if (updatePath)
+    {
+        FS.update_path(path_upd, fsgame::game_configs, szFileName);
+        path = &path_upd[0];
+    }
 
     if (IReader* F = FS.r_open(path))
     {
@@ -178,7 +177,7 @@ void CScriptIniFile::script_register(lua_State* L)
                   .def("w_vector", &CInifile::w_fvector3)
                   .def("w_vector4", &CInifile::w_fvector4),
 
-              def("system_ini", [] { return reinterpret_cast<CInifile*>(pSettings); }), def("game_ini", [] { return reinterpret_cast<CInifile*>(pGameIni); }),
+              def("system_ini", [] { return pSettings; }), def("game_ini", [] { return pGameIni; }),
               def(
                   "create_ini_file", // чтение ini как текста, без возможности сохранить
                   [](const char* ini_string) {

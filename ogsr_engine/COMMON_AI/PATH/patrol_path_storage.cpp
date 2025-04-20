@@ -15,6 +15,8 @@
 #include "level_graph.h"
 #include "game_graph.h"
 
+CPatrolPathStorage::CPatrolPathStorage() { m_registry.reserve(8192); }
+
 CPatrolPathStorage::~CPatrolPathStorage() { delete_data(m_registry); }
 
 void CPatrolPathStorage::load_raw(const CLevelGraph* level_graph, const CGameLevelCrossTable* cross, const CGameGraph* game_graph, IReader& stream)

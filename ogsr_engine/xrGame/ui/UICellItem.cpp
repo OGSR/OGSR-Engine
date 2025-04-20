@@ -323,7 +323,7 @@ void CUICellItem::Update()
 
 void CUICellItem::ColorizeItems(std::initializer_list<CUIDragDropListEx*> args)
 {
-    auto inventoryitem = reinterpret_cast<CInventoryItem*>(this->m_pData);
+    auto inventoryitem = static_cast<CInventoryItem*>(this->m_pData);
     if (!inventoryitem)
         return;
 
@@ -351,9 +351,9 @@ void CUICellItem::ColorizeItems(std::initializer_list<CUIDragDropListEx*> args)
             if (CellItem->GetTextureColor() == Color)
             {
                 if (CellItem->m_select_untradable)
-                    ProcessColorize(CellItem, reinterpret_cast<CInventoryItem*>(CellItem->m_pData)->ClrUntradable);
+                    ProcessColorize(CellItem, static_cast<CInventoryItem*>(CellItem->m_pData)->ClrUntradable);
                 else if (CellItem->m_select_equipped)
-                    ProcessColorize(CellItem, reinterpret_cast<CInventoryItem*>(CellItem->m_pData)->ClrEquipped);
+                    ProcessColorize(CellItem, static_cast<CInventoryItem*>(CellItem->m_pData)->ClrEquipped);
                 else
                     ProcessColorize(CellItem, 0xffffffff);
             }
@@ -385,7 +385,7 @@ void CUICellItem::ColorizeItems(std::initializer_list<CUIDragDropListEx*> args)
             for (u32 i = 0, item_count = DdListEx->ItemsCount(); i < item_count; ++i)
             {
                 CUICellItem* CellItem = DdListEx->GetItemIdx(i);
-                auto invitem = reinterpret_cast<CInventoryItem*>(CellItem->m_pData);
+                auto invitem = static_cast<CInventoryItem*>(CellItem->m_pData);
                 if (invitem && std::find(ColorizeSects.begin(), ColorizeSects.end(), invitem->object().cNameSect()) != ColorizeSects.end())
                 {
                     CellItem->m_select_armament = true;
@@ -404,7 +404,7 @@ void CUICellItem::ColorizeItems(std::initializer_list<CUIDragDropListEx*> args)
             for (u32 i = 0, item_count = DdListEx->ItemsCount(); i < item_count; ++i)
             {
                 CUICellItem* CellItem = DdListEx->GetItemIdx(i);
-                auto invitem = reinterpret_cast<CInventoryItem*>(CellItem->m_pData);
+                auto invitem = static_cast<CInventoryItem*>(CellItem->m_pData);
                 if (invitem)
                 {
                     if (auto Wpn = smart_cast<CWeaponMagazined*>(invitem))

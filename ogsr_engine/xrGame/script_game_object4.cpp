@@ -410,7 +410,7 @@ CInifile* CScriptGameObject::GetVisIni()
         ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "IKinematics : cannot access class member GetVisIni!");
         return nullptr;
     }
-    return reinterpret_cast<CInifile*>(k->LL_UserData());
+    return k->LL_UserData();
 }
 
 CScriptGameObject* CScriptGameObject::ObjectFromInvBox(int _i)

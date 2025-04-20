@@ -349,7 +349,7 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
 
     constexpr float def_min_TAI = 0.01f, def_max_TAI = 0.07f;
     const float def_TAI = def_min_TAI + (rain_density * (def_max_TAI - def_min_TAI)); //Если не прописано, дефолт будет рассчитываться от силы дождя.
-    m_fTreeAmplitudeIntensity = READ_IF_EXISTS(reinterpret_cast<CInifile*>(&config), r_float, m_identifier.c_str(), "tree_amplitude_intensity", def_TAI);
+    m_fTreeAmplitudeIntensity = READ_IF_EXISTS((&config), r_float, m_identifier.c_str(), "tree_amplitude_intensity", def_TAI);
 
     C_CHECK(clouds_color);
     C_CHECK(sky_color);
