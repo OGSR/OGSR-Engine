@@ -57,8 +57,6 @@ void CWeaponStatMgun::OnShot()
 
     FireBullet(m_fire_pos, m_fire_dir, fireDispersionBase, *m_Ammo, Owner()->ID(), ID(), SendHitAllowed(Owner()));
 
-    StartShotParticles();
-
     if (m_bLightShotEnabled)
         Light_Start();
 

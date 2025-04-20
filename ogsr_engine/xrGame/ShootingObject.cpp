@@ -28,8 +28,6 @@ CShootingObject::CShootingObject(void)
     fvHitPower.set(0.0f, 0.0f, 0.0f, 0.0f);
     m_fStartBulletSpeed = 1000.f;
 
-    m_vCurrentShootDir.set(0, 0, 0);
-    m_vCurrentShootPos.set(0, 0, 0);
     m_iCurrentParentID = 0xFFFF;
 
     m_fPredBulletTime = 0.0f;
@@ -267,10 +265,6 @@ void CShootingObject::LoadFlameParticles(LPCSTR section, LPCSTR prefix)
     if (pSettings->line_exist(section, full_name))
         m_sSmokeParticles = pSettings->r_string(section, full_name);
 
-    strconcat(sizeof(full_name), full_name, prefix, "shot_particles");
-    if (pSettings->line_exist(section, full_name))
-        m_sShotParticles = pSettings->r_string(section, full_name);
-
     //текущие партиклы
     m_sFlameParticlesCurrent = m_sFlameParticles;
     m_sSmokeParticlesCurrent = m_sSmokeParticles;
@@ -426,8 +420,6 @@ void CShootingObject::FireBullet(const Fvector& pos, const Fvector& shot_dir, fl
             dir.setHP(dir_yaw, dir_pitch);
         }
 
-    m_vCurrentShootDir = dir;
-    m_vCurrentShootPos = pos;
     m_iCurrentParentID = parent_id;
 
     bool aim_bullet;
@@ -477,9 +469,3 @@ void CShootingObject::FireBullet(const Fvector& pos, const Fvector& shot_dir, fl
 
 void CShootingObject::FireStart() { bWorking = true; }
 void CShootingObject::FireEnd() { bWorking = false; }
-
-void CShootingObject::StartShotParticles()
-{
-    CParticlesObject* pSmokeParticles = NULL;
-    StartParticles(pSmokeParticles, *m_sShotParticles, m_vCurrentShootPos, m_vCurrentShootDir, true);
-}

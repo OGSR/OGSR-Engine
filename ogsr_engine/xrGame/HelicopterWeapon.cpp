@@ -145,7 +145,6 @@ void CHelicopter::OnShot()
 
     FireBullet(fire_pos, fire_dir, fireDispersionBase, m_CurrentAmmo, ID(), ID(), TRUE);
 
-    StartShotParticles();
     if (m_bLightShotEnabled)
         Light_Start();
 
