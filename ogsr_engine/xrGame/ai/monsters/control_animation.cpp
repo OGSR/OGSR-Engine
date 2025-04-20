@@ -2,7 +2,7 @@
 #include "control_animation.h"
 #include "BaseMonster/base_monster.h"
 #include "control_manager.h"
-#include "profiler.h"
+
 
 //#ifdef DEBUG
 //#include "control_animation_base.h"

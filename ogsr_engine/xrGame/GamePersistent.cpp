@@ -4,7 +4,7 @@
 #include "..\xr_3da\XR_IOConsole.h"
 #include "../xr_3da/gamemtllib.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "profiler.h"
+
 #include "MainMenu.h"
 #include "UICursor.h"
 #include "game_base_space.h"

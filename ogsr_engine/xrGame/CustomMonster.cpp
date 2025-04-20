@@ -36,7 +36,7 @@
 #include "sound_user_data_visitor.h"
 #include "mt_config.h"
 #include "PHMovementControl.h"
-#include "profiler.h"
+
 #include "date_time.h"
 #include "characterphysicssupport.h"
 #include "ai/monsters/snork/snork.h"

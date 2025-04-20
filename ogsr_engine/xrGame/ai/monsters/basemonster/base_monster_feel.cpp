@@ -24,7 +24,7 @@
 #include "../../../UIGameCustom.h"
 #include "../../../UI/UIStatic.h"
 #include "../../../ai_object_location.h"
-#include "profiler.h"
+
 #include "../../../ActorEffector.h"
 #include "../../../../xr_3da/CameraBase.h"
 

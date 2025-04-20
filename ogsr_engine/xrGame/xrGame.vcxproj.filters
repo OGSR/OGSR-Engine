@@ -1714,9 +1714,6 @@
     <Filter Include="Core\Common\ObjectFactory\object_item_single">
       <UniqueIdentifier>{e66cceec-c04f-4176-aaee-a7abcdd1c4f9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Common\Profiler">
-      <UniqueIdentifier>{d8936339-3abb-48e2-a7c7-57109a477ec0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Common\QuadTree">
       <UniqueIdentifier>{b192e123-85f6-4666-9769-4123a966983f}</UniqueIdentifier>
     </Filter>
@@ -4878,9 +4875,6 @@
     <ClInclude Include="..\COMMON_AI\object_item_single_inline.h">
       <Filter>Core\Common\ObjectFactory\object_item_single</Filter>
     </ClInclude>
-    <ClInclude Include="profiler_inline.h">
-      <Filter>Core\Common\Profiler</Filter>
-    </ClInclude>
     <ClInclude Include="..\COMMON_AI\shared_data.h">
       <Filter>Core\Common\Shared</Filter>
     </ClInclude>
@@ -5639,9 +5633,6 @@
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\quadtree_inline.h">
       <Filter>Core\Common\QuadTree</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\profiler.h">
-      <Filter>Core\Common\Profiler</Filter>
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\LevelGameDef.h">
       <Filter>Core\Client\Level</Filter>
@@ -8001,9 +7992,6 @@
     </ClCompile>
     <ClCompile Include="..\COMMON_AI\object_item_script.cpp">
       <Filter>Core\Common\ObjectFactory\object_item_script</Filter>
-    </ClCompile>
-    <ClCompile Include="profiler.cpp">
-      <Filter>Core\Common\Profiler</Filter>
     </ClCompile>
     <ClCompile Include="string_table.cpp">
       <Filter>Core\Common\StringTable</Filter>

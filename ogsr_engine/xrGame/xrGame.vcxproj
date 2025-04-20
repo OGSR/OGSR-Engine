@@ -237,7 +237,6 @@
     <ClInclude Include="..\COMMON_AI\PATH\patrol_path_storage_inline.h" />
     <ClInclude Include="..\COMMON_AI\PATH\patrol_point.h" />
     <ClInclude Include="..\COMMON_AI\PATH\patrol_point_inline.h" />
-    <ClInclude Include="..\COMMON_AI\profiler.h" />
     <ClInclude Include="..\COMMON_AI\random32.h" />
     <ClInclude Include="..\COMMON_AI\script_writer.h" />
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper.h" />
@@ -1243,7 +1242,6 @@
     <ClInclude Include="..\COMMON_AI\object_item_script.h" />
     <ClInclude Include="..\COMMON_AI\object_item_single.h" />
     <ClInclude Include="..\COMMON_AI\object_item_single_inline.h" />
-    <ClInclude Include="profiler_inline.h" />
     <ClInclude Include="..\COMMON_AI\shared_data.h" />
     <ClInclude Include="..\COMMON_AI\smart_cast.h" />
     <ClInclude Include="string_table.h" />
@@ -2181,7 +2179,6 @@
     <ClCompile Include="..\COMMON_AI\object_factory_register.cpp" />
     <ClCompile Include="..\COMMON_AI\object_factory_script.cpp" />
     <ClCompile Include="..\COMMON_AI\object_item_script.cpp" />
-    <ClCompile Include="profiler.cpp" />
     <ClCompile Include="string_table.cpp" />
     <ClCompile Include="xrServer.cpp" />
     <ClCompile Include="xrServer_balance.cpp" />

@@ -18,7 +18,7 @@
 #include "agent_member_manager.h"
 #include "ai/stalker/ai_stalker.h"
 #include "game_object_space.h"
-#include "profiler.h"
+
 #include "client_spawn_manager.h"
 #include "memory_manager.h"
 #include "..\xr_3da\IGame_Persistent.h"

@@ -6,7 +6,7 @@
 #include "level.h"
 #include "gamepersistent.h"
 #include "material_manager.h"
-#include "profiler.h"
+
 #include "IKLimbsController.h"
 #include "actor.h"
 #include "game_object_space.h"

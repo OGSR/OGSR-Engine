@@ -93,10 +93,19 @@
 
 #include <tracy/Tracy.hpp>
 
+#ifdef TRACY_ENABLE
+#define START_PROFILE(a) { ZoneScopedN(a);
+#define STOP_PROFILE }
+#else
+#define START_PROFILE(a) {
+#define STOP_PROFILE }
+#endif
+
 #include "xrDebug.h"
 #include "vector.h"
 
 #include "clsid.h"
+
 #include "xrSyncronize.h"
 #include "xrMemory.h"
 

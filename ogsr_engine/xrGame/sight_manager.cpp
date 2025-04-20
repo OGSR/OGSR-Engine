@@ -15,7 +15,7 @@
 #include "stalker_movement_manager.h"
 #include "ai/stalker/ai_stalker_space.h"
 #include "ai_space.h"
-#include "profiler.h"
+
 
 using namespace StalkerSpace;
 

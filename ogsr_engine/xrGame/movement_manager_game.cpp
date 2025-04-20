@@ -11,7 +11,7 @@
 #include "alife_simulator.h"
 #include "alife_graph_registry.h"
 #include "alife_level_registry.h"
-#include "profiler.h"
+
 #include "game_location_selector.h"
 #include "game_path_manager.h"
 #include "level_location_selector.h"

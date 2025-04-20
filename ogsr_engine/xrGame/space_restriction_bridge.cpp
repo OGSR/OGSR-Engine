@@ -11,7 +11,7 @@
 #include "space_restriction_base.h"
 #include "ai_space.h"
 #include "level_graph.h"
-#include "profiler.h"
+
 
 CSpaceRestrictionBridge::~CSpaceRestrictionBridge() { xr_delete(m_object); }
 

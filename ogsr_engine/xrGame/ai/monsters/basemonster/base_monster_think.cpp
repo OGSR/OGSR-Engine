@@ -2,7 +2,7 @@
 #include "base_monster.h"
 #include "../ai_monster_squad.h"
 #include "../ai_monster_squad_manager.h"
-#include "profiler.h"
+
 #include "../state_manager.h"
 #include "../../../PhysicsShell.h"
 #include "../../../detail_path_manager.h"

@@ -14,7 +14,7 @@
 #include "..\xr_3da\xr_object.h"
 #include "..\Include/xrRender/Kinematics.h"
 #include "..\Include/xrRender/KinematicsAnimated.h"
-#include "profiler.h"
+
 #include "sound_collection_storage.h"
 #include "object_broker.h"
 #include "level.h"

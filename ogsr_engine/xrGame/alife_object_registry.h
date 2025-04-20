@@ -9,7 +9,7 @@
 #pragma once
 
 #include "xrServer_Objects_ALife.h"
-#include "profiler.h"
+
 
 class CALifeObjectRegistry
 {

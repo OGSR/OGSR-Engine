@@ -53,7 +53,6 @@
 #include "../../visual_memory_manager.h"
 #include "../../enemy_manager.h"
 #include "alife_human_brain.h"
-#include "profiler.h"
 #include "../../BoneProtections.h"
 #include "../../stalker_animation_names.h"
 #include "../../stalker_decision_space.h"
