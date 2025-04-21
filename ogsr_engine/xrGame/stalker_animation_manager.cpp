@@ -24,6 +24,8 @@
 
 void CStalkerAnimationManager::reinit()
 {
+    ZoneScoped;
+
     m_direction_start = 0;
     m_current_direction = eMovementDirectionForward;
     m_target_direction = eMovementDirectionForward;

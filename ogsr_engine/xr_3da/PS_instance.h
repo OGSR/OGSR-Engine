@@ -1,5 +1,4 @@
-#ifndef _CPS_Instance_H_
-#define _CPS_Instance_H_
+#pragma once
 
 #include "../xrcdb/ispatial.h"
 #include "isheduled.h"
@@ -40,5 +39,3 @@ public:
 
     //virtual void PerformCreate() = 0;
 };
-
-#endif

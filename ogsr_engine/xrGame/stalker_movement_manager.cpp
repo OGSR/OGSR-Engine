@@ -174,6 +174,8 @@ void CStalkerMovementManager::init_velocity_masks()
 
 void CStalkerMovementManager::reinit()
 {
+    ZoneScoped;
+
     inherited::reinit();
     m_body.speed = PI_MUL_2;
     m_danger_head_speed = 3 * PI_DIV_2;

@@ -1,7 +1,5 @@
-#ifndef _TextureDescrManager_included_
-#define _TextureDescrManager_included_
-
 #pragma once
+
 #include "ETextureParams.h"
 
 class cl_dt_scaler;
@@ -53,4 +51,3 @@ public:
 
     BOOL UseSteepParallax(const shared_str& tex_name) const;
 };
-#endif

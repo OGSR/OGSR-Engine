@@ -1,5 +1,3 @@
-#ifndef _HW_CAPS_
-#define _HW_CAPS_
 #pragma once
 
 #define CAP_VERSION(a, b) (u32(a) * 10 + u32(b))
@@ -50,5 +48,3 @@ public:
 
     void Update(void);
 };
-
-#endif

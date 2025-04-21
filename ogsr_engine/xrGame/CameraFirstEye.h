@@ -1,5 +1,4 @@
-#ifndef __CAMERA_FE_H__
-#define __CAMERA_FE_H__
+#pragma once
 
 #include "../xr_3da/camerabase.h"
 
@@ -20,5 +19,3 @@ public:
     virtual float GetWorldYaw() { return -yaw; };
     virtual float GetWorldPitch() { return pitch; };
 };
-
-#endif // __CAMERALOOK_H__

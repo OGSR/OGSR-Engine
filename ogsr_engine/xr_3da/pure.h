@@ -1,5 +1,4 @@
-#ifndef _PURE_H_AAA_
-#define _PURE_H_AAA_
+#pragma once
 
 // messages
 #define REG_PRIORITY_LOW 0x11111111ul
@@ -171,5 +170,3 @@ public:
         changed = false;
     }
 };
-
-#endif

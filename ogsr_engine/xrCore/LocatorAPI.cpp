@@ -665,25 +665,8 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
     m_Flags.set(flReady, TRUE);
 
     Msg("Init FileSystem %f sec", t.GetElapsed_sec());
-    //-----------------------------------------------------------
-    if (strstr(Core.Params, "-overlaypath"))
-    {
-        string1024 c_newAppPathRoot;
-        sscanf(strstr(Core.Params, "-overlaypath ") + 13, "%[^ ] ", c_newAppPathRoot);
-        FS_Path* pLogsPath = FS.get_path("$logs$");
-        FS_Path* pAppdataPath = FS.get_path("$app_data_root$");
 
-        if (pLogsPath)
-            pLogsPath->_set_root(c_newAppPathRoot);
-        if (pAppdataPath)
-        {
-            pAppdataPath->_set_root(c_newAppPathRoot);
-            rescan_physical_path(pAppdataPath->m_Path, pAppdataPath->m_Flags.is(FS_Path::flRecurse));
-        }
-    }
-    //-----------------------------------------------------------
-
-    CreateLog(0 != strstr(Core.Params, "-nolog"));
+    CreateLog(nullptr != strstr(Core.Params, "-nolog"));
 }
 
 void CLocatorAPI::_destroy()
