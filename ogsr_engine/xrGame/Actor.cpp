@@ -790,8 +790,6 @@ void CActor::UpdateCL()
             }
         }
     }
-    if (m_holder)
-        m_holder->UpdateEx(currentFOV());
 
     m_snd_noise -= 0.3f * Device.fTimeDelta;
 
@@ -806,15 +804,6 @@ void CActor::UpdateCL()
 
     PickupModeUpdate_COD();
 
-    m_bZoomAimingMode = false;
-    CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());
-
-    Device.Statistic->cam_Update.Begin();
-    cam_Update(float(Device.dwTimeDelta) / 1000.0f, currentFOV());
-    Device.Statistic->cam_Update.End();
-
-    Device.OnCameraUpdated(true);
-
     if (Level().CurrentEntity() && this->ID() == Level().CurrentEntity()->ID())
     {
         psHUD_Flags.set(HUD_CROSSHAIR_RT2, true);
@@ -822,8 +811,9 @@ void CActor::UpdateCL()
     }
 
     Is3dssZoomed = false;
+    m_bZoomAimingMode = false;
 
-    if (pWeapon)
+    if (CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem()))
     {
         if (pWeapon->IsZoomed())
         {
@@ -991,6 +981,15 @@ void CActor::shedule_Update(u32 DT)
         */
         return;
     }
+
+    if (m_holder)
+        m_holder->UpdateEx(currentFOV());
+
+    Device.Statistic->cam_Update.Begin();
+    cam_Update(float(Device.dwTimeDelta) / 1000.0f, currentFOV());
+    Device.Statistic->cam_Update.End();
+
+    Device.OnCameraUpdated(true);
 
     //
     clamp(DT, 0u, 100u);
