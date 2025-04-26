@@ -305,7 +305,7 @@ CWound* CEntityCondition::AddWound(float hit_power, ALife::EHitType hit_type, u1
 
     //запомнить кость по которой ударили и силу удара
     WOUND_VECTOR_IT it = m_WoundVector.begin();
-    for (; it != m_WoundVector.end(); it++)
+    for (; it != m_WoundVector.end(); ++it)
     {
         if ((*it)->GetBoneNum() == element)
             break;
@@ -405,7 +405,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
     }
 
     if (bDebug)
-        Msg("%s hitted in %s with %f[%f]", m_object->Name(), smart_cast<IKinematics*>(m_object->Visual())->LL_BoneName_dbg(pHDS->boneID), m_fHealthLost * 100.0f, hit_power_org);
+        Msg("%s hitted in %s with %f[%f]", m_object->Name(), smart_cast<IKinematics*>(m_object->Visual())->LL_BoneName(pHDS->boneID), m_fHealthLost * 100.0f, hit_power_org);
     //раны добавляются только живому
     if (bAddWound && GetHealth() > 0)
         return AddWound(hit_power * m_fWoundBoneScale, pHDS->hit_type, pHDS->boneID);

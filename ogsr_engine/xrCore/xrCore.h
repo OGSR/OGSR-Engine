@@ -116,25 +116,8 @@
 #include "xr_resource.h"
 #include "rt_compressor.h"
 
-// stl ext
-struct XRCORE_API xr_rtoken
-{
-    shared_str name;
-    int id;
-    xr_rtoken(LPCSTR _nm, int _id)
-    {
-        name = _nm;
-        id = _id;
-    }
-
-public:
-    void rename(LPCSTR _nm) { name = _nm; }
-    bool equal(LPCSTR _nm) { return (0 == xr_strcmp(*name, _nm)); }
-};
-
 DEFINE_VECTOR(shared_str, RStringVec, RStringVecIt);
 DEFINE_SET(shared_str, RStringSet, RStringSetIt);
-DEFINE_VECTOR(xr_rtoken, RTokenVec, RTokenVecIt);
 
 #include "FS.h"
 #include "xr_trims.h"

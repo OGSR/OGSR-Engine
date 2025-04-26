@@ -1,10 +1,22 @@
 #include "common.h"
-#include "mblur.h"
-#include "img_corrections.h"
-#include "visor.h"
+
+uniform float4 pnv_color_old;
+uniform float4 pnv_params_old;
+
+uniform float4 m_hud_params;
+uniform float4 shader_param_grayscale;
+
+uniform float4 fakescope;
+uniform float4 m_flare_params;
+
+#include "pnv.h"
 
 // Check Screen Space Shaders modules
 #include "check_screenspace.h"
+
+#ifdef SSFX_BEEFS_NVG
+#include "night_vision.h"
+#endif
 
 #ifdef SSFX_DEBAND
 #include "screenspace_debanding.h"
@@ -18,107 +30,88 @@
 #include "screenspace_il.h"
 #endif
 
-//////////////////////////////////////////////////////////////////////////////////////////
-#define EPSDEPTH 0.001
+#include "img_corrections.h"
+#include "effects_flare.h"
 
-#ifndef USE_MSAA
-Texture2D s_distort;
-#else
-TEXTURE2DMS(float4, MSAA_SAMPLES) s_distort;
+#include "mblur.h"
+
+Texture2D s_flares;
+#ifdef SSFX_BLOOM
+Texture2D s_ssfx_bloom;
 #endif
-//////////////////////////////////////////////////////////////////////////////////////////
-// Pixel
 
-struct c2_out
+float4 main(p_screen I) : SV_Target
 {
-    float4 Color : SV_Target;
-#ifdef USE_MSAA
-    float Depth : SV_Depth;
-#endif
-};
-
-c2_out main(v2p_aa_AA I)
-{
-    c2_out res;
-    res.Color = float4(0, 0, 0, 0);
-
     int iSample = 0;
+    float2 center = I.tc0;
 
-#ifdef GBUFFER_OPTIMIZATION
-    gbuffer_data gbd = gbuffer_load_data(I.Tex0, I.HPos, iSample);
-#else
-    gbuffer_data gbd = gbuffer_load_data(I.Tex0, iSample);
-#endif
+    gbuffer_data gbd = gbuffer_load_data(center, I.hpos, iSample);
 
     float depth = gbd.P.z;
-
-#ifdef USE_DISTORT
-#ifndef USE_MSAA
-    float4 distort = s_distort.Sample(smp_nofilter, I.Tex0);
-#else // USE_MSAA
-    float4 distort = s_distort.Load(int3(I.Tex0 * pos_decompression_params2.xy, 0), iSample);
-#endif // USE_MSAA
-    float2 offset = (distort.xy - (127.0h / 255.0h)) * def_distort; // fix newtral offset
-    float2 center = I.Tex0 + offset;
-
-#ifdef GBUFFER_OPTIMIZATION
-    gbuffer_data gbdx = gbuffer_load_data_offset(I.Tex0, center, I.HPos, iSample);
-#else
-    gbuffer_data gbdx = gbuffer_load_data_offset(I.Tex0, center, iSample);
-#endif
-
-    float depth_x = gbdx.P.z;
-    if ((depth_x + EPSDEPTH) < depth)
-        center = I.Tex0; // discard new sample
-#else // USE_DISTORT
-    float2 center = I.Tex0;
-#endif
 
     float3 img = s_image.Load(int3(center.xy * screen_res.xy, 0), 0);
 
     img = mblur(center, gbd.P, img.rgb);
 
-// Indirect light - SCREEN SPACE SHADERS - UPDATE 14
+    // Indirect light - SCREEN SPACE SHADERS - UPDATE 14
 #ifdef SSFX_INDIRECT_LIGHT
-    ssfx_il(I.Tex0, I.HPos, gbd.P, gbd.N, img, iSample);
+    ssfx_il(center, I.hpos, gbd.P, gbd.N, img, iSample);
 #endif
 
 // Sky Debanding Implementation  - SCREEN SPACE SHADERS - UPDATE 12.5
 #ifdef SSFX_DEBAND
     if (depth <= SKY_EPS)
-        img = ssfx_debanding(img, I.Tex0.xy);
+        img = ssfx_debanding(img, center);
 #endif
 
-    if (addon_VControl.w == 1)
-        img = visor_reflection(img, center);
-
+#ifdef SSFX_BLOOM
+    float4 bloom = s_ssfx_bloom.Sample(smp_rtlinear, center);
+#else
     float4 bloom = s_bloom.Sample(smp_rtlinear, center);
+#endif
 
 #ifdef SSFX_BEEFS_NVG
     // NVG CHANGE TO PREVENT WEIRD COLORS, ONLY APPLY BLOOM WHEN WE'RE NOT IN NVG MASK
-    float lua_param_nvg_generation = floor(shader_param_8.x); // 1, 2, or 3
-    float lua_param_nvg_num_tubes = frac(shader_param_8.x) * 10.0f; // 1, 2, 4, 1.1, or 1.2
-    if (lua_param_nvg_generation < 0.01f && compute_lens_mask(aspect_ratio_correction(I.Tex0), lua_param_nvg_num_tubes) == 0.0f)
+    if (pnv_param_1.z == 0.f) // beef pnv off
     {
-        img = blend_soft(img, bloom.xyz * bloom.w);
+        if (m_hud_params.x < 1.0 || fakescope.y <= 0)
+        {
+            img = blend_soft(img, bloom.xyz * bloom.w);
+            if (m_actor_position.w > 0.f)
+            {
+                img += generate_flare(center, m_flare_params.y);
+
+                float4 flares = s_flares.Sample(smp_rtlinear, center);
+                img += flares.xyz * flares.a;
+            }
+        }
     }
 #else
-    img = blend_soft(img, bloom.xyz * bloom.w);
+    if (m_hud_params.x < 1.0 || fakescope.y <= 0)
+    {
+        img = blend_soft(img, bloom.xyz * bloom.w);
+        if (m_actor_position.w > 0.f)
+        {
+            img += generate_flare(center, m_flare_params.y);
+
+            float4 flares = s_flares.Sample(smp_rtlinear, center);
+            img += flares.xyz * flares.a;
+        }
+    }
 #endif
 
+    // Vanilla color grading ( Exposure, saturation and gamma )
     img = img_corrections(img);
 
-#ifdef USE_DISTORT
-    float3 blurred = bloom * def_hdr;
-    img = lerp(img, blurred, distort.z);
-#endif
+    float3 before = img; // лютый костыль, что б этот долбанный ПНВ не ломал ничего
 
-    res.Color = float4(img, 1.0);
+    if (pnv_param_1.z == 0.f) // beef pnv off
+        if (pnv_color_old.w > 1.f) // apply old pnv
+            img = calc_night_vision_effect(center, float4(before, 1.0), pnv_color_old, pnv_params_old, fakescope.y);
 
-#ifdef USE_MSAA
-    float4 ptp = mul(m_P, float4(gbd.P, 1));
-    res.Depth = ptp.w == 0 ? 1 : ptp.z / ptp.w;
-#endif
+    // greyscale
+    float3 grey = (0.299 * img.r) + (0.587 * img.g) + (0.114 * img.b);
+    img = img * (1.f - shader_param_grayscale.x) + grey * shader_param_grayscale.x;
 
-    return res;
+    return float4(img, 1.0);
 }

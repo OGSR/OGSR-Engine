@@ -21,12 +21,12 @@ float4 main(p_screen I) : SV_Target
     float3 image;
     const float GAUSS_SIGMA = 2.5;
     const int support = int(GAUSS_SIGMA * 1.5);
-    float lua_param_nvg_generation = floor(shader_param_8.x); // 1, 2, or 3
-    float lua_param_nvg_num_tubes = frac(shader_param_8.x) * 10.0f;
-    float lua_param_nvg_washout_thresh = frac(shader_param_8.y);
-    float lua_param_vignette_current = floor(shader_param_8.z) / 100.0f;
 
-    if (lua_param_nvg_generation > 0.0f && compute_lens_mask(aspect_ratio_correction(I.tc0), lua_param_nvg_num_tubes) == 1.0f) // if NVGs are enabled ...
+    float lua_param_nvg_num_tubes = pnv_param_4.x;
+    float lua_param_nvg_washout_thresh = pnv_param_4.y;
+    float lua_param_vignette_current = pnv_param_2.z;
+
+    if (pnv_param_1.z == 1.f && compute_lens_mask(aspect_ratio_correction(I.tc0), lua_param_nvg_num_tubes) == 1.0f) // if NVGs are enabled ...
     {
         // HALF RES BLUR - PASS 1 - R = LUMA, G = LIGHTMAP, B = NORMALIZED DEPTH OUT TO FARTHEST_DEPTH (defined in night_vision.h)
         if (blur_params.x == 1 && blur_params.z == (screen_res.x / 2.0f))

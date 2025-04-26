@@ -32,16 +32,6 @@ bool SortStringsByAlphabetPred(const shared_str& s1, const shared_str& s2)
     return (xr_strcmp(s1, s2) < 0);
 };
 
-struct story_name_predicate
-{
-    IC bool operator()(const xr_rtoken& _1, const xr_rtoken& _2) const
-    {
-        VERIFY(_1.name.size());
-        VERIFY(_2.name.size());
-
-        return (xr_strcmp(_1.name, _2.name) < 0);
-    }
-};
 
 ////////////////////////////////////////////////////////////////////////////
 // CSE_ALifeGraphPoint
@@ -806,12 +796,8 @@ bool CSE_ALifeObjectHangingLamp::validate()
 bool CSE_ALifeObjectHangingLamp::match_configuration() const
 {
     R_ASSERT3(flags.test(flR1) || flags.test(flR2), "no renderer type set for hanging-lamp ", name_replace());
-#ifdef XRGAME_EXPORTS
-    return ((flags.test(flR1) && (::Render->get_generation() == IRender_interface::GENERATION_R1)) ||
-            (flags.test(flR2) && (::Render->get_generation() == IRender_interface::GENERATION_R2)));
-#else
-    return (true);
-#endif
+
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////

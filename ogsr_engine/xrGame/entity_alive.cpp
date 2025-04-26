@@ -481,7 +481,7 @@ void CEntityAlive::UpdateFireParticles()
             it = m_ParticleWounds.erase(it);
             continue;
         }
-        it++;
+        ++it;
     }
 }
 
@@ -561,7 +561,7 @@ void CEntityAlive::UpdateBloodDrops()
                 PlaceBloodWallmark(Fvector().set(0.f, -1.f, 0.f), pos, m_fBloodMarkDistance, m_fBloodDropSize, &**m_pBloodDropsVector);
             }
         }
-        it++;
+        ++it;
     }
 }
 

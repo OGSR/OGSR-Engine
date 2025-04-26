@@ -6,13 +6,10 @@
 //	Description : vision client inline functions
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef VISION_CLIENT_INLINE_H
-#define VISION_CLIENT_INLINE_H
+#pragma once
 
 IC CVisualMemoryManager& vision_client::visual() const
 {
     VERIFY(m_visual);
     return (*m_visual);
 }
-
-#endif // VISION_CLIENT_INLINE_H

@@ -1,5 +1,4 @@
-#ifndef ShapeDataH
-#define ShapeDataH
+#pragma once
 
 struct CShapeData
 {
@@ -21,5 +20,3 @@ struct CShapeData
     DEFINE_VECTOR(shape_def, ShapeVec, ShapeIt);
     ShapeVec shapes;
 };
-
-#endif

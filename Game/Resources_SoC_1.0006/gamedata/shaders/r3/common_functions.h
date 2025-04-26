@@ -3,8 +3,6 @@
 
 #include "srgb.h"
 
-uniform float4 m_actor_params;
-
 float3 vibrance(float3 img, float val)
 {
     float luminance = dot(float3(img.rgb), LUMINANCE_VECTOR);
@@ -20,7 +18,7 @@ float2 hash22(float2 p)
 
 float noise(float2 tc) { return frac(sin(dot(tc, float2(12.0, 78.0) + (timers.x))) * 43758.0) * 0.25f; }
 
-//	contrast function
+// contrast function
 float Contrast(float Input, float ContrastPower)
 {
     // piecewise contrast function
@@ -31,7 +29,7 @@ float Contrast(float Input, float ContrastPower)
     return Output;
 }
 
-void tonemap(out float4 low, out float4 high, float3 rgb, float scale)
+float3 tonemap(float3 rgb, float scale)
 {
     rgb = SRGBToLinear(rgb);
     rgb = rgb * scale;
@@ -39,11 +37,8 @@ void tonemap(out float4 low, out float4 high, float3 rgb, float scale)
 
     const float fWhiteIntensity = 11.2;
 
-    low = float4(tonemap_sRGB(rgb, fWhiteIntensity), 0);
-    high = float4(rgb / def_hdr, 0);
+    return tonemap_sRGB(rgb, fWhiteIntensity);
 }
-
-void tonemap_hipri(out float4 low, out float4 high, float3 rgb, float scale) { tonemap(low, high, rgb, scale); }
 
 // CUSTOM
 float3 blend_soft(float3 a, float3 b)
@@ -73,13 +68,6 @@ float3 blend_soft(float3 a, float3 b)
     a = LinearTosRGB(a);
     return a;
 }
-
-/*float4 combine_bloom(float3 low, float4 high)
-{
-    // return	float4(low + high*high.a, 1); //add
-    high.rgb *= high.a;
-    return float4(blend_soft(low.rgb, high.rgb), 1); // screen
-}*/
 
 float calc_fogging(float4 w_pos) { return dot(w_pos, fog_plane); }
 
@@ -161,7 +149,7 @@ static const uint USABLE_BIT_15 = 1 << 31;
 float gbuf_pack_hemi_mtl(float hemi, float mtl, const bool use_reflections)
 {
     uint packed_mtl = uint((mtl / 1.333333333) * 31.0);
-    //	Clamp hemi max value
+    // Clamp hemi max value
     uint packed = (MUST_BE_SET + (uint(saturate(hemi) * 255.9) << 12) + ((packed_mtl & uint(31)) << 21));
 
     if ((packed & USABLE_BIT_12) == 0)
@@ -215,7 +203,7 @@ bool gbuf_unpack_refl_flag(float mtl_hemi)
 float gbuf_pack_hemi_mtl(float hemi, float mtl)
 {
     uint packed_mtl = uint((mtl / 1.333333333) * 31.0);
-    //	Clamp hemi max value
+    // Clamp hemi max value
     uint packed = (MUST_BE_SET + (uint(saturate(hemi) * 255.9) << 13) + ((packed_mtl & uint(31)) << 21));
 
     if ((packed & USABLE_BIT_13) == 0)
@@ -246,11 +234,6 @@ f_deffer pack_gbuffer(float4 norm, float4 pos, float4 col, uint imask, const boo
 {
     f_deffer res;
 
-#ifndef GBUFFER_OPTIMIZATION
-    res.position = pos;
-    res.Ne = norm;
-    res.C = col;
-#else
     res.position = float4(gbuf_pack_normal(norm), pos.z,
                           gbuf_pack_hemi_mtl(norm.w, pos.w
 #ifdef REFLECTIONS_ONLY_ON_TERRAIN
@@ -259,7 +242,11 @@ f_deffer pack_gbuffer(float4 norm, float4 pos, float4 col, uint imask, const boo
 #endif
                                              ));
     res.C = col;
-#endif
+
+    if (L_hotness.x > 0.0)
+        res.H = float4(L_hotness.x, L_hotness.y, 0.0, 1.0);
+    else
+        res.H = float4(0.0, 0.0, 0.0, 0.0);
 
 #ifdef EXTEND_F_DEFFER
     res.mask = imask;
@@ -268,7 +255,6 @@ f_deffer pack_gbuffer(float4 norm, float4 pos, float4 col, uint imask, const boo
     return res;
 }
 
-#ifdef GBUFFER_OPTIMIZATION
 gbuffer_data gbuffer_load_data(float2 tc : TEXCOORD, float2 pos2d, int iSample)
 {
     gbuffer_data gbd;
@@ -279,20 +265,18 @@ gbuffer_data gbuffer_load_data(float2 tc : TEXCOORD, float2 pos2d, int iSample)
     gbd.C = 0;
     gbd.N = float3(0, 0, 0);
 
-#ifndef USE_MSAA
     float4 P = s_position.Sample(smp_nofilter, tc);
-#else
-    float4 P = s_position.Load(int3(pos2d, 0), iSample);
-#endif
+
+    pos2d = pos2d - m_taa_jitter.xy * float2(0.5f, -0.5f) * pos_decompression_params2.xy;
 
     // 3d view space pos reconstruction math
     // center of the plane (0,0) or (0.5,0.5) at distance 1 is eyepoint(0,0,0) + lookat (assuming |lookat| ==1
     // left/right = (0,0,1) -/+ tan(fHorzFOV/2) * (1,0,0 )
     // top/bottom = (0,0,1) +/- tan(fVertFOV/2) * (0,1,0 )
-    // lefttop		= ( -tan(fHorzFOV/2),  tan(fVertFOV/2), 1 )
-    // righttop		= (  tan(fHorzFOV/2),  tan(fVertFOV/2), 1 )
-    // leftbottom   = ( -tan(fHorzFOV/2), -tan(fVertFOV/2), 1 )
-    // rightbottom	= (  tan(fHorzFOV/2), -tan(fVertFOV/2), 1 )
+    // lefttop = ( -tan(fHorzFOV/2),  tan(fVertFOV/2), 1 )
+    // righttop = (  tan(fHorzFOV/2),  tan(fVertFOV/2), 1 )
+    // leftbottom = ( -tan(fHorzFOV/2), -tan(fVertFOV/2), 1 )
+    // rightbottom = (  tan(fHorzFOV/2), -tan(fVertFOV/2), 1 )
     gbd.P = float3(P.z * (pos2d * pos_decompression_params.zw - pos_decompression_params.xy), P.z);
 
     // reconstruct N
@@ -308,11 +292,7 @@ gbuffer_data gbuffer_load_data(float2 tc : TEXCOORD, float2 pos2d, int iSample)
     gbd.refl_flag = gbuf_unpack_refl_flag(P.w);
 #endif
 
-#ifndef USE_MSAA
     float4 C = s_diffuse.Sample(smp_nofilter, tc);
-#else
-    float4 C = s_diffuse.Load(int3(pos2d, 0), iSample);
-#endif
 
     gbd.C = C.xyz;
     gbd.gloss = C.w;
@@ -335,192 +315,6 @@ gbuffer_data gbuffer_load_data_offset(float2 tc : TEXCOORD, float2 OffsetTC : TE
 
     return gbuffer_load_data(OffsetTC, pos2d + delta, iSample);
 }
-
-#else // GBUFFER_OPTIMIZATION
-gbuffer_data gbuffer_load_data(float2 tc : TEXCOORD, uint iSample)
-{
-    gbuffer_data gbd;
-
-#ifndef USE_MSAA
-    float4 P = s_position.Sample(smp_nofilter, tc);
-#else
-    float4 P = s_position.Load(int3(tc * pos_decompression_params2.xy, 0), iSample);
-#endif
-
-    gbd.P = P.xyz;
-    gbd.mtl = P.w;
-
-#ifndef USE_MSAA
-    float4 N = s_normal.Sample(smp_nofilter, tc);
-#else
-    float4 N = s_normal.Load(int3(tc * pos_decompression_params2.xy, 0), iSample);
-#endif
-
-    gbd.N = N.xyz;
-    gbd.hemi = N.w;
-
-#ifndef USE_MSAA
-    float4 C = s_diffuse.Sample(smp_nofilter, tc);
-#else
-    float4 C = s_diffuse.Load(int3(tc * pos_decompression_params2.xy, 0), iSample);
-#endif
-
-    gbd.C = C.xyz;
-    gbd.gloss = C.w;
-
-    return gbd;
-}
-
-gbuffer_data gbuffer_load_data(float2 tc : TEXCOORD) { return gbuffer_load_data(tc, 0); }
-
-gbuffer_data gbuffer_load_data_offset(float2 tc : TEXCOORD, float2 OffsetTC : TEXCOORD, uint iSample) { return gbuffer_load_data(OffsetTC, iSample); }
-
-#endif // GBUFFER_OPTIMIZATION
-
-//////////////////////////////////////////////////////////////////////////
-//	Aplha to coverage code
-#if (defined(MSAA_ALPHATEST_DX10_1_ATOC) || defined(MSAA_ALPHATEST_DX10_1))
-
-#if MSAA_SAMPLES == 2
-uint alpha_to_coverage(float alpha, float2 pos2d)
-{
-    uint mask;
-    uint pos = uint(pos2d.x) | uint(pos2d.y);
-    if (alpha < 0.3333)
-        mask = 0;
-    else if (alpha < 0.6666)
-        mask = 1 << (pos & 1);
-    else
-        mask = 3;
-
-    return mask;
-}
-#endif
-
-#if MSAA_SAMPLES == 4
-uint alpha_to_coverage(float alpha, float2 pos2d)
-{
-    uint mask;
-
-    float off = float((uint(pos2d.x) | uint(pos2d.y)) & 3);
-    alpha = saturate(alpha - off * ((0.2 / 4.0) / 3.0));
-    if (alpha < 0.40)
-    {
-        if (alpha < 0.20)
-            mask = 0;
-        else if (alpha < 0.40) // only one bit set
-            mask = 1;
-    }
-    else
-    {
-        if (alpha < 0.60) // 2 bits set => 1100 0110 0011 1001 1010 0101
-        {
-            mask = 3;
-        }
-        else if (alpha < 0.8) // 3 bits set => 1110 0111 1011 1101
-            mask = 7;
-        else
-            mask = 0xf;
-    }
-
-    return mask;
-}
-#endif
-
-#if MSAA_SAMPLES == 8
-uint alpha_to_coverage(float alpha, float2 pos2d)
-{
-    uint mask;
-
-    float off = float((uint(pos2d.x) | uint(pos2d.y)) & 3);
-    alpha = saturate(alpha - off * ((0.1111 / 8.0) / 3.0));
-    if (alpha < 0.4444)
-    {
-        if (alpha < 0.2222)
-        {
-            if (alpha < 0.1111)
-                mask = 0;
-            else // only one bit set 0.2222
-                mask = 1;
-        }
-        else
-        {
-            if (alpha < 0.3333) // 2 bits set0=> 10000001 + 11000000 .. 00000011 : 8 // 0.2222
-                                //        set1=> 10100000 .. 00000101 + 10000010 + 01000001 : 8
-                                //		set2=> 10010000 .. 00001001 + 10000100 + 01000010 + 00100001 : 8
-                                //		set3=> 10001000 .. 00010001 + 10001000 + 01000100 + 00100010 + 00010001 : 8
-            {
-                mask = 3;
-            }
-            else // 3 bits set0 => 11100000 .. 00000111 + 10000011 + 11000001 : 8 ? 0.4444 // 0.3333
-                 //        set1 => 10110000 .. 00001011 + 10000101 + 11000010 + 01100001: 8
-                 //        set2 => 11010000 .. 00001101 + 10000110 + 01000011 + 10100001: 8
-                 //        set3 => 10011000 .. 00010011 + 10001001 + 11000100 + 01100010 + 00110001 : 8
-                 //        set4 => 11001000 .. 00011001 + 10001100 + 01000110 + 00100011 + 10010001 : 8
-            {
-                mask = 0x7;
-            }
-        }
-    }
-    else
-    {
-        if (alpha < 0.6666)
-        {
-            if (alpha < 0.5555) // 4 bits set0 => 11110000 .. 00001111 + 10000111 + 11000011 + 11100001 : 8 // 0.5555
-                                //        set1 => 11011000 .. 00011011 + 10001101 + 11000110 + 01100011 + 10110001 : 8
-                                //        set2 => 11001100 .. 00110011 + 10011001 : 4 make 8
-                                //        set3 => 11000110 + 01100011 + 10110001 + 11011000 + 01101100 + 00110110 + 00011011 + 10001101 : 8
-                                //        set4 => 10111000 .. 00010111 + 10001011 + 11000101 + 11100010 + 01110001 : 8
-                                //        set5 => 10011100 .. 00100111 + 10010011 + 11001001 + 11100100 + 01110010 + 00111001 : 8
-                                //        set6 => 10101010 .. 01010101 : 2 make 8
-                                //        set7 => 10110100 +  01011010 + 00101101 + 10010110 + 01001011 + 10100101 + 11010010 + 01101001 : 8
-                                //        set8 => 10011010 +  01001101 + 10100110 + 01010011 + 10101001 + 11010100 + 01101010 + 00110101 : 8
-            {
-                mask = 0xf;
-            }
-            else // 5 bits set0 => 11111000 01111100 00111110 00011111 10001111 11000111 11100011 11110001 : 8  // 0.6666
-                 //        set1 => 10111100 : 8
-                 //        set2 => 10011110 : 8
-                 //        set3 => 11011100 : 8
-                 //        set4 => 11001110 : 8
-                 //        set5 => 11011010 : 8
-                 //        set6 => 10110110 : 8
-            {
-                mask = 0x1F;
-            }
-        }
-        else
-        {
-            if (alpha < 0.7777) // 6 bits set0 => 11111100 01111110 00111111 10011111 11001111 11100111 11110011 11111001 : 8
-                                //        set1 => 10111110 : 8
-                                //        set2 => 11011110 : 8
-            {
-                mask = 0x3F;
-            }
-            else if (alpha < 0.8888) // 7 bits set0 => 11111110 :8
-            {
-                mask = 0x7F;
-            }
-            else // all 8 bits set
-                mask = 0xFF;
-        }
-    }
-
-    return mask;
-}
-#endif
-#endif
-
-//////////////////////////////////////////[SWM]///////////////////////////////////////////
-uniform float4 m_blender_mode; // x = [0 - default, 1 - night vision, 2 - thermal vision]; y = [0.0f / 1.0f - происходит ли в данный момент рендеринг картинки для прицела]; z =
-                               // [0.0f / 1.0f - выключен или включён двойной рендер]; w - зарезервировано на будущее.
-
-// Активен-ли двойной рендер?
-inline bool isSecondVPActive() { return (m_blender_mode.z == 1.f); }
-
-// Рендерится ли в данный момент кадр для прицела?
-inline bool IsSVPFrame() { return (m_blender_mode.y == 1.f); }
-//////////////////////////////////////////////////////////////////////////////////////////
 
 //#define SKY_WITH_DEPTH // sky renders with
 // depth to avoid some problems with reflections
@@ -547,4 +341,12 @@ float3 compute_colored_ao(float ao, float3 albedo)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 
-#endif //	common_functions_h_included
+float2 aspect_ratio_correction(float2 tc)
+{
+    tc.x -= 0.5f;
+    tc.x *= (screen_res.x / screen_res.y);
+    tc.x += 0.5f;
+    return tc;
+}
+
+#endif // common_functions_h_included

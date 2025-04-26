@@ -1,8 +1,5 @@
-#ifndef DTROCOLLIDERH
-#define DTROCOLLIDERH
+#pragma once
 
 #include "dTriBox.h"
 #include "dTriSphere.h"
 #include "dTriCylinder.h"
-
-#endif

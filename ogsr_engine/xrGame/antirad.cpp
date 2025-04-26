@@ -26,4 +26,4 @@ void CAntirad::OnH_A_Chield() { inherited::OnH_A_Chield(); }
 
 void CAntirad::OnH_B_Independent(bool just_before_destroy) { inherited::OnH_B_Independent(just_before_destroy); }
 
-void CAntirad::renderable_Render() { inherited::renderable_Render(); }
+void CAntirad::renderable_Render(u32 context_id, IRenderable* root) { inherited::renderable_Render(context_id, root); }

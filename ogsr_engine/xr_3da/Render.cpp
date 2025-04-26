@@ -10,4 +10,6 @@ IRender_Light::~IRender_Light() { ::Render->light_destroy(this); }
 IRender_Glow::~IRender_Glow() { ::Render->glow_destroy(this); }
 
 ENGINE_API ShExports shader_exports{};
+
 ENGINE_API GRASS_SHADER_DATA grass_shader_data{};
+ENGINE_API GRASS_SHADER_DATA_OLD grass_shader_data_old{};

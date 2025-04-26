@@ -6,8 +6,7 @@
 // Description : os clipboard class
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef OS_CLIPBOARD_H_INCLUDED
-#define OS_CLIPBOARD_H_INCLUDED
+#pragma once
 
 namespace os_clipboard
 {
@@ -15,4 +14,4 @@ namespace os_clipboard
 	XRCORE_API void paste_from_clipboard(LPSTR buf, u32 const& buf_size);
 } // namespace os_clipboard
 
-#endif // OS_CLIPBOARD_H_INCLUDED
+

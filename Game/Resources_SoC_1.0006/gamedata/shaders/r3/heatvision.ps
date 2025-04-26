@@ -1,0 +1,55 @@
+#include "common.h"
+#include "infrared.h"
+#include "ogsr_gasmask_common.h"
+
+float4 main(p_screen I) : SV_Target
+{
+    I.tc0 = applyInertiaDev(I.tc0);
+
+    float2 corrected_texturecoords = aspect_ratio_correction(I.tc0);
+
+    float3 image = s_image.Sample(smp_rtlinear, I.tc0).xyz;
+    float3 half_res_blur = s_blur_2.Sample(smp_rtlinear, I.tc0).rgb;
+
+    float lua_param_nvg_num_tubes = pnv_param_4.x; // 1, 2, 4, 1.1, or 1.2
+    float lua_param_nvg_gain_current = pnv_param_2.y;
+    float lua_param_vignette_current = pnv_param_2.z;
+
+    if (compute_lens_mask(corrected_texturecoords, lua_param_nvg_num_tubes) == 1.f) // see if we're inside the lens mask
+    {
+        float4 jitter = float4(frac(sin(dot(I.tc0, float2(12.0, 78.0) + (timers.x))) * 12345.0),
+                               frac(sin(dot(I.tc0 - fmod(I.tc0, float2(3.0, 3.0) / screen_res.xy), float2(12.0, 78.0) + (timers.x))) * 22738.0),
+                               frac(sin(dot(I.tc0 - fmod(I.tc0, float2(3.0, 3.0) / screen_res.xy), float2(12.0, 78.0) + (timers.x))) * 78372.0),
+                               frac(sin(dot(I.tc0, float2(12.0, 78.0) + (timers.x))) * 37857.0));
+
+        gbuffer_data gbd = gbuffer_load_data(I.tc0, I.hpos, 0);
+        image.rgb = infrared(gbd, image, gbd.P.z, I.hpos, I.tc0);
+
+        // APPLY CRT EFFECT
+        // image = lerp(image,make_crt_ified(half_res_blur, I.tc0),pnv_param_3.y); // Adds a CRT effect that I think looks better than draw_scanlines
+
+        // APPLY NOISE
+        image.r += jitter.y * (pnv_param_3.x * (pow(lua_param_nvg_gain_current, 0.5))); // Add the noise to the image
+
+        // APPLY SCINTILLATION EFFECT
+        // if (jitter.z > (pnv_param_3.z - ( (1.0-pnv_param_3.z) * (lua_param_nvg_gain_current - 1.0f) ) ) )
+        //{ image.r = 1.0f; }
+
+        // APPLY VIGNETTE
+        float vignette = calc_vignette(lua_param_nvg_num_tubes, I.tc0, lua_param_vignette_current);
+        image = clamp(image, 0.0, 1.0);
+        image *= vignette;
+
+        // RETURN THE RESULTING IMAGE
+        return float4(image, 1.0);
+    }
+    ///////////////////////////////////////////////////////
+    // OUTSIDE NVG CIRCLES OF EFFECT - If the absolute distance from screen center is farther than circle_radius, then we'll run the other shader effects below
+    ///////////////////////////////////////////////////////
+    else
+    {
+        image = float3(0.0, 0.0, 0.0);
+        // RETURN THE RESULTING IMAGE
+        return float4(image, 1.0);
+    }
+}

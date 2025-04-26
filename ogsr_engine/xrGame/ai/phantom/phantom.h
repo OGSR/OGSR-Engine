@@ -90,4 +90,6 @@ public:
     virtual BOOL UsedAI_Locations() { return false; }
 
     virtual CEntity* cast_entity() { return this; }
+
+    virtual float GetHotness() override { return 0.f; }
 };

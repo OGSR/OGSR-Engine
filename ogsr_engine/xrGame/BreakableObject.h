@@ -2,9 +2,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#ifndef BreakableObjectH
-#define BreakableObjectH
-
 #pragma once
 
 #include "physicsshellholder.h"
@@ -42,8 +39,6 @@ public:
     virtual void net_Destroy();
     virtual void shedule_Update(u32 dt); // Called by sheduler
     virtual void UpdateCL();
-    virtual BOOL renderable_ShadowGenerate() { return FALSE; }
-    virtual BOOL renderable_ShadowReceive() { return TRUE; }
 
     virtual void Hit(SHit* pHDS);
 
@@ -65,5 +60,3 @@ private:
     void enable_notificate();
     static void ObjectContactCallback(bool& /**do_colide/**/, bool bo1, dContact& c, SGameMtl* /*material_1*/, SGameMtl* /*material_2*/);
 };
-
-#endif // BreakableObjectH

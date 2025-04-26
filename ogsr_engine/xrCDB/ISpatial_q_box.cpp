@@ -54,7 +54,7 @@ public:
         float c_R = n_R / 2;
         for (u32 octant = 0; octant < 8; octant++)
         {
-            if (0 == N->children[octant])
+            if (nullptr == N->children[octant])
                 continue;
             Fvector c_C;
             c_C.mad(n_C, c_spatial_offset[octant], c_R);
@@ -67,6 +67,8 @@ public:
 
 void ISpatial_DB::q_box(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvector& _center, const Fvector& _size)
 {
+    ZoneScoped;
+
     cs.Enter();
     q_result = &R;
     q_result->clear();
@@ -83,8 +85,10 @@ void ISpatial_DB::q_box(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvecto
     cs.Leave();
 }
 
-void ISpatial_DB::q_sphere(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvector& _center, const float _radius)
+void ISpatial_DB::q_sphere(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvector& _center, float _radius)
 {
+    ZoneScoped;
+
     Fvector _size = {_radius, _radius, _radius};
     q_box(R, _o, _mask, _center, _size);
 }

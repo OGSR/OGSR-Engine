@@ -40,33 +40,9 @@ float3 GetWaterNMap(Texture3D s_texture, float2 tc, float time)
 #define ISAMPLE 0
 #endif
 
-#ifdef GBUFFER_OPTIMIZATION
-#ifdef MSAA_OPTIMIZATION
-float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR, float4 pos2d : SV_Position, uint iSample : SV_SAMPLEINDEX) : SV_Target
-#else
 float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, float4 Color : COLOR, float4 pos2d : SV_Position) : SV_Target
-#endif
-#else
-#ifdef MSAA_OPTIMIZATION
-float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, uint iSample : SV_SAMPLEINDEX) : SV_Target
-#else
-float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1) : SV_Target
-#endif
-#endif
 {
-#ifdef GBUFFER_OPTIMIZATION
-#ifdef MSAA_OPTIMIZATION
-    gbuffer_data gbd = gbuffer_load_data(tc, pos2d, iSample);
-#else
     gbuffer_data gbd = gbuffer_load_data(tc, pos2d, ISAMPLE);
-#endif
-#else
-#ifdef MSAA_OPTIMIZATION
-    gbuffer_data gbd = gbuffer_load_data(tc, iSample);
-#else
-    gbuffer_data gbd = gbuffer_load_data(tc, ISAMPLE);
-#endif
-#endif
     float4 _P = float4(gbd.P, 1.0);
     float3 _N = gbd.N;
     float3 D = gbd.C; // rgb	//.gloss

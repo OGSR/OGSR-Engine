@@ -21,14 +21,11 @@ XRCORE_API Fmatrix Fidentity;
 
 namespace CPU
 {
-u64 qpc_freq;
-u32 qpc_counter = 0;
 _processor_info ID;
 u64 QPC()
 {
     u64 _dest;
     QueryPerformanceCounter(PLARGE_INTEGER(&_dest));
-    qpc_counter++;
     return _dest;
 }
 } // namespace CPU
@@ -87,10 +84,6 @@ void _initialize_cpu()
         const PROCESSOR_POWER_INFORMATION& cpuInfo = cpusInfo[i];
         Msg("* CPU%zu current freq: %lu MHz, max freq: %lu MHz", i, cpuInfo.CurrentMhz, cpuInfo.MaxMhz);
     }
-
-    LARGE_INTEGER Freq;
-    QueryPerformanceFrequency(&Freq);
-    CPU::qpc_freq = Freq.QuadPart;
 
     Fidentity.identity(); // Identity matrix
     pvInitializeStatics(); // Lookup table for compressed normals

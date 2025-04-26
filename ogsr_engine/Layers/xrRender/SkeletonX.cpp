@@ -10,11 +10,6 @@
 #include "../../xr_3da/fmesh.h"
 #include "../../xr_3da/xrSkinXW.hpp"
 
-//Для экспериментов
-//#define QUATERNION_SKINNING
-
-constexpr const char* s_bones_array_const = "sbones_array";
-
 //////////////////////////////////////////////////////////////////////
 // Body Part
 //////////////////////////////////////////////////////////////////////
@@ -25,7 +20,7 @@ void CSkeletonX::AfterLoad(CKinematics* parent, u16 child_idx)
 }
 void CSkeletonX::_Copy(CSkeletonX* B)
 {
-    Parent = NULL;
+    Parent = nullptr;
     ChildIDX = B->ChildIDX;
     Vertices1W = B->Vertices1W;
     Vertices2W = B->Vertices2W;
@@ -43,23 +38,49 @@ void CSkeletonX::_Copy(CSkeletonX* B)
 
     m_Indices = B->m_Indices;
 }
-//////////////////////////////////////////////////////////////////////
-void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
+
+bool fill_array(Fvector4* bones_array, CKinematics* parent, bool need_old, u32 size)
 {
-    RCache.stat.r.s_dynamic.add(vCount);
+    if (!bones_array)
+        return false;
+
+    for (u32 mid = 0; mid < size; mid++)
+    {
+        const Fmatrix& M = (need_old) ? parent->LL_GetTransform_R_old(u16(mid)) : parent->LL_GetTransform_R(u16(mid));
+
+        bones_array->set(M._11, M._21, M._31, M._41);
+        bones_array++;
+        bones_array->set(M._12, M._22, M._32, M._42);
+        bones_array++;
+        bones_array->set(M._13, M._23, M._33, M._43);
+        bones_array++;
+    }
+    return true;
+}
+
+//////////////////////////////////////////////////////////////////////
+void CSkeletonX::_Render(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
+{
+    Parent->StoreVisualMatrix(cmd_list.xforms.m_w);
+    cmd_list.set_xform_world_old(Parent->mOldWorldMartrix);
+
+    cmd_list.stat.r.s_dynamic.add(vCount);
     switch (RenderMode)
     {
-    case RM_SKINNING_SOFT:
-        _Render_soft(hGeom, vCount, iOffset, pCount);
-        RCache.stat.r.s_dynamic_sw.add(vCount);
-        break;
+    case RM_SKINNING_SOFT: {
+        _Render_soft(cmd_list, hGeom, vCount, iOffset, pCount);
+        cmd_list.stat.r.s_dynamic_sw.add(vCount);
+    }break;
     case RM_SINGLE: {
         Fmatrix W;
-        W.mul_43(RCache.xforms.m_w, Parent->LL_GetTransform_R(u16(RMS_boneid)));
-        RCache.set_xform_world(W);
-        RCache.set_Geometry(hGeom);
-        RCache.Render(D3DPT_TRIANGLELIST, 0, 0, vCount, iOffset, pCount);
-        RCache.stat.r.s_dynamic_inst.add(vCount);
+        W.mul_43(cmd_list.xforms.m_w, Parent->LL_GetTransform_R(u16(RMS_boneid)));
+        Fmatrix O;
+        O.mul_43(cmd_list.xforms.m_w_old, Parent->LL_GetTransform_R_old(u16(RMS_boneid)));
+        cmd_list.set_xform_world(W);
+        cmd_list.set_xform_world_old(O);
+        cmd_list.set_Geometry(hGeom);
+        cmd_list.Render(D3DPT_TRIANGLELIST, 0, 0, vCount, iOffset, pCount);
+        cmd_list.stat.r.s_dynamic_inst.add(vCount);
     }
     break;
     case RM_SKINNING_1B:
@@ -67,64 +88,50 @@ void CSkeletonX::_Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
     case RM_SKINNING_3B:
     case RM_SKINNING_4B: {
         // transfer matrices
-#ifdef QUATERNION_SKINNING
-        const u32 c_bones_array_size = RMS_bonecount * sizeof(Fvector4) * 2;
-#else
         const u32 c_bones_array_size = RMS_bonecount * sizeof(Fvector4) * 3;
-#endif
+        const u32 c_bones_array_size_old = c_bones_array_size;
+
+        static const shared_str s_bones_array_const{"sbones_array"}, s_bones_array_const_old{"sbones_array_old"};
+
         Fvector4* c_bones_array{};
-        RCache.get_ConstantDirect(s_bones_array_const, c_bones_array_size, reinterpret_cast<void**>(&c_bones_array), nullptr, nullptr);
-        if (c_bones_array)
+        Fvector4* c_bones_array_old{};
+        cmd_list.get_ConstantDirect(s_bones_array_const, c_bones_array_size, reinterpret_cast<void**>(&c_bones_array), nullptr, nullptr);
+        cmd_list.get_ConstantDirect(s_bones_array_const_old, c_bones_array_size_old, reinterpret_cast<void**>(&c_bones_array_old), nullptr, nullptr);
+
+        if (!fill_array(c_bones_array, Parent, false, RMS_bonecount) || !fill_array(c_bones_array_old, Parent, true, RMS_bonecount))
         {
-            for (u32 mid = 0; mid < RMS_bonecount; mid++)
-            {
-                const Fmatrix& M = Parent->LL_GetTransform_R(u16(mid));
-#ifdef QUATERNION_SKINNING
-                using namespace DirectX;
-                XMVECTOR scale;
-                XMMatrixDecompose(&scale, reinterpret_cast<XMVECTOR*>(c_bones_array), reinterpret_cast<XMVECTOR*>(c_bones_array + 1), *reinterpret_cast<FXMMATRIX*>(&M));
-                c_bones_array += 2;
-#else
-                c_bones_array->set(M._11, M._21, M._31, M._41);
-                c_bones_array++;
-                c_bones_array->set(M._12, M._22, M._32, M._42);
-                c_bones_array++;
-                c_bones_array->set(M._13, M._23, M._33, M._43);
-                c_bones_array++;
-#endif
-            }
-        }
-        else
-        {
-            static bool logged{}; //чтоб не спамить в лог по сто раз за кадр.
+            static bool logged{}; // чтоб не спамить в лог по сто раз за кадр.
             if (!logged)
             {
                 logged = true;
-                Msg("!![%s] Can't get/create sbones_array for model [%s] vith [%u] bones. Most likely, an incorrect shader is assigned there.", __FUNCTION__,
+                Msg("!![%s] Can't get/create some bone array for model [%s] with [%u] bones. Most likely, an incorrect shader is assigned there.", __FUNCTION__,
                     this->Parent->dbg_name.c_str(), RMS_bonecount);
             }
         }
 
         // render
-        RCache.set_Geometry(hGeom);
-        RCache.Render(D3DPT_TRIANGLELIST, 0, 0, vCount, iOffset, pCount);
+        cmd_list.set_Geometry(hGeom);
+        cmd_list.Render(D3DPT_TRIANGLELIST, 0, 0, vCount, iOffset, pCount);
         if (RM_SKINNING_1B == RenderMode)
-            RCache.stat.r.s_dynamic_1B.add(vCount);
+            cmd_list.stat.r.s_dynamic_1B.add(vCount);
         else if (RM_SKINNING_2B == RenderMode)
-            RCache.stat.r.s_dynamic_2B.add(vCount);
+            cmd_list.stat.r.s_dynamic_2B.add(vCount);
         else if (RM_SKINNING_3B == RenderMode)
-            RCache.stat.r.s_dynamic_3B.add(vCount);
+            cmd_list.stat.r.s_dynamic_3B.add(vCount);
         else if (RM_SKINNING_4B == RenderMode)
-            RCache.stat.r.s_dynamic_4B.add(vCount);
+            cmd_list.stat.r.s_dynamic_4B.add(vCount);
     }
     break;
     }
+
+    cmd_list.set_xform_world_old(Fidentity);
 }
-void CSkeletonX::_Render_soft(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
+
+void CSkeletonX::_Render_soft(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount)
 {
     u32 vOffset = cache_vOffset;
 
-    _VertexStream& _VS = RCache.Vertex;
+    _VertexStream& _VS = RImplementation.Vertex;
     if (cache_DiscardID != _VS.DiscardID() || vCount >= cache_vCount)
     {
         vertRender* Dest = (vertRender*)_VS.Lock(vCount, hGeom->vb_stride, vOffset);
@@ -132,7 +139,7 @@ void CSkeletonX::_Render_soft(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCou
         cache_vCount = vCount;
         cache_vOffset = vOffset;
 
-        RDEVICE.Statistic->RenderDUMP_SKIN.Begin();
+        Device.Statistic->RenderDUMP_SKIN.Begin();
         if (*Vertices1W)
         {
             Skin1W(Dest, // dest
@@ -166,14 +173,14 @@ void CSkeletonX::_Render_soft(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCou
             );
         }
         else
-            R_ASSERT2(0, "unsupported soft rendering");
+            R_ASSERT(0, "unsupported soft rendering");
 
-        RDEVICE.Statistic->RenderDUMP_SKIN.End();
+        Device.Statistic->RenderDUMP_SKIN.End();
         _VS.Unlock(vCount, hGeom->vb_stride);
     }
 
-    RCache.set_Geometry(hGeom);
-    RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, iOffset, pCount);
+    cmd_list.set_Geometry(hGeom);
+    cmd_list.Render(D3DPT_TRIANGLELIST, vOffset, 0, vCount, iOffset, pCount);
 }
 
 void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
@@ -183,9 +190,7 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
     // Load vertices
     R_ASSERT(data->find_chunk(OGF_VERTICES));
 
-    // u16			hw_bones_cnt		= u16((HW.Caps.geometry.dwRegisters-22)/3);
-    //	Igor: some shaders in r1 need more free constant registers
-    u16 hw_bones_cnt = HW.Caps.geometry.dwRegisters;
+    constexpr u16 hw_bones_cnt = 254;
 
     u16 sw_bones_cnt = 0;
 
@@ -201,7 +206,7 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
     case OGF_VERTEXFORMAT_FVF_1L: // 1-Link
     case 1: {
         //size = dwVertCount * sizeof(vertBoned1W);
-        vertBoned1W* pVO = (vertBoned1W*)data->pointer();
+        const vertBoned1W* pVO = (vertBoned1W*)data->pointer();
 
         for (it = 0; it < dwVertCount; ++it)
         {
@@ -239,7 +244,7 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
     case OGF_VERTEXFORMAT_FVF_2L: // 2-Link
     case 2: {
         //size = dwVertCount * sizeof(vertBoned2W);
-        vertBoned2W* pVO = (vertBoned2W*)data->pointer();
+        const vertBoned2W* pVO = (vertBoned2W*)data->pointer();
 
         for (it = 0; it < dwVertCount; ++it)
         {
@@ -273,17 +278,17 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
     case OGF_VERTEXFORMAT_FVF_3L: // 3-Link
     case 3: {
         //size = dwVertCount * sizeof(vertBoned3W);
-        vertBoned3W* pVO = (vertBoned3W*)data->pointer();
+        const vertBoned3W* pVO = (vertBoned3W*)data->pointer();
 
         for (it = 0; it < dwVertCount; ++it)
         {
             const vertBoned3W& VB = pVO[it];
-            for (int i = 0; i < 3; ++i)
+            for (unsigned short i : VB.m)
             {
-                sw_bones_cnt = _max(sw_bones_cnt, VB.m[i]);
+                sw_bones_cnt = _max(sw_bones_cnt, i);
 
-                if (bids.end() == std::find(bids.begin(), bids.end(), VB.m[i]))
-                    bids.push_back(VB.m[i]);
+                if (bids.end() == std::find(bids.begin(), bids.end(), i))
+                    bids.push_back(i);
             }
         }
         //.			R_ASSERT(sw_bones_cnt<=hw_bones_cnt);
@@ -304,18 +309,18 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
     case OGF_VERTEXFORMAT_FVF_4L: // 4-Link
     case 4: {
         //size = dwVertCount * sizeof(vertBoned4W);
-        vertBoned4W* pVO = (vertBoned4W*)data->pointer();
+        const vertBoned4W* pVO = (vertBoned4W*)data->pointer();
 
         for (it = 0; it < dwVertCount; ++it)
         {
             const vertBoned4W& VB = pVO[it];
 
-            for (int i = 0; i < 4; ++i)
+            for (unsigned short i : VB.m)
             {
-                sw_bones_cnt = _max(sw_bones_cnt, VB.m[i]);
+                sw_bones_cnt = _max(sw_bones_cnt, i);
 
-                if (bids.end() == std::find(bids.begin(), bids.end(), VB.m[i]))
-                    bids.push_back(VB.m[i]);
+                if (bids.end() == std::find(bids.begin(), bids.end(), i))
+                    bids.push_back(i);
             }
         }
         //.			R_ASSERT(sw_bones_cnt<=hw_bones_cnt);
@@ -333,7 +338,7 @@ void CSkeletonX::_Load(const char* N, IReader* data, u32& dwVertCount)
         }
     }
     break;
-    default: Debug.fatal(DEBUG_INFO, "Invalid vertex type in skinned model '%s'", N); break;
+    default: FATAL("Invalid vertex type in skinned model '%s'", N); break;
     }
     if (bids.size() > 1)
     {
@@ -367,8 +372,8 @@ void get_pos_bones(const vertBoned2W& vert, Fvector& p, CKinematics* Parent)
 {
     Fvector P0, P1;
 
-    Fmatrix& xform0 = Parent->LL_GetBoneInstance(vert.matrix0).mRenderTransform;
-    Fmatrix& xform1 = Parent->LL_GetBoneInstance(vert.matrix1).mRenderTransform;
+    const Fmatrix& xform0 = Parent->LL_GetBoneInstance(vert.matrix0).mRenderTransform;
+    const Fmatrix& xform1 = Parent->LL_GetBoneInstance(vert.matrix1).mRenderTransform;
     xform0.transform_tiny(P0, vert.P);
     xform1.transform_tiny(P1, vert.P);
     p.lerp(P0, P1, vert.w);
@@ -376,9 +381,9 @@ void get_pos_bones(const vertBoned2W& vert, Fvector& p, CKinematics* Parent)
 
 void get_pos_bones(const vertBoned3W& vert, Fvector& p, CKinematics* Parent)
 {
-    Fmatrix& M0 = Parent->LL_GetBoneInstance(vert.m[0]).mRenderTransform;
-    Fmatrix& M1 = Parent->LL_GetBoneInstance(vert.m[1]).mRenderTransform;
-    Fmatrix& M2 = Parent->LL_GetBoneInstance(vert.m[2]).mRenderTransform;
+    const Fmatrix& M0 = Parent->LL_GetBoneInstance(vert.m[0]).mRenderTransform;
+    const Fmatrix& M1 = Parent->LL_GetBoneInstance(vert.m[1]).mRenderTransform;
+    const Fmatrix& M2 = Parent->LL_GetBoneInstance(vert.m[2]).mRenderTransform;
 
     Fvector P0, P1, P2;
     M0.transform_tiny(P0, vert.P);
@@ -394,10 +399,10 @@ void get_pos_bones(const vertBoned3W& vert, Fvector& p, CKinematics* Parent)
 }
 void get_pos_bones(const vertBoned4W& vert, Fvector& p, CKinematics* Parent)
 {
-    Fmatrix& M0 = Parent->LL_GetBoneInstance(vert.m[0]).mRenderTransform;
-    Fmatrix& M1 = Parent->LL_GetBoneInstance(vert.m[1]).mRenderTransform;
-    Fmatrix& M2 = Parent->LL_GetBoneInstance(vert.m[2]).mRenderTransform;
-    Fmatrix& M3 = Parent->LL_GetBoneInstance(vert.m[3]).mRenderTransform;
+    const Fmatrix& M0 = Parent->LL_GetBoneInstance(vert.m[0]).mRenderTransform;
+    const Fmatrix& M1 = Parent->LL_GetBoneInstance(vert.m[1]).mRenderTransform;
+    const Fmatrix& M2 = Parent->LL_GetBoneInstance(vert.m[2]).mRenderTransform;
+    const Fmatrix& M3 = Parent->LL_GetBoneInstance(vert.m[3]).mRenderTransform;
 
     Fvector P0, P1, P2, P3;
     M0.transform_tiny(P0, vert.P);
@@ -419,7 +424,7 @@ void get_pos_bones(const vertBoned4W& vert, Fvector& p, CKinematics* Parent)
 // Wallmarks
 //-----------------------------------------------------------------------------------------------------
 #include "cl_intersect.h"
-BOOL CSkeletonX::_PickBoneSoft1W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
+BOOL CSkeletonX::_PickBoneSoft1W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces) const
 {
     return pick_bone<vertBoned1W>(Vertices1W, Parent, r, dist, S, D, indices, faces);
 }
@@ -443,10 +448,10 @@ BOOL CSkeletonX::_PickBoneSoft4W(IKinematics::pick_result& r, float dist, const 
 void CSkeletonX::_FillVerticesSoft1W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16* indices, CBoneData::FacesVec& faces)
 {
     VERIFY(*Vertices1W);
-    for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); it++)
+    for (const unsigned short& face : faces)
     {
         Fvector p[3];
-        u32 idx = (*it) * 3;
+        const u32 idx = face * 3;
         CSkeletonWallmark::WMFace F;
         for (u32 k = 0; k < 3; k++)
         {
@@ -464,7 +469,7 @@ void CSkeletonX::_FillVerticesSoft1W(const Fmatrix& view, CSkeletonWallmark& wm,
         }
         Fvector test_normal;
         test_normal.mknormal(p[0], p[1], p[2]);
-        float cosa = test_normal.dotproduct(normal);
+        const float cosa = test_normal.dotproduct(normal);
         if (cosa < EPS)
             continue;
         if (CDB::TestSphereTri(wm.ContactPoint(), size, p))
@@ -485,10 +490,10 @@ void CSkeletonX::_FillVerticesSoft1W(const Fmatrix& view, CSkeletonWallmark& wm,
 void CSkeletonX::_FillVerticesSoft2W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16* indices, CBoneData::FacesVec& faces)
 {
     VERIFY(*Vertices2W);
-    for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); it++)
+    for (const unsigned short& face : faces)
     {
         Fvector p[3];
-        u32 idx = (*it) * 3;
+        const u32 idx = face * 3;
         CSkeletonWallmark::WMFace F;
         for (u32 k = 0; k < 3; k++)
         {
@@ -510,7 +515,7 @@ void CSkeletonX::_FillVerticesSoft2W(const Fmatrix& view, CSkeletonWallmark& wm,
         }
         Fvector test_normal;
         test_normal.mknormal(p[0], p[1], p[2]);
-        float cosa = test_normal.dotproduct(normal);
+        const float cosa = test_normal.dotproduct(normal);
         if (cosa < EPS)
             continue;
         if (CDB::TestSphereTri(wm.ContactPoint(), size, p))
@@ -531,10 +536,10 @@ void CSkeletonX::_FillVerticesSoft2W(const Fmatrix& view, CSkeletonWallmark& wm,
 void CSkeletonX::_FillVerticesSoft3W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16* indices, CBoneData::FacesVec& faces)
 {
     VERIFY(*Vertices3W);
-    for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); ++it)
+    for (const unsigned short& face : faces)
     {
         Fvector p[3];
-        u32 idx = (*it) * 3;
+        const u32 idx = face * 3;
         CSkeletonWallmark::WMFace F;
 
         for (u32 k = 0; k < 3; k++)
@@ -552,7 +557,7 @@ void CSkeletonX::_FillVerticesSoft3W(const Fmatrix& view, CSkeletonWallmark& wm,
         }
         Fvector test_normal;
         test_normal.mknormal(p[0], p[1], p[2]);
-        float cosa = test_normal.dotproduct(normal);
+        const float cosa = test_normal.dotproduct(normal);
         if (cosa < EPS)
             continue;
 
@@ -574,10 +579,10 @@ void CSkeletonX::_FillVerticesSoft3W(const Fmatrix& view, CSkeletonWallmark& wm,
 void CSkeletonX::_FillVerticesSoft4W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16* indices, CBoneData::FacesVec& faces)
 {
     VERIFY(*Vertices4W);
-    for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); ++it)
+    for (const unsigned short& face : faces)
     {
         Fvector p[3];
-        u32 idx = (*it) * 3;
+        const u32 idx = face * 3;
         CSkeletonWallmark::WMFace F;
 
         for (u32 k = 0; k < 3; k++)
@@ -595,7 +600,7 @@ void CSkeletonX::_FillVerticesSoft4W(const Fmatrix& view, CSkeletonWallmark& wm,
         }
         Fvector test_normal;
         test_normal.mknormal(p[0], p[1], p[2]);
-        float cosa = test_normal.dotproduct(normal);
+        const float cosa = test_normal.dotproduct(normal);
         if (cosa < EPS)
             continue;
 
@@ -621,7 +626,7 @@ void CSkeletonX::_DuplicateIndices(const char* N, IReader* data)
     //	Index buffer replica since we can't read from index buffer in DX10
     // ref_smem<u16>			Indices;
     R_ASSERT(data->find_chunk(OGF_INDICES));
-    u32 iCount = data->r_u32();
+    const u32 iCount = data->r_u32();
 
     //u32 size = iCount * 2;
     //u32 crc = crc32(data->pointer(), size);

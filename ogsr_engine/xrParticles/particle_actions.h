@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef particle_actionsH
-#define particle_actionsH
+#pragma once
 
 namespace PAPI
 {
@@ -38,7 +37,7 @@ public:
 
     IC void clear()
     {
-        for (PAVecIt it = m_actions.begin(); it != m_actions.end(); it++)
+        for (PAVecIt it = m_actions.begin(); it != m_actions.end(); ++it)
             xr_delete(*it);
         m_actions.clear();
     }
@@ -50,5 +49,3 @@ public:
     void copy(ParticleActions* src);
 };
 }; // namespace PAPI
-//---------------------------------------------------------------------------
-#endif

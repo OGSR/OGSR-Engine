@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "dxRenderDeviceRender.h"
 #include "ResourceManager.h"
 
@@ -9,28 +10,58 @@
 RENDERDOC_API_1_0_0* g_renderdoc_api{};
 #endif
 
-dxRenderDeviceRender::dxRenderDeviceRender() : Resources(0) { ; }
+dxRenderDeviceRender::dxRenderDeviceRender() : Resources(nullptr) { ; }
 
 void dxRenderDeviceRender::Copy(IRenderDeviceRender& _in) { *this = *(dxRenderDeviceRender*)&_in; }
 
-void dxRenderDeviceRender::setGamma(float fGamma) { m_Gamma.Gamma(fGamma); }
+void dxRenderDeviceRender::OnDeviceCreate()
+{
+    // Signal everyone - device created
+    RImplementation.CreateQuadIB();
 
-void dxRenderDeviceRender::setBrightness(float fGamma) { m_Gamma.Brightness(fGamma); }
+    // streams
+    RImplementation.Vertex.Create();
+    RImplementation.Index.Create();
 
-void dxRenderDeviceRender::setContrast(float fGamma) { m_Gamma.Contrast(fGamma); }
+    RImplementation.OnDeviceCreate();
 
-void dxRenderDeviceRender::updateGamma() { m_Gamma.Update(); }
+    Resources->OnDeviceCreate();
+    RImplementation.create();
+    Device.Statistic->OnDeviceCreate();
+
+    {
+        m_WireShader.create("editor\\wire");
+        m_SelectionShader.create("editor\\selection");
+
+        m_PortalFadeShader.create("portal");
+        m_PortalFadeGeom.create(FVF::F_L, RImplementation.Vertex.Buffer(), nullptr);
+
+        DUImpl.OnDeviceCreate();
+    }
+}
 
 void dxRenderDeviceRender::OnDeviceDestroy(BOOL bKeepTextures)
 {
     m_WireShader.destroy();
     m_SelectionShader.destroy();
 
+    m_PortalFadeGeom.destroy();
+    m_PortalFadeShader.destroy();
+
     Resources->OnDeviceDestroy(bKeepTextures);
-    RCache.OnDeviceDestroy();
+
+    RImplementation.OnDeviceDestroy();
+
+    // streams
+    RImplementation.Index.Destroy();
+    RImplementation.Vertex.Destroy();
+
+    // Quad
+    HW.stats_manager.decrement_stats_ib(RImplementation.QuadIB);
+    _RELEASE(RImplementation.QuadIB);
 }
 
-void dxRenderDeviceRender::DestroyHW()
+void dxRenderDeviceRender::Destroy()
 {
     xr_delete(Resources);
     HW.DestroyDevice();
@@ -43,14 +74,14 @@ void dxRenderDeviceRender::Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, float& 
 #endif // DEBUG
 
     Resources->reset_begin();
-    Memory.mem_compact();
-    HW.Reset(hWnd);
+    HW.ResetDevice(hWnd);
 
     dwWidth = HW.m_ChainDesc.BufferDesc.Width;
     dwHeight = HW.m_ChainDesc.BufferDesc.Height;
 
     fWidth_2 = float(dwWidth / 2);
     fHeight_2 = float(dwHeight / 2);
+
     Resources->reset_end();
 
 #ifdef DEBUG
@@ -68,57 +99,47 @@ void dxRenderDeviceRender::SetupStates()
     SSManager.SetMipLODBias(ps_r__tf_Mipbias);
 }
 
-void dxRenderDeviceRender::OnDeviceCreate(LPCSTR shName)
-{
-    // Signal everyone - device created
-    RCache.OnDeviceCreate();
-    m_Gamma.Update();
-    Resources->OnDeviceCreate();
-    ::Render->create();
-    Device.Statistic->OnDeviceCreate();
-
-    {
-        m_WireShader.create("editor\\wire");
-        m_SelectionShader.create("editor\\selection");
-
-        DUImpl.OnDeviceCreate();
-    }
-}
-
 void dxRenderDeviceRender::Create(HWND hWnd, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2)
 {
+    if (strstr(Core.Params, "-shadersdbg"))
+    {
+        ps_r2_ls_flags_ext.set(R2FLAGEXT_SHADER_DBG, TRUE);
+    }
+
 #ifdef USE_RENDERDOC
     if (!g_renderdoc_api)
     {
-        static HMODULE hModule = GetModuleHandle("renderdoc.dll");
-        if (!hModule)
-            hModule = LoadLibrary("renderdoc.dll");
-
-        if (hModule)
         {
-            const auto RENDERDOC_GetAPI = reinterpret_cast<pRENDERDOC_GetAPI>(GetProcAddress(hModule, "RENDERDOC_GetAPI"));
-            const auto Result = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_0_0, reinterpret_cast<void**>(&g_renderdoc_api));
+            static HMODULE hModule = GetModuleHandle("renderdoc.dll");
+            if (!hModule)
+                hModule = LoadLibrary("renderdoc.dll");
 
-            if (Result == 1)
+            if (hModule)
             {
-                g_renderdoc_api->UnloadCrashHandler();
+                const auto RENDERDOC_GetAPI = reinterpret_cast<pRENDERDOC_GetAPI>(GetProcAddress(hModule, "RENDERDOC_GetAPI"));
+                const auto Result = RENDERDOC_GetAPI(eRENDERDOC_API_Version_1_0_0, reinterpret_cast<void**>(&g_renderdoc_api));
 
-                string_path FolderName{};
-                FS.update_path(FolderName, "$app_data_root$", "renderdoc_captures\\");
-                VerifyPath(FolderName);
-                g_renderdoc_api->SetCaptureFilePathTemplate(FolderName);
-                Msg("~~[%s] RenderDoc folder: [%s]", __FUNCTION__, FolderName);
+                if (Result == 1)
+                {
+                    g_renderdoc_api->UnloadCrashHandler();
 
-                RENDERDOC_InputButton CaptureButton[] = {eRENDERDOC_Key_Home};
-                g_renderdoc_api->SetCaptureKeys(CaptureButton, std::size(CaptureButton));
-                g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_AllowVSync, 0);
-                g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_DebugOutputMute, 0);
+                    string_path FolderName{};
+                    FS.update_path(FolderName, fsgame::app_data_root, "renderdoc_captures\\");
+                    VerifyPath(FolderName);
+                    g_renderdoc_api->SetCaptureFilePathTemplate(FolderName);
+                    Msg("~~[%s] RenderDoc folder: [%s]", __FUNCTION__, FolderName);
 
-                g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_RefAllResources, 1);
-                g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_CaptureCallstacks, 1);
-                g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_VerifyBufferAccess, 1);
-                g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_APIValidation, 1);
-                g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_CaptureAllCmdLists, 1);
+                    RENDERDOC_InputButton CaptureButton[] = {eRENDERDOC_Key_Home};
+                    g_renderdoc_api->SetCaptureKeys(CaptureButton, std::size(CaptureButton));
+                    g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_AllowVSync, 0);
+                    g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_DebugOutputMute, 0);
+
+                    g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_RefAllResources, 1);
+                    g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_CaptureCallstacks, 1);
+                    g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_VerifyBufferAccess, 1);
+                    g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_APIValidation, 1);
+                    g_renderdoc_api->SetCaptureOptionU32(eRENDERDOC_Option_CaptureAllCmdLists, 1);
+                }
             }
         }
     }
@@ -135,28 +156,15 @@ void dxRenderDeviceRender::Create(HWND hWnd, u32& dwWidth, u32& dwHeight, float&
     Resources = xr_new<CResourceManager>();
 }
 
-void dxRenderDeviceRender::SetupGPU(BOOL bForceGPU_SW, BOOL bForceGPU_NonPure, BOOL bForceGPU_REF)
-{
-    HW.Caps.bForceGPU_SW = bForceGPU_SW;
-    HW.Caps.bForceGPU_NonPure = bForceGPU_NonPure;
-    HW.Caps.bForceGPU_REF = bForceGPU_REF;
-}
-
-void dxRenderDeviceRender::overdrawBegin()
-{
-    //	TODO: DX10: Implement overdrawBegin
-    VERIFY(!"dxRenderDeviceRender::overdrawBegin not implemented.");
-}
-
-void dxRenderDeviceRender::overdrawEnd()
-{
-    //	TODO: DX10: Implement overdrawEnd
-    VERIFY(!"dxRenderDeviceRender::overdrawBegin not implemented.");
-}
-
 void dxRenderDeviceRender::DeferredLoad(BOOL E) { Resources->DeferredLoad(E); }
 
 void dxRenderDeviceRender::ResourcesDeferredUpload() { Resources->DeferredUpload(); }
+
+void dxRenderDeviceRender::ResourcesPrefetchCreateTexture(LPCSTR name)
+{
+    const auto t = Resources->_CreateTexture(name);
+    ++t->ref_count; // to avoid unload
+}
 
 void dxRenderDeviceRender::ResourcesGetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u32& c_lmaps)
 {
@@ -168,91 +176,15 @@ void dxRenderDeviceRender::ResourcesDumpMemoryUsage() { Resources->_DumpMemoryUs
 
 dxRenderDeviceRender::DeviceState dxRenderDeviceRender::GetDeviceState()
 {
-    if (HW.doPresentTest)
-    {
-        switch (HW.m_pSwapChain->Present(0, DXGI_PRESENT_TEST))
-        {
-        case S_OK: HW.doPresentTest = false; break;
+    //const auto result = HW.m_pSwapChain->Present(0, DXGI_PRESENT_TEST);
 
-        case DXGI_STATUS_OCCLUDED:
-            // Do not render until we become visible again
-            return DeviceState::dsLost;
+    //switch (result)
+    //{
+    //// Check if the device is ready to be reset
+    //case DXGI_ERROR_DEVICE_RESET: return dsNeedReset;
+    //}
 
-        case DXGI_ERROR_DEVICE_RESET: return DeviceState::dsNeedReset;
-
-        case DXGI_ERROR_DEVICE_REMOVED:
-            FATAL(
-                "Graphics driver was updated or GPU was physically removed from computer.\n"
-                "Please, restart the game.");
-            break;
-        }
-    }
-
-    return DeviceState::dsOK;
-}
-
-BOOL dxRenderDeviceRender::GetForceGPU_REF() { return HW.Caps.bForceGPU_REF; }
-
-u32 dxRenderDeviceRender::GetCacheStatPolys() { return RCache.stat.polys; }
-
-void dxRenderDeviceRender::Begin()
-{
-    RCache.OnFrameBegin();
-    RCache.set_CullMode(CULL_CW);
-    RCache.set_CullMode(CULL_CCW);
-    if (HW.Caps.SceneMode)
-        overdrawBegin();
-}
-
-void dxRenderDeviceRender::Clear()
-{
-    HW.pContext->ClearDepthStencilView(RCache.get_ZB(), D3D_CLEAR_DEPTH | D3D_CLEAR_STENCIL, 1.0f, 0);
-
-    if (psDeviceFlags.test(rsClearBB))
-    {
-        FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-        HW.pContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
-    }
-}
-
-void dxRenderDeviceRender::End()
-{
-    VERIFY(HW.pDevice);
-
-    if (HW.Caps.SceneMode)
-        overdrawEnd();
-
-    RCache.OnFrameEnd();
-
-    bool bUseVSync = psDeviceFlags.is(rsFullscreen) && psDeviceFlags.test(rsVSync); // xxx: weird tearing glitches when VSync turned on for windowed mode in DX10\11
-    if (!Device.m_SecondViewport.IsSVPFrame() && !Device.m_SecondViewport.m_bCamReady)
-    { //--#SM+#-- +SecondVP+ Не выводим кадр из второго вьюпорта на экран (на практике у нас экранная картинка обновляется минимум в два
-      // раза реже) [don't flush image into display for SecondVP-frame]
-        switch (HW.m_pSwapChain->Present(bUseVSync ? 1 : 0, 0))
-        {
-        case DXGI_STATUS_OCCLUDED:
-        case DXGI_ERROR_DEVICE_REMOVED: HW.doPresentTest = true; break;
-        }
-    }
-}
-
-void dxRenderDeviceRender::ClearTarget()
-{
-    FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-    HW.pContext->ClearRenderTargetView(RCache.get_RT(), ColorRGBA);
-}
-
-void dxRenderDeviceRender::SetCacheXform(Fmatrix& mView, Fmatrix& mProject)
-{
-    RCache.set_xform_view(mView);
-    RCache.set_xform_project(mProject);
-}
-
-bool dxRenderDeviceRender::HWSupportsShaderYUV2RGB()
-{
-    u32 v_dev = CAP_VERSION(HW.Caps.raster_major, HW.Caps.raster_minor);
-    u32 v_need = CAP_VERSION(2, 0);
-    return (v_dev >= v_need);
+    return dsOK;
 }
 
 void dxRenderDeviceRender::OnAssetsChanged()
@@ -261,4 +193,4 @@ void dxRenderDeviceRender::OnAssetsChanged()
     Resources->m_textures_description.Load();
 }
 
-IResourceManager* dxRenderDeviceRender::GetResourceManager() const { return dynamic_cast<IResourceManager*>(Resources); }
+IResourceManager* dxRenderDeviceRender::GetResourceManager() const { return Resources; }

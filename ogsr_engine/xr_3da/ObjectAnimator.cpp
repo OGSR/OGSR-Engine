@@ -12,7 +12,7 @@ bool motion_find_pred(COMotion* a, shared_str b) { return a->name < b; }
 CObjectAnimator::CObjectAnimator()
 {
     bLoop = false;
-    m_Current = 0;
+    m_Current = nullptr;
     m_Speed = 1.f;
     m_Name = "";
 }
@@ -21,10 +21,10 @@ CObjectAnimator::~CObjectAnimator() { Clear(); }
 
 void CObjectAnimator::Clear()
 {
-    for (auto m_it = m_Motions.begin(); m_it != m_Motions.end(); m_it++)
-        xr_delete(*m_it);
+    for (auto& m_Motion : m_Motions)
+        xr_delete(m_Motion);
     m_Motions.clear();
-    SetActiveMotion(0);
+    SetActiveMotion(nullptr);
 }
 
 void CObjectAnimator::SetActiveMotion(COMotion* mot)
@@ -38,14 +38,15 @@ void CObjectAnimator::SetActiveMotion(COMotion* mot)
 void CObjectAnimator::LoadMotions(LPCSTR fname)
 {
     string_path full_path;
-    if (!FS.exist(full_path, "$level$", fname))
-        if (!FS.exist(full_path, "$game_anims$", fname))
-            Debug.fatal(DEBUG_INFO, "Can't find motion file '%s'.", fname);
+    if (!FS.exist(full_path, fsgame::level, fname))
+        if (!FS.exist(full_path, fsgame::game_anims, fname))
+            FATAL("Can't find motion file '%s'.", fname);
 
     LPCSTR ext = strext(full_path);
     if (ext)
     {
         Clear();
+
         if (0 == xr_strcmp(ext, ".anm"))
         {
             COMotion* M = xr_new<COMotion>();
@@ -69,15 +70,16 @@ void CObjectAnimator::LoadMotions(LPCSTR fname)
             }
             FS.r_close(F);
         }
+
         std::sort(m_Motions.begin(), m_Motions.end(), motion_sort_pred);
     }
 }
 
-void CObjectAnimator::Load(const char* name)
+void CObjectAnimator::Load(LPCSTR name)
 {
     m_Name = name;
     LoadMotions(name);
-    SetActiveMotion(0);
+    SetActiveMotion(nullptr);
 }
 
 void CObjectAnimator::Update(float dt)
@@ -106,8 +108,8 @@ COMotion* CObjectAnimator::Play(bool loop, LPCSTR name)
         }
         else
         {
-            Debug.fatal(DEBUG_INFO, "OBJ ANIM::Cycle '%s' not found.", name);
-            return NULL;
+            FATAL("OBJ ANIM::Cycle '%s' not found.", name);
+            return nullptr;
         }
     }
     else
@@ -121,15 +123,15 @@ COMotion* CObjectAnimator::Play(bool loop, LPCSTR name)
         }
         else
         {
-            Debug.fatal(DEBUG_INFO, "OBJ ANIM::Cycle '%s' not found.", name);
-            return NULL;
+            FATAL("OBJ ANIM::Cycle '%s' not found.", name);
+            return nullptr;
         }
     }
 }
 
 void CObjectAnimator::Stop()
 {
-    SetActiveMotion(0);
+    SetActiveMotion(nullptr);
     m_MParam.Stop();
 }
 

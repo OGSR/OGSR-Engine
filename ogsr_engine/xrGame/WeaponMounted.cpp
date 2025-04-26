@@ -152,12 +152,12 @@ void CWeaponMounted::UpdateCL()
 
 void CWeaponMounted::shedule_Update(u32 dt) { inherited::shedule_Update(dt); }
 
-void CWeaponMounted::renderable_Render()
+void CWeaponMounted::renderable_Render(u32 context_id, IRenderable* root)
 {
     //нарисовать подсветку
     RenderLight();
 
-    inherited::renderable_Render();
+    inherited::renderable_Render(context_id, root);
 }
 
 void CWeaponMounted::OnMouseMove(int dx, int dy)

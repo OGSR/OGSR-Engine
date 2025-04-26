@@ -32,6 +32,8 @@ private:
 
     void cleanup_lost();
 
+    std::recursive_mutex lock;
+
 public:
     typedef u64 occq_result;
 
@@ -40,8 +42,10 @@ public:
     ~R_occlusion();
 
     void occq_destroy();
-    u32 occq_begin(u32& ID); // returns 'order'
-    void occq_end(u32& ID);
-    occq_result occq_get(u32& ID);
+    u32 occq_begin(u32& ID, u32 context_id); // returns 'order'
+    void occq_end(const u32& ID, u32 context_id);
+    occq_result occq_get(u32& ID, float max_wait_occ);
     void occq_free(u32 ID);
+
+    void set_enabled(bool v) { enabled = v; }
 };

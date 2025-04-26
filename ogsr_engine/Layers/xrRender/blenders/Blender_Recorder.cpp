@@ -5,11 +5,11 @@
 #include "stdafx.h"
 
 
-#include "..\ResourceManager.h"
+#include "../ResourceManager.h"
 #include "Blender_Recorder.h"
 #include "Blender.h"
 
-#include "..\dxRenderDeviceRender.h"
+#include "../dxRenderDeviceRender.h"
 
 static int ParseName(LPCSTR N)
 {
@@ -51,23 +51,22 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
     //	optimization?
 
     // Analyze possibility to detail this shader
-    detail_texture = NULL;
-    detail_scaler = NULL;
-    LPCSTR base = NULL;
+    detail_texture = nullptr;
+    LPCSTR base = nullptr;
     if (bDetail && BT->canBeDetailed())
     {
         //
-        sh_list& lst = L_textures;
-        int id = ParseName(BT->oT_Name);
+        const sh_list& lst = L_textures;
+        const int id = ParseName(BT->oT_Name);
         base = BT->oT_Name;
         if (id >= 0)
         {
             if (id >= int(lst.size()))
-                Debug.fatal(DEBUG_INFO, "Not enought textures for shader. Base texture: '%s'.", *lst[0]);
+                FATAL("Not enought textures for shader. Base texture: '%s'.", *lst[0]);
             base = *lst[id];
         }
         //.		if (!dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(base,detail_texture,detail_scaler))	bDetail	= FALSE;
-        if (!DEV->m_textures_description.GetDetailTexture(base, detail_texture, detail_scaler))
+        if (!DEV->m_textures_description.GetDetailTexture(base, detail_texture))
             bDetail = FALSE;
     }
     else
@@ -77,13 +76,13 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
         //	Need this to correct base to detect steep parallax.
         if (BT->canUseSteepParallax())
         {
-            sh_list& lst = L_textures;
-            int id = ParseName(BT->oT_Name);
+            const sh_list& lst = L_textures;
+            const int id = ParseName(BT->oT_Name);
             base = BT->oT_Name;
             if (id >= 0)
             {
                 if (id >= int(lst.size()))
-                    Debug.fatal(DEBUG_INFO, "Not enought textures for shader. Base texture: '%s'.", *lst[0]);
+                    FATAL("Not enought textures for shader. Base texture: '%s'.", *lst[0]);
                 base = *lst[id];
             }
         }
@@ -102,17 +101,31 @@ void CBlender_Compile::_cpp_Compile(ShaderElement* _SH)
     if (bDetail)
     {
         DEV->m_textures_description.GetTextureUsage(base, bDetail_Diffuse, bDetail_Bump);
+
+        //	Detect the alowance of detail bump usage here.
+        if (!(ps_r2_ls_flags.test(R2FLAG_DETAIL_BUMP)))
+        {
+            bDetail_Diffuse |= bDetail_Bump;
+            bDetail_Bump = false;
+        }
     }
 
     bUseSteepParallax = DEV->m_textures_description.UseSteepParallax(base) && BT->canUseSteepParallax();
-
+/*
+    if (DEV->m_textures_description.UseSteepParallax(base))
+    {
+        bool bSteep = BT->canUseSteepParallax();
+        DEV->m_textures_description.UseSteepParallax(base);
+        bUseSteepParallax = true;
+    }
+*/
     TessMethod = 0;
 
     // Compile
     BT->Compile(*this);
 }
 
-void CBlender_Compile::SetParams(int iPriority, bool bStrictB2F)
+void CBlender_Compile::SetParams(int iPriority, bool bStrictB2F) const
 {
     SH->flags.iPriority = iPriority;
     SH->flags.bStrictB2F = bStrictB2F;
@@ -184,13 +197,6 @@ void CBlender_Compile::PassSET_ablend_aref(BOOL bATest, u32 aRef)
 void CBlender_Compile::PassSET_Blend(BOOL bABlend, u32 abSRC, u32 abDST, BOOL bATest, u32 aRef)
 {
     PassSET_ablend_mode(bABlend, abSRC, abDST);
-#ifdef DEBUG
-    if (strstr(Core.Params, "-noaref"))
-    {
-        bATest = FALSE;
-        aRef = 0;
-    }
-#endif
     PassSET_ablend_aref(bATest, aRef);
 }
 

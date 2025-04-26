@@ -40,6 +40,9 @@ public:
     CPGDef();
     ~CPGDef();
 
+    void SetName(LPCSTR name);
+    IC LPCSTR Name() const { return *m_Name; }
+
     void Save(IWriter& F);
     BOOL Load(IReader& F);
 
@@ -52,7 +55,7 @@ class ECORE_API CParticleGroup : public dxParticleCustom
 {
     const CPGDef* m_Def{};
     float m_CurrentTime{};
-    Fvector m_InitialPosition;
+    Fvector m_InitialPosition{};
 
 public:
     DEFINE_VECTOR(dxRender_Visual*, VisualVec, VisualVecIt);
@@ -88,7 +91,7 @@ public:
 
         u32 ParticlesCount();
         BOOL IsPlaying();
-        void Play();
+        void Play() const;
         void Stop(BOOL def_stop);
     };
     DEFINE_VECTOR(SItem, SItemVec, SItemVecIt)
@@ -105,6 +108,7 @@ public:
 public:
     CParticleGroup();
     virtual ~CParticleGroup();
+
     virtual void OnFrame(u32 dt);
 
     virtual void Copy(dxRender_Visual* pFrom) { FATAL("Can't duplicate particle system - NOT IMPLEMENTED"); }
@@ -116,11 +120,12 @@ public:
 
     BOOL Compile(CPGDef* def);
 
-    const CPGDef* GetDefinition() { return m_Def; }
+    const CPGDef* GetDefinition() const { return m_Def; }
 
     virtual void Play();
     virtual void Stop(BOOL bDefferedStop = TRUE);
     virtual BOOL IsPlaying() { return m_RT_Flags.is(flRT_Playing); }
+    virtual BOOL IsDeferredStopped() { return m_RT_Flags.is(flRT_DefferedStop); }
 
     virtual void SetHudMode(BOOL b);
     virtual BOOL GetHudMode();
@@ -138,6 +143,8 @@ public:
     }
 
     virtual u32 ParticlesCount();
+
+    virtual void Depart();
 };
 
 } // namespace PS

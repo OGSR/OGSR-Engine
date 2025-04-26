@@ -37,8 +37,8 @@ struct OPCODE_API BVTCache : Pair
 
     void ResetCache()
     {
-        Model0 = null;
-        Model1 = null;
+        Model0 = nullptr;
+        Model1 = nullptr;
         id0 = 0;
         id1 = 1;
 #ifdef __MESHMERIZER_H__ // Collision hulls only supported within ICE !

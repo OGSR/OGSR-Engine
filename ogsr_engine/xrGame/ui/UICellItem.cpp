@@ -57,9 +57,10 @@ bool CUICellItem::OnMouse(float x, float y, EUIMessages mouse_action)
     }
     else if (mouse_action == WINDOW_MOUSE_MOVE)
     {
-        if (pInput->iGetAsyncBtnState(0) && m_mouse_selected_item && m_mouse_selected_item == this)
+        if (pInput->iGetAsyncKeyState(MOUSE_1) && m_mouse_selected_item && m_mouse_selected_item == this)
         {
-            GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_DRAG, NULL);
+            if (pInput->iGetAsyncKeyState(MOUSE_1, true))
+                GetMessageTarget()->SendMessage(this, DRAG_DROP_ITEM_DRAG, NULL);
             return true;
         }
     }

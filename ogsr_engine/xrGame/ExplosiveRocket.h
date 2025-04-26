@@ -54,7 +54,7 @@ public:
 
     virtual void OnH_A_Chield() { inherited::OnH_A_Chield(); }
     virtual void OnH_B_Chield() { inherited::OnH_B_Chield(); }
-    virtual void renderable_Render() { inherited::renderable_Render(); }
+    virtual void renderable_Render(u32 context_id, IRenderable* root) override { inherited::renderable_Render(context_id, root); }
 #ifdef DEBUG
     virtual void OnRender();
 #endif

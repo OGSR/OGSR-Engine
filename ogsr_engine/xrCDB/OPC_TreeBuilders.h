@@ -109,7 +109,7 @@ class OPCODE_API AABBTreeOfAABBsBuilder : public AABBTreeBuilder
 {
 public:
     //! Constructor
-    AABBTreeOfAABBsBuilder() : mAABBList(null) {}
+    AABBTreeOfAABBsBuilder() : mAABBList(nullptr) {}
     //! Destructor
     virtual ~AABBTreeOfAABBsBuilder() {}
 
@@ -124,7 +124,7 @@ class OPCODE_API AABBTreeOfTrianglesBuilder : public AABBTreeBuilder
 {
 public:
     //! Constructor
-    AABBTreeOfTrianglesBuilder() : mTriList(null), mVerts(null), mNbTriangles(0) {}
+    AABBTreeOfTrianglesBuilder() : mTriList(nullptr), mVerts(nullptr), mNbTriangles(0) {}
     //! Destructor
     virtual ~AABBTreeOfTrianglesBuilder() {}
 

@@ -72,8 +72,8 @@ void CBlender_Model_EbB::Compile(CBlender_Compile& C)
     if (oBlend.value)
     {
         // forward
-        LPCSTR vsname = 0;
-        LPCSTR psname = 0;
+        LPCSTR vsname = nullptr;
+        LPCSTR psname = nullptr;
         switch (C.iElement)
         {
         case 0:
@@ -100,26 +100,24 @@ void CBlender_Model_EbB::Compile(CBlender_Compile& C)
             if (C.HudElement)
             {
                 //Msg("--[%s] Detected hud element: [%s]", __FUNCTION__, C.L_textures[0].c_str());
-                uber_deffer(C, true, "model_hud", "base_hud", false, 0, true);
+                uber_deffer(C, true, "model_hud", "base_hud", false, nullptr, true);
                 C.r_dx10Texture("s_hud_rain", "fx\\hud_rain");
             }
             else
             {
-                uber_deffer(C, true, "model", "base", false, 0, true);
+                uber_deffer(C, true, "model", "base", false, nullptr, true);
             }
             C.r_Stencil(TRUE, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
             C.r_StencilRef(0x01);
             C.r_End();
             break;
         case SE_R2_NORMAL_LQ: // deffer
-            uber_deffer(C, false, "model", "base", false, 0, true);
+            uber_deffer(C, false, "model", "base", false, nullptr, true);
             C.r_Stencil(TRUE, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
             C.r_StencilRef(0x01);
             C.r_End();
             break;
         case SE_R2_SHADOW: // smap
-            // if (RImplementation.o.HW_smap)	C.r_Pass	("shadow_direct_model","dumb",	FALSE,TRUE,TRUE,FALSE);
-            // else							C.r_Pass	("shadow_direct_model","shadow_direct_base",FALSE);
             C.r_Pass("shadow_direct_model", "dumb", FALSE, TRUE, TRUE, FALSE);
             // C.r_Sampler		("s_base",C.L_textures[0]);
             C.r_dx10Texture("s_base", C.L_textures[0]);

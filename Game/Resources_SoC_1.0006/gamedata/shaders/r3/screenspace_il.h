@@ -17,19 +17,18 @@ static const int il_quality[4] = { 8, 16, 24, 32 };
 
 // Some vars to fix incompatibilities for the moment...
 uniform float4 ssfx_wpn_dof_1;
-float4 fakescope_params3 = {0,0,0,0}; //uniform float4 fakescope_params3; //xrSimpodin: На данный момент в OGSR нет fake_scope, если появится - поменять обратно.
 
-float3 ssfx_il_bounce(float3 P, float3 N, float Range, int count, uint iSample) 
+float3 ssfx_il_bounce(float3 P, float3 N, float Range, int count, uint iSample)
 {
 	// Use surface normal and add the hemisphere distribution
 	float3 sample_rays = ssfx_hemisphere[count] + N.xyz;
-	
+
 	// Position to sample
 	float3 occ_pos = P.xyz + sample_rays * Range;
-	
+
 	// Sample position to UV
 	float2 occ_pos_uv = SSFX_view_to_uv(occ_pos);
-	
+
 	// Get position buffer to calc normal and get depth
 	float4 sample_pos = SSFX_get_position(occ_pos_uv, iSample);
 
@@ -50,7 +49,7 @@ float3 ssfx_il_bounce(float3 P, float3 N, float Range, int count, uint iSample)
 	// Never discard the sample if comes from the sky. We use this for some sort of sky light.
 	if (is_sky(sample_pos.z))
 		il_intensity = 1.0f * G_IL_SKYLIGHT_INTENSITY;
-	
+
 	// Discard if the final intensity is lower or equal to G_IL_DISCARD_SAMPLE_AT
 	[branch]
 	if (il_intensity > G_IL_DISCARD_SAMPLE_AT)
@@ -73,12 +72,12 @@ float3 ssfx_il_bounce(float3 P, float3 N, float Range, int count, uint iSample)
 void ssfx_il(float2 tc, float2 pos2d, float3 P, float3 N, inout float3 color, uint iSample)
 {
 	// Skip Sky. ( Disable when used with Shader Based 2D Scopes )
-	if (P.z <= SKY_EPS || fakescope_params3.x > 0)
+	if (P.z <= SKY_EPS || fakescope.y > 0)
 		return;
 
 	// Discard IL when using NV
 #ifdef SSFX_BEEFS_NVG
-	if (shader_param_8.x > 0)
+	if (pnv_param_1.z > 0.f)
 		return;
 #endif
 
@@ -112,7 +111,7 @@ void ssfx_il(float2 tc, float2 pos2d, float3 P, float3 N, inout float3 color, ui
 #ifdef SSFX_FOG
 	float3 WorldP = mul(m_inv_V, float4(P.xyz, 1));
 	float Fog =  saturate(PLen * fog_params.w + fog_params.x);
-	
+
 	// Same as SSFX_FOGGING but multiplied * 2
 	float fog_height = smoothstep(G_FOG_HEIGHT, -G_FOG_HEIGHT, WorldP.y) * G_FOG_HEIGHT_INTENSITY;
 	float fog_extra = saturate(Fog + fog_height * (Fog * G_FOG_HEIGHT_DENSITY));
@@ -143,11 +142,11 @@ void ssfx_il(float2 tc, float2 pos2d, float3 P, float3 N, inout float3 color, ui
 	float blendfact = 1.0 - dot(color, LUMINANCE_VECTOR); // Blend factor using LUMINANCE_VECTOR
 
 	// Adjust intensity using scene color.
-	il = il * dot(color, G_IL_INTENSITY) * blendfact * blendfact; 
+	il = il * dot(color, G_IL_INTENSITY) * blendfact * blendfact;
 
 	// Check color difference between color and IL.
 	float colordiff = saturate(normalize(il) - normalize(color));
-	
+
 	// Square difference to get a nice falloff curve where a higher difference fall faster than a lower one.
 	colordiff = sqrt(colordiff);
 

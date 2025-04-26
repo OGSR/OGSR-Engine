@@ -1,0 +1,64 @@
+[south_blockpost]
+center = -84.61,-34.95,-347.90
+max_depth = 0.5
+radius = 30
+
+;[test2]
+;center = 87.6,-12.50,265.26
+;max_depth = 0.45
+;radius = 30
+
+[test3]
+center = 53.27,-11.05,-34.29
+max_depth = 0.5
+radius = 30
+
+[test4]
+center = -96.13,-9.10,5.34
+max_depth = 0.5
+radius = 30
+
+;[test5]
+;center = 156.70,-8.85,-18.43
+;max_depth = 0.5
+;radius = 30
+
+;[test6]
+;center = 174.24,-8.70,-4.75
+;max_depth = 0.3
+;radius = 30
+
+;[test7]
+;center = 89.39,-8.20,16.55
+;max_depth = 0.2
+;radius = 30
+
+[test8]
+center = -158.39,-7.65,-34.98
+max_depth = 0.5
+radius = 30
+
+[test9]
+center = -21.74,-2.55,205.34
+max_depth = 0.5
+radius = 30
+
+[test10]
+center = 29.64,-1.70,316.59
+max_depth = 0.5
+radius = 25
+
+;[bridge_blockpost]
+;center = 61.51,-0.65,150.19
+;max_depth = 0.5
+;radius = 10
+
+[test12]
+center = 244.0,0.32,312.97
+max_depth = 0.5
+radius = 30
+
+[test13]
+center = 308.19,2.76,119.74
+max_depth = 0.5
+radius = 30

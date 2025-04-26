@@ -6,21 +6,27 @@
 #include "ps_instance.h"
 #include "IGame_Persistent.h"
 
+extern ENGINE_API BOOL g_bRendering;
+
 CPS_Instance::CPS_Instance(bool destroy_on_game_load) : ISpatial(g_SpatialSpace), m_destroy_on_game_load(destroy_on_game_load)
 {
     g_pGamePersistent->ps_active.insert(this);
+
     renderable.pROS_Allowed = FALSE;
+
+    spatial.type |= STYPE_PARTICLE;
+    spatial.dbg_name = "CPS_Instance";
 
     m_iLifeTime = int_max;
     m_bAutoRemove = TRUE;
     m_bDead = FALSE;
 }
-extern ENGINE_API BOOL g_bRendering;
 
 //----------------------------------------------------
 CPS_Instance::~CPS_Instance()
 {
     VERIFY(!g_bRendering);
+
     auto it = g_pGamePersistent->ps_active.find(this);
     R_ASSERT(it != g_pGamePersistent->ps_active.end());
     g_pGamePersistent->ps_active.erase(it);
@@ -29,12 +35,18 @@ CPS_Instance::~CPS_Instance()
     if (it != g_pGamePersistent->ps_destroy.end())
         g_pGamePersistent->ps_destroy.erase(it);
 
+    auto it2 = std::find(g_pGamePersistent->ps_needtocreate.begin(), g_pGamePersistent->ps_needtocreate.end(), this);
+    if (it2 != g_pGamePersistent->ps_needtocreate.end())
+        g_pGamePersistent->ps_needtocreate.erase(it2);
+
     spatial_unregister();
     shedule_unregister(true);
 }
 //----------------------------------------------------
 void CPS_Instance::shedule_Update(u32 dt)
 {
+    ZoneScoped;
+
     if (renderable.pROS)
         ::Render->ros_destroy(renderable.pROS); //. particles doesn't need ROS
 
@@ -52,6 +64,7 @@ void CPS_Instance::PSI_destroy()
 {
     m_bDead = TRUE;
     m_iLifeTime = 0;
+
     g_pGamePersistent->ps_destroy.insert(this);
 }
 //----------------------------------------------------

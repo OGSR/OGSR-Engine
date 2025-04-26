@@ -11,21 +11,9 @@ Texture2D s_patched_normal;
 TEXTURE2DMS(float4, MSAA_SAMPLES) s_patched_normal;
 #endif
 
-#ifdef MSAA_OPTIMIZATION
-float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1, uint iSample : SV_SAMPLEINDEX) : SV_Target
-#else
 float4 main(float2 tc : TEXCOORD0, float2 tcJ : TEXCOORD1) : SV_Target
-#endif
 {
-#ifndef USE_MSAA
     float Gloss = s_patched_normal.Sample(smp_nofilter, tc).a;
-#else
-#ifndef MSAA_OPTIMIZATION
-    float Gloss = s_patched_normal.Load(int3(tc * pos_decompression_params2.xy, 0), ISAMPLE).a;
-#else
-    float Gloss = s_patched_normal.Load(int3(tc * pos_decompression_params2.xy, 0), iSample).a;
-#endif
-#endif
 
     float rain = rain_params.x;
 

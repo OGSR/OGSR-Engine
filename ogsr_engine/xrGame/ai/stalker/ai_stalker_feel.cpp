@@ -38,22 +38,6 @@ BOOL CAI_Stalker::feel_vision_isRelevant(CObject* O)
     return (TRUE);
 }
 
-void CAI_Stalker::renderable_Render()
-{
-    inherited::renderable_Render();
-
-    if (!already_dead())
-        CInventoryOwner::renderable_Render();
-
-#ifdef DEBUG
-    if (g_Alive())
-    {
-        if (psAI_Flags.test(aiAnimationStats))
-            animation().add_animation_stats();
-    }
-#endif // DEBUG
-}
-
 void CAI_Stalker::Exec_Look(float dt)
 {
     if (animation_movement_controlled())

@@ -14,6 +14,8 @@ vf _main(v_model v)
     vf o;
 
     o.hpos = mul(m_WVP, v.P); // xform, input in world coords
+    o.hpos.xy = get_taa_jitter(o.hpos);
+
     o.tc0 = v.tc.xy; // copy tc
 
     // calculate fade

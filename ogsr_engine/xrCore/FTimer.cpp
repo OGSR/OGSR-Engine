@@ -8,16 +8,17 @@ void CStatTimer::FrameStart()
     count = 0;
 }
 
-void CStatTimer::FrameEnd()
-{
-    const float time = GetElapsed_sec();
-    if (time > result)
-        result = time;
-    else
-        result = 0.99f * result + 0.01f * time;
-}
+void CStatTimer::FrameEnd() { result = static_cast<float>(GetElapsed_ms()); }
 
-XRCORE_API pauseMngr g_pauseMngr;
+pauseMngr* g_pauseMngr;
+
+pauseMngr& g_pauseMngr_get()
+{
+    static pauseMngr manager;
+    g_pauseMngr = &manager;
+
+    return manager;
+}
 
 pauseMngr::pauseMngr() : paused(false) { m_timers.reserve(3); }
 

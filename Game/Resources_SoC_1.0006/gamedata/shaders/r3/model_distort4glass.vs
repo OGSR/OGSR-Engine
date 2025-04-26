@@ -5,10 +5,6 @@ struct vf
 {
     float2 tc0 : TEXCOORD0; // base
     float4 c0 : COLOR0; // color
-//	Igor: for additional depth dest
-#ifdef USE_SOFT_PARTICLES
-    float4 tctexgen : TEXCOORD1;
-#endif //	USE_SOFT_PARTICLES
     float4 hpos : SV_Position;
     float fog : FOG;
 };
@@ -18,6 +14,8 @@ vf _main(v_model v)
     vf o;
 
     o.hpos = mul(m_WVP, v.P); // xform, input in world coords
+    o.hpos.xy = get_taa_jitter(o.hpos);
+
     o.tc0 = v.tc.xy; // copy tc
 
     // calculate fade

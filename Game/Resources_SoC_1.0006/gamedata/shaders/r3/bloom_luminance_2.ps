@@ -13,11 +13,11 @@ struct v2p
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-//	perform 4x4 bilinear, 8x8p, the step (B)
-//	b):	64x64p	=> 8x8p
+// perform 4x4 bilinear, 8x8p, the step (B)
+// b): 64x64p => 8x8p
 float sample(float2 tc)
 {
-    //	float4	data = tex2D(s_image,tc);
+    // float4 data = tex2D(s_image,tc);
     float4 data = s_image.Sample(smp_rtlinear, tc);
     return dot(data, 1.h / 4.h); // sum components
 }

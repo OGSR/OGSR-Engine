@@ -851,6 +851,8 @@ IC bool TestSphereOBB(const Fsphere& rkSphere, const Fobb& rkBox)
 //----------------------------------------------------------------------------
 IC bool TestRayOBB(const Fvector3& origin, const Fvector3& direction, const Fobb& rkBox)
 {
+    ZoneScoped;
+
     float fWdU[3], fAWdU[3], fDdU[3], fADdU[3], fAWxDdU[3], fRhs;
 
     Fvector3 kDiff;

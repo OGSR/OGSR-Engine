@@ -1,5 +1,4 @@
-#ifndef I_COLLISION_DAMAGE_INFO_H
-#define I_COLLISION_DAMAGE_INFO_H
+#pragma once
 
 class ICollisionHitCallback;
 class ICollisionDamageInfo
@@ -17,4 +16,3 @@ public:
     virtual bool IsInitiated() const = 0;
     virtual bool GetAndResetInitiated() = 0;
 };
-#endif

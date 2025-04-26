@@ -6,18 +6,6 @@ class ENGINE_API CObject;
 //-----------------------------------------------------------------------------------------------------------
 class ENGINE_API IGame_ObjectPool
 {
-    /*
-    private:
-        struct str_pred
-        {
-            IC bool operator()(const shared_str& x, const shared_str& y) const
-            {	return xr_strcmp(x,y)<0;	}
-        };
-        typedef xr_multimap<shared_str,CObject*,str_pred>	POOL;
-        typedef POOL::iterator							POOL_IT;
-    private:
-        POOL						map_POOL;
-    */
     typedef xr_vector<CObject*> ObjectVec;
     typedef ObjectVec::iterator ObjectVecIt;
     ObjectVec m_PrefetchObjects;

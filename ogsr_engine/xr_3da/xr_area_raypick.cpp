@@ -24,6 +24,8 @@ BOOL CObjectSpace::RayTest(const Fvector& start, const Fvector& dir, float range
 }
 BOOL CObjectSpace::_RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::ray_cache* cache, const CObject* ignore_object)
 {
+    ZoneScoped;
+
     VERIFY(_abs(dir.magnitude() - 1) < EPS);
 
     const collide::ray_defs Q(start, dir, range, CDB::OPT_ONLYFIRST, tgt);
@@ -107,6 +109,8 @@ BOOL CObjectSpace::RayPick(const Fvector& start, const Fvector& dir, float range
 }
 BOOL CObjectSpace::_RayPick(const Fvector& start, const Fvector& dir, float range, rq_target tgt, rq_result& R, const CObject* ignore_object) const
 {
+    ZoneScoped;
+
     R.O = nullptr;
     R.range = range;
     R.element = -1;
@@ -151,15 +155,15 @@ BOOL CObjectSpace::_RayPick(const Fvector& start, const Fvector& dir, float rang
 //--------------------------------------------------------------------------------
 // RayQuery
 //--------------------------------------------------------------------------------
-BOOL CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& R, collide::rq_callback* CB, LPVOID user_data, collide::test_callback* tb,
-                            const CObject* ignore_object) const
+BOOL CObjectSpace::RayQuery(collide::rq_results& dest, const collide::ray_defs& R, collide::rq_callback* CB, LPVOID user_data, collide::test_callback* tb, const CObject* ignore_object) const
 {
     BOOL _res = _RayQuery(dest, R, CB, user_data, tb, ignore_object);
     return (_res);
 }
-BOOL CObjectSpace::_RayQuery(collide::rq_results& r_dest, const collide::ray_defs& R, collide::rq_callback* CB, LPVOID user_data, collide::test_callback* tb,
-                             const CObject* ignore_object) const
+BOOL CObjectSpace::_RayQuery(collide::rq_results& r_dest, const collide::ray_defs& R, collide::rq_callback* CB, LPVOID user_data, collide::test_callback* tb, const CObject* ignore_object) const
 {
+    ZoneScoped;
+
     // initialize query
     r_dest.r_clear();
     collide::rq_results r_temp;

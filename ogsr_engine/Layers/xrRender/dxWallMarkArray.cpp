@@ -7,8 +7,8 @@ void dxWallMarkArray::Copy(IWallMarkArray& _in) { *this = *(dxWallMarkArray*)&_i
 
 dxWallMarkArray::~dxWallMarkArray()
 {
-    for (ShaderIt it = m_CollideMarks.begin(); it != m_CollideMarks.end(); ++it)
-        it->destroy();
+    for (auto& m_CollideMark : m_CollideMarks)
+        m_CollideMark.destroy();
 }
 
 void dxWallMarkArray::AppendMark(LPCSTR s_textures)
@@ -30,4 +30,4 @@ wm_shader dxWallMarkArray::GenerateWallmark()
     return res;
 }
 
-ref_shader* dxWallMarkArray::dxGenerateWallmark() { return m_CollideMarks.empty() ? NULL : &m_CollideMarks[::Random.randI(0, m_CollideMarks.size())]; }
+ref_shader* dxWallMarkArray::dxGenerateWallmark() { return m_CollideMarks.empty() ? nullptr : &m_CollideMarks[::Random.randI(0, m_CollideMarks.size())]; }

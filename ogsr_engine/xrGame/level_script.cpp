@@ -132,14 +132,14 @@ bool start_weather_fx_from_time(LPCSTR weather_name, float time)
     if (s_ScriptWeather)
         return false;
 
-    return g_pGamePersistent->Environment().StartWeatherFXFromTime(weather_name, time);
+    return g_pGamePersistent->Environment().SetWeatherFXFromTime(weather_name, time);
 }
 
-bool is_wfx_playing() { return (g_pGamePersistent->Environment().IsWFXPlaying()); }
+bool is_wfx_playing() { return (g_pGamePersistent->Environment().IsWeatherFXPlaying()); }
 
 float get_wfx_time() { return (g_pGamePersistent->Environment().wfx_time); }
 
-void stop_weather_fx() { g_pGamePersistent->Environment().StopWFX(); }
+void stop_weather_fx() { g_pGamePersistent->Environment().StopWeatherFX(); }
 
 void set_time_factor(float time_factor)
 {
@@ -484,7 +484,7 @@ void remove_calls_for_object(const luabind::object& lua_object)
 }
 
 CPHWorld* physics_world() { return ph_world; }
-CEnvironment* environment() { return g_pGamePersistent->pEnvironment; }
+CEnvironment* environment() { return &g_pGamePersistent->Environment(); }
 
 extern bool g_bDisableAllInput;
 
@@ -764,29 +764,6 @@ void patrol_path_add(LPCSTR patrol_path, CPatrolPath* path) { ai().patrol_paths_
 
 void patrol_path_remove(LPCSTR patrol_path) { ai().patrol_paths_raw().remove_path(shared_str(patrol_path)); }
 
-//
-float set_blender_mode_main(float blender_num = 0.f) //--#SM+#--
-{
-    g_pGamePersistent->m_pGShaderConstants.m_blender_mode.x = blender_num;
-    return g_pGamePersistent->m_pGShaderConstants.m_blender_mode.x;
-}
-
-float get_blender_mode_main() //--#SM+#--
-{
-    return g_pGamePersistent->m_pGShaderConstants.m_blender_mode.x;
-}
-
-Fmatrix get_shader_params() //--#SM+#--
-{
-    return g_pGamePersistent->m_pGShaderConstants.m_script_params;
-}
-
-void set_shader_params(const Fmatrix& m_params) //--#SM+#--
-{
-    g_pGamePersistent->m_pGShaderConstants.m_script_params = m_params;
-}
-//
-
 bool valid_vertex_id(u32 level_vertex_id) { return ai().level_graph().valid_vertex_id(level_vertex_id); }
 
 u32 vertex_count() { return ai().level_graph().header().vertex_count(); }
@@ -978,6 +955,22 @@ DBG_ScriptObject* add_object(u16 id, DebugRenderType type)
 }
 
 
+static void shader_set_custom_param_vector(const char* key, const Fvector4 v) { shader_exports.set_custom_params(key, v); }
+
+static Fvector4 shader_get_custom_param_vector(const char* key) { return shader_exports.get_custom_params(key); }
+
+static void shader_set_custom_param(const char* key, float x, float y, float z, float w) { shader_exports.set_custom_params(key, Fvector4{x, y, z, w}); }
+
+static void shader_get_custom_param(const char* key, float& x, float& y, float& z, float& w)
+{
+    const auto& v = shader_exports.get_custom_params(key);
+    x = v.x;
+    y = v.y;
+    z = v.z;
+    w = v.w;
+}
+
+
 void CLevel::script_register(lua_State* L)
 {
     module(L)[class_<CEnvDescriptor>("CEnvDescriptor")
@@ -1124,10 +1117,6 @@ void CLevel::script_register(lua_State* L)
 
             def("get_effector_bobbing", &get_effector_bobbing), def("is_ray_intersect_sphere", &is_ray_intersect_sphere),
 
-            //--#SM+# Begin --
-            def("set_blender_mode_main", &set_blender_mode_main), def("get_blender_mode_main", &get_blender_mode_main), def("set_shader_params", &set_shader_params),
-            def("get_shader_params", &get_shader_params),
-            //--#SM+# End --
             def("block_action", [](EGameActions action) { Level().block_action(action); }),
             def("unblock_action", [](EGameActions action) { Level().unblock_action(action); })
     ],
@@ -1153,5 +1142,11 @@ void CLevel::script_register(lua_State* L)
               class_<enum_exporter<collide::rq_target>>("rq_target")
                   .enum_("rq_target")[value("rqtNone", int(collide::rqtNone)), value("rqtObject", int(collide::rqtObject)), value("rqtStatic", int(collide::rqtStatic)),
                                       value("rqtShape", int(collide::rqtShape)), value("rqtObstacle", int(collide::rqtObstacle)), value("rqtBoth", int(collide::rqtBoth)),
-                                      value("rqtDyn", int(collide::rqtDyn))]];
+                                      value("rqtDyn", int(collide::rqtDyn))],
+
+           def("shader_set_custom_param_vector", &shader_set_custom_param_vector),
+           def("shader_get_custom_param_vector", &shader_get_custom_param_vector),
+           def("shader_set_custom_param", &shader_set_custom_param),
+           def("shader_get_custom_param", &shader_get_custom_param, pure_out_value<2>() + pure_out_value<3>() + pure_out_value<4>() + pure_out_value<5>())
+   ];
 }

@@ -898,6 +898,7 @@ DLL_Pure* CAI_Stalker::_construct()
 
 bool CAI_Stalker::use_center_to_aim() const { return (!wounded() && (movement().body_state() != eBodyStateCrouch)); }
 
+#ifdef DEBUG
 void CAI_Stalker::UpdateCamera()
 {
     float new_range = eye_range, new_fov = eye_fov;
@@ -911,6 +912,7 @@ void CAI_Stalker::UpdateCamera()
 
     g_pGameLevel->Cameras().Update(eye_matrix.c, temp, eye_matrix.j, new_fov, .75f, new_range, 0);
 }
+#endif
 
 bool CAI_Stalker::can_attach(const CInventoryItem* inventory_item) const
 {
@@ -980,4 +982,20 @@ bool CAI_Stalker::CanPutInSlot(PIItem item, u32 slot)
         return false;
 
     return slot != OUTFIT_SLOT;
+}
+
+void CAI_Stalker::renderable_Render(u32 context_id, IRenderable* root)
+{
+    inherited::renderable_Render(context_id, root);
+
+    if (!already_dead())
+        CInventoryOwner::renderable_Render(context_id, root);
+
+#ifdef DEBUG
+    if (g_Alive())
+    {
+        if (psAI_Flags.test(aiAnimationStats))
+            animation().add_animation_stats();
+    }
+#endif // DEBUG
 }

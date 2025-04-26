@@ -6,8 +6,7 @@
 //	Description : vision client
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef VISION_CLIENT_H
-#define VISION_CLIENT_H
+#pragma once
 
 #include "..\xr_3da\feel_vision.h"
 
@@ -64,5 +63,3 @@ public:
 };
 
 #include "vision_client_inline.h"
-
-#endif // VISION_CLIENT_H

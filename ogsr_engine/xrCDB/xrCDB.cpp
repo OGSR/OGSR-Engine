@@ -32,10 +32,10 @@ MODEL::MODEL()
     : cs(MUTEX_PROFILE_ID(MODEL))
 #endif // PROFILE_CRITICAL_SECTIONS
 {
-    tree = 0;
-    tris = 0;
+    tree = nullptr;
+    tris = nullptr;
     tris_count = 0;
-    verts = 0;
+    verts = nullptr;
     verts_count = 0;
     status = S_INIT;
 }
@@ -96,12 +96,13 @@ void MODEL::build_internal(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callbac
 
     // Allocate temporary "OPCODE" tris + convert tris to 'pointer' form
     u32* temp_tris = xr_alloc<u32>(tris_count * 3);
-    if (0 == temp_tris)
+    if (nullptr == temp_tris)
     {
         xr_free(verts);
         xr_free(tris);
         return;
     }
+
     u32* temp_ptr = temp_tris;
     for (int i = 0; i < tris_count; i++)
     {
@@ -144,6 +145,15 @@ u32 MODEL::memory()
     const u32 V = verts_count * sizeof(Fvector);
     const u32 T = tris_count * sizeof(TRI);
     return tree->GetUsedBytes() + V + T + sizeof(*this) + sizeof(*tree);
+}
+
+void MODEL::syncronize_impl() const
+{
+    Log("! WARNING: syncronized CDB::query");
+    
+    xrCriticalSection* C = (xrCriticalSection*)&cs;
+    C->Enter();
+    C->Leave();
 }
 
 COLLIDER::~COLLIDER() { r_free(); }

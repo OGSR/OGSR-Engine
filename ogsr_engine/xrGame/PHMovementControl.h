@@ -1,9 +1,8 @@
 #pragma once
-#ifndef CPHMOVEMENT_CONTROL_H
-#define CPHMOVEMENT_CONTROL_H
 
 #include "PHCharacter.h"
 #include "MathUtils.h"
+
 namespace ALife
 {
 enum EHitType;
@@ -375,4 +374,3 @@ public:
 private:
     void UpdateCollisionDamage();
 };
-#endif

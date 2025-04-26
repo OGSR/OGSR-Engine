@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "r_backend_lod.h"
 
-R_LOD::R_LOD() { unmap(); }
+R_lod::R_lod(CBackend& cmd_list_in) : cmd_list(cmd_list_in) { unmap(); }
 
-void R_LOD::set_LOD(float LOD)
+void R_lod::set_lod(float lod) const
 {
-    if (c_LOD)
+    if (c_lod)
     {
-        float factor = clampr<float>(ceil(LOD * LOD * LOD * LOD * LOD * 8.0f), 1, 7);
-        RCache.set_c(c_LOD, factor);
+        const float factor = clampr<float>(ceil(lod * lod * lod * lod * lod * 8.0f), 1, 7);
+        cmd_list.set_c(c_lod, factor);
     }
 }

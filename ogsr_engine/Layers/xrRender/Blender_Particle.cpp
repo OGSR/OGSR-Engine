@@ -49,7 +49,7 @@ void CBlender_Particle::Save(IWriter& fs)
 
     // Params
     xrPWRITE_PROP(fs, "Texture clamp", xrPID_BOOL, oClamp);
-    xrP_INTEGER oAREF;
+    const xrP_INTEGER oAREF;
     xrPWRITE_PROP(fs, "Alpha ref", xrPID_INTEGER, oAREF);
 }
 
@@ -99,7 +99,7 @@ void CBlender_Particle::Compile(CBlender_Compile& C)
         {
             // C.r_Sampler			("s_base",	C.L_textures[0],false,oClamp.value?D3DTADDRESS_CLAMP:D3DTADDRESS_WRAP);
             C.r_dx10Texture("s_base", C.L_textures[0]);
-            u32 hSampler = C.r_dx10Sampler("smp_base");
+            const u32 hSampler = C.r_dx10Sampler("smp_base");
             if (oClamp.value && (hSampler != (u32)-1))
                 C.i_dx10Address(hSampler, D3DTADDRESS_CLAMP);
             //	Igor: soft particles
@@ -126,7 +126,7 @@ void CBlender_Particle::Compile(CBlender_Compile& C)
         {
             // C.r_Sampler			("s_base",	C.L_textures[0],false,oClamp.value?D3DTADDRESS_CLAMP:D3DTADDRESS_WRAP);
             C.r_dx10Texture("s_base", C.L_textures[0]);
-            u32 hSampler = C.r_dx10Sampler("smp_base");
+            const u32 hSampler = C.r_dx10Sampler("smp_base");
             if (oClamp.value && (hSampler != (u32)-1))
                 C.i_dx10Address(hSampler, D3DTADDRESS_CLAMP);
             //	Igor: soft particles

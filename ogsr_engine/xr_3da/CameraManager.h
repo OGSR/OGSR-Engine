@@ -90,13 +90,12 @@ using EffectorPPVec = xr_vector<CEffectorPP*>;
 struct SCamEffectorInfo;
 class ENGINE_API CCameraManager
 {
-    float fFovSecond;
-
 protected:
     SCamEffectorInfo m_cam_info{};
 
     EffectorCamVec m_EffectorsCam;
     EffectorCamVec m_EffectorsCam_added_deffered;
+
     EffectorPPVec m_EffectorsPP;
 
     bool m_bAutoApply;
@@ -106,7 +105,11 @@ protected:
     virtual void UpdateCamEffectors();
     virtual void UpdatePPEffectors();
     virtual bool ProcessCameraEffector(CEffectorCam* eff);
+
+    void OnEffectorAdded(SBaseEffector* e);
     void OnEffectorReleased(SBaseEffector* e);
+
+    void Update(const Fvector& P, const Fvector& D, const Fvector& N, float fFOV_Dest, float fASPECT_Dest, float fFAR_Dest, u32 flags);
 
 public:
 #ifdef DEBUG
@@ -114,26 +117,34 @@ public:
 #endif
 
     void Dump(void);
+
+    ECamEffectorType RequestCamEffectorId();
     CEffectorCam* AddCamEffector(CEffectorCam* ef);
     CEffectorCam* GetCamEffector(ECamEffectorType type);
     void RemoveCamEffector(ECamEffectorType type);
+    void RemoveAllCamEffector();
 
-    ECamEffectorType RequestCamEffectorId();
     EEffectorPPType RequestPPEffectorId();
     CEffectorPP* GetPPEffector(EEffectorPPType type);
     CEffectorPP* AddPPEffector(CEffectorPP* ef);
     void RemovePPEffector(EEffectorPPType type);
+    void RemoveAllPPEffector();
+
+    // demonized: removecameffector by pointer
+    void RemoveCamEffector(CEffectorCam* ef);
 
     IC Fvector Position() const { return m_cam_info.p; }
     IC Fvector Direction() const { return m_cam_info.d; }
     IC Fvector Up() const { return m_cam_info.n; }
     IC Fvector Right() const { return m_cam_info.r; }
+
     IC float Fov() const { return m_cam_info.fFov; }
+
     IC float Aspect() const { return m_cam_info.fAspect; }
+
     IC void camera_Matrix(Fmatrix& M) { M.set(m_cam_info.r, m_cam_info.n, m_cam_info.d, m_cam_info.p); }
     inline void SetVPNear(const float val) { m_cam_info.fNear = val; }
 
-    void Update(const Fvector& P, const Fvector& D, const Fvector& N, float fFOV_Dest, float fASPECT_Dest, float fFAR_Dest, u32 flags);
     void UpdateFromCamera(const CCameraBase* C);
     void ApplyDevice(bool effectOnly = false);
     static void ResetPP();
@@ -141,8 +152,10 @@ public:
     CCameraManager(bool bApplyOnUpdate);
     ~CCameraManager();
 };
+
 ENGINE_API extern SPPInfo pp_identity;
 ENGINE_API extern SPPInfo pp_zero;
 
 ENGINE_API extern float psCamInert;
+ENGINE_API extern float psSprintCamInert;
 ENGINE_API extern float psCamSlideInert;

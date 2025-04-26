@@ -24,7 +24,7 @@ void ColorMapManager::UpdateTexture(const shared_str& strTexName, int iTex)
 
     if (!strTexName.empty())
     {
-        map_TexIt I = m_TexCache.find(strTexName);
+        const map_TexIt I = m_TexCache.find(strTexName);
         if (I != m_TexCache.end())
         {
             ID3DBaseTexture* e0 = I->second->surface_get();

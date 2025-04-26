@@ -39,7 +39,7 @@ void dxHashHelper::Crc32Init()
 
     // This is the official polynomial used by CRC-32
     // in PKZip, WinZip and Ethernet.
-    u32 ulPolynomial = 0x04c11db7;
+    const u32 ulPolynomial = 0x04c11db7;
 
     // 256 values representing ASCII character codes.
     for (int i = 0; i <= 0xFF; i++)

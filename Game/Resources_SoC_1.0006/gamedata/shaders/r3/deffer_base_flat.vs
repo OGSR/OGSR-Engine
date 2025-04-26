@@ -16,12 +16,15 @@ v2p_flat main(v_in I)
     v2p_flat O;
     float4 Pp = mul(m_WVP, I.P);
     O.hpos = Pp;
+    O.hpos_curr = Pp;
+    O.hpos_old = mul(m_WVP_old, I.P);
     O.N = mul((float3x3)m_WV, unpack_bx2(I.Nh));
     float3 Pe = mul(m_WV, I.P);
 
     float2 tc = unpack_tc_base(I.tc, I.T.w, I.B.w); // copy tc
     O.tcdh = float4(tc.xyyy);
     O.position = float4(Pe, I.Nh.w);
+    O.hpos.xy = get_taa_jitter(O.hpos);
 
 #if defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)
     float s = I.color.w; // (r,g,b,dir-occlusion)

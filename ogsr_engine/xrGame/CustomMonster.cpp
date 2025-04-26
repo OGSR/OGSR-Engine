@@ -312,7 +312,6 @@ void CCustomMonster::shedule_Update(u32 DT)
         // here is monster AI call
         m_fTimeUpdateDelta = dt;
         Device.Statistic->AI_Think.Begin();
-        Device.Statistic->TEST1.Begin();
         if (GetScriptControl())
             ProcessScripts();
         else
@@ -321,7 +320,6 @@ void CCustomMonster::shedule_Update(u32 DT)
                 Think();
         }
         m_dwLastUpdateTime = Device.dwTimeGlobal;
-        Device.Statistic->TEST1.End();
         Device.Statistic->AI_Think.End();
 
         // Look and action streams
@@ -592,6 +590,7 @@ void CCustomMonster::Exec_Visibility()
     Device.Statistic->AI_Vis.End();
 }
 
+#ifdef DEBUG
 void CCustomMonster::UpdateCamera()
 {
     float new_range = eye_range, new_fov = eye_fov;
@@ -599,6 +598,7 @@ void CCustomMonster::UpdateCamera()
         update_range_fov(new_range, new_fov, memory().visual().current_state().m_max_view_distance * eye_range, eye_fov);
     g_pGameLevel->Cameras().Update(eye_matrix.c, eye_matrix.k, eye_matrix.j, new_fov, .75f, new_range, 0);
 }
+#endif
 
 void CCustomMonster::HitSignal(float /**perc/**/, Fvector& /**vLocalDir/**/, CObject* /**who/**/) {}
 
@@ -687,10 +687,6 @@ BOOL CCustomMonster::net_Spawn(CSE_Abstract* DC)
 
     return TRUE;
 }
-
-#ifdef DEBUG
-void CCustomMonster::OnHUDDraw(CCustomHUD* hud) {}
-#endif
 
 void CCustomMonster::Exec_Action(float /**dt/**/) {}
 

@@ -1248,6 +1248,45 @@ LUA_API int lua_resume(lua_State *L, int nargs)
 
 /* -- GC and memory management -------------------------------------------- */
 
+#include <time.h>
+#if LJ_TARGET_POSIX
+#include <sys/time.h>
+#elif LJ_TARGET_WINDOWS
+#define timercmp(a, b, CMP)                              \
+  (((a)->tv_sec == (b)->tv_sec) ?                        \
+   ((a)->tv_nsec CMP (b)->tv_nsec) :                    \
+   ((a)->tv_sec CMP (b)->tv_sec))
+#define timeradd(a, b, result)                                   \
+  do {                                                                         \
+    (result)->tv_sec = (a)->tv_sec + (b)->tv_sec;         \
+    (result)->tv_nsec = (a)->tv_nsec + (b)->tv_nsec;    \
+    if ((result)->tv_nsec >= 1000000000)                \
+      {                                                 \
+        ++(result)->tv_sec;                             \
+        (result)->tv_nsec -= 1000000000;                \
+      }                                                 \
+  } while (0)
+#endif
+
+static void gc_step_timeout(lua_State *L, uint32_t timeout_usec)
+{
+  struct timespec tv_timeout;
+  tv_timeout.tv_sec = 0;
+  tv_timeout.tv_nsec = timeout_usec * 1000;
+
+  struct timespec tv_current;
+  timespec_get(&tv_current, TIME_UTC);
+
+  timeradd(&tv_current, &tv_timeout, &tv_timeout);
+  while (timercmp(&tv_current, &tv_timeout, < )) {
+    if (lj_gc_step(L) > 0) {
+      break;
+    }
+
+    timespec_get(&tv_current, TIME_UTC);
+  }
+}
+
 LUA_API int lua_gc(lua_State *L, int what, int data)
 {
   global_State *g = G(L);
@@ -1273,9 +1312,13 @@ LUA_API int lua_gc(lua_State *L, int what, int data)
     g->gc.threshold = (a <= g->gc.total) ? (g->gc.total - a) : 0;
     while (g->gc.total >= g->gc.threshold)
       if (lj_gc_step(L) > 0) {
-	res = 1;
-	break;
+        res = 1;
+        break;
       }
+    break;
+  }
+  case LUA_GCTIMEOUT: {
+    gc_step_timeout(L, (uint32_t)data);
     break;
   }
   case LUA_GCSETPAUSE:
@@ -1308,4 +1351,3 @@ LUA_API void lua_setallocf(lua_State *L, lua_Alloc f, void *ud)
   g->allocd = ud;
   g->allocf = f;
 }
-

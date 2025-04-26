@@ -5,19 +5,21 @@ extern LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 void CRenderDevice::Initialize()
 {
+    ZoneScoped;
+
     Log("Initializing Engine...");
     TimerGlobal.Start();
     TimerMM.Start();
 
     // Unless a substitute hWnd has been specified, create a window to render into
-    if (m_hWnd == NULL)
+    if (m_hWnd == nullptr)
     {
         const char* wndclass = "_XRAY_1.5";
 
         // Register the windows class
-        HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(0);
-        WNDCLASS wndClass = {0,    WndProc, 0, 0, hInstance, LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1)), LoadCursor(NULL, IDC_ARROW), (HBRUSH)GetStockObject(BLACK_BRUSH),
-                             NULL, wndclass};
+        HINSTANCE hInstance = (HINSTANCE)GetModuleHandle(nullptr);
+        WNDCLASS wndClass = {0,    WndProc, 0, 0, hInstance, LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1)), LoadCursor(nullptr, IDC_ARROW), (HBRUSH)GetStockObject(BLACK_BRUSH),
+                             nullptr, wndclass};
         RegisterClass(&wndClass);
 
         // Set the window's initial style
@@ -33,6 +35,8 @@ void CRenderDevice::Initialize()
             wndclass, "OGSR Engine", m_dwWindowStyle,
             /*rc.left, rc.top, */ CW_USEDEFAULT, CW_USEDEFAULT, (rc.right - rc.left), (rc.bottom - rc.top), 0L, 0, hInstance, 0L);
         gGameWindow = m_hWnd;
+
+        TracySetProgramName("OGSR Engine");
     }
 
     // Save window properties

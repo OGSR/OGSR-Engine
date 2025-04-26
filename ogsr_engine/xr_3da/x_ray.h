@@ -19,7 +19,6 @@ class ENGINE_API CApplication : public pureFrame, public IEventReceiver
 
     EVENT eQuit;
     EVENT eStart;
-    EVENT eStartLoad;
     EVENT eDisconnect;
 
     void Level_Append(LPCSTR lname);
@@ -36,11 +35,11 @@ public:
     void Level_Set(u32 ID);
 
     // Loading
-    void LoadBegin();
+    void LoadBegin(bool quick = false);
     void LoadEnd();
     void LoadTitleInt(); // 100 советов по выживанию в Зоне
     void LoadStage();
-    void LoadDraw();
+    void LoadDraw() const;
     void LoadForceFinish();
 
     void SetLoadStageTitle(pcstr ls_title);
@@ -52,7 +51,7 @@ public:
     ~CApplication();
 
     virtual void OnFrame();
-    void load_draw_internal();
+    void load_draw_internal() const;
     void SetLoadingScreen(ILoadingScreen* newScreen);
     void DestroyLoadingScreen();
 };

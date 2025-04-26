@@ -1,14 +1,16 @@
 #include "stdafx.h"
-#pragma once
 
 #include "Rain.h"
 #include "igame_persistent.h"
 #include "environment.h"
 
+#include "../xr_3da/perlin.h"
+
 #include "render.h"
 #include "igame_level.h"
 #include "xr_object.h"
 
+CPerlinNoise1D* RainPerlin;
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -20,38 +22,71 @@ CEffect_Rain::CEffect_Rain()
 
     snd_Ambient.create("ambient\\rain", st_Effect, sg_Undefined);
 
+    RainPerlin = xr_new<CPerlinNoise1D>(Random.randI(0, 0xFFFF));
+    RainPerlin->SetOctaves(2);
+    RainPerlin->SetAmplitude(0.66666f);
+
     p_create();
 }
 
 CEffect_Rain::~CEffect_Rain()
 {
+    xr_delete(RainPerlin);
     snd_Ambient.destroy();
 
     p_destroy();
 }
 
-// Born
-void CEffect_Rain::Born(Item& dest, const float radius, const float speed, const float Wind_Velocity, const Fvector2& Rain_Offset, const Fvector3& Rain_Axis)
+void CEffect_Rain::Prepare(Fvector2& offset, Fvector3& axis, float W_Velocity, float W_Direction)
 {
-    const Fvector& view = Device.vCameraPosition;
+    // Wind gust, to add variation.
+    float Wind_Gust = RainPerlin->GetContinious(Device.fTimeGlobal * 0.3f) * 2.0f;
+    // Wind velocity [ 0 ~ 1 ]
+    float Wind_Velocity = W_Velocity + Wind_Gust; // g_pGamePersistent->Environment().CurrentEnv->wind_velocity * 0.001f
+    clamp(Wind_Velocity, 0.0f, 1.0f);
+    // Wind velocity controles the angle
+    float pitch = drop_max_angle * Wind_Velocity;
+    axis.setHP(W_Direction, pitch - PI_DIV_2);
+    // Get distance
+    float dist = _sin(pitch) * source_offset;
+    float C = PI_DIV_2 - pitch;
+    dist /= _sin(C);
+    // 0 is North
+    float fixNorth = W_Direction - PI_DIV_2;
+    // Set offset
+    offset.set(dist * _cos(fixNorth), dist * _sin(fixNorth));
+}
+
+// Born
+void CEffect_Rain::Born(Item& dest, float radius, float speed)
+{
+    ZoneScoped;
+
+    // Prepare correct angle and distance to hit the player
+    Fvector Rain_Axis = {0, -1, 0};
+    Fvector2 Rain_Offset;
+    float Wind_Direction = -g_pGamePersistent->Environment().CurrentEnv->wind_direction;
+
+    // Wind Velocity [ From 0 ~ 1000 to 0 ~ 1 ]
+    float Wind_Velocity = g_pGamePersistent->Environment().CurrentEnv->wind_velocity * 0.001f;
+    clamp(Wind_Velocity, 0.0f, 1.0f);
+    Prepare(Rain_Offset, Rain_Axis, Wind_Velocity, Wind_Direction);
+    // Camera Position
+    Fvector& view = Device.vCameraPosition;
 
     // Random Position
-    const float r = radius * 0.5f;
-    const Fvector2 RandomP{::Random.randF(-r, r), ::Random.randF(-r, r)};
-
+    float r = radius * 0.5f;
+    Fvector2 RandomP = {::Random.randF(-r, r), ::Random.randF(-r, r)};
     // Aim ahead of where the player is facing
-    const Fvector FinalView = Fvector{}.mad(view, Device.vCameraDirection, 5.0f);
-
+    Fvector FinalView = Fvector().mad(view, Device.vCameraDirection, 5.0f);
     // Random direction. Higher angle at lower velocity
     dest.D.random_dir(Rain_Axis, ::Random.randF(-drop_angle, drop_angle) * (1.5f - Wind_Velocity));
-
     // Set final destination
     dest.P.set(Rain_Offset.x + FinalView.x + RandomP.x, source_offset + view.y, Rain_Offset.y + FinalView.z + RandomP.y);
-
     // Set speed
     dest.fSpeed = ::Random.randF(drop_speed_min, drop_speed_max) * speed * clampr(Wind_Velocity * 1.5f, 0.5f, 1.0f);
-
     // Born
+
     float height = max_distance;
     const BOOL b_hit = RayPick(dest.P, dest.D, height, collide::rqtBoth);
     RenewItem(dest, height, b_hit);
@@ -59,6 +94,8 @@ void CEffect_Rain::Born(Item& dest, const float radius, const float speed, const
 
 BOOL CEffect_Rain::RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt)
 {
+    ZoneScoped;
+
     collide::rq_result RQ{};
     CObject* E = g_pGameLevel->CurrentViewEntity();
     const BOOL bRes = g_pGameLevel->ObjectSpace.RayPick(s, d, range, tgt, RQ, E);
@@ -89,15 +126,15 @@ void CEffect_Rain::OnFrame()
     if (!g_pGameLevel)
         return;
 
+    ZoneScoped;
+
     // Parse states
-    const float rain_density = g_pGamePersistent->Environment().CurrentEnv->rain_density;
+    float rain_density = g_pGamePersistent->Environment().CurrentEnv->rain_density;
     float wind_velocity = g_pGamePersistent->Environment().CurrentEnv->wind_velocity * 0.001f;
     clamp(wind_velocity, 0.0f, 1.0f);
-
     wind_velocity *= (rain_density > 0.0f ? 1.0f : 0.0f); // Only when raining
-
     // 50% of the volume is by rain_density and 50% wind_velocity;
-    const float factor = rain_density * 0.5f + wind_velocity * 0.5f;
+    float factor = rain_density * 0.5f + wind_velocity * 0.5f;
     static float hemi_factor = 0.f;
 
     CObject* E = g_pGameLevel->CurrentViewEntity();
@@ -129,7 +166,7 @@ void CEffect_Rain::OnFrame()
             snd_Ambient.stop();
             return;
         }
-        snd_Ambient.play(0, sm_Looped);
+        snd_Ambient.play(nullptr, sm_Looped | sm_2D);
         snd_Ambient.set_position(Fvector().set(0, 0, 0));
         snd_Ambient.set_range(source_offset, source_offset * 2.f);
         state = stWorking;
@@ -151,12 +188,12 @@ void CEffect_Rain::OnFrame()
     }
 }
 
-void CEffect_Rain::Render()
+void CEffect_Rain::Render(CBackend& cmd_list)
 {
     if (!g_pGameLevel)
         return;
 
-    m_pRender->Render(*this);
+    m_pRender->Render(cmd_list, *this);
 }
 
 void CEffect_Rain::Calculate()
@@ -174,7 +211,7 @@ void CEffect_Rain::Hit(Fvector& pos)
         return;
 
     Particle* P = p_allocate();
-    if (0 == P)
+    if (nullptr == P)
         return;
 
     const Fsphere& bv_sphere = m_pRender->GetDropBounds();
@@ -194,12 +231,12 @@ void CEffect_Rain::p_create()
     for (u32 it = 0; it < particle_pool.size(); it++)
     {
         Particle& P = particle_pool[it];
-        P.prev = it ? (&particle_pool[it - 1]) : 0;
-        P.next = (it < (particle_pool.size() - 1)) ? (&particle_pool[it + 1]) : 0;
+        P.prev = it ? (&particle_pool[it - 1]) : nullptr;
+        P.next = (it < (particle_pool.size() - 1)) ? (&particle_pool[it + 1]) : nullptr;
     }
 
     // active and idle lists
-    particle_active = 0;
+    particle_active = nullptr;
     particle_idle = &particle_pool.front();
 }
 
@@ -207,8 +244,8 @@ void CEffect_Rain::p_create()
 void CEffect_Rain::p_destroy()
 {
     // active and idle lists
-    particle_active = 0;
-    particle_idle = 0;
+    particle_active = nullptr;
+    particle_idle = nullptr;
 
     // pool
     particle_pool.clear();
@@ -219,9 +256,9 @@ void CEffect_Rain::p_remove(Particle* P, Particle*& LST)
 {
     VERIFY(P);
     Particle* prev = P->prev;
-    P->prev = NULL;
+    P->prev = nullptr;
     Particle* next = P->next;
-    P->next = NULL;
+    P->next = nullptr;
     if (prev)
         prev->next = next;
     if (next)
@@ -234,7 +271,7 @@ void CEffect_Rain::p_remove(Particle* P, Particle*& LST)
 void CEffect_Rain::p_insert(Particle* P, Particle*& LST)
 {
     VERIFY(P);
-    P->prev = 0;
+    P->prev = nullptr;
     P->next = LST;
     if (LST)
         LST->prev = P;
@@ -244,7 +281,7 @@ void CEffect_Rain::p_insert(Particle* P, Particle*& LST)
 // determine size of _list_
 int CEffect_Rain::p_size(Particle* P)
 {
-    if (0 == P)
+    if (nullptr == P)
         return 0;
     int cnt = 0;
     while (P)
@@ -259,8 +296,8 @@ int CEffect_Rain::p_size(Particle* P)
 CEffect_Rain::Particle* CEffect_Rain::p_allocate()
 {
     Particle* P = particle_idle;
-    if (0 == P)
-        return NULL;
+    if (nullptr == P)
+        return nullptr;
     p_remove(P, particle_idle);
     p_insert(P, particle_active);
     return P;

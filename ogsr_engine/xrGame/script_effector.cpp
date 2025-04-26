@@ -13,7 +13,6 @@
 
 CScriptEffector::~CScriptEffector(){
 // Msg("CScriptEffector::~CScriptEffector() called");
-#pragma todo("KRodin: для чего вывод в лог?")
 }
 
 BOOL CScriptEffector::Process(SPPInfo& pp)

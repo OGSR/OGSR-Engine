@@ -318,7 +318,7 @@ CPhysicsElement* CPHShell::get_Element(u16 bone_id)
 CPhysicsJoint* CPHShell::get_Joint(u16 bone_id)
 {
     JOINT_I i = joints.begin(), e = joints.end();
-    for (; e != i; i++)
+    for (; e != i; ++i)
         if ((*i)->BoneID() == bone_id)
             return (CPhysicsJoint*)(*i);
     return NULL;
@@ -453,14 +453,14 @@ void CPHShell::get_AngularVel(Fvector& velocity) { (*elements.begin())->get_Angu
 void CPHShell::set_LinearVel(const Fvector& velocity)
 {
     ELEMENT_I i = elements.begin(), e = elements.end();
-    for (; i != e; i++)
+    for (; i != e; ++i)
         (*i)->set_LinearVel(velocity);
 }
 
 void CPHShell::set_AngularVel(const Fvector& velocity)
 {
     ELEMENT_I i = elements.begin(), e = elements.end();
-    for (; i != e; i++)
+    for (; i != e; ++i)
         (*i)->set_AngularVel(velocity);
 }
 
@@ -959,7 +959,7 @@ void CPHShell::AddElementRecursive(CPhysicsElement* root_e, u16 id, Fmatrix glob
             Fmatrix tr;
 
             tr = K->LL_GetTransform(ii);
-            Log("bone ", K->LL_BoneName_dbg(ii));
+            Log("bone ", K->LL_BoneName(ii));
             Log("bone_matrix", tr);
         }
         Log("end-------");
@@ -1217,7 +1217,7 @@ void CPHShell::PassEndJoints(u16 from, u16 to, CPHShell* dest)
 {
     JOINT_I i_from = joints.begin() + from, e = joints.begin() + to;
     JOINT_I i = i_from;
-    for (; i != e; i++)
+    for (; i != e; ++i)
     {
         (*i)->SetShell(dest);
     }

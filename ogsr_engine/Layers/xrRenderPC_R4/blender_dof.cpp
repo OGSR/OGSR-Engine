@@ -19,7 +19,8 @@ void CBlender_dof::Compile(CBlender_Compile& C)
 		C.r_dx10Texture("s_position", r2_RT_P);
 		C.r_dx10Texture("s_image", r2_RT_generic0);
 		C.r_dx10Texture("s_blur_2", r2_RT_blur_2);		
-	
+		C.r_dx10Texture("t_zbuffer", r2_RT_zbuffer_dof);
+
 		C.r_dx10Sampler("smp_base");
 		C.r_dx10Sampler("smp_nofilter");
 		C.r_dx10Sampler("smp_rtlinear");

@@ -8,8 +8,8 @@
 #include "../../xr_3da/xr_input.h"
 #include "../../Include/xrAPI/xrAPI.h"
 
-#include "StateManager\dx10SamplerStateCache.h"
-#include "StateManager\dx10StateCache.h"
+#include "StateManager/dx10SamplerStateCache.h"
+#include "StateManager/dx10StateCache.h"
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
@@ -23,6 +23,11 @@ CHW HW;
 
 CHW::CHW()
 {
+    if (!ThisInstanceIsGlobal())
+    {
+        ASSERT_FMT(false, "non global CHW");
+    }
+
     Device.seqAppActivate.Add(this);
     Device.seqAppDeactivate.Add(this);
 
@@ -37,23 +42,28 @@ CHW::~CHW()
     Device.seqAppActivate.Remove(this);
     Device.seqAppDeactivate.Remove(this);
 }
+
+#include <dxgi1_6.h>
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 void CHW::CreateD3D()
 {
     // Минимально поддерживаемая версия Windows => Windows Vista SP2 или Windows 7.
-    R_CHK(CreateDXGIFactory1(IID_PPV_ARGS(&pFactory)));
+    R_CHK(CreateDXGIFactory1(IID_PPV_ARGS(&m_pFactory)));
 
+    
     UINT i = 0;
-    while (pFactory->EnumAdapters1(i, &m_pAdapter) != DXGI_ERROR_NOT_FOUND)
+    while (m_pFactory->EnumAdapters1(i, &m_pAdapter) != DXGI_ERROR_NOT_FOUND)
     {
-        DXGI_ADAPTER_DESC desc{};
+        DXGI_ADAPTER_DESC desc;
         m_pAdapter->GetDesc(&desc);
 
         Msg("* Avail GPU [vendor:%X]-[device:%X]: %S", desc.VendorId, desc.DeviceId, desc.Description);
 
-        _RELEASE(m_pAdapter);
+        m_pAdapter->Release();
+        m_pAdapter = nullptr;
         ++i;
     }
 
@@ -68,38 +78,79 @@ void CHW::CreateD3D()
         Msg(" !CHW::CreateD3D() use DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE");
 
         _RELEASE(pFactory6);
+
+        b_modern = true;
     }
     else
     {
         Msg(" !CHW::CreateD3D() use EnumAdapters1(0)");
 
-        pFactory->EnumAdapters1(0, &m_pAdapter);
+        m_pFactory->EnumAdapters1(0, &m_pAdapter);
     }
 
-    m_pAdapter->QueryInterface(&m_pAdapter3);
 }
 
 void CHW::DestroyD3D()
 {
-    _SHOW_REF("refCount:m_pAdapter3", m_pAdapter3);
-    _RELEASE(m_pAdapter3);
-
     _SHOW_REF("refCount:m_pAdapter", m_pAdapter);
     _RELEASE(m_pAdapter);
 
-    _SHOW_REF("refCount:pFactory", pFactory);
-    _RELEASE(pFactory);
+    _SHOW_REF("refCount:pFactory", m_pFactory);
+    _RELEASE(m_pFactory);
+}
+
+void CHW::CreateSwapChain2(HWND hw)
+{
+    // Set up the presentation parameters
+    DXGI_SWAP_CHAIN_DESC1 desc{};
+
+    SelectResolution(desc.Width, desc.Height);
+
+    desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    desc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
+
+    desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD; // DXGI_SWAP_EFFECT_FLIP_DISCARD or DXGI_SWAP_EFFECT_DISCARD
+    desc.Scaling = DXGI_SCALING_NONE;
+
+    desc.BufferCount = desc.SwapEffect == DXGI_SWAP_EFFECT_FLIP_DISCARD ? r_back_buffer_count : 1; // For DXGI_SWAP_EFFECT_FLIP_DISCARD we need at least two
+    desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+
+    // Multisample
+    desc.SampleDesc.Count = 1;
+    desc.SampleDesc.Quality = 0;
+
+    // Additional setup
+    desc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH | DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING | DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
+
+    DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullscreen_desc{};
+    fullscreen_desc.Windowed = true;
+
+    fullscreen_desc.RefreshRate.Numerator = 60;
+    fullscreen_desc.RefreshRate.Denominator = 1;
+
+    IDXGIFactory2* pFactory2{};
+    m_pAdapter->GetParent(IID_PPV_ARGS(& pFactory2));
+
+    IDXGISwapChain1* swapchain{};
+    R_CHK(pFactory2->CreateSwapChainForHwnd(pDevice, hw, &desc, &fullscreen_desc, nullptr, &swapchain));
+
+    _RELEASE(pFactory2);
+
+    R_CHK(swapchain->GetDesc(&m_ChainDesc));
+    R_CHK(swapchain->QueryInterface(IID_PPV_ARGS(&m_pSwapChain)));
+
+    _RELEASE(swapchain);
+
+    R_CHK(m_pSwapChain->SetMaximumFrameLatency(2));
+    m_frameLatencyWaitableObject = m_pSwapChain->GetFrameLatencyWaitableObject();
 }
 
 void CHW::CreateDevice(HWND m_hWnd)
 {
     CreateD3D();
 
-    // General - select adapter and device
-    BOOL bWindowed = !psDeviceFlags.is(rsFullscreen);
-
     // Display the name of video board
-    DXGI_ADAPTER_DESC1 Desc{};
+    DXGI_ADAPTER_DESC1 Desc;
     R_CHK(m_pAdapter->GetDesc1(&Desc));
 
     DumpVideoMemoryUsage();
@@ -110,101 +161,90 @@ void CHW::CreateDevice(HWND m_hWnd)
     Caps.id_vendor = Desc.VendorId;
     Caps.id_device = Desc.DeviceId;
 
-    // Select back-buffer & depth-stencil format
-    D3DFORMAT& fTarget = Caps.fTarget;
-    D3DFORMAT& fDepth = Caps.fDepth;
-
-    //	HACK: DX10: Embed hard target format.
-    fTarget = D3DFMT_X8R8G8B8; //	No match in DX10. D3DFMT_A8B8G8R8->DXGI_FORMAT_R8G8B8A8_UNORM
-    fDepth = selectDepthStencil(fTarget);
-
-    // Set up the presentation parameters
-    DXGI_SWAP_CHAIN_DESC& sd = m_ChainDesc;
-    ZeroMemory(&sd, sizeof(sd));
-
-    selectResolution(sd.BufferDesc.Width, sd.BufferDesc.Height, bWindowed);
-
-    // Back buffer
-    //.	P.BackBufferWidth		= dwWidth;
-    //. P.BackBufferHeight		= dwHeight;
-    //	TODO: DX10: implement dynamic format selection
-    // sd.BufferDesc.Format		= fTarget;
-    sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    sd.BufferCount = 1;
-
-    // Multisample
-    sd.SampleDesc.Count = 1;
-    sd.SampleDesc.Quality = 0;
-
-    // Windoze
-    // P.SwapEffect			= bWindowed?D3DSWAPEFFECT_COPY:D3DSWAPEFFECT_DISCARD;
-    // P.hDeviceWindow			= m_hWnd;
-    // P.Windowed				= bWindowed;
-    sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-    sd.OutputWindow = m_hWnd;
-    sd.Windowed = bWindowed;
-
-    // Depth/stencil
-    // DX10 don't need this?
-    // P.EnableAutoDepthStencil= TRUE;
-    // P.AutoDepthStencilFormat= fDepth;
-    // P.Flags					= 0;	//. D3DPRESENTFLAG_DISCARD_DEPTHSTENCIL;
-
-    // Refresh rate
-    // P.PresentationInterval	= D3DPRESENT_INTERVAL_IMMEDIATE;
-    // if( !bWindowed )		P.FullScreen_RefreshRateInHz	= selectRefresh	(P.BackBufferWidth, P.BackBufferHeight,fTarget);
-    // else					P.FullScreen_RefreshRateInHz	= D3DPRESENT_RATE_DEFAULT;
-    if (bWindowed)
-    {
-        sd.BufferDesc.RefreshRate.Numerator = 60;
-        sd.BufferDesc.RefreshRate.Denominator = 1;
-    }
-    else
-    {
-        sd.BufferDesc.RefreshRate = selectRefresh(sd.BufferDesc.Width, sd.BufferDesc.Height, sd.BufferDesc.Format);
-    }
-
-    //	Additional set up
-    sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-
     UINT createDeviceFlags = 0;
-#ifdef DEBUG
+//#ifdef DEBUG
     if (IsDebuggerPresent())
-        createDeviceFlags |= D3D_CREATE_DEVICE_DEBUG;
-#endif
+        createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+//#endif
 
-    const auto createDevice = [&](const D3D_FEATURE_LEVEL* level, const u32 levels) {
-        return D3D11CreateDevice(m_pAdapter, D3D_DRIVER_TYPE_UNKNOWN, // Если мы выбираем конкретный адаптер, то мы обязаны использовать D3D_DRIVER_TYPE_UNKNOWN.
-                                 nullptr, createDeviceFlags, level, levels, D3D11_SDK_VERSION, &pDevice, &FeatureLevel, &pContext);
+    auto& pContext = d3d_contexts_pool[CHW::IMM_CTX_ID];
+
+    constexpr D3D_FEATURE_LEVEL pFeatureLevels[] = {
+        D3D_FEATURE_LEVEL_11_1,
+        D3D_FEATURE_LEVEL_11_0,
     };
 
-    R_CHK(createDevice(nullptr, 0));
+    R_CHK(D3D11CreateDevice(
+        m_pAdapter
+        , D3D_DRIVER_TYPE_UNKNOWN // Если мы выбираем конкретный адаптер, то мы обязаны использовать D3D_DRIVER_TYPE_UNKNOWN.
+        , nullptr
+        , createDeviceFlags
+        , pFeatureLevels
+        , std::size(pFeatureLevels)
+        , D3D11_SDK_VERSION
+        , &pDevice
+        , &FeatureLevel
+        , &pContext));
 
     R_ASSERT(FeatureLevel >= D3D_FEATURE_LEVEL_11_0); //На всякий случай
 
-    R_CHK(pFactory->CreateSwapChain(pDevice, &sd, &m_pSwapChain));
+    for (int id = 0; id < R__NUM_PARALLEL_CONTEXTS; ++id)
+    {
+        const HRESULT R = pDevice->CreateDeferredContext(0, &d3d_contexts_pool[id]);
+        R_ASSERT(SUCCEEDED(R));
+    }
 
-    // https://habr.com/ru/post/308980/
-    IDXGIDevice1* pDeviceDXGI = nullptr;
-    R_CHK(pDevice->QueryInterface(IID_PPV_ARGS(&pDeviceDXGI)));
-    R_CHK(pDeviceDXGI->SetMaximumFrameLatency(1));
-    _RELEASE(pDeviceDXGI);
+    CreateSwapChain2(m_hWnd);
 
+    //// https://habr.com/ru/post/308980/
+    //IDXGIDevice1* pDeviceDXGI = nullptr;
+    //R_CHK(pDevice->QueryInterface(IID_PPV_ARGS(&pDeviceDXGI)));
+    //R_CHK(pDeviceDXGI->SetMaximumFrameLatency(1));
+    //_RELEASE(pDeviceDXGI);
 
     _SHOW_REF("* CREATE: DeviceREF:", HW.pDevice);
 
-    //	Create render target and depth-stencil views here
-    UpdateViews();
+     // Register immediate context in profiler
+    profiler_ctx = TracyD3D11Context(pDevice, pContext);
 
-    size_t memory = Desc.DedicatedVideoMemory;
+    UpdateWindowProps(m_hWnd);
+
+    const size_t memory = Desc.DedicatedVideoMemory;
     Msg("*     Texture memory: %d M", memory / (1024 * 1024));
 
-    updateWindowProps(m_hWnd);
     fill_vid_mode_list(this);
+
+    // https://walbourn.github.io/direct3d-sdk-debug-layer-tricks/
+
+    //if (IsDebuggerPresent())
+    //{
+    //    ID3D11Debug* d3dDebug = nullptr;
+    //    if (SUCCEEDED(pDevice->QueryInterface(IID_PPV_ARGS(&d3dDebug))))
+    //    {
+    //        ID3D11InfoQueue* d3dInfoQueue = nullptr;
+    //        if (SUCCEEDED(d3dDebug->QueryInterface(IID_PPV_ARGS(&d3dInfoQueue))))
+    //        {
+    //            d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
+
+    //            // Add more message IDs here as needed
+    //            D3D11_MESSAGE_ID hide[] = {
+    //                D3D11_MESSAGE_ID_SETPRIVATEDATA_CHANGINGPARAMS,
+    //            };
+
+    //            D3D11_INFO_QUEUE_FILTER filter = {};
+    //            filter.DenyList.NumIDs = _countof(hide);
+    //            filter.DenyList.pIDList = hide;
+    //            d3dInfoQueue->AddStorageFilterEntries(&filter);
+
+    //            _RELEASE(d3dInfoQueue);
+    //        }
+    //        _RELEASE(d3dDebug);
+    //    }
+    //}
 
     ImGui_ImplDX11_Init(m_hWnd, pDevice, pContext);
 
-    pContext->QueryInterface(IID_PPV_ARGS(&pAnnotation));
+    ImGui_ImplDX11_CreateDeviceObjects();
 }
 
 void CHW::DestroyDevice()
@@ -212,35 +252,24 @@ void CHW::DestroyDevice()
     ImGui_ImplDX11_Shutdown();
 
     //	Destroy state managers
-    StateManager.Reset();
     RSManager.ClearStateArray();
     DSSManager.ClearStateArray();
     BSManager.ClearStateArray();
     SSManager.ClearStateArray();
 
-    _SHOW_REF("refCount:pBaseZB", pBaseZB);
-    _RELEASE(pBaseZB);
-
-    _RELEASE(pAnnotation);
-
-    _SHOW_REF("refCount:pBaseRT", pBaseRT);
-    _RELEASE(pBaseRT);
-    //#ifdef DEBUG
-    //	_SHOW_REF				("refCount:dwDebugSB",dwDebugSB);
-    //	_RELEASE				(dwDebugSB);
-    //#endif
-
-    //	Must switch to windowed mode to release swap chain
-    if (!m_ChainDesc.Windowed)
-        m_pSwapChain->SetFullscreenState(FALSE, NULL);
     _SHOW_REF("refCount:m_pSwapChain", m_pSwapChain);
     _RELEASE(m_pSwapChain);
 
-
-    _RELEASE(pContext);
+    for (auto& id : d3d_contexts_pool)
+    {
+        _SHOW_REF("refCount:pContext", id);
+        _RELEASE(id);
+    }
 
     _SHOW_REF("DeviceREF:", HW.pDevice);
     _RELEASE(HW.pDevice);
+
+    TracyD3D11Destroy(profiler_ctx);
 
     DestroyD3D();
 
@@ -250,254 +279,168 @@ void CHW::DestroyDevice()
 //////////////////////////////////////////////////////////////////////
 // Resetting device
 //////////////////////////////////////////////////////////////////////
-void CHW::Reset(HWND hwnd)
+void CHW::ResetDevice(HWND m_hWnd)
 {
     ImGui_ImplDX11_InvalidateDeviceObjects();
 
     DXGI_SWAP_CHAIN_DESC& cd = m_ChainDesc;
 
-    BOOL bWindowed = !psDeviceFlags.is(rsFullscreen);
+    DXGI_MODE_DESC& desc = cd.BufferDesc;
 
-    cd.Windowed = bWindowed;
-
-    m_pSwapChain->SetFullscreenState(!bWindowed, NULL);
-
-    DXGI_MODE_DESC& desc = m_ChainDesc.BufferDesc;
-
-    selectResolution(desc.Width, desc.Height, bWindowed);
-
-    if (bWindowed)
-    {
-        desc.RefreshRate.Numerator = 60;
-        desc.RefreshRate.Denominator = 1;
-    }
-    else
-        desc.RefreshRate = selectRefresh(desc.Width, desc.Height, desc.Format);
+    SelectResolution(desc.Width, desc.Height);
 
     CHK_DX(m_pSwapChain->ResizeTarget(&desc));
+    CHK_DX(m_pSwapChain->ResizeBuffers(cd.BufferCount, desc.Width, desc.Height, desc.Format
+        , DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH | DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING | DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT));
 
-#ifdef DEBUG
-    //	_RELEASE			(dwDebugSB);
-#endif
-    _SHOW_REF("refCount:pBaseZB", pBaseZB);
-    _SHOW_REF("refCount:pBaseRT", pBaseRT);
+    UpdateWindowProps(m_hWnd);
 
-    _RELEASE(pBaseZB);
-    _RELEASE(pBaseRT);
-
-    CHK_DX(m_pSwapChain->ResizeBuffers(cd.BufferCount, desc.Width, desc.Height, desc.Format, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH));
-
-    UpdateViews();
-
-    updateWindowProps(hwnd);
+    Device.ShowMainWindow();
 
     ImGui_ImplDX11_CreateDeviceObjects();
 }
 
-D3DFORMAT CHW::selectDepthStencil(D3DFORMAT fTarget)
+bool CHW::CheckFormatSupport(const DXGI_FORMAT format, const u32 feature) const
 {
-    // R3 hack
-#pragma todo("R3 need to specify depth format")
-    return D3DFMT_D24S8;
+    u32 supports;
+
+    if (SUCCEEDED(pDevice->CheckFormatSupport(format, &supports)))
+    {
+        if (supports & feature)
+            return true;
+    }
+
+    return false;
 }
 
-void CHW::selectResolution(u32& dwWidth, u32& dwHeight, BOOL bWindowed)
+void CHW::SelectResolution(u32& dwWidth, u32& dwHeight)
 {
     fill_vid_mode_list(this);
 
-    if (bWindowed)
     {
         dwWidth = psCurrentVidMode[0];
         dwHeight = psCurrentVidMode[1];
-    }
-    else // check
-    {
-        string64 buff;
-        xr_sprintf(buff, sizeof(buff), "%dx%d", psCurrentVidMode[0], psCurrentVidMode[1]);
-
-        if (_ParseItem(buff, vid_mode_token) == u32(-1)) // not found
-        { // select safe
-            xr_sprintf(buff, sizeof(buff), "vid_mode %s", vid_mode_token[0].name);
-            Console->Execute(buff);
-        }
-
-        dwWidth = psCurrentVidMode[0];
-        dwHeight = psCurrentVidMode[1];
-    }
-}
-
-DXGI_RATIONAL CHW::selectRefresh(u32 dwWidth, u32 dwHeight, DXGI_FORMAT fmt)
-{
-    DXGI_RATIONAL res;
-
-    res.Numerator = 60;
-    res.Denominator = 1;
-
-    float CurrentFreq = 60.0f;
-
-    {
-        xr_vector<DXGI_MODE_DESC> modes;
-
-        IDXGIOutput* pOutput;
-        m_pAdapter->EnumOutputs(0, &pOutput);
-        VERIFY(pOutput);
-
-        UINT num = 0;
-        DXGI_FORMAT format = fmt;
-        UINT flags = 0;
-
-        // Get the number of display modes available
-        pOutput->GetDisplayModeList(format, flags, &num, 0);
-
-        // Get the list of display modes
-        modes.resize(num);
-        pOutput->GetDisplayModeList(format, flags, &num, &modes.front());
-
-        _RELEASE(pOutput);
-
-        for (u32 i = 0; i < num; ++i)
-        {
-            DXGI_MODE_DESC& desc = modes[i];
-
-            if ((desc.Width == dwWidth) && (desc.Height == dwHeight))
-            {
-                VERIFY(desc.RefreshRate.Denominator);
-                float TempFreq = float(desc.RefreshRate.Numerator) / float(desc.RefreshRate.Denominator);
-                if (TempFreq > CurrentFreq)
-                {
-                    CurrentFreq = TempFreq;
-                    res = desc.RefreshRate;
-                }
-            }
-        }
-
-        return res;
     }
 }
 
 void CHW::OnAppActivate()
 {
-    if (m_pSwapChain && !m_ChainDesc.Windowed)
-    {
-        ShowWindow(m_ChainDesc.OutputWindow, SW_RESTORE);
-        m_pSwapChain->SetFullscreenState(psDeviceFlags.is(rsFullscreen), nullptr);
-    }
+    //const HWND insertPos = IsDebuggerPresent() ? HWND_NOTOPMOST : HWND_TOPMOST;
+
+    //SetWindowPos(Device.m_hWnd, insertPos, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 }
 
 void CHW::OnAppDeactivate()
 {
-    if (m_pSwapChain && !m_ChainDesc.Windowed)
-    {
-        m_pSwapChain->SetFullscreenState(FALSE, NULL);
-        ShowWindow(m_ChainDesc.OutputWindow, SW_MINIMIZE);
-    }
+    //SetWindowPos(Device.m_hWnd, HWND_NOTOPMOST , 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 }
 
-BOOL CHW::support(D3DFORMAT fmt, DWORD type, DWORD usage)
+bool CHW::ThisInstanceIsGlobal() const
 {
-    //	TODO: DX10: implement stub for this code.
-    VERIFY(!"Implement CHW::support");
-    /*
-    HRESULT hr		= pD3D->CheckDeviceFormat(DevAdapter,DevT,Caps.fTarget,usage,(D3DRESOURCETYPE)type,fmt);
-    if (FAILED(hr))	return FALSE;
-    else			return TRUE;
-    */
-    return TRUE;
+    return this == &HW;
 }
+
+void CHW::WaitOnSwapChain() const { WaitForSingleObjectEx(m_frameLatencyWaitableObject, INFINITE, true); }
 
 void CHW::DumpVideoMemoryUsage() const
 {
-    DXGI_ADAPTER_DESC1 Desc{};
-    R_CHK(m_pAdapter->GetDesc1(&Desc));
-
-    DXGI_QUERY_VIDEO_MEMORY_INFO videoMemoryInfo{};
-
-    if (m_pAdapter3 && SUCCEEDED(m_pAdapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo)))
+    if (b_modern)
     {
-        Msg("\n\tDedicated VRAM: %zu MB (%zu bytes)\n\tDedicated Memory: %zu MB (%zu bytes)\n\tShared Memory: %zu MB (%zu bytes)\n\tCurrentUsage: %zu MB (%zu bytes)\n\tBudget: "
-            "%zu MB (%zu bytes)",
-            Desc.DedicatedVideoMemory / 1024 / 1024, Desc.DedicatedVideoMemory, Desc.DedicatedSystemMemory / 1024 / 1024, Desc.DedicatedSystemMemory,
-            Desc.SharedSystemMemory / 1024 / 1024, Desc.SharedSystemMemory, videoMemoryInfo.CurrentUsage / 1024 / 1024, videoMemoryInfo.CurrentUsage,
-            videoMemoryInfo.Budget / 1024 / 1024, videoMemoryInfo.Budget);
-    }
-    else
-    {
-        Msg("\n\tDedicated VRAM: %zu MB (%zu bytes)\n\tDedicated Memory: %zu MB (%zu bytes)\n\tShared Memory: %zu MB (%zu bytes)", Desc.DedicatedVideoMemory / 1024 / 1024,
-            Desc.DedicatedVideoMemory, Desc.DedicatedSystemMemory / 1024 / 1024, Desc.DedicatedSystemMemory, Desc.SharedSystemMemory / 1024 / 1024, Desc.SharedSystemMemory);
+        DXGI_ADAPTER_DESC1 Desc;
+        R_CHK(m_pAdapter->GetDesc1(&Desc));
+
+        IDXGIAdapter3* adapter3;
+        DXGI_QUERY_VIDEO_MEMORY_INFO videoMemoryInfo;
+
+        if (SUCCEEDED(m_pAdapter->QueryInterface(&adapter3)) 
+            && SUCCEEDED(adapter3->QueryVideoMemoryInfo(0, DXGI_MEMORY_SEGMENT_GROUP_LOCAL, &videoMemoryInfo)))
+        {
+            Msg("\n\tDedicated VRAM: %zu MB (%zu bytes)\n\tDedicated Memory: %zu MB (%zu bytes)\n\tShared Memory: %zu MB (%zu bytes)\n\tCurrentUsage: %zu MB (%zu bytes)\n\tBudget: %zu MB (%zu bytes)",
+                Desc.DedicatedVideoMemory / 1024 / 1024, Desc.DedicatedVideoMemory, 
+                Desc.DedicatedSystemMemory / 1024 / 1024, Desc.DedicatedSystemMemory,
+                Desc.SharedSystemMemory / 1024 / 1024, Desc.SharedSystemMemory,
+                videoMemoryInfo.CurrentUsage / 1024 / 1024, videoMemoryInfo.CurrentUsage,
+                videoMemoryInfo.Budget/ 1024 / 1024, videoMemoryInfo.Budget
+            );
+        }
+        else
+        {
+            Msg("\n\tDedicated VRAM: %zu MB (%zu bytes)\n\tDedicated Memory: %zu MB (%zu bytes)\n\tShared Memory: %zu MB (%zu bytes)",
+                Desc.DedicatedVideoMemory / 1024 / 1024, Desc.DedicatedVideoMemory, 
+                Desc.DedicatedSystemMemory / 1024 / 1024, Desc.DedicatedSystemMemory,
+                Desc.SharedSystemMemory / 1024 / 1024, Desc.SharedSystemMemory
+            );            
+        }
+
+        _RELEASE(adapter3);
     }
 }
 
-void CHW::updateWindowProps(HWND m_hWnd)
+void CHW::UpdateWindowProps(HWND m_hWnd) const
 {
     LONG_PTR dwWindowStyle = 0;
+
     // Set window properties depending on what mode were in.
-    if (!psDeviceFlags.is(rsFullscreen))
+    static const bool bBordersMode = !!strstr(Core.Params, "-draw_borders");
+    //dwWindowStyle = WS_VISIBLE;
+    if (bBordersMode)
+        dwWindowStyle |= WS_BORDER | WS_DLGFRAME | WS_SYSMENU | WS_MINIMIZEBOX;
+
+    SetWindowLongPtr(m_hWnd, GWL_STYLE, dwWindowStyle);
+
+    // When moving from fullscreen to windowed mode, it is important to
+    // adjust the window size after recreating the device rather than
+    // beforehand to ensure that you get the window size you want.  For
+    // example, when switching from 640x480 fullscreen to windowed with
+    // a 1000x600 window on a 1024x768 desktop, it is impossible to set
+    // the window size to 1000x600 until after the display mode has
+    // changed to 1024x768, because windows cannot be larger than the
+    // desktop.
+
+    RECT m_rcWindowBounds;
+    int fYOffset = 0;
+
+    auto& dxgi_mode_desc = m_ChainDesc.BufferDesc;
+
+    static const bool bCenter = !!strstr(Core.Params, "-center_screen");
+
+    if (bCenter)
     {
-        static const bool bBordersMode = !!strstr(Core.Params, "-draw_borders");
-        dwWindowStyle = WS_VISIBLE;
-        if (bBordersMode)
-            dwWindowStyle |= WS_BORDER | WS_DLGFRAME | WS_SYSMENU | WS_MINIMIZEBOX;
+        RECT DesktopRect;
 
-        SetWindowLongPtr(m_hWnd, GWL_STYLE, dwWindowStyle);
+        GetClientRect(GetDesktopWindow(), &DesktopRect);
 
-        // When moving from fullscreen to windowed mode, it is important to
-        // adjust the window size after recreating the device rather than
-        // beforehand to ensure that you get the window size you want.  For
-        // example, when switching from 640x480 fullscreen to windowed with
-        // a 1000x600 window on a 1024x768 desktop, it is impossible to set
-        // the window size to 1000x600 until after the display mode has
-        // changed to 1024x768, because windows cannot be larger than the
-        // desktop.
-
-        RECT m_rcWindowBounds{};
-        int fYOffset = 0;
-
-        static const bool bCenter = !!strstr(Core.Params, "-center_screen");
-        if (bCenter)
-        {
-            RECT DesktopRect;
-
-            GetClientRect(GetDesktopWindow(), &DesktopRect);
-
-            SetRect(&m_rcWindowBounds, (DesktopRect.right - m_ChainDesc.BufferDesc.Width) / 2, (DesktopRect.bottom - m_ChainDesc.BufferDesc.Height) / 2,
-                    (DesktopRect.right + m_ChainDesc.BufferDesc.Width) / 2, (DesktopRect.bottom + m_ChainDesc.BufferDesc.Height) / 2);
-        }
-        else
-        {
-            if (bBordersMode)
-                fYOffset = GetSystemMetrics(SM_CYCAPTION); // size of the window title bar
-
-            SetRect(&m_rcWindowBounds, 0, 0, m_ChainDesc.BufferDesc.Width, m_ChainDesc.BufferDesc.Height);
-        }
-
-        if (bBordersMode)
-        {
-            AdjustWindowRect(&m_rcWindowBounds, DWORD(dwWindowStyle), FALSE);
-
-            SetWindowPos(m_hWnd, HWND_NOTOPMOST, m_rcWindowBounds.left, m_rcWindowBounds.top + fYOffset, m_rcWindowBounds.right - m_rcWindowBounds.left,
-                         m_rcWindowBounds.bottom - m_rcWindowBounds.top, SWP_SHOWWINDOW | SWP_NOCOPYBITS | SWP_DRAWFRAME);
-        }
-        else
-        {
-            SetWindowPos(m_hWnd, HWND_NOTOPMOST, 0, 0, m_rcWindowBounds.right - m_rcWindowBounds.left, m_rcWindowBounds.bottom - m_rcWindowBounds.top,
-                         SWP_SHOWWINDOW | SWP_NOCOPYBITS | SWP_DRAWFRAME);
-        }
+        SetRect(&m_rcWindowBounds, 
+            (DesktopRect.right - dxgi_mode_desc.Width) / 2, 
+            (DesktopRect.bottom - dxgi_mode_desc.Height) / 2,
+            (DesktopRect.right + dxgi_mode_desc.Width) / 2, 
+            (DesktopRect.bottom + dxgi_mode_desc.Height) / 2);
     }
     else
     {
-        SetWindowLongPtr(m_hWnd, GWL_STYLE, dwWindowStyle = (WS_POPUP | WS_VISIBLE));
+        if (bBordersMode)
+            fYOffset = GetSystemMetrics(SM_CYCAPTION); // size of the window title bar
+
+        SetRect(&m_rcWindowBounds, 0, 0, dxgi_mode_desc.Width, dxgi_mode_desc.Height);
     }
 
-    SetForegroundWindow(m_hWnd);
+    if (bBordersMode)
+        AdjustWindowRect(&m_rcWindowBounds, DWORD(dwWindowStyle), FALSE);
 
-    pInput->clip_cursor(true);
+    SetWindowPos(m_hWnd, HWND_NOTOPMOST
+        , m_rcWindowBounds.left
+        , m_rcWindowBounds.top + fYOffset
+        , (m_rcWindowBounds.right - m_rcWindowBounds.left)
+        , (m_rcWindowBounds.bottom - m_rcWindowBounds.top)
+        
+        , /*SWP_SHOWWINDOW | */SWP_NOCOPYBITS | SWP_DRAWFRAME);
 }
 
 struct _uniq_mode
 {
     _uniq_mode(LPCSTR v) : _val(v) {}
     LPCSTR _val;
-    bool operator()(LPCSTR _other) { return !stricmp(_val, _other); }
+    bool operator()(LPCSTR _other) const { return !stricmp(_val, _other); }
 };
 
 void free_vid_mode_list()
@@ -507,18 +450,18 @@ void free_vid_mode_list()
         xr_free(vid_mode_token[i].name);
     }
     xr_free(vid_mode_token);
-    vid_mode_token = NULL;
+    vid_mode_token = nullptr;
 }
 
 void fill_vid_mode_list(CHW* _hw)
 {
-    if (vid_mode_token != NULL)
+    if (vid_mode_token != nullptr)
         return;
+
     xr_vector<LPCSTR> _tmp;
     xr_vector<DXGI_MODE_DESC> modes;
 
     IDXGIOutput* pOutput;
-    //_hw->m_pSwapChain->GetContainingOutput(&pOutput);
     _hw->m_pAdapter->EnumOutputs(0, &pOutput);
     VERIFY(pOutput);
 
@@ -527,7 +470,7 @@ void fill_vid_mode_list(CHW* _hw)
     UINT flags = 0;
 
     // Get the number of display modes available
-    pOutput->GetDisplayModeList(format, flags, &num, 0);
+    pOutput->GetDisplayModeList(format, flags, &num, nullptr);
 
     // Get the list of display modes
     modes.resize(num);
@@ -537,7 +480,8 @@ void fill_vid_mode_list(CHW* _hw)
 
     for (u32 i = 0; i < num; ++i)
     {
-        DXGI_MODE_DESC& desc = modes[i];
+        const DXGI_MODE_DESC& desc = modes[i];
+
         string32 str;
 
         if (desc.Width < 800)
@@ -548,19 +492,16 @@ void fill_vid_mode_list(CHW* _hw)
         if (_tmp.end() != std::find_if(_tmp.begin(), _tmp.end(), _uniq_mode(str)))
             continue;
 
-        _tmp.push_back(NULL);
+        _tmp.push_back(nullptr);
         _tmp.back() = xr_strdup(str);
     }
-
-    //	_tmp.push_back				(NULL);
-    //	_tmp.back()					= xr_strdup("1024x768");
 
     u32 _cnt = _tmp.size() + 1;
 
     vid_mode_token = xr_alloc<xr_token>(_cnt);
 
     vid_mode_token[_cnt - 1].id = -1;
-    vid_mode_token[_cnt - 1].name = NULL;
+    vid_mode_token[_cnt - 1].name = nullptr;
 
 #ifdef DEBUG
     Msg("Available video modes[%d]:", _tmp.size());
@@ -573,47 +514,4 @@ void fill_vid_mode_list(CHW* _hw)
         Msg("[%s]", _tmp[i]);
 #endif // DEBUG
     }
-}
-
-void CHW::UpdateViews()
-{
-    DXGI_SWAP_CHAIN_DESC& sd = m_ChainDesc;
-    HRESULT R;
-
-    // Create a render target view
-    // R_CHK	(pDevice->GetRenderTarget			(0,&pBaseRT));
-    ID3DTexture2D* pBuffer;
-    R = m_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBuffer));
-    R_CHK(R);
-
-    R = pDevice->CreateRenderTargetView(pBuffer, NULL, &pBaseRT);
-    pBuffer->Release();
-    R_CHK(R);
-
-    //	Create Depth/stencil buffer
-    //	HACK: DX10: hard depth buffer format
-    // R_CHK	(pDevice->GetDepthStencilSurface	(&pBaseZB));
-    ID3DTexture2D* pDepthStencil = NULL;
-    D3D_TEXTURE2D_DESC descDepth{};
-    descDepth.Width = sd.BufferDesc.Width;
-    descDepth.Height = sd.BufferDesc.Height;
-    descDepth.MipLevels = 1;
-    descDepth.ArraySize = 1;
-    descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-    descDepth.SampleDesc.Count = 1;
-    descDepth.SampleDesc.Quality = 0;
-    descDepth.Usage = D3D_USAGE_DEFAULT;
-    descDepth.BindFlags = D3D_BIND_DEPTH_STENCIL;
-    descDepth.CPUAccessFlags = 0;
-    descDepth.MiscFlags = 0;
-    R = pDevice->CreateTexture2D(&descDepth, // Texture desc
-                                 NULL, // Initial data
-                                 &pDepthStencil); // [out] Texture
-    R_CHK(R);
-
-    //	Create Depth/stencil view
-    R = pDevice->CreateDepthStencilView(pDepthStencil, NULL, &pBaseZB);
-    R_CHK(R);
-
-    pDepthStencil->Release();
 }

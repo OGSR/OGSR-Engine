@@ -227,7 +227,7 @@ bool CUIScrollView::OnMouse(float x, float y, EUIMessages mouse_action)
     if (inherited::OnMouse(x, y, mouse_action))
         return true;
 
-    bool with_shift = Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT);
+    bool with_shift = pInput->iGetAsyncKeyState(DIK_LSHIFT) || pInput->iGetAsyncKeyState(DIK_RSHIFT);
 
     switch (mouse_action)
     {
@@ -250,7 +250,7 @@ bool CUIScrollView::OnMouse(float x, float y, EUIMessages mouse_action)
         return true;
         break;
     case WINDOW_MOUSE_MOVE:
-        if (pInput->iGetAsyncBtnState(0))
+        if (pInput->iGetAsyncKeyState(MOUSE_1))
         {
             Fvector2 curr_pad_pos = m_pad->GetWndPos();
             curr_pad_pos.y += GetUICursor()->GetCursorPositionDelta().y;

@@ -1,5 +1,3 @@
-#ifndef xrPoolH
-#define xrPoolH
 #pragma once
 
 template <class T, int granularity>
@@ -58,4 +56,3 @@ public:
         blocks.clear();
     }
 };
-#endif

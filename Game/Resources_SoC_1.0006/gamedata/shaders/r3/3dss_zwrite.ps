@@ -1,0 +1,19 @@
+#include "common.h"
+
+Texture2D rt_tempzb;
+
+struct PSOutput
+{
+    // float4 mask : SV_Target4; //SSS hud mask?
+    float depth : SV_Depth;
+};
+
+PSOutput main(float4 hpos : SV_Position)
+{
+    PSOutput output;
+
+    output.depth = rt_tempzb[hpos.xy].x;
+    // output.mask = float4(1.0, 0.0, 0.0, 0.0);
+
+    return output;
+}

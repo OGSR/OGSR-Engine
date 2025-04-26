@@ -159,8 +159,10 @@ protected:
 
     const char* m_str_count_tmpl;
 
-    // режим выделения рамкой противников
+    bool m_bFlameParticlesHideInZoom{};
+
 protected:
+    // режим выделения рамкой противников
     bool m_bVision;
     CBinocularsVision* m_binoc_vision;
 
@@ -216,4 +218,6 @@ protected:
 
     virtual void OnMotionMark(u32 state, const motion_marks& M) override;
     int CheckAmmoBeforeReload(u32& v_ammoType);
+
+    bool ShouldPlayFlameParticles();
 };

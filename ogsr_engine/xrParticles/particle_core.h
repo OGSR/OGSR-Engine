@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef particle_coreH
-#define particle_coreH
+#pragma once
 
 #define SQRT2PI 2.506628274631000502415765284811045253006f
 #define ONEOVERSQRT2PI (1.f / SQRT2PI)
@@ -34,5 +33,3 @@ struct PARTICLES_API pDomain
 // misc
 float NRand(float sigma = 1.0f);
 }; // namespace PAPI
-//---------------------------------------------------------------------------
-#endif

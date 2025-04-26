@@ -14,6 +14,7 @@ CPHObject::CPHObject() : ISpatial(g_SpatialSpacePhysic)
 {
     m_flags.flags = 0;
     spatial.type |= STYPE_PHYSIC;
+    spatial.dbg_name = "CPHObject";
     m_island.Init();
     m_check_count = 0;
     CPHCollideValidator::InitObject(*this);
@@ -88,7 +89,7 @@ void CPHObject::Collide()
     {
         CPHMoveStorage* tracers = MoveStorage();
         CPHMoveStorage::iterator I = tracers->begin(), E = tracers->end();
-        for (; E != I; I++)
+        for (; E != I; ++I)
         {
             const Fvector *from = 0, *to = 0;
             Fvector dir;

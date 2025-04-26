@@ -4,7 +4,8 @@ struct v2p
 {
     float2 tc0 : TEXCOORD0; // base
     float4 c : COLOR0; // diffuse
-    float fog : FOG; // fog
+    float4 hpos : SV_Position;
+    float fog : FOG;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

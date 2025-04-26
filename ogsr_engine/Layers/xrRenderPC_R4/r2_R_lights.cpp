@@ -1,38 +1,130 @@
 #include "stdafx.h"
 
-IC bool pred_area(light* _1, light* _2)
-{
-    u32 a0 = _1->X.S.size;
-    u32 a1 = _2->X.S.size;
-    return a0 > a1; // reverse -> descending
-}
-
 bool check_grass_shadow(light* L, CFrustum VB)
 {
-    // Grass shadows are allowed?
-    if (ps_ssfx_grass_shadows.x < 1 || !ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
-        return false;
     // Inside the range?
     if (L->vis.distance > ps_ssfx_grass_shadows.z)
         return false;
+
     // Is in view? L->vis.visible?
     u32 mask = 0xff;
     if (!VB.testSphere(L->position, L->range * 0.6f, mask))
         return false;
+
     return true;
 }
 
-void CRender::render_lights(light_Package& LP)
+struct light_ctx
 {
-    //////////////////////////////////////////////////////////////////////////
-    // Refactor order based on ability to pack shadow-maps
-    // 1. calculate area + sort in descending order
-    // const	u16		smap_unassigned		= u16(-1);
+    u32 context_id{CHW::INVALID_CONTEXT_ID};
+    u32 curr{};
+    xr_vector<light*> lights;
+};
+
+void CRender::render_lights_shadowed_one(light_ctx& task)
+{
+    auto build = [this, &task] {
+        auto& dsgraph = get_context(task.context_id);
+        light* L = task.lights[task.curr];
+
+        // use smapvis only for static light sources
+        if (!L->get_moveable())
+        {
+            L->svis[dsgraph.context_id].begin();
+        }
+
+        dsgraph.phase = PHASE_SMAP;
+        dsgraph.r_pmask(true, false);
+
+        CFrustum view_frustum;
+        view_frustum.CreateFromMatrix(L->X.S.combine, FRUSTUM_P_ALL & (~FRUSTUM_P_NEAR));
+
+        dsgraph.max_render_distance = std::max(30.f, L->get_range() + 20.f);
+
+        dsgraph.build_subspace(L->spatial.sector_id, &view_frustum, L->X.S.combine, L->position, TRUE);
+
+        bool empty = dsgraph.mapNormalPasses[0][0].empty() && dsgraph.mapMatrixPasses[0][0].empty();
+        VERIFY(dsgraph.mapNormalPasses[1][0].empty() && dsgraph.mapMatrixPasses[1][0].empty() && dsgraph.mapSorted.empty());
+
+        if (!empty)
+        {
+            auto render = [this, &task] {
+                auto& dsgraph = get_context(task.context_id);
+                light* L = task.lights[task.curr];
+
+                stats.s_merged++;
+
+                Target->phase_smap_spot(dsgraph.cmd_list, L);
+                dsgraph.cmd_list.set_xform_world(Fidentity);
+                dsgraph.cmd_list.set_xform_view(L->X.S.view);
+                dsgraph.cmd_list.set_xform_project(L->X.S.project);
+                dsgraph.r_dsgraph_render_graph(0);
+
+                if (ps_r2_ls_flags.test(R2FLAG_LIGHT_DETAILS))
+                {
+                    if (check_grass_shadow(L, ViewBase))
+                    {
+                        // Use light position to calc "fade"
+                        Details->Render(dsgraph.cmd_list, true, L);
+                    }
+                }
+
+                if (!L->get_moveable())
+                {
+                    L->svis[dsgraph.context_id].end();
+                }
+
+                if (++task.curr < task.lights.size())
+                    render_lights_shadowed_one(task);
+            };
+
+            if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_LIGHTS))
+            {
+                light_pool.submit_detach(render);
+            }
+            else
+            {
+                render();
+            }
+        }
+        else
+        {
+            stats.s_finalclip++;
+
+            if (!L->get_moveable())
+            {
+                L->svis[dsgraph.context_id].end();
+            }
+
+            task.lights.erase(task.lights.begin() + task.curr);
+
+            if (task.curr < task.lights.size())
+                render_lights_shadowed_one(task);
+        }
+    };
+
+    if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_LIGHTS))
     {
-        xr_vector<light*>& source = LP.v_shadowed;
+        light_pool.submit_detach(build);
+    }
+    else
+    {
+        build();
+    }
+}
+
+void CRender::render_lights_shadowed(light_Package& LP)
+{
+    auto& source = LP.v_shadowed;
+
+    // Refactor order based on ability to pack shadow-maps
+
+    // 1. calculate area + sort in descending order
+    {
         for (u32 it = 0; it < source.size(); it++)
         {
             light* L = source[it];
+            // L->vis_update();
             if (!L->vis.visible)
             {
                 source.erase(source.begin() + it);
@@ -40,45 +132,15 @@ void CRender::render_lights(light_Package& LP)
             }
             else
             {
-                LR.compute_xf_spot(L);
-            }
-        }
-    }
+                L->optimize_smap_size();
 
-    // 2. refactor - infact we could go from the backside and sort in ascending order
-    {
-        xr_vector<light*>& source = LP.v_shadowed;
-        xr_vector<light*> refactored;
-        refactored.reserve(source.size());
-        u32 total = source.size();
-
-        for (u16 smap_ID = 0; refactored.size() != total; smap_ID++)
-        {
-            LP_smap_pool.initialize(RImplementation.o.smapsize);
-            std::sort(source.begin(), source.end(), pred_area);
-            for (u32 test = 0; test < source.size(); test++)
-            {
-                light* L = source[test];
-                SMAP_Rect R;
-                if (LP_smap_pool.push(R, L->X.S.size))
+                if (!L->get_moveable())
                 {
-                    // OK
-                    L->X.S.posX = R.min.x;
-                    L->X.S.posY = R.min.y;
-                    L->vis.smap_ID = smap_ID;
-                    refactored.push_back(L);
-                    source.erase(source.begin() + test);
-                    test--;
+                    Lights_LastFrame.push_back(L);
                 }
             }
         }
-
-        // save (lights are popped from back)
-        std::reverse(refactored.begin(), refactored.end());
-        LP.v_shadowed = refactored;
     }
-
-    PIX_EVENT(SHADOWED_LIGHTS);
 
     //////////////////////////////////////////////////////////////////////////
     // sort lights by importance???
@@ -93,220 +155,218 @@ void CRender::render_lights(light_Package& LP)
     //	}
     //	if (left_some_lights_that_doesn't cast shadows)
     //		accumulate them
-    HOM.Disable();
-    while (LP.v_shadowed.size())
+
+    // if (has_spot_shadowed)
+    while (!source.empty())
     {
-        // if (has_spot_shadowed)
-        xr_vector<light*> L_spot_s;
         stats.s_used++;
 
-        // generate spot shadowmap
-        Target->phase_smap_spot_clear();
+        static xr_vector<light_ctx> light_tasks;
 
-        auto& source = LP.v_shadowed;
-        const u16 sid = source.back()->vis.smap_ID;
-
-        while (!source.empty())
+        if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_LIGHTS))
         {
-            light* L = source.back();
+            light_tasks.reserve(R__NUM_PARALLEL_CONTEXTS);
 
-            if (L->vis.smap_ID != sid)
-                break;
-
-            source.pop_back();
-
-            if (!L->spatial.sector)
+            for (size_t i{}; i < std::min<size_t>(R__NUM_PARALLEL_CONTEXTS, source.size()); i++)
             {
-                Msg("!![%s] L->spatial.sector not found in Light [%p]", __FUNCTION__, L);
-                continue;
+                const u32 id = alloc_context();
+                if (id != CHW::INVALID_CONTEXT_ID)
+                    light_tasks.emplace_back().context_id = id;
             }
-
-            Lights_LastFrame.push_back(L);
-
-            // render
-            phase = PHASE_SMAP;
-            if (RImplementation.o.Tshadows)
-                r_pmask(true, true);
-            else
-                r_pmask(true, false);
-            L->svis.begin();
-            PIX_EVENT(SHADOWED_LIGHTS_RENDER_SUBSPACE);
-            r_dsgraph_render_subspace(L->spatial.sector, L->X.S.combine, L->position, TRUE);
-            bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
-            bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
-            if (bNormal || bSpecial)
-            {
-                stats.s_merged++;
-                L_spot_s.push_back(L);
-                Target->phase_smap_spot(L);
-                RCache.set_xform_world(Fidentity);
-                RCache.set_xform_view(L->X.S.view);
-                RCache.set_xform_project(L->X.S.project);
-                r_dsgraph_render_graph(0);
-                if (Details)
-                {
-                    if (check_grass_shadow(L, ViewBase))
-                    {
-                        Details->fade_distance = -1; // Use light position to calc "fade"
-                        Details->light_position.set(L->position);
-                        Details->Render();
-                    }
-                }
-                L->X.S.transluent = FALSE;
-                if (bSpecial)
-                {
-                    L->X.S.transluent = TRUE;
-                    Target->phase_smap_spot_tsh(L);
-                    PIX_EVENT(SHADOWED_LIGHTS_RENDER_GRAPH);
-                    r_dsgraph_render_graph(1); // normal level, secondary priority
-                    PIX_EVENT(SHADOWED_LIGHTS_RENDER_SORTED);
-                    r_dsgraph_render_sorted(); // strict-sorted geoms
-                }
-            }
-            else
-            {
-                stats.s_finalclip++;
-            }
-            L->svis.end();
-            r_pmask(true, false);
+        }
+        else
+        {
+            light_tasks.emplace_back().context_id = get_imm_context().cmd_list.context_id;
         }
 
-        PIX_EVENT(UNSHADOWED_LIGHTS);
+        const size_t num_tasks = light_tasks.size();
 
-        //		switch-to-accumulator
-        Target->phase_accumulator();
-        HOM.Disable();
+        // 2. refactor - infact we could go from the backside and sort in ascending order
+        const auto light_cmp = [](const light* l1, const light* l2) {
+            const u32 a0 = l1->X.S.size;
+            const u32 a1 = l2->X.S.size;
+            return a0 > a1; // reverse -> descending
+        };
 
-        PIX_EVENT(POINT_LIGHTS);
+        std::ranges::sort(source, light_cmp);
 
-        //		if (has_point_unshadowed)	-> 	accum point unshadowed
+        size_t curr_task = 0;
+        bool init = true;
+
+        for (size_t test = 0; test < source.size(); test++)
+        {
+            light* L = source[test];
+            size_t fails = 0;
+
+            while (true)
+            {
+                light_ctx& task = light_tasks[curr_task];
+
+                auto& cmd_list = get_context(task.context_id).cmd_list;
+                if (init)
+                    cmd_list.LP_smap_pool.initialize(o.smapsize);
+
+                if (++curr_task == num_tasks)
+                {
+                    curr_task = 0;
+                    init = false;
+                }
+
+                SMAP_Rect R{};
+                if (cmd_list.LP_smap_pool.push(R, L->X.S.size))
+                {
+                    // OK
+                    L->X.S.posX = R.min.x;
+                    L->X.S.posY = R.min.y;
+                    L->vis.smap_ID = static_cast<u16>(cmd_list.context_id); // ???
+                    task.lights.push_back(L);
+
+                    source.erase(source.begin() + test);
+                    test--;
+                    break;
+                }
+
+                if (++fails == num_tasks)
+                {
+                    goto calc;
+                }
+            }
+        }
+
+    calc:
+        for (auto& task : light_tasks)
+        {
+            Target->phase_smap_spot_clear(get_context(task.context_id).cmd_list);
+            render_lights_shadowed_one(task);
+        }
+
+        static xr_vector<light*> L_spot_s;
+
+        light_pool.wait_for_tasks();
+
+        for (auto& task : light_tasks)
+        {
+            for (auto* light : task.lights)
+                L_spot_s.push_back(light);
+
+            if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_LIGHTS))
+            {
+                get_context(task.context_id).cmd_list.submit();
+                release_context(task.context_id);
+            }
+        }
+
+        auto& cmd_list = get_imm_context().cmd_list;
+        cmd_list.Invalidate();
+
+        light_tasks.clear();
+        std::ranges::sort(L_spot_s, light_cmp);
+
+        PIX_EVENT_CTX(cmd_list, UNSHADOWED_LIGHTS);
+
+        // switch-to-accumulator
+        Target->phase_accumulator(cmd_list);
+
+        PIX_EVENT_CTX(cmd_list, POINT_LIGHTS);
+
+        //if (has_point_unshadowed) -> accum point unshadowed
         if (!LP.v_point.empty())
         {
-            light* L = LP.v_point.back();
+            ZoneScopedN("v_point");
+
+            light* L2 = LP.v_point.back();
             LP.v_point.pop_back();
-            if (L->vis.visible)
+            if (L2->vis.visible)
             {
-                Target->accum_point(L);
-                render_indirect(L);
+                Target->accum_point(cmd_list, L2);
             }
         }
 
-        PIX_EVENT(SPOT_LIGHTS);
+        PIX_EVENT_CTX(cmd_list, SPOT_LIGHTS);
 
-        //		if (has_spot_unshadowed)	-> 	accum spot unshadowed
+        //if (has_spot_unshadowed) -> accum spot unshadowed
         if (!LP.v_spot.empty())
         {
-            light* L = LP.v_spot.back();
+            ZoneScopedN("v_spot");
+
+            light* L2 = LP.v_spot.back();
             LP.v_spot.pop_back();
-            if (L->vis.visible)
+            if (L2->vis.visible)
             {
-                LR.compute_xf_spot(L);
-                Target->accum_spot(L);
-                render_indirect(L);
+                L2->optimize_smap_size();
+                Target->accum_spot(cmd_list, L2);
             }
         }
 
-        PIX_EVENT(SPOT_LIGHTS_ACCUM_VOLUMETRIC);
+        PIX_EVENT_CTX(cmd_list, SPOT_LIGHTS_ACCUM_VOLUMETRIC);
 
-        //		if (was_spot_shadowed)		->	accum spot shadowed
+        const bool needVolumetric = ps_r2_ls_flags.is(R2FLAG_VOLUMETRIC_LIGHTS);
+
+        //if (was_spot_shadowed) -> accum spot shadowed
         if (!L_spot_s.empty())
         {
-            PIX_EVENT(ACCUM_SPOT);
-            for (u32 it = 0; it < L_spot_s.size(); it++)
-            {
-                Target->accum_spot(L_spot_s[it]);
-                render_indirect(L_spot_s[it]);
-            }
+            ZoneScopedN("L_spot_s");
 
-            PIX_EVENT(ACCUM_VOLUMETRIC);
-            if (RImplementation.o.advancedpp && ps_r2_ls_flags.is(R2FLAG_VOLUMETRIC_LIGHTS))
-                for (u32 it = 0; it < L_spot_s.size(); it++)
-                    Target->accum_volumetric(L_spot_s[it]);
+            for (light* p_light : L_spot_s)
+            {
+                Target->rt_smap_depth->set_slice_read(p_light->vis.smap_ID);
+                Target->accum_spot(cmd_list, p_light);
+                if (needVolumetric)
+                {
+                    Target->accum_volumetric(cmd_list, p_light);
+                }
+            }
 
             L_spot_s.clear();
         }
     }
-
-    PIX_EVENT(POINT_LIGHTS_ACCUM);
-    // Point lighting (unshadowed, if left)
-    if (!LP.v_point.empty())
-    {
-        xr_vector<light*>& Lvec = LP.v_point;
-        for (u32 pid = 0; pid < Lvec.size(); pid++)
-        {
-            if (Lvec[pid]->vis.visible)
-            {
-                render_indirect(Lvec[pid]);
-                Target->accum_point(Lvec[pid]);
-            }
-        }
-        Lvec.clear();
-    }
-
-    PIX_EVENT(SPOT_LIGHTS_ACCUM);
-    // Spot lighting (unshadowed, if left)
-    if (!LP.v_spot.empty())
-    {
-        xr_vector<light*>& Lvec = LP.v_spot;
-        for (u32 pid = 0; pid < Lvec.size(); pid++)
-        {
-            if (Lvec[pid]->vis.visible)
-            {
-                LR.compute_xf_spot(Lvec[pid]);
-                render_indirect(Lvec[pid]);
-                Target->accum_spot(Lvec[pid]);
-            }
-        }
-        Lvec.clear();
-    }
 }
 
-void CRender::render_indirect(light* L)
+void CRender::render_lights(light_Package& LP)
 {
-    if (!ps_r2_ls_flags.test(R2FLAG_GI))
-        return;
+    ZoneScoped;
 
-    light LIGEN;
-    LIGEN.set_type(IRender_Light::REFLECTED);
-    LIGEN.set_shadow(false);
-    LIGEN.set_cone(PI_DIV_2 * 2.f);
+    if (!LP.v_shadowed.empty())
+        render_lights_shadowed(LP);
 
-    xr_vector<light_indirect>& Lvec = L->indirect;
-    if (Lvec.empty())
-        return;
-    float LE = L->color.intensity();
-    for (u32 it = 0; it < Lvec.size(); it++)
     {
-        light_indirect& LI = Lvec[it];
+        auto& cmd_list = get_imm_context().cmd_list;
 
-        // energy and color
-        float LIE = LE * LI.E;
-        if (LIE < ps_r2_GI_clip)
-            continue;
-        Fvector T;
-        T.set(L->color.r, L->color.g, L->color.b).mul(LI.E);
-        LIGEN.set_color(T.x, T.y, T.z);
+        ZoneScopedN("render_light rest");
 
-        // geometric
-        Fvector L_up, L_right;
-        L_up.set(0, 1, 0);
-        if (_abs(L_up.dotproduct(LI.D)) > .99f)
-            L_up.set(0, 0, 1);
-        L_right.crossproduct(L_up, LI.D).normalize();
-        LIGEN.spatial.sector = LI.S;
-        LIGEN.set_position(LI.P);
-        LIGEN.set_rotation(LI.D, L_right);
+        // Point lighting (unshadowed, if left)
+        if (!LP.v_point.empty())
+        {
+            PIX_EVENT_CTX(cmd_list, POINT_LIGHTS_ACCUM);
 
-        // range
-        // dist^2 / range^2 = A - has infinity number of solutions
-        // approximate energy by linear fallof Emax / (1 + x) = Emin
-        float Emax = LIE;
-        float Emin = 1.f / 255.f;
-        float x = (Emax - Emin) / Emin;
-        if (x < 0.1f)
-            continue;
-        LIGEN.set_range(x);
+            xr_vector<light*>& Lvec = LP.v_point;
+            for (const auto& p_light : Lvec)
+            {
+                //p_light->vis_update();
+                if (p_light->vis.visible)
+                {
+                    Target->accum_point(cmd_list, p_light);
+                }
+            }
+            Lvec.clear();
+        }
 
-        Target->accum_reflected(&LIGEN);
+        // Spot lighting (unshadowed, if left)
+        if (!LP.v_spot.empty())
+        {
+            PIX_EVENT_CTX(cmd_list, SPOT_LIGHTS_ACCUM);
+
+            xr_vector<light*>& Lvec = LP.v_spot;
+            for (const auto& p_light : Lvec)
+            {
+                //p_light->vis_update();
+                if (p_light->vis.visible)
+                {
+                    p_light->optimize_smap_size();
+                    Target->accum_spot(cmd_list, p_light);
+                }
+            }
+            Lvec.clear();
+        }
     }
 }

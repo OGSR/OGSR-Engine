@@ -13,8 +13,6 @@ class ENGINE_API CLAItem;
 #include "../Include/xrRender/ThunderboltDescRender.h"
 #include "../Include/xrRender/ThunderboltRender.h"
 
-#define INGAME_EDITOR_VIRTUAL
-
 class CEnvironment;
 
 struct SThunderboltDesc
@@ -46,18 +44,16 @@ struct SThunderboltDesc
 
 public:
     SThunderboltDesc();
-    INGAME_EDITOR_VIRTUAL ~SThunderboltDesc();
+    ~SThunderboltDesc();
 
     void load(CInifile& pIni, shared_str const& sect);
-    INGAME_EDITOR_VIRTUAL void create_top_gradient(CInifile& pIni, shared_str const& sect);
-    INGAME_EDITOR_VIRTUAL void create_center_gradient(CInifile& pIni, shared_str const& sect);
+    void create_top_gradient(CInifile& pIni, shared_str const& sect);
+    void create_center_gradient(CInifile& pIni, shared_str const& sect);
 
     void load_shoc(CInifile* pIni, shared_str const& sect);
-    INGAME_EDITOR_VIRTUAL void create_top_gradient_shoc(CInifile* pIni, shared_str const& sect);
-    INGAME_EDITOR_VIRTUAL void create_center_gradient_shoc(CInifile* pIni, shared_str const& sect);
+    void create_top_gradient_shoc(CInifile* pIni, shared_str const& sect);
+    void create_center_gradient_shoc(CInifile* pIni, shared_str const& sect);
 };
-
-#undef INGAME_EDITOR_VIRTUAL
 
 struct SThunderboltCollection
 {
@@ -127,7 +123,7 @@ public:
     ~CEffect_Thunderbolt();
 
     void OnFrame(shared_str id, float period, float duration);
-    void Render();
+    void Render(CBackend& cmd_list);
 
     shared_str AppendDef(CEnvironment& environment, CInifile* pIni, CInifile* thunderbolts, LPCSTR sect);
     shared_str AppendDef_shoc(CEnvironment& environment, CInifile* pIni, LPCSTR sect);

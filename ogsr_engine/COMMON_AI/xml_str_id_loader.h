@@ -84,7 +84,7 @@ const typename ITEM_DATA* CSXML_IdToIndex::GetById(const shared_str& str_id, boo
     T_INIT::InitXmlIdToIndex();
 
     auto it = m_pItemDataVector->begin();
-    for (; m_pItemDataVector->end() != it; it++)
+    for (; m_pItemDataVector->end() != it; ++it)
     {
         if ((*it).id == str_id)
             break;
@@ -160,7 +160,7 @@ typename void CSXML_IdToIndex::InitInternal()
 
             //проверетить ID на уникальность
             T_VECTOR::iterator t_it = m_pItemDataVector->begin();
-            for (; m_pItemDataVector->end() != t_it; t_it++)
+            for (; m_pItemDataVector->end() != t_it; ++t_it)
             {
                 if (!xr_strcmp((*t_it).id.c_str(), item_name))
                     break;

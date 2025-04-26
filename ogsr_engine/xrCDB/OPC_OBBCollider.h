@@ -49,13 +49,13 @@ public:
      *	\warning	SCALE NOT SUPPORTED. The matrices must contain rotation & translation parts only.
      */
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    bool Collide(OBBCache& cache, const OBB& box, OPCODE_Model* model, const Matrix4x4* worldb = null, const Matrix4x4* worldm = null);
+    bool Collide(OBBCache& cache, const OBB& box, OPCODE_Model* model, const Matrix4x4* worldb = nullptr, const Matrix4x4* worldm = nullptr);
 
     // Collision queries
-    bool Collide(OBBCache& cache, const OBB& box, const AABBCollisionTree* tree, const Matrix4x4* worldb = null, const Matrix4x4* worldm = null);
-    bool Collide(OBBCache& cache, const OBB& box, const AABBNoLeafTree* tree, const Matrix4x4* worldb = null, const Matrix4x4* worldm = null);
-    bool Collide(OBBCache& cache, const OBB& box, const AABBQuantizedTree* tree, const Matrix4x4* worldb = null, const Matrix4x4* worldm = null);
-    bool Collide(OBBCache& cache, const OBB& box, const AABBQuantizedNoLeafTree* tree, const Matrix4x4* worldb = null, const Matrix4x4* worldm = null);
+    bool Collide(OBBCache& cache, const OBB& box, const AABBCollisionTree* tree, const Matrix4x4* worldb = nullptr, const Matrix4x4* worldm = nullptr);
+    bool Collide(OBBCache& cache, const OBB& box, const AABBNoLeafTree* tree, const Matrix4x4* worldb = nullptr, const Matrix4x4* worldm = nullptr);
+    bool Collide(OBBCache& cache, const OBB& box, const AABBQuantizedTree* tree, const Matrix4x4* worldb = nullptr, const Matrix4x4* worldm = nullptr);
+    bool Collide(OBBCache& cache, const OBB& box, const AABBQuantizedNoLeafTree* tree, const Matrix4x4* worldb = nullptr, const Matrix4x4* worldm = nullptr);
     // Settings
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,7 +116,7 @@ protected:
     inline_ BOOL BoxBoxOverlap(const Point& extents, const Point& center);
     inline_ BOOL TriBoxOverlap();
     // Init methods
-    BOOL InitQuery(OBBCache& cache, const OBB& box, const Matrix4x4* worldb = null, const Matrix4x4* worldm = null);
+    BOOL InitQuery(OBBCache& cache, const OBB& box, const Matrix4x4* worldb = nullptr, const Matrix4x4* worldm = nullptr);
 };
 
 #endif // __OPC_OBBCOLLIDER_H__

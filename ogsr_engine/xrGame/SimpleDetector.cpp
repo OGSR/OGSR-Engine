@@ -98,7 +98,7 @@ void CUIArtefactDetectorSimple::Flash(bool bOn, float fRelPower)
     if (bOn)
     {
         K->LL_SetBoneVisible(m_flash_bone, TRUE, TRUE);
-        m_turn_off_flash_time = Device.dwTimeGlobal + iFloor(fRelPower * 1000.0f);
+        m_turn_off_flash_time = Device.dwTimeGlobal + iFloor(fRelPower * 500.0f);
     }
     else
     {

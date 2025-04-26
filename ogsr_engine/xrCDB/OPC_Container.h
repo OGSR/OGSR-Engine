@@ -152,7 +152,7 @@ public:
     bool Refit();
 
     // Checks whether the container already contains a given value.
-    bool Contains(udword entry, udword* location = null) const;
+    bool Contains(udword entry, udword* location = nullptr) const;
     // Deletes an entry - doesn't preserve insertion order.
     bool Delete(udword entry);
     // Deletes an entry - does preserve insertion order.

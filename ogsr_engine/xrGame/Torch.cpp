@@ -250,9 +250,7 @@ BOOL CTorch::net_Spawn(CSE_Abstract* DC)
     if (!inherited::net_Spawn(DC))
         return (FALSE);
 
-    bool b_r2 = !!psDeviceFlags.test(rsR2);
-    b_r2 |= !!psDeviceFlags.test(rsR3);
-    b_r2 |= !!psDeviceFlags.test(rsR4);
+    constexpr bool b_r2 = true;
 
     IKinematics* K = smart_cast<IKinematics*>(Visual());
     CInifile* pUserData = K->LL_UserData();
@@ -351,9 +349,14 @@ void CTorch::UpdateCL()
     if (!m_switched_on)
         return;
 
+    CActor* actor = smart_cast<CActor*>(H_Parent());
+
+#pragma todo("Simp: Добавить отдельную команду/настройку?")
+    //light_render->set_shadow(actor || !Core.Features.test(xrCore::Feature::npc_simplified_shooting));
+
     if (useVolumetric)
     {
-        if (smart_cast<CActor*>(H_Parent()))
+        if (actor)
             light_render->set_volumetric(useVolumetricForActor);
         else
             light_render->set_volumetric(psActorFlags.test(AF_AI_VOLUMETRIC_LIGHTS));
@@ -364,18 +367,18 @@ void CTorch::UpdateCL()
 
     if (H_Parent())
     {
-        CActor* actor = smart_cast<CActor*>(H_Parent());
-        if (actor)
-        {
-            smart_cast<IKinematics*>(H_Parent()->Visual())->CalculateBones_Invalidate();
-#pragma todo("KRodin: переделать под новый рендер!")
+        // if (actor)
+        // {
+// todo("переделать под новый рендер!")
             // light_render->set_actor_torch(true);
-        }
+        // }
 
         if (H_Parent()->XFORM().c.distance_to_sqr(Device.vCameraPosition) < _sqr(OPTIMIZATION_DISTANCE))
         {
             // near camera
-            smart_cast<IKinematics*>(H_Parent()->Visual())->CalculateBones();
+
+            smart_cast<IKinematics*>(H_Parent()->Visual())->CalculateBones(TRUE);
+
             M.mul_43(XFORM(), BI.mTransform);
         }
         else
@@ -467,7 +470,7 @@ void CTorch::UpdateCL()
     }
     else
     {
-#pragma todo("KRodin: переделать под новый рендер!")
+// todo("переделать под новый рендер!")
         // light_render->set_actor_torch(false);
         if (getVisible() && m_pPhysicsShell)
         {
@@ -548,7 +551,7 @@ void CTorch::afterDetach()
     inherited::afterDetach();
     Switch(false);
 }
-void CTorch::renderable_Render() { inherited::renderable_Render(); }
+void CTorch::renderable_Render(u32 context_id, IRenderable* root) { inherited::renderable_Render(context_id, root); }
 
 void CTorch::calc_m_delta_h(float range) { m_delta_h = PI_DIV_2 - atan((range * 0.5f) / _abs(TORCH_OFFSET.x)); }
 

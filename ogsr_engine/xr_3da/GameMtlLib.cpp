@@ -1,9 +1,7 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
-
 #include "GameMtlLib.h"
-//#include "../include/xrapi/xrapi.h"
 
 CGameMtlLibrary GMLib;
 // CSound_manager_interface*	Sound = NULL;
@@ -44,9 +42,7 @@ void SGameMtl::Load(IReader& fs)
     fSndOcclusionFactor = fs.r_float();
 
     if (fs.find_chunk(GAMEMTL_CHUNK_FACTORS_MP))
-        fShootFactorMP = fs.r_float();
-    else
-        fShootFactorMP = fShootFactor;
+        fs.r_float();
 
     if (fs.find_chunk(GAMEMTL_CHUNK_FLOTATION))
         fFlotationFactor = fs.r_float();
@@ -61,7 +57,7 @@ void SGameMtl::Load(IReader& fs)
 void CGameMtlLibrary::Load()
 {
     string_path name;
-    if (!FS.exist(name, _game_data_, GAMEMTL_FILENAME))
+    if (!FS.exist(name, fsgame::game_data, GAMEMTL_FILENAME))
     {
         Msg("! Can't find game material file: [%s]", name);
         return;
@@ -87,6 +83,10 @@ void CGameMtlLibrary::Load()
 
     materials.clear();
     material_pairs.clear();
+
+    
+    CTimer timer;
+    timer.Start();
 
     IReader* OBJ = F->open_chunk(GAMEMTLS_CHUNK_MTLS);
     if (OBJ)
@@ -127,13 +127,18 @@ void CGameMtlLibrary::Load()
             }*/
         }
         OBJ->close();
+        loadSounds();
+#pragma todo("Simp: почему это убрано?")
+        //loadParticles();
     }
 
+    Msg("* [%s]: mtl pairs loading time (%u): [%.3f s.]", __FUNCTION__, material_pairs.size(), timer.GetElapsed_sec());
+
     material_count = (u32)materials.size();
-    material_pairs_rt.resize(material_count * material_count, 0);
-    for (GameMtlPairIt p_it = material_pairs.begin(); material_pairs.end() != p_it; ++p_it)
+    material_pairs_rt.resize(material_count * material_count, nullptr);
+
+    for (const auto& S : material_pairs)
     {
-        SGameMtlPair* S = *p_it;
         u16 idx_1 = GetMaterialIdx(S->mtl0);
         u16 idx_2 = GetMaterialIdx(S->mtl1);
         if (idx_1 >= materials.size() || idx_2 >= materials.size())
@@ -158,40 +163,37 @@ void CGameMtlLibrary::Load()
     FS.r_close(F);
 }
 
-#ifdef GM_NON_GAME
-SGameMtlPair::~SGameMtlPair() {}
-void SGameMtlPair::Load(IReader& fs)
+void CGameMtlLibrary::loadSounds()
 {
-    shared_str buf;
+    CTimer timer;
+    timer.Start();
 
-    R_ASSERT(fs.find_chunk(GAMEMTLPAIR_CHUNK_PAIR));
-    mtl0 = fs.r_u32();
-    mtl1 = fs.r_u32();
-    ID = fs.r_u32();
-    ID_parent = fs.r_u32();
-    u32 own_mask = fs.r_u32();
-    if (GAMEMTL_NONE_ID == ID_parent)
-        OwnProps.one();
-    else
-        OwnProps.assign(own_mask);
+#pragma todo("SIMP: новый код падает, вероятно не хватает мьютексов где-то")
+    for (auto* it : material_pairs)
+    {
+        //TTAPI->submit_detach([](SGameMtlPair* pair) { pair->CreateAllSounds(); }, it);
+        it->CreateAllSounds();
+    }
 
-    R_ASSERT(fs.find_chunk(GAMEMTLPAIR_CHUNK_BREAKING));
-    fs.r_stringZ(buf);
-    BreakingSounds = buf.size() ? *buf : "";
+    //TTAPI->wait_for_tasks();
 
-    R_ASSERT(fs.find_chunk(GAMEMTLPAIR_CHUNK_STEP));
-    fs.r_stringZ(buf);
-    StepSounds = buf.size() ? *buf : "";
-
-    R_ASSERT(fs.find_chunk(GAMEMTLPAIR_CHUNK_COLLIDE));
-    fs.r_stringZ(buf);
-    CollideSounds = buf.size() ? *buf : "";
-    fs.r_stringZ(buf);
-    CollideParticles = buf.size() ? *buf : "";
-    fs.r_stringZ(buf);
-    CollideMarks = buf.size() ? *buf : "";
+    Msg("* [%s]: sounds creating time: [%.3f s.]", __FUNCTION__, timer.GetElapsed_sec());
 }
-#endif
+
+void CGameMtlLibrary::loadParticles()
+{
+    CTimer timer;
+    timer.Start();
+
+    for (auto& it : material_pairs)
+    {
+        TTAPI->submit_detach([](SGameMtlPair* pair) { pair->CreateAllParticles(); }, it);
+    }
+
+    TTAPI->wait_for_tasks();
+
+    Msg("* [%s]: particles creating time: [%.3f s.]", __FUNCTION__, timer.GetElapsed_sec());
+}
 
 #ifdef DEBUG
 LPCSTR SGameMtlPair::dbg_Name()

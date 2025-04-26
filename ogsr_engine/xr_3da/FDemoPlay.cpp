@@ -18,21 +18,20 @@ CDemoPlay::CDemoPlay(const char* name, float ms, u32 cycles, float life_time) : 
 {
     Msg("*** Playing demo: %s", name);
     //Console->Execute("hud_weapon 0");
-    if (g_bBenchmark)
-        Console->Execute("hud_draw 0");
 
     fSpeed = ms;
     dwCyclesLeft = cycles ? cycles : 1;
 
-    m_pMotion = 0;
-    m_MParam = 0;
+    m_pMotion = nullptr;
+    m_MParam = nullptr;
     string_path nm, fn;
     strcpy_s(nm, sizeof(nm), name);
 
     if (strext(nm))
         strcpy(strext(nm), ".anm");
 
-    if (FS.exist(fn, "$level$", nm) || FS.exist(fn, "$game_anims$", nm))
+    if (FS.exist(fn, fsgame::level, nm) 
+        || FS.exist(fn, fsgame::game_anims, nm))
     {
         m_pMotion = xr_new<COMotion>();
         m_pMotion->LoadMotion(fn);
@@ -72,8 +71,6 @@ CDemoPlay::~CDemoPlay()
     xr_delete(m_pMotion);
     xr_delete(m_MParam);
     //Console->Execute("hud_weapon 1");
-    if (g_bBenchmark)
-        Console->Execute("hud_draw 1");
 }
 
 void CDemoPlay::stat_Start()
@@ -89,8 +86,6 @@ void CDemoPlay::stat_Start()
     stat_table.reserve(1024);
     fStartTime = 0;
 }
-
-extern string512 g_sBenchmarkName;
 
 void CDemoPlay::stat_Stop()
 {
@@ -121,35 +116,6 @@ void CDemoPlay::stat_Stop()
     rfps_middlepoint /= float(stat_table.size() - 1);
 
     Msg("* [DEMO] FPS: average[%f], min[%f], max[%f], middle[%f]", rfps_average, rfps_min, rfps_max, rfps_middlepoint);
-
-    if (g_bBenchmark)
-    {
-        string_path fname;
-
-        if (xr_strlen(g_sBenchmarkName))
-            sprintf_s(fname, sizeof(fname), "%s.result", g_sBenchmarkName);
-        else
-            strcpy_s(fname, sizeof(fname), "benchmark.result");
-
-        FS.update_path(fname, "$app_data_root$", fname);
-        CInifile res(fname, FALSE, FALSE, TRUE);
-        res.w_float("general", "renderer", float(::Render->get_generation()) / 10.f);
-        res.w_float("general", "min", rfps_min);
-        res.w_float("general", "max", rfps_max);
-        res.w_float("general", "average", rfps_average);
-        res.w_float("general", "middle", rfps_middlepoint);
-        for (u32 it = 1; it < stat_table.size(); it++)
-        {
-            string32 id;
-            sprintf_s(id, sizeof(id), "%7d", it);
-            for (u32 c = 0; id[c]; c++)
-                if (' ' == id[c])
-                    id[c] = '0';
-            res.w_float("per_frame_stats", id, 1.f / stat_table[it]);
-        }
-
-        Console->Execute("quit");
-    }
 }
 
 #define FIX(a) \

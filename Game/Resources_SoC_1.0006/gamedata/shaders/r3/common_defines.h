@@ -8,7 +8,7 @@
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
-// Defines                                		//
+// Defines //
 #define def_gloss float(2.f / 255.f)
 #define def_aref float(200.f / 255.f)
 #define def_dbumph float(0.333f)
@@ -25,8 +25,8 @@
 #endif
 //////////////////////////////////////////////////////////////////////////////////////////
 
-//#define USE_GRASS_WAVE								// enable grass wave
+//#define USE_GRASS_WAVE // enable grass wave
 #define GRASS_WAVE_FREQ float(0.7) // frequency of waves
 #define GRASS_WAVE_POWER float(3.0) // brightness of waves
 
-#endif //	common_defines_h_included
+#endif // common_defines_h_included

@@ -275,12 +275,12 @@ void CInventoryOwner::StopTalk()
 
 bool CInventoryOwner::IsTalking() { return m_bTalking; }
 
-void CInventoryOwner::renderable_Render()
+void CInventoryOwner::renderable_Render(u32 context_id, IRenderable* root)
 {
     if (inventory().ActiveItem())
-        inventory().ActiveItem()->renderable_Render();
+        inventory().ActiveItem()->renderable_Render(context_id, root);
 
-    CAttachmentOwner::renderable_Render();
+    CAttachmentOwner::renderable_Render(context_id, root);
 }
 
 void CInventoryOwner::OnItemTake(CInventoryItem* inventory_item)

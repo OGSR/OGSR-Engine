@@ -239,7 +239,7 @@ void SPHBonesData::net_Save(NET_Packet& P)
         P.w_u64(bones_mask._visimask_ex.flags);
     }
     PHNETSTATE_I i = bones.begin(), e = bones.end();
-    for (; e != i; i++)
+    for (; e != i; ++i)
     {
         (*i).net_Save(P, get_min(), get_max());
     }

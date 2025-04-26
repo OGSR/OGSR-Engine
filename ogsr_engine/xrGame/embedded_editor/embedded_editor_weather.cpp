@@ -336,7 +336,7 @@ void ShowWeatherEditor(bool& show)
     for (const auto& el : env.WeatherCycles)
     {
         cycles.push_back(el.first);
-        if (el.first == env.CurrentWeatherName)
+        if (el.first == env.GetWeather())
             iCycle = cycles.size() - 1;
     }
 
@@ -550,7 +550,7 @@ void ShowWeatherEditor(bool& show)
 
     if (changed)
     {
-        modifiedWeathers.insert(env.CurrentWeatherName);
+        modifiedWeathers.insert(env.GetWeather());
         s_ScriptWeatheParams = true;
     }
 
@@ -570,7 +570,7 @@ void ShowWeatherEditor(bool& show)
     {
         s_ScriptWeatheParams = false;
 
-        env.SetWeather(env.CurrentWeatherName, true);        
+        env.SetWeather(env.GetWeather(), true);        
 
         modifiedWeathers.clear();
     }

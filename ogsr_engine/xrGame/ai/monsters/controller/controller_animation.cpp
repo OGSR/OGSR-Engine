@@ -286,7 +286,7 @@ CControllerAnimation::SPathRotations CControllerAnimation::get_path_rotation(flo
 
     auto it_best = m_path_rotations[m_current_legs_action].begin();
     float best_diff = flt_max;
-    for (auto it = m_path_rotations[m_current_legs_action].begin(); it != m_path_rotations[m_current_legs_action].end(); it++)
+    for (auto it = m_path_rotations[m_current_legs_action].begin(); it != m_path_rotations[m_current_legs_action].end(); ++it)
     {
         float angle_diff = angle_normalize(it->angle);
 

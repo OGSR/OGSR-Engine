@@ -8,7 +8,7 @@
 
 v2p_bumped main(v_in I)
 {
-    //	I.color.rgb 	= I.color.bgr;	//	Swizzle to compensate DX9/DX10 format mismatch
+    // I.color.rgb = I.color.bgr; // Swizzle to compensate DX9/DX10 format mismatch
     float4 w_pos = I.P;
     float2 tc = unpack_tc_base(I.tc, I.T.w, I.B.w); // copy tc
     float hemi = I.Nh.w;
@@ -17,9 +17,11 @@ v2p_bumped main(v_in I)
     v2p_bumped O;
     float3 Pe = mul(m_WV, w_pos);
     O.hpos = mul(m_WVP, w_pos);
+    O.hpos_curr = O.hpos;
+    O.hpos_old = mul(m_WVP_old, w_pos);
     O.tcdh = float4(tc.xyyy);
     O.position = float4(Pe, hemi);
-    //	O.position	= float4	(O.hpos.xyz, hemi	);
+    O.hpos.xy = get_taa_jitter(O.hpos);
 
 #if defined(USE_R2_STATIC_SUN) && !defined(USE_LM_HEMI)
     O.tcdh.w = I.color.w; // (r,g,b,dir-occlusion)
@@ -27,7 +29,7 @@ v2p_bumped main(v_in I)
 
     // Calculate the 3x3 transform from tangent space to eye-space
     // TangentToEyeSpace = object2eye * tangent2object
-    //		     = object2eye * transpose(object2tangent) (since the inverse of a rotation is its transpose)
+    //    = object2eye * transpose(object2tangent) (since the inverse of a rotation is its transpose)
     I.Nh = unpack_D3DCOLOR(I.Nh);
     I.T = unpack_D3DCOLOR(I.T);
     I.B = unpack_D3DCOLOR(I.B);

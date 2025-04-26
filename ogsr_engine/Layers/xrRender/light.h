@@ -1,18 +1,27 @@
-#ifndef LAYERS_XRRENDER_LIGHT_H_INCLUDED
-#define LAYERS_XRRENDER_LIGHT_H_INCLUDED
+#pragma once
 
 #include "../../xrcdb/ispatial.h"
 
-#if (RENDER == R_R2) || (RENDER == R_R3) || (RENDER == R_R4)
 #include "light_package.h"
 #include "light_smapvis.h"
-#include "light_GI.h"
-#endif //(RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
 
 #define MIN_VIRTUAL_SIZE 0.01f
 
+extern Fvector3 ps_ssfx_volumetric;
+
 class light : public IRender_Light, public ISpatial
 {
+private:
+    bool b_originShadow{};
+    bool b_originVolumetric{};
+    
+    vis_data hom;    
+
+    light* omnipart[6];
+    light* omniparent{};
+
+    u32 m_xform_frame;
+
 public:
     struct
     {
@@ -22,46 +31,39 @@ public:
         u32 bShadow : 1;
         u32 bVolumetric : 1;
         u32 bHudMode : 1;
+        u32 bFlare : 1;
         u32 bMoveable : 1;
-    } flags{};
+    } flags;
+
     Fvector position;
     Fvector direction;
+
     Fvector right;
     float range;
     float cone;
     Fcolor color;
 
-    vis_data hom;
     u32 frame_render;
 
     float m_volumetric_quality;
     float m_volumetric_intensity;
     float m_volumetric_distance;
 
-#if (RENDER == R_R2) || (RENDER == R_R3) || (RENDER == R_R4)
-    float falloff; // precalc to make light equal to zero at light range
-    float attenuation0; // Constant attenuation
-    float attenuation1; // Linear attenuation
-    float attenuation2; // Quadratic attenuation
+    float fBlend; // For flares
+
+    float falloff{}; // precalc to make light equal to zero at light range
+    float attenuation0{}; // Constant attenuation
+    float attenuation1{}; // Linear attenuation
+    float attenuation2{}; // Quadratic attenuation
 
     float virtual_size;
-    light* omnipart[6];
-    xr_vector<light_indirect> indirect;
-    u32 indirect_photons;
 
-    smapvis svis; // used for 6-cubemap faces
+    smapvis svis[R__NUM_CONTEXTS]; // used for 6-cubemap faces
 
     ref_shader s_spot;
     ref_shader s_point;
     ref_shader s_volumetric;
 
-#if (RENDER == R_R3) || (RENDER == R_R4)
-    ref_shader s_spot_msaa[8];
-    ref_shader s_point_msaa[8];
-    ref_shader s_volumetric_msaa[8];
-#endif //	(RENDER==R_R3) || (RENDER==R_R4)
-
-    u32 m_xform_frame;
     Fmatrix m_xform;
 
     struct _vis
@@ -83,14 +85,7 @@ public:
             s32 minX, maxX;
             s32 minY, maxY;
             BOOL transluent;
-        } D;
-        struct _P
-        {
-            Fmatrix world;
-            Fmatrix view;
-            Fmatrix project;
-            Fmatrix combine;
-        } P;
+        } D[R__NUM_SUN_CASCADES]; // directional
         struct _S
         {
             Fmatrix view;
@@ -100,17 +95,31 @@ public:
             u32 posX;
             u32 posY;
             BOOL transluent;
-        } S;
+        } S; // spot
     } X;
-#endif //	(RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
+
+    RayPickAsync FlareRayPick;
 
 public:
+    light();
+    virtual ~light();
+
     virtual void set_type(LT type) { flags.type = type; }
-    virtual u32 get_type() const override { return flags.type; }
     virtual void set_active(bool b);
     virtual bool get_active() { return flags.bActive; }
-    virtual void set_shadow(bool b) { flags.bShadow = b; }
-    virtual void set_volumetric(bool b) { flags.bVolumetric = b; }
+    virtual void set_shadow(bool b)
+    {
+        flags.bShadow = b;
+        b_originShadow = b;
+    }
+    virtual bool get_shadow() override { return b_originShadow; }
+
+    virtual void set_volumetric(bool b)
+    {
+        flags.bVolumetric = b;
+        b_originVolumetric = b;
+    }
+    virtual bool get_volumetric() override { return b_originVolumetric; }
 
     virtual void set_volumetric_quality(float fValue) { m_volumetric_quality = fValue; }
     virtual void set_volumetric_intensity(float fValue) { m_volumetric_intensity = fValue; }
@@ -119,24 +128,30 @@ public:
     virtual void set_position(const Fvector& P);
     virtual void set_rotation(const Fvector& D, const Fvector& R);
     virtual void set_cone(float angle);
+
     virtual void set_range(float R);
-    float get_range() const override { return range; };
+    virtual float get_range() const override { return range; }
+
     virtual void set_virtual_size(float S)
     {
-#if RENDER != R_R1
         virtual_size = (S > MIN_VIRTUAL_SIZE) ? S : MIN_VIRTUAL_SIZE;
-#endif
     }
+    virtual void set_texture(LPCSTR name) override;
 
     virtual void set_color(const Fcolor& C) { color.set(C); }
-    virtual void set_color(float r, float g, float b) { color.set(r, g, b, 1); }
-    Fcolor get_color() const override { return color; };
 
-    virtual void set_texture(LPCSTR name);
+    virtual void set_color(float r, float g, float b) { color.set(r, g, b, 1); }
+    Fcolor get_color() const override { return color; }
+
+    virtual void set_flare(bool b) { flags.bFlare = b; }
+    virtual bool get_flare() override { return flags.bFlare; }
+
     virtual void set_hud_mode(bool b) { flags.bHudMode = b; }
-    virtual bool get_hud_mode() { return flags.bHudMode; };
+
+    virtual bool get_hud_mode() { return flags.bHudMode; }
 
     virtual void set_moveable(bool b) override { flags.bMoveable = b; }
+    virtual bool get_moveable() override { return flags.bMoveable || flags.bHudMode; }
 
     virtual void spatial_move();
     virtual Fvector spatial_sector_point();
@@ -144,19 +159,14 @@ public:
     virtual IRender_Light* dcast_Light() { return this; }
 
     vis_data& get_homdata();
-#if (RENDER == R_R2) || (RENDER == R_R3) || (RENDER == R_R4)
-    void gi_generate();
+    float get_LOD() const;
+
     void xform_calc();
-    void vis_prepare();
-    void vis_update();
+    void optimize_smap_size();
     void export_to(light_Package& dest);
+
+    void vis_prepare(CBackend& cmd_list);
+    void vis_update();
+
     void set_attenuation_params(float a0, float a1, float a2, float fo);
-#endif // (RENDER==R_R2) || (RENDER==R_R3) || (RENDER==R_R4)
-
-    float get_LOD();
-
-    light();
-    virtual ~light();
 };
-
-#endif // #define LAYERS_XRRENDER_LIGHT_H_INCLUDED

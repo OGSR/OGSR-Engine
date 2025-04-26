@@ -1,13 +1,11 @@
 #include "stdafx.h"
 
-void CRenderTarget::phase_occq()
+void CRenderTarget::phase_occq(CBackend& cmd_list)
 {
-    if (!RImplementation.o.dx10_msaa)
-        u_setrt(Device.dwWidth, Device.dwHeight, HW.pBaseRT, NULL, NULL, HW.pBaseZB);
-    else
-        u_setrt(Device.dwWidth, Device.dwHeight, NULL, NULL, NULL, rt_MSAADepth->pZRT);
-    RCache.set_Shader(s_occq);
-    RCache.set_CullMode(CULL_CCW);
-    RCache.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
-    RCache.set_ColorWriteEnable(FALSE);
+    u_setrt(cmd_list, Device.dwWidth, Device.dwHeight, get_base_rt(), nullptr, nullptr, rt_Base_Depth->pZRT[cmd_list.context_id]);
+
+    cmd_list.set_Shader(s_occq);
+    cmd_list.set_CullMode(CULL_CCW);
+    cmd_list.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
+    cmd_list.set_ColorWriteEnable(FALSE);
 }

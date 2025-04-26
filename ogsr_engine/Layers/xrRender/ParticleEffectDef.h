@@ -35,7 +35,7 @@ struct SFrame
         m_iFrameCount = 16;
         m_fSpeed = 24.f;
     }
-    IC void CalculateTC(int frame, Fvector2& lt, Fvector2& rb)
+    IC void CalculateTC(int frame, Fvector2& lt, Fvector2& rb) const
     {
         lt.x = (frame % m_iFrameDimX) * m_fTexSize.x;
         lt.y = (frame / m_iFrameDimX) * m_fTexSize.y;
@@ -79,8 +79,8 @@ public:
     // compiled actions
     CMemoryWriter m_Actions;
     // def
-    u32 m_uStep; // update rate of this effect in ms
-    float m_fStep; // update rate of this effect in s
+    u32 m_uStep{}; // update rate of this effect in ms
+    float m_fStep{}; // update rate of this effect in s
     float m_fTimeLimit{}; // time limit
     int m_MaxParticles{}; // max particle count
     Fvector m_VelocityScale{}; // velocity scale
@@ -102,7 +102,7 @@ public:
     CPEDef();
     ~CPEDef();
 
-    u32 GetUStep();
+    u32 GetUStep() const;
     float GetFStep();
 
     void SetName(LPCSTR name);

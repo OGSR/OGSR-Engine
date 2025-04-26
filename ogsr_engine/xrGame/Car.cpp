@@ -196,6 +196,8 @@ BOOL CCar::net_Spawn(CSE_Abstract* DC)
         m_memory->reload(pUserData->r_string("visual_memory_definition", "section"));
     }
 
+    renderable.visual->ignore_optimization = true;
+
     return (CScriptEntity::net_Spawn(DC) && R);
 }
 
@@ -513,16 +515,16 @@ void CCar::VisualUpdate(float fov)
     m_lights.Update();
 }
 
-void CCar::renderable_Render()
+void CCar::renderable_Render(u32 context_id, IRenderable* root)
 {
-    inherited::renderable_Render();
+    inherited::renderable_Render(context_id, root);
     if (m_car_weapon)
         m_car_weapon->Render_internal();
 }
 
 void CCar::net_Export(CSE_Abstract* E) { inherited::net_Export(E); }
 
-void CCar::OnHUDDraw(CCustomHUD* /**hud/**/)
+void CCar::OnHUDDraw(CCustomHUD* hud, u32 context_id, IRenderable* root)
 {
 #ifdef DEBUG
     Fvector velocity;

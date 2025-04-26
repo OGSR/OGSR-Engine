@@ -91,7 +91,8 @@ protected:
     float light_var_color;
     float light_var_range;
     float light_lifetime;
-    u32 light_frame;
+    u32 light_start_frame{};
+    u32 light_update_frame{};
     float light_time;
     //включение подсветки во время выстрела
     bool m_bLightShotEnabled;
@@ -101,7 +102,7 @@ protected:
     void Light_Destroy();
 
     void Light_Start();
-    void Light_Render(const Fvector& P);
+    void Light_Update(const Fvector& P);
 
     virtual void LoadLights(LPCSTR section, LPCSTR prefix);
     virtual void RenderLight();

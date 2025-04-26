@@ -17,39 +17,53 @@ struct v_filter
 };
 #pragma pack(pop)
 
-void CRenderTarget::phase_luminance()
+struct Build_filter_kernel
+{
+    Fvector2 a[16]{}, b[16]{};
+    consteval Build_filter_kernel(const float _src)
+    {
+        for (int k{}; k < 16; ++k)
+        {
+            const int _x = (k * 2 + 1) % 8; // 1,3,5,7
+            const int _y = ((k / 4) * 2 + 1); // 1,1,1,1 ~ 3,3,3,3 ~...etc...
+            a[k].set(_x, _y).div(_src);
+            b[k].set(a[k]).add(1);
+        }
+    }
+};
+
+void CRenderTarget::phase_luminance(CBackend& cmd_list)
 {
     u32 Offset = 0;
-    //	float	eps		= EPS_S;
-    float eps = 0;
+    constexpr float eps{}; //EPS_S
 
     // Targets
-    RCache.set_Stencil(FALSE);
-    RCache.set_CullMode(CULL_NONE);
-    RCache.set_ColorWriteEnable();
-    RCache.set_Z(FALSE);
+    cmd_list.set_Stencil(FALSE);
+    cmd_list.set_CullMode(CULL_NONE);
+    cmd_list.set_ColorWriteEnable();
+    cmd_list.set_Z(FALSE);
     // CHK_DX									(HW.pDevice->SetRenderState	(D3DRS_ZENABLE,FALSE));
 
     // 000: Perform LUM-SAT, pass 0, 256x256 => 64x64
-    u_setrt(rt_LUM_64, NULL, NULL, NULL);
+    u_setrt(cmd_list, rt_LUM_64, nullptr, nullptr, nullptr, nullptr);
     // RImplementation.rmNormal();
     {
-        float ts = 64;
-        float _w = float(BLOOM_size_X);
-        float _h = float(BLOOM_size_Y);
-        Fvector2 one = {2.f / _w, 2.f / _h}; // two, infact
-        Fvector2 half = {1.f / _w, 1.f / _h}; // one, infact
-        Fvector2 a_0 = {half.x + 0, half.y + 0};
-        Fvector2 a_1 = {half.x + one.x, half.y + 0};
-        Fvector2 a_2 = {half.x + 0, half.y + one.y};
-        Fvector2 a_3 = {half.x + one.x, half.y + one.y};
-        Fvector2 b_0 = {1 + a_0.x, 1 + a_0.y};
-        Fvector2 b_1 = {1 + a_1.x, 1 + a_1.y};
-        Fvector2 b_2 = {1 + a_2.x, 1 + a_2.y};
-        Fvector2 b_3 = {1 + a_3.x, 1 + a_3.y};
+        constexpr float ts{64};
+        constexpr float _w{static_cast<float>(BLOOM_size_X)};
+        constexpr float _h{static_cast<float>(BLOOM_size_Y)};
+        constexpr Fvector2 one{2.f / _w, 2.f / _h}; // two, infact
+        constexpr Fvector2 half{1.f / _w, 1.f / _h}; // one, infact
+        constexpr Fvector2 a_0{half.x + 0, half.y + 0};
+        constexpr Fvector2 a_1{half.x + one.x, half.y + 0};
+        constexpr Fvector2 a_2{half.x + 0, half.y + one.y};
+        constexpr Fvector2 a_3{half.x + one.x, half.y + one.y};
+        constexpr Fvector2 b_0{1 + a_0.x, 1 + a_0.y};
+        constexpr Fvector2 b_1{1 + a_1.x, 1 + a_1.y};
+        constexpr Fvector2 b_2{1 + a_2.x, 1 + a_2.y};
+        constexpr Fvector2 b_3{1 + a_3.x, 1 + a_3.y};
 
         // Fill vertex buffer
-        v_build* pv = (v_build*)RCache.Vertex.Lock(4, g_bloom_build->vb_stride, Offset);
+        v_build* pv = (v_build*)RImplementation.Vertex.Lock(4, g_bloom_build->vb_stride, Offset);
         pv->p.set(eps, float(ts + eps), eps, 1.f);
         pv->uv0.set(a_0.x, b_0.y);
         pv->uv1.set(a_1.x, b_1.y);
@@ -74,30 +88,24 @@ void CRenderTarget::phase_luminance()
         pv->uv2.set(b_2.x, a_2.y);
         pv->uv3.set(b_3.x, a_3.y);
         pv++;
-        RCache.Vertex.Unlock(4, g_bloom_build->vb_stride);
-        RCache.set_Element(s_luminance->E[0]);
-        RCache.set_Geometry(g_bloom_build);
-        RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+        RImplementation.Vertex.Unlock(4, g_bloom_build->vb_stride);
+        cmd_list.set_Element(s_luminance->E[0]);
+        cmd_list.set_Geometry(g_bloom_build);
+        cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
     }
 
     // 111: Perform LUM-SAT, pass 1, 64x64 => 8x8
-    u_setrt(rt_LUM_8, NULL, NULL, NULL);
+    u_setrt(cmd_list, rt_LUM_8, nullptr, nullptr, nullptr, nullptr);
     // RImplementation.rmNormal();
     {
         // Build filter-kernel
-        float _ts = 8;
-        float _src = float(64);
-        Fvector2 a[16], b[16];
-        for (int k = 0; k < 16; k++)
-        {
-            int _x = (k * 2 + 1) % 8; // 1,3,5,7
-            int _y = ((k / 4) * 2 + 1); // 1,1,1,1 ~ 3,3,3,3 ~...etc...
-            a[k].set(_x, _y).div(_src);
-            b[k].set(a[k]).add(1);
-        }
+        constexpr float _ts = 8.f;
+        constexpr Build_filter_kernel filter_kernel{64.f};
+        const Fvector2* a = filter_kernel.a;
+        const Fvector2* b = filter_kernel.b;
 
         // Fill vertex buffer
-        v_filter* pv = (v_filter*)RCache.Vertex.Lock(4, g_bloom_filter->vb_stride, Offset);
+        v_filter* pv = (v_filter*)RImplementation.Vertex.Lock(4, g_bloom_filter->vb_stride, Offset);
         pv->p.set(eps, float(_ts + eps), eps, 1.f);
         for (int t = 0; t < 8; t++)
             pv->uv[t].set(a[t].x, b[t].y, b[t + 8].y, a[t + 8].x); // xy/yx	- left+down
@@ -114,31 +122,24 @@ void CRenderTarget::phase_luminance()
         for (int t = 0; t < 8; t++)
             pv->uv[t].set(b[t].x, a[t].y, a[t + 8].y, b[t + 8].x); // xy/yx	- right+up
         pv++;
-        RCache.Vertex.Unlock(4, g_bloom_filter->vb_stride);
-        RCache.set_Element(s_luminance->E[1]);
-        RCache.set_Geometry(g_bloom_filter);
-        RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+        RImplementation.Vertex.Unlock(4, g_bloom_filter->vb_stride);
+        cmd_list.set_Element(s_luminance->E[1]);
+        cmd_list.set_Geometry(g_bloom_filter);
+        cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
     }
 
     // 222: Perform LUM-SAT, pass 2, 8x8 => 1x1
-    u32 gpu_id = Device.dwFrame % HW.Caps.iGPUNum;
-    u_setrt(rt_LUM_pool[gpu_id * 2 + 1], NULL, NULL, NULL);
+    u_setrt(cmd_list, rt_LUM_pool[1], nullptr, nullptr, nullptr, nullptr);
     // RImplementation.rmNormal();
     {
         // Build filter-kernel
-        float _ts = 1;
-        float _src = float(8);
-        Fvector2 a[16], b[16];
-        for (int k = 0; k < 16; k++)
-        {
-            int _x = (k * 2 + 1) % 8; // 1,3,5,7
-            int _y = ((k / 4) * 2 + 1); // 1,1,1,1 ~ 3,3,3,3 ~...etc...
-            a[k].set(_x, _y).div(_src);
-            b[k].set(a[k]).add(1);
-        }
+        constexpr float _ts = 1.f;
+        constexpr Build_filter_kernel filter_kernel{8.f};
+        const Fvector2* a = filter_kernel.a;
+        const Fvector2* b = filter_kernel.b;
 
         // Fill vertex buffer
-        v_filter* pv = (v_filter*)RCache.Vertex.Lock(4, g_bloom_filter->vb_stride, Offset);
+        v_filter* pv = (v_filter*)RImplementation.Vertex.Lock(4, g_bloom_filter->vb_stride, Offset);
         pv->p.set(eps, float(_ts + eps), eps, 1.f);
         for (int t = 0; t < 8; t++)
             pv->uv[t].set(a[t].x, b[t].y, b[t + 8].y, a[t + 8].x); // xy/yx	- left+down
@@ -155,22 +156,22 @@ void CRenderTarget::phase_luminance()
         for (int t = 0; t < 8; t++)
             pv->uv[t].set(b[t].x, a[t].y, a[t + 8].y, b[t + 8].x); // xy/yx	- right+up
         pv++;
-        RCache.Vertex.Unlock(4, g_bloom_filter->vb_stride);
+        RImplementation.Vertex.Unlock(4, g_bloom_filter->vb_stride);
 
         f_luminance_adapt = .9f * f_luminance_adapt + .1f * Device.fTimeDelta * ps_r2_tonemap_adaptation;
-        float amount = ps_r2_ls_flags.test(R2FLAG_TONEMAP) ? ps_r2_tonemap_amount : 0;
-        Fvector3 _none, _full, _result;
-        _none.set(1, 0, 1);
-        _full.set(ps_r2_tonemap_middlegray, 1.f, ps_r2_tonemap_low_lum);
+        const float amount = ps_r2_ls_flags.test(R2FLAG_TONEMAP) ? ps_r2_tonemap_amount : 0;
+        constexpr Fvector3 _none{1.f, 0.f, 1.f};
+        const Fvector3 _full{ps_r2_tonemap_middlegray, 1.f, ps_r2_tonemap_low_lum};
+        Fvector3 _result;
         _result.lerp(_none, _full, amount);
 
-        RCache.set_Element(s_luminance->E[2]);
-        RCache.set_Geometry(g_bloom_filter);
-        RCache.set_c("MiddleGray", _result.x, _result.y, _result.z, f_luminance_adapt);
-        RCache.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+        cmd_list.set_Element(s_luminance->E[2]);
+        cmd_list.set_Geometry(g_bloom_filter);
+        cmd_list.set_c("MiddleGray", _result.x, _result.y, _result.z, f_luminance_adapt);
+        cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
     }
 
     // Cleanup states
     // CHK_DX		(HW.pDevice->SetRenderState(D3DRS_ZENABLE,TRUE));
-    RCache.set_Z(TRUE);
+    cmd_list.set_Z(TRUE);
 }

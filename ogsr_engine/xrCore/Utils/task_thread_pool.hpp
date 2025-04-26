@@ -115,6 +115,8 @@
 #define NODISCARD
 #endif
 
+inline thread_local unsigned int curr_thread_id;
+
 namespace task_thread_pool
 {
 
@@ -135,20 +137,14 @@ public:
     /**
      * Create a task_thread_pool and start worker threads.
      *
-     * @param num_threads Number of worker threads. If 0 then number of threads is equal to the number of physical cores on the machine, as given by
-     * std::thread::hardware_concurrency().
+     * @param num_threads Number of worker threads. If 0 then number of threads is equal to the number of physical cores on the machine, as given by std::thread::hardware_concurrency().
      */
-    explicit task_thread_pool(unsigned int num_threads = 0)
+    explicit task_thread_pool(std::string name, unsigned int threads = 0)
     {
-        if (num_threads < 1)
-        {
-            num_threads = std::thread::hardware_concurrency();
-            if (num_threads < 1)
-            {
-                num_threads = 1;
-            }
-        }
-        start_threads(num_threads);
+        prefix = name;
+
+        curr_thread_id = 0;
+        num_threads = threads;
     }
 
     /**
@@ -160,6 +156,19 @@ public:
         unpause();
         wait_for_queued_tasks();
         stop_all_threads();
+    }
+
+    void init()
+    {
+        if (num_threads < 1)
+        {
+            num_threads = std::thread::hardware_concurrency();
+            if (num_threads < 1)
+            {
+                num_threads = 1;
+            }
+        }
+        start_threads(num_threads);
     }
 
     /**
@@ -217,10 +226,10 @@ public:
         return static_cast<unsigned int>(threads.size());
     }
 
-    NODISCARD bool is_pool_thread() const
+    NODISCARD unsigned int get_thread_id() const
     {
-        const std::lock_guard<std::mutex> threads_lock(thread_mutex);
-        return thread_ids.contains(std::this_thread::get_id());
+        //const std::lock_guard<std::mutex> threads_lock(thread_mutex);
+        return curr_thread_id;
     }
 
     /**
@@ -272,15 +281,17 @@ public:
     NODISCARD std::future<R> submit(F&& func, A&&... args)
     {
         const std::lock_guard<std::mutex> tasks_lock(task_mutex);
-        std::shared_ptr<std::packaged_task<R()>> ptask = std::make_shared<std::packaged_task<R()>>([=] {
+        auto bind = std::bind(std::forward<F>(func), std::forward<A>(args)...);
+        std::shared_ptr<std::packaged_task<R()>> ptask = std::make_shared<std::packaged_task<R()>>([bind] {
             __try
             {
-                func(std::forward<A>(args)...);
+                return bind();
             }
             __except (ExceptStackTrace("TTAPI stack trace:\n"))
             {
                 Debug.on_exception_in_thread();
             }
+
         });
         tasks.emplace([ptask] { (*ptask)(); });
         task_cv.notify_one();
@@ -296,10 +307,11 @@ public:
     void submit_detach(F&& func, A&&... args)
     {
         const std::lock_guard<std::mutex> tasks_lock(task_mutex);
-        tasks.emplace([=] {
+        auto bind = std::bind(std::forward<F>(func), std::forward<A>(args)...);
+        tasks.emplace([bind] {
             __try
             {
-                func(std::forward<A>(args)...);
+                bind();
             }
             __except (ExceptStackTrace("TTAPI stack trace:\n"))
             {
@@ -307,17 +319,6 @@ public:
             }
         });
         task_cv.notify_one();
-    }
-
-    /**
-     * Block until the task queue is empty. Some tasks may be in-progress when this method returns.
-     */
-    void wait_for_queued_tasks()
-    {
-        std::unique_lock<std::mutex> tasks_lock(task_mutex);
-        notify_task_finish = true;
-        task_finished_cv.wait(tasks_lock, [&] { return tasks.empty(); });
-        notify_task_finish = false;
     }
 
     /**
@@ -331,15 +332,26 @@ public:
         notify_task_finish = false;
     }
 
+    NODISCARD bool on_pool_thread() const
+    {
+        const std::lock_guard<std::mutex> threads_lock(thread_mutex);
+        return thread_ids.contains(std::this_thread::get_id());
+    }
+
 protected:
     /**
      * Main function for worker threads.
      */
-    void worker_main()
+    void worker_main(unsigned int i)
     {
         bool finished_task = false;
 
         CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+
+        {
+            curr_thread_id = i + 1;
+            Msg("[%s] Pool thread id=%d", prefix.c_str(), curr_thread_id);
+        }
 
         while (true)
         {
@@ -354,7 +366,9 @@ protected:
                 }
             }
 
-            task_cv.wait(tasks_lock, [&]() { return !pool_running || (!pool_paused && !tasks.empty()); });
+            task_cv.wait(tasks_lock, [&]() {
+                    return !pool_running || (!pool_paused && !tasks.empty());
+            });
 
             if (!pool_running)
             {
@@ -377,7 +391,7 @@ protected:
                 // std::packaged_task::operator() may throw in some error
                 // conditions, such as if the task had already been run.
                 // Nothing that the pool can do anything about.
-                Msg("!![%s] Catched std::future_error: [%s]", __FUNCTION__, ferr.what());
+                Msg("!![%s] Caught std::future_error: [%s]", __FUNCTION__, ferr.what());
             }
 
             finished_task = true;
@@ -395,8 +409,8 @@ protected:
 
         for (unsigned int i = 0; i < num_threads; ++i)
         {
-            threads.emplace_back(&task_thread_pool::worker_main, this);
-            std::string threadName{"TTAPI thread " + std::to_string(i + 1)};
+            threads.emplace_back(&task_thread_pool::worker_main, this, i);
+            std::string threadName{prefix + " thread id" + std::to_string(i + 1)};
             set_thread_name(threadName.c_str(), threads.back());
             thread_ids.insert(threads.back().get_id());
         }
@@ -422,6 +436,17 @@ protected:
         }
         threads.clear();
         thread_ids.clear();
+    }
+
+    /**
+     * Block until the task queue is empty. Some tasks may be in-progress when this method returns.
+     */
+    void wait_for_queued_tasks()
+    {
+        std::unique_lock<std::mutex> tasks_lock(task_mutex);
+        notify_task_finish = true;
+        task_finished_cv.wait(tasks_lock, [&] { return tasks.empty(); });
+        notify_task_finish = false;
     }
 
     /**
@@ -493,6 +518,9 @@ protected:
      * Access protected by task_mutex.
      */
     int num_inflight_tasks = 0;
+
+    std::string prefix{};
+    unsigned int num_threads{};
 };
 } // namespace task_thread_pool
 

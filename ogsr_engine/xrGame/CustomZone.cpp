@@ -481,7 +481,7 @@ void CCustomZone::net_Destroy()
         m_effector->Stop();
     //---------------------------------------------
     OBJECT_INFO_VEC_IT i = m_ObjectInfoMap.begin(), e = m_ObjectInfoMap.end();
-    for (; e != i; i++)
+    for (; e != i; ++i)
         exit_Zone(*i);
     m_ObjectInfoMap.clear();
 }

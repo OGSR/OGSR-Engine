@@ -18,7 +18,7 @@ void CBlender_blur::Compile(CBlender_Compile& C)
 		C.r_Pass("stub_screen_space", "pp_blur", FALSE, FALSE, FALSE);
 		C.r_dx10Texture("s_image", r2_RT_generic0);
 		C.r_dx10Texture("s_position", r2_RT_P);		
-		//C.r_dx10Texture("s_lut_atlas", "shaders\\lut_atlas");
+		C.r_dx10Texture("s_lut_atlas", "shaders\\lut_atlas");
 
 		C.r_dx10Sampler("smp_nofilter");
 		C.r_dx10Sampler("smp_rtlinear");
@@ -28,7 +28,7 @@ void CBlender_blur::Compile(CBlender_Compile& C)
 		C.r_Pass("stub_screen_space", "pp_blur", FALSE, FALSE, FALSE);
 		C.r_dx10Texture("s_image", r2_RT_blur_h_2);
 		C.r_dx10Texture("s_position", r2_RT_P);		
-		//C.r_dx10Texture("s_lut_atlas", "shaders\\lut_atlas");
+		C.r_dx10Texture("s_lut_atlas", "shaders\\lut_atlas");
 
 		C.r_dx10Sampler("smp_nofilter");
 		C.r_dx10Sampler("smp_rtlinear");
@@ -38,7 +38,7 @@ void CBlender_blur::Compile(CBlender_Compile& C)
 		C.r_Pass("stub_screen_space", "pp_blur", FALSE, FALSE, FALSE);
 		C.r_dx10Texture("s_image", r2_RT_generic0);
 		C.r_dx10Texture("s_position", r2_RT_P);		
-		//C.r_dx10Texture("s_lut_atlas", "shaders\\lut_atlas");
+		C.r_dx10Texture("s_lut_atlas", "shaders\\lut_atlas");
 
 		C.r_dx10Sampler("smp_nofilter");
 		C.r_dx10Sampler("smp_rtlinear");
@@ -48,7 +48,7 @@ void CBlender_blur::Compile(CBlender_Compile& C)
 		C.r_Pass("stub_screen_space", "pp_blur", FALSE, FALSE, FALSE);
 		C.r_dx10Texture("s_image", r2_RT_blur_h_4);
 		C.r_dx10Texture("s_position", r2_RT_P);		
-		//C.r_dx10Texture("s_lut_atlas", "shaders\\lut_atlas");
+		C.r_dx10Texture("s_lut_atlas", "shaders\\lut_atlas");
 
 		C.r_dx10Sampler("smp_nofilter");
 		C.r_dx10Sampler("smp_rtlinear");
@@ -58,7 +58,7 @@ void CBlender_blur::Compile(CBlender_Compile& C)
 		C.r_Pass("stub_screen_space", "pp_blur", FALSE, FALSE, FALSE);
 		C.r_dx10Texture("s_image", r2_RT_generic0);
 		C.r_dx10Texture("s_position", r2_RT_P);		
-		//C.r_dx10Texture("s_lut_atlas", "shaders\\lut_atlas");
+		C.r_dx10Texture("s_lut_atlas", "shaders\\lut_atlas");
 
 		C.r_dx10Sampler("smp_nofilter");
 		C.r_dx10Sampler("smp_rtlinear");
@@ -68,7 +68,7 @@ void CBlender_blur::Compile(CBlender_Compile& C)
 		C.r_Pass("stub_screen_space", "pp_blur", FALSE, FALSE, FALSE);
 		C.r_dx10Texture("s_image", r2_RT_blur_h_8);
 		C.r_dx10Texture("s_position", r2_RT_P);		
-		//C.r_dx10Texture("s_lut_atlas", "shaders\\lut_atlas");
+		C.r_dx10Texture("s_lut_atlas", "shaders\\lut_atlas");
 
 		C.r_dx10Sampler("smp_nofilter");
 		C.r_dx10Sampler("smp_rtlinear");

@@ -3,26 +3,15 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
-
 #include "DetailManager.h"
 
-#include "cl_intersect.h"
-
-#include "../../xr_3da/igame_persistent.h"
-#include "../../xr_3da/environment.h"
-#include <xmmintrin.h>
-
-const float dbgOffset = 0.f;
-const int dbgItems = 128;
-
 //--------------------------------------------------- Decompression
-static int magic4x4[4][4] = {{0, 14, 3, 13}, {11, 5, 8, 6}, {12, 2, 15, 1}, {7, 9, 4, 10}};
+constexpr int magic4x4[4][4] = {{0, 14, 3, 13}, {11, 5, 8, 6}, {12, 2, 15, 1}, {7, 9, 4, 10}};
 
 void bwdithermap(int levels, int magic[16][16])
 {
     /* Get size of each step */
-    float N = 255.0f / (levels - 1);
+    const float N = 255.0f / (levels - 1);
 
     /*
      * Expand 4x4 dither pattern to 16x16.  4x4 leaves obvious patterning,
@@ -34,25 +23,14 @@ void bwdithermap(int levels, int magic[16][16])
      * pixel value with mod N == 0 at the next level).
      */
 
-    float magicfact = (N - 1) / 16;
+    const float magicfact = (N - 1) / 16;
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
             for (int k = 0; k < 4; k++)
                 for (int l = 0; l < 4; l++)
                     magic[4 * k + i][4 * l + j] = (int)(0.5 + magic4x4[i][j] * magicfact + (magic4x4[k][l] / 16.) * magicfact);
 }
-//--------------------------------------------------- Decompression
 
-void CDetailManager::SSwingValue::lerp(const SSwingValue& A, const SSwingValue& B, float f)
-{
-    float fi = 1.f - f;
-    amp1 = fi * A.amp1 + f * B.amp1;
-    amp2 = fi * A.amp2 + f * B.amp2;
-    rot1 = fi * A.rot1 + f * B.rot1;
-    rot2 = fi * A.rot2 + f * B.rot2;
-    speed = fi * A.speed + f * B.speed;
-}
-//---------------------------------------------------
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -60,17 +38,8 @@ void CDetailManager::SSwingValue::lerp(const SSwingValue& A, const SSwingValue& 
 
 CDetailManager::CDetailManager()
 {
-    dtFS = 0;
-    dtSlots = 0;
-    soft_Geom = 0;
-    hw_Geom = 0;
-    hw_BatchSize = 0;
-    hw_VB = 0;
-    hw_IB = 0;
-    m_time_rot_1 = 0;
-    m_time_rot_2 = 0;
-    m_time_pos = 0;
-    m_global_time_old = 0;
+    dtFS = nullptr;
+    dtSlots = nullptr;
 
     // KD: variable detail radius
     dm_size = dm_current_size;
@@ -101,7 +70,7 @@ CDetailManager::~CDetailManager()
     if (dtFS)
     {
         FS.r_close(dtFS);
-        dtFS = NULL;
+        dtFS = nullptr;
     }
 
     for (u32 i = 0; i < dm_cache_size; ++i)
@@ -120,44 +89,33 @@ CDetailManager::~CDetailManager()
     }
     xr_mfree(cache_level1);
 }
-/*
- */
 
-/*
-void dump	(CDetailManager::vis_list& lst)
-{
-    for (int i=0; i<lst.size(); i++)
-    {
-        Msg("%8x / %8x / %8x",	lst[i]._M_start, lst[i]._M_finish, lst[i]._M_end_of_storage._M_data);
-    }
-}
-*/
 void CDetailManager::Load()
 {
     // Open file stream
-    if (!FS.exist("$level$", "level.details"))
+    if (!FS.exist(fsgame::level, fsgame::level_files::level_details))
     {
-        dtFS = NULL;
+        dtFS = nullptr;
         return;
     }
 
     string_path fn;
-    FS.update_path(fn, "$level$", "level.details");
+    FS.update_path(fn, fsgame::level, fsgame::level_files::level_details);
     dtFS = FS.r_open(fn);
 
     // Header
     dtFS->r_chunk_safe(0, &dtH, sizeof(dtH));
     R_ASSERT(dtH.version == DETAIL_VERSION);
-    u32 m_count = dtH.object_count;
+    const u32 m_count = dtH.object_count;
 
     // Models
     IReader* m_fs = dtFS->open_chunk(1);
+    objects.reserve(m_count);
     for (u32 m_id = 0; m_id < m_count; m_id++)
     {
-        CDetail* dt = xr_new<CDetail>();
+        CDetail& dt = objects.emplace_back();
         IReader* S = m_fs->open_chunk(m_id);
-        dt->Load(S);
-        objects.push_back(dt);
+        dt.Load(S);
         S->close();
     }
     m_fs->close();
@@ -168,83 +126,76 @@ void CDetailManager::Load()
     m_slots->close();
 
     // Initialize 'vis' and 'cache'
-    for (u32 i = 0; i < 3; ++i)
-        m_visibles[i].resize(objects.size());
+    m_visibles.resize(objects.size());
+
     cache_Initialize();
 
     // Make dither matrix
     bwdithermap(2, dither);
-
-    // Hardware specific optimizations
-    if (UseVS())
-        hw_Load();
-    else
-        soft_Load();
-
-    // swing desc
-    // normal
-    swing_desc[0].amp1 = pSettings->r_float("details", "swing_normal_amp1");
-    swing_desc[0].amp2 = pSettings->r_float("details", "swing_normal_amp2");
-    swing_desc[0].rot1 = pSettings->r_float("details", "swing_normal_rot1");
-    swing_desc[0].rot2 = pSettings->r_float("details", "swing_normal_rot2");
-    swing_desc[0].speed = pSettings->r_float("details", "swing_normal_speed");
-    // fast
-    swing_desc[1].amp1 = pSettings->r_float("details", "swing_fast_amp1");
-    swing_desc[1].amp2 = pSettings->r_float("details", "swing_fast_amp2");
-    swing_desc[1].rot1 = pSettings->r_float("details", "swing_fast_rot1");
-    swing_desc[1].rot2 = pSettings->r_float("details", "swing_fast_rot2");
-    swing_desc[1].speed = pSettings->r_float("details", "swing_fast_speed");
 }
 
 void CDetailManager::Unload()
 {
-    if (UseVS())
-        hw_Unload();
-    else
-        soft_Unload();
-
-    for (DetailIt it = objects.begin(); it != objects.end(); it++)
     {
-        (*it)->Unload();
-        xr_delete(*it);
+        check_lock.lock();
+
+        if (awaiter.valid())
+            awaiter.get();
+
+        async_started = false;
+
+        check_lock.unlock();
     }
+
+    for (auto& object : objects)
+        object.Unload();
     objects.clear();
-    m_visibles[0].clear();
-    m_visibles[1].clear();
-    m_visibles[2].clear();
+
+    for (auto& vec : m_visibles)
+        vec.clear();
+
     FS.r_close(dtFS);
-    dtFS = NULL;
+    dtFS = nullptr;
 }
 
 extern ECORE_API float r_ssaDISCARD;
 extern BOOL ps_no_scale_on_fade;
 
+static float go_to_target(float& current, const float target)
+{
+    const float diff = abs(current - target);
+    const float r_value = Device.fTimeDelta;
+    if (diff - r_value <= 0.f)
+    {
+        current = target;
+        return 0.f;
+    }
+    return current < target ? r_value : -r_value;
+}
+
 void CDetailManager::UpdateVisibleM()
 {
-    // Фикс мерцания и прочих глюков травы при активном двойном рендеринге. Для теней от травы SSS16 фикс не нужен, наоборот вредит.
-   // if (Device.m_SecondViewport.IsSVPFrame())
-   //     return;
+    // сюда можно всунуть многопоток но смысла мало - оно всеравно успевает отработать раньше чем начало рендера
+
+    ZoneScoped;
 
     // Clean up
     for (auto& vec : m_visibles)
-        for (auto& vis : vec)
-            vis.clear();
+        vec.clear();
 
-    Fvector EYE = RDEVICE.vCameraPosition_saved;
+    const Fvector EYE = Device.vCameraPositionSaved;
 
     CFrustum View;
-    View.CreateFromMatrix(RDEVICE.mFullTransform_saved, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+    View.CreateFromMatrix(Device.mFullTransformSaved, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 
-    float fade_limit = dm_fade;
-    fade_limit = fade_limit * fade_limit;
-    float fade_start = 1.f;
-    fade_start = fade_start * fade_start;
-    float fade_range = fade_limit - fade_start;
-    float r_ssaCHEAP = 16 * r_ssaDISCARD;
+    const float fade_limit_sqr = dm_fade * dm_fade;
+    const float fade_start_sqr = 1.f * 1.f;
+
+    const float fade_range = fade_limit_sqr - fade_start_sqr;
 
     // Initialize 'vis' and 'cache'
     // Collect objects for rendering
-    RDEVICE.Statistic->RenderDUMP_DT_VIS.Begin();
+    Device.Statistic->RenderDUMP_DT_VIS.Begin();
     for (u32 _mz = 0; _mz < dm_cache1_line; _mz++)
     {
         for (u32 _mx = 0; _mx < dm_cache1_line; _mx++)
@@ -254,23 +205,20 @@ void CDetailManager::UpdateVisibleM()
             {
                 continue;
             }
+
             u32 mask = 0xff;
-            u32 res = View.testSphere(MS.vis.sphere.P, MS.vis.sphere.R, mask);
+            const u32 res = View.testSphere(MS.vis.sphere.P, MS.vis.sphere.R, mask);
             if (fcvNone == res)
             {
                 continue; // invisible-view frustum
             }
-            // test slots
 
-            u32 dwCC = dm_cache1_count * dm_cache1_count;
+            const u32 dwCC = dm_cache1_count * dm_cache1_count;
 
             for (u32 _i = 0; _i < dwCC; _i++)
             {
                 Slot* PS = *MS.slots[_i];
                 Slot& S = *PS;
-
-                //				if ( ( _i + 1 ) < dwCC );
-                //					_mm_prefetch( (char *) *MS.slots[ _i + 1 ]  , _MM_HINT_T1 );
 
                 // if slot empty - continue
                 if (S.empty)
@@ -282,7 +230,7 @@ void CDetailManager::UpdateVisibleM()
                 if (fcvPartial == res)
                 {
                     u32 _mask = mask;
-                    u32 _res = View.testSphere(S.vis.sphere.P, S.vis.sphere.R, _mask);
+                    const u32 _res = View.testSphere(S.vis.sphere.P, S.vis.sphere.R, _mask);
                     if (fcvNone == _res)
                     {
                         continue; // invisible-view frustum
@@ -295,79 +243,127 @@ void CDetailManager::UpdateVisibleM()
                 }
 
                 // Add to visibility structures
-                if (RDEVICE.dwFrame > S.frame)
+                if (Device.dwFrame > S.frame)
                 {
                     // Calc fade factor	(per slot)
-                    float dist_sq = EYE.distance_to_sqr(S.vis.sphere.P);
-                    if (dist_sq > fade_limit)
-                        continue;
-                    float alpha = (dist_sq < fade_start) ? 0.f : (dist_sq - fade_start) / fade_range;
-                    float alpha_i = 1.f - alpha;
-                    float dist_sq_rcp = 1.f / dist_sq;
-
-                    S.frame = RDEVICE.dwFrame + Random.randI(15, 30);
-                    for (int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
+                    const float dist_sqr = EYE.distance_to_sqr(S.vis.sphere.P);
+                    if (dist_sqr > fade_limit_sqr)
                     {
-                        SlotPart& sp = S.G[sp_id];
+                        S.hidden = true;
+                        continue;
+                    }
+
+                    S.frame = Device.dwFrame + Random.randI(15, 30);
+
+                    const float alpha = (dist_sqr < fade_start_sqr) ? 0.f : (dist_sqr - fade_start_sqr) / fade_range;
+                    const float alpha_i = 1.f - alpha;
+                    const float dist_sq_rcp = 1.f / dist_sqr;
+
+                    for (auto& sp : S.G)
+                    {
                         if (sp.id == DetailSlot::ID_Empty)
                             continue;
 
-                        sp.r_items[0].clear();
-                        sp.r_items[1].clear();
-                        sp.r_items[2].clear();
+                        sp.r_items.clear();
 
-                        float R = objects[sp.id]->bv_sphere.R;
+                        float R = objects.at(sp.id).bv_sphere.R;
                         float Rq_drcp = R * R * dist_sq_rcp; // reordered expression for 'ssa' calc
 
-                        for (auto& el : sp.items)
+                        for (auto& Item : sp.items)
                         {
-                            if (el == nullptr)
-                                continue;
+                            const float scale = ps_no_scale_on_fade ? (Item.scale_calculated = Item.scale) : (Item.scale_calculated = Item.scale * alpha_i);
+                            const float ssa = ps_no_scale_on_fade ? scale : scale * scale * Rq_drcp;
 
-                            SlotItem& Item = *el;
-                            float scale = ps_no_scale_on_fade ? (Item.scale_calculated = Item.scale) : (Item.scale_calculated = Item.scale * alpha_i);
-                            float ssa = ps_no_scale_on_fade ? scale : scale * scale * Rq_drcp;
+                            const Fmatrix& M = Item.xform;
+                            Item.data.data[0] = M._11 * Item.scale_calculated;
+                            Item.data.data[1] = M._21 * Item.scale_calculated;
+                            Item.data.data[2] = M._31 * Item.scale_calculated;
+
+                            Item.data.data[4] = M._12 * Item.scale_calculated;
+                            Item.data.data[5] = M._22 * Item.scale_calculated;
+                            Item.data.data[6] = M._32 * Item.scale_calculated;
+
+                            Item.data.data[8] = M._13 * Item.scale_calculated;
+                            Item.data.data[9] = M._23 * Item.scale_calculated;
+                            Item.data.data[10] = M._33 * Item.scale_calculated;
+
                             if (ssa < r_ssaDISCARD)
                             {
-                                continue;
+                                Item.alpha_target = 0;
                             }
-                            u32 vis_id = 0;
-                            if (ssa > r_ssaCHEAP)
-                                vis_id = Item.vis_ID;
+                            else
+                            {
 
-                            sp.r_items[vis_id].push_back(el);
-                            Item.distance = dist_sq;
-                            Item.position = S.vis.sphere.P;
+                                bool should_add = true;
+                                if (!fis_zero(ps_r2_no_details_radius))
+                                {
+                                    if ((dist_sqr < ps_r2_no_details_radius * ps_r2_no_details_radius))
+                                        should_add = false;
+                                }
 
-                            // 2							visible[vis_id][sp.id].push_back(&Item);
+                                if (should_add)
+                                {
+                                    if (S.hidden)
+                                    {
+                                        Item.alpha = 0;
+                                        S.hidden = false;
+                                    }
+                                    Item.alpha_target = 1;
+
+                                    sp.r_items.push_back(&Item);
+                                }
+                            }
+
+                            if (Device.dwPrecacheFrame)
+                            {
+                                Item.alpha = Item.alpha_target;
+                            }
                         }
                     }
                 }
-                for (int sp_id = 0; sp_id < dm_obj_in_slot; sp_id++)
+
+                for (auto& sp : S.G)
                 {
-                    SlotPart& sp = S.G[sp_id];
                     if (sp.id == DetailSlot::ID_Empty)
                         continue;
-                    if (!sp.r_items[0].empty())
+
+                    if (!sp.r_items.empty())
                     {
-                        m_visibles[0][sp.id].push_back(&sp.r_items[0]);
-                    }
-                    if (!sp.r_items[1].empty())
-                    {
-                        m_visibles[1][sp.id].push_back(&sp.r_items[1]);
-                    }
-                    if (!sp.r_items[2].empty())
-                    {
-                        m_visibles[2][sp.id].push_back(&sp.r_items[2]);
+                        m_visibles[sp.id].push_back(&sp.r_items);
                     }
                 }
             }
         }
     }
-    RDEVICE.Statistic->RenderDUMP_DT_VIS.End();
+    Device.Statistic->RenderDUMP_DT_VIS.End();
+
+    // update alpha. it takes time but still much faster than update during render
+    for (auto& vec : m_visibles)
+    {
+        u32 cnt = 0;
+
+        for (const auto& slot_items : vec)
+        {
+            for (const auto& instance : *slot_items)
+            {
+                if (!fsimilar(instance->alpha, instance->alpha_target))
+                {
+                    instance->alpha += go_to_target(instance->alpha, instance->alpha_target);
+                    instance->alpha = std::clamp(instance->alpha, 0.0f, 1.0f);
+                }
+
+                instance->data.data[13] = instance->alpha;
+
+                if (instance->alpha > 0.f && instance->scale_calculated > 0.f)
+                    cnt++;
+            }
+        }
+
+        vec.instance_count = cnt;
+    }
 }
 
-void CDetailManager::Render()
+void CDetailManager::Render(CBackend& cmd_list, const bool shadows, light* L)
 {
     if (!RImplementation.Details)
         return; // possibly deleted
@@ -375,90 +371,65 @@ void CDetailManager::Render()
         return;
     if (!psDeviceFlags.is(rsDetails))
         return;
-    if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
+    if (CRender::ShouldSkipRender())
         return;
 
-    // MT wait
-    if (ps_r2_ls_flags.test((u32)R2FLAG_EXP_MT_DETAILS) && async_started)
+    ZoneScoped;
+
     {
-        //Msg("--[%s] async! frame №[%u] svpactive:[%d], svpframe:[%d]", __FUNCTION__, Device.dwFrame, Device.m_SecondViewport.IsSVPActive(), Device.m_SecondViewport.IsSVPFrame());
-        WaitAsync();
+        check_lock.lock();
+
+        if (awaiter.valid())
+            awaiter.get();
+
+        async_started = false;
+
+        check_lock.unlock();
     }
-    else
-    {
-        //Msg("~~[%s] NO async! frame №[%u] svpactive:[%d], svpframe:[%d]", __FUNCTION__, Device.dwFrame, Device.m_SecondViewport.IsSVPActive(), Device.m_SecondViewport.IsSVPFrame());
-        MT_CALC();
-    }
 
-    RDEVICE.Statistic->RenderDUMP_DT_Render.Begin();
+    Device.Statistic->RenderDUMP_DT_Render.Begin();
 
-    const float factor = g_pGamePersistent->Environment().wind_strength_factor;
+    cmd_list.set_CullMode(CULL_NONE);
 
-    swing_current.lerp(swing_desc[0], swing_desc[1], factor);
+    cmd_list.set_xform_world(Fidentity);
+    cmd_list.set_xform_world_old(Fidentity);
 
-    RCache.set_CullMode(CULL_NONE);
-    RCache.set_xform_world(Fidentity);
+    hw_Render(cmd_list, shadows, L);
 
-    if (UseVS())
-        hw_Render();
-    else
-        soft_Render();
+    cmd_list.set_CullMode(CULL_CCW);
 
-    RCache.set_CullMode(CULL_CCW);
-    RDEVICE.Statistic->RenderDUMP_DT_Render.End();
+    Device.Statistic->RenderDUMP_DT_Render.End();
 }
 
 u32 reset_frame = 0;
 
-void CDetailManager::StartAsync()
+void CDetailManager::StartCalculationAsync()
 {
-    if (!(ps_r2_ls_flags.test((u32)R2FLAG_EXP_MT_DETAILS) && //костыли чтоб в 3д прицелах не мерцала трава. Фикс не совсем идеальный, иногда всё равно проскакивает, но не критично.
-          (Device.m_SecondViewport.IsSVPFrame() || !Device.m_SecondViewport.IsSVPActive() || (((Device.dwFrame - 1) % g_3dscopes_fps_factor) != 0))))
+    check_lock.lock();
+
+    if (!async_started)
     {
-        async_started = false;
-        return;
+        awaiter = TTAPI->submit([this]() { MT_CALC(); });
+        async_started = true;
     }
 
-    if (reset_frame == Device.dwFrame)
-        return;
-
-    if (!RImplementation.Details)
-        return; // possibly deleted
-    if (!dtFS)
-        return;
-    if (!psDeviceFlags.is(rsDetails))
-        return;
-    if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
-        return;
-
-    //Заметка: сначала рендерится фрейм для 3д прицела, а уже следующий фрейм для всего мира вне прицела
-    //Msg("##[%s] frame №[%u] svpactive:[%d], svpframe:[%d]", __FUNCTION__, Device.dwFrame, Device.m_SecondViewport.IsSVPActive(), Device.m_SecondViewport.IsSVPFrame());
-
-    awaiter = TTAPI->submit([this]() { MT_CALC(); });
-    async_started = true;
-}
-
-void CDetailManager::WaitAsync()
-{
-    if (awaiter.valid())
-        awaiter.get();
+    check_lock.unlock();
 }
 
 void CDetailManager::MT_CALC()
 {
     if (reset_frame == Device.dwFrame)
         return;
-
     if (!RImplementation.Details)
         return; // possibly deleted
     if (!dtFS)
         return;
     if (!psDeviceFlags.is(rsDetails))
         return;
-    if (g_pGamePersistent && g_pGamePersistent->m_pMainMenu && g_pGamePersistent->m_pMainMenu->IsActive())
+    if (RImplementation.ShouldSkipRender())
         return;
 
-    MT.Enter();
+    ZoneScoped;
 
     if (need_init)
     {
@@ -466,28 +437,24 @@ void CDetailManager::MT_CALC()
         cache_Initialize();
     }
 
-    Fvector EYE = RDEVICE.vCameraPosition_saved;
+    Fvector EYE = Device.vCameraPositionSaved;
 
-    int s_x = iFloor(EYE.x / dm_slot_size + .5f);
-    int s_z = iFloor(EYE.z / dm_slot_size + .5f);
+    const int s_x = iFloor(EYE.x / dm_slot_size + .5f);
+    const int s_z = iFloor(EYE.z / dm_slot_size + .5f);
 
-    RDEVICE.Statistic->RenderDUMP_DT_Cache.Begin();
-    cache_Update(s_x, s_z, EYE, dm_max_decompress);
-    RDEVICE.Statistic->RenderDUMP_DT_Cache.End();
+    Device.Statistic->RenderDUMP_DT_Cache.Begin();
+    cache_Update(s_x, s_z, EYE);
+    Device.Statistic->RenderDUMP_DT_Cache.End();
 
     UpdateVisibleM();
-
-    MT.Leave();
 }
 
-void CDetailManager::details_clear()
+void CDetailManager::Clear()
 {
-    // Disable fade, next render will be scene
-    fade_distance = 99999;
-    if (ps_ssfx_grass_shadows.x <= 0)
-        return;
+    //if (ps_ssfx_grass_shadows.x <= 0)
+    //    return;
 
-    for (auto& list : m_visibles)
-        for (auto& vis : list)
-            vis.clear();
+    //for (auto& list : m_visibles)
+    //    for (auto& vis : list)
+    //        vis.clear();
 }

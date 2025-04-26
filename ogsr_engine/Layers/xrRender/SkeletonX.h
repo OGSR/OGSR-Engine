@@ -12,6 +12,7 @@
 class CKinematics;
 
 struct SEnumVerticesCallback;
+
 class CSkeletonX
 {
 protected:
@@ -53,8 +54,8 @@ protected:
     };
 
     void _Copy(CSkeletonX* V);
-    void _Render_soft(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount);
-    void _Render(ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount);
+    void _Render_soft(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount);
+    void _Render(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount);
     void _Load(const char* N, IReader* data, u32& dwVertCount);
 
     virtual void _Load_hw(Fvisual& V, void* data) = 0;
@@ -64,21 +65,13 @@ protected:
     void _FillVerticesSoft2W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16* indices, CBoneData::FacesVec& faces);
     void _FillVerticesSoft3W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16* indices, CBoneData::FacesVec& faces);
     void _FillVerticesSoft4W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16* indices, CBoneData::FacesVec& faces);
-    virtual void _FillVerticesHW1W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces) = 0;
-    virtual void _FillVerticesHW2W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces) = 0;
-    virtual void _FillVerticesHW3W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces) = 0;
-    virtual void _FillVerticesHW4W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces) = 0;
+
     virtual void _FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16 bone_id, u32 iBase, u32 iCount) = 0;
 
-    BOOL _PickBoneSoft1W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces);
+    BOOL _PickBoneSoft1W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces) const;
     BOOL _PickBoneSoft2W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces);
     BOOL _PickBoneSoft3W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces);
     BOOL _PickBoneSoft4W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces);
-
-    virtual BOOL _PickBoneHW1W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces) = 0;
-    virtual BOOL _PickBoneHW2W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces) = 0;
-    virtual BOOL _PickBoneHW3W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces) = 0;
-    virtual BOOL _PickBoneHW4W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces) = 0;
 
     virtual BOOL _PickBone(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16 bone_id, u32 iBase, u32 iCount) = 0;
 
@@ -86,7 +79,7 @@ public:
     BOOL has_visible_bones();
     CSkeletonX()
     {
-        Parent = 0;
+        Parent = nullptr;
         ChildIDX = u16(-1);
     }
 
@@ -106,9 +99,9 @@ protected:
 template <typename T_vertex, typename T_buffer>
 BOOL pick_bone(T_buffer vertices, CKinematics* Parent, IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces)
 {
-    for (CBoneData::FacesVecIt it = faces.begin(); it != faces.end(); it++)
+    for (const unsigned short& face : faces)
     {
-        u32 idx = (*it) * 3;
+        const u32 idx = face * 3;
         for (u32 k = 0; k < 3; k++)
         {
             T_vertex& vert = vertices[indices[idx + k]];
@@ -122,12 +115,5 @@ BOOL pick_bone(T_buffer vertices, CKinematics* Parent, IKinematics::pick_result&
             return TRUE;
         };
     }
-    return FALSE;
-}
-
-template <typename T>
-BOOL pick_bone(CKinematics* Parent, IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces)
-{
-    VERIFY(!"Not implemented");
     return FALSE;
 }

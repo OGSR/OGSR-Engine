@@ -1,10 +1,9 @@
-#ifndef r_constantsH
-#define r_constantsH
 #pragma once
 
 #include "../../xrcore/xr_resource.h"
 #include "../xrRenderDX10/dx10ConstantBuffer.h"
 
+class CBackend;
 class ECORE_API R_constant_setup;
 
 enum
@@ -73,7 +72,7 @@ struct ECORE_API R_constant_load
 
     R_constant_load() : index(u16(-1)), cls(u16(-1)){};
 
-    IC BOOL equal(R_constant_load& C) { return (index == C.index) && (cls == C.cls); }
+    IC BOOL equal(R_constant_load& C) const { return (index == C.index) && (cls == C.cls); }
 };
 
 struct ECORE_API R_constant : public xr_resource
@@ -91,7 +90,7 @@ struct ECORE_API R_constant : public xr_resource
     R_constant_load samp;
     R_constant_setup* handler;
 
-    R_constant() : type(u16(-1)), destination(0), handler(NULL){};
+    R_constant() : type(u16(-1)), destination(0), handler(nullptr){};
 
     IC R_constant_load& get_load(u32 destination)
     {
@@ -111,8 +110,17 @@ struct ECORE_API R_constant : public xr_resource
 
     IC BOOL equal(R_constant& C)
     {
-        return (0 == xr_strcmp(name, C.name)) && (type == C.type) && (destination == C.destination) && ps.equal(C.ps) && vs.equal(C.vs) && samp.equal(C.samp) &&
-            handler == C.handler;
+        return !xr_strcmp(name, C.name)
+            && type == C.type
+            && destination == C.destination
+            && ps.equal(C.ps)
+            && vs.equal(C.vs)
+            && gs.equal(C.gs)
+            && hs.equal(C.hs)
+            && ds.equal(C.ds)
+            && cs.equal(C.cs)
+            && samp.equal(C.samp)
+            && handler == C.handler;
     }
     IC BOOL equal(R_constant* C) { return equal(*C); }
 };
@@ -122,8 +130,17 @@ typedef resptr_core<R_constant, resptr_base<R_constant>> ref_constant;
 class ECORE_API R_constant_setup
 {
 public:
-    virtual void setup(R_constant* C) = 0;
+    bool bCapture{};
+
+    virtual void setup(CBackend& cmd_list, R_constant* C) = 0;
     virtual ~R_constant_setup() {}
+};
+
+class ECORE_API R_constant_setup_cap : public R_constant_setup
+{
+public:
+    R_constant_setup_cap() { bCapture = true; }
+    virtual ~R_constant_setup_cap() {}
 };
 
 class ECORE_API R_constant_table : public xr_resource_flagged
@@ -134,30 +151,32 @@ public:
 
     typedef std::pair<u32, ref_cbuffer> cb_table_record;
     typedef xr_vector<cb_table_record> cb_table;
-    cb_table m_CBTable;
+
+    cb_table m_CBTable[R__NUM_CONTEXTS];
+
 private:
-    void fatal(LPCSTR s);
+    static void fatal(LPCSTR s);
 
     BOOL parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination);
     BOOL parseResources(ID3DShaderReflection* pReflection, int ResNum, u32 destination);
 
 public:
+    R_constant_table() = default;
     ~R_constant_table();
 
     void clear();
     BOOL parse(void* desc, u32 destination);
-    void merge(R_constant_table* C);
-    ref_constant get(LPCSTR name); // slow search
-    ref_constant get(shared_str& name); // fast search
+    void merge(const R_constant_table* T);
+    ref_constant get(LPCSTR name) const; // slow search
+    ref_constant get(const shared_str& name) const; // fast search
+    void dbg_dump(u32 context_id) const;
 
-    BOOL equal(R_constant_table& C);
-    BOOL equal(R_constant_table* C) { return equal(*C); }
-    BOOL empty() { return 0 == table.size(); }
+    BOOL equal(const R_constant_table& C) const;
+    BOOL equal(const R_constant_table* C) const { return equal(*C); }
+    BOOL empty() const { return 0 == table.size(); }
 
 private:
 };
 typedef resptr_core<R_constant_table, resptr_base<R_constant_table>> ref_ctable;
 
 #include "../xrRenderDX10/dx10ConstantBuffer_impl.h"
-
-#endif

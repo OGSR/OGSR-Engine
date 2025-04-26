@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-
 #include "GameFont.h"
 #include "Render.h"
 
@@ -222,8 +221,16 @@ CGameFont::~CGameFont()
     RenderFactory->DestroyFontRender(pFontRender);
 }
 
-#define DI2PX(x) float(iFloor((x + 1) * float(::Render->getTarget()->get_width()) * 0.5f))
-#define DI2PY(y) float(iFloor((y + 1) * float(::Render->getTarget()->get_height()) * 0.5f))
+static inline float DI2PX(float x)
+{
+    auto& cmd_list = ::Render->get_imm_command_list();
+    return float(iFloor((x + 1) * float(::Render->getTarget()->get_width(cmd_list)) * 0.5f));
+}
+static inline float DI2PY(float y)
+{
+    auto& cmd_list = ::Render->get_imm_command_list();
+    return float(iFloor((y + 1) * float(::Render->getTarget()->get_height(cmd_list)) * 0.5f));
+}
 
 void CGameFont::OutSet(float x, float y)
 {
@@ -310,7 +317,7 @@ u16 CGameFont::SplitByWidth(u16* puBuffer, u16 uBufferSize, float fTargetWidth, 
 
 void CGameFont::MasterOut(BOOL bCheckDevice, BOOL bUseCoords, BOOL bScaleCoords, BOOL bUseSkip, float _x, float _y, float _skip, LPCSTR fmt, va_list p)
 {
-    if (bCheckDevice && (!RDEVICE.b_is_Active))
+    if (bCheckDevice && (!Device.b_is_Active))
         return;
 
     String rs;
@@ -418,7 +425,7 @@ float CGameFont::CurrentHeight_() { return fCurrentHeight * vInterval.y * GetHei
 void CGameFont::SetHeightI(float S)
 {
     VERIFY(uFlags & fsDeviceIndependent);
-    fCurrentHeight = S * RDEVICE.dwHeight;
+    fCurrentHeight = S * Device.dwHeight;
 };
 
 void CGameFont::SetHeight(float S)

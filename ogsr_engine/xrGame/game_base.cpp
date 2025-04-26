@@ -206,17 +206,3 @@ float game_GameState::GetEnvironmentGameTimeFactor()
 {
     return GetGameTimeFactor(); //(m_fETimeFactor);
 }
-
-void game_GameState::SetEnvironmentGameTimeFactor(const float fTimeFactor)
-{
-    m_qwEStartGameTime = GetEnvironmentGameTime();
-    m_qwEStartProcessorTime = Level().timeServer_Async();
-    m_fETimeFactor = fTimeFactor;
-}
-
-void game_GameState::SetEnvironmentGameTimeFactor(ALife::_TIME_ID GameTime, const float fTimeFactor)
-{
-    m_qwEStartGameTime = GameTime;
-    m_qwEStartProcessorTime = Level().timeServer_Async();
-    m_fETimeFactor = fTimeFactor;
-}

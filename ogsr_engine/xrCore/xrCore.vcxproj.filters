@@ -154,9 +154,6 @@
       <Filter>XML_Parser</Filter>
     </ClCompile>
     <ClCompile Include="..\Layers\xrAPI\xrAPI.cpp" />
-    <ClCompile Include="Event.cpp">
-      <Filter>Threading</Filter>
-    </ClCompile>
     <ClCompile Include="trivial_encryptor.cpp">
       <Filter>FS</Filter>
     </ClCompile>
@@ -246,7 +243,7 @@
     <ClInclude Include="cpuid.h">
       <Filter>Math\CPU</Filter>
     </ClInclude>
-    <ClInclude Include="FixedMap.h">
+    <ClInclude Include="xr_fixed_map.h">
       <Filter>Math\STLext</Filter>
     </ClInclude>
     <ClInclude Include="FixedVector.h">
@@ -337,9 +334,6 @@
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="..\Include\xrAPI\xrAPI.h" />
-    <ClInclude Include="Event.hpp">
-      <Filter>Threading</Filter>
-    </ClInclude>
     <ClInclude Include="xrSyncronize.h">
       <Filter>Threading</Filter>
     </ClInclude>

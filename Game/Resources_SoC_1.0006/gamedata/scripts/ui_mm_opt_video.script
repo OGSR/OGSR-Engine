@@ -23,9 +23,9 @@ function opt_video:InitControls(x, y, xml, handler)
 	local cap_gamma = xml:InitStatic("tab_video:cap_gamma", self)
 	local track_gamma = xml:InitTrackBar("tab_video:track_gamma", self)
 
-	xml:InitStatic("tab_video:cap_fullscreen", self)
-	local btn = xml:InitCheck("tab_video:check_fullscreen", self)
-	handler:Register(btn, "check_fullscreen")
+	--xml:InitStatic("tab_video:cap_fullscreen", self)
+	--local btn = xml:InitCheck("tab_video:check_fullscreen", self)
+	--handler:Register(btn, "check_fullscreen")
 
 	xml:InitStatic("tab_video:cap_always_active", self) --Вот это надо инитить раньше list_fps_lock, чтобы этот статик не перекрывал выпадающий список.
 	xml:InitCheck("tab_video:check_always_active", self)
@@ -40,10 +40,10 @@ function opt_video:InitControls(x, y, xml, handler)
 	local btn = xml:InitComboBox("tab_video:list_presets", self)
 	handler:Register(btn, "combo_preset")
 
-	xml:InitStatic("tab_video:cap_renderer", self)
-	local btn = xml:InitComboBox("tab_video:list_renderer", self)
-	handler:Register(btn, "tab_video:list_renderer")
-	handler:AddCallback( "tab_video:list_renderer", ui_events.LIST_ITEM_SELECT, handler.show_need_restart_wnd, handler )
+	--xml:InitStatic("tab_video:cap_renderer", self)
+	--local btn = xml:InitComboBox("tab_video:list_renderer", self)
+	--handler:Register(btn, "tab_video:list_renderer")
+	--handler:AddCallback( "tab_video:list_renderer", ui_events.LIST_ITEM_SELECT, handler.show_need_restart_wnd, handler )
 
 	local btn = xml:Init3tButton("tab_video:btn_advanced", self)	
 	handler:Register(btn, "btn_advanced_graphic")	

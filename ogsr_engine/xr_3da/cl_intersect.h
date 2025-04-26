@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef intersectH
-#define intersectH
+#pragma once
 
 namespace CDB
 {
@@ -899,5 +898,3 @@ IC bool TestRayOBB(const Fvector3& origin, const Fvector3& direction, const Fobb
 }
 //----------------------------------------------------------------------------
 }; // namespace CDB
-
-#endif

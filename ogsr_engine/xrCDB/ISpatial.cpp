@@ -16,16 +16,24 @@ ISpatial_DB* g_SpatialSpacePhysic = nullptr;
 //////////////////////////////////////////////////////////////////////////
 ISpatial::ISpatial(ISpatial_DB* space)
 {
+    //R_ASSERT(space);
+
     spatial.sphere.P.set(0, 0, 0);
     spatial.sphere.R = 0;
     spatial.node_center.set(0, 0, 0);
     spatial.node_radius = 0;
-    spatial.node_ptr = NULL;
-    spatial.sector = NULL;
+    spatial.node_ptr = nullptr;
+    spatial.sector_id = IRender_Sector::INVALID_SECTOR_ID;
     spatial.space = space;
 }
-ISpatial::~ISpatial() { spatial_unregister(); }
-BOOL ISpatial::spatial_inside()
+
+ISpatial::~ISpatial()
+{
+    if (spatial.space)
+        spatial_unregister();
+}
+
+BOOL ISpatial::spatial_inside() const
 {
     float dr = -(-spatial.node_radius + spatial.sphere.R);
     if (spatial.sphere.P.x < spatial.node_center.x - dr)
@@ -63,17 +71,11 @@ BOOL verify_sp(ISpatial* sp, Fvector& node_center, float node_radius)
 
 void ISpatial::spatial_register()
 {
-    spatial.type |= STYPEFLAG_INVALIDSECTOR;
-    if (spatial.node_ptr)
-    {
-        // already registered - nothing to do
-    }
-    else
+    if (!spatial.node_ptr)
     {
         // register
         R_ASSERT(spatial.space);
         spatial.space->insert(this);
-        spatial.sector = 0;
     }
 }
 
@@ -82,42 +84,42 @@ void ISpatial::spatial_unregister()
     if (spatial.node_ptr)
     {
         // remove
+        R_ASSERT(spatial.space);
         spatial.space->remove(this);
-        spatial.node_ptr = NULL;
-        spatial.sector = NULL;
-    }
-    else
-    {
-        // already unregistered
     }
 }
 
 void ISpatial::spatial_move()
 {
+    ZoneScoped;
+
+    R_ASSERT(spatial.space);
+
     if (spatial.node_ptr)
     {
         //*** somehow it was determined that object has been moved
-        spatial.type |= STYPEFLAG_INVALIDSECTOR;
+
+        if (!spatial.last_sector_check_pos.similar(spatial_sector_point(), EPS_L))
+        {
+            spatial.type |= STYPEFLAG_INVALIDSECTOR;
+
+            spatial.last_sector_check_pos = spatial_sector_point();
+        }
 
         //*** check if we are supposed to correct it's spatial location
         if (spatial_inside())
             return; // ???
+
         spatial.space->remove(this);
         spatial.space->insert(this);
     }
-    else
-    {
-        //*** we are not registered yet, or already unregistered
-        //*** ignore request
-    }
 }
 
-void ISpatial::spatial_updatesector_internal()
+void ISpatial::spatial_updatesector_internal(IRender_Sector::sector_id_t sector_id)
 {
-    IRender_Sector* S = ::Render->detectSector(spatial_sector_point());
     spatial.type &= ~STYPEFLAG_INVALIDSECTOR;
-    if (S)
-        spatial.sector = S;
+    if (sector_id != IRender_Sector::INVALID_SECTOR_ID)
+        spatial.sector_id = sector_id;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -137,7 +139,7 @@ void ISpatial_NODE::_insert(ISpatial* S)
 
 void ISpatial_NODE::_remove(ISpatial* S)
 {
-    S->spatial.node_ptr = NULL;
+    S->spatial.node_ptr = nullptr;
     auto it = std::find(items.begin(), items.end(), S);
     if (it != items.end())
         items.erase(it);
@@ -189,20 +191,19 @@ ISpatial_NODE* ISpatial_DB::_node_create()
 {
     stat_nodes++;
     if (allocator_pool.empty())
-        return allocator.create();
-    else
     {
-        ISpatial_NODE* N = allocator_pool.back();
-        allocator_pool.pop_back();
-        return N;
+        return allocator.create();
     }
+    ISpatial_NODE* N = allocator_pool.back();
+    allocator_pool.pop_back();
+    return N;
 }
 void ISpatial_DB::_node_destroy(ISpatial_NODE*& P)
 {
     VERIFY(P->_empty());
     stat_nodes--;
     allocator_pool.push_back(P);
-    P = NULL;
+    P = nullptr;
 }
 
 void ISpatial_DB::_insert(ISpatial_NODE* N, Fvector& n_C, float n_R)
@@ -235,7 +236,7 @@ void ISpatial_DB::_insert(ISpatial_NODE* N, Fvector& n_C, float n_R)
         VERIFY(octant == _octant(n_C, c_C)); // check table assosiations
         ISpatial_NODE*& chield = N->children[octant];
 
-        if (0 == chield)
+        if (nullptr == chield)
         {
             chield = _node_create();
             VERIFY(chield);
@@ -257,60 +258,76 @@ void ISpatial_DB::_insert(ISpatial_NODE* N, Fvector& n_C, float n_R)
 
 void ISpatial_DB::insert(ISpatial* S)
 {
-    cs.Enter();
-#ifdef DEBUG
-    stat_insert.Begin();
+    R_ASSERT(S);
 
-    BOOL bValid = _valid(S->spatial.sphere.R) && _valid(S->spatial.sphere.P);
-    if (!bValid)
+    cs.Enter();
+
+    if (!S->spatial.node_ptr) // only if unregistered
     {
-        CObject* O = dynamic_cast<CObject*>(S);
-        if (O)
-            FATAL("Invalid OBJECT position or radius (%s)", O->cName().c_str());
+#ifdef DEBUG
+        stat_insert.Begin();
+#endif
+
+#ifdef DEBUG
+        BOOL bValid = _valid(S->spatial.sphere.R) && _valid(S->spatial.sphere.P);
+        if (!bValid)
+        {
+            CObject* O = dynamic_cast<CObject*>(S);
+            if (O)
+                FATAL("Invalid OBJECT position or radius (%s)", O->cName().c_str());
+            else
+            {
+                CPS_Instance* P = dynamic_cast<CPS_Instance*>(S);
+                if (P)
+                    FATAL("Invalid PS spatial position{%3.2f,%3.2f,%3.2f} or radius{%3.2f}", VPUSH(S->spatial.sphere.P), S->spatial.sphere.R);
+                else
+                    FATAL("Invalid OTHER spatial position{%3.2f,%3.2f,%3.2f} or radius{%3.2f}", VPUSH(S->spatial.sphere.P), S->spatial.sphere.R);
+            }
+        }
+#endif
+
+        object_track[S->spatial.dbg_name.c_str()] += 1;
+
+        if (verify_sp(S, m_center, m_bounds))
+        {
+            // Object inside our DB
+            rt_insert_object = S;
+            _insert(m_root, m_center, m_bounds);
+            VERIFY(S->spatial_inside());
+            rt_insert_object = nullptr;
+        }
         else
         {
-            CPS_Instance* P = dynamic_cast<CPS_Instance*>(S);
-            if (P)
-                FATAL("Invalid PS spatial position{%3.2f,%3.2f,%3.2f} or radius{%3.2f}", VPUSH(S->spatial.sphere.P), S->spatial.sphere.R);
-            else
-                FATAL("Invalid OTHER spatial position{%3.2f,%3.2f,%3.2f} or radius{%3.2f}", VPUSH(S->spatial.sphere.P), S->spatial.sphere.R);
+            // Object outside our DB, put it into root node and hack bounds
+            // Object will reinsert itself until fits into "real", "controlled" space
+
+            /*
+            if (0 == m_root)	// KD: временная затычка - непонятно, почему может не быть кости
+            {
+                m_root = _node_create();
+                m_root->_init(NULL);
+            }
+            */
+
+            m_root->_insert(S);
+            S->spatial.node_center.set(m_center);
+            S->spatial.node_radius = m_bounds;
         }
-    }
-#endif
 
-    if (verify_sp(S, m_center, m_bounds))
-    {
-        // Object inside our DB
-        rt_insert_object = S;
-        _insert(m_root, m_center, m_bounds);
-        VERIFY(S->spatial_inside());
-    }
-    else
-    {
-        // Object outside our DB, put it into root node and hack bounds
-        // Object will reinsert itself until fits into "real", "controlled" space
+        S->spatial.sector_id = IRender_Sector::INVALID_SECTOR_ID;
+        S->spatial.type |= STYPEFLAG_INVALIDSECTOR;
 
-        /*
-        if (0 == m_root)	// KD: временная затычка - непонятно, почему может не быть кости
-        {
-            m_root = _node_create();
-            m_root->_init(NULL);
-        }
-        */
-
-        m_root->_insert(S);
-        S->spatial.node_center.set(m_center);
-        S->spatial.node_radius = m_bounds;
-    }
 #ifdef DEBUG
-    stat_insert.End();
+        stat_insert.End();
 #endif
+    }
+
     cs.Leave();
 }
 
 void ISpatial_DB::_remove(ISpatial_NODE* N, ISpatial_NODE* N_sub)
 {
-    if (0 == N)
+    if (nullptr == N)
         return;
 
     //*** we are assured that node contains N_sub and this subnode is empty
@@ -344,30 +361,75 @@ void ISpatial_DB::_remove(ISpatial_NODE* N, ISpatial_NODE* N_sub)
 
 void ISpatial_DB::remove(ISpatial* S)
 {
+    R_ASSERT(S);
+
     cs.Enter();
-#ifdef DEBUG
-    stat_remove.Begin();
-#endif
-    ISpatial_NODE* N = S->spatial.node_ptr;
-    N->_remove(S);
 
-    // Recurse
-    if (N->_empty())
-        _remove(N->parent, N);
+    if (S->spatial.node_ptr) // only if registered
+    {
+#ifdef DEBUG
+        stat_remove.Begin();
+#endif
+
+        object_track[S->spatial.dbg_name.c_str()] -= 1;
+
+        ISpatial_NODE* N = S->spatial.node_ptr;
+        N->_remove(S);
+
+        S->spatial.sector_id = IRender_Sector::INVALID_SECTOR_ID;
+        S->spatial.type |= STYPEFLAG_INVALIDSECTOR;
+
+        // Recurse
+        if (N->_empty())
+            _remove(N->parent, N);
 
 #ifdef DEBUG
-    stat_remove.End();
+        stat_remove.End();
 #endif
+    }
+
     cs.Leave();
 }
 
-void ISpatial_DB::update(u32 nodes /* =8 */)
+void ISpatial_DB::update(bool validate)
 {
-#ifdef DEBUG
-    if (0 == m_root)
+    if (nullptr == m_root)
         return;
-    cs.Enter();
-    VERIFY(verify());
-    cs.Leave();
-#endif
+
+    if (validate)
+    {
+        cs.Enter();
+        R_ASSERT(verify());
+        cs.Leave();
+    }
+}
+
+void ISpatial_DB::clear()
+{
+    if (!object_track.empty())
+    {
+        bool empty = true;
+
+        for (const auto & track : object_track)
+        {
+            if (track.second > 0)
+            {
+                Msg("! object type [%s] cnt: [%d].", track.first.c_str(), track.second);
+                empty = false;
+            }
+        }
+         
+        R_ASSERT(empty, "Non empty ISpatial_DB on level unload!!!");
+    }
+
+    if (m_root)
+    {
+        _node_destroy(m_root);
+    }
+
+    while (!allocator_pool.empty())
+    {
+        allocator.destroy(allocator_pool.back());
+        allocator_pool.pop_back();
+    }
 }

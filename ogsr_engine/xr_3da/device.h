@@ -1,9 +1,9 @@
 #pragma once
 
 #include <atomic>
-#include "Event.hpp"
 
 #include "pure.h"
+#include "Render.h"
 #include "../xrcore/ftimer.h"
 #include "stats.h"
 #include <numeric>
@@ -11,7 +11,7 @@
 extern u32 g_dwFPSlimit;
 
 #define VIEWPORT_NEAR 0.2f
-#define HUD_VIEWPORT_NEAR 0.05f
+#define HUD_VIEWPORT_NEAR 0.005f
 
 #define DEVICE_RESET_PRECACHE_FRAME_COUNT 10
 
@@ -29,17 +29,6 @@ class IRenderDevice
 class ENGINE_API CRenderDeviceData
 {
 public:
-    class ENGINE_API CSecondVPParams //--#SM+#-- +SecondVP+
-    {
-    public:
-        bool m_bCamReady; // Флаг готовности камеры (FOV, позиция, и т.п) к рендеру второго вьюпорта
-    private:
-        bool m_bIsActive; // Флаг активации рендера во второй вьюпорт
-    public:
-        IC bool IsSVPActive() { return m_bIsActive; }
-        void SetSVPActive(bool bState);
-        bool IsSVPFrame();
-    };
 
 public:
     u32 dwWidth;
@@ -53,29 +42,49 @@ public:
     // Engine flow-control
     u32 dwFrame;
 
-    float fTimeDelta;
-    float fTimeGlobal;
-    u32 dwTimeDelta;
-    u32 dwTimeGlobal;
-    u32 dwTimeContinual;
+    float fTimeDelta{};
+    float fTimeDeltaReal{}, fTimeDeltaRealMS{};
+    float fTimeGlobal{};
 
-    Fvector vCameraPosition;
-    Fvector vCameraDirection;
-    Fvector vCameraTop;
-    Fvector vCameraRight;
+    u32 dwTimeDelta{};
+    u32 dwTimeGlobal{};
+    u32 dwTimeContinual{};
+    u32 dwTimeDeltaContinual{};
 
-    Fmatrix mView;
-    Fmatrix mInvView;
-    Fmatrix mProject;
-    Fmatrix mFullTransform;
-    Fmatrix mInvFullTransform;
+    // Cameras & projection
+    Fvector vCameraPosition{};
+    Fvector vCameraDirection{};
+    Fvector vCameraTop{};
+    Fvector vCameraRight{};
+
+    Fmatrix mView{};
+    Fmatrix mInvView{};
+    Fmatrix mProject{};
+    Fmatrix mFullTransform{};
+    Fmatrix mInvFullTransform{};
 
     // Copies of corresponding members. Used for synchronization.
-    Fvector vCameraPosition_saved;
+    Fvector vCameraPositionSaved{};
+    Fvector vCameraDirectionSaved{};
+    Fvector vCameraTopSaved{};
+    Fvector vCameraRightSaved{};
 
-    Fmatrix mView_saved;
-    Fmatrix mProject_saved;
-    Fmatrix mFullTransform_saved;
+    Fmatrix mViewSaved{};
+    Fmatrix mProjectSaved{};
+    Fmatrix mFullTransformSaved{};
+
+
+    Fmatrix mView_old;
+    Fmatrix mProject_old;
+    Fmatrix mFullTransform_old;
+
+    Fmatrix mView_hud, mView_hud2;
+    Fmatrix mProject_hud, mProject_hud2;
+    Fmatrix mFullTransform_hud, mFullTransform_hud2;
+
+    Fmatrix mView_hud_old, mView_hud_old2;
+    Fmatrix mProject_hud_old, mProject_hud_old2;
+    Fmatrix mFullTransform_hud_old, mFullTransform_hud_old2;
 
     float fFOV;
     float fASPECT;
@@ -110,16 +119,22 @@ protected:
 public:
     // Registrators
     CRegistrator<pureRender> seqRender;
+    CRegistrator<pureFrame> seqFrame;
+
     CRegistrator<pureAppActivate> seqAppActivate;
     CRegistrator<pureAppDeactivate> seqAppDeactivate;
     CRegistrator<pureAppStart> seqAppStart;
     CRegistrator<pureAppEnd> seqAppEnd;
-    CRegistrator<pureFrame> seqFrame;
+
     CRegistrator<pureScreenResolutionChanged> seqResolutionChanged;
 
     HWND m_hWnd;
 
-    bool OnMainThread() const { return std::this_thread::get_id() == mainThreadId; }
+    bool OnMainThread() const
+    {
+        extern BOOL g_bLoaded;
+        return !g_bLoaded || std::this_thread::get_id() == mainThreadId;
+    }
 };
 
 class ENGINE_API CRenderDeviceBase : public IRenderDevice, public CRenderDeviceData
@@ -139,7 +154,7 @@ private:
 
     CTimer TimerMM;
 
-    void _Create(LPCSTR shName);
+    void _Create();
     void _Destroy(BOOL bKeepTextures);
     void _SetupStates();
 
@@ -156,44 +171,23 @@ public:
 
     IRenderDeviceRender* m_pRender;
 
-    BOOL m_bNearer;
-    void SetNearer(BOOL enabled)
-    {
-        if (enabled && !m_bNearer)
-        {
-            m_bNearer = TRUE;
-            mProject._43 -= EPS_L;
-        }
-        else if (!enabled && m_bNearer)
-        {
-            m_bNearer = FALSE;
-            mProject._43 += EPS_L;
-        }
-        m_pRender->SetCacheXform(mView, mProject);
-    }
-
     void DumpResourcesMemoryUsage() { m_pRender->ResourcesDumpMemoryUsage(); }
 
 public:
     CRegistrator<pureFrame> seqFrameMT;
     CRegistrator<pureDeviceReset> seqDeviceReset;
 
-    CSecondVPParams m_SecondViewport; //--#SM+#-- +SecondVP+
+    xr_vector<std::future<void>> async_waiter;
 
     CStats* Statistic;
 
     CRenderDevice()
-        : m_pRender(0)
+        : m_pRender(nullptr)
     {
-        m_hWnd = NULL;
+        m_hWnd = nullptr;
         b_is_Active = FALSE;
         b_is_Ready = FALSE;
         Timer.Start();
-        m_bNearer = FALSE;
-
-        //--#SM+#-- +SecondVP+
-        m_SecondViewport.SetSVPActive(false);
-        m_SecondViewport.m_bCamReady = false;
     };
 
     void Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason);
@@ -206,9 +200,6 @@ public:
     void End();
     void FrameMove();
 
-    void overdrawBegin();
-    void overdrawEnd();
-
 #pragma warning(push)
 #pragma warning(disable : 4366)
     IC CTimer_paused* GetTimerGlobal() { return &TimerGlobal; }
@@ -220,13 +211,14 @@ public:
     // Creation & Destroying
     void ConnectToRender();
     void Create(void);
+    void ShowMainWindow() const;
     void Run(void);
     void Destroy(void);
     void Reset(bool precache = true);
 
     void Initialize(void);
 
-    void time_factor(const float& time_factor); //--#SM+#--
+    void time_factor(const float& time_factor);
     inline const float time_factor() const
     {
         VERIFY(Timer.time_factor() == TimerGlobal.time_factor());
@@ -234,7 +226,7 @@ public:
     }
 
 private:
-    std::chrono::duration<double, std::milli> SecondThreadTasksElapsedTime;
+    std::chrono::duration<double, std::milli> SecondThreadTasksElapsedTime{}, SecondThreadFreeTimeLast{};
 
 public:
     ICF bool add_to_seq_parallel(const fastdelegate::FastDelegate<void()>& delegate)
@@ -255,15 +247,18 @@ public:
     void on_idle();
     bool on_message(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& result);
 
+    void OnCameraUpdated(bool from_actor);
+
 private:
     void message_loop();
+
+public:
+    bool m_AltScopeActive{};
+    IC bool IsAltScopeActive() { return m_AltScopeActive; }
+    void SetAltScopeActive(bool bState);
 };
 
 extern ENGINE_API CRenderDevice Device;
-
-#define RDEVICE Device
-
-extern ENGINE_API bool g_bBenchmark;
 
 extern ENGINE_API xr_list<fastdelegate::FastDelegate<bool()>> g_loading_events;
 
@@ -276,7 +271,6 @@ public:
     virtual void OnRender();
 
     bool b_registered;
-    bool b_need_user_input{};
 };
 
 extern ENGINE_API CLoadScreenRenderer load_screen_renderer;

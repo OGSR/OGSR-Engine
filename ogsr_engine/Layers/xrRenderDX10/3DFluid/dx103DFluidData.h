@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef DX10_FLUID_ENABLE
+
 #include "dx103DFluidEmitters.h"
 
 class dx103DFluidData
@@ -79,13 +81,17 @@ private:
     void ParseProfile(const xr_string& Profile);
 
 private:
-    Fmatrix m_Transform{};
+    Fmatrix m_Transform;
 
     xr_vector<Fmatrix> m_Obstacles;
     xr_vector<CEmitter> m_Emitters;
 
-    Settings m_Settings{};
+    Settings m_Settings;
 
-    ID3DRenderTargetView* m_pRenderTargetViews[VP_NUM_TARGETS]{};
-    ID3DTexture3D* m_pRTTextures[VP_NUM_TARGETS]{};
+    static DXGI_FORMAT m_VPRenderTargetFormats[VP_NUM_TARGETS];
+
+    ID3DRenderTargetView* m_pRenderTargetViews[VP_NUM_TARGETS];
+    ID3DTexture3D* m_pRTTextures[VP_NUM_TARGETS];
 };
+
+#endif //	dx103DFluidData_included

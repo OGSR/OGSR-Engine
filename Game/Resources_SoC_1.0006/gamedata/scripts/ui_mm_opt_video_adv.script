@@ -12,13 +12,18 @@ local adv_vid_opt_params = {
 	{ "hud_fov",               "track", 0, hint_colors.green , "video_settings_name_62", "video_settings_desc_62" },
 	--
 	{ "aa",                    "list",  0, hint_colors.green , "video_settings_name_19", "video_settings_desc_19" },
-	{ "msaa",                  "list",  1, hint_colors.red   , "video_settings_name_1" , "video_settings_desc_1"  },
+	{ "cas",                   "track", 0, hint_colors.green , "video_settings_name_20", "video_settings_desc_20" },
+	{ "3dss_scale_factor",     "track", 0, hint_colors.yellow, "video_settings_name_69", "video_settings_desc_69" },
 	--
-	{ "r2_sun",                "check", 0, hint_colors.red   , "video_settings_name_11", "video_settings_desc_11" },
+	{ "vis_dist",              "track", 0, hint_colors.yellow, "video_settings_name_2" , "video_settings_desc_2"  },
+	{ "geometry_lod",          "track", 0, hint_colors.yellow, "video_settings_name_3" , "video_settings_desc_3"  },
+	{ "dyn_opt_dist",          "track", 0, hint_colors.yellow, "video_settings_name_68", "video_settings_desc_68" },
+	--
 	{ "r__smap_size",          "list",  1, hint_colors.red   , "video_settings_name_59", "video_settings_desc_59" },
 	{ "r2_sun_quality",        "list",  0, hint_colors.red   , "", ""                                             },
 	{ "sun_shafts",            "list",  0, hint_colors.yellow, "video_settings_name_29", "video_settings_desc_29" },
-	{ "r2_actor_shadow",       "check", 0, hint_colors.green , "video_settings_name_56", ""                       },
+--	{ "r2_actor_shadow",       "check", 0, hint_colors.green , "video_settings_name_56", ""                       },
+	{ "lens_flare",            "check", 0, hint_colors.green,  "video_settings_name_67", "" },
 	--
 	{ "ao_mode",               "list",  0, hint_colors.red   , "video_settings_name_38", "video_settings_desc_38" },
 	{ "ssao",                  "list",  0, hint_colors.red   , "video_settings_name_37", "video_settings_desc_37" },
@@ -27,27 +32,26 @@ local adv_vid_opt_params = {
 	{ "r_sslr_enable",         "check", 0, hint_colors.yellow, "video_settings_name_51", "video_settings_desc_51" },
 	--
 	{ "tessellation",          "check", 0, hint_colors.green , "video_settings_name_52", "video_settings_desc_52" },
-	{ "vsync",                 "check", 0, hint_colors.green , "video_settings_name_16", "video_settings_desc_16" },
-	{ "3d_scopes_fps_factor",  "track", 0, hint_colors.red   , "video_settings_name_64", "video_settings_desc_64" },
 	{ "mt_texload",            "check", 0, hint_colors.green , "video_settings_name_60", ""                       },
 	--
-	{ "detail_density",        "track", 0, hint_colors.red   , "video_settings_name_4" , "video_settings_desc_4"  },
+	{ "detail_density",        "track", 0, hint_colors.yellow, "video_settings_name_4" , "video_settings_desc_4"  },
 	{ "detail_distance",       "track", 0, hint_colors.red   , "video_settings_name_5" , "video_settings_desc_5"  },
 	{ "detail_scale",          "track", 0, hint_colors.yellow, "" , ""  },
-	{ "r2_sun_details",        "check", 0, hint_colors.red   , "video_settings_name_12", "video_settings_desc_12" },
+	{ "r2_sun_details",        "check", 0, hint_colors.yellow, "video_settings_name_12", "video_settings_desc_12" },
 	--
 	{ "r2_steep_parallax",     "check", 0, hint_colors.yellow, "video_settings_name_39", "video_settings_desc_39" },
-	{ "terrain_parallax",      "check", 1, hint_colors.yellow, "video_settings_name_24", "video_settings_desc_24" },
+--	{ "terrain_parallax",      "check", 1, hint_colors.yellow, "video_settings_name_24", "video_settings_desc_24" }, --TODO: заменить на ссс-стайл
 	--
-	{ "volumetric_light",      "check", 0, hint_colors.red   , "video_settings_name_50", "video_settings_desc_50" },
-	{ "npc_torch",             "check", 0, hint_colors.red   , "video_settings_name_14", "video_settings_desc_14" },
+	{ "volumetric_light",      "check", 0, hint_colors.yellow, "video_settings_name_50", "video_settings_desc_50" },
+	{ "npc_torch",             "check", 0, hint_colors.yellow, "video_settings_name_14", "video_settings_desc_14" },
 	--
 	{ "dof_reload",            "check", 0, hint_colors.green , "video_settings_name_41", "video_settings_desc_41" },
 	{ "dof_zoom",              "check", 0, hint_colors.green , "video_settings_name_42", "video_settings_desc_42" },
 	{ "dof_zoom_param",        "track", 0, hint_colors.green , "", ""                                             },
 	--	
-	{ "r2_rain_drops",         "check", 0, hint_colors.green , "video_settings_name_47", "video_settings_desc_47" },
+	{ "r2_mask",               "check", 0, hint_colors.green , "video_settings_name_66", "",                      },
 	{ "r2_visor_refl",         "check", 0, hint_colors.green , "video_settings_name_65", "",                      },
+	{ "r2_rain_drops",         "check", 0, hint_colors.green , "video_settings_name_47", "video_settings_desc_47" },
 	--
 	{ "r3_volumetric_smoke",   "check", 0, hint_colors.green , "video_settings_name_55", ""--[["video_settings_desc_55"]] },
 }

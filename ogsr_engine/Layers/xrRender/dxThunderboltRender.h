@@ -1,8 +1,6 @@
-#ifndef dxThunderboltRender_included
-#define dxThunderboltRender_included
 #pragma once
 
-#include "..\..\Include\xrRender\ThunderboltRender.h"
+#include "../../Include/xrRender/ThunderboltRender.h"
 
 class dxThunderboltRender : public IThunderboltRender
 {
@@ -12,11 +10,9 @@ public:
 
     virtual void Copy(IThunderboltRender& _in);
 
-    virtual void Render(CEffect_Thunderbolt& owner);
+    virtual void Render(CBackend& cmd_list, CEffect_Thunderbolt& owner);
 
 private:
     ref_geom hGeom_model;
     ref_geom hGeom_gradient;
 };
-
-#endif //	ThunderboltRender_included

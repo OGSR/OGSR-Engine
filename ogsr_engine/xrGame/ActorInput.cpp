@@ -449,7 +449,7 @@ void CActor::ActorUse()
                 return;
             }
             //обыск трупа
-            else if (!Level().IR_GetKeyState(DIK_LSHIFT))
+            else if (!pInput->iGetAsyncKeyState(DIK_LSHIFT))
             {
                 //только если находимся в режиме single
                 CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
@@ -463,7 +463,7 @@ void CActor::ActorUse()
         CPhysicsShellHolder* object = smart_cast<CPhysicsShellHolder*>(RQ.O);
         if (object && object->getVisible())
         {
-            if (Level().IR_GetKeyState(DIK_LSHIFT))
+            if (pInput->iGetAsyncKeyState(DIK_LSHIFT))
             {
                 if (object->ActorCanCapture())
                 {

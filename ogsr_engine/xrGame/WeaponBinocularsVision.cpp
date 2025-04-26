@@ -152,8 +152,7 @@ CBinocularsVision::~CBinocularsVision()
 
 void CBinocularsVision::Update()
 {
-    // Рамочек в прицеле нет - нечего и звуки издавать.
-    if (Device.m_SecondViewport.IsSVPActive())
+    if (m_parent->Is3dssEnabled())
         return;
 
     const CActor* pActor = Actor();
@@ -215,9 +214,7 @@ void CBinocularsVision::Update()
 
 void CBinocularsVision::Draw()
 {
-    // Бессмысленно пытаться рендерить рамочки для 3д прицела. Они попадают только в кадр вне прицела. В кадр для прицела пытаться их редерить бессмысленно, т.к. туда идёт кадр до
-    // начала рендера UI.
-    if (Device.m_SecondViewport.IsSVPActive())
+    if (m_parent->Is3dssEnabled())
         return;
 
     for (auto& vis : m_active_objects)

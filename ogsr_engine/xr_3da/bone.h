@@ -11,7 +11,7 @@ class CBone;
 
 class ENGINE_API CBoneInstance;
 // callback
-typedef void _BCL BoneCallbackFunction(CBoneInstance* P);
+typedef void BoneCallbackFunction(CBoneInstance* P);
 typedef BoneCallbackFunction* BoneCallback;
 // typedef void  (* BoneCallback)		(CBoneInstance* P);
 
@@ -23,6 +23,8 @@ public:
     // data
     Fmatrix mTransform; // final x-form matrix (local to model)
     Fmatrix mRenderTransform; // final x-form matrix (model_base -> bone -> model)
+    Fmatrix mRenderTransform_old; // final x-form matrix (model_base -> bone -> model) old
+    Fmatrix mRenderTransform_tmp; // final x-form matrix (model_base -> bone -> model) temp
 private:
     BoneCallback Callback{};
     void* Callback_Param{};
@@ -34,16 +36,18 @@ public:
     //
     // methods
 public:
-    IC BoneCallback _BCL callback() { return Callback; }
-    IC void* _BCL callback_param() { return Callback_Param; }
-    IC BOOL _BCL callback_overwrite() { return Callback_overwrite; } // performance hint - don't calc anims
-    IC u32 _BCL callback_type() { return Callback_type; }
+    IC BoneCallback callback() { return Callback; }
+    IC void* callback_param() { return Callback_Param; }
+    IC BOOL callback_overwrite() { return Callback_overwrite; } // performance hint - don't calc anims
+    IC u32 callback_type() { return Callback_type; }
 
 public:
     IC void construct()
     {
         mTransform.identity();
         mRenderTransform.identity();
+        mRenderTransform_old.identity();
+        mRenderTransform_tmp.identity();
 
         Callback = nullptr;
         Callback_Param = nullptr;
@@ -53,7 +57,7 @@ public:
         ZeroMemory(&param, sizeof(param));
     }
 
-    void _BCL set_callback(u32 Type, BoneCallback C, void* Param, BOOL overwrite = FALSE)
+    void set_callback(u32 Type, BoneCallback C, void* Param, BOOL overwrite = FALSE)
     {
         Callback = C;
         Callback_Param = Param;
@@ -61,14 +65,14 @@ public:
         Callback_type = Type;
     }
 
-    void _BCL reset_callback()
+    void reset_callback()
     {
-        Callback = 0;
-        Callback_Param = 0;
+        Callback = nullptr;
+        Callback_Param = nullptr;
         Callback_overwrite = FALSE;
         Callback_type = 0;
     }
-    void _BCL set_callback_overwrite(BOOL v) { Callback_overwrite = v; }
+    void set_callback_overwrite(BOOL v) { Callback_overwrite = v; }
 
     void set_param(u32 idx, float data);
     float get_param(u32 idx);
@@ -262,7 +266,7 @@ struct ECORE_API SJointIKData
     void Export(IWriter& F)
     {
         F.w_u32(type);
-        for (int k = 0; k < 3; k++)
+        for (auto& limit : limits)
         {
             // Kostya Slipchenko say:
             // направление вращения в ОДЕ отличается от направления вращение в X-Ray
@@ -273,11 +277,11 @@ struct ECORE_API SJointIKData
             VERIFY(_min(-limits[k].limit.x, -limits[k].limit.y) == -limits[k].limit.y);
             VERIFY(_max(-limits[k].limit.x, -limits[k].limit.y) == -limits[k].limit.x);
 
-            F.w_float(-limits[k].limit.y); // min (swap special for ODE)
-            F.w_float(-limits[k].limit.x); // max (swap special for ODE)
+            F.w_float(-limit.limit.y); // min (swap special for ODE)
+            F.w_float(-limit.limit.x); // max (swap special for ODE)
 
-            F.w_float(limits[k].spring_factor);
-            F.w_float(limits[k].damping_factor);
+            F.w_float(limit.spring_factor);
+            F.w_float(limit.damping_factor);
         }
         F.w_float(spring_factor);
         F.w_float(damping_factor);
@@ -309,21 +313,21 @@ struct ECORE_API SJointIKData
 class IBoneData
 {
 public:
-    //virtual IBoneData& _BCL GetChild(u16 id) = 0;
-    //virtual const IBoneData& _BCL GetChild(u16 id) const = 0;
-    //virtual u16 _BCL GetSelfID() const = 0;
-    //virtual u16 _BCL GetNumChildren() const = 0;
+    //virtual IBoneData& GetChild(u16 id) = 0;
+    //virtual const IBoneData& GetChild(u16 id) const = 0;
+    //virtual u16 GetSelfID() const = 0;
+    //virtual u16 GetNumChildren() const = 0;
 
-    //virtual const SJointIKData& _BCL get_IK_data() const = 0;
-    //virtual const Fmatrix& _BCL get_bind_transform() const = 0;
-    //virtual const SBoneShape& _BCL get_shape() const = 0;
-    //virtual const Fobb& _BCL get_obb() const = 0;
-    //virtual const Fvector& _BCL get_center_of_mass() const = 0;
-    //virtual float _BCL get_mass() const = 0;
-    //virtual u16 _BCL get_game_mtl_idx() const = 0;
-    //virtual u16 _BCL GetParentID() const = 0;
-    //virtual float _BCL lo_limit(u8 k) const = 0;
-    //virtual float _BCL hi_limit(u8 k) const = 0;
+    virtual const SJointIKData& get_IK_data() const = 0;
+    //virtual const Fmatrix& get_bind_transform() const = 0;
+    //virtual const SBoneShape& get_shape() const = 0;
+    //virtual const Fobb& get_obb() const = 0;
+    //virtual const Fvector& get_center_of_mass() const = 0;
+    //virtual float get_mass() const = 0;
+    //virtual u16 get_game_mtl_idx() const = 0;
+    //virtual u16 GetParentID() const = 0;
+    virtual float lo_limit(u8 k) const = 0;
+    virtual float hi_limit(u8 k) const = 0;
 };
 
 // static const Fobb	dummy ;//= Fobb().identity();
@@ -398,7 +402,7 @@ public:
     shared_str ParentName() { return parent_name; }
     shared_str WMap() { return wmap; }
     IC CBone* Parent() { return parent; }
-    IC BOOL IsRoot() { return (parent == 0); }
+    IC BOOL IsRoot() { return (parent == nullptr); }
     shared_str& NameRef() { return name; }
 
     //// transformation
@@ -435,11 +439,11 @@ public:
     void Load_0(IReader& F);
     void Load_1(IReader& F);
 
-    IC float _BCL engine_lo_limit(u8 k) const { return -IK_data.limits[k].limit.y; }
-    IC float _BCL engine_hi_limit(u8 k) const { return -IK_data.limits[k].limit.x; }
+    IC float engine_lo_limit(u8 k) const { return -IK_data.limits[k].limit.y; }
+    IC float engine_hi_limit(u8 k) const { return -IK_data.limits[k].limit.x; }
 
-    IC float _BCL editor_lo_limit(u8 k) const { return IK_data.limits[k].limit.x; }
-    IC float _BCL editor_hi_limit(u8 k) const { return IK_data.limits[k].limit.y; }
+    IC float editor_lo_limit(u8 k) const { return IK_data.limits[k].limit.x; }
+    IC float editor_hi_limit(u8 k) const { return IK_data.limits[k].limit.y; }
 
     void SaveData(IWriter& F);
     void LoadData(IReader& F);
@@ -447,26 +451,26 @@ public:
     void CopyData(CBone* bone);
 
 private:
-    //IBoneData& _BCL GetChild(u16 id) { return *children[id]; }
-    //const IBoneData& _BCL GetChild(u16 id) const { return *children[id]; }
-    //u16 _BCL GetSelfID() const { return (u16)SelfID; }
-    //u16 _BCL GetNumChildren() const { return u16(children.size()); }
-    //const SJointIKData& _BCL get_IK_data() const { return IK_data; }
-    //const Fmatrix& _BCL get_bind_transform() const { return local_rest_transform; }
-    //const SBoneShape& _BCL get_shape() const { return shape; }
-    //const Fobb& _BCL get_obb() const;
-    //const Fvector& _BCL get_center_of_mass() const { return center_of_mass; }
-    //float _BCL get_mass() const { return mass; }
-    //u16 _BCL get_game_mtl_idx() const;
-    //u16 _BCL GetParentID() const
+    //IBoneData& GetChild(u16 id) { return *children[id]; }
+    //const IBoneData& GetChild(u16 id) const { return *children[id]; }
+    //u16 GetSelfID() const { return (u16)SelfID; }
+    //u16 GetNumChildren() const { return u16(children.size()); }
+    const SJointIKData& get_IK_data() const { return IK_data; }
+    //const Fmatrix& get_bind_transform() const { return local_rest_transform; }
+    //const SBoneShape& get_shape() const { return shape; }
+    //const Fobb& get_obb() const;
+    //const Fvector& get_center_of_mass() const { return center_of_mass; }
+    //float get_mass() const { return mass; }
+    //u16 get_game_mtl_idx() const;
+    //u16 GetParentID() const
     //{
     //    if (parent)
     //        return u16(parent->SelfID);
     //    else
     //        return u16(-1);
     //};
-    //float _BCL lo_limit(u8 k) const { return engine_lo_limit(k); }
-    //float _BCL hi_limit(u8 k) const { return engine_hi_limit(k); }
+    float lo_limit(u8 k) const { return engine_lo_limit(k); }
+    float hi_limit(u8 k) const { return engine_hi_limit(k); }
 };
 
 //*** Shared Bone Data ****************************************************************************
@@ -495,6 +499,9 @@ public:
     float mass;
     Fvector center_of_mass;
 
+    Fvector rotation{};
+    Fvector position{};
+
     vecBones children; // bones which are slaves to this
 
     DEFINE_VECTOR(u16, FacesVec, FacesVecIt);
@@ -509,8 +516,8 @@ public:
 #endif
     IC void SetParentID(u16 id) { ParentID = id; }
 
-    IC u16 _BCL GetSelfID() const { return SelfID; }
-    IC u16 _BCL GetParentID() const { return ParentID; }
+    IC u16 GetSelfID() const { return SelfID; }
+    IC u16 GetParentID() const { return ParentID; }
 
     // assign face
     void AppendFace(u16 child_idx, u16 idx) { child_faces[child_idx].push_back(idx); }
@@ -518,24 +525,24 @@ public:
     void CalculateM2B(const Fmatrix& Parent);
 
 private:
-    //IBoneData& _BCL GetChild(u16 id);
-    //const IBoneData& _BCL GetChild(u16 id) const;
-    //u16 _BCL GetNumChildren() const;
-    //const SJointIKData& _BCL get_IK_data() const { return IK_data; }
-    //const Fmatrix& _BCL get_bind_transform() const { return bind_transform; }
-    //const SBoneShape& _BCL get_shape() const { return shape; }
-    //const Fobb& _BCL get_obb() const { return obb; }
-    //const Fvector& _BCL get_center_of_mass() const { return center_of_mass; }
-    //float _BCL get_mass() const { return mass; }
-    //u16 _BCL get_game_mtl_idx() const { return game_mtl_idx; }
-    //float _BCL lo_limit(u8 k) const { return IK_data.limits[k].limit.x; }
-    //float _BCL hi_limit(u8 k) const { return IK_data.limits[k].limit.y; }
+    //IBoneData& GetChild(u16 id);
+    //const IBoneData& GetChild(u16 id) const;
+    //u16 GetNumChildren() const;
+    const SJointIKData& get_IK_data() const { return IK_data; }
+    //const Fmatrix& get_bind_transform() const { return bind_transform; }
+    //const SBoneShape& get_shape() const { return shape; }
+    //const Fobb& get_obb() const { return obb; }
+    //const Fvector& get_center_of_mass() const { return center_of_mass; }
+    //float get_mass() const { return mass; }
+    //u16 get_game_mtl_idx() const { return game_mtl_idx; }
+    float lo_limit(u8 k) const { return IK_data.limits[k].limit.x; }
+    float hi_limit(u8 k) const { return IK_data.limits[k].limit.y; }
 
 public:
     virtual u32 mem_usage()
     {
         u32 sz = sizeof(*this) + sizeof(vecBones::value_type) * children.size();
-        for (ChildFacesVecIt c_it = child_faces.begin(); c_it != child_faces.end(); c_it++)
+        for (ChildFacesVecIt c_it = child_faces.begin(); c_it != child_faces.end(); ++c_it)
             sz += c_it->size() * sizeof(FacesVec::value_type) + sizeof(*c_it);
         return sz;
     }

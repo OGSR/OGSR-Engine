@@ -96,7 +96,7 @@ void CBlender_BmmD::Compile(CBlender_Compile& C)
     switch (C.iElement)
     {
     case SE_R2_NORMAL_HQ: // deffer
-        uber_deffer(C, true, "impl", "impl", false, oT2_Name[0] ? oT2_Name : 0, true);
+        uber_deffer(C, true, "impl", "impl", false, oT2_Name[0] ? oT2_Name : nullptr, true);
 
         C.r_dx10Texture("s_mask", mask);
         C.r_dx10Texture("s_lmap", C.L_textures[1]);
@@ -116,12 +116,12 @@ void CBlender_BmmD::Compile(CBlender_Compile& C)
         C.r_dx10Texture("s_dnE_b", strconcat(sizeof(mask), mask, oB_Name, "_bump#"));
         C.r_dx10Texture("s_dnE_a", strconcat(sizeof(mask), mask, oA_Name, "_bump#"));
 
-#if RENDER == R_R4
+
         C.r_dx10Texture("s_puddles_normal", "fx\\water_normal");
         C.r_dx10Texture("s_puddles_perlin", "fx\\puddles_perlin");
         C.r_dx10Texture("s_puddles_mask", strconcat(sizeof(mask), mask, C.L_textures[0].c_str(), "_puddles_mask"));
         C.r_dx10Texture("s_rainsplash", "fx\\water_sbumpvolume");
-#endif
+
         C.r_dx10Sampler("smp_base");
         C.r_dx10Sampler("smp_linear");
 
@@ -131,10 +131,8 @@ void CBlender_BmmD::Compile(CBlender_Compile& C)
         C.r_End();
         break;
     case SE_R2_NORMAL_LQ: // deffer
-        uber_deffer(C, false, "base", "impl", false, oT2_Name[0] ? oT2_Name : 0, true);
-
+        uber_deffer(C, false, "base", "impl", false, oT2_Name[0] ? oT2_Name : nullptr, true);
         // C.r_Sampler		("s_lmap",	C.L_textures[1]);
-
         C.r_dx10Texture("s_lmap", C.L_textures[1]);
         C.r_dx10Sampler("smp_linear");
 
@@ -144,8 +142,6 @@ void CBlender_BmmD::Compile(CBlender_Compile& C)
         C.r_End();
         break;
     case SE_R2_SHADOW: // smap
-        // if (RImplementation.o.HW_smap)	C.r_Pass	("shadow_direct_base","dumb",	FALSE,TRUE,TRUE,FALSE);
-        // else							C.r_Pass	("shadow_direct_base","shadow_direct_base",FALSE);
         C.r_Pass("shadow_direct_base", "dumb", FALSE, TRUE, TRUE, FALSE);
         // C.r_Sampler		("s_base",C.L_textures[0]);
         C.r_dx10Texture("s_base", C.L_textures[0]);

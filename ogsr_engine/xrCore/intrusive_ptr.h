@@ -29,7 +29,7 @@ struct intrusive_base
     bool released() const  { return m_ref_count == 0; }
 
 private:
-    size_t m_ref_count;
+    std::atomic_size_t m_ref_count;
 };
 
 template <typename ObjectType, typename BaseType = intrusive_base>

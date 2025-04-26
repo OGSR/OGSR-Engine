@@ -1,28 +1,26 @@
 #include "stdafx.h"
 
-
 #include "DetailManager.h"
 #include "cl_intersect.h"
-
 
 
 //--------------------------------------------------- Decompression
 IC float Interpolate(float* base, u32 x, u32 y, u32 size)
 {
-    float f = float(size);
-    float fx = float(x) / f;
-    float ifx = 1.f - fx;
-    float fy = float(y) / f;
-    float ify = 1.f - fy;
+    const float f = float(size);
+    const float fx = float(x) / f;
+    const float ifx = 1.f - fx;
+    const float fy = float(y) / f;
+    const float ify = 1.f - fy;
 
-    float c01 = base[0] * ifx + base[1] * fx;
-    float c23 = base[2] * ifx + base[3] * fx;
+    const float c01 = base[0] * ifx + base[1] * fx;
+    const float c23 = base[2] * ifx + base[3] * fx;
 
-    float c02 = base[0] * ify + base[2] * fy;
-    float c13 = base[1] * ify + base[3] * fy;
+    const float c02 = base[0] * ify + base[2] * fy;
+    const float c13 = base[1] * ify + base[3] * fy;
 
-    float cx = ify * c01 + fy * c23;
-    float cy = ifx * c02 + fx * c13;
+    const float cx = ify * c01 + fy * c23;
+    const float cy = ifx * c02 + fx * c13;
     return (cx + cy) / 2;
 }
 
@@ -33,8 +31,8 @@ IC bool InterpolateAndDither(float* alpha255, u32 x, u32 y, u32 sx, u32 sy, u32 
     int c = iFloor(Interpolate(alpha255, x, y, size) + .5f);
     clamp(c, 0, 255);
 
-    u32 row = (y + sy) % 16;
-    u32 col = (x + sx) % 16;
+    const u32 row = (y + sy) % 16;
+    const u32 col = (x + sx) % 16;
     return c > dither[col][row];
 }
 
@@ -65,9 +63,10 @@ bool det_render_debug = false;
 #include "../../xr_3da/gamemtllib.h"
 
 extern float ps_current_detail_scale;
-//#define		DBG_SWITCHOFF_RANDOMIZE
 void CDetailManager::cache_Decompress(Slot* S)
 {
+    ZoneScoped;
+
     VERIFY(S);
     Slot& D = *S;
     D.type = stReady;
@@ -84,7 +83,6 @@ void CDetailManager::cache_Decompress(Slot* S)
     u32 triCount = xrc.r_count();
     CDB::TRI* tris = g_pGameLevel->ObjectSpace.GetStaticTris();
     Fvector* verts = g_pGameLevel->ObjectSpace.GetStaticVerts();
-
 
     if (0 == triCount)
         return;
@@ -115,17 +113,12 @@ void CDetailManager::cache_Decompress(Slot* S)
         for (u32 x = 0; x <= d_size; x++)
         {
             // shift
-#ifndef DBG_SWITCHOFF_RANDOMIZE
-            u32 shift_x = ::Random.randI(16);
-            u32 shift_z = ::Random.randI(16);
-#else
-            u32 shift_x = 8;
-            u32 shift_z = 8;
-#endif
+            const u32 shift_x = Random.randI(16);
+            const u32 shift_z = Random.randI(16);
+
             // Iterpolate and dither palette
             selected.clear();
 
-#ifndef DBG_SWITCHOFF_RANDOMIZE
             if ((DS.id0 != DetailSlot::ID_Empty) && InterpolateAndDither(alpha255[0], x, z, shift_x, shift_z, d_size, dither))
                 selected.push_back(0);
             if ((DS.id1 != DetailSlot::ID_Empty) && InterpolateAndDither(alpha255[1], x, z, shift_x, shift_z, d_size, dither))
@@ -134,54 +127,33 @@ void CDetailManager::cache_Decompress(Slot* S)
                 selected.push_back(2);
             if ((DS.id3 != DetailSlot::ID_Empty) && InterpolateAndDither(alpha255[3], x, z, shift_x, shift_z, d_size, dither))
                 selected.push_back(3);
-#else
-            if ((DS.id0 != DetailSlot::ID_Empty))
-                selected.push_back(0);
-            if ((DS.id1 != DetailSlot::ID_Empty))
-                selected.push_back(1);
-            if ((DS.id2 != DetailSlot::ID_Empty))
-                selected.push_back(2);
-            if ((DS.id3 != DetailSlot::ID_Empty))
-                selected.push_back(3);
-#endif
 
             // Select
             if (selected.empty())
                 continue;
-#ifndef DBG_SWITCHOFF_RANDOMIZE
+
             u32 index;
             if (selected.size() == 1)
                 index = selected[0];
             else
-                index = selected[::Random.randI(selected.size())];
-#else
-            u32 index = selected[0];
-#endif
+                index = selected[Random.randI(selected.size())];
 
-            CDetail* Dobj = objects[DS.r_id(index)];
-            SlotItem* ItemP = poolSI.create();
-            SlotItem& Item = *ItemP;
+            CDetail& Dobj = objects.at(DS.r_id(index));
 
             // Position (XZ)
             float rx = (float(x) / float(d_size)) * dm_slot_size + D.vis.box.min.x;
             float rz = (float(z) / float(d_size)) * dm_slot_size + D.vis.box.min.z;
-            Fvector Item_P;
 
-#ifndef DBG_SWITCHOFF_RANDOMIZE
-            Item_P.set(rx + ::Random.randFs(jitter), D.vis.box.max.y, rz + ::Random.randFs(jitter));
-#else
-            Item_P.set(rx, D.vis.box.max.y, rz);
-#endif
+            Fvector Item_P{rx + Random.randFs(jitter), D.vis.box.max.y, rz + Random.randFs(jitter)};
 
             // Position (Y)
             float y = D.vis.box.min.y - 5;
-            Fvector dir;
-            dir.set(0, -1, 0);
+            constexpr Fvector dir{0.f, -1.f, 0.f};
+            Fvector3 terrain_normal{};
 
             float r_u, r_v, r_range;
             for (u32 tid = 0; tid < triCount; tid++)
             {
-
                 CDB::TRI& T = tris[xrc.r_begin()[tid].id];
                 SGameMtl* mtl = GMLib.GetMaterialByIdx(T.material);
                 if (mtl->Flags.test(SGameMtl::flPassable))
@@ -195,88 +167,84 @@ void CDetailManager::cache_Decompress(Slot* S)
                         float y_test = Item_P.y - r_range;
                         if (y_test > y)
                             y = y_test;
+                        terrain_normal.mknormal(Tv[0], Tv[1], Tv[2]);
                     }
                 }
-
             }
+
+            // Slope Limit
+            const float DotP = terrain_normal.dotproduct(dir);
+            if (DotP > -(1.0f - Random.randF(ps_ssfx_terrain_grass_slope * 0.8f, ps_ssfx_terrain_grass_slope)))
+                continue;
+
             if (y < D.vis.box.min.y)
                 continue;
             Item_P.y = y;
 
+            auto& Item = D.G[index].items.emplace_back();
+
             // Angles and scale
-#ifndef DBG_SWITCHOFF_RANDOMIZE
-            Item.scale = ::Random.randF(Dobj->m_fMinScale * 0.5f, Dobj->m_fMaxScale * 0.9f);
-#else
-            Item.scale = (Dobj->m_fMinScale * 0.5f + Dobj->m_fMaxScale * 0.9f) / 2;
-            // Item.scale	= 0.1f;
-#endif
+            Item.scale = Random.randF(Dobj.m_fMinScale * 0.5f, Dobj.m_fMaxScale * 0.9f);
+
             Item.scale *= ps_current_detail_scale;
             // X-Form BBox
             Fmatrix mScale, mXform;
             Fbox ItemBB;
 
-#ifndef DBG_SWITCHOFF_RANDOMIZE
-            Item.mRotY.rotateY(::Random.randF(0, PI_MUL_2));
-#else
-            Item.mRotY.rotateY(0);
-#endif
+            Item.xform.rotateY(Random.randF(0, PI_MUL_2));
 
-            Item.mRotY.translate_over(Item_P);
+            // Terrain Alignment
+            if (ps_ssfx_terrain_grass_align)
+            {
+                // Current matrix
+                const Fmatrix CurrMatrix = Item.xform;
+                // Align to terrain
+                Item.xform.j.set(terrain_normal);
+                Fvector::generate_orthonormal_basis(Item.xform.j, Item.xform.i, Item.xform.k);
+                // Apply random rotation from old matrix
+                Item.xform.mulB_43(CurrMatrix);
+            }
+
+            Item.xform.translate_over(Item_P);
+
             mScale.scale(Item.scale, Item.scale, Item.scale);
-            mXform.mul_43(Item.mRotY, mScale);
-            ItemBB.xform(Dobj->bv_bb, mXform);
-            Bounds.merge(ItemBB);
+            mXform.mul_43(Item.xform, mScale);
 
+            ItemBB.xform(Dobj.bv_bb, mXform);
+            Bounds.merge(ItemBB);
 
 #ifdef DEBUG
             if (det_render_debug)
                 draw_obb(mXform, color_rgba(255, 0, 0, 255)); // Fmatrix().mul_43( mXform, Fmatrix().scale(5,5,5) )
 #endif
 
-                // Color
-                /*
-                DetailPalette*	c_pal			= (DetailPalette*)&DS.color;
-                float gray255	[4];
-                gray255[0]						=	255.f*float(c_pal->a0)/15.f;
-                gray255[1]						=	255.f*float(c_pal->a1)/15.f;
-                gray255[2]						=	255.f*float(c_pal->a2)/15.f;
-                gray255[3]						=	255.f*float(c_pal->a3)/15.f;
-                */
-                // float c_f						=	1.f;	//Interpolate		(gray255,x,z,d_size)+.5f;
-                // int c_dw						=	255;	//iFloor			(c_f);
-                // clamp							(c_dw,0,255);
-                // Item.C_dw						=	color_rgba		(c_dw,c_dw,c_dw,255);
+            // clamp для hemi перенесен сюда из вершинного шейдера:
+            // Some spots are bugged ( Full black ), better if we limit the value till a better solution.
+            float c_hemi = std::clamp(DS.r_qclr(DS.c_hemi, 15), 0.05f, 1.0f);
 
-            Item.c_hemi = DS.r_qclr(DS.c_hemi, 15);
-            Item.c_sun = DS.r_qclr(DS.c_dir, 15);
+            // init xform and terrain normal
+            const Fmatrix& M = Item.xform;
 
-            //? hack: RGB = hemi
-            //? Item.c_rgb.add					(ps_r__Detail_rainbow_hemi*Item.c_hemi);
-
-            // Vis-sorting
-#ifndef DBG_SWITCHOFF_RANDOMIZE
-            if (!UseVS())
-            {
-                // Always still on CPU pipe
-                Item.vis_ID = 0;
-            }
-            else
-            {
-                if (Dobj->m_Flags.is(DO_NO_WAVING))
-                    Item.vis_ID = 0;
-                else
-                {
-                    if (::Random.randI(0, 3) == 0)
-                        Item.vis_ID = 2; // Second wave
-                    else
-                        Item.vis_ID = 1; // First wave
-                }
-            }
-#else
-            Item.vis_ID = 0;
-#endif
-            // Save it
-            D.G[index].items.push_back(ItemP);
+            Item.data = {M._11,
+                         M._21,
+                         M._31,
+                         M._41,
+                         M._12,
+                         M._22,
+                         M._32,
+                         M._42,
+                         M._13,
+                         M._23,
+                         M._33,
+                         M._43,
+                         c_hemi,
+                         Item.alpha,
+                         static_cast<float>(Dobj.m_Flags.is(DO_NO_WAVING)),
+                         0.f,
+                         terrain_normal.x,
+                         terrain_normal.y,
+                         terrain_normal.z,
+                         0.f};
         }
     }
 

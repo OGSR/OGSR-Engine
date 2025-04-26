@@ -2,8 +2,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(SHADER__INCLUDED_)
-#define SHADER__INCLUDED_
 #pragma once
 
 #include "r_constants.h"
@@ -30,6 +28,8 @@ class IBlenderXr;
 struct ECORE_API STextureList : public xr_resource_flagged, public xr_vector<std::pair<u32, ref_texture>>
 {
     typedef xr_vector<std::pair<u32, ref_texture>> inherited_vec;
+
+    STextureList() = default;
     ~STextureList();
 
     IC BOOL equal(const STextureList& base) const
@@ -72,14 +72,15 @@ struct ECORE_API SGeometry : public xr_resource_flagged
     ID3DVertexBuffer* vb;
     ID3DIndexBuffer* ib;
     u32 vb_stride;
+    SGeometry() = default;
     ~SGeometry();
 };
 
 struct ECORE_API resptrcode_geom : public resptr_base<SGeometry>
 {
-    void create(D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
+    void create(const D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
     void create(u32 FVF, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
-    void destroy() { _set(NULL); }
+    void destroy() { _set(nullptr); }
     u32 stride() const { return _get()->vb_stride; }
 };
 
@@ -95,15 +96,15 @@ struct ECORE_API SPass : public xr_resource_flagged
     ref_hs hs; // may be NULL = don't use hull shader at all
     ref_ds ds; // may be NULL = don't use domain shader at all
     ref_cs cs; // may be NULL = don't use compute shader at all
-
     ref_ctable constants; // may be NULL
 
     ref_texture_list T;
     ref_constant_list C;
 
+    SPass() = default;
     ~SPass();
 
-    BOOL equal(const SPass& other);
+    BOOL equal(const SPass& other) const;
 };
 typedef resptr_core<SPass, resptr_base<SPass>> ref_pass;
 
@@ -118,6 +119,7 @@ public:
         u32 bEmissive : 1;
         u32 bDistort : 1;
         u32 bWmark : 1;
+        u32 iScopeLense : 1;
     };
 
 public:
@@ -135,17 +137,22 @@ typedef resptr_core<ShaderElement, resptr_base<ShaderElement>> ref_selement;
 struct ECORE_API Shader : public xr_resource_flagged
 {
 public:
-    ref_selement E[6]; // R1 - 0=norm_lod0(det),	1=norm_lod1(normal),	2=L_point,		3=L_spot,	4=L_for_models,
-                       // R2 - 0=deffer,			1=norm_lod1(normal),	2=psm,			3=ssm,		4=dsm
+    ref_selement E[6]; // R2 - 0=deffer,			1=norm_lod1(normal),	2=psm,			3=ssm,		4=dsm
+
+    shared_str dbg_shader_name;
+    shared_str dbg_texture_name;
+
+    Shader() = default;
     ~Shader();
+
     BOOL equal(Shader& S);
     BOOL equal(Shader* S);
 };
 struct ECORE_API resptrcode_shader : public resptr_base<Shader>
 {
-    void create(LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
-    void create(IBlender* B, LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
-    void destroy() { _set(NULL); }
+    void create(LPCSTR s_shader = nullptr, LPCSTR s_textures = nullptr, LPCSTR s_constants = nullptr, LPCSTR s_matrices = nullptr);
+    void create(IBlender* B, LPCSTR s_shader = nullptr, LPCSTR s_textures = nullptr, LPCSTR s_constants = nullptr, LPCSTR s_matrices = nullptr);
+    void destroy() { _set(nullptr); }
 };
 typedef resptr_core<Shader, resptrcode_shader> ref_shader;
 
@@ -154,18 +161,8 @@ enum SE_R1
     SE_R1_NORMAL_HQ = 0, // high quality/detail
     SE_R1_NORMAL_LQ = 1, // normal or low quality
     SE_R1_LPOINT = 2, // add: point light
-    SE_R1_LSPOT = 3, // add:	spot light
+    SE_R1_LSPOT = 3, // add: spot light
     SE_R1_LMODELS = 4, // lighting info for models or shadowing from models
 };
 
-//#define		SE_R2_NORMAL_HQ		0	// high quality/detail
-//#define		SE_R2_NORMAL_LQ		1	// low quality
-//#define		SE_R2_SHADOW		2	// shadow generation
-//	E[3] - can use for night vision but need to extend SE_R1. Will need
-//	Extra shader element.
-//	E[4] - distortion or self illumination(self emission).
-//	E[4] Can use for lightmap capturing.
-
 #pragma pack(pop)
-
-#endif // !defined(AFX_SHADER_H__9CBD70DD_E147_446B_B4EE_5DA321EB726F__INCLUDED_)

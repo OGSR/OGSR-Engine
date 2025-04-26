@@ -1,6 +1,41 @@
-#ifndef r4_R_sun_support_included
-#define r4_R_sun_support_included
 #pragma once
+
+constexpr float tweak_COP_initial_offs = 1200.f;
+
+//////////////////////////////////////////////////////////////////////////
+// tables to calculate view-frustum bounds in world space
+// note: D3D uses [0..1] range for Z
+namespace sun
+{
+inline constexpr Fvector3 corners[8]{
+    { -1, -1, +0 }, { -1, -1, +1 },
+    { -1, +1, +1 }, { -1, +1, +0 },
+    { +1, +1, +1 }, { +1, +1, +0 },
+    { +1, -1, +1 }, { +1, -1, +0 }
+};
+
+inline constexpr int facetable[6][4]{
+    { 6, 7, 5, 4 }, { 1, 0, 7, 6 },
+    { 1, 2, 3, 0 }, { 3, 2, 4, 5 },
+    // near and far planes
+    { 0, 3, 5, 7 }, { 1, 6, 4, 2 },
+};
+} // namespace sun
+
+//////////////////////////////////////////////////////////////////////////
+static  Fvector3 wform(Fmatrix& m, Fvector3 const& v)
+{
+    Fvector4 r;
+    r.x = v.x * m._11 + v.y * m._21 + v.z * m._31 + m._41;
+    r.y = v.x * m._12 + v.y * m._22 + v.z * m._32 + m._42;
+    r.z = v.x * m._13 + v.y * m._23 + v.z * m._33 + m._43;
+    r.w = v.x * m._14 + v.y * m._24 + v.z * m._34 + m._44;
+    // VERIFY		(r.w>0.f);
+    const float invW = 1.0f / r.w;
+    const Fvector3 r3 = {r.x * invW, r.y * invW, r.z * invW};
+    return r3;
+}
+
 
 const u32 LIGHT_CUBOIDSIDEPOLYS_COUNT = 4;
 const u32 LIGHT_CUBOIDVERTICES_COUNT = 2 * LIGHT_CUBOIDSIDEPOLYS_COUNT;
@@ -24,10 +59,8 @@ public:
 public:
     void compute_planes()
     {
-        for (u32 it = 0; it < LIGHT_CUBOIDSIDEPOLYS_COUNT; it++)
+        for (auto& P : light_cuboid_polys)
         {
-            _poly& P = light_cuboid_polys[it];
-
             P.plane.build(light_cuboid_points[P.points[0]], light_cuboid_points[P.points[2]], light_cuboid_points[P.points[1]]);
 
             // verify
@@ -69,7 +102,7 @@ public:
         // find one or two planes that align to view frustum from behind.
         for (u32 i = 0; i < LIGHT_CUBOIDSIDEPOLYS_COUNT; i++)
         {
-            float tmp_dot = view_ray.D.dotproduct(light_cuboid_polys[i].plane.n);
+            const float tmp_dot = view_ray.D.dotproduct(light_cuboid_polys[i].plane.n);
             if (tmp_dot <= EPS_L)
                 continue;
 
@@ -88,10 +121,10 @@ public:
         {
             // Hack !
             float min_dist = 10000;
-            for (u32 i = 0; i < view_frustum_rays.size(); ++i)
+            for (const auto& view_frustum_ray : view_frustum_rays)
             {
                 float tmp_dist = 0;
-                Fvector tmp_point = view_frustum_rays[i].P;
+                Fvector tmp_point = view_frustum_ray.P;
 
                 tmp_dist = light_cuboid_polys[align_planes[p]].plane.classify(tmp_point);
                 min_dist = _min(tmp_dist, min_dist);
@@ -118,9 +151,9 @@ public:
         for (int p = 0; p < align_planes_count; ++p)
         {
             float max_mag = 0;
-            for (u32 i = 0; i < view_frustum_rays.size(); ++i)
+            for (auto& view_frustum_ray : view_frustum_rays)
             {
-                float plane_dot_ray = view_frustum_rays[i].D.dotproduct(light_cuboid_polys[align_planes[p]].plane.n);
+                const float plane_dot_ray = view_frustum_ray.D.dotproduct(light_cuboid_polys[align_planes[p]].plane.n);
                 if (plane_dot_ray < 0)
                 {
                     Fvector per_plane_view;
@@ -128,7 +161,7 @@ public:
                     Fvector per_view_to_plane;
                     per_view_to_plane.crossproduct(per_plane_view, view_ray.D);
 
-                    float tmp_mag = -plane_dot_ray / view_frustum_rays[i].D.dotproduct(per_view_to_plane);
+                    float tmp_mag = -plane_dot_ray / view_frustum_ray.D.dotproduct(per_view_to_plane);
 
                     max_mag = (max_mag < tmp_mag) ? tmp_mag : max_mag;
                 }
@@ -139,7 +172,7 @@ public:
 
             VERIFY(max_mag <= 1.f);
 
-            float dist = -light_cuboid_polys[align_planes[p]].plane.n.dotproduct(translation);
+            const float dist = -light_cuboid_polys[align_planes[p]].plane.n.dotproduct(translation);
             align_vector.mad(light_cuboid_polys[align_planes[p]].plane.n, dist * max_mag);
         }
 
@@ -148,17 +181,17 @@ public:
         translate_light_model(translation);
 
         // compute culling planes by rays as edges
-        for (u32 i = 0; i < view_frustum_rays.size(); ++i)
+        for (auto& view_frustum_ray : view_frustum_rays)
         {
             Fvector tmp_vector;
-            tmp_vector.crossproduct(view_frustum_rays[i].D, light_ray.D);
+            tmp_vector.crossproduct(view_frustum_ray.D, light_ray.D);
 
             // check if the vectors are parallel
             if (fis_zero(tmp_vector.square_magnitude(), EPS))
                 continue;
 
             Fplane tmp_plane;
-            tmp_plane.build(view_frustum_rays[i].P, tmp_vector);
+            tmp_plane.build(view_frustum_ray.P, tmp_vector);
 
             float sign = 0;
             if (check_cull_plane_valid(tmp_plane, sign, 5))
@@ -180,13 +213,13 @@ public:
             plane.build(view_ray.P, perp_light_to_view);
 
             float max_dist = -1000;
-            for (u32 i = 0; i < view_frustum_rays.size(); ++i)
-                max_dist = _max(plane.classify(view_frustum_rays[i].P), max_dist);
+            for (auto& view_frustum_ray : view_frustum_rays)
+                max_dist = _max(plane.classify(view_frustum_ray.P), max_dist);
 
-            for (u32 i = 0; i < view_frustum_rays.size(); ++i)
+            for (auto& view_frustum_ray : view_frustum_rays)
             {
-                Fvector P = view_frustum_rays[i].P;
-                P.mad(view_frustum_rays[i].D, 5);
+                Fvector P = view_frustum_ray.P;
+                P.mad(view_frustum_ray.D, 5);
 
                 if (plane.classify(P) > max_dist)
                 {
@@ -202,44 +235,44 @@ public:
             }
         }
 
-        for (u32 i = 0; i < LIGHT_CUBOIDSIDEPOLYS_COUNT; i++)
+        for (auto& light_cuboid_poly : light_cuboid_polys)
         {
-            dest.push_back(light_cuboid_polys[i].plane);
+            dest.push_back(light_cuboid_poly.plane);
             dest.back().n.mul(-1);
             dest.back().d *= -1;
             VERIFY(light_cuboid_polys[i].plane.classify(light_ray.P) > 0);
         }
 
         // Compute ray intersection with light model, this is needed to next cascade to start it's placement.
-        for (u32 i = 0; i < view_frustum_rays.size(); ++i)
+        for (auto& view_frustum_ray : view_frustum_rays)
         {
             float min_dist = 2 * map_size;
-            for (int p = 0; p < 4; ++p)
+            for (auto& light_cuboid_poly : light_cuboid_polys)
             {
                 float dist;
-                if ((light_cuboid_polys[p].plane.n.dotproduct(view_frustum_rays[i].D)) > -0.1)
+                if ((light_cuboid_poly.plane.n.dotproduct(view_frustum_ray.D)) > -0.1)
                     dist = map_size;
                 else
-                    light_cuboid_polys[p].plane.intersectRayDist(view_frustum_rays[i].P, view_frustum_rays[i].D, dist);
+                    light_cuboid_poly.plane.intersectRayDist(view_frustum_ray.P, view_frustum_ray.D, dist);
 
                 if (dist > EPS_L && dist < min_dist)
                     min_dist = dist;
             }
 
-            view_frustum_rays[i].P.mad(view_frustum_rays[i].D, min_dist);
+            view_frustum_ray.P.mad(view_frustum_ray.D, min_dist);
         }
     }
 
-    bool check_cull_plane_valid(Fplane const& plane, float& sign, float mad_factor = 0.f)
+    bool check_cull_plane_valid(Fplane const& plane, float& sign, float mad_factor = 0.f) const
     {
         bool valid = false;
         bool oriented = false;
         float orient = 0;
-        for (u32 j = 0; j < view_frustum_rays.size(); ++j)
+        for (auto& view_frustum_ray : view_frustum_rays)
         {
             float tmp_dist = 0.f;
-            Fvector tmp_pt = view_frustum_rays[j].P;
-            tmp_pt.mad(view_frustum_rays[j].D, mad_factor);
+            Fvector tmp_pt = view_frustum_ray.P;
+            tmp_pt.mad(view_frustum_ray.D, mad_factor);
             tmp_dist = plane.classify(tmp_pt);
 
             if (fis_zero(tmp_dist, EPS_L))
@@ -267,8 +300,8 @@ public:
     {
         Fmatrix trans_mat;
         trans_mat.translate(translate);
-        for (int i = 0; i < LIGHT_CUBOIDSIDEPOLYS_COUNT; ++i)
-            light_cuboid_polys[i].plane.d -= translate.dotproduct(light_cuboid_polys[i].plane.n);
+        for (auto& light_cuboid_poly : light_cuboid_polys)
+            light_cuboid_poly.plane.d -= translate.dotproduct(light_cuboid_poly.plane.n);
     }
 };
 
@@ -396,9 +429,9 @@ public:
         CRenderTarget& T = *RImplementation.Target;
 
         // COG
-        Fvector3 cog = {0, 0, 0};
-        for (int it = 0; it < int(points.size()); it++)
-            cog.add(points[it]);
+        Fvector3 cog{};
+        for (const auto& point : points)
+            cog.add(point);
         cog.div(float(points.size()));
 
         // planes
@@ -461,7 +494,7 @@ public:
             points.push_back(point.sub(points[E.p1], direction));
 
             auto& P = polys.emplace_back();
-            int pend = int(points.size());
+            const int pend = int(points.size());
             P.points.push_back(E.p0);
             P.points.push_back(E.p1);
             P.points.push_back(pend - 1); // p1 mod
@@ -491,5 +524,3 @@ public:
         }
     }
 };
-
-#endif //	r3_R_sun_support_included

@@ -146,10 +146,10 @@ void CMainMenu::Activate(bool bActivate)
 
         m_Flags.set(flRestorePauseStr, bShowPauseString);
 
-        bShowPauseString = FALSE;
-
         if (!m_Flags.test(flRestorePause))
             Device.Pause(TRUE, TRUE, FALSE, "mm_activate2");
+
+        bShowPauseString = FALSE;
 
         m_startDialog->m_bWorkInPause = true;
         StartStopMenu(m_startDialog, true);
@@ -159,8 +159,8 @@ void CMainMenu::Activate(bool bActivate)
             Device.seqFrame.Remove(g_pGameLevel);
             Device.seqRender.Remove(g_pGameLevel);
             CCameraManager::ResetPP();
-        };
-        Device.seqRender.Add(this, 4); // 1-console 2-cursor 3-tutorial
+        }
+        Device.seqRender.Add(this, 5); // 1-console 2-cursor 3-tutorial
 
         if (!g_pGameLevel)
         {
@@ -227,7 +227,7 @@ bool CMainMenu::IsLanguageChanged() const { return languageChanged; }
 void CMainMenu::SetLanguageChanged(bool status) { languageChanged = status; }
 
 // IInputReceiver
-static int mouse_button_2_key[] = {MOUSE_1, MOUSE_2, MOUSE_3};
+static int mouse_button_2_key[] = {MOUSE_1, MOUSE_2, MOUSE_3, MOUSE_4, MOUSE_5, MOUSE_6, MOUSE_7, MOUSE_8};
 void CMainMenu::IR_OnMousePress(int btn)
 {
     if (!IsActive())
@@ -318,11 +318,11 @@ void CMainMenu::OnRender()
     if (m_Flags.test(flGameSaveScreenshot))
         return;
 
-    if (g_pGameLevel)
+ //   if (g_pGameLevel)
         Render->Calculate();
 
     Render->Render();
-    if (!OnRenderPPUI_query())
+ //   if (!OnRenderPPUI_query())
     {
         DoRenderDialogs();
         UI()->RenderFont();
@@ -332,6 +332,7 @@ void CMainMenu::OnRender()
 
 void CMainMenu::OnRenderPPUI_main()
 {
+/*
     if (!IsActive())
         return;
 
@@ -347,10 +348,12 @@ void CMainMenu::OnRenderPPUI_main()
     }
 
     UI()->pp_stop();
+*/
 }
 
 void CMainMenu::OnRenderPPUI_PP()
 {
+/*
     if (!IsActive())
         return;
 
@@ -365,6 +368,7 @@ void CMainMenu::OnRenderPPUI_PP()
         (*it)->Draw();
     }
     UI()->pp_stop();
+*/
 }
 
 void CMainMenu::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)

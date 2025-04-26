@@ -2,8 +2,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#ifndef FSkinnedH
-#define FSkinnedH
 #pragma once
 
 #include "FVisual.h"
@@ -11,22 +9,16 @@
 #include "SkeletonX.h"
 
 struct SEnumVerticesCallback;
+
 class CSkeletonX_ext : public CSkeletonX // shared code for SkeletonX derivates
 {
 protected:
     virtual void _Load_hw(Fvisual& V, void* data);
     virtual void _CollectBoneFaces(Fvisual* V, u32 iBase, u32 iCount);
-    void _EnumBoneVertices(SEnumVerticesCallback& C, Fvisual* V, u16 bone_id, u32 iBase, u32 iCount) const;
-    virtual void _FillVerticesHW1W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces);
-    virtual void _FillVerticesHW2W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces);
-    virtual void _FillVerticesHW3W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces);
-    virtual void _FillVerticesHW4W(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16* indices, CBoneData::FacesVec& faces);
-    virtual void _FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16 bone_id, u32 iBase, u32 iCount);
 
-    virtual BOOL _PickBoneHW1W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces);
-    virtual BOOL _PickBoneHW2W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces);
-    virtual BOOL _PickBoneHW3W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces);
-    virtual BOOL _PickBoneHW4W(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16* indices, CBoneData::FacesVec& faces);
+    void _EnumBoneVertices(SEnumVerticesCallback& C, Fvisual* V, u16 bone_id, u32 iBase, u32 iCount) const;
+    
+    virtual void _FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, Fvisual* V, u16 bone_id, u32 iBase, u32 iCount);
 
     virtual BOOL _PickBone(IKinematics::pick_result& r, float range, const Fvector& S, const Fvector& D, Fvisual* V, u16 bone_id, u32 iBase, u32 iCount);
 
@@ -42,7 +34,8 @@ private:
 public:
     CSkeletonX_ST() {}
     virtual ~CSkeletonX_ST() {}
-    virtual void Render(float LOD);
+
+    void Render(CBackend& cmd_list, float lod, bool use_fast_geo) override;
     virtual void Load(const char* N, IReader* data, u32 dwFlags);
     virtual void Copy(dxRender_Visual* pFrom);
     virtual void Release();
@@ -52,20 +45,24 @@ public:
     virtual void FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16 bone_id);
 
 private:
-    CSkeletonX_ST(const CSkeletonX_ST& other);
-    void operator=(const CSkeletonX_ST& other);
+    CSkeletonX_ST(const CSkeletonX_ST& other) = delete;
+    void operator=(const CSkeletonX_ST& other) = delete;
 };
 
-class CSkeletonX_PM : public FProgressive, public CSkeletonX_ext
+class CSkeletonX_PM : public Fvisual, public CSkeletonX_ext
 {
 private:
-    typedef FProgressive inherited1;
+    typedef Fvisual inherited1;
     typedef CSkeletonX_ext inherited2;
+
+private:
+    FSlideWindowItem nSWI;
 
 public:
     CSkeletonX_PM() {}
     virtual ~CSkeletonX_PM() {}
-    virtual void Render(float LOD);
+
+    void Render(CBackend& cmd_list, float lod, bool use_fast_geo) override;
     virtual void Load(const char* N, IReader* data, u32 dwFlags);
     virtual void Copy(dxRender_Visual* pFrom);
     virtual void Release();
@@ -75,8 +72,6 @@ public:
     virtual void FillVertices(const Fmatrix& view, CSkeletonWallmark& wm, const Fvector& normal, float size, u16 bone_id);
 
 private:
-    CSkeletonX_PM(const CSkeletonX_PM& other);
-    void operator=(const CSkeletonX_PM& other);
+    CSkeletonX_PM(const CSkeletonX_PM& other) = delete;
+    void operator=(const CSkeletonX_PM& other) = delete;
 };
-
-#endif // FSkinnedH

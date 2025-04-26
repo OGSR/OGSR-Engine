@@ -2,7 +2,10 @@
 #include "r__occlusion.h"
 #include "QueryHelper.h"
 
-R_occlusion::R_occlusion() : enabled(!strstr(Core.Params, "-no_occq")), last_frame(Device.dwFrame) {}
+R_occlusion::R_occlusion() : last_frame(Device.dwFrame)
+{
+    enabled = true;
+}
 
 R_occlusion::~R_occlusion() { occq_destroy(); }
 
@@ -36,13 +39,15 @@ void R_occlusion::cleanup_lost()
         MsgDbg("! [%s]: cleanup %u lost queries", __FUNCTION__, cnt);
 }
 
-u32 R_occlusion::occq_begin(u32& ID)
+u32 R_occlusion::occq_begin(u32& ID, u32 context_id)
 {
     if (!enabled)
     {
         ID = iInvalidHandle;
         return 0;
     }
+
+    std::scoped_lock slock(lock);
 
     if (last_frame != Device.dwFrame)
     {
@@ -54,12 +59,14 @@ u32 R_occlusion::occq_begin(u32& ID)
     if (fids.empty())
     {
         ID = u32(used.size());
+
         _Q q{};
         q.order = ID;
         if (FAILED(CreateQuery(q.Q.GetAddressOf(), D3DQUERYTYPE_OCCLUSION)))
         {
             if (Device.dwFrame % 100 == 0)
                 Msg("RENDER [Warning]: Too many occlusion queries were issued: %u !!!", used.size());
+
             ID = iInvalidHandle;
             return 0;
         }
@@ -73,45 +80,76 @@ u32 R_occlusion::occq_begin(u32& ID)
         used[ID].Q = pool.back().Q;
         pool.pop_back();
     }
+
     used[ID].ttl = Device.dwFrame + 1;
-    CHK_DX(BeginQuery(used[ID].Q.Get()));
+    CHK_DX(BeginQuery(used[ID].Q.Get(), context_id));
     return used[ID].order;
 }
 
-void R_occlusion::occq_end(u32& ID)
+void R_occlusion::occq_end(const u32& ID, u32 context_id)
 {
-    if (!enabled || ID == iInvalidHandle || !used[ID].Q)
+    if (!enabled || ID == iInvalidHandle)
         return;
-    CHK_DX(EndQuery(used[ID].Q.Get()));
+
+    std::scoped_lock slock(lock);
+
+    if (!used[ID].Q)
+        return;
+
+    CHK_DX(EndQuery(used[ID].Q.Get(), context_id));
     used[ID].ttl = Device.dwFrame + 1;
 }
 
-R_occlusion::occq_result R_occlusion::occq_get(u32& ID)
-{
-    if (!enabled || ID == iInvalidHandle || !used[ID].Q)
-        return 0xffffffff;
+#define OCC_NOT_AVAIL R_occlusion::occq_result(-1)
 
-    occq_result fragments = 0;
+R_occlusion::occq_result R_occlusion::occq_get(u32& ID, float max_wait_occ)
+{
+    if (!enabled || ID == iInvalidHandle)
+        return OCC_NOT_AVAIL;
+
+    std::scoped_lock slock(lock);
+
+    if (!used[ID].Q)
+        return OCC_NOT_AVAIL;
+
+    ZoneScoped;
+
     HRESULT hr;
-    CTimer T;
-    T.Start();
+
     Device.Statistic->RenderDUMP_Wait.Begin();
-    VERIFY2(ID < used.size(), make_string("_Pos = %d, size() = %d", ID, used.size()));
-    // здесь нужно дождаться результата, т.к. отладка показывает, что
-    // очень редко когда он готов немедленно
-    while ((hr = GetData(used[ID].Q.Get(), &fragments, sizeof(fragments))) == S_FALSE)
+    VERIFY(ID < used.size(), make_string("_Pos = %d, size() = %d", ID, used.size()));
+
+    occq_result fragments = OCC_NOT_AVAIL;
+
     {
-        if (!SwitchToThread())
-            Sleep(ps_r2_wait_sleep);
-        if (T.GetElapsed_ms() > 500)
+        CTimer T;
+        T.Start();
+
+        ZoneScopedN("occq_get/wait");
+
+        u32 tries{0};
+
+        // здесь нужно дождаться результата, т.к. отладка показывает, что
+        // очень редко когда он готов немедленно
+        while ((hr = GetData(used[ID].Q.Get(), &fragments, sizeof(fragments))) == S_FALSE)
         {
-            fragments = (occq_result)-1; // 0xffffffff;
-            break;
+            if (!SwitchToThread())
+                Sleep(0);
+
+            if (T.GetElapsed_ms_total() > max_wait_occ || (max_wait_occ <= 1.f && tries++ > 512))
+            {
+                //Msg("local skip occq_get due to timeout!");
+
+                fragments = OCC_NOT_AVAIL;
+                break;
+            }
         }
     }
+
     Device.Statistic->RenderDUMP_Wait.End();
+
     if (hr == D3DERR_DEVICELOST)
-        fragments = 0xffffffff;
+        fragments = OCC_NOT_AVAIL;
 
     if (fragments == 0)
         RImplementation.stats.o_culled++;
@@ -123,12 +161,17 @@ R_occlusion::occq_result R_occlusion::occq_get(u32& ID)
     return fragments;
 }
 
-void R_occlusion::occq_free(u32 ID)
+void R_occlusion::occq_free(const u32 ID)
 {
+    if (!enabled || ID == iInvalidHandle)
+        return;
+
+    std::scoped_lock slock(lock);
+
     if (used[ID].Q)
     {
         pool.push_back(used[ID]);
         used[ID].Q.Reset();
-        fids.push_back(std::move(ID));
+        fids.push_back((ID));
     }
 }

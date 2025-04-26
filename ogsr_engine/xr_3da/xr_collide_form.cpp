@@ -99,6 +99,7 @@ CCF_Skeleton::CCF_Skeleton(CObject* O) : ICollisionForm(O, cftObject)
 {
     // getVisData
     IRenderVisual* pVisual = O->Visual();
+    ASSERT_FMT(pVisual, "pVisual is null! section [%s]", O->cNameSect().c_str());
     // IKinematics* K	= PKinematics(pVisual); VERIFY(K,"Can't create skeleton without Kinematics.",*O->cNameVisual());
     // IKinematics* K	= PKinematics(pVisual); VERIFY(K,"Can't create skeleton without Kinematics.",*O->cNameVisual());
     // bv_box.set		(K->vis.box);
@@ -112,7 +113,12 @@ void CCF_Skeleton::BuildState()
     dwFrame = Device.dwFrame;
     IRenderVisual* pVisual = owner->Visual();
     IKinematics* K = PKinematics(pVisual);
-    K->CalculateBones();
+
+    //K->CalculateBones();
+#pragma todo("Simp: CalculateBones_InvalidateSkeleton")
+    K->CalculateBones_Invalidate();
+    K->CalculateBones(TRUE);
+
     const Fmatrix& L2W = owner->XFORM();
 
     if (vis_mask != K->LL_GetBonesVisible())
@@ -227,6 +233,8 @@ void CCF_Skeleton::Calculate()
 
 BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 {
+    ZoneScoped;
+
     // не будет тут обновлять стейт костей если мы не на основном потоке.
     // он тут или с прошлого кадра уже есть или даже если чуть кривой - не важно
     // если обновлять - будут дергатся модели
@@ -286,6 +294,8 @@ CCF_Shape::CCF_Shape(CObject* _owner) : ICollisionForm(_owner, cftShape) {}
 
 BOOL CCF_Shape::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 {
+    ZoneScoped;
+
     // Convert ray into local model space
     Fvector dS, dD;
     Fmatrix temp;
@@ -420,6 +430,8 @@ void CCF_Shape::ComputeBounds()
 
 BOOL CCF_Shape::Contact(CObject* O)
 {
+    ZoneScoped;
+
     // Build object-sphere in World-Space
     Fsphere S;
     if (O->Visual())

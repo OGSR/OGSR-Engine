@@ -410,8 +410,7 @@ void CWeaponScript::script_register(lua_State* L)
 
                   .def_readwrite("scope_inertion_factor", &CWeapon::m_fScopeInertionFactor)
 
-                  .def_readwrite("scope_lense_fov_factor", &CWeapon::m_fSecondVPZoomFactor)
-                  .def("second_vp_enabled", &CWeapon::SecondVPEnabled)
+                  .def("is_3dss_enabled", &CWeapon::Is3dssEnabled)
 
                   .property("ammo_elapsed", &CWeapon::GetAmmoElapsed, &CWeapon::SetAmmoElapsed)
                   .property("const_deviation", &CWeaponScript::FireDeviation) // отклонение при стрельбе от целика (для непристрелляного оружия).

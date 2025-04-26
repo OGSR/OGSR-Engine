@@ -1,13 +1,6 @@
-#ifndef RenderFactory_included
-#define RenderFactory_included
 #pragma once
 
 class IWallMarkArray;
-
-#ifdef DEBUG
-class IObjectSpaceRender;
-#endif // DEBUG
-
 class IFontRender;
 class IEnvDescriptorRender;
 class IEnvDescriptorMixerRender;
@@ -20,7 +13,6 @@ class IStatsRender;
 class IRenderDeviceRender;
 class IThunderboltDescRender;
 class IStatGraphRender;
-class IConsoleRender;
 class IUIShader;
 class IUISequenceVideoItem;
 
@@ -31,16 +23,8 @@ public:
     virtual void DestroyUISequenceVideoItem(IUISequenceVideoItem* pObject) = 0;
     virtual IUIShader* CreateUIShader() = 0;
     virtual void DestroyUIShader(IUIShader* pObject) = 0;
-    virtual IStatGraphRender* CreateStatGraphRender() = 0;
-    virtual void DestroyStatGraphRender(IStatGraphRender* pObject) = 0;
-    virtual IConsoleRender* CreateConsoleRender() = 0;
-    virtual void DestroyConsoleRender(IConsoleRender* pObject) = 0;
     virtual IRenderDeviceRender* CreateRenderDeviceRender() = 0;
     virtual void DestroyRenderDeviceRender(IRenderDeviceRender* pObject) = 0;
-#ifdef DEBUG
-    virtual IObjectSpaceRender* CreateObjectSpaceRender() = 0;
-    virtual void DestroyObjectSpaceRender(IObjectSpaceRender* pObject) = 0;
-#endif // DEBUG
     virtual IWallMarkArray* CreateWallMarkArray() = 0;
     virtual void DestroyWallMarkArray(IWallMarkArray* pObject) = 0;
     virtual IStatsRender* CreateStatsRender() = 0;
@@ -66,5 +50,3 @@ public:
     virtual IFontRender* CreateFontRender() = 0;
     virtual void DestroyFontRender(IFontRender* pObject) = 0;
 };
-
-#endif //	RenderFactory_included

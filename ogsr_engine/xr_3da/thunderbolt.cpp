@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#pragma once
 
 #include "render.h"
 #include "Thunderbolt.h"
@@ -8,16 +7,13 @@
 #include "igame_level.h"
 #include "xr_object.h"
 
-SThunderboltDesc::SThunderboltDesc() : m_GradientTop(0), m_GradientCenter(0) {}
+SThunderboltDesc::SThunderboltDesc() : m_GradientTop(nullptr), m_GradientCenter(nullptr) {}
 
 SThunderboltDesc::~SThunderboltDesc()
 {
     m_pRender->DestroyModel();
-    //::Render->model_Delete	(l_model);
     m_GradientTop->m_pFlare->DestroyShader();
     m_GradientCenter->m_pFlare->DestroyShader();
-    // m_GradientTop.hShader.destroy	();
-    // m_GradientCenter.hShader.destroy();
     snd.destroy();
 
     xr_delete(m_GradientTop);
@@ -151,8 +147,8 @@ void SThunderboltCollection::load_shoc(CInifile* pIni, LPCSTR sect)
 
 SThunderboltCollection::~SThunderboltCollection()
 {
-    for (DescIt d_it = palette.begin(); d_it != palette.end(); d_it++)
-        xr_delete(*d_it);
+    for (auto& d_it : palette)
+        xr_delete(d_it);
 
     palette.clear();
 }
@@ -162,33 +158,17 @@ SThunderboltCollection::~SThunderboltCollection()
 //----------------------------------------------------------------------------------------------
 CEffect_Thunderbolt::CEffect_Thunderbolt()
 {
-    current = 0;
+    current = nullptr;
     life_time = 0.f;
     state = stIdle;
     next_lightning_time = 0.f;
     bEnabled = FALSE;
-
-    // geom
-    // hGeom_model.create	(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1, RCache.Vertex.Buffer(), RCache.Index.Buffer());
-    // hGeom_gradient.create(FVF::F_LIT,RCache.Vertex.Buffer(),RCache.QuadIB);
-
-    // params
-    //	p_var_alt		= pSettings->r_fvector2							( "environment","altitude" );
-    //	p_var_alt.x		= deg2rad(p_var_alt.x); p_var_alt.y	= deg2rad(p_var_alt.y);
-    //	p_var_long		= deg2rad	(				 pSettings->r_float	( "environment","delta_longitude" ));
-    //	p_min_dist		= _min		(.95f,pSettings->r_float	( "environment","min_dist_factor" ));
-    //	p_tilt			= deg2rad	(pSettings->r_float					( "environment","tilt" ));
-    //	p_second_prop	= pSettings->r_float							( "environment","second_propability" );
-    //	clamp			(p_second_prop,0.f,1.f);
-    //	p_sky_color		= pSettings->r_float							( "environment","sky_color" );
-    //	p_sun_color		= pSettings->r_float							( "environment","sun_color" );
-    //	p_fog_color		= pSettings->r_float							( "environment","fog_color" );
 }
 
 CEffect_Thunderbolt::~CEffect_Thunderbolt()
 {
-    for (CollectionVecIt d_it = collection.begin(); d_it != collection.end(); d_it++)
-        xr_delete(*d_it);
+    for (auto& d_it : collection)
+        xr_delete(d_it);
     collection.clear();
     // hGeom_model.destroy			();
     // hGeom_gradient.destroy		();
@@ -220,10 +200,11 @@ shared_str CEffect_Thunderbolt::AppendDef_shoc(CEnvironment& environment, CInifi
 
 BOOL CEffect_Thunderbolt::RayPick(const Fvector& s, const Fvector& d, float& dist)
 {
-    BOOL bRes = TRUE;
+    ZoneScoped;
+
     collide::rq_result RQ;
     CObject* E = g_pGameLevel->CurrentViewEntity();
-    bRes = g_pGameLevel->ObjectSpace.RayPick(s, d, dist, collide::rqtBoth, RQ, E);
+    BOOL bRes = g_pGameLevel->ObjectSpace.RayPick(s, d, dist, collide::rqtBoth, RQ, E);
     if (bRes)
         dist = RQ.range;
     else
@@ -247,6 +228,8 @@ BOOL CEffect_Thunderbolt::RayPick(const Fvector& s, const Fvector& d, float& dis
 
 void CEffect_Thunderbolt::Bolt(shared_str id, float period, float lt)
 {
+    ZoneScoped;
+
     VERIFY(id.size());
     state = stWorking;
     life_time = lt + Random.randF(-lt * 0.5f, lt * 0.5f);
@@ -292,7 +275,7 @@ void CEffect_Thunderbolt::Bolt(shared_str id, float period, float lt)
     else
     {
         next_lightning_time = Device.fTimeGlobal + period + Random.randF(-period * 0.3f, period * 0.3f);
-        current->snd.play_no_feedback(0, 0, dist / 300.f, &pos, 0, 0, &Fvector2().set(dist / 2, dist * 2.f));
+        current->snd.play_no_feedback(nullptr, 0, dist / 300.f, &pos, nullptr, nullptr, &Fvector2().set(dist / 2, dist * 2.f));
     }
 
     current_direction.invert(); // for env-sun
@@ -300,6 +283,8 @@ void CEffect_Thunderbolt::Bolt(shared_str id, float period, float lt)
 
 void CEffect_Thunderbolt::OnFrame(shared_str id, float period, float duration)
 {
+    ZoneScoped;
+
     BOOL enabled = !!(id.size());
     if (bEnabled != enabled)
     {
@@ -335,19 +320,16 @@ void CEffect_Thunderbolt::OnFrame(shared_str id, float period, float duration)
         environment.CurrentEnv->sun_color.mad(fClr, environment.p_sun_color);
         environment.CurrentEnv->fog_color.mad(fClr, environment.p_fog_color);
 
-        if (::Render->get_generation() == IRender_interface::GENERATION_R2)
-        {
-            R_ASSERT(_valid(current_direction));
-            g_pGamePersistent->Environment().CurrentEnv->sun_dir = current_direction;
-            VERIFY2(g_pGamePersistent->Environment().CurrentEnv->sun_dir.y < 0, "Invalid sun direction settings while CEffect_Thunderbolt");
-        }
+        R_ASSERT(_valid(current_direction));
+        g_pGamePersistent->Environment().CurrentEnv->sun_dir = current_direction;
+        VERIFY(g_pGamePersistent->Environment().CurrentEnv->sun_dir.y < 0, "Invalid sun direction settings while CEffect_Thunderbolt");
     }
 }
 
-void CEffect_Thunderbolt::Render()
+void CEffect_Thunderbolt::Render(CBackend& cmd_list)
 {
     if (state == stWorking)
     {
-        m_pRender->Render(*this);
+        m_pRender->Render(cmd_list, *this);
     }
 }

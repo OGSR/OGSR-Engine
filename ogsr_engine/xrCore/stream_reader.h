@@ -1,5 +1,4 @@
-#ifndef STREAM_READER_H
-#define STREAM_READER_H
+#pragma once
 
 class XRCORE_API CStreamReader : public IReaderBase<CStreamReader>
 {
@@ -58,5 +57,3 @@ public:
 };
 
 #include "stream_reader_inline.h"
-
-#endif // STREAM_READER_H

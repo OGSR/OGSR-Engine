@@ -16,7 +16,9 @@ public:
     bool Save(const char* nm);
 
     bool Load2();
-    bool Save2(bool override);
+    bool Save2(bool override) const;
+
+    void DumpTextures() const;
 
     CPSLibrary() = default;
     ~CPSLibrary() = default;
@@ -26,6 +28,9 @@ public:
 
     PS::CPEDef* FindPED(const char* name);
     PS::CPGDef* FindPGD(const char* name);
+
+    const decltype(m_PEDs)& IteratePEDs() { return m_PEDs; }
+    const decltype(m_PGDs)& IteratePGDs() { return m_PGDs; }
 
     void Reload();
 };

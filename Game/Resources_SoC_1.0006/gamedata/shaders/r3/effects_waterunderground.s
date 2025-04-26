@@ -22,7 +22,7 @@ function normal                (shader, t_base, t_second, t_detail)
 	shader:dx10texture	("sky_s1",		tex_sky1)
 	shader:dx10texture	("s_position", "$user$position")
 
-shader:dx10texture  ("s_rimage", "$user$generic0_temp")
+shader:dx10texture  ("s_rimage", "$user$generic_temp")
 shader:dx10texture  ("s_diffuse", "$user$albedo")
 shader:dx10texture  ("s_accumulator", "$user$accum")
 

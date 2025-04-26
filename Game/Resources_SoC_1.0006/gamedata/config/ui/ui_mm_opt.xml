@@ -296,6 +296,13 @@
             <options_item entry="r__geometry_lod" group="mm_opt_video_adv"/>
         </track_geometry_lod>
 
+        <cap_dyn_opt_dist x="5" y="5" width="143" height="21">
+            <text font="letterica16" r="215" g="195" b="170">ui_mm_dyn_opt_dist</text>
+        </cap_dyn_opt_dist>
+        <track_dyn_opt_dist x="249" y="0" width="190" height="21" step="0.1">
+            <options_item entry="r__dyn_opt_dist" group="mm_opt_video_adv"/>
+        </track_dyn_opt_dist>
+
         <cap_detail_density x="5" y="5" width="143" height="21">
             <text font="letterica16" r="215" g="195" b="170">ui_mm_detail_density</text>
         </cap_detail_density>
@@ -347,7 +354,7 @@
 		<cap_aa x="5" y="5" width="143" height="21">
             <text font="letterica16" r="215" g="195" b="170">ui_mm_r_aa_mode</text>
         </cap_aa>
-        <list_aa x="249" y="0" width="190" height="21" list_length="2" always_show_scroll="0">
+        <list_aa x="249" y="0" width="190" height="21" list_length="5" always_show_scroll="0">
             <options_item entry="r_aa_mode" group="mm_opt_video_adv" depend="vid"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
@@ -357,12 +364,12 @@
 			<list_font r="216" g="186" b="140" font="letterica16"/>
         </list_aa>
 
-        <cap_ssample x="5" y="5" width="143" height="21">
-            <text font="letterica16" r="215" g="195" b="170">ui_mm_ssample</text>
-        </cap_ssample>
-        <track_ssample x="249" y="0" width="190" height="21" step="1" is_integer="1">
-            <options_item entry="r__supersample" group="mm_opt_video_adv" depend="vid"/>
-        </track_ssample>
+        <cap_cas x="5" y="5" width="143" height="21">
+            <text font="letterica16" r="215" g="195" b="170">ui_mm_cas</text>
+        </cap_cas>
+        <track_cas x="249" y="0" width="190" height="21" step="0.01">
+            <options_item entry="r_aa_cas" group="mm_opt_video_adv" depend="vid"/>
+        </track_cas>
 
         <cap_r2_sun x="5" y="5" width="143" height="21">
             <text font="letterica16" r="215" g="195" b="170">ui_mm_r2_sun</text>
@@ -457,7 +464,7 @@
         <cap_sun_shafts x="5" y="5" width="143" height="21">
             <text font="letterica16" r="215" g="195" b="170">ui_mm_r2_sunshafts_mode</text>
         </cap_sun_shafts>
-        <list_sun_shafts x="249" y="0" width="190" height="21" always_show_scroll="1">
+        <list_sun_shafts x="249" y="0" width="190" height="21" list_length="6" always_show_scroll="1">
             <options_item entry="r_sunshafts_mode" group="mm_opt_video" depend="vid"/>
 			<text_color>
 				<e r="216" g="186" b="140"/>
@@ -528,6 +535,13 @@
             <options_item entry="ssfx_wpn_dof_2" group="mm_opt_video_adv"/>
         </track_dof_zoom_param>
 
+        <cap_3dss_scale_factor x="5" y="5" width="143" height="21">
+            <text font="letterica16" r="215" g="195" b="170">ui_mm_3dss_scale_factor</text>
+        </cap_3dss_scale_factor>
+        <track_3dss_scale_factor x="249" y="0" width="190" height="21" step="0.01">
+            <options_item entry="r_3dss_scale_factor" group="mm_opt_video_adv"/>
+        </track_3dss_scale_factor>
+
         <cap_volumetric_light x="5" y="5" width="143" height="21">
             <text font="letterica16" r="215" g="195" b="170">ui_mm_volumetric_light</text>
         </cap_volumetric_light>
@@ -568,6 +582,20 @@
 		<check_r2_rain_drops x="249" y="0" width="30" height="21">
 			<options_item entry="r2_rain_drops" group="mm_opt_video_adv"/>
 		</check_r2_rain_drops>
+
+		<cap_r2_mask x="5" y="5" width="143" height="21">
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_r2_mask</text>
+		</cap_r2_mask>
+		<check_r2_mask x="249" y="0" width="30" height="21">
+			<options_item entry="r2_mask" group="mm_opt_video_adv"/>
+		</check_r2_mask>	
+
+		<cap_lens_flare x="5" y="5" width="143" height="21">
+			<text font="letterica16" r="215" g="195" b="170">ui_mm_lens_flare</text>
+		</cap_lens_flare>
+		<check_lens_flare x="249" y="0" width="30" height="21">
+			<options_item entry="r_lens_flare" group="mm_opt_video_adv"/>
+		</check_lens_flare>	
 
 		<cap_r2_visor_refl x="5" y="5" width="143" height="21">
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_r2_visor_refl</text>

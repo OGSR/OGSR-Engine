@@ -180,6 +180,7 @@ public:
     }
 
     IC BOOL similar(const Self& v, T E = EPS_L) { return _abs(x - v.x) < E && _abs(y - v.y) < E && _abs(z - v.z) < E && _abs(w - v.w) < E; };
+    IC BOOL similar(const T _x, const T _y, const T _z, const T _w, T E = EPS_L) { return _abs(x - _x) < E && _abs(y - _y) < E && _abs(z - _z) < E && _abs(w - _w) < E; }
 
     IC T magnitude_sqr() { return x * x + y * y + z * z + w * w; }
     IC T magnitude() { return _sqrt(magnitude_sqr()); }

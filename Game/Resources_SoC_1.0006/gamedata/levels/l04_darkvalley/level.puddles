@@ -1,0 +1,69 @@
+[east_cliff]
+center = 157.76,-5.61,-75.62
+max_depth = 0.5
+radius = 5
+
+[north_hills]
+center = 191.63,-5.38,106.40
+max_depth = 0.5
+radius = 10
+
+[south_road]
+center = -14.43,-5.01,-470.51
+max_depth = 0.5
+radius = 7
+
+[near_elevator]
+center = 144.66,-4.81,-156.76
+max_depth = 0.5
+radius = 19
+
+[north_1]
+center = 92.53,-3.91,55.61
+max_depth = 0.5
+radius = 10
+
+[south_1]
+center = -69.30,-3.94,-344.66
+max_depth = 0.5
+radius = 9
+
+[gate]
+center = 14.61,-3.89,-120.80
+max_depth = 0.5
+radius = 15
+
+[west_cliff]
+center = -42.2,-3.53,-154.03
+max_depth = 0.5
+radius = 13
+
+[west_1]
+center = -110.53,-2.95,-264.18
+max_depth = 0.5
+radius = 11
+
+[factory]
+center = -29.12,-2.65,-88.38
+max_depth = 0.5
+radius = 9
+
+[path_to_factory]
+center = -123.85,-1.3,-193.0
+max_depth = 0.5
+radius = 12
+
+[south_to_farm]
+center = -144.25,-1.54,-359.43 
+max_depth = 0.5
+radius = 4
+
+[south_to_farm1]
+center = -152.94,-1.2,-368.94
+max_depth = 0.2
+radius = 7
+
+[north_to_factory]
+center = -93.51,-1.06,-138.76
+max_depth = 0.2
+radius = 9

@@ -48,12 +48,10 @@ void CAttachmentOwner::net_Destroy()
     R_ASSERT(attached_objects().empty());
 }
 
-void CAttachmentOwner::renderable_Render()
+void CAttachmentOwner::renderable_Render(u32 context_id, IRenderable* root)
 {
-    xr_vector<CAttachableItem*>::iterator I = m_attached_objects.begin();
-    xr_vector<CAttachableItem*>::iterator E = m_attached_objects.end();
-    for (; I != E; ++I)
-        (*I)->renderable_Render();
+    for (auto* obj : m_attached_objects)
+        obj->renderable_Render(context_id, root);
 }
 
 void __stdcall AttachmentCallback(IKinematics* tpKinematics)
@@ -68,8 +66,7 @@ void __stdcall AttachmentCallback(IKinematics* tpKinematics)
 
     for (const auto* it : attachment_owner->attached_objects())
     {
-        Fmatrix bone_mtx;
-        kinematics->Bone_GetAnimPos(bone_mtx, it->bone_id(), u8(-1), false);
+        Fmatrix bone_mtx = kinematics->LL_GetBoneInstance(it->bone_id()).mTransform;
         it->item().object().XFORM().mul_43(bone_mtx, it->offset());
         it->item().object().XFORM().mulA_43(game_object->XFORM());
     }

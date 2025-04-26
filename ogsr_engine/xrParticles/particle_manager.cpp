@@ -45,7 +45,7 @@ int CParticleManager::CreateEffect(u32 max_particles)
     {
         // Couldn't find a big enough gap. Reallocate.
         eff_id = m_effect_vec.size();
-        m_effect_vec.push_back(0);
+        m_effect_vec.push_back(nullptr);
     }
 
     m_effect_vec[eff_id] = xr_new<ParticleEffect>(max_particles);
@@ -73,7 +73,7 @@ int CParticleManager::CreateActionList()
     {
         // Couldn't find a big enough gap. Reallocate.
         list_id = m_alist_vec.size();
-        m_alist_vec.push_back(0);
+        m_alist_vec.push_back(nullptr);
     }
 
     m_alist_vec[list_id] = xr_new<ParticleActions>();
@@ -95,7 +95,7 @@ void CParticleManager::PlayEffect(int effect_id, int alist_id)
     // Execute the specified action list.
     ParticleActions* pa = GetActionListPtr(alist_id);
     VERIFY(pa);
-    if (pa == NULL)
+    if (pa == nullptr)
         return; // ERROR
     std::scoped_lock<std::mutex> m(pa->m_bLocked);
     // Step through all the actions in the action list.
@@ -117,11 +117,11 @@ void CParticleManager::StopEffect(int effect_id, int alist_id, BOOL deffered)
     // Execute the specified action list.
     ParticleActions* pa = GetActionListPtr(alist_id);
     VERIFY(pa);
-    if (pa == NULL)
+    if (pa == nullptr)
         return; // ERROR
     std::scoped_lock<std::mutex> m(pa->m_bLocked);
     // Step through all the actions in the action list.
-    for (PAVecIt it = pa->begin(); it != pa->end(); it++)
+    for (PAVecIt it = pa->begin(); it != pa->end(); ++it)
     {
 		if ((*it))
             switch ((*it)->type)
@@ -149,7 +149,7 @@ void CParticleManager::Update(int effect_id, int alist_id, float dt)
     std::scoped_lock<std::mutex> m(pa->m_bLocked);
 
     // Step through all the actions in the action list.
-    for (PAVecIt it = pa->begin(); it != pa->end(); it++)
+    for (PAVecIt it = pa->begin(); it != pa->end(); ++it)
     {
         VERIFY((*it));
 		if ((*it))
@@ -166,7 +166,7 @@ void CParticleManager::Transform(int alist_id, const Fmatrix& full, const Fvecto
     // Execute the specified action list.
     ParticleActions* pa = GetActionListPtr(alist_id);
     VERIFY(pa);
-    if (pa == NULL)
+    if (pa == nullptr)
         return; // ERROR
     std::scoped_lock<std::mutex> m(pa->m_bLocked);
 
@@ -174,7 +174,7 @@ void CParticleManager::Transform(int alist_id, const Fmatrix& full, const Fvecto
     mT.translate(full.c);
 
     // Step through all the actions in the action list.
-    for (PAVecIt it = pa->begin(); it != pa->end(); it++)
+    for (PAVecIt it = pa->begin(); it != pa->end(); ++it)
     {
 		if (!(*it))
 			continue;
@@ -223,7 +223,7 @@ u32 CParticleManager::GetParticlesCount(int effect_id)
 // action
 ParticleAction* CParticleManager::CreateAction(PActionEnum type)
 {
-    ParticleAction* pa = 0;
+    ParticleAction* pa = nullptr;
     switch (type)
     {
     case PAAvoidID: pa = xr_new<PAAvoid>(); break;

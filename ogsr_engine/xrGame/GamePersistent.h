@@ -1,5 +1,3 @@
-#ifndef GamePersistentH
-#define GamePersistentH
 #pragma once
 
 #include "..\xr_3da\IGame_Persistent.h"
@@ -78,10 +76,7 @@ public:
     virtual void LoadTitle(const char* title_name);
     virtual void SetTip();
 
-    virtual bool CanBePaused();
     bool OnKeyboardPress(int dik);
 };
 
 IC CGamePersistent& GamePersistent() { return *((CGamePersistent*)g_pGamePersistent); }
-
-#endif // GamePersistentH

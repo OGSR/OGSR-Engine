@@ -1,0 +1,115 @@
+#include "common.h"
+
+// classic TAA implementation by ya local shaderguy (LVutner)
+
+// SRVs
+Texture2D<float4> t_current;
+Texture2D<float4> t_previous;
+Texture2D<float2> t_motion_vectors; // RG16FLOAT
+Texture2D t_zbuffer; // R24G8
+
+// From Timothy Lottes
+float3 Lottes_Tonemap(float3 c) { return c / (max(c.r, max(c.g, c.b)) + 1.0); }
+
+float3 Lottes_Tonemap_Inverse(float3 c) { return c / (1.0 - max(c.r, max(c.g, c.b))); }
+
+static const int2 offset_3x3[9] = {
+    int2(-1, -1), int2(0, -1), int2(1, -1), int2(-1, 0), int2(0, 0), int2(1, 0), int2(-1, 1), int2(0, 1), int2(1, 1),
+};
+
+// From CoD presentation
+float3 SMAABicubicFilter(float3 current_top, float3 current_bottom, float3 current_left, float3 current_right, float3 current_center, float3 previous_center, float2 f)
+{
+    float2 w = 0.468 * (f * f - f); // hardcoded sharpness, refer to slides
+    float4 color = float4(lerp(current_left, current_right, f.x), 1.0) * w.x + float4(lerp(current_top, current_bottom, f.y), 1.0) * w.y;
+
+    color += float4((1.0 + color.w) * previous_center - color.w * current_center, 1.0);
+    return color.xyz / color.w;
+}
+
+// Cheapest way to get 3x3 neighborhood of single channel texture
+void get_3x3_depth(float2 tc0, inout float d_3x3[9])
+{
+    // https://wojtsterna.blogspot.com/2018/02/directx-11-hlsl-gatherred.html
+    float2 gather_texcoord = tc0 + screen_res.zw * 0.5;
+
+    float4 d_gather0 = t_zbuffer.Gather(smp_nofilter, gather_texcoord);
+    float4 d_gather1 = t_zbuffer.Gather(smp_nofilter, gather_texcoord, int2(-1, -1));
+
+    d_3x3[0] = d_gather1.w;
+    d_3x3[1] = d_gather1.z;
+    d_3x3[2] = t_zbuffer.SampleLevel(smp_nofilter, tc0, 0, int2(1, -1)).x;
+    d_3x3[3] = d_gather1.x;
+    d_3x3[4] = d_gather0.w; // d_gather1.y overlap
+    d_3x3[5] = d_gather0.z;
+    d_3x3[6] = t_zbuffer.SampleLevel(smp_nofilter, tc0, 0, int2(-1, 1)).x;
+    d_3x3[7] = d_gather0.x;
+    d_3x3[8] = d_gather0.y;
+}
+
+float4 main(p_screen I) : SV_Target
+{
+    // Fetch 3x3 depth neighborhood
+    float d_3x3[9];
+    get_3x3_depth(I.tc0.xy, d_3x3);
+
+    // Fetch 3x3 color neighborhood and find closest depth
+    float3 c_3x3[9];
+    int2 depth_offset = int2(0, 0);
+    float depth_closest = 1.0;
+
+    [unroll] for (int i = 0; i < 9; i++)
+    {
+        int2 offset_hpos = clamp(I.hpos.xy + offset_3x3[i], 0, screen_res.xy - 1);
+
+        float sampled_depth = d_3x3[i]; // Down to 2 gathers and 2 SampleLevel
+        c_3x3[i] = Lottes_Tonemap(t_current[offset_hpos].xyz); // This can be optimized to 3 gathers and 5 SampleLevel, on DX11...
+
+        if (sampled_depth < depth_closest) // Swap the sign if something is wrong (And replace initial value of depth_closest)
+        {
+            depth_closest = sampled_depth;
+            depth_offset = offset_3x3[i];
+        }
+    }
+
+    // Soft min and max window
+    float3 c_min = min(c_3x3[0], min(c_3x3[1], min(c_3x3[2], min(c_3x3[3], min(c_3x3[4], min(c_3x3[5], min(c_3x3[6], min(c_3x3[7], c_3x3[8]))))))));
+    c_min += min(c_3x3[1], min(c_3x3[3], min(c_3x3[4], min(c_3x3[5], c_3x3[7]))));
+    c_min *= 0.5;
+
+    float3 c_max = max(c_3x3[0], max(c_3x3[1], max(c_3x3[2], max(c_3x3[3], max(c_3x3[4], max(c_3x3[5], max(c_3x3[6], max(c_3x3[7], c_3x3[8]))))))));
+    c_max += max(c_3x3[1], max(c_3x3[3], max(c_3x3[4], max(c_3x3[5], c_3x3[7]))));
+    c_max *= 0.5;
+
+    // Fetch motion vectors and reproject
+    float2 motion_vector = t_motion_vectors[clamp(I.hpos.xy + depth_offset, 0, screen_res.xy - 1)].xy;
+    float2 reprojected_tc = I.tc0.xy - motion_vector * float2(0.5, -0.5);
+
+    // Early quit
+    if (any(reprojected_tc != saturate(reprojected_tc)))
+        return float4(Lottes_Tonemap_Inverse(c_3x3[4]), 0.0);
+
+    // Fetch previous frame
+    float3 p_4 = Lottes_Tonemap(t_previous.SampleLevel(smp_rtlinear, reprojected_tc, 0).xyz);
+
+    // Spatio-temporal bicubic filter
+    p_4 = SMAABicubicFilter(c_3x3[1], c_3x3[7], c_3x3[3], c_3x3[5], c_3x3[4], p_4, frac(reprojected_tc * screen_res.xy - 0.5));
+
+    // Clamp
+    p_4 = clamp(p_4, c_min, c_max);
+
+    // SMAA-ish velocity weighting. Something better should be used...
+    float2 mags = (0.0).xx;
+    mags.x = sqrt(5.0 * length(motion_vector));
+    mags.y = t_previous.SampleLevel(smp_nofilter, reprojected_tc, 0.0).w;
+
+    float delta = abs(mags.x * mags.x - mags.y * mags.y) * rcp(5.0);
+    float weight = 0.925 * saturate(1.0 - sqrt(delta) * 8.0);
+
+    // Simple lerp is ok, RGBA16F lmao
+    float3 reprojected_color = lerp(c_3x3[4], p_4, weight);
+    reprojected_color = max(reprojected_color, 0.0);
+    reprojected_color = Lottes_Tonemap_Inverse(reprojected_color);
+
+    return float4(reprojected_color, mags.x);
+}

@@ -57,11 +57,9 @@ void CAttachableItem::OnH_A_Chield()
         object().setVisible(true);
 }
 
-void CAttachableItem::renderable_Render()
+void CAttachableItem::renderable_Render(u32 context_id, IRenderable* root)
 {
-    //	VERIFY							(m_valid);
-    ::Render->set_Transform(&object().XFORM());
-    ::Render->add_Visual(object().Visual());
+    ::Render->add_Visual(context_id, root, object().Visual(), object().XFORM());
 }
 
 void CAttachableItem::OnH_A_Independent()

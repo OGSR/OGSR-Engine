@@ -55,7 +55,7 @@ IC T _max(T a, T b)
     return a > b ? a : b;
 }
 template <class T>
-IC T _sqr(T a)
+constexpr T _sqr(T a)
 {
     return a * a;
 }

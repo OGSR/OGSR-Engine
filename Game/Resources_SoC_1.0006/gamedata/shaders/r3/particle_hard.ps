@@ -1,2 +1,32 @@
-#undef USE_SOFT_PARTICLES
-#include "particle.ps"
+#include "common.h"
+
+struct v2p
+{
+    float2 tc0 : TEXCOORD0;
+    float4 c : COLOR0;
+    float4 hpos : SV_Position;
+    float fog : FOG;
+};
+
+struct p_particle_out
+{
+    float4 main : SV_Target0;
+    float4 additional : SV_Target1;
+};
+
+p_particle_out main(v2p I) : SV_Target
+{
+    p_particle_out O;
+
+    float4 result = I.c * s_base.Sample(smp_base, I.tc0);
+
+    clip(result.a - (0.01f / 255.0f));
+    result.a *= I.fog * I.fog; // ForserX: Port Skyloader fog fix
+
+    result.a *= (1.0 - L_hotness.y);
+
+    O.main = result;
+    O.additional = float4(0.0, 0.0, L_hotness.x, 1.0);
+
+    return O;
+}

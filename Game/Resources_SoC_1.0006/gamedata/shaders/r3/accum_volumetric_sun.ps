@@ -17,25 +17,15 @@
 #endif
 #endif
 
-#ifndef FILTER_LOW
-#ifdef USE_MINMAX_SM
-#define SM_MINMAX
-#endif
-#endif
-
 #include "shadow.h"
 
 float4 sun_shafts_intensity;
 
-#ifdef MSAA_OPTIMIZATION
-float4 main(v2p_volume I, uint iSample : SV_SAMPLEINDEX) : SV_Target
-#else
 float4 main(v2p_volume I) : SV_Target
-#endif
 {
 #ifndef SUN_SHAFTS_QUALITY
     return float4(0, 0, 0, 0);
-#else //	SUN_SHAFTS_QUALITY
+#else // SUN_SHAFTS_QUALITY
 
     float2 tc = I.tc.xy / I.tc.w;
     float4 pos2d = I.hpos;
@@ -66,7 +56,11 @@ float4 main(v2p_volume I) : SV_Target
 
     // Volumetric offset when used with SSS extended shadows.
 #ifdef SSFX_MODEXE
+#ifdef SSFX_SHADOWS
+    current.z += 0.001f * (1.0 + saturate(P.z * 0.1f) * 0.1f);
+#else
     current.z += 0.001f;
+#endif
 #endif
 
     // Fade Weapon
@@ -90,9 +84,9 @@ float4 main(v2p_volume I) : SV_Target
 
     float fSturation = -Ldynamic_dir.z;
 
-    //	Normalize dot product to
+    // Normalize dot product to
     fSturation = 0.5 * fSturation + 0.5;
-    //	Map saturation to 0.2..1
+    // Map saturation to 0.2..1
     fSturation = 0.80 * fSturation + 0.20;
 
     res *= fSturation;
@@ -111,5 +105,5 @@ float4 main(v2p_volume I) : SV_Target
     float3 result = lerp(SunColor * max_density * fSturation, SunColor * res, 1.0f - fog * fog);
 
     return float4(result, 1);
-#endif //	SUN_SHAFTS_QUALITY
+#endif // SUN_SHAFTS_QUALITY
 }

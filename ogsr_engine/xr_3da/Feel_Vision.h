@@ -34,6 +34,7 @@ private:
 public:
     Vision();
     virtual ~Vision();
+
     struct feel_visible_Item
     {
         float fuzzy{}; // note range: (-1[no]..1[yes])
@@ -61,20 +62,20 @@ public:
     {
         R.clear();
         xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
-        for (; I != E; I++)
+        for (; I != E; ++I)
             if (positive(I->fuzzy))
                 R.push_back(I->O);
     }
     Fvector feel_vision_get_vispoint(CObject* _O)
     {
         xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
-        for (; I != E; I++)
+        for (; I != E; ++I)
             if (_O == I->O)
             {
                 VERIFY(positive(I->fuzzy));
                 return I->cp_LAST;
             }
-        VERIFY2(0, "There is no such object in the potentially visible list");
+        VERIFY(0, "There is no such object in the potentially visible list");
         return Fvector().set(flt_max, flt_max, flt_max);
     }
     virtual BOOL feel_vision_isRelevant(CObject* O) = 0;

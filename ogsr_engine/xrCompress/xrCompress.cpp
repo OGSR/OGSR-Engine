@@ -599,3 +599,5 @@ EXIT:
     ExitFromWinMain = true;
     return 0;
 }
+
+bool OnMainThread() { return true; } // for core

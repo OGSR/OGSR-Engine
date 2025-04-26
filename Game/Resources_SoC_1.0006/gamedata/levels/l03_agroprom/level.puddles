@@ -1,0 +1,9 @@
+[west_valley]
+center = -20.84,-5.12,-287.45
+max_depth = 0.3
+radius = 9
+
+[near_swamp]
+center = -192.57,-0.67,-37.07
+max_depth = 0.2
+radius = 12

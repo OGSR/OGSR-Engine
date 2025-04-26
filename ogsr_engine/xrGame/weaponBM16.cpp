@@ -51,8 +51,13 @@ void CWeaponBM16::OnShot()
         Fvector vel;
         PHGetLinearVell(vel);
         OnShellDrop(get_LastSP(), vel);
-        StartFlameParticles();
-        ForceUpdateFireParticles();
+
+        if (ShouldPlayFlameParticles())
+        {
+            StartFlameParticles();
+            ForceUpdateFireParticles();
+        }
+
         StartSmokeParticles(get_LastFP(), vel);
     }
 }

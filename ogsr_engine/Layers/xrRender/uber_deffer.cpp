@@ -10,7 +10,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BOO
     fix_texture_name(fname);
     ref_texture _t;
     _t.create(fname);
-    bool bump = _t.bump_exist();
+    const bool bump = _t.bump_exist();
 
     // detect lmap
     bool lmap = true;
@@ -18,7 +18,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BOO
         lmap = false;
     else
     {
-        pcstr tex = C.L_textures[2].c_str();
+        const pcstr tex = C.L_textures[2].c_str();
         if (tex[0] == 'l' && tex[1] == 'm' && tex[2] == 'a' && tex[3] == 'p')
             lmap = true;
         else
@@ -140,7 +140,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BOO
         C.r_TessPass(vs, hs, ds, "null", ps, FALSE);
         C.r_ComputePass("null");
         RImplementation.clearAllShaderOptions();
-        u32 stage = C.r_dx10Sampler("smp_bump_ds");
+        const u32 stage = C.r_dx10Sampler("smp_bump_ds");
         if (stage != -1)
         {
             C.i_dx10Address(stage, D3DTADDRESS_WRAP);
@@ -156,7 +156,9 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BOO
         }
     }
     else
-    C.r_Pass(vs, ps, FALSE);
+
+        C.r_Pass(vs, ps, FALSE);
+
     C.r_dx10Texture("s_base", C.L_textures[0]);
     C.r_dx10Texture("s_bumpX", fnameB); // should be before base bump
     C.r_dx10Texture("s_bump", fnameA);
@@ -175,6 +177,7 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BOO
         C.r_dx10Sampler("smp_rtlinear");
     }
 
+
     if (!DO_NOT_FINISH)
         C.r_End();
 }
@@ -187,7 +190,7 @@ void uber_shadow(CBlender_Compile& C, LPCSTR _vspec)
     fix_texture_name(fname);
     ref_texture _t;
     _t.create(fname);
-    bool bump = _t.bump_exist();
+    const bool bump = _t.bump_exist();
 
     // detect lmap
     bool lmap = true;
@@ -195,7 +198,7 @@ void uber_shadow(CBlender_Compile& C, LPCSTR _vspec)
         lmap = false;
     else
     {
-        pcstr tex = C.L_textures[2].c_str();
+        const pcstr tex = C.L_textures[2].c_str();
         if (tex[0] == 'l' && tex[1] == 'm' && tex[2] == 'a' && tex[3] == 'p')
             lmap = true;
         else
@@ -284,7 +287,7 @@ void uber_shadow(CBlender_Compile& C, LPCSTR _vspec)
             C.r_dx10Texture("s_detailBump", texDetailBump);
             C.r_dx10Texture("s_detailBumpX", texDetailBumpX);
         }
-        u32 stage = C.r_dx10Sampler("smp_bump_ds");
+        const u32 stage = C.r_dx10Sampler("smp_bump_ds");
         if (stage != -1)
         {
             C.i_dx10Address(stage, D3DTADDRESS_WRAP);

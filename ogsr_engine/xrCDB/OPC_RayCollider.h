@@ -42,13 +42,13 @@ public:
      *	\warning	SCALE NOT SUPPORTED. The matrices must contain rotation & translation parts only.
      */
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    bool Collide(const Ray& world_ray, OPCODE_Model* model, const Matrix4x4* world = null, udword* cache = null);
+    bool Collide(const Ray& world_ray, OPCODE_Model* model, const Matrix4x4* world = nullptr, udword* cache = nullptr);
 
     // Collision queries
-    bool Collide(const Ray& world_ray, const AABBCollisionTree* tree, const Matrix4x4* world = null, udword* cache = null);
-    bool Collide(const Ray& world_ray, const AABBNoLeafTree* tree, const Matrix4x4* world = null, udword* cache = null);
-    bool Collide(const Ray& world_ray, const AABBQuantizedTree* tree, const Matrix4x4* world = null, udword* cache = null);
-    bool Collide(const Ray& world_ray, const AABBQuantizedNoLeafTree* tree, const Matrix4x4* world = null, udword* cache = null);
+    bool Collide(const Ray& world_ray, const AABBCollisionTree* tree, const Matrix4x4* world = nullptr, udword* cache = nullptr);
+    bool Collide(const Ray& world_ray, const AABBNoLeafTree* tree, const Matrix4x4* world = nullptr, udword* cache = nullptr);
+    bool Collide(const Ray& world_ray, const AABBQuantizedTree* tree, const Matrix4x4* world = nullptr, udword* cache = nullptr);
+    bool Collide(const Ray& world_ray, const AABBQuantizedNoLeafTree* tree, const Matrix4x4* world = nullptr, udword* cache = nullptr);
     bool Collide(const Ray& world_ray, const AABBTree* tree, Container& box_indices);
     // Settings
 
@@ -209,7 +209,7 @@ protected:
     inline_ BOOL SegmentAABBOverlap(const Point& center, const Point& extents);
     inline_ BOOL RayTriOverlap(const Point& vert0, const Point& vert1, const Point& vert2);
     // Init methods
-    BOOL InitQuery(const Ray& world_ray, const Matrix4x4* world = null, udword* faceid = null);
+    BOOL InitQuery(const Ray& world_ray, const Matrix4x4* world = nullptr, udword* faceid = nullptr);
 };
 
 #endif // __OPC_RAYCOLLIDER_H__

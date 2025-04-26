@@ -1,4 +1,5 @@
 #include "common.h"
+#include "ogsr_gasmask_common.h"
 
 // Оригинальный шейдер: https://github.com/ya7gisa0/Unity-Raindrops
 // Для OGSR Engine портировал KRodin (c) 2019
@@ -150,7 +151,7 @@ float StaticDrops(float2 uv, float t)
     float d = length(uv - p);
 
     float fade = Saw(.025, frac(t + n.z));
-    float c = smoothstep(.5, 0., d) * frac(n.z * 10.) * fade;
+    float c = smoothstep(.2, 0., d) * frac(n.z * 10.) * fade;
     return c;
 }
 
@@ -170,6 +171,7 @@ float4 main(p_screen _in) : SV_Target
 {
     float rainAmount = rain_drops_params.x;
     float2 uv = _in.tc0;
+    uv = applyInertia(uv);
 
     float T = rain_drops_params.z * (timers.x + rainAmount * 2.);
 

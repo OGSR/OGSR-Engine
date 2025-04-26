@@ -13,7 +13,6 @@ void w_stringZ(IWriter* self, LPCSTR s)
     self->w_stringZ(s);
 }
 
-#pragma optimize("s", on)
 void CScriptWriter::script_register(lua_State* L)
 {
     module(L)[class_<IWriter>("writer")

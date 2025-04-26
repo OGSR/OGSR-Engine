@@ -1,5 +1,4 @@
-#ifndef _MB_HELPERS_H_INCLUDED
-#define _MB_HELPERS_H_INCLUDED
+#pragma once
 
 #define MAX_MB_CHARS 4096
 
@@ -39,5 +38,3 @@ __inline BOOL IsBadEndCharacter(wide_char wc)
 
             (wc == 0x4E00));
 }
-
-#endif // _MB_HELPERS_H_INCLUDED

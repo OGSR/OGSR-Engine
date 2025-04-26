@@ -1,0 +1,34 @@
+[road_from_bar1]
+center = -316.23,-26.42,54.48
+max_depth = 0.5
+radius = 12
+
+[road_from_bar2]
+center = -268.57,-25.82,87.62
+max_depth = 0.4
+radius = 10
+
+[road_to_blockpost1]
+center = -14.78,-25.08,264.63
+max_depth = 0.5
+radius = 17
+
+[village1]
+center = -343.55,-24.18,258.10
+max_depth = 0.5
+radius = 11
+
+[village2]
+center = -343.94,-23.48,198.30
+max_depth = 0.5
+radius = 11
+
+[cliffs1]
+center = -54.56,-22.53,380.52
+max_depth = 0.5
+radius = 7
+
+[valley_near_cherep_site]
+center = -272.6,-18.17,-25.3
+max_depth = 0.4
+radius = 12

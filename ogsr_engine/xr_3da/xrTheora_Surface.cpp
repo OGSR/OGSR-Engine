@@ -14,7 +14,6 @@ CTheoraSurface::CTheoraSurface()
     // controls
     playing = FALSE;
     looped = FALSE;
-    bShaderYUV2RGB = TRUE;
 }
 
 CTheoraSurface::~CTheoraSurface()
@@ -120,7 +119,6 @@ BOOL CTheoraSurface::Load(const char* fname)
     if (res)
     {
         R_ASSERT(Device.m_pRender);
-        bShaderYUV2RGB = Device.m_pRender->HWSupportsShaderYUV2RGB();
     }
     return res;
 }
@@ -194,22 +192,7 @@ void CTheoraSurface::DecompressFrame(u32* data, u32 _width, int& _pos)
                 u8 y = Y[w];
                 u8 u = U[w / uv_w];
                 u8 v = V[w / uv_w];
-                if (!bShaderYUV2RGB)
-                {
-                    int C = y - 16;
-                    int D = u - 128;
-                    int E = v - 128;
-
-                    int R = clampr((298 * C + 409 * E + 128) >> 8, 0, 255);
-                    int G = clampr((298 * C - 100 * D - 208 * E + 128) >> 8, 0, 255);
-                    int B = clampr((298 * C + 516 * D + 128) >> 8, 0, 255);
-
-                    data[pos] = color_rgba(R, G, B, 255);
-                }
-                else
-                {
-                    data[pos] = color_rgba(int(y), int(u), int(v), 255);
-                }
+                data[pos] = color_rgba(int(y), int(u), int(v), 255);
                 pos++;
                 if (w == width - 1)
                     pos += _width;

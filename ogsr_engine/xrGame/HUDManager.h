@@ -50,6 +50,8 @@ private:
     CHUDTarget* m_pHUDTarget;
     bool b_online;
 
+    std::recursive_mutex render_lock;
+
 public:
     CHUDManager();
     virtual ~CHUDManager();
@@ -57,9 +59,9 @@ public:
 
     virtual void Load();
 
-    virtual void Render_First();
-    virtual void Render_Last();
-    virtual void Render_Actor_Shadow(); // added by KD
+    void Render_SMAP(u32 context_id) override;
+    void Render_MAIN(u32 context_id) override;
+
     virtual void OnFrame();
 
     virtual void RenderUI();
@@ -85,5 +87,10 @@ public:
     virtual bool RenderActiveItemUIQuery();
 
     virtual void net_Relcase(CObject* object);
-    CHUDTarget* GetTarget() const { return m_pHUDTarget; };
+
+    CHUDTarget* GetTarget() const { return m_pHUDTarget; }
+
+private:
+    void Render_Actor_Shadow(u32 context_id);
+    // void Render_Actor_FirstPersonBody(u32 context_id);
 };

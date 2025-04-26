@@ -9,13 +9,14 @@ template <>
 struct ShaderTypeTraits<SHS>
 {
     typedef CResourceManager::map_HS MapType;
+
     typedef ID3D11HullShader DXIface;
 
     static inline const char* GetShaderExt() { return ".hs"; }
     static inline const char* GetCompilationTarget() { return "hs_5_0"; }
     static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
     {
-        DXIface* hs = 0;
+        DXIface* hs = nullptr;
         R_CHK(HW.pDevice->CreateHullShader(buffer, size, NULL, &hs));
         return hs;
     }
@@ -27,13 +28,14 @@ template <>
 struct ShaderTypeTraits<SDS>
 {
     typedef CResourceManager::map_DS MapType;
+
     typedef ID3D11DomainShader DXIface;
 
     static inline const char* GetShaderExt() { return ".ds"; }
     static inline const char* GetCompilationTarget() { return "ds_5_0"; }
     static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
     {
-        DXIface* hs = 0;
+        DXIface* hs = nullptr;
         R_CHK(HW.pDevice->CreateDomainShader(buffer, size, NULL, &hs));
         return hs;
     }
@@ -45,18 +47,39 @@ template <>
 struct ShaderTypeTraits<SCS>
 {
     typedef CResourceManager::map_CS MapType;
+
     typedef ID3D11ComputeShader DXIface;
 
     static inline const char* GetShaderExt() { return ".cs"; }
     static inline const char* GetCompilationTarget() { return "cs_5_0"; }
     static inline DXIface* CreateHWShader(DWORD const* buffer, size_t size)
     {
-        DXIface* cs = 0;
+        DXIface* cs = nullptr;
         R_CHK(HW.pDevice->CreateComputeShader(buffer, size, NULL, &cs));
         return cs;
     }
 
     static inline u32 GetShaderDest() { return RC_dest_compute; }
+};
+
+template <>
+struct ShaderTypeTraits<SGS>
+{
+    using MapType = CResourceManager::map_GS;
+
+    typedef ID3DGeometryShader DXIface;
+
+
+    static inline const char* GetShaderExt() { return ".gs"; }
+    static inline const char* GetCompilationTarget() { return "gs_5_0"; }
+    static inline DXIface* CreateHWShader(DWORD const* buffer, const size_t size)
+    {
+        DXIface* gs = nullptr;
+        R_CHK(HW.pDevice->CreateGeometryShader(buffer, size, NULL, &gs));
+        return gs;
+    }
+
+    static inline u32 GetShaderDest() { return RC_dest_geometry; }
 };
 
 template <>
@@ -75,6 +98,12 @@ template <>
 inline CResourceManager::map_CS& CResourceManager::GetShaderMap()
 {
     return m_cs;
+}
+
+template <>
+inline CResourceManager::map_GS& CResourceManager::GetShaderMap()
+{
+    return m_gs;
 }
 
 template <typename T>
@@ -99,18 +128,18 @@ inline T* CResourceManager::CreateShader(const char* name)
 
         string_path shName;
         const char* pchr = strchr(name, '(');
-        ptrdiff_t strSize = pchr ? pchr - name : xr_strlen(name);
+        const ptrdiff_t strSize = pchr ? pchr - name : xr_strlen(name);
         strncpy_s(shName, name, strSize);
         shName[strSize] = 0;
 
         // Open file
         string_path cname;
-        strconcat(sizeof(cname), cname, ::Render->getShaderPath(), /*name*/ shName, ShaderTypeTraits<T>::GetShaderExt());
-        FS.update_path(cname, "$game_shaders$", cname);
+        strconcat(sizeof(cname), cname, RImplementation.getShaderPath(), /*name*/ shName, ShaderTypeTraits<T>::GetShaderExt());
+        FS.update_path(cname, fsgame::game_shaders, cname);
 
         // duplicate and zero-terminate
         IReader* file = FS.r_open(cname);
-        R_ASSERT2(file, cname);
+        R_ASSERT(file, cname);
 
         file->skip_bom(cname);
 
@@ -119,18 +148,18 @@ inline T* CResourceManager::CreateShader(const char* name)
         LPCSTR c_entry = "main";
 
         DWORD Flags{D3DCOMPILE_PACK_MATRIX_ROW_MAJOR};
-        if (strstr(Core.Params, "-shadersdbg"))
+        if (ps_r2_ls_flags_ext.test(R2FLAGEXT_SHADER_DBG))
         {
             Flags |= D3DCOMPILE_DEBUG;
             Flags |= D3DCOMPILE_SKIP_OPTIMIZATION;
         }
 
         // Compile
-        HRESULT const _hr = ::Render->shader_compile(name, (DWORD const*)file->pointer(), file->elapsed(), c_entry, c_target, Flags, (void*&)sh);
+        HRESULT const _hr = RImplementation.shader_compile(name, (DWORD const*)file->pointer(), file->elapsed(), c_entry, c_target, Flags, (void*&)sh);
 
         FS.r_close(file);
 
-        ASSERT_FMT(!FAILED(_hr), "Can't compile shader [%s]", name);
+        ASSERT_FMT(!FAILED(_hr), "Can't compile shader [%s] file [%s]", name, cname);
 
         return sh;
     }

@@ -6,6 +6,10 @@
 #include "..\xr_3da\igame_level.h"
 #include "clsid_game.h"
 #include "Car.h"
+// #include "Flashlight.h"
+#include "inventory.h"
+#include "torch.h"
+#include "weapon.h"
 #include "ui/UIMessagesWindow.h"
 
 CFontManager::CFontManager()
@@ -232,66 +236,83 @@ bool need_render_hud()
     return true;
 }
 
-void CHUDManager::Render_First()
-{
-    if (!psHUD_Flags.is(HUD_WEAPON_RT))
-        return;
+void CHUDManager::Render_SMAP(u32 context_id) { Render_Actor_Shadow(context_id); }
 
-    if (pUI == nullptr)
+void CHUDManager::Render_MAIN(u32 context_id)
+{
+    if (nullptr == pUI)
         return;
 
     if (!need_render_hud())
         return;
 
-    // only shadow
-    CObject* O = g_pGameLevel->CurrentViewEntity();
-    ::Render->set_Invisible(TRUE);
-    ::Render->set_Object(O->H_Root());
-    O->renderable_Render();
-    ::Render->set_Invisible(FALSE);
-}
+    ZoneScoped;
 
-void CHUDManager::Render_Last()
-{
-    if (!psHUD_Flags.is(HUD_WEAPON_RT))
-        return;
-    if (0 == pUI)
-        return;
-    CObject* O = g_pGameLevel->CurrentViewEntity();
-    if (0 == O)
-        return;
-    CActor* A = smart_cast<CActor*>(O);
-    if (A && !A->HUDview())
-        return;
-    if (O->CLS_ID == CLSID_CAR)
-        return;
-
-    if (O->CLS_ID == CLSID_SPECTATOR)
-        return;
+    std::scoped_lock slock(render_lock);
 
     // hud itself
-    ::Render->set_HUD(TRUE);
-    ::Render->set_Object(O->H_Root());
-    O->OnHUDDraw(this);
-    ::Render->set_HUD(FALSE);
+    {
+        CObject* O = g_pGameLevel->CurrentViewEntity();
+        const auto root = O->H_Root();
+        root->renderable_HUD(true);
+        O->OnHUDDraw(this, context_id, root);
+        root->renderable_HUD(false);
+    }
+
+    // Render_Actor_FirstPersonBody(context_id);
 }
 
-void CHUDManager::Render_Actor_Shadow() // added by KD
+void CHUDManager::Render_Actor_Shadow(u32 context_id) // added by KD
 {
-    if (0 == pUI)
+    if (!psActorFlags.test(AF_ACTOR_SHADOW))
         return;
+
+    if (nullptr == pUI)
+        return;
+
     CObject* O = g_pGameLevel->CurrentViewEntity();
-    if (0 == O)
+    if (nullptr == O)
         return;
+
     CActor* A = smart_cast<CActor*>(O);
     if (!A)
         return;
+
+    // KD: we need to render actor shadow only in first eye cam mode because
+    // in other modes actor model already in scene graph and renders well
     if (A->active_cam() != eacFirstEye)
-        return; // KD: we need to render actor shadow only in first eye cam mode because
-                // in other modes actor model already in scene graph and renders well
-    ::Render->set_Object(O->H_Root());
-    O->renderable_Render();
+        return;
+/*
+    const auto flashlight = smart_cast<CFlashlight*>(A->inventory().ItemFromSlot(DETECTOR_SLOT));
+    if (flashlight && flashlight->torch_active())
+        return;
+*/
+    const auto torch = smart_cast<CTorch*>(A->inventory().ItemFromSlot(TORCH_SLOT));
+    if (torch && torch->torch_active())
+        return;
+
+    const auto wpn = smart_cast<CWeapon*>(A->inventory().ActiveItem());
+    if (wpn && (wpn->IsFlashlightOn()))
+        return;
+
+    std::scoped_lock slock(render_lock);
+    O->renderable_Render(context_id, O->H_Root());
 }
+
+/*
+void CHUDManager::Render_Actor_FirstPersonBody(u32 context_id)
+{
+    CObject* O = g_pGameLevel->CurrentEntity();
+    if (nullptr == O)
+        return;
+
+    CActor* A = smart_cast<CActor*>(O);
+    if (!A)
+        return;
+
+    A->RenderFirstPersonBody(context_id, O->H_Root());
+}
+*/
 
 extern void draw_wnds_rects();
 
@@ -387,9 +408,6 @@ void CHUDManager::net_Relcase(CObject* object)
 #include "player_hud.h"
 bool CHUDManager::RenderActiveItemUIQuery()
 {
-    if (!psHUD_Flags.is(HUD_WEAPON_RT))
-        return false;
-
     if (!need_render_hud())
         return false;
 

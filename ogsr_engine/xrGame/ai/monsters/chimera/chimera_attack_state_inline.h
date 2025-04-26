@@ -1,5 +1,4 @@
-#ifndef CHIMERA_ATTACK_STATE_INLINE_H_INCLUDED
-#define CHIMERA_ATTACK_STATE_INLINE_H_INCLUDED
+#pragma once
 
 #include "chimera_attack_state.h"
 
@@ -502,5 +501,3 @@ void ChimeraAttackState<Object>::execute()
     object->path().extrapolate_path(true);
     object->path().set_target_point(m_target, m_target_vertex);
 }
-
-#endif // #ifdef CHIMERA_ATTACK_STATE_INLINE_H_INCLUDED

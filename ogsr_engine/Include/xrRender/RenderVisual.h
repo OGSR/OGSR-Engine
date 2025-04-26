@@ -1,5 +1,3 @@
-#ifndef RenderVisual_included
-#define RenderVisual_included
 #pragma once
 
 class IKinematics;
@@ -12,14 +10,17 @@ class IRenderVisual
 public:
     virtual ~IRenderVisual() { ; }
 
-    virtual vis_data& _BCL getVisData() = 0;
+    virtual vis_data& getVisData() = 0;
     virtual u32 getType() = 0;
 
-    virtual shared_str _BCL getDebugName() = 0;
+    virtual shared_str getDebugName() const = 0;
+    virtual shared_str getDebugInfo() const = 0;
 
-    virtual IKinematics* _BCL dcast_PKinematics() { return 0; }
-    virtual IKinematicsAnimated* dcast_PKinematicsAnimated() { return 0; }
-    virtual IParticleCustom* dcast_ParticleCustom() { return 0; }
+    virtual void MarkAsHot(bool is_hot){};
+
+    virtual IKinematics* dcast_PKinematics() { return nullptr; }
+    virtual IKinematicsAnimated* dcast_PKinematicsAnimated() { return nullptr; }
+    virtual IParticleCustom* dcast_ParticleCustom() { return nullptr; }
+
+    bool ignore_optimization{false};
 };
-
-#endif //	RenderVisual_included

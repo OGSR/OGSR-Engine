@@ -2,8 +2,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#ifndef HangingLampH
-#define HangingLampH
 #pragma once
 
 #include "gameobject.h"
@@ -15,6 +13,7 @@ class CLAItem;
 class CPhysicsElement;
 class CSE_ALifeObjectHangingLamp;
 class CPHElement;
+
 class CHangingLamp : public CPhysicsShellHolder, public CPHSkeleton
 { // need m_pPhysicShell
     typedef CPhysicsShellHolder inherited;
@@ -33,6 +32,8 @@ private:
     float fHealth;
     float fBrightness;
     bool lights_turned_on{};
+    bool m_animated{};
+
     void CreateBody(CSE_ALifeObjectHangingLamp* lamp);
     void Init();
     void RespawnInit();
@@ -55,9 +56,6 @@ public:
     virtual void net_Save(NET_Packet& P);
     virtual BOOL net_SaveRelevant();
 
-    virtual BOOL renderable_ShadowGenerate() { return TRUE; }
-    virtual BOOL renderable_ShadowReceive() { return TRUE; }
-
     virtual void Hit(SHit* pHDS);
     virtual void net_Export(CSE_Abstract*);
     virtual BOOL UsedAI_Locations();
@@ -71,5 +69,3 @@ public:
 add_to_type_list(CHangingLamp)
 #undef script_type_list
 #define script_type_list save_type_list(CHangingLamp)
-
-#endif // HangingLampH

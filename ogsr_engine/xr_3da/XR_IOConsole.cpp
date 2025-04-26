@@ -15,26 +15,26 @@
 
 #include "../Include/xrRender/UIRender.h"
 
-static float const UI_BASE_WIDTH = 1024.0f;
-static float const UI_BASE_HEIGHT = 768.0f;
+constexpr float UI_BASE_WIDTH = 1024.0f;
+constexpr float UI_BASE_HEIGHT = 768.0f;
 
-static float const LDIST = 0.05f;
+constexpr float LDIST = 0.05f;
 
-static u32 const cmd_history_max = 64;
+constexpr u32 cmd_history_max = 64;
 
-static u32 const prompt_font_color = color_rgba(228, 228, 255, 255);
-static u32 const tips_font_color = color_rgba(230, 250, 230, 255);
-static u32 const cmd_font_color = color_rgba(138, 138, 245, 255);
-static u32 const cursor_font_color = color_rgba(255, 255, 255, 255);
-static u32 const total_font_color = color_rgba(250, 250, 15, 180);
-static u32 const default_font_color = color_rgba(250, 250, 250, 250);
+constexpr u32 prompt_font_color = color_rgba(228, 228, 255, 255);
+constexpr u32 tips_font_color = color_rgba(230, 250, 230, 255);
+constexpr u32 cmd_font_color = color_rgba(138, 138, 245, 255);
+constexpr u32 cursor_font_color = color_rgba(255, 255, 255, 255);
+constexpr u32 total_font_color = color_rgba(250, 250, 15, 180);
+constexpr u32 default_font_color = color_rgba(250, 250, 250, 250);
 
-static u32 const back_color = color_rgba(20, 20, 20, 200);
-static u32 const tips_back_color = color_rgba(20, 20, 20, 200);
-static u32 const tips_select_color = color_rgba(90, 90, 140, 230);
-static u32 const tips_word_color = color_rgba(5, 100, 56, 200);
-static u32 const tips_scroll_back_color = color_rgba(15, 15, 15, 230);
-static u32 const tips_scroll_pos_color = color_rgba(70, 70, 70, 240);
+constexpr u32 back_color = color_rgba(20, 20, 20, 200);
+constexpr u32 tips_back_color = color_rgba(20, 20, 20, 200);
+constexpr u32 tips_select_color = color_rgba(90, 90, 140, 230);
+constexpr u32 tips_word_color = color_rgba(5, 100, 56, 200);
+constexpr u32 tips_scroll_back_color = color_rgba(15, 15, 15, 230);
+constexpr u32 tips_scroll_pos_color = color_rgba(70, 70, 70, 240);
 
 ENGINE_API CConsole* Console = NULL;
 
@@ -167,9 +167,9 @@ void CConsole::Initialize()
 	pFont = NULL;
 	pFont2 = NULL;
 
-	m_mouse_pos.x = 0;
-	m_mouse_pos.y = 0;
-	m_last_cmd = NULL;
+	//m_mouse_pos.x = 0;
+	//m_mouse_pos.y = 0;
+	m_last_cmd = nullptr;
 
 	m_cmd_history.reserve(m_cmd_history_max + 2);
 	m_cmd_history.clear();
@@ -202,6 +202,7 @@ CConsole::~CConsole()
 
     if (g_console_show_always)
         Device.seqRender.Remove(this);
+
 	Device.seqResolutionChanged.Remove(this);
 }
 
@@ -240,7 +241,6 @@ void CConsole::OutFont(LPCSTR text, float& pos_y)
 	float scr_width = 1.98f * Device.fWidth_2;
 	if (str_length > scr_width) //1024.0f
 	{
-		float f = 0.0f;
 		int sz = 0;
 		int ln = 0;
 		LPSTR one_line = (LPSTR)_alloca((CONSOLE_BUF_SIZE + 1) * sizeof(char));
@@ -257,12 +257,7 @@ void CConsole::OutFont(LPCSTR text, float& pos_y)
 				pos_y -= lineDistance;
 				pFont->OutI(-1.0f, pos_y, "%s", one_line + ln);
 				ln = sz + 1;
-				f = 0.0f;
-			}
-			else
-			{
-				f = t;
-			}
+            }
 
 			++sz;
 		}
@@ -306,7 +301,7 @@ void CConsole::OnRender()
 		pFont2->SetHeightI(0.025f);
 	}
 
-    const bool bGame = true;
+    constexpr bool bGame = true;
 
 	if (bVisible)
 		DrawBackgrounds(bGame);
@@ -587,6 +582,16 @@ void CConsole::DrawRect(Frect const& r, u32 color)
 	UIRender->PushPoint(r.x1, r.y2, 0.0f, color, 0.0f, 1.0f);
 }
 
+//extern bool CCC_OnUnknownCommand(std::string c, std::string a);
+bool CCC_OnUnknownCommand(std::string c, std::string a)
+{
+#pragma todo("Simp: перенести функцию CCC_OnUnknownCommand в xrGame и добавить engine_callback")
+   // static engine_callback<bool> ec("on_console_command");
+
+   // return ec(c.c_str(), a.c_str());
+   return false;
+}
+
 void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabled)
 {
     std::string edt{cmd_str};
@@ -657,7 +662,8 @@ void CConsole::ExecuteCommand(LPCSTR cmd_str, bool record_cmd, bool allow_disabl
 	}
 	else
 	{
-        Msg("! Unknown command: %s", first.c_str());
+		if (!CCC_OnUnknownCommand(first.c_str(), last.c_str()))
+            Msg("! Unknown command: %s", first.c_str());
 	}
 
 	if (record_cmd)
@@ -676,7 +682,7 @@ void CConsole::Show()
 	}
 	bVisible = true;
 
-	GetCursorPos(&m_mouse_pos);
+	//GetCursorPos(&m_mouse_pos);
 
 	ec().clear_states();
 	scroll_delta = 0;
@@ -702,10 +708,10 @@ void CConsole::Hide()
 		return;
 	}
 
-	if (pInput->exclusive_mode())
-	{
-		SetCursorPos(m_mouse_pos.x, m_mouse_pos.y);
-	}
+	//if (pInput->exclusive_mode())
+	//{
+	//	SetCursorPos(m_mouse_pos.x, m_mouse_pos.y);
+	//}
 
 	bVisible = false;
 	reset_selected_tip();
@@ -766,7 +772,7 @@ IConsole_Command* CConsole::find_next_cmd(LPCSTR in_str, shared_str& out_str)
 		IConsole_Command* cc = it->second;
 		LPCSTR name_cmd = cc->Name();
 
-		out_str._set(name_cmd);
+		out_str = name_cmd;
 		return cc;
 	}
 	return nullptr;
@@ -785,7 +791,7 @@ bool CConsole::add_next_cmds(LPCSTR in_str, vecTipsEx& out_v)
 
 	shared_str temp;
 	IConsole_Command* cc = find_next_cmd(t2, temp);
-	if (!cc || temp.size() == 0)
+	if (!cc || temp.empty())
 	{
 		return false;
 	}
@@ -793,7 +799,7 @@ bool CConsole::add_next_cmds(LPCSTR in_str, vecTipsEx& out_v)
 	bool res = false;
 	for (u32 i = cur_count; i < MAX_TIPS_COUNT * 2; ++i) //fake=protect
 	{
-		temp._set(cc->Name());
+        temp = cc->Name();
 		bool dup = (std::find(out_v.begin(), out_v.end(), temp) != out_v.end());
 		if (!dup)
 		{
@@ -840,11 +846,11 @@ bool CConsole::add_internal_cmds(LPCSTR in_str, vecTipsEx& out_v)
 			if (!stricmp(name2.c_str(), in_str))
 			{
 				shared_str temp;
-				temp._set(name);
+                temp = name;
 				bool dup = (std::find(out_v.begin(), out_v.end(), temp) != out_v.end());
 				if (!dup)
 				{
-					out_v.push_back(TipString(temp, 0, in_sz));
+					out_v.emplace_back(temp, 0, in_sz);
 					res = true;
 				}
 			}
@@ -866,13 +872,13 @@ bool CConsole::add_internal_cmds(LPCSTR in_str, vecTipsEx& out_v)
 		if (fd_str)
 		{
 			shared_str temp;
-			temp._set(name);
+            temp = name;
 			bool dup = (std::find(out_v.begin(), out_v.end(), temp) != out_v.end());
 			if (!dup)
 			{
 				u32 name_sz = xr_strlen(name);
 				int fd_sz = name_sz - xr_strlen(fd_str);
-				out_v.push_back(TipString(temp, fd_sz, fd_sz + in_sz));
+				out_v.emplace_back(temp, fd_sz, fd_sz + in_sz);
 				res = true;
 			}
 		}
@@ -958,12 +964,12 @@ void CConsole::update_tips()
 
 				cc->fill_tips(m_temp_tips, mode);
 				m_tips_mode = 2;
-				m_cur_cmd._set(first.c_str());
+                m_cur_cmd = first.c_str();
                 select_for_filter(last.c_str(), m_temp_tips, m_tips);
 
-				if (m_tips.size() == 0)
+				if (m_tips.empty())
 				{
-					m_tips.push_back(TipString("(empty)"));
+					m_tips.emplace_back("(empty)");
 				}
 				if ((int)m_tips.size() <= m_select_tip)
 				{
@@ -981,7 +987,7 @@ void CConsole::update_tips()
 		m_tips_mode = 1;
 	}
 
-	if (m_tips.size() == 0)
+	if (m_tips.empty())
 	{
 		m_tips_mode = 0;
 		reset_selected_tip();
@@ -1010,14 +1016,13 @@ void CConsole::select_for_filter(LPCSTR filter_str, vecTips& in_v, vecTipsEx& ou
 		shared_str const& str = (*itb);
 		if (all)
 		{
-			out_v.push_back(TipString(str));
+			out_v.emplace_back(str);
 		}
 		else
 		{
-			LPCSTR fd_str = strstr(str.c_str(), filter_str);
-			if (fd_str)
+            if (LPCSTR fd_str = strstr(str.c_str(), filter_str))
 			{
-				int fd_sz = str.size() - xr_strlen(fd_str);
+				u32 fd_sz = str.size() - xr_strlen(fd_str);
 				TipString ts(str, fd_sz, fd_sz + xr_strlen(filter_str));
 				out_v.push_back(ts);
 			}

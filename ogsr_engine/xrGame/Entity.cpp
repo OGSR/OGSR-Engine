@@ -362,3 +362,26 @@ void CEntity::ChangeTeam(int team, int squad, int group)
     Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).register_member(this);
     on_after_change_team();
 }
+
+u32 clampU(u32 x, u32 a, u32 b)
+{
+    if (x < a)
+        return a;
+    else if (x > b)
+        return b;
+    return x;
+}
+
+float CEntity::GetHotness()
+{
+    if (AlreadyDie() || !g_Alive())
+        return 1.0f - (float)clampU(Device.dwTimeGlobal - m_level_death_time, 0, 20000) / 20000.0f;
+    return 1.0f;
+}
+
+void CEntity::OnChangeVisual()
+{
+    inherited::OnChangeVisual();
+    if (renderable.visual != 0)
+        renderable.visual->MarkAsHot(true);
+}

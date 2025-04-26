@@ -1,5 +1,3 @@
-#ifndef FixedVectorH
-#define FixedVectorH
 #pragma once
 
 template <class T, const int dim>
@@ -29,45 +27,53 @@ public:
     IC void clear() { count = 0; }
     IC void resize(int c)
     {
-        VERIFY(c <= dim);
+        R_ASSERT(c <= dim);
         count = c;
     }
-    IC void reserve(int c) {}
+    /*IC void reserve(int c) {}*/
 
     IC void push_back(value_type e)
     {
-        VERIFY(count < dim);
+        R_ASSERT(count < dim); //  <!!!
         array[count++] = e;
     }
     IC void pop_back()
     {
-        VERIFY(count);
+        R_ASSERT(count);
         count--;
     }
 
     IC reference operator[](u32 id)
     {
-        VERIFY(id < count);
+        R_ASSERT(id < count);
         return array[id];
     }
     IC const_reference operator[](u32 id) const
     {
-        VERIFY(id < count);
+        R_ASSERT(id < count);
         return array[id];
     }
 
     IC reference front() { return array[0]; }
-    IC reference back() { return array[count - 1]; }
+    IC reference back()
+    {
+        R_ASSERT(count);
+        return array[count - 1];
+    }
     IC reference last()
     {
-        VERIFY(count < dim);
+        R_ASSERT(count < dim);
         return array[count];
     }
     IC const_reference front() const { return array[0]; }
-    IC const_reference back() const { return array[count - 1]; }
+    IC const_reference back() const
+    {
+        R_ASSERT(count);
+        return array[count - 1];
+    }
     IC const_reference last() const
     {
-        VERIFY(count < dim);
+        R_ASSERT(count < dim);
         return array[count];
     }
     IC void inc() { count++; }
@@ -75,7 +81,7 @@ public:
 
     IC void erase(u32 id)
     {
-        VERIFY(id < count);
+        R_ASSERT(id < count);
         count--;
         for (u32 i = id; i < count; i++)
             array[i] = array[i + 1];
@@ -84,15 +90,15 @@ public:
 
     IC void insert(u32 id, reference V)
     {
-        VERIFY(id < count);
+        R_ASSERT(id < count);
         for (int i = count; i > int(id); i--)
             array[i] = array[i - 1];
         count++;
         array[id] = V;
     }
-    IC void assign(iterator p, int c)
+    IC void assign(const_iterator p, int c)
     {
-        R_ASSERT(c > 0 && c < dim);
+        R_ASSERT(c > 0 && c <= dim);
         CopyMemory(array, p, c * sizeof(value_type));
         count = c;
     }
@@ -106,5 +112,3 @@ public:
         return TRUE;
     }
 };
-
-#endif

@@ -1,11 +1,9 @@
-#ifndef dx10StateManager_included
-#define dx10StateManager_included
 #pragma once
 
 class dx10StateManager
 {
 public:
-    dx10StateManager();
+    explicit dx10StateManager(CBackend& cmd_list_in);
     ~dx10StateManager() = default;
 
     //	Set all states to default
@@ -28,7 +26,7 @@ public:
     //	The slowest (but finer) method
     //	Can create state objects in runtime
     //	These functions accept only DX9 style constants
-    //	Don't use these directly. Only via RCache to allow it
+    //	Don't use these directly. Only via cmd_list to allow it
     //	to route calls to DX9
     //	TODO: replace u32 with appropriate DX9 enums to avoid confusion
     void SetStencil(u32 Enable, u32 Func, u32 Ref, u32 Mask, u32 WriteMask, u32 Fail, u32 Pass, u32 ZFail);
@@ -82,15 +80,13 @@ private:
 
     //	Cached state descriptions
     //	Valid only if *Valid flag is set
-    D3D_RASTERIZER_DESC m_RDesc{};
-    D3D_DEPTH_STENCIL_DESC m_DSDesc{};
-    D3D_BLEND_DESC m_BDesc{};
+    D3D_RASTERIZER_DESC m_RDesc;
+    D3D_DEPTH_STENCIL_DESC m_DSDesc;
+    D3D_BLEND_DESC m_BDesc;
 
     bool m_bOverrideScissoring;
     BOOL m_bOverrideScissoringValue;
     UINT m_uiSampleMask;
+
+    CBackend& cmd_list;
 };
-
-extern dx10StateManager StateManager;
-
-#endif //	dx10StateManager_included

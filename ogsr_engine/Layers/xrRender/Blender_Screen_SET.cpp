@@ -146,55 +146,33 @@ void CBlender_Screen_SET::LoadIni(CInifile* ini_file, LPCSTR section)
 void CBlender_Screen_SET::Compile(CBlender_Compile& C)
 {
     IBlender::Compile(C);
-    // C.r_Pass			("stub_notransform_t", "Blender_Screen_SET", false);
 
     if (oBlend.IDselected == 6)
     {
         // Usually for wallmarks
         C.r_Pass("stub_notransform_t", "stub_default_ma", false);
-
-        VERIFY(C.L_textures.size() > 0);
-        C.r_dx10Texture("s_base", C.L_textures[0]);
-        int iSmp = C.r_dx10Sampler("smp_base");
-        if (oClamp.value)
-            C.i_dx10Address(iSmp, D3DTADDRESS_CLAMP);
+    }
+    else if (9 == oBlend.IDselected)
+    {
+        // 4x R
+        C.r_Pass("stub_notransform_t_m4", "stub_default", false);
+    }
+    else if ((7 == oBlend.IDselected) || (8 == oBlend.IDselected))
+    {
+        // 2x R
+        C.r_Pass("stub_notransform_t_m2", "stub_default", false);
     }
     else
     {
-        if (9 == oBlend.IDselected)
-        {
-            // 4x R
-            C.r_Pass("stub_notransform_t_m4", "stub_default", false);
-            // C.StageSET_Color	(D3DTA_TEXTURE,	  D3DTOP_MODULATE4X,	D3DTA_DIFFUSE);
-            // C.StageSET_Alpha	(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,	D3DTA_DIFFUSE);
-        }
-        else
-        {
-            if ((7 == oBlend.IDselected) || (8 == oBlend.IDselected))
-            {
-                // 2x R
-                C.r_Pass("stub_notransform_t_m2", "stub_default", false);
-                // C.StageSET_Color	(D3DTA_TEXTURE,	  D3DTOP_MODULATE2X,	D3DTA_DIFFUSE);
-                // C.StageSET_Alpha	(D3DTA_TEXTURE,	  D3DTOP_SELECTARG1,	D3DTA_DIFFUSE);
-            }
-            else
-            {
-                // 1x R
-                C.r_Pass("stub_notransform_t", "stub_default", false);
-                // C.StageSET_Color	(D3DTA_TEXTURE,	  D3DTOP_MODULATE,		D3DTA_DIFFUSE);
-                // C.StageSET_Alpha	(D3DTA_TEXTURE,	  D3DTOP_MODULATE,		D3DTA_DIFFUSE);
-            }
-        }
-        // C.Stage_Texture		(oT_Name);
-        // C.Stage_Matrix		(oT_xform,	0);
-        // C.Stage_Constant	("$null");
-        // C.StageEnd			();
-        VERIFY(C.L_textures.size() > 0);
-        C.r_dx10Texture("s_base", C.L_textures[0]);
-        int iSmp = C.r_dx10Sampler("smp_base");
-        if ((oClamp.value) && (iSmp != u32(-1)))
-            C.i_dx10Address(iSmp, D3DTADDRESS_CLAMP);
-    }
+        // 1x R
+        C.r_Pass("stub_notransform_t", "stub_default", false);
+    }    
+
+    VERIFY(C.L_textures.size() > 0);
+    C.r_dx10Texture("s_base", C.L_textures[0]);
+    const int iSmp = C.r_dx10Sampler("smp_base");
+    if ((oClamp.value) && (iSmp != u32(-1)))
+        C.i_dx10Address(iSmp, D3DTADDRESS_CLAMP);
 
     C.PassSET_ZB(oZTest.value, oZWrite.value);
 
@@ -231,7 +209,9 @@ void CBlender_Screen_SET::Compile(CBlender_Compile& C)
         C.PassSET_Blend(TRUE, D3DBLEND_SRCALPHA, D3DBLEND_INVSRCALPHA, TRUE, oAREF.value);
         break;
     }
+
     C.PassSET_LightFog(oLighting.value, oFog.value);
 
     C.r_End();
 }
+

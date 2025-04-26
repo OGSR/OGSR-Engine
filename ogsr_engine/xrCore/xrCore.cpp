@@ -133,7 +133,8 @@ void xrCore::_initialize(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
     {
         th_count = dwOverride;
     }
-    TTAPI = xr_new<task_thread_pool::task_thread_pool>(th_count);
+    TTAPI = xr_new<task_thread_pool::task_thread_pool>("TTAPI", th_count);
+    TTAPI->init();
     Msg("TTAPI number of threads: [%u]", TTAPI->get_num_threads());
 }
 

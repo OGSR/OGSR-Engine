@@ -80,8 +80,8 @@ public:
     void TextureAvailable(bool value) { m_bAvailableTexture = value; }
     bool TextureAvailable() { return m_bAvailableTexture; }
 
-    const LPCSTR GetTextureName() const { return m_texture.c_str(); }
-    const LPCSTR GetShaderName() const { return m_shader.c_str(); }
+    LPCSTR GetTextureName() const { return m_texture.c_str(); }
+    LPCSTR GetShaderName() const { return m_shader.c_str(); }
     // own
     virtual void SetHighlightColor(const u32 uColor) { m_HighlightColor = uColor; }
     void EnableTextHighlighting(bool value) { m_bEnableTextHighlighting = value; }

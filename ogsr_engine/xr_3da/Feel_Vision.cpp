@@ -25,7 +25,7 @@ IC BOOL feel_vision_callback(collide::rq_result& result, LPVOID params)
     SFeelParam* fp = (SFeelParam*)params;
     float vis = fp->parent->feel_vision_mtl_transp(result.O, result.element);
     fp->vis *= vis;
-    if (NULL == result.O && fis_zero(vis))
+    if (nullptr == result.O && fis_zero(vis))
     {
         CDB::TRI* T = g_pGameLevel->ObjectSpace.GetStaticTris() + result.element;
         Fvector* V = g_pGameLevel->ObjectSpace.GetStaticVerts();
@@ -98,9 +98,8 @@ void Vision::feel_vision_query(Fmatrix& mFull, Fvector& P)
 
     // Determine visibility for dynamic part of scene
     clear_and_reserve(seen);
-    for (u32 o_it = 0; o_it < r_spatial.size(); o_it++)
+    for (const auto& spatial : r_spatial)
     {
-        ISpatial* spatial = r_spatial[o_it];
         CObject* object = spatial->dcast_CObject();
         if (object && feel_vision_isRelevant(object))
         {
@@ -130,8 +129,8 @@ void Vision::feel_vision_update(CObject* parent, Fvector& P, float dt, float vis
             diff.resize(_max(seen.size(), query.size()));
             xr_vector<CObject*>::iterator E = std::set_difference(seen.begin(), seen.end(), query.begin(), query.end(), diff.begin());
             diff.resize(E - diff.begin());
-            for (u32 i = 0; i < diff.size(); i++)
-                o_new(diff[i]);
+            for (auto& i : diff)
+                o_new(i);
         }
     }
 
@@ -141,8 +140,8 @@ void Vision::feel_vision_update(CObject* parent, Fvector& P, float dt, float vis
         diff.resize(_max(seen.size(), query.size()));
         xr_vector<CObject*>::iterator E = std::set_difference(query.begin(), query.end(), seen.begin(), seen.end(), diff.begin());
         diff.resize(E - diff.begin());
-        for (u32 i = 0; i < diff.size(); i++)
-            o_delete(diff[i]);
+        for (auto& i : diff)
+            o_delete(i);
     }
 
     // Copy results and perform traces
@@ -155,7 +154,7 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold)
     xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
     for (; I != E; I++)
     {
-        if (0 == I->O->CFORM())
+        if (nullptr == I->O->CFORM())
         {
             I->fuzzy = -1;
             I->trans = 0.f;
@@ -216,7 +215,7 @@ void Vision::o_trace(Fvector& P, float dt, float vis_threshold)
                 {
                     // cache outdated. real query.
                     VERIFY(!fis_zero(RD.dir.square_magnitude()));
-                    if (g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, feel_vision_callback, &feel_params, NULL, NULL))
+                    if (g_pGameLevel->ObjectSpace.RayQuery(RQR, RD, feel_vision_callback, &feel_params, nullptr, nullptr))
                     {
                         I->Cache_vis = feel_params.vis;
                         I->Cache.set(P, D, f, TRUE);

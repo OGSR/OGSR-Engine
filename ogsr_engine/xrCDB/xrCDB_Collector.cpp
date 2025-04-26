@@ -242,6 +242,7 @@ void Collector::calc_adjacency(xr_vector<u32>& dest)
     }
 #endif
 }
+
 IC BOOL similar(TRI& T1, TRI& T2)
 {
     if ((T1.verts[0] == T2.verts[0]) && (T1.verts[1] == T2.verts[1]) && (T1.verts[2] == T2.verts[2]) && (T1.dummy == T2.dummy))
@@ -258,6 +259,7 @@ IC BOOL similar(TRI& T1, TRI& T2)
         return TRUE;
     return FALSE;
 }
+
 void Collector::remove_duplicate_T()
 {
     for (u32 f = 0; f < faces.size(); f++)

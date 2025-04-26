@@ -8,11 +8,10 @@
 //	Used for RGBA texture too ?!
 Texture2D s_smap : register(ps, t0); // 2D/cube shadowmap
 
-Texture2D<float> s_smap_minmax; // 2D/cube shadowmap
-#include "gather.ps"
-
 SamplerComparisonState smp_smap; //	Special comare sampler
 sampler smp_jitter;
+
+uniform float4 ssfx_shadow_bias;
 
 Texture2D jitter0;
 Texture2D jitter1;
@@ -52,53 +51,6 @@ float shadow_hw(float4 tc)
 
     return (s0 + s1 + s2 + s3) / 4.h;
 }
-
-#ifdef SM_MINMAX
-bool cheap_reject(float3 tc, inout bool full_light)
-{
-    float4 plane0 = sm_minmax_gather(tc.xy, int2(-1, -1));
-    float4 plane1 = sm_minmax_gather(tc.xy, int2(1, -1));
-    float4 plane2 = sm_minmax_gather(tc.xy, int2(-1, 1));
-    float4 plane3 = sm_minmax_gather(tc.xy, int2(1, 1));
-    bool plane = all((plane0 >= (0).xxxx) * (plane1 >= (0).xxxx) * (plane2 >= (0).xxxx) * (plane3 >= (0).xxxx));
-
-    [flatten] if (!plane) // if there are no proper plane equations in the support region
-    {
-        bool no_plane = all((plane0 < (0).xxxx) * (plane1 < (0).xxxx) * (plane2 < (0).xxxx) * (plane3 < (0).xxxx));
-        float4 z = (tc.z - 0.0005).xxxx;
-        bool reject = all((z > -plane0) * (z > -plane1) * (z > -plane2) * (z > -plane3));
-        [flatten] if (no_plane && reject)
-        {
-            full_light = false;
-            return true;
-        }
-        else { return false; }
-    }
-    else // plane equation detected
-    {
-        // compute corrected z for texel pos
-        static const float scale = float(SMAP_size / 4);
-        float2 fc = frac(tc.xy * scale);
-        float z = lerp(lerp(plane0.y, plane1.x, fc.x), lerp(plane2.z, plane3.w, fc.x), fc.y);
-
-        // do minmax test with new z
-        full_light = ((tc.z - 0.0001) <= z);
-
-        return true;
-    }
-}
-
-// Sunshafts
-float shadow_dx10_1_sunshafts(float4 tc, float2 pos2d)
-{
-    float3 t = tc.xyz / tc.w;
-    float minmax = s_smap_minmax.SampleLevel(smp_nofilter, t, 0).x;
-    bool umbra = ((minmax.x < 0) && (t.z > -minmax.x));
-
-    [branch] if (umbra) { return 0.0; }
-    else { return shadow_hw(tc); }
-}
-#endif //	SM_MINMAX
 
 // PCSS shadows
 static const float2 poissonDisk[32] = {
@@ -210,31 +162,12 @@ half shadowtest_sun(float4 tc, float4 tcJ) // jittered sampling
     return dot(r, 1.0 / 4.0);
 }
 
-float shadow_hw_hq(float4 tc)
-{
-#ifdef SM_MINMAX
-    bool full_light = false;
-    bool cheap_path = cheap_reject(tc.xyz / tc.w, full_light);
-
-    [branch] if (cheap_path)
-    {
-        [branch] if (full_light == true) return 1.0;
-        else return sample_hw_pcf(tc, (0).xxxx);
-    }
-    else { return shadow_pcss(tc); }
-#else //	SM_MINMAX
-    return shadow_pcss(tc);
-#endif //	SM_MINMAX
-}
+float shadow_hw_hq(float4 tc) { return shadow_pcss(tc); }
 
 float shadow(float4 tc)
 {
 #ifdef USE_ULTRA_SHADOWS
-#ifdef SM_MINMAX
-    return modify_light(shadow_hw_hq(tc));
-#else
     return shadow_hw_hq(tc);
-#endif
 #else
     return shadow_pcss(tc);
 #endif

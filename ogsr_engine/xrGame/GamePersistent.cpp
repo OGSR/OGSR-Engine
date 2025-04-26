@@ -167,6 +167,11 @@ void CGamePersistent::Disconnect()
     __super::Disconnect();
     // stop all played emitters
     ::Sound->stop_emitters();
+
+    // validate and clean up spatial dbs
+    g_SpatialSpace->clear();
+    g_SpatialSpacePhysic->clear();
+
     m_game_params.m_e_game_type = GAME_ANY;
 }
 
@@ -184,8 +189,6 @@ void CGamePersistent::UpdateGameType()
     __super::UpdateGameType();
     m_game_params.m_e_game_type = GAME_SINGLE;
 
-#pragma todo( \
-    "KRodin: надо подумать, надо ли тут вылетать вообще. Не может ли возникнуть каких-нибудь проблем, если парсер налажал. Он же влияет не только на m_game_type. На данный момент парсер может налажать, если встретит скобочки () в имени сейва.")
     ASSERT_FMT_DBG(!xr_strcmp(m_game_params.m_game_type, "single"), "!!failed to parse the name of the save, rename it and try to load again.");
 }
 
@@ -720,8 +723,6 @@ void CGamePersistent::SetTip()
 {
     pApp->LoadTitleInt();
 }
-
-bool CGamePersistent::CanBePaused() { return (g_pGamePersistent->GameType() == GAME_SINGLE); }
 
 bool CGamePersistent::OnKeyboardPress(int dik)
 {

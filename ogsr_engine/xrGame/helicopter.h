@@ -299,9 +299,7 @@ public:
     virtual void net_Save(NET_Packet& P);
     virtual BOOL net_SaveRelevant() { return (inherited::net_SaveRelevant() && BOOL(PPhysicsShell() != NULL)) || m_exploded; };
 
-    virtual void renderable_Render() { inherited::renderable_Render(); };
-    virtual BOOL renderable_ShadowGenerate() { return FALSE; }
-    virtual BOOL renderable_ShadowReceive() { return TRUE; }
+    virtual void renderable_Render(u32 context_id, IRenderable* root) override { inherited::renderable_Render(context_id, root); };
 
     virtual void OnEvent(NET_Packet& P, u16 type);
     virtual void UpdateCL();
@@ -365,6 +363,8 @@ public:
     float GetSafeAltitude() { return m_movement.GetSafeAltitude(); };
     float GetHeliHealth() const { return inherited::GetfHealth(); }
     float SetHeliHealth(float value) { return inherited::SetfHealth(value); }
+
+    virtual float GetHotness() override { return 0.f; }
 
 #ifdef DEBUG
 public:

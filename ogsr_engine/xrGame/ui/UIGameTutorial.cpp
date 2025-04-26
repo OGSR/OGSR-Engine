@@ -288,7 +288,7 @@ void CUISequencer::IR_OnActivate()
     int i;
     for (i = 0; i < CInput::COUNT_KB_BUTTONS; i++)
     {
-        if (IR_GetKeyState(i))
+        if (pInput->iGetAsyncKeyState(i))
         {
             EGameActions action = get_binded_action(i);
             switch (action)

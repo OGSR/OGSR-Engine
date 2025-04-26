@@ -5,16 +5,18 @@
 class walker
 {
 public:
+
     u32 mask;
+
     CFrustum* F;
     ISpatial_DB* space;
 
 public:
     walker(ISpatial_DB* _space, u32 _mask, const CFrustum* _F)
     {
+        space = _space;
         mask = _mask;
         F = (CFrustum*)_F;
-        space = _space;
     }
     void walk(ISpatial_NODE* N, Fvector& n_C, float n_R, u32 fmask)
     {
@@ -37,7 +39,7 @@ public:
             Fvector& sC = S->spatial.sphere.P;
             float sR = S->spatial.sphere.R;
             u32 tmask = fmask;
-            if (fcvNone == F->testSphere(sC, sR, tmask))
+            if (fcvNone == F->testSphere(sC, std::max(sR, 0.5f), tmask))
                 continue;
 
             space->q_result->push_back(S);
@@ -47,8 +49,9 @@ public:
         float c_R = n_R / 2;
         for (u32 octant = 0; octant < 8; octant++)
         {
-            if (0 == N->children[octant])
+            if (!N->children[octant])
                 continue;
+
             Fvector c_C;
             c_C.mad(n_C, c_spatial_offset[octant], c_R);
             walk(N->children[octant], c_C, c_R, fmask);
@@ -58,6 +61,8 @@ public:
 
 void ISpatial_DB::q_frustum(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const CFrustum& _frustum)
 {
+    ZoneScoped;
+
     cs.Enter();
     q_result = &R;
     q_result->clear();

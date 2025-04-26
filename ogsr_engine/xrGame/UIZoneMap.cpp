@@ -146,8 +146,7 @@ void CUIZoneMap::SetupCurrentMap()
 {
     CInifile* pLtx = pGameIni;
 
-    if (!pLtx->section_exist(Level().name()))
-        pLtx = Level().pLevel;
+    R_ASSERT(pLtx->section_exist(Level().name()));
 
     // dsh: очередной костыль. Если не создавать новый CUIMiniMap, то после
     // перехода с локации, на которой нет текстуры миникарты, на локацию,

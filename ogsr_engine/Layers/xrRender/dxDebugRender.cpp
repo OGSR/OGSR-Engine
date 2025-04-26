@@ -3,6 +3,7 @@
 #include "dxDebugRender.h"
 #include "dxUIShader.h"
 #include "dxRenderDeviceRender.h"
+#include "HUDInitializer.h"
 
 dxDebugRender DebugRenderImpl;
 
@@ -15,6 +16,7 @@ void dxDebugRender::Render()
         for (auto& [color, vert_vec] : m_line_vertices)
         {
             auto& ind_vec = m_line_indices.at(color);
+
             RCache.set_xform_world(Fidentity);
             RCache.set_Shader(dxRenderDeviceRender::Instance().m_WireShader);
             RCache.set_c("tfactor", float(color_get_R(color)) / 255.f, float(color_get_G(color)) / 255.f, float(color_get_B(color)) / 255.f, float(color_get_A(color)) / 255.f);
@@ -27,34 +29,16 @@ void dxDebugRender::Render()
 
     if (!m_line_vertices_hud.empty())
     {
-        Fmatrix Pold = Device.mProject;
-        Fmatrix FTold = Device.mFullTransform;
-
-        {
-            RDEVICE.mProject.build_projection(deg2rad(psHUD_FOV <= 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV), Device.fASPECT, HUD_VIEWPORT_NEAR,
-                                              g_pGamePersistent->Environment().CurrentEnv->far_plane);
-
-            Device.mFullTransform.mul(Device.mProject, Device.mView);
-            RCache.set_xform_project(Device.mProject);
-            //RImplementation.rmNear();
-            //ApplyTexgen(Device.mFullTransform);
-        }
+        CHUDTransformHelper initializer(RCache, true);
 
         for (auto& [color, vert_vec] : m_line_vertices_hud)
         {
             auto& ind_vec = m_line_indices_hud.at(color);
+
             RCache.set_xform_world(Fidentity);
             RCache.set_Shader(dxRenderDeviceRender::Instance().m_WireShader);
             RCache.set_c("tfactor", float(color_get_R(color)) / 255.f, float(color_get_G(color)) / 255.f, float(color_get_B(color)) / 255.f, float(color_get_A(color)) / 255.f);
             RCache.dbg_Draw_Near(D3DPT_LINELIST, &vert_vec.front(), static_cast<int>(vert_vec.size()), &ind_vec.front(), static_cast<int>(ind_vec.size() / 2));
-        }
-
-        {
-            //RImplementation.rmNormal();
-            Device.mProject = Pold;
-            Device.mFullTransform = FTold;
-            RCache.set_xform_project(Device.mProject);
-            //ApplyTexgen(Device.mFullTransform);
         }
 
         m_line_vertices_hud.clear();
@@ -119,6 +103,10 @@ void dxDebugRender::OnFrameEnd() { RCache.OnFrameEnd(); }
 
 void dxDebugRender::SetShader(const debug_shader& shader) { RCache.set_Shader(((dxUIShader*)&*shader)->hShader); }
 
+void dxDebugRender::CacheSetXformWorld(const Fmatrix& M) { RCache.set_xform_world(M); }
+
+void dxDebugRender::CacheSetCullMode(CullMode m) { RCache.set_CullMode(CULL_NONE + m); }
+
 void dxDebugRender::SetAmbient(u32 colour)
 {
     //	TODO: DX10: Check if need this for DX10
@@ -159,7 +147,7 @@ struct RDebugRender : public dxDebugRender, public pureRender
     void OnRender() { Render(); }
     virtual void add_lines(Fvector const* vertices, u32 const& vertex_count, u16 const* pairs, u32 const& pair_count, u32 const& color)
     {
-        __super::add_lines(vertices, vertex_count, pairs, pair_count, color);
+        dxDebugRender::add_lines(vertices, vertex_count, pairs, pair_count, color);
     }
 } rdebug_render_impl;
 dxDebugRender* rdebug_render = &rdebug_render_impl;

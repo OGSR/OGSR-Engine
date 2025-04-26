@@ -6,8 +6,6 @@
 //	Description : Object item client or server class inline functions
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef object_item_single_inlineH
-#define object_item_single_inlineH
 
 #pragma once
 
@@ -46,4 +44,3 @@ ObjectFactory::SERVER_BASE_CLASS* CObjectItemSingle<_unknown_type, true>::server
 
 #undef TEMPLATE_SPECIALIZATION
 #undef CSObjectItemSingle
-#endif

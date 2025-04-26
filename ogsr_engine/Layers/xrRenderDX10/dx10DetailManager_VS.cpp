@@ -1,195 +1,169 @@
 #include "stdafx.h"
 #include "../xrRender/DetailManager.h"
 
-#include "../../xr_3da/igame_persistent.h"
-#include "../../xr_3da/environment.h"
-
-#include "../xrRenderDX10/dx10BufferUtils.h"
-
-constexpr int quant = 16384;
-
-void CDetailManager::hw_Render()
+void CDetailManager::SetupCBuffer(CBackend& cmd_list, const ref_pass& pass, bool shadows)
 {
-    // Render-prepare
-    //	Update timer
-    //	Can't use Device.fTimeDelta since it is smoothed! Don't know why, but smoothed value looks more choppy!
-    float fDelta = Device.fTimeGlobal - m_global_time_old;
-    if ((fDelta < 0) || (fDelta > 1))
-        fDelta = 0.03;
-    m_global_time_old = Device.fTimeGlobal;
+    static const shared_str benders_pos{"benders_pos"}, benders_pos_old{"benders_pos_old"};
 
-    m_time_rot_1 += (PI_MUL_2 * fDelta / swing_current.rot1);
-    m_time_rot_2 += (PI_MUL_2 * fDelta / swing_current.rot2);
-    m_time_pos += fDelta * swing_current.speed;
+    // Setup matrices + colors (and flush it as necessary)
+    cmd_list.set_Pass(pass);
+    cmd_list.apply_lmaterial();
 
-    float tm_rot1 = m_time_rot_1;
-    float tm_rot2 = m_time_rot_2;
+    cmd_list.set_c("m_taa_jitter_disable", shadows ? 1.f : 0.f);
+    cmd_list.set_c("grass_align", ps_ssfx_terrain_grass_align);
 
-    Fvector4 dir1, dir2;
-    dir1.set(_sin(tm_rot1), 0, _cos(tm_rot1), 0).normalize().mul(swing_current.amp1);
-    dir2.set(_sin(tm_rot2), 0, _cos(tm_rot2), 0).normalize().mul(swing_current.amp2);
+    cmd_list.set_c("benders_setup",
+                   Fvector4{ps_ssfx_int_grass_params_1.x, ps_ssfx_int_grass_params_1.y, ps_ssfx_int_grass_params_1.z,
+                            ps_r2_ls_flags_ext.test(R2FLAGEXT_SSFX_INTER_GRASS) ? ps_ssfx_grass_interactive.y : 0.f});
 
-    // Setup geometry and DMA
-    RCache.set_Geometry(hw_Geom);
+    if (ps_r2_ls_flags_ext.test(R2FLAGEXT_SSFX_INTER_GRASS))
+    {
+        Fvector4* b_pos{};
+        cmd_list.get_ConstantDirect(benders_pos, sizeof grass_shader_data.pos + sizeof grass_shader_data.dir, reinterpret_cast<void**>(&b_pos), nullptr, nullptr, true);
+        R_ASSERT(b_pos, "Something strange in grass shader!");
 
-    // Wave0
-    constexpr float scale = 1.f / float(quant);
-    Fvector4 wave;
-    Fvector4 consts;
-    consts.set(scale, scale, ps_r__Detail_l_aniso, ps_r__Detail_l_ambient);
+        std::memcpy(b_pos, &grass_shader_data.pos, sizeof grass_shader_data.pos);
+        std::memcpy(b_pos + std::size(grass_shader_data.pos), &grass_shader_data.dir, sizeof grass_shader_data.dir);
 
-    wave.set(1.f / 5.f, 1.f / 7.f, 1.f / 3.f, m_time_pos);
+        Fvector4* b_pos_old{};
+        cmd_list.get_ConstantDirect(benders_pos_old, sizeof grass_shader_data_old.pos + sizeof grass_shader_data_old.dir, reinterpret_cast<void**>(&b_pos_old), nullptr, nullptr, true);
+        R_ASSERT(b_pos_old, "Something strange in grass shader!");
 
-    hw_Render_dump(consts, wave.div(PI_MUL_2), dir1, 1, 0);
-
-    // Wave1
-    wave.set(1.f / 3.f, 1.f / 7.f, 1.f / 5.f, m_time_pos);
-
-    hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, 2, 0);
-
-    // Still
-    consts.set(scale, scale, scale, 1.f);
-
-    hw_Render_dump(consts, wave.div(PI_MUL_2), dir2, 0, 1);
+        std::memcpy(b_pos_old, &grass_shader_data_old.pos, sizeof grass_shader_data_old.pos);
+        std::memcpy(b_pos_old + std::size(grass_shader_data_old.pos), &grass_shader_data_old.dir, sizeof grass_shader_data_old.dir);
+    }
 }
 
-void CDetailManager::hw_Render_dump(const Fvector4& consts, const Fvector4& wave, const Fvector4& wind, u32 var_id, u32 lod_id)
+void CDetailManager::hw_Render(CBackend& cmd_list, const bool shadows, light* L)
 {
-    constexpr const char* strConsts = "consts";
-    constexpr const char* strWave = "wave";
-    constexpr const char* strDir2D = "dir2D";
-    constexpr const char* strArray = "array";
-    constexpr const char* strXForm = "xform";
-    constexpr const char* strBendersSetup = "benders_setup";
-    constexpr const char* strBendersPos = "benders_pos";
+    ZoneScoped;
 
-    Device.Statistic->RenderDUMP_DT_Count = 0;
+    if (!shadows)
+        Device.Statistic->RenderDUMP_DT_Count = 0;
 
-    // Matrices and offsets
-    u32 vOffset = 0;
-    u32 iOffset = 0;
+    // тут обычно не больше 16 или 32 визуалов. можно сгруппировать по шейдеру их...
+    // так же как правил везде один pass
 
-    vis_list& list = m_visibles[var_id];
+    const SPass* last_pass{};
 
-    CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
-    Fvector c_sun, c_ambient, c_hemi;
-    c_sun.set(desc.sun_color.x, desc.sun_color.y, desc.sun_color.z);
-    c_sun.mul(.5f);
-    c_ambient.set(desc.ambient.x, desc.ambient.y, desc.ambient.z);
-    c_hemi.set(desc.hemi_color.x, desc.hemi_color.y, desc.hemi_color.z);
+    u32 dwBatchTotal{};
 
     // Iterate
-    for (u32 O = 0; O < objects.size(); O++)
+    for (u32 O{}; const auto& object : objects)
     {
-        CDetail& Object = *objects[O];
-        auto& vis = list[O];
-        if (!vis.empty())
+        auto& vis = m_visibles[O++]; // by object index
+
+        if (vis.empty())
+            continue;
+
+        if (ref_pass& pass = object.shader->E[0]->passes[0]; !last_pass || !pass->equal(*last_pass))
         {
-            for (u32 iPass = 0; iPass < Object.shader->E[lod_id]->passes.size(); ++iPass)
+            last_pass = pass._get();
+
+            SetupCBuffer(cmd_list, pass, shadows);
+        }
+
+        dwBatchTotal += render_items(cmd_list, object, vis, shadows, L);
+    }
+
+    ZoneValue(dwBatchTotal);
+
+    if (!shadows)
+        Device.Statistic->RenderDUMP_DT_Count += dwBatchTotal;
+}
+
+u32 CDetailManager::render_items(CBackend& cmd_list, const CDetail& object, const vis_list_inner& vis_list, const bool shadows, light* L)
+{
+    u32 dwBatchTotal{}, sizeof_vbuffer{}, all_items_size{vis_list.instance_count}, details_count{};
+    ID3DVertexBuffer* current_vbuffer{};
+    D3D11_MAPPED_SUBRESOURCE pSubRes{};
+    FloraVertData* c_storage{};
+
+    auto update_vertex_buffer = [&] {
+        sizeof_vbuffer = all_items_size;
+        current_vbuffer = cmd_list.GetFloraVbuff(sizeof_vbuffer);
+
+        constexpr u32 vb_stride[]{sizeof(DetailVertData), sizeof(FloraVertData)};
+        constexpr u32 i_offset[]{0, 0};
+        ID3DVertexBuffer* final_vbuffer[]{object.DetailVb, current_vbuffer};
+
+        cmd_list.set_Format(&*object.DetailGeom->dcl);
+        cmd_list.set_Vertices_Forced(std::size(final_vbuffer), final_vbuffer, vb_stride, i_offset);
+        cmd_list.set_Indices(object.DetailIb);
+    };
+
+    auto render_call = [&] {
+        ZoneScopedN("render_call");
+
+        if (c_storage)
+        {
+            HW.get_context(cmd_list.context_id)->Unmap(current_vbuffer, 0);
+            c_storage = nullptr;
+        }
+        if (details_count > 0)
+        {
+            dwBatchTotal += details_count;
+
+            //Msg("--Called rendering [%u] grass instances", details_count);
+            cmd_list.Render(D3DPT_TRIANGLELIST, 0, 0, object.number_vertices, 0, object.number_indices / 3, details_count);
+            cmd_list.stat.r.s_details.add(details_count);
+
+            // restart
+            details_count = 0;
+        }
+    };
+
+    {
+        ZoneScopedN("render");
+
+        update_vertex_buffer();
+
+        const float L_range_sqr = L ? _sqr(L->range) * 1.05f : 0.f;
+
+        for (const auto* items : vis_list)
+        {
+            for (const auto* instance : *items)
             {
-                // Setup matrices + colors (and flush it as necessary)
-                RCache.set_Element(Object.shader->E[lod_id], iPass);
-                RImplementation.apply_lmaterial();
+                if (instance->alpha <= 0.f || instance->scale_calculated <= 0.f)
+                    break;
 
-                //	This could be cached in the corresponding consatant buffer
-                //	as it is done for DX9
-                RCache.set_c(strConsts, consts);
-                RCache.set_c(strWave, wave);
-                RCache.set_c(strDir2D, wind);
-                RCache.set_c(strXForm, Device.mFullTransform);
-
-                RCache.set_c(strBendersSetup,
-                             Fvector4{ps_ssfx_int_grass_params_1.x, ps_ssfx_int_grass_params_1.y, ps_ssfx_int_grass_params_1.z,
-                                      ps_r2_ls_flags_ext.test(SSFX_INTER_GRASS) ? ps_ssfx_grass_interactive.y : 0.f});
-
-                if (ps_r2_ls_flags_ext.test(SSFX_INTER_GRASS))
+                if (shadows) // on SMAP phase only
                 {
-                    Fvector4* c_grass{};
-                    RCache.get_ConstantDirect(strBendersPos, sizeof grass_shader_data.pos + sizeof grass_shader_data.dir, reinterpret_cast<void**>(&c_grass), nullptr, nullptr);
-                    if (c_grass)
-                    {
-                        std::memcpy(c_grass, &grass_shader_data.pos, sizeof grass_shader_data.pos);
-                        std::memcpy(c_grass + std::size(grass_shader_data.pos), &grass_shader_data.dir, sizeof grass_shader_data.dir);
-                    }
+                    if (L && L->position.distance_to_sqr(instance->xform.c) > L_range_sqr)
+                        continue;
                 }
 
-                Fvector4* c_storage{};
-                RCache.get_ConstantDirect(strArray, hw_BatchSize * sizeof(Fvector4) * 4, reinterpret_cast<void**>(&c_storage), nullptr, nullptr);
-                R_ASSERT(c_storage);
-
-                u32 dwBatch = 0;
-
-                auto _vI = vis.begin();
-                auto _vE = vis.end();
-                for (; _vI != _vE; _vI++)
+                if (!c_storage)
                 {
-                    SlotItemVec* items = *_vI;
-                    SlotItemVecIt _iI = items->begin();
-                    SlotItemVecIt _iE = items->end();
-                    for (; _iI != _iE; _iI++)
+                    //Msg("~~Called mapping buffer with size [%u]", sizeof_vbuffer);
+                    R_CHK(HW.get_context(cmd_list.context_id)->Map(current_vbuffer, 0, D3D_MAP_WRITE_DISCARD, 0, &pSubRes));
+                    c_storage = reinterpret_cast<FloraVertData*>(pSubRes.pData);
+                }
+
+                std::memcpy(&c_storage[details_count++], &instance->data, sizeof(instance->data));
+
+                if (details_count == sizeof_vbuffer)
+                {
+                    all_items_size -= details_count;
+
+                    render_call();
+
+                    if (all_items_size > 0)
                     {
-                        if (*_iI == nullptr)
-                            continue;
-
-                        SlotItem& Instance = **_iI;
-                        u32 base = dwBatch * 4;
-
-                        // Build matrix ( 3x4 matrix, last row - color )
-                        float scale = Instance.scale_calculated;
-
-                        // Sort of fade using the scale
-                        // fade_distance == -1 use light_position to define "fade", anything else uses fade_distance
-                        if (fade_distance <= -1)
-                            scale *= 1.0f - Instance.position.distance_to_xz_sqr(light_position) * 0.005f;
-                        else if (Instance.distance > fade_distance)
-                            scale *= 1.0f - abs(Instance.distance - fade_distance) * 0.005f;
-                        if (scale <= 0)
-                            break;
-                        // Build matrix ( 3x4 matrix, last row - color )
-                        // float scale = Instance.scale_calculated;
-
-                        Fmatrix& M = Instance.mRotY;
-                        c_storage[base + 0].set(M._11 * scale, M._21 * scale, M._31 * scale, M._41);
-                        c_storage[base + 1].set(M._12 * scale, M._22 * scale, M._32 * scale, M._42);
-                        c_storage[base + 2].set(M._13 * scale, M._23 * scale, M._33 * scale, M._43);
-
-                        // Build color
-                        // R2 only needs hemisphere
-                        float h = Instance.c_hemi;
-                        float s = Instance.c_sun;
-                        c_storage[base + 3].set(s, s, s, h);
-                        dwBatch++;
-                        if (dwBatch == hw_BatchSize)
+                        u32 temp_buff_size = all_items_size;
+                        cmd_list.GetFloraVbuff(temp_buff_size);
+                        if (temp_buff_size != sizeof_vbuffer)
                         {
-                            // flush
-                            Device.Statistic->RenderDUMP_DT_Count += dwBatch;
-                            u32 dwCNT_verts = dwBatch * Object.number_vertices;
-                            u32 dwCNT_prims = (dwBatch * Object.number_indices) / 3;
-                            RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, dwCNT_verts, iOffset, dwCNT_prims);
-                            RCache.stat.r.s_details.add(dwCNT_verts);
-
-                            // restart
-                            dwBatch = 0;
-
-                            //	Remap constants to memory directly (just in case anything goes wrong)
-                            RCache.get_ConstantDirect(strArray, hw_BatchSize * sizeof(Fvector4) * 4, reinterpret_cast<void**>(&c_storage), nullptr, nullptr);
-                            R_ASSERT(c_storage);
+                            //Msg("--Updated buff from [%u] to [%u]", sizeof_vbuffer, temp_buff_size);
+                            update_vertex_buffer();
                         }
                     }
                 }
-
-                // flush if nessecary
-                if (dwBatch)
-                {
-                    Device.Statistic->RenderDUMP_DT_Count += dwBatch;
-                    u32 dwCNT_verts = dwBatch * Object.number_vertices;
-                    u32 dwCNT_prims = (dwBatch * Object.number_indices) / 3;
-                    RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, dwCNT_verts, iOffset, dwCNT_prims);
-                    RCache.stat.r.s_details.add(dwCNT_verts);
-                }
             }
         }
-        vOffset += hw_BatchSize * Object.number_vertices;
-        iOffset += hw_BatchSize * Object.number_indices;
+
+        render_call();
     }
+
+    return dwBatchTotal;
 }

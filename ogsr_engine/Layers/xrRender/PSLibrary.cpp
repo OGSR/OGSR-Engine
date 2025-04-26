@@ -4,8 +4,6 @@
 #include "ParticleEffect.h"
 #include "ParticleGroup.h"
 
-#define _game_data_ "$game_data$"
-
 void CPSLibrary::OnCreate() { LoadAll(); }
 
 void CPSLibrary::LoadAll()
@@ -13,13 +11,13 @@ void CPSLibrary::LoadAll()
     if (!Load2()) // load ltx pg and pe
     {
         string_path fn;
-        if (FS.exist(fn, _game_data_, "particles.xr"))
+        if (FS.exist(fn, fsgame::game_data, "particles.xr"))
         {
             Msg("Load [%s]", fn);
             Load(fn);
         }
 
-        if (FS.exist(fn, _game_data_, "particles_cop.xr"))
+        if (FS.exist(fn, fsgame::game_data, "particles_cop.xr"))
         {
             Msg("Load [%s]", fn);
             Load(fn);
@@ -33,7 +31,7 @@ void CPSLibrary::LoadAll()
 void CPSLibrary::ExportAllAsNew()
 {
     string_path fn;
-    FS.update_path(fn, _game_data_, "particles_cop.new_xr"); // dummy file name
+    FS.update_path(fn, fsgame::game_data, "particles_cop.new_xr"); // dummy file name
     Msg("~ Exported all ltx shaders to [%s] in COP format. Rename file to use it.", fn);
     Save(fn);
 }
@@ -49,14 +47,14 @@ void CPSLibrary::OnDestroy()
 
 PS::CPEDef* CPSLibrary::FindPED(const char* Name)
 {
-    //auto it = Name ? m_PEDs.find(Name) : m_PEDs.end(); //Сомневаюсь что сюда может попасть nullptr
+    // auto it = Name ? m_PEDs.find(Name) : m_PEDs.end(); //Сомневаюсь что сюда может попасть nullptr
     auto it = m_PEDs.find(Name);
     return it == m_PEDs.end() ? nullptr : it->second.get();
 }
 
 PS::CPGDef* CPSLibrary::FindPGD(const char* Name)
 {
-    //auto it = Name ? m_PGDs.find(Name) : m_PGDs.end(); //Сомневаюсь что сюда может попасть nullptr
+    // auto it = Name ? m_PGDs.find(Name) : m_PGDs.end(); //Сомневаюсь что сюда может попасть nullptr
     auto it = m_PGDs.find(Name);
     return it == m_PGDs.end() ? nullptr : it->second.get();
 }
@@ -233,14 +231,14 @@ bool CPSLibrary::Load2()
         {
             R_ASSERT(0);
         }
-    }    
+    }
 
     Msg("Loaded particle files: [%u]", files.size());
 
     return something_loaded;
 }
 
-bool CPSLibrary::Save2(bool override)
+bool CPSLibrary::Save2(bool override) const
 {
     if (!FS.path_exist("$game_particles$"))
     {
@@ -276,4 +274,12 @@ bool CPSLibrary::Save2(bool override)
     }
 
     return true;
+}
+
+void CPSLibrary::DumpTextures() const
+{
+    for (const auto& [name, eff] : m_PEDs)
+    {
+        Msg("texture: [%s] (effect name: [%s])", eff->m_TextureName.c_str(), name.c_str());
+    }
 }

@@ -2,10 +2,19 @@
 #include "screenspace_common.h"
 #include "screenspace_dof.h"
 
+Texture2D t_zbuffer; // R24G8
+
+inline float get_depth(float2 tc)
+{
+    const float depth = t_zbuffer.SampleLevel(smp_nofilter, tc, 0).x;
+    return dev_mProject.z * rcp(min(1.0f, depth * 50.0f) - dev_mProject.w);
+}
+
 float4 main(p_screen I) : SV_TARGET
 {
-    float3 P = SSFX_get_position(I.tc0, 0);
+    const float Depth = get_depth(I.tc0.xy);
+
     float3 img = s_image.Sample(smp_nofilter, I.tc0).rgb;
 
-    return float4(SSFX_DOF(I.tc0, P, img), 1.0);
+    return float4(SSFX_DOF(I.tc0, Depth, img), 1.0);
 }

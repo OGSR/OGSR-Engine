@@ -14,7 +14,10 @@ vf main(v_static_color v)
     vf o;
 
     float3 N = unpack_normal(v.Nh);
+
     o.hpos = mul(m_VP, v.P); // xform, input in world coords
+    o.hpos.xy = get_taa_jitter(o.hpos);
+
     o.tc0 = unpack_tc_base(v.tc, v.T.w, v.B.w); // copy tc
 
     float3 L_rgb = v.color.zyx; // precalculated RGB lighting

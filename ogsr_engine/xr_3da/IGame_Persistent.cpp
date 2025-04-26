@@ -31,8 +31,6 @@ IGame_Persistent::IGame_Persistent()
     PerlinNoise1D->SetAmplitude(0.66666f);
 
     pEnvironment = xr_new<CEnvironment>();
-
-    m_pGShaderConstants = ShadersExternalData(); //--#SM+#--
 }
 
 IGame_Persistent::~IGame_Persistent()
@@ -54,9 +52,8 @@ void IGame_Persistent::OnAppStart() { Environment().load(); }
 void IGame_Persistent::OnAppEnd()
 {
     Environment().unload();
-    OnGameEnd();
 
-    DEL_INSTANCE(g_hud);
+    OnGameEnd();
 }
 
 void IGame_Persistent::PreStart(LPCSTR op)
@@ -76,14 +73,13 @@ void IGame_Persistent::Start(LPCSTR op)
 {
     string256 prev_type;
     strcpy_s(prev_type, m_game_params.m_game_type);
+
     m_game_params.parse_cmd_line(op);
-    // change game type
+
     if ((0 != xr_strcmp(prev_type, m_game_params.m_game_type)))
     {
         if (*m_game_params.m_game_type)
             OnGameStart();
-        if (g_hud)
-            DEL_INSTANCE(g_hud);
     }
     else
         UpdateGameType();
@@ -136,6 +132,8 @@ void IGame_Persistent::OnGameEnd()
 
 void IGame_Persistent::OnFrame()
 {
+    ZoneScoped;
+
     if (!Device.Paused() || Device.dwPrecacheFrame)
     {
         Environment().OnFrame();
@@ -154,6 +152,7 @@ void IGame_Persistent::OnFrame()
         ps_needtoplay.pop_back();
         psi->Play();
     }
+
     // Destroy inactive particle systems
     while (!ps_destroy.empty())
     {
@@ -166,11 +165,21 @@ void IGame_Persistent::OnFrame()
         }
         psi->PSI_internal_delete();
     }
+
+#pragma todo("SIMP: пока убрано")
+//    Device.add_to_seq_parallel(fastdelegate::MakeDelegate(this, &IGame_Persistent::ProcessParticlesCreate));
 }
 
-void IGame_Persistent::destroy_particles(const bool& all_particles)
+void IGame_Persistent::destroy_particles(const bool& all_particles) // this for level unload or disconnect
 {
     ps_needtoplay.clear();
+
+    {
+#pragma todo("SIMP: пока убрано")
+//        Device.remove_from_seq_parallel(fastdelegate::MakeDelegate(this, &IGame_Persistent::ProcessParticlesCreate));
+
+        ps_needtocreate.clear();
+    }
 
     while (!ps_destroy.empty())
     {
@@ -213,6 +222,22 @@ void IGame_Persistent::destroy_particles(const bool& all_particles)
 }
 
 void IGame_Persistent::models_savePrefetch() { Render->models_savePrefetch(); }
+
+void IGame_Persistent::ProcessParticlesCreate()
+{
+    if (!ps_needtocreate.empty())
+    {
+        //Msg("ProcessParticlesCreate fire");
+        ZoneScoped;
+#pragma todo("SIMP: пока убрано")
+        /*for (const auto& ps : ps_needtocreate)
+        {
+            ps->PerformCreate();
+        }*/
+
+        ps_needtocreate.clear();
+    }
+}
 
 void IGame_Persistent::GrassBendersUpdate(const u16 id, size_t& data_idx, u32& data_frame, const Fvector& position, const float init_radius, const float init_str)
 {
@@ -511,7 +536,7 @@ float IGame_Persistent::GrassBenderToValue(float& current, const float go_to, co
     return current < go_to ? r_value : -r_value;
 }
 
-bool IGame_Persistent::IsActorInHideout() const
+bool IGame_Persistent::IsActorInHideout()
 {
     static bool actor_in_hideout = true;
     static u32 last_ray_pick_time = Device.dwTimeGlobal;
@@ -560,7 +585,7 @@ void IGame_Persistent::UpdateHudRaindrops() const
 
     static float drops_int{}, drops_anim{};
 
-    const float Rain_factor = g_pGamePersistent->pEnvironment->CurrentEnv->rain_density;
+    const float Rain_factor = pEnvironment->CurrentEnv->rain_density;
 
     // Don 't do anything if intensity of drops is <= 0 and isn' t raining
     if (Rain_factor <= 0.f && drops_int <= 0.f)
@@ -620,7 +645,7 @@ void IGame_Persistent::UpdateRainGloss() const
     if (ssfx_default_settings.auto_gloss)
     {
         const float Wetness_gloss =
-            ps_ssfx_gloss_minmax.x + std::max(ssfx_default_settings.auto_gloss_max - ps_ssfx_gloss_minmax.x, 0.f) * g_pGamePersistent->Environment().wetness_factor;
+            ps_ssfx_gloss_minmax.x + std::max(ssfx_default_settings.auto_gloss_max - ps_ssfx_gloss_minmax.x, 0.f) * pEnvironment->wetness_factor;
 
         ps_ssfx_gloss_factor = Wetness_gloss * 0.96f;
     }

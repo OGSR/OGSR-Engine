@@ -1,0 +1,79 @@
+#include "common.h"
+
+uniform float4 m_affects;
+
+struct v2p
+{
+    float2 tc0 : TEXCOORD0;
+    float4 c : COLOR0;
+    float4 hpos : SV_Position;
+    float fog : FOG;
+    float4 tctexgen : TEXCOORD1;
+};
+
+struct p_particle_out
+{
+    float4 main : SV_Target0;
+    float4 additional : SV_Target1;
+};
+
+// https://stackoverflow.com/a/10625698
+float random(float2 p)
+{
+    float2 K1 = float2(23.14069263277926f, // e^pi (Gelfond's constant)
+                       2.665144142690225f // 2^sqrt(2) (Gelfond?€“Schneider constant)
+    );
+    return frac(cos(dot(p, K1)) * 12345.6789f);
+}
+
+float get_noise(float2 co) { return (frac(sin(dot(co.xy, float2(12.9898, 78.233))) * 43758.5453)) * 0.5; }
+
+//	Must be less than view near
+#define DEPTH_EPSILON 0.1h
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pixel
+p_particle_out main(v2p I) : SV_Target
+{
+    p_particle_out O;
+
+    float4 result = I.c * s_base.Sample(smp_base, I.tc0);
+    result.rgb = result.rgb * 0.9;
+
+    // ЛЦУ глючит при выбросе
+    float mig = 1.0f - (m_affects.x * 2.f);
+    result.a = random(timers.xz) > mig ? 0.f : result.a;
+
+    if (result.a > 0.1 && (result.r > 0.75 || result.g > 0.75 || result.b > 0.75))
+    {
+        float noise = get_noise(I.tc0.xy * timers.z) * 0.25 * 0.25 * 20;
+        result.r += noise;
+        result.g += noise;
+    }
+
+    float2 tcProj = I.tctexgen.xy / I.tctexgen.w;
+
+    gbuffer_data gbd = gbuffer_load_data(tcProj, I.hpos);
+
+    float4 _P = float4(gbd.P, gbd.mtl);
+    float spaceDepth = _P.z - I.tctexgen.z - DEPTH_EPSILON;
+    if (spaceDepth < -2 * DEPTH_EPSILON)
+        spaceDepth = 100000.0h; //  Skybox doesn't draw into position buffer
+    result.a *= Contrast(saturate(spaceDepth * 1.3h), 2);
+    result.rgb *= Contrast(saturate(spaceDepth * 1.3h), 2);
+
+    clip(result.a - (0.01f / 255.0f));
+    result.a *= I.fog * I.fog; // ForserX: Port Skyloader fog fix
+
+    O.main = result;
+
+    if (result.a > 0.2)
+    {
+        O.additional = float4(0.0, (result.r + result.g + result.b) / 3.0f, 0.0, 1.0);
+    }
+    else
+    {
+        O.additional = float4(0.0, 0.0, 0.0, 0.0);
+    }
+
+    return O;
+}

@@ -188,10 +188,10 @@ namespace text_editor
 
 		clear_states();
 
-		for (u32 i = 0; i < DIK_COUNT; ++i)
-		{
-			xr_delete(m_actions[i]);
-			m_actions[i] = NULL;
+		for (auto& m_action : m_actions)
+        {
+			xr_delete(m_action);
+            m_action = nullptr;
 		}
 
 		if (mode == im_read_only)
@@ -477,7 +477,7 @@ void line_edit_control::insert_character(char c)
 			break;
 		}
 
-		if (m_repeat_mode && m_last_key_time > 3.0f * g_console_sensitive)
+		if (m_repeat_mode && m_last_key_time > 2.0f * g_console_sensitive)
 		{
 			float buf_time = m_rep_time;
 			m_hold_mode = true;
@@ -521,7 +521,7 @@ void line_edit_control::insert_character(char c)
 		{
 			m_rep_time = 0.0f;
 			m_repeat_mode = true;
-			m_accel += 0.2f;
+			m_accel += 0.5f;
 		}
 		m_last_key_time += dt;
 

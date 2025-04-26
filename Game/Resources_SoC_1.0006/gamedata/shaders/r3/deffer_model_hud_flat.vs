@@ -10,6 +10,9 @@ v2p_flat _main(v_model I, float3 psp)
     v2p_flat O;
     float3 Pe = mul(m_WV, I.P);
     O.hpos = mul(m_WVP, I.P);
+    O.hpos_curr = O.hpos;
+    O.hpos_old = mul(m_WVP_old, I.P_old);
+    O.hpos.xy = get_taa_jitter(O.hpos);
     O.N = mul((float3x3)m_WV, (float3)I.N);
 
     O.tcdh = float4(I.tc.xyyy);

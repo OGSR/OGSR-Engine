@@ -1,0 +1,243 @@
+#include "common.h"
+
+struct Input
+{
+    float4 hpos : SV_POSITION;
+    float3 wpos : TEXCOORD0;
+};
+
+uniform float4 sky_color;
+
+Texture2D s_nmap;
+Texture2D t_zbuffer;
+
+TextureCube s_env0;
+TextureCube s_env1;
+TextureCube env_s0;
+TextureCube env_s1;
+
+//***********************************************************************
+
+#define SSR_EDGE_ATTENUATION float(0.09) // Edge attenuation intensity
+
+#define SSR_SAMPLES int(10) // 20
+#define SSR_DISTANCE float(150.0) // 400
+
+/*Helper functions*/
+float RayAttenBorder(float2 pos, float value)
+{
+    float borderDist = min(1.0 - max(pos.x, pos.y), min(pos.x, pos.y));
+    return saturate(borderDist > value ? 1.0 : borderDist / value);
+}
+
+float4 proj_to_screen(float4 proj)
+{
+    float4 screen = proj;
+    screen.x = (proj.x + proj.w);
+    screen.y = (proj.w - proj.y);
+    screen.xy *= 0.5;
+    return screen;
+}
+
+float4 compute_ssr(float3 position, float3 normal)
+{
+    /*Initialize step size and error*/
+    float step = 1.0f / float(SSR_SAMPLES);
+    int reflection = 1;
+
+    /*Initialize reflected TC*/
+    float2 refl_tc = (0, 0);
+
+    /*Prepare ray direction and reflection vector*/
+    float3 v2point = normalize(position - eye_position);
+    float3 vreflect = normalize(reflect(v2point, normalize(normal)));
+
+    /*Main loop*/
+    [unroll(SSR_SAMPLES)] for (int i = 0; i < SSR_SAMPLES; i++)
+    {
+        /*Prepare new position*/
+        float3 new_position = position + vreflect * step;
+
+        /*Convert new position to texcoord*/
+        float4 proj_position = mul(m_VP, float4(new_position, 1.f));
+        float4 p2ss = proj_to_screen(proj_position);
+        refl_tc.xy = p2ss.xy /= p2ss.w;
+
+        /*Sample hit depth*/
+        float hit_depth = s_position.Load(int3(refl_tc.xy * screen_res.xy, 0), 0).z;
+
+        /*Intersect sky from hit depth*/
+        hit_depth = lerp(hit_depth, 0.f, is_sky(hit_depth));
+
+        /*Sample depth*/
+        float depth = mul(m_V, float4(position, 1.f)).z;
+
+        /*Fixing incorrect refls*/
+        if ((depth - hit_depth) > 0.0f || (hit_depth > SSR_DISTANCE))
+            reflection = 0;
+
+        /*Depth difference*/
+        step = length(hit_depth - depth);
+    }
+
+    /*Edge attenuation*/
+    float edge = RayAttenBorder(refl_tc.xy, SSR_EDGE_ATTENUATION);
+
+    /*Sample image with reflected TC*/
+    float3 img = s_image.Load(int3(refl_tc.xy * screen_res.xy, 0), 0);
+
+    /*Image.rgb, Reflcontrol.a*/
+    return float4(img.xyz, reflection * edge);
+}
+
+//***********************************************************************
+
+float hash12(float2 p)
+{
+    float3 p3 = frac(float3(p.xyx) * .1031);
+    p3 += dot(p3, p3.yzx + 19.19);
+    return frac((p3.x + p3.y) * p3.z);
+}
+
+float ripples(float2 tc, float size)
+{
+    float2 uv = tc * size;
+    float2 p0 = floor(uv);
+
+    float2 circles;
+    for (int j = -2; j <= 2; ++j)
+    {
+        for (int i = -2; i <= 2; ++i)
+        {
+            float2 pi = p0 + float2(i, j);
+            float2 hsh = hash22(pi);
+            float2 p = pi + hash22(hsh);
+
+            float t = frac(0.35f * timers.x + hash12(hsh));
+            float2 v = p - uv;
+            float d = length(v) - (float(2.f) + 1.) * t;
+
+            float h = 1e-3;
+
+            // 1st pass
+            float d1 = d - h;
+            float p1 = sin(31. * d1) * smoothstep(-0.6, -0.3, d1) * smoothstep(0., -0.3, d1);
+            // sec pass
+            float d2 = d + h;
+            float p2 = sin(31. * d2) * smoothstep(-0.6, -0.3, d2) * smoothstep(0., -0.3, d2);
+            circles += 0.5 * normalize(v) * ((p2 - p1) / (2. * h) * (1. - t) * (1. - t));
+        }
+    }
+    circles /= float((2 * 3 + 1) * (2 * 2 + 1));
+
+    float intensity = lerp(0.025f, 0.15, smoothstep(0.1, 0.6, frac(0.05 + 0.05) * 2. - 1.));
+    float3 n = float3(circles, sqrt(1. - dot(circles, circles)));
+
+    float final = 10. * pow(clamp(dot(n, normalize(float3(1., 0.7, 0.5))), 0., 1.), 6.);
+    return final;
+}
+
+//***********************************************************************
+
+float3 specular_phong(float3 pnt, float3 normal, float3 light_direction) { return L_sun_color.rgb * pow(abs(dot(normalize(pnt + light_direction), normal)), 256.0); }
+
+//***********************************************************************
+
+float4 gbuff_get_point(in float2 hpos)
+{
+    float depth = t_zbuffer.Load(int3(hpos, 0)).x;
+    hpos = hpos - m_taa_jitter.xy * float2(0.5f, -0.5f) * pos_decompression_params2.xy;
+    float3 _point = float3(hpos * pos_decompression_params.zw - pos_decompression_params.xy, 1.0f);
+    _point *= dev_mProject.x * rcp(depth - dev_mProject.y);
+    return float4(_point, 1.0f);
+}
+
+// http://www.thetenthplanet.de/archives/1180
+void build_contangent_frame(float3 position, float3 normal, float2 uv, out float3 tangent, out float3 binormal)
+{
+    float4 duv = float4(ddx(uv), ddy(uv));
+    float3 dp1perp = cross(normal, ddx(position));
+    float3 dp2perp = cross(ddy(position), normal);
+
+    tangent = dp2perp * duv.x + dp1perp * duv.z;
+    binormal = dp2perp * duv.y + dp1perp * duv.w;
+
+    float invmax = rsqrt(max(dot(tangent, tangent), dot(binormal, binormal)));
+
+    tangent *= invmax;
+    binormal *= invmax;
+}
+
+float _calc_fogging(float3 pos) { return saturate(length(pos - eye_position) * fog_params.w + fog_params.x); }
+
+//***********************************************************************
+
+float4 main(Input I) : SV_Target
+{
+    float2 tcdh = I.wpos.xz * 0.3f;
+    float4 base = s_base.Sample(smp_base, tcdh);
+
+    float3 normal = s_nmap.Sample(smp_base, tcdh).xyz * 2.0 - 1.0;
+    if (rain_params.x >= 0.05f)
+        normal += ripples(tcdh, 15.f) * rain_params.x;
+
+    // Build cotangent frame and transform our normal to world space
+    float3x3 TBN = {float3(0.0, 0.0, 0.0), float3(0.0, 0.0, 0.0), float3(0.0, 1.0, 0.0)};
+
+    build_contangent_frame(I.wpos.xyz, TBN[2], tcdh, TBN[0], TBN[1]);
+
+    float3 Nw = normalize(mul(TBN, normal));
+
+    float3 envd0 = env_s0.Sample(smp_rtlinear, Nw).xyz;
+    float3 envd1 = env_s1.Sample(smp_rtlinear, Nw).xyz;
+
+    float3 envd = lerp(envd0, envd1, L_ambient.w) * L_hemi_color.xyz;
+    base.xyz *= envd * envd; // Ambient
+
+    float3 v2point = normalize(I.wpos - eye_position);
+    float3 vreflect = reflect(v2point, Nw);
+
+    float fresnel = saturate(dot(vreflect, v2point));
+
+#ifdef SSLR_ENABLED
+    float4 sslr = compute_ssr(I.wpos.xyz, Nw.xyz);
+    sslr.xyz *= 1.6;
+#endif
+
+    float2 rotation = 0.0f;
+    sincos(sky_color.w, rotation.x, rotation.y);
+    vreflect.xz = float2(vreflect.x * rotation.y - vreflect.z * rotation.x, vreflect.x * rotation.x + vreflect.z * rotation.y);
+
+    float3 vreflectabs = abs(vreflect);
+    float vreflectmax = max(vreflectabs.x, max(vreflectabs.y, vreflectabs.z));
+
+    vreflect /= vreflectmax;
+    vreflect.y = vreflect.y * 2.0f - 1.0f;
+
+    float3 env0 = s_env0.Sample(smp_rtlinear, vreflect).xyz;
+    float3 env1 = s_env1.Sample(smp_rtlinear, vreflect).xyz;
+
+    float3 env = lerp(env0, env1, L_ambient.w) * sky_color.xyz;
+
+#ifdef SSLR_ENABLED
+    env = lerp(env.xyz, sslr.xyz, sslr.www);
+#endif
+
+    float power = pow(fresnel, 5.0f);
+    float amount = 0.25f + 0.25f * power;
+
+    float3 final = lerp(env * amount * 0.8f, base.xyz, 0 /*base.w*/);
+    float alpha = 0.25f + 0.65f * power;
+
+    alpha = lerp(alpha, 1.0f, base.w);
+
+    float4 Point = gbuff_get_point(I.hpos.xy);
+    float waterDepth = length(mul(m_V, float4(I.wpos, 1.0)).xyz - Point.xyz) * 0.75f;
+
+    alpha = min(alpha, saturate(waterDepth));
+    alpha = max(1.0f - exp(-4.0f * waterDepth), alpha);
+
+    final += specular_phong(v2point, Nw.xyz, L_sun_dir_w) * 2.f /*4.f*/;
+
+    return lerp(float4(final, alpha), fog_color, _calc_fogging(I.wpos));
+}

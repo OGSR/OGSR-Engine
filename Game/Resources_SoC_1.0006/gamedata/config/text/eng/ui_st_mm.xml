@@ -133,7 +133,7 @@
 		<text>FPS Limit</text>
 	</string>
 	<string id="ui_mm_always_active">
-		<text>Do not pause when switching to other windows</text>
+		<text>Disable pause on Alt + Tab</text>
 	</string>
 
 	<string id="ui_mm_gamma">
@@ -260,7 +260,10 @@
 		<text>Quality of eye focus effect (r2 dof)</text>
 	</string>
 	<string id="ui_mm_geometry_lod">
-		<text>Objects detail</text>
+		<text>Detailing of distant objects</text>
+	</string>
+	<string id="ui_mm_dyn_opt_dist">
+		<text>Rendering distance of dynamic objects</text>
 	</string>
 	<string id="ui_mm_detail_density">
 		<text>Grass Density</text>
@@ -282,15 +285,18 @@
 	</string>
 	<string id="st_opt_smaa">
 		<text>SMAA</text>
-	</string>	
+	</string>
+	<string id="st_opt_dlss">
+		<text>NVIDIA DLSS</text>
+	</string>
+	<string id="st_opt_fsr2">
+		<text>AMD FSR2</text>
+	</string>
+	<string id="st_opt_taa">
+		<text>TAA</text>
+	</string>
 	<string id="ui_mm_r2_aa_mode">
 		<text>Antialiasing mode (R2)</text>
-	</string>	
-	<string id="fxaa">
-		<text>FXAA</text>
-	</string>
-	<string id="smaa">
-		<text>SMAA</text>
 	</string>	
 	<string id="ui_mm_r2_sun">
 		<text>Sun Shadow</text>
@@ -306,16 +312,27 @@
 	</string>		
 	<string id="ui_mm_r2_sunshafts">
 		<text>Sun shafts</text>
-	</string>	
+	</string>
+
 	<string id="ui_mm_r2_sunshafts_mode">
 		<text>Sun shafts mode</text>
 	</string>
 	<string id="volumetric">
-		<text>Volumetric (Clear Sky)</text>
+		<text>Volumetric</text>
 	</string>
-	<string id="screen_space">
-		<text>Crysis (Screen Space)</text>
+	<string id="ss_ogse">
+		<text>Screen space (OGSE)</text>
 	</string>
+	<string id="ss_manowar">
+		<text>Screen space (Mrmnwar)</text>
+	</string>
+	<string id="combined_ogse">
+		<text>Volumetric + Screen space (OGSE)</text>
+	</string>
+	<string id="combined_manowar">
+		<text>Volumetric + Screen space (Mrmnwar)</text>
+	</string>
+
 	<string id="ui_mm_light_distance">
 		<text>Lighting distance</text>
 	</string>
@@ -373,9 +390,15 @@
 	<string id="ui_mm_r2_rain_drops">
 		<text>Drops on glass</text>
 	</string>	
+	<string id="ui_mm_r2_mask">
+		<text>Helmet</text>
+	</string>
 	<string id="ui_mm_r2_visor_refl">
 		<text>Reflections in the helmet</text>
 	</string>	
+	<string id="ui_mm_lens_flare">
+		<text>Lens flares</text>
+	</string>
 	<string id="ui_mm_r2_puddles">
 		<text>Puddles</text>
 	</string>
@@ -441,7 +464,10 @@
 	</string>
 	<string id="ui_mm_r_aa_mode">
 		<text>Anti-aliasing</text>
-	</string>	
+	</string>
+	<string id="ui_mm_cas">
+		<text>Sharpness after anti-aliasing</text>
+	</string>
 	<string id="ui_mm_r2_aa">
 		<text>Antialiasing (R2)</text>
 	</string>	
@@ -533,6 +559,10 @@
 
 	<string id="ui_mm_hud_fov">
 		<text>HUD Field of View (HudFOV)</text>
+	</string>
+
+	<string id="ui_mm_3dss_scale_factor">
+		<text>Image upscaling in 3D scopes</text>
 	</string>
 
 	<string id="ui_mm_ambient">
@@ -656,7 +686,7 @@
 		<text>Visibility range-rs_vis_distance</text>
 	</string>
 	<string id="video_settings_name_3">
-		<text>Object detail - r__geometry_lod</text>
+		<text>Detailing of distant objects - r__geometry_lod</text>
 	</string>
 	<string id="video_settings_name_4">
 		<text>The density of the grass - r__detail_density</text>
@@ -704,7 +734,7 @@
 		<text>Type of Anti-aliasing - r2_aa_mode</text>
 	</string>
 	<string id="video_settings_name_20">
-		<text>The clarity of textures at a distance - r__tf_mipbias</text>
+		<text>Sharpness after antialiasing - r_aa_cas</text>
 	</string>
 	<string id="video_settings_name_21">
 		<text>Surface gloss - r2_gloss_factor</text>
@@ -841,19 +871,30 @@
 	<string id="video_settings_name_64">
 		<text>FPS in 3D Scopes - g_3d_scopes_fps_factor</text>
 	</string>
-
 	<string id="video_settings_name_65">
 		<text>Reflections on the edges of the helmet - r2_visor_refl</text>
+	</string>
+	<string id="video_settings_name_66">
+		<text>Shader effect of helmet - r2_mask</text>
+	</string>
+	<string id="video_settings_name_67">
+		<text>Lens flares - r_lens_flare</text>
+	</string>
+	<string id="video_settings_name_68">
+		<text>Rendering distance of dynamic objects - r__dyn_opt_dist</text>
+	</string>
+	<string id="video_settings_name_69">
+		<text>Image upscaling in 3D scopes - r_3dss_scale_factor</text>
 	</string>
 
 	<string id="video_settings_desc_1">
 		<text>MSAA is a very heavy and at the same time very high quality type of anti-aliasing. Qualitatively smoothes wires, vegetation, translucent geometry.</text>
 	</string>
 	<string id="video_settings_desc_2">
-		<text>This setting adjusts the amount by which the visibility limit set in the current weather profile is multiplied. The range of values of this value is from 0.4 (minimum slider) to 1.5 (maximum slider). For example, in the weather, a viewing range of 150 meters is set. At the minimum of the slider you will see at 60 meters, at the maximum at 225. High viewing range can greatly reduce the performance of older PCs.</text>
+		<text>This setting adjusts the amount by which the visibility limit set in the current weather profile is multiplied. The range of values of this value is from 0.4 (minimum slider) to 1 (maximum slider). For example, in the weather, a viewing range of 150 meters is set. At the minimum of the slider you will see at 60 meters, at the maximum at 150.</text>
 	</string>
 	<string id="video_settings_desc_3">
-		<text>This setting adjusts the detail of drawing and lighting models of people, monsters, and weapons in the game. The further the slider is, the more detailed they will be.</text>
+		<text>This setting adjusts the detail of drawing and lighting models of people, monsters, and weapons that are far from the player. The further the slider is, the more detailed they will be.</text>
 	</string>
 	<string id="video_settings_desc_4">
 		<text>This setting controls how tightly the grass bushes are drawn in the game. The further the slider is, the closer the grass elements will be drawn to each other and the thicker it will be. ATTENTION! Excessive density of grass leads to strong brakes, if you want to adjust this parameter, do it a little, each time checking what happened.</text>
@@ -901,10 +942,10 @@
 		<text>This setting enables shader smoothing on dynamic lighting.</text>
 	</string>
 	<string id="video_settings_desc_19">
-		<text>This setting switches the anti-aliasing type on dynamic lighting. Available SMAA (Subpixel Morphological antialiasing).</text>
+        <text>This setting switches the anti-aliasing type. Available options are NVIDIA DLSS (Deep learning super sampling), AMD FSR2 (FidelityFX Super Resolution 2), TAA (Temporal anti-aliasing), SMAA (Subpixel Morphological AntiAliasing). \n \nNVIDIA DLSS (Deep Learning Super Sampling) is a revolutionary AI-powered rendering technology that improves graphics quality by using specialized tensor cores in GeForce RTX graphics cards. The technology became available in desktop and mobile graphics cards with the arrival of the RTX20 series. Anti-aliasing using DLSS produces results superior in quality to MSAA 8x, without causing performance drops. \n \nFSR is a less demanding and lower quality analogue from AMD. FSR 2.0 is supported by all AMD video cards from the RX 400 series and newer, as well as NVIDIA video cards from the 1000 series.</text>
 	</string>
 	<string id="video_settings_desc_20">
-		<text>This setting adjusts the detail of mip levels of textures at a distance. The normal value of this slider is average, and when you reduce it, the textures at a distance will be less clear, when you increase them-more clear, but excessive magnification can lead to the appearance of moire and unpleasant flickering dots on distant objects.</text>
+		<text>""</text>
 	</string>
 	<string id="video_settings_desc_21">
 		<text>This setting adjusts the degree of reflection of light on shiny and matte surfaces such as metal, leather, wood, etc. This is an"amateur" setting, and if you don't know exactly what you're doing, leave it at the default value. The further the slider is, the stronger the reflection effect, but do not overdo it - at large values, the surfaces begin to look like they are covered in plastic.</text>
@@ -1034,6 +1075,13 @@
 	</string>
 	<string id="video_settings_desc_64">
 		<text>This setting controls which frame in turn will be rendered in the 3D scope. By default - every 2. If you increase it, the FPS in the game will increase, but the FPS in the 3D scope will decrease.</text>
+	</string>
+	<string id="video_settings_desc_68">
+		<text>This setting controls the rendering range of dynamic objects, with the exception of helicopters, crows and cars. The greater the range, the more objects will be processed by the renderer, and accordingly the FPS may be lower.
+		%c[red] \nIn most cases, the default value of 250 meters should be optimal. It is recommended to increase it only if for some reason a greater rendering range of objects is needed.</text>
+	</string>
+	<string id="video_settings_desc_69">
+		<text>If DLSS or FSR is enabled, this setting adjusts the scaling of the image in the 3D scopes to improve its clarity. %c[yellow] \nWhen set to 1, the image is not scaled. %c[green] \nOptimal value: 2. %c[red] \nValues ??greater than 2 may noticeably reduce FPS.</text>
 	</string>
 
 </string_table>

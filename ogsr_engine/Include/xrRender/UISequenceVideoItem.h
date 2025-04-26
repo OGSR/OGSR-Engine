@@ -1,5 +1,3 @@
-#ifndef UISequenceVideoItem_included
-#define UISequenceVideoItem_included
 #pragma once
 
 class IUISequenceVideoItem
@@ -16,5 +14,3 @@ public:
     virtual void video_Play(BOOL looped, u32 _time = 0xFFFFFFFF) = 0;
     virtual void video_Stop() = 0;
 };
-
-#endif //	UISequenceVideoItem_included

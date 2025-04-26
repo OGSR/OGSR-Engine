@@ -55,8 +55,8 @@ public:
     virtual void UpdateCL();
     virtual void shedule_Update(u32 dt);
 
-    virtual void renderable_Render();
-    virtual void render_hud_mode() override;
+    virtual void renderable_Render(u32 context_id, IRenderable* root) override;
+    virtual void render_hud_mode(u32 context_id, IRenderable* root) override;
     virtual void OnDrawUI();
     virtual bool need_renderable();
 
@@ -238,8 +238,6 @@ protected:
     float m_fScopeZoomFactor;
     //когда режим приближения включен
     bool m_bZoomMode;
-    //коэффициент увеличения во втором вьюпорте при зуме
-    float m_fSecondVPZoomFactor;
     //прятать перекрестие в режиме прицеливания
     bool m_bHideCrosshairInZoom;
     //разрешить инерцию оружия в режиме прицеливания
@@ -249,7 +247,7 @@ protected:
     //Целевой HUD FOV при зуме
     float m_fZoomHudFov;
     //Целевой HUD FOV для линзы
-    float m_fSecondVPHudFov;
+    float m_f3dssHudFov;
 
     bool m_bUseScopeZoom = false;
     bool m_bUseScopeGrenadeZoom = false;
@@ -282,6 +280,7 @@ public:
 
     IC float GetZoomFactor() const { return m_fZoomFactor; }
     virtual float CurrentZoomFactor();
+
     //показывает, что оружие находится в соостоянии поворота для приближенного прицеливания
     bool IsRotatingToZoom() const { return (m_fZoomRotationFactor < 1.f); }
     bool IsRotatingFromZoom() const { return m_fZoomRotationFactor > 0.f; }
@@ -417,11 +416,10 @@ public:
     float camStepAngleHorz;
 
     float dof_transition_time{};
-    float dof_zoom_effect{};
-    float dof_reload_effect{};
+    static float dof_zoom_effect, dof_reload_effect;
     Fvector4 dof_params_zoom{};
     Fvector4 dof_params_reload{};
-    void UpdateDof(float& type, Fvector4 params_type, bool desire);
+    void UpdateDof(float& type, const Fvector4& params_type, const bool desire);
 
 protected:
     //фактор увеличения дисперсии при максимальной изношености
@@ -559,10 +557,8 @@ private:
 
 public:
     const float& hit_probability() const;
-    void UpdateSecondVP();
     float GetZRotatingFactor() const { return m_fZoomRotationFactor; } //--#SM+#--
-    float GetSecondVPFov() const; //--#SM+#--
-    bool SecondVPEnabled() const;
+    bool Is3dssEnabled() const;
     float GetHudFov() override;
 
     virtual void OnBulletHit();

@@ -55,7 +55,7 @@ public:
     virtual void OnMouseScroll(float iDirection);
     virtual bool OnDbClick();
     virtual bool OnMouseDown(int mouse_btn);
-    virtual void OnMouseUp(int mouse_btn);
+    virtual bool OnMouseUp(int mouse_btn);
     virtual void OnFocusReceive();
     virtual void OnFocusLost();
     virtual void UpdateFocus(bool = false);

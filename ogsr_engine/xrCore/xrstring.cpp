@@ -2,22 +2,18 @@
 
 #include "xrstring.h"
 
-XRCORE_API extern str_container* g_pStringContainer = NULL;
+XRCORE_API str_container* g_pStringContainer{};
 
 struct str_container_impl
 {
     xrCriticalSection cs;
     static constexpr size_t buffer_size = 1024u * 256u;
-    str_value* buffer[buffer_size];
-    int num_docs;
+    str_value* buffer[buffer_size]{};
+    int num_docs{};
 
-    str_container_impl()
-    {
-        num_docs = 0;
-        ZeroMemory(buffer, sizeof(buffer));
-    }
+    str_container_impl() = default;
 
-    str_value* find(str_value* value, const char* str) const
+    str_value* find(const str_value* value, const char* str) const
     {
         str_value* candidate = buffer[value->dwCRC % buffer_size];
         while (candidate)
@@ -42,9 +38,9 @@ struct str_container_impl
 
     void clean()
     {
-        for (size_t i = 0; i < buffer_size; ++i)
+        for (auto& i : buffer)
         {
-            str_value** current = &buffer[i];
+            str_value** current = &i;
 
             while (*current != nullptr)
             {
@@ -65,9 +61,8 @@ struct str_container_impl
     void verify() const
     {
         Msg("strings verify started");
-        for (size_t i = 0; i < buffer_size; ++i)
+        for (auto value : buffer)
         {
-            const str_value* value = buffer[i];
             while (value)
             {
                 const auto crc = crc32(value->value, value->dwLength);
@@ -82,12 +77,11 @@ struct str_container_impl
 
     void dump(FILE* f) const
     {
-        for (size_t i = 0; i < buffer_size; ++i)
+        for (auto value : buffer)
         {
-            str_value* value = buffer[i];
             while (value)
             {
-                fprintf(f, "ref[%4u]-len[%3u]-crc[%8X] : %s\n", value->dwReference, value->dwLength, value->dwCRC, value->value);
+                fprintf(f, "ref[%4u]-len[%3u]-crc[%8X] : %s\n", value->dwReference.load(), value->dwLength, value->dwCRC, value->value);
                 value = value->next;
             }
         }
@@ -95,13 +89,12 @@ struct str_container_impl
 
     void dump(IWriter* f) const
     {
-        for (size_t i = 0; i < buffer_size; ++i)
+        for (auto value : buffer)
         {
-            str_value* value = buffer[i];
             string4096 temp;
             while (value)
             {
-                xr_sprintf(temp, sizeof(temp), "ref[%4u]-len[%3u]-crc[%8X] : %s\n", value->dwReference, value->dwLength, value->dwCRC, value->value);
+                xr_sprintf(temp, sizeof(temp), "ref[%4u]-len[%3u]-crc[%8X] : %s\n", value->dwReference.load(), value->dwLength, value->dwCRC, value->value);
                 f->w_string(temp);
                 value = value->next;
             }
@@ -111,9 +104,8 @@ struct str_container_impl
     ptrdiff_t stat_economy() const
     {
         ptrdiff_t counter = 0;
-        for (size_t i = 0; i < buffer_size; ++i)
+        for (auto value : buffer)
         {
-            const str_value* value = buffer[i];
             while (value)
             {
                 counter -= sizeof(str_value);
@@ -135,8 +127,6 @@ str_value* str_container::dock(pcstr value) const
 
     impl->cs.Enter();
 
-    str_value* result = nullptr;
-
     // calc len
     const auto s_len = xr_strlen(value);
     const auto s_len_with_zero = s_len + 1;
@@ -150,7 +140,7 @@ str_value* str_container::dock(pcstr value) const
     sv->dwCRC = crc32(value, s_len);
 
     // search
-    result = impl->find(sv, value);
+    str_value* result = impl->find(sv, value);
 
 #ifdef DEBUG
     const bool is_leaked_string = !xr_strcmp(value, "enter leaked string here");

@@ -10,7 +10,6 @@
 #include "PHMovementControl.h"
 #include "PhysicsShell.h"
 #include "InventoryOwner.h"
-#include "..\xr_3da\StatGraph.h"
 #include "PhraseDialogManager.h"
 
 #include "step_manager.h"
@@ -120,8 +119,9 @@ public:
     virtual void OnEvent(NET_Packet& P, u16 type);
 
     // Render
-    virtual void renderable_Render();
-    virtual BOOL renderable_ShadowGenerate();
+    virtual void renderable_Render(u32 context_id, IRenderable* root) override;
+    virtual BOOL renderable_ShadowReceive() override;
+
     virtual void feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power);
     virtual Feel::Sound* dcast_FeelSound() { return this; }
     float m_snd_noise;
@@ -327,7 +327,7 @@ public:
     // HUD
     //////////////////////////////////////////////////////////////////////////
 public:
-    virtual void OnHUDDraw(CCustomHUD* hud);
+    virtual void OnHUDDraw(CCustomHUD* hud, u32 context_id, IRenderable* root) override;
     BOOL HUDview() const;
 
     // visiblity
@@ -600,8 +600,6 @@ public:
     virtual void ChangeVisual(shared_str NewVisual);
     virtual void OnChangeVisual();
 
-    virtual void RenderText(LPCSTR Text, Fvector dpos, float* pdup, u32 color);
-
     //////////////////////////////////////////////////////////////////////////
     // Controlled Routines
     //////////////////////////////////////////////////////////////////////////
@@ -618,7 +616,6 @@ private:
     /////////////////////////////////////////
     // DEBUG INFO
 protected:
-    CStatGraph* pStatGraph;
 
     shared_str m_DefaultVisualOutfit;
 

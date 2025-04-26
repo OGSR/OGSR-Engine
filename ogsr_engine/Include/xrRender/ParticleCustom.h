@@ -1,5 +1,3 @@
-#ifndef ParticleCustom_included
-#define ParticleCustom_included
 #pragma once
 
 class IParticleCustom
@@ -16,6 +14,7 @@ public:
     virtual void Play() = 0;
     virtual void Stop(BOOL bDefferedStop = TRUE) = 0;
     virtual BOOL IsPlaying() = 0;
+    virtual BOOL IsDeferredStopped() = 0;
 
     virtual u32 ParticlesCount() = 0;
 
@@ -26,5 +25,3 @@ public:
     virtual void SetHudMode(BOOL b) = 0;
     virtual BOOL GetHudMode() = 0;
 };
-
-#endif //	ParticleCustom_included

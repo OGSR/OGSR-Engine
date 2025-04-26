@@ -18,9 +18,9 @@ protected:
     float m_Speed;
 
     COMotion* m_Current;
+
     void LoadMotions(LPCSTR fname);
     void SetActiveMotion(COMotion* mot);
-    COMotion* FindMotionByName(LPCSTR name);
 
 public:
     CObjectAnimator();
@@ -31,17 +31,17 @@ public:
 
     void Clear();
     void Load(LPCSTR name);
-    IC LPCSTR Name() { return *m_Name; }
+
+    IC LPCSTR Name() const { return *m_Name; }
     float& Speed() { return m_Speed; }
 
     COMotion* Play(bool bLoop, LPCSTR name = nullptr);
     void Pause(bool val) { return m_MParam.Pause(val); }
     void Stop();
-    IC BOOL IsPlaying() { return m_MParam.bPlay; }
+    IC BOOL IsPlaying() const { return m_MParam.bPlay; }
 
     IC const Fmatrix& XFORM() { return m_XFORM; }
     float GetLength();
     // Update
     void Update(float dt);
-    void DrawPath();
 };

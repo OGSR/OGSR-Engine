@@ -1,0 +1,19 @@
+[entrance]
+center = 9.66,-14.86,-386.41
+max_depth = 0.19
+radius = 20
+
+[entrance1]
+center = 24.83,-12.45,-196
+max_depth = 0.2
+radius = 17
+
+[entrance2]
+center = 12.84,-12.37,-232.17
+max_depth = 0.3
+radius = 10
+
+[road_to_military]
+center = -41.58,-7.15,402.65
+max_depth = 0.45
+radius = 20

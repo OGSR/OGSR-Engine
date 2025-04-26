@@ -41,7 +41,7 @@ void CBlender_Compile::r_dx10Texture(LPCSTR ResourceName, LPCSTR texture)
     fix_texture_name(TexName);
 
     // Find index
-    ref_constant C = ctable.get(ResourceName);
+    const ref_constant C = ctable.get(ResourceName);
     // VERIFY(C);
     if (!C)
         return;
@@ -108,13 +108,13 @@ u32 CBlender_Compile::r_dx10Sampler(LPCSTR ResourceName)
 
     // Find index
     // ref_constant C			= ctable.get(ResourceName);
-    ref_constant C = ctable.get(name);
+    const ref_constant C = ctable.get(name);
     // VERIFY(C);
     if (!C)
         return u32(-1);
 
     R_ASSERT(C->type == RC_sampler);
-    u32 stage = C->samp.index;
+    const u32 stage = C->samp.index;
 
     //	init defaults here
 
@@ -126,34 +126,33 @@ u32 CBlender_Compile::r_dx10Sampler(LPCSTR ResourceName)
     }
 
     //	Use D3DTADDRESS_CLAMP,	D3DTEXF_LINEAR,			D3DTEXF_NONE,	D3DTEXF_LINEAR
-    else if (0 == xr_strcmp(ResourceName, "smp_rtlinear"))
+    if (0 == xr_strcmp(ResourceName, "smp_rtlinear"))
     {
         i_dx10Address(stage, D3DTADDRESS_CLAMP);
         i_dx10Filter(stage, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
     }
 
     //	Use	D3DTADDRESS_WRAP,	D3DTEXF_LINEAR,			D3DTEXF_LINEAR,	D3DTEXF_LINEAR
-    else if (0 == xr_strcmp(ResourceName, "smp_linear"))
+    if (0 == xr_strcmp(ResourceName, "smp_linear"))
     {
         i_dx10Address(stage, D3DTADDRESS_WRAP);
         i_dx10Filter(stage, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
     }
 
-    #pragma todo("Зачем добавлен ещё один такой же что и smp_linear ???")
-    else if (0 == xr_strcmp(ResourceName, "smp_linear2"))
+    if (0 == xr_strcmp(ResourceName, "smp_linear2"))
     {
         i_dx10Address(stage, D3DTADDRESS_WRAP);
         i_dx10Filter(stage, D3DTEXF_LINEAR, D3DTEXF_LINEAR, D3DTEXF_LINEAR);
     }
 
-    else if (0 == xr_strcmp(ResourceName, "smp_point"))
+    if (0 == xr_strcmp(ResourceName, "smp_point"))
     {
         i_dx10Address(stage, D3DTADDRESS_WRAP);
         i_dx10Filter(stage, D3DTEXF_POINT, D3DTEXF_POINT, D3DTEXF_POINT);
     }
 
     //	Use D3DTADDRESS_WRAP,	D3DTEXF_ANISOTROPIC, 	D3DTEXF_LINEAR,	D3DTEXF_ANISOTROPIC
-    else if (0 == xr_strcmp(ResourceName, "smp_base"))
+    if (0 == xr_strcmp(ResourceName, "smp_base"))
     {
         i_dx10Address(stage, D3DTADDRESS_WRAP);
         i_dx10FilterAnizo(stage, TRUE);
@@ -161,14 +160,14 @@ u32 CBlender_Compile::r_dx10Sampler(LPCSTR ResourceName)
     }
 
     //	Use D3DTADDRESS_CLAMP,	D3DTEXF_LINEAR,			D3DTEXF_NONE,	D3DTEXF_LINEAR
-    else if (0 == xr_strcmp(ResourceName, "smp_material"))
+    if (0 == xr_strcmp(ResourceName, "smp_material"))
     {
         i_dx10Address(stage, D3DTADDRESS_CLAMP);
         i_dx10Filter(stage, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
         RS.SetSAMP(stage, D3DSAMP_ADDRESSW, D3DTADDRESS_WRAP);
     }
 
-    else if (0 == xr_strcmp(ResourceName, "smp_smap"))
+    if (0 == xr_strcmp(ResourceName, "smp_smap"))
     {
         i_dx10Address(stage, D3DTADDRESS_CLAMP);
         i_dx10Filter(stage, D3DTEXF_LINEAR, D3DTEXF_NONE, D3DTEXF_LINEAR);
@@ -176,10 +175,37 @@ u32 CBlender_Compile::r_dx10Sampler(LPCSTR ResourceName)
         RS.SetSAMP(stage, XRDX10SAMP_COMPARISONFUNC, D3D_COMPARISON_LESS_EQUAL);
     }
 
-    else if (0 == xr_strcmp(ResourceName, "smp_jitter"))
+    if (0 == xr_strcmp(ResourceName, "smp_jitter"))
     {
         i_dx10Address(stage, D3DTADDRESS_WRAP);
         i_dx10Filter(stage, D3DTEXF_POINT, D3DTEXF_NONE, D3DTEXF_POINT);
+    }
+
+    // Point, clamp
+    if (0 == xr_strcmp(ResourceName, "SamplerPointClamp"))
+    {
+        // Address
+        RS.SetSAMP(stage, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
+        RS.SetSAMP(stage, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
+        RS.SetSAMP(stage, D3DSAMP_ADDRESSW, D3DTADDRESS_CLAMP);
+
+        // Filter
+        RS.SetSAMP(stage, D3DSAMP_MINFILTER, D3DTEXF_POINT);
+        RS.SetSAMP(stage, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
+        RS.SetSAMP(stage, D3DSAMP_MIPFILTER, D3DTEXF_POINT);
+    }
+    // Linear, clamp
+    if (0 == xr_strcmp(ResourceName, "SamplerLinearClamp"))
+    {
+        // Address
+        RS.SetSAMP(stage, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
+        RS.SetSAMP(stage, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
+        RS.SetSAMP(stage, D3DSAMP_ADDRESSW, D3DTADDRESS_CLAMP);
+
+        // Filter
+        RS.SetSAMP(stage, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+        RS.SetSAMP(stage, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+        RS.SetSAMP(stage, D3DSAMP_MIPFILTER, D3DTEXF_POINT);
     }
 
     return stage;
@@ -244,11 +270,11 @@ void CBlender_Compile::r_ComputePass(LPCSTR cs)
 void CBlender_Compile::r_End()
 {
     SetMapping();
+
     dest.constants = DEV->_CreateConstantTable(ctable);
     dest.state = DEV->_CreateState(RS.GetContainer());
     dest.T = DEV->_CreateTextureList(passTextures);
-    dest.C = 0;
-    ref_matrix_list temp(0);
+    dest.C = nullptr;
+    // ref_matrix_list temp(nullptr); ???
     SH->passes.push_back(DEV->_CreatePass(dest));
-    // SH->passes.push_back	(DEV->_CreatePass(dest.state,dest.ps,dest.vs,dest.gs,dest.constants,dest.T,temp,dest.C));
 }

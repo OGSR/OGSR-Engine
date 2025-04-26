@@ -151,7 +151,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Event.cpp" />
     <ClCompile Include="trivial_encryptor.cpp" />
     <ClCompile Include="XML_Parser\tinyxml.cpp" />
     <ClCompile Include="XML_Parser\tinyxmlerror.cpp" />
@@ -189,7 +188,6 @@
     <ClInclude Include="FTimer.h" />
     <ClInclude Include="stacktrace_collector.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Event.hpp" />
     <ClInclude Include="trivial_encryptor.h" />
     <ClInclude Include="Utils\FastDelegate.hpp" />
     <ClInclude Include="Utils\imdexlib\fast_dynamic_cast.hpp" />
@@ -230,7 +228,7 @@
     <ClInclude Include="_vector4.h" />
     <ClInclude Include="vector.h" />
     <ClInclude Include="cpuid.h" />
-    <ClInclude Include="FixedMap.h" />
+    <ClInclude Include="xr_fixed_map.h" />
     <ClInclude Include="FixedVector.h" />
     <ClInclude Include="xrPool.h" />
     <ClInclude Include="_std_extensions.h" />

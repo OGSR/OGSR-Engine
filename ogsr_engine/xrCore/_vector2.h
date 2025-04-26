@@ -24,13 +24,13 @@ public:
         y = T(_v);
         return *this;
     }
-    IC SelfRef set(int _u, int _v)
+    constexpr SelfRef set(int _u, int _v)
     {
         x = T(_u);
         y = T(_v);
         return *this;
     }
-    IC SelfRef set(const Self& p)
+    constexpr SelfRef set(const Self& p)
     {
         x = p.x;
         y = p.y;
@@ -90,7 +90,7 @@ public:
         y = p.y - d;
         return *this;
     }
-    IC SelfRef add(const T p)
+    constexpr SelfRef add(const T p)
     {
         x += p;
         y += p;
@@ -126,7 +126,7 @@ public:
         y *= p.y;
         return *this;
     }
-    IC SelfRef div(const T s)
+    constexpr SelfRef div(const T s)
     {
         x /= s;
         y /= s;

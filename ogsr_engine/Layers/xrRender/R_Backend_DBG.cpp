@@ -4,8 +4,8 @@ extern IC u32 GetIndexCount(D3DPRIMITIVETYPE T, u32 iPrimitiveCount);
 
 void CBackend::InitializeDebugDraw()
 {
-    vs_L.create(FVF::F_L, RCache.Vertex.Buffer(), RCache.Index.Buffer());
-    vs_TL.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.Index.Buffer());
+    vs_L.create(FVF::F_L, RImplementation.Vertex.Buffer(), RImplementation.Index.Buffer());
+    vs_TL.create(FVF::F_TL, RImplementation.Vertex.Buffer(), RImplementation.Index.Buffer());
 }
 
 void CBackend::DestroyDebugDraw()
@@ -30,26 +30,26 @@ void CBackend::dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* pIdx,
 {
     u32 vBase;
     {
-        FVF::L* pv = (FVF::L*)Vertex.Lock(vcnt, vs_L->vb_stride, vBase);
+        FVF::L* pv = (FVF::L*)RImplementation.Vertex.Lock(vcnt, vs_L->vb_stride, vBase);
         for (size_t i = 0; i < vcnt; i++)
         {
             pv[i] = pVerts[i];
         }
-        Vertex.Unlock(vcnt, vs_L->vb_stride);
+        RImplementation.Vertex.Unlock(vcnt, vs_L->vb_stride);
     }
 
     u32 iBase;
     {
         const u32 count = GetIndexCount(T, pcnt);
-        u16* indices = Index.Lock(count, iBase);
+        u16* indices = RImplementation.Index.Lock(count, iBase);
         for (size_t i = 0; i < count; i++)
             indices[i] = pIdx[i];
-        Index.Unlock(count);
+        RImplementation.Index.Unlock(count);
     }
 
     set_Geometry(vs_L);
-    set_RT(HW.pBaseRT);
-    RImplementation.rmNormal();
+    set_RT(RImplementation.Target->get_base_rt());
+    RImplementation.rmNormal(RCache);
     set_Stencil(FALSE);
     Render(T, vBase, 0, vcnt, iBase, pcnt);
 }
@@ -58,26 +58,26 @@ void CBackend::dbg_Draw_Near(D3DPRIMITIVETYPE T, FVF::L* pVerts, int vcnt, u16* 
 {
     u32 vBase;
     {
-        FVF::L* pv = (FVF::L*)Vertex.Lock(vcnt, vs_L->vb_stride, vBase);
+        FVF::L* pv = (FVF::L*)RImplementation.Vertex.Lock(vcnt, vs_L->vb_stride, vBase);
         for (size_t i = 0; i < vcnt; i++)
         {
             pv[i] = pVerts[i];
         }
-        Vertex.Unlock(vcnt, vs_L->vb_stride);
+        RImplementation.Vertex.Unlock(vcnt, vs_L->vb_stride);
     }
 
     u32 iBase;
     {
         const u32 count = GetIndexCount(T, pcnt);
-        u16* indices = Index.Lock(count, iBase);
+        u16* indices = RImplementation.Index.Lock(count, iBase);
         for (size_t i = 0; i < count; i++)
             indices[i] = pIdx[i];
-        Index.Unlock(count);
+        RImplementation.Index.Unlock(count);
     }
 
     set_Geometry(vs_L);
-    set_RT(HW.pBaseRT);
-    RImplementation.rmNear();
+    set_RT(RImplementation.Target->get_base_rt());
+    RImplementation.rmNear(RCache);
     set_Stencil(FALSE);
     Render(T, vBase, 0, vcnt, iBase, pcnt);
 }
@@ -88,17 +88,17 @@ void CBackend::dbg_Draw(D3DPRIMITIVETYPE T, FVF::L* pVerts, int pcnt)
     u32 vBase;
     {
         const u32 count = GetIndexCount(T, pcnt);
-        FVF::L* pv = (FVF::L*)Vertex.Lock(count, vs_L->vb_stride, vBase);
+        FVF::L* pv = (FVF::L*)RImplementation.Vertex.Lock(count, vs_L->vb_stride, vBase);
         for (size_t i = 0; i < count; i++)
         {
             pv[i] = pVerts[i];
         }
-        Vertex.Unlock(count, vs_L->vb_stride);
+        RImplementation.Vertex.Unlock(count, vs_L->vb_stride);
     }
 
     set_Geometry(vs_L);
-    set_RT(HW.pBaseRT);
-    RImplementation.rmFar();
+    set_RT(RImplementation.Target->get_base_rt());
+    RImplementation.rmFar(RCache);
     set_Stencil(FALSE);
     Render(T, vBase, pcnt);
 }
@@ -213,7 +213,7 @@ void CBackend::dbg_DrawEllipse(Fmatrix& T, u32 C)
     FVF::L verts[vcnt];
     for (int i = 0; i < vcnt; i++)
     {
-        int k = i * 3;
+        const int k = i * 3;
         verts[i].set(gVertices[k], gVertices[k + 1], gVertices[k + 2], C);
     }
 

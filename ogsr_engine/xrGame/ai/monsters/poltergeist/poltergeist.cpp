@@ -293,10 +293,10 @@ void CPoltergeist::Show()
         conditions().LoadImmunities(pSettings->r_string(cNameSect().c_str(), "visible_immunities_sect"), pSettings);
 }
 
-void CPoltergeist::renderable_Render()
+void CPoltergeist::renderable_Render(u32 context_id, IRenderable* root)
 {
     Visual()->getVisData().hom_frame = Device.dwFrame;
-    inherited::renderable_Render();
+    inherited::renderable_Render(context_id, root);
 }
 
 void CPoltergeist::UpdateCL()

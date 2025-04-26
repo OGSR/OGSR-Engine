@@ -1,0 +1,108 @@
+/*
+    Gasmask overlay shader
+
+    Author: LVutner
+    Credits: ZHC (visor reflection shader)
+*/
+
+#include "common.h"
+#include "ogsr_gasmask_common.h"
+
+#include "visor.h"
+
+uniform float4 pnv_param_1;
+uniform float4 pnv_param_2;
+uniform float4 pnv_param_4;
+
+float4 main(p_screen I) : SV_Target
+{
+    // Sample gasmask texture
+    float4 gasmask_tex;
+
+    I.tc0 = applyInertia(I.tc0);
+
+    if (m_actor_params.y > 0.9)
+    {
+        gasmask_tex = s_mask_nm_1.Sample(smp_nofilter, I.tc0);
+    }
+    else if (m_actor_params.y > 0.8)
+    {
+        gasmask_tex = s_mask_nm_2.Sample(smp_nofilter, I.tc0);
+    }
+    else if (m_actor_params.y > 0.7)
+    {
+        gasmask_tex = s_mask_nm_3.Sample(smp_nofilter, I.tc0);
+    }
+    else if (m_actor_params.y > 0.6)
+    {
+        gasmask_tex = s_mask_nm_4.Sample(smp_nofilter, I.tc0);
+    }
+    else if (m_actor_params.y > 0.5)
+    {
+        gasmask_tex = s_mask_nm_5.Sample(smp_nofilter, I.tc0);
+    }
+    else if (m_actor_params.y > 0.4)
+    {
+        gasmask_tex = s_mask_nm_6.Sample(smp_nofilter, I.tc0);
+    }
+    else if (m_actor_params.y > 0.3)
+    {
+        gasmask_tex = s_mask_nm_7.Sample(smp_nofilter, I.tc0);
+    }
+    else if (m_actor_params.y > 0.2)
+    {
+        gasmask_tex = s_mask_nm_8.Sample(smp_nofilter, I.tc0);
+    }
+    else if (m_actor_params.y > 0.1)
+    {
+        gasmask_tex = s_mask_nm_9.Sample(smp_nofilter, I.tc0);
+    }
+    else
+    {
+        gasmask_tex = s_mask_nm_10.Sample(smp_nofilter, I.tc0);
+    }
+
+    float3 image;
+    if (mask_control.w == 1) // R2FLAGEXT_MASK_CONTROL
+    {
+        // Prepare refracted texcoord
+        float2 refr_tc = I.tc0.xy + (gasmask_tex.xy * 2.0 - 1.0) * GM_DIST_INT;
+
+        // Sample scene with refracted texcoord
+        image = s_image.Sample(smp_nofilter, refr_tc.xy).xyz;
+        float3 blurredImage = s_blur_2.Sample(smp_nofilter, refr_tc.xy).xyz;
+
+        float2 center = float2(0.5, 0.5);
+        float distFromCenter = length(refr_tc.xy - center);
+        image = lerp(image, blurredImage, (m_actor_params.y / 10) * abs(distFromCenter * 1.5));
+    }
+    else
+    {
+        image = s_image.Sample(smp_nofilter, I.tc0.xy).xyz;
+    }
+
+    // Add glass reflection on top
+    if (pnv_param_1.z == 0.f && mask_control.z == 1)
+    {
+        // Prepare aspect-ratio correct TC for attenuation
+        float2 vig_tc = I.tc0.xy;
+        vig_tc -= 0.5;
+        vig_tc.x *= screen_res.x / screen_res.y;
+        vig_tc += 0.5;
+
+        // Get refl attenuation
+        float refl_att = smoothstep(0.8, 1.0, distance(vig_tc, float2(0.5, 0.5)));
+
+        // image = lerp(image, visor_reflection(image, I.tc0.xy), refl_att);
+        image = visor_reflection(image, I.tc0.xy);
+    }
+
+    if (pnv_param_1.z == 0.f && (mask_control.z == 1 || mask_control.w == 1))
+    {
+        // Mix gasmask cracks with image
+        image += (gasmask_tex.w * image) * GM_DIFF_INT;
+    }
+
+    // Output
+    return float4(image, 1.0);
+}

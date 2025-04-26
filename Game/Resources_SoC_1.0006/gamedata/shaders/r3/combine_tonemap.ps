@@ -1,0 +1,63 @@
+#include "common.h"
+
+// Check Screen Space Shaders modules
+#include "check_screenspace.h"
+
+#ifdef SSFX_BEEFS_NVG
+#include "night_vision.h"
+#endif
+
+float4 main(p_screen I) : SV_Target
+{
+    float2 center = I.tc0;
+    float4 color = s_image.Load(int3(center.xy * screen_res.xy, 0), 0);
+    float3 img = color.rgb;
+
+    // Simp: TODO: перенести в вершинный шейдер?
+    float tm_scale = s_tonemap.Load(int3(0, 0, 0)).x;
+#ifndef SSFX_BEEFS_NVG
+    img = tonemap(img, tm_scale);
+#else
+    //// SOME NVG SHIT ////
+    float lua_param_nvg_num_tubes = pnv_param_4.x; // 1, 2, 4, 1.1, or 1.2
+    float lua_param_nvg_gain_current = pnv_param_2.y;
+    float lua_param_vignette_current = pnv_param_2.z;
+    float lua_param_nvg_gain_offset = pnv_param_2.w;
+
+    if (pnv_param_1.z == 1.f && compute_lens_mask(aspect_ratio_correction(center), lua_param_nvg_num_tubes) == 1.0f)
+    {
+        img = tonemap(img, 10.0f * lua_param_nvg_gain_offset);
+
+        // Turn split tonemapping data to YUV and discard UV
+        img.r = dot(img.rgb, luma_conversion_coeff);
+
+        img.r *= 4.0f;
+
+        int iSample = 0;
+        gbuffer_data gbd = gbuffer_load_data(center, I.hpos, iSample);
+        float4 L = s_accumulator.Sample(smp_nofilter, center); // diffuse.specular
+        L.rgb += L.a * SRGBToLinear(gbd.C.rgb); // illum in alpha
+
+        // Turn s_accumulator data in to YUV and discard UV
+        img.g = pow(dot(L.rgb, luma_conversion_coeff), 2.0f) * 1.3f;
+
+        // Turn albedo into YUV and discard UV
+        img.b = dot(gbd.C.rgb, luma_conversion_coeff);
+
+        img *= lua_param_nvg_gain_current;
+
+        // APPLY VIGNETTE
+        float vignette = calc_vignette(lua_param_nvg_num_tubes, center, lua_param_vignette_current + 0.02);
+
+        img = clamp(img, 0.0, 1.0);
+
+        img.rgb *= vignette;
+    }
+    else // NVG CHANGE TO PREVENT WEIRD COLORS, ONLY APPLY BLOOM WHEN WE'RE NOT IN NVG MASK
+    {
+        img = tonemap(img, tm_scale);
+    }
+#endif
+
+    return float4(img, color.a);
+}

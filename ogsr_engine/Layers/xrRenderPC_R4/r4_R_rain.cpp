@@ -1,7 +1,5 @@
 #include "stdafx.h"
 #include "../../xr_3da/igame_persistent.h"
-#include "../../xr_3da/irenderable.h"
-#include "../xrRender/FBasicVisual.h"
 
 #include "r4_R_sun_support.h"
 
@@ -10,37 +8,52 @@ using namespace DirectX;
 constexpr float tweak_rain_COP_initial_offs = 1200.f;
 constexpr float tweak_rain_ortho_xform_initial_offs = 1000.f; //. ?
 
-//	Defined in r2_R_sun.cpp
-extern Fvector3 wform(Fmatrix& m, Fvector3 const& v);
-
 //////////////////////////////////////////////////////////////////////////
 // tables to calculate view-frustum bounds in world space
 // note: D3D uses [0..1] range for Z
-constexpr Fvector3 corners[8] = {{-1, -1, 0}, {-1, -1, +1}, {-1, +1, +1}, {-1, +1, 0}, {+1, +1, +1}, {+1, +1, 0}, {+1, -1, +1}, {+1, -1, 0}};
-constexpr int facetable[6][4] = {
-    {0, 3, 5, 7}, {1, 2, 3, 0}, {6, 7, 5, 4}, {4, 2, 1, 6}, {3, 2, 4, 5}, {1, 0, 7, 6},
-};
-
-//////////////////////////////////////////////////////////////////////////
-void CRender::render_rain()
+namespace rain
 {
-    float fRainFactor{};
-    if (ps_ssfx_gloss_method == 0)
-        fRainFactor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
-    else
-        fRainFactor = g_pGamePersistent->Environment().wetness_factor;
+constexpr Fvector3 corners[8]{
+    {-1, -1, 0}, {-1, -1, +1},
+    {-1, +1, +1}, {-1, +1, 0},
+    {+1, +1, +1}, {+1, +1, 0},
+    {+1, -1, +1}, {+1, -1, 0}
+};
+constexpr int facetable[6][4]{
+    {0, 3, 5, 7}, {1, 2, 3, 0},
+    {6, 7, 5, 4}, {4, 2, 1, 6},
+    {3, 2, 4, 5}, {1, 0, 7, 6},
+};
+}
 
-    if (fRainFactor < EPS_L)
+void render_rain::init()
+{
+    if (ps_ssfx_gloss_method == 0)
+        rain_factor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
+    else
+        rain_factor = g_pGamePersistent->Environment().wetness_factor;
+
+    o.active = ps_r2_ls_flags.test(R3FLAG_DYN_WET_SURF);
+    o.active &= rain_factor >= EPS_L;
+    //o.active &= !Device.vCameraPositionSaved.similar(Device.vCameraPosition, EPS_L) || !Device.vCameraDirectionSaved.similar(Device.vCameraDirection, EPS_L);
+
+    if (!o.active)
         return;
 
-    PIX_EVENT(render_rain);
+    o.mt_calc_enabled = ps_r2_ls_flags.test(R2FLAG_EXP_MT_RAIN); // RImplementation.o.mt_calculate;
+    o.mt_draw_enabled = ps_r2_ls_flags.test(R2FLAG_EXP_MT_RAIN); // RImplementation.o.mt_render;
 
-    //	Use light as placeholder for rain data.
-    light RainLight;
+    // pre-allocate context
+    context_id = RImplementation.alloc_context();
+    R_ASSERT(context_id != CHW::INVALID_CONTEXT_ID);
+}
 
-    // static const float	source_offset		= 40.f;
+//////////////////////////////////////////////////////////////////////////
+void render_rain::calculate()
+{
+    ZoneScoped;
 
-    static const float source_offset = 10000.f;
+    constexpr float source_offset = 10000.f;
     RainLight.direction.set(0.0f, -1.0f, 0.0f);
     RainLight.position.set(Device.vCameraPosition.x, Device.vCameraPosition.y + source_offset, Device.vCameraPosition.z);
 
@@ -53,8 +66,9 @@ void CRender::render_rain()
         if (ps_ssfx_gloss_method == 0)
             fRainFar = ps_r3_dyn_wet_surf_far;
 
-        ex_project.build_projection(deg2rad(Device.fFOV /* *Device.fASPECT*/), Device.fASPECT, VIEWPORT_NEAR, fRainFar);
+        ex_project.build_projection(deg2rad(Device.fFOV /* * Device.fASPECT*/), Device.fASPECT, VIEWPORT_NEAR, fRainFar);
         ex_full.mul(ex_project, Device.mView);
+
         XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&ex_full_inverse), XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&ex_full))));
 
         //	Calculate view frustum were we can see dynamic rain radius
@@ -69,14 +83,11 @@ void CRender::render_rain()
         }
     }
 
-    // Device.vCameraDirection
-
     // Compute volume(s) - something like a frustum for infinite directional light
     // Also compute virtual light position and sector it is inside
     CFrustum cull_frustum;
     xr_vector<Fplane> cull_planes;
     Fvector3 cull_COP;
-    CSector* cull_sector;
     Fmatrix cull_xform;
     {
         // Lets begin from base frustum
@@ -89,16 +100,15 @@ void CRender::render_rain()
         t_volume hull;
         {
             hull.points.reserve(9);
-            for (int p = 0; p < 8; p++)
+            for (const auto& corner : rain::corners)
             {
-                Fvector3 xf = wform(fullxform_inv, corners[p]);
-                hull.points.push_back(xf);
+                hull.points.emplace_back(wform(fullxform_inv, corner));
             }
-            for (int plane = 0; plane < 6; plane++)
+            for (auto& plane : rain::facetable)
             {
-                hull.polys.push_back(t_volume::_poly());
+                hull.polys.emplace_back();
                 for (int pt = 0; pt < 4; pt++)
-                    hull.polys.back().points.push_back(facetable[plane][pt]);
+                    hull.polys.back().points.push_back(plane[pt]);
             }
         }
         // hull.compute_caster_model	(cull_planes,fuckingsun->direction);
@@ -108,23 +118,6 @@ void CRender::render_rain()
             RImplementation.Target->dbg_addplane(cull_planes[it], 0xffffffff);
 #endif
 
-        // Search for default sector - assume "default" or "outdoor" sector is the largest one
-        //. hack: need to know real outdoor sector
-        CSector* largest_sector = 0;
-        float largest_sector_vol = 0;
-        for (u32 s = 0; s < Sectors.size(); s++)
-        {
-            CSector* S = (CSector*)Sectors[s];
-            dxRender_Visual* V = S->root();
-            float vol = V->vis.box.getvolume();
-            if (vol > largest_sector_vol)
-            {
-                largest_sector_vol = vol;
-                largest_sector = S;
-            }
-        }
-        cull_sector = largest_sector;
-
         // COP - 100 km away
         cull_COP.mad(Device.vCameraPosition, RainLight.direction, -tweak_rain_COP_initial_offs);
         cull_COP.x += fBoundingSphereRadius * Device.vCameraDirection.x;
@@ -132,8 +125,8 @@ void CRender::render_rain()
 
         // Create frustum for query
         cull_frustum._clear();
-        for (u32 p = 0; p < cull_planes.size(); p++)
-            cull_frustum._add(cull_planes[p]);
+        for (auto& cull_plane : cull_planes)
+            cull_frustum._add(cull_plane);
 
         // Create approximate ortho-xform
         // view: auto find 'up' and 'right' vectors
@@ -162,35 +155,33 @@ void CRender::render_rain()
         bb.grow(EPS);
 
         //	HACK
-        //	TODO: DX10: Calculate bounding sphere for view frustum
-        //	TODO: DX10: Reduce resolution.
-        // bb.min.x = -50;
-        // bb.max.x = 50;
-        // bb.min.y = -50;
-        // bb.max.y = 50;
+        //	TODO: DX11: Calculate bounding sphere for view frustum
+        //	TODO: DX11: Reduce resolution.
+        // bb.vMin.x = -50;
+        // bb.vMax.x = 50;
+        // bb.vMin.y = -50;
+        // bb.vMax.y = 50;
 
         //	Offset RainLight position to center rain shadowmap
-        Fvector3 vRectOffset;
-        vRectOffset.set(fBoundingSphereRadius * Device.vCameraDirection.x, 0, fBoundingSphereRadius * Device.vCameraDirection.z);
+        Fvector3 vRectOffset = {fBoundingSphereRadius * Device.vCameraDirection.x, 0, fBoundingSphereRadius * Device.vCameraDirection.z};
         bb.min.x = -fBoundingSphereRadius + vRectOffset.x;
         bb.max.x = fBoundingSphereRadius + vRectOffset.x;
         bb.min.y = -fBoundingSphereRadius + vRectOffset.z;
         bb.max.y = fBoundingSphereRadius + vRectOffset.z;
 
         XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&mdir_Project),
-                        XMMatrixOrthographicOffCenterLH(bb.min.x, bb.max.x, bb.min.y, bb.max.y, bb.min.z - tweak_rain_ortho_xform_initial_offs,
-                                                        bb.min.z + 2 * tweak_rain_ortho_xform_initial_offs));
+                        XMMatrixOrthographicOffCenterLH(bb.min.x, bb.max.x, bb.min.y, bb.max.y, bb.min.z - tweak_rain_ortho_xform_initial_offs, bb.min.z + 2 * tweak_rain_ortho_xform_initial_offs));
 
         cull_xform.mul(mdir_Project, mdir_View);
 
-        s32 limit = _min(RImplementation.o.smapsize, ps_r3_dyn_wet_surf_sm_res);
+        s32 const limit = RImplementation.o.rain_smapsize;
 
         // build viewport xform
         float view_dim = float(limit);
-        float fTexelOffs = (.5f / RImplementation.o.smapsize);
-        Fmatrix m_viewport = {view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f + fTexelOffs, view_dim / 2.f + fTexelOffs,
-                              0.0f,           1.0f};
-        Fmatrix m_viewport_inv{};
+        float fTexelOffs = .5f / RImplementation.o.rain_smapsize;
+
+        Fmatrix m_viewport = {view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f + fTexelOffs, view_dim / 2.f + fTexelOffs, 0.0f, 1.0f};
+        Fmatrix m_viewport_inv;
         XMStoreFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&m_viewport_inv), XMMatrixInverse(nullptr, XMLoadFloat4x4(reinterpret_cast<XMFLOAT4X4*>(&m_viewport))));
 
         // snap view-position to pixel
@@ -206,56 +197,88 @@ void CRender::render_rain()
         adjust.translate(diff);
         cull_xform.mulA_44(adjust);
 
-        RainLight.X.D.minX = 0;
-        RainLight.X.D.maxX = limit;
-        RainLight.X.D.minY = 0;
-        RainLight.X.D.maxY = limit;
+        RainLight.X.D[0].minX = 0;
+        RainLight.X.D[0].maxX = limit;
+        RainLight.X.D[0].minY = 0;
+        RainLight.X.D[0].maxY = limit;
     }
 
     // Begin SMAP-render
+    auto& dsgraph = RImplementation.get_context(context_id);
     {
-        VERIFY(!(mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size()));
-        HOM.Disable();
-        phase = PHASE_SMAP;
-        r_pmask(true, false);
-    }
+        dsgraph.phase = CRender::PHASE_SMAP;
+        dsgraph.r_pmask(true, false);
 
-    // Fill the database
-    // r_dsgraph_render_subspace				(cull_sector, &cull_frustum, cull_xform, cull_COP, TRUE);
-    r_dsgraph_render_subspace(cull_sector, &cull_frustum, cull_xform, cull_COP, FALSE);
+        //dsgraph.o.sector_id = RImplementation.get_largest_sector();
+        //dsgraph.o.xform = cull_xform;
+        //dsgraph.o.view_frustum = cull_frustum;
+        //dsgraph.o.view_pos = cull_COP;
+
+        IRender_Sector::sector_id_t id = RImplementation.get_largest_sector();
+
+        // Fill the database
+        dsgraph.build_subspace(id, &cull_frustum, cull_xform, cull_COP, TRUE);
+    }
 
     // Finalize & Cleanup
-    RainLight.X.D.combine = cull_xform; //*((Fmatrix*)&m_LightViewProj);
+    RainLight.X.D[0].combine = cull_xform;
+}
 
-    // Render shadow-map
-    //. !!! We should clip based on shrinked frustum (again)
+void render_rain::render()
+{
+    if (o.active)
     {
-        bool bNormal = mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
-        bool bSpecial = mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
-        if (bNormal || bSpecial)
+        auto& dsgraph = RImplementation.get_context(context_id);
+
+        // Render shadow-map
         {
-            Target->phase_smap_direct(&RainLight, SE_SUN_RAIN_SMAP);
-            RCache.set_xform_world(Fidentity);
-            RCache.set_xform_view(Fidentity);
-            RCache.set_xform_project(RainLight.X.D.combine);
-            r_dsgraph_render_graph(0);
-            // if (ps_r2_ls_flags.test(R2FLAG_SUN_DETAILS))
-            //	Details->Render					()	;
+            const bool bNormal = !dsgraph.mapNormalPasses[0][0].empty() || !dsgraph.mapMatrixPasses[0][0].empty();
+            //bool bSpecial = !dsgraph.mapNormalPasses[1][0].empty() || !dsgraph.mapMatrixPasses[1][0].empty() || !dsgraph.mapSorted.empty();
+            if (bNormal /*|| bSpecial*/)
+            {
+                PIX_EVENT_CTX(dsgraph.cmd_list, RAIN);
+
+                RImplementation.Target->phase_smap_direct(dsgraph.cmd_list, &RainLight, SE_SUN_RAIN_SMAP);
+                dsgraph.cmd_list.set_xform_world(Fidentity);
+                dsgraph.cmd_list.set_xform_view(Fidentity);
+                dsgraph.cmd_list.set_xform_project(RainLight.X.D[0].combine);
+                dsgraph.r_dsgraph_render_graph(0);
+            }
         }
     }
+}
 
-    // End SMAP-render
+void render_rain::flush()
+{
+    if (o.active)
     {
-        //		fuckingsun->svis.end					();
-        r_pmask(true, false);
+        auto& dsgraph = RImplementation.get_context(context_id);
+
+        dsgraph.cmd_list.submit();
+        RImplementation.release_context(context_id);
     }
 
+    auto& cmd_list_imm = RImplementation.get_imm_context().cmd_list;
+
+    cmd_list_imm.Invalidate();
+
     // Restore XForms
-    RCache.set_xform_world(Fidentity);
-    RCache.set_xform_view(Device.mView);
-    RCache.set_xform_project(Device.mProject);
+    cmd_list_imm.set_xform_world(Fidentity);
+    cmd_list_imm.set_xform_view(Device.mView);
+    cmd_list_imm.set_xform_project(Device.mProject);
 
     // Accumulate
-    Target->phase_rain();
-    Target->draw_rain(RainLight);
+    if (rain_factor >= EPS_L)
+    {
+        PIX_EVENT_CTX(cmd_list_imm, RainApply);
+
+        cmd_list_imm.set_pass_targets(
+            RImplementation.Target->rt_Color, /*rt_Normal*/
+            nullptr,
+            nullptr, 
+            nullptr, 
+            RImplementation.Target->rt_Base_Depth);
+
+        RImplementation.Target->draw_rain(cmd_list_imm, RainLight);
+    }
 }

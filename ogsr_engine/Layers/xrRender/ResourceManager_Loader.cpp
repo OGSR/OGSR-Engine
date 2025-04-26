@@ -1,22 +1,22 @@
 #include "stdafx.h"
 
 #include "ResourceManager.h"
-#include "blenders\blender.h"
+#include "blenders/blender.h"
 
 BOOL bShadersXrExport{};
 
 void CResourceManager::OnDeviceDestroy(BOOL)
 {
-    if (RDEVICE.b_is_Ready)
+    if (Device.b_is_Ready)
         return;
 
     m_textures_description.UnLoad();
 
     // Release blenders
-    for (map_BlenderIt b = m_blenders.begin(); b != m_blenders.end(); b++)
+    for (auto& m_blender : m_blenders)
     {
-        xr_free((char*&)b->first);
-        IBlenderXr::Destroy(b->second);
+        xr_free((char*&)m_blender.first);
+        IBlenderXr::Destroy(m_blender.second);
     }
     m_blenders.clear();
 
@@ -26,27 +26,27 @@ void CResourceManager::OnDeviceDestroy(BOOL)
 
 void CResourceManager::OnDeviceCreate()
 {
-    if (!RDEVICE.b_is_Ready)
+    if (!Device.b_is_Ready)
         return;
 
     // scripting
     LS_Load();
 
     string_path fname;
-    if (FS.exist(fname, _game_data_, "shaders.ltx"))
+    if (FS.exist(fname, fsgame::game_data, "shaders.ltx"))
     {
         Msg("Loading shader file: [%s]", fname);
         LoadShaderLtxFile(fname);
     }
     else
     {
-        if (FS.exist(fname, _game_data_, "shaders.xr"))
+        if (FS.exist(fname, fsgame::game_data, "shaders.xr"))
         {
             Msg("Loading shader file: [%s]", fname);
             LoadShaderFile(fname);
         }
 
-        if (FS.exist(fname, _game_data_, "shaders_cop.xr"))
+        if (FS.exist(fname, fsgame::game_data, "shaders_cop.xr"))
         {
             Msg("Loading shader file: [%s]", fname);
             LoadShaderFile(fname);
@@ -59,11 +59,11 @@ void CResourceManager::OnDeviceCreate()
 void CResourceManager::LoadShaderFile(LPCSTR fname)
 {
     // Check if file is compressed already
-    string32 ID = "shENGINE";
+    const string32 ID = "shENGINE";
 
     string32 id;
     IReader* F = FS.r_open(fname);
-    R_ASSERT2(F, fname);
+    R_ASSERT(F, fname);
     F->r(&id, 8);
 
     if (0 == strncmp(id, ID, 8))
@@ -119,7 +119,7 @@ void CResourceManager::LoadShaderFile(LPCSTR fname)
 
                 //Msg("Loading shader: [%s]", desc.cName);
 
-                std::pair<map_BlenderIt, bool> I = m_blenders.insert_or_assign(xr_strdup(desc.cName), B);
+                const auto I = m_blenders.insert_or_assign(xr_strdup(desc.cName), B);
                 ASSERT_FMT(I.second, "CResourceManager::LoadSharedFile - found shader name [%s]", desc.cName);
             }
 
@@ -162,7 +162,7 @@ void CResourceManager::LoadShaderLtxFile(LPCSTR fname)
 
             // Msg("Loading shader: [%s]", desc.cName);
 
-            std::pair<map_BlenderIt, bool> I = m_blenders.insert_or_assign(xr_strdup(name.c_str()), B);
+            const std::pair<map_BlenderIt, bool> I = m_blenders.insert_or_assign(xr_strdup(name.c_str()), B);
             ASSERT_FMT(I.second, "CResourceManager::LoadSharedFile - found shader name [%s]", name.c_str());
         }
     }

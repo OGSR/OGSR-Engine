@@ -2,8 +2,6 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(_PORTAL_H_)
-#define _PORTAL_H_
 #pragma once
 
 class CPortal;
@@ -21,37 +19,48 @@ class CPortal : public IRender_Portal
                 public pureRender
 #endif
 {
+public:
+    using Poly = svector<Fvector, 6>;
+    struct level_portal_data_t
+    {
+        u16 sector_front;
+        u16 sector_back;
+        Poly vertices;
+    };
+
 private:
-    svector<Fvector, 8> poly;
-    CSector *pFace, *pBack;
+    Poly poly{};
+    CSector *pFace{}, *pBack{};
 
 public:
-    Fplane P;
-    Fsphere S;
-    u32 marker;
-    BOOL bDualRender;
+    Fplane P{};
+    Fsphere S{};
+    u32 r_marker{};
+    BOOL bDualRender{};
 
-    void Setup(Fvector* V, int vcnt, CSector* face, CSector* back);
+    void setup(const level_portal_data_t& data, const xr_vector<CSector*>& portals);
 
-    svector<Fvector, 8>& getPoly() { return poly; }
-    CSector* Back() { return pBack; }
-    CSector* Front() { return pFace; }
-    CSector* getSector(CSector* pFrom) { return pFrom == pFace ? pBack : pFace; }
-    CSector* getSectorFacing(const Fvector& V)
+    Poly& getPoly() { return poly; }
+
+    CSector* Back() const { return pBack; }
+    CSector* Front() const { return pFace; }
+
+    CSector* getSector(CSector* pFrom) const { return pFrom == pFace ? pBack : pFace; }
+    CSector* getSectorFacing(const Fvector& V) const
     {
         if (P.classify(V) > 0)
             return pFace;
         else
             return pBack;
     }
-    CSector* getSectorBack(const Fvector& V)
+    CSector* getSectorBack(const Fvector& V) const
     {
         if (P.classify(V) > 0)
             return pBack;
         else
             return pFace;
     }
-    float distance(const Fvector& V) { return _abs(P.classify(V)); }
+    float distance(const Fvector& V) const { return _abs(P.classify(V)); }
 
     CPortal();
     virtual ~CPortal();
@@ -66,28 +75,46 @@ class dxRender_Visual;
 // Main 'Sector' class
 class CSector : public IRender_Sector
 {
+public:
+    struct level_sector_data_t
+    {
+        xr_vector<u32> portals_id;
+        u32 root_id;
+    };
+
 protected:
     dxRender_Visual* m_root; // whole geometry of that sector
-    xr_vector<CPortal*> m_portals;
 
 public:
+    xr_vector<CPortal*> m_portals;
     xr_vector<CFrustum> r_frustums;
     xr_vector<_scissor> r_scissors;
-    _scissor r_scissor_merged;
-    u32 r_marker;
+    _scissor r_scissor_merged{};
+    u32 r_marker{};
 
 public:
     // Main interface
     dxRender_Visual* root() { return m_root; }
-    void traverse(CFrustum& F, _scissor& R);
-    void load(IReader& fs);
 
-    CSector() { m_root = NULL; }
-    virtual ~CSector();
+    void setup(const level_sector_data_t& data, const xr_vector<CPortal*>& portals);
+
+    CSector() { m_root = nullptr; }
+    virtual ~CSector() = default;
 };
 
 class CPortalTraverser
 {
+private:
+    CSector* i_start{}; // input:	starting point
+    Fvector i_vBase{}; // input:	"view" point
+    Fmatrix i_mXFORM{}; // input:	4x4 xform
+    u32 i_options{}; // input:	culling options
+
+    xr_vector<std::pair<CPortal*, float>> f_portals; //
+
+    u32 i_marker{}; // input
+    u32 device_frame{}; // input
+
 public:
     enum
     {
@@ -98,29 +125,23 @@ public:
     };
 
 public:
-    u32 i_marker; // input
-    u32 i_options; // input:	culling options
-    Fvector i_vBase; // input:	"view" point
-    Fmatrix i_mXFORM; // input:	4x4 xform
-    Fmatrix i_mXFORM_01; //
-    CSector* i_start; // input:	starting point
-    xr_vector<IRender_Sector*> r_sectors; // result
-    xr_vector<std::pair<CPortal*, float>> f_portals; //
-    ref_shader f_shader;
-    ref_geom f_geom;
+    xr_vector<CSector*> r_sectors; // result
+
+    u32 marker() const { return i_marker; }
+    u32 frame() const { return device_frame; }
+
+    void traverse_sector(CSector* sector, CFrustum& F, _scissor& R_scissor);
+
+    void fade_portal(CPortal* _p, float ssa);
 
 public:
     CPortalTraverser();
-    void initialize();
-    void destroy();
+
     void traverse(IRender_Sector* start, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM, u32 options);
-    void fade_portal(CPortal* _p, float ssa);
-    void fade_render();
+
+    void fade_render(CBackend& cmd_list);
+
 #ifdef DEBUG
     void dbg_draw();
 #endif
 };
-
-extern CPortalTraverser PortalTraverser;
-
-#endif // !defined(AFX_PORTAL_H__1FC2D371_4A19_49EA_BD1E_2D0F8DEBBF15__INCLUDED_)

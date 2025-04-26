@@ -38,7 +38,7 @@ public:
 public:
     Fsphere m_Bounds{}; // 16		world space
 public:
-    CSkeletonWallmark(CKinematics* p, const Fmatrix* m, ref_shader s, const Fvector& cp, float ts) : m_Parent(p), m_XForm(m), m_Shader(s), m_fTimeStart(ts), m_ContactPoint(cp)
+    CSkeletonWallmark(CKinematics* p, const Fmatrix* m, ref_shader s, const Fvector& cp, float ts) : m_Parent(p), m_XForm(m), m_Shader(s), m_ContactPoint(cp), m_fTimeStart(ts)
     {
 #ifdef DEBUG
         used_in_render = u32(-1);
@@ -51,7 +51,7 @@ public:
     {}
 #endif
 
-    IC CKinematics* Parent() { return m_Parent; }
+    IC CKinematics* Parent() const { return m_Parent; }
     IC u32 VCount() { return m_Faces.size() * 3; }
     IC bool Similar(ref_shader& sh, const Fvector& cp, float eps) { return (m_Shader == sh) && m_ContactPoint.similar(cp, eps); }
     IC float TimeStart() { return m_fTimeStart; }
@@ -60,24 +60,6 @@ public:
     IC ref_shader Shader() { return m_Shader; }
 };
 DEFINE_VECTOR(intrusive_ptr<CSkeletonWallmark>, SkeletonWMVec, SkeletonWMVecIt);
-
-// sanity check
-#ifdef DEBUG
-struct dbg_marker
-{
-    BOOL* lock;
-    dbg_marker(BOOL* b)
-    {
-        lock = b;
-        VERIFY(*lock == FALSE);
-        *lock = TRUE;
-    }
-    ~dbg_marker() { *lock = FALSE; }
-};
-#define _DBG_SINGLE_USE_MARKER dbg_marker _dbg_marker(&dbg_single_use_marker)
-#else
-#define _DBG_SINGLE_USE_MARKER
-#endif
 
 class CKinematics : public FHierrarhyVisual, public IKinematics
 {
@@ -114,9 +96,33 @@ public:
 public:
     dxRender_Visual* m_lod;
 
+    Fmatrix mOldWorldMartrix;
+    Fmatrix mOldWorldMartrixTmp;
+
+    u32 dwFirstRenderFrame;
+
+    void StoreVisualMatrix(const Fmatrix& world_matrix);
+
 protected:
+    class wallmark_calculate_details
+    {
+    public:
+        CKinematics* parent{};
+        Fmatrix* parent_xform{};
+
+        Fvector3 position{};
+        Fvector3 direction{};
+
+        ref_shader shader{};
+        float size{};
+
+        wallmark_calculate_details(){};
+        void add_wallmark_internal();
+    };
+
     SkeletonWMVec wallmarks;
     u32 wm_frame;
+    SpinLock wallmarks_lock;
 
     xr_vector<dxRender_Visual*> children_invisible;
 
@@ -130,12 +136,14 @@ protected:
     string_unordered_map<shared_str, u16> bone_map_N; // bones associations
 
     BOOL Update_Visibility;
+
     u32 UCalc_Time;
     s32 UCalc_Visibox;
+    std::recursive_mutex UCalc_Mutex;
 
     VisMask visimask;
 
-    CSkeletonX* LL_GetChild(u32 idx);
+    CSkeletonX* LL_GetChild(u32 idx) const;
 
     // internal functions
     virtual CBoneData* CreateBoneData(u16 ID) { return xr_new<CBoneData>(ID); }
@@ -152,8 +160,8 @@ public:
 
 public:
     // wallmarks
-    void AddWallmark(const Fmatrix* parent, const Fvector3& start, const Fvector3& dir, ref_shader shader, float size);
-    void CalculateWallmarks();
+    void AddWallmark(Fmatrix* parent, Fvector3& start, Fvector3& dir, ref_shader shader, float size);
+    void CalculateWallmarks(bool hud);
     void RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT*& verts);
     void ClearWallmarks();
 
@@ -168,15 +176,15 @@ public:
     // Low level interface
     u16 LL_BoneID(const char* B) const override;
     u16 LL_BoneID(const shared_str& B) const override;
-    const char* LL_BoneName_dbg(const u16 ID) const override;
+    const char* LL_BoneName(const u16 ID) const override;
 
-    CInifile* _BCL LL_UserData() { return pUserData; }
+    CInifile* LL_UserData() { return pUserData; }
 
     ICF CBoneInstance& LL_GetBoneInstance(u16 bone_id)
     {
         //Msg("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id);
 
-        R_ASSERT(bone_id < LL_BoneCount(), make_string("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id));
+        ASSERT_FMT(bone_id < LL_BoneCount(), "visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id);
         R_ASSERT(bone_instances);
         return bone_instances[bone_id];
     }
@@ -184,70 +192,72 @@ public:
     {
         //Msg("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id);
 
-        R_ASSERT(bone_id < LL_BoneCount(), make_string("visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id));
+        ASSERT_FMT(bone_id < LL_BoneCount(), "visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id);
         R_ASSERT(bone_instances);
         return bone_instances[bone_id];
     }
 
-    CBoneData& _BCL LL_GetData(u16 bone_id)
+    CBoneData& LL_GetData(u16 bone_id)
     {
-        ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", __FUNCTION__, dbg_name.c_str(), bone_id);
+        ASSERT_FMT(bone_id < LL_BoneCount(), "visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id);
         VERIFY(bones);
         CBoneData& bd = *((*bones)[bone_id]);
         return bd;
     }
 
-    virtual const IBoneData& _BCL GetBoneData(u16 bone_id) const
+    virtual const IBoneData& GetBoneData(u16 bone_id) const
     {
-        ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", __FUNCTION__, dbg_name.c_str(), bone_id);
+        ASSERT_FMT(bone_id < LL_BoneCount(), "visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id);
         VERIFY(bones);
         CBoneData& bd = *((*bones)[bone_id]);
         return bd;
     }
-    CBoneData* _BCL LL_GetBoneData(u16 bone_id)
+    CBoneData* LL_GetBoneData(u16 bone_id)
     {
-        ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", __FUNCTION__, dbg_name.c_str(), bone_id);
+        ASSERT_FMT(bone_id < LL_BoneCount(), "visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id);
         VERIFY(bones);
-        u32 sz = sizeof(vecBones);
-        u32 sz1 = sizeof(((*bones)[bone_id])->children);
-        Msg("sz: %d", sz);
+        const u32 sz = sizeof(vecBones);
+        const u32 sz1 = sizeof(((*bones)[bone_id])->children);
+        Msg("size: %d", sz);
         Msg("sz1: %d", sz1);
         CBoneData* bd = ((*bones)[bone_id]);
         return bd;
     }
-    u16 _BCL LL_BoneCount() const { return u16(bones->size()); }
-    u16 LL_VisibleBoneCount() { return visimask.count(); }
-    ICF Fmatrix& _BCL LL_GetTransform(u16 bone_id) { return LL_GetBoneInstance(bone_id).mTransform; }
-    ICF const Fmatrix& _BCL LL_GetTransform(u16 bone_id) const { return LL_GetBoneInstance(bone_id).mTransform; }
+    u16 LL_BoneCount() const { return u16(bones->size()); }
+    u16 LL_VisibleBoneCount(); /*{ return visimask.count(); }*/
+    ICF Fmatrix& LL_GetTransform(u16 bone_id) { return LL_GetBoneInstance(bone_id).mTransform; }
+    ICF const Fmatrix& LL_GetTransform(u16 bone_id) const { return LL_GetBoneInstance(bone_id).mTransform; }
+    ICF Fmatrix& LL_GetTransform_R_old(u16 bone_id) { return LL_GetBoneInstance(bone_id).mRenderTransform_old; }
     ICF Fmatrix& LL_GetTransform_R(u16 bone_id) { return LL_GetBoneInstance(bone_id).mRenderTransform; } // rendering only
     Fobb& LL_GetBox(u16 bone_id)
     {
-        ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", __FUNCTION__, dbg_name.c_str(), bone_id);
+        ASSERT_FMT(bone_id < LL_BoneCount(), "visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id);
         return (*bones)[bone_id]->obb;
     }
-    const Fbox& _BCL GetBox() const { return vis.box; }
+    const Fbox& GetBox() const { return vis.box; }
     void LL_GetBindTransform(xr_vector<Fmatrix>& matrices);
     int LL_GetBoneGroups(xr_vector<xr_vector<u16>>& groups);
 
-    u16 _BCL LL_GetBoneRoot() { return iRoot; }
+    u16 LL_GetBoneRoot() { return iRoot; }
     void LL_SetBoneRoot(u16 bone_id)
     {
-        VERIFY(bone_id < LL_BoneCount());
+        ASSERT_FMT(bone_id < LL_BoneCount(), "visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id);
         iRoot = bone_id;
     }
 
-    BOOL _BCL LL_GetBoneVisible(u16 bone_id)
+    BOOL LL_GetBoneVisible(u16 bone_id)
     {
-        VERIFY(bone_id < LL_BoneCount());
+        ASSERT_FMT(bone_id < LL_BoneCount(), "visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id);
         return visimask.is(bone_id);
     }
     void LL_SetBoneVisible(u16 bone_id, BOOL val, BOOL bRecursive);
-    VisMask _BCL LL_GetBonesVisible() { return visimask; }
+    VisMask LL_GetBonesVisible() { return visimask; }
     void LL_SetBonesVisible(VisMask mask);
 
     // Main functionality
     virtual void CalculateBones(BOOL bForceExact = FALSE); // Recalculate skeleton
     void CalculateBones_Invalidate();
+
     void Callback(UpdateCallback C, void* Param)
     {
         Update_Callback = C;
@@ -266,7 +276,7 @@ public:
     void DebugRender(Fmatrix& XFORM);
 #endif
 protected:
-    virtual shared_str _BCL getDebugName() { return dbg_name; }
+    virtual shared_str getDebugName() { return dbg_name; }
 
 public:
     // General "Visual" stuff
@@ -276,10 +286,9 @@ public:
     virtual void Depart();
     virtual void Release();
 
-    virtual IKinematicsAnimated* dcast_PKinematicsAnimated() { return 0; }
-    virtual IRenderVisual* _BCL dcast_RenderVisual() { return this; }
-    virtual IKinematics* _BCL dcast_PKinematics() { return this; }
-    //	virtual	CKinematics*		dcast_PKinematics	()				{ return this;	}
+    virtual IKinematicsAnimated* dcast_PKinematicsAnimated() { return nullptr; }
+    virtual IRenderVisual* dcast_RenderVisual() { return this; }
+    virtual IKinematics* dcast_PKinematics() { return this; }
 
     virtual u32 mem_usage(bool bInstance)
     {
@@ -287,9 +296,8 @@ public:
         sz += bone_instances ? bone_instances->mem_usage() : 0;
         if (!bInstance)
         {
-            //			sz					+= pUserData?pUserData->mem_usage():0;
-            for (vecBonesIt b_it = bones->begin(); b_it != bones->end(); b_it++)
-                sz += sizeof(vecBones::value_type) + (*b_it)->mem_usage();
+            for (const auto& bone : *bones)
+                sz += sizeof(vecBones::value_type) + bone->mem_usage();
         }
         return sz;
     }
@@ -297,4 +305,5 @@ public:
 private:
     bool m_is_original_lod;
 };
-IC CKinematics* PCKinematics(dxRender_Visual* V) { return V ? (CKinematics*)V->dcast_PKinematics() : 0; }
+
+IC CKinematics* PCKinematics(dxRender_Visual* V) { return V ? (CKinematics*)V->dcast_PKinematics() : nullptr; }

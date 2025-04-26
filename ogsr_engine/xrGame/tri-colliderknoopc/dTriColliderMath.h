@@ -1,5 +1,5 @@
-#ifndef D_TRI_COLLIDER_MATH_H
-#define D_TRI_COLLIDER_MATH_H
+#pragma once
+
 #include "__aabb_tri.h"
 #include "../ode_include.h"
 #include "../mathutils.h"
@@ -102,4 +102,3 @@ ICF void CalculateTri(CDB::TRI* XTri, const float* pos, Triangle& triangle, cons
     InitTriangle(XTri, triangle, VRT);
     triangle.dist = dDOT(pos, triangle.norm) - triangle.pos;
 }
-#endif

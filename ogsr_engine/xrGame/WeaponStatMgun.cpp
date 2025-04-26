@@ -234,9 +234,9 @@ void CWeaponStatMgun::cam_Update(float dt, float fov)
     Level().Cameras().UpdateFromCamera(Camera());
 }
 
-void CWeaponStatMgun::renderable_Render()
+void CWeaponStatMgun::renderable_Render(u32 context_id, IRenderable* root)
 {
-    inheritedPH::renderable_Render();
+    inheritedPH::renderable_Render(context_id, root);
 
     RenderLight();
 }

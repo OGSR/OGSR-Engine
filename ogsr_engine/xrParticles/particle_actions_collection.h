@@ -1,9 +1,9 @@
 //---------------------------------------------------------------------------
-#ifndef particle_actions_collectionH
-#define particle_actions_collectionH
+#pragma once
 
 #include "particle_actions.h"
 #include "particle_core.h"
+
 namespace PAPI
 {
 #define _METHODS \
@@ -302,6 +302,3 @@ struct PARTICLES_API PATurbulence : public ParticleAction
     _METHODS;
 };
 }; // namespace PAPI
-
-//---------------------------------------------------------------------------
-#endif

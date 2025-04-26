@@ -199,8 +199,6 @@ ALife::_TIME_ID game_sv_Single::GetEnvironmentGameTime()
 
 float game_sv_Single::GetEnvironmentGameTimeFactor() { return (inherited::GetGameTimeFactor()); }
 
-void game_sv_Single::SetEnvironmentGameTimeFactor(const float fTimeFactor) { return (inherited::SetGameTimeFactor(fTimeFactor)); }
-
 bool game_sv_Single::change_level(NET_Packet& net_packet, ClientID sender)
 {
     if (ai().get_alife())
@@ -310,16 +308,20 @@ void game_sv_Single::on_death(CSE_Abstract* e_dest, CSE_Abstract* e_src)
 
 void game_sv_Single::restart_simulator(LPCSTR saved_game_name)
 {
+    // это загрузка сохранения на этом же уровне - загрузка quick save
+
     shared_str& options = *alife().server_command_line();
 
     delete_data(m_alife_simulator);
     server().clear_ids();
+    Memory.mem_compact();
 
     strcpy_s(g_pGamePersistent->m_game_params.m_game_or_spawn, saved_game_name);
     strcpy_s(g_pGamePersistent->m_game_params.m_new_or_load, "load");
 
     pApp->SetLoadingScreen(xr_new<UILoadingScreen>());
-    pApp->LoadBegin();
+    pApp->LoadBegin(true);
+
     m_alife_simulator = xr_new<CALifeSimulator>(&server(), &options);
     if (!psActorFlags.test(AF_KEYPRESS_ON_START))
         pApp->LoadForceFinish();

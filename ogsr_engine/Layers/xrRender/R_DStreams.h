@@ -1,5 +1,3 @@
-#ifndef r_DStreamsH
-#define r_DStreamsH
 #pragma once
 
 enum
@@ -29,7 +27,7 @@ public:
     void reset_begin();
     void reset_end();
 
-    IC ID3DVertexBuffer* Buffer() { return pVB; }
+    IC ID3DVertexBuffer* Buffer() const { return pVB; }
     IC u32 DiscardID() { return mDiscardID; }
     IC void Flush() { mPosition = mSize; }
 
@@ -55,7 +53,7 @@ public:
 private:
     void _clear()
     {
-        pIB = NULL;
+        pIB = nullptr;
         mSize = 0;
         mPosition = 0;
         mDiscardID = 0;
@@ -77,4 +75,3 @@ public:
     _IndexStream() { _clear(); };
     ~_IndexStream() { Destroy(); };
 };
-#endif

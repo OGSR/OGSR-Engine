@@ -29,25 +29,16 @@ void CDetailManager::cache_Initialize()
     }
 }
 
-CDetailManager::Slot* CDetailManager::cache_Query(int r_x, int r_z)
-{
-    int gx = w2cg_X(r_x + cache_cx);
-    VERIFY(gx >= 0 && gx < dm_cache_line);
-    int gz = w2cg_Z(r_z + cache_cz);
-    VERIFY(gz >= 0 && gz < dm_cache_line);
-    return cache[gz][gx];
-}
-
 void CDetailManager::cache_Task(int gx, int gz, Slot* D)
 {
-    int sx = cg2w_X(gx);
-    int sz = cg2w_Z(gz);
+    const int sx = cg2w_X(gx);
+    const int sz = cg2w_Z(gz);
     DetailSlot& DS = QueryDB(sx, sz);
 
     D->empty = (DS.id0 == DetailSlot::ID_Empty) && (DS.id1 == DetailSlot::ID_Empty) && (DS.id2 == DetailSlot::ID_Empty) && (DS.id3 == DetailSlot::ID_Empty);
 
     // Unpacking
-    u32 old_type = D->type;
+    const u32 old_type = D->type;
     D->type = stPending;
     D->sx = sx;
     D->sz = sz;
@@ -58,11 +49,10 @@ void CDetailManager::cache_Task(int gx, int gz, Slot* D)
 
     for (u32 i = 0; i < dm_obj_in_slot; i++)
     {
-        D->G[i].id = DS.r_id(i);
-        for (u32 clr = 0; clr < D->G[i].items.size(); clr++)
-            if (D->G[i].items[clr]) // KD: затычка. Причина появления нулевых указателей неясна
-                poolSI.destroy(D->G[i].items[clr]);
-        D->G[i].items.clear();
+        auto& SP = D->G[i];
+        SP.id = DS.r_id(i);
+        SP.items.clear();
+        SP.r_items.clear();
     }
 
     if (old_type != stPending)
@@ -72,134 +62,143 @@ void CDetailManager::cache_Task(int gx, int gz, Slot* D)
     }
 }
 
-BOOL CDetailManager::cache_Validate()
+void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view)
 {
-    for (u32 z = 0; z < dm_cache_line; z++)
-    {
-        for (u32 x = 0; x < dm_cache_line; x++)
-        {
-            int w_x = cg2w_X(x);
-            int w_z = cg2w_Z(z);
-            Slot* D = cache[z][x];
+    ZoneScoped;
 
-            if (D->sx != w_x)
-                return FALSE;
-            if (D->sz != w_z)
-                return FALSE;
-        }
-    }
-    return TRUE;
-}
+    const bool bNeedMegaUpdate = (cache_cx != v_x) || (cache_cz != v_z);
 
-void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view, int limit)
-{
-    bool bNeedMegaUpdate = (cache_cx != v_x) || (cache_cz != v_z);
-    // *****	Cache shift
-    while (cache_cx != v_x)
     {
         if (v_x > cache_cx)
         {
-            // shift matrix to left
-            cache_cx++;
-            for (u32 z = 0; z < dm_cache_line; z++)
+            while (cache_cx != v_x)
             {
-                Slot* S = cache[z][0];
-                for (u32 x = 1; x < dm_cache_line; x++)
-                    cache[z][x - 1] = cache[z][x];
-                cache[z][dm_cache_line - 1] = S;
-                cache_Task(dm_cache_line - 1, z, S);
+                // shift matrix to left
+                cache_cx++;
+                for (u32 z = 0; z < dm_cache_line; z++)
+                {
+                    Slot* S = cache[z][0];
+                    for (u32 x = 1; x < dm_cache_line; x++)
+                        cache[z][x - 1] = cache[z][x];
+                    cache[z][dm_cache_line - 1] = S;
+                    cache_Task(dm_cache_line - 1, z, S);
+                }
+                // R_ASSERT(cache_Validate());
             }
-            // R_ASSERT	(cache_Validate());
         }
         else
         {
-            // shift matrix to right
-            cache_cx--;
-            for (u32 z = 0; z < dm_cache_line; z++)
+            while (cache_cx != v_x)
             {
-                Slot* S = cache[z][dm_cache_line - 1];
-                for (int x = dm_cache_line - 1; x > 0; x--)
-                    cache[z][x] = cache[z][x - 1];
-                cache[z][0] = S;
-                cache_Task(0, z, S);
+                // shift matrix to right
+                cache_cx--;
+                for (u32 z = 0; z < dm_cache_line; z++)
+                {
+                    Slot* S = cache[z][dm_cache_line - 1];
+                    for (u32 x = dm_cache_line - 1; x > 0; x--)
+                        cache[z][x] = cache[z][x - 1];
+                    cache[z][0] = S;
+                    cache_Task(0, z, S);
+                }
+                // R_ASSERT(cache_Validate());
             }
-            // R_ASSERT	(cache_Validate());
         }
-    }
-    while (cache_cz != v_z)
-    {
+
         if (v_z > cache_cz)
         {
-            // shift matrix down a bit
-            cache_cz++;
-            for (u32 x = 0; x < dm_cache_line; x++)
+            while (cache_cz != v_z)
             {
-                Slot* S = cache[dm_cache_line - 1][x];
-                for (int z = dm_cache_line - 1; z > 0; z--)
-                    cache[z][x] = cache[z - 1][x];
-                cache[0][x] = S;
-                cache_Task(x, 0, S);
+                // shift matrix down a bit
+                cache_cz++;
+                for (u32 x = 0; x < dm_cache_line; x++)
+                {
+                    Slot* S = cache[dm_cache_line - 1][x];
+                    for (u32 z = dm_cache_line - 1; z > 0; z--)
+                        cache[z][x] = cache[z - 1][x];
+                    cache[0][x] = S;
+                    cache_Task(x, 0, S);
+                }
+                // R_ASSERT(cache_Validate());
             }
-            // R_ASSERT	(cache_Validate());
         }
         else
         {
-            // shift matrix up
-            cache_cz--;
-            for (u32 x = 0; x < dm_cache_line; x++)
+            while (cache_cz != v_z)
             {
-                Slot* S = cache[0][x];
-                for (u32 z = 1; z < dm_cache_line; z++)
-                    cache[z - 1][x] = cache[z][x];
-                cache[dm_cache_line - 1][x] = S;
-                cache_Task(x, dm_cache_line - 1, S);
+                // shift matrix up
+                cache_cz--;
+                for (u32 x = 0; x < dm_cache_line; x++)
+                {
+                    Slot* S = cache[0][x];
+                    for (u32 z = 1; z < dm_cache_line; z++)
+                        cache[z - 1][x] = cache[z][x];
+                    cache[dm_cache_line - 1][x] = S;
+                    cache_Task(x, dm_cache_line - 1, S);
+                }
+                // R_ASSERT (cache_Validate());
             }
-            // R_ASSERT	(cache_Validate());
         }
     }
 
     // Task performer
-    BOOL bFullUnpack = FALSE;
-    if (cache_task.size() == dm_cache_size || Device.dwPrecacheFrame == 1) // на последнем кадре префетча
+    if (cache_task.size() == dm_cache_size) // full unpack, first time
     {
-        limit = dm_cache_size;
-        bFullUnpack = TRUE;
-    }
-
-    for (int iteration = 0; cache_task.size() && (iteration < limit); iteration++)
-    {
-        u32 best_id = 0;
-        float best_dist = flt_max;
-
-        if (bFullUnpack)
+        while (!cache_task.empty())
         {
-            best_id = cache_task.size() - 1;
+            // Decompress and remove task
+            const u32 bestId = cache_task.size() - 1;
+            cache_Decompress(cache_task[bestId]);
+            cache_task.erase(bestId);
         }
-        else
+    }
+    else
+    {
+        const u32 invalidIndex = u32(-1);
+        u32 bestIndexes[dm_max_decompress];
+        std::fill_n(bestIndexes, dm_max_decompress, invalidIndex);
+
+        float bestDistances[dm_max_decompress];
+        std::fill_n(bestDistances, dm_max_decompress, flt_max);
+
+        const auto bestDistancesBegin = std::begin(bestDistances);
+        const auto bestDistancesEnd = std::end(bestDistances);
+        ptrdiff_t maxIdx = 0;
+
+        for (u32 i = 0, size = cache_task.size(); i < size; ++i)
         {
-            for (u32 entry = 0; entry < cache_task.size(); entry++)
+            // Gain access to data
+            const Slot* S = cache_task[i];
+            VERIFY(stPending == S->type);
+
+            // Estimate
+            Fvector C;
+            S->vis.box.getcenter(C);
+            const float D = view.distance_to_sqr(C);
+
+            // Select
+            if (D < bestDistances[maxIdx])
             {
-                // Gain access to data
-                Slot* S = cache_task[entry];
-                VERIFY(stPending == S->type);
+                bestDistances[maxIdx] = D;
+                bestIndexes[maxIdx] = i;
 
-                // Estimate
-                Fvector C;
-                S->vis.box.getcenter(C);
-                float D = view.distance_to_sqr(C);
-
-                // Select
-                if (D < best_dist)
-                {
-                    best_dist = D;
-                    best_id = entry;
-                }
+                const auto maxIt = std::max_element(bestDistancesBegin, bestDistancesEnd);
+                maxIdx = std::distance(bestDistancesBegin, maxIt);
             }
         }
 
-        // Decompress and remove task
-        cache_Decompress(cache_task[best_id]);
-        cache_task.erase(best_id);
+        std::sort(bestIndexes, bestIndexes + dm_max_decompress);
+
+        for (int i = dm_max_decompress - 1; i >= 0; --i)
+        {
+            const u32 bestId = bestIndexes[i];
+
+            if (bestId != invalidIndex)
+            {
+                // Decompress and remove task
+                cache_Decompress(cache_task[bestId]);
+                cache_task.erase(bestId);
+            }
+        }
     }
 
     if (bNeedMegaUpdate)
@@ -211,9 +210,9 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view, int limit)
                 CacheSlot1& MS = cache_level1[_mz1][_mx1];
                 MS.empty = TRUE;
                 MS.vis.clear();
-                for (int _i = 0; _i < dm_cache1_count * dm_cache1_count; _i++)
+                for (const auto& slot : MS.slots)
                 {
-                    Slot* PS = *MS.slots[_i];
+                    Slot* PS = *slot;
                     Slot& S = *PS;
                     MS.vis.box.merge(S.vis.box);
                     if (!S.empty)
@@ -227,11 +226,11 @@ void CDetailManager::cache_Update(int v_x, int v_z, Fvector& view, int limit)
 
 DetailSlot& CDetailManager::QueryDB(int sx, int sz)
 {
-    int db_x = sx + dtH.offs_x;
-    int db_z = sz + dtH.offs_z;
+    const int db_x = sx + dtH.offs_x;
+    const int db_z = sz + dtH.offs_z;
     if ((db_x >= 0) && (db_x < int(dtH.size_x)) && (db_z >= 0) && (db_z < int(dtH.size_z)))
     {
-        u32 linear_id = db_z * dtH.size_x + db_x;
+        const u32 linear_id = db_z * dtH.size_x + db_x;
         return dtSlots[linear_id];
     }
     else

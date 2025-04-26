@@ -46,7 +46,7 @@ bool CStateMonsterHitObjectAbstract::check_start_conditions()
     xr_vector<CObject*>::iterator B = m_nearest_objects.begin();
     xr_vector<CObject*>::iterator E = m_nearest_objects.end();
 
-    for (xr_vector<CObject*>::iterator I = B; I != E; I++)
+    for (xr_vector<CObject*>::iterator I = B; I != E; ++I)
     {
         CPhysicsShellHolder* obj = smart_cast<CPhysicsShellHolder*>(*I);
         if (!obj || !obj->m_pPhysicsShell)

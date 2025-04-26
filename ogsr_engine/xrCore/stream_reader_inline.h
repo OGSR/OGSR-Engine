@@ -1,5 +1,4 @@
-#ifndef STREAM_READER_INLINE_H
-#define STREAM_READER_INLINE_H
+#pragma once
 
 IC CStreamReader::CStreamReader() {}
 
@@ -49,5 +48,3 @@ IC void CStreamReader::close()
     CStreamReader* self = this;
     xr_delete(self);
 }
-
-#endif // STREAM_READER_INLINE_H

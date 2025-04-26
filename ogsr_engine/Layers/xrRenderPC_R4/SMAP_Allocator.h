@@ -3,7 +3,7 @@
 struct SMAP_Rect
 {
     Ivector2 min, max;
-    bool intersect(SMAP_Rect& R)
+    bool intersect(SMAP_Rect& R) const
     {
         if (max.x < R.min.x)
             return false;
@@ -46,7 +46,7 @@ private:
         stack.push_back(R);
         Ivector2 p0, p1;
         R.get_cp(p0, p1);
-        s32 ps = s32(psize);
+        const s32 ps = s32(psize);
         if ((p0.x < ps) && (p0.y < ps))
             cpoint.push_back(p0); // 1st
         if ((p1.x < ps) && (p1.y < ps))

@@ -56,6 +56,7 @@
 #include "ui/UIBtnHint.h"
 
 #include "embedded_editor/embedded_editor_main.h"
+#include "..\xr_3da\xr_ioc_cmd.h"
 
 CPHWorld* ph_world = 0;
 
@@ -110,10 +111,7 @@ CLevel::CLevel()
 #ifdef DEBUG
     m_bSynchronization = false;
 #endif
-    //---------------------------------------------------------
-    pStatGraphR = NULL;
-    pStatGraphS = NULL;
-    //---------------------------------------------------------
+
     pCurrentControlEntity = NULL;
 
     //---------------------------------------------------------
@@ -121,46 +119,11 @@ CLevel::CLevel()
     m_dwCL_PingDeltaSend = 1000;
     m_dwRealPing = 0;
 
-    //---------------------------------------------------------
-
-    //	if ( !strstr( Core.Params, "-tdemo " ) && !strstr(Core.Params,"-tdemof "))
-    //	{
-    //		Demo_PrepareToStore();
-    //	};
-    //---------------------------------------------------------
-    //	m_bDemoPlayMode = FALSE;
-    //	m_aDemoData.clear();
-    //	m_bDemoStarted	= FALSE;
-
-    /*
-    if (strstr(Core.Params,"-tdemo ") || strstr(Core.Params,"-tdemof ")) {
-        string1024				f_name;
-        if (strstr(Core.Params,"-tdemo "))
-        {
-            sscanf					(strstr(Core.Params,"-tdemo ")+7,"%[^ ] ",f_name);
-            m_bDemoPlayByFrame = FALSE;
-
-            Demo_Load	(f_name);
-        }
-        else
-        {
-            sscanf					(strstr(Core.Params,"-tdemof ")+8,"%[^ ] ",f_name);
-            m_bDemoPlayByFrame = TRUE;
-
-            m_lDemoOfs = 0;
-            Demo_Load_toFrame(f_name, 100, m_lDemoOfs);
-        };
-    }
-    */
-    //---------------------------------------------------------
-
     m_is_removing_objects = false;
 
     g_player_hud = xr_new<player_hud>();
     g_player_hud->load_default();
 }
-
-extern CAI_Space* g_ai_space;
 
 CLevel::~CLevel()
 {
@@ -217,9 +180,6 @@ CLevel::~CLevel()
     //	xr_delete					(m_pFogOfWar);
     // destroy bullet manager
     xr_delete(m_pBulletManager);
-    //-----------------------------------------------------------
-    xr_delete(pStatGraphR);
-    xr_delete(pStatGraphS);
 
     //-----------------------------------------------------------
     xr_delete(m_ph_commander);
@@ -418,15 +378,11 @@ void CLevel::OnFrame()
     psDeviceFlags.set(rsDisableObjectsAsCrows, false);
 
     // commit events from bullet manager from prev-frame
-    Device.Statistic->TEST0.Begin();
+    Device.Statistic->BulletManager.Begin();
     BulletManager().CommitEvents();
-    Device.Statistic->TEST0.End();
-
-    Device.Statistic->netClient1.Begin();
+    Device.Statistic->BulletManager.End();
 
     ClientReceive();
-
-    Device.Statistic->netClient1.End();
 
     ProcessGameEvents();
 
@@ -445,9 +401,9 @@ void CLevel::OnFrame()
     m_ph_commander_scripts->update();
 
     //просчитать полет пуль
-    Device.Statistic->TEST0.Begin();
+    Device.Statistic->BulletManager.Begin();
     BulletManager().CommitRenderSet();
-    Device.Statistic->TEST0.End();
+    Device.Statistic->BulletManager.End();
 
     // update static sounds
     if (g_mt_config.test(mtLevelSounds))
@@ -458,15 +414,8 @@ void CLevel::OnFrame()
     if (!sound_registry_defer.empty())
         Device.add_to_seq_parallel(fastdelegate::MakeDelegate(this, &CLevel::PrefetchDeferredSounds));
 
-    //-----------------------------------------------------
-    if (pStatGraphR)
-    {
-        static float fRPC_Mult = 10.0f;
-        static float fRPS_Mult = 1.0f;
-
-        pStatGraphR->AppendItem(float(m_dwRPC) * fRPC_Mult, 0xffff0000, 1);
-        pStatGraphR->AppendItem(float(m_dwRPS) * fRPS_Mult, 0xff00ff00, 0);
-    };
+    if (ps_lua_gc_method != gc_timeout)
+        Device.add_to_seq_parallel(fastdelegate::MakeDelegate(this, &CLevel::script_gc));
 
     ShowEditor();
 }
@@ -475,11 +424,15 @@ extern Flags32 dbg_net_Draw_Flags;
 
 extern void draw_wnds_rects();
 
+extern bool use_reshade;
+extern void render_reshade_effects();
+
 void CLevel::OnRender()
 {
-    Render->BeforeWorldRender(); //--#SM+#-- +SecondVP+
-
     inherited::OnRender();
+
+    Render->Calculate();
+    Render->Render();
 
     Game().OnRender();
 
@@ -488,14 +441,18 @@ void CLevel::OnRender()
     BulletManager().Render();
     // Device.Statistic->TEST1.End();
 
+    if (use_reshade)
+        render_reshade_effects();
+
     auto pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
     auto pActor = smart_cast<CActor*>(Level().CurrentEntity());
     CPda* Pda = pActor ? pActor->GetPDA() : nullptr;
     const bool need_pda_render = Pda && Pda->Is3DPDA() && psActorFlags.test(AF_3D_PDA) && pGameSP->PdaMenu->IsShown();
-    Render->AfterWorldRender(need_pda_render);
 
     if (need_pda_render)
     {
+        Render->AfterWorldRender();
+
         HUD().RenderUI();
         if (g_btnHint)
             g_btnHint->OnRender();
@@ -704,7 +661,7 @@ float CLevel::GetEnvironmentGameDayTimeSec() { return (float(s64(GetEnvironmentG
 
 void CLevel::ScriptDebugRender()
 {
-    if (!m_debug_render_queue.size())
+    if (m_debug_render_queue.empty())
         return;
 
     bool hasVisibleObj = false;
@@ -734,27 +691,16 @@ void CLevel::GetGameDateTime(u32& year, u32& month, u32& day, u32& hours, u32& m
 float CLevel::GetGameTimeFactor()
 {
     return (game->GetGameTimeFactor());
-    //	return			(Server->game->GetGameTimeFactor());
 }
 
 void CLevel::SetGameTimeFactor(const float fTimeFactor)
 {
     game->SetGameTimeFactor(fTimeFactor);
-    //	Server->game->SetGameTimeFactor(fTimeFactor);
 }
 
 void CLevel::SetGameTimeFactor(ALife::_TIME_ID GameTime, const float fTimeFactor)
 {
     game->SetGameTimeFactor(GameTime, fTimeFactor);
-    //	Server->game->SetGameTimeFactor(fTimeFactor);
-}
-
-void CLevel::SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTimeFactor)
-{
-    if (!game)
-        return;
-
-    game->SetEnvironmentGameTimeFactor(GameTime, fTimeFactor);
 }
 
 void CLevel::GetGameTimeForShaders(u32& hours, u32& minutes, u32& seconds, u32& milliseconds)
@@ -840,4 +786,38 @@ bool GlobalFeelTouch::is_object_denied(CObject const* O)
         return false;
     }
     return true;
+}
+
+void CLevel::script_gc() const
+{
+    ZoneScoped;
+
+    //int memory_before_kb = lua_gc(ai().script_engine().lua(), LUA_GCCOUNT, 0);
+
+    switch (ps_lua_gc_method)
+    {
+    case gc_step: {
+        // делает один шаг очистки памяти в lua. там у него свое понимание сколько надо очистить
+        lua_gc(ai().script_engine().lua(), LUA_GCSTEP, psLUA_GCSTEP);
+
+        lua_gc(ai().script_engine().lua(), LUA_GCSTOP, 0);
+        break;
+    }
+    case gc_timeout: {
+        // чистит столько раз пока не вышел timeout. это типо лучше, НО иногда бывает что какой то шаг очистки может занять сильно больше времени
+        lua_gc(ai().script_engine().lua(), LUA_GCTIMEOUT, psLUA_GCTIMEOUT);
+
+        lua_gc(ai().script_engine().lua(), LUA_GCSTOP, 0);
+        break;
+    }
+    case gc_default: {
+        // луаджит чистит себе память сам когда захочет.
+        lua_gc(ai().script_engine().lua(), LUA_GCRESTART, 0);
+        break;
+    }
+    }
+
+    //int memory_after_kb = lua_gc(ai().script_engine().lua(), LUA_GCCOUNT, 0);
+
+    //Msg("##[%s] script_gc [timeout: %d]: before [%d]kb after [%d]kb", __FUNCTION__, psLUA_GCTIMEOUT, memory_before_kb, memory_after_kb);
 }

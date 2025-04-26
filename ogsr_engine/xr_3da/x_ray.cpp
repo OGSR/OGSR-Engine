@@ -8,7 +8,6 @@
 #include "stdafx.h"
 #include "igame_level.h"
 #include "igame_persistent.h"
-
 #include "xr_input.h"
 #include "xr_ioconsole.h"
 #include "x_ray.h"
@@ -17,31 +16,19 @@
 #include "../xrcdb/ispatial.h"
 #include "ILoadingScreen.h"
 #include "DiscordRPC.hpp"
+#include "Render.h"
 #include "splash.h"
 
 #define CORE_FEATURE_SET(feature, section) Core.Features.set(xrCore::Feature::feature, READ_IF_EXISTS(pSettings, r_bool, section, #feature, false))
 
+ENGINE_API CApplication* pApp{};
 ENGINE_API bool IS_OGSR_GA{};
-ENGINE_API CInifile* pGameIni = nullptr;
-int max_load_stage = 0;
+ENGINE_API CInifile* pGameIni{};
+int max_load_stage{};
 
-struct _SoundProcessor : public pureFrame
-{
-    virtual void OnFrame()
-    {
-        // Msg							("------------- sound: %d [%3.2f,%3.2f,%3.2f]",u32(Device.dwFrame),VPUSH(Device.vCameraPosition));
-        Device.Statistic->Sound.Begin();
-        ::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop);
-        Device.Statistic->Sound.End();
-    }
-} SoundProcessor;
-
-// global variables
-ENGINE_API CApplication* pApp = NULL;
-static HWND logoWindow = NULL;
-
-ENGINE_API bool g_bBenchmark = false;
-string512 g_sBenchmarkName;
+bool use_reshade{};
+extern bool init_reshade();
+extern void unregister_reshade();
 
 // startup point
 void InitEngine()
@@ -62,6 +49,53 @@ void InitSettings()
     CHECK_OR_EXIT(!pGameIni->sections().empty(), make_string("Cannot find file %s.\nReinstalling application may fix this problem.", fname));
 
     IS_OGSR_GA = strstr(READ_IF_EXISTS(pSettings, r_string, "mod_ver", "mod_ver", "nullptr"), "OGSR");
+
+    // load custom shader params declarations
+
+    // Simp: сюда добавлены параметры для актуальных шейдеров, в конфигах их держать не практично (потерялся параметр - и шейдер будет работать не правильно.)
+    shader_exports.set_custom_params("shader_param_grayscale", {});
+
+    shader_exports.set_custom_params("pnv_color_old", {});
+    shader_exports.set_custom_params("pnv_params_old", {});
+
+    shader_exports.set_custom_params("pnv_color", {});
+
+    shader_exports.set_custom_params("heat_vision_steps", {});
+    shader_exports.set_custom_params("heat_vision_blurring", {});
+    shader_exports.set_custom_params("heat_fade_distance", {});
+
+    shader_exports.set_custom_params("breath_size", {});
+    shader_exports.set_custom_params("breath_idx", {});
+
+    shader_exports.set_custom_params("gasmask_inertia", {});
+    shader_exports.set_custom_params("device_inertia", {});
+
+    shader_exports.set_custom_params("mark_number", {});
+    shader_exports.set_custom_params("mark_color", {});
+
+    shader_exports.set_custom_params("s3ds_param_1", {});
+    shader_exports.set_custom_params("s3ds_param_2", {});
+    shader_exports.set_custom_params("s3ds_param_3", {});
+    shader_exports.set_custom_params("s3ds_param_4", {});
+    //
+
+    if (pSettings->section_exist("shader_params_export"))
+    {
+        Msg("[shader_params_export] section found!!!");
+
+        int tb_count = pSettings->line_count("shader_params_export");
+        for (int tb_idx = 0; tb_idx < tb_count; tb_idx++)
+        {
+            LPCSTR N, V;
+            if (pSettings->r_line("shader_params_export", tb_idx, &N, &V))
+            {
+                if (strstr(N, "_save"))
+                    continue;
+
+                shader_exports.set_custom_params(N, Fvector4{});
+            }
+        }
+    }
 }
 void InitConsole()
 {
@@ -181,7 +215,7 @@ void Startup()
     }
 
     // Initialize APP
-    ShowWindow(Device.m_hWnd, SW_SHOWNORMAL);
+
     Device.Create();
     LALib.OnCreate();
     pApp = xr_new<CApplication>();
@@ -189,35 +223,40 @@ void Startup()
     g_SpatialSpace = xr_new<ISpatial_DB>();
     g_SpatialSpacePhysic = xr_new<ISpatial_DB>();
 
-    // Destroy LOGO
-    DestroyWindow(logoWindow);
-    logoWindow = NULL;
-
     Discord.Init();
+
+	// Reshade
+#pragma todo("Simp: нужен вообще этот решейд???")
+    use_reshade = init_reshade();
+    if (use_reshade)
+        Msg("--[ReShade]: Loaded compatibility addon");
+    else
+        Msg("!![ReShade]: ReShade not installed or version too old - didn't load compatibility addon");
 
     // Main cycle
     Memory.mem_usage();
+
     Device.Run();
+
+	// Reshade
+    if (use_reshade)
+        unregister_reshade();
 
     // Destroy APP
     xr_delete(g_SpatialSpacePhysic);
     xr_delete(g_SpatialSpace);
-    DEL_INSTANCE(g_pGamePersistent);
+    xr_delete(g_pGamePersistent);
     xr_delete(pApp);
     Engine.Event.Dump();
 
     // Destroying
     destroyInput();
 
-    if (!g_bBenchmark)
-        destroySettings();
+    destroySettings();
 
     LALib.OnDestroy();
 
-    if (!g_bBenchmark)
-        destroyConsole();
-    else
-        Console->OnScreenResolutionChanged(); // Console->Reset();
+    destroyConsole();
 
     destroySound();
 
@@ -338,16 +377,20 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
             // New mutex
             hCheckPresenceMutex = CreateMutex(nullptr, FALSE, STALKER_PRESENCE_MUTEX);
             if (hCheckPresenceMutex == nullptr)
+            {
                 // Shit happens
-                return 2;
+                return 0;
+            }
         }
         else
         {
             // Already running
             CloseHandle(hCheckPresenceMutex);
-            return 1;
+            return 0;
         }
     }
+
+    Debug._initialize();
 
     // SetThreadAffinityMask		(GetCurrentThread(),1);
 
@@ -355,7 +398,7 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
 
     DisableProcessWindowsGhosting();
 
-    logoWindow = ShowSplash(hInstance, nCmdShow);
+    ShowSplash(hInstance);
 
     LPCSTR fsgame_ltx_name = "-fsltx ";
     string_path fsgame = "";
@@ -376,8 +419,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
         InitInput();
         InitConsole();
 
-        Engine.External.CreateRendererList();
-
         Engine.External.Initialize();
         Console->Execute("stat_memory");
         Startup();
@@ -395,8 +436,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLi
 {
     gModulesLoaded = true;
 
-    Debug._initialize();
-
     WinMain_impl(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
 
     ExitFromWinMain = true;
@@ -411,7 +450,6 @@ CApplication::CApplication() : loadingScreen(nullptr)
     // events
     eQuit = Engine.Event.Handler_Attach("KERNEL:quit", this);
     eStart = Engine.Event.Handler_Attach("KERNEL:start", this);
-    eStartLoad = Engine.Event.Handler_Attach("KERNEL:load", this);
     eDisconnect = Engine.Event.Handler_Attach("KERNEL:disconnect", this);
 
     // levels
@@ -421,8 +459,6 @@ CApplication::CApplication() : loadingScreen(nullptr)
     // Register us
     Device.seqFrame.Add(this, REG_PRIORITY_HIGH + 1000);
 
-    Device.seqFrameMT.Add(&SoundProcessor);
-
     Console->Show();
 }
 
@@ -430,13 +466,10 @@ CApplication::~CApplication()
 {
     Console->Hide();
 
-    Device.seqFrameMT.Remove(&SoundProcessor);
-    Device.seqFrame.Remove(&SoundProcessor);
     Device.seqFrame.Remove(this);
 
     // events
     Engine.Event.Handler_Detach(eDisconnect, this);
-    Engine.Event.Handler_Detach(eStartLoad, this);
     Engine.Event.Handler_Detach(eStart, this);
     Engine.Event.Handler_Detach(eQuit, this);
 }
@@ -447,9 +480,9 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
     {
         PostQuitMessage(0);
 
-        for (u32 i = 0; i < Levels.size(); i++)
+        for (auto& Level : Levels)
         {
-            xr_free(Levels[i].folder);
+            xr_free(Level.folder);
         }
     }
     else if (E == eStart)
@@ -457,17 +490,14 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
         LPSTR op_server = LPSTR(P1);
         LPSTR op_client = LPSTR(P2);
         R_ASSERT(0 == g_pGameLevel);
-        R_ASSERT(0 != g_pGamePersistent);
+        R_ASSERT(g_pGamePersistent);
 
         {
             Console->Execute("main_menu off");
             Console->Hide();
-            //!			this line is commented by Dima
-            //!			because I don't see any reason to reset device here
-            //!			Device.Reset(false);
-            //-----------------------------------------------------------
+            
             g_pGamePersistent->PreStart(op_server);
-            //-----------------------------------------------------------
+            
             g_pGameLevel = (IGame_Level*)NEW_INSTANCE(CLSID_GAME_LEVEL);
 
             pApp->LoadBegin();
@@ -486,8 +516,8 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
             Console->Hide();
 
             g_pGameLevel->net_Stop();
+            xr_delete(g_pGameLevel);
 
-            DEL_INSTANCE(g_pGameLevel);
             Console->Show();
 
             if ((FALSE == Engine.Event.Peek("KERNEL:quit")) && (FALSE == Engine.Event.Peek("KERNEL:start")))
@@ -496,7 +526,6 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
             }
         }
 
-        R_ASSERT(0 != g_pGamePersistent);
         g_pGamePersistent->Disconnect();
     }
 }
@@ -504,7 +533,7 @@ void CApplication::OnEvent(EVENT E, u64 P1, u64 P2)
 static CTimer phase_timer;
 extern ENGINE_API BOOL g_appLoaded = FALSE;
 
-void CApplication::LoadBegin()
+void CApplication::LoadBegin(bool quick)
 {
     ll_dwReference++;
     if (1 == ll_dwReference)
@@ -512,7 +541,12 @@ void CApplication::LoadBegin()
         g_appLoaded = FALSE;
 
         phase_timer.Start();
+
         load_stage = 0;
+        if (quick)
+            max_load_stage = 4; // при быстром сохранении меньше фаз загрузки. 4 вроде б
+        else 
+            max_load_stage = 16; // 17; //KRodin: пересчитал кол-во стадий, у нас их 15 при создании НИ + 1 на автопаузу
     }
 }
 
@@ -542,7 +576,7 @@ void CApplication::SetLoadingScreen(ILoadingScreen* newScreen)
 
 void CApplication::DestroyLoadingScreen() { xr_delete(loadingScreen); }
 
-void CApplication::LoadDraw()
+void CApplication::LoadDraw() const
 {
     if (g_appLoaded)
         return;
@@ -570,10 +604,6 @@ void CApplication::LoadStage()
     phase_timer.Start();
     Msg("* phase cmem: %d K", Memory.mem_usage() / 1024);
 
-    // if (g_pGamePersistent->GameType() == 1 && strstr(Core.Params, "alife"))
-    max_load_stage = 16; // 17; //KRodin: пересчитал кол-во стадий, у нас их 15 при создании НИ + 1 на автопаузу
-    // else
-    //	max_load_stage = 14;
 
     LoadDraw();
 
@@ -584,9 +614,22 @@ void CApplication::LoadStage()
 // Sequential
 void CApplication::OnFrame()
 {
+    ZoneScoped;
+
     Engine.Event.OnFrame();
-    g_SpatialSpace->update();
-    g_SpatialSpacePhysic->update();
+
+    {
+        static u32 last_frame{0};
+
+        if (Device.dwFrame > last_frame)
+        {
+            g_SpatialSpace->update(true);
+            g_SpatialSpacePhysic->update(false);
+
+            last_frame = Device.dwFrame + 30;
+        }
+    }
+
     if (g_pGameLevel)
         g_pGameLevel->SoundEvent_Dispatch();
 }
@@ -608,9 +651,12 @@ void CApplication::Level_Scan()
 {
     xr_vector<char*>* folder = FS.file_list_open("$game_levels$", FS_ListFolders | FS_RootOnly);
     R_ASSERT(folder && folder->size());
-    for (u32 i = 0; i < folder->size(); i++)
-        Level_Append((*folder)[i]);
+
+    for (auto& i : *folder)
+        Level_Append(i);
+
     FS.file_list_close(folder);
+
 #ifdef DEBUG
     folder = FS.file_list_open("$game_levels$", "$debug$\\", FS_ListFolders | FS_RootOnly);
     if (folder)
@@ -703,18 +749,22 @@ int CApplication::Level_ID(LPCSTR name)
     return -1;
 }
 
-void CApplication::load_draw_internal() { loadingScreen->Update(load_stage, max_load_stage); }
+extern void render_reshade_effects();
 
-/* //KRodin: надо подумать, действительно ли это нужно.
-
-// Always request high performance GPU
-extern "C"
+void CApplication::load_draw_internal() const
 {
-    // https://docs.nvidia.com/gameworks/content/technologies/desktop/optimus.htm
-    ENGINE_API DWORD NvOptimusEnablement = 0x00000001; // NVIDIA Optimus
+    if (use_reshade)
+        render_reshade_effects();
 
-    // https://gpuopen.com/amdpowerxpressrequesthighperformance/
-    ENGINE_API DWORD AmdPowerXpressRequestHighPerformance = 0x00000001; // PowerXpress or Hybrid Graphics
+    loadingScreen->Update(load_stage, max_load_stage);
 }
 
-*/
+#pragma todo("Simp: нужно ли это? сомневаюсь.")
+// Always request high performance GPU
+extern "C" {
+// https://docs.nvidia.com/gameworks/content/technologies/desktop/optimus.htm
+_declspec(dllexport) u32 NvOptimusEnablement = 0x00000001; // NVIDIA Optimus
+
+// https://gpuopen.com/amdpowerxpressrequesthighperformance/
+_declspec(dllexport) u32 AmdPowerXpressRequestHighPerformance = 0x00000001; // PowerXpress or Hybrid Graphics
+}

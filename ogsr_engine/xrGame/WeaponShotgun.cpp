@@ -129,9 +129,11 @@ void CWeaponShotgun::OnShotBoth()
     PHGetLinearVell(vel);
     OnShellDrop(get_LastSP(), vel);
 
-    //огонь из 2х стволов
-    StartFlameParticles();
-    StartFlameParticles2();
+    if (ShouldPlayFlameParticles())
+    {
+        StartFlameParticles();
+        ForceUpdateFireParticles();
+    }
 
     //дым из 2х стволов
     if (ParentIsActor())

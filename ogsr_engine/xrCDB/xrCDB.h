@@ -111,7 +111,7 @@ class XRCDB_API MODEL
 private:
     xrCriticalSection cs;
     Opcode::OPCODE_Model* tree;
-    u32 status; // 0=ready, 1=init, 2=building
+    volatile u32 status; // 0=ready, 1=init, 2=building
 
     // tris
     TRI* tris;
@@ -124,23 +124,23 @@ public:
     ~MODEL();
 
     IC Fvector* get_verts() { return verts; }
+    IC const Fvector* get_verts() const { return verts; }
     IC int get_verts_count() const { return verts_count; }
     IC TRI* get_tris() { return tris; }
+    IC const TRI* get_tris() const { return tris; }
     IC int get_tris_count() const { return tris_count; }
     IC void syncronize() const
     {
         if (S_READY != status)
-        {
-            Log("! WARNING: syncronized CDB::query");
-            xrCriticalSection* C = (xrCriticalSection*)&cs;
-            C->Enter();
-            C->Leave();
-        }
+            syncronize_impl();
     }
 
     void build_internal(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc = nullptr, void* bcp = nullptr, const bool rebuildTrisRequired = true);
     void build(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc = nullptr, void* bcp = nullptr, const bool rebuildTrisRequired = true);
     u32 memory();
+
+private:
+    void syncronize_impl() const;
 };
 
 // Collider result

@@ -16,20 +16,14 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 float4 m_lmap[2];
 
-#ifdef MSAA_OPTIMIZATION
-float4 main(p_volume I, float4 pos2d : SV_Position, uint iSample : SV_SAMPLEINDEX) : SV_Target
-#else
 float4 main(p_volume I, float4 pos2d : SV_Position) : SV_Target
-#endif
 {
     float2 tcProj = I.tc.xy / I.tc.w;
 
     gbuffer_data gbd = gbuffer_load_data(GLD_P(tcProj, pos2d, ISAMPLE));
 
-#ifdef GBUFFER_OPTIMIZATION
-    //	Emulate virtual offset
+    // Emulate virtual offset
     gbd.P += gbd.N * 0.015f;
-#endif //	GBUFFER_OPTIMIZATION
 
     float4 _P = float4(gbd.P, gbd.mtl);
     float4 _N = float4(gbd.N, gbd.hemi);
@@ -55,8 +49,17 @@ float4 main(p_volume I, float4 pos2d : SV_Position) : SV_Target
     float4 light = plight_local(m, _P, _N, _C, Ldynamic_pos, Ldynamic_pos.w, rsqr);
 
     // ----- shadow
-    float4 P4 = float4(_P.x, _P.y, _P.z, 1);
+
+    float3 Offset = 0;
+#ifdef SSFX_SHADOWS
+    // Biasing ( Use the nDotL from plight_local... )
+    float bias_int = (1.0 - saturate(dot(_N, -normalize(_P - Ldynamic_pos.xyz)))) * rsqr * Ldynamic_pos.w;
+    Offset = _N * (0.025f + bias_int * ssfx_shadow_bias.x);
+#endif
+
+    float4 P4 = float4(_P.xyz + Offset, 1);
     float4 PS = mul(m_shadow, P4);
+
     float s = 1.h;
 #ifdef USE_SHADOW
     s = shadow(PS);
@@ -71,7 +74,7 @@ float4 main(p_volume I, float4 pos2d : SV_Position) : SV_Target
 #endif
 
     //	Can use linear with mip point
-    lightmap = s_lmap.SampleLevel(smp_rtlinear, PS.xy / PS.w, 0); //
+    lightmap = s_lmap.SampleLevel(smp_rtlinear, PS.xy / PS.w, 0);
 #endif
 
 #ifdef SSFX_ENHANCED_SHADERS

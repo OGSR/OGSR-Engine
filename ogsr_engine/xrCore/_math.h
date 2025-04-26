@@ -4,9 +4,6 @@ struct _processor_info;
 
 namespace CPU
 {
-XRCORE_API extern u64 qpc_freq;
-XRCORE_API extern u32 qpc_counter;
-
 XRCORE_API extern _processor_info ID;
 XRCORE_API extern u64 QPC();
 

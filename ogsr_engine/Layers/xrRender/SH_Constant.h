@@ -1,5 +1,3 @@
-#ifndef SH_CONSTANT_H
-#define SH_CONSTANT_H
 #pragma once
 
 #include "../../xr_3da/WaveForm.h"
@@ -17,17 +15,16 @@ public:
     };
 
 public:
-    Fcolor const_float;
-    u32 const_dword;
+    Fcolor const_float{0.0f, 0.0f, 0.0f, 0.0f};
+    u32 const_dword{0};
 
-    u32 dwFrame;
-    u32 dwMode;
+    u32 dwFrame{0};
+    u32 dwMode{0};
     WaveForm _R;
     WaveForm _G;
     WaveForm _B;
     WaveForm _A;
 
-    CConstant() { Memory.mem_fill(this, 0, sizeof(CConstant)); }
     IC void set_float(float r, float g, float b, float a)
     {
         const_float.set(r, g, b, a);
@@ -44,7 +41,8 @@ public:
         const_dword = c;
     }
     void Calculate();
-    IC BOOL Similar(CConstant& C) // comare by modes and params
+    IC BOOL Similar(CConstant& C) const
+    // comare by modes and params
     {
         if (dwMode != C.dwMode)
             return FALSE;
@@ -59,9 +57,7 @@ public:
         return TRUE;
     }
     void Load(IReader* fs);
-    void Save(IWriter* fs);
+    void Save(IWriter* fs) const;
 };
 
 typedef resptr_core<CConstant, resptr_base<CConstant>> ref_constant_obsolette;
-
-#endif

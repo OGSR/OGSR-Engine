@@ -1,7 +1,13 @@
 #include "stdafx.h"
+
+#include "blender_fluid.h"
+
+#ifdef DX10_FLUID_ENABLE
+
 #include "dx103DFluidManager.h"
+
 #include "../../xrRender/dxRenderDeviceRender.h"
-#include "dx103DFluidBlenders.h"
+
 #include "dx103DFluidData.h"
 #include "dx103DFluidGrid.h"
 #include "dx103DFluidRenderer.h"
@@ -10,34 +16,78 @@
 
 dx103DFluidManager FluidManager;
 
-// For render call
-// DrawTextureShaderVariable = pEffect->GetVariableByName( "textureNumber")->AsScalar();
-constexpr const char* strDrawTexture("textureNumber");
+namespace
+{
 // For project, advect
-// ModulateShaderVariable = pEffect->GetVariableByName( "modulate")->AsScalar();
-constexpr const char* strModulate("modulate");
-// For confinement
-// EpsilonShaderVariable = pEffect->GetVariableByName( "epsilon")->AsScalar();
-constexpr const char* strEpsilon("epsilon");
+shared_str strModulate;
+shared_str strEpsilon;
 // For confinement, advect
-constexpr const char* strTimeStep("timestep");
-// For advect BFECC
-// ForwardShaderVariable = pEffect->GetVariableByName( "forward")->AsScalar();
-constexpr const char* strForward("forward");
-// HalfVolumeDimShaderVariable = pEffect->GetVariableByName( "halfVolumeDim")->AsVector();
-constexpr const char* strHalfVolumeDim("halfVolumeDim");
+shared_str strTimeStep;
+shared_str strForward;
+shared_str strHalfVolumeDim;
 
-constexpr const char* strGravityBuoyancy("GravityBuoyancy");
+shared_str strGravityBuoyancy;
 
-dx103DFluidManager::dx103DFluidManager() {}
+} // namespace
+
+LPCSTR dx103DFluidManager::m_pEngineTextureNames[NUM_RENDER_TARGETS] = {
+    "$user$Texture_velocity1", //	RENDER_TARGET_VELOCITY1 = 0,
+    "$user$Texture_color_out", //	RENDER_TARGET_COLOR,	//	Swap with object's
+    "$user$Texture_obstacles", //	RENDER_TARGET_OBSTACLES,
+    "$user$Texture_obstvelocity", //	RENDER_TARGET_OBSTVELOCITY,
+    "$user$Texture_tempscalar", //	RENDER_TARGET_TEMPSCALAR,
+    "$user$Texture_tempvector", //	 RENDER_TARGET_TEMPVECTOR,
+    "$user$Texture_velocity0", //	RENDER_TARGET_VELOCITY0 = NUM_OWN_RENDER_TARGETS,	//	For textures generated from local data
+    "$user$Texture_pressure", //	RENDER_TARGET_PRESSURE,
+    "$user$Texture_color", //	RENDER_TARGET_COLOR_IN,
+};
+
+LPCSTR dx103DFluidManager::m_pShaderTextureNames[NUM_RENDER_TARGETS] = {
+    "Texture_velocity1", //	RENDER_TARGET_VELOCITY1 = 0,
+    "Texture_color_out", //	RENDER_TARGET_COLOR,	//	Swap with object's
+    "Texture_obstacles", //	RENDER_TARGET_OBSTACLES,
+    "Texture_obstvelocity", //	RENDER_TARGET_OBSTVELOCITY,
+    "Texture_tempscalar", //	RENDER_TARGET_TEMPSCALAR,
+    "Texture_tempvector", //	 RENDER_TARGET_TEMPVECTOR,
+    "Texture_velocity0", //	RENDER_TARGET_VELOCITY0 = NUM_OWN_RENDER_TARGETS,	//	For textures generated from local data
+    "Texture_pressure", //	RENDER_TARGET_PRESSURE,
+    "Texture_color", //	RENDER_TARGET_COLOR_IN,
+};
+
+dx103DFluidManager::dx103DFluidManager()
+    : m_bInited(false),
+      m_nIterations(6), m_bUseBFECC(true),
+      m_fSaturation(0.78f), m_bAddDensity(true),
+      m_fImpulseSize(0.15f), m_fConfinementScale(0.0f),
+      m_fDecay(1.0f),
+        m_iTextureWidth(0),
+        m_iTextureHeight(0),
+        m_iTextureDepth(0),
+        m_pGrid(nullptr),
+        m_pRenderer(nullptr),
+        m_pObstaclesHandler(nullptr),
+        m_pEmittersHandler(nullptr)
+{
+    ZeroMemory(pRenderTargetViews, sizeof(pRenderTargetViews));
+
+    RenderTargetFormats[RENDER_TARGET_VELOCITY1] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    RenderTargetFormats[RENDER_TARGET_COLOR] = DXGI_FORMAT_R16_FLOAT;
+    RenderTargetFormats[RENDER_TARGET_OBSTACLES] = DXGI_FORMAT_R8_UNORM;
+    RenderTargetFormats[RENDER_TARGET_OBSTVELOCITY] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    RenderTargetFormats[RENDER_TARGET_TEMPSCALAR] = DXGI_FORMAT_R16_FLOAT;
+    RenderTargetFormats[RENDER_TARGET_TEMPVECTOR] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+}
 
 dx103DFluidManager::~dx103DFluidManager() { Destroy(); }
 
 void dx103DFluidManager::Initialize(int width, int height, int depth)
 {
-    // if (strstr(Core.Params,"-no_volumetric_fog"))
-    /*if (!ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE))
-        return;*/
+    strModulate = "modulate";
+    strEpsilon = "epsilon";
+    strTimeStep = "timestep";
+    strForward = "forward";
+    strHalfVolumeDim = "halfVolumeDim";
+    strGravityBuoyancy = "GravityBuoyancy";
 
     Destroy();
 
@@ -47,7 +97,7 @@ void dx103DFluidManager::Initialize(int width, int height, int depth)
 
     InitShaders();
 
-    D3D_TEXTURE3D_DESC desc{};
+    D3D_TEXTURE3D_DESC desc;
     desc.BindFlags = D3D10_BIND_SHADER_RESOURCE | D3D10_BIND_RENDER_TARGET;
     desc.CPUAccessFlags = 0;
     desc.MipLevels = 1;
@@ -57,7 +107,8 @@ void dx103DFluidManager::Initialize(int width, int height, int depth)
     desc.Height = height;
     desc.Depth = depth;
 
-    D3D_SHADER_RESOURCE_VIEW_DESC SRVDesc{};
+    D3D_SHADER_RESOURCE_VIEW_DESC SRVDesc;
+    ZeroMemory(&SRVDesc, sizeof(SRVDesc));
     SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE3D;
     SRVDesc.Texture3D.MipLevels = 1;
     SRVDesc.Texture3D.MostDetailedMip = 0;
@@ -65,13 +116,13 @@ void dx103DFluidManager::Initialize(int width, int height, int depth)
     for (int rtIndex = 0; rtIndex < NUM_RENDER_TARGETS; rtIndex++)
     {
         PrepareTexture(rtIndex);
-        pRenderTargetViews[rtIndex] = 0;
+        pRenderTargetViews[rtIndex] = nullptr;
     }
 
     for (int rtIndex = 0; rtIndex < NUM_OWN_RENDER_TARGETS; rtIndex++)
     {
-        desc.Format = dx103DFluidConsts::RenderTargetFormats[rtIndex];
-        SRVDesc.Format = dx103DFluidConsts::RenderTargetFormats[rtIndex];
+        desc.Format = RenderTargetFormats[rtIndex];
+        SRVDesc.Format = RenderTargetFormats[rtIndex];
         CreateRTTextureAndViews(rtIndex, desc);
     }
 
@@ -89,6 +140,10 @@ void dx103DFluidManager::Initialize(int width, int height, int depth)
     m_pEmittersHandler = xr_new<dx103DFluidEmitters>(m_iTextureWidth, m_iTextureHeight, m_iTextureDepth, m_pGrid);
 
     m_bInited = true;
+
+    //	Create and grid and renderer here
+    // grid = new Grid( m_pD3DDevice );
+    // renderer = new VolumeRenderer( m_pD3DDevice );
 }
 
 void dx103DFluidManager::Destroy()
@@ -101,7 +156,10 @@ void dx103DFluidManager::Destroy()
     xr_delete(m_pObstaclesHandler);
     xr_delete(m_pRenderer);
     xr_delete(m_pGrid);
+    // grid = new Grid( m_pD3DDevice );
+    // renderer = new VolumeRenderer( m_pD3DDevice );
 
+    // for(int rtIndex=0; rtIndex<NUM_OWN_RENDER_TARGETS; rtIndex++)
     for (int rtIndex = 0; rtIndex < NUM_RENDER_TARGETS; rtIndex++)
         DestroyRTTextureAndViews(rtIndex);
 
@@ -139,17 +197,14 @@ void dx103DFluidManager::InitShaders()
 
 void dx103DFluidManager::DestroyShaders()
 {
-    for (int i = 0; i < SS_NumShaders; ++i)
+    for (auto& i : m_SimulationTechnique)
     {
         //	Release shader's element.
-        m_SimulationTechnique[i] = 0;
+        i = nullptr;
     }
 }
 
-void dx103DFluidManager::PrepareTexture(int rtIndex)
-{
-    pRTTextures[rtIndex] = dxRenderDeviceRender::Instance().Resources->_CreateTexture(dx103DFluidConsts::m_pEngineTextureNames[rtIndex]);
-}
+void dx103DFluidManager::PrepareTexture(int rtIndex) { pRTTextures[rtIndex] = dxRenderDeviceRender::Instance().Resources->_CreateTexture(m_pEngineTextureNames[rtIndex]); }
 
 void dx103DFluidManager::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC TexDesc)
 {
@@ -160,7 +215,7 @@ void dx103DFluidManager::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC
     // Create the texture
     CHK_DX(HW.pDevice->CreateTexture3D(&TexDesc, NULL, &pRT));
     // Create the render target view
-    D3D_RENDER_TARGET_VIEW_DESC DescRT{};
+    D3D_RENDER_TARGET_VIEW_DESC DescRT;
     DescRT.Format = TexDesc.Format;
     DescRT.ViewDimension = D3D_RTV_DIMENSION_TEXTURE3D;
     DescRT.Texture3D.FirstWSlice = 0;
@@ -174,30 +229,30 @@ void dx103DFluidManager::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC
     //	CTexture owns ID3DxxTexture3D interface
     pRT->Release();
 }
+
 void dx103DFluidManager::DestroyRTTextureAndViews(int rtIndex)
 {
-    pRTTextures[rtIndex] = 0;
+    // pRTTextures[rtIndex]->surface_set(0);
+    pRTTextures[rtIndex] = nullptr;
     _RELEASE(pRenderTargetViews[rtIndex]);
 }
 
-void dx103DFluidManager::Reset()
+void dx103DFluidManager::Reset() const
 {
-    constexpr float color[4] = {0, 0, 0, 0};
-
     for (int rtIndex = 0; rtIndex < NUM_OWN_RENDER_TARGETS; rtIndex++)
     {
-        HW.pContext->ClearRenderTargetView(pRenderTargetViews[rtIndex], color);
+        RCache.ClearRT(pRenderTargetViews[rtIndex], {}); // black
     }
 }
 
-void dx103DFluidManager::Update(dx103DFluidData& FluidData, float timestep)
+void dx103DFluidManager::Update(CBackend& cmd_list, dx103DFluidData& FluidData, float timestep)
 {
-    PIX_EVENT(simulate_fluid);
+    PIX_EVENT_CTX(cmd_list, simulate_fluid);
 
     const dx103DFluidData::Settings& VolumeSettings = FluidData.GetSettings();
     const bool bSimulateFire = (VolumeSettings.m_SimulationType == dx103DFluidData::ST_FIRE);
 
-    AttachFluidData(FluidData);
+    AttachFluidData(cmd_list, FluidData);
 
     // All drawing will take place to a viewport with the dimensions of a 3D texture slice
     D3D_VIEWPORT rtViewport;
@@ -209,14 +264,14 @@ void dx103DFluidManager::Update(dx103DFluidData& FluidData, float timestep)
     rtViewport.Width = (float)m_iTextureWidth;
     rtViewport.Height = (float)m_iTextureHeight;
 
-    HW.pContext->RSSetViewports(1, &rtViewport);
+    cmd_list.SetViewport(rtViewport);
 
-    RCache.set_ZB(0);
+    cmd_list.set_ZB(nullptr);
 
-    UpdateObstacles(FluidData, timestep);
+    UpdateObstacles(cmd_list, FluidData, timestep);
 
     // Set vorticity confinment and decay parameters
-    /*if (m_bUseBFECC)
+    if (m_bUseBFECC)
     {
         if (bSimulateFire)
         {
@@ -233,43 +288,40 @@ void dx103DFluidManager::Update(dx103DFluidData& FluidData, float timestep)
     {
         m_fConfinementScale = 0.12f;
         m_fDecay = 0.9995f;
-    }*/
+    }
 
     m_fConfinementScale = VolumeSettings.m_fConfinementScale;
     m_fDecay = VolumeSettings.m_fDecay;
 
     if (m_bUseBFECC)
-        AdvectColorBFECC(timestep, bSimulateFire);
+        AdvectColorBFECC(cmd_list, timestep, bSimulateFire);
     else
-        AdvectColor(timestep, bSimulateFire);
+        AdvectColor(cmd_list, timestep, bSimulateFire);
 
-    AdvectVelocity(timestep, VolumeSettings.m_fGravityBuoyancy);
+    AdvectVelocity(cmd_list, timestep, VolumeSettings.m_fGravityBuoyancy);
 
-    ApplyVorticityConfinement(timestep);
+    ApplyVorticityConfinement(cmd_list, timestep);
 
-    ApplyExternalForces(FluidData, timestep);
+    ApplyExternalForces(cmd_list, FluidData, timestep);
 
-    ComputeVelocityDivergence(timestep);
+    ComputeVelocityDivergence(cmd_list, timestep);
 
-    ComputePressure(timestep);
+    ComputePressure(cmd_list, timestep);
 
-    ProjectVelocity(timestep);
+    ProjectVelocity(cmd_list, timestep);
 
-    DetachAndSwapFluidData(FluidData);
+    DetachAndSwapFluidData(cmd_list, FluidData);
 
     //	Restore render state
     CRenderTarget* pTarget = RImplementation.Target;
-    if (!RImplementation.o.dx10_msaa)
-        pTarget->u_setrt(pTarget->rt_Generic_0, 0, 0, HW.pBaseZB); // LDR RT
-    else
-        pTarget->u_setrt(pTarget->rt_Generic_0_r, 0, 0, pTarget->rt_MSAADepth->pZRT); // LDR RT
-
-    RImplementation.rmNormal();
+    pTarget->u_setrt(cmd_list, pTarget->rt_Generic_0, nullptr, nullptr, pTarget->rt_Base_Depth->pZRT[cmd_list.context_id]); // LDR RT
+    
+    RImplementation.rmNormal(cmd_list);
 }
 
-void dx103DFluidManager::AttachFluidData(dx103DFluidData& FluidData)
+void dx103DFluidManager::AttachFluidData(CBackend& cmd_list, dx103DFluidData& FluidData)
 {
-    PIX_EVENT(AttachFluidData);
+    PIX_EVENT_CTX(cmd_list, AttachFluidData);
 
     for (int i = 0; i < dx103DFluidData::VP_NUM_TARGETS; ++i)
     {
@@ -282,14 +334,15 @@ void dx103DFluidManager::AttachFluidData(dx103DFluidData& FluidData)
     }
 }
 
-void dx103DFluidManager::DetachAndSwapFluidData(dx103DFluidData& FluidData)
+void dx103DFluidManager::DetachAndSwapFluidData(CBackend& cmd_list, dx103DFluidData& FluidData)
 {
-    PIX_EVENT(DetachAndSwapFluidData);
+    PIX_EVENT_CTX(cmd_list, DetachAndSwapFluidData);
 
     ID3DTexture3D* pTTarg = (ID3DTexture3D*)pRTTextures[RENDER_TARGET_COLOR]->surface_get();
     ID3DTexture3D* pTSrc = FluidData.GetTexture(dx103DFluidData::VP_COLOR);
     FluidData.SetTexture(dx103DFluidData::VP_COLOR, pTTarg);
     pRTTextures[RENDER_TARGET_COLOR]->surface_set(pTSrc);
+    _RELEASE(pTTarg);
     _RELEASE(pTSrc);
 
     ID3DRenderTargetView* pV = FluidData.GetView(dx103DFluidData::VP_COLOR);
@@ -299,202 +352,284 @@ void dx103DFluidManager::DetachAndSwapFluidData(dx103DFluidData& FluidData)
 
     for (int i = 0; i < dx103DFluidData::VP_NUM_TARGETS; ++i)
     {
-        pRTTextures[RENDER_TARGET_VELOCITY0 + i]->surface_set(0);
+        pRTTextures[RENDER_TARGET_VELOCITY0 + i]->surface_set(nullptr);
         _RELEASE(pRenderTargetViews[RENDER_TARGET_VELOCITY0 + i]);
     }
 }
 
-void dx103DFluidManager::AdvectColorBFECC(float timestep, bool bTeperature)
+void dx103DFluidManager::AdvectColorBFECC(CBackend& cmd_list, float timestep, bool bTeperature)
 {
-    PIX_EVENT(AdvectColorBFECC);
+    PIX_EVENT_CTX(cmd_list, AdvectColorBFECC);
 
-    constexpr float color[4] = {0, 0, 0, 0};
+    cmd_list.ClearRT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR], {});
+    cmd_list.ClearRT(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR], {});
 
-    HW.pContext->ClearRenderTargetView(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR], color);
-    HW.pContext->ClearRenderTargetView(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR], color);
-
-    RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
+    cmd_list.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
     if (bTeperature)
-        RCache.set_Element(m_SimulationTechnique[SS_AdvectTemp]);
+        cmd_list.set_Element(m_SimulationTechnique[SS_AdvectTemp]);
     else
-        RCache.set_Element(m_SimulationTechnique[SS_Advect]);
-
-    RCache.set_c(strTimeStep, timestep);
-    RCache.set_c(strModulate, 1.0f);
-    RCache.set_c(strForward, 1.0f);
-
-    m_pGrid->DrawSlices();
+        cmd_list.set_Element(m_SimulationTechnique[SS_Advect]);
+    // Advect forward to get \phi^(n+1)
+    // pShaderResourceVariables[RENDER_TARGET_TEMPVECTOR]->SetResource( NULL );
+    // TimeStepShaderVariable->SetFloat(timestep);
+    cmd_list.set_c(strTimeStep, timestep);
+    // ModulateShaderVariable->SetFloat(1.0f);
+    cmd_list.set_c(strModulate, 1.0f);
+    // ForwardShaderVariable->SetFloat(1.0f);
+    cmd_list.set_c(strForward, 1.0f);
+    // SetRenderTarget( RENDER_TARGET_TEMPVECTOR );
+    // TechniqueAdvect->GetPassByIndex(0)->Apply(0);
+    m_pGrid->DrawSlices(cmd_list);
+    // m_pD3DDevice->OMSetRenderTargets(0, NULL, NULL);
+    // pShaderResourceVariables[RENDER_TARGET_TEMPVECTOR]->SetResource( pRenderTargetShaderViews[RENDER_TARGET_TEMPVECTOR] );
 
     // Advect back to get \bar{\phi}
-    RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR]);
+    cmd_list.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR]);
     ref_selement AdvectElement;
     if (bTeperature)
         AdvectElement = m_SimulationTechnique[SS_AdvectTemp];
     else
         AdvectElement = m_SimulationTechnique[SS_Advect];
 
-    RCache.set_Element(AdvectElement);
-
+    cmd_list.set_Element(AdvectElement);
+    // pShaderResourceVariables[RENDER_TARGET_TEMPSCALAR]->SetResource( NULL );
+    // pShaderResourceVariables[RENDER_TARGET_COLOR0]->SetResource( pRenderTargetShaderViews[RENDER_TARGET_TEMPVECTOR] );
+    //	Overwrite RENDER_TARGET_COLOR0 with RENDER_TARGET_TEMPVECTOR
     //	Find texture index and patch texture manually using DirecX call!
-    static const shared_str strColorName(dx103DFluidConsts::m_pEngineTextureNames[RENDER_TARGET_COLOR_IN]);
-    STextureList* _T = &*(AdvectElement->passes[0]->T);
-    u32 dwTextureStage = _T->find_texture_stage(strColorName);
+    static const shared_str strColorName(m_pEngineTextureNames[RENDER_TARGET_COLOR_IN]);
+    const STextureList* _T = &*(AdvectElement->passes[0]->T);
+    const u32 dwTextureStage = _T->find_texture_stage(strColorName);
     //	This will be overritten by the next technique.
     //	Otherwise we had to reset current texture list manually.
-    pRTTextures[RENDER_TARGET_TEMPVECTOR]->bind(dwTextureStage);
+    pRTTextures[RENDER_TARGET_TEMPVECTOR]->bind(cmd_list, dwTextureStage);
 
-    RCache.set_c(strTimeStep, timestep);
-    RCache.set_c(strModulate, 1.0f);
-    RCache.set_c(strForward, -1.0f);
+    // TimeStepShaderVariable->SetFloat(timestep);
+    cmd_list.set_c(strTimeStep, timestep);
+    // ModulateShaderVariable->SetFloat(1.0f);
+    cmd_list.set_c(strModulate, 1.0f);
+    // ForwardShaderVariable->SetFloat(-1.0);
+    cmd_list.set_c(strForward, -1.0f);
+    // SetRenderTarget( RENDER_TARGET_TEMPSCALAR );
+    // TechniqueAdvect->GetPassByIndex(0)->Apply(0);
+    m_pGrid->DrawSlices(cmd_list);
+    // m_pD3DDevice->OMSetRenderTargets(0, NULL, NULL);
+    // pShaderResourceVariables[RENDER_TARGET_TEMPSCALAR]->SetResource( pRenderTargetShaderViews[RENDER_TARGET_TEMPSCALAR] );
 
-    m_pGrid->DrawSlices();
- 
-    RCache.set_RT(pRenderTargetViews[RENDER_TARGET_COLOR]);
+    // Advect forward but use the BFECC advection shader which
+    //  uses both \phi and \bar{\phi} as source quantity
+    //  (specifically, (3/2)\phi^n - (1/2)\bar{\phi})
+    // if(ColorTextureNumber == 0)
+    //{
+    //	pShaderResourceVariables[RENDER_TARGET_COLOR1]->SetResource( pRenderTargetShaderViews[RENDER_TARGET_COLOR1] );
+    //	SetRenderTarget( RENDER_TARGET_COLOR0 );
+    //}
+    // else
+    //{
+    //	pShaderResourceVariables[RENDER_TARGET_COLOR0]->SetResource( pRenderTargetShaderViews[RENDER_TARGET_COLOR0] );
+    //	SetRenderTarget( RENDER_TARGET_COLOR1 );
+    //}
+    cmd_list.set_RT(pRenderTargetViews[RENDER_TARGET_COLOR]);
     if (bTeperature)
-        RCache.set_Element(m_SimulationTechnique[SS_AdvectBFECCTemp]);
+        cmd_list.set_Element(m_SimulationTechnique[SS_AdvectBFECCTemp]);
     else
-        RCache.set_Element(m_SimulationTechnique[SS_AdvectBFECC]);
+        cmd_list.set_Element(m_SimulationTechnique[SS_AdvectBFECC]);
 
+    // D3DXVECTOR3 halfVol( grid->dim[0]/2.0f, grid->dim[1]/2.0f, grid->dim[2]/2.0f );
+    // HalfVolumeDimShaderVariable->SetFloatVector( (float*)&halfVol);
     Fvector4 halfVol;
     halfVol.set((float)m_iTextureWidth / 2.0f, (float)m_iTextureHeight / 2.0f, (float)m_iTextureDepth / 2.0f, 0.0f);
-    RCache.set_c(strHalfVolumeDim, halfVol);
-    RCache.set_c(strModulate, m_fDecay);
-    RCache.set_c(strForward, 1.0f);
-
-    m_pGrid->DrawSlices();
+    cmd_list.set_c(strHalfVolumeDim, halfVol);
+    // ModulateShaderVariable->SetFloat(decay);
+    cmd_list.set_c(strModulate, m_fDecay);
+    // ForwardShaderVariable->SetFloat(1.0);
+    cmd_list.set_c(strForward, 1.0f);
+    // TechniqueAdvectBFECC->GetPassByIndex(0)->Apply(0);
+    m_pGrid->DrawSlices(cmd_list);
+    // m_pD3DDevice->OMSetRenderTargets(0, NULL, NULL);
+    // pShaderResourceVariables[RENDER_TARGET_TEMPSCALAR]->SetResource( NULL );
+    //  Apply the technique again so that the RENDER_TARGET_TEMPSCALAR shader resource is unbound
+    // TechniqueAdvectBFECC->GetPassByIndex(0)->Apply(0);*/
 }
 
-void dx103DFluidManager::AdvectColor(float timestep, bool bTeperature)
+void dx103DFluidManager::AdvectColor(CBackend& cmd_list, float timestep, bool bTeperature)
 {
-    PIX_EVENT(AdvectColor);
+    PIX_EVENT_CTX(cmd_list, AdvectColor);
 
-    RCache.set_RT(pRenderTargetViews[RENDER_TARGET_COLOR]);
+    cmd_list.set_RT(pRenderTargetViews[RENDER_TARGET_COLOR]);
 
     if (bTeperature)
-        RCache.set_Element(m_SimulationTechnique[SS_AdvectTemp]);
+        cmd_list.set_Element(m_SimulationTechnique[SS_AdvectTemp]);
     else
-        RCache.set_Element(m_SimulationTechnique[SS_Advect]);
+        cmd_list.set_Element(m_SimulationTechnique[SS_Advect]);
 
-    RCache.set_c(strTimeStep, timestep);
-    RCache.set_c(strModulate, 1.0f);
-    RCache.set_c(strForward, 1.0f);
-    RCache.set_c(strModulate, m_fDecay);
+    // TimeStepShaderVariable->SetFloat(timestep);
+    cmd_list.set_c(strTimeStep, timestep);
+    // ModulateShaderVariable->SetFloat(1.0f);
+    cmd_list.set_c(strModulate, 1.0f);
+    // ForwardShaderVariable->SetFloat(1.0);
+    cmd_list.set_c(strForward, 1.0f);
+    // ModulateShaderVariable->SetFloat(decay);
+    cmd_list.set_c(strModulate, m_fDecay);
+    // TechniqueAdvect->GetPassByIndex(0)->Apply(0);
 
-    m_pGrid->DrawSlices();
+    m_pGrid->DrawSlices(cmd_list);
 }
 
-void dx103DFluidManager::AdvectVelocity(float timestep, float fGravity)
+void dx103DFluidManager::AdvectVelocity(CBackend& cmd_list, float timestep, float fGravity)
 {
-    PIX_EVENT(AdvectVelocity);
+    PIX_EVENT_CTX(cmd_list, AdvectVelocity);
 
-   //  Advect velocity by the fluid velocity
-    RCache.set_RT(pRenderTargetViews[RENDER_TARGET_VELOCITY1]);
+    // pShaderResourceVariables[RENDER_TARGET_VELOCITY1]->SetResource( NULL );
+    // SetRenderTarget(RENDER_TARGET_VELOCITY1);
+    //  Advect velocity by the fluid velocity
+    cmd_list.set_RT(pRenderTargetViews[RENDER_TARGET_VELOCITY1]);
 
     if (_abs(fGravity) < 0.000001)
-        RCache.set_Element(m_SimulationTechnique[SS_AdvectVel]);
+        cmd_list.set_Element(m_SimulationTechnique[SS_AdvectVel]);
     else
     {
-        RCache.set_Element(m_SimulationTechnique[SS_AdvectVelGravity]);
-        RCache.set_c(strGravityBuoyancy, fGravity);
+        cmd_list.set_Element(m_SimulationTechnique[SS_AdvectVelGravity]);
+        cmd_list.set_c(strGravityBuoyancy, fGravity);
     }
 
-    RCache.set_c(strTimeStep, timestep);
-    RCache.set_c(strModulate, 1.0f);
-    RCache.set_c(strForward, 1.0f);
-    m_pGrid->DrawSlices();
+    // TimeStepShaderVariable->SetFloat(timestep);
+    cmd_list.set_c(strTimeStep, timestep);
+    // ModulateShaderVariable->SetFloat(1.0 );
+    cmd_list.set_c(strModulate, 1.0f);
+    // ForwardShaderVariable->SetFloat(1.0);
+    cmd_list.set_c(strForward, 1.0f);
+    // TechniqueAdvectVel->GetPassByIndex(0)->Apply(0);
+    m_pGrid->DrawSlices(cmd_list);
+    // m_pD3DDevice->OMSetRenderTargets(0, NULL, NULL);
+    // pShaderResourceVariables[RENDER_TARGET_VELOCITY1]->SetResource( pRenderTargetShaderViews[RENDER_TARGET_VELOCITY1] );
 }
 
-void dx103DFluidManager::ApplyVorticityConfinement(float timestep)
+void dx103DFluidManager::ApplyVorticityConfinement(CBackend& cmd_list, float timestep)
 {
-    PIX_EVENT(ApplyVorticityConfinement);
+    PIX_EVENT_CTX(cmd_list, ApplyVorticityConfinement);
 
     // Compute vorticity
-    constexpr float color[4] = {0, 0, 0, 0};
-    HW.pContext->ClearRenderTargetView(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR], color);
+    cmd_list.ClearRT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR], {});
 
-    RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
-
-    RCache.set_Element(m_SimulationTechnique[SS_Vorticity]);
-    m_pGrid->DrawSlices();
+    // pShaderResourceVariables[RENDER_TARGET_TEMPVECTOR]->SetResource( NULL );
+    // SetRenderTarget( RENDER_TARGET_TEMPVECTOR );
+    cmd_list.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
+    // TechniqueVorticity->GetPassByIndex(0)->Apply(0);
+    cmd_list.set_Element(m_SimulationTechnique[SS_Vorticity]);
+    m_pGrid->DrawSlices(cmd_list);
+    // m_pD3DDevice->OMSetRenderTargets(0, NULL, NULL);
+    // pShaderResourceVariables[RENDER_TARGET_TEMPVECTOR]->SetResource( pRenderTargetShaderViews[RENDER_TARGET_TEMPVECTOR] );
 
     // Compute and apply vorticity confinement force
-    RCache.set_RT(pRenderTargetViews[RENDER_TARGET_VELOCITY1]);
-    RCache.set_Element(m_SimulationTechnique[SS_Confinement]);
-
-    RCache.set_c(strEpsilon, m_fConfinementScale);
-    RCache.set_c(strTimeStep, timestep);
-
-    m_pGrid->DrawSlices();
+    cmd_list.set_RT(pRenderTargetViews[RENDER_TARGET_VELOCITY1]);
+    cmd_list.set_Element(m_SimulationTechnique[SS_Confinement]);
+    // pShaderResourceVariables[RENDER_TARGET_VELOCITY1]->SetResource( NULL );
+    // EpsilonShaderVariable->SetFloat(confinementScale);
+    cmd_list.set_c(strEpsilon, m_fConfinementScale);
+    // TimeStepShaderVariable->SetFloat(timestep);
+    cmd_list.set_c(strTimeStep, timestep);
+    // TechniqueConfinement->GetPassByIndex(0)->Apply(0);
+    // SetRenderTarget( RENDER_TARGET_VELOCITY1 );
+    //  Add the confinement force to the rest of the forces
+    m_pGrid->DrawSlices(cmd_list);
+    // m_pD3DDevice->OMSetRenderTargets(0, NULL, NULL);
+    // pShaderResourceVariables[RENDER_TARGET_VELOCITY1]->SetResource( pRenderTargetShaderViews[RENDER_TARGET_VELOCITY1] );
 }
 
-void dx103DFluidManager::ApplyExternalForces(const dx103DFluidData& FluidData, float timestep)
+void dx103DFluidManager::ApplyExternalForces(CBackend& cmd_list, const dx103DFluidData& FluidData, float timestep) const
 {
-    PIX_EVENT(ApplyExternalForces);
+    PIX_EVENT_CTX(cmd_list, ApplyExternalForces);
 
-    RCache.set_RT(pRenderTargetViews[RENDER_TARGET_COLOR]);
-    m_pEmittersHandler->RenderDensity(FluidData);
+    cmd_list.set_RT(pRenderTargetViews[RENDER_TARGET_COLOR]);
+    m_pEmittersHandler->RenderDensity(cmd_list, FluidData);
 
-    RCache.set_RT(pRenderTargetViews[RENDER_TARGET_VELOCITY1]);
-    m_pEmittersHandler->RenderVelocity(FluidData);
+    cmd_list.set_RT(pRenderTargetViews[RENDER_TARGET_VELOCITY1]);
+    m_pEmittersHandler->RenderVelocity(cmd_list, FluidData);
 }
 
-void dx103DFluidManager::ComputeVelocityDivergence(float timestep)
+void dx103DFluidManager::ComputeVelocityDivergence(CBackend& cmd_list, float timestep)
 {
-    PIX_EVENT(ComputeVelocityDivergence);
+    PIX_EVENT_CTX(cmd_list, ComputeVelocityDivergence);
 
-    constexpr float color[4] = {0, 0, 0, 0};
-    HW.pContext->ClearRenderTargetView(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR], color);
+    cmd_list.ClearRT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR], {}); // black
 
-    RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
-    RCache.set_Element(m_SimulationTechnique[SS_Divergence]);
+    cmd_list.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPVECTOR]);
+    cmd_list.set_Element(m_SimulationTechnique[SS_Divergence]);
 
-     m_pGrid->DrawSlices();
+    // pShaderResourceVariables[RENDER_TARGET_TEMPVECTOR]->SetResource( NULL );
+    // SetRenderTarget( RENDER_TARGET_TEMPVECTOR );
+    // TechniqueDivergence->GetPassByIndex(0)->Apply(0);
+    m_pGrid->DrawSlices(cmd_list);
+    // m_pD3DDevice->OMSetRenderTargets(0, NULL, NULL);
+    // pShaderResourceVariables[RENDER_TARGET_TEMPVECTOR]->SetResource( pRenderTargetShaderViews[RENDER_TARGET_TEMPVECTOR] );
 }
 
-void dx103DFluidManager::ComputePressure(float timestep)
+void dx103DFluidManager::ComputePressure(CBackend& cmd_list, float timestep)
 {
-    PIX_EVENT(ComputePressure);
+    PIX_EVENT_CTX(cmd_list, ComputePressure);
 
-    constexpr float color[4] = {0, 0, 0, 0};
-    HW.pContext->ClearRenderTargetView(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR], color);
+    RCache.ClearRT(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR], {});
 
-    RCache.set_RT(0);
+    // ID3DxxTexture3D	*pTemp = (ID3DxxTexture3D*) pRTTextures[RENDER_TARGET_TEMPSCALAR]->surface_get();
+    // ID3DxxTexture3D	*pPressure = (ID3DxxTexture3D*) pRTTextures[RENDER_TARGET_PRESSURE]->surface_get();
+
+    // unbind this variable from the other technique that may have used it
+    // pShaderResourceVariables[RENDER_TARGET_TEMPSCALAR]->SetResource( NULL );
+    // TechniqueAdvectBFECC->GetPassByIndex(0)->Apply(0);
+    cmd_list.set_RT(nullptr);
     ref_selement CurrentTechnique = m_SimulationTechnique[SS_Jacobi];
-    RCache.set_Element(CurrentTechnique);
+    cmd_list.set_Element(CurrentTechnique);
 
     //	Find texture index and patch texture manually using DirecX call!
-    static const shared_str strPressureName(dx103DFluidConsts::m_pEngineTextureNames[RENDER_TARGET_PRESSURE]);
-    STextureList* _T = &*(CurrentTechnique->passes[0]->T);
-    u32 dwTextureStage = _T->find_texture_stage(strPressureName);
+    static const shared_str strPressureName(m_pEngineTextureNames[RENDER_TARGET_PRESSURE]);
+    const STextureList* _T = &*(CurrentTechnique->passes[0]->T);
+    const u32 dwTextureStage = _T->find_texture_stage(strPressureName);
 
     for (int iteration = 0; iteration < m_nIterations / 2.0; iteration++)
     {
-        RCache.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR]);
-        pRTTextures[RENDER_TARGET_PRESSURE]->bind(dwTextureStage);
-        m_pGrid->DrawSlices();
+        // pShaderResourceVariables[RENDER_TARGET_PRESSURE]->SetResource( pRenderTargetShaderViews[RENDER_TARGET_PRESSURE] );
+        // TechniqueJacobi->GetPassByIndex(0)->Apply(0);
+        // SetRenderTarget( RENDER_TARGET_TEMPSCALAR );
+        cmd_list.set_RT(pRenderTargetViews[RENDER_TARGET_TEMPSCALAR]);
+        pRTTextures[RENDER_TARGET_PRESSURE]->bind(cmd_list, dwTextureStage);
+        m_pGrid->DrawSlices(cmd_list);
+        // m_pD3DDevice->OMSetRenderTargets(0, NULL, NULL);
+        // cmd_list.set_RT(0);
 
-        RCache.set_RT(pRenderTargetViews[RENDER_TARGET_PRESSURE]);
-        pRTTextures[RENDER_TARGET_TEMPSCALAR]->bind(dwTextureStage);
-        m_pGrid->DrawSlices();
+        // pShaderResourceVariables[RENDER_TARGET_PRESSURE]->SetResource( pRenderTargetShaderViews[RENDER_TARGET_TEMPSCALAR] );
+        // TechniqueJacobi->GetPassByIndex(0)->Apply(0);
+        // SetRenderTarget( RENDER_TARGET_PRESSURE );
+        cmd_list.set_RT(pRenderTargetViews[RENDER_TARGET_PRESSURE]);
+        pRTTextures[RENDER_TARGET_TEMPSCALAR]->bind(cmd_list, dwTextureStage);
+        m_pGrid->DrawSlices(cmd_list);
+        // m_pD3DDevice->OMSetRenderTargets(0, NULL, NULL);
+        // cmd_list.set_RT(0);
     }
+
+    // pShaderResourceVariables[RENDER_TARGET_PRESSURE]->SetResource( pRenderTargetShaderViews[RENDER_TARGET_PRESSURE] );
+    // TechniqueJacobi->GetPassByIndex(0)->Apply(0);
 }
 
-void dx103DFluidManager::ProjectVelocity(float timestep)
+void dx103DFluidManager::ProjectVelocity(CBackend& cmd_list, float timestep)
 {
-    PIX_EVENT(ProjectVelocity);
+    PIX_EVENT_CTX(cmd_list, ProjectVelocity);
 
-    RCache.set_RT(pRenderTargetViews[RENDER_TARGET_VELOCITY0]);
-    RCache.set_Element(m_SimulationTechnique[SS_Project]);
-
-    RCache.set_c(strModulate, 1.0f);
-
-    m_pGrid->DrawSlices();
+    // pShaderResourceVariables[RENDER_TARGET_VELOCITY0]->SetResource( NULL );
+    // SetRenderTarget( RENDER_TARGET_VELOCITY0 );
+    cmd_list.set_RT(pRenderTargetViews[RENDER_TARGET_VELOCITY0]);
+    cmd_list.set_Element(m_SimulationTechnique[SS_Project]);
+    // ModulateShaderVariable->SetFloat(1.0f);
+    cmd_list.set_c(strModulate, 1.0f);
+    // TechniqueProject->GetPassByIndex(0)->Apply(0);
+    m_pGrid->DrawSlices(cmd_list);
+    // m_pD3DDevice->OMSetRenderTargets(0, NULL, NULL);
+    // pShaderResourceVariables[RENDER_TARGET_VELOCITY0]->SetResource( pRenderTargetShaderViews[RENDER_TARGET_VELOCITY0] );
 }
 
-void dx103DFluidManager::RenderFluid(dx103DFluidData& FluidData)
+void dx103DFluidManager::RenderFluid(CBackend& cmd_list, dx103DFluidData& FluidData)
 {
     //	return;
-    PIX_EVENT(render_fluid);
+    PIX_EVENT_CTX(cmd_list, render_fluid);
 
     //	Bind input texture
     ID3DTexture3D* pT = FluidData.GetTexture(dx103DFluidData::VP_COLOR);
@@ -502,40 +637,36 @@ void dx103DFluidManager::RenderFluid(dx103DFluidData& FluidData)
     _RELEASE(pT);
 
     //	Do rendering
-    m_pRenderer->Draw(FluidData);
+    m_pRenderer->Draw(cmd_list, FluidData);
 
     //	Unbind input texture
-    pRTTextures[RENDER_TARGET_COLOR_IN]->surface_set(0);
+    pRTTextures[RENDER_TARGET_COLOR_IN]->surface_set(nullptr);
 
     //	Restore render state
     CRenderTarget* pTarget = RImplementation.Target;
-    if (!RImplementation.o.dx10_msaa)
-        pTarget->u_setrt(pTarget->rt_Generic_0, 0, 0, HW.pBaseZB); // LDR RT
-    else
-        pTarget->u_setrt(pTarget->rt_Generic_0_r, 0, 0, pTarget->rt_MSAADepth->pZRT); // LDR RT
+    pTarget->u_setrt(cmd_list, pTarget->rt_Generic_0, nullptr, nullptr, pTarget->rt_Base_Depth->pZRT[cmd_list.context_id]); // LDR RT
 
-    RImplementation.rmNormal();
+    RImplementation.rmNormal(cmd_list);
 }
 
-void dx103DFluidManager::UpdateObstacles(const dx103DFluidData& FluidData, float timestep)
+void dx103DFluidManager::UpdateObstacles(CBackend& cmd_list, const dx103DFluidData& FluidData, float timestep)
 {
-    PIX_EVENT(Fluid_update_obstacles);
+    PIX_EVENT_CTX(cmd_list, Fluid_update_obstacles);
     //	Reset data
-    constexpr float color[4] = {0, 0, 0, 0};
-    HW.pContext->ClearRenderTargetView(pRenderTargetViews[RENDER_TARGET_OBSTACLES], color);
-    HW.pContext->ClearRenderTargetView(pRenderTargetViews[RENDER_TARGET_OBSTVELOCITY], color);
+    cmd_list.ClearRT(pRenderTargetViews[RENDER_TARGET_OBSTACLES], {}); // black
+    cmd_list.ClearRT(pRenderTargetViews[RENDER_TARGET_OBSTVELOCITY], {}); // black
 
-    RCache.set_RT(pRenderTargetViews[RENDER_TARGET_OBSTACLES], 0);
-    RCache.set_RT(pRenderTargetViews[RENDER_TARGET_OBSTVELOCITY], 1);
+    cmd_list.set_RT(pRenderTargetViews[RENDER_TARGET_OBSTACLES], 0);
+    cmd_list.set_RT(pRenderTargetViews[RENDER_TARGET_OBSTVELOCITY], 1);
 
-    m_pObstaclesHandler->ProcessObstacles(FluidData, timestep);
+    m_pObstaclesHandler->ProcessObstacles(cmd_list, FluidData, timestep);
 
     //	Just reset render targets:
     //	later only rt 0 will be reassigned so rt1
     //	would be bound all the time
     //	Reset to avoid confusion.
-    RCache.set_RT(0, 0);
-    RCache.set_RT(0, 1);
+    cmd_list.set_RT(nullptr, 0);
+    cmd_list.set_RT(nullptr, 1);
 }
 
 //	Allow real-time config reload
@@ -601,3 +732,5 @@ void dx103DFluidManager::UpdateProfiles()
 }
 
 #endif //	DEBUG
+
+#endif

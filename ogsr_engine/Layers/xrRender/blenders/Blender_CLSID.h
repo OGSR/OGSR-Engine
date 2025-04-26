@@ -14,7 +14,6 @@ constexpr auto B_PARTICLE = MK_CLSID('P', 'A', 'R', 'T', 'I', 'C', 'L', 'E');
 // Screen space blenders
 constexpr auto B_SCREEN_SET = MK_CLSID('S', '_', 'S', 'E', 'T', ' ', ' ', ' ');
 
-constexpr auto B_DETAIL = MK_CLSID('D', '_', 'S', 'T', 'I', 'L', 'L', ' ');
 constexpr auto B_TREE = MK_CLSID('D', '_', 'T', 'R', 'E', 'E', ' ', ' ');
 
 constexpr auto B_MODEL = MK_CLSID('M', 'O', 'D', 'E', 'L', ' ', ' ', ' ');

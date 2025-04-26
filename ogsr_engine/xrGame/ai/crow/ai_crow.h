@@ -3,8 +3,7 @@
 //	Description : AI Behaviour for monster "Crow"
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef __XRAY_AI_CROW__
-#define __XRAY_AI_CROW__
+#pragma once
 
 #include "../../entity_alive.h"
 #include "../../../Include/xrRender/KinematicsAnimated.h"
@@ -118,9 +117,8 @@ public:
     void init();
     virtual BOOL net_Spawn(CSE_Abstract* DC);
     virtual void net_Destroy();
-    virtual BOOL renderable_ShadowGenerate() { return FALSE; }
     virtual BOOL renderable_ShadowReceive() { return FALSE; }
-    virtual void renderable_Render();
+    virtual void renderable_Render(u32 context_id, IRenderable* root) override;
     virtual void shedule_Update(u32 DT);
     virtual void UpdateCL();
 
@@ -143,5 +141,3 @@ public:
     virtual BOOL UsedAI_Locations();
     virtual void create_physic_shell();
 };
-
-#endif

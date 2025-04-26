@@ -1,5 +1,3 @@
-#ifndef dx10StateCacheImpl_included
-#define dx10StateCacheImpl_included
 #pragma once
 
 #include "../dx10StateUtils.h"
@@ -67,7 +65,5 @@ IDeviceState* dx10StateCache<IDeviceState, StateDecs>::FindState(const StateDecs
     if (res != 0xffffffff)
         return m_StateArray[res].m_pState;
     else
-        return NULL;
+        return nullptr;
 }
-
-#endif //	dx10StateCacheImpl_included

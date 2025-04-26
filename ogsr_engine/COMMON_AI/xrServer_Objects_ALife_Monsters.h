@@ -6,8 +6,7 @@
 //	Description : Server objects monsters for ALife simulator
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef xrServer_Objects_ALife_MonstersH
-#define xrServer_Objects_ALife_MonstersH
+#pragma once
 
 #include "xrServer_Objects_ALife.h"
 #include "xrServer_Objects_ALife_Items.h"
@@ -508,5 +507,3 @@ add_to_type_list(CSE_ALifeOnlineOfflineGroup)
 #define script_type_list save_type_list(CSE_ALifeOnlineOfflineGroup)
 
 #pragma warning(pop)
-
-#endif

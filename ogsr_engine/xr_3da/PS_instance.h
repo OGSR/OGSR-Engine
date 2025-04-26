@@ -22,11 +22,11 @@ public:
     CPS_Instance(bool destroy_on_game_load);
     virtual ~CPS_Instance();
 
-    IC const bool& destroy_on_game_load() const { return m_destroy_on_game_load; }
     virtual void PSI_destroy();
+
+    IC const bool& destroy_on_game_load() const { return m_destroy_on_game_load; }
+
     IC BOOL PSI_alive() { return m_iLifeTime > 0; }
-    IC BOOL PSI_IsAutomatic() { return m_bAutoRemove; }
-    IC void PSI_SetLifeTime(float life_time) { m_iLifeTime = iFloor(life_time * 1000); }
 
     virtual void Play(BOOL hudMode = FALSE) = 0;
     virtual BOOL Locked() { return FALSE; }
@@ -35,6 +35,10 @@ public:
 
     virtual void shedule_Update(u32 dt);
     virtual IRenderable* dcast_Renderable() { return this; }
+
+    virtual void PerformFrame() = 0;
+
+    //virtual void PerformCreate() = 0;
 };
 
 #endif

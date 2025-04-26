@@ -183,7 +183,7 @@ bool CXml::HasNode(LPCSTR path, int index)
 bool CXml::HasNodeAttribute(LPCSTR path, int index, LPCSTR attrib)
 {
     XML_NODE* node = NavigateToNode(path, index);
-    const LPCSTR result = ReadAttrib(node, attrib, NULL);
+    LPCSTR result = ReadAttrib(node, attrib, NULL);
     return !!result;
 }
 

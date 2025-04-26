@@ -216,6 +216,7 @@ void CWeaponMagazined::Load(LPCSTR section)
         }
     }
 
+    m_bFlameParticlesHideInZoom = READ_IF_EXISTS(pSettings, r_bool, section, "flame_particles_hide_in_zoom", false);
 }
 
 void CWeaponMagazined::FireStart()
@@ -808,10 +809,13 @@ void CWeaponMagazined::OnShot()
     OnShellDrop(get_LastSP(), vel);
 
     // Огонь из ствола
-    StartFlameParticles();
+    if (ShouldPlayFlameParticles())
+    {
+        StartFlameParticles();
+        ForceUpdateFireParticles();
+    }
 
     //дым из ствола
-    ForceUpdateFireParticles();
     StartSmokeParticles(get_LastFP(), vel);
 
     update_visual_bullet_textures();
@@ -1050,8 +1054,9 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
     }
     break;
     case kNIGHT_VISION: {
-        auto pActorNv = smart_cast<CActor*>(H_Parent())->inventory().ItemFromSlot(IS_OGSR_GA ? NIGHT_VISION_SLOT : TORCH_SLOT);
-        if ((flags & CMD_START) && pActorNv && GetState() == eIdle)
+        auto pActor = smart_cast<CActor*>(H_Parent());
+        auto pActorNv = pActor->inventory().ItemFromSlot(IS_OGSR_GA ? NIGHT_VISION_SLOT : TORCH_SLOT);
+        if ((flags & CMD_START) && pActorNv && GetState() == eIdle && !pActor->IsZoomAimingMode())
         {
             NightVisionSwitch = true;
             DeviceSwitch();
@@ -1209,10 +1214,9 @@ void CWeaponMagazined::InitZoomParams(LPCSTR section, bool useTexture)
     clamp(m_fScopeInertionFactor, m_fControlInertionFactor, m_fScopeInertionFactor);
 
     m_fScopeZoomFactor = pSettings->r_float(section, "scope_zoom_factor");
-    m_fSecondVPZoomFactor = READ_IF_EXISTS(pSettings, r_float, section, "scope_lense_fov_factor", 0.0f);
 
     m_fZoomHudFov = READ_IF_EXISTS(pSettings, r_float, section, "scope_zoom_hud_fov", 0.0f);
-    m_fSecondVPHudFov = READ_IF_EXISTS(pSettings, r_float, section, "scope_lense_hud_fov", 0.0f);
+    m_f3dssHudFov = READ_IF_EXISTS(pSettings, r_float, section, "scope_lense_hud_fov", 0.0f);
 
     if (m_UIScope)
         xr_delete(m_UIScope);
@@ -1248,7 +1252,7 @@ void CWeaponMagazined::InitAddons()
             InitZoomParams(*m_sScopeName, !m_bIgnoreScopeTexture);
 
             m_fZoomHudFov = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "scope_zoom_hud_fov", m_fZoomHudFov);
-            m_fSecondVPHudFov = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "scope_lense_hud_fov", m_fSecondVPHudFov);
+            m_f3dssHudFov = READ_IF_EXISTS(pSettings, r_float, cNameSect().c_str(), "scope_lense_hud_fov", m_f3dssHudFov);
         }
         else if (m_eScopeStatus == ALife::eAddonPermanent)
         {
@@ -1271,23 +1275,14 @@ void CWeaponMagazined::InitAddons()
         }
         else
         {
-            m_fSecondVPZoomFactor = 0.0f;
             m_fZoomHudFov = 0.0f;
-            m_fSecondVPHudFov = 0.0f;
+            m_f3dssHudFov = 0.0f;
             m_fScopeInertionFactor = m_fControlInertionFactor;
         }
     }
 
     if (m_bScopeDynamicZoom)
     {
-        if (SecondVPEnabled())
-        {
-            float delta, min_zoom_factor;
-            GetZoomData(m_fSecondVPZoomFactor, delta, min_zoom_factor);
-
-            m_fRTZoomFactor = min_zoom_factor;
-        }
-        else
         {
             if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system))
             {
@@ -1789,4 +1784,12 @@ bool CWeaponMagazined::ScopeRespawn(PIItem pIItem)
         }
     }
     return false;
+}
+
+bool CWeaponMagazined::ShouldPlayFlameParticles()
+{
+    if (m_bFlameParticlesHideInZoom && IsZoomed() && !IsRotatingToZoom() && Is3dssEnabled())
+        return false;
+
+    return true;
 }

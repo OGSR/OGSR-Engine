@@ -190,14 +190,14 @@ public:
     virtual void OnEvent(NET_Packet& P, u16 type);
     virtual void feel_touch_new(CObject* O);
 
-    virtual void renderable_Render();
+    virtual void renderable_Render(u32 context_id, IRenderable* root) override;
     virtual void Exec_Look(float dt);
     virtual void Hit(SHit* pHDS);
     virtual void PHHit(SHit& H);
     virtual BOOL feel_vision_isRelevant(CObject* who);
     virtual float Radius() const;
 #ifdef DEBUG
-    virtual void OnHUDDraw(CCustomHUD* hud);
+    virtual void OnHUDDraw(CCustomHUD* hud, u32 context_id, IRenderable* root) override;
     virtual void OnRender();
 #endif
 
@@ -385,7 +385,9 @@ public:
     virtual void on_weapon_hide(CWeapon* weapon);
     IC CWeaponShotEffector& weapon_shot_effector() const;
     IC Fvector weapon_shot_effector_direction(const Fvector& current) const;
+#ifdef DEBUG
     virtual void UpdateCamera();
+#endif
     virtual bool can_attach(const CInventoryItem* inventory_item) const;
     virtual bool use_simplified_visual() const { return (already_dead()); };
 #ifdef DEBUG

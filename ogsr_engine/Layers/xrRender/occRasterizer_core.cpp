@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "occRasterizer.h"
 
-static occTri* currentTri = 0;
+static occTri* currentTri = nullptr;
 static u32 dwPixels = 0;
 static float currentA[3], currentB[3], currentC[3];
 
@@ -88,8 +88,8 @@ IC BOOL shared(occTri* T1, occTri* T2)
 }
 IC BOOL lesser(float& a, float& b)
 {
-    u32* A = (u32*)(&a);
-    u32* B = (u32*)(&b);
+    const u32* A = (u32*)(&a);
+    const u32* B = (u32*)(&b);
     return *A < *B;
 }
 
@@ -99,11 +99,11 @@ const float one_div_3 = 1.f / 3.f;
 void i_scan(int curY, float leftX, float lhx, float rightX, float rhx, float startZ, float endZ)
 {
     // calculate span(s)
-    float start_c = leftX + lhx;
-    float end_c = rightX + rhx;
+    const float start_c = leftX + lhx;
+    const float end_c = rightX + rhx;
 
-    float startR = leftX - lhx;
-    float endR = rightX - rhx;
+    const float startR = leftX - lhx;
+    const float endR = rightX - rhx;
 
     float startT = startR, endT = end_c;
     float startX = start_c, endX = endR;
@@ -141,11 +141,11 @@ void i_scan(int curY, float leftX, float lhx, float rightX, float rhx, float sta
     }
 
     // interpolate
-    float lenR = endR - startR;
-    float Zlen = endZ - startZ;
+    const float lenR = endR - startR;
+    const float Zlen = endZ - startZ;
     float Z = startZ + (minT - startR) / lenR * Zlen; // interpolate Z to the start
-    float Zend = startZ + (maxT - startR) / lenR * Zlen; // interpolate Z to the end
-    float dZ = (Zend - Z) / (maxT - minT); // increment in Z / pixel wrt dX
+    const float Zend = startZ + (maxT - startR) / lenR * Zlen; // interpolate Z to the end
+    const float dZ = (Zend - Z) / (maxT - minT); // increment in Z / pixel wrt dX
 
     // Move to far my dz/5 to place the pixel at the center of face that it covers.
     // This will make sure that objects will not be clipped for just standing next to the home from outside.
@@ -156,7 +156,7 @@ void i_scan(int curY, float leftX, float lhx, float rightX, float rhx, float sta
     float* pDepth = Raster.get_depth();
 
     // left connector
-    int i_base = curY * occ_dim;
+    const int i_base = curY * occ_dim;
     int i = i_base + minT;
     int limit = i_base + limLeft;
     for (; i < limit; i++, Z += dZ)
@@ -214,9 +214,9 @@ IC void i_test_micro(int x, int y)
         return;
     else if (y >= occ_dim - 1)
         return;
-    int pos = y * occ_dim + x;
-    int pos_up = pos - occ_dim;
-    int pos_down = pos + occ_dim;
+    const int pos = y * occ_dim + x;
+    const int pos_up = pos - occ_dim;
+    const int pos_down = pos + occ_dim;
 
     occTri** pFrame = Raster.get_frame();
     occTri* T1 = pFrame[pos_up];
@@ -224,7 +224,7 @@ IC void i_test_micro(int x, int y)
     if (T1 && shared(T1, T2))
     {
         float* pDepth = Raster.get_depth();
-        float ZR = (pDepth[pos_up] + pDepth[pos_down]) / 2;
+        const float ZR = (pDepth[pos_up] + pDepth[pos_down]) / 2;
         if (ZR < pDepth[pos])
         {
             pFrame[pos] = T1;
@@ -241,17 +241,17 @@ void i_test(int x, int y)
 
 void i_edge(int x1, int y1, int x2, int y2)
 {
-    int dx = _abs(x2 - x1);
-    int dy = _abs(y2 - y1);
+    const int dx = _abs(x2 - x1);
+    const int dy = _abs(y2 - y1);
 
-    int sx = x2 >= x1 ? 1 : -1;
-    int sy = y2 >= y1 ? 1 : -1;
+    const int sx = x2 >= x1 ? 1 : -1;
+    const int sy = y2 >= y1 ? 1 : -1;
 
     if (dy <= dx)
     {
         int d = (dy << 1) - dx;
-        int d1 = dy << 1;
-        int d2 = (dy - dx) << 1;
+        const int d1 = dy << 1;
+        const int d2 = (dy - dx) << 1;
 
         i_test(x1, y1);
         for (int x = x1 + sx, y = y1, i = 1; i <= dx; i++, x += sx)
@@ -269,8 +269,8 @@ void i_edge(int x1, int y1, int x2, int y2)
     else
     {
         int d = (dx << 1) - dy;
-        int d1 = dx << 1;
-        int d2 = (dx - dy) << 1;
+        const int d1 = dx << 1;
+        const int d2 = (dx - dy) << 1;
 
         i_test(x1, y1);
         for (int x = x1, y = y1 + sy, i = 1; i <= dy; i++, y += sy)
@@ -310,7 +310,7 @@ IC void i_section(int Sect, BOOL bMiddle)
             endY++;
 
         // check 'endY' for out-of-triangle
-        int test = iFloor(currentC[1]);
+        const int test = iFloor(currentC[1]);
         if (endY >= test)
             endY--;
 
@@ -332,7 +332,7 @@ IC void i_section(int Sect, BOOL bMiddle)
             startY--;
 
         // check 'startY' for out-of-triangle
-        int test = iCeil(currentA[1]);
+        const int test = iCeil(currentA[1]);
         if (startY < test)
             startY++;
 
@@ -350,8 +350,8 @@ IC void i_section(int Sect, BOOL bMiddle)
         return;
 
     // Compute the inverse slopes of the lines, ie rate of change of X by Y
-    float mE1 = E1[0] / E1[1];
-    float mE2 = E2[0] / E2[1];
+    const float mE1 = E1[0] / E1[1];
+    const float mE2 = E2[0] / E2[1];
 
     // Initial Y offset for left and right (due to pixel rounding)
     float e1_init_dY = float(startY) - startp1[1], e2_init_dY = float(startY) - startp2[1];
@@ -394,9 +394,9 @@ IC void i_section(int Sect, BOOL bMiddle)
     }
 
     // Now scan all lines in this section
-    float lhx = left_dX / 2;
+    const float lhx = left_dX / 2;
     leftX += lhx; // half pixel
-    float rhx = right_dX / 2;
+    const float rhx = right_dX / 2;
     rightX += rhx; // half pixel
     for (; startY <= endY; startY++)
     {
@@ -415,6 +415,8 @@ void __stdcall i_section_t1() { i_section(TOP, 1); }
 
 u32 occRasterizer::rasterize(occTri* T)
 {
+    ZoneScoped;
+
     // Order the vertices by Y
     currentTri = T;
     dwPixels = 0;

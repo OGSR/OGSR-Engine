@@ -32,7 +32,7 @@ public:
     virtual void reload(LPCSTR section);
     virtual void OnH_A_Chield();
     virtual void OnH_A_Independent();
-    virtual void renderable_Render();
+    virtual void renderable_Render(u32 context_id, IRenderable* root);
     virtual bool can_be_attached() const;
     virtual void afterAttach();
     virtual void afterDetach();

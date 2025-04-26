@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef SkeletonAnimatedH
-#define SkeletonAnimatedH
+#pragma once
 
 #include "skeletoncustom.h"
 #include "animation.h"
@@ -30,14 +29,12 @@ public:
     u32 mem_usage()
     {
         u32 sz = sizeof(*this);
-        for (BlendSVecIt it = Blend.begin(); it != Blend.end(); it++)
-            sz += (*it)->mem_usage();
+        for (const auto& it : Blend)
+            sz += it->mem_usage();
         return sz;
     }
 };
 #pragma pack(pop)
-
-// typedef void	( * MotionMarkCallback)		(CBlend*		P);
 
 //*** The visual itself ***************************************************************************
 class ECORE_API CKinematicsAnimated : public CKinematics, public IKinematicsAnimated
@@ -52,7 +49,7 @@ private:
     void Bone_Motion_Start(CBoneData* bd, CBlend* handle); // with recursion
     void Bone_Motion_Stop(CBoneData* bd, CBlend* handle); // with recursion
 
-    void Bone_Motion_Start_IM(CBoneData* bd, CBlend* handle);
+    void Bone_Motion_Start_IM(CBoneData* bd, CBlend* handle) const;
     void Bone_Motion_Stop_IM(CBoneData* bd, CBlend* handle);
 
 public:
@@ -99,10 +96,9 @@ protected:
     CBlend* IBlend_Create();
 
 private:
-    void IBlendSetup(CBlend& B, u16 part, u8 channel, MotionID motion_ID, BOOL bMixing, float blendAccrue, float blendFalloff, float Speed, BOOL noloop, PlayCallback Callback,
-                     LPVOID CallbackParam);
+    void IBlendSetup(CBlend& B, u16 part, u8 channel, MotionID motion_ID, BOOL bMixing, float blendAccrue, float blendFalloff, float Speed, BOOL noloop, PlayCallback Callback, LPVOID CallbackParam);
     void IFXBlendSetup(CBlend& B, MotionID motion_ID, float blendAccrue, float blendFalloff, float Power, float Speed, u16 bone);
-    //.	bool						LoadMotions				(LPCSTR N, IReader *data);
+
 public:
     std::pair<LPCSTR, LPCSTR> LL_MotionDefName_dbg(MotionID ID);
     void LL_DumpBlends_dbg();
@@ -123,20 +119,21 @@ public:
 
     virtual IBlendDestroyCallback* GetBlendDestroyCallback();
     virtual void SetBlendDestroyCallback(IBlendDestroyCallback* cb);
+
     // Low level interface
     MotionID LL_MotionID(LPCSTR B);
     u16 LL_PartID(LPCSTR B);
 
     CBlend* LL_PlayFX(u16 bone, MotionID motion, float blendAccrue, float blendFalloff, float Speed, float Power);
-    CBlend* LL_PlayCycle(u16 partition, MotionID motion, BOOL bMixing, float blendAccrue, float blendFalloff, float Speed, BOOL noloop, PlayCallback Callback, LPVOID CallbackParam,
-                         u8 channel = 0);
+    CBlend* LL_PlayCycle(u16 partition, MotionID motion, BOOL bMixing, float blendAccrue, float blendFalloff, float Speed, BOOL noloop, PlayCallback Callback, LPVOID CallbackParam, u8 channel = 0);
     CBlend* LL_PlayCycle(u16 partition, MotionID motion, BOOL bMixIn, PlayCallback Callback, LPVOID CallbackParam, u8 channel = 0);
+
     void LL_FadeCycle(u16 partition, float falloff, u8 mask_channel = (1 << 0));
     void LL_CloseCycle(u16 partition, u8 mask_channel = (1 << 0));
     void LL_SetChannelFactor(u16 channel, float factor);
-    CBlendInstance& LL_GetBlendInstance(u16 bone_id)
+    CBlendInstance& LL_GetBlendInstance(u16 bone_id) const
     {
-        ASSERT_FMT(bone_id < LL_BoneCount(), "!![%s] visual_name: [%s], invalid bone_id: [%u]", __FUNCTION__, dbg_name.c_str(), bone_id);
+        ASSERT_FMT(bone_id < LL_BoneCount(), "visual_name: %s, bone_id: %d", dbg_name.c_str(), bone_id);
         return blend_instances[bone_id];
     }
 
@@ -149,9 +146,9 @@ public:
     // cycles
     MotionID ID_Cycle(const shared_str& N) override;
     MotionID ID_Cycle_Safe(const shared_str& N) override;
-    CBlend* PlayCycle(const shared_str& N, BOOL bMixIn = TRUE, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0) override;
-    CBlend* PlayCycle(MotionID M, BOOL bMixIn = TRUE, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0);
-    CBlend* PlayCycle(u16 partition, MotionID M, BOOL bMixIn = TRUE, PlayCallback Callback = 0, LPVOID CallbackParam = 0, u8 channel = 0);
+    CBlend* PlayCycle(const shared_str& N, BOOL bMixIn = TRUE, PlayCallback Callback = nullptr, LPVOID CallbackParam = nullptr, u8 channel = 0) override;
+    CBlend* PlayCycle(MotionID M, BOOL bMixIn = TRUE, PlayCallback Callback = nullptr, LPVOID CallbackParam = nullptr, u8 channel = 0);
+    CBlend* PlayCycle(u16 partition, MotionID M, BOOL bMixIn = TRUE, PlayCallback Callback = nullptr, LPVOID CallbackParam = nullptr, u8 channel = 0);
     // fx'es
     MotionID ID_FX(LPCSTR N);
     MotionID ID_FX_Safe(LPCSTR N);
@@ -166,15 +163,15 @@ public:
     virtual void Release();
     virtual void Spawn();
     virtual IKinematicsAnimated* dcast_PKinematicsAnimated() { return this; }
-    virtual IRenderVisual* _BCL dcast_RenderVisual() { return this; }
-    virtual IKinematics* _BCL dcast_PKinematics() { return this; }
+    virtual IRenderVisual* dcast_RenderVisual() { return this; }
+    virtual IKinematics* dcast_PKinematics() { return this; }
 
     virtual ~CKinematicsAnimated();
     CKinematicsAnimated();
 
     virtual u32 mem_usage(bool bInstance)
     {
-        u32 sz = CKinematics::mem_usage(bInstance) + sizeof(*this) + (bInstance && blend_instances ? blend_instances->mem_usage() : 0);
+        const u32 sz = CKinematics::mem_usage(bInstance) + sizeof(*this) + (bInstance && blend_instances ? blend_instances->mem_usage() : 0);
         return sz;
     }
 
@@ -186,7 +183,5 @@ public:
 
     virtual float get_animation_length(MotionID motion_ID);
 };
-// IC CKinematicsAnimated* PKinematicsAnimated(IRenderVisual* V) { return V?V->dcast_PKinematicsAnimated():0; }
-IC CKinematicsAnimated* PKinematicsAnimated(IRenderVisual* V) { return V ? (CKinematicsAnimated*)V->dcast_PKinematicsAnimated() : 0; }
-//---------------------------------------------------------------------------
-#endif
+
+IC CKinematicsAnimated* PKinematicsAnimated(IRenderVisual* V) { return V ? (CKinematicsAnimated*)V->dcast_PKinematicsAnimated() : nullptr; }

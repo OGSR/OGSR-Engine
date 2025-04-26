@@ -3,89 +3,79 @@
 
 #include "../xrRender/r_constants_cache.h"
 
-dx10ConstantBuffer& R_constants::GetCBuffer(R_constant* C, BufferType BType)
+
+template <>
+dx10ConstantBuffer& R_constants::GetCBuffer<R_constants::BT_PixelBuffer>(R_constant* C) const
 {
-    if (BType == BT_PixelBuffer)
-    {
-        //	Decode index
-        int iBufferIndex = (C->destination & RC_dest_pixel_cb_index_mask) >> RC_dest_pixel_cb_index_shift;
+    //	Decode index
+    const int iBufferIndex = (C->destination & RC_dest_pixel_cb_index_mask) >> RC_dest_pixel_cb_index_shift;
 
-        VERIFY(iBufferIndex < CBackend::MaxCBuffers);
-        VERIFY(RCache.m_aPixelConstants[iBufferIndex]);
-        return *RCache.m_aPixelConstants[iBufferIndex];
-    }
-    else if (BType == BT_VertexBuffer)
-    {
-        //	Decode index
-        int iBufferIndex = (C->destination & RC_dest_vertex_cb_index_mask) >> RC_dest_vertex_cb_index_shift;
-
-        VERIFY(iBufferIndex < CBackend::MaxCBuffers);
-        VERIFY(RCache.m_aVertexConstants[iBufferIndex]);
-        return *RCache.m_aVertexConstants[iBufferIndex];
-    }
-    else if (BType == BT_GeometryBuffer)
-    {
-        //	Decode index
-        int iBufferIndex = (C->destination & RC_dest_geometry_cb_index_mask) >> RC_dest_geometry_cb_index_shift;
-
-        VERIFY(iBufferIndex < CBackend::MaxCBuffers);
-        VERIFY(RCache.m_aGeometryConstants[iBufferIndex]);
-        return *RCache.m_aGeometryConstants[iBufferIndex];
-    }
-    else if (BType == BT_HullBuffer)
-    {
-        //	Decode index
-        int iBufferIndex = (C->destination & RC_dest_hull_cb_index_mask) >> RC_dest_hull_cb_index_shift;
-
-        VERIFY(iBufferIndex < CBackend::MaxCBuffers);
-        VERIFY(RCache.m_aHullConstants[iBufferIndex]);
-        return *RCache.m_aHullConstants[iBufferIndex];
-    }
-    else if (BType == BT_DomainBuffer)
-    {
-        //	Decode index
-        int iBufferIndex = (C->destination & RC_dest_domain_cb_index_mask) >> RC_dest_domain_cb_index_shift;
-
-        VERIFY(iBufferIndex < CBackend::MaxCBuffers);
-        VERIFY(RCache.m_aDomainConstants[iBufferIndex]);
-        return *RCache.m_aDomainConstants[iBufferIndex];
-    }
-    else if (BType == BT_Compute)
-    {
-        //	Decode index
-        int iBufferIndex = (C->destination & RC_dest_compute_cb_index_mask) >> RC_dest_compute_cb_index_shift;
-
-        VERIFY(iBufferIndex < CBackend::MaxCBuffers);
-        VERIFY(RCache.m_aComputeConstants[iBufferIndex]);
-        return *RCache.m_aComputeConstants[iBufferIndex];
-    }
-
-    FATAL("Unreachable code");
-    // Just hack to avoid warning;
-    dx10ConstantBuffer* ptr = 0;
-    return *ptr; //-V522
+    R_ASSERT(iBufferIndex < CBackend::MaxCBuffers);
+    return *cmd_list.m_aPixelConstants[iBufferIndex];
 }
 
-void R_constants::flush_cache()
+template <>
+dx10ConstantBuffer& R_constants::GetCBuffer<R_constants::BT_VertexBuffer>(R_constant* C) const
 {
+    //	Decode index
+    const int iBufferIndex = (C->destination & RC_dest_vertex_cb_index_mask) >> RC_dest_vertex_cb_index_shift;
+
+    R_ASSERT(iBufferIndex < CBackend::MaxCBuffers);
+    return *cmd_list.m_aVertexConstants[iBufferIndex];
+}
+
+template <>
+dx10ConstantBuffer& R_constants::GetCBuffer<R_constants::BT_GeometryBuffer>(R_constant* C) const
+{
+    //	Decode index
+    const int iBufferIndex = (C->destination & RC_dest_geometry_cb_index_mask) >> RC_dest_geometry_cb_index_shift;
+
+    R_ASSERT(iBufferIndex < CBackend::MaxCBuffers);
+    return *cmd_list.m_aGeometryConstants[iBufferIndex];
+}
+
+template <>
+dx10ConstantBuffer& R_constants::GetCBuffer<R_constants::BT_HullBuffer>(R_constant* C) const
+{
+    //	Decode index
+    const int iBufferIndex = (C->destination & RC_dest_hull_cb_index_mask) >> RC_dest_hull_cb_index_shift;
+
+    R_ASSERT(iBufferIndex < CBackend::MaxCBuffers);
+    return *cmd_list.m_aHullConstants[iBufferIndex];
+}
+
+template <>
+dx10ConstantBuffer& R_constants::GetCBuffer<R_constants::BT_DomainBuffer>(R_constant* C) const
+{
+    //	Decode index
+    const int iBufferIndex = (C->destination & RC_dest_domain_cb_index_mask) >> RC_dest_domain_cb_index_shift;
+
+    R_ASSERT(iBufferIndex < CBackend::MaxCBuffers);
+    return *cmd_list.m_aDomainConstants[iBufferIndex];
+}
+
+void R_constants::flush_cache() const
+{
+    const auto context_id = cmd_list.context_id; // TODO: constant buffer should be encapsulated, so no ctx ID needed
+
     for (int i = 0; i < CBackend::MaxCBuffers; ++i)
     {
-        if (RCache.m_aVertexConstants[i])
-            RCache.m_aVertexConstants[i]->Flush();
+        if (cmd_list.m_aVertexConstants[i])
+            cmd_list.m_aVertexConstants[i]->Flush(context_id);
 
-        if (RCache.m_aPixelConstants[i])
-            RCache.m_aPixelConstants[i]->Flush();
+        if (cmd_list.m_aPixelConstants[i])
+            cmd_list.m_aPixelConstants[i]->Flush(context_id);
 
-        if (RCache.m_aGeometryConstants[i])
-            RCache.m_aGeometryConstants[i]->Flush();
+        if (cmd_list.m_aGeometryConstants[i])
+            cmd_list.m_aGeometryConstants[i]->Flush(context_id);
 
-        if (RCache.m_aHullConstants[i])
-            RCache.m_aHullConstants[i]->Flush();
+        if (cmd_list.m_aHullConstants[i])
+            cmd_list.m_aHullConstants[i]->Flush(context_id);
 
-        if (RCache.m_aDomainConstants[i])
-            RCache.m_aDomainConstants[i]->Flush();
+        if (cmd_list.m_aDomainConstants[i])
+            cmd_list.m_aDomainConstants[i]->Flush(context_id);
 
-        if (RCache.m_aComputeConstants[i])
-            RCache.m_aComputeConstants[i]->Flush();
+        if (cmd_list.m_aComputeConstants[i])
+            cmd_list.m_aComputeConstants[i]->Flush(context_id);
     }
 }

@@ -1,10 +1,10 @@
-#ifndef D_TRI_BOX_H
-#define D_TRI_BOX_H
+#pragma once
 
 #include "TriPrimitiveCollideClassDef.h"
 #include "../ode_include.h"
 #include "../MathUtils.h"
 #include "dcTriListCollider.h"
+
 struct Triangle;
 struct dxBox
 {
@@ -254,113 +254,3 @@ IC dReal dcTriListCollider::FragmentonBoxTest(const dReal* Pt1, const dReal* Pt2
         }
     }
 }
-
-/*
-inline dReal FragmentonBoxTest1(const dReal* Pt1,const dReal* Pt2,const dReal* BxP,const dReal* BxEx,const dReal* R,dReal* norm){
-
-dVector3 fragmentonAx={Pt2[0]-Pt1[0],Pt2[1]-Pt1[1],Pt2[2]-Pt1[2]};
-dVector3 currentAx;
-dReal* axis;
-dReal currentDepth,depth;
-dReal currentDistance,distanse;
-dReal BxExPr;
-accurate_normalize(fragmentonAx);
-dReal BxPPr=dDOT(fragmentonAx,BxP);
-
-BxExPr=
-dFabs(dDOT14(fragmentonAx,R+0)*BxEx[0])+
-dFabs(dDOT14(fragmentonAx,R+1)*BxEx[1])+
-dFabs(dDOT14(fragmentonAx,R+2)*BxEx[2]);
-
-currentDistance=dDOT(fragmentonAx,Pt1)-BxPPr;
-currentDepth=BxExPr-dFabs(currentDistance);
-
-distance=dDOT(fragmentonAx,Pt2)-BxPPr;
-depth=BxExPr-dFabs(distance);
-
-if(
-(currentDistance-BxExPr/2.f)*
-(distance-BxExPr/2.f)>0.f
-&&
-(currentDistance+BxExPr/2.f)*
-(distance+BxExPr/2.f)>0.f
-) return -1.f;
-
-if(depth<0.f&&currentDepth>=0.f) {
-depth=currentDepth;
-distance=currentDistance;
-}
-else
-dVector3 crossAx0;
-dCROSS114(crossAx0,=,fragmentonAx,R+0);
-accurate_normalize(crossAx0);
-BxExPr=
-dFabs(dDOT14(crossAx0,R+0)*BxEx[0])+
-dFabs(dDOT14(crossAx0,R+1)*BxEx[1])+
-dFabs(dDOT14(crossAx0,R+2)*BxEx[2]);
-dReal distance0=dDOT(crossAx0,Pt1)-dDOT(crossAx0,BxP);
-if(dFabs(distance0)>BxExPr/2.f) return -1.f;
-dReal depth0=BxExPr/2.f-dFabs(distance0);
-
-dVector3 crossAx1;
-dCROSS114(crossAx1,=,fragmentonAx,R+1);
-accurate_normalize(crossAx1);
-BxExPr=
-dFabs(dDOT14(crossAx1,R+0)*BxEx[0])+
-dFabs(dDOT14(crossAx1,R+1)*BxEx[1])+
-dFabs(dDOT14(crossAx1,R+2)*BxEx[2]);
-dReal distance1=dDOT(crossAx1,Pt1)-dDOT(crossAx1,BxP);
-if(dFabs(distance1)>BxExPr/2.f) return -1.f;
-dReal depth1=BxExPr/2.f-dFabs(distance1);
-
-dVector3 crossAx2;
-dCROSS114(crossAx2,=,fragmentonAx,R+2);
-accurate_normalize(crossAx2);
-BxExPr=
-dFabs(dDOT14(crossAx2,R+0)*BxEx[0])+
-dFabs(dDOT14(crossAx2,R+1)*BxEx[1])+
-dFabs(dDOT14(crossAx2,R+2)*BxEx[2]);
-dReal distance2=dDOT(crossAx2,Pt1)-dDOT(crossAx2,BxP);
-if(dFabs(distance2)>BxExPr/2.f) return -1.f;
-dReal depth2=BxExPr/2.f-dFabs(distance2);
-
-
-if(depth0<depth1){
-
-if(depth0<depth2)						{
-norm[0]=distance0*crossAx0[0];
-norm[1]=distance0*crossAx0[1];
-norm[2]=distance0*crossAx0[2];
-return depth0;
-}
-
-else									{
-
-norm[0]=distance2*crossAx2[0];
-norm[1]=distance2*crossAx2[1];
-norm[2]=distance2*crossAx2[2];
-return depth2;
-}
-}
-
-
-else{
-
-if(depth1<depth2)						{
-norm[0]=distance1*crossAx1[0];
-norm[1]=distance1*crossAx1[1];
-norm[2]=distance1*crossAx1[2];
-return depth1;
-}
-else 									{
-norm[0]=distance2*crossAx2[0];
-norm[1]=distance2*crossAx2[1];
-norm[2]=distance2*crossAx2[2];
-return depth2;
-}
-}
-
-}
-*/
-
-#endif

@@ -83,7 +83,7 @@ public:
     virtual CInventory* GetInventory() { return NULL; };
     virtual void cam_Update(float dt, float fov = 90.0f);
 
-    virtual void renderable_Render();
+    virtual void renderable_Render(u32 context_id, IRenderable* root) override;
 
     virtual bool attach_Actor(CGameObject* actor);
     virtual void detach_Actor();

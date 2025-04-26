@@ -18,8 +18,7 @@ void UIMiniMapInit(CUIMiniMap* wnd)
 
     CInifile* pLtx = pGameIni;
 
-    if (!pLtx->section_exist(Level().name()))
-        pLtx = Level().pLevel;
+    R_ASSERT(pLtx->section_exist(Level().name()));
 
     wnd->Init(Level().name(), *pLtx, "hud\\default");
 

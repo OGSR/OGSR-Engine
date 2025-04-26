@@ -85,7 +85,7 @@ EFC_Visible CFrustum::testSphere(const Fvector& c, float r, u32& test_mask) cons
     return test_mask ? fcvPartial : fcvFully;
 }
 
-BOOL CFrustum::testSphere_dirty(Fvector& c, float r) const
+BOOL CFrustum::testSphere_dirty(const Fvector& c, const float r) const
 {
     switch (p_count)
     {
@@ -417,7 +417,7 @@ sPoly* CFrustum::ClipPoly(sPoly& S, sPoly& D) const
 
         // here we end up with complete polygon in 'dest' which is inside plane #i
         if (dest->size() < 3)
-            return 0;
+            return nullptr;
     }
     return dest;
 }
@@ -432,7 +432,7 @@ BOOL CFrustum::CreateFromClipPoly(Fvector* p, int count, Fvector& vBase, CFrustu
     sPoly* dest = clip.ClipPoly(poly1, poly2);
 
     // here we end up with complete frustum-polygon in 'dest'
-    if (0 == dest)
+    if (nullptr == dest)
         return false;
 
     CreateFromPoints(dest->begin(), dest->size(), vBase);

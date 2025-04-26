@@ -88,7 +88,7 @@ public:
     virtual void setup_physic_shell();
 
     virtual void afterDetach();
-    virtual void renderable_Render();
+    virtual void renderable_Render(u32 context_id, IRenderable* root) override;
 
     // alpet: управление светом фонаря
     IRender_Light* GetLight(int target = 0) const;

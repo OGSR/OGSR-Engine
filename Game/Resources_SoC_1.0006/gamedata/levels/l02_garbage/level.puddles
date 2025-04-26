@@ -1,0 +1,134 @@
+[east_south_valley]
+center = 260.93,-10.00,-134.27
+max_depth = 0.5
+radius = 40
+
+[east_valley]
+center = 264.59,-8.37,1.99
+max_depth = 0.5
+radius = 11
+
+[west_anomaly_field]
+center = -280.22,-7.95,-177.50
+max_depth = 0.5
+radius = 22
+
+[north_swamp]
+center = 151.02,-6.78,106.27
+max_depth = 0.5
+radius = 7
+
+[west_garbage]
+center = -215.96,-4.92,153.40
+max_depth = 0.5
+radius = 8
+
+[north_swamp_1]
+center = 130.28,-4.85,146.82
+max_depth = 0.35
+radius = 10
+
+[east_garbage_2]
+center = 215.03,-4.70,-7.68
+max_depth = 0.3
+radius = 8
+
+[west_garbage_2]
+center = -215.52,-4.46,127.70
+max_depth = 0.5
+radius = 10
+
+[east_garbage_1]
+center = 229.09,-4.45,-172.66
+max_depth = 0.5
+radius = 8
+
+[south_west_garbage_1]
+center = -175.83,-4.20,-187.62
+max_depth = 0.4
+radius = 8
+
+[garbage_1]
+center = -143.46,-4.17,153.97
+max_depth = 0.5
+radius = 15
+
+[garbage_2]
+center = -186.20,-4.14,113.40
+max_depth = 0.5
+radius = 25
+
+[west_garbage_3]
+center = -235.40,-4.08,93.19
+max_depth = 0.5
+radius = 8
+
+[south_garbage_1]
+center = 70.23,-4.05,-249.98
+max_depth = 0.5
+radius = 13
+
+[north_garbage_2]
+center = -79.35,-3.94,197.27
+max_depth = 0.5
+radius = 7
+
+[south_garbage_2]
+center = 74.41,-3.77,-281.20
+max_depth = 0.45
+radius = 10
+
+[north_garbage_4]
+center = 163.07,-3.75,259.46
+max_depth = 0.5
+radius = 19
+
+[south_garbage_3]
+center = 44.22,-3.00,-227.66
+max_depth = 0.5
+radius = 7
+
+[east_garbage_4]
+center = 209.29,-2.92,71.58
+max_depth = 0.5
+radius = 8
+
+[east_garbage_3]
+center = 137.33,-2.82,-138.97
+max_depth = 0.5
+radius = 18
+
+[east_garbage_5]
+center = 100.28,-2.83,-105.52
+max_depth = 0.5
+radius = 10
+
+[east_garbage_6]
+center = 97.84,-2.73,-171.25
+max_depth = 0.5
+radius = 14
+
+[east_garbage_7]
+center = 110.90,-2.53,-149.82
+max_depth = 0.5
+radius = 23
+
+[north_garbage_5]
+center = 107.71,-2.53,106.90
+max_depth = 0.5
+radius = 7
+
+[east_garbage_8]
+center = 184.59,-1.71,-116.92
+max_depth = 0.5
+radius = 12
+
+[north_west_garbage_1]
+center = -181.20,-1.68,175.79
+max_depth = 0.5
+radius = 17
+
+[south_east_garbage_1]
+center = 94.09,-1.47,-62.67
+max_depth = 0.5
+radius = 21

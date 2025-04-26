@@ -1,0 +1,1 @@
+normal = details_blend.normal

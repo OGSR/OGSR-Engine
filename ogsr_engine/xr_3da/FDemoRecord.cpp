@@ -38,9 +38,9 @@ static void setup_lm_screenshot_matrices()
 static Fbox get_level_screenshot_bound()
 {
     Fbox res = g_pGameLevel->ObjectSpace.GetBoundingVolume();
-    if (g_pGameLevel->pLevel->section_exist("level_map") && g_pGameLevel->pLevel->line_exist("level_map", "bound_rect"))
+    if (pGameIni->line_exist(g_pGameLevel->name(), "bound_rect"))
     {
-        Fvector4 res2d = g_pGameLevel->pLevel->r_fvector4("level_map", "bound_rect");
+        Fvector4 res2d = pGameIni->r_fvector4(g_pGameLevel->name(), "bound_rect");
         res.min.x = res2d.x;
         res.min.z = res2d.y;
 
@@ -100,7 +100,7 @@ CDemoRecord::CDemoRecord(const char* name, float life_time) : CEffectorCam(cefDe
 
     m_b_redirect_input_to_level = false;
 
-    if (name && name[0]) // что б можно было demo_record без файла использовать
+    if (strlen(name) > 0) // что б можно было demo_record без файла использовать
     {
         _unlink(name);
         file = FS.w_open(name);
@@ -190,9 +190,7 @@ void CDemoRecord::MakeLevelMapProcess()
         s_dev_flags = psDeviceFlags;
         s_hud_flag.assign(psHUD_Flags);
         psDeviceFlags.zero();
-        psDeviceFlags.set(rsClearBB | rsFullscreen | rsDrawStatic, true);
-        if (!psDeviceFlags.equal(s_dev_flags, rsFullscreen))
-            Device.Reset();
+        psDeviceFlags.set(rsClearBB /*| rsFullscreen | rsDrawStatic*/, true);
     }
     break;
 
@@ -223,10 +221,8 @@ void CDemoRecord::MakeLevelMapProcess()
         {
             psHUD_Flags.assign(s_hud_flag);
 
-            bool bDevReset = !psDeviceFlags.equal(s_dev_flags, rsFullscreen);
             psDeviceFlags = s_dev_flags;
-            if (bDevReset)
-                Device.Reset();
+
             m_bMakeLevelMap = false;
             m_iLMScreenshotFragment = -1;
         }
@@ -336,17 +332,17 @@ BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
 
         float speed = m_fSpeed1, ang_speed = m_fAngSpeed1;
 
-        if (IR_GetKeyState(DIK_LSHIFT))
+        if (pInput->iGetAsyncKeyState(DIK_LSHIFT))
         {
             speed = m_fSpeed0;
             ang_speed = m_fAngSpeed0;
         }
-        else if (IR_GetKeyState(DIK_LALT))
+        else if (pInput->iGetAsyncKeyState(DIK_LALT))
         {
             speed = m_fSpeed2;
             ang_speed = m_fAngSpeed2;
         }
-        else if (IR_GetKeyState(DIK_LCONTROL))
+        else if (pInput->iGetAsyncKeyState(DIK_LCONTROL))
         {
             speed = m_fSpeed3;
             ang_speed = m_fAngSpeed3;
@@ -426,7 +422,7 @@ void CDemoRecord::IR_OnKeyboardPress(int dik)
     if (dik == DIK_BACK)
         MakeCubemap();
     if (dik == DIK_F11)
-        MakeLevelMapScreenshot(IR_GetKeyState(DIK_LCONTROL));
+        MakeLevelMapScreenshot(pInput->iGetAsyncKeyState(DIK_LCONTROL));
     if (dik == DIK_F12)
         MakeScreenshot();
     if (dik == DIK_ESCAPE)

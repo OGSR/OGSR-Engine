@@ -20,6 +20,8 @@ vf _main(v_model v)
     float3 norm_w = normalize(mul(m_W, v.N));
 
     o.hpos = mul(m_WVP, pos); // xform, input in world coords
+    o.hpos.xy = get_taa_jitter(o.hpos);
+
     o.tc0 = v.tc.xy; // copy tc
     o.tc1 = calc_reflection(pos_w, norm_w);
     o.c0 = calc_model_lq_lighting(float3(0, 1, 0)); // SSS 14.5 - Improve the illumination a little using a fake normal

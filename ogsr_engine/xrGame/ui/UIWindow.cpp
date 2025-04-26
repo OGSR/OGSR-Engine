@@ -372,6 +372,18 @@ bool CUIWindow::OnMouse(float x, float y, EUIMessages mouse_action)
         if (OnMouseDown(MOUSE_3))
             return true;
         break;
+    case WINDOW_LBUTTON_UP:
+        if (OnMouseUp(MOUSE_1))
+            return true;
+        break;
+    case WINDOW_RBUTTON_UP:
+        if (OnMouseUp(MOUSE_2))
+            return true;
+        break;
+    case WINDOW_CBUTTON_UP:
+        if (OnMouseUp(MOUSE_3))
+            return true;
+        break;
     case WINDOW_LBUTTON_DB_CLICK:
         if (OnDbClick())
             return true;
@@ -438,7 +450,7 @@ bool CUIWindow::OnDbClick()
 
 bool CUIWindow::OnMouseDown(int mouse_btn) { return false; }
 
-void CUIWindow::OnMouseUp(int mouse_btn) {}
+bool CUIWindow::OnMouseUp(int mouse_btn) { return false; }
 
 void CUIWindow::OnFocusReceive()
 {

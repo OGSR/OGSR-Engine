@@ -1,5 +1,4 @@
-#ifndef PHSHELL_CREATOR_H
-#define PHSHELL_CREATOR_H
+#pragma once
 
 #include "ph_shell_interface.h"
 
@@ -11,4 +10,3 @@ public:
 protected:
 private:
 };
-#endif

@@ -9,7 +9,12 @@ class ENGINE_API CGameFont;
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/StatsRender.h"
 
-DECLARE_MESSAGE(Stats);
+extern RP_FUNC rp_Stats;
+class pureStats
+{
+public:
+    virtual void OnStats(void) = 0;
+};
 
 class ENGINE_API CStatsPhysics
 {
@@ -33,6 +38,7 @@ public:
     CStatTimer EngineTOTAL; //
     CStatTimer Sheduler; //
     CStatTimer UpdateClient; //
+
     u32 UpdateClient_updated; //
     u32 UpdateClient_crows; //
     u32 UpdateClient_active; //
@@ -40,9 +46,7 @@ public:
     u32 Particles_starting; // starting
     u32 Particles_active; // active
     u32 Particles_destroy; // destroying
-    //	CStatTimer	Physics;			// movement+collision
-    //	CStatTimer	ph_collision;		// collision
-    //	CStatTimer	ph_core;			// collision
+
     CStatTimer AI_Think; // thinking
     CStatTimer AI_Range; // query: range
     CStatTimer AI_Path; // query: path
@@ -58,7 +62,6 @@ public:
     CStatTimer Animation; // skeleton calculation
     CStatTimer RenderDUMP; // actual primitive rendering
     CStatTimer RenderDUMP_Wait; // ...waiting something back (queries results, etc.)
-    // CStatTimer	RenderDUMP_Wait_S;	// ...frame-limit sync
     CStatTimer RenderDUMP_RT; // ...render-targets
     CStatTimer RenderDUMP_SKIN; // ...skinning
     CStatTimer RenderDUMP_HUD; // ...hud rendering
@@ -82,19 +85,11 @@ public:
     CStatTimer clBOX; // total: box query
     CStatTimer clFRUSTUM; // total: frustum query
 
-    CStatTimer netClient1;
-    CStatTimer netClient2;
-    CStatTimer netServer;
-    CStatTimer netClientCompressor;
-    CStatTimer netServerCompressor;
-
-    CStatTimer TEST0; // debug counter
-    CStatTimer TEST1; // debug counter
-    CStatTimer TEST2; // debug counter
-    CStatTimer TEST3; // debug counter
+    CStatTimer BulletManager; // debug counter
+    CStatTimer cam_Update; // debug counter
+    CStatTimer dxRainRender; // debug counter
 
 private:
-
     float PhysMemoryUsedPercent;
 
     float AvailableMem;
@@ -107,7 +102,7 @@ private:
 
 public:
     void Show();
-    void Show_HW_Stats();
+    void Show_HW();
 
     virtual void OnRender();
     void OnDeviceCreate(void);

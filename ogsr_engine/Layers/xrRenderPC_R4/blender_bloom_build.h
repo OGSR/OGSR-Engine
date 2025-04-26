@@ -10,25 +10,3 @@ public:
     CBlender_bloom_build();
     virtual ~CBlender_bloom_build();
 };
-
-class CBlender_bloom_build_msaa : public IBlender
-{
-public:
-    virtual LPCSTR getComment() { return "INTERNAL: combine to bloom target msaa"; }
-
-    virtual void Compile(CBlender_Compile& C);
-
-    CBlender_bloom_build_msaa();
-    virtual ~CBlender_bloom_build_msaa();
-};
-
-class CBlender_postprocess_msaa : public IBlender
-{
-public:
-    virtual LPCSTR getComment() { return "INTERNAL: combine to bloom target msaa"; }
-
-    virtual void Compile(CBlender_Compile& C);
-
-    CBlender_postprocess_msaa();
-    virtual ~CBlender_postprocess_msaa();
-};

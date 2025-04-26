@@ -186,7 +186,6 @@ void CObjectList::ProcessDestroyQueue()
         for (int it = destroy_queue.size() - 1; it >= 0; it--)
             Sound->object_relcase(destroy_queue[it]);
 
-        CCustomHUD& hud = *g_pGameLevel->pHUD;
         RELCASE_CALLBACK_VEC::iterator It = m_relcase_callbacks.begin();
         RELCASE_CALLBACK_VEC::iterator Ite = m_relcase_callbacks.end();
         for (; It != Ite; ++It)
@@ -197,7 +196,7 @@ void CObjectList::ProcessDestroyQueue()
             for (; dIt != dIte; ++dIt)
             {
                 (*It).m_Callback(*dIt);
-                hud.net_Relcase(*dIt);
+                g_hud->net_Relcase(*dIt);
             }
         }
 

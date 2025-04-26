@@ -56,8 +56,8 @@ IClient* xrServer::new_client(SClientConnectData* cl_data)
 
     string64 new_name;
     strcpy_s(new_name, cl_data->name);
-    CL->name._set(new_name);
-    CL->pass._set(cl_data->pass);
+    CL->name = new_name;
+    CL->pass = cl_data->pass;
 
     NET_Packet P;
     P.B.count = 0;

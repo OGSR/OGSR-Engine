@@ -6,8 +6,7 @@
 //	Description : steering behaviour separation class
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef STEERING_BEHAVIOUR_SEPARATION_H_INCLUDED
-#define STEERING_BEHAVIOUR_SEPARATION_H_INCLUDED
+#pragma once
 
 #include "steering_behaviour_base.h"
 #include "smart_cover_detail.h"
@@ -31,5 +30,3 @@ private:
 };
 
 } // namespace steering_behaviour
-
-#endif // STEERING_BEHAVIOUR_SEPARATION_H_INCLUDED

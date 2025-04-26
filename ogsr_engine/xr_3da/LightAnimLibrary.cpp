@@ -16,7 +16,7 @@ ELightAnimLibrary LALib;
 
 CLAItem::CLAItem()
 {
-    fFPS = 15.f;
+    def_fFPS = fFPS = 15.f;
     iFrameCount = 1;
 }
 
@@ -26,51 +26,17 @@ void CLAItem::Load(IReader& F)
 {
     R_ASSERT(F.find_chunk(CHUNK_ITEM_COMMON));
     F.r_stringZ(cName);
-    fFPS = F.r_float();
+    def_fFPS = fFPS = F.r_float();
     iFrameCount = F.r_u32();
 
-    int key_cnt, key;
     R_ASSERT(F.find_chunk(CHUNK_ITEM_KEYS));
-    key_cnt = F.r_u32();
+
+    const int key_cnt = F.r_u32();
     for (int i = 0; i < key_cnt; i++)
     {
-        key = F.r_u32();
+        int key = F.r_u32();
         Keys[key] = F.r_u32();
     }
-}
-
-void CLAItem::Save(IWriter& F)
-{
-    F.open_chunk(CHUNK_ITEM_COMMON);
-    F.w_stringZ(cName);
-    F.w_float(fFPS);
-    F.w_u32(iFrameCount);
-    F.close_chunk();
-
-    F.open_chunk(CHUNK_ITEM_KEYS);
-    F.w_u32(Keys.size());
-    for (KeyPairIt it = Keys.begin(); it != Keys.end(); it++)
-    {
-        F.w_u32(it->first);
-        F.w_u32(it->second);
-    }
-    F.close_chunk();
-}
-
-void CLAItem::InsertKey(int frame, u32 color)
-{
-    R_ASSERT(frame <= iFrameCount);
-    Keys[frame] = color;
-}
-
-void CLAItem::DeleteKey(int frame)
-{
-    R_ASSERT(frame <= iFrameCount);
-    if (0 == frame)
-        return;
-    KeyPairIt it = Keys.find(frame);
-    if (it != Keys.end())
-        Keys.erase(it);
 }
 
 void CLAItem::MoveKey(int from, int to)
@@ -121,11 +87,11 @@ u32 CLAItem::InterpolateRGB(int frame)
         B = Keys.upper_bound(frame); // ищем следующий ключ
         if (B == Keys.end())
         { // если его нет вернем цвет последнего ключа
-            B--;
+            --B;
             return B->second;
         }
         A = B; // иначе в A занесем предыдущий ключ
-        A--;
+        --A;
     }
 
     R_ASSERT(Keys.size() > 1);
@@ -158,36 +124,6 @@ u32 CLAItem::CalculateBGR(float T, int& frame)
     return InterpolateBGR(frame);
 }
 
-int CLAItem::PrevKeyFrame(int frame)
-{
-    KeyPairIt A = Keys.lower_bound(frame);
-    if (A != Keys.end())
-    {
-        KeyPairIt B = A;
-        B--;
-        if (B != Keys.end())
-            return B->first;
-        return A->first;
-    }
-    else
-    {
-        return Keys.rbegin()->first;
-    }
-}
-
-int CLAItem::NextKeyFrame(int frame)
-{
-    KeyPairIt A = Keys.upper_bound(frame);
-    if (A != Keys.end())
-    {
-        return A->first;
-    }
-    else
-    {
-        return Keys.rbegin()->first;
-    }
-}
-
 //------------------------------------------------------------------------------
 // Library
 //------------------------------------------------------------------------------
@@ -201,8 +137,8 @@ void ELightAnimLibrary::OnDestroy() { Unload(); }
 
 void ELightAnimLibrary::Unload()
 {
-    for (LAItemIt it = Items.begin(); it != Items.end(); it++)
-        xr_delete(*it);
+    for (auto& Item : Items)
+        xr_delete(Item);
     Items.clear();
 }
 
@@ -220,73 +156,57 @@ void ELightAnimLibrary::DbgDumpInfo() const
 
 void ELightAnimLibrary::Load()
 {
-    string_path fn;
-    FS.update_path(fn, _game_data_, "lanims.xr");
-    IReader* fs = FS.r_open(fn);
-    if (fs)
+    FS_FileSet flist;
+    FS.file_list(flist, fsgame::game_data, FS_ListFiles | FS_RootOnly, "*lanims*.xr");
+    Msg("[%s] count of *lanims*.xr files: [%u]", __FUNCTION__, flist.size());
+
+    for (const auto& file : flist)
     {
-        u16 version = 0;
-        if (fs->find_chunk(CHUNK_VERSION))
+        string_path fn;
+        FS.update_path(fn, fsgame::game_data, file.name.c_str());
+
+        if (IReader* fs = FS.r_open(fn))
         {
-            version = fs->r_u16();
-        }
-        IReader* OBJ = fs->open_chunk(CHUNK_ITEM_LIST);
-        if (OBJ)
-        {
-            IReader* O = OBJ->open_chunk(0);
-            for (int count = 1; O; count++)
+            u16 version = 0;
+            if (fs->find_chunk(CHUNK_VERSION))
             {
-                CLAItem* I = xr_new<CLAItem>();
-                I->Load(*O);
-                if (version == 0)
-                {
-                    for (CLAItem::KeyPairIt it = I->Keys.begin(); it != I->Keys.end(); it++)
-                        it->second = subst_alpha(bgr2rgb(it->second), color_get_A(it->second));
-                }
-                Items.push_back(I);
-                O->close();
-                O = OBJ->open_chunk(count);
+                version = fs->r_u16();
             }
-            OBJ->close();
+
+            if (IReader* obj = fs->open_chunk(CHUNK_ITEM_LIST))
+            {
+                IReader* o = obj->open_chunk(0);
+
+                for (int count = 1; o; count++)
+                {
+                    CLAItem* I = xr_new<CLAItem>();
+                    I->Load(*o);
+
+                    if (version == 0)
+                    {
+                        for (auto& Key : I->Keys)
+                            Key.second = subst_alpha(bgr2rgb(Key.second), color_get_A(Key.second));
+                    }
+
+                    Items.push_back(I);
+
+                    o->close();
+
+                    o = obj->open_chunk(count); // open next chunk
+                }
+
+                obj->close();
+            }
+
+            FS.r_close(fs);
         }
-
-        FS.r_close(fs);
     }
-}
-
-void ELightAnimLibrary::Save()
-{
-    CMemoryWriter F;
-    F.open_chunk(CHUNK_VERSION);
-    F.w_u16(LANIM_VERSION);
-    F.close_chunk();
-    F.open_chunk(CHUNK_ITEM_LIST);
-    int count = 0;
-    for (LAItemIt it = Items.begin(); it != Items.end(); it++)
-    {
-        F.open_chunk(count++);
-        (*it)->Save(F);
-        F.close_chunk();
-    }
-    F.close_chunk();
-
-    string_path fn;
-    FS.update_path(fn, _game_data_, "lanims.xr");
-
-    if (!F.save_to(fn))
-        Msg("!Can't save color animations: [%s]", fn);
-}
-
-void ELightAnimLibrary::Reload()
-{
-    Unload();
-    Load();
 }
 
 LAItemIt ELightAnimLibrary::FindItemI(LPCSTR name)
 {
     if (name && name[0])
-        for (LAItemIt it = Items.begin(); it != Items.end(); it++)
+        for (LAItemIt it = Items.begin(); it != Items.end(); ++it)
             if (0 == xr_strcmp((*it)->cName, name))
                 return it;
     return Items.end();
@@ -295,18 +215,5 @@ LAItemIt ELightAnimLibrary::FindItemI(LPCSTR name)
 CLAItem* ELightAnimLibrary::FindItem(LPCSTR name)
 {
     LAItemIt it = FindItemI(name);
-    return (it != Items.end()) ? *it : 0;
-}
-
-CLAItem* ELightAnimLibrary::AppendItem(LPCSTR name, CLAItem* src)
-{
-    VERIFY2(FindItem(name) == 0, "Duplicate name found.");
-    CLAItem* I = xr_new<CLAItem>();
-    if (src)
-        *I = *src;
-    else
-        I->InitDefault();
-    I->cName = name;
-    Items.push_back(I);
-    return I;
+    return (it != Items.end()) ? *it : nullptr;
 }

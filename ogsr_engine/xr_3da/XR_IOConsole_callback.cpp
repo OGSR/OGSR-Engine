@@ -6,6 +6,8 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+//#include "igame_persistent.h"
 #include "XR_IOConsole.h"
 
 #include "line_editor.h"
@@ -46,8 +48,11 @@ void CConsole::Register_callbacks()
 }
 
 void CConsole::Screenshot()
-{ 
-	Render->Screenshot(); 
+{
+	Render->Screenshot();
+#pragma todo("Simp: ?")
+    //if (g_pGamePersistent)
+    //    g_pGamePersistent->m_pMainMenu->Screenshot();
 }
 
 void CConsole::Prev_log() // DIK_PRIOR=PAGE_UP

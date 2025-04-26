@@ -12,6 +12,6 @@ public:
 public:
     void clear();
     void sort();
-    void vis_prepare();
-    void vis_update();
+    void vis_prepare(CBackend& cmd_list) const;
+    void vis_update() const;
 };

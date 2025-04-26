@@ -148,6 +148,10 @@ void CScriptEngine::init()
 
     register_script_classes(); //Походу, запуск class_registrator.script
     object_factory().register_script(); //Регистрация классов
+
+    lua_gc(ai().script_engine().lua(), LUA_GCSETSTEPMUL, 500);
+    lua_gc(ai().script_engine().lua(), LUA_GCSETPAUSE, 100);
+
     // Msg("[CScriptEngine::init] LuaJIT Started!");
 }
 

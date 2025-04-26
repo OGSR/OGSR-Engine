@@ -28,8 +28,6 @@ void CBlender_luminance::Compile(CBlender_Compile& C)
         break;
     case 2: // 8x8		=> 1x1, blending with old result
         C.r_Pass("stub_notransform_filter", "bloom_luminance_3", false, FALSE, FALSE, FALSE);
-        // C.r_Sampler_clf	("s_image",		r2_RT_luminance_t8	);
-        // C.r_Sampler_clf	("s_tonemap",	r2_RT_luminance_src	);
         C.r_dx10Texture("s_image", r2_RT_luminance_t8);
         C.r_dx10Texture("s_tonemap", r2_RT_luminance_src);
         C.r_dx10Sampler("smp_rtlinear");

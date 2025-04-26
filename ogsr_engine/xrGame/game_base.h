@@ -182,6 +182,4 @@ public:
 
     virtual ALife::_TIME_ID GetEnvironmentGameTime();
     virtual float GetEnvironmentGameTimeFactor();
-    void SetEnvironmentGameTimeFactor(ALife::_TIME_ID GameTime, const float fTimeFactor);
-    virtual void SetEnvironmentGameTimeFactor(const float fTimeFactor);
 };

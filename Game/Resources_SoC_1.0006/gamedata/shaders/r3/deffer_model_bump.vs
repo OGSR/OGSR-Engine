@@ -8,6 +8,9 @@ v2p_bumped _main(v_model I)
     // Eye-space pos/normal
     v2p_bumped O;
     O.hpos = mul(m_WVP, w_pos);
+    O.hpos_curr = O.hpos;
+    O.hpos_old = mul(m_WVP_old, I.P_old);
+    O.hpos.xy = get_taa_jitter(O.hpos);
     float2 tc = I.tc;
     float3 Pe = mul(m_WV, w_pos);
     O.tcdh = float4(tc.xyyy);
@@ -28,7 +31,7 @@ v2p_bumped _main(v_model I)
 
     // Calculate the 3x3 transform from tangent space to eye-space
     // TangentToEyeSpace = object2eye * tangent2object
-    //		     = object2eye * transpose(object2tangent) (since the inverse of a rotation is its transpose)
+    //    = object2eye * transpose(object2tangent) (since the inverse of a rotation is its transpose)
     float3 N = I.N; // just scale (assume normal in the -.5f, .5f)
     float3 T = I.T; //
     float3 B = I.B; //

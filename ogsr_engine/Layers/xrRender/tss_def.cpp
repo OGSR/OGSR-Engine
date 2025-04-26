@@ -2,13 +2,12 @@
 
 
 #include "tss_def.h"
-#include "../xrRenderDX10/dx10StateUtils.h"
 
 IDirect3DStateBlock9* SimulatorStates::record()
 {
-    //	TODO: DX10: Implement equivalent for SimulatorStates::record for DX10
+//	TODO: DX10: Implement equivalent for SimulatorStates::record for DX10
     // VERIFY(!"SimulatorStates::record not implemented!");
-    return 0;
+    return nullptr;
 }
 
 void SimulatorStates::set_RS(u32 a, u32 b)
@@ -16,7 +15,7 @@ void SimulatorStates::set_RS(u32 a, u32 b)
     // Search duplicates
     for (int t = 0; t < int(States.size()); t++)
     {
-        State& S = States[t];
+        const State& S = States[t];
         if ((0 == S.type) && (a == S.v1))
         {
             States.erase(States.begin() + t);
@@ -35,7 +34,7 @@ void SimulatorStates::set_TSS(u32 a, u32 b, u32 c)
     // Search duplicates
     for (int t = 0; t < int(States.size()); t++)
     {
-        State& S = States[t];
+        const State& S = States[t];
         if ((1 == S.type) && (a == S.v1) && (b == S.v2))
         {
             States.erase(States.begin() + t);
@@ -54,7 +53,7 @@ void SimulatorStates::set_SAMP(u32 a, u32 b, u32 c)
     // Search duplicates
     for (int t = 0; t < int(States.size()); t++)
     {
-        State& S = States[t];
+        const State& S = States[t];
         if ((2 == S.type) && (a == S.v1) && (b == S.v2))
         {
             States.erase(States.begin() + t);
@@ -68,7 +67,7 @@ void SimulatorStates::set_SAMP(u32 a, u32 b, u32 c)
     States.push_back(st);
 }
 
-BOOL SimulatorStates::equal(SimulatorStates& S)
+BOOL SimulatorStates::equal(SimulatorStates& S) const
 {
     if (States.size() != S.States.size())
         return FALSE;
@@ -79,11 +78,12 @@ BOOL SimulatorStates::equal(SimulatorStates& S)
 
 void SimulatorStates::clear() { States.clear(); }
 
+#include "../xrRenderDX10/dx10StateUtils.h"
+
 void SimulatorStates::UpdateState(dx10State& state) const
 {
-    for (u32 it = 0; it < States.size(); it++)
+    for (const auto& S : States)
     {
-        const State& S = States[it];
         if (S.type == 0)
         {
             switch (S.v1)
@@ -97,12 +97,10 @@ void SimulatorStates::UpdateState(dx10State& state) const
 
 void SimulatorStates::UpdateDesc(D3D_RASTERIZER_DESC& desc) const
 {
-    for (u32 it = 0; it < States.size(); it++)
+    for (const auto& S : States)
     {
-        const State& S = States[it];
         if (S.type == 0)
         {
-            // CHK_DX(HW.pDevice->SetRenderState		((D3DRENDERSTATETYPE)S.v1,S.v2));
             switch (S.v1)
             {
             case D3DRS_FILLMODE:
@@ -171,9 +169,8 @@ void SimulatorStates::UpdateDesc(D3D_RASTERIZER_DESC& desc) const
 
 void SimulatorStates::UpdateDesc(D3D_DEPTH_STENCIL_DESC& desc) const
 {
-    for (u32 it = 0; it < States.size(); it++)
+    for (const auto& S : States)
     {
-        const State& S = States[it];
         if (S.type == 0)
         {
             switch (S.v1)
@@ -212,9 +209,8 @@ void SimulatorStates::UpdateDesc(D3D_DEPTH_STENCIL_DESC& desc) const
 
 void SimulatorStates::UpdateDesc(D3D_BLEND_DESC& desc) const
 {
-    for (u32 it = 0; it < States.size(); it++)
+    for (const auto& S : States)
     {
-        const State& S = States[it];
         if (S.type == 0)
         {
             switch (S.v1)
@@ -225,40 +221,40 @@ void SimulatorStates::UpdateDesc(D3D_BLEND_DESC& desc) const
                 break;
 
             case D3DRS_SRCBLEND:
-                for (int i = 0; i < 8; ++i)
-                    desc.RenderTarget[i].SrcBlend = dx10StateUtils::ConvertBlendArg((D3DBLEND)S.v2);
+                for (auto& i : desc.RenderTarget)
+                    i.SrcBlend = dx10StateUtils::ConvertBlendArg((D3DBLEND)S.v2);
                 break;
 
             case D3DRS_DESTBLEND:
-                for (int i = 0; i < 8; ++i)
-                    desc.RenderTarget[i].DestBlend = dx10StateUtils::ConvertBlendArg((D3DBLEND)S.v2);
+                for (auto& i : desc.RenderTarget)
+                    i.DestBlend = dx10StateUtils::ConvertBlendArg((D3DBLEND)S.v2);
                 break;
 
                 // D3DRS_ALPHAFUNC
 
             case D3DRS_BLENDOP:
-                for (int i = 0; i < 8; ++i)
-                    desc.RenderTarget[i].BlendOp = dx10StateUtils::ConvertBlendOp((D3DBLENDOP)S.v2);
+                for (auto& i : desc.RenderTarget)
+                    i.BlendOp = dx10StateUtils::ConvertBlendOp((D3DBLENDOP)S.v2);
                 break;
 
             case D3DRS_SRCBLENDALPHA:
-                for (int i = 0; i < 8; ++i)
-                    desc.RenderTarget[i].SrcBlendAlpha = dx10StateUtils::ConvertBlendArg((D3DBLEND)S.v2);
+                for (auto& i : desc.RenderTarget)
+                    i.SrcBlendAlpha = dx10StateUtils::ConvertBlendArg((D3DBLEND)S.v2);
                 break;
 
             case D3DRS_DESTBLENDALPHA:
-                for (int i = 0; i < 8; ++i)
-                    desc.RenderTarget[i].DestBlendAlpha = dx10StateUtils::ConvertBlendArg((D3DBLEND)S.v2);
+                for (auto& i : desc.RenderTarget)
+                    i.DestBlendAlpha = dx10StateUtils::ConvertBlendArg((D3DBLEND)S.v2);
                 break;
 
             case D3DRS_BLENDOPALPHA:
-                for (int i = 0; i < 8; ++i)
-                    desc.RenderTarget[i].BlendOpAlpha = dx10StateUtils::ConvertBlendOp((D3DBLENDOP)S.v2);
+                for (auto& i : desc.RenderTarget)
+                    i.BlendOpAlpha = dx10StateUtils::ConvertBlendOp((D3DBLENDOP)S.v2);
                 break;
 
             case D3DRS_ALPHABLENDENABLE:
-                for (int i = 0; i < 8; ++i)
-                    desc.RenderTarget[i].BlendEnable = S.v2 ? 1 : 0;
+                for (auto& i : desc.RenderTarget)
+                    i.BlendEnable = S.v2 ? 1 : 0;
                 break;
 
             case D3DRS_COLORWRITEENABLE: desc.RenderTarget[0].RenderTargetWriteMask = (u8)S.v2; break;
@@ -273,19 +269,17 @@ void SimulatorStates::UpdateDesc(D3D_BLEND_DESC& desc) const
     }
 }
 
-void SimulatorStates::UpdateDesc(D3D_SAMPLER_DESC descArray[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT], bool SamplerUsed[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT],
-                                 int iBaseSamplerIndex) const
+void SimulatorStates::UpdateDesc(D3D_SAMPLER_DESC descArray[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT], bool SamplerUsed[D3D_COMMONSHADER_SAMPLER_SLOT_COUNT], int iBaseSamplerIndex) const
 {
-    constexpr int MipfilterLinear = 0x01;
-    constexpr int MagfilterLinear = 0x04;
-    constexpr int MinfilterLinear = 0x10;
-    constexpr int AllfilterLinear = 0x15;
-    constexpr int FilterAnisotropic = 0x40;
-    constexpr int FilterComparison = 0x80;
+    const int MipfilterLinear = 0x01;
+    const int MagfilterLinear = 0x04;
+    const int MinfilterLinear = 0x10;
+    const int AllfilterLinear = 0x15;
+    const int FilterAnisotropic = 0x40;
+    const int FilterComparison = 0x80;
 
-    for (u32 it = 0; it < States.size(); it++)
+    for (const auto& S : States)
     {
-        const State& S = States[it];
         if (S.type == 2)
         {
             int iSamplerIndex = int(S.v1);

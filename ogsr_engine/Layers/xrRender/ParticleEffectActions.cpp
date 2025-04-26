@@ -1,6 +1,8 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
+
+
 #include "ParticleEffectActions.h"
 
 #include "../../COMMON_AI/smart_cast.h"
@@ -84,7 +86,7 @@ bool EParticleAction::Load(IReader& F)
 
         float_index++;
 
-        if (needFix && float_index == 2) // for EPATargetColor COP format //
+        if (needFix && float_index == 2) // for EPATargetColor COP format
             break;
     }
 
@@ -158,7 +160,7 @@ void EParticleAction::Save(IWriter& F)
     F.w_u32(PARTICLE_ACTION_VERSION_COP);
     F.w_stringZ(actionName);
     F.w_u32(flags.get());
-    for (auto& f_it : floats)
+    for (const auto& f_it : floats)
         F.w_float(f_it.second.val);
 
     for (auto& vector : vectors)
@@ -167,10 +169,10 @@ void EParticleAction::Save(IWriter& F)
     for (auto& domain : domains)
         domain.second.Save(F);
 
-    for (auto& b_it : bools)
+    for (const auto& b_it : bools)
         F.w_u8((u8)b_it.second.val);
 
-    for (auto& i_it : ints)
+    for (const auto& i_it : ints)
         F.w_s32(i_it.second.val);
 }
 
@@ -1043,7 +1045,7 @@ EPATurbulence::EPATurbulence() : EParticleAction(PAPI::PATurbulenceID)
     appendFloat("Delta", 0.01f, -P_MAXFLOAT, P_MAXFLOAT);
     appendVector("Movement", PVector::vNum, 1, 1, 1);
     // -
-    nval = 0;
+    nval = nullptr;
     age = 0.f;
 }
 
@@ -1103,7 +1105,7 @@ void PDomain::Load2(CInifile& ini, const shared_str& sect)
     v[2] = ini.r_fvector3(sect, "v2");
 }
 
-void PDomain::Save(IWriter& F)
+void PDomain::Save(IWriter& F) const
 {
     F.w_u32(type);
     F.w_fvector3(v[0]);

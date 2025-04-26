@@ -109,7 +109,10 @@
       <Command>
         copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL_Soft\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)OpenAL32.dll"
         copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
-		copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
+        copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
+        copy /Y "$(SolutionDir)\3rd_party\Src\NVIDIA_DLSS\lib\Windows_x86_64\$(Configuration)\nvngx_dlss.dll" "$(OutDir)nvngx_dlss.dll"
+        copy /Y "$(SolutionDir)\3rd_party\Src\AMD_FSR2\runtimes\win-x64\native\$(Configuration)\ffx_fsr2_api_dx11_x64.dll" "$(OutDir)ffx_fsr2_api_dx11_x64.dll"
+        copy /Y "$(SolutionDir)\3rd_party\Src\AMD_FSR2\runtimes\win-x64\native\$(Configuration)\ffx_fsr2_api_x64.dll" "$(OutDir)ffx_fsr2_api_x64.dll"
       </Command>
     </PostBuildEvent>
     <Manifest>
@@ -180,7 +183,10 @@
       <Command>
         copy /Y "$(SolutionDir)\3rd_party\Src\OpenAL_Soft\bin\$(PlatformShortName)\soft_oal.dll" "$(OutDir)OpenAL32.dll"
         copy /Y "$(SolutionDir)\Game\dlls\dbghelp_$(PlatformShortName).dll" "$(OutDir)dbghelp.dll"
-		copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
+        copy /Y "$(SolutionDir)\Game\dlls\discord-rpc_$(PlatformShortName).dll" "$(OutDir)discord-rpc.dll"
+        copy /Y "$(SolutionDir)\3rd_party\Src\NVIDIA_DLSS\lib\Windows_x86_64\$(Configuration)\nvngx_dlss.dll" "$(OutDir)nvngx_dlss.dll"
+        copy /Y "$(SolutionDir)\3rd_party\Src\AMD_FSR2\runtimes\win-x64\native\$(Configuration)\ffx_fsr2_api_dx11_x64.dll" "$(OutDir)ffx_fsr2_api_dx11_x64d.dll"
+        copy /Y "$(SolutionDir)\3rd_party\Src\AMD_FSR2\runtimes\win-x64\native\$(Configuration)\ffx_fsr2_api_x64.dll" "$(OutDir)ffx_fsr2_api_x64d.dll"
       </Command>
     </PostBuildEvent>
     <Manifest>
@@ -192,6 +198,7 @@
     <ClInclude Include="bone.h" />
     <ClInclude Include="cl_intersect.h" />
     <ClInclude Include="..\xrParticles\psystem.h" />
+    <ClInclude Include="defines.h" />
     <ClInclude Include="DiscordRPC.hpp" />
     <ClInclude Include="edit_actions.h" />
     <ClInclude Include="GameMtlLib.h" />
@@ -205,7 +212,6 @@
     <ClInclude Include="NET_Server_Trash\NET_Shared.h" />
     <ClInclude Include="NET_Server_Trash\NET_utils.h" />
     <ClInclude Include="os_clipboard.h" />
-    <ClInclude Include="ShadersExternalData.h" />
     <ClInclude Include="SkeletonMotionDefs.h" />
     <ClInclude Include="splash.h" />
     <ClInclude Include="stdafx.h" />
@@ -256,7 +262,6 @@
     <ClInclude Include="GameFont.h" />
     <ClInclude Include="MbHelpers.h" />
     <ClInclude Include="device.h" />
-    <ClInclude Include="StatGraph.h" />
     <ClInclude Include="Stats.h" />
     <ClInclude Include="WaveForm.h" />
     <ClInclude Include="tntQAVI.h" />
@@ -284,6 +289,7 @@
     <ClCompile Include="NET_Server_Trash\NET_Client.cpp" />
     <ClCompile Include="NET_Server_Trash\NET_Server.cpp" />
     <ClCompile Include="os_clipboard.cpp" />
+    <ClCompile Include="ReShadeCompat.cpp" />
     <ClCompile Include="splash.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -340,9 +346,7 @@
     <ClCompile Include="Device_create.cpp" />
     <ClCompile Include="Device_destroy.cpp" />
     <ClCompile Include="Device_Initialize.cpp" />
-    <ClCompile Include="Device_overdraw.cpp" />
     <ClCompile Include="Device_wndproc.cpp" />
-    <ClCompile Include="StatGraph.cpp" />
     <ClCompile Include="Stats.cpp" />
     <ClCompile Include="tntQAVI.cpp" />
     <ClCompile Include="xrTheora_Stream.cpp" />
@@ -362,7 +366,6 @@
     <None Include="stalker.ico">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="ClientServer.txt" />
     <None Include="Effects description.txt" />
     <None Include="features.txt" />
     <None Include="TODO.txt" />

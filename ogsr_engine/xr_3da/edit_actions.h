@@ -5,10 +5,9 @@
 // Description : edit actions class
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#pragma once
 
-#ifndef EDIT_ACTIONS_H_INCLUDED
-#define EDIT_ACTIONS_H_INCLUDED
+#include "stdafx.h"
 
 namespace text_editor
 {
@@ -74,5 +73,3 @@ namespace text_editor
 		base* m_type_pair;
 	}; // class key_state_base
 } // namespace text_editor
-
-#endif // EDIT_ACTIONS_H_INCLUDED

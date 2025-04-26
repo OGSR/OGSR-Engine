@@ -254,7 +254,7 @@ static float incoming(st_Key* key0, st_Key* key1, st_Key* key1n)
 //======================================================================
 float evalEnvelope(CEnvelope* env, float time)
 {
-    st_Key *key0, *key1, *skey, *ekey, *skey_n, *ekey_p, *key0_p = 0, *key1_n = 0;
+    st_Key *key0, *key1, *skey, *ekey, *skey_n, *ekey_p, *key0_p = nullptr, *key1_n = nullptr;
     float t, h1, h2, h3, h4, in, out, offset = 0.0f;
     int noff;
 
@@ -280,7 +280,7 @@ float evalEnvelope(CEnvelope* env, float time)
         {
         case BEH_RESET: return 0.0f;
         case BEH_CONSTANT: return skey->value;
-        case BEH_REPEAT: time = range(time, skey->time, ekey->time, NULL); break;
+        case BEH_REPEAT: time = range(time, skey->time, ekey->time, nullptr); break;
         case BEH_OSCILLATE:
             time = range(time, skey->time, ekey->time, &noff);
             if (noff % 2)
@@ -290,7 +290,7 @@ float evalEnvelope(CEnvelope* env, float time)
             time = range(time, skey->time, ekey->time, &noff);
             offset = noff * (ekey->value - skey->value);
             break;
-        case BEH_LINEAR: out = outgoing(0, skey, skey_n) / (skey_n->time - skey->time); return out * (time - skey->time) + skey->value;
+        case BEH_LINEAR: out = outgoing(nullptr, skey, skey_n) / (skey_n->time - skey->time); return out * (time - skey->time) + skey->value;
         }
     }
     // use post-behavior if time is after last key time
@@ -300,7 +300,7 @@ float evalEnvelope(CEnvelope* env, float time)
         {
         case BEH_RESET: return 0.0f;
         case BEH_CONSTANT: return ekey->value;
-        case BEH_REPEAT: time = range(time, skey->time, ekey->time, NULL); break;
+        case BEH_REPEAT: time = range(time, skey->time, ekey->time, nullptr); break;
         case BEH_OSCILLATE:
             time = range(time, skey->time, ekey->time, &noff);
             if (noff % 2)
@@ -310,7 +310,7 @@ float evalEnvelope(CEnvelope* env, float time)
             time = range(time, skey->time, ekey->time, &noff);
             offset = noff * (ekey->value - skey->value);
             break;
-        case BEH_LINEAR: in = incoming(ekey_p, ekey, 0) / (ekey->time - ekey_p->time); return in * (time - ekey->time) + ekey->value;
+        case BEH_LINEAR: in = incoming(ekey_p, ekey, nullptr) / (ekey->time - ekey_p->time); return in * (time - ekey->time) + ekey->value;
         }
     }
     // get the endpoints of the interval being evaluated

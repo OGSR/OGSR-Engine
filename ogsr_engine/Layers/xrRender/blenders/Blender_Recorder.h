@@ -2,11 +2,9 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_BLENDER_RECORDER_H__1F549674_8674_4EB2_95E6_E6BC19218A6C__INCLUDED_)
-#define AFX_BLENDER_RECORDER_H__1F549674_8674_4EB2_95E6_E6BC19218A6C__INCLUDED_
 #pragma once
 
-#include "..\tss.h"
+#include "../tss.h"
 
 #pragma pack(push, 4)
 
@@ -18,13 +16,13 @@ public:
     sh_list L_matrices;
 
     LPCSTR detail_texture;
-    R_constant_setup* detail_scaler;
 
     BOOL bEditor;
     BOOL bDetail;
     BOOL bDetail_Diffuse;
     BOOL bDetail_Bump;
     BOOL bUseSteepParallax;
+
     int iElement;
     bool HudElement{};
 
@@ -41,6 +39,7 @@ public:
         TESS_PN_HM = 3
     };
     u32 TessMethod;
+
 
 private:
     SPass dest;
@@ -63,12 +62,13 @@ private:
 public:
     CSimulator& R() { return RS; }
 
-    void SetParams(int iPriority, bool bStrictB2F);
-    void SetMapping();
+    void SetParams(int iPriority, bool bStrictB2F) const;
+    void SetMapping() const;
+
+    u32 Pass() const { return SH->passes.size(); }
 
     // R1-compiler
     void PassBegin();
-    u32 Pass() { return SH->passes.size(); }
     void PassSET_ZB(BOOL bZTest, BOOL bZWrite, BOOL bInvertZTest = FALSE);
     void PassSET_ablend_mode(BOOL bABlend, u32 abSRC, u32 abDST);
     void PassSET_ablend_aref(BOOL aTest, u32 aRef);
@@ -82,15 +82,13 @@ public:
     void PassSET_PS(LPCSTR name);
     void PassSET_VS(LPCSTR name);
 
+    u32 Stage() const { return dwStage; }
+
     void StageBegin();
-    u32 Stage() { return dwStage; }
     void StageSET_Address(u32 adr);
-    void StageSET_XForm(u32 tf, u32 tc);
     void StageSET_Color(u32 a1, u32 op, u32 a2);
     void StageSET_Color3(u32 a1, u32 op, u32 a2, u32 a3);
     void StageSET_Alpha(u32 a1, u32 op, u32 a2);
-    void Stage_Matrix(LPCSTR name, int UVW_channel);
-    void Stage_Constant(LPCSTR name);
     void StageEnd();
 
     // R1/R2-compiler	[programmable]
@@ -102,19 +100,23 @@ public:
     void i_dx10Filter(u32 s, u32 _min, u32 _mip, u32 _mag);
     void i_dx10BorderColor(u32 s, u32 color);
 
-    // compiler	[programmable]		- templates
     void r_Pass(LPCSTR vs, LPCSTR ps, bool bFog, BOOL bZtest = TRUE, BOOL bZwrite = TRUE, BOOL bABlend = FALSE, D3DBLEND abSRC = D3DBLEND_ONE, D3DBLEND abDST = D3DBLEND_ZERO, BOOL aTest = FALSE, u32 aRef = 0);
-    void r_Constant(LPCSTR name, R_constant_setup* s);
+    void r_Constant(LPCSTR name, R_constant_setup* s) const;
+
     void r_Pass(LPCSTR vs, LPCSTR gs, LPCSTR ps, bool bFog, BOOL bZtest = TRUE, BOOL bZwrite = TRUE, BOOL bABlend = FALSE, D3DBLEND abSRC = D3DBLEND_ONE, D3DBLEND abDST = D3DBLEND_ZERO, BOOL aTest = FALSE, u32 aRef = 0);
+
     void r_TessPass(LPCSTR vs, LPCSTR hs, LPCSTR ds, LPCSTR gs, LPCSTR ps, bool bFog, BOOL bZtest = TRUE, BOOL bZwrite = TRUE, BOOL bABlend = FALSE, D3DBLEND abSRC = D3DBLEND_ONE, D3DBLEND abDST = D3DBLEND_ZERO, BOOL aTest = FALSE, u32 aRef = 0);
     void r_ComputePass(LPCSTR cs);
+
     void r_Stencil(BOOL Enable, u32 Func = D3DCMP_ALWAYS, u32 Mask = 0x00, u32 WriteMask = 0x00, u32 Fail = D3DSTENCILOP_KEEP, u32 Pass = D3DSTENCILOP_KEEP, u32 ZFail = D3DSTENCILOP_KEEP);
     void r_StencilRef(u32 Ref);
     void r_CullMode(D3DCULL Mode);
 
     void r_dx10Texture(LPCSTR ResourceName, LPCSTR texture);
-    void r_dx10Texture(LPCSTR ResourceName, shared_str texture) { return r_dx10Texture(ResourceName, texture.c_str()); };
+    void r_dx10Texture(LPCSTR ResourceName, const shared_str& texture) { return r_dx10Texture(ResourceName, texture.c_str()); }
+
     u32 r_dx10Sampler(LPCSTR ResourceName);
+
     void r_ColorWriteEnable(bool cR = true, bool cG = true, bool cB = true, bool cA = true);
     void r_End();
 
@@ -125,5 +127,3 @@ public:
     ShaderElement* _lua_Compile(LPCSTR namesp, LPCSTR name);
 };
 #pragma pack(pop)
-
-#endif // !defined(AFX_BLENDER_RECORDER_H__1F549674_8674_4EB2_95E6_E6BC19218A6C__INCLUDED_)

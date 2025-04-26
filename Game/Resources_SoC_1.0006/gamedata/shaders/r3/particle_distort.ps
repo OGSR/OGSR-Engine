@@ -4,13 +4,8 @@ struct v2p
 {
     float2 tc0 : TEXCOORD0; // base
     float4 c : COLOR0; // diffuse
-
-#ifdef USE_SOFT_PARTICLES
-    //	Igor: for additional depth dest
-    float4 tctexgen : TEXCOORD1;
-#endif //	USE_SOFT_PARTICLES
-    float fog : FOG; // fog
     float4 hpos : SV_Position;
+    float fog : FOG;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -17,139 +17,99 @@ public:
 //////////////////////////////////////////////////////////////////////////
 // common part of interface implementation for all D3D renderers		//
 //////////////////////////////////////////////////////////////////////////
-class R_dsgraph_structure : public IRender_interface, public pureFrame
+class R_dsgraph_structure
 {
 public:
-    IRenderable* val_pObject;
-    Fmatrix* val_pTransform;
-    BOOL val_bHUD;
-    BOOL val_bInvisible;
-    BOOL val_bRecordMP; // record nearest for multi-pass
-    R_feedback* val_feedback; // feedback for geometry being rendered
-    u32 val_feedback_breakp; // breakpoint
-    xr_vector<Fbox3>* val_recorder; // coarse structure recorder
-    u32 phase;
-    u32 marker;
-    bool pmask[2];
+
+    R_feedback* val_feedback{}; // feedback for geometry being rendered
+    u32 val_feedback_breakp{}; // breakpoint
+
+    u32 phase{};
+    u32 marker{};
+
+    bool pmask[2]; // deferred + forward
     bool pmask_wmark;
+
+    bool main_pass{};
+
+    Fvector render_position{};
+    float max_render_distance{-1.f};
 
 public:
     // Dynamic scene graph
-    // R_dsgraph::mapNormal_T										mapNormal	[2]		;	// 2==(priority/2)
     R_dsgraph::mapNormalPasses_T mapNormalPasses[2]; // 2==(priority/2)
-    // R_dsgraph::mapMatrix_T										mapMatrix	[2]		;
     R_dsgraph::mapMatrixPasses_T mapMatrixPasses[2];
+
     R_dsgraph::mapSorted_T mapSorted;
-    R_dsgraph::mapHUD_T mapHUD;
-    R_dsgraph::mapLOD_T mapLOD;
     R_dsgraph::mapSorted_T mapDistort;
-    R_dsgraph::mapHUD_T mapHUDSorted;
+
+    R_dsgraph::mapLOD_T mapLOD;
+
+    R_dsgraph::mapSorted_T mapHUD;
+    R_dsgraph::mapSorted_T mapHUDSorted;
+    R_dsgraph::mapSorted_T mapHUDEmissive;
+
+    R_dsgraph::mapSorted_T mapScopeHUD;
+    R_dsgraph::mapSorted_T mapScopeHUDSorted, mapScopeHUDSorted2;
 
     R_dsgraph::mapSorted_T mapWmark; // sorted
     R_dsgraph::mapSorted_T mapEmissive;
-    R_dsgraph::mapSorted_T mapHUDEmissive;
 
 
     // Runtime structures
-    xr_vector<R_dsgraph::mapNormalVS::TNode*> nrmVS;
-    xr_vector<R_dsgraph::mapNormalGS::TNode*> nrmGS;
-    xr_vector<R_dsgraph::mapNormalPS::TNode*> nrmPS;
-    xr_vector<R_dsgraph::mapNormalCS::TNode*> nrmCS;
-    xr_vector<R_dsgraph::mapNormalStates::TNode*> nrmStates;
-    xr_vector<R_dsgraph::mapNormalTextures::TNode*> nrmTextures;
-    xr_vector<R_dsgraph::mapNormalTextures::TNode*> nrmTexturesTemp;
-
-    xr_vector<R_dsgraph::mapMatrixVS::TNode*> matVS;
-    xr_vector<R_dsgraph::mapMatrixGS::TNode*> matGS;
-    xr_vector<R_dsgraph::mapMatrixPS::TNode*> matPS;
-    xr_vector<R_dsgraph::mapMatrixCS::TNode*> matCS;
-    xr_vector<R_dsgraph::mapMatrixStates::TNode*> matStates;
-    xr_vector<R_dsgraph::mapMatrixTextures::TNode*> matTextures;
-    xr_vector<R_dsgraph::mapMatrixTextures::TNode*> matTexturesTemp;
-
+    xr_vector<R_dsgraph::mapNormal_T::value_type*> nrmPasses;
+    xr_vector<R_dsgraph::mapMatrix_T::value_type*> matPasses;
     xr_vector<R_dsgraph::_LodItem> lstLODs;
-    xr_vector<int> lstLODgroups;
+
     xr_vector<ISpatial*> lstRenderables;
-    xr_vector<ISpatial*> lstSpatial;
-    xr_vector<dxRender_Visual*> lstVisuals;
 
-    xr_vector<dxRender_Visual*> lstRecorded;
+    xr_vector<int> lstLODgroups;
 
-    u32 counter_S;
-    u32 counter_D;
-    BOOL b_loaded;
+    CBackend cmd_list{};
+
+    xr_vector<CPortal*> Portals;
+    xr_vector<CSector*> Sectors;
+    CPortalTraverser PortalTraverser;
+    xrXRC Sectors_xrc;
+
+    u32 context_id{CHW::INVALID_CONTEXT_ID};
+
+    u32 counter_S{};
 
 public:
-    virtual void set_Transform(Fmatrix* M)
-    {
-        VERIFY(M);
-        val_pTransform = M;
-    }
-    virtual void set_HUD(BOOL V) { val_bHUD = V; }
-    virtual BOOL get_HUD() { return val_bHUD; }
-    virtual void set_Invisible(BOOL V) { val_bInvisible = V; }
     void set_Feedback(R_feedback* V, u32 id)
     {
-        val_feedback_breakp = id;
         val_feedback = V;
+        val_feedback_breakp = id;
     }
-    void set_Recorder(xr_vector<Fbox3>* dest)
-    {
-        val_recorder = dest;
-        if (dest)
-            dest->clear();
-    }
-    void get_Counters(u32& s, u32& d)
+
+    void get_Counters(u32& s) const
     {
         s = counter_S;
-        d = counter_D;
     }
-    void clear_Counters() { counter_S = counter_D = 0; }
+    void clear_Counters() { counter_S = 0; }
 
 public:
     R_dsgraph_structure()
     {
-        val_pObject = NULL;
-        val_pTransform = NULL;
-        val_bHUD = FALSE;
-        val_bInvisible = FALSE;
-        val_bRecordMP = FALSE;
-        val_feedback = 0;
+        val_feedback = nullptr;
         val_feedback_breakp = 0;
-        val_recorder = 0;
         marker = 0;
         r_pmask(true, true);
-        b_loaded = FALSE;
-    };
+    }
 
-    void r_dsgraph_destroy()
+    void reset()
     {
-        nrmVS.clear();
-        nrmPS.clear();
-        nrmCS.clear();
-        nrmStates.clear();
-        nrmTextures.clear();
-        nrmTexturesTemp.clear();
+        context_id = CHW::INVALID_CONTEXT_ID;
 
-        matVS.clear();
-        matPS.clear();
-        matCS.clear();
-        matStates.clear();
-        matTextures.clear();
-        matTexturesTemp.clear();
+        nrmPasses.clear();
+        matPasses.clear();
+
+        val_feedback = nullptr;
 
         lstLODs.clear();
         lstLODgroups.clear();
-        lstRenderables.clear();
-        lstSpatial.clear();
-        lstVisuals.clear();
 
-        lstRecorded.clear();
-
-        // mapNormal[0].destroy	();
-        // mapNormal[1].destroy	();
-        // mapMatrix[0].destroy	();
-        // mapMatrix[1].destroy	();
         for (int i = 0; i < SHADER_PASSES_MAX; ++i)
         {
             mapNormalPasses[0][i].destroy();
@@ -157,46 +117,79 @@ public:
             mapMatrixPasses[0][i].destroy();
             mapMatrixPasses[1][i].destroy();
         }
+
         mapSorted.destroy();
         mapHUD.destroy();
         mapLOD.destroy();
         mapDistort.destroy();
         mapHUDSorted.destroy();
+
         mapWmark.destroy();
         mapEmissive.destroy();
         mapHUDEmissive.destroy();
 
+        mapScopeHUD.destroy();
+        mapScopeHUDSorted.destroy();
+        mapScopeHUDSorted2.destroy();
+
+        lstRenderables.clear();
+
+        cmd_list.Invalidate();
+
+        main_pass = false;
+        max_render_distance = -1.f;
     }
 
-    void r_pmask(bool _1, bool _2, bool _wm = false)
+    void r_pmask(const bool deferred, const bool forward, const bool wallmarks = false)
     {
-        pmask[0] = _1;
-        pmask[1] = _2;
-        pmask_wmark = _wm;
+        pmask[0] = deferred;
+        pmask[1] = forward;
+        pmask_wmark = wallmarks;
     }
 
-    void r_dsgraph_insert_dynamic(dxRender_Visual* pVisual, Fvector& Center);
-    void r_dsgraph_insert_static(dxRender_Visual* pVisual);
+    void load(const xr_vector<CSector::level_sector_data_t>& sectors, const xr_vector<CPortal::level_portal_data_t>& portals);
+    void unload();
 
-    void r_dsgraph_render_graph(u32 _priority, bool _clear = true);
+    ICF IRender_Portal* get_portal(size_t id) const
+    {
+        VERIFY(id < Portals.size());
+        return Portals[id];
+    }
+    ICF IRender_Sector* get_sector(size_t id) const
+    {
+        VERIFY(id < Sectors.size());
+        return Sectors[id];
+    }
+    IRender_Sector::sector_id_t detect_sector(const Fvector& P);
+    IRender_Sector::sector_id_t detect_sector(const Fvector& P, Fvector& D);
+
+    void update_sector(ISpatial* S);
+
+    void add_static(dxRender_Visual* pVisual, const CFrustum& view, u32 planes);
+    void add_leafs_static(dxRender_Visual* pVisual); // if detected node's full visibility
+    void add_leafs_dynamic(IRenderable* root, dxRender_Visual* pVisual, Fmatrix& xform); // if detected node's full visibility
+
+    void r_dsgraph_insert_static(dxRender_Visual* pVisual);
+    void r_dsgraph_insert_dynamic(IRenderable* root, dxRender_Visual* pVisual, Fmatrix& xform, Fvector& center);
+
+    void r_dsgraph_render_graph_static(u32 _priority);
+    void r_dsgraph_render_graph_dynamic(u32 _priority);
+
+    void r_dsgraph_render_graph(u32 _priority);
     void r_dsgraph_render_hud();
+    void r_dsgraph_render_hud_scope_depth();
     void r_dsgraph_render_hud_ui();
-    void r_dsgraph_render_lods(bool _setup_zb, bool _clear);
+    void r_dsgraph_render_lods();
     void r_dsgraph_render_sorted();
-    void r_dsgraph_render_emissive();
+    void r_dsgraph_render_scope_sorted(const bool upscaled);
+    void r_dsgraph_render_emissive(bool clear);
     void r_dsgraph_render_wmarks();
     void r_dsgraph_render_distort();
-    void r_dsgraph_render_subspace(IRender_Sector* _sector, CFrustum* _frustum, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals = FALSE);
-    void r_dsgraph_render_subspace(IRender_Sector* _sector, Fmatrix& mCombined, Fvector& _cop, BOOL _dynamic, BOOL _precise_portals = FALSE);
-    void r_dsgraph_render_R1_box(IRender_Sector* _sector, Fbox& _bb, int _element);
 
-public:
-    virtual u32 memory_usage()
-    {
-#ifdef USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-        return (g_render_lua_allocator.get_allocated_size());
-#else // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-        return (0);
-#endif // USE_DOUG_LEA_ALLOCATOR_FOR_RENDER
-    }
+    void build_subspace(IRender_Sector::sector_id_t& sector_id, CFrustum* frustum, Fmatrix& xform, Fvector& camera_position, BOOL add_dynamic);
 };
+
+extern float r_ssaDISCARD;
+extern float r_ssaGLOD_start, r_ssaGLOD_end;
+
+ICF float calcLOD(const float ssa /*fDistSq*/, float R) { return _sqrt(clampr((ssa - r_ssaGLOD_end) / (r_ssaGLOD_start - r_ssaGLOD_end), 0.01f, 1.f)); }

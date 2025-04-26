@@ -3,31 +3,23 @@
 #include "../xrCDB/frustum.h"
 
 #include "vis_common.h"
-//#include "IRenderDetailModel.h"
 
 #include "../Include/xrAPI/xrAPI.h"
 #include "../Include/xrRender/FactoryPtr.h"
+
 class IUIShader;
 typedef FactoryPtr<IUIShader> wm_shader;
-//#include "../Include/xrRender/WallMarkArray.h"
 
 // refs
 class ENGINE_API IRenderable;
-// class ENGINE_API	IRenderVisual;
-
-// class ENGINE_API	IBlender;
-// class ENGINE_API	CSkeletonWallmark;
-// class ENGINE_API	CKinematics;
 struct ENGINE_API FSlideWindowItem;
 
 //	Igor
 class IRenderVisual;
 class IKinematics;
 class CGameFont;
-// class IRenderDetailModel;
 
 extern const float fLightSmoothFactor;
-ENGINE_API extern int g_3dscopes_fps_factor;
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Dynamic Light)
@@ -36,29 +28,39 @@ class ENGINE_API IRender_Light : public xr_resource
 public:
     enum LT
     {
-        DIRECT = 0,
-        POINT = 1,
+        DIRECT = 0, // unused ???
+        POINT = 1, // OMNI
         SPOT = 2,
-        OMNIPART = 3,
-        REFLECTED = 4,
+        OMNIPART = 3, // SECTION OF OMNI
     };
 
 public:
     virtual void set_type(LT type) = 0;
-    virtual u32 get_type() const = 0;
+
     virtual void set_active(bool) = 0;
     virtual bool get_active() = 0;
+
     virtual void set_shadow(bool) = 0;
+    virtual bool get_shadow() = 0;
+
     virtual void set_volumetric(bool) = 0;
+    virtual bool get_volumetric() = 0;
+
     virtual void set_volumetric_quality(float) = 0;
     virtual void set_volumetric_intensity(float) = 0;
     virtual void set_volumetric_distance(float) = 0;
-    virtual void set_indirect(bool){};
+
+    virtual void set_flare(bool b) = 0;
+    virtual bool get_flare() = 0;
+
     virtual void set_position(const Fvector& P) = 0;
     virtual void set_rotation(const Fvector& D, const Fvector& R) = 0;
+
     virtual void set_cone(float angle) = 0;
+
     virtual void set_range(float R) = 0;
     virtual float get_range() const = 0;
+
     virtual void set_virtual_size(float R) = 0;
     virtual void set_texture(LPCSTR name) = 0;
 
@@ -70,12 +72,13 @@ public:
     virtual bool get_hud_mode() = 0;
 
     virtual void set_moveable(bool) = 0;
+    virtual bool get_moveable() = 0;
 
     virtual ~IRender_Light();
 };
 struct ENGINE_API resptrcode_light : public resptr_base<IRender_Light>
 {
-    void destroy() { _set(NULL); }
+    void destroy() { _set(nullptr); }
 };
 typedef resptr_core<IRender_Light, resptrcode_light> ref_light;
 
@@ -92,11 +95,12 @@ public:
     virtual void set_texture(LPCSTR name) = 0;
     virtual void set_color(const Fcolor& C) = 0;
     virtual void set_color(float r, float g, float b) = 0;
+
     virtual ~IRender_Glow();
 };
 struct ENGINE_API resptrcode_glow : public resptr_base<IRender_Glow>
 {
-    void destroy() { _set(NULL); }
+    void destroy() { _set(nullptr); }
 };
 typedef resptr_core<IRender_Glow, resptrcode_glow> ref_glow;
 
@@ -114,7 +118,6 @@ public:
     };
 
 public:
-    virtual void force_mode(u32 mode) = 0;
     virtual float get_luminocity() = 0;
     virtual float get_luminocity_hemi() = 0;
     virtual float* get_luminocity_hemi_cube() = 0;
@@ -123,20 +126,8 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////
-// definition (Portal)
-class ENGINE_API IRender_Portal
-{
-public:
-    virtual ~IRender_Portal(){};
-};
-
-//////////////////////////////////////////////////////////////////////////
-// definition (Sector)
-class ENGINE_API IRender_Sector
-{
-public:
-    virtual ~IRender_Sector(){};
-};
+// definition (Backend)
+class CBackend; // TODO: the real command list interface should be defined here
 
 //////////////////////////////////////////////////////////////////////////
 // definition (Target)
@@ -152,10 +143,9 @@ public:
     virtual void set_noise_fps(float f) = 0;
     virtual void set_color_base(u32 f) = 0;
     virtual void set_color_gray(u32 f) = 0;
-    // virtual void					set_color_add		(u32	f)							= 0;
     virtual void set_color_add(const Fvector& f) = 0;
-    virtual u32 get_width() = 0;
-    virtual u32 get_height() = 0;
+    virtual u32 get_width(CBackend& cmd_list) = 0;
+    virtual u32 get_height(CBackend& cmd_list) = 0;
     virtual void set_cm_imfluence(float f) = 0;
     virtual void set_cm_interpolate(float f) = 0;
     virtual void set_cm_textures(const shared_str& tex0, const shared_str& tex1) = 0;
@@ -167,14 +157,6 @@ public:
 class ENGINE_API IRender_interface
 {
 public:
-    enum GenerationLevel
-    {
-        GENERATION_R1 = 81,
-        GENERATION_DX81 = 81,
-        GENERATION_R2 = 90,
-        GENERATION_DX90 = 90,
-        GENERATION_forcedword = u32(-1)
-    };
     enum ScreenshotMode
     {
         SM_NORMAL = 0, // jpeg,	name ignored
@@ -187,30 +169,20 @@ public:
 public:
     // options
     bool hud_loading{};
+    //bool HAT{};
     s32 m_skinning;
-    s32 m_MSAASample;
-
-    BENCH_SEC_SCRAMBLEMEMBER1
+    u32 m_SMAPSize;
 
     // data
     CFrustum ViewBase;
-    CFrustum* View;
 
 public:
-    // feature level
-    virtual GenerationLevel get_generation() = 0;
-
-    virtual bool is_sun_static() = 0;
-    virtual DWORD get_dx_level() = 0;
-
+  
     // Loading / Unloading
     virtual void create() = 0;
     virtual void destroy() = 0;
     virtual void reset_begin() = 0;
     virtual void reset_end() = 0;
-
-    BENCH_SEC_SCRAMBLEVTBL1
-    BENCH_SEC_SCRAMBLEVTBL3
 
     virtual void level_Load(IReader*) = 0;
     virtual void level_Unload() = 0;
@@ -222,39 +194,21 @@ public:
     virtual void Statistics(CGameFont* F){};
 
     virtual LPCSTR getShaderPath() = 0;
-    //	virtual ref_shader				getShader				(int id)									= 0;
-    virtual IRender_Sector* getSector(int id) = 0;
+
     virtual IRenderVisual* getVisual(int id) = 0;
-    virtual IRender_Sector* detectSector(const Fvector& P) = 0;
+    virtual u32 getVisualCount() = 0;
+
     virtual IRender_Target* getTarget() = 0;
 
     // Main
-    IC void set_Frustum(CFrustum* O)
-    {
-        VERIFY(O);
-        View = O;
-    }
-    virtual void set_Transform(Fmatrix* M) = 0;
-    virtual void set_HUD(BOOL V) = 0;
-    virtual BOOL get_HUD() = 0;
-    virtual void set_Invisible(BOOL V) = 0;
-    virtual void flush() = 0;
-    virtual void set_Object(IRenderable* O) = 0;
-    virtual void add_Occluder(Fbox2& bb_screenspace) = 0; // mask screen region as oclluded (-1..1, -1..1)
-    virtual void add_Visual(IRenderVisual* V) = 0; // add visual leaf	(no culling performed at all)
-    virtual void add_Geometry(IRenderVisual* V) = 0; // add visual(s)	(all culling performed)
-    //	virtual void					add_StaticWallmark		(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V)=0;
+    virtual void add_Visual(u32 context_id, IRenderable* root, IRenderVisual* V, Fmatrix& m) = 0; // add visual leaf	(no culling performed at all)
     virtual void add_StaticWallmark(const wm_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V) = 0;
     //	Prefer this function when possible
     virtual void add_StaticWallmark(IWallMarkArray* pArray, const Fvector& P, float s, CDB::TRI* T, Fvector* V) = 0;
-    virtual void clear_static_wallmarks() = 0;
-    // virtual void					add_SkeletonWallmark	(intrusive_ptr<CSkeletonWallmark> wm)						= 0;
-    // virtual void					add_SkeletonWallmark	(const Fmatrix* xf, CKinematics* obj, ref_shader& sh, const Fvector& start, const Fvector& dir, float size)=0;
     //	Prefer this function when possible
-    virtual void add_SkeletonWallmark(const Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, const Fvector& start, const Fvector& dir, float size) = 0;
+    virtual void add_SkeletonWallmark(Fmatrix* xf, IKinematics* obj, IWallMarkArray* pArray, Fvector& start, Fvector& dir, float size) = 0;
 
-    // virtual IBlender*				blender_create			(CLASS_ID cls)								= 0;
-    // virtual void					blender_destroy			(IBlender* &)								= 0;
+    virtual void clear_static_wallmarks() = 0;
 
     virtual IRender_ObjectSpecific* ros_create(IRenderable* parent) = 0;
     virtual void ros_destroy(IRender_ObjectSpecific*&) = 0;
@@ -265,46 +219,65 @@ public:
     virtual IRender_Glow* glow_create() = 0;
     virtual void glow_destroy(IRender_Glow* p_){};
 
+    virtual void ParticleEffectFillName(xr_vector<shared_str>& s) = 0;
+    virtual void ParticleGroupFillName(xr_vector<shared_str>& s) = 0;
+
+    virtual float GetParticlesTimeLimit(LPCSTR name) = 0;
+
     // Models
-    virtual IRenderVisual* model_CreateParticles(LPCSTR name) = 0;
-    virtual IRenderVisual* model_Create(LPCSTR name, IReader* data = 0) = 0;
+    virtual IRenderVisual* model_CreateParticles(LPCSTR name, BOOL bNoPool = FALSE) = 0;
+
+    virtual IRenderVisual* model_Create(LPCSTR name, IReader* data = nullptr) = 0;
     virtual IRenderVisual* model_CreateChild(LPCSTR name, IReader* data) = 0;
     virtual IRenderVisual* model_Duplicate(IRenderVisual* V) = 0;
 
     virtual void model_Delete(IRenderVisual*& V, BOOL bDiscard = FALSE) = 0;
     virtual void model_Logging(BOOL bEnable) = 0;
+
     virtual void models_Prefetch() = 0;
     virtual void models_Clear(BOOL b_complete) = 0;
     virtual void models_savePrefetch() = 0;
     virtual void models_begin_prefetch1(bool val) = 0;
 
     // Occlusion culling
-    virtual BOOL occ_visible(vis_data& V) = 0;
-    virtual BOOL occ_visible(Fbox& B) = 0;
-    virtual BOOL occ_visible(sPoly& P) = 0;
+    //virtual BOOL occ_visible(vis_data& V) = 0;
+    //virtual BOOL occ_visible(Fbox& B) = 0;
+    //virtual BOOL occ_visible(sPoly& P) = 0;
 
     // Main
     virtual void Calculate() = 0;
     virtual void Render() = 0;
-    virtual void BeforeWorldRender() = 0; //--#SM+#-- Перед рендерингом мира
-    virtual void AfterWorldRender(const bool save_bb_before_ui) = 0; //--#SM+#-- После рендеринга мира (до UI)
+    virtual void AfterWorldRender() = 0; //После рендеринга мира (перед UI ПДА)
     virtual void AfterUIRender() = 0; //После рендеринга UI. Вызывать только если нам нужно отрендерить кадр для пда.
 
-    virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = 0) = 0;
+    virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = nullptr) = 0;
 
     // Render mode
-    virtual void rmNear() = 0;
-    virtual void rmFar() = 0;
-    virtual void rmNormal() = 0;
+    virtual void rmNear(CBackend& cmd_list) = 0;
+    virtual void rmFar(CBackend& cmd_list) = 0;
+    virtual void rmNormal(CBackend& cmd_list) = 0;
+
     virtual u32 memory_usage() = 0;
 
-    virtual u32 active_phase() const = 0;
+    virtual u32 GetCacheStatPolys() = 0;
+
+    virtual void Begin() = 0;
+    virtual void Clear() = 0;
+    virtual void End() = 0;
+    virtual void ClearTarget() = 0;
+
+    virtual void SetCacheXform(Fmatrix& mView, Fmatrix& mProject) = 0;
+    virtual void SetCacheXformOld(Fmatrix& mView, Fmatrix& mProject) = 0;
+
+    virtual CBackend& get_imm_command_list() = 0;
+
+    virtual void OnCameraUpdated(bool from_actor) = 0;
 
     // Constructor/destructor
     virtual ~IRender_interface();
 
 protected:
-    virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name, CMemoryWriter* memory_writer) = 0;
+    virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name) = 0;
 };
 
 class ITexture
@@ -313,9 +286,13 @@ public:
     virtual ~ITexture() = default;
 
     virtual const char* GetName() const = 0;
+    virtual const char* GetLoadedName() const = 0;
 
     virtual void Load(const char* Name) = 0;
     virtual void Unload() = 0;
+
+    virtual u32 get_Width() = 0;
+    virtual u32 get_Height() = 0;
 };
 
 class IResourceManager
@@ -341,24 +318,49 @@ class ShExports final
 
     PositionsStorage<Fvector2, 24> artefacts_position{};
     PositionsStorage<Fvector2, 24> anomalys_position{};
+
     Ivector2 detector_params{};
-    Fvector pda_params{}, actor_params{};
+    Fvector pda_params{}, actor_params{}, actor_params2{}, laser_params{};
     Fvector4 dof_params{};
+
+    // [zoom_rotate_factor, NULL, NULL, NULL] - Параметры худа оружия
+    Fvector4 hud_params{};
+
+    // [fFPCamYawMagnitudeSmooth, fFPCamPitchMagnitudeSmooth, fFPCamRollMagnitudeSmooth, NULL]
+    Fvector4 cam_inertia_smooth{};
+
+public:
+    xr_map<shared_str, Fvector4> customExports{};
 
 public:
     void set_artefact_position(const u32& _i, const Fvector2& _pos) { artefacts_position[_i] = _pos; };
     void set_anomaly_position(const u32& _i, const Fvector2& _pos) { anomalys_position[_i] = _pos; };
-    void set_detector_params(const Ivector2& _pos) { detector_params = _pos; };
-    void set_pda_params(const Fvector& _pos) { pda_params = _pos; };
-    void set_actor_params(const Fvector& _pos) { actor_params = _pos; };
-    void set_dof_params(float a, float b, float c, float d) { dof_params = {a, b, c, d}; };
 
     const Fvector2& get_artefact_position(const u32& _i) { return artefacts_position[_i]; }
     const Fvector2& get_anomaly_position(const u32& _i) { return anomalys_position[_i]; }
+
+    void set_custom_params(const char* key, const Fvector4& v) { customExports[key] = v; };
+    const Fvector4& get_custom_params(const shared_str& key) { return customExports[key]; };
+
+    void set_detector_params(const Ivector2& v) { detector_params = v; };
+    void set_pda_params(const Fvector& v) { pda_params = v; };
+    void set_actor_params(const Fvector& v) { actor_params = v; };
+    void set_actor_params2(const Fvector& v) { actor_params2 = v; };
+    void set_laser_params(const Fvector& v) { laser_params = v; };
+    void set_dof_params(const float a, const float b, const float c, const float d) { dof_params = {a, b, c, d}; };
+
     const Ivector2& get_detector_params() const { return detector_params; }
     const Fvector& get_pda_params() const { return pda_params; }
     const Fvector& get_actor_params() const { return actor_params; }
+    const Fvector& get_actor_params2() const { return actor_params2; }
+    const Fvector& get_laser_params() const { return laser_params; }
     const Fvector4& get_dof_params() const { return dof_params; }
+
+    const Fvector4& get_hud_params() const { return hud_params; }
+    const Fvector4& get_cam_inertia_smooth() const { return cam_inertia_smooth; }
+
+    void set_hud_params(const Fvector4& v) { hud_params = v; };
+    void set_cam_inertia_smooth(const Fvector4& v) { cam_inertia_smooth = v; };
 };
 
 ENGINE_API extern ShExports shader_exports;
@@ -371,8 +373,10 @@ struct GRASS_SHADER_DATA
     size_t index{};
     s8 anim[GRASS_SHADER_DATA_COUNT]{};
     u16 id[GRASS_SHADER_DATA_COUNT]{};
+
     Fvector4 pos[GRASS_SHADER_DATA_COUNT]{}; //x,y,z - pos, w - radius_curr
     Fvector4 dir[GRASS_SHADER_DATA_COUNT]{}; // x,y,z - dir, w - str
+
     float radius[GRASS_SHADER_DATA_COUNT]{};
     float str_target[GRASS_SHADER_DATA_COUNT]{};
     float time[GRASS_SHADER_DATA_COUNT]{};
@@ -380,7 +384,15 @@ struct GRASS_SHADER_DATA
     float speed[GRASS_SHADER_DATA_COUNT]{};
 };
 
+
+struct GRASS_SHADER_DATA_OLD
+{
+    Fvector4 pos[GRASS_SHADER_DATA_COUNT]{}; // x,y,z - pos, w - radius_curr
+    Fvector4 dir[GRASS_SHADER_DATA_COUNT]{}; // x,y,z - dir, w - str
+};
+
 ENGINE_API extern GRASS_SHADER_DATA grass_shader_data;
+ENGINE_API extern GRASS_SHADER_DATA_OLD grass_shader_data_old;
 
 extern Fvector4 ps_ssfx_grass_interactive;
 extern Fvector4 ps_ssfx_int_grass_params_2;
@@ -389,3 +401,5 @@ extern Fvector4 ps_ssfx_wetsurfaces_1, ps_ssfx_wetsurfaces_2, ps_ssfx_wetsurface
 extern Fvector4 ps_ssfx_lightsetup_1;
 extern float ps_ssfx_gloss_factor;
 extern Fvector3 ps_ssfx_gloss_minmax;
+extern BOOL ps_ssfx_terrain_grass_align;
+extern float ps_ssfx_terrain_grass_slope;

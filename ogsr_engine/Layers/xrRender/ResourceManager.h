@@ -15,10 +15,7 @@ class dx10ConstantBuffer;
 class ECORE_API CResourceManager : public IResourceManager
 {
 private:
-    struct str_pred
-    {
-        IC bool operator()(LPCSTR x, LPCSTR y) const { return xr_strcmp(x, y) < 0; }
-    };
+
     struct texture_detail
     {
         const char* T;
@@ -41,18 +38,22 @@ private:
     // data
     map_Blender m_blenders;
     map_Texture m_textures;
+
     map_RT m_rtargets;
 
     map_VS m_vs;
     map_PS m_ps;
     map_GS m_gs;
+    map_DS m_ds;
+    map_HS m_hs;
+    map_CS m_cs;
 
     xr_vector<SState*> v_states;
     xr_vector<SDeclaration*> v_declarations;
     xr_vector<SGeometry*> v_geoms;
     xr_vector<R_constant_table*> v_constant_tables;
 
-    xr_vector<dx10ConstantBuffer*> v_constant_buffer;
+    xr_vector<dx10ConstantBuffer*> v_constant_buffer[R__NUM_CONTEXTS]{};
     xr_vector<SInputSignature*> v_input_signature;
 
     // lists
@@ -64,25 +65,30 @@ private:
     xr_vector<SPass*> v_passes;
     xr_vector<ShaderElement*> v_elements;
     xr_vector<Shader*> v_shaders;
-    // misc
+
+    std::recursive_mutex v_shaders_lock;
+
+    std::recursive_mutex ScriptEngineLock;
+
 public:
     CTextureDescrMngr m_textures_description;
     xr_vector<std::pair<shared_str, R_constant_setup*>> v_constant_setup;
     BOOL bDeferredLoad;
 
 private:
-    void LS_Load();
-    void LS_Unload();
+    static void LS_Load();
+    static void LS_Unload();
 
     // Miscelaneous
     static void _ParseList(sh_list& dest, LPCSTR names);
+
     IBlender* _GetBlender(LPCSTR Name);
 
-    Shader* _cpp_Create(LPCSTR s_shader, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
-    Shader* _cpp_Create(IBlender* B, LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
+    Shader* _cpp_Create(LPCSTR s_shader, LPCSTR s_textures = nullptr, LPCSTR s_constants = nullptr, LPCSTR s_matrices = nullptr);
+    Shader* _cpp_Create(IBlender* B, LPCSTR s_shader = nullptr, LPCSTR s_textures = nullptr, LPCSTR s_constants = nullptr, LPCSTR s_matrices = nullptr);
 
     Shader* _lua_Create(LPCSTR s_shader, LPCSTR s_textures);
-    static BOOL _lua_HasShader(LPCSTR s_shader);
+    BOOL _lua_HasShader(LPCSTR s_shader);
 
     void LoadShaderFile(LPCSTR name);
     void LoadShaderLtxFile(LPCSTR name);
@@ -105,13 +111,13 @@ public:
     R_constant_table* _CreateConstantTable(R_constant_table& C);
     void _DeleteConstantTable(const R_constant_table* C);
 
-    dx10ConstantBuffer* _CreateConstantBuffer(ID3DShaderReflectionConstantBuffer* pTable);
-    void _DeleteConstantBuffer(const dx10ConstantBuffer* pBuffer);
+    dx10ConstantBuffer* _CreateConstantBuffer(u32 context_id, ID3DShaderReflectionConstantBuffer* pTable);
+    bool _DeleteConstantBuffer(u32 context_id, const dx10ConstantBuffer* pBuffer);
 
     SInputSignature* _CreateInputSignature(ID3DBlob* pBlob);
     void _DeleteInputSignature(const SInputSignature* pSignature);
 
-    CRT* _CreateRT(LPCSTR Name, u32 w, u32 h, D3DFORMAT f, u32 SampleCount = 1, bool useUAV = false);
+    CRT* _CreateRT(LPCSTR Name, u32 w, u32 h, DXGI_FORMAT f, u32 SampleCount = 1, u32 slices_num = 1, Flags32 flags = {});
     void _DeleteRT(const CRT* RT);
 
     SGS* _CreateGS(LPCSTR Name);
@@ -139,7 +145,7 @@ public:
     SState* _CreateState(SimulatorStates& Code);
     void _DeleteState(const SState* SB);
 
-    SDeclaration* _CreateDecl(D3DVERTEXELEMENT9* dcl);
+    SDeclaration* _CreateDecl(const D3DVERTEXELEMENT9* dcl);
     void _DeleteDecl(const SDeclaration* dcl);
 
     STextureList* _CreateTextureList(STextureList& L);
@@ -151,7 +157,7 @@ public:
     SConstantList* _CreateConstantList(SConstantList& L);
     void _DeleteConstantList(const SConstantList* L);
 
-    ShaderElement* _CreateElement(ShaderElement& L);
+    ShaderElement* _CreateElement(ShaderElement&& L);
     void _DeleteElement(const ShaderElement* L);
 
     void OnDeviceCreate();
@@ -161,28 +167,24 @@ public:
     void reset_end();
 
     // Creation/Destroying
-    Shader* Create(LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
-    Shader* Create(IBlender* B, LPCSTR s_shader = 0, LPCSTR s_textures = 0, LPCSTR s_constants = 0, LPCSTR s_matrices = 0);
+    Shader* Create(LPCSTR s_shader = nullptr, LPCSTR s_textures = nullptr, LPCSTR s_constants = nullptr, LPCSTR s_matrices = nullptr);
+    Shader* Create(IBlender* B, LPCSTR s_shader = nullptr, LPCSTR s_textures = nullptr, LPCSTR s_constants = nullptr, LPCSTR s_matrices = nullptr);
     void Delete(const Shader* S);
 
     void RegisterConstantSetup(LPCSTR name, R_constant_setup* s) { v_constant_setup.push_back(mk_pair(shared_str(name), s)); }
 
-    SGeometry* CreateGeom(D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
+    SGeometry* CreateGeom(const D3DVERTEXELEMENT9* decl, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
     SGeometry* CreateGeom(u32 FVF, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib);
     void DeleteGeom(const SGeometry* VS);
 
     void DeferredLoad(BOOL E) { bDeferredLoad = E; }
     void DeferredUpload();
-    void Evict();
-    void Dump(bool bBrief);
+
+    void Dump(bool bBrief) const;
 
     xr_vector<ITexture*> FindTexture(const char* Name) const override;
 
 private:
-    map_DS m_ds;
-    map_HS m_hs;
-    map_CS m_cs;
-
     template <typename T>
     T& GetShaderMap();
 

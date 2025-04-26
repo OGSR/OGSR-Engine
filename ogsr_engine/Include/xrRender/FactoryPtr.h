@@ -1,5 +1,3 @@
-#ifndef FactoryPtr_included
-#define FactoryPtr_included
 #pragma once
 
 #include "RenderFactory.h"
@@ -30,7 +28,7 @@ public:
     // unspecified bool type
     typedef T const* (FactoryPtr::*unspecified_bool_type)() const;
     operator unspecified_bool_type() const { return (!m_pObject ? 0 : &FactoryPtr::get); }
-    bool operator!() const { return m_pObject == 0; }
+    bool operator!() const { return m_pObject == nullptr; }
 
 private:
     void CreateObject();
@@ -64,28 +62,6 @@ inline void FactoryPtr<IUIShader>::DestroyObject()
     m_pObject = nullptr;
 }
 template <>
-inline void FactoryPtr<IStatGraphRender>::CreateObject()
-{
-    m_pObject = RenderFactory->CreateStatGraphRender();
-}
-template <>
-inline void FactoryPtr<IStatGraphRender>::DestroyObject()
-{
-    RenderFactory->DestroyStatGraphRender(m_pObject);
-    m_pObject = nullptr;
-}
-template <>
-inline void FactoryPtr<IConsoleRender>::CreateObject()
-{
-    m_pObject = RenderFactory->CreateConsoleRender();
-}
-template <>
-inline void FactoryPtr<IConsoleRender>::DestroyObject()
-{
-    RenderFactory->DestroyConsoleRender(m_pObject);
-    m_pObject = nullptr;
-}
-template <>
 inline void FactoryPtr<IRenderDeviceRender>::CreateObject()
 {
     m_pObject = RenderFactory->CreateRenderDeviceRender();
@@ -96,19 +72,6 @@ inline void FactoryPtr<IRenderDeviceRender>::DestroyObject()
     RenderFactory->DestroyRenderDeviceRender(m_pObject);
     m_pObject = nullptr;
 }
-#ifdef DEBUG
-template <>
-inline void FactoryPtr<IObjectSpaceRender>::CreateObject()
-{
-    m_pObject = RenderFactory->CreateObjectSpaceRender();
-}
-template <>
-inline void FactoryPtr<IObjectSpaceRender>::DestroyObject()
-{
-    RenderFactory->DestroyObjectSpaceRender(m_pObject);
-    m_pObject = nullptr;
-}
-#endif // DEBUG
 template <>
 inline void FactoryPtr<IWallMarkArray>::CreateObject()
 {
@@ -232,5 +195,3 @@ inline void FactoryPtr<IFontRender>::DestroyObject()
     RenderFactory->DestroyFontRender(m_pObject);
     m_pObject = nullptr;
 }
-
-#endif //	FactoryPtr_included

@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 
-#ifndef du_boxH
-#define du_boxH
+#pragma once
+
 //---------------------------------------------------------------------------
 #define DU_BOX_NUMVERTEX 8
 #define DU_BOX_NUMFACES 12
@@ -11,6 +11,4 @@
 extern ECORE_API Fvector du_box_vertices[];
 extern ECORE_API WORD du_box_faces[];
 extern ECORE_API WORD du_box_lines[];
-
 extern ECORE_API Fvector du_box_vertices2[];
-#endif

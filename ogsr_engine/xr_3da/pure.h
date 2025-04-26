@@ -5,33 +5,59 @@
 #define REG_PRIORITY_LOW 0x11111111ul
 #define REG_PRIORITY_NORMAL 0x22222222ul
 #define REG_PRIORITY_HIGH 0x33333333ul
-#define REG_PRIORITY_CAPTURE 0x7ffffffful
+
 #define REG_PRIORITY_INVALID 0xfffffffful
 
-typedef void __fastcall RP_FUNC(void* obj);
-#define DECLARE_MESSAGE_CL(name, calling) \
-    extern ENGINE_API RP_FUNC rp_##name; \
-    class ENGINE_API pure##name \
-    { \
-    public: \
-        virtual void calling On##name(void) = 0; \
-    }
+typedef void RP_FUNC(void* obj);
 
-#define DECLARE_MESSAGE(name) DECLARE_MESSAGE_CL(name, )
-#define DECLARE_RP(name) \
-    void __fastcall rp_##name(void* p) { ((pure##name*)p)->On##name(); }
-
-DECLARE_MESSAGE_CL(Frame, _BCL);
-
-DECLARE_MESSAGE(Render);
-DECLARE_MESSAGE(AppActivate);
-DECLARE_MESSAGE(AppDeactivate);
-DECLARE_MESSAGE(AppStart);
-DECLARE_MESSAGE(AppEnd);
-DECLARE_MESSAGE(DeviceReset);
-DECLARE_MESSAGE(ScreenResolutionChanged);
-
-// ENGINE_API extern int	__cdecl	_REG_Compare(const void *, const void *);
+extern ENGINE_API RP_FUNC rp_Frame;
+class ENGINE_API pureFrame
+{
+public:
+    virtual void OnFrame(void) = 0;
+};
+extern ENGINE_API RP_FUNC rp_Render;
+class ENGINE_API pureRender
+{
+public:
+    virtual void OnRender(void) = 0;
+};
+extern ENGINE_API RP_FUNC rp_AppActivate;
+class ENGINE_API pureAppActivate
+{
+public:
+    virtual void OnAppActivate(void) = 0;
+};
+extern ENGINE_API RP_FUNC rp_AppDeactivate;
+class ENGINE_API pureAppDeactivate
+{
+public:
+    virtual void OnAppDeactivate(void) = 0;
+};
+extern ENGINE_API RP_FUNC rp_AppStart;
+class ENGINE_API pureAppStart
+{
+public:
+    virtual void OnAppStart(void) = 0;
+};
+extern ENGINE_API RP_FUNC rp_AppEnd;
+class ENGINE_API pureAppEnd
+{
+public:
+    virtual void OnAppEnd(void) = 0;
+};
+extern ENGINE_API RP_FUNC rp_DeviceReset;
+class ENGINE_API pureDeviceReset
+{
+public:
+    virtual void OnDeviceReset(void) = 0;
+};
+extern ENGINE_API RP_FUNC rp_ScreenResolutionChanged;
+class ENGINE_API pureScreenResolutionChanged
+{
+public:
+    virtual void OnScreenResolutionChanged(void) = 0;
+};
 
 template <class T>
 class CRegistrator // the registrator itself
@@ -59,8 +85,9 @@ public:
         changed = false;
     }
 
-    constexpr void Add(T* object, const int priority = REG_PRIORITY_NORMAL) { Add({object, priority}); }
-    
+    constexpr void Add(T* object) { Add({object, REG_PRIORITY_NORMAL}); }
+    constexpr void Add(T* object, const int priority) { Add({object, priority}); }
+
     void Add(_REG_INFO&& newMessage)
     {
         bool found = false;
@@ -109,11 +136,11 @@ public:
 
         in_process = true;
 
-        if (R[0].Prio == REG_PRIORITY_CAPTURE)
-        {
-            f(R[0].Object);
-        }
-        else
+        // if (R[0].Prio == REG_PRIORITY_CAPTURE)
+        //{
+        //     f(R[0].Object);
+        // }
+        // else
         {
             for (u32 i = 0; i < R.size(); i++)
                 if (R[i].Prio != REG_PRIORITY_INVALID)

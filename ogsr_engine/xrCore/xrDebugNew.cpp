@@ -4,6 +4,7 @@
 
 #include <new.h> // for _set_new_mode
 #include <signal.h> // for signals
+#include <comdef.h> // for _com_error
 
 XRCORE_API xrDebug Debug;
 XRCORE_API HWND gGameWindow = nullptr;
@@ -16,9 +17,21 @@ static bool error_after_dialog = false;
 #include <VersionHelpers.h>
 #include <shellapi.h>
 
+static bool open_log()
+{
+    if (logFName[0])
+    {
+        ShellExecute(nullptr, "open", logFName, nullptr, nullptr, SW_SHOW);
+        return true;
+    }
+    return false;
+}
+
+extern bool OnMainThread();
+
 static void ShowErrorMessage(const char* msg, const bool show_msg = false)
 {
-    const bool on_ttapi_thread = (TTAPI && TTAPI->is_pool_thread());
+    const bool on_ttapi_thread = !OnMainThread();
 
     if (!on_ttapi_thread)
     {
@@ -30,10 +43,12 @@ static void ShowErrorMessage(const char* msg, const bool show_msg = false)
 
     if (!IsDebuggerPresent())
     {
-        if (show_msg && !on_ttapi_thread)
+        if (!show_msg)
+            if (open_log())
+                return;
+
+        if (!on_ttapi_thread)
             MessageBox(gGameWindow, msg, "FATAL ERROR", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
-        else
-            ShellExecute(nullptr, "open", logFName, nullptr, nullptr, SW_SHOW);
     }
 }
 
@@ -202,7 +217,7 @@ void xrDebug::backend(const char* expression, const char* description, const cha
         DEBUG_INVOKE;
 }
 
-const char* xrDebug::DXerror2string(const HRESULT code) const { return error2string(code); }
+const char* xrDebug::DXerror2string(const HRESULT code) const { return _com_error{code}.ErrorMessage(); }
 
 const char* xrDebug::error2string(const DWORD code) const
 {
@@ -246,7 +261,7 @@ void xrDebug::on_exception_in_thread()
 {
     if (!IsDebuggerPresent())
     {
-        ShellExecute(nullptr, "open", logFName, nullptr, nullptr, SW_SHOW);
+        open_log();
 
         quick_exit(EXIT_SUCCESS);
     }
@@ -258,7 +273,7 @@ void xrDebug::on_exception_in_thread()
 
 static int out_of_memory_handler(size_t size)
 {
-    Memory.mem_compact();
+    //Memory.mem_compact();
     size_t process_heap = mem_usage_impl(nullptr, nullptr);
     u32 eco_strings = g_pStringContainer->stat_economy();
     u32 eco_smem = g_pSharedMemoryContainer->stat_economy();

@@ -545,7 +545,7 @@ public:
     virtual void UpdateEx(float fov); // called by owner
 
     virtual void shedule_Update(u32 dt);
-    virtual void renderable_Render();
+    virtual void renderable_Render(u32 context_id, IRenderable* root) override;
     virtual bool bfAssignMovement(CScriptEntityAction* tpEntityAction);
     virtual bool bfAssignObject(CScriptEntityAction* tpEntityAction);
 
@@ -583,7 +583,7 @@ public:
     virtual void g_fireParams(CHudItem* /**pHudItem/**/, Fvector& /**P/**/, Fvector& /**D/**/, const bool for_cursor = false) override {}
     virtual u16 Initiator();
     // HUD
-    virtual void OnHUDDraw(CCustomHUD* hud);
+    virtual void OnHUDDraw(CCustomHUD* hud, u32 context_id, IRenderable* root) override;
 
     CCameraBase* Camera() { return active_camera; }
     void SetExplodeTime(u32 et);
@@ -611,6 +611,7 @@ public:
     bool IsEngineOn();
     bool IsLightsOn();
     void SwitchLights();
+    virtual float GetHotness() override { return 0.f; }
 
 private:
     template <class T>

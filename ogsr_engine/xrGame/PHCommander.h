@@ -1,5 +1,5 @@
-#ifndef PH_COMMANDER_H
-#define PH_COMMANDER_H
+#pragma once
+
 class CPHReqBase;
 class CPHReqComparerV;
 
@@ -86,4 +86,3 @@ public:
 
     void clear();
 };
-#endif

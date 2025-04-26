@@ -1,8 +1,8 @@
-#ifndef PH_SKELETON_H
-#define PH_SKELETON_H
+#pragma once
 
 #include "PHDefs.h"
 #include "PHDestroyableNotificate.h"
+
 class CPhysicsShellHolder;
 class CSE_ALifePHSkeletonObject;
 class CSE_Abstract;
@@ -58,5 +58,3 @@ public:
     CPHSkeleton();
     virtual ~CPHSkeleton();
 };
-
-#endif

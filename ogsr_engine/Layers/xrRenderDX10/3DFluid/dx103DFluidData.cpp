@@ -1,13 +1,36 @@
 #include "stdafx.h"
+
+#ifdef DX10_FLUID_ENABLE
+
 #include "dx103DFluidData.h"
+
 #include "dx103DFluidManager.h"
 
-constexpr xr_token simulation_type_token[] = {{"Fog", dx103DFluidData::ST_FOG}, {"Fire", dx103DFluidData::ST_FIRE}, {0, 0}};
-constexpr xr_token emitter_type_token[] = {{"SimpleGaussian", dx103DFluidEmitters::ET_SimpleGausian}, {"SimpleDraught", dx103DFluidEmitters::ET_SimpleDraught}, {0, 0}};
+namespace
+{
+const xr_token simulation_type_token[] = {
+    {"Fog", dx103DFluidData::ST_FOG},
+    {"Fire", dx103DFluidData::ST_FIRE},
+
+    {nullptr, 0}};
+
+const xr_token emitter_type_token[] = {
+    {"SimpleGaussian", dx103DFluidEmitters::ET_SimpleGausian},
+    {"SimpleDraught", dx103DFluidEmitters::ET_SimpleDraught},
+
+    {nullptr, 0}};
+
+} // namespace
+
+DXGI_FORMAT dx103DFluidData::m_VPRenderTargetFormats[VP_NUM_TARGETS] = {
+    DXGI_FORMAT_R16G16B16A16_FLOAT, //	VP_VELOCITY0
+    DXGI_FORMAT_R16_FLOAT, //	VP_PRESSURE
+    DXGI_FORMAT_R16_FLOAT //	VP_COLOR
+};
 
 dx103DFluidData::dx103DFluidData()
 {
-    D3D_TEXTURE3D_DESC desc{};
+    D3D_TEXTURE3D_DESC desc;
     desc.BindFlags = D3D10_BIND_SHADER_RESOURCE | D3D10_BIND_RENDER_TARGET;
     desc.CPUAccessFlags = 0;
     desc.MipLevels = 1;
@@ -17,15 +40,16 @@ dx103DFluidData::dx103DFluidData()
     desc.Height = FluidManager.GetTextureHeight();
     desc.Depth = FluidManager.GetTextureDepth();
 
-    D3D_SHADER_RESOURCE_VIEW_DESC SRVDesc{};
+    D3D_SHADER_RESOURCE_VIEW_DESC SRVDesc;
+    ZeroMemory(&SRVDesc, sizeof(SRVDesc));
     SRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE3D;
     SRVDesc.Texture3D.MipLevels = 1;
     SRVDesc.Texture3D.MostDetailedMip = 0;
 
     for (int rtIndex = 0; rtIndex < VP_NUM_TARGETS; rtIndex++)
     {
-        desc.Format = dx103DFluidConsts::m_VPRenderTargetFormats[rtIndex];
-        SRVDesc.Format = dx103DFluidConsts::m_VPRenderTargetFormats[rtIndex];
+        desc.Format = m_VPRenderTargetFormats[rtIndex];
+        SRVDesc.Format = m_VPRenderTargetFormats[rtIndex];
         CreateRTTextureAndViews(rtIndex, desc);
     }
 }
@@ -49,7 +73,7 @@ void dx103DFluidData::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC Te
     CHK_DX(HW.pDevice->CreateTexture3D(&TexDesc, NULL, &m_pRTTextures[rtIndex]));
     // Create the render target view
 
-    D3D_RENDER_TARGET_VIEW_DESC DescRT{};
+    D3D_RENDER_TARGET_VIEW_DESC DescRT;
     DescRT.Format = TexDesc.Format;
     DescRT.ViewDimension = D3D_RTV_DIMENSION_TEXTURE3D;
     DescRT.Texture3D.FirstWSlice = 0;
@@ -58,9 +82,8 @@ void dx103DFluidData::CreateRTTextureAndViews(int rtIndex, D3D_TEXTURE3D_DESC Te
 
     CHK_DX(HW.pDevice->CreateRenderTargetView(m_pRTTextures[rtIndex], &DescRT, &m_pRenderTargetViews[rtIndex]));
 
-    constexpr float color[4] = {0, 0, 0, 0};
-
-    HW.pContext->ClearRenderTargetView(m_pRenderTargetViews[rtIndex], color);
+    // Clear to zero
+    RCache.ClearRT(m_pRenderTargetViews[rtIndex], {});
 }
 
 void dx103DFluidData::DestroyRTTextureAndViews(int rtIndex)
@@ -80,7 +103,7 @@ void dx103DFluidData::Load(IReader* data)
     data->r(&m_Transform, sizeof(m_Transform));
 
     //	Read obstacles
-    u32 uiObstCnt = data->r_u32();
+    const u32 uiObstCnt = data->r_u32();
     m_Obstacles.reserve(uiObstCnt);
     for (u32 i = 0; i < uiObstCnt; ++i)
     {
@@ -95,7 +118,7 @@ void dx103DFluidData::Load(IReader* data)
 void dx103DFluidData::ParseProfile(const xr_string& Profile)
 {
     string_path fn;
-    FS.update_path(fn, "$game_config$", Profile.c_str());
+    FS.update_path(fn, fsgame::game_configs, Profile.c_str());
 
     dbg_name = Profile.c_str();
 
@@ -115,7 +138,10 @@ void dx103DFluidData::ParseProfile(const xr_string& Profile)
         Fmatrix Scale;
         Fmatrix Translate;
         Fmatrix TranslateScale;
-
+        //	Convert to 0..intDim space since it is used by simulation
+        // Scale.scale((float)m_iTextureWidth-1, (float)m_iTextureHeight-1, (float)m_iTextureDepth-1);
+        // Translate.translate(0.5, 0.5, 0.5);
+        // It seems that y axis is inverted in fluid simulation, so shange maths a bit
         Fvector vGridDim;
         vGridDim.set((float)FluidManager.GetTextureWidth(), (float)FluidManager.GetTextureHeight(), (float)FluidManager.GetTextureDepth());
         Scale.scale(vGridDim.x - 1, -(vGridDim.y - 1), vGridDim.z - 1);
@@ -145,14 +171,13 @@ void dx103DFluidData::ParseProfile(const xr_string& Profile)
 
     u32 iEmittersNum = ini.r_u32("volume", "EmittersNum");
 
-    m_Emitters.clear();
-    m_Emitters.reserve(iEmittersNum);
+    m_Emitters.resize(iEmittersNum);
 
     for (u32 i = 0; i < iEmittersNum; ++i)
     {
-        string32 EmitterSectionName{};
-        CEmitter& Emitter = m_Emitters.emplace_back();
-
+        string32 EmitterSectionName;
+        CEmitter& Emitter = m_Emitters[i];
+        ZeroMemory(&Emitter, sizeof(Emitter));
         xr_sprintf(EmitterSectionName, "emitter%02d", i);
 
         Emitter.m_eType = (dx103DFluidEmitters::EmitterType)ini.r_token(EmitterSectionName, "Type", emitter_type_token);
@@ -202,6 +227,9 @@ void dx103DFluidData::ParseProfile(const xr_string& Profile)
 #ifdef DEBUG
 void dx103DFluidData::ReparseProfile(const xr_string& Profile)
 {
+    m_Emitters.clear();
     ParseProfile(Profile);
 }
 #endif //	DEBUG
+
+#endif

@@ -24,4 +24,4 @@ void CSilencer::OnH_A_Chield() { inherited::OnH_A_Chield(); }
 
 void CSilencer::OnH_B_Independent(bool just_before_destroy) { inherited::OnH_B_Independent(just_before_destroy); }
 
-void CSilencer::renderable_Render() { inherited::renderable_Render(); }
+void CSilencer::renderable_Render(u32 context_id, IRenderable* root) { inherited::renderable_Render(context_id, root); }

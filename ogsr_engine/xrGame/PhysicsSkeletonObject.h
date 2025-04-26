@@ -1,5 +1,5 @@
-#ifndef PHYSICS_SKELETON_OBJECT_H
-#define PHYSICS_SKELETON_OBJECT_H
+#pragma once
+
 #include "physicsshellholder.h"
 #include "PHSkeleton.h"
 
@@ -29,5 +29,3 @@ protected:
     virtual void PHObjectPositionUpdate();
     virtual void CreatePhysicsShell(CSE_Abstract* e);
 };
-
-#endif

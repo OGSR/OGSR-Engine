@@ -17,7 +17,6 @@ private:
     // Debug
     CDB::MODEL Static;
     Fbox m_BoundingVolume;
-
 public:
 #ifdef DEBUG
     ref_shader sh_debug;
@@ -28,8 +27,7 @@ public:
 private:
     BOOL _RayTest(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::ray_cache* cache, const CObject* ignore_object);
     BOOL _RayPick(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::rq_result& R, const CObject* ignore_object) const;
-    BOOL _RayQuery(collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, LPVOID user_data, collide::test_callback* tb,
-                   const CObject* ignore_object) const;
+    BOOL _RayQuery(collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, LPVOID user_data, collide::test_callback* tb, const CObject* ignore_object) const;
 
 public:
     CObjectSpace();
@@ -44,8 +42,7 @@ public:
     BOOL RayPick(const Fvector& start, const Fvector& dir, float range, collide::rq_target tgt, collide::rq_result& R, const CObject* ignore_object) const;
 
     // General collision query
-    BOOL RayQuery(collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, LPVOID user_data, collide::test_callback* tb,
-                  const CObject* ignore_object) const;
+    BOOL RayQuery(collide::rq_results& dest, const collide::ray_defs& rq, collide::rq_callback* cb, LPVOID user_data, collide::test_callback* tb, const CObject* ignore_object) const;
 
     bool BoxQuery(Fvector const& box_center, Fvector const& box_z_axis, Fvector const& box_y_axis, Fvector const& box_sizes, xr_vector<Fvector>* out_tris) const;
 
@@ -64,4 +61,31 @@ public:
     void dbgRender();
     ref_shader dbgGetShader() { return sh_debug; }
 #endif
+};
+
+
+class ENGINE_API RayPickAsync
+{
+private:
+    bool future_ready{false};
+
+    collide::rq_result result{};
+
+    Fvector start{};
+    Fvector dir{};
+    float range{};
+    collide::rq_target tgt{};
+    const CObject* ignore_object{};
+
+public:
+    RayPickAsync(){};
+    ~RayPickAsync() { Discard(); };
+
+public:
+    void RayPickSubmit(Fvector start, Fvector dir, float range, collide::rq_target tgt, const CObject* ignore_object);
+    bool Ready(collide::rq_result& R);
+    void Discard();
+
+private:
+    void do_work_async();
 };

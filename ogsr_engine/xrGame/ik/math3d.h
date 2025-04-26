@@ -31,8 +31,7 @@
 
  */
 
-#ifndef _MYVECH
-#define _MYVECH
+#pragma once
 
 #define DTOR(x) ((x)*M_PI / 180.0)
 #define DOT4(u, v) ((u)[0] * (v)[0] + (u)[1] * (v)[1] + (u)[2] * (v)[2] + (u)[3] * ((v)[3]))
@@ -119,7 +118,6 @@ inline void vecadd(float t[], float u[], float v[])
 
 #define DOT(u, v) (u[0] * v[0] + u[1] * v[1] + u[2] * v[2])
 
-#endif
 
 //
 // Some miscellaneous useful routines

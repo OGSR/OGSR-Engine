@@ -38,8 +38,8 @@ public:
     virtual bool Activate(bool = false);
     virtual void Deactivate(bool = false);
     virtual void UpdateCL();
-    virtual void renderable_Render();
-    virtual void on_renderable_Render();
+    virtual void renderable_Render(u32 context_id, IRenderable* root) override;
+    virtual void on_renderable_Render(u32 context_id, IRenderable* root) override;
 
     virtual bool use_parent_ai_locations() const { return (Device.dwFrame != dwXF_Frame); }
 };

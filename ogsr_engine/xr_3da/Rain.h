@@ -5,11 +5,11 @@
 
 #include "../xrcdb/xr_collide_defs.h"
 
-inline const float max_desired_items = std::thread::hardware_concurrency() < 3u ? 1500.f : 2500.f;
+inline const float max_desired_items = std::thread::hardware_concurrency() < 3u ? 1000.f : 2000.f;
 inline const float min_desired_items = max_desired_items / 10.f;
 
-constexpr float source_radius = 15.f; // 12.5f;
-constexpr float source_offset = 40.f;
+constexpr float source_radius = 15;//12.5f;
+constexpr float source_offset = 40.f; // 40
 
 constexpr float max_distance = source_offset * 1.5f; // 1.25f;
 constexpr float sink_offset = -(max_distance - source_offset);
@@ -22,8 +22,8 @@ constexpr float drop_max_wind_vel = 20.0f;
 constexpr float drop_speed_min = 40.f;
 constexpr float drop_speed_max = 80.f;
 
-constexpr size_t max_particles = 1000;
-constexpr u32 particles_cache = 400;
+constexpr int max_particles = 1000;
+constexpr int particles_cache = 400;
 
 constexpr float particles_time = .3f;
 
@@ -98,16 +98,17 @@ private:
     void p_free(Particle* P);
 
     // Some methods
-    void Born(Item& dest, const float radius, const float speed, const float vel, const Fvector2& offset, const Fvector3& axis);
+    void Born(Item& dest, float radius, float speed);
     void Hit(Fvector& pos);
     BOOL RayPick(const Fvector& s, const Fvector& d, float& range, collide::rq_target tgt);
     void RenewItem(Item& dest, float height, BOOL bHit);
+    void Prepare(Fvector2& offset, Fvector3& axis, float Wind_Vel, float Wind_Dir);
 
 public:
     CEffect_Rain();
     ~CEffect_Rain();
 
-    void Render();
+    void Render(CBackend& cmd_list);
     void Calculate();
     void OnFrame();
     void InvalidateState() { state = stIdle; }

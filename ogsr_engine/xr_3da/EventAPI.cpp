@@ -34,8 +34,8 @@ public:
     }
     void Signal(u64 P1, u64 P2)
     {
-        for (u32 I = 0; I < Handlers.size(); I++)
-            Handlers[I]->OnEvent(this, P1, P2);
+        for (auto& Handler : Handlers)
+            Handler->OnEvent(this, P1, P2);
     }
 };
 //-----------------------------------------
@@ -53,19 +53,19 @@ IC bool ev_sort(CEvent* E1, CEvent* E2) { return E1->GetFull() < E2->GetFull(); 
 void CEventAPI::Dump()
 {
     std::sort(Events.begin(), Events.end(), ev_sort);
-    for (u32 i = 0; i < Events.size(); i++)
-        Msg("* [%d] %s", Events[i]->RefCount(), Events[i]->GetFull());
+    for (auto& Event : Events)
+        Msg("* [%d] %s", Event->RefCount(), Event->GetFull());
 }
 
 EVENT CEventAPI::Create(const char* N)
 {
     CS.Enter();
     CEvent E(N);
-    for (xr_vector<CEvent*>::iterator I = Events.begin(); I != Events.end(); I++)
+    for (auto& Event : Events)
     {
-        if ((*I)->Equal(E))
+        if (Event->Equal(E))
         {
-            EVENT F = *I;
+            EVENT F = Event;
             F->dwRefCount++;
             CS.Leave();
             return F;
@@ -102,7 +102,7 @@ EVENT CEventAPI::Handler_Attach(const char* N, IEventReceiver* H)
 
 void CEventAPI::Handler_Detach(EVENT& E, IEventReceiver* H)
 {
-    if (0 == E)
+    if (nullptr == E)
         return;
     CS.Enter();
     E->Detach(H);
@@ -144,17 +144,19 @@ void CEventAPI::Defer(LPCSTR N, u64 P1, u64 P2)
 
 void CEventAPI::OnFrame()
 {
+    ZoneScoped;
+
     CS.Enter();
     if (Events_Deferred.empty())
     {
         CS.Leave();
         return;
     }
-    for (u32 I = 0; I < Events_Deferred.size(); I++)
+    for (auto& I : Events_Deferred)
     {
-        Deferred& DEF = Events_Deferred[I];
+        Deferred& DEF = I;
         Signal(DEF.E, DEF.P1, DEF.P2);
-        Destroy(Events_Deferred[I].E);
+        Destroy(I.E);
     }
     Events_Deferred.clear();
     CS.Leave();
@@ -168,9 +170,8 @@ BOOL CEventAPI::Peek(LPCSTR EName)
         CS.Leave();
         return FALSE;
     }
-    for (u32 I = 0; I < Events_Deferred.size(); I++)
+    for (auto& DEF : Events_Deferred)
     {
-        Deferred& DEF = Events_Deferred[I];
         if (stricmp(DEF.E->GetFull(), EName) == 0)
         {
             CS.Leave();
@@ -181,7 +182,7 @@ BOOL CEventAPI::Peek(LPCSTR EName)
     return FALSE;
 }
 
-void CEventAPI::_destroy()
+void CEventAPI::Destroy()
 {
     Dump();
     if (Events.empty())

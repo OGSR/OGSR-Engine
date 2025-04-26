@@ -177,7 +177,7 @@ void CProjector::UpdateCL()
     angle_lerp(_current.pitch, _target.pitch, bone_y.velocity, Device.fTimeDelta);
 }
 
-void CProjector::renderable_Render() { inherited::renderable_Render(); }
+void CProjector::renderable_Render(u32 context_id, IRenderable* root) { inherited::renderable_Render(context_id, root); }
 
 BOOL CProjector::UsedAI_Locations() { return (FALSE); }
 

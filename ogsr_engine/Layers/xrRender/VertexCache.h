@@ -1,5 +1,4 @@
-#ifndef VERTEX_CACHE_H
-#define VERTEX_CACHE_H
+#pragma once
 
 class VertexCache
 {
@@ -8,25 +7,25 @@ public:
     VertexCache();
     ~VertexCache();
 
-    bool InCache(int entry);
+    bool InCache(int entry) const;
     int AddEntry(int entry);
     void Clear();
 
     void Copy(VertexCache* inVcache);
-    int At(int index);
+    int At(int index) const;
     void Set(int index, int value);
 
 private:
     xr_vector<int> entries;
 };
 
-IC bool VertexCache::InCache(int entry)
+IC bool VertexCache::InCache(int entry) const
 {
     bool returnVal = false;
 
-    for (u32 i = 0; i < entries.size(); i++)
+    for (const int entrie : entries)
     {
-        if (entries[i] == entry)
+        if (entrie == entry)
         {
             returnVal = true;
             break;
@@ -52,5 +51,3 @@ IC int VertexCache::AddEntry(int entry)
 
     return removed;
 }
-
-#endif

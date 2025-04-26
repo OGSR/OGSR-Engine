@@ -10,7 +10,7 @@ function normal		(shader, t_base, t_second, t_detail)
 							stencil_op.keep, stencil_op.replace, stencil_op.keep)
 	shader:dx10stencil_ref	(1)
 	
-	--shader: dx10color_write_enable( true, true, true, false)
+--	shader: dx10color_write_enable( true, true, true, false)
 end
 
 function l_special	(shader, t_base, t_second, t_detail)

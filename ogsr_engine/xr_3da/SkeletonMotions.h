@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef SkeletonMotionsH
-#define SkeletonMotionsH
+#pragma once
 
 //#include		"skeletoncustom.h"
 #include "bone.h"
@@ -150,7 +149,7 @@ class ENGINE_API CPartDef
 public:
     shared_str Name;
     xr_vector<u32> bones;
-    CPartDef() : Name(0){};
+    CPartDef() : Name(nullptr){};
 
     u32 mem_usage() { return sizeof(*this) + bones.size() * sizeof(u32) + sizeof(Name); }
 };
@@ -188,15 +187,15 @@ struct ENGINE_API motions_value
     shared_str m_id;
 
     BOOL load(LPCSTR N, IReader* data, vecBones* bones);
-    MotionVec* bone_motions(shared_str bone_name);
+    MotionVec* bone_motions(const shared_str& bone_name);
 
     u32 mem_usage()
     {
         size_t sz = sizeof(*this) + m_motion_map.size() * 6 + m_partition.mem_usage();
-        for (MotionDefVecIt it = m_mdefs.begin(); it != m_mdefs.end(); it++)
-            sz += it->mem_usage();
-        for (auto bm_it = m_motions.begin(); bm_it != m_motions.end(); bm_it++)
-            for (MotionVecIt m_it = bm_it->second.begin(); m_it != bm_it->second.end(); m_it++)
+        for (auto& m_mdef : m_mdefs)
+            sz += m_mdef.mem_usage();
+        for (auto& m_motion : m_motions)
+            for (MotionVecIt m_it = m_motion.second.begin(); m_it != m_motion.second.end(); ++m_it)
                 sz += m_it->mem_usage();
         return u32(sz);
     }
@@ -226,11 +225,11 @@ protected:
     // ref-counting
     void destroy()
     {
-        if (0 == p_)
+        if (nullptr == p_)
             return;
         p_->m_dwReference--;
         if (0 == p_->m_dwReference)
-            p_ = 0;
+            p_ = nullptr;
     }
 
 public:
@@ -239,10 +238,10 @@ public:
     bool create(shared_motions const& rhs); //	{	motions_value* v = rhs.p_; if (0!=v) v->m_dwReference++; destroy(); p_ = v;	}
 public:
     // construction
-    shared_motions() { p_ = 0; }
+    shared_motions() { p_ = nullptr; }
     shared_motions(shared_motions const& rhs)
     {
-        p_ = 0;
+        p_ = nullptr;
         create(rhs);
     }
     ~shared_motions() { destroy(); }
@@ -256,7 +255,7 @@ public:
     bool operator==(shared_motions const& rhs) const { return (p_ == rhs.p_); }
 
     // misc func
-    MotionVec* bone_motions(shared_str bone_name)
+    MotionVec* bone_motions(const shared_str& bone_name)
     {
         VERIFY(p_);
         return p_->bone_motions(bone_name);
@@ -294,4 +293,3 @@ public:
     }
 };
 //---------------------------------------------------------------------------
-#endif

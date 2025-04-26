@@ -300,8 +300,8 @@ void CLocatorAPI::ProcessArchive(LPCSTR _path, LPCSTR base_path)
     // find existing archive
     shared_str path = _path;
 
-    for (archives_it it = archives.begin(); it != archives.end(); ++it)
-        if (it->path == path)
+    for (auto& archive : archives)
+        if (archive.path == path)
             return;
 
     const bool shouldDecrypt = !strstr(_path, ".xdb");
@@ -688,23 +688,23 @@ void CLocatorAPI::_initialize(u32 flags, LPCSTR target_folder, LPCSTR fs_name)
 
 void CLocatorAPI::_destroy()
 {
-    for (files_it I = files.begin(); I != files.end(); I++)
+    for (const auto& file : files)
     {
-        char* str = LPSTR(I->name);
+        char* str = LPSTR(file.name);
         xr_free(str);
     }
     files.clear();
-    for (PathPairIt p_it = pathes.begin(); p_it != pathes.end(); p_it++)
+    for (auto& pathe : pathes)
     {
-        char* str = LPSTR(p_it->first);
+        char* str = LPSTR(pathe.first);
         xr_free(str);
-        xr_delete(p_it->second);
+        xr_delete(pathe.second);
     }
     pathes.clear();
-    for (archives_it a_it = archives.begin(); a_it != archives.end(); a_it++)
+    for (auto& archive : archives)
     {
-        CloseHandle(a_it->hSrcMap);
-        CloseHandle(a_it->hSrcFile);
+        CloseHandle(archive.hSrcMap);
+        CloseHandle(archive.hSrcFile);
     }
     archives.clear();
 }
@@ -808,8 +808,8 @@ void CLocatorAPI::file_list_close(xr_vector<char*>*& lst)
 {
     if (lst)
     {
-        for (xr_vector<char*>::iterator I = lst->begin(); I != lst->end(); I++)
-            xr_free(*I);
+        for (auto& I : *lst)
+            xr_free(I);
         xr_delete(lst);
     }
 }
@@ -859,9 +859,9 @@ int CLocatorAPI::file_list(FS_FileSet& dest, LPCSTR path, u32 flags, LPCSTR mask
             if (b_mask)
             {
                 bool bOK = false;
-                for (SStringVecIt it = masks.begin(); it != masks.end(); it++)
+                for (auto& mask : masks)
                 {
-                    if (PatternMatch(entry_begin, it->c_str()))
+                    if (PatternMatch(entry_begin, mask.c_str()))
                     {
                         bOK = true;
                         break;
@@ -1255,9 +1255,9 @@ void CLocatorAPI::rescan_physical_path(LPCSTR full_path, BOOL bRecurse)
 void CLocatorAPI::rescan_physical_pathes()
 {
     m_Flags.set(flNeedRescan, FALSE);
-    for (PathPairIt p_it = pathes.begin(); p_it != pathes.end(); p_it++)
+    for (auto& pathe : pathes)
     {
-        FS_Path* P = p_it->second;
+        FS_Path* P = pathe.second;
         if (P->m_Flags.is(FS_Path::flNeedRescan))
         {
             std::string filepath{P->m_Path};

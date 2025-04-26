@@ -1,5 +1,4 @@
-#ifndef CHIMERA_ATTACK_STATE_H_INCLUDED
-#define CHIMERA_ATTACK_STATE_H_INCLUDED
+#pragma once
 
 template <typename Object>
 class ChimeraAttackState : public CState<Object>
@@ -79,5 +78,3 @@ private:
 }; // ChimeraAttackState
 
 #include "chimera_attack_state_inline.h"
-
-#endif // #ifdef CHIMERA_ATTACK_STATE_H_INCLUDED

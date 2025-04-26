@@ -1,5 +1,3 @@
-#ifndef dxHashHelper_included
-#define dxHashHelper_included
 #pragma once
 
 class dxHashHelper
@@ -23,12 +21,10 @@ private:
 
 IC void dxHashHelper::AddData(const void* P, u32 len)
 {
-    u8* buffer = (u8*)P;
+    const u8* buffer = (u8*)P;
 
     while (len--)
     {
         m_uiCrcValue = (m_uiCrcValue >> 8) ^ m_CrcTable[(m_uiCrcValue & 0xFF) ^ *buffer++];
     }
 }
-
-#endif //	dxHashHelper_included

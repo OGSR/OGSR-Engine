@@ -1,8 +1,6 @@
-#ifndef dxLensFlareRender_included
-#define dxLensFlareRender_included
 #pragma once
 
-#include "..\..\Include\xrRender\LensFlareRender.h"
+#include "../../Include/xrRender/LensFlareRender.h"
 
 class dxFlareRender : public IFlareRender
 {
@@ -22,7 +20,7 @@ class dxLensFlareRender : public ILensFlareRender
 public:
     virtual void Copy(ILensFlareRender& _in);
 
-    virtual void Render(CLensFlare& owner, BOOL bSun, BOOL bFlares, BOOL bGradient);
+    virtual void Render(CBackend& cmd_list, CLensFlare& owner, BOOL bSun, BOOL bFlares, BOOL bGradient);
 
     virtual void OnDeviceCreate();
     virtual void OnDeviceDestroy();
@@ -30,5 +28,3 @@ public:
 private:
     ref_geom hGeom;
 };
-
-#endif //	LensFlareRender_included

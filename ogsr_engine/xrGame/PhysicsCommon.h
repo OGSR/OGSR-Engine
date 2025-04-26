@@ -1,5 +1,4 @@
-#ifndef PHYSICS_COMMON_H
-#define PHYSICS_COMMON_H
+#pragma once
 
 #include "DisablingParams.h"
 #include "ode_include.h"
@@ -63,4 +62,3 @@ extern ContactCallbackFun* CharacterContactShotMark;
 
 typedef void PhysicsStepTimeCallback(u32 step_start, u32 step_end);
 extern PhysicsStepTimeCallback* physics_step_time_callback;
-#endif // PHYSICS_COMMON_H

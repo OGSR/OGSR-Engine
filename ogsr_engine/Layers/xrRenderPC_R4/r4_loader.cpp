@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "r4.h"
+
 #include "../xrRender/ResourceManager.h"
 #include "../xrRender/fbasicvisual.h"
+
 #include "../../xr_3da/fmesh.h"
 #include "../../xr_3da/xrLevel.h"
 #include "../../xr_3da/x_ray.h"
@@ -9,13 +11,12 @@
 #include "../../xrCore/stream_reader.h"
 
 #include "../xrRender/dxRenderDeviceRender.h"
-
 #include "../xrRenderDX10/dx10BufferUtils.h"
-#include "../xrRenderDX10/3DFluid/dx103DFluidVolume.h"
-
 #include "../xrRender/FHierrarhyVisual.h"
 
 #include <Utilities/FlexibleVertexFormat.h>
+
+#include "../xrRenderDX10/3DFluid/dx103DFluidVolume.h"
 
 void CRender::level_Load(IReader* fs)
 {
@@ -39,8 +40,8 @@ void CRender::level_Load(IReader* fs)
     g_pGamePersistent->LoadTitle("st_loading_shaders");
     {
         chunk = fs->open_chunk(fsL_SHADERS);
-        R_ASSERT2(chunk, "Level doesn't builded correctly.");
-        u32 count = chunk->r_u32();
+        R_ASSERT(chunk, "Level doesn't builded correctly.");
+        const u32 count = chunk->r_u32();
         Shaders.resize(count);
         for (u32 i = 0; i < count; i++) // skip first shader as "reserved" one
         {
@@ -50,7 +51,7 @@ void CRender::level_Load(IReader* fs)
             if (0 == n[0])
                 continue;
             xr_strcpy(n_sh, n);
-            LPSTR delim = strchr(n_sh, '/');
+            const LPSTR delim = strchr(n_sh, '/');
             *delim = 0;
             xr_strcpy(n_tlist, delim + 1);
             Shaders[i] = dxRenderDeviceRender::Instance().Resources->Create(n_sh, n_tlist);
@@ -66,8 +67,8 @@ void CRender::level_Load(IReader* fs)
         // VB,IB,SWI
         g_pGamePersistent->LoadTitle("st_loading_geometry");
         {
-            CStreamReader* geom = FS.rs_open("$level$", "level.geom");
-            R_ASSERT2(geom, "level.geom");
+            CStreamReader* geom = FS.rs_open(fsgame::level, fsgame::level_files::level_geom);
+            R_ASSERT(geom, "level.geom");
             LoadBuffers(geom, FALSE);
             LoadSWIs(geom);
             FS.r_close(geom);
@@ -75,8 +76,8 @@ void CRender::level_Load(IReader* fs)
 
         //...and alternate/fast geometry
         {
-            CStreamReader* geom = FS.rs_open("$level$", "level.geomx");
-            R_ASSERT2(geom, "level.geomX");
+            CStreamReader* geom = FS.rs_open(fsgame::level, fsgame::level_files::level_geomx);
+            R_ASSERT(geom, "level.geomX");
             LoadBuffers(geom, TRUE);
             FS.r_close(geom);
         }
@@ -106,6 +107,41 @@ void CRender::level_Load(IReader* fs)
     // pApp->LoadTitle			("Loading lights...");
     LoadLights(fs);
 
+    current_level_puddles.clear();
+    string_path puddles_file{};
+    if (FS.exist(puddles_file, "$level$", "level.puddles"))
+    {
+        CInifile ini(puddles_file);
+
+        current_level_puddles.reserve(ini.sections().size());
+
+        for (const auto& pair : ini.sections())
+        {
+            const auto& sect = pair.second->Name;
+
+            auto& puddle = current_level_puddles.emplace_back();
+
+            const Fvector position = ini.r_fvector3(sect, "center");
+            const float max_height = ini.r_float(sect, "max_depth");
+
+            Fvector2 size_xz = ini.r_fvector2(sect, "radius");
+            if (fis_zero(size_xz.y))
+                size_xz.y = size_xz.x;
+
+            if (pair.second->line_exist("rotation"))
+                puddle.xform.rotateY(ini.r_float(sect, "rotation"));
+
+            puddle.xform.mulB_43(Fmatrix{}.scale(size_xz.x, 1.0f, size_xz.y));
+
+            puddle.xform.translate_over(position);
+
+            puddle.height = max_height;
+            puddle.radius = size_xz.magnitude();
+
+            // Msg("~~Loaded puddle with center: [%f,%f,%f], size: [%f,%f]", position.x, position.y, position.z, size_xz.x, size_xz.y);
+        }
+    }
+
     // End
     pApp->LoadEnd();
 
@@ -116,23 +152,17 @@ void CRender::level_Load(IReader* fs)
     Msg("~ LevelResources - base: %d, %d K", c_base, m_base / 1024);
     Msg("~ LevelResources - lmap: %d, %d K", c_lmaps, m_lmaps / 1024);
 
-    // sanity-clear
-    lstLODs.clear();
-    lstLODgroups.clear();
-    mapLOD.clear();
-
     // signal loaded
     b_loaded = TRUE;
 }
 
 void CRender::level_Unload()
 {
-    if (0 == g_pGameLevel)
+    if (nullptr == g_pGameLevel)
         return;
 
     if (!b_loaded)
         return;
-
     
     u32 m_base, c_base, m_lmaps, c_lmaps;
     Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
@@ -152,16 +182,15 @@ void CRender::level_Unload()
     //*** Sectors
     // 1.
     xr_delete(rmPortals);
-    pLastSector = 0;
-    vLastCameraPos.set(0, 0, 0);
-    // 2.
-    for (I = 0; I < Sectors.size(); I++)
-        xr_delete(Sectors[I]);
-    Sectors.clear();
-    // 3.
-    for (I = 0; I < Portals.size(); I++)
-        xr_delete(Portals[I]);
-    Portals.clear();
+    last_sector_id = IRender_Sector::INVALID_SECTOR_ID;
+    Device.vCameraPositionSaved.set(0, 0, 0);
+
+    cleanup_contexts();
+
+    for (auto& id : contexts_pool)
+    {
+        id.unload();
+    }
 
     //*** Lights
     // Glows.Unload			();
@@ -215,9 +244,7 @@ void CRender::level_Unload()
 
 void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 {
-    R_ASSERT2(base_fs, "Could not load geometry. File not found.");
-    dxRenderDeviceRender::Instance().Resources->Evict();
-    //	u32	dwUsage					= D3DUSAGE_WRITEONLY;
+    R_ASSERT(base_fs, "Could not load geometry. File not found.");
 
     xr_vector<VertexDeclarator>& _DC = _alternative ? xDC : nDC;
     xr_vector<ID3DVertexBuffer*>& _VB = _alternative ? xVB : nVB;
@@ -227,8 +254,8 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
     {
         // Use DX9-style declarators
         CStreamReader* fs = base_fs->open_chunk(fsL_VB);
-        R_ASSERT2(fs, "Could not load geometry. File 'level.geom?' corrupted.");
-        u32 count = fs->r_u32();
+        R_ASSERT(fs, "Could not load geometry. File 'level.geom?' corrupted.");
+        const u32 count = fs->r_u32();
         _DC.resize(count);
         _VB.resize(count);
 
@@ -241,22 +268,15 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
             fs->r(dcl, buffer_size);
             fs->advance(-(int)buffer_size);
 
-            u32 dcl_len = FVF::GetDeclLength(dcl) + 1;
+            const u32 dcl_len = FVF::GetDeclLength(dcl) + 1;
             _DC[i].resize(dcl_len);
             fs->r(_DC[i].begin(), dcl_len * sizeof(D3DVERTEXELEMENT9));
 
             // count, size
-            u32 vCount = fs->r_u32();
-            u32 vSize = FVF::ComputeVertexSize(dcl, 0);
+            const u32 vCount = fs->r_u32();
+            const u32 vSize = FVF::ComputeVertexSize(dcl, 0);
             Msg("* [Loading VB] %d verts, %d Kb", vCount, (vCount * vSize) / 1024);
 
-            // Create and fill
-            // BYTE*	pData		= 0;
-            // R_CHK				(HW.pDevice->CreateVertexBuffer(vCount*vSize,dwUsage,0,D3DPOOL_MANAGED,&_VB[i],0));
-            // R_CHK				(_VB[i]->Lock(0,0,(void**)&pData,0));
-            //			CopyMemory			(pData,fs().pointer(),vCount*vSize);
-            // fs->r				(pData,vCount*vSize);
-            //_VB[i]->Unlock		();
             //	TODO: DX10: Check fragmentation.
             //	Check if buffer is less then 2048 kb
             BYTE* pData = xr_alloc<BYTE>(vCount * vSize);
@@ -272,20 +292,12 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
     // Index buffers
     {
         CStreamReader* fs = base_fs->open_chunk(fsL_IB);
-        u32 count = fs->r_u32();
+        const u32 count = fs->r_u32();
         _IB.resize(count);
         for (u32 i = 0; i < count; i++)
         {
-            u32 iCount = fs->r_u32();
+            const u32 iCount = fs->r_u32();
             Msg("* [Loading IB] %d indices, %d Kb", iCount, (iCount * 2) / 1024);
-
-            // Create and fill
-            // BYTE*	pData		= 0;
-            // R_CHK				(HW.pDevice->CreateIndexBuffer(iCount*2,dwUsage,D3DFMT_INDEX16,D3DPOOL_MANAGED,&_IB[i],0));
-            // R_CHK				(_IB[i]->Lock(0,0,(void**)&pData,0));
-            //			CopyMemory			(pData,fs().pointer(),iCount*2);
-            // fs->r				(pData,iCount*2);
-            //_IB[i]->Unlock		();
 
             //	TODO: DX10: Check fragmentation.
             //	Check if buffer is less then 2048 kb
@@ -302,21 +314,28 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
 
 void CRender::LoadVisuals(IReader* fs)
 {
-    IReader* chunk = 0;
     u32 index = 0;
-    dxRender_Visual* V = 0;
+    dxRender_Visual* V = nullptr;
     ogf_header H;
 
-    while ((chunk = fs->open_chunk(index)) != 0)
+    IReader* chunk;
+
+    while ((chunk = fs->open_chunk(index)) != nullptr)
     {
         chunk->r_chunk_safe(OGF_HEADER, &H, sizeof(H));
+
         V = Models->Instance_Create(H.type);
-        V->Load(0, chunk, 0);
+        V->Load(nullptr, chunk, 0);
+        V->is_level_static = true;
+
         Visuals.push_back(V);
 
         chunk->close();
+
         index++;
     }
+
+    Msg("Loaded [%d] models from level.", Visuals.size());
 }
 
 void CRender::LoadLights(IReader* fs)
@@ -326,76 +345,123 @@ void CRender::LoadLights(IReader* fs)
     Lights.LoadHemi();
 }
 
-struct b_portal
-{
-    u16 sector_front;
-    u16 sector_back;
-    svector<Fvector, 6> vertices;
-};
-
 void CRender::LoadSectors(IReader* fs)
 {
     // allocate memory for portals
-    u32 size = fs->find_chunk(fsL_PORTALS);
-    R_ASSERT(0 == size % sizeof(b_portal));
-    u32 count = size / sizeof(b_portal);
-    Portals.resize(count);
-    for (u32 c = 0; c < count; c++)
-        Portals[c] = xr_new<CPortal>();
+    const u32 size = fs->find_chunk(fsL_PORTALS);
+    R_ASSERT(0 == size % sizeof(CPortal::level_portal_data_t));
+
+    // load sectors
+    xr_vector<CSector::level_sector_data_t> sectors_data;
+
+    float largest_sector_vol = 0.0f;
 
     // load sectors
     IReader* S = fs->open_chunk(fsL_SECTORS);
     for (u32 i = 0;; i++)
     {
         IReader* P = S->open_chunk(i);
-        if (0 == P)
+        if (!P)
             break;
 
-        CSector* __S = xr_new<CSector>();
-        __S->load(*P);
-        Sectors.push_back(__S);
+        {
+            u32 size = P->find_chunk(fsP_Portals);
+            R_ASSERT(0 == (size & 1));
+            u32 portals_in_sector = size / sizeof(u16);
+
+            auto& sector_data = sectors_data.emplace_back();
+            sector_data.portals_id.reserve(portals_in_sector);
+            while (portals_in_sector)
+            {
+                const u16 ID = P->r_u16();
+                sector_data.portals_id.emplace_back(ID);
+                --portals_in_sector;
+            }
+
+            size = P->find_chunk(fsP_Root);
+            R_ASSERT(size == 4);
+            sector_data.root_id = P->r_u32();
+
+            // Search for default sector - assume "default" or "outdoor" sector is the largest one
+            // XXX: hack: need to know real outdoor sector
+            auto* V = static_cast<dxRender_Visual*>(RImplementation.getVisual(sector_data.root_id));
+            const float vol = V->getVisData().box.getvolume();
+            if (vol > largest_sector_vol)
+            {
+                largest_sector_vol = vol;
+                largest_sector_id = /*static_cast<IRender_Sector::sector_id_t>*/(i);
+            }
+        }
 
         P->close();
     }
     S->close();
 
+    const u32 portals_count = size / sizeof(CPortal::level_portal_data_t);
+    xr_vector<CPortal::level_portal_data_t> portals_data{portals_count};
+
     // load portals
-    if (count)
+    if (portals_count)
     {
         CDB::Collector CL;
         fs->find_chunk(fsL_PORTALS);
-        for (u32 i = 0; i < count; i++)
+        for (u32 i = 0; i < portals_count; i++)
         {
-            b_portal P;
+            auto& P = portals_data[i];
             fs->r(&P, sizeof(P));
-            CPortal* __P = (CPortal*)Portals[i];
-            __P->Setup(P.vertices.begin(), P.vertices.size(), (CSector*)getSector(P.sector_front), (CSector*)getSector(P.sector_back));
-            for (u32 j = 2; j < P.vertices.size(); j++)
-                CL.add_face_packed_D(P.vertices[0], P.vertices[j - 1], P.vertices[j], u32(i));
+
+            {
+                for (u32 j = 2; j < P.vertices.size(); j++)
+                    CL.add_face_packed_D(P.vertices[0], P.vertices[j - 1], P.vertices[j], u32(i));
+            }
         }
+
         if (CL.getTS() < 2)
         {
-            Fvector v1, v2, v3;
-            v1.set(-20000.f, -20000.f, -20000.f);
-            v2.set(-20001.f, -20001.f, -20001.f);
-            v3.set(-20002.f, -20002.f, -20002.f);
+            constexpr Fvector v1{-20000.f, -20000.f, -20000.f};
+            constexpr Fvector v2{-20001.f, -20001.f, -20001.f};
+            constexpr Fvector v3{-20002.f, -20002.f, -20002.f};
             CL.add_face_packed_D(v1, v2, v3, 0);
         }
 
-        // build portal model
-        rmPortals = xr_new<CDB::MODEL>();
-        rmPortals->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()), nullptr, nullptr, false);
+        //if (!SectorsLoadDisabled)
+        {
+            // build portal model
+            rmPortals = xr_new<CDB::MODEL>();
+            rmPortals->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()), nullptr, nullptr, false);
+        }
     }
     else
     {
-        rmPortals = 0;
+        rmPortals = nullptr;
+    }
+
+    Msg("Level sector data:");
+    for (const auto& sector_data : sectors_data)
+    {
+        auto* V = static_cast<dxRender_Visual*>(RImplementation.getVisual(sector_data.root_id));
+        const float vol = V->getVisData().box.getvolume();
+
+        Msg("root_id=[%d] volume=[%f]", sector_data.root_id, vol);
     }
 
     // debug
     //	for (int d=0; d<Sectors.size(); d++)
     //		Sectors[d]->DebugDump	();
 
-    pLastSector = 0;
+    for (int id = 0; id < R__NUM_PARALLEL_CONTEXTS; ++id)
+    {
+        auto& dsgraph = contexts_pool[id];
+        dsgraph.reset();
+        dsgraph.load(sectors_data, portals_data);
+        contexts_used.set(id, false);
+    }
+
+    auto& dsgraph = get_imm_context();
+    dsgraph.reset();
+    dsgraph.load(sectors_data, portals_data);
+
+    last_sector_id = IRender_Sector::INVALID_SECTOR_ID;
 }
 
 void CRender::LoadSWIs(CStreamReader* base_fs)
@@ -404,10 +470,10 @@ void CRender::LoadSWIs(CStreamReader* base_fs)
     if (base_fs->find_chunk(fsL_SWIS))
     {
         CStreamReader* fs = base_fs->open_chunk(fsL_SWIS);
-        u32 item_count = fs->r_u32();
+        const u32 item_count = fs->r_u32();
 
         xr_vector<FSlideWindowItem>::iterator it = SWIs.begin();
-        xr_vector<FSlideWindowItem>::iterator it_e = SWIs.end();
+        const xr_vector<FSlideWindowItem>::iterator it_e = SWIs.end();
 
         for (; it != it_e; ++it)
             xr_free((*it).sw);
@@ -436,15 +502,17 @@ void CRender::Load3DFluid()
     if (!ps_r2_ls_flags.test(R3FLAG_VOLUMETRIC_SMOKE))
         return;
 
+#ifdef DX10_FLUID_ENABLE
+
     string_path fn_game;
-    if (FS.exist(fn_game, "$level$", "level.fog_vol"))
+    if (FS.exist(fn_game, fsgame::level, fsgame::level_files::level_fog_vol))
     {
         IReader* F = FS.r_open(fn_game);
-        u16 version = F->r_u16();
+        const u16 version = F->r_u16();
 
         if (version == 3)
         {
-            u32 cnt = F->r_u32();
+            const u32 cnt = F->r_u32();
             for (u32 i = 0; i < cnt; ++i)
             {
                 dx103DFluidVolume* pVolume = xr_new<dx103DFluidVolume>();
@@ -454,12 +522,14 @@ void CRender::Load3DFluid()
 
                 Msg("~ Loading fog volume with profile [%s]. Position x=[%f] y=[%f] z=[%f]", pVolume->getProfileName().c_str(), v.x, v.y, v.z);
 
-                //	Attach to sector's static geometry
-                CSector* pSector = (CSector*)detectSector(pVolume->getVisData().sphere.P);
+                 auto& dsgraph = get_imm_context();
 
+                //	Attach to sector's static geometry
+                const auto sector_id = dsgraph.detect_sector(pVolume->getVisData().sphere.P);
+                auto* pSector = dynamic_cast<CSector*>(dsgraph.get_sector(sector_id));
                 if (!pSector)
                 {
-                    Msg("!!Cannot find sector for fog volume. Position x=[%f] y=[%f] z=[%f]!", v.x, v.y, v.z);
+                    Msg("Cannot find sector for fog volume. Position x=[%f] y=[%f] z=[%f]!", v.x, v.y, v.z);
 
                     xr_delete(pVolume);
 
@@ -480,4 +550,6 @@ void CRender::Load3DFluid()
 
         FS.r_close(F);
     }
+
+#endif
 }

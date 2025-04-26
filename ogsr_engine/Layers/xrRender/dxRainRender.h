@@ -1,15 +1,16 @@
 #pragma once
 
-#include "..\..\Include\xrRender\RainRender.h"
+#include "../../Include/xrRender/RainRender.h"
 
 class dxRainRender : public IRainRender
 {
 public:
     dxRainRender();
     virtual ~dxRainRender();
+    virtual void Copy(IRainRender& _in);
 
-    virtual void Render(CEffect_Rain& owner);
-    virtual void Calculate(CEffect_Rain& owner) override;
+    virtual void Render(CBackend& cmd_list, CEffect_Rain& owner);
+    virtual void Calculate(CEffect_Rain& owner);
 
     virtual const Fsphere& GetDropBounds() const;
 
@@ -22,5 +23,4 @@ private:
     IRender_DetailModel* DM_Drop;
     ref_geom hGeom_Drops;
     ref_shader SH_Splash;
-    std::unique_ptr<CPerlinNoise1D> RainPerlin;
 };

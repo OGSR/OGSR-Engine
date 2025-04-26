@@ -40,12 +40,14 @@ void CHUDCrosshair::Load()
 void CHUDCrosshair::SetDispersion(float disp)
 {
     Fvector4 r;
-    Fvector R = {VIEWPORT_NEAR * _sin(disp), 0.f, VIEWPORT_NEAR};
+    const Fvector R = {VIEWPORT_NEAR * _sin(disp), 0.f, VIEWPORT_NEAR};
     Device.mProject.transform(r, R);
 
+    auto& cmd_list_imm = ::Render->get_imm_command_list();
+
     Fvector2 scr_size;
-    scr_size.set(float(::Render->getTarget()->get_width()), float(::Render->getTarget()->get_height()));
-    float radius_pixels = _abs(r.x) * scr_size.x / 2.0f;
+    scr_size.set(float(::Render->getTarget()->get_width(cmd_list_imm)), float(::Render->getTarget()->get_height(cmd_list_imm)));
+    const float radius_pixels = _abs(r.x) * scr_size.x / 2.0f;
     //	clamp(radius_pixels, min_radius, max_radius);
     target_radius = radius_pixels;
 }

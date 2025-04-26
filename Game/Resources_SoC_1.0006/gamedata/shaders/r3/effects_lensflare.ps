@@ -1,0 +1,54 @@
+#include "common.h"
+
+#define LENS_FLARE_INTENSITY 0.65
+#define GLOW_FLARE_INTENSITY 0.25
+#define LENS_DIRT_INTENSITY 0.5
+#define CLIP_DISTANCE 1.5f
+
+struct flare
+{
+    float4 hpos : SV_Position;
+    float2 tc0 : TEXCOORD0;
+    float4 tc1 : TEXCOORD1;
+    float4 tc2 : TEXCOORD2;
+    float4 c0 : COLOR;
+    float fog : FOG;
+};
+
+uniform Texture2D s_glow;
+uniform Texture2D s_flare;
+uniform Texture2D s_dirt_mask;
+
+uniform float4 flare_params;
+uniform float4 flare_color;
+
+float4 main(flare I) : SV_Target
+{
+    float4 final = {0.0, 0.0, 0.0, 1.0};
+    float2 len = I.tc0.xy - float2(0.5, 0.5);
+
+    float3 glow = s_glow.Sample(smp_base, I.tc0).rgb * GLOW_FLARE_INTENSITY;
+    float3 flare = s_flare.Sample(smp_base, I.tc0).rgb * LENS_FLARE_INTENSITY;
+    float4 dirt = s_dirt_mask.Sample(smp_base, I.tc1) * LENS_DIRT_INTENSITY;
+
+    final.rgb = (glow + flare) * (1.0 - flare_params.x);
+
+    float2 tcProj = I.tc2.xy / I.tc2.w;
+    gbuffer_data gbd = gbuffer_load_data(tcProj, I.hpos);
+    float4 _P = float4(gbd.P, gbd.mtl);
+
+    float spaceDepth = gbd.P.z;
+    if (spaceDepth < 0.01f)
+        spaceDepth = 100000.0f; //  filter for skybox
+
+    // clip pixels on hud
+    clip(spaceDepth - CLIP_DISTANCE);
+
+    final.rgb += dirt.aaa * saturate(0.5 - length(len)) * 2 * LENS_DIRT_INTENSITY;
+    final.rgb *= flare_color.rgba;
+    final.rgb = clamp(0.1, 0.6, final.rgb);
+
+    final.a *= I.fog;
+
+    return final;
+}

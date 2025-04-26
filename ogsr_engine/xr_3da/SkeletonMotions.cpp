@@ -5,9 +5,9 @@
 //#include 	"SkeletonAnimated.h"
 #include "Fmesh.h"
 #include "motion.h"
-#include "..\Include\xrRender\Kinematics.h"
+#include "../Include/xrRender/Kinematics.h"
 
-motions_container* g_pMotionsContainer = 0;
+motions_container* g_pMotionsContainer = nullptr;
 
 u16 CPartition::part_id(const shared_str& name) const
 {
@@ -27,7 +27,7 @@ void CPartition::load(IKinematics* V, LPCSTR model_name)
     if (!ini)
         return;
 
-    if (ini->sections().empty() || !ini->section_exist("part_0"))
+    if (!ini->section_exist("part_0"))
         return;
 
     static const shared_str part_name = "partition_name";
@@ -73,7 +73,7 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
         u16 vers = MP->r_u16();
         u16 part_bone_cnt = 0;
         string128 buf;
-        R_ASSERT3(vers <= xrOGF_SMParamsVersion, "Invalid OGF/OMF version:", N);
+        R_ASSERT(vers <= xrOGF_SMParamsVersion, "Invalid OGF/OMF version:", N);
 
         // partitions
         u16 part_count;
@@ -86,7 +86,7 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
             PART.Name = _strlwr(buf);
             PART.bones.resize(MP->r_u16());
 
-            for (xr_vector<u32>::iterator b_it = PART.bones.begin(); b_it < PART.bones.end(); b_it++)
+            for (xr_vector<u32>::iterator b_it = PART.bones.begin(); b_it < PART.bones.end(); ++b_it)
             {
                 MP->r_stringZ(buf, sizeof(buf));
                 u16 m_idx = u16(MP->r_u32());
@@ -133,7 +133,7 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
     }
     else
     {
-        Debug.fatal(DEBUG_INFO, "Old skinned model version unsupported! (%s)", N);
+        FATAL("Old skinned model version unsupported! (%s)", N);
     }
     if (!bRes)
         return false;
@@ -150,8 +150,8 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
     m_motions.reserve(bones->size());
 
     // set per bone motion size
-    for (u32 i = 0; i < bones->size(); i++)
-        m_motions[bones->at(i)->name].resize(dwCNT);
+    for (auto& bone : *bones)
+        m_motions[bone->name].resize(dwCNT);
 
     // load motions
     for (u16 m_idx = 0; m_idx < (u16)dwCNT; m_idx++)
@@ -220,13 +220,13 @@ BOOL motions_value::load(LPCSTR N, IReader* data, vecBones* bones)
     return bRes;
 }
 
-MotionVec* motions_value::bone_motions(shared_str bone_name)
+MotionVec* motions_value::bone_motions(const shared_str& bone_name)
 {
     auto I = m_motions.find(bone_name);
     if (I == m_motions.end())
         return nullptr;
 
-    return &(*I).second;
+    return &I->second;
 }
 //-----------------------------------
 motions_container::motions_container() {}
@@ -243,11 +243,11 @@ bool motions_container::has(shared_str key) { return (container.find(key) != con
 
 motions_value* motions_container::dock(shared_str key, IReader* data, vecBones* bones)
 {
-    motions_value* result = 0;
+    motions_value* result = nullptr;
     auto I = container.find(key);
     if (I != container.end())
         result = I->second;
-    if (0 == result)
+    if (nullptr == result)
     {
         // loading motions
         VERIFY(data);
@@ -267,7 +267,7 @@ void motions_container::clean(bool force_destroy)
     auto _E = container.end();
     if (force_destroy)
     {
-        for (; it != _E; it++)
+        for (; it != _E; ++it)
         {
             motions_value* sv = it->second;
             xr_delete(sv);
@@ -289,7 +289,7 @@ void motions_container::clean(bool force_destroy)
             }
             else
             {
-                it++;
+                ++it;
             }
         }
     }
@@ -300,7 +300,7 @@ void motions_container::dump()
     auto _E = container.end();
     Log("--- motion container --- begin:");
     u32 sz = sizeof(*this);
-    for (u32 k = 0; it != _E; k++, it++)
+    for (u32 k = 0; it != _E; k++, ++it)
     {
         sz += it->second->mem_usage();
         Msg("#%3d: [%3d/%5d Kb] - %s", k, it->second->m_dwReference, it->second->mem_usage() / 1024, it->first.c_str());
@@ -362,21 +362,21 @@ bool CMotionDef::StopAtEnd() const { return !!(flags & esmStopAtEnd); }
 bool shared_motions::create(shared_str key, IReader* data, vecBones* bones)
 {
     motions_value* v = g_pMotionsContainer->dock(key, data, bones);
-    if (0 != v)
+    if (nullptr != v)
         v->m_dwReference++;
     destroy();
     p_ = v;
-    return (0 != v);
+    return (nullptr != v);
 }
 
 bool shared_motions::create(shared_motions const& rhs)
 {
     motions_value* v = rhs.p_;
-    if (0 != v)
+    if (nullptr != v)
         v->m_dwReference++;
     destroy();
     p_ = v;
-    return (0 != v);
+    return (nullptr != v);
 }
 
 const motion_marks::interval* motion_marks::pick_mark(const float& t) const
@@ -393,7 +393,7 @@ const motion_marks::interval* motion_marks::pick_mark(const float& t) const
         if (I.first > t)
             break;
     }
-    return NULL;
+    return nullptr;
 }
 
 bool motion_marks::is_mark_between(float const& t0, float const& t1) const

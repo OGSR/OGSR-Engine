@@ -675,11 +675,10 @@ void CGameObject::dbg_DrawSkeleton()
     };
 }
 
-void CGameObject::renderable_Render()
+void CGameObject::renderable_Render(u32 context_id, IRenderable* root)
 {
-    inherited::renderable_Render();
-    ::Render->set_Transform(&XFORM());
-    ::Render->add_Visual(Visual());
+    inherited::renderable_Render(context_id, root);
+    ::Render->add_Visual(context_id, root, Visual(), XFORM());
     Visual()->getVisData().hom_frame = Device.dwFrame;
 }
 

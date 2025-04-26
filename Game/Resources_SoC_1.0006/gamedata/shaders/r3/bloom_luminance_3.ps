@@ -3,8 +3,8 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 float4 MiddleGray;
 //////////////////////////////////////////////////////////////////////////////////////////
-//	perform 4x4 bilinear, 8x8p, the step (C)
-//	c):	8x8p	=> 1x1p		with exp
+// perform 4x4 bilinear, 8x8p, the step (C)
+// c): 8x8p => 1x1p with exp
 
 // native bilinear
 float sample(float2 tc)
@@ -57,7 +57,7 @@ float4 main(p_filter I) : SV_Target
     float scale = MiddleGray.x / (result * MiddleGray.y + MiddleGray.z); // final
 
     // scale = 1 / (9.6 * AvgLum);
-    // scale = MiddleGray.x / max(9.6 * AvgLum, MiddleGray.z);	// final
+    // scale = MiddleGray.x / max(9.6 * AvgLum, MiddleGray.z); // final
 
     float scale_prev = s_tonemap.Sample(smp_nofilter, I.Tex0).x;
     float rvalue = lerp(scale_prev, scale, MiddleGray.w);

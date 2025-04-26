@@ -266,7 +266,7 @@ public:
     void load(const shared_str& sect_name);
     void update(bool bForce);
     void setup_firedeps(firedeps& fd);
-    void render();
+    void render(u32 context_id, IRenderable* root);
     void render_item_ui();
     bool render_item_ui_query();
     bool need_renderable();
@@ -299,7 +299,7 @@ public:
     void load(const shared_str& model_name, bool force = false);
     void load_default() { load("actor_hud_05"); };
     void update(const Fmatrix& trans);
-    void render_hud();
+    void render_hud(u32 context_id, IRenderable* root);
     void render_item_ui();
     bool render_item_ui_query();
 

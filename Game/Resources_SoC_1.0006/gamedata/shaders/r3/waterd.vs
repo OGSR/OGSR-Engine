@@ -42,6 +42,7 @@ vf main(v_vert v)
     o.tdist0 = watermove_tc(o.tbase * W_DISTORT_BASE_TILE_0, P.xz, W_DISTORT_AMP_0);
     o.tdist1 = watermove_tc(o.tbase * W_DISTORT_BASE_TILE_1, P.xz, W_DISTORT_AMP_1);
     o.hpos = mul(m_VP, P); // xform, input in world coords
+    o.hpos.xy = get_taa_jitter(o.hpos);
     o.fog = saturate(calc_fogging(v.P)); // Always do this for forward geometry (AMD)
 
 //	Igor: for additional depth dest

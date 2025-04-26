@@ -2,8 +2,8 @@
 #define __XR_OBJECT_H__
 
 #include "../xrCDB/ISpatial.h"
+
 #include "isheduled.h"
-//#include "iinputreceiver.h"
 #include "irenderable.h"
 #include "icollidable.h"
 
@@ -88,7 +88,7 @@ public:
     BOOL GetTmpPreDestroy() const { return Props.bPreDestroy; }
     void SetTmpPreDestroy(BOOL b) { Props.bPreDestroy = b; }
     virtual float shedule_Scale() { return Device.vCameraPosition.distance_to(Position()) / 200.f; }
-    virtual bool shedule_Needed() { return processing_enabled(); };
+    virtual bool shedule_Needed() { return processing_enabled(); }
 
     // Parentness
     IC CObject* H_Parent() { return Parent; }
@@ -116,9 +116,8 @@ public:
     virtual float Radius() const;
     virtual const Fbox& BoundingBox() const;
 
-    IC IRender_Sector* Sector() { return H_Root()->spatial.sector; }
+    IC IRender_Sector::sector_id_t Sector() { return H_Root()->spatial.sector_id; }
     IC IRender_ObjectSpecific* ROS() { return renderable_ROS(); }
-    virtual BOOL renderable_ShadowGenerate() { return TRUE; }
     virtual BOOL renderable_ShadowReceive() { return TRUE; }
 
     // Accessors and converters
@@ -135,44 +134,49 @@ public:
     void cNameSect_set(shared_str N);
     ICF shared_str cNameVisual() const { return NameVisual; }
     void cNameVisual_set(shared_str N);
-    virtual shared_str shedule_Name() const { return cName(); };
+    virtual shared_str shedule_Name() const { return cName(); }
     ICF LPCSTR Name_script() const { return NameObject.c_str(); }
 
     // Properties
     void processing_activate(); // request	to enable	UpdateCL
     virtual void processing_deactivate(); // request	to disable	UpdateCL
-    bool processing_enabled() { return 0 != Props.bActiveCounter; }
+    bool processing_enabled() const { return 0 != Props.bActiveCounter; }
 
     void setVisible(BOOL _visible);
-    ICF BOOL getVisible() const { return Props.bVisible; }
+    ICF BOOL getVisible() const { return !!Props.bVisible; }
+
     void setEnabled(BOOL _enabled);
-    ICF BOOL getEnabled() const { return Props.bEnabled; }
+    ICF BOOL getEnabled() const { return !!Props.bEnabled; }
+
     void setDestroy(BOOL _destroy);
-    ICF BOOL getDestroy() const { return Props.bDestroy; }
+    ICF BOOL getDestroy() const { return !!Props.bDestroy; }
+
     ICF void setLocal(BOOL _local) { Props.net_Local = _local ? 1 : 0; }
-    ICF BOOL getLocal() const { return Props.net_Local; }
+    ICF BOOL getLocal() const { return !!Props.net_Local; }
+
     ICF void setSVU(BOOL _svu) { Props.net_SV_Update = _svu ? 1 : 0; }
     ICF BOOL getSVU() const { return Props.net_SV_Update; }
+
     ICF void setReady(BOOL _ready) { Props.net_Ready = _ready ? 1 : 0; }
-    ICF BOOL getReady() const { return Props.net_Ready; }
+    ICF BOOL getReady() const { return !!Props.net_Ready; }
 
     //---------------------------------------------------------------------
     CObject();
     virtual ~CObject();
 
     virtual void Load(LPCSTR section);
-    virtual void reload(LPCSTR section) {};
+    virtual void reload(LPCSTR section) {}
 
     // Update
     virtual void shedule_Update(u32 dt); // Called by sheduler
-    virtual void renderable_Render();
+    virtual void renderable_Render(u32 context_id, IRenderable* root) override;
 
     virtual void UpdateCL(); // Called each frame, so no need for dt
     virtual BOOL net_Spawn(CSE_Abstract* data);
     virtual void net_Destroy();
-    virtual void net_Export(CSE_Abstract* E){}; // export to server
-    virtual BOOL net_Relevant() { return FALSE; }; // relevant for export to server
-    virtual void net_Relcase(CObject* O){}; // destroy all links to another objects
+    virtual void net_Export(CSE_Abstract* E){} // export to server
+    virtual BOOL net_Relevant() { return FALSE; } // relevant for export to server
+    virtual void net_Relcase(CObject* O){} // destroy all links to another objects
 
     // Position stack
     IC u32 ps_Size() const { return PositionStack.size(); }
@@ -182,7 +186,7 @@ public:
     virtual void ForceTransformAndDirection(const Fmatrix& m) = 0;
 
     // HUD
-    virtual void OnHUDDraw(CCustomHUD* hud){};
+    virtual void OnHUDDraw(CCustomHUD* hud, u32 context_id, IRenderable* root) {}
 
     // Active/non active
     virtual void OnH_B_Chield(); // before

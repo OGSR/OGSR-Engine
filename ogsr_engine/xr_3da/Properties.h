@@ -1,4 +1,5 @@
 #pragma once
+
 #pragma pack(push, 4)
 
 // Parameter/Property specifications
@@ -74,7 +75,7 @@ IC void xrPWRITE(IWriter& fs, u32 ID, LPCSTR name, LPCVOID data, u32 size)
     if (data && size)
         fs.w(data, size);
 }
-IC void xrPWRITE_MARKER(IWriter& fs, LPCSTR name) { xrPWRITE(fs, xrPID_MARKER, name, 0, 0); }
+IC void xrPWRITE_MARKER(IWriter& fs, LPCSTR name) { xrPWRITE(fs, xrPID_MARKER, name, nullptr, 0); }
 
 #define xrPWRITE_PROP(FS, name, ID, data) \
     { \
@@ -99,5 +100,4 @@ IC void xrPREAD_MARKER(IReader& fs) { R_ASSERT(xrPID_MARKER == xrPREAD(fs)); }
         case xrPID_TOKEN: fs.advance(((xrP_TOKEN*)&data)->Count * sizeof(xrP_TOKEN::Item)); break; \
         }; \
     }
-
 #pragma pack(pop)

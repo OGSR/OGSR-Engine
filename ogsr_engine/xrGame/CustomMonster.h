@@ -124,7 +124,9 @@ public:
     void eye_pp_s1();
     void eye_pp_s2();
 
+#ifdef DEBUG
     virtual void UpdateCamera();
+#endif
 
 public:
     CCustomMonster();
@@ -154,7 +156,6 @@ public:
     // debug
 #ifdef DEBUG
     virtual void OnRender();
-    virtual void OnHUDDraw(CCustomHUD* hud);
 #endif
 
     virtual bool bfExecMovement() { return (false); };

@@ -1,5 +1,4 @@
-#ifndef FILE_STREAM_READER_H
-#define FILE_STREAM_READER_H
+#pragma once
 
 #include "stream_reader.h"
 
@@ -15,5 +14,3 @@ public:
     virtual void construct(LPCSTR file_name, const u32& window_size);
     virtual void destroy();
 };
-
-#endif // FILE_STREAM_READER_H

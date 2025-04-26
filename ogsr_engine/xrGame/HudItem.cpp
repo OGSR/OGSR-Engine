@@ -22,7 +22,7 @@ CHudItem::CHudItem()
 {
     m_huditem_flags.zero();
     m_animation_slot = u32(-1);
-    RenderHud(TRUE);
+
     EnableHudInertion(TRUE);
     AllowHudInertion(TRUE);
     m_bobbing = std::make_unique<CWeaponBobbing>(this);
@@ -186,25 +186,25 @@ void CHudItem::net_Destroy() { m_dwStateTime = 0; }
 
 BOOL CHudItem::net_Spawn(CSE_Abstract* DC) { return TRUE; }
 
-void CHudItem::renderable_Render()
+void CHudItem::renderable_Render(u32 context_id, IRenderable* root)
 {
     UpdateXForm();
-    const bool _hud_render = ::Render->get_HUD() && GetHUDmode();
 
-    if (!(_hud_render && !IsHidden()))
+    const bool _hud_render = root && root->renderable_HUD() && GetHUDmode();
+    if (_hud_render && !IsHidden())
+        return;
+
+    if (!object().H_Parent() || (!_hud_render && !IsHidden()))
     {
-        if (!object().H_Parent() || (!_hud_render && !IsHidden()))
-        {
-            on_renderable_Render();
-        }
-        else if (object().H_Parent())
-        {
-            CInventoryOwner* owner = smart_cast<CInventoryOwner*>(object().H_Parent());
-            VERIFY(owner);
-            CInventoryItem* self = smart_cast<CInventoryItem*>(this);
-            if (owner->attached(self))
-                on_renderable_Render();
-        }
+        on_renderable_Render(context_id, root);
+    }
+    else if (object().H_Parent())
+    {
+        const CInventoryOwner* owner = smart_cast<CInventoryOwner*>(object().H_Parent());
+        VERIFY(owner);
+        const CInventoryItem* self = smart_cast<CInventoryItem*>(this);
+        if (owner->attached(self))
+            on_renderable_Render(context_id, root);
     }
 }
 

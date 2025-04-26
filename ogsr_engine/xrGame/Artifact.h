@@ -50,9 +50,6 @@ public:
 
     virtual bool CanTake() const;
 
-    // virtual void					renderable_Render				();
-    virtual BOOL renderable_ShadowGenerate() { return FALSE; }
-    virtual BOOL renderable_ShadowReceive() { return TRUE; }
     virtual void create_physic_shell();
 
     // for smart_cast

@@ -1,0 +1,16 @@
+#include "common.h"
+
+uniform float4 laser_params;
+
+struct v2p
+{
+    float2 tc0 : TEXCOORD0; // base
+    //	float2 tc1: TEXCOORD1; // lmap
+    float4 c0 : COLOR0; // sun
+};
+
+float4 main(v2p I) : SV_Target
+{
+    float4 t_base = s_base.Sample(smp_base, I.tc0);
+    return float4(t_base.r, t_base.g, t_base.b, laser_params.x > laser_params.y ? 0.f : t_base.a * I.c0.a);
+}

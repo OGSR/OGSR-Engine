@@ -7,18 +7,19 @@ dxUIRender UIRenderImpl;
 
 void dxUIRender::CreateUIGeom()
 {
-    hGeom_TL.create(FVF::F_TL, RCache.Vertex.Buffer(), 0);
-    hGeom_LIT.create(FVF::F_LIT, RCache.Vertex.Buffer(), 0);
+    hGeom_TL.create(FVF::F_TL, RImplementation.Vertex.Buffer(), nullptr);
+    hGeom_LIT.create(FVF::F_LIT, RImplementation.Vertex.Buffer(), nullptr);
 }
 
 void dxUIRender::DestroyUIGeom()
 {
     for (auto& it : g_UIShadersCache)
         it.second.destroy();
+
     g_UIShadersCache.clear();
 
-    hGeom_TL = NULL;
-    hGeom_LIT = NULL;
+    hGeom_TL = nullptr;
+    hGeom_LIT = nullptr;
 }
 
 void dxUIRender::SetShader(IUIShader& shader)
@@ -38,7 +39,7 @@ void dxUIRender::SetAlphaRef(int aref)
 void dxUIRender::SetScissor(Irect* rect)
 {
     RCache.set_Scissor(rect);
-    StateManager.OverrideScissoring(rect ? true : false, TRUE);
+    RCache.StateManager.OverrideScissoring(rect ? true : false, TRUE);
 }
 
 void dxUIRender::GetActiveTextureResolution(Fvector2& res)
@@ -50,10 +51,10 @@ void dxUIRender::GetActiveTextureResolution(Fvector2& res)
 LPCSTR dxUIRender::UpdateShaderName(LPCSTR tex_name, LPCSTR sh_name)
 {
     string_path buff;
-    u32 v_dev = CAP_VERSION(HW.Caps.raster_major, HW.Caps.raster_minor);
-    u32 v_need = CAP_VERSION(2, 0);
-    // strstr(Core.Params,"-ps_movie") &&
-    if ((v_dev >= v_need) && FS.exist(buff, "$game_textures$", tex_name, ".ogm"))
+    const u32 v_dev = CAP_VERSION(HW.Caps.raster_major, HW.Caps.raster_minor);
+    const u32 v_need = CAP_VERSION(2, 0);
+    
+    if ((v_dev >= v_need) && FS.exist(buff, fsgame::game_textures, tex_name, ".ogm"))
         return "hud\\movie";
     else
         return sh_name;
@@ -87,11 +88,11 @@ void dxUIRender::StartPrimitive(u32 iMaxVerts, ePrimitiveType primType, ePointTy
     switch (m_PointType)
     {
     case pttLIT:
-        LIT_start_pv = (FVF::LIT*)RCache.Vertex.Lock(m_iMaxVerts, hGeom_LIT.stride(), vOffset);
+        LIT_start_pv = (FVF::LIT*)RImplementation.Vertex.Lock(m_iMaxVerts, hGeom_LIT.stride(), vOffset);
         LIT_pv = LIT_start_pv;
         break;
     case pttTL:
-        TL_start_pv = (FVF::TL*)RCache.Vertex.Lock(m_iMaxVerts, hGeom_TL.stride(), vOffset);
+        TL_start_pv = (FVF::TL*)RImplementation.Vertex.Lock(m_iMaxVerts, hGeom_TL.stride(), vOffset);
         TL_pv = TL_start_pv;
         break;
     }
@@ -109,14 +110,14 @@ void dxUIRender::FlushPrimitive()
         p_cnt = LIT_pv - LIT_start_pv;
         VERIFY(u32(p_cnt) <= m_iMaxVerts);
 
-        RCache.Vertex.Unlock(u32(p_cnt), hGeom_LIT.stride());
+        RImplementation.Vertex.Unlock(u32(p_cnt), hGeom_LIT.stride());
         RCache.set_Geometry(hGeom_LIT);
         break;
     case pttTL:
         p_cnt = TL_pv - TL_start_pv;
         VERIFY(u32(p_cnt) <= m_iMaxVerts);
 
-        RCache.Vertex.Unlock(u32(p_cnt), hGeom_TL.stride());
+        RImplementation.Vertex.Unlock(u32(p_cnt), hGeom_TL.stride());
         RCache.set_Geometry(hGeom_TL);
         break;
     default: NODEFAULT;

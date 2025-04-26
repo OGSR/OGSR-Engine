@@ -30,6 +30,37 @@ constexpr LPCSTR game_textures_reference = "$game_textures_reference$";
 constexpr LPCSTR game_meshes_reference = "$game_meshes_reference$";
 }
 
+namespace fsgame::level_files
+{
+constexpr LPCSTR build_lights = "build.lights"; // hemi light
+
+constexpr LPCSTR level = "level"; // main level data - visual, shaders, portals etc
+
+constexpr LPCSTR level_geom = "level.geom";
+constexpr LPCSTR level_geomx = "level.geomx";
+
+constexpr LPCSTR level_cform = "level.cform";
+
+constexpr LPCSTR level_graph = "level.graph";
+constexpr LPCSTR level_ai = "level.ai";
+constexpr LPCSTR level_gct = "level.gct";
+
+constexpr LPCSTR level_details = "level.details";
+constexpr LPCSTR level_hom = "level.hom";
+constexpr LPCSTR level_fog_vol = "level.fog_vol";
+constexpr LPCSTR level_snd_env = "level.snd_env";
+constexpr LPCSTR level_som = "level.som";
+
+constexpr LPCSTR level_ps_static = "level.ps_static";
+constexpr LPCSTR level_ps_static_ltx = "level.ps_static.ltx";
+
+constexpr LPCSTR level_snd_static = "level.snd_static";
+constexpr LPCSTR level_snd_static_ltx = "level.snd_static.ltx";
+
+constexpr LPCSTR level_env_mod = "level.env_mod";
+constexpr LPCSTR level_env_mod_ltx = "level.env_mod.ltx";
+}
+
 enum FS_List
 {
     FS_ListFiles = (1 << 0),

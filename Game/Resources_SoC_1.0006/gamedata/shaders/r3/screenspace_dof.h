@@ -11,7 +11,7 @@
 uniform float4 ssfx_wpn_dof_1;
 uniform float ssfx_wpn_dof_2;
 
-float3 SSFX_DOF(float2 tc, float3 depth, float3 img)
+float3 SSFX_DOF(float2 tc, const float depth, float3 img)
 {
     // Full Blur Scene + CA
     float CA = float2(4.0f / screen_res.x, 4.0f / screen_res.y);
@@ -21,8 +21,8 @@ float3 SSFX_DOF(float2 tc, float3 depth, float3 img)
     blur_far.b = s_blur_2.SampleLevel(smp_rtlinear, tc - CA, 0).b;
 
     // Use Depth to adjust blur intensity
-    float blur_w = lerp(ssfx_wpn_dof_1.w, 0, smoothstep(ssfx_wpn_dof_1.x, ssfx_wpn_dof_1.y, depth.z));
-    blur_w *= depth.z > SKY_EPS; // Don't apply to the sky ( Sky depth = float(0.001) )
+    float blur_w = lerp(ssfx_wpn_dof_1.w, 0, smoothstep(ssfx_wpn_dof_1.x, ssfx_wpn_dof_1.y, depth));
+    blur_w *= depth > SKY_EPS; // Don't apply to the sky ( Sky depth = float(0.001) )
 
     float edgeBlur = 0;
 
@@ -74,7 +74,7 @@ float3 SSFX_DOF(float2 tc, float3 depth, float3 img)
     if (ssfx_wpn_dof_1.z > 0)
     {
         // Let's use s_blur_2 for far blur
-        img = lerp(img, blur_far, saturate(smoothstep(1.0f, 2.4f, length(depth)) + int(depth.z <= SKY_EPS)) * ssfx_wpn_dof_1.z);
+        img = lerp(img, blur_far, saturate(smoothstep(1.0f, 2.4f, length(depth)) + int(depth <= SKY_EPS)) * ssfx_wpn_dof_1.z);
     }
 
     return img;

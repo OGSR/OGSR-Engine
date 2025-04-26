@@ -85,6 +85,6 @@ void CHudItemObject::UpdateCL()
     CHudItem::UpdateCL();
 }
 
-void CHudItemObject::renderable_Render() { CHudItem::renderable_Render(); }
+void CHudItemObject::renderable_Render(u32 context_id, IRenderable* root) { CHudItem::renderable_Render(context_id, root); }
 
-void CHudItemObject::on_renderable_Render() { CInventoryItemObject::renderable_Render(); }
+void CHudItemObject::on_renderable_Render(u32 context_id, IRenderable* root) { CInventoryItemObject::renderable_Render(context_id, root); }

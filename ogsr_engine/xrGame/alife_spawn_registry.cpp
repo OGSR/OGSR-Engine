@@ -107,7 +107,7 @@ void CALifeSpawnRegistry::load(IReader& file_stream, xrGUID* save_guid)
     if (!stream)
     {
         string_path file_name;
-        FS.update_path(file_name, _game_data_, GRAPH_NAME);
+        FS.update_path(file_name, fsgame::game_data, GRAPH_NAME);
         stream = FS.r_open(file_name);
         separated_graphs = true;
     }

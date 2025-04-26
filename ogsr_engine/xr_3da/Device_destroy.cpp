@@ -15,8 +15,6 @@ void CRenderDevice::_Destroy(BOOL bKeepTextures)
     Statistic->OnDeviceDestroy();
     ::Render->destroy();
     m_pRender->OnDeviceDestroy(bKeepTextures);
-    // Resources->OnDeviceDestroy	(bKeepTextures);
-    // RCache.OnDeviceDestroy		();
 
     Memory.mem_compact();
 }
@@ -26,6 +24,8 @@ void CRenderDevice::Destroy(void)
     if (!b_is_Ready)
         return;
 
+    ZoneScoped;
+
     Log("Destroying Direct3D...");
 
     pInput->clip_cursor(false);
@@ -33,7 +33,7 @@ void CRenderDevice::Destroy(void)
     _Destroy(FALSE);
 
     // real destroy
-    m_pRender->DestroyHW();
+    m_pRender->Destroy();
 
     // xr_delete					(Resources);
     // HW.DestroyDevice			();
@@ -49,12 +49,21 @@ void CRenderDevice::Destroy(void)
     seqParallel.clear();
 
     RenderFactory->DestroyRenderDeviceRender(m_pRender);
-    m_pRender = 0;
+    m_pRender = nullptr;
     xr_delete(Statistic);
 }
 
+extern bool use_reshade;
+extern bool init_reshade();
+extern void unregister_reshade();
+
 void CRenderDevice::Reset(bool precache)
 {
+    ZoneScoped;
+
+    if (use_reshade) // отключим решейд если он был
+        unregister_reshade();
+
     u32 dwWidth_before = dwWidth;
     u32 dwHeight_before = dwHeight;
 
@@ -78,9 +87,8 @@ void CRenderDevice::Reset(bool precache)
 
     Msg("*** RESET [%d ms]", tm_end - tm_start);
 
-    //	TODO: Remove this! It may hide crash
-#pragma todo("KRodin: ??? Remove this! It may hide crash ???")
-    Memory.mem_compact();
+    if (use_reshade) // основа попробуем включить решейд если он был
+        use_reshade = init_reshade();
 
     pInput->clip_cursor(true);
 

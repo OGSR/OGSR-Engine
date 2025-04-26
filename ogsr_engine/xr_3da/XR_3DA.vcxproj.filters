@@ -246,9 +246,6 @@
     <ClInclude Include="device.h">
       <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
     </ClInclude>
-    <ClInclude Include="StatGraph.h">
-      <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
-    </ClInclude>
     <ClInclude Include="Stats.h">
       <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
     </ClInclude>
@@ -295,7 +292,6 @@
       <Filter>Interfaces</Filter>
     </ClInclude>
     <ClInclude Include="vismask.h" />
-    <ClInclude Include="ShadersExternalData.h" />
     <ClInclude Include="NET_Server_Trash\client_id.h">
       <Filter>NET_Server_Trash</Filter>
     </ClInclude>
@@ -343,6 +339,7 @@
     <ClInclude Include="IPhysicsDefinitions.h">
       <Filter>Interfaces\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="defines.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">
@@ -492,13 +489,7 @@
     <ClCompile Include="Device_Initialize.cpp">
       <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
     </ClCompile>
-    <ClCompile Include="Device_overdraw.cpp">
-      <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
-    </ClCompile>
     <ClCompile Include="Device_wndproc.cpp">
-      <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
-    </ClCompile>
-    <ClCompile Include="StatGraph.cpp">
       <Filter>Interfaces\Render\Execution &amp; 3D</Filter>
     </ClCompile>
     <ClCompile Include="Stats.cpp">
@@ -571,6 +562,9 @@
     <ClCompile Include="splash.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="ReShadeCompat.cpp">
+      <Filter>General</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">
@@ -581,7 +575,6 @@
     <None Include="stalker.ico">
       <Filter>General\Resources</Filter>
     </None>
-    <None Include="ClientServer.txt" />
     <None Include="Effects description.txt" />
     <None Include="features.txt" />
     <None Include="TODO.txt" />

@@ -54,7 +54,7 @@ public:
      *	\return		the list of touched primitives (primitive indices)
      */
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    inline_ udword* GetTouchedPrimitives() const { return mTouchedPrimitives ? mTouchedPrimitives->GetEntries() : null; }
+    inline_ udword* GetTouchedPrimitives() const { return mTouchedPrimitives ? mTouchedPrimitives->GetEntries() : nullptr; }
 
     // Stats
 

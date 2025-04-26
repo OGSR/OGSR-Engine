@@ -78,5 +78,10 @@
     // output.M3.z = Normal.z;
     output.hpos = mul(m_P, float4(output.position.xyz, 1));
 
+    output.hpos_curr = bp[0].hpos_curr * w + bp[1].hpos_curr * v + bp[2].hpos_curr * u;
+    output.hpos_old = bp[0].hpos_old * w + bp[1].hpos_old * v + bp[2].hpos_old * u;
+
+    output.hpos.xy = get_taa_jitter(output.hpos);
+
     return output;
 }

@@ -18,16 +18,17 @@
 #include <d3d11_1.h>
 #include <D3DCompiler.h>
 
-#include "../xrRender/xrD3DDefs.h"
+#include <tracy/TracyD3D11.hpp>
 
-#include "../xrRender/Debug/dxPixEventWrapper.h"
+#include "../xrRender/xrD3DDefs.h"
 
 #define R_R1 1
 #define R_R2 2
 #define R_R3 3
 #define R_R4 4
 #define RENDER R_R4
-#define USE_DX11 //оставлено на случай пояаления кода откуда-то в котором будут нужны эти макросы.
+#define USE_DX11 // оставлено на случай появления кода откуда-то в котором будет нужен этот макрос
+#define DX10_FLUID_ENABLE
 
 #include "../../xrParticles/psystem.h"
 
@@ -42,9 +43,13 @@
 #include "../../xr_3da/render.h"
 #include "../../xr_3da/_d3d_extensions.h"
 #include "../../xr_3da/igame_level.h"
-#include "../xrRender/blenders\blender.h"
-#include "../xrRender/blenders\blender_clsid.h"
+
+#include "../xrRender/blenders/blender.h"
+#include "../xrRender/blenders/blender_clsid.h"
 #include "../xrRender/xrRender_console.h"
+
+#include "../xrRender/Debug/dxPixEventWrapper.h"
+
 #include "r4.h"
 
 IC void jitter(CBlender_Compile& C)

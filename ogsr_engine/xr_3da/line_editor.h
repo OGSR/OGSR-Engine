@@ -5,10 +5,9 @@
 // Description : line editor class, controller of line_edit_control
 ////////////////////////////////////////////////////////////////////////////
 
-#include "stdafx.h"
+#pragma once
 
-#ifndef LINE_EDITOR_H_INCLUDED
-#define LINE_EDITOR_H_INCLUDED
+#include "stdafx.h"
 
 #include "IInputReceiver.h"
 #include "line_edit_control.h"
@@ -34,5 +33,3 @@ namespace text_editor
 		line_edit_control m_control;
 	}; // class line_editor
 } // namespace text_editor
-
-#endif // LINE_EDITOR_H_INCLUDED

@@ -73,7 +73,7 @@ void CLevel::IR_OnMouseWheel(int direction)
     }
 }
 
-static int mouse_button_2_key[] = {MOUSE_1, MOUSE_2, MOUSE_3};
+static int mouse_button_2_key[] = {MOUSE_1, MOUSE_2, MOUSE_3, MOUSE_4, MOUSE_5, MOUSE_6, MOUSE_7, MOUSE_8};
 
 void CLevel::IR_OnMousePress(int btn) { IR_OnKeyboardPress(mouse_button_2_key[btn]); }
 
@@ -88,7 +88,7 @@ void CLevel::IR_OnMouseMove(int dx, int dy)
 
     if (g_bDisableAllInput)
         return;
-    if (pHUD->GetUI()->IR_OnMouseMove(dx, dy))
+    if (HUD().GetUI()->IR_OnMouseMove(dx, dy))
         return;
     if (Device.Paused())
         return;
@@ -121,7 +121,7 @@ void CLevel::IR_OnKeyboardPress(int key)
     if (m_blocked_actions.find(_curr) != m_blocked_actions.end())
         return; // Real Wolf. 14.10.2014
 
-    bool b_ui_exist = (pHUD && pHUD->GetUI());
+    const bool b_ui_exist = (Has_HUD() && HUD().GetUI());
 
     switch (_curr)
     {
@@ -175,7 +175,7 @@ void CLevel::IR_OnKeyboardPress(int key)
             return;
     }
 
-    if (b_ui_exist && pHUD->GetUI()->IR_OnKeyboardPress(key))
+    if (b_ui_exist && HUD().GetUI()->IR_OnKeyboardPress(key))
         return;
 
     if (Device.Paused())
@@ -356,9 +356,9 @@ void CLevel::IR_OnKeyboardRelease(int key)
             return;
     }
 
-    bool b_ui_exist = (pHUD && pHUD->GetUI());
+    const bool b_ui_exist = (Has_HUD() && HUD().GetUI());
 
-    if (b_ui_exist && pHUD->GetUI()->IR_OnKeyboardRelease(key))
+    if (b_ui_exist && HUD().GetUI()->IR_OnKeyboardRelease(key))
         return;
 
     if (Device.Paused())
@@ -400,9 +400,9 @@ void CLevel::IR_OnKeyboardHold(int key)
             return;
     }
 
-    bool b_ui_exist = (pHUD && pHUD->GetUI());
+    const bool b_ui_exist = (Has_HUD() && HUD().GetUI());
 
-    if (b_ui_exist && pHUD->GetUI()->IR_OnKeyboardHold(key))
+    if (b_ui_exist && HUD().GetUI()->IR_OnKeyboardHold(key))
         return;
     if (b_ui_exist && HUD().GetUI()->MainInputReceiver())
         return;
@@ -429,7 +429,7 @@ void CLevel::IR_OnActivate()
     int i;
     for (i = 0; i < CInput::COUNT_KB_BUTTONS; i++)
     {
-        if (IR_GetKeyState(i))
+        if (pInput->iGetAsyncKeyState(i))
         {
             EGameActions action = get_binded_action(i);
             switch (action)

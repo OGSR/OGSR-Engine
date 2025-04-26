@@ -332,7 +332,12 @@ void CActor::cam_Update(float dt, float fFOV)
         cameras[eacFirstEye]->f_fov = fFOV;
     }
 
-    //if (psActorFlags.test(AF_PSP)) // всегда true
+    float curr_inert = psCamInert;
+
+    if (mstate_real & mcSprint)
+        psCamInert = psSprintCamInert;
+
+    // if (psActorFlags.test(AF_PSP)) // всегда true
     {
         Cameras().UpdateFromCamera(C);
     }
@@ -357,6 +362,8 @@ void CActor::cam_Update(float dt, float fFOV)
             Cameras().ApplyDevice(demo);   
         }
     }
+
+    psCamInert = curr_inert;
 }
 
 // shot effector stuff

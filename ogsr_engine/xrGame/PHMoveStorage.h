@@ -1,5 +1,5 @@
-#ifndef PHMOVESTORAGE_H
-#define PHMOVESTORAGE_H
+#pragma once
+
 #include "phgeometryowner.h"
 // DEFINE_VECTOR(dReal *&,POSITIONS_STORAGE,POSITIONS_I);
 
@@ -18,7 +18,7 @@ public:
     IC dGeomID dGeom() { return (*geom)->geometry_transform(); }
     IC CPHPositionsPairs& operator++(int)
     {
-        geom++;
+        ++geom;
         return *this;
     }
     IC CPHPositionsPairs& operator=(const CPHPositionsPairs& right)
@@ -42,5 +42,3 @@ public:
     void add(CODEGeom* g) { m_trace_geometries.push_back(g); }
     void clear() { m_trace_geometries.clear(); }
 };
-
-#endif

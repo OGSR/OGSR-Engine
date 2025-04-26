@@ -1,6 +1,5 @@
 //---------------------------------------------------------------------------
-#ifndef ParticleEffectActionsH
-#define ParticleEffectActionsH
+#pragma once
 
 #include "../../xrCore/_stl_extensions.h"
 
@@ -121,7 +120,7 @@ public:
     ~PDomain();
 
     void Load(IReader& F);
-    void Save(IWriter& F);
+    void Save(IWriter& F) const;
 
     void Load2(CInifile& ini, const shared_str& sect);
     void Save2(CInifile& ini, const shared_str& sect);
@@ -189,43 +188,43 @@ public:
 
     PFloat& _float(LPCSTR name)
     {
-        PFloatMapIt it = floats.find(name);
+        const PFloatMapIt it = floats.find(name);
         R_ASSERT(it != floats.end(), name);
         return it->second;
     }
 
     PInt& _int(LPCSTR name)
     {
-        PIntMapIt it = ints.find(name);
+        const PIntMapIt it = ints.find(name);
         R_ASSERT(it != ints.end(), name);
         return it->second;
     }
 
     PVector& _vector(LPCSTR name)
     {
-        PVectorMapIt it = vectors.find(name);
+        const PVectorMapIt it = vectors.find(name);
         R_ASSERT(it != vectors.end(), name);
         return it->second;
     }
 
     PDomain& _domain(LPCSTR name)
     {
-        PDomainMapIt it = domains.find(name);
+        const PDomainMapIt it = domains.find(name);
         R_ASSERT(it != domains.end(), name);
         return it->second;
     }
 
     PBool& _bool(LPCSTR name)
     {
-        PBoolMapIt it = bools.find(name);
+        const PBoolMapIt it = bools.find(name);
         R_ASSERT(it != bools.end(), name);
         return it->second;
     }
 
     PBool* _bool_safe(LPCSTR name)
     {
-        PBoolMapIt it = bools.find(name);
-        return (it != bools.end()) ? &it->second : 0;
+        const PBoolMapIt it = bools.find(name);
+        return (it != bools.end()) ? &it->second : nullptr;
     }
 
 public:
@@ -419,7 +418,3 @@ public:
 
 typedef EParticleAction* (*_CreateEAction)(PAPI::PActionEnum type);
 extern ECORE_API _CreateEAction pCreateEAction;
-
-//---------------------------------------------------------------------------
-
-#endif

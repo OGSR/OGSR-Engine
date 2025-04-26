@@ -51,7 +51,7 @@ bool CControlAnimationBase::accel_chain_get(float cur_speed, EMotionAnim target_
     auto E = m_accel.chain.end();
 
     // пройти по всем Chain-векторам
-    for (auto I = B; I != E; I++)
+    for (auto I = B; I != E; ++I)
     {
         auto IT_B = I->begin();
         auto IT_E = I->end();
@@ -61,7 +61,7 @@ bool CControlAnimationBase::accel_chain_get(float cur_speed, EMotionAnim target_
         bool found = false;
 
         // Пройти по текущему вектору
-        for (auto IT = IT_B; IT != IT_E; IT++)
+        for (auto IT = IT_B; IT != IT_E; ++IT)
         {
             SAnimItem* item_it = m_anim_storage[*IT];
             VERIFY(item_it);

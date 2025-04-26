@@ -46,6 +46,7 @@
 #include "map_hint.h"
 #include "UIColorAnimatorWrapper.h"
 #include "../game_news.h"
+#include "../xr_3da/xr_input.h"
 
 using namespace InventoryUtilities;
 
@@ -437,7 +438,7 @@ void CUIMainIngameWnd::Update()
 
 bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 {
-    const bool shift = Level().IR_GetKeyState(DIK_LSHIFT) || Level().IR_GetKeyState(DIK_RSHIFT);
+    const bool shift = pInput->iGetAsyncKeyState(DIK_LSHIFT) || pInput->iGetAsyncKeyState(DIK_RSHIFT);
     const auto bind = get_binded_action(dik);
 
     if (bind == kHIDEHUD)

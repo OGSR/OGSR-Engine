@@ -26,4 +26,4 @@ void CMedkit::OnH_A_Chield() { inherited::OnH_A_Chield(); }
 
 void CMedkit::OnH_B_Independent(bool just_before_destroy) { inherited::OnH_B_Independent(just_before_destroy); }
 
-void CMedkit::renderable_Render() { inherited::renderable_Render(); }
+void CMedkit::renderable_Render(u32 context_id, IRenderable* root) { inherited::renderable_Render(context_id, root); }

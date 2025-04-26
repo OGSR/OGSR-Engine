@@ -31,8 +31,7 @@
 
  */
 
-#ifndef _SRSH
-#define _SRSH
+#pragma once
 
 #include "math3d.h"
 
@@ -201,5 +200,3 @@ public:
     */
     void SolveAim(float psi_angle, Matrix R1);
 };
-
-#endif

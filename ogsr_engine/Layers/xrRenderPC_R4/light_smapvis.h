@@ -11,13 +11,13 @@ public:
     } state;
     xr_vector<dxRender_Visual*> invisible;
 
-    u32 frame_sleep;
-    u32 test_count;
-    u32 test_current;
-    dxRender_Visual* testQ_V;
-    u32 testQ_id;
-    u32 testQ_frame;
-    bool pending;
+    u32 frame_sleep{};
+    u32 test_count{};
+    u32 test_current{};
+    dxRender_Visual* testQ_V{};
+    u32 testQ_id{};
+    u32 testQ_frame{};
+    u32 context_id{CHW::INVALID_CONTEXT_ID};
 
 public:
     smapvis();
@@ -26,12 +26,12 @@ public:
     void invalidate();
     void begin(); // should be called before 'marker++' and before graph-build
     void end();
-    void mark();
+    void mark() const;
     void flushoccq(); // should be called when no rendering of light is supposed
 
     void resetoccq();
 
-    IC bool sleep() { return Device.dwFrame > frame_sleep; }
+    IC bool sleep() const { return Device.dwFrame > frame_sleep; }
 
     virtual void rfeedback_static(dxRender_Visual* V);
 };

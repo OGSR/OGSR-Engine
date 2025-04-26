@@ -77,7 +77,6 @@ public:
     virtual CGameObject* cast_game_object() { return this; }
 
 public:
-    virtual BOOL renderable_ShadowReceive() { return TRUE; }
     virtual void Die(CObject* who);
     virtual void HitSignal(float amount, Fvector& vLocalDir, CObject* who, s16 element);
     virtual void Hit(SHit* pHDS);
@@ -118,7 +117,7 @@ public:
     virtual float evaluate(const CItemManager* manager, const CGameObject* object) const;
 
     virtual void OnEvent(NET_Packet& P, u16 type);
-    virtual void OnHUDDraw(CCustomHUD* hud) { return inherited::OnHUDDraw(hud); }
+    virtual void OnHUDDraw(CCustomHUD* hud, u32 context_id, IRenderable* root) override { return inherited::OnHUDDraw(hud, context_id, root); }
     virtual u16 PHGetSyncItemsNumber() { return inherited::PHGetSyncItemsNumber(); }
     virtual CPHSynchronize* PHGetSyncItem(u16 item) { return inherited::PHGetSyncItem(item); }
     virtual void PHUnFreeze() { return inherited::PHUnFreeze(); }
@@ -126,7 +125,7 @@ public:
     virtual BOOL UsedAI_Locations() { return inherited::UsedAI_Locations(); }
 
     virtual const SRotation Orientation() const { return inherited::Orientation(); }
-    virtual void renderable_Render() { return inherited::renderable_Render(); }
+    virtual void renderable_Render(u32 context_id, IRenderable* root) override { return inherited::renderable_Render(context_id, root); }
 
     virtual void on_restrictions_change();
 

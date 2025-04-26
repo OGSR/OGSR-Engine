@@ -6,8 +6,7 @@
 //	Description : Server objects for ALife simulator
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef xrServer_Objects_ALifeH
-#define xrServer_Objects_ALifeH
+#pragma once
 
 #include "xrServer_Objects.h"
 #include "alife_space.h"
@@ -511,5 +510,3 @@ public:
 };
 
 #pragma warning(pop)
-
-#endif

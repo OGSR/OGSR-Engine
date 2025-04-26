@@ -29,7 +29,9 @@ enum EFC_Visible
 #define FRUSTUM_P_ALL (FRUSTUM_P_LRTB | FRUSTUM_P_NEAR | FRUSTUM_P_FAR)
 
 #define FRUSTUM_SAFE (FRUSTUM_MAXPLANES * 4)
+
 typedef svector<Fvector, FRUSTUM_SAFE> sPoly;
+
 extern u32 frustum_aabb_remap[8][6];
 
 class XRCDB_API CFrustum
@@ -81,7 +83,7 @@ public:
     u32 getMask() const { return (1 << p_count) - 1; }
 
     EFC_Visible testSphere(const Fvector& c, float r, u32& test_mask) const;
-    BOOL testSphere_dirty(Fvector& c, float r) const;
+    BOOL testSphere_dirty(const Fvector& c, const float r) const;
     EFC_Visible testAABB(const float* mM, u32& test_mask) const;
     EFC_Visible testSAABB(Fvector& c, float r, const float* mM, u32& test_mask) const;
     BOOL testPolyInside_dirty(Fvector* p, int count) const;

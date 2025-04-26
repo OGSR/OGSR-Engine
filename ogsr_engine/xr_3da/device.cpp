@@ -1,26 +1,28 @@
 #include "stdafx.h"
 
-#include <mmsystem.h>
-
 #include "x_ray.h"
 #include "render.h"
 #include "xr_input.h"
-
 #include "igame_persistent.h"
-
 #include "imgui.h"
 #include "..\Layers\xrRenderDX10\imgui_impl_dx11.h"
+#include "igame_level.h"
+#include "splash.h"
 #include <winternl.h>
+#include <mmsystem.h>
+#include "XR_IOConsole.h"
+#include "xr_ioc_cmd.h"
+
+//#define LOG_SECOND_THREAD_STATS
 
 ENGINE_API CRenderDevice Device;
 ENGINE_API CLoadScreenRenderer load_screen_renderer;
 
 ENGINE_API BOOL g_bRendering = FALSE;
 
-u32 g_dwFPSlimit = 60;
+extern ENGINE_API float psHUD_FOV;
 
-ENGINE_API int g_3dscopes_fps_factor = 2; // На каком кадре с момента прошлого рендера во второй вьюпорт мы начнём новый (не может быть меньше 2 - каждый второй кадр, чем больше
-                                          // тем более низкий FPS во втором вьюпорте)
+u32 g_dwFPSlimit = 60;
 
 BOOL g_bLoaded = FALSE;
 
@@ -44,32 +46,47 @@ BOOL CRenderDevice::Begin()
     default: R_ASSERT(0);
     }
 
-    m_pRender->Begin();
+    
+    ::Render->Begin();
 
     g_bRendering = TRUE;
 
     return TRUE;
 }
 
-void CRenderDevice::Clear() { m_pRender->Clear(); }
+void CRenderDevice::Clear() { ::Render->Clear(); }
 
-void CRenderDevice::End(void)
+void CRenderDevice::End()
 {
     if (dwPrecacheFrame)
     {
         ::Sound->set_master_volume(0.f);
+
+        const HWND insertPos = IsDebuggerPresent() ? HWND_NOTOPMOST : HWND_TOPMOST;
+
+        SetWindowPos(Device.m_hWnd, insertPos, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+
         dwPrecacheFrame--;
 
         if (!load_screen_renderer.b_registered)
-            m_pRender->ClearTarget();
+        {
+            ::Render->ClearTarget();
+
+            if (0 == dwPrecacheFrame)
+            {
+                ::Sound->set_master_volume(1.f);
+            }
+        }        
 
         if (0 == dwPrecacheFrame)
         {
-            m_pRender->updateGamma();
+            SetWindowPos(Device.m_hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+
+            //m_pRender->updateGamma();
             
             ::Sound->set_master_volume(1.f);
 
-            Memory.mem_compact();
+            //Memory.mem_compact();
 
             Msg("* MEMORY USAGE: %d K", Memory.mem_usage() / 1024);
             Msg("* End of synchronization A[%d] R[%d]", b_is_Active, b_is_Ready);
@@ -87,17 +104,20 @@ void CRenderDevice::End(void)
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
     }
 
-    m_pRender->End();
-}
+    ::Render->End();
 
-#include "igame_level.h"
+    vCameraPositionSaved = vCameraPosition;
+    vCameraDirectionSaved = vCameraDirection;
+    vCameraTopSaved = vCameraTop;
+    vCameraRightSaved = vCameraRight;
+
+    mFullTransformSaved = mFullTransform;
+    mViewSaved = mView;
+    mProjectSaved = mProject;
+}
 
 void CRenderDevice::PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_user_input)
 {
-    if (m_pRender->GetForceGPU_REF())
-        amount = 0;
-
-    // Msg			("* PCACHE: start for %d...",amount);
     dwPrecacheFrame = dwPrecacheTotal = amount;
 
     if (amount && b_draw_loadscreen && load_screen_renderer.b_registered == false)
@@ -108,22 +128,97 @@ void CRenderDevice::PreCache(u32 amount, bool b_draw_loadscreen, bool b_wait_use
 
 ENGINE_API xr_list<fastdelegate::FastDelegate<bool()>> g_loading_events;
 
+void CRenderDevice::OnCameraUpdated(bool from_actor)
+{
+    static u32 frame{u32(-1)};
+    if (frame == dwFrame)
+        return;
+
+    frame = dwFrame;
+
+    // Precache
+    if (dwPrecacheFrame)
+    {
+        float factor = float(dwPrecacheFrame) / float(dwPrecacheTotal);
+        float angle = PI_MUL_2 * factor;
+
+        vCameraDirection.set(_sin(angle), 0, _cos(angle));
+        vCameraDirection.normalize();
+
+        vCameraTop.set(0, 1, 0);
+        vCameraRight.crossproduct(vCameraTop, vCameraDirection);
+
+        mView.build_camera_dir(vCameraPosition, vCameraDirection, vCameraTop);
+    }
+
+    // Matrices
+    mInvView.invert(mView);
+    mFullTransform.mul(mProject, mView);
+    mInvFullTransform.invert_44(mFullTransform);
+
+    ::Render->OnCameraUpdated(from_actor);
+
+    ::Render->SetCacheXform(mView, mProject);
+
+    mView_hud_old = mView_hud;
+    mView_hud_old2 = mView_hud2;
+    mProject_hud_old = mProject_hud;
+    mProject_hud_old2 = mProject_hud2;
+    mFullTransform_hud_old = mFullTransform_hud;
+    mFullTransform_hud_old2 = mFullTransform_hud2;
+
+    mView_old = mViewSaved;
+    mProject_old = mProjectSaved;
+    mFullTransform_old = mFullTransformSaved;
+
+    ::Render->SetCacheXformOld(mView_old, mProject_old);
+
+    mView_hud.build_camera_dir(Fvector{}, vCameraDirection, vCameraTop);
+    mProject_hud.build_projection(deg2rad(psHUD_FOV <= 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV), fASPECT, HUD_VIEWPORT_NEAR,
+                                  g_pGamePersistent->Environment().CurrentEnv->far_plane);
+    mFullTransform_hud.mul(mProject_hud, mView_hud);
+
+    mView_hud2.set(mView);
+    mProject_hud2.build_projection(deg2rad(psHUD_FOV <= 1.f ? psHUD_FOV * Device.fFOV : psHUD_FOV), fASPECT, HUD_VIEWPORT_NEAR,
+                                   g_pGamePersistent->Environment().CurrentEnv->far_plane);
+    mFullTransform_hud2.mul(mProject_hud2, mView_hud2);
+}
+
+struct _SoundProcessor : public pureFrame
+{
+    void OnFrame() override
+    {
+        ZoneScopedN("_SoundProcessor");
+
+        Device.Statistic->Sound.Begin();
+        ::Sound->update(Device.vCameraPosition, Device.vCameraDirection, Device.vCameraTop /*, Device.Paused()*/);
+        Device.Statistic->Sound.End();
+    }
+} g_sound_update;
+
+#pragma todo("SIMP: для этого кода нужны переделки в xrSound")
+/*
+struct _SoundRender : public pureFrame
+{
+    virtual void OnFrame()
+    {
+        ZoneScopedN("_SoundRender");
+
+        // Msg							("------------- sound: %d [%3.2f,%3.2f,%3.2f]",u32(Device.dwFrame),VPUSH(Device.vCameraPosition));
+        Device.Statistic->Sound.Begin();
+        ::Sound->render();
+        Device.Statistic->Sound.End();
+    }
+} g_sound_render;
+*/
+
 void CRenderDevice::on_idle()
 {
-    ZoneScoped;
-
     if (!b_is_Ready)
     {
         Sleep(100);
         return;
     }
-
-    const auto FrameStartTime = std::chrono::high_resolution_clock::now();
-
-    if (psDeviceFlags.test(rsStatistic))
-        g_bEnableStatGather = TRUE;
-    else
-        g_bEnableStatGather = FALSE;
 
     if (g_loading_events.size())
     {
@@ -135,146 +230,173 @@ void CRenderDevice::on_idle()
         return;
     }
 
-    ImGui_ImplDX11_NewFrame(); // должно быть перед FrameMove
-
-    FrameMove();
-
-    // Precache
-    if (dwPrecacheFrame)
-    {
-        float factor = float(dwPrecacheFrame) / float(dwPrecacheTotal);
-        float angle = PI_MUL_2 * factor;
-        vCameraDirection.set(_sin(angle), 0, _cos(angle));
-        vCameraDirection.normalize();
-        vCameraTop.set(0, 1, 0);
-        vCameraRight.crossproduct(vCameraTop, vCameraDirection);
-
-        mView.build_camera_dir(vCameraPosition, vCameraDirection, vCameraTop);
-    }
-
-    // Matrices
-    mInvView.invert(mView);
-    mFullTransform.mul(mProject, mView);
-    m_pRender->SetCacheXform(mView, mProject);
-    mInvFullTransform.invert_44(mFullTransform);
-
-    vCameraPosition_saved = vCameraPosition;
-    mFullTransform_saved = mFullTransform;
-    mView_saved = mView;
-    mProject_saved = mProject;
-
-#ifdef LOG_SECOND_THREAD_STATS
-    const auto SecondThreadStartTime = std::chrono::high_resolution_clock::now();
-#endif
-
-    // allow secondary thread to do its job
-    auto awaiter = TTAPI->submit([this] {
-#ifdef LOG_SECOND_THREAD_STATS
-        const auto SecondThreadTasksStartTime = std::chrono::high_resolution_clock::now();
-#endif
-        auto size = seqParallel.size();
-
-        while (size > 0)
-        {
-            seqParallel.front()();
-
-            seqParallel.pop_front();
-
-            size--;
-        }
-
-        seqFrameMT.Process(rp_Frame);
-
-#ifdef LOG_SECOND_THREAD_STATS
-        const auto SecondThreadTasksEndTime = std::chrono::high_resolution_clock::now();
-        SecondThreadTasksElapsedTime = SecondThreadTasksEndTime - SecondThreadTasksStartTime;
-#endif
-    });
-
-    Statistic->RenderTOTAL_Real.FrameStart();
-    Statistic->RenderTOTAL_Real.Begin();
-
-    if (b_is_Active)
     {
         ZoneScoped;
 
-        if (Begin())
+        const auto FrameStartTime = std::chrono::high_resolution_clock::now();
+
+        if (psDeviceFlags.test(rsStatistic))
+            g_bEnableStatGather = TRUE;
+        else
+            g_bEnableStatGather = FALSE;
+
+        ImGui_ImplDX11_NewFrame(); // должно быть перед FrameMove
+
+        // if (b_is_Active)
         {
-            seqRender.Process(rp_Render);
-
-            if (psDeviceFlags.test(rsCameraPos) || psDeviceFlags.test(rsStatistic) || Statistic->errors.size())
-                Statistic->Show();
-
-            Statistic->Show_HW_Stats();
-
-            End();
+            FrameMove();
         }
-    }
 
-    ImGui::EndFrame();
+        OnCameraUpdated(false);
 
-    Statistic->RenderTOTAL_Real.End();
-    Statistic->RenderTOTAL_Real.FrameEnd();
-    Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
+        const auto SecondThreadStartTime = std::chrono::high_resolution_clock::now();
 
-    const auto FrameEndTime = std::chrono::high_resolution_clock::now();
-    const std::chrono::duration<double, std::milli> FrameElapsedTime = FrameEndTime - FrameStartTime;
+        // allow secondary thread to do its job
+        auto awaiter = TTAPI->submit([this] {
+            ZoneScoped;
 
-    constexpr u32 menuFPSlimit{60}, pauseFPSlimit{60};
-    const u32 curFPSLimit = IsMainMenuActive() ? menuFPSlimit : Device.Paused() ? pauseFPSlimit : g_dwFPSlimit;
-    if (curFPSLimit > 0 && !m_SecondViewport.IsSVPFrame())
-    {
-        const std::chrono::duration<double, std::milli> FpsLimitMs{std::floor(1000.f / static_cast<float>(curFPSLimit + 1))};
-        if (FrameElapsedTime < FpsLimitMs)
+            const auto SecondThreadTasksStartTime = std::chrono::high_resolution_clock::now();
+
+            g_sound_update.OnFrame();
+
+            // Device.async_waiter.push_back(TTAPI->submit([]() { g_sound_render.OnFrame(); }));
+
+            {
+                ZoneScopedN("seqParallel");
+
+                auto size = seqParallel.size();
+                while (size > 0)
+                {
+                    seqParallel.front()();
+                    seqParallel.pop_front();
+
+                    size--;
+                }
+            }
+
+            if (g_pGameLevel && ps_lua_gc_method == gc_timeout)
+            {
+                const auto GCTime = (SecondThreadFreeTimeLast.count() / 2.0) * 1000.0;
+                psLUA_GCTIMEOUT = std::max(psLUA_GCTIMEOUT_MIN, static_cast<int>(GCTime));
+                async_waiter.emplace_back(TTAPI->submit([] { g_pGameLevel->script_gc(); }));
+            }
+
+            {
+                ZoneScopedN("seqFrameMT");
+
+                seqFrameMT.Process(rp_Frame); // only PHWorld and NetProcessor
+            }
+
+            const auto SecondThreadTasksEndTime = std::chrono::high_resolution_clock::now();
+            SecondThreadTasksElapsedTime = SecondThreadTasksEndTime - SecondThreadTasksStartTime;
+        });
+
+        Statistic->RenderTOTAL_Real.FrameStart();
+        Statistic->RenderTOTAL_Real.Begin();
+
+        if (b_is_Active)
         {
-            const auto TimeToSleep = FpsLimitMs - FrameElapsedTime;
-            // std::this_thread::sleep_until(FrameEndTime + TimeToSleep); // часто спит больше, чем надо. Скорее всего из-за округлений в большую сторону.
-            Sleep(iFloor(TimeToSleep.count()));
-            // Msg("~~[%s] waited [%f] ms", __FUNCTION__, TimeToSleep.count());
+            ZoneScopedN("DoRender");
+
+            if (Begin())
+            {
+                {
+                    ZoneScopedN("Render process");
+                    seqRender.Process(rp_Render);
+                }
+
+                {
+                    ZoneScopedN("DoRender End");
+                    End();
+                }
+            }
         }
-    }
+
+        ImGui::EndFrame();
+
+        Statistic->RenderTOTAL_Real.End();
+        Statistic->RenderTOTAL_Real.FrameEnd();
+
+        Statistic->RenderTOTAL.accum = Statistic->RenderTOTAL_Real.accum;
+
+        const auto FrameEndTime = std::chrono::high_resolution_clock::now();
+        const std::chrono::duration<double, std::milli> FrameElapsedTime = FrameEndTime - FrameStartTime;
+
+        {
+            ZoneScopedN("fps_lock");
+
+            constexpr u32 menuFPSlimit{60}, pauseFPSlimit{60};
+            const u32 curFPSLimit = IsMainMenuActive() ? menuFPSlimit : Paused() ? pauseFPSlimit : g_dwFPSlimit;
+
+            if (curFPSLimit > 0)
+            {
+                const std::chrono::duration<double, std::milli> FpsLimitMs{std::floor(1000.f / static_cast<float>(curFPSLimit + 1))};
+                if (FrameElapsedTime < FpsLimitMs)
+                {
+                    const auto TimeToSleep = FpsLimitMs - FrameElapsedTime;
+                    // std::this_thread::sleep_until(FrameEndTime + TimeToSleep); // часто спит больше, чем надо. Скорее всего из-за округлений в большую сторону.
+                    Sleep(iFloor(TimeToSleep.count()));
+
+                    // Msg("~~[%s] waited [%f] ms", __FUNCTION__, TimeToSleep.count());
+                }
+            }
+        }
+
+        {
+            ZoneScopedN("WaitSecondThread");
+
+            const auto SecondThreadEndTime = std::chrono::high_resolution_clock::now();
 
 #ifdef LOG_SECOND_THREAD_STATS
-    const auto SecondThreadEndTime = std::chrono::high_resolution_clock::now();
-
-    bool show_stats{};
-    if (awaiter.wait_for(FrameElapsedTime) == std::future_status::timeout)
-        show_stats = true;
+            bool show_stats{};
+            if (awaiter.wait_for(FrameElapsedTime) == std::future_status::timeout)
+                show_stats = true;
 #else
-    if (awaiter.valid())
+            if (awaiter.valid())
 #endif
-        awaiter.get();
+            awaiter.get();
+
+            while (!async_waiter.empty())
+            {
+                if (async_waiter.back().valid())
+                    async_waiter.back().get();
+                async_waiter.pop_back();
+            }
+
+            const std::chrono::duration<double, std::milli> SecondThreadElapsedTime = SecondThreadEndTime - SecondThreadStartTime;
+            SecondThreadFreeTimeLast = SecondThreadElapsedTime - SecondThreadTasksElapsedTime;
 
 #ifdef LOG_SECOND_THREAD_STATS
-    if (show_stats && dwPrecacheFrame == 0)
-    {
-        const std::chrono::duration<double, std::milli> SecondThreadElapsedTime = SecondThreadEndTime - SecondThreadStartTime;
-        const std::chrono::duration<double, std::milli> SecondThreadFreeTime = SecondThreadElapsedTime - SecondThreadTasksElapsedTime;
-        Msg("##[%s] Second thread work time is too long! Avail: [%f]ms, used: [%f]ms, free: [%f]ms", __FUNCTION__, SecondThreadElapsedTime.count(),
-            SecondThreadTasksElapsedTime.count(), SecondThreadFreeTime.count());
-    }
+            if (show_stats && dwPrecacheFrame == 0)
+            {
+                Msg("##[%s] Second thread work time is too long! Avail: [%f]ms, used: [%f]ms, free: [%f]ms", __FUNCTION__, SecondThreadElapsedTime.count(),
+                    SecondThreadTasksElapsedTime.count(), SecondThreadFreeTimeLast.count());
+            }
 #endif
+        }
+
+        FrameMark;
+    }
 
     if (!b_is_Active)
         Sleep(1);
-
-    FrameMark;
 }
 
 void CRenderDevice::message_loop()
 {
-    MSG msg;
-    PeekMessage(&msg, NULL, 0U, 0U, PM_NOREMOVE);
+    MSG msg{};
+
     while (msg.message != WM_QUIT)
     {
-        if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+        if (PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
-            continue;
         }
-
-        on_idle();
+        
+        {
+            on_idle();
+        }
     }
 }
 
@@ -297,14 +419,34 @@ static void LogOsVersion()
     Msg("!![%s] Can't get RtlGetVersion", __FUNCTION__);
 }
 
+void LogWorkingDriveInfo()
+{
+    // Setup the DWORD variables.
+    ULARGE_INTEGER TotalNumberOfBytes, TotalNumberOfFreeBytes;
+
+    if (GetDiskFreeSpaceExA(Core.ApplicationPath, nullptr, &TotalNumberOfBytes, &TotalNumberOfFreeBytes))
+    {
+        Msg("Current drive space free: [%g]Mb total: [%g]Mb"
+            , static_cast<float>(TotalNumberOfFreeBytes.QuadPart) / 1024.f / 1024.f, static_cast<float>(TotalNumberOfBytes.QuadPart) / 1024.f / 1024.f);
+    }
+}
+
+void CRenderDevice::ShowMainWindow() const
+{
+    ShowWindow(m_hWnd, SW_SHOWNORMAL);
+    SetForegroundWindow(m_hWnd);
+    SetWindowPos(m_hWnd, nullptr, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
+}
+
 void CRenderDevice::Run()
 {
     //	DUMP_PHASE;
     g_bLoaded = FALSE;
 
-    LogOsVersion();
-
     Log("Starting engine...");
+    LogOsVersion();
+    LogWorkingDriveInfo();
+
     set_current_thread_name("X-RAY Primary thread");
     mainThreadId = std::this_thread::get_id();
     Msg("Main thread id: [%u]", _Thrd_id());
@@ -324,9 +466,22 @@ void CRenderDevice::Run()
     // Message cycle
     seqAppStart.Process(rp_AppStart);
 
-    m_pRender->ClearTarget();
+    ::Render->ClearTarget();
+
+    // Destroy LOGO
+    HideSplash();
+
+    ShowMainWindow();
+
+    pInput->clip_cursor(true);
+
+    Memory.mem_compact();
+
+    g_bLoaded = TRUE;
 
     message_loop();
+
+    g_bLoaded = FALSE;
 
     seqAppEnd.Process(rp_AppEnd);
 }
@@ -336,26 +491,29 @@ u32 app_inactive_time_start = 0;
 
 void CRenderDevice::FrameMove()
 {
+    ZoneScoped;
+
     dwFrame++;
 
+    u32 _old_continual = dwTimeContinual;
     dwTimeContinual = TimerMM.GetElapsed_ms() - app_inactive_time;
+    dwTimeDeltaContinual = dwTimeContinual - _old_continual;
+
+    fTimeDeltaReal = Timer.GetElapsed_sec();
+    fTimeDeltaRealMS = static_cast<float>(Timer.GetElapsed_ms());
+    if (!_valid(fTimeDeltaReal))
+        fTimeDeltaReal = EPS_S + EPS_S;
+    Timer.Start(); // previous frame
 
     {
-        // Timer
-        float fPreviousFrameTime = Timer.GetElapsed_sec();
-        Timer.Start(); // previous frame
-        fTimeDelta = 0.1f * fTimeDelta + 0.9f * fPreviousFrameTime; // smooth random system activity - worst case ~7% error
-
-        if (fTimeDelta > .1f)
-            fTimeDelta = .1f; // limit to 15fps minimum
-
-        if (fTimeDelta <= 0.f)
-            fTimeDelta = EPS_S + EPS_S; // limit to 15fps minimum
-
         if (Paused())
             fTimeDelta = 0.0f;
-
-        fTimeGlobal = TimerGlobal.GetElapsed_sec(); // float(qTime)*CPU::cycles2seconds;
+        else
+        {
+            fTimeDelta = 0.1f * fTimeDelta + 0.9f * fTimeDeltaReal; // smooth random system activity - worst case ~7% error
+            clamp(fTimeDelta, EPS_S + EPS_S, .1f); // limit to 10fps minimum
+        }
+        fTimeGlobal = TimerGlobal.GetElapsed_sec();
 
         u32 _old_global = dwTimeGlobal;
         dwTimeGlobal = TimerGlobal.GetElapsed_ms();
@@ -366,7 +524,6 @@ void CRenderDevice::FrameMove()
     Statistic->EngineTOTAL.Begin();
 
     Device.seqFrame.Process(rp_Frame);
-    g_bLoaded = TRUE;
 
     Statistic->EngineTOTAL.End();
 }
@@ -376,9 +533,6 @@ ENGINE_API BOOL bShowPauseString = TRUE;
 void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 {
     static int snd_emitters_ = -1;
-
-    if (g_bBenchmark)
-        return;
 
 #ifdef DEBUG
 //	Msg("pause [%s] timer=[%s] sound=[%s] reason=%s",bOn?"ON":"OFF", bTimer?"ON":"OFF", bSound?"ON":"OFF", reason);
@@ -394,9 +548,9 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 #endif // DEBUG
                                                              TRUE;
 
-        if (bTimer && (!g_pGamePersistent || g_pGamePersistent->CanBePaused()))
+        if (bTimer)
         {
-            g_pauseMngr.Pause(TRUE);
+            g_pauseMngr->Pause(TRUE);
 #ifdef DEBUG
             if (!xr_strcmp(reason, "li_pause_key_no_clip"))
                 TimerGlobal.Pause(FALSE);
@@ -413,10 +567,11 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
     }
     else
     {
-        if (bTimer && /*g_pGamePersistent->CanBePaused() &&*/ g_pauseMngr.Paused())
+        if (bTimer && g_pauseMngr->Paused())
         {
             fTimeDelta = EPS_S + EPS_S;
-            g_pauseMngr.Pause(FALSE);
+
+            g_pauseMngr->Pause(FALSE);
         }
 
         if (bSound)
@@ -439,69 +594,60 @@ void CRenderDevice::Pause(BOOL bOn, BOOL bTimer, BOOL bSound, LPCSTR reason)
 
 }
 
-BOOL CRenderDevice::Paused() { return g_pauseMngr.Paused(); };
+BOOL CRenderDevice::Paused() { return g_pauseMngr->Paused(); }
 
 void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 {
     const u16 fActive = LOWORD(wParam);
     const BOOL fMinimized = (BOOL)HIWORD(wParam);
-    const BOOL bActive = ((fActive != WA_INACTIVE) && (!fMinimized)) ? TRUE : FALSE;
-    const BOOL isGameActive = ((psDeviceFlags.is(rsAlwaysActive) && !psDeviceFlags.is(rsFullscreen)) || bActive) ? TRUE : FALSE;
+    const BOOL bWndActive = (fActive != WA_INACTIVE) && !fMinimized ? TRUE : FALSE;
 
-    pInput->clip_cursor(fActive != WA_INACTIVE);
+    const BOOL isGameActive = (!g_loading_events.empty() || (psDeviceFlags.is(rsAlwaysActive)) || bWndActive) ? TRUE : FALSE;
 
-    if (isGameActive != Device.b_is_Active)
+    if (g_bLoaded)
+        pInput->clip_cursor(fActive != WA_INACTIVE);
+
+    if (isGameActive != b_is_Active)
     {
-        Device.b_is_Active = isGameActive;
+        b_is_Active = isGameActive;
 
-        if (Device.b_is_Active)
+        if (b_is_Active)
         {
-            Device.seqAppActivate.Process(rp_AppActivate);
+            seqAppActivate.Process(rp_AppActivate);
             app_inactive_time += TimerMM.GetElapsed_ms() - app_inactive_time_start;
         }
         else
         {
             app_inactive_time_start = TimerMM.GetElapsed_ms();
-            Device.seqAppDeactivate.Process(rp_AppDeactivate);
+            seqAppDeactivate.Process(rp_AppDeactivate);
         }
     }
+}
+
+void CRenderDevice::SetAltScopeActive(bool bState)
+{
+    m_AltScopeActive = bState;
 }
 
 CLoadScreenRenderer::CLoadScreenRenderer() : b_registered(false) {}
 
 void CLoadScreenRenderer::start(bool b_user_input)
 {
-    Device.seqRender.Add(this, 0);
+    Device.seqRender.Add(this);
     b_registered = true;
-    b_need_user_input = b_user_input;
 }
 
 void CLoadScreenRenderer::stop()
 {
     if (!b_registered)
         return;
+
     Device.seqRender.Remove(this);
     pApp->DestroyLoadingScreen();
     b_registered = false;
-    b_need_user_input = false;
 }
 
 void CLoadScreenRenderer::OnRender() { pApp->load_draw_internal(); }
-
-void CRenderDevice::CSecondVPParams::SetSVPActive(bool bState) //--#SM+#-- +SecondVP+
-{
-    m_bIsActive = bState;
-    if (g_pGamePersistent)
-        g_pGamePersistent->m_pGShaderConstants.m_blender_mode.z = (m_bIsActive ? 1.0f : 0.0f);
-}
-
-bool CRenderDevice::CSecondVPParams::IsSVPFrame() //--#SM+#-- +SecondVP+
-{
-    bool cond = IsSVPActive() && ((Device.dwFrame % g_3dscopes_fps_factor) == 0);
-    if (g_pGamePersistent)
-        g_pGamePersistent->m_pGShaderConstants.m_blender_mode.y = cond ? 1.0f : 0.0f;
-    return cond;
-}
 
 void CRenderDevice::time_factor(const float& time_factor)
 {
@@ -509,3 +655,5 @@ void CRenderDevice::time_factor(const float& time_factor)
     TimerGlobal.time_factor(time_factor);
     psSoundTimeFactor = time_factor; //--#SM+#--
 }
+
+bool OnMainThread() { return Device.OnMainThread(); } // for core

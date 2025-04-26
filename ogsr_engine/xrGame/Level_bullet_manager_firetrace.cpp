@@ -142,7 +142,7 @@ BOOL CBulletManager::test_callback(const collide::ray_defs& rd, CObject* object,
 //	result.range;	// range from start to element
 //	result.element;	// if (O) "num tri" else "num bone"
 //	params;			// user defined abstract data
-//	Device.Statistic.TEST0.End();
+//	Device.Statistic.BulletManager.End();
 // return TRUE-продолжить трассировку / FALSE-закончить трассировку
 BOOL CBulletManager::firetrace_callback(collide::rq_result& result, LPVOID params)
 {
@@ -316,7 +316,7 @@ void CBulletManager::DynamicObjectHit(CBulletManager::_event& E)
 
     if (V)
     {
-        VERIFY3(V->LL_GetBoneVisible(u16(E.R.element)), *E.R.O->cNameVisual(), V->LL_BoneName_dbg(u16(E.R.element)));
+        VERIFY3(V->LL_GetBoneVisible(u16(E.R.element)), *E.R.O->cNameVisual(), V->LL_BoneName(u16(E.R.element)));
         Fmatrix& m_bone = (V->LL_GetBoneInstance(u16(E.R.element))).mTransform;
         Fmatrix m_inv_bone;
         m_inv_bone.invert(m_bone);

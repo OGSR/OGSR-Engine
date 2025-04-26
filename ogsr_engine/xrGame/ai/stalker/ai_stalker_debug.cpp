@@ -229,7 +229,7 @@ LPCSTR danger_type(const CDangerObject::EDangerType& danger_type)
 
 void CAI_Stalker::debug_planner(const script_planner* planner) { m_debug_planner = planner; }
 
-void CAI_Stalker::OnHUDDraw(CCustomHUD* hud)
+void CAI_Stalker::OnHUDDraw(CCustomHUD* hud, u32 context_id, IRenderable* root)
 {
     inherited::OnHUDDraw(hud);
 
@@ -338,7 +338,7 @@ void CAI_Stalker::OnHUDDraw(CCustomHUD* hud)
 
         float fuzzy = 0.f;
         xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
-        for (; I != E; I++)
+        for (; I != E; ++I)
             if (I->O->ID() == memory().enemy().selected()->ID())
             {
                 fuzzy = I->fuzzy;
@@ -780,7 +780,7 @@ void CAI_Stalker::OnHUDDraw(CCustomHUD* hud)
     }
 }
 
-void CAI_Stalker::OnRender()
+void CAI_Stalker::OnRender() // debug
 {
     if (inventory().ActiveItem())
     {

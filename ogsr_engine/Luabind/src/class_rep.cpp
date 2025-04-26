@@ -1058,7 +1058,6 @@ int luabind::detail::class_rep::construct_lua_class_callback(lua_State* L)
 	// we don't have any stack objects here
 	lua_call(L, args, 0);
 
-#pragma todo("KRodin: Заметка: здесь попытка исправить утечку памяти")
 	// https://stackoverflow.com/questions/1946465/luabind-class-deriving-problem-memory-leak
 	// https://github.com/luabind/luabind/commit/2c99f0475afea7c282c2e432499fd22aa17744e3
 	lua_pushstring(L, "super");
@@ -1101,9 +1100,8 @@ int luabind::detail::class_rep::lua_class_gettable(lua_State* L)
 
 	// BUG: This might catch members called "__ok\0foobar"
 	const char* key		= lua_tostring(L, 2);
-	const char* _ok_	= "__ok";
 
-	if (key && ( *((unsigned*)key) == *((unsigned*)_ok_) ) && !key[4])
+	if (key && !std::strcmp(key, "__ok"))
 	{
 		class_rep* crep = obj->crep();
 

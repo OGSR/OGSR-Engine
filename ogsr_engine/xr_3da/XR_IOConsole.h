@@ -1,12 +1,11 @@
 // XR_IOConsole.h: interface for the CConsole class.
 //
 //////////////////////////////////////////////////////////////////////
-#ifndef XR_IOCONSOLE_H_INCLUDED
-#define XR_IOCONSOLE_H_INCLUDED
+
+#pragma once
 
 #include "../Include/xrRender/FactoryPtr.h"
 #include "../Include/xrRender/UIShader.h"
-
 
 //refs
 class ENGINE_API CGameFont;
@@ -26,34 +25,34 @@ struct TipString
 
 	TipString()
 	{
-		text._set("");
+		text = "";
 		HL_start = 0;
 		HL_finish = 0;
 	}
 
 	TipString(shared_str const& tips_text, int start_pos, int finish_pos)
 	{
-		text._set(tips_text);
+		text = tips_text;
 		HL_start = start_pos;
 		HL_finish = finish_pos;
 	}
 
 	TipString(LPCSTR tips_text, int start_pos, int finish_pos)
 	{
-		text._set(tips_text);
+		text = tips_text;
 		HL_start = start_pos;
 		HL_finish = finish_pos;
 	}
 
 	TipString(shared_str const& tips_text)
 	{
-		text._set(tips_text);
+		text = tips_text;
 		HL_start = 0;
 		HL_finish = 0;
 	}
 
-	IC bool operator==(shared_str const& tips_text)
-	{
+	IC bool operator==(shared_str const& tips_text) const
+    {
 		return (text == tips_text);
 	}
 };
@@ -64,12 +63,8 @@ class ENGINE_API CConsole :
 	public pureScreenResolutionChanged
 {
 public:
-    struct str_pred
-    {
-        IC bool operator()(const char* x, const char* y) const { return (xr_strcmp(x, y) < 0); }
-    };
 
-	typedef xr_map<LPCSTR, IConsole_Command*, str_pred> vecCMD;
+	typedef xr_map<LPCSTR, IConsole_Command*, pred_str> vecCMD;
 	typedef vecCMD::iterator vecCMD_IT;
 	typedef vecCMD::const_iterator vecCMD_CIT;
     typedef fastdelegate::FastDelegate<void()> Callback;
@@ -89,7 +84,7 @@ protected:
 
 	FactoryPtr<IUIShader>* m_hShader_back;
 
-	POINT m_mouse_pos;
+	//POINT m_mouse_pos;
 	bool m_disable_tips;
 
 private:
@@ -97,7 +92,6 @@ private:
 	u32 m_cmd_history_max;
 	int m_cmd_history_idx;
 	shared_str m_last_cmd;
-	BENCH_SEC_SCRAMBLEMEMBER1
 
 	vecTips m_temp_tips;
 	vecTipsEx m_tips;
@@ -143,14 +137,17 @@ public:
 	LPCSTR GetString(LPCSTR cmd) const;
 	LPCSTR GetToken(LPCSTR cmd) const;
     const xr_token* GetXRToken(LPCSTR cmd) const;
-	Fvector GetFVector(LPCSTR cmd) const;
-	Fvector* GetFVectorPtr(LPCSTR cmd) const;
+	Fvector GetFVector3(LPCSTR cmd) const;
+    void GetFVector3Bounds(LPCSTR cmd, Fvector& imin, Fvector& imax) const;
+	Fvector* GetFVector3Ptr(LPCSTR cmd) const;
+    Fvector4 GetFVector4(LPCSTR cmd) const;
+    void GetFVector4Bounds(LPCSTR cmd, Fvector4& imin, Fvector4& imax) const;
+    Fvector4* GetFVector4Ptr(LPCSTR cmd) const;
+
 	IConsole_Command* GetCommand(LPCSTR cmd) const;
 protected:
 	text_editor::line_editor* m_editor;
 	text_editor::line_edit_control& ec();
-
-	BENCH_SEC_SCRAMBLEMEMBER2
 
 	enum Console_mark // (int)=char
 	{
@@ -230,5 +227,3 @@ protected:
 }; // class CConsole
 
 ENGINE_API extern CConsole* Console;
-
-#endif // XR_IOCONSOLE_H_INCLUDED

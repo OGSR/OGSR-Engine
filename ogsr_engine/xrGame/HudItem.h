@@ -77,7 +77,7 @@ protected: //чтоб нельзя было вызвать на прямую
     enum
     {
         fl_pending = (1 << 0),
-        fl_renderhud = (1 << 1),
+        // = (1 << 1),
         fl_inertion_enable = (1 << 2),
         fl_inertion_allow = (1 << 3),
         fl_bobbing_allow = (1 << 4),
@@ -155,7 +155,7 @@ public:
     virtual bool NeedBlendAnm();
 
     virtual void UpdateCL();
-    virtual void renderable_Render();
+    virtual void renderable_Render(u32 context_id, IRenderable* root);
 
     virtual void Hide(bool = false) {}
     virtual void Show(bool = false) {}
@@ -178,12 +178,10 @@ public:
     BOOL GetHUDmode();
     IC void SetPending(BOOL H) { m_huditem_flags.set(fl_pending, H); }
     IC BOOL IsPending() const { return !!m_huditem_flags.test(fl_pending); }
-    IC void RenderHud(BOOL B) { m_huditem_flags.set(fl_renderhud, B); }
-    IC BOOL RenderHud() { return m_huditem_flags.test(fl_renderhud); }
 
     void PlayBlendAnm(LPCSTR name, float speed = 1.f, float power = 1.f, bool stop_old = true);
 
-    virtual void render_hud_mode(){};
+    virtual void render_hud_mode(u32 context_id, IRenderable* root){};
     virtual bool need_renderable() { return true; };
     virtual void render_item_3d_ui() {}
     virtual bool render_item_3d_ui_query() { return false; }
@@ -219,7 +217,7 @@ public:
         return (*m_item);
     }
 
-    virtual void on_renderable_Render() = 0;
+    virtual void on_renderable_Render(u32 context_id, IRenderable* root) = 0;
 
 public:
     class CWeaponBobbing

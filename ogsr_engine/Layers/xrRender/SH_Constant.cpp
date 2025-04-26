@@ -1,15 +1,17 @@
 #include "stdafx.h"
 
+
+
 void CConstant::Calculate()
 {
-    if (dwFrame == RDEVICE.dwFrame)
+    if (dwFrame == Device.dwFrame)
         return;
-    dwFrame = RDEVICE.dwFrame;
+    dwFrame = Device.dwFrame;
 
     if (modeProgrammable == dwMode)
         return;
 
-    float t = RDEVICE.fTimeGlobal;
+    const float t = Device.fTimeGlobal;
     set_float(_R.Calculate(t), _G.Calculate(t), _B.Calculate(t), _A.Calculate(t));
 }
 
@@ -23,7 +25,7 @@ void CConstant::Load(IReader* fs)
     fs->r(&_A, sizeof(WaveForm));
 }
 
-void CConstant::Save(IWriter* fs)
+void CConstant::Save(IWriter* fs) const
 {
     fs->w(&_R, sizeof(WaveForm));
     fs->w(&_G, sizeof(WaveForm));

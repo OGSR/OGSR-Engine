@@ -80,6 +80,7 @@ vf main(v_vert v)
     // L_final        = v.N.w        + L_ambient;
 
     o.hpos = mul(m_VP, P); // xform, input in world coords
+    o.hpos.xy = get_taa_jitter(o.hpos);
     o.fog = saturate(calc_fogging(v.P));
 
     o.c0 = float4(L_final, 1);

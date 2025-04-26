@@ -149,7 +149,7 @@ public:
 
     float get_vampire_distance() const { return m_vampire_distance; }
 
-    virtual void renderable_Render();
+    virtual void renderable_Render(u32 context_id, IRenderable* root) override;
 
 #ifdef DEBUG
     virtual CBaseMonster::SDebugInfo show_debug_info();
@@ -185,6 +185,8 @@ private:
     TTime m_runaway_invisible_time;
 
 public:
+    virtual float GetTransparency() override;
+
     float get_full_visibility_radius();
     float get_partial_visibility_radius();
     TTime get_visibility_state_change_min_delay();

@@ -5,10 +5,6 @@
 
 float normalize_depth(float depth) { return (saturate(depth / FARPLANE)); }
 
-// new uniform variables - OGSE Team
-// global constants
-uniform float4 ogse_c_screen; // x - fFOV, y - fAspect, z - Zf/(Zf-Zn), w - Zn*tan(fFov/2)
-
 float4 proj_to_screen(float4 proj)
 {
     float4 screen = proj;

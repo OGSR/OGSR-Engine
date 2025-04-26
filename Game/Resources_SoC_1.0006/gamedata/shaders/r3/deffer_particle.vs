@@ -20,10 +20,13 @@ v2p_particle main(vv I)
     // Eye-space pos/normal
     v2p_flat O;
     O.hpos = mul(m_WVP, w_pos);
+    O.hpos_curr = O.hpos;
+    O.hpos_old = mul(m_WVP_old, w_pos);
     O.N = normalize(eye_position - w_pos);
     float3 Pe = mul(m_WV, I.P);
     O.tcdh = float4(I.tc.xyyy);
     O.position = float4(Pe, .2h);
+    O.hpos.xy = get_taa_jitter(O.hpos);
 
 #ifdef USE_TDETAIL
     O.tcdbump = O.tcdh * dt_params; // dt tc

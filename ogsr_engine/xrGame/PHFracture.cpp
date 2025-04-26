@@ -104,9 +104,9 @@ void CPHFracturesHolder::PassEndFractures(u16 from, CPHElement* dest)
             cur_end_geom = cur_end_geom - passed_geoms;
     }
 
-    i++; // omit used fracture;
+    ++i; // omit used fracture;
     // these to be passed
-    for (; i != e; i++) // itterate antil a fracture where geom num > end geom num
+    for (; i != e; ++i) // itterate antil a fracture where geom num > end geom num
     {
         u16& cur_end_geom = i->m_end_geom_num;
         u16& cur_geom = i->m_start_geom_num;
@@ -414,7 +414,7 @@ bool CPHFracture::Update(CPHElement* element)
     }
 
     PH_IMPACT_I i_i = impacts.begin(), i_e = impacts.end();
-    for (; i_i != i_e; i_i++)
+    for (; i_i != i_e; ++i_i)
     {
         u16 geom = i_i->geom;
 

@@ -9,9 +9,8 @@ int xrSimulate(xr_vector<u16>& indices, int iCacheSize)
     VertexCache C(iCacheSize);
 
     int count = 0;
-    for (u32 i = 0; i < indices.size(); i++)
+    for (const int id : indices)
     {
-        int id = indices[i];
         if (C.InCache(id))
             continue;
         count++;
@@ -42,8 +41,8 @@ void xrStripify(xr_vector<u16>& indices, xr_vector<u16>& perturb, int iCacheSize
     // Build perturberation table
     for (u32 index = 0; index < PGROUP[0].numIndices; index++)
     {
-        u16 oldIndex = PGROUP[0].indices[index];
-        int newIndex = xPGROUP[0].indices[index];
+        const u16 oldIndex = PGROUP[0].indices[index];
+        const int newIndex = xPGROUP[0].indices[index];
         VERIFY(oldIndex < (int)perturb.size());
         VERIFY(newIndex < (int)perturb.size());
         perturb[newIndex] = oldIndex;

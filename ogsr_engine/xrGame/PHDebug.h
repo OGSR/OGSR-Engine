@@ -1,5 +1,5 @@
-#ifndef PH_DEBUG_H
-#define PH_DEBUG_H
+#pragma once
+
 #ifdef DEBUG
 struct dContact;
 #include "../xr_3da/StatGraph.h"
@@ -154,5 +154,4 @@ public:
         return s;
     }
 };
-#endif
 #endif

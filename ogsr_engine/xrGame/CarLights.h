@@ -1,5 +1,3 @@
-#ifndef CAR_LIGHTS_H
-#define CAR_LIGHTS_H
 #pragma once
 
 #include "..\xr_3da\render.h"
@@ -63,5 +61,3 @@ protected:
     */
 private:
 };
-
-#endif

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "iinputreceiver.h"
-//#include "CameraManager.h"
 #include "xr_object_list.h"
 #include "xr_area.h"
 
@@ -14,37 +13,6 @@ namespace Feel
 {
 class ENGINE_API Sound;
 }
-
-class ENGINE_API CServerInfo
-{
-private:
-    struct SItem_ServerInfo
-    {
-        string128 name;
-        u32 color;
-    };
-    enum
-    {
-        max_item = 15
-    };
-    svector<SItem_ServerInfo, max_item> data;
-
-public:
-    u32 Size() { return data.size(); }
-    void ResetData() { data.clear(); }
-
-    void AddItem(LPCSTR name_, LPCSTR value_, u32 color_ = RGB(255, 255, 255));
-    void AddItem(shared_str& name_, LPCSTR value_, u32 color_ = RGB(255, 255, 255));
-
-    IC SItem_ServerInfo& operator[](u32 id)
-    {
-        VERIFY(id < max_item);
-        return data[id];
-    }
-
-    // CServerInfo() {};
-    //~CServerInfo() {};
-};
 
 //-----------------------------------------------------------------------------------------------------------
 class ENGINE_API IGame_Level : public DLL_Pure, public IInputReceiver, public pureRender, public pureFrame, public IEventReceiver
@@ -67,12 +35,9 @@ protected:
 public:
     CObjectList Objects;
     CObjectSpace ObjectSpace;
-    CCameraManager& Cameras() { return *m_pCameras; };
+    CCameraManager& Cameras() const { return *m_pCameras; };
 
     BOOL bReady;
-
-    CInifile* pLevel;
-    CCustomHUD* pHUD;
 
 public: // deferred sound events
     struct _esound_delegate
@@ -117,25 +82,17 @@ public:
     // Loader interface
     // ref_shader					LL_CreateShader			(int S, int T, int M, int C);
     void LL_CheckTextures();
-    virtual void SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTimeFactor) = 0;
+
     virtual void OnChangeCurrentWeather(const char* sect) = 0;
 
     virtual void OnDestroyObject(u16 id) = 0;
 
     virtual void GetGameTimeForShaders(u32& hours, u32& minutes, u32& seconds, u32& milliseconds) = 0;
+
+    virtual bool is_removing_objects() const = 0;
+
+    virtual void script_gc() const = 0;
 };
 
 //-----------------------------------------------------------------------------------------------------------
 extern ENGINE_API IGame_Level* g_pGameLevel;
-
-template <typename _class_type>
-void relcase_register(_class_type* self, void (_class_type::*function_to_bind)(CObject*))
-{
-    g_pGameLevel->Objects.relcase_register(fastdelegate::MakeDelegate(self, function_to_bind));
-}
-
-template <typename _class_type>
-void relcase_unregister(_class_type* self, void (_class_type::*function_to_bind)(CObject*))
-{
-    g_pGameLevel->Objects.relcase_unregister(fastdelegate::MakeDelegate(self, function_to_bind));
-}

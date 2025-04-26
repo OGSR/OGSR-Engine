@@ -26,6 +26,8 @@ void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range)
     if (nullptr == S->feedback)
         return;
 
+    ZoneScoped;
+
     clamp(range, 0.1f, 500.f);
 
     const CSound_params* p = S->feedback->get_params();
@@ -48,7 +50,7 @@ void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range)
     // Iterate
     xr_vector<ISpatial*>::iterator it = snd_ER.begin();
     xr_vector<ISpatial*>::iterator end = snd_ER.end();
-    for (; it != end; it++)
+    for (; it != end; ++it)
     {
         Feel::Sound* L = (*it)->dcast_FeelSound();
         if (nullptr == L)
@@ -84,6 +86,8 @@ void IGame_Level::SoundEvent_Register(ref_sound_data_ptr S, float range)
 
 void IGame_Level::SoundEvent_Dispatch()
 {
+    ZoneScoped;
+
     while (!snd_Events.empty())
     {
         _esound_delegate& D = snd_Events.back();
@@ -137,6 +141,8 @@ CObjectSpace::~CObjectSpace()
 //----------------------------------------------------------------------
 int CObjectSpace::GetNearest(xr_vector<ISpatial*>& q_spatial, xr_vector<CObject*>& q_nearest, const Fvector& point, float range, CObject* ignore_object)
 {
+    ZoneScoped;
+
     q_spatial.clear();
     // Query objects
     q_nearest.clear();
@@ -149,7 +155,7 @@ int CObjectSpace::GetNearest(xr_vector<ISpatial*>& q_spatial, xr_vector<CObject*
     // Iterate
     xr_vector<ISpatial*>::iterator it = q_spatial.begin();
     xr_vector<ISpatial*>::iterator end = q_spatial.end();
-    for (; it != end; it++)
+    for (; it != end; ++it)
     {
         CObject* O = (*it)->dcast_CObject();
         if (nullptr == O)
@@ -180,54 +186,73 @@ int CObjectSpace::GetNearest(xr_vector<CObject*>& q_nearest, ICollisionForm* obj
 
 //----------------------------------------------------------------------
 static void __stdcall build_callback(Fvector* V, int Vcnt, CDB::TRI* T, int Tcnt, void* params) { g_pGameLevel->Load_GameSpecific_CFORM(T, Tcnt); }
+
 void CObjectSpace::Load()
 {
-    IReader* F = FS.r_open("$level$", "level.cform");
+    IReader* F = FS.r_open(fsgame::level, fsgame::level_files::level_cform);
     R_ASSERT(F);
 
     hdrCFORM H;
     F->r(&H, sizeof(hdrCFORM));
+
     Fvector* verts = (Fvector*)F->pointer();
     CDB::TRI* tris = (CDB::TRI*)(verts + H.vertcount);
+
     R_ASSERT(CFORM_CURRENT_VERSION == H.version);
+
+    CTimer t_total;
+
+    t_total.Start();
     Static.build(verts, H.vertcount, tris, H.facecount, build_callback);
+    if (t_total.GetElapsed_ms() > 5)
+    {
+        MsgDbg("Long CObjectSpace::Load() !!! duration [%d]ms!", t_total.GetElapsed_ms());
+    }
 
     m_BoundingVolume.set(H.aabb);
     g_SpatialSpace->initialize(H.aabb);
     g_SpatialSpacePhysic->initialize(H.aabb);
+
     Sound->set_geometry_occ(&Static);
     Sound->set_handler(_sound_event);
 
     FS.r_close(F);
 }
+
 //----------------------------------------------------------------------
-#ifdef DEBUG
-void CObjectSpace::dbgRender()
+
+void RayPickAsync::RayPickSubmit(const Fvector start, const Fvector dir, float range, collide::rq_target tgt, const CObject* ignore_object)
 {
-    R_ASSERT(bDebug);
+    this->start = start;
+    this->dir = dir;
+    this->range = range;
+    this->tgt = tgt;
+    this->ignore_object = ignore_object;
 
-    RCache.set_Shader(sh_debug);
-    for (u32 i = 0; i < q_debug.boxes.size(); i++)
-    {
-        Fobb& obb = q_debug.boxes[i];
-        Fmatrix X, S, R;
-        obb.xform_get(X);
-        RCache.dbg_DrawOBB(X, obb.m_halfsize, D3DCOLOR_XRGB(255, 0, 0));
-        S.scale(obb.m_halfsize);
-        R.mul(X, S);
-        RCache.dbg_DrawEllipse(R, D3DCOLOR_XRGB(0, 0, 255));
-    }
-    q_debug.boxes.clear();
-
-    for (i = 0; i < dbg_S.size(); i++)
-    {
-        std::pair<Fsphere, u32>& P = dbg_S[i];
-        Fsphere& S = P.first;
-        Fmatrix M;
-        M.scale(S.R, S.R, S.R);
-        M.translate_over(S.P);
-        RCache.dbg_DrawEllipse(M, P.second);
-    }
-    dbg_S.clear();
+    future_ready = false;
+    Device.add_to_seq_parallel(fastdelegate::MakeDelegate(this, &RayPickAsync::do_work_async));
 }
-#endif
+
+bool RayPickAsync::Ready(collide::rq_result& R)
+{
+    if (result.valid())
+        R = result;
+    return result.valid();
+}
+
+void RayPickAsync::Discard()
+{
+    Device.remove_from_seq_parallel(fastdelegate::MakeDelegate(this, &RayPickAsync::do_work_async));
+}
+
+void RayPickAsync::do_work_async()
+{
+    if (!g_pGameLevel || g_pGameLevel->is_removing_objects())
+        return;
+
+    ZoneScoped;
+
+    g_pGameLevel->ObjectSpace.RayPick(this->start, this->dir, this->range, this->tgt, result, this->ignore_object);
+
+    future_ready = true;
+}

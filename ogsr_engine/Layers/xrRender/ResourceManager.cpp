@@ -6,15 +6,15 @@
 
 #include "ResourceManager.h"
 #include "tss.h"
-#include "blenders\blender.h"
-#include "blenders\blender_recorder.h"
+#include "blenders/blender.h"
+#include "blenders/blender_recorder.h"
 
 template <class T>
 BOOL reclaim(xr_vector<T*>& vec, const T* ptr)
 {
     auto it = vec.begin();
     auto end = vec.end();
-    for (; it != end; it++)
+    for (; it != end; ++it)
         if (*it == ptr)
         {
             vec.erase(it);
@@ -44,11 +44,11 @@ IBlender* CResourceManager::_GetBlender(LPCSTR Name)
 //////////////////////////////////////////////////////////////////////
 void CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
 {
-    if (0 == names || 0 == names[0])
+    if (nullptr == names || 0 == names[0])
         names = "$null";
 
     dest.clear();
-    char* P = (char*)names;
+    const char* P = (char*)names;
     svector<char, 128> N;
 
     while (*P)
@@ -83,20 +83,19 @@ void CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
     }
 }
 
-ShaderElement* CResourceManager::_CreateElement(ShaderElement& S)
+ShaderElement* CResourceManager::_CreateElement(ShaderElement&& S)
 {
     if (S.passes.empty())
-        return 0;
+        return nullptr;
 
     // Search equal in shaders array
-    for (u32 it = 0; it < v_elements.size(); it++)
-        if (S.equal(*(v_elements[it])))
-            return v_elements[it];
+    for (const auto& v_element : v_elements)
+        if (S.equal(*v_element))
+            return v_element;
 
     // Create _new_ entry
-    ShaderElement* N = xr_new<ShaderElement>(S);
+    ShaderElement* N = v_elements.emplace_back(xr_new<ShaderElement>(std::move(S)));
     N->dwFlags |= xr_resource_flagged::RF_REGISTERED;
-    v_elements.push_back(N);
     return N;
 }
 
@@ -148,7 +147,7 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
     C.BT = B;
     C.bEditor = FALSE;
     C.bDetail = FALSE;
-    C.HudElement = ::Render->hud_loading;
+    C.HudElement = RImplementation.hud_loading;
 
     // Parse names
     _ParseList(C.L_textures, s_textures);
@@ -158,19 +157,19 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
     // Compile element	(LOD0 - HQ)
     {
         C.iElement = 0;
-        C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
+        C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture);
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[0] = _CreateElement(E);
+        S.E[0] = _CreateElement(std::move(E));
     }
 
     // Compile element	(LOD1)
     {
         C.iElement = 1;
-        C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture, C.detail_scaler);
+        C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture);
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[1] = _CreateElement(E);
+        S.E[1] = _CreateElement(std::move(E));
     }
 
     // Compile element
@@ -179,7 +178,7 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
         C.bDetail = FALSE;
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[2] = _CreateElement(E);
+        S.E[2] = _CreateElement(std::move(E));
     }
 
     // Compile element
@@ -188,7 +187,7 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
         C.bDetail = FALSE;
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[3] = _CreateElement(E);
+        S.E[3] = _CreateElement(std::move(E));
     }
 
     // Compile element
@@ -197,7 +196,7 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
         C.bDetail = TRUE; //.$$$ HACK :)
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[4] = _CreateElement(E);
+        S.E[4] = _CreateElement(std::move(E));
     }
 
     // Compile element
@@ -206,25 +205,35 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
         C.bDetail = FALSE;
         ShaderElement E;
         C._cpp_Compile(&E);
-        S.E[5] = _CreateElement(E);
+        S.E[5] = _CreateElement(std::move(E));
     }
 
+    std::scoped_lock scope(v_shaders_lock);
+
     // Search equal in shaders array
-    for (u32 it = 0; it < v_shaders.size(); it++)
-        if (S.equal(v_shaders[it]))
-            return v_shaders[it];
+    for (auto* v_shader : v_shaders)
+        if (S.equal(v_shader))
+            return v_shader;
 
     // Create _new_ entry
     Shader* N = xr_new<Shader>(S);
     N->dwFlags |= xr_resource_flagged::RF_REGISTERED;
+    N->dbg_shader_name = s_shader;
+    N->dbg_texture_name = s_textures;
+
     v_shaders.push_back(N);
+
     return N;
 }
+
 
 void CResourceManager::Delete(const Shader* S)
 {
     if (0 == (S->dwFlags & xr_resource_flagged::RF_REGISTERED))
         return;
+
+    std::scoped_lock scope(v_shaders_lock);
+
     if (reclaim(v_shaders, S))
         return;
     Msg("! ERROR: Failed to find complete shader");
@@ -232,10 +241,13 @@ void CResourceManager::Delete(const Shader* S)
 
 void CResourceManager::DeferredUpload()
 {
-    if (!RDEVICE.b_is_Ready)
+    if (!Device.b_is_Ready)
         return;
 
-    Msg("CResourceManager::DeferredUpload [%s] -> START, size = [%u]", ps_r2_ls_flags_ext.test(R2FLAGEXT_MT_TEXLOAD) ? "MT" : "NO MT", m_textures.size());
+    const int number_of_threads = TTAPI->get_num_threads();
+
+    Msg("CResourceManager::DeferredUpload [%s] -> START, texture count = [%u], number_of_threads = %d", ps_r2_ls_flags_ext.test(R2FLAGEXT_MT_TEXLOAD) ? "MT" : "NO MT",
+        m_textures.size(), number_of_threads);
 
     Msg("CResourceManager::DeferredUpload VRAM usage before:");
     
@@ -252,13 +264,15 @@ void CResourceManager::DeferredUpload()
     // Теперь многопоточная загрузка текстур даёт очень существенный прирост скорости, проверено.
     if (ps_r2_ls_flags_ext.test(R2FLAGEXT_MT_TEXLOAD))
     {
-        for (const auto& it : m_textures)
-            TTAPI->submit_detach([](CTexture* tex) { tex->Load(); }, it.second);
+        for (const auto& pair : m_textures)
+        {
+            TTAPI->submit_detach([](CTexture* tex) { tex->Load(); }, pair.second);
+        }
 
         TTAPI->wait_for_tasks();
     }
     else
-        for (auto& pair : m_textures)
+        for (const auto& pair : m_textures)
             pair.second->Load();
 
     Msg("CResourceManager::DeferredUpload VRAM usage after:");
@@ -276,10 +290,10 @@ void CResourceManager::_GetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u
     m_base = c_base = m_lmaps = c_lmaps = 0;
 
     map_Texture::iterator I = m_textures.begin();
-    map_Texture::iterator E = m_textures.end();
-    for (; I != E; I++)
+    const map_Texture::iterator E = m_textures.end();
+    for (; I != E; ++I)
     {
-        u32 m = I->second->flags.memUsage;
+        const u32 m = I->second->flags.memUsage;
         if (strstr(I->first, "lmap"))
         {
             c_lmaps++;
@@ -299,27 +313,22 @@ void CResourceManager::_DumpMemoryUsage()
     // sort
     {
         map_Texture::iterator I = m_textures.begin();
-        map_Texture::iterator E = m_textures.end();
-        for (; I != E; I++)
+        const map_Texture::iterator E = m_textures.end();
+        for (; I != E; ++I)
         {
             u32 m = I->second->flags.memUsage;
             shared_str n = I->second->cName;
-            mtex.insert(mk_pair(m, mk_pair(I->second->dwReference, n)));
+            mtex.insert(mk_pair(m, mk_pair(I->second->ref_count.load(), n)));
         }
     }
 
     // dump
     {
         xr_multimap<u32, std::pair<u32, shared_str>>::iterator I = mtex.begin();
-        xr_multimap<u32, std::pair<u32, shared_str>>::iterator E = mtex.end();
-        for (; I != E; I++)
+        const xr_multimap<u32, std::pair<u32, shared_str>>::iterator E = mtex.end();
+        for (; I != E; ++I)
             Msg("* %4.1f : [%4d] %s", float(I->first) / 1024.f, I->second.first, I->second.second.c_str());
     }
-}
-
-void CResourceManager::Evict()
-{
-    //	TODO: DX10: check if we really need this method
 }
 
 xr_vector<ITexture*> CResourceManager::FindTexture(const char* Name) const
@@ -336,7 +345,7 @@ xr_vector<ITexture*> CResourceManager::FindTexture(const char* Name) const
 
     if (!ch) // no wildcard?
     {
-        auto I = m_textures.find(filename);
+        const auto I = m_textures.find(filename);
         if (I != m_textures.end())
             res.emplace_back(dynamic_cast<ITexture*>(I->second));
     }

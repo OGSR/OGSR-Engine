@@ -136,7 +136,7 @@ public:
     CCC_MemStats(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
     virtual void Execute(LPCSTR args)
     {
-        Memory.mem_compact();
+        //Memory.mem_compact();
 
         u32 m_base = 0, c_base = 0, m_lmaps = 0, c_lmaps = 0;
 
@@ -1497,6 +1497,7 @@ void CCC_RegisterCommands()
 
     CMD3(CCC_Mask, "hud_crosshair", &psHUD_Flags, HUD_CROSSHAIR);
     CMD3(CCC_Mask, "hud_crosshair_dist", &psHUD_Flags, HUD_CROSSHAIR_DIST);
+    CMD3(CCC_Mask, "hud_info_overhead", &psHUD_Flags, HUD_INFO_OVERHEAD);
 
     if (IS_OGSR_GA)
         psHUD_FOV_def = 0.65f;
@@ -1603,8 +1604,9 @@ void CCC_RegisterCommands()
     CMD3(CCC_Mask, "g_god", &psActorFlags, AF_GODMODE);
     CMD3(CCC_Mask, "g_unlimitedammo", &psActorFlags, AF_UNLIMITEDAMMO);
     CMD3(CCC_Mask, "g_ammunition_on_belt", &psActorFlags, AF_AMMO_ON_BELT);
+
     CMD3(CCC_Mask, "g_3d_scopes", &psActorFlags, AF_3D_SCOPES);
-    CMD4(CCC_Integer, "g_3d_scopes_fps_factor", &g_3dscopes_fps_factor, 2, 5);
+
     CMD3(CCC_Mask, "g_crosshair_dbg", &psActorFlags, AF_CROSSHAIR_DBG);
     CMD3(CCC_Mask, "g_camera_collision", &psActorFlags, AF_CAM_COLLISION);
 
@@ -1716,11 +1718,12 @@ void CCC_RegisterCommands()
     CMD4(CCC_Integer, "show_wnd_rect_names", &g_show_wnd_rect_text, 0, 1);
     CMD4(CCC_Integer, "g_console_show_always", &g_console_show_always, 0, 1);
 
-
     *g_last_saved_game = 0;
 
     CMD4(CCC_Float, "g_cam_height_speed", &cam_HeightInterpolationSpeed, 4.0f, 16.0f);
     CMD4(CCC_Float, "g_cam_lookout_speed", &cam_LookoutSpeed, 1.0f, 4.0f);
+
+    CMD3(CCC_Mask, "g_actor_shadow", &psActorFlags, AF_ACTOR_SHADOW);
 
 #ifdef USE_MEMORY_VALIDATOR
     CMD4(CCC_Integer, "g_enable_memory_debug", &g_enable_memory_debug, 0, 1);
@@ -1730,4 +1733,7 @@ void CCC_RegisterCommands()
     if (!g_enable_memory_debug)
         PointerRegistryClear();
 #endif
+
+    extern BOOL bSenvironmentXrExport;
+    CMD4(CCC_Integer, "senvironment_xr_export", &bSenvironmentXrExport, FALSE, TRUE);
 }

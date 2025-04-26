@@ -158,7 +158,7 @@ CSavedGameWrapper::CSavedGameWrapper(LPCSTR saved_game_name)
         if (!R)
         {
             string_path graph_path;
-            FS.update_path(graph_path, _game_data_, GRAPH_NAME);
+            FS.update_path(graph_path, fsgame::game_data, GRAPH_NAME);
             R = FS.r_open(graph_path);
             separated_graphs = true;
         }

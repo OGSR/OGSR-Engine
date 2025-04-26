@@ -75,7 +75,7 @@ void IBlenderXr::Save(IWriter& fs)
 void IBlenderXr::Load(IReader& fs, u16)
 {
     // Read desc and doesn't change version
-    u16 V = description.version;
+    const u16 V = description.version;
     fs.r(&description, sizeof(description));
     description.version = V;
 
@@ -106,7 +106,7 @@ void IBlenderXr::SaveIni(CInifile* ini_file, LPCSTR section)
 void IBlenderXr::LoadIni(CInifile* ini_file, LPCSTR section)
 {
     // Read desc and doesn't change version
-    u16 V = description.version;
+    const u16 V = description.version;
 
     description.CLS = ini_file->r_clsid(section, "class");
     strcpy_s(description.cName, section/*ini_file->r_string(section, "name")*/);

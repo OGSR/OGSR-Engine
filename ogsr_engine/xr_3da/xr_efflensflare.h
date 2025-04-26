@@ -1,5 +1,5 @@
-#ifndef xr_efflensflareH
-#define xr_efflensflareH
+#pragma once
+
 
 #include "../xrcdb/xr_collide_defs.h"
 
@@ -20,7 +20,7 @@ public:
         shared_str texture;
         shared_str shader;
         FactoryPtr<IFlareRender> m_pRender;
-        // ref_shader		hShader;
+
         SFlare() { fOpacity = fRadius = fPosition = 0; }
     };
     struct SSource : public SFlare
@@ -47,18 +47,18 @@ public:
     float m_StateBlendUpSpeed;
     float m_StateBlendDnSpeed;
 
+    shared_str section;
+
+private:
     void SetGradient(float fMaxRadius, float fOpacity, LPCSTR tex_name, LPCSTR sh_name);
     void SetSource(float fRadius, BOOL ign_color, LPCSTR tex_name, LPCSTR sh_name);
     void AddFlare(float fRadius, float fOpacity, float fPosition, LPCSTR tex_name, LPCSTR sh_name);
-    // ref_shader			CreateShader	(LPCSTR tex_name, LPCSTR sh_name);
-
-    shared_str section;
 
 public:
     CLensFlareDescriptor()
     {
         m_Flags.zero();
-        section = 0;
+        section = nullptr;
         m_StateBlendUpSpeed = m_StateBlendDnSpeed = 0.1f;
     }
     void load(CInifile* pIni, LPCSTR section);
@@ -95,7 +95,6 @@ protected:
     float fGradientValue;
 
     FactoryPtr<ILensFlareRender> m_pRender;
-    // ref_geom			hGeom;
 
     LensFlareDescVec m_Palette;
     CLensFlareDescriptor* m_Current;
@@ -120,7 +119,8 @@ public:
     virtual ~CLensFlare();
 
     void OnFrame(shared_str id);
-    void __fastcall Render(BOOL bSun, BOOL bFlares, BOOL bGradient);
+    void Render(CBackend& cmd_list, BOOL bSun, BOOL bFlares, BOOL bGradient);
+
     void OnDeviceCreate();
     void OnDeviceDestroy();
 
@@ -129,4 +129,14 @@ public:
     void Invalidate() { m_State = lfsNone; }
 };
 
-#endif // xr_efflensflareH
+IC void blend_lerp(float& cur, float tgt, float speed, float dt)
+{
+    float diff = tgt - cur;
+    float diff_a = _abs(diff);
+    if (diff_a < EPS_S)
+        return;
+    float mot = speed * dt;
+    if (mot > diff_a)
+        mot = diff_a;
+    cur += (diff / diff_a) * mot;
+}

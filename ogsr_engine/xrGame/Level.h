@@ -7,7 +7,6 @@
 #include "..\xr_3da\igame_level.h"
 #include "../xr_3da/NET_Server_Trash/net_client.h"
 #include "script_export_space.h"
-#include "..\xr_3da\StatGraph.h"
 #include "xrMessages.h"
 #include "alife_space.h"
 #include "xrDebug.h"
@@ -86,10 +85,8 @@ protected:
     EVENT eEnvironment;
     EVENT eEntitySpawn;
     //---------------------------------------------
-    CStatGraph* pStatGraphS;
     u32 m_dwSPC; // SendedPacketsCount
     u32 m_dwSPS; // SendedPacketsSize
-    CStatGraph* pStatGraphR;
     u32 m_dwRPC; // ReceivedPacketsCount
     u32 m_dwRPS; // ReceivedPacketsSize
     //---------------------------------------------
@@ -157,6 +154,8 @@ public:
     bool PrefetchManySoundsLater(LPCSTR prefix);
     void PrefetchDeferredSounds();
     void CancelPrefetchManySounds(LPCSTR prefix);
+
+    void script_gc() const override;
 
 protected:
     BOOL net_start_result_total;
@@ -267,7 +266,6 @@ public:
     float GetGameTimeFactor();
     void SetGameTimeFactor(const float fTimeFactor);
     void SetGameTimeFactor(ALife::_TIME_ID GameTime, const float fTimeFactor);
-    virtual void SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTimeFactor);
 
     void GetGameTimeForShaders(u32& hours, u32& minutes, u32& seconds, u32& milliseconds) override;
 
@@ -316,7 +314,7 @@ private:
     bool m_is_removing_objects;
 
 public:
-    bool is_removing_objects() { return m_is_removing_objects; }
+    bool is_removing_objects() const override { return m_is_removing_objects; }
     void remove_objects();
     virtual void OnSessionTerminate(LPCSTR reason);
     void OnDestroyObject(u16 id) override;
@@ -335,7 +333,11 @@ add_to_type_list(CLevel)
 IC game_cl_GameState& Game() { return *Level().game; }
 u32 GameID();
 
-IC CHUDManager& HUD() { return *((CHUDManager*)Level().pHUD); }
+extern ENGINE_API CCustomHUD* g_hud;
+
+IC CHUDManager& HUD() { return *((CHUDManager*)g_hud); }
+
+IC bool Has_HUD() { return g_hud != nullptr; }
 
 #ifdef DEBUG
 IC CLevelDebug& DBG() { return *((CLevelDebug*)Level().m_level_debug); }
