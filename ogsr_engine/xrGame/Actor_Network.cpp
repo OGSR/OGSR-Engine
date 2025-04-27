@@ -30,6 +30,7 @@
 #include "actor_statistic_mgr.h"
 #include "alife_simulator_header.h"
 #include "actorcondition.h"
+#include "Car.h"
 #include "player_hud.h"
 #include "UIGameSP.h"
 #include "ui/UIPDAWnd.h"
@@ -394,6 +395,22 @@ void CActor::ChangeVisual(shared_str NewVisual)
     g_SetAnimation(mstate_real);
     Visual()->dcast_PKinematics()->CalculateBones_Invalidate();
     Visual()->dcast_PKinematics()->CalculateBones();
+
+    CCar* car;
+    if ((Holder()) && (car = smart_cast<CCar*>(Holder())))
+    {
+        IKinematicsAnimated* V = smart_cast<IKinematicsAnimated*>(Visual());
+        R_ASSERT(V);
+        u16 anim_type = car->DriverAnimationType();
+        SVehicleAnimCollection& anims = m_vehicle_anims->m_vehicles_type_collections[anim_type];
+        V->PlayCycle(anims.idles[0], FALSE);
+
+        ResetCallbacks();
+        u16 head_bone = V->dcast_PKinematics()->LL_BoneID("bip01_head");
+        V->dcast_PKinematics()->LL_GetBoneInstance(u16(head_bone)).set_callback(bctPhysics, VehicleHeadCallback, this);
+
+        character_physics_support()->movement()->DestroyCharacter();
+    }
 };
 
 void CActor::save(NET_Packet& output_packet)
