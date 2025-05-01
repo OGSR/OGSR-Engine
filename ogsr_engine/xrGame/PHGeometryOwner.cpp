@@ -21,6 +21,28 @@ CPHGeometryOwner::~CPHGeometryOwner()
         xr_delete(*i_geom);
     m_geoms.clear();
 }
+
+void CPHGeometryOwner::group_add(CODEGeom& g)
+{
+    if (!m_group)
+    {
+        CreateGroupSpace();
+    }
+    VERIFY(m_group);
+    {
+        g.add_to_space((dSpaceID)m_group);
+    }
+}
+
+void CPHGeometryOwner::group_remove(CODEGeom& g)
+{
+    VERIFY(m_group);
+    g.remove_from_space(m_group);
+    if (dSpaceGetNumGeoms(m_group) == 0)
+        DestroyGroupSpace();
+}
+
+
 void CPHGeometryOwner::build_Geom(CODEGeom& geom)
 {
     geom.build(m_mass_center);
@@ -403,5 +425,39 @@ void CPHGeometryOwner::clear_cashed_tries()
     for (; i != e; ++i)
     {
         (*i)->clear_cashed_tries();
+    }
+}
+void CPHGeometryOwner::add_geom(CODEGeom* g)
+{
+    VERIFY(b_builded);
+    VERIFY(m_group);
+    m_geoms.push_back(g);
+    group_add(*g);
+    // g->add_to_space( m_group );
+}
+
+void CPHGeometryOwner::remove_geom(CODEGeom* g)
+{
+    VERIFY(b_builded);
+    VERIFY(m_group);
+    GEOM_I gi = std::find(m_geoms.begin(), m_geoms.end(), g);
+    VERIFY(gi != m_geoms.end());
+    //(*gi)->remove_from_space( m_group );
+    group_remove(*g);
+    m_geoms.erase(gi);
+}
+
+void CPHGeometryOwner::CreateGroupSpace()
+{
+    VERIFY(!m_group);
+    m_group = dSimpleSpaceCreate(0);
+    dSpaceSetCleanup(m_group, 0);
+}
+void CPHGeometryOwner::DestroyGroupSpace()
+{
+    if (m_group)
+    {
+        dGeomDestroy((dGeomID)m_group);
+        m_group = nullptr;
     }
 }

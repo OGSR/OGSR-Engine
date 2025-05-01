@@ -70,6 +70,7 @@ public:
     virtual const Fvector& local_center() = 0;
     virtual void get_local_form(Fmatrix& form) = 0;
     virtual void set_local_form(const Fmatrix& form) = 0;
+    void set_local_form_bt(const Fmatrix& xform);
     // set
     // element part
     void set_body(dBodyID body);
@@ -122,6 +123,8 @@ public:
     virtual void set_local_form(const Fmatrix& form);
     virtual dGeomID create();
     virtual void set_position(const Fvector& ref_point);
+    void set_size(const Fvector& half_size);
+    void get_size(Fvector& half_size);
 };
 
 class CSphereGeom : public CODEGeom
@@ -159,4 +162,5 @@ public:
     virtual void set_local_form(const Fmatrix& form);
     virtual dGeomID create();
     virtual void set_position(const Fvector& ref_point);
+    void set_radius(float r);
 };

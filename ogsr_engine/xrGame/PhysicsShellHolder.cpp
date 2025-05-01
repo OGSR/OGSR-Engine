@@ -484,6 +484,19 @@ CPHCapture* CPhysicsShellHolder::PHCapture()
     return mov->PHCapture();
 }
 
+bool CPhysicsShellHolder::IsInventoryItem() { return !!cast_inventory_item(); }
+
+bool CPhysicsShellHolder::IsActor() { return !!cast_actor(); }
+
+bool CPhysicsShellHolder::IsStalker() { return !!cast_stalker(); }
+
+void CPhysicsShellHolder::MovementCollisionEnable(bool enable)
+{
+    VERIFY(character_physics_support());
+    VERIFY(character_physics_support()->movement());
+    character_physics_support()->movement()->CollisionEnable(enable);
+}
+
 bool CPhysicsShellHolder::ActivationSpeedOverriden(Fvector& dest, bool clear_override)
 {
     if (m_activation_speed_is_overriden)

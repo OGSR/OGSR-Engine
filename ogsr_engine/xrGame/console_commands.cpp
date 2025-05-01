@@ -1609,6 +1609,7 @@ void CCC_RegisterCommands()
 
     CMD3(CCC_Mask, "g_crosshair_dbg", &psActorFlags, AF_CROSSHAIR_DBG);
     CMD3(CCC_Mask, "g_camera_collision", &psActorFlags, AF_CAM_COLLISION);
+    CMD3(CCC_Mask, "g_camera_collision_cop_mode", &psActorFlags, AF_CAM_COLLISION_COP);
 
     CMD3(CCC_Mask, "g_mouse_wheel_switch_slot", &psActorFlags, AF_MOUSE_WHEEL_SWITCH_SLOTS);
 

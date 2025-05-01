@@ -6077,6 +6077,12 @@
     <ClInclude Include="..\COMMON_AI\script_writer.h">
       <Filter>AI\AScript\ScriptClasses\ScriptWriter</Filter>
     </ClInclude>
+    <ClInclude Include="ActorCameraCollision.h">
+      <Filter>Core\Client\Cameras</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometryBits.h">
+      <Filter>Core\Client\Objects\physics\Base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -8875,6 +8881,12 @@
     </ClCompile>
     <ClCompile Include="..\COMMON_AI\script_writer_script.cpp">
       <Filter>AI\AScript\ScriptClasses\ScriptWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="ActorCameraCollision.cpp">
+      <Filter>Core\Client\Cameras</Filter>
+    </ClCompile>
+    <ClCompile Include="GeometryBits.cpp">
+      <Filter>Core\Client\Objects\physics\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -115,6 +115,10 @@ public:
     Fvector2 CollideSndDist() const;
 
 public: // IPhysicsShellHolder
+    virtual bool IsInventoryItem();
+    virtual bool IsActor();
+    virtual bool IsStalker();
+    virtual void MovementCollisionEnable(bool enable);
     CPHCapture* _BCL PHCapture();
 
 private:

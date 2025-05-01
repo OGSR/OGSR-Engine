@@ -120,6 +120,9 @@ public:
     virtual void add_Shape(const SBoneShape& shape) = 0;
     virtual void add_Shape(const SBoneShape& shape, const Fmatrix& offset) = 0;
     virtual CODEGeom* last_geom() = 0;
+    virtual CODEGeom* geometry(u16 i) = 0;
+    virtual void add_geom(CODEGeom* g) = 0;
+    virtual void remove_geom(CODEGeom* g) = 0;
     virtual bool has_geoms() = 0;
     virtual void add_Mass(const SBoneShape& shape, const Fmatrix& offset, const Fvector& mass_center, float mass, CPHFracture* fracture = NULL) = 0;
     virtual void set_ParentElement(CPhysicsElement* p) = 0;
@@ -146,6 +149,9 @@ public:
     virtual void Fix() = 0;
     virtual void ReleaseFixed() = 0;
     virtual bool isFixed() = 0;
+
+    virtual void set_local_mass_center(const Fvector& mc) = 0;
+    virtual void setQuaternion(const Fquaternion& quaternion) = 0;
 
     virtual const Fmatrix& XFORM() const override { return CPhysicsBase::XFORM(); }
 
@@ -249,10 +255,15 @@ public:
 #ifdef DEBUG
     CPhysicsShellHolder* dbg_obj;
 #endif
+    bool bCopMode{};
+
 public:
     IC IKinematics* PKinematics() { return m_pKinematics; }
-
+    ////////////////////////////////////////////////////IPhysicsShell///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     virtual const Fmatrix& XFORM() const override { return CPhysicsBase::XFORM(); }
+    virtual CPhysicsElement& Element(u16 index) { return *get_ElementByStoreOrder(index); };
+    virtual void GetGlobalTransformDynamic(Fmatrix* m) = 0;
+
     virtual IPhysicsElement& IElement(u16 index) override { return *get_ElementByStoreOrder(index); };
 
 #ifdef ANIMATED_PHYSICS_OBJECT_SUPPORT
@@ -356,6 +367,7 @@ add_to_type_list(CPhysicsShell)
 #define script_type_list save_type_list(CPhysicsShell)
 
     void get_box(CPhysicsShell* shell, const Fmatrix& form, Fvector& sz, Fvector& c);
+    void destroy_physics_shell(CPhysicsShell*& p);
 
 // Implementation creator
 CPhysicsJoint* P_create_Joint(CPhysicsJoint::enumType type, CPhysicsElement* first, CPhysicsElement* second);

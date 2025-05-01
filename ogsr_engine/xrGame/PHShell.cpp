@@ -1131,8 +1131,13 @@ void CPHShell::GetGlobalTransformDynamic(Fmatrix* m)
     e = elements.end();
     for (; i != e; ++i)
         (*i)->GetGlobalTransformDynamic(&(*i)->mXFORM);
+
     m->set((*elements.begin())->mXFORM);
     m->mulB_43(m_object_in_root);
+
+    if (bCopMode)
+        mXFORM.set(*m);
+
     VERIFY2(_valid(*m), "not valide transform");
 }
 void CPHShell::InterpolateGlobalPosition(Fvector* v)
@@ -1449,8 +1454,15 @@ void CPHShell::SetAnimated(bool v)
 
 void CPHShell::PureStep(float step)
 {
-    CPHObject::Island().Step(step);
-    PhDataUpdate(step);
+    if (bCopMode)
+    {
+        CPHObject::step(step);
+    }
+    else
+    {
+        CPHObject::IslandStep(step);
+        PhDataUpdate(step);
+    }
 }
 void CPHShell::CollideAll()
 {

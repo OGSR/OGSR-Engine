@@ -66,6 +66,33 @@ void CPHElement::add_Sphere(const Fsphere& V) { CPHGeometryOwner::add_Sphere(V);
 
 void CPHElement::add_Cylinder(const Fcylinder& V) { CPHGeometryOwner::add_Cylinder(V); }
 
+void CPHElement::add_geom(CODEGeom* g)
+{
+    Fmatrix gf;
+    g->get_xform(gf);
+
+    Fmatrix bf;
+    PHDynamicData::DMXPStoFMX(dBodyGetRotation(m_body), dBodyGetPosition(m_body), bf);
+
+    Fmatrix diff = Fmatrix().mul_43(Fmatrix().invert(bf), gf);
+
+    dMatrix3 m;
+    PHDynamicData::FMXtoDMX(diff, m);
+
+    VERIFY(g->geom());
+    dGeomSetPosition(g->geom(), diff.c.x, diff.c.y, diff.c.z);
+    dGeomSetRotation(g->geom(), m);
+
+    g->set_body(m_body);
+    CPHGeometryOwner::add_geom(g);
+}
+
+void CPHElement::remove_geom(CODEGeom* g)
+{
+    g->set_body(0);
+    CPHGeometryOwner::remove_geom(g);
+}
+
 void CPHElement::build()
 {
     m_body = dBodyCreate(0); // phWorld
@@ -144,6 +171,12 @@ void CPHElement::calc_it_fract_data_use_density(const Fvector& mc, float density
     dMassSetZero(&m_mass);
     static_dencity = density;
     recursive_mass_summ(0, m_fratures_holder->m_fractures.begin());
+}
+
+void CPHElement::set_local_mass_center(const Fvector& mc)
+{
+    m_mass_center.set(mc);
+    dVectorSet(m_mass.c, cast_fp(mc));
 }
 
 dMass CPHElement::recursive_mass_summ(u16 start_geom, FRACTURE_I cur_fracture)

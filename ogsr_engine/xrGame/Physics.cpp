@@ -87,18 +87,18 @@ IC void add_contact_body_effector(dBodyID body, const dContact& c, SGameMtl* mat
 
 IC static int CollideIntoGroup(dGeomID o1, dGeomID o2, dJointGroupID jointGroup, CPHIsland* world, const int& MAX_CONTACTS)
 {
-    const int RS = 800 + 10;
-    const int N = RS;
+    constexpr int RS = 800 + 10;
+    constexpr int N = RS;
 
     static dContact contacts[RS]{};
     int collided_contacts = 0;
     // get the contacts up to a maximum of N contacts
-    int n;
 
-    VERIFY(o1);
-    VERIFY(o2);
+    if (!o1 || !o2)
+        return 0;
+
     VERIFY(&contacts[0].geom);
-    n = dCollide(o1, o2, N, &contacts[0].geom, sizeof(dContact));
+    int n = dCollide(o1, o2, N, &contacts[0].geom, sizeof(dContact));
 
     if (n > N - 1)
         n = N - 1;

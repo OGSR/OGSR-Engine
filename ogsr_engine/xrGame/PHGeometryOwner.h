@@ -21,6 +21,9 @@ protected:
     u16 ul_material; // e ??				//bl
     ContactCallbackFun* contact_callback; //->to shell ??		//bt
     ObjectContactCallbackFun* object_contact_callback; //->to shell ??		//st
+    void group_add(CODEGeom& g);
+    void group_remove(CODEGeom& g);
+
 public:
     ///
     void add_Sphere(const Fsphere& V); // aux
@@ -35,6 +38,9 @@ public:
         return m_geoms.back();
     } // aux
     bool has_geoms() { return !m_geoms.empty(); }
+    void add_geom(CODEGeom* g);
+    void remove_geom(CODEGeom* g);
+
     void set_ContactCallback(ContactCallbackFun* callback); // aux (may not be)
     void set_ObjectContactCallback(ObjectContactCallbackFun* callback); // called anywhere ph state influent
     void add_ObjectContactCallback(ObjectContactCallbackFun* callback); // called anywhere ph state influent
@@ -76,6 +82,8 @@ public:
 
 protected:
     void build();
+    void CreateGroupSpace();
+    void DestroyGroupSpace();
     void CreateSimulBase();
     void destroy();
     void build_Geom(CODEGeom& V); // aux

@@ -82,6 +82,10 @@ public:
     virtual void add_Shape(const SBoneShape& shape); // aux
     virtual void add_Shape(const SBoneShape& shape, const Fmatrix& offset); // aux
     virtual CODEGeom* last_geom() { return CPHGeometryOwner::last_geom(); } // aux
+    virtual CODEGeom* geometry(u16 i) { return CPHGeometryOwner::Geom(i); }
+    virtual void add_geom(CODEGeom* g);
+    virtual void remove_geom(CODEGeom* g);
+
     virtual bool has_geoms() { return CPHGeometryOwner::has_geoms(); }
     virtual void set_ContactCallback(ContactCallbackFun* callback); // aux (may not be)
     virtual void set_ObjectContactCallback(ObjectContactCallbackFun* callback); // called anywhere ph state influent
@@ -123,6 +127,7 @@ public: //
     void ReAdjustMassPositions(const Fmatrix& shift_pivot, float density); // aux
     void ResetMass(float density); // aux
     void CutVelocity(float l_limit, float a_limit);
+    virtual void set_local_mass_center(const Fvector& mc);
     ///////////////////////////////////////////////////PushOut///////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

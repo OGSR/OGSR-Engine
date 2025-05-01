@@ -8,6 +8,7 @@
 #include "ActorEffector.h"
 
 #include "PHWorld.h"
+#include "actorcameracollision.h"
 #include "level.h"
 #include "alife_registry_wrappers.h"
 #include "..\Include/xrRender/Kinematics.h"
@@ -259,6 +260,9 @@ void CActor::net_Destroy()
         g_actor = NULL;
 
     Engine.Sheduler.Unregister(this);
+
+    if (actor_camera_shell && actor_camera_shell->get_ElementByStoreOrder(0)->PhysicsRefObject() == this)
+        destroy_physics_shell(actor_camera_shell);
 }
 
 void CActor::net_Relcase(CObject* O)
