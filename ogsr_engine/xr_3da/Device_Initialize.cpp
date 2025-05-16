@@ -1,11 +1,47 @@
 #include "stdafx.h"
 #include "resource.h"
+#include <winternl.h>
+
+static void LogOsVersion()
+{
+    static auto RtlGetVersion = reinterpret_cast<NTSTATUS(WINAPI*)(LPOSVERSIONINFOEXW)>(GetProcAddress(GetModuleHandle("ntdll"), "RtlGetVersion"));
+
+    if (RtlGetVersion)
+    {
+        OSVERSIONINFOEXW osInfo{};
+        osInfo.dwOSVersionInfoSize = sizeof(osInfo);
+
+        if (NT_SUCCESS(RtlGetVersion(&osInfo)))
+        {
+            Msg("--OS Version major: [%d] minor: [%d], build: [%d]. Server OS: [%s]", osInfo.dwMajorVersion, osInfo.dwMinorVersion, osInfo.dwBuildNumber,
+                osInfo.wProductType != VER_NT_WORKSTATION ? "yes" : "no");
+            return;
+        }
+    }
+    Msg("!![%s] Can't get RtlGetVersion", __FUNCTION__);
+}
+
+static void LogWorkingDriveInfo()
+{
+    // Setup the DWORD variables.
+    ULARGE_INTEGER TotalNumberOfBytes, TotalNumberOfFreeBytes;
+
+    if (GetDiskFreeSpaceEx(Core.ApplicationPath, nullptr, &TotalNumberOfBytes, &TotalNumberOfFreeBytes))
+    {
+        Msg("Current drive space free: [%0.f]Mb total: [%0.f]Mb", static_cast<float>(TotalNumberOfFreeBytes.QuadPart) / 1024.f / 1024.f,
+            static_cast<float>(TotalNumberOfBytes.QuadPart) / 1024.f / 1024.f);
+    }
+}
+
 
 extern LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 void CRenderDevice::Initialize()
 {
     ZoneScoped;
+
+    LogOsVersion();
+    LogWorkingDriveInfo();
 
     Log("Initializing Engine...");
     TimerGlobal.Start();

@@ -8,7 +8,6 @@
 #include "..\Layers\xrRenderDX10\imgui_impl_dx11.h"
 #include "igame_level.h"
 #include "splash.h"
-#include <winternl.h>
 #include <mmsystem.h>
 #include "XR_IOConsole.h"
 #include "xr_ioc_cmd.h"
@@ -400,37 +399,6 @@ void CRenderDevice::message_loop()
     }
 }
 
-static void LogOsVersion()
-{
-    static auto RtlGetVersion = reinterpret_cast<NTSTATUS(WINAPI*)(LPOSVERSIONINFOEXW)>(GetProcAddress(GetModuleHandle("ntdll"), "RtlGetVersion"));
-
-    if (RtlGetVersion)
-    {
-        OSVERSIONINFOEXW osInfo{};
-        osInfo.dwOSVersionInfoSize = sizeof(osInfo);
-
-        if (NT_SUCCESS(RtlGetVersion(&osInfo)))
-        {
-            Msg("--OS Version major: [%d] minor: [%d], build: [%d]. Server OS: [%s]", osInfo.dwMajorVersion, osInfo.dwMinorVersion, osInfo.dwBuildNumber,
-                osInfo.wProductType != VER_NT_WORKSTATION ? "yes" : "no");
-            return;
-        }
-    }
-    Msg("!![%s] Can't get RtlGetVersion", __FUNCTION__);
-}
-
-void LogWorkingDriveInfo()
-{
-    // Setup the DWORD variables.
-    ULARGE_INTEGER TotalNumberOfBytes, TotalNumberOfFreeBytes;
-
-    if (GetDiskFreeSpaceExA(Core.ApplicationPath, nullptr, &TotalNumberOfBytes, &TotalNumberOfFreeBytes))
-    {
-        Msg("Current drive space free: [%g]Mb total: [%g]Mb"
-            , static_cast<float>(TotalNumberOfFreeBytes.QuadPart) / 1024.f / 1024.f, static_cast<float>(TotalNumberOfBytes.QuadPart) / 1024.f / 1024.f);
-    }
-}
-
 void CRenderDevice::ShowMainWindow() const
 {
     ShowWindow(m_hWnd, SW_SHOWNORMAL);
@@ -444,8 +412,6 @@ void CRenderDevice::Run()
     g_bLoaded = FALSE;
 
     Log("Starting engine...");
-    LogOsVersion();
-    LogWorkingDriveInfo();
 
     set_current_thread_name("X-RAY Primary thread");
     mainThreadId = std::this_thread::get_id();
