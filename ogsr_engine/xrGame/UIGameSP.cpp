@@ -285,6 +285,16 @@ void CChangeLevelWnd::OnOk()
 void CChangeLevelWnd::OnCancel()
 {
     Game().StartStopMenu(this, true);
+
+    auto pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
+    if (auto pda = Actor()->GetPDA(); pda && pda->Is3DPDA() && psActorFlags.test(AF_3D_PDA) && pGameSP->PdaMenu->IsShown())
+    {
+        pGameSP->PdaMenu->SetHolder(HUD().GetUI());
+        GetUICursor()->Show();
+        if (pda->m_bZoomed)
+            HUD().GetUI()->SetMainInputReceiver(pGameSP->PdaMenu, false);
+    }
+
     if (m_b_position_cancel)
     {
         Actor()->MoveActor(m_position_cancel, m_angles_cancel);

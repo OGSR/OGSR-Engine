@@ -453,10 +453,18 @@ void CLevel::OnRender()
     {
         Render->AfterWorldRender();
 
-        HUD().RenderUI();
-        if (g_btnHint)
-            g_btnHint->OnRender();
-        GetUICursor()->OnRender();
+        pGameSP->PdaMenu->Draw();
+
+        const CUIDialogWnd* receiver = pGameSP->MainInputReceiver();
+        const bool is_top = receiver == pGameSP->PdaMenu;
+
+        if (is_top || !receiver)
+        {
+            if (g_btnHint)
+                g_btnHint->OnRender();
+            GetUICursor()->OnRender();
+        }
+
         draw_wnds_rects();
 
         Fvector2 cursor_pos = GetUICursor()->GetCursorPosition();
@@ -469,9 +477,10 @@ void CLevel::OnRender()
     }
 
     HUD().RenderUI();
+
     if (g_btnHint)
         g_btnHint->OnRender();
-    GetUICursor()->OnRender();
+
     draw_wnds_rects();
 
 #ifndef DEBUG
