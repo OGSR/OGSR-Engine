@@ -154,58 +154,63 @@ Shader* CResourceManager::_cpp_Create(IBlender* B, LPCSTR s_shader, LPCSTR s_tex
     _ParseList(C.L_constants, s_constants);
     _ParseList(C.L_matrices, s_matrices);
 
-    // Compile element	(LOD0 - HQ)
     {
-        C.iElement = 0;
-        C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture);
-        ShaderElement E;
-        C._cpp_Compile(&E);
-        S.E[0] = _CreateElement(std::move(E));
-    }
+        // need lock ???
+        std::scoped_lock scope(ResourceEngineLock);
 
-    // Compile element	(LOD1)
-    {
-        C.iElement = 1;
-        C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture);
-        ShaderElement E;
-        C._cpp_Compile(&E);
-        S.E[1] = _CreateElement(std::move(E));
-    }
+        // Compile element	(LOD0 - HQ)
+        {
+            C.iElement = 0;
+            C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture);
+            ShaderElement E;
+            C._cpp_Compile(&E);
+            S.E[0] = _CreateElement(std::move(E));
+        }
 
-    // Compile element
-    {
-        C.iElement = 2;
-        C.bDetail = FALSE;
-        ShaderElement E;
-        C._cpp_Compile(&E);
-        S.E[2] = _CreateElement(std::move(E));
-    }
+        // Compile element	(LOD1)
+        {
+            C.iElement = 1;
+            C.bDetail = m_textures_description.GetDetailTexture(C.L_textures[0], C.detail_texture);
+            ShaderElement E;
+            C._cpp_Compile(&E);
+            S.E[1] = _CreateElement(std::move(E));
+        }
 
-    // Compile element
-    {
-        C.iElement = 3;
-        C.bDetail = FALSE;
-        ShaderElement E;
-        C._cpp_Compile(&E);
-        S.E[3] = _CreateElement(std::move(E));
-    }
+        // Compile element
+        {
+            C.iElement = 2;
+            C.bDetail = FALSE;
+            ShaderElement E;
+            C._cpp_Compile(&E);
+            S.E[2] = _CreateElement(std::move(E));
+        }
 
-    // Compile element
-    {
-        C.iElement = 4;
-        C.bDetail = TRUE; //.$$$ HACK :)
-        ShaderElement E;
-        C._cpp_Compile(&E);
-        S.E[4] = _CreateElement(std::move(E));
-    }
+        // Compile element
+        {
+            C.iElement = 3;
+            C.bDetail = FALSE;
+            ShaderElement E;
+            C._cpp_Compile(&E);
+            S.E[3] = _CreateElement(std::move(E));
+        }
 
-    // Compile element
-    {
-        C.iElement = 5;
-        C.bDetail = FALSE;
-        ShaderElement E;
-        C._cpp_Compile(&E);
-        S.E[5] = _CreateElement(std::move(E));
+        // Compile element
+        {
+            C.iElement = 4;
+            C.bDetail = TRUE; //.$$$ HACK :)
+            ShaderElement E;
+            C._cpp_Compile(&E);
+            S.E[4] = _CreateElement(std::move(E));
+        }
+
+        // Compile element
+        {
+            C.iElement = 5;
+            C.bDetail = FALSE;
+            ShaderElement E;
+            C._cpp_Compile(&E);
+            S.E[5] = _CreateElement(std::move(E));
+        }
     }
 
     std::scoped_lock scope(v_shaders_lock);

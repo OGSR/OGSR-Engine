@@ -609,7 +609,7 @@ BOOL CResourceManager::_lua_HasShader(LPCSTR s_shader)
     for (int i = 0, l = xr_strlen(s_shader) + 1; i < l; i++)
         undercorated[i] = ('\\' == s_shader[i]) ? '_' : s_shader[i];
 
-    std::scoped_lock scope(ScriptEngineLock);
+    std::scoped_lock scope(ResourceEngineLock);
 
     bool bHasShader = object(undercorated, "normal", LUA_TFUNCTION)
         || object(undercorated, "l_special", LUA_TFUNCTION);
@@ -652,7 +652,7 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
     C.detail_texture = nullptr;
 
     {
-        std::scoped_lock scope(ScriptEngineLock);
+        std::scoped_lock scope(ResourceEngineLock);
 
         // Choose workflow here: old (using named stages) or new (explicitly declaring stage number)
         bool bUseNewWorkflow = false;

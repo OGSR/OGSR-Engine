@@ -64,11 +64,11 @@ private:
     // main shader-array
     xr_vector<SPass*> v_passes;
     xr_vector<ShaderElement*> v_elements;
-    xr_vector<Shader*> v_shaders;
 
+    xr_vector<Shader*> v_shaders;
     std::recursive_mutex v_shaders_lock;
 
-    std::recursive_mutex ScriptEngineLock;
+    std::recursive_mutex ResourceEngineLock;
 
 public:
     CTextureDescrMngr m_textures_description;
