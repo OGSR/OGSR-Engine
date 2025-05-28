@@ -8,6 +8,8 @@ using namespace luabind;
 
 bool CUIListWnd::AddItem_script(CUIListItem* item) { return AddItem(item, -1); }
 
+bool CUIListWnd::AddItem_scriptIndex(CUIListItem* item, int index) { return AddItem(item, index); }
+
 struct CUIListItemWrapper : public CUIListItem, public luabind::wrap_base
 {};
 
@@ -22,6 +24,7 @@ void CUIListWnd::script_register(lua_State* L)
         class_<CUIListWnd, CUIWindow>("CUIListWnd")
             .def(constructor<>())
             .def("AddItem", &CUIListWnd::AddItem_script, adopt<2>())
+            .def("AddItem", &CUIListWnd::AddItem_scriptIndex, adopt<2>())
             .def("RemoveItem", &CUIListWnd::RemoveItem)
             .def("RemoveAll", &CUIListWnd::RemoveAll)
             .def("EnableScrollBar", &CUIListWnd::EnableScrollBar)

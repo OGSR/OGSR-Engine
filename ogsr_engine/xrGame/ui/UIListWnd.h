@@ -40,7 +40,8 @@ public:
     template <class Element>
     bool AddItem(const char* str, const float shift = 0.0f, void* pData = NULL, int value = 0, int insertBeforeIdx = -1);
 
-    virtual bool AddItem_script(CUIListItem* item);
+    bool AddItem_script(CUIListItem* item);
+    bool AddItem_scriptIndex(CUIListItem* item, int index);
 
     template <class Element>
     bool AddItem(Element* pItem, int insertBeforeIdx = -1);
