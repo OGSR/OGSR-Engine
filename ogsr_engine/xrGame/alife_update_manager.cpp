@@ -53,7 +53,7 @@ CALifeUpdateManager::CALifeUpdateManager(xrServer* server, LPCSTR section)
 {
     shedule.t_min = pSettings->r_s32(section, "schedule_min");
     shedule.t_max = pSettings->r_s32(section, "schedule_max");
-    shedule_register();
+    Engine.Sheduler.Register(this, TRUE); // shedule_register();
 
     m_max_process_time = pSettings->r_s32(section, "process_time");
     m_update_monster_factor = pSettings->r_float(section, "update_monster_factor");
@@ -64,7 +64,7 @@ CALifeUpdateManager::CALifeUpdateManager(xrServer* server, LPCSTR section)
 
 CALifeUpdateManager::~CALifeUpdateManager()
 {
-    shedule_unregister(true);
+    Engine.Sheduler.Unregister(this); // shedule_unregister(true);
     Device.remove_from_seq_parallel(fastdelegate::MakeDelegate(this, &CALifeUpdateManager::update));
 }
 
