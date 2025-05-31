@@ -41,10 +41,10 @@ void CLevel::cl_Process_Spawn(NET_Packet& P)
 
     if (Device.dwPrecacheFrame == 0)
     {
-        CSE_ALifeMonsterAbstract* monster = smart_cast<CSE_ALifeMonsterAbstract*>(E);
-        CSE_ALifeTraderAbstract* trader = smart_cast<CSE_ALifeTraderAbstract*>(E);
-        bool postpone = ((trader || monster) && !is_removing_objects()) ? true : false;
-        if (!(monster || trader))
+        const CSE_ALifeMonsterAbstract* monster = smart_cast<CSE_ALifeMonsterAbstract*>(E);
+        const CSE_ALifeTraderAbstract* trader = smart_cast<CSE_ALifeTraderAbstract*>(E);
+        bool postpone = (trader || monster) && !is_removing_objects();
+        if (!postpone)
         {
             for (const auto& it : game_spawn_queue)
             {
@@ -230,12 +230,20 @@ void CLevel::ProcessGameSpawns()
         {
             if (E->ID_Parent == trader->ID)
             {
-                // Msg( "* [%s]: delayed spawn dwFrame[%u] trader[%d] ID[%d] ID_Parent[%d] name_replace[%s]", __FUNCTION__, Device.dwFrame, trader->ID, E->ID, E->ID_Parent,
-                // E->name_replace() );
+                // Msg( "* [%s]: delayed spawn dwFrame[%u] trader[%d] ID[%d] ID_Parent[%d] name_replace[%s]", __FUNCTION__, Device.dwFrame, trader->ID, E->ID, E->ID_Parent, E->name_replace() );
                 g_sv_Spawn(E);
             }
         }
-        game_spawn_queue.erase(std::remove_if(game_spawn_queue.begin(), game_spawn_queue.end(), [&](auto& E) { return E->ID_Parent == trader->ID; }), game_spawn_queue.end());
+        
+        std::erase_if(game_spawn_queue, [&](auto& E) {
+            if (E->ID_Parent == trader->ID)
+            {
+                F_entity_Destroy(E);
+                return true;
+            }
+            return false;
+        });
+
         F_entity_Destroy(trader);
     }
 }
