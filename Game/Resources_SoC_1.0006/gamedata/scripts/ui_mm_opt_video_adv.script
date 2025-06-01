@@ -32,6 +32,7 @@ local adv_vid_opt_params = {
 	{ "r_sslr_enable",         "check", 0, hint_colors.yellow, "video_settings_name_51", "video_settings_desc_51" },
 	--
 	{ "tessellation",          "check", 0, hint_colors.green , "video_settings_name_52", "video_settings_desc_52" },
+	{ "vsync",                 "check", 0, hint_colors.green , "video_settings_name_16", "video_settings_desc_16" },
 	{ "mt_texload",            "check", 0, hint_colors.green , "video_settings_name_60", ""                       },
 	--
 	{ "detail_density",        "track", 0, hint_colors.yellow, "video_settings_name_4" , "video_settings_desc_4"  },
