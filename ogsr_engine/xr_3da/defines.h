@@ -28,7 +28,7 @@ enum
 {
     //rsFullscreen = (1ul << 0ul),
     rsClearBB = (1ul << 1ul),
-    //rsVSync = (1ul << 2ul),
+    rsVSync = (1ul << 2ul),
     //rsWireframe = (1ul << 3ul),
     //rsOcclusion = (1ul << 4ul),
     rsStatistic = (1ul << 5ul),

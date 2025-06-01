@@ -955,9 +955,15 @@ void CRender::End()
     {
         ZoneScopedN("Present");
 
-        UINT flags = 0;
-        flags = flags | DXGI_PRESENT_ALLOW_TEARING;
-        HW.m_pSwapChain->Present(0, flags);
+        if (psDeviceFlags.test(rsVSync))
+            {
+                // 512: DXGI_PRESENT_ALLOW_TEARING - allows for true V-Sync off with flip model
+                HW.m_pSwapChain->Present(1, 0);
+            }
+        else
+            {
+                HW.m_pSwapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING);
+            }
     }
 
     TracyD3D11Collect(HW.profiler_ctx);
