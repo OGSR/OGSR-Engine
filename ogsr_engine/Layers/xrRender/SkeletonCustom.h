@@ -38,7 +38,7 @@ public:
 public:
     Fsphere m_Bounds{}; // 16		world space
 public:
-    CSkeletonWallmark(CKinematics* p, const Fmatrix* m, ref_shader s, const Fvector& cp, float ts) : m_Parent(p), m_XForm(m), m_Shader(s), m_ContactPoint(cp), m_fTimeStart(ts)
+    CSkeletonWallmark(CKinematics* p, const Fmatrix* m, ref_shader s, const Fvector& cp, const float ts) : m_Parent(p), m_XForm(m), m_Shader(s), m_ContactPoint(cp), m_fTimeStart(ts)
     {
 #ifdef DEBUG
         used_in_render = u32(-1);
@@ -53,7 +53,7 @@ public:
 
     IC CKinematics* Parent() const { return m_Parent; }
     IC u32 VCount() { return m_Faces.size() * 3; }
-    IC bool Similar(ref_shader& sh, const Fvector& cp, float eps) { return (m_Shader == sh) && m_ContactPoint.similar(cp, eps); }
+    IC bool Similar(const ref_shader& sh, const Fvector& cp, const float eps) { return (m_Shader == sh) && m_ContactPoint.similar(cp, eps); }
     IC float TimeStart() { return m_fTimeStart; }
     IC const Fmatrix* XFORM() { return m_XForm; }
     IC const Fvector3& ContactPoint() { return m_ContactPoint; }
@@ -107,7 +107,6 @@ protected:
     class wallmark_calculate_details
     {
     public:
-        CKinematics* parent{};
         Fmatrix* parent_xform{};
 
         Fvector3 position{};
@@ -116,8 +115,7 @@ protected:
         ref_shader shader{};
         float size{};
 
-        wallmark_calculate_details(){};
-        void add_wallmark_internal();
+        void add_wallmark_internal(CKinematics* parent);
     };
 
     SkeletonWMVec wallmarks;
@@ -160,10 +158,14 @@ public:
 
 public:
     // wallmarks
-    void AddWallmark(Fmatrix* parent, Fvector3& start, Fvector3& dir, ref_shader shader, float size);
+    void AddWallmark(Fmatrix* parent_xform, const Fvector3& start, const Fvector3& dir, const ref_shader& shader, float size);
     void CalculateWallmarks(bool hud);
     void RenderWallmark(intrusive_ptr<CSkeletonWallmark> wm, FVF::LIT*& verts);
     void ClearWallmarks();
+
+private:
+    void AddWallmarkAsync();
+    xr_vector<wallmark_calculate_details> wallmarks_to_add;
 
 public:
     bool PickBone(const Fmatrix& parent_xform, IKinematics::pick_result& r, float dist, const Fvector& start, const Fvector& dir, u16 bone_id);
@@ -223,7 +225,7 @@ public:
         CBoneData* bd = ((*bones)[bone_id]);
         return bd;
     }
-    u16 LL_BoneCount() const { return u16(bones->size()); }
+    u16 LL_BoneCount() const { return static_cast<u16>(bones->size()); }
     u16 LL_VisibleBoneCount(); /*{ return visimask.count(); }*/
     ICF Fmatrix& LL_GetTransform(u16 bone_id) { return LL_GetBoneInstance(bone_id).mTransform; }
     ICF const Fmatrix& LL_GetTransform(u16 bone_id) const { return LL_GetBoneInstance(bone_id).mTransform; }
@@ -306,4 +308,4 @@ private:
     bool m_is_original_lod;
 };
 
-IC CKinematics* PCKinematics(dxRender_Visual* V) { return V ? (CKinematics*)V->dcast_PKinematics() : nullptr; }
+IC CKinematics* PCKinematics(dxRender_Visual* V) { return V ? dynamic_cast<CKinematics*>(V->dcast_PKinematics()) : nullptr; }

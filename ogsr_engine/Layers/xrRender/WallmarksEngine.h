@@ -5,7 +5,7 @@
 
 namespace WallmarksEngine
 {
-struct static_queue;
+struct wallmark_static_queue_item;
 struct wm_slot;
 }
 
@@ -43,6 +43,8 @@ private:
     CDB::Collector sml_collector;
     xr_vector<u32> sml_adjacency;
 
+    xr_vector<WallmarksEngine::wallmark_static_queue_item> static_items_to_add;
+
 private:
     wm_slot* FindSlot(const ref_shader& shader);
     wm_slot* AppendSlot(const ref_shader& shader);
@@ -56,17 +58,18 @@ private:
 
     void static_wm_render(const static_wallmark* W, FVF::LIT*& V);
 
+    void add_static_wallmark_internal(const WallmarksEngine::wallmark_static_queue_item& q);
+
 public:
     CWallmarksEngine();
     ~CWallmarksEngine();
 
-    void AddStaticWallmark(CDB::TRI* pTri, const Fvector* pVerts, const Fvector& contact_point, const ref_shader& sh, const float sz);
+    void AddStaticWallmark(CDB::TRI* pTri, const Fvector* pVerts, const Fvector& contact_point, const ref_shader& sh, float wm_size);
 
-    void AddSkeletonWallmark(Fmatrix* xf, CKinematics* obj, ref_shader& sh, Fvector& start, Fvector& dir, float size);
+    void AddSkeletonWallmark(Fmatrix* xf, CKinematics* obj, const ref_shader& sh, const Fvector& start, const Fvector& dir, float size);
     void AppendSkeletonWallmark(intrusive_ptr<CSkeletonWallmark> wm);
 
-    // called by static_queue
-    void add_static_wallmark_internal(const WallmarksEngine::static_queue& q);
+    void add_static_wallmarks_async();
 
     // render
     void Render();
