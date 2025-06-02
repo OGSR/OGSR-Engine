@@ -5,6 +5,7 @@
 #include "../../xr_3da/CustomHUD.h"
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/environment.h"
+#include "../../xr_3da/device.h"
 #include "../xrRender/SkeletonCustom.h"
 #include "../xrRender/LightTrack.h"
 #include "../xrRender/dxRenderDeviceRender.h"
@@ -19,6 +20,11 @@
 float OLES_SUN_LIMIT_27_01_07 = 100.f;
 
 CRender RImplementation;
+
+// Для лимитера
+static auto s_LastPresentTime = std::chrono::high_resolution_clock::now();
+extern std::uint32_t g_dwFPSlimit;
+
 
 //////////////////////////////////////////////////////////////////////////
 class CGlow : public IRender_Glow
@@ -927,6 +933,7 @@ void CRender::Clear()
     }
 }
 
+
 void CRender::End()
 {
     r_main.sync();
@@ -951,22 +958,55 @@ void CRender::End()
 
         HW.WaitOnSwapChain(); // wait for prev Present to finish. not sure that it is best place to wait, but it works
     }
-
+    
     {
         ZoneScopedN("Present");
+        {
+            {   //TODO: подключить сюда и паузу если нужно
+                constexpr u32 menuFPSlimit{60}; //, pauseFPSlimit{60};
+                const u32 curFPSLimit = IsMainMenuActive() ? menuFPSlimit : g_dwFPSlimit; //: Paused() ? pauseFPSlimit
 
-        if (psDeviceFlags.test(rsVSync))
-            {
-                // 512: DXGI_PRESENT_ALLOW_TEARING - allows for true V-Sync off with flip model
-                HW.m_pSwapChain->Present(1, 0);
+                auto now = std::chrono::high_resolution_clock::now();
+                auto frameTime = std::chrono::duration_cast<std::chrono::microseconds>(now - s_LastPresentTime).count();
+
+                // конверсия лимита фпс в микросекунды
+                const long long targetFrameTime = (curFPSLimit > 0) ? (1'000'000LL / curFPSLimit) : 0LL;
+
+                if (frameTime < targetFrameTime)
+                {
+                    // считаем сколько спать
+                    auto remainingTime = targetFrameTime - frameTime;
+                    auto sleepTime = (remainingTime / 1000) - 1; // поспать на 1мс меньше, чтоб не переспать
+
+                    if (sleepTime > 0)
+                    {
+                        Sleep(static_cast<DWORD>(sleepTime));
+                    }
+
+                    // spinwait оставшееся время
+                    auto spinWaitEnd = now + std::chrono::microseconds(targetFrameTime - frameTime - 100);
+                    while (std::chrono::high_resolution_clock::now() < spinWaitEnd)
+                    {
+                        _mm_pause();
+                    }
+                }
+
+                if (psDeviceFlags.test(rsVSync))
+                {
+                    HW.m_pSwapChain->Present(1, 0);
+                }
+                else
+                {
+                    // 512: DXGI_PRESENT_ALLOW_TEARING - allows for true V-Sync off with flip model
+                    HW.m_pSwapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING);
+                }
+
+                s_LastPresentTime = std::chrono::high_resolution_clock::now();
             }
-        else
-            {
-                HW.m_pSwapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING);
-            }
+
+            TracyD3D11Collect(HW.profiler_ctx);
+
+            Target->reset_target_dimensions();
+        }
     }
-
-    TracyD3D11Collect(HW.profiler_ctx);
-
-    Target->reset_target_dimensions();
 }

@@ -320,26 +320,28 @@ void CRenderDevice::on_idle()
 
         const auto FrameEndTime = std::chrono::high_resolution_clock::now();
         const std::chrono::duration<double, std::milli> FrameElapsedTime = FrameEndTime - FrameStartTime;
+        
+        //  Отложить здесь до лучших времён
+        //
+        //{
+        //    ZoneScopedN("fps_lock");
 
-        {
-            ZoneScopedN("fps_lock");
+        //    constexpr u32 menuFPSlimit{60}, pauseFPSlimit{60};
+        //    const u32 curFPSLimit = IsMainMenuActive() ? menuFPSlimit : Paused() ? pauseFPSlimit : g_dwFPSlimit;
 
-            constexpr u32 menuFPSlimit{60}, pauseFPSlimit{60};
-            const u32 curFPSLimit = IsMainMenuActive() ? menuFPSlimit : Paused() ? pauseFPSlimit : g_dwFPSlimit;
+        //    if (curFPSLimit > 0)
+        //    {
+        //        const std::chrono::duration<double, std::milli> FpsLimitMs{std::floor(1000.f / static_cast<float>(curFPSLimit + 1))};
+        //        if (FrameElapsedTime < FpsLimitMs)
+        //        {
+        //            const auto TimeToSleep = FpsLimitMs - FrameElapsedTime;
+        //            // std::this_thread::sleep_until(FrameEndTime + TimeToSleep); // часто спит больше, чем надо. Скорее всего из-за округлений в большую сторону.
+        //            Sleep(iFloor(TimeToSleep.count()));
 
-            if (curFPSLimit > 0)
-            {
-                const std::chrono::duration<double, std::milli> FpsLimitMs{std::floor(1000.f / static_cast<float>(curFPSLimit + 1))};
-                if (FrameElapsedTime < FpsLimitMs)
-                {
-                    const auto TimeToSleep = FpsLimitMs - FrameElapsedTime;
-                    // std::this_thread::sleep_until(FrameEndTime + TimeToSleep); // часто спит больше, чем надо. Скорее всего из-за округлений в большую сторону.
-                    Sleep(iFloor(TimeToSleep.count()));
-
-                    // Msg("~~[%s] waited [%f] ms", __FUNCTION__, TimeToSleep.count());
-                }
-            }
-        }
+        //            // Msg("~~[%s] waited [%f] ms", __FUNCTION__, TimeToSleep.count());
+        //        }
+        //    }
+        //}
 
         {
             ZoneScopedN("WaitSecondThread");
