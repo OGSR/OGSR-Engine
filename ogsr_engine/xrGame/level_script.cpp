@@ -1044,6 +1044,10 @@ void CLevel::script_register(lua_State* L)
 
             def("cover_in_direction", &cover_in_direction), def("vertex_in_direction", &vertex_in_direction), def("rain_factor", &rain_factor), def("rain_hemi", rain_hemi),
             def("rain_wetness", [] { return g_pGamePersistent->Environment().wetness_factor; }),
+            def("set_rain_wetness", [](float val) {
+                clamp(val, 0.f, 1.f);
+                g_pGamePersistent->Environment().wetness_factor = val;
+            }),
             def("patrol_path_exists", &patrol_path_exists), def("vertex_position", &vertex_position), def("name", &get_name), def("prefetch_sound", &prefetch_sound),
 
             def("prefetch_sound", prefetch_sound),
