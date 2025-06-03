@@ -958,38 +958,45 @@ void CRender::End()
 
         HW.WaitOnSwapChain(); // wait for prev Present to finish. not sure that it is best place to wait, but it works
     }
-    
+
+    {
+        ZoneScopedN("fps_lock");
+        // TODO: подключить сюда и паузу если нужно
+        constexpr u32 menuFPSlimit{60}; //, pauseFPSlimit{60};
+        const u32 curFPSLimit = IsMainMenuActive() ? menuFPSlimit : g_dwFPSlimit; //: Paused() ? pauseFPSlimit
+
+        auto now = std::chrono::high_resolution_clock::now();
+        auto frameTime = std::chrono::duration_cast<std::chrono::microseconds>(now - s_LastPresentTime).count();
+
+        // конверсия лимита фпс в микросекунды
+        const long long targetFrameTime = (curFPSLimit > 0) ? (1000000 / curFPSLimit) : 60;
+
+        if (frameTime < targetFrameTime)
+        {
+            // считаем сколько спать
+            auto remainingTime = targetFrameTime - frameTime;
+            auto sleepTime = (remainingTime / 1000);
+
+            if (sleepTime > 2)
+            {
+                Sleep(static_cast<DWORD>(sleepTime - 2)); // поспать на 2мс меньше, чтоб не переспать
+            }
+            
+            // spinwait оставшееся время
+            auto spinWaitEnd = now + std::chrono::microseconds(targetFrameTime - frameTime);
+            while (std::chrono::high_resolution_clock::now() < spinWaitEnd)
+            {
+                YieldProcessor();
+            }
+        }
+    }
+
     {
         ZoneScopedN("Present");
         {
-            {   //TODO: подключить сюда и паузу если нужно
-                constexpr u32 menuFPSlimit{60}; //, pauseFPSlimit{60};
-                const u32 curFPSLimit = IsMainMenuActive() ? menuFPSlimit : g_dwFPSlimit; //: Paused() ? pauseFPSlimit
+            
 
-                auto now = std::chrono::high_resolution_clock::now();
-                auto frameTime = std::chrono::duration_cast<std::chrono::microseconds>(now - s_LastPresentTime).count();
-
-                // конверсия лимита фпс в микросекунды
-                const long long targetFrameTime = (curFPSLimit > 0) ? (1'000'000LL / curFPSLimit) : 0LL;
-
-                if (frameTime < targetFrameTime)
-                {
-                    // считаем сколько спать
-                    auto remainingTime = targetFrameTime - frameTime;
-                    auto sleepTime = (remainingTime / 1000) - 1; // поспать на 1мс меньше, чтоб не переспать
-
-                    if (sleepTime > 0)
-                    {
-                        Sleep(static_cast<DWORD>(sleepTime));
-                    }
-
-                    // spinwait оставшееся время
-                    auto spinWaitEnd = now + std::chrono::microseconds(targetFrameTime - frameTime - 100);
-                    while (std::chrono::high_resolution_clock::now() < spinWaitEnd)
-                    {
-                        _mm_pause();
-                    }
-                }
+                s_LastPresentTime = std::chrono::high_resolution_clock::now();
 
                 if (psDeviceFlags.test(rsVSync))
                 {
@@ -1001,7 +1008,6 @@ void CRender::End()
                     HW.m_pSwapChain->Present(0, DXGI_PRESENT_ALLOW_TEARING);
                 }
 
-                s_LastPresentTime = std::chrono::high_resolution_clock::now();
             }
 
             TracyD3D11Collect(HW.profiler_ctx);
@@ -1009,4 +1015,3 @@ void CRender::End()
             Target->reset_target_dimensions();
         }
     }
-}
