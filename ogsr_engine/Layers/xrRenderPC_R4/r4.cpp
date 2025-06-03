@@ -953,6 +953,44 @@ void CRender::End()
     }
 
     {
+        ZoneScopedN("fps_lock");
+
+        const auto now = std::chrono::high_resolution_clock::now();
+        static auto s_LastPresentTime = now;
+
+        constexpr long long menuFPSlimit{60ll}, pauseFPSlimit{60ll};
+        const long long curFPSLimit = IsMainMenuActive() ? menuFPSlimit : Device.Paused() ? pauseFPSlimit : g_dwFPSlimit;
+
+        if (curFPSLimit > 0ll)
+        {
+            const auto frameTime = std::chrono::duration_cast<std::chrono::microseconds>(now - s_LastPresentTime).count();
+            // конверсия лимита фпс в микросекунды
+            const auto targetFrameTime = 1000000ll / curFPSLimit;
+
+            if (frameTime < targetFrameTime)
+            {
+                // считаем сколько спать
+                const auto remainingTime = targetFrameTime - frameTime;
+                const auto sleepTime = remainingTime / 1000ll;
+
+                if (sleepTime > 2ll)
+                {
+                    Sleep(static_cast<DWORD>(sleepTime - 2ll)); // поспать на 2мс меньше, чтоб не переспать
+                }
+
+                // spinwait оставшееся время
+                const auto spinWaitEnd = now + std::chrono::microseconds(targetFrameTime - frameTime);
+                while (std::chrono::high_resolution_clock::now() < spinWaitEnd)
+                {
+                    YieldProcessor();
+                }
+            }
+        }
+
+        s_LastPresentTime = std::chrono::high_resolution_clock::now();
+    }
+
+    {
         ZoneScopedN("Present");
 
         if (psDeviceFlags.test(rsVSync))
