@@ -29,7 +29,7 @@
 #include "lj_vm.h"
 
 #define GCSTEPSIZE	1024u
-#define GCSWEEPMAX	40
+#define GCSWEEPMAX	10
 #define GCSWEEPCOST	10
 #define GCFINALIZECOST	100
 
@@ -875,4 +875,3 @@ void *lj_mem_grow(lua_State *L, void *p, MSize *szp, MSize lim, MSize esz)
   *szp = sz;
   return p;
 }
-

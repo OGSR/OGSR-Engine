@@ -71,6 +71,9 @@ CLevel::CLevel()
       DemoCS(MUTEX_PROFILE_ID(DemoCS))
 #endif // PROFILE_CRITICAL_SECTIONS
 {
+    lua_gc(ai().script_engine().lua(), LUA_GCSTOP, 0);
+    lua_gc(ai().script_engine().lua(), LUA_GCSETSTEPMUL, 5);
+
     g_bDebugEvents = strstr(Core.Params, "-debug_ge") ? TRUE : FALSE;
 
     Server = NULL;
