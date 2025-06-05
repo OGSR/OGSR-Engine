@@ -166,8 +166,7 @@ void IGame_Persistent::OnFrame()
         psi->PSI_internal_delete();
     }
 
-#pragma todo("SIMP: пока убрано")
-//    Device.add_to_seq_parallel(fastdelegate::MakeDelegate(this, &IGame_Persistent::ProcessParticlesCreate));
+    Device.add_to_seq_parallel(fastdelegate::MakeDelegate(this, &IGame_Persistent::ProcessParticlesCreate));
 }
 
 void IGame_Persistent::destroy_particles(const bool& all_particles) // this for level unload or disconnect
@@ -175,8 +174,7 @@ void IGame_Persistent::destroy_particles(const bool& all_particles) // this for 
     ps_needtoplay.clear();
 
     {
-#pragma todo("SIMP: пока убрано")
-//        Device.remove_from_seq_parallel(fastdelegate::MakeDelegate(this, &IGame_Persistent::ProcessParticlesCreate));
+        Device.remove_from_seq_parallel(fastdelegate::MakeDelegate(this, &IGame_Persistent::ProcessParticlesCreate));
 
         ps_needtocreate.clear();
     }
@@ -223,17 +221,26 @@ void IGame_Persistent::destroy_particles(const bool& all_particles) // this for 
 
 void IGame_Persistent::models_savePrefetch() { Render->models_savePrefetch(); }
 
+#include <execution>
+
 void IGame_Persistent::ProcessParticlesCreate()
 {
     if (!ps_needtocreate.empty())
     {
-        //Msg("ProcessParticlesCreate fire");
         ZoneScoped;
-#pragma todo("SIMP: пока убрано")
-        /*for (const auto& ps : ps_needtocreate)
+
+        if (ps_needtocreate.size() > 8)
         {
-            ps->PerformCreate();
-        }*/
+#pragma todo("Simp: Rework it!!!")
+            std::for_each(std::execution::par_unseq, ps_needtocreate.begin(), ps_needtocreate.end(), [](auto* ps) { ps->PerformCreate(); });
+        }
+        else
+        {
+            for (auto* ps : ps_needtocreate)
+            {
+                ps->PerformCreate();
+            }
+        }
 
         ps_needtocreate.clear();
     }
