@@ -4,6 +4,8 @@
 #include "stdafx.h"
 
 #include "ParticlesObject.h"
+
+#include "gamepersistent.h"
 #include "../Include/xrRender/RenderVisual.h"
 #include "../Include/xrRender/ParticleCustom.h"
 #include "..\xr_3da\render.h"
@@ -19,12 +21,11 @@ void CParticlesObject::Init(LPCSTR p_name, IRender_Sector::sector_id_t sector_id
     m_bLooped = false;
     m_bAutoRemove = bAutoRemove;
 
-    // create visual
-    renderable.visual = Render->model_CreateParticles(p_name);
-    VERIFY(renderable.visual);
-    IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
-    VERIFY(V);
-    const float time_limit = V->GetTimeLimit();
+    m_name = p_name;
+
+    GamePersistent().ps_needtocreate.push_back(this);
+
+    float time_limit = Render->GetParticlesTimeLimit(p_name);
 
     if (time_limit > 0.f)
     {
@@ -34,7 +35,7 @@ void CParticlesObject::Init(LPCSTR p_name, IRender_Sector::sector_id_t sector_id
     {
         if (bAutoRemove)
         {
-            R_ASSERT3(!m_bAutoRemove, "Can't set auto-remove flag for looped particle system.", p_name);
+            R_ASSERT(!m_bAutoRemove, "Can't set auto-remove flag for looped particle system.", p_name);
         }
         else
         {
@@ -46,6 +47,7 @@ void CParticlesObject::Init(LPCSTR p_name, IRender_Sector::sector_id_t sector_id
     // spatial
     spatial.type = 0;
     spatial.sector_id = sector_id;
+    spatial.dbg_name = "CParticlesObject";
 
     // sheduled
     shedule.t_min = 20;
@@ -64,17 +66,20 @@ CParticlesObject::~CParticlesObject()
 
 void CParticlesObject::UpdateSpatial()
 {
+    R_ASSERT(renderable.visual);
+
+    auto& vis_data = renderable.visual->getVisData();
+
     // spatial	(+ workaround occasional bug inside particle-system)
-    if (_valid(renderable.visual->getVisData().sphere))
+    if (_valid(vis_data.sphere))
     {
         Fvector P;
-        float R;
-        renderable.xform.transform_tiny(P, renderable.visual->getVisData().sphere.P);
-        R = renderable.visual->getVisData().sphere.R;
+        renderable.xform.transform_tiny(P, vis_data.sphere.P);
+        const float R = vis_data.sphere.R;
         if (0 == spatial.type)
         {
             // First 'valid' update - register
-            spatial.type = STYPE_RENDERABLE;
+            spatial.type = STYPE_RENDERABLE | STYPE_PARTICLE;
             spatial.sphere.set(P, R);
             spatial_register();
         }
@@ -94,38 +99,55 @@ void CParticlesObject::UpdateSpatial()
     }
 }
 
-const shared_str CParticlesObject::Name()
-{
-    IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
-    VERIFY(V);
-    return (V) ? V->Name() : "";
-}
-
 //----------------------------------------------------
 void CParticlesObject::Play(BOOL hudMode)
 {
+    m_bStopping = false;
+    m_bDeferredStopped = false;
+    m_bPlaying = true;
+
     dwLastTime = Device.dwTimeGlobal - 33ul;
     market = Device.dwFrame - 1;
 
+    if (!m_bCreated)
+    {
+        hud_mode = hudMode;
+
+        return;
+    }
+
     IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
     VERIFY(V);
+
     V->SetHudMode(hudMode);
     V->Play();
 
     DoWork();
 }
 
-void CParticlesObject::play_at_pos(const Fvector& pos, BOOL xform)
+void CParticlesObject::PlayAtPos(const Fvector& pos)
 {
+    m_bStopping = false;
+    m_bDeferredStopped = false;
+    m_bPlaying = true;
+
     dwLastTime = Device.dwTimeGlobal - 33ul;
     market = Device.dwFrame - 1;
 
     Fmatrix m;
     m.translate(pos);
 
+    if (!m_bCreated)
+    {
+        matrix = m;
+
+        return;
+    }
+
     IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
     VERIFY(V);
-    V->UpdateParent(m, {}, xform);
+
+    V->UpdateParent(m, {}, false);
     V->Play();
 
     DoWork();
@@ -133,6 +155,13 @@ void CParticlesObject::play_at_pos(const Fvector& pos, BOOL xform)
 
 void CParticlesObject::Stop(BOOL bDefferedStop)
 {
+    m_bStopping = true;
+    m_bPlaying = false;
+    m_bDeferredStopped = bDefferedStop;
+
+    if (!m_bCreated)
+        return;
+
     IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
     VERIFY(V);
     V->Stop(bDefferedStop);
@@ -142,7 +171,7 @@ void CParticlesObject::shedule_Update(u32 _dt)
 {
     inherited::shedule_Update(_dt);
 
-    if (market < Device.dwFrame - (30 + Random.randI(60))) // если не рендерили на прошлом кадре - ГГ не видит
+    if (m_bCreated && market < Device.dwFrame - (30 + Random.randI(60))) // если не рендерили на прошлом кадре - ГГ не видит
     {
         DoWork();
     }
@@ -176,11 +205,47 @@ void CParticlesObject::DoWork()
 
 void CParticlesObject::PerformFrame()
 {
-    DoWork();
+    if (m_bCreated)
+        DoWork();
+}
+
+void CParticlesObject::PerformCreate()
+{
+    if (!m_bCreated)
+    {
+        renderable.visual = Render->model_CreateParticles(m_name.c_str());
+        R_ASSERT(renderable.visual);
+
+        IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
+        VERIFY(V);
+
+        V->UpdateParent(matrix, velocity, xform_set);
+        if (xform_set)
+            renderable.xform.set(matrix);
+        UpdateSpatial();
+
+        if (m_bPlaying)
+        {
+            V->SetHudMode(hud_mode);
+            V->Play();
+
+            DoWork();
+        }
+        m_bCreated = true;
+    }
 }
 
 void CParticlesObject::SetXFORM(const Fmatrix& m)
 {
+    if (!m_bCreated)
+    {
+        matrix = m;
+        velocity = {};
+        xform_set = true;
+
+        return;
+    }
+
     IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
     VERIFY(V);
     V->UpdateParent(m, {}, TRUE);
@@ -190,24 +255,39 @@ void CParticlesObject::SetXFORM(const Fmatrix& m)
 
 void CParticlesObject::UpdateParent(const Fmatrix& m, const Fvector& vel)
 {
+    if (!m_bCreated)
+    {
+        matrix = m;
+        velocity = vel;
+        xform_set = false;
+
+        return;
+    }
+
     IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
     VERIFY(V);
     V->UpdateParent(m, vel, FALSE);
     UpdateSpatial();
 }
 
-Fvector& CParticlesObject::Position() { return renderable.visual->getVisData().sphere.P; }
+float CParticlesObject::shedule_Scale()
+{
+    if (!m_bCreated)
+        return 50.f / 200.f;
 
-float CParticlesObject::shedule_Scale() { return Device.vCameraPosition.distance_to(Position()) / 200.f; }
+    R_ASSERT(renderable.visual);
+    return Device.vCameraPosition.distance_to(renderable.visual->getVisData().sphere.P) / 200.f;
+}
 
 void CParticlesObject::renderable_Render(u32 context_id, IRenderable* root)
 {
     R_ASSERT(renderable.visual);
 
-    ::Render->add_Visual(context_id, root, renderable.visual, renderable.xform);
+    if (m_bCreated)
+        ::Render->add_Visual(context_id, root, renderable.visual, renderable.xform);
 }
 
-bool CParticlesObject::IsAutoRemove()
+bool CParticlesObject::IsAutoRemove() const
 {
     if (m_bAutoRemove)
         return true;
@@ -222,9 +302,31 @@ void CParticlesObject::SetAutoRemove(bool auto_remove)
 
 //играются ли партиклы, отличается от PSI_Alive, тем что после
 //остановки Stop партиклы могут еще доигрывать анимацию IsPlaying = true
-bool CParticlesObject::IsPlaying()
+bool CParticlesObject::IsPlaying() const
 {
+    if (!m_bCreated)
+        return m_bPlaying;
+
     IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
     VERIFY(V);
     return !!V->IsPlaying();
+}
+
+bool CParticlesObject::IsDeferredStopped() const
+{
+    if (!m_bCreated)
+        return m_bDeferredStopped;
+
+    IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
+    VERIFY(V);
+    return !!V->IsDeferredStopped();
+}
+
+shared_str CParticlesObject::Name() const
+{
+    if (!m_bCreated)
+        return m_name;
+
+    IParticleCustom* V = smart_cast<IParticleCustom*>(renderable.visual);
+    return (V) ? V->Name() : "";
 }

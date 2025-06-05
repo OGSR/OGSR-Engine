@@ -408,7 +408,7 @@ bool CScriptEntity::bfAssignParticles(CScriptEntityAction* tpEntityAction)
             {
                 const Fmatrix& l_tMatrix = GetUpdatedMatrix(*l_tParticleAction.m_caBoneName, l_tParticleAction.m_tParticlePosition, l_tParticleAction.m_tParticleAngles);
                 l_tParticleAction.m_tpParticleSystem->UpdateParent(l_tMatrix, {});
-                l_tParticleAction.m_tpParticleSystem->play_at_pos(l_tMatrix.c);
+                l_tParticleAction.m_tpParticleSystem->PlayAtPos(l_tMatrix.c);
                 l_tParticleAction.m_bStartedToPlay = true;
             }
             else
