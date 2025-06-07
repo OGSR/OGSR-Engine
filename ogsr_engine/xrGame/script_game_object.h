@@ -155,8 +155,8 @@ public:
     CScriptGameObject* Parent() const;
     void Hit(CScriptHit* tLuaHit);
     int clsid() const;
-    void play_cycle(LPCSTR anim, bool mix_in);
-    void play_cycle(LPCSTR anim);
+    u32 play_cycle(LPCSTR anim, bool mix_in) const;
+    u32 play_cycle(LPCSTR anim) const;
     Fvector Center();
     void set_lua_state(lua_State* L) { m_lua_state = L; }
     lua_State* lua_state() { return m_lua_state; }
