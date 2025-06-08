@@ -140,7 +140,7 @@ void CDetailManager::Unload()
         check_lock.lock();
 
         if (awaiter.valid())
-            awaiter.get();
+            awaiter.wait();
 
         async_started = false;
 
@@ -380,7 +380,7 @@ void CDetailManager::Render(CBackend& cmd_list, const bool shadows, light* L)
         check_lock.lock();
 
         if (awaiter.valid())
-            awaiter.get();
+            awaiter.wait();
 
         async_started = false;
 

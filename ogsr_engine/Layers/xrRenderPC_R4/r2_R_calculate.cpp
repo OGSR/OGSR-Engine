@@ -190,7 +190,7 @@ void CRender::calculate_particles_wait()
 {
     if (particles_async_awaiter.valid())
     {
-        particles_async_awaiter.get();
+        particles_async_awaiter.wait();
     }
 }
 
@@ -237,7 +237,7 @@ void CRender::calculate_bones_wait()
 {
     if (bones_async_awaiter.valid())
     {
-        bones_async_awaiter.get();
+        bones_async_awaiter.wait();
     }
 }
 

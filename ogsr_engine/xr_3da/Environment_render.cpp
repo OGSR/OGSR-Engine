@@ -51,7 +51,7 @@ void CEnvironment::RenderLast(CBackend& cmd_list)
     {
         if (awaiter.valid())
         {
-            awaiter.get();
+            awaiter.wait();
         }
 
         async_started = false;

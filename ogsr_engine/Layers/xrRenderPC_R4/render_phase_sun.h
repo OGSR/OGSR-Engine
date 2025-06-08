@@ -45,13 +45,13 @@ struct i_render_phase
     {
         if (main_task_started)
         {
-            main_task.get();
+            main_task.wait();
             main_task_started = false;
         }
 
         if (draw_task_started)
         {
-            draw_task.get();
+            draw_task.wait();
             draw_task_started = false;
         }
         else

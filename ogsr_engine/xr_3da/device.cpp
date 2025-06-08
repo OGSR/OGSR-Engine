@@ -337,12 +337,12 @@ void CRenderDevice::on_idle()
 #else
             if (awaiter.valid())
 #endif
-            awaiter.get();
+            awaiter.wait();
 
             while (!async_waiter.empty())
             {
                 if (async_waiter.back().valid())
-                    async_waiter.back().get();
+                    async_waiter.back().wait();
                 async_waiter.pop_back();
             }
 
