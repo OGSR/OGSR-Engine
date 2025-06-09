@@ -435,9 +435,6 @@ void CActor::cam_Update(float dt, float fFOV)
     if (m_holder)
         return;
 
-    C->Update(point, dangle);
-    C->f_fov = fFOV;
-
     if (eacFirstEye != cam_active)
     {
         cameras[eacFirstEye]->Update(point, dangle);
