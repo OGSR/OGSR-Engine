@@ -181,8 +181,11 @@ void CArtefact::OnH_B_Independent(bool just_before_destroy)
     VERIFY(!ph_world->Processing());
     inherited::OnH_B_Independent(just_before_destroy);
 
-    StartLights();
-    SwitchAfParticles(true);
+    if (!just_before_destroy)
+    {
+        StartLights();
+        SwitchAfParticles(true);
+    }
 }
 
 // called only in "fast-mode"
