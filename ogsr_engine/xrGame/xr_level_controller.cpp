@@ -616,7 +616,7 @@ bool ConsoleBindCmds::execute(int dik)
     if (it == m_bindConsoleCmds.end())
         return false;
 
-    Console->Execute(it->second.cmd.c_str());
+    Console->ExecuteCommand(it->second.cmd.c_str(), false, false);
     return true;
 }
 
