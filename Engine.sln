@@ -24,6 +24,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrCore", "ogsr_engine\xrCore\xrCore.vcxproj", "{A0F7D1FB-59A7-4717-A7E4-96F37E91998E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1B71D5DF-C005-4B3F-822A-345255173F0B} = {1B71D5DF-C005-4B3F-822A-345255173F0B}
+		{ABB5EAE7-B3E6-432E-B636-333449892EA6} = {ABB5EAE7-B3E6-432E-B636-333449892EA6}
 		{CF0ABA8F-E803-3A6E-8969-ECFE88B85AED} = {CF0ABA8F-E803-3A6E-8969-ECFE88B85AED}
 	EndProjectSection
 EndProject
@@ -67,8 +68,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		ogsr_engine\xray.natvis = ogsr_engine\xray.natvis
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{1C3F1496-7953-4B6D-83C2-19D0DB6A06DD}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Renders", "Renders", "{559DFEB1-3EDA-4F37-A9C5-E59D18E0EFDD}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xrRender_R4", "ogsr_engine\Layers\xrRenderPC_R4\xrRender_R4.vcxproj", "{AC9B12ED-A2D7-4337-A981-5BD8430E96D8}"
@@ -88,6 +87,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "liblz4", "3rd_party\Src\lz4\liblz4.vcxproj", "{9092C5CC-3E71-41B3-BF68-4A7BDD8A5476}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libzstd", "3rd_party\Src\zstd\libzstd.vcxproj", "{8BFD8150-94D5-4BF9-8A50-7BD9929A0850}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mimalloc-lib", "3rd_party\Src\mimalloc\mimalloc-lib.vcxproj", "{ABB5EAE7-B3E6-432E-B636-333449892EA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -175,6 +176,10 @@ Global
 		{8BFD8150-94D5-4BF9-8A50-7BD9929A0850}.Debug|x64.Build.0 = Debug|x64
 		{8BFD8150-94D5-4BF9-8A50-7BD9929A0850}.Release|x64.ActiveCfg = Release|x64
 		{8BFD8150-94D5-4BF9-8A50-7BD9929A0850}.Release|x64.Build.0 = Release|x64
+		{ABB5EAE7-B3E6-432E-B636-333449892EA6}.Debug|x64.ActiveCfg = Debug|x64
+		{ABB5EAE7-B3E6-432E-B636-333449892EA6}.Debug|x64.Build.0 = Debug|x64
+		{ABB5EAE7-B3E6-432E-B636-333449892EA6}.Release|x64.ActiveCfg = Release|x64
+		{ABB5EAE7-B3E6-432E-B636-333449892EA6}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -197,6 +202,7 @@ Global
 		{36D591C7-65C7-A0D1-1CBC-10CDE441BDC8} = {240AEFB4-B8D3-465D-BFE0-D3700EC0485C}
 		{9092C5CC-3E71-41B3-BF68-4A7BDD8A5476} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
 		{8BFD8150-94D5-4BF9-8A50-7BD9929A0850} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
+		{ABB5EAE7-B3E6-432E-B636-333449892EA6} = {240AEFB4-B8D3-465D-BFE0-D3700EC0485C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1F9B04CC-5248-4AE5-97B7-66A0D0E5AA5E}

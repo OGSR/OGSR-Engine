@@ -7,16 +7,16 @@
 #endif
 
 #ifdef USE_MIMALLOC
-#include "..\mimalloc\include\mimalloc-override.h"
+#include "mimalloc-override.h"
 #ifdef XRCORE_STATIC
 // xrSimpodin: перегрузка операторов new/delete будет действовать только внутри того модуля движка, в котором они перегружены.
 // Если движок разбит на модули и операторы перегружены в xrCore.dll, то в других модулях будут использоваться стандартные операторы,
 // и если создать объект через new в xrCore, а delete сделать в xrGame - будет ошибка, т.к. объект создали кастомным аллокатором, а удалить пытаемся системным.
 // Здесь два варианта решения проблемы: или перегружать операторы в каждом модуле, что не очень рационально,
 // или перегружать их только в случае, если движок собирается в один exe файл. Второй вариант мне кажется более рациональным.
-#include "..\mimalloc\include\mimalloc-new-delete.h"
+#include "mimalloc-new-delete.h"
 #endif
-#pragma comment(lib, "mimalloc-static")
+#pragma comment(lib, "mimalloc")
 #endif
 
 xrMemory Memory;
