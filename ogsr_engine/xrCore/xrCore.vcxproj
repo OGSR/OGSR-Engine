@@ -68,7 +68,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\concurrentqueue;$(SolutionDir)\3rd_party\Src\libsquashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\concurrentqueue;$(SolutionDir)\3rd_party\Src\libsquashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <CompileAsManaged>
@@ -115,7 +115,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\concurrentqueue;$(SolutionDir)\3rd_party\Src\libsquashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\mimalloc\mimalloc\include;$(SolutionDir)\3rd_party\Src\concurrentqueue;$(SolutionDir)\3rd_party\Src\libsquashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <CompileAsManaged>
