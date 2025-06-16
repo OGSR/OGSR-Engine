@@ -160,6 +160,12 @@
     <ClCompile Include="..\..\3rd_party\Src\tracy\public\TracyClient.cpp">
       <Filter>Profiler</Filter>
     </ClCompile>
+    <ClCompile Include="arc_db.cpp">
+      <Filter>FS</Filter>
+    </ClCompile>
+    <ClCompile Include="arc_sqfs.cpp">
+      <Filter>FS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FTimer.h">

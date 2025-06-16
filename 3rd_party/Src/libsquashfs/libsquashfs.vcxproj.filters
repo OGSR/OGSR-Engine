@@ -1,0 +1,264 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="squashfs-tools-ng\lib\compat\src\strchrnul.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\compat\src\strndup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\block_processor\backend.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\block_processor\block_processor.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\block_processor\frontend.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\block_processor\ostream.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\block_writer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\comp\compressor.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\comp\lz4.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\comp\zstd.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\data_reader.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\dir_entry.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\dir_iterator.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\dir_reader.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\dir_writer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\frag_table.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\id_table.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\inode.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\io\dir_hl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\io\dir_rec.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\io\dir_win32.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\io\file.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\io\istream.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\io\ostream.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\io\stream_api.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\io\win32.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\meta_reader.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\meta_writer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\misc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\read_inode.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\read_super.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\read_table.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\readdir.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\super.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\write_inode.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\write_super.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\write_table.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\xattr\xattr.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\xattr\xattr_reader.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\xattr\xattr_writer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\xattr\xattr_writer_flush.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\xattr\xattr_writer_record.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\alloc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\array.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\file_cmp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\hash_table.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\is_memory_zero.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\mempool.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\rbtree.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\str_table.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\threadpool.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\xxhash.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="squashfs-tools-ng\include\compat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\block.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\block_processor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\block_writer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\compressor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\data_reader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\dir.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\dir_entry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\dir_reader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\dir_writer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\error.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\frag_table.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\id_table.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\inode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\io.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\meta_reader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\meta_writer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\predef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\super.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\table.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\xattr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\xattr_reader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\xattr_writer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\util\array.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\util\hash_table.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\util\mempool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\util\rbtree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\include\util\threadpool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\lib\sqfs\src\block_processor\internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\lib\sqfs\src\comp\internal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="squashfs-tools-ng\lib\sqfs\src\xattr\xattr_writer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{18A7C1DE-652C-35D1-907A-40E789C23881}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{E36FC71A-EFFD-3394-83EF-AC3EC5233082}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

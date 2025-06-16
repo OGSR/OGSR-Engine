@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{CF0ABA8F-E803-3A6E-8969-ECFE88B85AED}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>libsquashfs</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="..\3rd_party_lib_properties.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <!--CharacterSet>Unicode</CharacterSet-->
+    <CharacterSet>MultiByte</CharacterSet>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <LinkIncremental>false</LinkIncremental>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <!--CharacterSet>Unicode</CharacterSet-->
+    <CharacterSet>MultiByte</CharacterSet>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\inc;.\squashfs-tools-ng\include;..\lz4\lz4\lib;..\zstd\zstd\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>false</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WITH_LZ4;WITH_ZSTD;SQFS_STATIC;</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>.\inc;.\squashfs-tools-ng\include;..\lz4\lz4\lib;..\zstd\zstd\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Disabled</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <StringPooling>false</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <OmitFramePointers>false</OmitFramePointers>
+      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;WITH_LZ4;WITH_ZSTD;SQFS_STATIC;</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <LinkTimeCodeGeneration>
+      </LinkTimeCodeGeneration>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="squashfs-tools-ng\include\compat.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\block.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\block_processor.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\block_writer.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\compressor.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\data_reader.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\dir.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\dir_entry.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\dir_reader.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\dir_writer.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\error.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\frag_table.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\id_table.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\inode.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\io.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\meta_reader.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\meta_writer.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\predef.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\super.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\table.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\xattr.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\xattr_reader.h" />
+    <ClInclude Include="squashfs-tools-ng\include\sqfs\xattr_writer.h" />
+    <ClInclude Include="squashfs-tools-ng\include\util\array.h" />
+    <ClInclude Include="squashfs-tools-ng\include\util\hash_table.h" />
+    <ClInclude Include="squashfs-tools-ng\include\util\mempool.h" />
+    <ClInclude Include="squashfs-tools-ng\include\util\rbtree.h" />
+    <ClInclude Include="squashfs-tools-ng\include\util\threadpool.h" />
+    <ClCompile Include="squashfs-tools-ng\lib\compat\src\strchrnul.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\compat\src\strndup.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\block_processor\backend.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\block_processor\block_processor.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\block_processor\frontend.c" />
+    <ClInclude Include="squashfs-tools-ng\lib\sqfs\src\block_processor\internal.h" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\block_processor\ostream.c">
+      <ObjectFileName>$(IntDir)/squashfs-tools-ng/lib/sqfs/src/block_processor/ostream.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\block_writer.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\comp\compressor.c" />
+    <ClInclude Include="squashfs-tools-ng\lib\sqfs\src\comp\internal.h" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\comp\lz4.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\comp\zstd.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\data_reader.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\dir_entry.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\dir_iterator.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\dir_reader.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\dir_writer.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\frag_table.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\id_table.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\inode.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\io\dir_hl.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\io\dir_rec.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\io\dir_win32.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\io\file.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\io\istream.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\io\ostream.c">
+      <ObjectFileName>$(IntDir)/squashfs-tools-ng/lib/sqfs/src/io/ostream.c.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\io\stream_api.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\io\win32.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\meta_reader.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\meta_writer.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\misc.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\read_inode.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\read_super.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\read_table.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\readdir.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\super.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\write_inode.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\write_super.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\write_table.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\xattr\xattr.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\xattr\xattr_reader.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\xattr\xattr_writer.c" />
+    <ClInclude Include="squashfs-tools-ng\lib\sqfs\src\xattr\xattr_writer.h" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\xattr\xattr_writer_flush.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\sqfs\src\xattr\xattr_writer_record.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\alloc.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\array.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\file_cmp.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\hash_table.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\is_memory_zero.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\mempool.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\rbtree.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\str_table.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\threadpool.c" />
+    <ClCompile Include="squashfs-tools-ng\lib\util\src\xxhash.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

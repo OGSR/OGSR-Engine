@@ -134,7 +134,7 @@ u32 IWriter::chunk_size() // returns size of currently opened chunk, 0 otherwise
 void IWriter::w_compressed(void* ptr, u32 count, const bool encrypt, const bool is_ww)
 {
     BYTE* dest = 0;
-    unsigned dest_sz = 0;
+    size_t dest_sz = 0;
     _compressLZ(&dest, &dest_sz, ptr, count);
 
     if (encrypt)
@@ -192,7 +192,7 @@ IReader* IReader::open_chunk(u32 ID)
         if (bCompressed)
         {
             BYTE* dest;
-            unsigned dest_sz;
+            size_t dest_sz;
             _decompressLZ(&dest, &dest_sz, pointer(), dwSize);
             return xr_new<CTempReader>(dest, dest_sz, tell() + dwSize);
         }
@@ -243,7 +243,7 @@ IReader* IReader::open_chunk_iterator(u32& ID, IReader* _prev)
     {
         // compressed
         u8* dest;
-        unsigned dest_sz;
+        size_t dest_sz;
         _decompressLZ(&dest, &dest_sz, pointer(), _size);
         return xr_new<CTempReader>(dest, dest_sz, tell() + _size);
     }

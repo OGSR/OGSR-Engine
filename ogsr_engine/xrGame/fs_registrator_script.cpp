@@ -30,26 +30,25 @@ struct FS_item
 {
     string_path name;
     u32 size;
-    u32 modif;
+    u32 time_write;
     string256 buff;
 
     LPCSTR NameShort() { return name; }
     LPCSTR NameFull() { return name; }
-    u32 Size() { return size; }
-    LPCSTR Modif()
+    u32 Size() const { return size; }
+
+    LPCSTR TimeWrite()
     {
-        struct tm* newtime;
-        time_t t = modif;
-        newtime = localtime(&t);
+        const time_t t = time_write;
+        const struct tm* newtime = localtime(&t);
         strcpy_s(buff, asctime(newtime));
         return buff;
     }
 
-    LPCSTR ModifDigitOnly()
+    LPCSTR TimeWriteDigitOnly()
     {
-        struct tm* newtime;
-        time_t t = modif;
-        newtime = localtime(&t);
+        const time_t t = time_write;
+        const struct tm* newtime = localtime(&t);
         sprintf_s(buff, "%02d:%02d:%4d %02d:%02d", newtime->tm_mday, newtime->tm_mon + 1, newtime->tm_year + 1900, newtime->tm_hour, newtime->tm_min);
         return buff;
     }
@@ -63,11 +62,11 @@ bool sizeSorter(const FS_item& itm1, const FS_item& itm2)
     return (itm2.size < itm1.size);
 }
 template <bool b>
-bool modifSorter(const FS_item& itm1, const FS_item& itm2)
+bool writeSorter(const FS_item& itm1, const FS_item& itm2)
 {
     if (b)
-        return (itm1.modif < itm2.modif);
-    return (itm2.modif < itm1.modif);
+        return (itm1.time_write < itm2.time_write);
+    return (itm2.time_write < itm1.time_write);
 }
 template <bool b>
 bool nameSorter(const FS_item& itm1, const FS_item& itm2)
@@ -109,13 +108,13 @@ FS_file_list_ex::FS_file_list_ex(LPCSTR path, u32 flags, LPCSTR mask)
     FS_FileSet files;
     FS.file_list(files, path, flags, mask);
 
-    for (FS_FileSetIt it = files.begin(); it != files.end(); ++it)
+    for (const auto& file : files)
     {
         auto& itm = m_file_items.emplace_back();
         ZeroMemory(itm.name, sizeof(itm.name));
-        strcat_s(itm.name, it->name.c_str());
-        itm.modif = (u32)it->time_write;
-        itm.size = it->size;
+        strcat_s(itm.name, file.name.c_str());
+        itm.time_write = (u32)file.time_write;
+        itm.size = file.size;
     }
 
     FS.m_Flags.set(CLocatorAPI::flNeedCheck, FALSE);
@@ -132,9 +131,9 @@ void FS_file_list_ex::Sort(u32 flags)
     else if (flags == eSortBySizeDown)
         std::sort(m_file_items.begin(), m_file_items.end(), sizeSorter<false>);
     else if (flags == eSortByModifUp)
-        std::sort(m_file_items.begin(), m_file_items.end(), modifSorter<true>);
+        std::sort(m_file_items.begin(), m_file_items.end(), writeSorter<true>);
     else if (flags == eSortByModifDown)
-        std::sort(m_file_items.begin(), m_file_items.end(), modifSorter<false>);
+        std::sort(m_file_items.begin(), m_file_items.end(), writeSorter<false>);
 }
 
 void r_close_script(CLocatorAPI* fs, IReader* S) { fs->r_close(S); }
@@ -267,8 +266,8 @@ void fs_registrator::script_register(lua_State* L)
                   .def("NameFull", &FS_item::NameFull)
                   .def("NameShort", &FS_item::NameShort)
                   .def("Size", &FS_item::Size)
-                  .def("ModifDigitOnly", &FS_item::ModifDigitOnly)
-                  .def("Modif", &FS_item::Modif),
+                  .def("ModifDigitOnly", &FS_item::TimeWriteDigitOnly)
+                  .def("Modif", &FS_item::TimeWrite),
 
               class_<FS_file_list_ex>("FS_file_list_ex")
                   .def("Size", &FS_file_list_ex::Size)
@@ -292,7 +291,7 @@ void fs_registrator::script_register(lua_State* L)
                   .def_readonly("ptr", &CLocatorAPI::file::ptr)
                   .def_readonly("size_real", &CLocatorAPI::file::size_real)
                   .def_readonly("size_compressed", &CLocatorAPI::file::size_compressed)
-                  .def_readonly("modif", &CLocatorAPI::file::modif),
+                  .def_readonly("modif", &CLocatorAPI::file::time_write),
 
               class_<CLocatorAPI>("FS")
                   .enum_("FS_sort_mode")[value("FS_sort_by_name_up", int(FS_file_list_ex::eSortByNameUp)), value("FS_sort_by_name_down", int(FS_file_list_ex::eSortByNameDown)),
@@ -314,8 +313,6 @@ void fs_registrator::script_register(lua_State* L)
 
                   .def("application_dir", &get_engine_dir)
 
-                  .def("file_rename", &CLocatorAPI::file_rename)
-                  .def("file_length", &CLocatorAPI::file_length)
                   .def("file_copy", &CLocatorAPI::file_copy)
 
                   .def("exist", (const CLocatorAPI::file* (CLocatorAPI::*)(LPCSTR))(&CLocatorAPI::exist))

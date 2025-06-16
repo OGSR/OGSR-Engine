@@ -1,56 +1,29 @@
-// LzHuf.cpp : Defines the entry point for the console application.
-//
-
 #include "stdafx.h"
-
-#include <io.h>
-#include <fcntl.h>
-#include <sys\stat.h>
-
-#define MODULE
-
-// typedef unsigned char BYTE;
-
-unsigned textsize = 0, codesize = 0;
-
-char wterr[] = "Can't write.";
 
 /********** LZSS compression **********/
 
-#define N 4096 /* buffer size */
-#define F 60 /* lookahead buffer size */
-#define THRESHOLD 2
-#define NIL N /* leaf of tree */
+constexpr int N{4096}; /* buffer size */
+constexpr int F{60}; /* lookahead buffer size */
+constexpr int THRESHOLD{2};
+constexpr int NIL{N}; /* leaf of tree */
 
-#define N_CHAR (256 - THRESHOLD + F) /* kinds of characters (character code = 0..N_CHAR-1) */
-#define T (N_CHAR * 2 - 1) /* size of table */
-#define R (T - 1) /* position of root */
-#define MAX_FREQ 0x4000 /* updates tree when the */
-
-u8 text_buf[N + F];
-int match_position, match_length, lson[N + 1], rson[N + 257], dad[N + 1];
-
-// unsigned			code, len;
-unsigned tim_size = 0;
-
-unsigned freq[T + 1]; /* frequency table */
-
-int prnt[T + N_CHAR + 1]; /* pointers to parent nodes, except for the				*/
-/* elements [T..T + N_CHAR - 1] which are used to get	*/
-/* the positions of leaves corresponding to the codes.	*/
-
-int son[T]; /* pointers to child nodes (son[], son[] + 1)			*/
+constexpr int N_CHAR{256 - THRESHOLD + F}; /* kinds of characters (character code = 0..N_CHAR-1) */
+constexpr int T{N_CHAR * 2 - 1}; /* size of table */
+constexpr int R{T - 1}; /* position of root */
+constexpr u32 MAX_FREQ{0x4000}; /* updates tree when the */
 
 //************************** Internal FS
-// typedef xr_vector<BYTE>	vecB;
+
 class LZfs
 {
 private:
-    unsigned getbuf{};
-    unsigned getlen{};
+    u32 codesize;
 
-    unsigned putbuf{};
-    unsigned putlen{};
+    u32 getbuf;
+    u32 getlen;
+
+    u32 putbuf;
+    u32 putlen;
 
     u8* in_start;
     u8* in_end;
@@ -79,12 +52,6 @@ public:
         *out_iterator++ = u8(c & 0xFF);
     }
 
-    LZfs()
-    {
-        in_start = in_end = in_iterator = 0;
-        out_start = out_end = out_iterator = 0;
-    }
-
     IC void Init_Input(u8* _start, u8* _end)
     {
         // input
@@ -102,8 +69,8 @@ public:
         out_end = out_start + _rsize;
         out_iterator = out_start;
     }
-    IC u32 InputSize() { return u32(in_end - in_start); }
-    IC u32 OutSize() { return u32(out_iterator - out_start); }
+    IC size_t InputSize() { return size_t(in_end - in_start); }
+    IC size_t OutSize() { return size_t(out_iterator - out_start); }
     IC u8* OutPointer() { return out_start; }
     IC void OutRelease()
     {
@@ -175,9 +142,56 @@ public:
         }
     }
 };
-static LZfs fs;
+
+class LzHuf
+{
+private:
+    LZfs fs;
+
+    u32 textsize;
+    u8 text_buf[N + F];
+
+    int match_position;
+    int match_length;
+
+    int lson[N + 1];
+    int rson[N + 257];
+    int dad[N + 1];
+
+    /* frequency table */
+    u32 freq[T + 1];
+
+    /* pointers to parent nodes, except for the */
+    /* elements [T..T + N_CHAR - 1] which are used to get */
+    /* the positions of leaves corresponding to the codes. */
+    int prnt[T + N_CHAR + 1];
+
+    /* pointers to child nodes (son[], son[] + 1) */
+    int son[T];
+
+    IC void InitTree();
+    void InsertNode(int r);
+    void DeleteNode(int p);
+
+    void StartHuff();
+    void reconst();
+    void update(int c);
+
+    void EncodeChar(u32 c);
+    void EncodePosition(u32 c);
+    void Encode();
+
+    int DecodeChar();
+    int DecodePosition();
+    bool Decode(int total_size);
+
+public:
+    void _compressLZ(u8** dest, size_t* dest_sz, void* src, size_t src_sz);
+    bool _decompressLZ(u8** dest, size_t* dest_sz, void* src, size_t src_sz, size_t total_size);
+};
+
 //************************** Internal FS
-IC void InitTree(void) /* initialize trees */
+IC void LzHuf::InitTree() /* initialize trees */
 {
     int i;
 
@@ -187,7 +201,7 @@ IC void InitTree(void) /* initialize trees */
         dad[i] = NIL; /* node */
 }
 
-void InsertNode(int r) /* insert to tree */
+void LzHuf::InsertNode(int r) /* insert to tree */
 {
     int i, p, cmp;
     u8* key;
@@ -254,7 +268,7 @@ void InsertNode(int r) /* insert to tree */
     dad[p] = NIL; /* remove p */
 }
 
-void DeleteNode(int p) /* remove from tree */
+void LzHuf::DeleteNode(int p) /* remove from tree */
 {
     int q;
 
@@ -299,16 +313,20 @@ void DeleteNode(int p) /* remove from tree */
 
 /* table for encoding and decoding the upper 6 bits of position */
 /* for encoding */
-u8 p_len[64] = {0x03, 0x04, 0x04, 0x04, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06,
-                0x06, 0x06, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
-                0x07, 0x07, 0x07, 0x07, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08};
+static constexpr u8 p_len[64] = {
+    0x03, 0x04, 0x04, 0x04, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06, 0x06,
+    0x06, 0x06, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07, 0x07,
+    0x07, 0x07, 0x07, 0x07, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08,
+};
 
-u8 p_code[64] = {0x00, 0x20, 0x30, 0x40, 0x50, 0x58, 0x60, 0x68, 0x70, 0x78, 0x80, 0x88, 0x90, 0x94, 0x98, 0x9C, 0xA0, 0xA4, 0xA8, 0xAC, 0xB0, 0xB4,
-                 0xB8, 0xBC, 0xC0, 0xC2, 0xC4, 0xC6, 0xC8, 0xCA, 0xCC, 0xCE, 0xD0, 0xD2, 0xD4, 0xD6, 0xD8, 0xDA, 0xDC, 0xDE, 0xE0, 0xE2, 0xE4, 0xE6,
-                 0xE8, 0xEA, 0xEC, 0xEE, 0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF};
+static constexpr u8 p_code[64] = {
+    0x00, 0x20, 0x30, 0x40, 0x50, 0x58, 0x60, 0x68, 0x70, 0x78, 0x80, 0x88, 0x90, 0x94, 0x98, 0x9C, 0xA0, 0xA4, 0xA8, 0xAC, 0xB0, 0xB4,
+    0xB8, 0xBC, 0xC0, 0xC2, 0xC4, 0xC6, 0xC8, 0xCA, 0xCC, 0xCE, 0xD0, 0xD2, 0xD4, 0xD6, 0xD8, 0xDA, 0xDC, 0xDE, 0xE0, 0xE2, 0xE4, 0xE6,
+    0xE8, 0xEA, 0xEC, 0xEE, 0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF,
+};
 
 /* for decoding */
-u8 d_code[256] = {
+static constexpr u8 d_code[256] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
     0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
@@ -320,7 +338,7 @@ u8 d_code[256] = {
     0x2C, 0x2C, 0x2D, 0x2D, 0x2E, 0x2E, 0x2F, 0x2F, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F,
 };
 
-u8 d_len[256] = {
+static constexpr u8 d_len[256] = {
     0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03,
     0x03, 0x03, 0x03, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
     0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05,
@@ -334,7 +352,7 @@ u8 d_len[256] = {
 
 /* initialization of tree */
 
-void StartHuff(void)
+void LzHuf::StartHuff()
 {
     int i, j;
 
@@ -359,7 +377,7 @@ void StartHuff(void)
 }
 
 /* reconstruction of tree */
-void reconst(void)
+void LzHuf::reconst()
 {
     int i, j, k;
     unsigned f, l;
@@ -405,7 +423,7 @@ void reconst(void)
 }
 
 /* increment frequency of given code by one, and update tree */
-void update(int c)
+void LzHuf::update(int c)
 {
     int i, j, k, l;
 
@@ -445,7 +463,7 @@ void update(int c)
     } while ((c = prnt[c]) != 0); /* repeat up to root */
 }
 
-void EncodeChar(unsigned c)
+void LzHuf::EncodeChar(u32 c)
 {
     unsigned i;
     int j, k;
@@ -467,12 +485,10 @@ void EncodeChar(unsigned c)
         k = prnt[k];
     } while (k != R);
     fs.PutCode(j, i);
-    /*code = i;
-    len = j;*/
     update(c);
 }
 
-void EncodePosition(unsigned c)
+void LzHuf::EncodePosition(u32 c)
 {
     unsigned i;
 
@@ -484,7 +500,7 @@ void EncodePosition(unsigned c)
     fs.PutCode(6, (c & 0x3f) << 10);
 }
 
-int DecodeChar(void)
+int LzHuf::DecodeChar()
 {
     unsigned c;
 
@@ -503,7 +519,7 @@ int DecodeChar(void)
     return (int)c;
 }
 
-int DecodePosition(void)
+int LzHuf::DecodePosition()
 {
     unsigned i, j, c;
 
@@ -522,9 +538,9 @@ int DecodePosition(void)
 }
 
 /* compression */
-void Encode(void) /* compression */
+void LzHuf::Encode() /* compression */
 {
-    int i, c, len, r, s, last_match_length;
+    int i, c, r, s, last_match_length;
 
     textsize = fs.InputSize();
     fs.Init_Output(textsize);
@@ -541,6 +557,7 @@ void Encode(void) /* compression */
     r = N - F;
     for (i = s; i < r; i++)
         text_buf[i] = 0x20;
+    int len;
     for (len = 0; len < F && (c = fs._getb()) != EOF; len++)
         text_buf[r + len] = (unsigned char)c;
     textsize = len;
@@ -584,10 +601,9 @@ void Encode(void) /* compression */
         }
     } while (len > 0);
     fs.PutFlush();
-    tim_size = textsize;
 }
 
-static bool Decode(int total_size) /* recover */
+bool LzHuf::Decode(int total_size) /* recover */
 {
     int i, j, k, r, c;
     unsigned int count;
@@ -596,7 +612,6 @@ static bool Decode(int total_size) /* recover */
     textsize |= (fs._getb() << 8);
     textsize |= (fs._getb() << 16);
     textsize |= (fs._getb() << 24);
-
     if (textsize == 0)
         return false;
     if (total_size != -1 && textsize > static_cast<u32>(total_size))
@@ -632,28 +647,15 @@ static bool Decode(int total_size) /* recover */
             }
         }
     }
-    tim_size = count;
 
     return true;
 }
 
-unsigned _writeLZ(int hf, void* d, unsigned size)
+void LzHuf::_compressLZ(u8** dest, size_t* dest_sz, void* src, size_t src_sz)
 {
-    u8* start = (u8*)d;
-    fs.Init_Input(start, start + size);
+    static_assert(!offsetof(LzHuf, fs));
+    memset(this, 0, sizeof(LzHuf));
 
-    // Actual compression
-    Encode();
-    // Flush cache
-    int size_out = fs.OutSize();
-    if (size_out)
-        _write(hf, fs.OutPointer(), size_out);
-    fs.OutRelease();
-    return size_out;
-}
-
-void _compressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz)
-{
     u8* start = (u8*)src;
     fs.Init_Input(start, start + src_sz);
     Encode();
@@ -661,8 +663,10 @@ void _compressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz)
     *dest_sz = fs.OutSize();
 }
 
-bool _decompressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz, int total_size)
+bool LzHuf::_decompressLZ(u8** dest, size_t* dest_sz, void* src, size_t src_sz, size_t total_size)
 {
+    memset(this, 0, sizeof(LzHuf));
+
     u8* start = (u8*)src;
     fs.Init_Input(start, start + src_sz);
 
@@ -674,19 +678,18 @@ bool _decompressLZ(u8** dest, unsigned* dest_sz, void* src, unsigned src_sz, int
     return true;
 }
 
-unsigned _readLZ(int hf, void*& d, unsigned size)
+void _compressLZ(u8** dest, size_t* dest_sz, void* src, size_t src_sz)
 {
-    // Read file in memory
-    u8* data = (u8*)xr_malloc(size);
-    _read(hf, data, size);
+    LzHuf* lz = xr_new<LzHuf>();
+    lz->_compressLZ(dest, dest_sz, src, src_sz);
+    xr_delete(lz);
+}
 
-    fs.Init_Input(data, data + size);
+bool _decompressLZ(u8** dest, size_t* dest_sz, void* src, size_t src_sz, size_t total_size)
+{
+    LzHuf* lz = xr_new<LzHuf>();
+    bool res = lz->_decompressLZ(dest, dest_sz, src, src_sz, total_size);
+    xr_delete(lz);
 
-    // Actual compression
-    Decode(-1);
-
-    // Flush cache
-    xr_free(data);
-    d = fs.OutPointer();
-    return fs.OutSize();
+    return res;
 }

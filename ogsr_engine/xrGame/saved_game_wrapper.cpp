@@ -7,6 +7,9 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
+#include <zstd.h>
+
 #include "saved_game_wrapper.h"
 #include "alife_time_manager.h"
 #include "alife_object_registry.h"
@@ -34,12 +37,13 @@ bool CSavedGameWrapper::saved_game_exist(LPCSTR saved_game_name)
     return (!!FS.exist(saved_game_full_name(saved_game_name, file_name)));
 }
 
-bool CSavedGameWrapper::valid_saved_game(IReader& stream)
+bool CSavedGameWrapper::valid_saved_game(IReader& stream, u32& magic)
 {
     if (stream.length() < 8)
         return (false);
 
-    if (stream.r_u32() != u32(-1))
+    magic = stream.r_u32();
+    if (magic != u32(-1) && magic != u32(0))
         return (false);
 
     if (stream.r_u32() < 0x0002)
@@ -57,8 +61,10 @@ bool CSavedGameWrapper::valid_saved_game(LPCSTR saved_game_name)
     if (!FS.exist(saved_game_full_name(saved_game_name, file_name)))
         return (false);
 
+    u32 magic = 0;
+
     IReader* stream = FS.r_open(file_name);
-    bool result = valid_saved_game(*stream);
+    const bool result = valid_saved_game(*stream, magic);
     FS.r_close(stream);
     return (result);
 }
@@ -69,8 +75,10 @@ CSavedGameWrapper::CSavedGameWrapper(LPCSTR saved_game_name)
     saved_game_full_name(saved_game_name, file_name);
     R_ASSERT3(FS.exist(file_name), "There is no saved game ", file_name);
 
+    u32 magic = 0;
+
     IReader* stream = FS.r_open(file_name);
-    if (!valid_saved_game(*stream))
+    if (!valid_saved_game(*stream, magic))
     {
         FS.r_close(stream);
         CALifeTimeManager time_manager(alife_section);
@@ -83,7 +91,10 @@ CSavedGameWrapper::CSavedGameWrapper(LPCSTR saved_game_name)
 
     u32 source_count = stream->r_u32();
     void* source_data = xr_malloc(source_count);
-    rtc_decompress(source_data, source_count, stream->pointer(), stream->length() - 3 * sizeof(u32));
+    if (magic == 0)
+        R_ASSERT(ZSTD_decompress(source_data, source_count, stream->pointer(), stream->length() - 3 * sizeof(u32)) == source_count);
+    else
+        rtc_decompress(source_data, source_count, stream->pointer(), stream->length() - 3 * sizeof(u32));
     FS.r_close(stream);
 
     IReader reader(source_data, source_count);
