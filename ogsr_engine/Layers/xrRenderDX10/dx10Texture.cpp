@@ -128,7 +128,7 @@ ID3DBaseTexture* CRender::texture_load(LPCSTR fRName, u32& ret_msize)
     do
     {
         DirectX::ScratchImage texture{};
-        if (const auto hr = LoadFromDDSMemory(File->pointer(), File->length(), dds_flags, &IMG, texture); FAILED(hr))
+        if (const auto hr = LoadFromDDSMemory(reinterpret_cast<const uint8_t*>(File->pointer()), File->length(), dds_flags, &IMG, texture); FAILED(hr))
         {
             Msg("! Failed to load DDS texture from memory: [%s], hr: [%d]", fn, hr);
             break;

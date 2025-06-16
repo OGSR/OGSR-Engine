@@ -20,12 +20,11 @@
   <Import Project="..\3rd_party_lib_properties.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <UseDebugLibraries>true</UseDebugLibraries>
   </PropertyGroup>
@@ -39,8 +38,6 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <!--TargetName>DirectXTex</TargetName>
-    <GenerateManifest>true</GenerateManifest-->
     <IncludePath>.\DirectXTex\DirectXTex;.\DirectXTex\DirectXTex\Shaders\Compiled;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -52,9 +49,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <!--SDLCheck>true</SDLCheck-->
       <FloatingPointModel>Fast</FloatingPointModel>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;WIN32;NDEBUG;_LIB;_WIN7_PLATFORM_UPDATE;_WIN32_WINNT=0x0601;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>DirectXTexP.h</PrecompiledHeaderFile>
       <ExternalWarningLevel>Level4</ExternalWarningLevel>
@@ -65,6 +61,8 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <OpenMPSupport>true</OpenMPSupport>
+      <GuardEHContMetadata>true</GuardEHContMetadata>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -74,9 +72,6 @@
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
     </Lib>
-    <!--Manifest>
-      <EnableDPIAwareness>false</EnableDPIAwareness>
-    </Manifest-->
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -85,7 +80,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;WIN32;NDEBUG;_LIB;_WIN7_PLATFORM_UPDATE;_WIN32_WINNT=0x0601;_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_STDIO_ARBITRARY_WIDE_SPECIFIERS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>DirectXTexP.h</PrecompiledHeaderFile>
       <ExternalWarningLevel>Level4</ExternalWarningLevel>
@@ -98,6 +93,8 @@
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -110,17 +107,9 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CLInclude Include="DirectXTex\DirectXTex\BC.h" />
     <ClCompile Include="DirectXTex\DirectXTex\BC.cpp" />
     <ClCompile Include="DirectXTex\DirectXTex\BC4BC5.cpp" />
     <ClCompile Include="DirectXTex\DirectXTex\BC6HBC7.cpp" />
-    <ClInclude Include="DirectXTex\DirectXTex\BCDirectCompute.h" />
-    <CLInclude Include="DirectXTex\DirectXTex\DDS.h" />
-    <ClInclude Include="DirectXTex\DirectXTex\filters.h" />
-    <CLInclude Include="DirectXTex\DirectXTex\scoped.h" />
-    <CLInclude Include="DirectXTex\DirectXTex\DirectXTex.h" />
-    <CLInclude Include="DirectXTex\DirectXTex\DirectXTexP.h" />
-    <CLInclude Include="DirectXTex\DirectXTex\DirectXTex.inl" />
     <ClCompile Include="DirectXTex\DirectXTex\BCDirectCompute.cpp" />
     <ClCompile Include="DirectXTex\DirectXTex\DirectXTexCompress.cpp" />
     <ClCompile Include="DirectXTex\DirectXTex\DirectXTexCompressGPU.cpp" />
@@ -143,15 +132,26 @@
     <ClCompile Include="DirectXTex\DirectXTex\DirectXTexWIC.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DirectXTex\Common\d3dx12.h" />
+    <CLInclude Include="DirectXTex\DirectXTex\BC.h" />
+    <ClInclude Include="DirectXTex\DirectXTex\BCDirectCompute.h" />
+    <CLInclude Include="DirectXTex\DirectXTex\DDS.h" />
+    <CLInclude Include="DirectXTex\DirectXTex\DirectXTex.h" />
+    <CLInclude Include="DirectXTex\DirectXTex\DirectXTexP.h" />
+    <ClInclude Include="DirectXTex\DirectXTex\filters.h" />
+    <CLInclude Include="DirectXTex\DirectXTex\scoped.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DirectXTex\DirectXTex\DirectXTex.inl" />
+    <None Include="DirectXTex\DirectXTex\Shaders\CompileShaders.cmd" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="DirectXTex\DirectXTex\Shaders\BC6HEncode.hlsl">
       <FileType>Document</FileType>
     </None>
     <None Include="DirectXTex\DirectXTex\Shaders\BC7Encode.hlsl">
       <FileType>Document</FileType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="DirectXTex\DirectXTex\Shaders\CompileShaders.cmd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
@@ -160,10 +160,13 @@
       <_ATGFXCPath>$(WindowsSDK_ExecutablePath_x64.Split(';')[0])</_ATGFXCPath>
       <_ATGFXCPath>$(_ATGFXCPath.Replace("x64",""))</_ATGFXCPath>
       <_ATGFXCPath Condition="'$(_ATGFXCPath)' != '' and !HasTrailingSlash('$(_ATGFXCPath)')">$(_ATGFXCPath)\</_ATGFXCPath>
+      <_ATGFXCVer>$([System.Text.RegularExpressions.Regex]::Match($(_ATGFXCPath), `10\.0\.\d+\.0`))</_ATGFXCVer>
+      <_ATGFXCVer Condition="'$(_ATGFXCVer)' != '' and !HasTrailingSlash('$(_ATGFXCVer)')">$(_ATGFXCVer)\</_ATGFXCVer>
     </PropertyGroup>
-    <Exec Condition="!Exists('./DirectXTex/DirectXTex/Shaders/Compiled/BC6HEncode_EncodeBlockCS.inc')" WorkingDirectory="$(ProjectDir)\DirectXTex\DirectXTex\Shaders" Command="CompileShaders" EnvironmentVariables="WindowsSdkVerBinPath=$(_ATGFXCPath)" />
+    <Exec Condition="!Exists('./DirectXTex/DirectXTex/Shaders/Compiled/BC6HEncode_EncodeBlockCS.inc')" WorkingDirectory="./DirectXTex/DirectXTex/Shaders/" Command="CompileShaders" EnvironmentVariables="WindowsSdkVerBinPath=$(_ATGFXCPath);WindowsSDKVersion=$(_ATGFXCVer);CompileShadersOutput=./Compiled" LogStandardErrorAsError="true" />
     <PropertyGroup>
       <_ATGFXCPath />
+      <_ATGFXCVer />
     </PropertyGroup>
   </Target>
   <Target Name="ATGDeleteShaders" AfterTargets="Clean">
