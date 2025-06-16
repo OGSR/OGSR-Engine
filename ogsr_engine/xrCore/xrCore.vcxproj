@@ -51,7 +51,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;XRCORE_STATIC;XRENGINE_STATIC;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;XRCORE_STATIC;XRENGINE_STATIC;SQFS_STATIC;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -68,7 +68,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\concurrentqueue;$(SolutionDir)\3rd_party\Src\libsquashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <CompileAsManaged>
@@ -98,7 +98,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <PreprocessorDefinitions>_WINDOWS;_USRDLL;XRCORE_STATIC;XRENGINE_STATIC;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;_USRDLL;XRCORE_STATIC;XRENGINE_STATIC;SQFS_STATIC;APPVEYOR_BUILD_VERSION="$(APPVEYOR_BUILD_VERSION)";APPVEYOR_REPO_NAME="$(APPVEYOR_REPO_NAME)";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>false</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -115,7 +115,7 @@
       </BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\concurrentqueue;$(SolutionDir)\3rd_party\Src\libsquashfs\squashfs-tools-ng\include;$(SolutionDir)\3rd_party\Src\lzo;$(SolutionDir)\3rd_party\Src\d3dx;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
       <CompileAsManaged>
@@ -145,6 +145,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\Layers\xrAPI\xrAPI.cpp" />
+    <ClCompile Include="arc_db.cpp" />
+    <ClCompile Include="arc_sqfs.cpp" />
     <ClCompile Include="FTimer.cpp" />
     <ClCompile Include="stacktrace_collector.cpp" />
     <ClCompile Include="stdafx.cpp">

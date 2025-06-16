@@ -1,32 +1,32 @@
 #include "stdafx.h"
 #include "stream_reader.h"
 
-void CStreamReader::construct(const HANDLE& file_mapping_handle, const u32& start_offset, const u32& file_size, const u32& archive_size, const u32& window_size)
+void CMapStreamReader::construct(const HANDLE& file_mapping_handle, const size_t& start_offset, const size_t& file_size, const size_t& archive_size, const size_t& window_size)
 {
     m_file_mapping_handle = file_mapping_handle;
     m_start_offset = start_offset;
     m_file_size = file_size;
     m_archive_size = archive_size;
-    m_window_size = _max(window_size, FS.dwAllocGranularity);
+    m_window_size = _max(window_size, static_cast<size_t>(FS.dwAllocGranularity));
 
     map(0);
 }
 
-void CStreamReader::destroy() { unmap(); }
+void CMapStreamReader::destroy() { unmap(); }
 
-void CStreamReader::map(const u32& new_offset)
+void CMapStreamReader::map(const size_t& new_offset)
 {
     VERIFY(new_offset <= m_file_size);
     m_current_offset_from_start = new_offset;
 
-    u32 granularity = FS.dwAllocGranularity;
-    u32 start_offset = m_start_offset + new_offset;
-    u32 pure_start_offset = start_offset;
+    size_t granularity = FS.dwAllocGranularity;
+    size_t start_offset = m_start_offset + new_offset;
+    size_t pure_start_offset = start_offset;
     start_offset = (start_offset / granularity) * granularity;
 
     VERIFY(pure_start_offset >= start_offset);
-    u32 pure_end_offset = m_window_size + pure_start_offset;
-    u32 end_offset = pure_end_offset / granularity;
+    size_t pure_end_offset = m_window_size + pure_start_offset;
+    size_t end_offset = pure_end_offset / granularity;
     if (pure_end_offset % granularity)
         ++end_offset;
 
@@ -38,16 +38,16 @@ void CStreamReader::map(const u32& new_offset)
     m_current_map_view_of_file = (u8*)MapViewOfFile(m_file_mapping_handle, FILE_MAP_READ, 0, start_offset, m_current_window_size);
     m_current_pointer = m_current_map_view_of_file;
 
-    u32 difference = pure_start_offset - start_offset;
+    size_t difference = pure_start_offset - start_offset;
     m_current_window_size -= difference;
     m_current_pointer += difference;
     m_start_pointer = m_current_pointer;
 }
 
-void CStreamReader::advance(const int& offset)
+void CMapStreamReader::advance(const int& offset)
 {
     VERIFY(m_current_pointer >= m_start_pointer);
-    VERIFY(u32(m_current_pointer - m_start_pointer) <= m_current_window_size);
+    VERIFY(size_t(m_current_pointer - m_start_pointer) <= m_current_window_size);
     int offset_inside_window = int(m_current_pointer - m_start_pointer);
     if (offset_inside_window + offset >= (int)m_current_window_size)
     {
@@ -64,10 +64,10 @@ void CStreamReader::advance(const int& offset)
     m_current_pointer += offset;
 }
 
-void CStreamReader::r(void* _buffer, u32 buffer_size)
+void CMapStreamReader::r(void* _buffer, size_t buffer_size)
 {
     VERIFY(m_current_pointer >= m_start_pointer);
-    VERIFY(u32(m_current_pointer - m_start_pointer) <= m_current_window_size);
+    VERIFY(size_t(m_current_pointer - m_start_pointer) <= m_current_window_size);
 
     int offset_inside_window = int(m_current_pointer - m_start_pointer);
     if (offset_inside_window + buffer_size < m_current_window_size)
@@ -78,7 +78,7 @@ void CStreamReader::r(void* _buffer, u32 buffer_size)
     }
 
     u8* buffer = (u8*)_buffer;
-    u32 elapsed_in_window = u32(m_current_window_size - (m_current_pointer - m_start_pointer));
+    size_t elapsed_in_window = size_t(m_current_window_size - (m_current_pointer - m_start_pointer));
 
     do
     {
@@ -94,15 +94,16 @@ void CStreamReader::r(void* _buffer, u32 buffer_size)
     advance(buffer_size);
 }
 
-CStreamReader* CStreamReader::open_chunk(const u32& chunk_id)
+CStreamReader* CMapStreamReader::open_chunk(const u32& chunk_id)
 {
     BOOL compressed;
-    u32 size = find_chunk(chunk_id, &compressed);
+    size_t size = find_chunk(chunk_id, &compressed);
     if (!size)
-        return (0);
+        return (nullptr);
 
-    R_ASSERT2(!compressed, "cannot use CStreamReader on compressed chunks");
-    CStreamReader* result = xr_new<CStreamReader>();
+    R_ASSERT(!compressed, "cannot use CMapStreamReader on compressed chunks");
+
+    CMapStreamReader* result = xr_new<CMapStreamReader>();
     result->construct(file_mapping_handle(), m_start_offset + tell(), size, m_archive_size, m_window_size);
     return (result);
 }

@@ -212,3 +212,7 @@ inline bool StringHasUTF8(const char* str)
     }
     return true;
 }
+
+// Round @val to next or prev @mul boundary, where @mul is a power of two
+constexpr ICF size_t roundup(size_t val, long mul) { return (val + mul - 1) & -mul; }
+constexpr ICF size_t rounddown(size_t val, long mul) { return val & -mul; }

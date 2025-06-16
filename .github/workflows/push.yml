@@ -30,7 +30,7 @@ jobs:
 
     - name: Update DirectX Components
       run: |
-        ${{ github.workspace }}/Update_DirectX_Components.cmd
+        ${{ github.workspace }}/Update_Components.cmd
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
