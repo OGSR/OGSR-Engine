@@ -28,7 +28,11 @@ void CRenderTarget::ProcessTAA(CBackend& cmd_list)
 #include <..\NVIDIA_DLSS\include\nvsdk_ngx_helpers.h>
 
 #ifdef _DEBUG
+#if _ITERATOR_DEBUG_LEVEL == 0
+#pragma comment(lib, "nvsdk_ngx_s_dbg_iterator0")
+#else
 #pragma comment(lib, "nvsdk_ngx_s_dbg")
+#endif
 #else
 #pragma comment(lib, "nvsdk_ngx_d")
 #endif

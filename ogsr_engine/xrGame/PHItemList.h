@@ -2,9 +2,22 @@
 
 #define DECLARE_PHLIST_ITEM(class_name) \
     friend class CPHItemList<class_name>; \
-    friend class CPHItemList<class_name>::iterator; \
+    friend class CPHItemListIterator<class_name>; \
     class_name* next; \
     class_name** tome;
+
+template <class T>
+class CPHItemListIterator
+{
+    T* my_ptr{};
+
+public:
+    CPHItemListIterator() = default;
+    CPHItemListIterator(T* i) : my_ptr(i) {}
+    CPHItemListIterator operator++() { return my_ptr = ((my_ptr)->next); }
+    T* operator*() { return my_ptr; }
+    bool operator!=(const CPHItemListIterator& right) const { return my_ptr != right.my_ptr; }
+};
 
 template <class T>
 class CPHItemList
@@ -16,18 +29,6 @@ protected:
     u16 size;
 
 public:
-    class iterator;
-    class iterator
-    {
-        T* my_ptr;
-
-    public:
-        iterator() { my_ptr = 0; }
-        iterator(T* i) { my_ptr = i; }
-        iterator operator++() { return my_ptr = ((my_ptr)->next); }
-        T* operator*() { return my_ptr; }
-        bool operator!=(iterator right) { return my_ptr != right.my_ptr; }
-    };
     CPHItemList() { empty(); }
     u16 count() { return size; }
     void push_back(T* item)
@@ -48,7 +49,7 @@ public:
         size = size + sourse_list.size;
         sourse_list.empty();
     }
-    void erase(iterator i)
+    void erase(CPHItemListIterator<T>& i)
     {
         T* item = *i;
         T* next = item->next;
@@ -65,10 +66,10 @@ public:
         first_next = 0;
         size = 0;
     }
-    iterator begin() { return iterator(first_next); }
-    iterator end() { return iterator(0); }
+    CPHItemListIterator<T> begin() { return CPHItemListIterator<T>(first_next); }
+    CPHItemListIterator<T> end() { return CPHItemListIterator<T>(nullptr); }
 };
 
 #define DEFINE_PHITEM_LIST(T, N, I) \
     typedef CPHItemList<T> N; \
-    typedef CPHItemList<T>::iterator I;
+    typedef CPHItemListIterator<T> I;
