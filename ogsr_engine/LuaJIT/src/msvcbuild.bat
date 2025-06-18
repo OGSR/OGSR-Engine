@@ -14,10 +14,18 @@
 @if not defined INCLUDE goto :FAIL
 
 @setlocal
-@set LJCOMPILE=cl /nologo /MP /Zi /c /O2 /W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline
+@set LJCOMPILE=cl /nologo /MP /Zi /c /W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline
 @set LJLINK=link /nologo /DEBUG
+@set LJLIB=lib /nologo
+@if "%3"=="Debug" goto :DBG_BUILD
+@set LJCOMPILE=%LJCOMPILE% /O2 /Oi /Ot /GL /Gm- /Gy /Ob3 /MD
+@set LJLINK=%LJLINK% /LARGEADDRESSAWARE /OPT:REF /OPT:ICF /LTCG /incremental:no
+@set LJLIB=%LJLIB% /LTCG
+@goto :COMMON_BUILD
+:DBG_BUILD
+@set LJCOMPILE=%LJCOMPILE% /Od /MTd
+:COMMON_BUILD
 @set LJMT=mt /nologo
-@set LJLIB=lib /nologo /nodefaultlib
 @set DASMDIR=..\dynasm
 @set DASM=%DASMDIR%\dynasm.lua
 @set LJTARGETARCH=%1
@@ -73,13 +81,9 @@ buildvm -m vmdef -o jit\vmdef.lua %ALL_LIB%
 buildvm -m folddef -o lj_folddef.h lj_opt_fold.c
 @if errorlevel 1 goto :BAD
 
-@if "%2" neq "debug" goto :NODEBUG
-@shift
-@set LJLINK=%LJLINK% /opt:ref /opt:icf /incremental:no
-:NODEBUG
 @if "%2"=="amalg" goto :AMALGDLL
 @if "%2"=="static" goto :STATIC
-%LJCOMPILE% /MD /DLUA_BUILD_AS_DLL lj_*.c lib_*.c
+%LJCOMPILE% /DLUA_BUILD_AS_DLL lj_*.c lib_*.c
 @if errorlevel 1 goto :BAD
 %LJLINK% /DLL /out:%LJDLLNAME% lj_*.obj lib_*.obj
 @if errorlevel 1 goto :BAD
@@ -91,7 +95,7 @@ buildvm -m folddef -o lj_folddef.h lj_opt_fold.c
 @if errorlevel 1 goto :BAD
 @goto :MTDLL
 :AMALGDLL
-%LJCOMPILE% /MD /DLUA_BUILD_AS_DLL ljamalg.c
+%LJCOMPILE% /DLUA_BUILD_AS_DLL ljamalg.c
 @if errorlevel 1 goto :BAD
 %LJLINK% /DLL /out:%LJDLLNAME% ljamalg.obj lj_vm.obj
 @if errorlevel 1 goto :BAD
@@ -114,7 +118,7 @@ if not exist %LJBINPATH%lua\jit\*.* (
 )
 copy /Y jit\*.* %LJBINPATH%lua\jit\
 
-@del *.obj *.manifest minilua.exe minilua.exp minilua.lib buildvm.exe buildvm.exp buildvm.lib jit\vmdef.lua *.ilk *.pdb
+@del *.obj *.manifest minilua.exe minilua.exp minilua.lib buildvm.exe buildvm.exp buildvm.lib jit\vmdef.lua *.ilk
 @del host\buildvm_arch.h
 @del lj_bcdef.h lj_ffdef.h lj_libdef.h lj_recdef.h lj_folddef.h
 @echo.

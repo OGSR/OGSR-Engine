@@ -5,6 +5,10 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{632AEEB6-DC06-4E15-9551-B2B09A4B73C5}</ProjectGuid>
@@ -30,47 +34,48 @@
     <NMakeOutput>..\bin\$(PlatformShortName)\LuaJIT.dll</NMakeOutput>
     <NMakeUseOemCodePage>true</NMakeUseOemCodePage>
     <NMakeBuildCommandLine>
-		if not exist "..\bin\$(PlatformShortName)\LuaJIT.dll" (
-			call msvcbuild.bat $(PlatformShortName)
+		if not exist "..\bin\$(PlatformShortName)\LuaJIT.lib" (
+			call msvcbuild.bat $(PlatformShortName) static $(Configuration)
 		)
 
-		if not exist "$(OutDir)LuaJIT.dll" (
+		if not exist "$(OutDir)LuaJIT.dll" if exist "..\bin\$(PlatformShortName)\LuaJIT.dll" (
 			if not exist "$(OutDir)*.*" (
 				md "$(OutDir)"
 			)
 			copy /Y "..\bin\$(PlatformShortName)\LuaJIT.dll" "$(OutDir)LuaJIT.dll"
 			copy /Y "..\bin\$(PlatformShortName)\LuaJIT.pdb" "$(OutDir)LuaJIT.pdb"
 		)
-		if not exist "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.lib" (
-			if not exist "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\*.*" (
-				md "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\"
-			)
-			copy /Y "..\bin\$(PlatformShortName)\LuaJIT.lib" "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.lib"
+
+		if not exist "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\*.*" (
+			md "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\"
 		)
-		if not exist "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.exp" (
-			if not exist "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\*.*" (
-				md "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\"
-			)
+
+		copy /Y "..\bin\$(PlatformShortName)\LuaJIT.lib" "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.lib"
+		if exist "..\bin\$(PlatformShortName)\LuaJIT.exp" (
 			copy /Y "..\bin\$(PlatformShortName)\LuaJIT.exp" "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.exp"
 		)
 	</NMakeBuildCommandLine>
     <NMakeReBuildCommandLine>
 		RD /S/Q ..\bin
-		call msvcbuild.bat $(PlatformShortName)
+		call msvcbuild.bat $(PlatformShortName) static $(Configuration)
 
 		if not exist "$(OutDir)*.*" (
 			md "$(OutDir)"
 		)
-		copy /Y "..\bin\$(PlatformShortName)\LuaJIT.dll" "$(OutDir)LuaJIT.dll"
-		copy /Y "..\bin\$(PlatformShortName)\LuaJIT.pdb" "$(OutDir)LuaJIT.pdb"
+
+		if not exist "$(OutDir)LuaJIT.dll" if exist "..\bin\$(PlatformShortName)\LuaJIT.dll" (
+			copy /Y "..\bin\$(PlatformShortName)\LuaJIT.dll" "$(OutDir)LuaJIT.dll"
+			copy /Y "..\bin\$(PlatformShortName)\LuaJIT.pdb" "$(OutDir)LuaJIT.pdb"
+		)
+
 		if not exist "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\*.*" (
 			md "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\"
 		)
+
 		copy /Y "..\bin\$(PlatformShortName)\LuaJIT.lib" "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.lib"
-		if not exist "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\*.*" (
-			md "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\"
+		if exist "..\bin\$(PlatformShortName)\LuaJIT.exp" (
+			copy /Y "..\bin\$(PlatformShortName)\LuaJIT.exp" "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.exp"
 		)
-		copy /Y "..\bin\$(PlatformShortName)\LuaJIT.exp" "$(OutDir)..\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\LuaJIT.exp"
 	</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine>RD /S/Q ..\bin</NMakeCleanCommandLine>
   </PropertyGroup>
