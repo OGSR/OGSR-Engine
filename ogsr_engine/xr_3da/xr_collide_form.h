@@ -145,7 +145,7 @@ public:
 
 private:
     VisMask vis_mask;
-    SpinLock elements_lock;
+    std::shared_mutex skeleton_mtx;
     ElementVec elements;
 
     u32 dwFrame{}; // The model itself

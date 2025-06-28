@@ -456,14 +456,13 @@ void CKinematicsAnimated::DestroyCycle(CBlend& B)
 // returns true if play time out
 void CKinematicsAnimated::LL_UpdateTracks(float dt, bool b_force, bool leave_blends)
 {
-    BlendSVecIt I, E;
     // Cycles
     for (u16 part = 0; part < MAX_PARTS; part++)
     {
         if (m_Partition->part(part).Name == nullptr)
             continue;
-        I = blend_cycles[part].begin();
-        E = blend_cycles[part].end();
+        BlendSVecIt I = blend_cycles[part].begin();
+        BlendSVecIt E = blend_cycles[part].end();
         for (; I != E; I++)
         {
             CBlend& B = *(*I);
@@ -496,9 +495,8 @@ void CKinematicsAnimated::LL_UpdateTracks(float dt, bool b_force, bool leave_ble
 void CKinematicsAnimated::LL_UpdateFxTracks(float dt)
 {
     // FX
-    BlendSVecIt I, E;
-    I = blend_fx.begin();
-    E = blend_fx.end();
+    BlendSVecIt I = blend_fx.begin();
+    BlendSVecIt E = blend_fx.end();
     for (; I != E; I++)
     {
         CBlend& B = *(*I);
@@ -656,7 +654,7 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
 
     // Load animation
     xr_vector<xr_string> omfs;
-#pragma todo("SIMP: пересмотреть это и добавить в вики.")
+
     auto add_omf = [&](LPCSTR nm) {
         if (strstr(nm, "*.omf"))
         {
@@ -725,7 +723,6 @@ void CKinematicsAnimated::Load(const char* N, IReader* data, u32 dwFlags)
         }
     }
 
-#pragma todo("SIMP: пересмотреть это и добавить в вики.")
     if (const auto omf_override_ini = RImplementation.Models->omf_override_ini)
     {
         for (const auto& pair : omf_override_ini->sections())
@@ -811,14 +808,15 @@ void CKinematicsAnimated::LL_BuldBoneMatrixDequatize(const CBoneData* bd, u8 cha
     CBlendInstance& BLEND_INST = LL_GetBlendInstance(SelfID);
     const CBlendInstance::BlendSVec& Blend = BLEND_INST.blend_vector();
     CKey BK[MAX_CHANNELS][MAX_BLENDED]; // base keys
-    BlendSVecCIt BI;
-    for (BI = Blend.begin(); BI != Blend.end(); BI++)
+    for (BlendSVecCIt BI = Blend.begin(); BI != Blend.end(); BI++)
     {
         CBlend* B = *BI;
-        int& b_count = keys.chanel_blend_conts[B->channel];
-        CKey* D = &keys.keys[B->channel][b_count];
         if (!(channel_mask & (1 << B->channel)))
             continue;
+
+        int& b_count = keys.chanel_blend_conts[B->channel];
+        CKey* D = &keys.keys[B->channel][b_count];
+
         const u8 channel = B->channel;
         // keys.blend_factors[channel][b_count]	=  B->blendAmount;
         keys.blends[channel][b_count] = B;
@@ -887,6 +885,8 @@ void CKinematicsAnimated::LL_BoneMatrixBuild(CBoneInstance& bi, const Fmatrix* p
 
 void CKinematicsAnimated::BuildBoneMatrix(const CBoneData* bd, CBoneInstance& bi, const Fmatrix* parent, u8 channel_mask /*= (1<<0)*/)
 {
+    ZoneScoped;
+
     SKeyTable keys;
     LL_BuldBoneMatrixDequatize(bd, channel_mask, keys);
     LL_BoneMatrixBuild(bi, parent, keys);

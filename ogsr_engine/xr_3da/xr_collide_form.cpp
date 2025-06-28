@@ -46,14 +46,15 @@ bool pred_find_elem(const CCF_Skeleton::SElement& E, u16 elem) { return E.elem_i
 bool CCF_Skeleton::_ElementCenter(u16 elem_id, Fvector& e_center)
 {
     bool r = false;
-    elements_lock.lock();
+
+    std::shared_lock lock{skeleton_mtx};
+
     ElementVecIt it = std::lower_bound(elements.begin(), elements.end(), elem_id, pred_find_elem);
     if (it->elem_id == elem_id)
     {
         it->center(e_center);
         r = true;
     }
-    elements_lock.unlock();
     return r;
 }
 
@@ -111,15 +112,16 @@ CCF_Skeleton::CCF_Skeleton(CObject* O) : ICollisionForm(O, cftObject)
 void CCF_Skeleton::BuildState()
 {
     dwFrame = Device.dwFrame;
+
     IRenderVisual* pVisual = owner->Visual();
     IKinematics* K = PKinematics(pVisual);
 
-    //K->CalculateBones();
-#pragma todo("Simp: CalculateBones_InvalidateSkeleton")
-    K->CalculateBones_Invalidate();
-    K->CalculateBones(TRUE);
+    //K->CalculateBones_InvalidateSkeleton();
+    //K->CalculateBones(TRUE);
 
     const Fmatrix& L2W = owner->XFORM();
+
+    std::scoped_lock lock{skeleton_mtx};
 
     if (vis_mask != K->LL_GetBonesVisible())
     {
@@ -225,9 +227,7 @@ void CCF_Skeleton::Calculate()
     if (dwFrame != Device.dwFrame || K->LL_GetBonesVisible() != vis_mask)
     {
         // Model changed between ray-picks
-        elements_lock.lock();
         BuildState();
-        elements_lock.unlock();
     }
 }
 
@@ -235,59 +235,53 @@ BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 {
     ZoneScoped;
 
-    // не будет тут обновлять стейт костей если мы не на основном потоке.
-    // он тут или с прошлого кадра уже есть или даже если чуть кривой - не важно
-    // если обновлять - будут дергатся модели
-    if (Device.OnMainThread())
+    if (dwFrameTL != Device.dwFrame)
     {
-        Calculate();
+        BuildTopLevel();
+
+        dwFrameTL = Device.dwFrame;
     }
 
     Fsphere w_bv_sphere;
     owner->XFORM().transform_tiny(w_bv_sphere.P, bv_sphere.P);
     w_bv_sphere.R = bv_sphere.R;
 
-    //
     float tgt_dist = Q.range;
     Fsphere::ERP_Result res = w_bv_sphere.intersect(Q.start, Q.dir, tgt_dist);
     if (res == Fsphere::rpNone)
         return FALSE;
 
-    auto iterate_elements = [&](const ElementVec& xr_vector) {
-        BOOL bHIT = FALSE;
-        for (auto& I : xr_vector)
-        {
-            if (!I.valid())
-                continue;
-            bool res = false;
-            float range = Q.range;
-            switch (I.type)
-            {
-            case SBoneShape::stBox: res = RAYvsOBB(I.b_IM, I.b_hsize, Q.start, Q.dir, range, Q.flags & CDB::OPT_CULL); break;
-            case SBoneShape::stSphere: res = RAYvsSPHERE(I.s_sphere, Q.start, Q.dir, range, Q.flags & CDB::OPT_CULL); break;
-            case SBoneShape::stCylinder: res = RAYvsCYLINDER(I.c_cylinder, Q.start, Q.dir, range, Q.flags & CDB::OPT_CULL); break;
-            }
-            if (res)
-            {
-                bHIT = TRUE;
-                R.append_result(owner, range, I.elem_id, Q.flags & CDB::OPT_ONLYNEAREST);
-                if (Q.flags & CDB::OPT_ONLYFIRST)
-                    break;
-            }
-        }
-        return bHIT;
-    };
-
-    if (Device.OnMainThread())
+    IKinematics* K = PKinematics(owner->Visual());
+    if (dwFrame != Device.dwFrame || K->LL_GetBonesVisible() != vis_mask)
     {
-        return iterate_elements(elements);
+        // Model changed between ray-picks
+        BuildState();
     }
 
-    elements_lock.lock();
-    const auto xr_vector = ElementVec(elements);
-    elements_lock.unlock();
+    std::shared_lock lock{skeleton_mtx};
 
-    return iterate_elements(xr_vector);
+    BOOL bHIT = FALSE;
+    for (auto& I : elements)
+    {
+        if (!I.valid())
+            continue;
+        bool res = false;
+        float range = Q.range;
+        switch (I.type)
+        {
+        case SBoneShape::stBox: res = RAYvsOBB(I.b_IM, I.b_hsize, Q.start, Q.dir, range, Q.flags & CDB::OPT_CULL); break;
+        case SBoneShape::stSphere: res = RAYvsSPHERE(I.s_sphere, Q.start, Q.dir, range, Q.flags & CDB::OPT_CULL); break;
+        case SBoneShape::stCylinder: res = RAYvsCYLINDER(I.c_cylinder, Q.start, Q.dir, range, Q.flags & CDB::OPT_CULL); break;
+        }
+        if (res)
+        {
+            bHIT = TRUE;
+            R.append_result(owner, range, I.elem_id, Q.flags & CDB::OPT_ONLYNEAREST);
+            if (Q.flags & CDB::OPT_ONLYFIRST)
+                break;
+        }
+    }
+    return bHIT;
 }
 
 CCF_Shape::CCF_Shape(CObject* _owner) : ICollisionForm(_owner, cftShape) {}

@@ -84,7 +84,8 @@ public:
     // Main functionality
     virtual void CalculateBones(BOOL bForceExact = FALSE) = 0; // Recalculate skeleton
     virtual void CalculateBones_Invalidate() = 0;
-    virtual void Callback(UpdateCallback C, void* Param) = 0;
+    virtual void CalculateBones_InvalidateSkeleton() = 0;
+    virtual void Callback(const UpdateCallback C, void* Param) = 0;
 
     //	Callback: data manipulation
     virtual void SetUpdateCallback(UpdateCallback pCallback) = 0;

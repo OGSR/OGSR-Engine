@@ -136,8 +136,8 @@ protected:
     BOOL Update_Visibility;
 
     u32 UCalc_Time;
-    s32 UCalc_Visibox;
-    std::recursive_mutex UCalc_Mutex;
+    s32 UCalc_Skeleton;
+    std::mutex UCalc_Mutex;
 
     VisMask visimask;
 
@@ -147,7 +147,8 @@ protected:
     virtual CBoneData* CreateBoneData(u16 ID) { return xr_new<CBoneData>(ID); }
     virtual void IBoneInstances_Create();
     virtual void IBoneInstances_Destroy();
-    void Visibility_Invalidate() { Update_Visibility = TRUE; };
+
+    void Visibility_Invalidate() { Update_Visibility = TRUE; }
     void Visibility_Update();
 
     void LL_Validate();
@@ -257,10 +258,11 @@ public:
     void LL_SetBonesVisible(VisMask mask);
 
     // Main functionality
+    virtual void CalculateBones_Invalidate() override;
+    virtual void CalculateBones_InvalidateSkeleton() override;
     virtual void CalculateBones(BOOL bForceExact = FALSE); // Recalculate skeleton
-    void CalculateBones_Invalidate();
 
-    void Callback(UpdateCallback C, void* Param)
+    void Callback(const UpdateCallback C, void* Param) override
     {
         Update_Callback = C;
         Update_Callback_Param = Param;
@@ -279,6 +281,8 @@ public:
 #endif
 protected:
     virtual shared_str getDebugName() { return dbg_name; }
+
+    void CalculateSkeleton();
 
 public:
     // General "Visual" stuff

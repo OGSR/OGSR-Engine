@@ -479,7 +479,12 @@ void CKinematics::Copy(dxRender_Visual* P)
 void CKinematics::CalculateBones_Invalidate()
 {
     UCalc_Time = 0x0;
-    UCalc_Visibox = psSkeletonUpdate;
+    UCalc_Skeleton = psSkeletonUpdate;
+}
+
+void CKinematics::CalculateBones_InvalidateSkeleton()
+{
+    UCalc_Skeleton = psSkeletonUpdate;
 }
 
 void CKinematics::Spawn()
@@ -582,6 +587,7 @@ void CKinematics::Visibility_Update()
     ZoneScoped;
 
     Update_Visibility = FALSE;
+
     // check visible
     for (u32 c_it = 0; c_it < children.size(); c_it++)
     {
@@ -794,7 +800,7 @@ void CKinematics::AddWallmark(Fmatrix* parent_xform, const Fvector3& start, cons
 
 void CKinematics::AddWallmarkAsync()
 {
-    for (auto& item : wallmarks_to_add)
+    for (auto & item : wallmarks_to_add)
     {
         item.add_wallmark_internal(this);
     }
@@ -821,11 +827,11 @@ void CKinematics::CalculateWallmarks(const bool hud) // called on render
                 return true; // remove wallmark
             }
 
-                // append wm to WallmarkEngine
-                if (!hud && RImplementation.ViewBase.testSphere_dirty(wm->m_Bounds.P, wm->m_Bounds.R))
-                    ::RImplementation.append_SkeletonWallmark(wm);
+            // append wm to WallmarkEngine
+            if (!hud && RImplementation.ViewBase.testSphere_dirty(wm->m_Bounds.P, wm->m_Bounds.R))
+                ::RImplementation.append_SkeletonWallmark(wm);
 
-                return false;
+            return false;
         });
     }
 
@@ -925,7 +931,7 @@ void CKinematics::ClearWallmarks()
     Device.remove_from_seq_parallel(fastdelegate::MakeDelegate(this, &CKinematics::AddWallmarkAsync));
 
     wallmarks_to_add.clear();
-    
+
     wallmarks_lock.lock();
 
     wallmarks.clear();
