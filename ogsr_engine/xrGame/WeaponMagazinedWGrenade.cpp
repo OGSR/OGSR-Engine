@@ -325,7 +325,7 @@ void CWeaponMagazinedWGrenade::SwitchState(u32 S)
     inherited::SwitchState(S);
 
     //стрельнуть из подствольника
-    if (m_bGrenadeMode && GetState() == eIdle && S == eFire && getRocketCount())
+    if (m_bGrenadeMode && (GetState() == eIdle || GetState() == eSprintStart || GetState() == eSprintEnd) && S == eFire && getRocketCount())
     {
         Fvector p1, d;
         p1.set(get_LastFP2());
