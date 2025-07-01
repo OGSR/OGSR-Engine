@@ -54,12 +54,14 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion* info_portion, bool rever
             updated_pda.push_back(p);
     };
 
+    bool force_update = false;
     auto last_end = article_vector.end();
     for (const auto& id : (revert ? info_portion->Articles() : info_portion->ArticlesDisable()))
     {
         last_end = std::remove_if(article_vector.begin(), last_end, [&](const auto& it) {
             if (it.article_id == id)
             {
+                force_update = true;
                 update_pda_section(it);
                 return true;
             }
@@ -88,6 +90,7 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion* info_portion, bool rever
             auto& Data = article_vector.emplace_back(id, Level().GetGameTime(), _atype);
 
             callback(GameObject::eArticleInfo)(lua_game_object(), article.data()->group.c_str(), article.data()->name.c_str(), _atype, article.data()->text.c_str());
+            force_update = true;
 
             update_pda_section(Data);
         }
@@ -96,7 +99,7 @@ void CActor::AddEncyclopediaArticle(const CInfoPortion* info_portion, bool rever
     {
         auto* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
         for (const auto& p : updated_pda)
-            pGameSP->PdaMenu->PdaContentsChanged(p, !revert);
+            pGameSP->PdaMenu->PdaContentsChanged(p, !revert, force_update);
     }
 }
 

@@ -75,7 +75,7 @@ public:
     void SetActiveSubdialog(EPdaTabs section);
     virtual bool StopAnyMove() { return false; }
 
-    void PdaContentsChanged(pda_section::part type, bool = true);
+    void PdaContentsChanged(pda_section::part type, bool = true, bool = false);
 
     Fvector2 last_cursor_pos{};
     bool bButtonL{}, bButtonR{};

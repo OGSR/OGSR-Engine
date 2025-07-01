@@ -393,11 +393,14 @@ void CUIPdaWnd::Draw()
     DrawUpdatedSections();
 }
 
-void CUIPdaWnd::PdaContentsChanged(pda_section::part type, bool flash)
+void CUIPdaWnd::PdaContentsChanged(pda_section::part type, bool flash, bool force_update)
 {
     if (type == pda_section::encyclopedia)
     {
-        UIEncyclopediaWnd->ReloadArticles();
+        if (force_update)
+            UIEncyclopediaWnd->ResetArticles();
+        else
+            UIEncyclopediaWnd->ReloadArticles();
     }
     else if (type == pda_section::news)
     {
@@ -415,7 +418,12 @@ void CUIPdaWnd::PdaContentsChanged(pda_section::part type, bool flash)
     }
 
     else if (type == pda_section::journal || type == pda_section::info)
-        UIDiaryWnd->ReloadJournal();
+    {
+        if (force_update)
+            UIDiaryWnd->ResetJournal();
+        else
+            UIDiaryWnd->ReloadJournal();
+    }
 
     if (flash)
     {
