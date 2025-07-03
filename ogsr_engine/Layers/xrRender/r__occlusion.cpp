@@ -133,8 +133,7 @@ R_occlusion::occq_result R_occlusion::occq_get(u32& ID, float max_wait_occ)
         // очень редко когда он готов немедленно
         while ((hr = GetData(used[ID].Q.Get(), &fragments, sizeof(fragments))) == S_FALSE)
         {
-            if (!SwitchToThread())
-                Sleep(0);
+            YieldProcessor();
 
             if (T.GetElapsed_ms_total() > max_wait_occ || (max_wait_occ <= 1.f && tries++ > 512))
             {
