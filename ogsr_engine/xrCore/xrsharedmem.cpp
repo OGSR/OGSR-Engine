@@ -82,12 +82,15 @@ void smem_container::clean()
 
 void smem_container::dump()
 {
+    string_path fname;
+    FS.update_path(fname, fsgame::app_data_root, "$smem_container_dump$.txt");
+
     cs.Enter();
     cdb::iterator it = container.begin();
     cdb::iterator end = container.end();
-    FILE* F = fopen("x:\\$smem_dump$.txt", "w");
-    for (; it != end; it++)
-        fprintf(F, "%4u : crc[%6x], %u bytes\n", (*it)->dwReference, (*it)->dwCRC, (*it)->dwSize);
+    FILE* F = fopen(fname, "w");
+    for (; it != end; ++it)
+        fprintf(F, "%4u : crc[%6x], %u bytes\n", (*it)->dwReference.load(), (*it)->dwCRC, (*it)->dwSize);
     fclose(F);
     cs.Leave();
 }

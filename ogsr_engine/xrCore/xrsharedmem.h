@@ -5,10 +5,11 @@
 #pragma warning(disable : 4200)
 struct XRCORE_API smem_value
 {
-    u32 dwReference;
+    std::atomic<u32> dwReference{};
+
     u32 dwCRC;
     u32 dwSize; // size in bytes !!!
-    u32 _align_16;
+
     u8 value[];
 };
 
@@ -60,9 +61,10 @@ protected:
     {
         if (0 == p_)
             return;
-        p_->dwReference--;
+        --p_->dwReference;
         if (0 == p_->dwReference)
         {
+            // Msg("ref_smem: deleting %d bytes of shared memory", p_->dwSize);
             if (g_pSharedMemoryContainer->disabled())
                 xr_free(p_);
 
@@ -74,8 +76,10 @@ public:
     void _set(ref_smem const& rhs)
     {
         smem_value* v = rhs.p_;
-        if (0 != v)
-            v->dwReference++;
+
+        if (v)
+            ++v->dwReference;
+
         _dec();
         p_ = v;
     }
@@ -94,8 +98,10 @@ public:
     void create(u32 dwLength, T* ptr)
     {
         smem_value* v = g_pSharedMemoryContainer->dock(dwLength * sizeof(T), ptr);
-        if (0 != v)
-            v->dwReference++;
+
+        if (v)
+            ++v->dwReference;
+
         _dec();
         p_ = v;
     }
@@ -104,7 +110,7 @@ public:
     ref_smem<T>& operator=(ref_smem<T> const& rhs)
     {
         _set(rhs);
-        return (ref_smem<T>&)*this;
+        return static_cast<ref_smem<T>&>(*this);
     }
     T* operator*() const { return p_ ? (T*)p_->value : 0; }
     bool operator!() const { return p_ == 0; }
