@@ -236,6 +236,10 @@ void CUIEncyclopediaWnd::ResetArticles()
 
 void CUIEncyclopediaWnd::FillEncyclopedia()
 {
+    SetCurrentArtice(nullptr);
+    UIEncyclopediaInfoHeader->UITitleText.SetText("");
+    UIArticleHeader->SetText("");
+
     ResetArticles();
     UpdateArticles();
 }
