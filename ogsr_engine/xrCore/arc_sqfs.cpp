@@ -53,7 +53,7 @@ CLocatorAPI::archive::xr_sqfs::reader* CLocatorAPI::archive::xr_sqfs::alloc(cons
 {
     reader* rd = xr_new<reader>();
 
-    R_ASSERT(!sqfs_file_open(&rd->file, arc.path.c_str(), SQFS_FILE_OPEN_READ_ONLY));
+    R_ASSERT(!sqfs_file_open(&rd->file, arc.path.c_str(), SQFS_FILE_OPEN_READ_ONLY | SQFS_FILE_OPEN_NO_CHARSET_XFRM));
 
     rd->dr = sqfs_dir_reader_create(&arc.fs->super, arc.cmp, rd->file, 0);
     rd->data = sqfs_data_reader_create(rd->file, arc.fs->super.block_size, arc.cmp, 0);
@@ -224,7 +224,7 @@ void CLocatorAPI::archive::open_sqfs()
     type = container::SQFS;
     fs = xr_new<xr_sqfs>();
 
-    R_ASSERT(!sqfs_file_open(&file, path.c_str(), SQFS_FILE_OPEN_READ_ONLY));
+    R_ASSERT(!sqfs_file_open(&file, path.c_str(), SQFS_FILE_OPEN_READ_ONLY | SQFS_FILE_OPEN_NO_CHARSET_XFRM));
     R_ASSERT(!sqfs_super_read(&fs->super, file));
 
     sqfs_compressor_config_t cfg;
