@@ -161,11 +161,12 @@ void CHW::CreateDevice(HWND m_hWnd)
     Caps.id_vendor = Desc.VendorId;
     Caps.id_device = Desc.DeviceId;
 
-    UINT createDeviceFlags = 0;
-//#ifdef DEBUG
-    if (IsDebuggerPresent())
+    const bool UseDXDBG = !!strstr(Core.Params, "-dxdbg");
+
+    UINT createDeviceFlags{};
+
+    if (UseDXDBG)
         createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-//#endif
 
     auto& pContext = d3d_contexts_pool[CHW::IMM_CTX_ID];
 
@@ -214,33 +215,32 @@ void CHW::CreateDevice(HWND m_hWnd)
 
     fill_vid_mode_list(this);
 
-    // https://walbourn.github.io/direct3d-sdk-debug-layer-tricks/
+    if (UseDXDBG)
+    { // https://walbourn.github.io/direct3d-sdk-debug-layer-tricks/
+        Microsoft::WRL::ComPtr<ID3D11Debug> d3dDebug;
+        if (SUCCEEDED(pDevice->QueryInterface(IID_PPV_ARGS(&d3dDebug))))
+        {
+            Microsoft::WRL::ComPtr<ID3D11InfoQueue> d3dInfoQueue;
+            if (SUCCEEDED(d3dDebug->QueryInterface(IID_PPV_ARGS(&d3dInfoQueue))))
+            {
+                if (IsDebuggerPresent())
+                {
+                    d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
+                    // d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_ERROR, true);
+                }
 
-    //if (IsDebuggerPresent())
-    //{
-    //    ID3D11Debug* d3dDebug = nullptr;
-    //    if (SUCCEEDED(pDevice->QueryInterface(IID_PPV_ARGS(&d3dDebug))))
-    //    {
-    //        ID3D11InfoQueue* d3dInfoQueue = nullptr;
-    //        if (SUCCEEDED(d3dDebug->QueryInterface(IID_PPV_ARGS(&d3dInfoQueue))))
-    //        {
-    //            d3dInfoQueue->SetBreakOnSeverity(D3D11_MESSAGE_SEVERITY_CORRUPTION, true);
+                // Add more message IDs here as needed
+                D3D11_MESSAGE_ID hide[]{
+                    D3D11_MESSAGE_ID_SETPRIVATEDATA_CHANGINGPARAMS,
+                };
 
-    //            // Add more message IDs here as needed
-    //            D3D11_MESSAGE_ID hide[] = {
-    //                D3D11_MESSAGE_ID_SETPRIVATEDATA_CHANGINGPARAMS,
-    //            };
-
-    //            D3D11_INFO_QUEUE_FILTER filter = {};
-    //            filter.DenyList.NumIDs = _countof(hide);
-    //            filter.DenyList.pIDList = hide;
-    //            d3dInfoQueue->AddStorageFilterEntries(&filter);
-
-    //            _RELEASE(d3dInfoQueue);
-    //        }
-    //        _RELEASE(d3dDebug);
-    //    }
-    //}
+                D3D11_INFO_QUEUE_FILTER filter{};
+                filter.DenyList.NumIDs = std::size(hide);
+                filter.DenyList.pIDList = hide;
+                d3dInfoQueue->AddStorageFilterEntries(&filter);
+            }
+        }
+    }
 
     ImGui_ImplDX11_Init(m_hWnd, pDevice, pContext);
 
@@ -513,5 +513,45 @@ void fill_vid_mode_list(CHW* _hw)
 #ifdef DEBUG
         Msg("[%s]", _tmp[i]);
 #endif // DEBUG
+    }
+}
+
+void LogD3D11DebugMessages()
+{
+    if (!HW.pDevice || !strstr(Core.Params, "-dxdbg") || IsDebuggerPresent())
+        return;
+
+    static std::recursive_mutex logCS;
+    std::scoped_lock lock(logCS); // на всякий случай
+
+    Microsoft::WRL::ComPtr<ID3D11InfoQueue> infoQueue;
+    if (SUCCEEDED(HW.pDevice->QueryInterface(IID_PPV_ARGS(&infoQueue))) && infoQueue)
+    {
+        const UINT64 numMessages = infoQueue->GetNumStoredMessages();
+        for (UINT64 i{}; i < numMessages; ++i)
+        {
+            SIZE_T messageLength{};
+            infoQueue->GetMessage(i, nullptr, &messageLength); // Получаем размер
+
+            xr_vector<char> messageData(messageLength);
+            auto message = reinterpret_cast<D3D11_MESSAGE*>(messageData.data());
+
+            if (SUCCEEDED(infoQueue->GetMessage(i, message, &messageLength)))
+            { // Теперь у нас есть текст сообщения
+                Log("---------[" __FUNCTION__ "]------------");
+                Log(std::string{message->pDescription, message->DescriptionByteLength});
+                Log("----------------------------------------");
+            }
+            else
+            {
+                Msg("!![%s] Failed infoQueue->GetMessage", __FUNCTION__);
+            }
+        }
+
+        infoQueue->ClearStoredMessages(); // Очистить очередь сообщений
+    }
+    else
+    {
+        Msg("!![%s] Failed infoQueue", __FUNCTION__);
     }
 }

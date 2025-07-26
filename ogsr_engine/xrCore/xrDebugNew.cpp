@@ -31,6 +31,9 @@ extern bool OnMainThread();
 
 static void ShowErrorMessage(const char* msg, const bool show_msg = false)
 {
+    extern void LogD3D11DebugMessages();
+    LogD3D11DebugMessages();
+
     const bool on_ttapi_thread = !OnMainThread();
 
     if (!on_ttapi_thread)
