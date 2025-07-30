@@ -40,8 +40,8 @@ public:
 public:
     // general
     u32 MODE;
-    u32 dwFrame;
-    u32 dwFrameSmooth{};
+    std::atomic<u32> dwFrame;
+    std::atomic<u32> dwFrameSmooth;
     bool skip{};
 
     //
@@ -124,18 +124,17 @@ private:
     // static inline CubeFaces get_cube_face(Fvector3& dir);
 
     // Accumulates light from direction for corresponding faces
-    static inline void accum_hemi(float* hemi_cube, Fvector3& dir, float scale);
+    static inline void accum_hemi(float* hemi_cube, const Fvector3& dir, const float scale);
 
     // Calculates sun part of ambient occlusion
-    void calc_sun_value(Fvector& position, CObject* _object);
+    void calc_sun_value(const Fvector& position, const CObject* _object);
 
     // Calculates sky part of ambient occlusion
-    void calc_sky_hemi_value(Fvector& position, CObject* _object);
+    void calc_sky_hemi_value(const Fvector& position, const CObject* _object);
 
     // prepares static or hemisphere lights for ambient occlusion calculations
-    void prepare_lights(Fvector& position, IRenderable* O);
+    void prepare_lights(const Fvector& position, IRenderable* O);
 
     //	Updates only if makes a desizion that update is necessary
     void smart_update(IRenderable* O);
-
 };

@@ -15,13 +15,16 @@
 CROS_impl::CROS_impl()
 {
     approximate.set(0, 0, 0);
-    dwFrame = u32(-1);
-    shadow_recv_frame = u32(-1);
+
+    dwFrame = static_cast<u32>(-1);
+    dwFrameSmooth = static_cast<u32>(-1);
+
+    shadow_recv_frame = static_cast<u32>(-1);
     shadow_recv_slot = -1;
 
     result_count = 0;
     result_iterator = 0;
-    result_frame = u32(-1);
+    result_frame = static_cast<u32>(-1);
     result_sun = 0;
     hemi_value = 0.5f;
     hemi_smooth = 0.5f;
@@ -132,7 +135,7 @@ const float hdir[lt_hemisamples][3] = {
 //	return (dir.z > 0) ? CUBE_FACE_POS_Z : CUBE_FACE_NEG_Z;
 // }
 
-inline void CROS_impl::accum_hemi(float* hemi_cube, Fvector3& dir, float scale)
+inline void CROS_impl::accum_hemi(float* hemi_cube, const Fvector3& dir, const float scale)
 {
     if (dir.x > 0)
         hemi_cube[CUBE_FACE_POS_X] += dir.x * scale;
@@ -155,16 +158,19 @@ void CROS_impl::update(IRenderable* O)
 {
     ZoneScoped;
 
-    // clip & verify
-    if (dwFrame == Device.dwFrame)
+    u32 expected_frame = dwFrame.load();
+
+    if (!dwFrame.compare_exchange_strong(expected_frame, Device.dwFrame) || expected_frame == Device.dwFrame)
         return;
-    dwFrame = Device.dwFrame;
+
+    // clip & verify
+
     if (nullptr == O)
         return;
     if (nullptr == O->renderable.visual)
         return;
+
     VERIFY(dynamic_cast<CROS_impl*>(O->renderable_ROS()));
-    // float	dt			=	Device.fTimeDelta;
 
     CObject* _object = dynamic_cast<CObject*>(O);
 
@@ -193,8 +199,6 @@ void CROS_impl::update(IRenderable* O)
     position.y += .3f * vis.sphere.R;
     Fvector direction;
     direction.random_dir();
-    //.			position.mad(direction,0.25f*radius);
-    //.			position.mad(direction,0.025f*radius);
 
     // function call order is important at least for r1
     for (float& i : hemi_cube)
@@ -211,19 +215,23 @@ void CROS_impl::update(IRenderable* O)
     // Process ambient lighting and approximate average lighting
     // Process our lights to find average luminescences
     const CEnvDescriptor& desc = *g_pGamePersistent->Environment().CurrentEnv;
+
     Fvector accum = {desc.ambient.x, desc.ambient.y, desc.ambient.z};
     Fvector hemi = {desc.hemi_color.x, desc.hemi_color.y, desc.hemi_color.z};
     Fvector sun_ = {desc.sun_color.x, desc.sun_color.y, desc.sun_color.z};
+
     if (MODE & IRender_ObjectSpecific::TRACE_HEMI)
         hemi.mul(hemi_smooth);
     else
         hemi.mul(.2f);
     accum.add(hemi);
+
     if (MODE & IRender_ObjectSpecific::TRACE_SUN)
         sun_.mul(sun_smooth);
     else
         sun_.mul(.2f);
     accum.add(sun_);
+
     if (MODE & IRender_ObjectSpecific::TRACE_LIGHTS)
     {
         Fvector lacc = {0, 0, 0};
@@ -265,11 +273,6 @@ void CROS_impl::update(IRenderable* O)
             hemi_cube[i] = std::max(hemi_cube[i], minHemiValue);
         }
 
-
-        //		lacc.x		*= desc.lmap_color.x;
-        //		lacc.y		*= desc.lmap_color.y;
-        //		lacc.z		*= desc.lmap_color.z;
-        //		Msg				("- rgb[%f,%f,%f]",lacc.x,lacc.y,lacc.z);
         accum.add(lacc);
     }
     else
@@ -296,9 +299,7 @@ constexpr s32 s_iUTIdleMax = 2000;
 
 void CROS_impl::smart_update(IRenderable* O)
 {
-    if (!O)
-        return;
-    if (nullptr == O->renderable.visual)
+    if (!O || !O->renderable.visual)
         return;
 
     --ticks_to_update;
@@ -323,9 +324,10 @@ void CROS_impl::smart_update(IRenderable* O)
     }
     else
     {
-        if (!last_position.similar(position, 0.15))
+        if (!last_position.similar(position, 0.15f))
         {
             sky_rays_uptodate = 0;
+
             update(O);
             last_position = position;
 
@@ -343,10 +345,10 @@ extern float ps_r2_lt_smooth;
 // hemi & sun: update and smooth
 void CROS_impl::update_smooth(IRenderable* O)
 {
-    if (dwFrameSmooth == Device.dwFrame)
-        return;
+    u32 expected_frame = dwFrameSmooth.load();
 
-    dwFrameSmooth = Device.dwFrame;
+    if (!dwFrameSmooth.compare_exchange_strong(expected_frame, Device.dwFrame) || expected_frame == Device.dwFrame)
+        return;
 
     smart_update(O);
 
@@ -355,15 +357,16 @@ void CROS_impl::update_smooth(IRenderable* O)
     const float l_i = 1.f - l_f;
     hemi_smooth = hemi_value * l_f + hemi_smooth * l_i;
     sun_smooth = sun_value * l_f + sun_smooth * l_i;
+
     for (size_t i = 0; i < NUM_FACES; ++i)
     {
         hemi_cube_smooth[i] = hemi_cube[i] * l_f + hemi_cube_smooth[i] * l_i;
     }
 }
 
-void CROS_impl::calc_sun_value(Fvector& position, CObject* _object)
+void CROS_impl::calc_sun_value(const Fvector& position, const CObject* _object)
 {
-    const light* sun = (light*)RImplementation.Lights.sun_adapted._get();
+    const light* sun = dynamic_cast<light*>(RImplementation.Lights.sun_adapted._get());
 
     if (MODE & IRender_ObjectSpecific::TRACE_SUN)
     {
@@ -377,7 +380,7 @@ void CROS_impl::calc_sun_value(Fvector& position, CObject* _object)
     }
 }
 
-void CROS_impl::calc_sky_hemi_value(Fvector& position, CObject* _object)
+void CROS_impl::calc_sky_hemi_value(const Fvector& position, const CObject* _object)
 {
     // hemi-tracing
     if (MODE & IRender_ObjectSpecific::TRACE_HEMI)
@@ -385,7 +388,7 @@ void CROS_impl::calc_sky_hemi_value(Fvector& position, CObject* _object)
         sky_rays_uptodate += ps_r2_dhemi_count;
         sky_rays_uptodate = _min(sky_rays_uptodate, lt_hemisamples);
 
-        for (u32 it = 0; it < (u32)ps_r2_dhemi_count; it++)
+        for (u32 it = 0; it < static_cast<u32>(ps_r2_dhemi_count); it++)
         { // five samples per one frame
             u32 sample = 0;
             if (result_count < lt_hemisamples)
@@ -414,7 +417,7 @@ void CROS_impl::calc_sky_hemi_value(Fvector& position, CObject* _object)
     for (int it = 0; it < result_count; it++)
         if (result[it])
             _pass++;
-    hemi_value = float(_pass) / float(result_count ? result_count : 1);
+    hemi_value = static_cast<float>(_pass) / static_cast<float>(result_count ? result_count : 1);
     hemi_value *= ps_r2_dhemi_sky_scale;
 
     for (int it = 0; it < result_count; it++)
@@ -426,7 +429,7 @@ void CROS_impl::calc_sky_hemi_value(Fvector& position, CObject* _object)
     }
 }
 
-void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
+void CROS_impl::prepare_lights(const Fvector& position, IRenderable* O)
 {
     const CObject* _object = dynamic_cast<CObject*>(O);
     const float dt = Device.fTimeDelta;
@@ -449,7 +452,7 @@ void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
 
         for (const auto& spatial : lstSpatial)
         {
-            light* source = (light*)(spatial->dcast_Light());
+            light* source = dynamic_cast<light*>(spatial->dcast_Light());
             VERIFY(source); // sanity check
             const float R = radius + source->range;
             if (position.distance_to(source->position) < R && source->flags.bStatic)
@@ -459,7 +462,7 @@ void CROS_impl::prepare_lights(Fvector& position, IRenderable* O)
         // Trace visibility
         lights.clear();
 
-        for (s32 id = 0; id < s32(track.size()); id++)
+        for (s32 id = 0; id < static_cast<s32>(track.size()); id++)
         {
             // remove untouched lights
             const xr_vector<CROS_impl::Item>::iterator I = track.begin() + id;
