@@ -63,7 +63,7 @@ float4 main(p_screen I) : SV_Target
     float2 grp_offset = float2(0.0, ssfx_lut.y / LUT_GROUPS);
 
     // Sample LUTs
-    float3 lut_col = lerp(s_lut_atlas.Sample(smp_linear, uvs.xy + grp_offset).rgb, s_lut_atlas.Sample(smp_linear, uvs.zw + grp_offset).rgb, lut_frac);
+    float3 lut_col = lerp(s_lut_atlas.SampleLevel(smp_linear, uvs.xy + grp_offset, 0).rgb, s_lut_atlas.SampleLevel(smp_linear, uvs.zw + grp_offset, 0).rgb, lut_frac);
 
 #ifdef ADVANCE_TRANSITION
 
@@ -71,7 +71,7 @@ float4 main(p_screen I) : SV_Target
     grp_offset = float2(0.0, ssfx_lut.z / LUT_GROUPS);
 
     // Sample transition LUTs
-    float3 SecondLUT = lerp(s_lut_atlas.Sample(smp_linear, uvs.xy + grp_offset).rgb, s_lut_atlas.Sample(smp_linear, uvs.zw + grp_offset).rgb, lut_frac);
+    float3 SecondLUT = lerp(s_lut_atlas.SampleLevel(smp_linear, uvs.xy + grp_offset, 0).rgb, s_lut_atlas.SampleLevel(smp_linear, uvs.zw + grp_offset, 0).rgb, lut_frac);
 
     lut_col = lerp(lut_col, SecondLUT, ssfx_lut.w);
 #endif
