@@ -160,14 +160,15 @@ private:
 
     xr_deque<fastdelegate::FastDelegate<void()>> seqParallel;
 
+    xr_vector<std::future<void>> second_tasks;
+    SpinLock second_tasks_lock;
+
 public:
     LRESULT MsgProc(HWND, UINT, WPARAM, LPARAM);
 
     u32 dwPrecacheTotal;
     float fWidth_2, fHeight_2;
     void OnWM_Activate(WPARAM wParam, LPARAM lParam);
-
-public:
 
     IRenderDeviceRender* m_pRender;
 
@@ -176,8 +177,6 @@ public:
 public:
     CRegistrator<pureFrame> seqFrameMT;
     CRegistrator<pureDeviceReset> seqDeviceReset;
-
-    xr_vector<std::future<void>> async_waiter;
 
     CStats* Statistic;
 
@@ -241,6 +240,13 @@ public:
     ICF void remove_from_seq_parallel(const fastdelegate::FastDelegate<void()>& delegate)
     {
         seqParallel.erase(std::remove(seqParallel.begin(), seqParallel.end(), delegate), seqParallel.end());
+    }
+
+    IC void add_to_awaiters(std::future<void> f)
+    {
+        second_tasks_lock.lock();
+        second_tasks.push_back(std::move(f));
+        second_tasks_lock.unlock();
     }
 
 public:

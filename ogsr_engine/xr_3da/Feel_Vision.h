@@ -3,6 +3,7 @@
 #include "../xrcdb/xr_collide_defs.h"
 #include "render.h"
 #include "pure_relcase.h"
+#include "xr_object.h"
 
 class IRender_Sector;
 class CObject;
@@ -26,6 +27,9 @@ private:
 
     xr_vector<ISpatial*> r_spatial;
     collide::rq_results RQR;
+
+    CFrustum Frustum;
+    std::shared_mutex lock_query, lock_visible;
 
     void o_new(CObject* E);
     void o_delete(CObject* E);
@@ -61,22 +65,34 @@ public:
     void feel_vision_get(xr_vector<CObject*>& R)
     {
         R.clear();
-        xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
-        for (; I != E; ++I)
-            if (positive(I->fuzzy))
-                R.push_back(I->O);
+
+        if (feel_visible.empty())
+            return;
+
+        R.reserve(feel_visible.size());
+
+        std::shared_lock lock{lock_visible};
+
+        for (const auto& item : feel_visible)
+        {
+            if (item.O && !item.O->getDestroy() && positive(item.fuzzy))
+                R.push_back(item.O);
+        }
     }
-    Fvector feel_vision_get_vispoint(CObject* _O)
+    Fvector feel_vision_get_vispoint(const CObject* _O)
     {
-        xr_vector<feel_visible_Item>::iterator I = feel_visible.begin(), E = feel_visible.end();
-        for (; I != E; ++I)
-            if (_O == I->O)
-            {
-                VERIFY(positive(I->fuzzy));
-                return I->cp_LAST;
-            }
-        VERIFY(0, "There is no such object in the potentially visible list");
-        return Fvector().set(flt_max, flt_max, flt_max);
+        if (!_O || _O->getDestroy() || feel_visible.empty())
+            return {};
+
+        std::shared_lock lock{lock_visible};
+
+        auto it = std::find_if(feel_visible.begin(), feel_visible.end(), [_O](const auto& item) { return _O == item.O && positive(item.fuzzy); });
+        if (it != feel_visible.end())
+        {
+            return it->cp_LAST;
+        }
+
+        return {};
     }
     virtual BOOL feel_vision_isRelevant(CObject* O) = 0;
     virtual float feel_vision_mtl_transp(CObject* O, u32 element) = 0;

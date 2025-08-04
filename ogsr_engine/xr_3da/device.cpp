@@ -277,7 +277,7 @@ void CRenderDevice::on_idle()
 
             g_sound_update.OnFrame();
 
-            // Device.async_waiter.push_back(TTAPI->submit([]() { g_sound_render.OnFrame(); }));
+            // add_to_awaiters(TTAPI->submit([]() { g_sound_render.OnFrame(); }));
 
             {
                 ZoneScopedN("seqParallel");
@@ -296,7 +296,7 @@ void CRenderDevice::on_idle()
             {
                 const auto GCTime = (SecondThreadFreeTimeLast.count() / 2.0) * 1000.0;
                 psLUA_GCTIMEOUT = std::max(psLUA_GCTIMEOUT_MIN, static_cast<int>(GCTime));
-                async_waiter.emplace_back(TTAPI->submit([] { g_pGameLevel->script_gc(); }));
+                add_to_awaiters(TTAPI->submit([] { g_pGameLevel->script_gc(); }));
             }
 
             {
@@ -359,11 +359,11 @@ void CRenderDevice::on_idle()
 #endif
             awaiter.wait();
 
-            while (!async_waiter.empty())
+            while (!second_tasks.empty())
             {
-                if (async_waiter.back().valid())
-                    async_waiter.back().wait();
-                async_waiter.pop_back();
+                if (second_tasks.back().valid())
+                    second_tasks.back().wait();
+                second_tasks.pop_back();
             }
 
             const std::chrono::duration<double, std::milli> SecondThreadElapsedTime = SecondThreadEndTime - SecondThreadStartTime;
