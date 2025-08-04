@@ -30,11 +30,6 @@ u32 ps_r_dlss_preset = NVSDK_NGX_DLSS_Hint_Render_Preset_F;
 u32 ps_r_dlss_3dss_preset = NVSDK_NGX_DLSS_Hint_Render_Preset_F;
 constexpr xr_token dlss_mode_token[]{
     {"st_opt_dlss_default", NVSDK_NGX_DLSS_Hint_Render_Preset_Default}, // default behavior, may or may not change after OTA
-    {"st_opt_dlss_a", NVSDK_NGX_DLSS_Hint_Render_Preset_A},
-    {"st_opt_dlss_b", NVSDK_NGX_DLSS_Hint_Render_Preset_B},
-    {"st_opt_dlss_c", NVSDK_NGX_DLSS_Hint_Render_Preset_C},
-    {"st_opt_dlss_d", NVSDK_NGX_DLSS_Hint_Render_Preset_D},
-    {"st_opt_dlss_e", NVSDK_NGX_DLSS_Hint_Render_Preset_E},
     {"st_opt_dlss_f", NVSDK_NGX_DLSS_Hint_Render_Preset_F},
     {"st_opt_dlss_j", NVSDK_NGX_DLSS_Hint_Render_Preset_J},
     {"st_opt_dlss_k", NVSDK_NGX_DLSS_Hint_Render_Preset_K},

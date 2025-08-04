@@ -55,26 +55,39 @@ extern "C"
 //          * Support multiple GPUs (bug 3270533)
 #define NVSDK_NGX_VERSION_API_MACRO 0x0000015  // NGX_VERSION_DOT 1.5.0
 
+#ifdef __cplusplus
+#if __cplusplus >= 201402L
+#define SR_DEPRECATED_PRESET [[deprecated("Presets A-E are deprecated. Use defaults or preset J or K")]]
+#define SR_DEPRECATED_SHARPENING [[deprecated("Sharpness is not supported")]]
+#else
+#define SR_DEPRECATED_PRESET
+#define SR_DEPRECATED_SHARPENING
+#endif
+#else
+#define SR_DEPRECATED_PRESET
+#define SR_DEPRECATED_SHARPENING
+#endif
+
 typedef unsigned long long AppId;
 
 typedef enum NVSDK_NGX_DLSS_Hint_Render_Preset
 {
-    NVSDK_NGX_DLSS_Hint_Render_Preset_Default,     // default behavior, may or may not change after OTA
-    NVSDK_NGX_DLSS_Hint_Render_Preset_A,
-    NVSDK_NGX_DLSS_Hint_Render_Preset_B,
-    NVSDK_NGX_DLSS_Hint_Render_Preset_C,
-    NVSDK_NGX_DLSS_Hint_Render_Preset_D,
-    NVSDK_NGX_DLSS_Hint_Render_Preset_E,
-    NVSDK_NGX_DLSS_Hint_Render_Preset_F,
-    NVSDK_NGX_DLSS_Hint_Render_Preset_G,           // do not use, reverts to default behavior
-    NVSDK_NGX_DLSS_Hint_Render_Preset_H_Reserved,  // do not use, reverts to default behavior
-    NVSDK_NGX_DLSS_Hint_Render_Preset_I_Reserved,  // do not use, reverts to default behavior
-    NVSDK_NGX_DLSS_Hint_Render_Preset_J,
-    NVSDK_NGX_DLSS_Hint_Render_Preset_K,
-    NVSDK_NGX_DLSS_Hint_Render_Preset_L,           // do not use, reverts to default behavior
-    NVSDK_NGX_DLSS_Hint_Render_Preset_M,           // do not use, reverts to default behavior
-    NVSDK_NGX_DLSS_Hint_Render_Preset_N,           // do not use, reverts to default behavior
-    NVSDK_NGX_DLSS_Hint_Render_Preset_O,           // do not use, reverts to default behavior
+    NVSDK_NGX_DLSS_Hint_Render_Preset_Default,                  // default behavior, may or may not change after OTA
+    NVSDK_NGX_DLSS_Hint_Render_Preset_A SR_DEPRECATED_PRESET,   // Deprecated, use preset J or K
+    NVSDK_NGX_DLSS_Hint_Render_Preset_B SR_DEPRECATED_PRESET,   // Deprecated, use preset J or K
+    NVSDK_NGX_DLSS_Hint_Render_Preset_C SR_DEPRECATED_PRESET,   // Deprecated, use preset J or K
+    NVSDK_NGX_DLSS_Hint_Render_Preset_D SR_DEPRECATED_PRESET,   // Deprecated, use preset J or K
+    NVSDK_NGX_DLSS_Hint_Render_Preset_E SR_DEPRECATED_PRESET,   // Deprecated, use preset J or K
+    NVSDK_NGX_DLSS_Hint_Render_Preset_F,                        // Intended for Ultra Perf/DLAA modes. The default preset for Ultra Perf
+    NVSDK_NGX_DLSS_Hint_Render_Preset_G,                        // Do not use, reverts to default behavior
+    NVSDK_NGX_DLSS_Hint_Render_Preset_H_Reserved,               // Do not use, reverts to default behavior
+    NVSDK_NGX_DLSS_Hint_Render_Preset_I_Reserved,               // Do not use, reverts to default behavior
+    NVSDK_NGX_DLSS_Hint_Render_Preset_J,                        // Similar to preset K. Preset J might exhibit slightly less ghosting at the cost of extra flickering. Preset K is generally recommended over preset J
+    NVSDK_NGX_DLSS_Hint_Render_Preset_K,                        // Default preset for DLAA/Perf/Balanced/Quality modes that is transformer based. Best image quality preset at a higher performance cost
+    NVSDK_NGX_DLSS_Hint_Render_Preset_L,                        // Do not use, reverts to default behavior
+    NVSDK_NGX_DLSS_Hint_Render_Preset_M,                        // Do not use, reverts to default behavior
+    NVSDK_NGX_DLSS_Hint_Render_Preset_N,                        // Do not use, reverts to default behavior
+    NVSDK_NGX_DLSS_Hint_Render_Preset_O,                        // Do not use, reverts to default behavior
 } NVSDK_NGX_DLSS_Hint_Render_Preset;
 
 typedef struct NVSDK_NGX_FeatureCommonInfo_Internal NVSDK_NGX_FeatureCommonInfo_Internal;
@@ -83,62 +96,85 @@ typedef enum NVSDK_NGX_Version { NVSDK_NGX_Version_API = NVSDK_NGX_VERSION_API_M
 
 typedef enum NVSDK_NGX_Result
 {
+    // The operation completed successfully.
     NVSDK_NGX_Result_Success = 0x1,
 
+    // Generic failure. Check the NGX logs for detailed information.
     NVSDK_NGX_Result_Fail = 0xBAD00000,
 
-    // Feature is not supported on current hardware
+    // The NGX SDK or a specific feature is not supported by the current system,
+    // hardware, and/or graphics API.
     NVSDK_NGX_Result_FAIL_FeatureNotSupported = NVSDK_NGX_Result_Fail | 1,
 
-    // Platform error - for example - check d3d12 debug layer log for more information
+    // An error occurred within the underlying platform, which includes the
+    // graphics API in use, the operating system, or other system libraries and
+    // dependencies that are not part of the NGX SDK, such as NvAPI. Consult the
+    // NGX logs and the graphics API's validation layers for detailed
+    // information.
     NVSDK_NGX_Result_FAIL_PlatformError = NVSDK_NGX_Result_Fail | 2,
 
-    // Feature with given parameters already exists
+    // The NGX feature could not be created because a feature with identical
+    // parameters already exists, and the feature does not support multiple
+    // identical instances.
     NVSDK_NGX_Result_FAIL_FeatureAlreadyExists = NVSDK_NGX_Result_Fail | 3,
 
-    // Feature with provided handle does not exist
+    // A feature associated with the provided handle could not be found.
     NVSDK_NGX_Result_FAIL_FeatureNotFound = NVSDK_NGX_Result_Fail | 4,
 
-    // Invalid parameter was provided
+    // One or more provided parameters had an incorrect value or type, or a
+    // required parameter was not provided.
     NVSDK_NGX_Result_FAIL_InvalidParameter = NVSDK_NGX_Result_Fail | 5,
 
-    // Provided buffer is too small, please use size provided by NVSDK_NGX_GetScratchBufferSize
+    // The feature requires a scratch buffer, but none was provided or the
+    // provided buffer is too small. Use NVSDK_NGX_GetScratchBufferSize to
+    // determine the necessary size.
     NVSDK_NGX_Result_FAIL_ScratchBufferTooSmall = NVSDK_NGX_Result_Fail | 6,
 
-    // SDK was not initialized properly
+    // A function that requires the NGX SDK to be initialized was called before
+    // the SDK was properly initialized.
     NVSDK_NGX_Result_FAIL_NotInitialized = NVSDK_NGX_Result_Fail | 7,
 
-    //  Unsupported format used for input/output buffers
+    // One or more input buffers supplied to the feature had an unsupported
+    // format.
     NVSDK_NGX_Result_FAIL_UnsupportedInputFormat = NVSDK_NGX_Result_Fail | 8,
 
-    // Feature input/output needs RW access (UAV) (d3d11/d3d12 specific)
+    // The feature requires read/write access to output buffers, but one or more
+    // provided buffers did not have the correct access flags (UAV in
+    // D3D11/D3D12).
     NVSDK_NGX_Result_FAIL_RWFlagMissing = NVSDK_NGX_Result_Fail | 9,
 
-    // Feature was created with specific input but none is provided at evaluation
+    // A required input parameter was not provided.
     NVSDK_NGX_Result_FAIL_MissingInput = NVSDK_NGX_Result_Fail | 10,
 
-    // Feature is not available on the system
+    // The requested feature could not be initialized, likely because the
+    // library for that feature could not be found.
     NVSDK_NGX_Result_FAIL_UnableToInitializeFeature = NVSDK_NGX_Result_Fail | 11,
 
-    // NGX system libraries are old and need an update
+    // A function was used which requires a newer version of the NVIDIA Display
+    // Driver or feature library than is currently installed.
     NVSDK_NGX_Result_FAIL_OutOfDate = NVSDK_NGX_Result_Fail | 12,
 
-    // Feature requires more GPU memory than it is available on system
+    // An operation could not be completed because the system lacked sufficient
+    // GPU memory.
     NVSDK_NGX_Result_FAIL_OutOfGPUMemory = NVSDK_NGX_Result_Fail | 13,
 
-    // Format used in input buffer(s) is not supported by feature
+    // One or more buffers provided to the feature had an unsupported format.
     NVSDK_NGX_Result_FAIL_UnsupportedFormat = NVSDK_NGX_Result_Fail | 14,
 
-    // Path provided in InApplicationDataPath cannot be written to
+    // The SDK does not have the necessary write permissions for the path
+    // specified in InApplicationDataPath.
     NVSDK_NGX_Result_FAIL_UnableToWriteToAppDataPath = NVSDK_NGX_Result_Fail | 15,
 
-    // Unsupported parameter was provided (e.g. specific scaling factor is unsupported)
+    // A parameter supplied to the feature is either unsupported by the current
+    // version or has an unsupported value.
     NVSDK_NGX_Result_FAIL_UnsupportedParameter = NVSDK_NGX_Result_Fail | 16,
 
-    // The feature or application was denied (contact NVIDIA for further details)
+    // NVIDIA has restricted the use of this feature in the current application.
+    // Contact NVIDIA for further information.
     NVSDK_NGX_Result_FAIL_Denied = NVSDK_NGX_Result_Fail | 17,
 
-    // The feature or functionality is not implemented
+    // The requested feature or functionality has not been implemented in the
+    // current version of the NGX SDK, display driver, or feature library.
     NVSDK_NGX_Result_FAIL_NotImplemented = NVSDK_NGX_Result_Fail | 18,
 } NVSDK_NGX_Result;
 
@@ -223,6 +259,16 @@ typedef enum NVSDK_NGX_RTX_Value
     NVSDK_NGX_RTX_Value_On,
 } NVSDK_NGX_RTX_Value;
 
+// For each unique instance, a pointer to NVSDK_NGX_CUDADevice is passed in to 
+// NVSDK_NGX_CUDA_Init1, NVSDK_NGX_CUDA_CreateFeature1 and NVSDK_NGX_CUDA_Shutdown1.
+// This is needed in the case of running multiple threads in a single process.
+// Depending on the app usage of CUDA, one or both of cudaContext and cudaStream can be set.
+struct NVSDK_NGX_CUDADevice
+{
+    void*   cudaContext;        // CUcontext returned from cuCtxCreate
+    void*   cudaStream;         // CUstream returned from cuStreamCreate
+};
+
 typedef enum NVSDK_NGX_DLSS_Mode
 {
     NVSDK_NGX_DLSS_Mode_Off,        // use existing in-engine AA + upscale solution
@@ -261,7 +307,7 @@ typedef enum NVSDK_NGX_DLSS_Feature_Flags
     NVSDK_NGX_DLSS_Feature_Flags_MVJittered     = 1 << 2,
     NVSDK_NGX_DLSS_Feature_Flags_DepthInverted  = 1 << 3,
     NVSDK_NGX_DLSS_Feature_Flags_Reserved_0     = 1 << 4,
-    NVSDK_NGX_DLSS_Feature_Flags_DoSharpening   = 1 << 5,
+    NVSDK_NGX_DLSS_Feature_Flags_DoSharpening SR_DEPRECATED_SHARPENING = 1 << 5, // Sharpness is not supported
     NVSDK_NGX_DLSS_Feature_Flags_AutoExposure   = 1 << 6,
     NVSDK_NGX_DLSS_Feature_Flags_AlphaUpscaling = 1 << 7,
 } NVSDK_NGX_DLSS_Feature_Flags;
