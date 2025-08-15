@@ -432,11 +432,11 @@
 	<string id="ui_mm_r4_enable_tessellation">
 		<text>Tessellation</text>
 	</string>
-	<string id="ui_mm_soft_particles">
-		<text>Soft particles</text>
+	<string id="ui_mm_mblur">
+		<text>Motion blur</text>
 	</string>
-	<string id="ui_mm_r__bloodmarks">
-		<text>Bloodmarks</text>
+	<string id="ui_mm_mblur_param">
+		<text>Motion blur intensity</text>
 	</string>	
 	<string id="ui_mm_r2_details_opt">
 		<text>Details optimization</text>
@@ -680,7 +680,7 @@
 
 
 	<string id="video_settings_name_1">
-		<text>Multisample anti-aliasing - r3_msaa</text>
+		<text>Motion blur - r2_mblur_enable</text>
 	</string>
 	<string id="video_settings_name_2">
 		<text>Visibility range-rs_vis_distance</text>
@@ -770,7 +770,7 @@
 		<text>Volume ray type - r2_sunshafts_mode</text>
 	</string>
 	<string id="video_settings_name_31">
-		<text>The soft edge of the water - r2_soft_water</text>
+		<text>Motion blur intensity - r2_mblur</text>
 	</string>
 	<string id="video_settings_name_32">
 		<text>Soft particles - r2_soft_particles</text>
@@ -888,7 +888,7 @@
 	</string>
 
 	<string id="video_settings_desc_1">
-		<text>MSAA is a very heavy and at the same time very high quality type of anti-aliasing. Qualitatively smoothes wires, vegetation, translucent geometry.</text>
+		<text>Motion blur - blurring of the image when turning the camera, playing scenes of movement or fast-moving objects.</text>
 	</string>
 	<string id="video_settings_desc_2">
 		<text>This setting adjusts the amount by which the visibility limit set in the current weather profile is multiplied. The range of values of this value is from 0.4 (minimum slider) to 1 (maximum slider). For example, in the weather, a viewing range of 150 meters is set. At the minimum of the slider you will see at 60 meters, at the maximum at 150.</text>

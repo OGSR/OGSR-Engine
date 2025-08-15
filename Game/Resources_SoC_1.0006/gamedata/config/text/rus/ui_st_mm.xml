@@ -426,11 +426,11 @@
 	<string id="ui_mm_r4_enable_tessellation">
 		<text>Тесселяция</text>
 	</string>
-	<string id="ui_mm_soft_particles">
-		<text>Мягкие частицы</text>
+	<string id="ui_mm_mblur">
+		<text>Размытие в движении</text>
 	</string>
-	<string id="ui_mm_r__bloodmarks">
-		<text>Блудмарки</text>
+	<string id="ui_mm_mblur_param">
+		<text>Интенсивность размытия в движении</text>
 	</string>	
 	<string id="ui_mm_r2_details_opt">
 		<text>Оптимизация травы</text>
@@ -661,7 +661,7 @@
 
 
 	<string id="video_settings_name_1">
-		<text>Multisample anti-aliasing - r3_msaa</text>
+		<text>Размытие в движении - r2_mblur_enable</text>
 	</string>
 	<string id="video_settings_name_2">
 		<text>Дальность видимости - rs_vis_distance</text>
@@ -745,7 +745,7 @@
 		<text>Мягкие тени от солнца</text>
 	</string>
 	<string id="video_settings_name_31">
-		<text>Мягкие края воды - r2_soft_water</text>
+		<text>Интенсивность размытия в движении - r2_mblur</text>
 	</string>
 	<string id="video_settings_name_32">
 		<text>Мягкие частицы - r2_soft_particles</text>
@@ -863,7 +863,7 @@
 	</string>
 
 	<string id="video_settings_desc_1">
-		<text>MSAA - очень тяжелый и в тоже время очень качественный тип сглаживания. Качественно сглаживает провода, растительность, полупрозрачную геометрию.</text>
+		<text>Motion blur - размытие изображения при повороте камеры, воспроизведении сцен движения или быстро движущихся объектов.</text>
 	</string>
 	<string id="video_settings_desc_2">
 		<text>Эта настройка регулирует величину, на которую умножается предельное расстояние видимости, установленное в профиле текущей погоды. Диапазон значений этой величины - от 0.4 (минимум ползунка) до 1 (максимум ползунка). Например, в погоде установлена дальность обзора 150 метров. На минимуме ползунка вы будете видеть на 60 метров, на максимуме на 150.</text>

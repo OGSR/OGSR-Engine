@@ -49,7 +49,10 @@ local adv_vid_opt_params = {
 	{ "dof_reload",            "check", 0, hint_colors.green , "video_settings_name_41", "video_settings_desc_41" },
 	{ "dof_zoom",              "check", 0, hint_colors.green , "video_settings_name_42", "video_settings_desc_42" },
 	{ "dof_zoom_param",        "track", 0, hint_colors.green , "", ""                                             },
-	--	
+	--
+	{ "mblur",                 "check", 0, hint_colors.green , "video_settings_name_1", "video_settings_desc_1"   },
+	{ "mblur_param",           "track", 0, hint_colors.green , "video_settings_name_31", ""                       },
+	--
 	{ "r2_mask",               "check", 0, hint_colors.green , "video_settings_name_66", "",                      },
 	{ "r2_visor_refl",         "check", 0, hint_colors.green , "video_settings_name_65", "",                      },
 	{ "r2_rain_drops",         "check", 0, hint_colors.green , "video_settings_name_47", "video_settings_desc_47" },

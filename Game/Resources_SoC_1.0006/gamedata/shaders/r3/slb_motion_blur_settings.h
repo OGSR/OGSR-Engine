@@ -1,15 +1,15 @@
 #ifndef SLB_MOTION_BLUR_SETTINGS_H
 #define SLB_MOTION_BLUR_SETTINGS_H
 
-#define SLB_MBLUR_SAMPLES int(4) /// Blur samples     /// default int(4)      /// vanilla int(6)
-#define SLB_MBLUR_CLAMP float(0.1) /// Max blur length  /// default float(0.1)  /// vanilla float(0.012)
-#define SLB_MBLUR_LENGTH float(120) /// Blur length      /// default float(120)  /// vanilla float(12)
+#define SLB_MBLUR_SAMPLES int(6) /// Blur samples     /// default int(4)      /// vanilla int(6)
+#define SLB_MBLUR_CLAMP float(0.012) /// Max blur length  /// default float(0.1)  /// vanilla float(0.012)
+#define SLB_MBLUR_LENGTH float(12) /// Blur length      /// default float(120)  /// vanilla float(12)
 
 #define SLB_MBLUR_ANIMATED_DITHER /// Comment to disable
 #define SLB_MBLUR_CONE_DITHER float(0.0) /// Cone like dithering aka blurriness // default float(0.0)
 
-#define SLB_MBLUR_DUAL /// Blur in both directions. Comment to disable
-#define SLB_MBLUR_REVERSED /// Reverse blur direction.  Comment to disable
+// #define SLB_MBLUR_DUAL /// Blur in both directions. Comment to disable
+// #define SLB_MBLUR_REVERSED /// Reverse blur direction.  Comment to disable
 
 #define SLB_MBLUR_WPN /// Disabled motion blur for weapon and hud. Comment to disable
 #define SLB_MBLUR_WPN_RADIUS float(1.3) /// default float(1.3)

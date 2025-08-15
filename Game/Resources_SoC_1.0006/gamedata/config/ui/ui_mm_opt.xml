@@ -535,6 +535,20 @@
             <options_item entry="ssfx_wpn_dof_2" group="mm_opt_video_adv"/>
         </track_dof_zoom_param>
 
+        <cap_mblur x="5" y="5" width="143" height="21">
+            <text font="letterica16" r="215" g="195" b="170">ui_mm_mblur</text>
+        </cap_mblur>
+        <check_mblur x="249" y="0" width="30" height="21">
+            <options_item entry="r2_mblur_enable" group="mm_opt_video_adv" depend="vid"/>
+        </check_mblur>
+
+        <cap_mblur_param x="5" y="5" width="143" height="21">
+            <text font="letterica16" r="215" g="195" b="170">ui_mm_mblur_param</text>
+        </cap_mblur_param>
+        <track_mblur_param x="249" y="0" width="190" height="21" step="0.01">
+            <options_item entry="r2_mblur" group="mm_opt_video_adv"/>
+        </track_mblur_param>
+
         <cap_3dss_scale_factor x="5" y="5" width="143" height="21">
             <text font="letterica16" r="215" g="195" b="170">ui_mm_3dss_scale_factor</text>
         </cap_3dss_scale_factor>
