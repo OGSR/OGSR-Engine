@@ -930,23 +930,20 @@ void CWeapon::UpdateCL()
 
         if (pActor && pActorItem == this)
         {
-            if (psActorFlags.test(AF_DOF_ZOOM))
-            {
-                if (m_bZoomMode && dof_zoom_effect < 1.f && !UseScopeTexture() && pActor->active_cam() == ACTOR_DEFS::eacFirstEye)
-                    UpdateDof(dof_zoom_effect, Is3dssEnabled() ? dof_params_reload : dof_params_zoom, false);
-                else if (dof_zoom_effect > 0.f && (!m_bZoomMode || pActor->active_cam() != ACTOR_DEFS::eacFirstEye))
-                    UpdateDof(dof_zoom_effect, Is3dssEnabled() ? dof_params_reload : dof_params_zoom, true);
-            }
+            if (psActorFlags.test(AF_DOF_ZOOM) && m_bZoomMode && dof_zoom_effect < 1.f && !UseScopeTexture() && pActor->active_cam() == ACTOR_DEFS::eacFirstEye)
+                UpdateDof(dof_zoom_effect, Is3dssEnabled() ? dof_params_reload : dof_params_zoom, false);
+            else if (dof_zoom_effect > 0.f && (!m_bZoomMode || pActor->active_cam() != ACTOR_DEFS::eacFirstEye))
+                UpdateDof(dof_zoom_effect, Is3dssEnabled() ? dof_params_reload : dof_params_zoom, true);
 
-            if (psActorFlags.test(AF_DOF_RELOAD) && dof_reload_effect > 0.f) 
+            if (dof_reload_effect > 0.f)
                 UpdateDof(dof_reload_effect, dof_params_reload, true);
         }
     }
     else if (GetState() == eReload)
     {
-        if (pActor && pActorItem == this && psActorFlags.test(AF_DOF_RELOAD))
+        if (pActor && pActorItem == this)
         {
-            if (dof_reload_effect < 1.f && pActor->active_cam() == ACTOR_DEFS::eacFirstEye)
+            if (psActorFlags.test(AF_DOF_RELOAD) && dof_reload_effect < 1.f && pActor->active_cam() == ACTOR_DEFS::eacFirstEye)
                 UpdateDof(dof_reload_effect, dof_params_reload, false);
             else if (dof_reload_effect > 0.f && pActor->active_cam() != ACTOR_DEFS::eacFirstEye)
                 UpdateDof(dof_reload_effect, dof_params_reload, true);
@@ -958,10 +955,10 @@ void CWeapon::UpdateCL()
     {
         if (pActor && pActorItem == this)
         {
-            if (psActorFlags.test(AF_DOF_RELOAD) && dof_reload_effect > 0.f)
+            if (dof_reload_effect > 0.f)
                 UpdateDof(dof_reload_effect, dof_params_reload, true);
 
-            if (psActorFlags.test(AF_DOF_ZOOM) && dof_zoom_effect > 0.f && (!m_bZoomMode || pActor->active_cam() != ACTOR_DEFS::eacFirstEye))
+            if (dof_zoom_effect > 0.f && (!m_bZoomMode || pActor->active_cam() != ACTOR_DEFS::eacFirstEye))
                 UpdateDof(dof_zoom_effect, Is3dssEnabled() ? dof_params_reload : dof_params_zoom, true);
         }
 
