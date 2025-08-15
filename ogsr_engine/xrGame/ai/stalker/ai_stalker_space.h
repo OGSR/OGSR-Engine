@@ -46,16 +46,19 @@ enum EStalkerSounds
 enum EStalkerSoundMasks
 {
     eStalkerSoundMaskAnySound = u32(0),
+
     eStalkerSoundMaskDie = u32(-1),
     eStalkerSoundMaskDieInAnomaly = u32(-1),
     eStalkerSoundMaskInjuring = u32(-1),
     eStalkerSoundMaskInjuringByFriend = u32(-1),
+
     eStalkerSoundMaskNonTriggered = u32(1 << 31) | (1 << 30),
     eStalkerSoundMaskNoHumming = (1 << 29),
     eStalkerSoundMaskFree = eStalkerSoundMaskNoHumming | eStalkerSoundMaskNonTriggered,
     eStalkerSoundMaskHumming = 1 | eStalkerSoundMaskFree,
     eStalkerSoundMaskNoDanger = (1 << 28),
     eStalkerSoundMaskDanger = eStalkerSoundMaskNoDanger | eStalkerSoundMaskNonTriggered,
+
     eStalkerSoundMaskAlarm = (1 << 0) | eStalkerSoundMaskDanger,
     eStalkerSoundMaskAttackNoAllies = (1 << 1) | eStalkerSoundMaskDanger,
     eStalkerSoundMaskAttackAlliesSingleEnemy = (1 << 2) | eStalkerSoundMaskDanger,

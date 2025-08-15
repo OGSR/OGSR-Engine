@@ -103,8 +103,6 @@ void CRender::create()
     o.distortion = o.distortion_enabled;
     o.disasm = (strstr(Core.Params, "-disasm")) ? TRUE : FALSE;
 
-    o.mblur = ps_r2_ls_flags_ext.test(R2FLAGEXT_MOTION_BLUR);
-
     o.dx11_enable_tessellation = HW.FeatureLevel >= D3D_FEATURE_LEVEL_11_0 && ps_r2_ls_flags_ext.test(R2FLAGEXT_ENABLE_TESSELLATION);
 
     // constants
@@ -713,7 +711,7 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
     appendShaderOption(HW.Caps.geometry.bVTF, "USE_VTF", "1");
 
     // Motion blur
-    appendShaderOption(o.mblur, "USE_MBLUR", "1");
+    appendShaderOption(ps_r2_ls_flags_ext.test(R2FLAGEXT_MOTION_BLUR), "USE_MBLUR", "1");
 
     appendShaderOption(ps_r_ao_mode == AO_MODE_GTAO, "USE_GTAO", "1");
 
@@ -747,12 +745,6 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
 
     // Soft particles
     appendShaderOption(TRUE, "USE_SOFT_PARTICLES", "1");
-
-    // Depth of field
-    {
-        const bool dof = ps_r2_ls_flags.test(R2FLAG_DOF);
-        appendShaderOption(dof, "USE_DOF", "1");
-    }
 
     if (ps_r_sun_shafts)
     {

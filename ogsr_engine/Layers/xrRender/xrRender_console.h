@@ -105,11 +105,6 @@ extern ECORE_API float ps_r2_img_saturation; // r2-only
 
 extern ECORE_API Fvector ps_r2_img_cg; // r2-only
 
-//	x - min (0), y - focus (1.4), z - max (100)
-extern ECORE_API Fvector3 ps_r2_dof;
-extern ECORE_API float ps_r2_dof_sky; //	distance to sky
-extern ECORE_API float ps_r2_dof_kernel_size; //	7.0f
-
 extern ECORE_API int ps_r3_dyn_wet_surf_opt;
 extern ECORE_API float ps_r3_dyn_wet_surf_near; // 10.0f
 extern ECORE_API float ps_r3_dyn_wet_surf_far; // 30.0f
@@ -201,7 +196,7 @@ enum : u64
 
     R2FLAG_STEEP_PARALLAX = 1ull << 22,
 
-    R2FLAG_DOF = 1ull << 23,
+    // = 1ull << 23,
     R2FLAG_EXP_MT_BONES = 1ull << 24,
     R2FLAG_DETAIL_BUMP = 1ull << 25,
 
