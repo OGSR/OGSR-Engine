@@ -2219,6 +2219,9 @@ void CWeapon::ParseCurrentItem(CGameFont* F) { F->OutNext("WEAPON IN STRAPPED MO
 
 void CWeapon::update_visual_bullet_textures(const bool forced)
 {
+    if (IsGrenadeMode())
+        return;
+
     if (bullet_textures_in_model.empty())
         return;
 
