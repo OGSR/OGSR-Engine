@@ -248,7 +248,7 @@ void CEnvironment::SetWeather(shared_str name, bool forced)
             SelectEnvs(fGameTime);
         }
 #ifdef WEATHER_LOGGING
-        Msg("Starting Cycle: %s [%s]", *name, forced ? "forced" : "deferred");
+        Msg("Starting Cycle: %s [%s] @ [%.6f]", *name, forced ? "forced" : "deferred", fGameTime);
 #endif
     }
     else
@@ -388,9 +388,14 @@ void CEnvironment::SelectEnvs(EnvVec* envs, CEnvDescriptor*& e0, CEnvDescriptor*
 void CEnvironment::SelectEnvs(float gt)
 {
     VERIFY(CurrentWeather);
-
+#ifdef WEATHER_LOGGING
+    Msg("CEnvironment::SelectEnvs called gt [%.6f]",gt);
+#endif
     if ((Current[0] == Current[1]) && (Current[0] == nullptr))
     {
+#ifdef WEATHER_LOGGING
+        Msg("CEnvironment::SelectEnvs Current[0] == nullptr");
+#endif
         VERIFY(!bWFX);
         // first or forced start
         SelectEnvs(CurrentWeather, Current[0], Current[1], gt);
@@ -399,9 +404,18 @@ void CEnvironment::SelectEnvs(float gt)
     }
     else
     {
+#ifdef WEATHER_LOGGING
+        Msg("CEnvironment::SelectEnvs [0] <%s> [1] <%s> [0]->exec_time [%.6f] [1]->exec_time [%.6f]", Current[0]->m_identifier.c_str(),
+            Current[1]->m_identifier.c_str(), Current[0]->exec_time, Current[1]->exec_time);
+#endif
         bool bSelect;
 
-        if (Current[0]->exec_time > Current[1]->exec_time)
+        if (Current[0]->exec_time > gt && Current[1]->exec_time > gt)
+        {
+            SetWeather(CurrentWeatherName, true);
+            return;
+        }
+        else if (Current[0]->exec_time > Current[1]->exec_time)
         {
             // terminator
             bSelect = (gt > Current[1]->exec_time) && (gt < Current[0]->exec_time);
