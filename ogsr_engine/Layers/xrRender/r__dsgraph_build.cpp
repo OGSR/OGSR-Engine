@@ -246,7 +246,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_V
         {
             if (Is3dssZoomed)
             {
-                mapHUD.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[0]}));
+                mapHUD.insert_anyway(EPS, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[0]}));
                 mapScopeHUD.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[1]}));
                 if (ps_r_pp_aa_mode == DLSS || ps_r_pp_aa_mode == FSR2 || ps_r_pp_aa_mode == TAA || ps_r2_ls_flags.test(R2FLAG_DBG_TAA_JITTER_ENABLE))
                 {
