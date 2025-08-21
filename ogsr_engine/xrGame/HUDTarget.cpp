@@ -200,7 +200,7 @@ void CHUDTarget::Render()
                 if (E && E->Visual())
                 {
                     const auto k = smart_cast<IKinematics*>(E->Visual());
-                    const u16 bone_id = k->LL_BoneID("bip01_head");
+                    const u16 bone_id = k->LL_BoneID(READ_IF_EXISTS(pSettings, r_string, E->cNameSect(), "bone_head", "bip01_head"));
 
                     k->CalculateBones();
 
