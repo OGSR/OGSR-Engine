@@ -30,7 +30,7 @@
 * [Git](https://git-scm.com/)
 ### Compilation guide: ###
 * Clone repository locally
-* Run `Update_DirectX_Components.cmd` to get pinned versions of engine dependencies
+* Run `Update_Components.cmd` to get pinned versions of engine dependencies
 * Open `Engine.sln` in Visual Studio
 * Set the platform to `x64` and the configuration to `Release`, then select `Build` -> `Build solution`
 ### Thanks to: ###
@@ -72,7 +72,7 @@ And everyone else whose work has been used. If you are not mentioned, send a mes
 * [Git](https://git-scm.com/)
 ### Инструкции по сборке: ###
 * Склонировать репозиторий локально
-* Запустить `Update_DirectX_Components.cmd`
+* Запустить `Update_Components.cmd`
 * Открыть `Engine.sln` в Visual Studio
 * Выбрать пункт `Сборка` -> `Собрать решение`, предварительно выставив платформу `x64` и конфигурацию `Release`
 ### Благодарим: ###
