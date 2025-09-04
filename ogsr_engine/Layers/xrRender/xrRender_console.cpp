@@ -2,7 +2,7 @@
 
 #include "xrRender_console.h"
 #include "dxRenderDeviceRender.h"
-#include <..\NVIDIA_DLSS\include\nvsdk_ngx.h>
+#include <..\NVIDIA_DLSS\DLSS\include\nvsdk_ngx.h>
 
 u32 r2_SmapSize = 2048;
 constexpr xr_token SmapSizeToken[] = {{"1536x1536", 1536},

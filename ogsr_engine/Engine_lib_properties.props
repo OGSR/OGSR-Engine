@@ -17,7 +17,7 @@
     </ClCompile>
     <Link>
       <ImportLibrary>$(SolutionDir)\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform)\$(TargetName).lib</ImportLibrary>
-      <AdditionalLibraryDirectories>$(SolutionDir)\3rd_party\Src\AMD_FSR2\runtimes\win-x64\native\$(Configuration);$(SolutionDir)\3rd_party\Src\NVIDIA_DLSS\lib\Windows_x86_64\x86_64;$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform);$(SolutionDir)\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform);$(SolutionDir)\3rd_party\Src\OpenAL_Soft\libs\$(PlatformShortName);$(SolutionDir)\3rd_party\_LIB\Release\$(Platform);$(SolutionDir)\ogsr_engine\_LIB\Engine\Release\$(Platform);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\3rd_party\Src\AMD_FSR2\runtimes\win-x64\native\$(Configuration);$(SolutionDir)\3rd_party\Src\NVIDIA_DLSS\DLSS\lib\Windows_x86_64\x64;$(SolutionDir)\3rd_party\_LIB\$(Configuration)\$(Platform);$(SolutionDir)\ogsr_engine\_LIB\Engine\$(Configuration)\$(Platform);$(SolutionDir)\3rd_party\Src\OpenAL_Soft\libs\$(PlatformShortName);$(SolutionDir)\3rd_party\_LIB\Release\$(Platform);$(SolutionDir)\ogsr_engine\_LIB\Engine\Release\$(Platform);</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
 

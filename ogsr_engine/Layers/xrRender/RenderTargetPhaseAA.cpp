@@ -24,8 +24,8 @@ void CRenderTarget::ProcessTAA(CBackend& cmd_list)
 }
 
 //*****************************************************************************************************
-#include <..\NVIDIA_DLSS\include\nvsdk_ngx.h>
-#include <..\NVIDIA_DLSS\include\nvsdk_ngx_helpers.h>
+#include <..\NVIDIA_DLSS\DLSS\include\nvsdk_ngx.h>
+#include <..\NVIDIA_DLSS\DLSS\include\nvsdk_ngx_helpers.h>
 
 #ifdef _DEBUG
 #if _ITERATOR_DEBUG_LEVEL == 0
