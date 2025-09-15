@@ -132,6 +132,14 @@ function CUIScriptWnd:Connect(name, event, func, ...)
 	local args = {...}
 	return self:AddCallback( name, event, function() func(unpack(args)) end )
 end
+--======================================[FS Extension]==========================================
+-- Возвращение метода getFS():file_rename, который вырезан из движка
+function FS:file_rename(src, dest, bOwerwrite)
+	if bOwerwrite then
+		os.remove(dest)
+	end
+	os.rename(src, dest)
+end
 --==============================================================================================
 local tostring_all_tbl = {
     ["table"] 	   = function(table, ind) --Распечатка таблиц

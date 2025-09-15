@@ -96,6 +96,8 @@ void InitSettings()
             }
         }
     }
+
+    FS.init_gamedata_unused();
 }
 void InitConsole()
 {
