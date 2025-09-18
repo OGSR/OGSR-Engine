@@ -495,7 +495,6 @@ public:
     void set_patrol_path(LPCSTR path_name, const PatrolPathManager::EPatrolStartType patrol_start_type, const PatrolPathManager::EPatrolRouteType patrol_route_type, bool random);
     void set_dest_level_vertex_id(u32 level_vertex_id);
     u32 level_vertex_id() const;
-    float level_vertex_light(const u32& level_vertex_id) const;
     u32 game_vertex_id() const;
     void add_animation(LPCSTR animation, bool hand_usage, bool use_movement_controller);
     void clear_animations();

@@ -16,9 +16,6 @@
 
 class CGameGraph
 {
-private:
-    friend class CRenumbererConverter;
-
 public:
     typedef GameGraph::_GRAPH_ID _GRAPH_ID;
     typedef GameGraph::_LEVEL_ID _LEVEL_ID;

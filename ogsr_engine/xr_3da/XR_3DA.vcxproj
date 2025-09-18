@@ -206,6 +206,7 @@
     <ClInclude Include="..\xrParticles\psystem.h" />
     <ClInclude Include="defines.h" />
     <ClInclude Include="DiscordRPC.hpp" />
+    <ClInclude Include="xrLevel.h" />
     <ClInclude Include="edit_actions.h" />
     <ClInclude Include="GameMtlLib.h" />
     <ClInclude Include="ILoadingScreen.h" />

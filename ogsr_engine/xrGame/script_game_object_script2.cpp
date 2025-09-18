@@ -236,7 +236,6 @@ class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>
         .def("set_patrol_path", &CScriptGameObject::set_patrol_path)
         .def("set_dest_level_vertex_id", &CScriptGameObject::set_dest_level_vertex_id)
         .def("level_vertex_id", &CScriptGameObject::level_vertex_id)
-        .def("level_vertex_light", &CScriptGameObject::level_vertex_light)
         .def("game_vertex_id", &CScriptGameObject::game_vertex_id)
         .def("add_animation", (void(CScriptGameObject::*)(LPCSTR, bool, bool))(&CScriptGameObject::add_animation))
         .def("clear_animations", &CScriptGameObject::clear_animations)

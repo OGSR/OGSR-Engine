@@ -837,20 +837,21 @@ void CAI_Stalker::OnRender() // debug
 
         if (ai().level_graph().valid_vertex_id(level_vertex_id))
         {
+            // high
             LevelGraph::CVertex* v = ai().level_graph().vertex(level_vertex_id);
             Fvector direction;
             float best_value = -1.f;
 
             for (u32 i = 0, j = 0; i < 36; ++i)
             {
-                float value = ai().level_graph().cover_in_direction(float(10 * i) / 180.f * PI, v);
+                float value = ai().level_graph().high_cover_in_direction(float(10 * i) / 180.f * PI, v);
                 direction.setHP(float(10 * i) / 180.f * PI, 0);
                 direction.normalize();
                 direction.mul(value * half_size);
                 direction.add(position);
                 direction.y = position.y;
                 Level().debug_renderer().draw_line(Fidentity, position, direction, D3DCOLOR_XRGB(0, 0, 255));
-                value = ai().level_graph().compute_square(float(10 * i) / 180.f * PI, PI / 2.f, v);
+                value = ai().level_graph().compute_high_square(float(10 * i) / 180.f * PI, PI / 2.f, v);
                 if (value > best_value)
                 {
                     best_value = value;
@@ -858,25 +859,68 @@ void CAI_Stalker::OnRender() // debug
                 }
             }
 
-            direction.set(position.x - half_size * float(v->cover(0)) / 15.f, position.y, position.z);
+            direction.set(position.x - half_size * float(v->high_cover(0)) / 15.f, position.y, position.z);
             Level().debug_renderer().draw_line(Fidentity, position, direction, D3DCOLOR_XRGB(255, 0, 0));
 
-            direction.set(position.x, position.y, position.z + half_size * float(v->cover(1)) / 15.f);
+            direction.set(position.x, position.y, position.z + half_size * float(v->high_cover(1)) / 15.f);
             Level().debug_renderer().draw_line(Fidentity, position, direction, D3DCOLOR_XRGB(255, 0, 0));
 
-            direction.set(position.x + half_size * float(v->cover(2)) / 15.f, position.y, position.z);
+            direction.set(position.x + half_size * float(v->high_cover(2)) / 15.f, position.y, position.z);
             Level().debug_renderer().draw_line(Fidentity, position, direction, D3DCOLOR_XRGB(255, 0, 0));
 
-            direction.set(position.x, position.y, position.z - half_size * float(v->cover(3)) / 15.f);
+            direction.set(position.x, position.y, position.z - half_size * float(v->high_cover(3)) / 15.f);
             Level().debug_renderer().draw_line(Fidentity, position, direction, D3DCOLOR_XRGB(255, 0, 0));
 
-            float value = ai().level_graph().cover_in_direction(float(10 * j) / 180.f * PI, v);
+            float value = ai().level_graph().high_cover_in_direction(float(10 * j) / 180.f * PI, v);
             direction.setHP(float(10 * j) / 180.f * PI, 0);
             direction.normalize();
             direction.mul(value * half_size);
             direction.add(position);
             direction.y = position.y;
             Level().debug_renderer().draw_line(Fidentity, position, direction, D3DCOLOR_XRGB(0, 0, 0));
+
+            // low
+            {
+                Fvector direction;
+                float best_value = -1.f;
+                j = 0;
+                for (u32 i = 0; i < 36; ++i)
+                {
+                    float value = ai().level_graph().low_cover_in_direction(float(10 * i) / 180.f * PI, v);
+                    direction.setHP(float(10 * i) / 180.f * PI, 0);
+                    direction.normalize();
+                    direction.mul(value * half_size);
+                    direction.add(position);
+                    direction.y = position.y;
+                    Level().debug_renderer().draw_line(Fidentity, position, direction, color_xrgb(0, 0, 255));
+                    value = ai().level_graph().compute_low_square(float(10 * i) / 180.f * PI, PI / 2.f, v);
+                    if (value > best_value)
+                    {
+                        best_value = value;
+                        j = i;
+                    }
+                }
+
+                direction.set(position.x - half_size * float(v->low_cover(0)) / 15.f, position.y, position.z);
+                Level().debug_renderer().draw_line(Fidentity, position, direction, color_xrgb(255, 0, 0));
+
+                direction.set(position.x, position.y, position.z + half_size * float(v->low_cover(1)) / 15.f);
+                Level().debug_renderer().draw_line(Fidentity, position, direction, color_xrgb(255, 0, 0));
+
+                direction.set(position.x + half_size * float(v->low_cover(2)) / 15.f, position.y, position.z);
+                Level().debug_renderer().draw_line(Fidentity, position, direction, color_xrgb(255, 0, 0));
+
+                direction.set(position.x, position.y, position.z - half_size * float(v->low_cover(3)) / 15.f);
+                Level().debug_renderer().draw_line(Fidentity, position, direction, color_xrgb(255, 0, 0));
+
+                float value = ai().level_graph().low_cover_in_direction(float(10 * j) / 180.f * PI, v);
+                direction.setHP(float(10 * j) / 180.f * PI, 0);
+                direction.normalize();
+                direction.mul(value * half_size);
+                direction.add(position);
+                direction.y = position.y;
+                Level().debug_renderer().draw_line(Fidentity, position, direction, color_xrgb(0, 0, 0));
+            }
         }
     }
 }

@@ -417,7 +417,8 @@ IC float CLevelGraph::square(float a1, float b1, float fAlpha) const
     return (fAlpha * fAlpha * fAlpha * a * a / 6 + fAlpha * fAlpha * a * b / 2 + fAlpha * b * b / 2);
 }
 
-#define NORMALIZE_NODE_COVER(a, b) (float(a->cover(b)) / 15.f)
+#define NORMALIZE_NODE_COVER_HIGH(a, b) (float(a->high_cover(b)) / 15.f)
+#define NORMALIZE_NODE_COVER_LOW(a, b) (float(a->low_cover(b)) / 15.f)
 
 IC float CLevelGraph::compute_square(float fAngle, float fAngleOfView, float b1, float b0, float b3, float b2) const
 {
@@ -473,34 +474,62 @@ IC float CLevelGraph::compute_square(float fAngle, float fAngleOfView, float b1,
     return (fSquare);
 }
 
-IC float CLevelGraph::compute_square(float fAngle, float fAngleOfView, const CLevelGraph::CVertex* vertex) const
+IC float CLevelGraph::compute_high_square(float fAngle, float fAngleOfView, const CLevelGraph::CVertex* vertex) const
 {
-    return (
-        compute_square(fAngle, fAngleOfView, NORMALIZE_NODE_COVER(vertex, 0), NORMALIZE_NODE_COVER(vertex, 1), NORMALIZE_NODE_COVER(vertex, 2), NORMALIZE_NODE_COVER(vertex, 3)));
+    return (compute_square(fAngle, fAngleOfView, NORMALIZE_NODE_COVER_HIGH(vertex, 0), NORMALIZE_NODE_COVER_HIGH(vertex, 1), NORMALIZE_NODE_COVER_HIGH(vertex, 2),
+                           NORMALIZE_NODE_COVER_HIGH(vertex, 3)));
 }
 
-IC float CLevelGraph::compute_square(float fAngle, float fAngleOfView, u32 dwNodeID) const { return (compute_square(fAngle, fAngleOfView, vertex(dwNodeID))); }
+IC float CLevelGraph::compute_low_square(float fAngle, float fAngleOfView, const CLevelGraph::CVertex* vertex) const
+{
+    return (compute_square(fAngle, fAngleOfView, NORMALIZE_NODE_COVER_LOW(vertex, 0), NORMALIZE_NODE_COVER_LOW(vertex, 1), NORMALIZE_NODE_COVER_LOW(vertex, 2),
+                           NORMALIZE_NODE_COVER_LOW(vertex, 3)));
+}
 
-IC float CLevelGraph::vertex_cover(const CLevelGraph::CVertex* vertex) const
+IC float CLevelGraph::compute_high_square(float fAngle, float fAngleOfView, u32 dwNodeID) const { return (compute_high_square(fAngle, fAngleOfView, vertex(dwNodeID))); }
+
+IC float CLevelGraph::compute_low_square(float fAngle, float fAngleOfView, u32 dwNodeID) const { return (compute_low_square(fAngle, fAngleOfView, vertex(dwNodeID))); }
+
+IC float CLevelGraph::vertex_high_cover(const CLevelGraph::CVertex* vertex) const
 {
     float _cover = 0.f;
-    _cover += square(NORMALIZE_NODE_COVER(vertex, 0), NORMALIZE_NODE_COVER(vertex, 1));
-    _cover += square(NORMALIZE_NODE_COVER(vertex, 1), NORMALIZE_NODE_COVER(vertex, 2));
-    _cover += square(NORMALIZE_NODE_COVER(vertex, 2), NORMALIZE_NODE_COVER(vertex, 3));
-    _cover += square(NORMALIZE_NODE_COVER(vertex, 3), NORMALIZE_NODE_COVER(vertex, 0));
+    _cover += square(NORMALIZE_NODE_COVER_HIGH(vertex, 0), NORMALIZE_NODE_COVER_HIGH(vertex, 1));
+    _cover += square(NORMALIZE_NODE_COVER_HIGH(vertex, 1), NORMALIZE_NODE_COVER_HIGH(vertex, 2));
+    _cover += square(NORMALIZE_NODE_COVER_HIGH(vertex, 2), NORMALIZE_NODE_COVER_HIGH(vertex, 3));
+    _cover += square(NORMALIZE_NODE_COVER_HIGH(vertex, 3), NORMALIZE_NODE_COVER_HIGH(vertex, 0));
     return (_cover);
 }
 
-IC float CLevelGraph::vertex_cover(const u32 vertex_id) const { return (vertex_cover(vertex(vertex_id))); }
-
-IC float CLevelGraph::cover_in_direction(float angle, const CLevelGraph::CVertex* vertex) const
+IC float CLevelGraph::vertex_low_cover(const CLevelGraph::CVertex* vertex) const
 {
-    return (cover_in_direction(angle, NORMALIZE_NODE_COVER(vertex, 0), NORMALIZE_NODE_COVER(vertex, 1), NORMALIZE_NODE_COVER(vertex, 2), NORMALIZE_NODE_COVER(vertex, 3)));
+    float _cover = 0.f;
+    _cover += square(NORMALIZE_NODE_COVER_LOW(vertex, 0), NORMALIZE_NODE_COVER_LOW(vertex, 1));
+    _cover += square(NORMALIZE_NODE_COVER_LOW(vertex, 1), NORMALIZE_NODE_COVER_LOW(vertex, 2));
+    _cover += square(NORMALIZE_NODE_COVER_LOW(vertex, 2), NORMALIZE_NODE_COVER_LOW(vertex, 3));
+    _cover += square(NORMALIZE_NODE_COVER_LOW(vertex, 3), NORMALIZE_NODE_COVER_LOW(vertex, 0));
+    return (_cover);
 }
 
-#undef NORMALIZE_NODE_COVER
+IC float CLevelGraph::vertex_high_cover(const u32 vertex_id) const { return (vertex_high_cover(vertex(vertex_id))); }
+IC float CLevelGraph::vertex_low_cover(const u32 vertex_id) const { return (vertex_low_cover(vertex(vertex_id))); }
+IC float CLevelGraph::high_cover_in_direction(float angle, const CLevelGraph::CVertex* vertex) const
+{
+    return (cover_in_direction(angle, NORMALIZE_NODE_COVER_HIGH(vertex, 0), NORMALIZE_NODE_COVER_HIGH(vertex, 1), NORMALIZE_NODE_COVER_HIGH(vertex, 2),
+                               NORMALIZE_NODE_COVER_HIGH(vertex, 3)));
+}
 
-IC float CLevelGraph::cover_in_direction(float angle, u32 vertex_id) const { return (cover_in_direction(angle, vertex(vertex_id))); }
+IC float CLevelGraph::low_cover_in_direction(float angle, const CLevelGraph::CVertex* vertex) const
+{
+    return (cover_in_direction(angle, NORMALIZE_NODE_COVER_LOW(vertex, 0), NORMALIZE_NODE_COVER_LOW(vertex, 1), NORMALIZE_NODE_COVER_LOW(vertex, 2),
+                               NORMALIZE_NODE_COVER_LOW(vertex, 3)));
+}
+
+#undef NORMALIZE_NODE_COVER_HIGH
+#undef NORMALIZE_NODE_COVER_LOW
+
+IC float CLevelGraph::high_cover_in_direction(float angle, u32 vertex_id) const { return (high_cover_in_direction(angle, vertex(vertex_id))); }
+
+IC float CLevelGraph::low_cover_in_direction(float angle, u32 vertex_id) const { return (low_cover_in_direction(angle, vertex(vertex_id))); }
 
 IC u32 CLevelGraph::check_position_in_direction(u32 start_vertex_id, const Fvector2& start_position, const Fvector2& finish_position) const
 {
@@ -527,14 +556,33 @@ IC bool CLevelGraph::check_vertex_in_direction(u32 start_vertex_id, const Fvecto
 }
 
 template <class _predicate>
-float CLevelGraph::vertex_cover_angle(u32 vertex_id, float inc_angle, _predicate compare_predicate) const
+float CLevelGraph::vertex_high_cover_angle(u32 vertex_id, float inc_angle, _predicate compare_predicate) const
 {
     float best_angle = 0.f;
-    float best_value = compute_square(best_angle, PI_DIV_2, vertex_id);
+    float best_value = compute_high_square(best_angle, PI_DIV_2, vertex_id);
 
     for (float angle = inc_angle; angle <= PI_MUL_2; angle += inc_angle)
     {
-        float cover = compute_square(angle, PI_DIV_2, vertex_id);
+        float cover = compute_high_square(angle, PI_DIV_2, vertex_id);
+        if (compare_predicate(cover, best_value))
+        {
+            best_value = cover;
+            best_angle = angle;
+        }
+    }
+
+    return best_angle;
+}
+
+template <class _predicate>
+float CLevelGraph::vertex_low_cover_angle(u32 vertex_id, float inc_angle, _predicate compare_predicate) const
+{
+    float best_angle = 0.f;
+    float best_value = compute_low_square(best_angle, PI_DIV_2, vertex_id);
+
+    for (float angle = inc_angle; angle <= PI_MUL_2; angle += inc_angle)
+    {
+        float cover = compute_low_square(angle, PI_DIV_2, vertex_id);
         if (compare_predicate(cover, best_value))
         {
             best_value = cover;

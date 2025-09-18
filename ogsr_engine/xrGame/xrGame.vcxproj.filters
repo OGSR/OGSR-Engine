@@ -8764,6 +8764,9 @@
     <ClCompile Include="..\COMMON_AI\GRAPH\level_graph_vertex.cpp">
       <Filter>AI\ANavigation\LevelGraph</Filter>
     </ClCompile>
+    <ClInclude Include="..\COMMON_AI\GRAPH\level_graph_vertex_storage.h">
+      <Filter>AI\ANavigation\LevelGraph</Filter>
+    </ClInclude>
     <ClCompile Include="..\COMMON_AI\server_entity_wrapper.cpp">
       <Filter>AI\ALife\simulator_base\registries\spawn_registry\server_entity_wrapper</Filter>
     </ClCompile>

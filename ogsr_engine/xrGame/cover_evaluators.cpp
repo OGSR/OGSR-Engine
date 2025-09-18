@@ -32,14 +32,6 @@ void CCoverEvaluatorCloseToEnemy::evaluate(const CCoverPoint* cover_point, float
     if (enemy_distance >= m_current_distance + m_deviation)
         return;
 
-    // Fvector					direction;
-    // float					y,p;
-    // direction.sub			(m_enemy_position,cover_point->position());
-    // direction.getHP			(y,p);
-    // float					cover_value = ai().level_graph().cover_in_direction(y,cover_point->level_vertex_id());
-    // if (cover_value >= m_best_value)
-    //	return;
-
     if (enemy_distance >= m_best_value)
         return;
 
@@ -69,11 +61,6 @@ void CCoverEvaluatorFarFromEnemy::evaluate(const CCoverPoint* cover_point, float
     if (enemy_distance <= m_current_distance - m_deviation)
         return;
 
-    //	Fvector					direction;
-    //	float					y,p;
-    //	direction.sub			(m_enemy_position,cover_point->position());
-    //	direction.getHP			(y,p);
-    //	float					cover_value = ai().level_graph().cover_in_direction(y,cover_point->level_vertex_id());
     if (enemy_distance <= -m_best_value)
         return;
 
@@ -106,7 +93,9 @@ void CCoverEvaluatorBest::evaluate(const CCoverPoint* cover_point, float weight)
     direction.sub(m_enemy_position, cover_point->position());
     direction.getHP(y, p);
 
-    float cover_value = ai().level_graph().cover_in_direction(y, cover_point->level_vertex_id());
+    float high_cover_value = ai().level_graph().high_cover_in_direction(y, cover_point->level_vertex_id());
+    float low_cover_value = ai().level_graph().low_cover_in_direction(y, cover_point->level_vertex_id());
+    float cover_value = std::min(high_cover_value, low_cover_value);
     float value = cover_value;
     if (ai().level_graph().neighbour_in_direction(direction, cover_point->level_vertex_id()))
         value += 10.f;
@@ -174,7 +163,9 @@ void CCoverEvaluatorAngle::initialize(const Fvector& start_position, bool fake_c
     float m_best_angle = 0.f;
     for (float alpha = 0.f, step = PI_MUL_2 / 360.f; alpha < PI_MUL_2; alpha += step)
     {
-        float value = ai().level_graph().compute_square(alpha, PI_DIV_2, m_level_vertex_id);
+        float high_value = ai().level_graph().compute_high_square(alpha, PI_DIV_2, m_level_vertex_id);
+        float low_value = ai().level_graph().compute_low_square(alpha, PI_DIV_2, m_level_vertex_id);
+        float value = _max(high_value, low_value);
         if (value > best_value)
         {
             best_value = value;
@@ -217,7 +208,9 @@ void CCoverEvaluatorSafe::evaluate(const CCoverPoint* cover_point, float weight)
     if (m_start_position.distance_to(cover_point->position()) <= m_min_distance)
         return;
 
-    float cover_value = ai().level_graph().vertex_cover(cover_point->level_vertex_id());
+    float high_cover_value = ai().level_graph().vertex_high_cover(cover_point->level_vertex_id());
+    float low_cover_value = ai().level_graph().vertex_low_cover(cover_point->level_vertex_id());
+    float cover_value = std::min(high_cover_value, low_cover_value);
     if (cover_value >= m_best_value)
         return;
 
@@ -290,18 +283,22 @@ void CCoverEvaluatorAmbush::evaluate(const CCoverPoint* cover_point, float weigh
     if (my_distance <= m_min_enemy_distance)
         return;
 
-    Fvector direction;
+    Fvector direction{};
     float y, p;
-    float cover_from_enemy;
-    float cover_from_myself;
 
     direction.sub(m_enemy_position, cover_point->position());
     direction.getHP(y, p);
-    cover_from_enemy = ai().level_graph().cover_in_direction(y, cover_point->level_vertex_id());
+    y = angle_normalize(y);
+    float high_cover_from_enemy = ai().level_graph().high_cover_in_direction(y, cover_point->level_vertex_id());
+    float low_cover_from_enemy = ai().level_graph().low_cover_in_direction(y, cover_point->level_vertex_id());
+    float cover_from_enemy = std::min(high_cover_from_enemy, low_cover_from_enemy);
 
     direction.sub(m_my_position, cover_point->position());
     direction.getHP(y, p);
-    cover_from_myself = ai().level_graph().cover_in_direction(y, cover_point->level_vertex_id());
+    y = angle_normalize(y);
+    float high_cover_from_myself = ai().level_graph().high_cover_in_direction(y, cover_point->level_vertex_id());
+    float low_cover_from_myself = ai().level_graph().low_cover_in_direction(y, cover_point->level_vertex_id());
+    float cover_from_myself = std::min(high_cover_from_myself, low_cover_from_myself);
 
     float value = cover_from_enemy / cover_from_myself;
     if (value >= m_best_value)

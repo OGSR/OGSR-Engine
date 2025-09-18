@@ -26,10 +26,14 @@ CCoverManager::~CCoverManager()
 IC bool CCoverManager::edge_vertex(u32 index)
 {
     CLevelGraph::CVertex* v = ai().level_graph().vertex(index);
-    return ((!ai().level_graph().valid_vertex_id(v->link(0)) && (v->cover(0) < MIN_COVER_VALUE)) ||
-            (!ai().level_graph().valid_vertex_id(v->link(1)) && (v->cover(1) < MIN_COVER_VALUE)) ||
-            (!ai().level_graph().valid_vertex_id(v->link(2)) && (v->cover(2) < MIN_COVER_VALUE)) ||
-            (!ai().level_graph().valid_vertex_id(v->link(3)) && (v->cover(3) < MIN_COVER_VALUE)));
+    return ((!ai().level_graph().valid_vertex_id(v->link(0)) && (v->high_cover(0) < MIN_COVER_VALUE)) ||
+            (!ai().level_graph().valid_vertex_id(v->link(1)) && (v->high_cover(1) < MIN_COVER_VALUE)) ||
+            (!ai().level_graph().valid_vertex_id(v->link(2)) && (v->high_cover(2) < MIN_COVER_VALUE)) ||
+            (!ai().level_graph().valid_vertex_id(v->link(3)) && (v->high_cover(3) < MIN_COVER_VALUE)) ||
+            (!ai().level_graph().valid_vertex_id(v->link(0)) && (v->low_cover(0) < MIN_COVER_VALUE)) ||
+            (!ai().level_graph().valid_vertex_id(v->link(1)) && (v->low_cover(1) < MIN_COVER_VALUE)) ||
+            (!ai().level_graph().valid_vertex_id(v->link(2)) && (v->low_cover(2) < MIN_COVER_VALUE)) ||
+            (!ai().level_graph().valid_vertex_id(v->link(3)) && (v->low_cover(3) < MIN_COVER_VALUE)));
 }
 
 IC bool CCoverManager::cover(CLevelGraph::CVertex* v, u32 index0, u32 index1)
@@ -57,14 +61,33 @@ void CCoverManager::compute_static_cover()
     m_covers = xr_new<CPointQuadTree>(ai().level_graph().header().box(), ai().level_graph().header().cell_size() * .5f, 4 * 65536, 2 * 65536);
     m_temp.resize(ai().level_graph().header().vertex_count());
 
-    u32 n = ai().level_graph().header().vertex_count();
-    for (u32 i = 0; i < n; ++i)
-        if (ai().level_graph().vertex(i)->cover(0) + ai().level_graph().vertex(i)->cover(1) + ai().level_graph().vertex(i)->cover(2) + ai().level_graph().vertex(i)->cover(3))
-            m_temp[i] = edge_vertex(i);
-        else
-            m_temp[i] = false;
+    const CLevelGraph& graph = ai().level_graph();
+    const u32 levelVertexCount = ai().level_graph().header().vertex_count();
 
-    for (u32 i = 0; i < n; ++i)
+#pragma todo("Simp: Раскомментировать когда будет новый TTP")
+//    xr_parallel_for(TaskRange<u32>(0, levelVertexCount), [&](const TaskRange<u32>& range) {
+//        ZoneScopedN("Process vertices");
+//        for (u32 i = range.begin(); i != range.end(); ++i)
+    for (u32 i = 0; i < levelVertexCount; ++i)
+        {
+            const CLevelGraph::CVertex& vertex = *graph.vertex(i);
+            if (vertex.high_cover(0) + vertex.high_cover(1) + vertex.high_cover(2) + vertex.high_cover(3))
+            {
+                m_temp[i] = edge_vertex(i);
+                continue;
+            }
+
+            if (vertex.low_cover(0) + vertex.low_cover(1) + vertex.low_cover(2) + vertex.low_cover(3))
+            {
+                m_temp[i] = edge_vertex(i);
+                continue;
+            }
+
+            m_temp[i] = false;
+        }
+//    });
+
+    for (u32 i = 0; i < levelVertexCount; ++i)
         if (m_temp[i] && critical_cover(i))
             m_covers->insert(xr_new<CCoverPoint>(ai().level_graph().vertex_position(ai().level_graph().vertex(i)), i));
 }

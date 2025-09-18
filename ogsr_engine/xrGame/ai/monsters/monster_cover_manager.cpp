@@ -127,7 +127,9 @@ void CCoverEvaluator::evaluate(const CCoverPoint* cover_point, float weight)
     direction.sub(m_dest_position, cover_point->position());
     direction.getHP(y, p);
 
-    float cover_value = ai().level_graph().cover_in_direction(y, cover_point->level_vertex_id());
+    float high_cover_value = ai().level_graph().high_cover_in_direction(y, cover_point->level_vertex_id());
+    float low_cover_value = ai().level_graph().low_cover_in_direction(y, cover_point->level_vertex_id());
+    float cover_value = std::min(high_cover_value, low_cover_value);
     float value = cover_value;
     if (ai().level_graph().neighbour_in_direction(direction, cover_point->level_vertex_id()))
         value += 10.f;
@@ -176,7 +178,7 @@ const CCoverPoint* CMonsterCoverManager::find_cover(const Fvector& src_pos, cons
 
 void CMonsterCoverManager::less_cover_direction(Fvector& dir)
 {
-    float angle = ai().level_graph().vertex_cover_angle(m_object->ai_location().level_vertex_id(), deg(10), ::std::greater<float>());
+    float angle = ai().level_graph().vertex_high_cover_angle(m_object->ai_location().level_vertex_id(), deg(10), ::std::greater<float>());
 
     collide::rq_result l_rq;
 

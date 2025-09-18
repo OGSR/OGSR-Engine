@@ -71,125 +71,491 @@ struct hdrNODES
 #pragma pack(pop)
 
 #pragma pack(push, 1)
-class NodePosition
-{
-    u8 data[5];
 
-    ICF void xz(u32 value) { CopyMemory(data, &value, 3); } //-V512
-    ICF void y(u16 value) { CopyMemory(data + 3, &value, 2); }
+class NodePositionSOC
+{
+    u8 data[3 + sizeof(u16)];
+
+    ICF void xz(u32 value) { CopyMemory(data, &value, 3); }
+    ICF void y(u16 value) { CopyMemory(data + 3, &value, sizeof(u16)); }
 
 public:
-    ICF u32 xz() const { return ((*((u32*)data)) & 0x00ffffff); }
+    // xz-coordinates are packed into 3 bytes
+    static constexpr u32 MAX_XZ = (1 << 24) - 1;
+    // y-coordinate is packed into 2 bytes
+    static constexpr u32 MAX_Y = (1 << 16) - 1;
+
+    [[nodiscard]]
+    ICF u32 xz() const { return ((*((u32*)data)) & MAX_XZ); }
+
+    [[nodiscard]]
     ICF u32 x(u32 row) const { return (xz() / row); }
+
+    [[nodiscard]]
     ICF u32 z(u32 row) const { return (xz() % row); }
-    ICF u32 y() const { return (*((u16*)(data + 3))); }
+
+    [[nodiscard]]
+    ICF u16 y() const { return (*((u16*)(data + 3))); }
 
     friend class CLevelGraph;
-    friend struct CNodePositionCompressor;
-    friend struct CNodePositionConverter;
 };
 
-struct NodeCompressed
+static_assert(sizeof(NodePositionSOC) == 5);
+
+class NodePositionExtended
 {
-public:
-    u8 data[12];
+    u32 m_xz;
+    u16 m_y;
 
-private:
-    ICF void link(u8 link_index, u32 value)
-    {
-        value &= 0x007fffff;
-        switch (link_index)
-        {
-        case 0: {
-            value |= (*(u32*)data) & 0xff800000;
-            CopyMemory(data, &value, sizeof(u32));
-            break;
-        }
-        case 1: {
-            value <<= 7;
-            value |= (*(u32*)(data + 2)) & 0xc000007f;
-            CopyMemory(data + 2, &value, sizeof(u32));
-            break;
-        }
-        case 2: {
-            value <<= 6;
-            value |= (*(u32*)(data + 5)) & 0xe000003f;
-            CopyMemory(data + 5, &value, sizeof(u32));
-            break;
-        }
-        case 3: {
-            value <<= 5;
-            value |= (*(u32*)(data + 8)) & 0xf000001f;
-            CopyMemory(data + 8, &value, sizeof(u32));
-            break;
-        }
-        }
-    }
-
-    ICF void light(u8 value)
-    {
-        data[11] &= 0x0f;
-        data[11] |= value << 4;
-    }
+    ICF void xz(u32 value) { m_xz = value; }
+    ICF void y(u16 value) { m_y = value; }
 
 public:
+    // xz-coordinates are packed into 4 bytes
+    static constexpr u32 MAX_XZ = std::numeric_limits<u32>::max();
+    // y-coordinate is packed into 2 bytes
+    static constexpr u32 MAX_Y = std::numeric_limits<u16>::max();
+
+    NodePositionExtended() = default;
+
+    explicit NodePositionExtended(const NodePositionSOC& old)
+        : m_xz(old.xz()), m_y(old.y()) {}
+
+    NodePositionExtended& operator=(const NodePositionSOC& old)
+    {
+        m_xz = old.xz();
+        m_y  = old.y();
+        return *this;
+    }
+
+    [[nodiscard]]
+    ICF u32 xz() const { return m_xz; }
+
+    [[nodiscard]]
+    ICF u32 x(u32 row) const { return (xz() / row); }
+
+    [[nodiscard]]
+    ICF u32 z(u32 row) const { return (xz() % row); }
+
+    [[nodiscard]]
+    ICF u16 y() const { return m_y; }
+
+    friend class CLevelGraph;
+    friend class NodePositionSOC;
+};
+
+static_assert(sizeof(NodePositionExtended) == 6);
+
+struct NodeCover
+{
     u16 cover0 : 4;
     u16 cover1 : 4;
     u16 cover2 : 4;
     u16 cover3 : 4;
-    u16 plane;
-    NodePosition p;
-    // 4 + 4 + 4 + 4 + 16 + 40 + 96 = 168 bits = 21 byte
-
-    ICF u32 link(u8 index) const
-    {
-        switch (index)
-        {
-        case 0: return ((*(u32*)data) & 0x007fffff);
-        case 1: return (((*(u32*)(data + 2)) >> 7) & 0x007fffff);
-        case 2: return (((*(u32*)(data + 5)) >> 6) & 0x007fffff);
-        case 3: return (((*(u32*)(data + 8)) >> 5) & 0x007fffff);
-        default: NODEFAULT;
-        }
-#ifdef DEBUG
-        return (0);
-#endif
-    }
-
-    ICF u8 light() const { return (data[11] >> 4); }
 
     ICF u16 cover(u8 index) const
     {
         switch (index)
         {
-        case 0: return (cover0);
-        case 1: return (cover1);
-        case 2: return (cover2);
-        case 3: return (cover3);
+        case 0: return cover0;
+        case 1: return cover1;
+        case 2: return cover2;
+        case 3: return cover3;
         default: NODEFAULT;
         }
-#ifdef DEBUG
-        return (u8(-1));
-#endif
+        return u8(-1);
+    }
+};
+
+static_assert(sizeof(NodeCover) == 2);
+
+struct NodeCompressedSOC
+{
+public:
+    u8 data[12];      // 12 bytes
+    NodeCover cover; // 2 bytes
+    u16 plane;        // 2 bytes
+    NodePositionSOC p;  // 5 bytes
+    // 12 + 2 + 2 + 5 = 21 bytes
+
+public:
+    static constexpr u32 NODE_BIT_COUNT = 23;
+    static constexpr u32 LINK_MASK = (1 << NODE_BIT_COUNT) - 1;
+
+public:
+    ICF u32 link(u8 index) const
+    {
+        switch (index)
+        {
+        case 0: return ((*(u32*)data) & LINK_MASK);
+        case 1: return (((*(u32*)(data + 2)) >> 7) & LINK_MASK);
+        case 2: return (((*(u32*)(data + 5)) >> 6) & LINK_MASK);
+        case 3: return (((*(u32*)(data + 8)) >> 5) & LINK_MASK);
+        default: NODEFAULT;
+        }
+        return 0;
+    }
+};
+
+static_assert(sizeof(NodeCompressedSOC) == 21);
+
+struct NodeCompressedCS_COP
+{
+public:
+    NodeCompressedCS_COP() = default;
+
+public:
+    static constexpr u32 NODE_BIT_COUNT = 23;
+    static constexpr u32 LINK_MASK = (1 << NODE_BIT_COUNT) - 1;
+
+    u8 data[12]; // 12 bytes
+
+private:
+    ICF void link(u8 link_index, u32 value)
+    {
+        value &= LINK_MASK;
+        switch (link_index)
+        {
+        case 0:
+            value |= *(u32*)data & ~(LINK_MASK << 0);
+            CopyMemory(data, &value, sizeof(u32));
+            break;
+        case 1:
+            value <<= 7;
+            value |= *(u32*)(data + 2) & ~(LINK_MASK << 7);
+            CopyMemory(data + 2, &value, sizeof(u32));
+            break;
+        case 2:
+            value <<= 6;
+            value |= *(u32*)(data + 5) & ~(LINK_MASK << 6);
+            CopyMemory(data + 5, &value, sizeof(u32));
+            break;
+        case 3:
+            value <<= 5;
+            value |= *(u32*)(data + 8) & ~(LINK_MASK << 5);
+            CopyMemory(data + 8, &value, sizeof(u32));
+            break;
+        }
+    }
+
+public:
+    NodeCover high; // 2 bytes
+    NodeCover low;  // 2 bytes
+    u16 plane;       // 2 bytes
+    NodePositionSOC p; // 5 bytes
+    // 12 + 2 + 2 + 2 + 5 = 23 bytes
+
+    [[nodiscard]]
+    ICF u32 link(u8 index) const
+    {
+        switch (index)
+        {
+        case 0: return ((*(u32*)data) & LINK_MASK);
+        case 1: return (((*(u32*)(data + 2)) >> 7) & LINK_MASK);
+        case 2: return (((*(u32*)(data + 5)) >> 6) & LINK_MASK);
+        case 3: return (((*(u32*)(data + 8)) >> 5) & LINK_MASK);
+        default: NODEFAULT;
+        }
+        return 0;
     }
 
     friend class CLevelGraph;
     friend struct CNodeCompressed;
-    friend class CNodeRenumberer;
-    friend class CRenumbererConverter;
-}; // 2+2+5+12 = 21b
-
-struct SNodePositionOld
-{
-    s16 x;
-    u16 y;
-    s16 z;
 };
+
+static_assert(sizeof(NodeCompressedCS_COP) == 23);
+
+struct NodeCompressedBORSHT
+{
+public:
+    static constexpr u32 NODE_BIT_COUNT = 25;
+    static constexpr u32 LINK_MASK = (1 << NODE_BIT_COUNT) - 1;
+    static constexpr u32 LINK_MASK_0 = LINK_MASK;
+    static constexpr u32 LINK_MASK_1 = LINK_MASK_0 << 1;
+    static constexpr u32 LINK_MASK_2 = LINK_MASK_0 << 2;
+    static constexpr u32 LINK_MASK_3 = LINK_MASK_0 << 3;
+
+    u8 data[13];
+
+private:
+    ICF void link(u8 link_index, u32 value)
+    {
+        value &= LINK_MASK_0;
+        switch (link_index)
+        {
+        case 0:
+        {
+            value |= (*(u32*)data) & ~LINK_MASK_0;
+            CopyMemory(data, &value, sizeof(u32));
+            break;
+        }
+        case 1:
+        {
+            value <<= 1;
+            value |= (*(u32*)(data + 3)) & ~LINK_MASK_1;
+            CopyMemory(data + 3, &value, sizeof(u32));
+            break;
+        }
+        case 2:
+        {
+            value <<= 2;
+            value |= (*(u32*)(data + 6)) & ~LINK_MASK_2;
+            CopyMemory(data + 6, &value, sizeof(u32));
+            break;
+        }
+        case 3:
+        {
+            value <<= 3;
+            value |= (*(u32*)(data + 9)) & ~LINK_MASK_3;
+            CopyMemory(data + 9, &value, sizeof(u32));
+            break;
+        }
+        }
+    }
+
+public:
+    NodeCover high;
+    NodeCover low;
+    u16 plane;
+    NodePositionSOC p;
+    // 13 + 2 + 2 + 2 + 5 = 24 bytes
+
+    [[nodiscard]]
+    ICF u32 link(u8 index) const
+    {
+        switch (index)
+        {
+        case 0: return ((*(u32*)data) & LINK_MASK_0);
+        case 1: return (((*(u32*)(data + 3)) >> 1) & LINK_MASK_0);
+        case 2: return (((*(u32*)(data + 6)) >> 2) & LINK_MASK_0);
+        case 3: return (((*(u32*)(data + 9)) >> 3) & LINK_MASK_0);
+        default: NODEFAULT;
+        }
+        return 0;
+    }
+
+    friend class CLevelGraph;
+    friend struct CNodeCompressed;
+};
+
+static_assert(sizeof(NodeCompressedBORSHT) == 24);
+
+struct NodeCompressedBORSHT_BIG
+{
+public:
+    static constexpr u32 NODE_BIT_COUNT = 25;
+    static constexpr u32 LINK_MASK = (1 << NODE_BIT_COUNT) - 1;
+    static constexpr u32 LINK_MASK_0 = LINK_MASK;
+    static constexpr u32 LINK_MASK_1 = LINK_MASK_0 << 1;
+    static constexpr u32 LINK_MASK_2 = LINK_MASK_0 << 2;
+    static constexpr u32 LINK_MASK_3 = LINK_MASK_0 << 3;
+
+    u8 data[13];
+
+private:
+    ICF void link(u8 link_index, u32 value)
+    {
+        value &= LINK_MASK_0;
+        switch (link_index)
+        {
+        case 0:
+        {
+            value |= (*(u32*)data) & ~LINK_MASK_0;
+            CopyMemory(data, &value, sizeof(u32));
+            break;
+        }
+        case 1:
+        {
+            value <<= 1;
+            value |= (*(u32*)(data + 3)) & ~LINK_MASK_1;
+            CopyMemory(data + 3, &value, sizeof(u32));
+            break;
+        }
+        case 2:
+        {
+            value <<= 2;
+            value |= (*(u32*)(data + 6)) & ~LINK_MASK_2;
+            CopyMemory(data + 6, &value, sizeof(u32));
+            break;
+        }
+        case 3:
+        {
+            value <<= 3;
+            value |= (*(u32*)(data + 9)) & ~LINK_MASK_3;
+            CopyMemory(data + 9, &value, sizeof(u32));
+            break;
+        }
+        }
+    }
+
+public:
+    NodeCover high;
+    NodeCover low;
+    u16 plane;
+    NodePositionExtended p;
+    // 13 + 2 + 2 + 2 + 6 = 25 bytes
+
+    [[nodiscard]]
+    ICF u32 link(u8 index) const
+    {
+        switch (index)
+        {
+        case 0: return ((*(u32*)data) & LINK_MASK_0);
+        case 1: return (((*(u32*)(data + 3)) >> 1) & LINK_MASK_0);
+        case 2: return (((*(u32*)(data + 6)) >> 2) & LINK_MASK_0);
+        case 3: return (((*(u32*)(data + 9)) >> 3) & LINK_MASK_0);
+        default: NODEFAULT;
+        }
+        return 0;
+    }
+
+    friend class CLevelGraph;
+    friend struct CNodeCompressed;
+};
+
+static_assert(sizeof(NodeCompressedBORSHT_BIG) == 25);
+
+struct NodeCompressedSKYLOADER
+{
+public:
+    NodeCompressedSKYLOADER() = default;
+    NodeCompressedSKYLOADER& operator=(const NodeCompressedSOC& old)
+    {
+        link(0, old.link(0));
+        link(1, old.link(1));
+        link(2, old.link(2));
+        link(3, old.link(3));
+        high = old.cover;
+        low = old.cover;
+        plane = old.plane;
+        p = old.p;
+        return *this;
+    }
+    template <typename Node>
+    NodeCompressedSKYLOADER& operator=(const Node& old)
+    {
+        link(0, old.link(0));
+        link(1, old.link(1));
+        link(2, old.link(2));
+        link(3, old.link(3));
+        high = old.high;
+        low = old.low;
+        plane = old.plane;
+        p = old.p;
+        return *this;
+    }
+
+public:
+    static constexpr u32 NODE_BIT_COUNT = 26;
+    static constexpr u32 LINK_MASK = (1 << NODE_BIT_COUNT) - 1;
+    static constexpr u32 LINK_MASK_0 = LINK_MASK;
+    static constexpr u32 LINK_MASK_1 = LINK_MASK_0 << 2;
+    static constexpr u32 LINK_MASK_2 = LINK_MASK_0 << 4;
+    static constexpr u32 LINK_MASK_3 = LINK_MASK_0 << 6;
+
+    u8 data[13];
+
+public:
+    ICF void link(u8 link_index, u32 value)
+    {
+        value &= LINK_MASK_0;
+        switch (link_index)
+        {
+        case 0:
+        {
+            value |= (*(u32*)data) & ~LINK_MASK_0;
+            CopyMemory(data, &value, sizeof(u32));
+            break;
+        }
+        case 1:
+        {
+            value <<= 2;
+            value |= (*(u32*)(data + 3)) & ~LINK_MASK_1;
+            CopyMemory(data + 3, &value, sizeof(u32));
+            break;
+        }
+        case 2:
+        {
+            value <<= 4;
+            value |= (*(u32*)(data + 6)) & ~LINK_MASK_2;
+            CopyMemory(data + 6, &value, sizeof(u32));
+            break;
+        }
+        case 3:
+        {
+            value <<= 6;
+            value |= (*(u32*)(data + 9)) & ~LINK_MASK_3;
+            CopyMemory(data + 9, &value, sizeof(u32));
+            break;
+        }
+        }
+    }
+
+public:
+    NodeCover high;
+    NodeCover low;
+    u16 plane;
+    NodePositionExtended p;
+    // 13 + 2 + 2 + 2 + 6 = 25 bytes
+
+    ICF u32 link(u8 index) const
+    {
+        switch (index)
+        {
+        case 0: return ((*(u32*)data) & LINK_MASK_0);
+        case 1: return (((*(u32*)(data + 3)) >> 2) & LINK_MASK_0);
+        case 2: return (((*(u32*)(data + 6)) >> 4) & LINK_MASK_0);
+        case 3: return (((*(u32*)(data + 9)) >> 6) & LINK_MASK_0);
+        default: NODEFAULT;
+        }
+        return 0;
+    }
+
+    friend class CLevelGraph;
+    friend struct CNodeCompressed;
+};
+
+static_assert(sizeof(NodeCompressedSKYLOADER) == 25);
+
+using NodePosition = NodePositionExtended;
+using NodeCompressed = NodeCompressedSKYLOADER;
+
 #pragma pack(pop)
 
 const u32 XRCL_CURRENT_VERSION = 17; // input
 const u32 XRCL_PRODUCTION_VERSION = 14; // output
 const u32 CFORM_CURRENT_VERSION = 4;
-const u32 MAX_NODE_BIT_COUNT = 23;
 
-const u32 XRAI_CURRENT_VERSION = 8;
+enum xrAI_Versions : u8
+{
+    // Release SOC: builds 2945, 2947 and further
+    XRAI_VERSION_SOC = 8,
+
+    // PRIQUEL: early CS builds on SOC engine, e.g. build 3120
+    XRAI_VERSION_PRIQUEL = 9,
+
+    // Release CS/COP: build 3456 and further
+    XRAI_VERSION_CS_COP = 10,
+
+    // Extended AI nodes to 25-bit links
+    // https://github.com/abramcumner/xray15
+    XRAI_VERSION_BORSHT = 11,
+    // Further improved AI nodes with 6 bytes position
+    XRAI_VERSION_BORSHT_BIG = 12,
+    // 26-bit links, removed rudimentary light data
+    XRAI_VERSION_SKYLOADER = 13,
+
+    // Lowest version that can be loaded by the engine
+    XRAI_VERSION_ALLOWED = XRAI_VERSION_SOC,
+    // Main version used by the game
+    XRAI_CURRENT_VERSION = XRAI_VERSION_SKYLOADER
+};
+
+// Cross table and game spawn uses u32, but game graph header uses u8,
+// Make sure to be within u8 bounds...
+static_assert(XRAI_VERSION_ALLOWED <= type_max<u8>);
+static_assert(XRAI_CURRENT_VERSION <= type_max<u8>);
+
+#define ASSERT_XRAI_VERSION_MATCH(version, description) \
+    R_ASSERT2((version) >= XRAI_VERSION_ALLOWED && (version) <= XRAI_CURRENT_VERSION, \
+              make_string("%s version mismatch! %s has version %u but engine supports only %u.", description, description, (version), XRAI_CURRENT_VERSION).c_str())

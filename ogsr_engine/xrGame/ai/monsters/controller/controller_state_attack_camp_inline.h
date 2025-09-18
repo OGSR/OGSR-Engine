@@ -14,7 +14,7 @@ void CStateControlCampAbstract::initialize()
 {
     inherited::initialize();
 
-    float angle = ai().level_graph().vertex_cover_angle(object->ai_location().level_vertex_id(), deg(10), std::greater<float>());
+    float angle = ai().level_graph().vertex_low_cover_angle(object->ai_location().level_vertex_id(), deg(10), std::greater<float>());
 
     collide::rq_result l_rq;
 

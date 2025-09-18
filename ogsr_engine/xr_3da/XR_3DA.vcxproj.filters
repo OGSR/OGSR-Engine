@@ -340,6 +340,7 @@
       <Filter>Interfaces\Physics</Filter>
     </ClInclude>
     <ClInclude Include="defines.h" />
+    <ClInclude Include="xrLevel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">

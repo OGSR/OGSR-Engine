@@ -14,7 +14,11 @@ IC CGameGraph::CGameGraph(IReader* stream, bool separatedGraphs)
     m_separated_graphs = separatedGraphs;
     VERIFY(m_reader);
     m_header.load(m_reader);
-    R_ASSERT2(header().version() == XRAI_CURRENT_VERSION, "Graph version mismatch!");
+
+    ASSERT_XRAI_VERSION_MATCH(header().version(), "Game graph");
+
+    Msg("CGameGraph load started...");
+
     m_nodes = (CVertex*)m_reader->pointer();
     m_current_level_some_vertex_id = _GRAPH_ID(-1);
     m_enabled.assign(header().vertex_count(), true);

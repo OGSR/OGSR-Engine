@@ -12,9 +12,6 @@ namespace LevelGraph
 {
 class CHeader : private hdrNODES
 {
-private:
-    friend class CRenumbererConverter;
-
 public:
     ICF u32 version() const;
     ICF u32 vertex_count() const;
@@ -26,15 +23,12 @@ public:
 
 typedef NodePosition CPosition;
 
-class CVertex : private NodeCompressed
+class CVertex : public NodeCompressed
 {
-private:
-    friend class CRenumbererConverter;
-
 public:
     ICF u32 link(int i) const;
-    ICF u8 light() const;
-    ICF u16 cover(u8 index) const;
+    ICF u16 high_cover(u8 index) const;
+    ICF u16 low_cover(u8 index) const;
     ICF u16 plane() const;
     ICF const CPosition& position() const;
     ICF bool operator<(const LevelGraph::CVertex& vertex) const;

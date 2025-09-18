@@ -19,7 +19,9 @@ void CMonsterCorpseCoverEvaluator::evaluate(const CCoverPoint* cover_point, floa
     direction.sub(m_start_position, cover_point->position());
     direction.getHP(y, p);
 
-    float cover_value = ai().level_graph().cover_in_direction(y, cover_point->level_vertex_id());
+    float high_cover_value = ai().level_graph().high_cover_in_direction(y, cover_point->level_vertex_id());
+    float low_cover_value = ai().level_graph().low_cover_in_direction(y, cover_point->level_vertex_id());
+    float cover_value = std::min(high_cover_value, low_cover_value);
     if (cover_value >= 2.f * m_best_value)
         return;
 
