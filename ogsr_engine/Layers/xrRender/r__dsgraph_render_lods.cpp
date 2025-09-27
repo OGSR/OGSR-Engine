@@ -20,7 +20,7 @@ void R_dsgraph_structure::r_dsgraph_render_lods()
 
     // *** Fill VB and generate groups
     const u32 shid = SE_R1_LMODELS;
-    FLOD* firstV = (FLOD*)lstLODs[0].pVisual;
+    FLOD* firstV = smart_cast<FLOD*>(lstLODs[0].pVisual);
     ref_selement cur_S = firstV->shader->E[shid];
     float ssaRange = r_ssaLOD_A - r_ssaLOD_B;
     if (ssaRange < EPS_S)
@@ -65,7 +65,7 @@ void R_dsgraph_structure::r_dsgraph_render_lods()
             const u32 uA = u32(clampr(iA, 0, 255));
 
             // calculate direction and shift
-            FLOD* lodV = (FLOD*)P.pVisual;
+            FLOD* lodV = smart_cast<FLOD*>(P.pVisual);
             Fvector Ldir, shift;
             Ldir.sub(lodV->getVisData().sphere.P, Device.vCameraPosition).normalize();
             shift.mul(Ldir, -.5f * lodV->getVisData().sphere.R);

@@ -193,5 +193,5 @@ resptr_core<T, D> static_pointer_cast(resptr_core<U, D> const& p)
 template <class T, class U, typename D>
 resptr_core<T, D> dynamic_pointer_cast(resptr_core<U, D> const& p)
 {
-    return dynamic_cast<T*>(p.get());
+    return smart_cast<T*>(p.get());
 }

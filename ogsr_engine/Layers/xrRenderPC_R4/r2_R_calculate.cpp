@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "../../COMMON_AI/smart_cast.h"
 #include "../../xr_3da/ps_instance.h"
 #include "../../xr_3da/customhud.h"
 #include "../xrRender/FBasicVisual.h"
@@ -292,7 +291,7 @@ void CRender::ExportLights()
         VERIFY(spatial->spatial.type & STYPE_LIGHTSOURCE);
 
         // lightsource
-        light* L = dynamic_cast<light*>(spatial->dcast_Light());
+        light* L = smart_cast<light*>(spatial->dcast_Light());
         R_ASSERT(L);
 
         //const float lod = L->get_LOD();
@@ -308,7 +307,7 @@ void CRender::ExportLights()
     for (auto spatial : lstLights)
     {
         // lightsource
-        light* L = dynamic_cast<light*>(spatial->dcast_Light());
+        light* L = smart_cast<light*>(spatial->dcast_Light());
         R_ASSERT(L);
 
         if (Device.dwFrame == L->frame_render)

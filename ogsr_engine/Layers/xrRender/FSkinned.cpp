@@ -282,7 +282,7 @@ struct vertHW_4W
 void CSkeletonX_PM::Copy(dxRender_Visual* V)
 {
     inherited1::Copy(V);
-    CSkeletonX_PM* X = (CSkeletonX_PM*)(V);
+    CSkeletonX_PM* X = smart_cast<CSkeletonX_PM*>(V);
     _Copy(X);
     nSWI = X->nSWI;
 }
@@ -290,7 +290,7 @@ void CSkeletonX_PM::Copy(dxRender_Visual* V)
 void CSkeletonX_ST::Copy(dxRender_Visual* P)
 {
     inherited1::Copy(P);
-    CSkeletonX_ST* X = (CSkeletonX_ST*)P;
+    CSkeletonX_ST* X = smart_cast<CSkeletonX_ST*>(P);
     _Copy(X);
 }
 

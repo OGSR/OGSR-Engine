@@ -598,7 +598,7 @@ void CKinematicsAnimated::Copy(dxRender_Visual* P)
 {
     inherited::Copy(P);
 
-    const CKinematicsAnimated* pFrom = (CKinematicsAnimated*)P;
+    const CKinematicsAnimated* pFrom = smart_cast<CKinematicsAnimated*>(P);
     PCOPY(m_Motions);
     PCOPY(m_Partition);
 

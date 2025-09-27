@@ -1723,9 +1723,6 @@
     <Filter Include="Core\Common\Shared">
       <UniqueIdentifier>{973f168e-d4df-4ec7-b233-e5d9cf636757}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Common\SmartCast">
-      <UniqueIdentifier>{eefb4cf3-44ab-4436-96a4-f09f1afe0dbe}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Common\StringTable">
       <UniqueIdentifier>{97eb32cc-6f8b-48ff-bf78-c1206d0fa2b7}</UniqueIdentifier>
     </Filter>
@@ -4877,9 +4874,6 @@
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\shared_data.h">
       <Filter>Core\Common\Shared</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\smart_cast.h">
-      <Filter>Core\Common\SmartCast</Filter>
     </ClInclude>
     <ClInclude Include="string_table.h">
       <Filter>Core\Common\StringTable</Filter>

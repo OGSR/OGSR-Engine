@@ -282,7 +282,7 @@ void IReader::r(void* p, int cnt)
     advance(cnt);
 #ifdef DEBUG
     BOOL bShow = FALSE;
-    if (dynamic_cast<CVirtualFileReader*>(this))
+    if (smart_cast<CVirtualFileReader*>(this))
         bShow = TRUE;
     if (bShow)
     {

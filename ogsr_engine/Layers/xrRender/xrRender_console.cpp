@@ -666,7 +666,7 @@ public:
                                 range2 = range * range;
                             }*/
 
-                            dxRender_Visual* dx_vis = (dxRender_Visual*)vis;
+                            dxRender_Visual* dx_vis = smart_cast<dxRender_Visual*>(vis);
 
                             list.emplace_back(dx_vis, _sqrt(distSQ));
 

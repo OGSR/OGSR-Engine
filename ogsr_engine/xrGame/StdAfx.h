@@ -10,9 +10,6 @@
 
 #include "..\xr_3da\ai_script_space.h" //KRodin: пусть луа для рендера и скриптов инитится в одном месте.
 
-// this include MUST be here, since smart_cast is used >1800 times in the project
-#include <smart_cast.h>
-
 #define THROW VERIFY
 #define THROW2 VERIFY2
 #define THROW3 VERIFY3

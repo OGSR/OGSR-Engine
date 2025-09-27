@@ -19,7 +19,7 @@ void render_sun::init()
     m_sun_cascades[2].size = ps_ssfx_shadow_cascades.z;
     m_sun_cascades[2].bias = m_sun_cascades[2].size * fBias;
     
-    sun = (light*)RImplementation.Lights.sun_adapted._get(); // fuckingsun
+    sun = smart_cast<light*>(RImplementation.Lights.sun_adapted._get()); // fuckingsun
 
     const Fcolor sun_color = sun->color;
     o.active = ps_r2_ls_flags.test(R2FLAG_SUN) && (u_diffuse2s(sun_color.r, sun_color.g, sun_color.b) > EPS);

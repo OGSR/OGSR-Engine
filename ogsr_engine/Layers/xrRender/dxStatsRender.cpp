@@ -3,7 +3,7 @@
 #include "../../xr_3da/GameFont.h"
 #include "dxRenderDeviceRender.h"
 
-void dxStatsRender::Copy(IStatsRender& _in) { *this = *((dxStatsRender*)&_in); }
+void dxStatsRender::Copy(IStatsRender& _in) { *this = *smart_cast<dxStatsRender*>(&_in); }
 
 void dxStatsRender::OutData1(CGameFont& F)
 {
@@ -63,7 +63,7 @@ void dxStatsRender::GuardDrawCalls(CGameFont& F)
 
 void dxStatsRender::SetDrawParams(IRenderDeviceRender* pRender)
 {
-    dxRenderDeviceRender* pR = (dxRenderDeviceRender*)pRender;
+    dxRenderDeviceRender* pR = smart_cast<dxRenderDeviceRender*>(pRender);
 
     RCache.set_xform_world(Fidentity);
     RCache.set_Shader(pR->m_SelectionShader);

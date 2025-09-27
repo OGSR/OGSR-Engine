@@ -41,12 +41,12 @@ namespace luabind {
     {     
        static wrap_base const* extract(T const* ptr)
         {
-            return dynamic_cast<wrap_base const*>(get_pointer(*ptr));
+            return smart_cast<wrap_base const*>(get_pointer(*ptr));
         }
 
         static wrap_base* extract(T* ptr)
         {
-            return dynamic_cast<wrap_base*>(get_pointer(*ptr));
+            return smart_cast<wrap_base*>(get_pointer(*ptr));
         }
     };
 

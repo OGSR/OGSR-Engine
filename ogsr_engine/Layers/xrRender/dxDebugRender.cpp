@@ -95,7 +95,7 @@ void dxDebugRender::add_lines(Fvector const* vertices, u32 const& vertex_count, 
 
 void dxDebugRender::OnFrameEnd() { RCache.OnFrameEnd(); }
 
-void dxDebugRender::SetShader(const debug_shader& shader) { RCache.set_Shader(((dxUIShader*)&*shader)->hShader); }
+void dxDebugRender::SetShader(const debug_shader& shader) { RCache.set_Shader(smart_cast<dxUIShader*>(&*shader)->hShader); }
 
 void dxDebugRender::CacheSetXformWorld(const Fmatrix& M) { RCache.set_xform_world(M); }
 

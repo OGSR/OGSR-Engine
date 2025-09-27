@@ -171,7 +171,7 @@ void Fvisual::Copy(dxRender_Visual* pSrc)
 {
     dxRender_Visual::Copy(pSrc);
 
-    const Fvisual* pFrom = dynamic_cast<Fvisual*>(pSrc);
+    const Fvisual* pFrom = smart_cast<Fvisual*>(pSrc);
 
     PCOPY(rm_geom);
 

@@ -18,7 +18,7 @@ dxThunderboltRender::~dxThunderboltRender()
     hGeom_gradient.destroy();
 }
 
-void dxThunderboltRender::Copy(IThunderboltRender& _in) { *this = *(dxThunderboltRender*)&_in; }
+void dxThunderboltRender::Copy(IThunderboltRender& _in) { *this = *smart_cast<dxThunderboltRender*>(&_in); }
 
 void dxThunderboltRender::Render(CBackend& cmd_list, CEffect_Thunderbolt& owner)
 {
@@ -31,7 +31,7 @@ void dxThunderboltRender::Render(CBackend& cmd_list, CEffect_Thunderbolt& owner)
     cmd_list.set_CullMode(CULL_NONE);
     u32 v_offset, i_offset;
 
-    const dxThunderboltDescRender* pThRen = (dxThunderboltDescRender*)&*owner.current->m_pRender;
+    const dxThunderboltDescRender* pThRen = smart_cast<dxThunderboltDescRender*>(&*owner.current->m_pRender);
 
     const u32 vCount_Lock = pThRen->l_model->number_vertices;
     const u32 iCount_Lock = pThRen->l_model->number_indices;
@@ -85,15 +85,14 @@ void dxThunderboltRender::Render(CBackend& cmd_list, CEffect_Thunderbolt& owner)
     RImplementation.Vertex.Unlock(8, hGeom_gradient.stride());
     cmd_list.set_xform_world(Fidentity);
     cmd_list.set_Geometry(hGeom_gradient);
-    cmd_list.set_Shader(((dxFlareRender*)&*owner.current->m_GradientTop->m_pFlare)->hShader);
 
-
+    cmd_list.set_Shader(smart_cast<dxFlareRender*>(&*owner.current->m_GradientTop->m_pFlare)->hShader);
     //	Hack. Since lightning gradient uses sun shader override z write settings manually
     cmd_list.set_Z(TRUE);
     cmd_list.set_ZFunc(D3DCMP_LESSEQUAL);
     cmd_list.Render(D3DPT_TRIANGLELIST, VS_Offset, 0, 4, 0, 2);
-    cmd_list.set_Shader(((dxFlareRender*)&*owner.current->m_GradientCenter->m_pFlare)->hShader);
 
+    cmd_list.set_Shader(smart_cast<dxFlareRender*>(&*owner.current->m_GradientCenter->m_pFlare)->hShader);
     //	Hack. Since lightning gradient uses sun shader override z write settings manually
     cmd_list.set_Z(TRUE);
     cmd_list.set_ZFunc(D3DCMP_LESSEQUAL);

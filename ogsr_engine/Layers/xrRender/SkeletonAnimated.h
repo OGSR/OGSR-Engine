@@ -184,4 +184,4 @@ public:
     virtual float get_animation_length(MotionID motion_ID);
 };
 
-IC CKinematicsAnimated* PKinematicsAnimated(IRenderVisual* V) { return V ? (CKinematicsAnimated*)V->dcast_PKinematicsAnimated() : nullptr; }
+IC CKinematicsAnimated* PKinematicsAnimated(IRenderVisual* V) { return V ? smart_cast<CKinematicsAnimated*>(V->dcast_PKinematicsAnimated()) : nullptr; }

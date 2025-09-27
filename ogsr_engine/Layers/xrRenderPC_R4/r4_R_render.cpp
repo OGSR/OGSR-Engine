@@ -168,7 +168,7 @@ void CRender::main_pass_dynamic(R_dsgraph_structure& dsgraph, bool fill_lights)
         CObject* O = g_pGameLevel->CurrentViewEntity();
         if (O && !O->getDestroy())
         {
-            if (CROS_impl* R = (CROS_impl*)O->ROS())
+            if (CROS_impl* R = smart_cast<CROS_impl*>(O->ROS()))
                 R->update(O);
         }
 
@@ -182,7 +182,7 @@ void CRender::main_pass_dynamic(R_dsgraph_structure& dsgraph, bool fill_lights)
             if (IRenderable* renderable = lstRenderables[uID_LTRACK]->dcast_Renderable())
             {
                 // track lighting environment
-                if (CROS_impl* T = (CROS_impl*)renderable->renderable_ROS())
+                if (CROS_impl* T = smart_cast<CROS_impl*>(renderable->renderable_ROS()))
                     T->update(renderable);
             }
         }

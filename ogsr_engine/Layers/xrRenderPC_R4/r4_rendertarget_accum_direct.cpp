@@ -41,7 +41,7 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, Fmat
 
     //	TODO: DX10: Remove half pixe offset
     // *** assume accumulator setted up ***
-    light* fuckingsun = (light*)RImplementation.Lights.sun_adapted._get();
+    light* fuckingsun = smart_cast<light*>(RImplementation.Lights.sun_adapted._get());
 
     // Common calc for quad-rendering
     u32 Offset;
@@ -314,7 +314,7 @@ void CRenderTarget::accum_direct_volumetric(CBackend& cmd_list, u32 sub_phase, c
     // Perform lighting
     {
         // *** assume accumulator setted up ***
-        const light* fuckingsun = (light*)RImplementation.Lights.sun_adapted._get();
+        const light* fuckingsun = smart_cast<light*>(RImplementation.Lights.sun_adapted._get());
 
         // setup
         cmd_list.set_Element(Element);

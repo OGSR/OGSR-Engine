@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "dxUIShader.h"
 
-void dxUIShader::Copy(IUIShader& _in) { *this = *dynamic_cast<dxUIShader*>(&_in); }
+void dxUIShader::Copy(IUIShader& _in) { *this = *smart_cast<dxUIShader*>(&_in); }
 
 void dxUIShader::create(LPCSTR sh, LPCSTR tex, bool no_cache)
 {

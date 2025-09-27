@@ -19,7 +19,7 @@ void dxUIRender::DestroyUIGeom()
 
 void dxUIRender::SetShader(IUIShader& shader)
 {
-    dxUIShader* pShader = (dxUIShader*)&shader;
+    dxUIShader* pShader = smart_cast<dxUIShader*>(&shader);
     VERIFY(&pShader);
     VERIFY(pShader->hShader);
     RCache.set_Shader(pShader->hShader);

@@ -5,8 +5,7 @@
 
 #define MAX_Flares 24
 
-
-void dxFlareRender::Copy(IFlareRender& _in) { *this = *(dxFlareRender*)&_in; }
+void dxFlareRender::Copy(IFlareRender& _in) { *this = *smart_cast<dxFlareRender*>(&_in); }
 
 void dxFlareRender::CreateShader(LPCSTR sh_name, LPCSTR tex_name)
 {
@@ -16,7 +15,7 @@ void dxFlareRender::CreateShader(LPCSTR sh_name, LPCSTR tex_name)
 
 void dxFlareRender::DestroyShader() { hShader.destroy(); }
 
-void dxLensFlareRender::Copy(ILensFlareRender& _in) { *this = *(dxLensFlareRender*)&_in; }
+void dxLensFlareRender::Copy(ILensFlareRender& _in) { *this = *smart_cast<dxLensFlareRender*>(&_in); }
 
 void dxLensFlareRender::Render(CBackend& cmd_list, CLensFlare& owner, BOOL bSun, BOOL bFlares, BOOL bGradient)
 {
@@ -52,7 +51,7 @@ void dxLensFlareRender::Render(CBackend& cmd_list, CLensFlare& owner, BOOL bSun,
             pv++;
             pv->set(owner.vecLight.x - vecSx.x + vecSy.x, owner.vecLight.y - vecSx.y + vecSy.y, owner.vecLight.z - vecSx.z + vecSy.z, c, 1, 1);
             pv++;
-            _2render.push_back(((dxFlareRender*)&*owner.m_Current->m_Source.m_pRender)->hShader);
+            _2render.push_back(smart_cast<dxFlareRender*>(&*owner.m_Current->m_Source.m_pRender)->hShader);
         }
     }
     if (owner.fBlend >= EPS_L)
@@ -86,7 +85,7 @@ void dxLensFlareRender::Render(CBackend& cmd_list, CLensFlare& owner, BOOL bSun,
                     pv++;
                     pv->set(vec.x - vecSx.x + vecSy.x, vec.y - vecSx.y + vecSy.y, vec.z - vecSx.z + vecSy.z, c, 1, 1);
                     pv++;
-                    _2render.push_back(((dxFlareRender*)&*it->m_pRender)->hShader);
+                    _2render.push_back(smart_cast<dxFlareRender*>(&*it->m_pRender)->hShader);
                 }
             }
         }
@@ -110,7 +109,7 @@ void dxLensFlareRender::Render(CBackend& cmd_list, CLensFlare& owner, BOOL bSun,
                 pv++;
                 pv->set(owner.vecLight.x - vecSx.x + vecSy.x, owner.vecLight.y - vecSx.y + vecSy.y, owner.vecLight.z - vecSx.z + vecSy.z, c, 1, 1);
                 pv++;
-                _2render.push_back(((dxFlareRender*)&*owner.m_Current->m_Gradient.m_pRender)->hShader);
+                _2render.push_back(smart_cast<dxFlareRender*>(&*owner.m_Current->m_Gradient.m_pRender)->hShader);
             }
         }
     }

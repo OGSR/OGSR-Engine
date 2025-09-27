@@ -147,7 +147,7 @@ void CLight_DB::UpdateSun() const
     {
         ZoneScoped;
 
-        const light* _sun_adapted = (light*)sun_adapted._get();
+        const light* _sun_adapted = smart_cast<light*>(sun_adapted._get());
         CEnvDescriptor& E = *g_pGamePersistent->Environment().CurrentEnv;
         VERIFY(_valid(E.sun_dir));
 

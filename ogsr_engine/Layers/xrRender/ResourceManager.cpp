@@ -352,7 +352,7 @@ xr_vector<ITexture*> CResourceManager::FindTexture(const char* Name) const
     {
         const auto I = m_textures.find(filename);
         if (I != m_textures.end())
-            res.emplace_back(dynamic_cast<ITexture*>(I->second));
+            res.emplace_back(smart_cast<ITexture*>(I->second));
     }
     else
     {
@@ -361,7 +361,7 @@ xr_vector<ITexture*> CResourceManager::FindTexture(const char* Name) const
 
         for (const auto& [name, tex] : m_textures)
             if (strstr(name, filename))
-                res.emplace_back(dynamic_cast<ITexture*>(tex));
+                res.emplace_back(smart_cast<ITexture*>(tex));
     }
 
     return res;

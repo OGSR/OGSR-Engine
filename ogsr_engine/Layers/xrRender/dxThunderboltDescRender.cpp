@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "dxThunderboltDescRender.h"
 
-void dxThunderboltDescRender::Copy(IThunderboltDescRender& _in) { *this = *((dxThunderboltDescRender*)&_in); }
+void dxThunderboltDescRender::Copy(IThunderboltDescRender& _in) { *this = *smart_cast<dxThunderboltDescRender*>(&_in); }
 
 void dxThunderboltDescRender::CreateModel(LPCSTR m_name)
 {

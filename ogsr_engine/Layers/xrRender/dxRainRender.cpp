@@ -22,7 +22,7 @@ dxRainRender::dxRainRender()
 
 dxRainRender::~dxRainRender() { ::RImplementation.model_Delete(DM_Drop); }
 
-void dxRainRender::Copy(IRainRender& _in) { *this = *(dxRainRender*)&_in; }
+void dxRainRender::Copy(IRainRender& _in) { *this = *smart_cast<dxRainRender*>(&_in); }
 
 #include "../../xr_3da/iGame_persistent.h"
 

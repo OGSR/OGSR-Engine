@@ -272,12 +272,12 @@ void ISpatial_DB::insert(ISpatial* S)
         BOOL bValid = _valid(S->spatial.sphere.R) && _valid(S->spatial.sphere.P);
         if (!bValid)
         {
-            CObject* O = dynamic_cast<CObject*>(S);
+            CObject* O = smart_cast<CObject*>(S);
             if (O)
                 FATAL("Invalid OBJECT position or radius (%s)", O->cName().c_str());
             else
             {
-                CPS_Instance* P = dynamic_cast<CPS_Instance*>(S);
+                CPS_Instance* P = smart_cast<CPS_Instance*>(S);
                 if (P)
                     FATAL("Invalid PS spatial position{%3.2f,%3.2f,%3.2f} or radius{%3.2f}", VPUSH(S->spatial.sphere.P), S->spatial.sphere.R);
                 else

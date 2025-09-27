@@ -25,7 +25,7 @@ namespace luabind {
 	struct delete_helper {
 		static inline void apply	(T *&pointer)
 		{
-			delete_helper2			(pointer,dynamic_cast<void*>(pointer));
+			delete_helper2			(pointer,smart_cast<void*>(pointer));
 		}
 	};
 

@@ -57,7 +57,7 @@ void CRenderTarget::phase_combine(CBackend& cmd_list)
 
         // sun-params
         {
-            light* fuckingsun = (light*)RImplementation.Lights.sun_adapted._get();
+            light* fuckingsun = smart_cast<light*>(RImplementation.Lights.sun_adapted._get());
             Fvector L_dir, L_clr;
             float L_spec;
             L_clr.set(fuckingsun->color.r, fuckingsun->color.g, fuckingsun->color.b);
@@ -87,7 +87,7 @@ void CRenderTarget::phase_combine(CBackend& cmd_list)
         pv++;
         RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
-        dxEnvDescriptorMixerRender& envdescren = *(dxEnvDescriptorMixerRender*)(&*envdesc.m_pDescriptorMixer);
+        dxEnvDescriptorMixerRender& envdescren = *smart_cast<dxEnvDescriptorMixerRender*>(&*envdesc.m_pDescriptorMixer);
 
         // Setup textures
         ID3DBaseTexture* e0 = envdescren.sky_r_textures_env[0].second->surface_get();

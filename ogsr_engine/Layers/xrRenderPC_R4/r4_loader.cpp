@@ -385,7 +385,7 @@ void CRender::LoadSectors(IReader* fs)
 
             // Search for default sector - assume "default" or "outdoor" sector is the largest one
             // XXX: hack: need to know real outdoor sector
-            auto* V = static_cast<dxRender_Visual*>(RImplementation.getVisual(sector_data.root_id));
+            auto* V = smart_cast<dxRender_Visual*>(RImplementation.getVisual(sector_data.root_id));
             const float vol = V->getVisData().box.getvolume();
             if (vol > largest_sector_vol)
             {
@@ -440,7 +440,7 @@ void CRender::LoadSectors(IReader* fs)
     Msg("Level sector data:");
     for (const auto& sector_data : sectors_data)
     {
-        auto* V = static_cast<dxRender_Visual*>(RImplementation.getVisual(sector_data.root_id));
+        auto* V = smart_cast<dxRender_Visual*>(RImplementation.getVisual(sector_data.root_id));
         const float vol = V->getVisData().box.getvolume();
 
         Msg("root_id=[%d] volume=[%f]", sector_data.root_id, vol);
@@ -524,7 +524,7 @@ void CRender::Load3DFluid()
 
                 //	Attach to sector's static geometry
                 const auto sector_id = RImplementation.detect_sector(xrc, pVolume->getVisData().sphere.P);
-                auto* pSector = dynamic_cast<CSector*>(RImplementation.get_sector(sector_id));
+                auto* pSector = smart_cast<CSector*>(RImplementation.get_sector(sector_id));
                 if (!pSector)
                 {
                     Msg("Cannot find sector for fog volume. Position x=[%f] y=[%f] z=[%f]!", v.x, v.y, v.z);
@@ -542,7 +542,7 @@ void CRender::Load3DFluid()
                 R_ASSERT(pRoot);
                 R_ASSERT(pRoot->getType() == MT_HIERRARHY);
 
-                ((FHierrarhyVisual*)pRoot)->children.push_back(pVolume);
+                smart_cast<FHierrarhyVisual*>(pRoot)->children.push_back(pVolume);
             }
         }
 

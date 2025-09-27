@@ -91,7 +91,7 @@ void FProgressive::Render(CBackend& cmd_list, float lod, bool use_fast_geo)
 void FProgressive::Copy(dxRender_Visual* pSrc)
 {
     Fvisual::Copy(pSrc);
-    const FProgressive* pFrom = (FProgressive*)pSrc;
+    const FProgressive* pFrom = smart_cast<FProgressive*>(pSrc);
     PCOPY(nSWI);
     PCOPY(xSWI);
 }

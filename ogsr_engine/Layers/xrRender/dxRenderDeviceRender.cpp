@@ -12,7 +12,7 @@ RENDERDOC_API_1_0_0* g_renderdoc_api{};
 
 dxRenderDeviceRender::dxRenderDeviceRender() : Resources(nullptr) { ; }
 
-void dxRenderDeviceRender::Copy(IRenderDeviceRender& _in) { *this = *(dxRenderDeviceRender*)&_in; }
+void dxRenderDeviceRender::Copy(IRenderDeviceRender& _in) { *this = *smart_cast<dxRenderDeviceRender*>(&_in); }
 
 void dxRenderDeviceRender::OnDeviceCreate()
 {

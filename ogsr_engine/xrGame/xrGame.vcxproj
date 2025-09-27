@@ -1245,7 +1245,6 @@
     <ClInclude Include="..\COMMON_AI\object_item_single.h" />
     <ClInclude Include="..\COMMON_AI\object_item_single_inline.h" />
     <ClInclude Include="..\COMMON_AI\shared_data.h" />
-    <ClInclude Include="..\COMMON_AI\smart_cast.h" />
     <ClInclude Include="string_table.h" />
     <ClInclude Include="string_table_defs.h" />
     <ClInclude Include="..\COMMON_AI\associative_vector.h" />

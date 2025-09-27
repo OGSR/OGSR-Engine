@@ -435,7 +435,7 @@ void R_dsgraph_structure::add_leafs_dynamic(IRenderable* root, dxRender_Visual* 
         if (phase == CRender::PHASE_NORMAL)
         {
             // Add all children, doesn't perform any tests
-            const PS::CParticleGroup* pG = (PS::CParticleGroup*)pVisual;
+            const PS::CParticleGroup* pG = smart_cast<PS::CParticleGroup*>(pVisual);
             for (auto& I : pG->items)
             {
                 if (I._effect)
@@ -449,14 +449,14 @@ void R_dsgraph_structure::add_leafs_dynamic(IRenderable* root, dxRender_Visual* 
     }
         return;
     case MT_HIERRARHY: {
-        for (dxRender_Visual* Vis : dynamic_cast<FHierrarhyVisual*>(pVisual)->children)
+        for (dxRender_Visual* Vis : smart_cast<FHierrarhyVisual*>(pVisual)->children)
             if (Vis->getRZFlag())
                 add_leafs_dynamic(root, Vis, xform);
     }
         return;
     case MT_SKELETON_ANIM:
     case MT_SKELETON_RIGID: {
-        const auto pV = dynamic_cast<CKinematics*>(pVisual);
+        const auto pV = smart_cast<CKinematics*>(pVisual);
         BOOL _use_lod = FALSE;
         if (pV->m_lod)
         {
@@ -526,7 +526,7 @@ void R_dsgraph_structure::add_leafs_static(dxRender_Visual* pVisual)
     }
         return;
     case MT_HIERRARHY: {
-        for (dxRender_Visual* Vis : dynamic_cast<FHierrarhyVisual*>(pVisual)->children)
+        for (dxRender_Visual* Vis : smart_cast<FHierrarhyVisual*>(pVisual)->children)
             if (Vis->getRZFlag())
                 add_leafs_static(Vis);
     }
@@ -542,7 +542,7 @@ void R_dsgraph_structure::add_leafs_static(dxRender_Visual* pVisual)
             return;
         }
 
-        const auto pV = dynamic_cast<FLOD*>(pVisual);
+        const auto pV = smart_cast<FLOD*>(pVisual);
         float D;
         float ssa = CalcSSA(D, pV->getVisData().sphere.P, pV) * pV->lod_factor;
 
@@ -628,7 +628,7 @@ void R_dsgraph_structure::add_static(dxRender_Visual* pVisual, const CFrustum& v
     switch (pVisual->Type)
     {
     case MT_HIERRARHY: {
-        for (dxRender_Visual* Vis : dynamic_cast<FHierrarhyVisual*>(pVisual)->children)
+        for (dxRender_Visual* Vis : smart_cast<FHierrarhyVisual*>(pVisual)->children)
         {
             if (Vis->getRZFlag())
             {

@@ -148,7 +148,7 @@ void FTreeVisual::Copy(dxRender_Visual* pSrc)
 {
     dxRender_Visual::Copy(pSrc);
 
-    FTreeVisual* pFrom = dynamic_cast<FTreeVisual*>(pSrc);
+    const FTreeVisual* pFrom = smart_cast<FTreeVisual*>(pSrc);
 
     PCOPY(rm_geom);
 
@@ -243,6 +243,6 @@ void FTreeVisual_PM::RenderInstanced(CBackend& cmd_list, const xr_vector<FloraVe
 void FTreeVisual_PM::Copy(dxRender_Visual* pSrc)
 {
     inherited::Copy(pSrc);
-    FTreeVisual_PM* pFrom = dynamic_cast<FTreeVisual_PM*>(pSrc);
+    const FTreeVisual_PM* pFrom = smart_cast<FTreeVisual_PM*>(pSrc);
     PCOPY(pSWI);
 }

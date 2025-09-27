@@ -170,9 +170,9 @@ void CROS_impl::update(IRenderable* O)
     if (nullptr == O->renderable.visual)
         return;
 
-    VERIFY(dynamic_cast<CROS_impl*>(O->renderable_ROS()));
+    VERIFY(smart_cast<CROS_impl*>(O->renderable_ROS()));
 
-    CObject* _object = dynamic_cast<CObject*>(O);
+    CObject* _object = smart_cast<CObject*>(O);
 
     if (skip)
     {
@@ -306,7 +306,7 @@ void CROS_impl::smart_update(IRenderable* O)
 
     //	Acquire current position
     Fvector position;
-    VERIFY(dynamic_cast<CROS_impl*>(O->renderable_ROS()));
+    VERIFY(smart_cast<CROS_impl*>(O->renderable_ROS()));
     const vis_data& vis = O->renderable.visual->getVisData();
     O->renderable.xform.transform_tiny(position, vis.sphere.P);
 
@@ -366,7 +366,7 @@ void CROS_impl::update_smooth(IRenderable* O)
 
 void CROS_impl::calc_sun_value(const Fvector& position, const CObject* _object)
 {
-    const light* sun = dynamic_cast<light*>(RImplementation.Lights.sun_adapted._get());
+    const light* sun = smart_cast<light*>(RImplementation.Lights.sun_adapted._get());
 
     if (MODE & IRender_ObjectSpecific::TRACE_SUN)
     {
@@ -431,7 +431,7 @@ void CROS_impl::calc_sky_hemi_value(const Fvector& position, const CObject* _obj
 
 void CROS_impl::prepare_lights(const Fvector& position, IRenderable* O)
 {
-    const CObject* _object = dynamic_cast<CObject*>(O);
+    const CObject* _object = smart_cast<CObject*>(O);
     const float dt = Device.fTimeDelta;
 
     const vis_data& vis = O->renderable.visual->getVisData();
@@ -452,7 +452,7 @@ void CROS_impl::prepare_lights(const Fvector& position, IRenderable* O)
 
         for (const auto& spatial : lstSpatial)
         {
-            light* source = dynamic_cast<light*>(spatial->dcast_Light());
+            light* source = smart_cast<light*>(spatial->dcast_Light());
             VERIFY(source); // sanity check
             const float R = radius + source->range;
             if (position.distance_to(source->position) < R && source->flags.bStatic)

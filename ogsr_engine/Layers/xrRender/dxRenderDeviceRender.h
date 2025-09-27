@@ -9,7 +9,7 @@ class CResourceManager;
 class dxRenderDeviceRender : public IRenderDeviceRender
 {
 public:
-    static dxRenderDeviceRender& Instance() { return *((dxRenderDeviceRender*)(&*Device.m_pRender)); }
+    static dxRenderDeviceRender& Instance() { return *smart_cast<dxRenderDeviceRender*>(Device.m_pRender); }
 
     dxRenderDeviceRender();
 

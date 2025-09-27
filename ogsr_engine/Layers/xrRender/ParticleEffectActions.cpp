@@ -1,11 +1,7 @@
 //---------------------------------------------------------------------------
 #include "stdafx.h"
 
-
-
 #include "ParticleEffectActions.h"
-
-#include "../../COMMON_AI/smart_cast.h"
 #include "../xrParticles/particle_actions_collection.h"
 
 using namespace PAPI;

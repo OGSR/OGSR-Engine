@@ -466,8 +466,8 @@ void dx103DFluidRenderer::CalculateLighting(const dx103DFluidData& FluidData, Fo
     for (ISpatial* spatial : m_lstRenderables)
     {
         // Light
-        light* pLight = (light*)spatial->dcast_Light();
-        R_ASSERT(pLight);
+        const light* pLight = smart_cast<light*>(spatial->dcast_Light());
+        VERIFY(pLight);
 
         if (pLight->flags.bMoveable || pLight->flags.bHudMode /*|| pLight->flags.bStatic*/)
             continue;

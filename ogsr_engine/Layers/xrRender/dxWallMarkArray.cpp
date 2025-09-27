@@ -3,7 +3,7 @@
 
 #include "dxUIShader.h"
 
-void dxWallMarkArray::Copy(IWallMarkArray& _in) { *this = *(dxWallMarkArray*)&_in; }
+void dxWallMarkArray::Copy(IWallMarkArray& _in) { *this = *smart_cast<dxWallMarkArray*>(&_in); }
 
 dxWallMarkArray::~dxWallMarkArray()
 {
@@ -26,7 +26,7 @@ wm_shader dxWallMarkArray::GenerateWallmark()
 {
     wm_shader res;
     if (!m_CollideMarks.empty())
-        ((dxUIShader*)&*res)->hShader = m_CollideMarks[::Random.randI(0, m_CollideMarks.size())];
+        smart_cast<dxUIShader*>(&*res)->hShader = m_CollideMarks[::Random.randI(0, m_CollideMarks.size())];
     return res;
 }
 

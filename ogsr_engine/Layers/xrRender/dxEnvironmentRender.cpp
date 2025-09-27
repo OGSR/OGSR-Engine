@@ -58,11 +58,11 @@ struct v_clouds
 const u32 v_clouds_fvf = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_SPECULAR;
 #pragma pack(pop)
 
-void dxEnvDescriptorRender::Copy(IEnvDescriptorRender& _in) { *this = *(dxEnvDescriptorRender*)&_in; }
+void dxEnvDescriptorRender::Copy(IEnvDescriptorRender& _in) { *this = *smart_cast<dxEnvDescriptorRender*>(&_in); }
 
-void dxEnvDescriptorMixerRender::Copy(IEnvDescriptorMixerRender& _in) { *this = *(dxEnvDescriptorMixerRender*)&_in; }
+void dxEnvDescriptorMixerRender::Copy(IEnvDescriptorMixerRender& _in) { *this = *smart_cast<dxEnvDescriptorMixerRender*>(&_in); }
 
-void dxEnvironmentRender::Copy(IEnvironmentRender& _in) { *this = *(dxEnvironmentRender*)&_in; }
+void dxEnvironmentRender::Copy(IEnvironmentRender& _in) { *this = *smart_cast<dxEnvironmentRender*>(&_in); }
 
 void dxEnvDescriptorMixerRender::Destroy()
 {
@@ -89,8 +89,8 @@ void dxEnvDescriptorMixerRender::Clear()
 
 void dxEnvDescriptorMixerRender::lerp(IEnvDescriptorRender* inA, IEnvDescriptorRender* inB)
 {
-    dxEnvDescriptorRender* pA = (dxEnvDescriptorRender*)inA;
-    dxEnvDescriptorRender* pB = (dxEnvDescriptorRender*)inB;
+    dxEnvDescriptorRender* pA = smart_cast<dxEnvDescriptorRender*>(inA);
+    dxEnvDescriptorRender* pB = smart_cast<dxEnvDescriptorRender*>(inB);
 
     sky_r_textures.clear();
     sky_r_textures.push_back(mk_pair(0, pA->sky_texture));
@@ -160,7 +160,7 @@ dxEnvironmentRender::dxEnvironmentRender()
 
 void dxEnvironmentRender::OnFrame(CEnvironment& env)
 {
-    const dxEnvDescriptorMixerRender& mixRen = *(dxEnvDescriptorMixerRender*)&*env.CurrentEnv->m_pDescriptorMixer;
+    const dxEnvDescriptorMixerRender& mixRen = *smart_cast<dxEnvDescriptorMixerRender*>(&*env.CurrentEnv->m_pDescriptorMixer);
 
     //. Setup skybox textures, somewhat ugly
     ID3DBaseTexture* e0 = mixRen.sky_r_textures[0].second->surface_get();
@@ -184,7 +184,7 @@ void dxEnvironmentRender::RenderSky(CBackend& cmd_list, CEnvironment& env)
 
     RImplementation.rmFar(cmd_list);
 
-    dxEnvDescriptorMixerRender& mixRen = *(dxEnvDescriptorMixerRender*)&*env.CurrentEnv->m_pDescriptorMixer;
+    dxEnvDescriptorMixerRender& mixRen = *smart_cast<dxEnvDescriptorMixerRender*>(&*env.CurrentEnv->m_pDescriptorMixer);
 
     // draw sky box
     static Fmatrix mSky = Fidentity;
@@ -227,8 +227,7 @@ void dxEnvironmentRender::RenderClouds(CBackend& cmd_list, CEnvironment& env)
 {
     RImplementation.rmFar(cmd_list);
 
-    
-    dxEnvDescriptorMixerRender& mixRen = *(dxEnvDescriptorMixerRender*)&*env.CurrentEnv->m_pDescriptorMixer;
+    dxEnvDescriptorMixerRender& mixRen = *smart_cast<dxEnvDescriptorMixerRender*>(&*env.CurrentEnv->m_pDescriptorMixer);
 
     Fmatrix mCloud;
     mCloud.rotateY(env.CurrentEnv->sky_rotation);

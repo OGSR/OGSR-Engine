@@ -144,5 +144,5 @@ void CSector::setup(const level_sector_data_t& data, const xr_vector<CPortal*>& 
     }
 
     // Assign visual
-    m_root = static_cast<dxRender_Visual*>(RImplementation.getVisual(data.root_id));
+    m_root = smart_cast<dxRender_Visual*>(RImplementation.getVisual(data.root_id));
 }

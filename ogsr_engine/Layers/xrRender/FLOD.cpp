@@ -70,7 +70,7 @@ void FLOD::Copy(dxRender_Visual* pFrom)
 {
     inherited::Copy(pFrom);
 
-    const FLOD* F = (FLOD*)pFrom;
+    const FLOD* F = smart_cast<FLOD*>(pFrom);
     geom = F->geom;
     lod_factor = F->lod_factor;
     CopyMemory(facets, F->facets, sizeof(facets));

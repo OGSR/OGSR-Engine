@@ -46,7 +46,7 @@ void FHierrarhyVisual::Load(const char* N, IReader* data, u32 dwFlags)
         for (u32 i = 0; i < cnt; i++)
         {
             const u32 ID = data->r_u32();
-            children[i] = (dxRender_Visual*)RImplementation.getVisual(ID);
+            children[i] = smart_cast<dxRender_Visual*>(RImplementation.getVisual(ID));
         }
         bDontDelete = TRUE;
     }
@@ -66,7 +66,7 @@ void FHierrarhyVisual::Load(const char* N, IReader* data, u32 dwFlags)
                     if (strext(short_name))
                         *strext(short_name) = 0;
                     strconcat(sizeof(name_load), name_load, short_name, ":", itoa(count, num, 10));
-                    children.push_back((dxRender_Visual*)RImplementation.model_CreateChild(name_load, O));
+                    children.push_back(smart_cast<dxRender_Visual*>(RImplementation.model_CreateChild(name_load, O)));
                     O->close();
                     O = OBJ->open_chunk(count);
                 }
@@ -85,13 +85,13 @@ void FHierrarhyVisual::Copy(dxRender_Visual* pSrc)
 {
     dxRender_Visual::Copy(pSrc);
 
-    const FHierrarhyVisual* pFrom = (FHierrarhyVisual*)pSrc;
+    const FHierrarhyVisual* pFrom = smart_cast<FHierrarhyVisual*>(pSrc);
 
     children.clear();
     children.reserve(pFrom->children.size());
     for (const auto& i : pFrom->children)
     {
-        dxRender_Visual* p = (dxRender_Visual*)RImplementation.model_Duplicate(i);
+        dxRender_Visual* p = smart_cast<dxRender_Visual*>(RImplementation.model_Duplicate(i));
         children.push_back(p);
     }
     bDontDelete = FALSE;

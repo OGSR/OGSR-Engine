@@ -21,7 +21,7 @@ void CPortalTraverser::traverse(IRender_Sector* start, CFrustum& F, const Fvecto
 
     R_ASSERT(start);
 
-    i_start = (CSector*)start;
+    i_start = smart_cast<CSector*>(start);
     i_vBase = vBase;
     i_mXFORM = mXFORM;
     i_options = options;

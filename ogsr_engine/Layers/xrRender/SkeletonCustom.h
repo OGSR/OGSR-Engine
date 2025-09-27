@@ -308,4 +308,4 @@ private:
     bool m_is_original_lod;
 };
 
-IC CKinematics* PCKinematics(dxRender_Visual* V) { return V ? dynamic_cast<CKinematics*>(V->dcast_PKinematics()) : nullptr; }
+IC CKinematics* PCKinematics(dxRender_Visual* V) { return V ? smart_cast<CKinematics*>(V->dcast_PKinematics()) : nullptr; }

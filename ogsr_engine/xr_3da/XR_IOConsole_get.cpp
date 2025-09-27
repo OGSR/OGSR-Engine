@@ -27,7 +27,7 @@ const xr_token* CConsole::GetXRToken(LPCSTR cmd) const
 {
     IConsole_Command* cc = GetCommand(cmd);
 
-    CCC_Token* cf = dynamic_cast<CCC_Token*>(cc);
+    CCC_Token* cf = smart_cast<CCC_Token*>(cc);
     if (cf)
     {
         const xr_token* v = cf->GetToken();
@@ -40,25 +40,25 @@ bool CConsole::GetBool(LPCSTR cmd) const
 {
 	IConsole_Command* cc = GetCommand(cmd);
 
-	CCC_Mask* cf = dynamic_cast<CCC_Mask*>(cc);
+	CCC_Mask* cf = smart_cast<CCC_Mask*>(cc);
 	if (cf)
 	{
 		return (cf->GetValue() != 0);
 	}
 
-    CCC_Mask64* cf64 = dynamic_cast<CCC_Mask64*>(cc);
+    CCC_Mask64* cf64 = smart_cast<CCC_Mask64*>(cc);
     if (cf64)
     {
         return (cf64->GetValue() != 0);
     }
 
-	CCC_Integer* ci = dynamic_cast<CCC_Integer*>(cc);
+	CCC_Integer* ci = smart_cast<CCC_Integer*>(cc);
 	if (ci)
 	{
 		return (ci->GetValue() != 0);
 	}
 
-    CCC_Bool* cb = dynamic_cast<CCC_Bool*>(cc);
+    CCC_Bool* cb = smart_cast<CCC_Bool*>(cc);
     if (cb)
     {
         return cb->GetValue();
@@ -73,7 +73,7 @@ float CConsole::GetFloat(LPCSTR cmd, float& min, float& max) const
 	max = 0.0f;
 	IConsole_Command* cc = GetCommand(cmd);
 
-	CCC_Float* cf = dynamic_cast<CCC_Float*>(cc);
+	CCC_Float* cf = smart_cast<CCC_Float*>(cc);
 	if (cf)
 	{
 		cf->GetBounds(min, max);
@@ -88,14 +88,14 @@ int CConsole::GetInteger(LPCSTR cmd, int& min, int& max) const
 	max = 1;
 	IConsole_Command* cc = GetCommand(cmd);
 
-	CCC_Integer* cf = dynamic_cast<CCC_Integer*>(cc);
+	CCC_Integer* cf = smart_cast<CCC_Integer*>(cc);
 	if (cf)
 	{
 		cf->GetBounds(min, max);
 		return cf->GetValue();
 	}
 
-	CCC_Mask* cm = dynamic_cast<CCC_Mask*>(cc);
+	CCC_Mask* cm = smart_cast<CCC_Mask*>(cc);
 	if (cm)
 	{
 		min = 0;
@@ -103,7 +103,7 @@ int CConsole::GetInteger(LPCSTR cmd, int& min, int& max) const
 		return (cm->GetValue()) ? 1 : 0;
 	}
 
-    CCC_Mask64* cf64 = dynamic_cast<CCC_Mask64*>(cc);
+    CCC_Mask64* cf64 = smart_cast<CCC_Mask64*>(cc);
     if (cf64)
     {
         min = 0;
@@ -116,12 +116,12 @@ int CConsole::GetInteger(LPCSTR cmd, int& min, int& max) const
 
 Fvector* CConsole::GetFVector3Ptr(LPCSTR cmd) const
 {
-    CCC_Vector3* cf = dynamic_cast<CCC_Vector3*>(GetCommand(cmd));
+    CCC_Vector3* cf = smart_cast<CCC_Vector3*>(GetCommand(cmd));
 	if (cf)
 	{
 		return cf->GetValuePtr();
 	}
-    CCC_Vector3NonStrict* cfns = dynamic_cast<CCC_Vector3NonStrict*>(GetCommand(cmd));
+    CCC_Vector3NonStrict* cfns = smart_cast<CCC_Vector3NonStrict*>(GetCommand(cmd));
     if (cfns)
     {
         return cfns->GetValuePtr();
@@ -141,12 +141,12 @@ Fvector CConsole::GetFVector3(LPCSTR cmd) const
 
 void CConsole::GetFVector3Bounds(LPCSTR cmd, Fvector& imin, Fvector& imax) const
 {
-    CCC_Vector3* cf = dynamic_cast<CCC_Vector3*>(GetCommand(cmd));
+    CCC_Vector3* cf = smart_cast<CCC_Vector3*>(GetCommand(cmd));
     if (cf)
     {
         cf->GetBounds(imin, imax);
     }
-    CCC_Vector3NonStrict* cfns = dynamic_cast<CCC_Vector3NonStrict*>(GetCommand(cmd));
+    CCC_Vector3NonStrict* cfns = smart_cast<CCC_Vector3NonStrict*>(GetCommand(cmd));
     if (cfns)
     {
         cfns->GetBounds(imin, imax);
@@ -155,12 +155,12 @@ void CConsole::GetFVector3Bounds(LPCSTR cmd, Fvector& imin, Fvector& imax) const
 
 Fvector4* CConsole::GetFVector4Ptr(LPCSTR cmd) const
 {
-    CCC_Vector4* cf = dynamic_cast<CCC_Vector4*>(GetCommand(cmd));
+    CCC_Vector4* cf = smart_cast<CCC_Vector4*>(GetCommand(cmd));
     if (cf)
     {
         return cf->GetValuePtr();
     }
-    CCC_Vector4NonStrict* cfns = dynamic_cast<CCC_Vector4NonStrict*>(GetCommand(cmd));
+    CCC_Vector4NonStrict* cfns = smart_cast<CCC_Vector4NonStrict*>(GetCommand(cmd));
     if (cfns)
     {
         return cfns->GetValuePtr();
@@ -180,12 +180,12 @@ Fvector4 CConsole::GetFVector4(LPCSTR cmd) const
 
 void CConsole::GetFVector4Bounds(LPCSTR cmd, Fvector4& imin, Fvector4& imax) const
 {
-    CCC_Vector4* cf = dynamic_cast<CCC_Vector4*>(GetCommand(cmd));
+    CCC_Vector4* cf = smart_cast<CCC_Vector4*>(GetCommand(cmd));
     if (cf)
     {
         cf->GetBounds(imin, imax);
     }
-    CCC_Vector4NonStrict* cfns = dynamic_cast<CCC_Vector4NonStrict*>(GetCommand(cmd));
+    CCC_Vector4NonStrict* cfns = smart_cast<CCC_Vector4NonStrict*>(GetCommand(cmd));
     if (cfns)
     {
         cfns->GetBounds(imin, imax);

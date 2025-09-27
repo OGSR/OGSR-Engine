@@ -596,14 +596,14 @@ void CModelPool::ClearPool(BOOL b_complete)
 
 dxRender_Visual* CModelPool::CreatePE(PS::CPEDef* source)
 {
-    PS::CParticleEffect* V = (PS::CParticleEffect*)Instance_Create(MT_PARTICLE_EFFECT);
+    PS::CParticleEffect* V = smart_cast<PS::CParticleEffect*>(Instance_Create(MT_PARTICLE_EFFECT));
     V->Compile(source);
     return V;
 }
 
 dxRender_Visual* CModelPool::CreatePG(PS::CPGDef* source)
 {
-    PS::CParticleGroup* V = (PS::CParticleGroup*)Instance_Create(MT_PARTICLE_GROUP);
+    PS::CParticleGroup* V = smart_cast<PS::CParticleGroup*>(Instance_Create(MT_PARTICLE_GROUP));
     V->Compile(source);
     return V;
 }
@@ -753,7 +753,7 @@ void CModelPool::memory_stats(u32& vb_mem_video, u32& vb_mem_system, u32& ib_mem
     for (; it != en; ++it)
     {
         dxRender_Visual* ptr = it->model;
-        const Fvisual* vis_ptr = dynamic_cast<Fvisual*>(ptr);
+        const Fvisual* vis_ptr = smart_cast<Fvisual*>(ptr);
 
         if (vis_ptr == nullptr)
             continue;
