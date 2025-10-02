@@ -10,7 +10,28 @@
 
 #include "dxRenderDeviceRender.h"
 
-//
+string_unordered_map<std::string, ref_shader> g_ShadersCache;
+
+ref_shader GetCachedShader(const char* sh, const char* tex)
+{
+    std::string key{sh};
+    key += "_";
+    key += tex ? tex : "";
+
+    if (const auto it = g_ShadersCache.find(key); it != g_ShadersCache.end())
+    {
+        return it->second;
+    }
+    else
+    {
+        auto& shader = g_ShadersCache[key];
+        shader.create(sh, tex);
+        return shader;
+    }
+}
+
+SGeometry::~SGeometry() { DEV->DeleteGeom(this); }
+
 STextureList::~STextureList() { DEV->_DeleteTextureList(this); }
 
 SMatrixList::~SMatrixList() { DEV->_DeleteMatrixList(this); }
@@ -20,8 +41,6 @@ SConstantList::~SConstantList() { DEV->_DeleteConstantList(this); }
 SPass::~SPass() { DEV->_DeletePass(this); }
 
 ShaderElement::~ShaderElement() { DEV->_DeleteElement(this); }
-
-SGeometry::~SGeometry() { DEV->DeleteGeom(this); }
 
 Shader::~Shader() { DEV->Delete(this); }
 

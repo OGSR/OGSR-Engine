@@ -1,9 +1,6 @@
 #include "StdAfx.h"
 #include "light.h"
 
-#include "Blender_light_point.h"
-#include "Blender_light_spot.h"
-
 constexpr float RSQRTDIV2 = 0.70710678118654752440084436210485f;
 
 light::light(void) : ISpatial(g_SpatialSpace)
@@ -87,6 +84,8 @@ light::~light()
 
 void light::set_texture(LPCSTR name)
 {
+    ZoneScoped;
+
     if ((nullptr == name) || (0 == name[0]))
     {
         // default shaders
@@ -96,14 +95,9 @@ void light::set_texture(LPCSTR name)
         return;
     }
 
-    #pragma todo("Only shadowed spot implements projective texture")
-
-    string_path temp;
-    CBlender_accum_spot b_accum_spot;
-    s_spot.create(&b_accum_spot, xr_strconcat(temp, "r2\\accum_spot_", name), name);
-    CBlender_accum_point b_accum_point;
-    s_point.create(&b_accum_point, xr_strconcat(temp, "r2\\accum_point_", name), name);
-    s_volumetric.create("accum_volumetric_nomsaa", name);
+    s_spot = GetCachedShader("accum_spot", name);
+    s_point = GetCachedShader("accum_omni", name);
+    s_volumetric = GetCachedShader("accum_volumetric", name);
 }
 
 void light::set_active(bool b)
@@ -227,7 +221,7 @@ vis_data& light::get_homdata()
     return hom;
 };
 
-Fvector light::spatial_sector_point() { return position; }
+const Fvector& light::spatial_sector_point() const { return position; }
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -350,7 +344,6 @@ void light::optimize_smap_size()
     X.S.posX = 0;
     X.S.posY = 0;
     X.S.size = SMAP_adapt_max;
-    X.S.transluent = FALSE;
 
     // Compute approximate screen area (treating it as an point light) - R*R/dist_sq
     // Note: we clamp screen space area to ONE, although it is not correct at all
@@ -385,13 +378,9 @@ void light::optimize_smap_size()
     const float factor = ps_r2_ls_squality * factor0 * factor1 * factor3 * factor4;
 
     // final size calc
-    const float max_size = float(RImplementation.o.smapsize) <= ps_ssfx_shadows.y ? float(RImplementation.o.smapsize) : ps_ssfx_shadows.y;
+    const u32 max_size = RImplementation.o.smapsize <= static_cast<u32>(ps_ssfx_shadows.y) ? RImplementation.o.smapsize : static_cast<u32>(ps_ssfx_shadows.y);
 
-    u32 _size = iFloor(factor * SMAP_adapt_optimal);
-    if (_size < ps_ssfx_shadows.x) 
-        _size = ps_ssfx_shadows.x;
-    if (_size > max_size) 
-        _size = max_size;
+    const u32 _size = std::clamp<u32>(iFloor(factor * SMAP_adapt_optimal), static_cast<u32>(ps_ssfx_shadows.x), max_size);
 
     const int _epsilon = iCeil(float(_size) * 0.01f);
     int _diff = _abs(int(_size) - int(_cached_size));

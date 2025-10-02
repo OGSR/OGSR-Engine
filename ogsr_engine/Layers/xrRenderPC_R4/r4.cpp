@@ -123,8 +123,10 @@ void CRender::destroy()
 #endif
 
     lstRenderables.clear();
+    lstLights.clear();
     lstParticlesCalculation.clear();
     lstBonesCalculation.clear();
+    lstUpdateSector.clear();
 
     HWOCC.occq_destroy();
     xr_delete(Models);
@@ -844,7 +846,7 @@ void CRender::SetCacheXformOld(Fmatrix& mView, Fmatrix& mProject)
 
 void CRender::OnDeviceCreate()
 {
-    for (int id = 0; id < R__NUM_CONTEXTS; ++id)
+    for (u32 id{}; id < std::size(contexts_pool); ++id)
     {
         contexts_pool[id].cmd_list.context_id = id;
         contexts_pool[id].cmd_list.OnDeviceCreate();
@@ -883,8 +885,6 @@ void CRender::Begin()
     for (auto& id : contexts_pool)
     {
         id.cmd_list.OnFrameBegin();
-        id.cmd_list.set_CullMode(CULL_CW);
-        id.cmd_list.set_CullMode(CULL_CCW);
     }
 
     Vertex.Flush();

@@ -262,13 +262,14 @@ protected:
     //	In DX10 we need input shader signature which is stored in ref_vs
 
     ICF void set_VS(ID3DVertexShader* _vs, LPCSTR _n = nullptr);
-    ICF void set_PS(ID3DPixelShader* _ps, LPCSTR _n = nullptr);
     ICF void set_GS(ID3DGeometryShader* _gs, LPCSTR _n = nullptr);
     ICF void set_HS(ID3D11HullShader* _hs, LPCSTR _n = nullptr);
     ICF void set_DS(ID3D11DomainShader* _ds, LPCSTR _n = nullptr);
     ICF void set_CS(ID3D11ComputeShader* _cs, LPCSTR _n = nullptr);
 
 public:
+
+    ICF void set_PS(ID3DPixelShader* _ps, LPCSTR _n = nullptr);
 
     ICF void set_Vertices(ID3DVertexBuffer* _vb, u32 _vb_stride);
     ICF void set_Vertices_Forced(const u32 count, ID3DVertexBuffer* const* _vb, const u32* _vb_stride, const u32* iOffset);
@@ -316,10 +317,30 @@ public:
         if (C)
             constants.set(C, A);
     }
+    ICF void set_c(R_constant* C, const Fvector2& A)
+    {
+        if (C)
+            constants.set(C, A);
+    }
+    ICF void set_c(R_constant* C, const Fvector3& A)
+    {
+        if (C)
+            constants.set(C, A);
+    }
     ICF void set_c(R_constant* C, const Fvector4& A)
     {
         if (C)
             constants.set(C, A);
+    }
+    ICF void set_c(R_constant* C, float x, float y)
+    {
+        if (C)
+            constants.set(C, x, y);
+    }
+    ICF void set_c(R_constant* C, float x, float y, float z)
+    {
+        if (C)
+            constants.set(C, x, y, z);
     }
     ICF void set_c(R_constant* C, float x, float y, float z, float w)
     {
@@ -331,10 +352,30 @@ public:
         if (C)
             constants.seta(C, e, A);
     }
+    ICF void set_ca(R_constant* C, u32 e, const Fvector2& A)
+    {
+        if (C)
+            constants.seta(C, e, A);
+    }
+    ICF void set_ca(R_constant* C, u32 e, const Fvector3& A)
+    {
+        if (C)
+            constants.seta(C, e, A);
+    }
     ICF void set_ca(R_constant* C, u32 e, const Fvector4& A)
     {
         if (C)
             constants.seta(C, e, A);
+    }
+    ICF void set_ca(R_constant* C, u32 e, float x, float y)
+    {
+        if (C)
+            constants.seta(C, e, x, y);
+    }
+    ICF void set_ca(R_constant* C, u32 e, float x, float y, float z)
+    {
+        if (C)
+            constants.seta(C, e, x, y, z);
     }
     ICF void set_ca(R_constant* C, u32 e, float x, float y, float z, float w)
     {
@@ -342,6 +383,11 @@ public:
             constants.seta(C, e, x, y, z, w);
     }
     ICF void set_c(R_constant* C, float A)
+    {
+        if (C)
+            constants.set(C, A);
+    }
+    ICF void set_c(R_constant* C, bool A)
     {
         if (C)
             constants.set(C, A);
@@ -358,10 +404,30 @@ public:
         if (ctable)
             set_c(&*ctable->get(n), A);
     }
+    ICF void set_c(LPCSTR n, const Fvector2& A)
+    {
+        if (ctable)
+            set_c(&*ctable->get(n), A);
+    }
+    ICF void set_c(LPCSTR n, const Fvector3& A)
+    {
+        if (ctable)
+            set_c(&*ctable->get(n), A);
+    }
     ICF void set_c(LPCSTR n, const Fvector4& A)
     {
         if (ctable)
             set_c(&*ctable->get(n), A);
+    }
+    ICF void set_c(LPCSTR n, float x, float y)
+    {
+        if (ctable)
+            set_c(&*ctable->get(n), x, y);
+    }
+    ICF void set_c(LPCSTR n, float x, float y, float z)
+    {
+        if (ctable)
+            set_c(&*ctable->get(n), x, y, z);
     }
     ICF void set_c(LPCSTR n, float x, float y, float z, float w)
     {
@@ -373,15 +439,40 @@ public:
         if (ctable)
             set_ca(&*ctable->get(n), e, A);
     }
+    ICF void set_ca(LPCSTR n, u32 e, const Fvector2& A)
+    {
+        if (ctable)
+            set_ca(&*ctable->get(n), e, A);
+    }
+    ICF void set_ca(LPCSTR n, u32 e, const Fvector3& A)
+    {
+        if (ctable)
+            set_ca(&*ctable->get(n), e, A);
+    }
     ICF void set_ca(LPCSTR n, u32 e, const Fvector4& A)
     {
         if (ctable)
             set_ca(&*ctable->get(n), e, A);
     }
+    ICF void set_ca(LPCSTR n, u32 e, float x, float y)
+    {
+        if (ctable)
+            set_ca(&*ctable->get(n), e, x, y);
+    }
+    ICF void set_ca(LPCSTR n, u32 e, float x, float y, float z)
+    {
+        if (ctable)
+            set_ca(&*ctable->get(n), e, x, y, z);
+    }
     ICF void set_ca(LPCSTR n, u32 e, float x, float y, float z, float w)
     {
         if (ctable)
             set_ca(&*ctable->get(n), e, x, y, z, w);
+    }
+    ICF void set_c(LPCSTR n, bool A)
+    {
+        if (ctable)
+            set_c(&*ctable->get(n), A);
     }
     ICF void set_c(LPCSTR n, float A)
     {
@@ -400,10 +491,30 @@ public:
         if (ctable)
             set_c(&*ctable->get(n), A);
     }
+    ICF void set_c(shared_str& n, const Fvector2& A)
+    {
+        if (ctable)
+            set_c(&*ctable->get(n), A);
+    }
+    ICF void set_c(shared_str& n, const Fvector3& A)
+    {
+        if (ctable)
+            set_c(&*ctable->get(n), A);
+    }
     ICF void set_c(shared_str& n, const Fvector4& A)
     {
         if (ctable)
             set_c(&*ctable->get(n), A);
+    }
+    ICF void set_c(shared_str& n, float x, float y)
+    {
+        if (ctable)
+            set_c(&*ctable->get(n), x, y);
+    }
+    ICF void set_c(shared_str& n, float x, float y, float z)
+    {
+        if (ctable)
+            set_c(&*ctable->get(n), x, y, z);
     }
     ICF void set_c(shared_str& n, float x, float y, float z, float w)
     {
@@ -415,15 +526,40 @@ public:
         if (ctable)
             set_ca(&*ctable->get(n), e, A);
     }
+    ICF void set_ca(shared_str& n, u32 e, const Fvector2& A)
+    {
+        if (ctable)
+            set_ca(&*ctable->get(n), e, A);
+    }
+    ICF void set_ca(shared_str& n, u32 e, const Fvector3& A)
+    {
+        if (ctable)
+            set_ca(&*ctable->get(n), e, A);
+    }
     ICF void set_ca(shared_str& n, u32 e, const Fvector4& A)
     {
         if (ctable)
             set_ca(&*ctable->get(n), e, A);
     }
+    ICF void set_ca(shared_str& n, u32 e, float x, float y)
+    {
+        if (ctable)
+            set_ca(&*ctable->get(n), e, x, y);
+    }
+    ICF void set_ca(shared_str& n, u32 e, float x, float y, float z)
+    {
+        if (ctable)
+            set_ca(&*ctable->get(n), e, x, y, z);
+    }
     ICF void set_ca(shared_str& n, u32 e, float x, float y, float z, float w)
     {
         if (ctable)
             set_ca(&*ctable->get(n), e, x, y, z, w);
+    }
+    ICF void set_c(shared_str& n, bool A)
+    {
+        if (ctable)
+            set_c(&*ctable->get(n), A);
     }
     ICF void set_c(shared_str& n, float A)
     {
@@ -527,7 +663,6 @@ private:
 
     //	DirectX 10 internal functionality
     void ApplyVertexLayout();
-    void ApplyRTandZB();
     void ApplyPrimitieTopology(D3D_PRIMITIVE_TOPOLOGY Topology);
     bool CBuffersNeedUpdate(ref_cbuffer buf1[MaxCBuffers], ref_cbuffer buf2[MaxCBuffers], u32& uiMin, u32& uiMax);
 
@@ -538,6 +673,8 @@ private:
     bool m_bChangedRTorZB{}, need_reset_vertbuf{};
 
 public:
+    void ApplyRTandZB();
+
     dx10StateManager StateManager;
     dx10ShaderResourceStateCache SRVSManager;
 

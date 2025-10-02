@@ -29,7 +29,7 @@ dx10ConstantBuffer::dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTabl
 {
     D3D_SHADER_BUFFER_DESC Desc;
 
-    CHK_DX(pTable->GetDesc(&Desc));
+    R_CHK(pTable->GetDesc(&Desc));
 
     m_strBufferName = Desc.Name;
     m_eBufferType = Desc.Type;
@@ -51,21 +51,17 @@ dx10ConstantBuffer::dx10ConstantBuffer(ID3DShaderReflectionConstantBuffer* pTabl
         VERIFY(pType);
         pType->GetDesc(&m_MembersList[i]);
         //	Buffers with the same layout can contain totally different members
-        CHK_DX(pVar->GetDesc(&var_desc));
+        R_CHK(pVar->GetDesc(&var_desc));
         m_MembersNames[i] = var_desc.Name;
     }
 
     m_uiMembersCRC = crc32(&m_MembersList[0], Desc.Variables * sizeof(m_MembersList[0]));
 
     R_CHK(dx10BufferUtils::CreateConstantBuffer(&m_pBuffer, Desc.Size));
-    VERIFY(m_pBuffer);
-    m_pBufferData = xr_malloc(Desc.Size);
-    VERIFY(m_pBufferData);
 
-    if (m_pBuffer)
-    {
-        DXUT_SetDebugName(m_pBuffer, Desc.Name);
-    }
+    m_pBufferData = xr_malloc(Desc.Size);
+
+    DXUT_SetDebugName(m_pBuffer, Desc.Name);
 }
 
 bool dx10ConstantBuffer::Similar(const dx10ConstantBuffer& _in) const
@@ -101,14 +97,9 @@ void dx10ConstantBuffer::Flush(const u32 context_id)
 {
     if (m_bChanged)
     {
-        void* pData;
-
         D3D11_MAPPED_SUBRESOURCE pSubRes;
-        CHK_DX(HW.get_context(context_id)->Map(m_pBuffer, 0, D3D_MAP_WRITE_DISCARD, 0, &pSubRes));
-        pData = pSubRes.pData;
-        VERIFY(pData);
-        VERIFY(m_pBufferData);
-        CopyMemory(pData, m_pBufferData, m_uiBufferSize);
+        R_CHK(HW.get_context(context_id)->Map(m_pBuffer, 0, D3D_MAP_WRITE_DISCARD, 0, &pSubRes));
+        CopyMemory(pSubRes.pData, m_pBufferData, m_uiBufferSize);
         HW.get_context(context_id)->Unmap(m_pBuffer, 0);
         m_bChanged = false;
     }

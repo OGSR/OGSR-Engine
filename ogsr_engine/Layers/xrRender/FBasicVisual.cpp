@@ -101,6 +101,30 @@ static bool replaceShaders(const char* N, char* fnS, u32 fnS_size)
     return false;
 }
 
+string_unordered_map<std::string, ref_shader> g_ModelShadersCache;
+
+static ref_shader& GetCachedModelShader(const char* sh, const char* tex)
+{
+    std::string key{sh};
+    key += "_+_";
+    key += tex ? tex : "";
+    key += "___";
+    key += std::to_string(RImplementation.m_skinning);
+
+    if (const auto it = g_ModelShadersCache.find(key); it != g_ModelShadersCache.end())
+    {
+        //Msg("hit model shader cache: %s", key.c_str());
+
+        return it->second;
+    }
+    else
+    {
+        auto& shader = g_ModelShadersCache[key];
+        shader.create(sh, tex);
+        return shader;
+    }
+}
+
 void dxRender_Visual::Load(const char* N, IReader* data, u32)
 {
     IsHudVisual = ::Render->hud_loading;
@@ -143,7 +167,7 @@ void dxRender_Visual::Load(const char* N, IReader* data, u32)
         }
         dbg_texture_name = fnT;
         dbg_shader_name = fnS;
-        shader.create(fnS, fnT);
+        shader = GetCachedModelShader(fnS, fnT);
     }
 }
 

@@ -39,7 +39,7 @@ float4 main(p_screen I) : SV_Target
 
     float3 breathNoise = s_breath_noise.Sample(smp_rtlinear, texcoord).xyz;
     float2 seed = breathNoise.xy;
-    seed = frac(seed + float2(breath_idx, breath_idx) * 0.38196601125); // disable to stop generating new versions
+    seed = frac(seed + float2(breath_idx.x, breath_idx.x) * 0.38196601125); // disable to stop generating new versions
 
     // ratio correction (remember that only circle tc should be corrected)
     float4 circle_tc_pos;
@@ -51,7 +51,7 @@ float4 main(p_screen I) : SV_Target
     circle_tc_pos.y -= 0.68; // push it down to bottom 1/3 of screen
 
     // circle settings
-    float radius = breath_size * 0.9;
+    float radius = breath_size.x * 0.9;
     float fbmFactor = fbm(texcoord * (0.1 * (1.0 / seed)), 15);
 
     // draw circle

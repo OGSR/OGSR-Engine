@@ -91,8 +91,21 @@ void mdump(C c)
         Msg("*        : %3d: %s", I->second->ref_count.load(), I->second->cName.c_str());
 }
 
+extern string_unordered_map<std::string, ref_shader> g_ModelShadersCache;
+extern string_unordered_map<std::string, ref_shader> g_ShadersCache;
+
 CResourceManager::~CResourceManager()
 {
+    for (auto& it : g_ShadersCache)
+        it.second.destroy();
+
+    g_ShadersCache.clear();
+
+    for (auto& it : g_ModelShadersCache)
+        it.second.destroy();
+
+    g_ModelShadersCache.clear();
+
     Dump(false);
 }
 

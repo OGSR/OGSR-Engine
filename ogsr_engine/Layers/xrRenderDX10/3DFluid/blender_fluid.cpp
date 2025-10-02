@@ -190,12 +190,9 @@ void SetupTextures(CBlender_Compile& C)
 
     //	Renderer
     C.r_dx10Texture("sceneDepthTex", r2_RT_P);
-    // C.r_dx10Texture("colorTex", "Texture_color");
     C.r_dx10Texture("colorTex", TNames[dx103DFluidManager::RENDER_TARGET_COLOR_IN]);
     C.r_dx10Texture("jitterTex", "$user$NVjitterTex");
-
     C.r_dx10Texture("HHGGTex", "$user$NVHHGGTex");
-
     C.r_dx10Texture("fireTransferFunction", "internal\\internal_fireTransferFunction");
 
     TNames = dx103DFluidRenderer::GetRTNames();
@@ -304,8 +301,6 @@ void CBlender_fluid_obst::Compile(CBlender_Compile& C)
     switch (C.iElement)
     {
     case 0: // ObstStaticBox
-        //	AABB
-        // C.r_Pass	("fluid_grid", "fluid_array", "fluid_obststaticbox", false,FALSE,FALSE,FALSE);
         //	OOBB
         C.r_Pass("fluid_grid_oobb", "fluid_array_oobb", "fluid_obst_static_oobb", false, FALSE, FALSE, FALSE);
         break;
@@ -357,9 +352,6 @@ void CBlender_fluid_obstdraw::Compile(CBlender_Compile& C)
     case 0: // DrawTexture
         C.r_Pass("fluid_grid", "null", "fluid_draw_texture", false, FALSE, FALSE, FALSE);
         break;
-        //		TechniqueDrawWhiteTriangles = pEffect->GetTechniqueByName( "DrawWhiteTriangles" );
-        //		TechniqueDrawWhiteLines = pEffect->GetTechniqueByName( "DrawWhiteLines" );
-        //		TechniqueDrawBox = pEffect->GetTechniqueByName( "DrawBox" );
     }
 
     C.r_CullMode(D3DCULL_NONE);
@@ -381,11 +373,9 @@ void CBlender_fluid_raydata::Compile(CBlender_Compile& C)
     case 0: // CompRayData_Back
         C.r_Pass("fluid_raydata_back", "null", "fluid_raydata_back", false, FALSE, FALSE, FALSE);
         C.r_CullMode(D3DCULL_CW); //	Front
-        // C.r_CullMode(D3DCULL_CCW);	//	Front
         break;
     case 1: // CompRayData_Front
         C.r_Pass("fluid_raydata_front", "null", "fluid_raydata_front", false, FALSE, FALSE, TRUE, D3DBLEND_ONE, D3DBLEND_ONE);
-        // RS.SetRS(D3DRS_SRCBLENDALPHA,		bABlend?abSRC:D3DBLEND_ONE	);
         //	We need different blend arguments for color and alpha
         //	One Zero for color
         //	One One for alpha
@@ -398,15 +388,12 @@ void CBlender_fluid_raydata::Compile(CBlender_Compile& C)
         C.RS.SetRS(D3DRS_BLENDOPALPHA, D3DBLENDOP_REVSUBTRACT); // DST - SRC
 
         C.r_CullMode(D3DCULL_CCW); //	Back
-        // C.r_CullMode(D3DCULL_CW);	//	Back
         break;
     case 2: // QuadDownSampleRayDataTexture
         C.r_Pass("fluid_raycast_quad", "null", "fluid_raydatacopy_quad", false, FALSE, FALSE, FALSE);
         C.r_CullMode(D3DCULL_CCW); //	Back
         break;
     }
-
-    // C.PassSET_ZB(FALSE,FALSE);
 
     BindConstants(C);
     SetupSamplers(C);

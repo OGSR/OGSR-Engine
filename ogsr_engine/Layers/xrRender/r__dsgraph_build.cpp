@@ -1,12 +1,11 @@
 #include "stdafx.h"
 
-#include "fhierrarhyvisual.h"
-#include "SkeletonCustom.h"
 #include "../../xr_3da/fmesh.h"
 #include "../../xr_3da/irenderable.h"
-#include "../../xr_3da/XR_IOConsole.h"
-#include "../../xr_3da/xr_ioc_cmd.h"
+#include "../../xr_3da/CustomHUD.h"
 
+#include "fhierrarhyvisual.h"
+#include "SkeletonCustom.h"
 #include "flod.h"
 #include "particlegroup.h"
 #include "FTreeVisual.h"
@@ -77,8 +76,14 @@ constexpr Fvector4 o_optimize_static_l5_size{O_S_L5_S_LOW, O_S_L5_S_MED, O_S_L5_
 
 extern float ps_r__LOD_k;
 
-// Aproximate, adjusted by fov, distance from camera to position (For right work when looking though binoculars and scopes)
+float r_ssaDISCARD;
+float r_ssaLOD_A, r_ssaLOD_B;
+float r_ssaGLOD_start, r_ssaGLOD_end;
+float r_ssaHZBvsTEX;
 
+// Aproximate, adjusted by fov, distance from camera to position (For right work when looking though binoculars and scopes)
+namespace
+{
 IC float GetDistFromCamera(const Fvector& from_position)
 {
     const float distance = Device.vCameraPosition.distance_to(from_position);
@@ -88,7 +93,7 @@ IC float GetDistFromCamera(const Fvector& from_position)
     return adjusted_distane;
 }
 
-IC bool IsValuableToRender(dxRender_Visual* pVisual, bool sm, bool ignore_optimize = false)
+IC bool IsValuableToRender(dxRender_Visual* pVisual, const bool sm, const bool ignore_optimize = false)
 {
     if (ignore_optimize)
         return true;
@@ -181,11 +186,8 @@ IC bool IsValuableToRender(dxRender_Visual* pVisual, bool sm, bool ignore_optimi
     return true;
 }
 
-float r_ssaDISCARD;
-float r_ssaLOD_A, r_ssaLOD_B;
-float r_ssaGLOD_start, r_ssaGLOD_end;
 
-ICF float CalcSSA(float& distSQ, Fvector& C, dxRender_Visual* V)
+ICF float CalcSSA(float& distSQ, const Fvector& C, dxRender_Visual* V)
 {
     const float R = V->getVisData().sphere.R + 0;
     distSQ = Device.vCameraPosition.distance_to_sqr(C) + EPS;
@@ -202,6 +204,7 @@ ICF float CalcHudSSA(float& distSQ, Fvector& C, dxRender_Visual* V)
     distSQ = Fvector().set(0.f, 0.f, 0.f).distance_to_sqr(C) + EPS;
     return R / distSQ;
 }
+} // namespace
 
 void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_Visual* pVisual, Fmatrix& xform, Fvector& center)
 {
@@ -209,7 +212,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_V
         return;
     pVisual->getVisData().marker[context_id] = marker;
 
-    ZoneScoped;
+    //ZoneScoped;
 
     float distSQ;
     float SSA;
@@ -228,7 +231,8 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_V
     ShaderElement* sh_d = &*pVisual->shader->E[4];
     if (RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2])
     {
-        mapDistort.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh_d}));
+        mapMatrixItems& matrixItems = mapDistort[sh_d->passes[0]._get()];
+        matrixItems.items->emplace_back(_MatrixItem{.ssa = SSA, .pObject = root, .pVisual = pVisual, .Matrix = xform});
     }
 
     // Select shader
@@ -260,22 +264,22 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_V
             }
             else
             {
-                mapHUD.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[3]}));
+                mapHUD.insert_anyway(distSQ, _MatrixItemS({.ssa= SSA, .pObject= root, .pVisual= pVisual, .Matrix= xform, .se= &*pVisual->shader->E[3]}));
             }
             return;
         }
 
         if (sh->flags.bStrictB2F && !Is3dssZoomed)
         {
-            mapHUDSorted.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
+            mapHUDSorted.insert_anyway(distSQ, _MatrixItemS({.ssa= SSA, .pObject= root, .pVisual= pVisual, .Matrix= xform, .se= sh}));
             return;
         }
 
-        mapHUD.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
+        mapHUD.insert_anyway(distSQ, _MatrixItemS({.ssa= SSA, .pObject= root, .pVisual= pVisual, .Matrix= xform, .se= sh}));
 
         if (sh->flags.bEmissive && sh_d && !Is3dssZoomed)
         {
-            mapHUDEmissive.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh_d}));
+            mapHUDEmissive.insert_anyway(distSQ, _MatrixItemS({.ssa= SSA, .pObject= root, .pVisual= pVisual, .Matrix= xform, .se= sh_d}));
         }
         return;
     }
@@ -288,7 +292,8 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_V
     // strict-sorting selection
     if (sh->flags.bStrictB2F)
     {
-        mapSorted.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
+        mapMatrixItems& matrixItems = mapSorted[sh->passes[0]._get()];
+        matrixItems.items->emplace_back(_MatrixItem{.ssa = SSA, .pObject = root, .pVisual = pVisual, .Matrix = xform});
         return;
     }
 
@@ -297,31 +302,27 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_V
     // b) Allow to make them 100% lit and really bright
     // c) Should not cast shadows
     // d) Should be rendered to accumulation buffer in the second pass
-    if (sh->flags.bEmissive)
+    if (sh->flags.bEmissive && sh_d)
     {
-        mapEmissive.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh_d}));
+        mapEmissive.insert_anyway(distSQ, _MatrixItemS({.ssa= SSA, .pObject= root, .pVisual= pVisual, .Matrix= xform, .se= sh_d}));
     }
     if (sh->flags.bWmark && pmask_wmark)
     {
-        mapWmark.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
+        mapWmark.insert_anyway(distSQ, _MatrixItemS({.ssa= SSA, .pObject= root, .pVisual= pVisual, .Matrix= xform, .se= sh}));
         return;
     }
 
     ASSERT_FMT(sh->passes.size() <= SHADER_PASSES_MAX, "max pass should be <= 2! shader [%s]", pVisual->shader->dbg_shader_name.c_str());
 
+    mapMatrixCount++;
+
     for (u32 iPass = 0; iPass < sh->passes.size(); ++iPass)
     {
-        SPass* pass = sh->passes[iPass]._get();
         mapMatrix_T& map = mapMatrixPasses[sh->flags.iPriority / 2][iPass];
+        SPass* pass = sh->passes[iPass]._get();
         mapMatrixItems& matrixItems = map[pass];
 
-        matrixItems.items->emplace_back(_MatrixItem{SSA, root, pVisual, xform});
-
-        // Need to sort for HZB efficient use
-        if (SSA > matrixItems.ssa)
-        {
-            matrixItems.ssa = SSA;
-        }
+        matrixItems.items->emplace_back(_MatrixItem{.ssa= SSA, .pObject= root, .pVisual= pVisual, .Matrix= xform});
     }
 }
 
@@ -331,7 +332,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
         return;
     pVisual->getVisData().marker[context_id] = marker;
 
-    ZoneScoped;
+    //ZoneScoped;
 
     float distSQ;
     const float SSA = CalcSSA(distSQ, pVisual->getVisData().sphere.P, pVisual);
@@ -346,7 +347,8 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
     ShaderElement* sh_d = vis_sh ? vis_sh->E[4]._get() : nullptr; // 4=L_special
     if (RImplementation.o.distortion && sh_d && sh_d->flags.bDistort && pmask[sh_d->flags.iPriority / 2])
     {
-        mapDistort.insert_anyway(distSQ, _MatrixItemS({SSA, nullptr, pVisual, Fidentity, sh_d}));
+        mapMatrixItems& matrixItems = mapDistort[sh_d->passes[0]._get()];
+        matrixItems.items->emplace_back(_MatrixItem{.ssa = SSA, .pObject = nullptr, .pVisual = pVisual, .Matrix = Fidentity});
     }
 
     // Select shader
@@ -359,7 +361,8 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
     // strict-sorting selection
     if (sh->flags.bStrictB2F)
     {
-        mapSorted.insert_anyway(distSQ, _MatrixItemS({/*0*/ SSA, nullptr, pVisual, Fidentity, sh}));
+        mapMatrixItems& matrixItems = mapSorted[sh->passes[0]._get()];
+        matrixItems.items->emplace_back(_MatrixItem{.ssa = SSA, .pObject = nullptr, .pVisual = pVisual, .Matrix = Fidentity});
         return;
     }
 
@@ -370,11 +373,11 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
     // d) Should be rendered to accumulation buffer in the second pass
     if (sh->flags.bEmissive)
     {
-        mapEmissive.insert_anyway(distSQ, _MatrixItemS({SSA, nullptr, pVisual, Fidentity, sh_d})); // sh_d -> L_special
+        mapEmissive.insert_anyway(distSQ, _MatrixItemS({.ssa= SSA, .pObject= nullptr, .pVisual= pVisual, .Matrix= Fidentity, .se= sh_d})); // sh_d -> L_special
     }
     if (sh->flags.bWmark && pmask_wmark)
     {
-        mapWmark.insert_anyway(distSQ, _MatrixItemS({SSA, nullptr, pVisual, Fidentity, sh}));
+        mapWmark.insert_anyway(distSQ, _MatrixItemS({.ssa= SSA, .pObject= nullptr, .pVisual= pVisual, .Matrix= Fidentity, .se= sh}));
         return;
     }
 
@@ -384,14 +387,17 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
     counter_S++;
 
     {
-        ZoneScopedN("mapNormalPasses");
+        //ZoneScopedN("mapNormalPasses");
 
         ASSERT_FMT(sh->passes.size() <= SHADER_PASSES_MAX, "max pass should be <= 2! shader [%s]", pVisual->shader->dbg_shader_name.c_str());
+        ASSERT_FMT(sh->flags.iPriority / 2 <= 1, "sh->flags.iPriority / 2 <= 1! shader [%s]", pVisual->shader->dbg_shader_name.c_str());
+
+        mapNormalCount++;
 
         for (u32 iPass = 0; iPass < sh->passes.size(); ++iPass)
         {
-            SPass* pass = sh->passes[iPass]._get();
             mapNormal_T& map = mapNormalPasses[sh->flags.iPriority / 2][iPass];
+            SPass* pass = sh->passes[iPass]._get();
             mapNormalItems& normalItems = map[pass];
 
             if (pVisual->base_crc)
@@ -405,18 +411,12 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
                 }
                 else
                 {
-                    normalItems.trees->emplace(pVisual->crc[context_id], _TreeItem{pVisual, {&pVisual->tree_data}});
+                    (*normalItems.trees)[pVisual->crc[context_id]] = _TreeItem{.pVisual = pVisual, .data = {&pVisual->tree_data}};
                 }
             }
             else
             {
-                normalItems.items->emplace_back(_NormalItem{SSA, pVisual});
-            }
-
-            // Need to sort for HZB efficient use
-            if (SSA > normalItems.ssa)
-            {
-                normalItems.ssa = SSA;
+                normalItems.items->emplace_back(_NormalItem{.ssa= SSA, .pVisual= pVisual});
             }
         }
     }
@@ -500,14 +500,21 @@ void R_dsgraph_structure::add_leafs_static(dxRender_Visual* pVisual)
 {
     ZoneScoped;
 
-    if (!RImplementation.HOM.visible(pVisual->getVisData()))
-    {
-        //Msg("add_leafs_static skip static model");
+    if (pVisual->getVisData().marker[context_id] == marker)
         return;
-    }
 
-    if (!pVisual->ignore_optimization && !IsValuableToRender(pVisual, phase == CRender::PHASE_SMAP))
-        return;
+    {
+        // ZoneScopedN("add_leafs_static/HOM+IsValuableToRender");
+
+        if (!RImplementation.HOM.visible(pVisual->getVisData()))
+        {
+            // Msg("add_leafs_static skip static model");
+            return;
+        }
+
+        if (!pVisual->ignore_optimization && !IsValuableToRender(pVisual, phase == CRender::PHASE_SMAP))
+            return;
+    }
 
     switch (pVisual->Type)
     {
@@ -541,7 +548,7 @@ void R_dsgraph_structure::add_leafs_static(dxRender_Visual* pVisual)
 
         if (ssa < r_ssaLOD_A && phase != CRender::PHASE_SMAP)
         {
-            mapLOD.insert_anyway(D, _LodItem({ssa, pVisual}));
+            lstLODs.emplace_back(ssa, pVisual);
         }
 
         //if (ssa < r_ssaDISCARD)
@@ -571,17 +578,14 @@ void R_dsgraph_structure::add_leafs_static(dxRender_Visual* pVisual)
         {
             return;
         }
-
         if (is_tree && ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_STATIC_TREE))
         {
             return;
         }
-
         if (is_tree_progressive && ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_STATIC_TREE_PROGRESSIVE))
         {
             return;
         }
-
         if (is_progressive && ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_STATIC_PROGRESSIVE))
         {
             return;
@@ -598,6 +602,21 @@ void R_dsgraph_structure::add_static(dxRender_Visual* pVisual, const CFrustum& v
     ZoneScoped;
 
     vis_data& vis = pVisual->getVisData();
+    if (vis.marker[context_id] == marker)
+        return;
+
+    {
+        // ZoneScopedN("add_leafs_static/HOM+IsValuableToRender");
+
+        if (!RImplementation.HOM.visible(pVisual->getVisData()))
+        {
+            // Msg("add_leafs_static skip static model");
+            return;
+        }
+
+        if (!pVisual->ignore_optimization && !IsValuableToRender(pVisual, phase == CRender::PHASE_SMAP))
+            return;
+    }
 
     // Check frustum visibility and calculate distance to visual's center
     const EFC_Visible VIS = view.testSAABB(vis.sphere.P, vis.sphere.R, vis.box.data(), planes);
@@ -632,154 +651,169 @@ void R_dsgraph_structure::add_static(dxRender_Visual* pVisual, const CFrustum& v
     }
 }
 
-void R_dsgraph_structure::load(const xr_vector<CSector::level_sector_data_t>& sectors_data, const xr_vector<CPortal::level_portal_data_t>& portals_data)
+// sub-space rendering - main procedure
+void R_dsgraph_structure::build_subspace(const IRender_Sector::sector_id_t& start_sector_id, CFrustum& frustum, const Fmatrix& xform, const Fvector& camera_position,
+                                         const BOOL add_dynamic)
 {
-    const auto portals_count = portals_data.size();
-    const auto sectors_count = sectors_data.size();
+    ZoneScoped;
 
-    Sectors.resize(sectors_count);
-    Portals.resize(portals_count);
+    mapMatrixCount = 0;
+    mapNormalCount = 0;
 
-    for (int idx = 0; idx < portals_count; ++idx)
+    render_position = camera_position;
+
+    VERIFY(_sector);
+    marker++; // !!! critical here
+
+    if (start_sector_id == IRender_Sector::INVALID_SECTOR_ID) /* || RImplementation.SectorsLoadDisabled */ // check disabled for subspace (sun, light, rain)
     {
-        auto* portal = xr_new<CPortal>();
-        Portals[idx] = portal;
-    }
+        // add_static(Sectors[0]->root(), *frustum, frustum->getMask());
 
-    for (int idx = 0; idx < sectors_count; ++idx)
-    {
-        auto* sector = xr_new<CSector>();
-
-        sector->unique_id = static_cast<IRender_Sector::sector_id_t>(idx);
-        sector->setup(sectors_data[idx], Portals);
-        Sectors[idx] = sector;
-    }
-
-    for (int idx = 0; idx < portals_count; ++idx)
-    {
-        auto* portal = static_cast<CPortal*>(Portals[idx]);
-        portal->setup(portals_data[idx], Sectors);
-    }
-}
-
-void R_dsgraph_structure::unload()
-{
-    for (auto* sector : Sectors)
-        xr_delete(sector);
-    Sectors.clear();
-
-    for (auto* portal : Portals)
-        xr_delete(portal);
-    Portals.clear();
-}
-
-IRender_Sector::sector_id_t R_dsgraph_structure::detect_sector(const Fvector& P)
-{
-    Fvector dir{0, -1, 0};
-    auto sector = detect_sector(P, dir);
-    if (sector == IRender_Sector::INVALID_SECTOR_ID)
-    {
-        dir = {0, 1, 0};
-        sector = detect_sector(P, dir);
-    }
-    return sector;
-}
-
-#pragma optimize("", off)
-
-IRender_Sector::sector_id_t R_dsgraph_structure::detect_sector(const Fvector& P, Fvector& dir)
-{
-    // Portals model
-    int id1 = -1;
-    float range1 = 500.f;
-    if (RImplementation.rmPortals)
-    {
-        Sectors_xrc.ray_query(CDB::OPT_ONLYNEAREST, RImplementation.rmPortals, P, dir, range1);
-        if (Sectors_xrc.r_count())
+        for (const auto& sector : sector_portals_structure.Sectors)
         {
-            const CDB::RESULT* RP1 = Sectors_xrc.r_begin();
-            id1 = RP1->id;
-            range1 = RP1->range;
+            dxRender_Visual* root = sector->root();
+
+            // for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
+            {
+                add_static(root, frustum, frustum.getMask());
+            }
         }
     }
-
-    // Geometry model
-    int id2 = -1;
-    float range2 = range1;
-    Sectors_xrc.ray_query(CDB::OPT_ONLYNEAREST, g_pGameLevel->ObjectSpace.GetStaticModel(), P, dir, range2);
-    if (Sectors_xrc.r_count())
-    {
-        const CDB::RESULT* RP2 = Sectors_xrc.r_begin();
-        id2 = RP2->id;
-        range2 = RP2->range;
-    }
-
-    // Select ID
-    int ID{};
-    if (id1 >= 0)
-    {
-        if (id2 >= 0)
-            ID = (range1 <= range2 + EPS_L) ? id1 : id2; // both was found
-        else
-            ID = id1; // only id1 found
-    }
-    else if (id2 >= 0)
-        ID = id2; // only id2 found
     else
-        return IRender_Sector::INVALID_SECTOR_ID;
-
-    if (ID == id1)
     {
-        __try
+        IRender_Sector* root_sector = sector_portals_structure.Sectors.at(start_sector_id);
+
+        // Traverse sector/portal structure
+        PortalTraverser.traverse(root_sector, frustum, camera_position, xform, 0);
+
+        // Determine visibility for static geometry hierrarhy
+        for (const auto& r_sector : PortalTraverser.r_sectors)
         {
-            // Take sector, facing to our point from portal
-            const CDB::TRI* pTri = RImplementation.rmPortals->get_tris() + ID;
-            if (!pTri)
+            dxRender_Visual* root = r_sector->root();
+            for (const auto& view : r_sector->r_frustums)
             {
-                Msg("!![%s] nullptr pTri detected! tris ID: [%d]", __FUNCTION__, ID);
-                return IRender_Sector::INVALID_SECTOR_ID;
+                add_static(root, view, view.getMask());
             }
-
-            const CPortal* pPortal = Portals.at(pTri->dummy);
-            if (!pPortal)
-            {
-                Msg("!![%s] nullptr pPortal detected! tris ID: [%d], pTri->dummy: [%u]", __FUNCTION__, ID, pTri->dummy);
-                return IRender_Sector::INVALID_SECTOR_ID;
-            }
-
-            return pPortal->getSectorFacing(P)->unique_id;
         }
-        __except (ExceptStackTrace("Exception catched in " __FUNCTION__))
-        {
-            Msg("!![%s] possible bad tris ID: [%d]", __FUNCTION__, ID);
+    }
 
-            { // Отключаем сектора до перезапуска двига без сохранения этого отключения в юзере
-                auto it = Console->Commands.find("r2_disable_sectors");
-                if (it != Console->Commands.end())
+    if (add_dynamic)
+    {
+        // Traverse object database
+        if (max_render_distance > 0)
+        {
+            g_SpatialSpace->q_sphere(lstRenderables, 0, STYPE_RENDERABLE, render_position, max_render_distance);
+        }
+        else
+        {
+            g_SpatialSpace->q_frustum(lstRenderables, 0, STYPE_RENDERABLE, frustum);
+        }
+
+        // Determine visibility for dynamic part of scene
+        for (const auto spatial : lstRenderables)
+        {
+            /*if (o.is_main_pass)
+            {
+                const auto& entity_pos = spatial->spatial_sector_point();
+                const auto sector_id = detect_sector(entity_pos);
+                spatial->spatial_updatesector(sector_id);
+            }*/
+
+            const auto& sector_id = spatial->spatial.sector_id;
+            if (sector_id == IRender_Sector::INVALID_SECTOR_ID)
+            {
+                continue; // disassociated from S/P structure
+            }
+
+            const auto* sector = sector_portals_structure.Sectors.at(sector_id);
+
+            if (PortalTraverser.frame() == Device.dwFrame)
+            {
+                if (PortalTraverser.marker() != sector->r_marker)
+                    continue; // inactive (untouched) sector
+            }
+
+            if ((spatial->spatial.type & STYPE_RENDERABLE) && !ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_DYNAMIC))
+            {
+                // renderable
+                IRenderable* renderable = spatial->dcast_Renderable();
+                R_ASSERT(renderable);
+
+                // casting is faster then using getVis method
+                vis_data& v_orig = renderable->renderable.visual->getVisData();
+
+                if (max_render_distance > 0.f)
                 {
-                    auto* cmd = it->second;
-                    cmd->SetCanSave(false);
-                    cmd->Execute("on");
+                    Fvector pos;
+                    renderable->renderable.xform.transform_tiny(pos, v_orig.sphere.P);
+
+                    if (!renderable->renderable.visual->ignore_optimization && render_position.distance_to(pos) - v_orig.sphere.R / 2 > max_render_distance)
+                        continue;
+                }
+
+                for (auto& view : sector->r_frustums)
+                {
+                    if (!view.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
+                        continue;
+
+                    renderable->renderable_Render(context_id, renderable);
+
+                    break; // exit loop on frustums
                 }
             }
+        }
 
-            return IRender_Sector::INVALID_SECTOR_ID;
+        if (g_pGameLevel && g_hud)
+        {
+            if (phase == CRender::PHASE_SMAP)
+            {
+                g_hud->Render_SMAP(context_id);
+            }
         }
     }
-
-    // Take triangle at ID and use it's Sector
-    const CDB::TRI* pTri = g_pGameLevel->ObjectSpace.GetStaticTris() + ID;
-    return pTri->sector;
 }
 
-void R_dsgraph_structure::update_sector(ISpatial* S)
+void R_dsgraph_structure::reset()
 {
-    if (S->spatial.type & STYPEFLAG_INVALIDSECTOR)
+    context_id = CHW::INVALID_CONTEXT_ID;
+
+    val_feedback = nullptr;
+
+    lstLODs.clear();
+    lstLODgroups.clear();
+    lstRenderables.clear();
+
+    for (int i = 0; i < SHADER_PASSES_MAX; ++i)
     {
-        const auto entity_pos = S->spatial_sector_point();
-        const auto sector_id = detect_sector(entity_pos);
-        S->spatial_updatesector(sector_id);
+        mapNormalPasses[0][i].clear();
+        mapNormalPasses[1][i].clear();
+        mapMatrixPasses[0][i].clear();
+        mapMatrixPasses[1][i].clear();
     }
+
+    mapSorted.clear();
+    mapDistort.clear();
+
+    mapHUD.destroy();
+    mapHUDSorted.destroy();
+
+    mapWmark.destroy();
+    mapEmissive.destroy();
+    mapHUDEmissive.destroy();
+
+    mapScopeHUD.destroy();
+    mapScopeHUDSorted.destroy();
+    mapScopeHUDSorted2.destroy();
+
+    cmd_list.Invalidate();
+
+    main_pass = false;
+    max_render_distance = -1.f;
 }
 
-#pragma optimize("", on)
+void R_dsgraph_structure::load(const xr_vector<CSector::level_sector_data_t>& sectors_data, const xr_vector<CPortal::level_portal_data_t>& portals_data)
+{
+    sector_portals_structure.load(sectors_data, portals_data);
+}
+
+void R_dsgraph_structure::unload() { sector_portals_structure.unload(); }

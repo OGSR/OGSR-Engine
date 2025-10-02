@@ -41,12 +41,10 @@ void CRender::render_lights_shadowed_one(light_ctx& task)
 
         dsgraph.max_render_distance = std::max(30.f, L->get_range() + 20.f);
 
-        dsgraph.build_subspace(L->spatial.sector_id, &view_frustum, L->X.S.combine, L->position, TRUE);
+        dsgraph.build_subspace(L->spatial.sector_id, view_frustum, L->X.S.combine, L->position, TRUE);
 
-        bool empty = dsgraph.mapNormalPasses[0][0].empty() && dsgraph.mapMatrixPasses[0][0].empty();
-        VERIFY(dsgraph.mapNormalPasses[1][0].empty() && dsgraph.mapMatrixPasses[1][0].empty() && dsgraph.mapSorted.empty());
-
-        if (!empty)
+        const bool bNormal = dsgraph.mapNormalCount > 0 || dsgraph.mapMatrixCount > 0;
+        if (bNormal)
         {
             auto render = [this, &task] {
                 auto& dsgraph = get_context(task.context_id);
@@ -169,9 +167,7 @@ void CRender::render_lights_shadowed(light_Package& LP)
 
             for (size_t i{}; i < std::min<size_t>(R__NUM_PARALLEL_CONTEXTS, source.size()); i++)
             {
-                const u32 id = alloc_context();
-                if (id != CHW::INVALID_CONTEXT_ID)
-                    light_tasks.emplace_back().context_id = id;
+                light_tasks.emplace_back().context_id = alloc_context();
             }
         }
         else

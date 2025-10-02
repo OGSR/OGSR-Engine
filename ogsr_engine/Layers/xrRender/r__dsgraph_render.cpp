@@ -1,44 +1,23 @@
 #include "stdafx.h"
 
 #include "../../xr_3da/render.h"
-#include "../../xr_3da/irenderable.h"
-#include "../../xr_3da/igame_persistent.h"
-#include "../../xr_3da/environment.h"
 #include "../../xr_3da/CustomHUD.h"
 
 #include "FBasicVisual.h"
 #include "HUDInitializer.h"
 
-extern ENGINE_API float psHUD_FOV;
+extern float psHUD_FOV;
+extern float ps_r__LOD_k;
 
 using namespace R_dsgraph;
 
-extern float ps_r__LOD_k;
-
-template <class T>
-bool cmp_ssa(const T& lhs, const T& rhs)
-{
-    return lhs.ssa > rhs.ssa;
-}
-
-// Sorting by SSA and changes minimizations
-template <typename T>
-bool cmp_pass(const T& left, const T& right)
-{
-    if (left->first->equal(*right->first))
-        return false;
-    return left->second.ssa >= right->second.ssa;
-}
-
-void R_dsgraph_structure::r_dsgraph_render_graph_static(u32 _priority)
+void R_dsgraph_structure::r_dsgraph_render_graph_static(const u32 _priority)
 {
     Device.Statistic->RenderDUMP.Begin();
 
     cmd_list.set_xform_world(Fidentity);
 
     // **************************************************** NORMAL
-    // Perform sorting based on ScreenSpaceArea
-    // Sorting by SSA and changes minimizations
     {
         ZoneScopedN("dsgraph_render_static");
 
@@ -49,37 +28,43 @@ void R_dsgraph_structure::r_dsgraph_render_graph_static(u32 _priority)
         {
             auto& map = mapNormalPasses[_priority][iPass];
 
+            ID3DState* state{};
+            STextureList* textures{};
+
+            for (const auto& it : map)
             {
-                ZoneScopedN("dsgraph_render_static get_and_sort");
-                map.get_any_p(nrmPasses);
-                std::sort(nrmPasses.begin(), nrmPasses.end(), cmp_pass<mapNormal_T::value_type*>);
-            }
+                if (it.second.items->empty() && it.second.trees->empty())
+                    continue;
 
-            for (const auto& it : nrmPasses)
-            {
-                cmd_list.set_Pass(it->first);
-                cmd_list.apply_lmaterial();
+                // cmd_list.set_Pass(it->first);
 
-                mapNormalItems& items = it->second;
-                items.ssa = 0;
+                cmd_list.set_VS(it.first->vs);
+                cmd_list.set_GS(it.first->gs);
+                cmd_list.set_PS(it.first->ps);
+                cmd_list.set_HS(it.first->hs);
+                cmd_list.set_DS(it.first->ds);
 
+                cmd_list.set_Constants(it.first->constants);
+                if (it.first->state._get()->state != state)
                 {
-                    ZoneScopedN("dsgraph_render_static second_sort");
-                    std::sort(items.items->begin(), items.items->end(), cmp_ssa<_NormalItem>);
+                    cmd_list.set_States(state = it.first->state._get()->state);
+                }
+                if (it.first->T._get() != textures)
+                {
+                    cmd_list.set_Textures(textures = it.first->T._get());
+                    cmd_list.apply_lmaterial();
                 }
 
+                const mapNormalItems& items = it.second;
                 for (const auto& item : *items.items)
                 {
                     const float lod = calcLOD(item.ssa, item.pVisual->getVisData().sphere.R);
                     cmd_list.lod.set_lod(lod);
 
-                    // --#SM+#-- Обновляем шейдерные данные модели [update shader values for this model]
-                    // RCache.hemi.c_update(item.pVisual);
-
                     {
                         ZoneScopedN("render_static_visual");
 
-                        item.pVisual->Render(cmd_list,  clampr(1.f - (1.f - lod) * ps_r__LOD_k, 0.01f, 1.f), phase == CRender::PHASE_SMAP);
+                        item.pVisual->Render(cmd_list, clampr(1.f - (1.f - lod) * ps_r__LOD_k, 0.01f, 1.f), phase == CRender::PHASE_SMAP);
                     }
                 }
 
@@ -102,7 +87,8 @@ void R_dsgraph_structure::r_dsgraph_render_graph_static(u32 _priority)
                         }
 
                         Fvector4* b_pos_old{};
-                        cmd_list.get_ConstantDirect(benders_pos_old, sizeof grass_shader_data_old.pos + sizeof grass_shader_data_old.dir, reinterpret_cast<void**>(&b_pos_old), nullptr, nullptr);
+                        cmd_list.get_ConstantDirect(benders_pos_old, sizeof grass_shader_data_old.pos + sizeof grass_shader_data_old.dir, reinterpret_cast<void**>(&b_pos_old),
+                                                    nullptr, nullptr);
                         if (b_pos_old)
                         {
                             std::memcpy(b_pos_old, &grass_shader_data_old.pos, sizeof grass_shader_data_old.pos);
@@ -126,8 +112,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph_static(u32 _priority)
                 items.items->clear();
                 items.trees->clear();
             }
-            nrmPasses.clear();
-            map.clear();
+            map.clear(); // that should be removed, but having strange issues with trees map
         }
     }
 }
@@ -147,16 +132,34 @@ void R_dsgraph_structure::r_dsgraph_render_graph_dynamic(u32 _priority)
         {
             auto& map = mapMatrixPasses[_priority][iPass];
 
-            map.get_any_p(matPasses);
-            std::sort(matPasses.begin(), matPasses.end(), cmp_pass<mapMatrix_T::value_type*>);
-            for (const auto& it : matPasses)
+            ID3DState* state{};
+            STextureList* textures{};
+
+            for (const auto& it : map)
             {
-                cmd_list.set_Pass(it->first);
+                if (it.second.items->empty())
+                    continue;
 
-                mapMatrixItems& items = it->second;
-                items.ssa = 0;
+                // cmd_list.set_Pass(it->first);
 
-                std::sort(items.items->begin(), items.items->end(), cmp_ssa<_MatrixItem>);
+                cmd_list.set_VS(it.first->vs);
+                cmd_list.set_GS(it.first->gs);
+                cmd_list.set_PS(it.first->ps);
+                cmd_list.set_HS(it.first->hs);
+                cmd_list.set_DS(it.first->ds);
+
+                cmd_list.set_Constants(it.first->constants);
+                if (it.first->state._get()->state != state)
+                {
+                    cmd_list.set_States(state = it.first->state._get()->state);
+                }
+                if (it.first->T._get() != textures)
+                {
+                    cmd_list.set_Textures(textures = it.first->T._get());
+                    cmd_list.apply_lmaterial();
+                }
+
+                const mapMatrixItems& items = it.second;
                 for (auto& item : *items.items)
                 {
                     cmd_list.set_xform_world(item.Matrix);
@@ -165,15 +168,10 @@ void R_dsgraph_structure::r_dsgraph_render_graph_dynamic(u32 _priority)
 
                     const float lod = calcLOD(item.ssa, item.pVisual->getVisData().sphere.R);
                     cmd_list.lod.set_lod(lod);
-
-                    // --#SM+#-- Обновляем шейдерные данные модели [update shader values for this model]
-                    // RCache.hemi.c_update(item.pVisual);
-
                     item.pVisual->Render(cmd_list, lod, phase == CRender::PHASE_SMAP);
                 }
                 items.items->clear();
             }
-            matPasses.clear();
             map.clear();
         }
     }
@@ -189,6 +187,8 @@ void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority)
     r_dsgraph_render_graph_dynamic(_priority);
 }
 
+namespace
+{
 template <class T>
 void render_item(u32 context_id, const T& item)
 {
@@ -196,7 +196,9 @@ void render_item(u32 context_id, const T& item)
 
     dxRender_Visual* V = item.second.pVisual;
     VERIFY(V && V->shader._get());
+
     dsgraph.cmd_list.set_Element(item.second.se);
+
     dsgraph.cmd_list.set_xform_world(item.second.Matrix);
     RImplementation.apply_object(dsgraph.cmd_list, item.second.pObject);
     dsgraph.cmd_list.apply_lmaterial();
@@ -206,9 +208,6 @@ void render_item(u32 context_id, const T& item)
     //{
     //     cmd_list.set_CullMode(cullMode == CULL_CW ? CULL_CCW : CULL_CW);
     // }
-
-    //--#SM+#-- Обновляем шейдерные данные модели [update shader values for this model]
-    // RCache.hemi.c_update(V);
 
     const float lod = calcLOD(item.first, V->getVisData().sphere.R);
     dsgraph.cmd_list.lod.set_lod(lod); // !!!
@@ -228,6 +227,54 @@ ICF void sort_back_to_front_render_and_clean(u32 context_id, T& vec)
     vec.traverse_right_left(context_id, render_item);
     vec.clear();
 }
+
+void render_large_map(const u32 context_id, mapSortedLarge_T& map)
+{
+    auto& dsgraph = RImplementation.get_context(context_id);
+
+    ID3DState* state{};
+    STextureList* textures{};
+
+    for (const auto& it : map)
+    {
+        if (it.second.items->empty())
+            continue;
+
+        // cmd_list.set_Pass(it->first);
+
+        dsgraph.cmd_list.set_VS(it.first->vs);
+        dsgraph.cmd_list.set_GS(it.first->gs);
+        dsgraph.cmd_list.set_PS(it.first->ps);
+        dsgraph.cmd_list.set_HS(it.first->hs);
+        dsgraph.cmd_list.set_DS(it.first->ds);
+
+        dsgraph.cmd_list.set_Constants(it.first->constants);
+        if (it.first->state._get()->state != state)
+        {
+            dsgraph.cmd_list.set_States(state = it.first->state._get()->state);
+        }
+        if (it.first->T._get() != textures)
+        {
+            dsgraph.cmd_list.set_Textures(textures = it.first->T._get());
+            dsgraph.cmd_list.apply_lmaterial();
+        }
+
+        const mapMatrixItems& items = it.second;
+        for (auto& item : *items.items)
+        {
+            dsgraph.cmd_list.set_xform_world(item.Matrix);
+            RImplementation.apply_object(dsgraph.cmd_list, item.pObject);
+            dsgraph.cmd_list.apply_lmaterial();
+
+            const float lod = calcLOD(item.ssa, item.pVisual->getVisData().sphere.R);
+            dsgraph.cmd_list.lod.set_lod(lod);
+            item.pVisual->Render(dsgraph.cmd_list, lod, dsgraph.phase == CRender::PHASE_SMAP);
+        }
+        items.items->clear();
+    }
+    map.clear();
+}
+} // namespace
 
 //////////////////////////////////////////////////////////////////////////
 // HUD render
@@ -287,7 +334,7 @@ void R_dsgraph_structure::r_dsgraph_render_sorted()
 
     PIX_EVENT_CTX(cmd_list, dsgraph_render_sorted);
 
-    sort_back_to_front_render_and_clean(context_id, mapSorted);
+    render_large_map(context_id, mapSorted);
 
     if (!mapHUDSorted.empty())
     {
@@ -365,123 +412,5 @@ void R_dsgraph_structure::r_dsgraph_render_distort()
     PIX_EVENT_CTX(cmd_list, dsgraph_render_distort);
 
     // Sorted (back to front)
-    sort_back_to_front_render_and_clean(context_id, mapDistort);
-}
-
-// sub-space rendering - main procedure
-void R_dsgraph_structure::build_subspace(IRender_Sector::sector_id_t& sector_id, CFrustum* frustum, Fmatrix& xform, Fvector& camera_position, BOOL add_dynamic)
-{
-    ZoneScoped;
-
-    IRender_Sector* _sector = Sectors[sector_id];
-
-    render_position = camera_position;
-
-    VERIFY(_sector);
-    marker++; // !!! critical here
-
-    if (false) /*RImplementation.SectorsLoadDisabled*/ // check disabled for subspace (sun, light, rain)
-    {
-        //add_static(Sectors[0]->root(), *frustum, frustum->getMask());
-
-        for (const auto& sector : Sectors)
-        {
-            dxRender_Visual* root = sector->root();
-
-            // for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
-            {
-                add_static(root, *frustum, frustum->getMask());
-            }
-        }
-    }
-    else
-    {
-        // Traverse sector/portal structure
-        PortalTraverser.traverse(_sector, *frustum, camera_position, xform, 0);
-
-        // Determine visibility for static geometry hierrarhy
-        for (const auto& r_sector : PortalTraverser.r_sectors)
-        {
-            dxRender_Visual* root = r_sector->root();
-            for (const auto& view : r_sector->r_frustums)
-            {
-                add_static(root, view, view.getMask());
-            }
-        }
-    }
-
-    if (add_dynamic)
-    {
-        // Traverse object database
-        if (max_render_distance > 0)
-        {
-            g_SpatialSpace->q_sphere(lstRenderables, 0, STYPE_RENDERABLE, render_position, max_render_distance);   
-        }
-        else
-        {
-            g_SpatialSpace->q_frustum(lstRenderables, 0, STYPE_RENDERABLE, *frustum);
-        }
-
-        // Determine visibility for dynamic part of scene
-        for (const auto spatial : lstRenderables)
-        {
-            /*if (o.is_main_pass)
-            {
-                const auto& entity_pos = spatial->spatial_sector_point();
-                const auto sector_id = detect_sector(entity_pos);
-                spatial->spatial_updatesector(sector_id);
-            }*/
-
-            const auto& sector_id = spatial->spatial.sector_id;
-            if (sector_id == IRender_Sector::INVALID_SECTOR_ID)
-            {
-                continue; // disassociated from S/P structure
-            }
-
-            const auto* sector = Sectors[sector_id];
-
-            if (PortalTraverser.frame() == Device.dwFrame)
-            {
-                if (PortalTraverser.marker() != sector->r_marker)
-                    continue; // inactive (untouched) sector
-            }
-
-            if ((spatial->spatial.type & STYPE_RENDERABLE) && !ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_DYNAMIC))
-            {
-                // renderable
-                IRenderable* renderable = spatial->dcast_Renderable();
-                R_ASSERT(renderable);
-
-                // casting is faster then using getVis method
-                vis_data& v_orig = renderable->renderable.visual->getVisData();
-
-                if (max_render_distance > 0.f)
-                {
-                    Fvector pos;
-                    renderable->renderable.xform.transform_tiny(pos, v_orig.sphere.P);
-
-                    if (!renderable->renderable.visual->ignore_optimization && render_position.distance_to(pos) - v_orig.sphere.R / 2 > max_render_distance)
-                        continue;
-                }
-
-                for (auto& view : sector->r_frustums)
-                {
-                    if (!view.testSphere_dirty(spatial->spatial.sphere.P, spatial->spatial.sphere.R))
-                         continue;
-
-                    renderable->renderable_Render(context_id, renderable);
-
-                    break; // exit loop on frustums
-                }
-            }
-        }
-
-        if (g_pGameLevel && g_hud)
-        {
-            if (phase == CRender::PHASE_SMAP)
-            {
-                g_hud->Render_SMAP(context_id);
-            }
-        }
-    }
+    render_large_map(context_id, mapDistort);
 }

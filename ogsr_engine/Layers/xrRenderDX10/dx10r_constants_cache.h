@@ -47,6 +47,18 @@ public:
     }
 
     // scalars, non-array versions
+    ICF void set(R_constant* C, float x, float y)
+    {
+        Fvector2 data;
+        data.set(x, y);
+        set(C, data);
+    }
+    ICF void set(R_constant* C, float x, float y, float z)
+    {
+        Fvector3 data;
+        data.set(x, y, z);
+        set(C, data);
+    }
     ICF void set(R_constant* C, float x, float y, float z, float w)
     {
         Fvector4 data;
@@ -81,6 +93,18 @@ public:
     }
 
     // scalars, array versions
+    ICF void seta(R_constant* C, u32 e, float x, float y)
+    {
+        Fvector2 data;
+        data.set(x, y);
+        seta(C, e, data);
+    }
+    ICF void seta(R_constant* C, u32 e, float x, float y, float z)
+    {
+        Fvector3 data;
+        data.set(x, y, z);
+        seta(C, e, data);
+    }
     ICF void seta(R_constant* C, u32 e, float x, float y, float z, float w)
     {
         Fvector4 data;

@@ -8,4 +8,5 @@ void CRenderTarget::phase_occq(CBackend& cmd_list)
     cmd_list.set_CullMode(CULL_CCW);
     cmd_list.set_Stencil(TRUE, D3DCMP_LESSEQUAL, 0x01, 0xff, 0x00);
     cmd_list.set_ColorWriteEnable(FALSE);
+    cmd_list.set_PS(nullptr);
 }

@@ -3,6 +3,8 @@
 #include "../../xr_3da/ps_instance.h"
 #include "../../xr_3da/customhud.h"
 #include "../xrRender/FBasicVisual.h"
+#include "../../xr_3da/XR_IOConsole.h"
+#include "../../xr_3da/xr_ioc_cmd.h"
 
 float g_fSCREEN;
 
@@ -23,10 +25,7 @@ void render_main::calculate_static()
     static_waiter = TTAPI->submit([] {
         ZoneScoped;
 
-        if (RImplementation.HOM.Allowed())
-        {
-            RImplementation.HOM.DispatchRender();
-        }
+        RImplementation.HOM.DispatchRender();
 
         auto& dsgraph_main = RImplementation.get_imm_context();
 
@@ -101,8 +100,6 @@ constexpr u32 batch_size = 5;
 
 void CRender::calculate_particles_async()
 {
-    ZoneScoped;
-
     if (!ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_PARTICLES))
     {
         CFrustum v{};
@@ -110,7 +107,11 @@ void CRender::calculate_particles_async()
 
         g_SpatialSpace->q_frustum(lstParticlesCalculation, 0, STYPE_RENDERABLE | STYPE_PARTICLE, v);
 
+        //Msg("Particles calculation: %d objects", lstParticlesCalculation.size());
+
         auto calculate_particles = [this] {
+            ZoneScoped;
+
             CTimer t_total;
 
             t_total.Start();
@@ -198,8 +199,6 @@ void CRender::calculate_particles_wait()
 
 void CRender::calculate_bones_async()
 {
-    ZoneScoped;
-
     if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_BONES))
     {
         CFrustum v{};
@@ -208,22 +207,43 @@ void CRender::calculate_bones_async()
         g_SpatialSpace->q_frustum(lstBonesCalculation, 0, STYPE_RENDERABLE, v);
 
         auto calculate_bones = [this] {
+            ZoneScoped;
+
             // (almost) Exact sorting order (front-to-back)
             // std::sort(lstBonesCalculation.begin(), lstBonesCalculation.end(), pred_sp_sort);
-
-            // Traverse frustums
-            for (auto spatial : lstBonesCalculation)
+#pragma todo("Simp: Раскомментировать когда будет новый TTP")
+            /*if (lstBonesCalculation.size() > 12)
             {
-                if (IRenderable* renderable = spatial->dcast_Renderable())
-                {
-                    if (!renderable->renderable.visual)
-                        continue;
-                    if (!renderable->renderable.visual->dcast_PKinematics())
-                        continue;
-
-                    if (IKinematics* pKin = renderable->renderable.visual->dcast_PKinematics())
+                 poolstl::for_each_chunk(poolstl::par.on(*TTAPI)
+                    , lstBonesCalculation.begin()
+                    , lstBonesCalculation.end(), [](auto spatial) 
                     {
-                        pKin->CalculateBones(TRUE);
+                        if (IRenderable* renderable = spatial->dcast_Renderable())
+                        {
+                            if (renderable->renderable.visual && renderable->renderable.visual->dcast_PKinematics())
+                                if (IKinematics* pKin = renderable->renderable.visual->dcast_PKinematics())
+                                {
+                                    pKin->CalculateBones(TRUE);
+                                }
+                        }
+                    });
+            }
+            else*/
+            {
+                // Traverse frustums
+                for (auto spatial : lstBonesCalculation)
+                {
+                    if (IRenderable* renderable = spatial->dcast_Renderable())
+                    {
+                        if (!renderable->renderable.visual)
+                            continue;
+                        if (!renderable->renderable.visual->dcast_PKinematics())
+                            continue;
+
+                        if (IKinematics* pKin = renderable->renderable.visual->dcast_PKinematics())
+                        {
+                            pKin->CalculateBones(TRUE);
+                        }
                     }
                 }
             }
@@ -251,6 +271,104 @@ bool CRender::ShouldSkipRender()
         return true;
     }
     return false;
+}
+
+void CRender::ExportLights()
+{
+    ZoneScoped;
+
+    g_SpatialSpace->q_sphere(lstLights, 0, STYPE_LIGHTSOURCE, Device.vCameraPosition, EPS_L);
+
+    for (const auto& spatial : lstLights)
+    {
+        update_sector(light_sectors_xrc, spatial);
+
+        const auto& sector_id = spatial->spatial.sector_id;
+        if (sector_id == IRender_Sector::INVALID_SECTOR_ID)
+        {
+            continue; // disassociated from S/P structure
+        }
+
+        VERIFY(spatial->spatial.type & STYPE_LIGHTSOURCE);
+
+        // lightsource
+        light* L = dynamic_cast<light*>(spatial->dcast_Light());
+        R_ASSERT(L);
+
+        //const float lod = L->get_LOD();
+        //if (lod > EPS_L)
+        {
+            Lights.add_light(L);
+        }
+    }
+
+    g_SpatialSpace->q_frustum(lstLights, 0, STYPE_LIGHTSOURCE, ViewBase);
+
+    // Traverse frustums
+    for (auto spatial : lstLights)
+    {
+        // lightsource
+        light* L = dynamic_cast<light*>(spatial->dcast_Light());
+        R_ASSERT(L);
+
+        if (Device.dwFrame == L->frame_render)
+            continue;
+
+        update_sector(light_sectors_xrc, spatial);
+
+        const auto& sector_id = spatial->spatial.sector_id;
+        if (sector_id == IRender_Sector::INVALID_SECTOR_ID)
+        {
+            continue; // disassociated from S/P structure
+        }
+
+        const float lod = L->get_LOD();
+        if (lod > EPS_L)
+        {
+            bool can_add = true;
+
+            if (HOM.Allowed())
+            {
+                vis_data& vis = L->get_homdata();
+                can_add = HOM.visible(vis);
+            }
+
+            if (can_add)
+                Lights.add_light(L);
+        }
+    }
+}
+
+void CRender::UpdateSectors()
+{
+    ZoneScoped;
+
+    static CFrustum v{};
+    v.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
+
+    g_SpatialSpace->q_frustum(lstUpdateSector, 0, STYPE_RENDERABLE, v);
+
+    // (almost) Exact sorting order (front-to-back)
+    // std::sort(lstParticlesCalculation.begin(), lstParticlesCalculation.end(), pred_sp_sort);
+
+#pragma todo("Simp: Раскомментировать когда будет новый TTP")
+    /*if (lstUpdateSector.size() > 16)
+    {
+        poolstl::for_each_chunk(poolstl::par.on(*TTAPI)
+                    , lstUpdateSector.begin()
+                    , lstUpdateSector.end(), [this](auto spatial) 
+                    {
+                        update_sector(renderable_sectors_xrc, spatial);
+                    });
+    }
+    else*/
+    {
+        // Traverse frustums
+        for (auto spatial : lstUpdateSector)
+        {
+            update_sector(renderable_sectors_xrc, spatial);
+        }
+    }
 }
 
 void CRender::Calculate()
@@ -291,11 +409,6 @@ void CRender::Calculate()
     std::copy(std::begin(grass_shader_data.pos), std::end(grass_shader_data.pos), std::begin(grass_shader_data_old.pos));
     std::copy(std::begin(grass_shader_data.dir), std::end(grass_shader_data.dir), std::begin(grass_shader_data_old.dir));
 
-    auto& dsgraph_main = get_imm_context();
-
-    calculate_particles_async();
-    calculate_bones_async();
-
     //
     Lights.UpdateSun();
 
@@ -307,29 +420,11 @@ void CRender::Calculate()
         return;
     }
 
-    // Check if we touch some light even trough portal
-    g_SpatialSpace->q_sphere(lstRenderables, 0, STYPE_LIGHTSOURCE, Device.vCameraPosition, EPS_L);
+    calculate_particles_async();
+    calculate_bones_async();
 
-    for (const auto& spatial : lstRenderables)
-    {
-        dsgraph_main.update_sector(spatial);
-
-        const auto& sector_id = spatial->spatial.sector_id;
-        if (sector_id == IRender_Sector::INVALID_SECTOR_ID)
-            continue; // disassociated from S/P structure
-
-        VERIFY(spatial->spatial.type & STYPE_LIGHTSOURCE);
-
-        // lightsource
-        light* L = (light*)(spatial->dcast_Light());
-        VERIFY(L);
-
-        //float lod = L->get_LOD();
-        //if (lod > EPS_L)
-        {
-            Lights.add_light(L);
-        }
-    }
+    update_sectors_awaiter = TTAPI->submit([this] { UpdateSectors(); });
+    light_waiter = TTAPI->submit([this] { ExportLights(); });
 
     if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_RAIN))
     {
@@ -341,4 +436,119 @@ void CRender::Calculate()
 
     r_rain.run();
     r_sun.run();
+}
+
+
+IRender_Sector::sector_id_t CRender::detect_sector(xrXRC& Sectors_xrc, const Fvector& P) const
+{
+    Fvector dir{0, -1, 0};
+    auto sector = detect_sector(Sectors_xrc, P, dir);
+    if (sector == IRender_Sector::INVALID_SECTOR_ID)
+    {
+        dir = {.x = 0, .y = 1, .z = 0};
+        sector = detect_sector(Sectors_xrc, P, dir);
+    }
+    return sector;
+}
+
+IRender_Sector::sector_id_t CRender::detect_sector(xrXRC& Sectors_xrc, const Fvector& P, const Fvector& dir) const
+{
+    // Portals model
+    int id1 = -1;
+    float range1 = 500.f;
+    if (RImplementation.rmPortals)
+    {
+        Sectors_xrc.ray_query(CDB::OPT_ONLYNEAREST, RImplementation.rmPortals, P, dir, range1);
+        if (Sectors_xrc.r_count())
+        {
+            const CDB::RESULT* RP1 = Sectors_xrc.r_begin();
+            id1 = RP1->id;
+            range1 = RP1->range;
+        }
+    }
+
+    // Geometry model
+    int id2 = -1;
+    float range2 = range1;
+    Sectors_xrc.ray_query(CDB::OPT_ONLYNEAREST, g_pGameLevel->ObjectSpace.GetStaticModel(), P, dir, range2);
+    if (Sectors_xrc.r_count())
+    {
+        const CDB::RESULT* RP2 = Sectors_xrc.r_begin();
+        id2 = RP2->id;
+        range2 = RP2->range;
+    }
+
+    // Select ID
+    int ID;
+    if (id1 >= 0)
+    {
+        if (id2 >= 0)
+            ID = (range1 <= range2 + EPS_L) ? id1 : id2; // both was found
+        else
+            ID = id1; // only id1 found
+    }
+    else if (id2 >= 0)
+        ID = id2; // only id2 found
+    else
+        return IRender_Sector::INVALID_SECTOR_ID;
+
+    if (ID == id1)
+    {
+        __try
+        {
+            // Take sector, facing to our point from portal
+            const CDB::TRI* pTri = RImplementation.rmPortals->get_tris() + ID;
+            if (!pTri)
+            {
+                Msg("!![%s] nullptr pTri detected! tris ID: [%d]", __FUNCTION__, ID);
+                return IRender_Sector::INVALID_SECTOR_ID;
+            }
+
+            const auto& Portals = sector_portals_structure.Portals;
+            if (pTri->dummy >= Portals.size())
+            {
+                Msg("!![%s] out of range detected! tris ID: [%d], pTri->dummy: [%u], Portals.size(): [%u]", __FUNCTION__, ID, pTri->dummy, Portals.size());
+                return IRender_Sector::INVALID_SECTOR_ID;
+            }
+
+            const CPortal* pPortal = Portals.at(pTri->dummy);
+            if (!pPortal)
+            {
+                Msg("!![%s] nullptr pPortal detected! tris ID: [%d], pTri->dummy: [%u]", __FUNCTION__, ID, pTri->dummy);
+                return IRender_Sector::INVALID_SECTOR_ID;
+            }
+
+            return pPortal->getSectorFacing(P)->unique_id;
+        }
+        __except (ExceptStackTrace("Exception catched in " __FUNCTION__))
+        {
+            Msg("!![%s] possible bad tris ID: [%d]", __FUNCTION__, ID);
+
+            { // Отключаем сектора до перезапуска двига без сохранения этого отключения в юзере
+                auto it = Console->Commands.find("r2_disable_sectors");
+                if (it != Console->Commands.end())
+                {
+                    auto* cmd = it->second;
+                    cmd->SetCanSave(false);
+                    cmd->Execute("on");
+                }
+            }
+
+            return IRender_Sector::INVALID_SECTOR_ID;
+        }
+    }
+
+    // Take triangle at ID and use it's Sector
+    const CDB::TRI* pTri = g_pGameLevel->ObjectSpace.GetStaticTris() + ID;
+    return pTri->sector;
+}
+
+void CRender::update_sector(xrXRC& Sectors_xrc, ISpatial* S) const
+{
+    if (S->spatial.type & STYPEFLAG_INVALIDSECTOR)
+    {
+        const auto& entity_pos = S->spatial_sector_point();
+        const auto sector_id = detect_sector(Sectors_xrc, entity_pos);
+        S->spatial_updatesector(sector_id);
+    }
 }

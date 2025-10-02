@@ -70,10 +70,10 @@ struct xr_fixed_map_node
     }
 };
 
-template <class K, class T, size_t TGrowMultiplier = 2, class allocator = xr_allocator_legacy<xr_fixed_map_node<K, T>>>
+template <class K, class T, size_t TGrowMultiplier = 1, size_t SG_REALLOC_ADVANCE = 64, class allocator = xr_allocator_legacy<xr_fixed_map_node<K, T>>>
 class xr_fixed_map
 {
-    static constexpr size_t SG_REALLOC_ADVANCE = 128;
+    //static constexpr size_t SG_REALLOC_ADVANCE = 64;
 
 public:
     using key_type = K;
@@ -154,12 +154,19 @@ private:
 
         nodes = newNodes;
         limit = newLimit;
+
+        //Msg("resize() newLimit=%d", newLimit);
     }
 
     value_type* add(const K& key)
     {
         if (pool == limit)
+        {
+            /*if (limit > 0)
+                Msg("reloc from size [%d]", limit);*/
+
             resize();
+        }
 
         value_type* node = nodes + pool;
         node->first = key;
@@ -214,6 +221,11 @@ private:
             get_right_left(N->left, D);
     }
 
+    // for setup only
+    value_type* first() { return nodes; }
+    value_type* last() { return nodes + limit; }
+
+
 public:
     xr_fixed_map()
     {
@@ -222,13 +234,17 @@ public:
         nodes = nullptr;
     }
 
-    ~xr_fixed_map() { destroy(); }
+    virtual ~xr_fixed_map()
+    {
+        //Msg("~xr_fixed_map");
+        destroy();
+    }
 
     void destroy()
     {
         if (nodes)
         {
-            for (value_type* cur = begin(); cur != last(); ++cur)
+            for (value_type* cur = first(); cur != last(); ++cur)
                 cur->~value_type();
             allocator::deallocate(nodes, limit);
         }
@@ -352,9 +368,6 @@ public:
     value_type* begin() { return nodes; }
     value_type* end() { return nodes + pool; }
 
-    value_type* first() { return nodes; }
-    value_type* last() { return nodes + limit; } // for setup only
-
     [[nodiscard]] size_t size() const { return pool; }
 
     value_type& at_index(size_t v) { return nodes[v]; }
@@ -386,16 +399,16 @@ public:
             get_right_left(nodes, D);
     }
 
-    void get_any_p(xr_vector<value_type*>& D)
-    {
-        if (empty())
-            return;
-        D.resize(size());
-        value_type** _it = &D.front();
-        value_type* _end = end();
-        for (value_type* cur = begin(); cur != _end; ++cur, ++_it)
-            *_it = cur;
-    }
+    //void get_any_p(xr_vector<value_type*>& D)
+    //{
+    //    if (empty())
+    //        return;
+    //    D.resize(size());
+    //    value_type** _it = &D.front();
+    //    value_type* _end = end();
+    //    for (value_type* cur = begin(); cur != _end; ++cur, ++_it)
+    //        *_it = cur;
+    //}
 
     //void setup(callback CB)
     //{

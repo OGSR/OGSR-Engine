@@ -53,7 +53,6 @@ bool CRender::InFieldOfViewR(Fvector pos, float max_dist, bool check_direction)
 
 void CRender::main_pass_static(R_dsgraph_structure& dsgraph)
 {
-
     ZoneScoped;
 
     bool sectors_added = false;
@@ -63,7 +62,7 @@ void CRender::main_pass_static(R_dsgraph_structure& dsgraph)
         // Detect camera-sector
         if (!Device.vCameraPositionSaved.similar(Device.vCameraPosition, EPS_L))
         {
-            const auto sector_id = dsgraph.detect_sector(Device.vCameraPosition);
+            const auto sector_id = detect_sector(main_xrc, Device.vCameraPosition);
             if (sector_id != IRender_Sector::INVALID_SECTOR_ID)
             {
                 if (sector_id != last_sector_id)
@@ -88,18 +87,17 @@ void CRender::main_pass_static(R_dsgraph_structure& dsgraph)
             Fvector box_radius;
             box_radius.set(eps, eps, eps);
 
-            Sectors_xrc.box_query(CDB::OPT_FULL_TEST, rmPortals, Device.vCameraPosition, box_radius);
-
-            if (Sectors_xrc.r_count() > 0)
+            main_xrc.box_query(CDB::OPT_FULL_TEST, rmPortals, Device.vCameraPosition, box_radius);
+            if (main_xrc.r_count() > 0)
             {
                 MsgDbg("~ Enable dual render.");
 
-                for (size_t K = 0; K < Sectors_xrc.r_count(); K++)
+                for (size_t K = 0; K < main_xrc.r_count(); K++)
                 {
-                    const int id = Sectors_xrc.r_begin()[K].id;
+                    const int id = main_xrc.r_begin()[K].id;
                     const size_t portal_id = rmPortals->get_tris()[id].dummy;
 
-                    CPortal* pPortal = dsgraph.Portals[portal_id];
+                    CPortal* pPortal = dsgraph.sector_portals_structure.Portals[portal_id];
                     pPortal->bDualRender = TRUE; // this should be set on each frame as PortalTraverser will reset it
                 }
             }
@@ -112,7 +110,8 @@ void CRender::main_pass_static(R_dsgraph_structure& dsgraph)
             constexpr int options = CPortalTraverser::VQ_HOM + CPortalTraverser::VQ_SSA + CPortalTraverser::VQ_FADE;
 
             // Traverse sector/portal structure
-            dsgraph.PortalTraverser.traverse(dsgraph.Sectors[last_sector_id], ViewBase, Device.vCameraPosition, Device.mFullTransform, options);
+            CSector* root_sector = dsgraph.sector_portals_structure.Sectors.at(last_sector_id);
+            dsgraph.PortalTraverser.traverse(root_sector, ViewBase, Device.vCameraPosition, Device.mFullTransform, options);
 
             xr_vector<CSector*>& sectors = dsgraph.PortalTraverser.r_sectors;
 
@@ -143,13 +142,9 @@ void CRender::main_pass_static(R_dsgraph_structure& dsgraph)
 
     if (!sectors_added)
     {
-        for (const auto& r_sector : dsgraph.Sectors)
+        for (const auto& r_sector : dsgraph.sector_portals_structure.Sectors)
         {
-            dxRender_Visual* root = r_sector->root();
-            // for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
-            {
-                dsgraph.add_static(root, ViewBase, ViewBase.getMask());
-            }
+            dsgraph.add_static(r_sector->root(), ViewBase, ViewBase.getMask());
         }
     }
 }
@@ -161,7 +156,7 @@ void CRender::main_pass_dynamic(R_dsgraph_structure& dsgraph, bool fill_lights)
     // Calculate sector(s) and their objects
 
     // Traverse object database
-    g_SpatialSpace->q_frustum(lstRenderables, 0, STYPE_RENDERABLE + STYPE_LIGHTSOURCE, ViewBase);
+    g_SpatialSpace->q_frustum(lstRenderables, 0, STYPE_RENDERABLE, ViewBase);
 
     // (almost) Exact sorting order (front-to-back)
     std::sort(lstRenderables.begin(), lstRenderables.end(), pred_sp_sort);
@@ -193,44 +188,21 @@ void CRender::main_pass_dynamic(R_dsgraph_structure& dsgraph, bool fill_lights)
         }
     }
 
+    // ждем обновление сектора тут же
+    update_sectors_awaiter.wait();
+
     // Traverse frustums
     for (auto spatial : lstRenderables)
     {
-        dsgraph.update_sector(spatial);
-
         const auto& sector_id = spatial->spatial.sector_id;
         if (sector_id == IRender_Sector::INVALID_SECTOR_ID)
-            continue; // disassociated from S/P structure
-
-        if (spatial->spatial.type & STYPE_LIGHTSOURCE)
         {
-            if (fill_lights)
-            {
-                // lightsource
-                light* L = (light*)(spatial->dcast_Light());
-                R_ASSERT(L);
-                const float lod = L->get_LOD();
-                if (lod > EPS_L)
-                {
-                    bool can_add = true;
-
-                    if (HOM.Allowed())
-                    {
-                        vis_data& vis = L->get_homdata();
-                        can_add = HOM.visible(vis);
-                    }
-
-                    if (can_add)
-                        Lights.add_light(L);
-                }
-            }
-
-            continue;
+            continue; // disassociated from S/P structure
         }
 
         if (dsgraph.PortalTraverser.frame() == Device.dwFrame)
         {
-            auto* sector = dsgraph.Sectors[sector_id];
+            auto* sector = dsgraph.sector_portals_structure.Sectors.at(sector_id);
 
             if (dsgraph.PortalTraverser.marker() != sector->r_marker)
                 continue; // inactive (untouched) sector
@@ -242,20 +214,16 @@ void CRender::main_pass_dynamic(R_dsgraph_structure& dsgraph, bool fill_lights)
             IRenderable* renderable = spatial->dcast_Renderable();
             R_ASSERT(renderable);
 
-            // casting is faster then using getVis method
-            vis_data& v_orig = (renderable->renderable.visual)->getVisData();
-
             // Occlusion
-
-            // vis_data v_copy = v_orig;
-            // v_copy.box.xform(renderable->renderable.xform);
-
-            // BOOL bVisible = HOM.visible(v_copy);
-            // v_orig.marker = v_copy.marker;
-            // v_orig.hom_frame = v_copy.hom_frame;
-            // v_orig.hom_tested = v_copy.hom_tested;
-            // if (!bVisible)
-            //     continue; // exit loop on frustums
+            //	casting is faster then using getVis method
+            vis_data& v_orig = renderable->renderable.visual->getVisData();
+            vis_data v_copy = v_orig;
+            v_copy.box.xform(renderable->renderable.xform);
+            BOOL bVisible = HOM.visible(v_copy);
+            v_orig.hom_frame = v_copy.hom_frame;
+            v_orig.hom_tested = v_copy.hom_tested;
+            if (!bVisible)
+                continue; // exit loop on frustums
 
             Fvector pos;
             renderable->renderable.xform.transform_tiny(pos, v_orig.sphere.P);
@@ -402,6 +370,9 @@ void CRender::Render()
 
         Target->phase_scene_end(cmd_list);
     }
+
+    // wait light export
+    light_waiter.wait();
 
     const light_Package& LP_normal = Lights.package;
 
@@ -578,7 +549,7 @@ void CRender::render_forward()
     //.todo: should be done inside "combine" with estimation of of luminance, tone-mapping, etc.
     {
         //	Igor: we don't want to render old lods on next frame.
-        dsgraph.mapLOD.clear();
+        dsgraph.lstLODs.clear();
 
         auto& Env = g_pGamePersistent->Environment();
         Env.RenderLast(cmd_list); // rain/thunder-bolts

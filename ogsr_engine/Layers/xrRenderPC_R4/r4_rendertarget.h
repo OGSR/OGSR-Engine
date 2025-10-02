@@ -246,10 +246,8 @@ public:
     void phase_occq(CBackend& cmd_list);
     void phase_wallmarks(CBackend& cmd_list);
     void phase_smap_direct(CBackend& cmd_list, light* L, u32 sub_phase);
-    void phase_smap_direct_tsh(CBackend& cmd_list, light* L, u32 sub_phase);
     void phase_smap_spot_clear(CBackend& cmd_list);
     void phase_smap_spot(CBackend& cmd_list, light* L) const;
-    void phase_smap_spot_tsh(CBackend& cmd_list, light* L);
     void phase_accumulator(CBackend& cmd_list);
     void phase_vol_accumulator(CBackend& cmd_list);
     void phase_blur(CBackend& cmd_list);

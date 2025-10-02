@@ -45,7 +45,7 @@ void dxStatsRender::OutData4(CGameFont& F)
     F.OutNext("- 3B:         %3.1f verts/[%d] calls", rcstats.r.s_dynamic_3B.verts / 1024.f, rcstats.r.s_dynamic_3B.draw_calls);
     F.OutNext("- 4B:         %3.1f verts/[%d] calls", rcstats.r.s_dynamic_4B.verts / 1024.f, rcstats.r.s_dynamic_4B.draw_calls);
 
-    F.OutNext("Flora:        [%u] instances, [%u] draw calls", rcstats.r.s_flora.instances_count, rcstats.r.s_flora.draw_calls_count);
+    F.OutNext("Trees:        [%u] instances, [%u] draw calls", rcstats.r.s_flora.instances_count, rcstats.r.s_flora.draw_calls_count);
     F.OutNext("Details:      [%u] instances, [%u] draw calls", rcstats.r.s_details.instances_count, rcstats.r.s_details.draw_calls_count);
 }
 

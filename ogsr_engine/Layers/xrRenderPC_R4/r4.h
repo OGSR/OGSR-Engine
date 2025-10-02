@@ -1,7 +1,5 @@
 #pragma once
 
-#include <bitset>
-
 #include "../xrRender/r__dsgraph_structure.h"
 #include "../xrRender/r__occlusion.h"
 
@@ -87,7 +85,10 @@ public:
     IRender_Sector::sector_id_t last_sector_id{IRender_Sector::INVALID_SECTOR_ID};
     u32 uLastLTRACK;
 
-    xrXRC Sectors_xrc;
+    xrXRC main_xrc;
+    xrXRC light_sectors_xrc;
+    xrXRC renderable_sectors_xrc;
+
     CDB::MODEL* rmPortals{};
     CHOM HOM;
     R_occlusion HWOCC;
@@ -170,15 +171,18 @@ private:
 private:
     std::future<void> particles_async_awaiter;
     std::future<void> bones_async_awaiter;
+    std::future<void> update_sectors_awaiter;
 
     xr_vector<ISpatial*> lstParticlesCalculation;
     xr_vector<ISpatial*> lstBonesCalculation; 
+    xr_vector<ISpatial*> lstUpdateSector; 
 
     // constexpr unsigned number_of_threads = 8;
 
     task_thread_pool::task_thread_pool particles_pool{"MT_PARTICLES",16};
     task_thread_pool::task_thread_pool light_pool{"MT_LIGHT", R__NUM_PARALLEL_CONTEXTS};
 
+    std::future<void> light_waiter;
 
 public:
     ShaderElement* rimp_select_sh_static(dxRender_Visual* pVisual, float cdist_sq, u32 phase);
@@ -326,12 +330,20 @@ public:
 
     static bool ShouldSkipRender();
 
+    ICF IRender_Sector* get_sector(const size_t id) const
+    {
+        return sector_portals_structure.Sectors.at(id);
+    }
+
 private:
     xr_vector<D3D_SHADER_MACRO> m_ShaderOptions;
 
     xr_vector<ISpatial*> lstRenderables;
+    xr_vector<ISpatial*> lstLights;
 
     IRender_Sector::sector_id_t largest_sector_id{IRender_Sector::INVALID_SECTOR_ID};
+
+    SectorPortalStructure sector_portals_structure;
 
 protected:
     virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name);
@@ -339,12 +351,19 @@ protected:
     virtual void add_StaticWallmark(ref_shader& S, const Fvector& P, float s, CDB::TRI* T, Fvector* V);
     virtual void add_SkeletonWallmark(Fmatrix* xf, CKinematics* obj, ref_shader& sh, Fvector& start, Fvector& dir, float size);
 
+    void ExportLights();
+    void UpdateSectors();
+
+    IRender_Sector::sector_id_t detect_sector(xrXRC& Sectors_xrc, const Fvector& P) const;
+    IRender_Sector::sector_id_t detect_sector(xrXRC& Sectors_xrc, const Fvector& P, const Fvector& D) const;
+
+    void update_sector(xrXRC& Sectors_xrc, ISpatial* S) const;
+
 private:
     R_dsgraph_structure contexts_pool[R__NUM_CONTEXTS];
-    std::bitset<R__NUM_CONTEXTS> contexts_used{};
+    bool contexts_used[R__NUM_PARALLEL_CONTEXTS]{};
 
 public:
-
     virtual CBackend& get_imm_command_list()
     {
         return get_imm_context().cmd_list;
@@ -352,48 +371,49 @@ public:
 
     ICF u32 alloc_context()
     {
-        if (contexts_used.all())
-            return CHW::INVALID_CONTEXT_ID;
-        const auto raw = ~contexts_used.to_ulong();
-        int id = 0;
-        for (; id < R__NUM_PARALLEL_CONTEXTS; ++id)
+        for (size_t id{}; id < std::size(contexts_used); ++id)
         {
-            if (raw & (1u << id))
-                break;
+            if (!contexts_used[id])
+            {
+                contexts_used[id] = true;
+                auto& ctx = contexts_pool[id];
+                ctx.reset();
+                ctx.context_id = id;
+                ctx.cmd_list.context_id = id;
+                return id;
+            }
         }
-        contexts_used.set(id, true);
-        contexts_pool[id].reset();
-        contexts_pool[id].context_id = id;
-        contexts_pool[id].cmd_list.context_id = id;
-        return id;
+
+        FATAL("Can't find free context! All contexts used!");
+        return CHW::INVALID_CONTEXT_ID;
     }
 
     ICF R_dsgraph_structure& get_context(u32 id)
     {
-        R_ASSERT(id < R__NUM_CONTEXTS);
         if (id == CHW::IMM_CTX_ID)
-        {
             return get_imm_context();
-        }
-        R_ASSERT(contexts_used.test(id));
-        R_ASSERT(contexts_pool[id].context_id == id);
-        return contexts_pool[id];
+
+        R_ASSERT(id < std::size(contexts_pool));
+        R_ASSERT(contexts_used[id]);
+        auto& ctx = contexts_pool[id];
+        R_ASSERT(ctx.context_id == id);
+
+        return ctx;
     }
 
     ICF void release_context(u32 id)
     {
         R_ASSERT(id != CHW::IMM_CTX_ID); // never release immediate context
         R_ASSERT(id < R__NUM_PARALLEL_CONTEXTS);
-        R_ASSERT(contexts_used.test(id));
+        R_ASSERT(contexts_used[id]);
         R_ASSERT(contexts_pool[id].context_id != CHW::INVALID_CONTEXT_ID);
-        contexts_used.set(id, false);
+        contexts_used[id] = false;
     }
 
     ICF R_dsgraph_structure& get_imm_context()
     {
         auto& ctx = contexts_pool[CHW::IMM_CTX_ID];
         ctx.context_id = CHW::IMM_CTX_ID;
-        contexts_used.set(ctx.context_id, true);
         return ctx;
     }
 
@@ -403,7 +423,7 @@ public:
         {
             id.reset();
         }
-        contexts_used.reset();
+        ZeroMemory(&contexts_used, sizeof contexts_used);
 
         //if (R_dsgraph::mapNormalItems::instance_cnt)
         //    Msg("mapNormalItems::instance_cnt={%d}", R_dsgraph::mapNormalItems::instance_cnt);

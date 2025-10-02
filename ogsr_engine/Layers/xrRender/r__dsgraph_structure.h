@@ -2,8 +2,10 @@
 
 #include "../../xr_3da/render.h"
 #include "../../xrcdb/ispatial.h"
+
 #include "r__dsgraph_types.h"
 #include "r__sector.h"
+#include "SectorPortalStructure.h"
 
 //////////////////////////////////////////////////////////////////////////
 // feedback	for receiving visuals										//
@@ -37,13 +39,13 @@ public:
 
 public:
     // Dynamic scene graph
+    u32 mapNormalCount{};
     R_dsgraph::mapNormalPasses_T mapNormalPasses[2]; // 2==(priority/2)
+    u32 mapMatrixCount{};
     R_dsgraph::mapMatrixPasses_T mapMatrixPasses[2];
 
-    R_dsgraph::mapSorted_T mapSorted;
-    R_dsgraph::mapSorted_T mapDistort;
-
-    R_dsgraph::mapLOD_T mapLOD;
+    R_dsgraph::mapSortedLarge_T mapSorted;
+    R_dsgraph::mapSortedLarge_T mapDistort;
 
     R_dsgraph::mapSorted_T mapHUD;
     R_dsgraph::mapSorted_T mapHUDSorted;
@@ -55,10 +57,7 @@ public:
     R_dsgraph::mapSorted_T mapWmark; // sorted
     R_dsgraph::mapSorted_T mapEmissive;
 
-
     // Runtime structures
-    xr_vector<R_dsgraph::mapNormal_T::value_type*> nrmPasses;
-    xr_vector<R_dsgraph::mapMatrix_T::value_type*> matPasses;
     xr_vector<R_dsgraph::_LodItem> lstLODs;
 
     xr_vector<ISpatial*> lstRenderables;
@@ -67,10 +66,9 @@ public:
 
     CBackend cmd_list{};
 
-    xr_vector<CPortal*> Portals;
-    xr_vector<CSector*> Sectors;
+    SectorPortalStructure sector_portals_structure;
+    
     CPortalTraverser PortalTraverser;
-    xrXRC Sectors_xrc;
 
     u32 context_id{CHW::INVALID_CONTEXT_ID};
 
@@ -98,47 +96,7 @@ public:
         r_pmask(true, true);
     }
 
-    void reset()
-    {
-        context_id = CHW::INVALID_CONTEXT_ID;
-
-        nrmPasses.clear();
-        matPasses.clear();
-
-        val_feedback = nullptr;
-
-        lstLODs.clear();
-        lstLODgroups.clear();
-
-        for (int i = 0; i < SHADER_PASSES_MAX; ++i)
-        {
-            mapNormalPasses[0][i].destroy();
-            mapNormalPasses[1][i].destroy();
-            mapMatrixPasses[0][i].destroy();
-            mapMatrixPasses[1][i].destroy();
-        }
-
-        mapSorted.destroy();
-        mapHUD.destroy();
-        mapLOD.destroy();
-        mapDistort.destroy();
-        mapHUDSorted.destroy();
-
-        mapWmark.destroy();
-        mapEmissive.destroy();
-        mapHUDEmissive.destroy();
-
-        mapScopeHUD.destroy();
-        mapScopeHUDSorted.destroy();
-        mapScopeHUDSorted2.destroy();
-
-        lstRenderables.clear();
-
-        cmd_list.Invalidate();
-
-        main_pass = false;
-        max_render_distance = -1.f;
-    }
+    void reset();
 
     void r_pmask(const bool deferred, const bool forward, const bool wallmarks = false)
     {
@@ -150,29 +108,15 @@ public:
     void load(const xr_vector<CSector::level_sector_data_t>& sectors, const xr_vector<CPortal::level_portal_data_t>& portals);
     void unload();
 
-    ICF IRender_Portal* get_portal(size_t id) const
-    {
-        VERIFY(id < Portals.size());
-        return Portals[id];
-    }
-    ICF IRender_Sector* get_sector(size_t id) const
-    {
-        VERIFY(id < Sectors.size());
-        return Sectors[id];
-    }
-    IRender_Sector::sector_id_t detect_sector(const Fvector& P);
-    IRender_Sector::sector_id_t detect_sector(const Fvector& P, Fvector& D);
-
-    void update_sector(ISpatial* S);
-
     void add_static(dxRender_Visual* pVisual, const CFrustum& view, u32 planes);
     void add_leafs_static(dxRender_Visual* pVisual); // if detected node's full visibility
+
     void add_leafs_dynamic(IRenderable* root, dxRender_Visual* pVisual, Fmatrix& xform); // if detected node's full visibility
 
     void r_dsgraph_insert_static(dxRender_Visual* pVisual);
     void r_dsgraph_insert_dynamic(IRenderable* root, dxRender_Visual* pVisual, Fmatrix& xform, Fvector& center);
 
-    void r_dsgraph_render_graph_static(u32 _priority);
+    void r_dsgraph_render_graph_static(const u32 _priority);
     void r_dsgraph_render_graph_dynamic(u32 _priority);
 
     void r_dsgraph_render_graph(u32 _priority);
@@ -186,7 +130,7 @@ public:
     void r_dsgraph_render_wmarks();
     void r_dsgraph_render_distort();
 
-    void build_subspace(IRender_Sector::sector_id_t& sector_id, CFrustum* frustum, Fmatrix& xform, Fvector& camera_position, BOOL add_dynamic);
+    void build_subspace(const IRender_Sector::sector_id_t& start_sector_id, CFrustum& frustum, const Fmatrix& xform, const Fvector& camera_position, BOOL add_dynamic);
 };
 
 extern float r_ssaDISCARD;

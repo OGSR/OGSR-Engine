@@ -31,7 +31,7 @@
     <Filter Include="Visibility">
       <UniqueIdentifier>{071aa114-759f-4db0-a2ae-2f348ec7a0e8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Visibility\Sector/Portal">
+    <Filter Include="Visibility\Sector_Portal">
       <UniqueIdentifier>{c5a371a9-d597-4440-9942-bd64ba301acd}</UniqueIdentifier>
     </Filter>
     <Filter Include="Visibility\HOM Occlusion">
@@ -237,9 +237,6 @@
     <ClInclude Include="..\xrRender\WallmarksEngine.h">
       <Filter>Wallmarks</Filter>
     </ClInclude>
-    <ClInclude Include="blender_bloom_build.h">
-      <Filter>Shading templates</Filter>
-    </ClInclude>
     <ClInclude Include="blender_deffer_aref.h">
       <Filter>Shading templates</Filter>
     </ClInclude>
@@ -247,27 +244,6 @@
       <Filter>Shading templates</Filter>
     </ClInclude>
     <ClInclude Include="blender_deffer_model.h">
-      <Filter>Shading templates</Filter>
-    </ClInclude>
-    <ClInclude Include="blender_light_direct.h">
-      <Filter>Shading templates</Filter>
-    </ClInclude>
-    <ClInclude Include="blender_light_mask.h">
-      <Filter>Shading templates</Filter>
-    </ClInclude>
-    <ClInclude Include="blender_light_occq.h">
-      <Filter>Shading templates</Filter>
-    </ClInclude>
-    <ClInclude Include="blender_light_point.h">
-      <Filter>Shading templates</Filter>
-    </ClInclude>
-    <ClInclude Include="blender_light_spot.h">
-      <Filter>Shading templates</Filter>
-    </ClInclude>
-    <ClInclude Include="blender_luminance.h">
-      <Filter>Shading templates</Filter>
-    </ClInclude>
-    <ClInclude Include="blender_gasmask_dudv.h">
       <Filter>Shading templates</Filter>
     </ClInclude>
     <ClInclude Include="..\xrRender\blender_particle.h">
@@ -319,7 +295,10 @@
       <Filter>Models\Visuals</Filter>
     </ClInclude>
     <ClInclude Include="..\xrRender\r__sector.h">
-      <Filter>Visibility\Sector/Portal</Filter>
+      <Filter>Visibility\Sector_Portal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRender\SectorPortalStructure.h">
+      <Filter>Visibility\Sector_Portal</Filter>
     </ClInclude>
     <ClInclude Include="..\xrRender\HOM.h">
       <Filter>Visibility\HOM Occlusion</Filter>
@@ -477,9 +456,6 @@
     <ClInclude Include="..\xrRender\SkeletonX.h">
       <Filter>Refactored\Execution &amp; 3D\Visuals\Skeleton</Filter>
     </ClInclude>
-    <ClInclude Include="..\xrRender\IRenderDetailModel.h">
-      <Filter>Refactored\Interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="..\xrRender\stats_manager.h">
       <Filter>Refactored\stats_manager</Filter>
     </ClInclude>
@@ -621,23 +597,8 @@
     <ClInclude Include="..\xrRender\Debug\dxPixEventWrapper.h">
       <Filter>Debug</Filter>
     </ClInclude>
-    <ClInclude Include="blender_fakescope.h">
-      <Filter>Shading templates</Filter>
-    </ClInclude>
-    <ClInclude Include="blender_dof.h">
-      <Filter>Shading templates</Filter>
-    </ClInclude>
-    <ClInclude Include="blender_blur.h">
-      <Filter>Shading templates</Filter>
-    </ClInclude>
     <ClInclude Include="..\xrRender\R_light.h">
       <Filter>Lights</Filter>
-    </ClInclude>
-    <ClInclude Include="blender_nightvision.h">
-      <Filter>Shading templates</Filter>
-    </ClInclude>
-    <ClInclude Include="blender_thermalvision.h">
-      <Filter>Shading templates</Filter>
     </ClInclude>
     <ClInclude Include="..\xrRenderDX10\imgui_impl_dx11.h">
       <Filter>imgui_render</Filter>
@@ -654,9 +615,6 @@
     <ClInclude Include="HUDInitializer.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\xrRenderDX10\DX10 Rain\blender_rain.h">
-      <Filter>Shading templates</Filter>
-    </ClInclude>
     <ClInclude Include="..\xrRenderDX10\3DFluid\blender_fluid.h">
       <Filter>Shading templates</Filter>
     </ClInclude>
@@ -666,6 +624,7 @@
     <ClInclude Include="..\xrRender\DetailFormat.h">
       <Filter>Details</Filter>
     </ClInclude>
+    <ClInclude Include="..\xrRender\IRenderDetailModel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -767,9 +726,6 @@
     <ClCompile Include="..\xrRender\WallmarksEngine.cpp">
       <Filter>Wallmarks</Filter>
     </ClCompile>
-    <ClCompile Include="blender_bloom_build.cpp">
-      <Filter>Shading templates</Filter>
-    </ClCompile>
     <ClCompile Include="blender_deffer_aref.cpp">
       <Filter>Shading templates</Filter>
     </ClCompile>
@@ -777,24 +733,6 @@
       <Filter>Shading templates</Filter>
     </ClCompile>
     <ClCompile Include="blender_deffer_model.cpp">
-      <Filter>Shading templates</Filter>
-    </ClCompile>
-    <ClCompile Include="blender_light_direct.cpp">
-      <Filter>Shading templates</Filter>
-    </ClCompile>
-    <ClCompile Include="blender_light_mask.cpp">
-      <Filter>Shading templates</Filter>
-    </ClCompile>
-    <ClCompile Include="blender_light_occq.cpp">
-      <Filter>Shading templates</Filter>
-    </ClCompile>
-    <ClCompile Include="blender_light_point.cpp">
-      <Filter>Shading templates</Filter>
-    </ClCompile>
-    <ClCompile Include="blender_light_spot.cpp">
-      <Filter>Shading templates</Filter>
-    </ClCompile>
-    <ClCompile Include="blender_luminance.cpp">
       <Filter>Shading templates</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\blender_particle.cpp">
@@ -846,10 +784,13 @@
       <Filter>Models\Visuals</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\r__sector.cpp">
-      <Filter>Visibility\Sector/Portal</Filter>
+      <Filter>Visibility\Sector_Portal</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\r__sector_traversal.cpp">
-      <Filter>Visibility\Sector/Portal</Filter>
+      <Filter>Visibility\Sector_Portal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRender\SectorPortalStructure.cpp">
+      <Filter>Visibility\Sector_Portal</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\HOM.cpp">
       <Filter>Visibility\HOM Occlusion</Filter>
@@ -1157,35 +1098,17 @@
     <ClCompile Include="..\xrRender\RenderTargetPhaseSSSS.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
-    <ClCompile Include="blender_gasmask_dudv.cpp">
-      <Filter>Shading templates</Filter>
-    </ClCompile>
     <ClCompile Include="..\xrRender\rendertarget_phase_gasmask_dudv.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\rendertarget_phase_fakescope.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
-    <ClCompile Include="blender_fakescope.cpp">
-      <Filter>Shading templates</Filter>
-    </ClCompile>
-    <ClCompile Include="blender_dof.cpp">
-      <Filter>Shading templates</Filter>
-    </ClCompile>
     <ClCompile Include="..\xrRender\rendertarget_phase_dof.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
-    <ClCompile Include="blender_blur.cpp">
-      <Filter>Shading templates</Filter>
-    </ClCompile>
     <ClCompile Include="..\xrRender\rendertarget_phase_blur.cpp">
       <Filter>Core_Target</Filter>
-    </ClCompile>
-    <ClCompile Include="blender_thermalvision.cpp">
-      <Filter>Shading templates</Filter>
-    </ClCompile>
-    <ClCompile Include="blender_nightvision.cpp">
-      <Filter>Shading templates</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRender\rendertarget_phase_nightvision.cpp">
       <Filter>Core_Target</Filter>
@@ -1204,9 +1127,6 @@
     </ClCompile>
     <ClCompile Include="HUDInitializer.cpp">
       <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\xrRenderDX10\DX10 Rain\blender_rain.cpp">
-      <Filter>Shading templates</Filter>
     </ClCompile>
     <ClCompile Include="..\xrRenderDX10\3DFluid\blender_fluid.cpp">
       <Filter>Shading templates</Filter>

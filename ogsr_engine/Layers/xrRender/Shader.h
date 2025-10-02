@@ -166,3 +166,5 @@ enum SE_R1
 };
 
 #pragma pack(pop)
+
+ref_shader GetCachedShader(const char* sh, const char* tex);

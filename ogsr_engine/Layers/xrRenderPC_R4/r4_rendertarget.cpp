@@ -1,22 +1,6 @@
 #include "stdafx.h"
 
 #include "../xrRender/resourcemanager.h"
-
-#include "blender_light_occq.h"
-#include "blender_light_mask.h"
-#include "blender_light_direct.h"
-#include "blender_light_point.h"
-#include "blender_light_spot.h"
-#include "blender_bloom_build.h"
-#include "blender_luminance.h"
-#include "blender_gasmask_dudv.h"
-#include "blender_fakescope.h"
-#include "blender_blur.h"
-#include "blender_dof.h"
-#include "blender_nightvision.h"
-#include "blender_thermalvision.h"
-
-#include "../xrRenderDX10/DX10 Rain/blender_rain.h"
 #include "../xrRender/dxRenderDeviceRender.h"
 
 void CRenderTarget::u_setrt(CBackend& cmd_list, const ref_rt& _1, const ref_rt& _2, const ref_rt& _3, const ref_rt& _4, ID3DDepthStencilView* zb)
@@ -310,20 +294,14 @@ CRenderTarget::CRenderTarget()
     InitFSR();
 
     // OCCLUSION
-    CBlender_light_occq b_occq;
-    s_occq.create(&b_occq, "r2\\occq");
-    CBlender_blur b_blur;
-    s_blur.create(&b_blur, "r2\\blur");
-    CBlender_dof b_dof;
-    s_dof.create(&b_dof, "r2\\dof");
-    CBlender_gasmask_dudv b_gasmask_dudv;
-    s_gasmask_dudv.create(&b_gasmask_dudv, "r2\\gasmask_dudv");
-    CBlender_fakescope b_fakescope;
-    s_fakescope.create(&b_fakescope, "r2\\fakescope"); //crookr
-    CBlender_nightvision b_nightvision;
-    s_nightvision.create(&b_nightvision, "r2\\nightvision");
-    CBlender_heatvision b_heatvision;
-    s_heatvision.create(&b_heatvision, "r2\\heatvision");
+    s_occq.create("dumb");
+
+    s_blur.create("ogsr_blur");
+    s_dof.create("ogsr_dof");
+    s_gasmask_dudv.create("ogsr_gasmask");
+    s_fakescope.create("ogsr_fakescope"); // crookr
+    s_nightvision.create("ogsr_nightvision");
+    s_heatvision.create("ogsr_heatvision");
     s_flare.create("effects\\lensflare", "shaders\\lensflare");
     s_lut.create("ogsr_lut");
 
@@ -342,24 +320,22 @@ CRenderTarget::CRenderTarget()
     rt_smap_depth.create(r2_RT_smap_depth, size, size, DXGI_FORMAT_R24G8_TYPELESS, 1, R__NUM_CONTEXTS, flags);
     rt_smap_rain.create(r2_RT_smap_rain, options.rain_smapsize, options.rain_smapsize, DXGI_FORMAT_R24G8_TYPELESS);
 
-    CBlender_accum_direct_mask b_accum_mask;
-    s_accum_mask.create(&b_accum_mask, "r3\\accum_mask");
-    CBlender_accum_direct b_accum_direct;
-    s_accum_direct.create(&b_accum_direct, "r3\\accum_direct");
-    s_accum_direct_volumetric.create("accum_volumetric_sun_nomsaa");
+    s_accum_mask.create("accum_sun_mask");
+    s_accum_direct.create("accum_sun");
+    s_accum_direct_volumetric.create("accum_volumetric_sun");
 
     //	RAIN
     //	TODO: DX10: Create resources only when DX10 rain is enabled.
     //	Or make DX10 rain switch dynamic?
     {
-        CBlender_rain b_rain;
-        s_rain.create(&b_rain, "null");
+        RImplementation.m_SMAPSize = RImplementation.o.rain_smapsize;
+        s_rain.create("rain");
+        RImplementation.m_SMAPSize = RImplementation.o.smapsize;
     }
 
     // POINT
     {
-        CBlender_accum_point b_accum_point;
-        s_accum_point.create(&b_accum_point, "r2\\accum_point_s");
+        s_accum_point.create("accum_omni");
         accum_point_geom_create();
         g_accum_point.create(D3DFVF_XYZ, g_accum_point_vb, g_accum_point_ib);
         accum_omnip_geom_create();
@@ -368,8 +344,7 @@ CRenderTarget::CRenderTarget()
 
     // SPOT
     {
-        CBlender_accum_spot b_accum_spot;
-        s_accum_spot.create(&b_accum_spot, "r2\\accum_spot_s", "lights\\lights_spot01");
+        s_accum_spot.create("accum_spot", "lights\\lights_spot01");
         accum_spot_geom_create();
         g_accum_spot.create(D3DFVF_XYZ, g_accum_spot_vb, g_accum_spot_ib);
     }
@@ -392,8 +367,7 @@ CRenderTarget::CRenderTarget()
         rt_Bloom_2.create(r2_RT_bloom2, w, h, fmt);
         g_bloom_build.create(fvf_build, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
         g_bloom_filter.create(fvf_filter, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
-        CBlender_bloom_build b_bloom;
-        s_bloom.create(&b_bloom, "r2\\bloom");
+        s_bloom.create("bloom_filter");
         f_bloom_factor = 0.5f;
     }
 
@@ -401,8 +375,8 @@ CRenderTarget::CRenderTarget()
     {
         rt_LUM_64.create(r2_RT_luminance_t64, 64, 64, DXGI_FORMAT_R16G16B16A16_FLOAT);
         rt_LUM_8.create(r2_RT_luminance_t8, 8, 8, DXGI_FORMAT_R16G16B16A16_FLOAT);
-        CBlender_luminance b_luminance;
-        s_luminance.create(&b_luminance, "r2\\luminance");
+
+        s_luminance.create("bloom_luminance");
         f_luminance_adapt = 0.5f;
 
         t_LUM_src.create(r2_RT_luminance_src);
@@ -600,7 +574,7 @@ void CRenderTarget::reset_light_marker(CBackend& cmd_list, bool bResetStencil)
         pv->set(_w - _dw, -_dh, eps, 1.f, C, 0, 0);
         pv++;
         RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
-        cmd_list.set_Element(s_occq->E[2]);
+        cmd_list.set_Element(s_occq->E[1]);
         cmd_list.set_Geometry(g_combine);
         cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
     }

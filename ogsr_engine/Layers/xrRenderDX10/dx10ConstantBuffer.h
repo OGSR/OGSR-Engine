@@ -13,26 +13,22 @@ public:
     ID3DBuffer* GetBuffer() const { return m_pBuffer; }
     void Flush(u32 context_id);
 
-    //	Set copy data into constant buffer
+    // Set copy data into constant buffer
+    template <typename T>
+    void set(R_constant* C, R_constant_load& L, const T& A);
 
-    //	Plain buffer member
-    void set(R_constant* C, R_constant_load& L, const Fmatrix& A);
-    void set(R_constant* C, R_constant_load& L, const Fvector4& A);
-    void set(R_constant* C, R_constant_load& L, float A);
-    void set(R_constant* C, R_constant_load& L, int A);
+    // Array buffer member
+    template <typename T>
+    void seta(R_constant* C, R_constant_load& L, const u32 e, const T& A);
 
-    //	Array buffer member
-    void seta(R_constant* C, R_constant_load& L, u32 e, const Fmatrix& A);
-    void seta(R_constant* C, R_constant_load& L, u32 e, const Fvector4& A);
-
-    void* AccessDirect(R_constant_load& L, u32 DataSize);
+    void* AccessDirect(R_constant_load& L, const u32 DataSize);
 
     void dbg_dump() const;
 
 private:
-    Fvector4* Access(u16 offset);
+    template <class T>
+    T* Access(const u32 offset);
 
-private:
     shared_str m_strBufferName;
     D3D_CBUFFER_TYPE m_eBufferType;
 
@@ -45,8 +41,6 @@ private:
     u32 m_uiBufferSize; //	Cache buffer size for debug validation
     void* m_pBufferData;
     bool m_bChanged;
-
-    static constexpr u32 lineSize = sizeof(Fvector4);
 
     //	Never try to copy objects of this class due to the pointer and autoptr members
     dx10ConstantBuffer(const dx10ConstantBuffer&) = delete;

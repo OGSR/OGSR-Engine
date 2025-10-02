@@ -557,6 +557,8 @@ static void ImGui_ImplDX11_CreateFontsTexture()
 // - in your Render function, try translating your projection matrix by (0.5f,0.5f) or (0.375f,0.375f)
 void ImGui_ImplDX11_RenderDrawData(ImDrawData* draw_data)
 {
+    RCache.ApplyRTandZB();
+
     ID3D11DeviceContext* ctx = g_pd3dDeviceContext;
 
     // Create and grow vertex/index buffers if needed

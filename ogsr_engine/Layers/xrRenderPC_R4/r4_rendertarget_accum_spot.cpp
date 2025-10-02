@@ -140,10 +140,8 @@ void CRenderTarget::accum_spot(CBackend& cmd_list, light* L)
         u32 _id = 0;
         if (L->flags.bShadow)
         {
-            bool bFullSize = (L->X.S.size == u32(RImplementation.o.smapsize));
-            if (L->X.S.transluent)
-                _id = SE_L_TRANSLUENT;
-            else if (bFullSize)
+            bool bFullSize = (L->X.S.size == static_cast<u32>(RImplementation.o.smapsize));
+            if (bFullSize)
                 _id = SE_L_FULLSIZE;
             else
                 _id = SE_L_NORMAL;

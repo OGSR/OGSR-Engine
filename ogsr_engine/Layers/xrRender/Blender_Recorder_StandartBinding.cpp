@@ -161,6 +161,8 @@ static class cl_wind_params : public R_constant_setup
         {
             const CEnvDescriptor& E = *g_pGamePersistent->Environment().CurrentEnv;
             result.set(E.wind_direction, E.wind_velocity, E.m_fTreeAmplitudeIntensity, 0.0f);
+
+            marker = Device.dwFrame;
         }
         cmd_list.set_c(C, result);
     }
@@ -177,6 +179,8 @@ static class cl_wind_params_old : public R_constant_setup
         {
             const CEnvDescriptor& E = *g_pGamePersistent->Environment().CurrentEnv;
             result.set(E.wind_direction_old, E.wind_velocity_old, E.m_fTreeAmplitudeIntensity_old, 0.0f);
+
+            marker = Device.dwFrame;
         }
         cmd_list.set_c(C, result);
     }
@@ -696,27 +700,32 @@ static class cl_sun_shafts_intensity : public R_constant_setup
 
 static class cl_artifacts final : public R_constant_setup
 {
+    u32 marker{};
     Fmatrix result{};
 
     void setup(CBackend& cmd_list, R_constant* C) override
     {
-        result._11 = shader_exports.get_artefact_position(start_val).x;
-        result._12 = shader_exports.get_artefact_position(start_val).y;
-        result._13 = shader_exports.get_artefact_position(start_val + 1).x;
-        result._14 = shader_exports.get_artefact_position(start_val + 1).y;
-        result._21 = shader_exports.get_artefact_position(start_val + 2).x;
-        result._22 = shader_exports.get_artefact_position(start_val + 2).y;
-        result._23 = shader_exports.get_artefact_position(start_val + 3).x;
-        result._24 = shader_exports.get_artefact_position(start_val + 3).y;
-        result._31 = shader_exports.get_artefact_position(start_val + 4).x;
-        result._32 = shader_exports.get_artefact_position(start_val + 4).y;
-        result._33 = shader_exports.get_artefact_position(start_val + 5).x;
-        result._34 = shader_exports.get_artefact_position(start_val + 5).y;
-        result._41 = shader_exports.get_artefact_position(start_val + 6).x;
-        result._42 = shader_exports.get_artefact_position(start_val + 6).y;
-        result._43 = shader_exports.get_artefact_position(start_val + 7).x;
-        result._44 = shader_exports.get_artefact_position(start_val + 7).y;
+        if (marker != Device.dwFrame)
+        {
+            result._11 = shader_exports.get_artefact_position(start_val).x;
+            result._12 = shader_exports.get_artefact_position(start_val).y;
+            result._13 = shader_exports.get_artefact_position(start_val + 1).x;
+            result._14 = shader_exports.get_artefact_position(start_val + 1).y;
+            result._21 = shader_exports.get_artefact_position(start_val + 2).x;
+            result._22 = shader_exports.get_artefact_position(start_val + 2).y;
+            result._23 = shader_exports.get_artefact_position(start_val + 3).x;
+            result._24 = shader_exports.get_artefact_position(start_val + 3).y;
+            result._31 = shader_exports.get_artefact_position(start_val + 4).x;
+            result._32 = shader_exports.get_artefact_position(start_val + 4).y;
+            result._33 = shader_exports.get_artefact_position(start_val + 5).x;
+            result._34 = shader_exports.get_artefact_position(start_val + 5).y;
+            result._41 = shader_exports.get_artefact_position(start_val + 6).x;
+            result._42 = shader_exports.get_artefact_position(start_val + 6).y;
+            result._43 = shader_exports.get_artefact_position(start_val + 7).x;
+            result._44 = shader_exports.get_artefact_position(start_val + 7).y;
 
+            marker = Device.dwFrame;
+        }
         cmd_list.set_c(C, result);
     }
 
@@ -729,27 +738,32 @@ public:
 
 static class cl_anomalys final : public R_constant_setup
 {
+    u32 marker{};
     Fmatrix result{};
 
     void setup(CBackend& cmd_list, R_constant* C) override
     {
-        result._11 = shader_exports.get_anomaly_position(start_val).x;
-        result._12 = shader_exports.get_anomaly_position(start_val).y;
-        result._13 = shader_exports.get_anomaly_position(start_val + 1).x;
-        result._14 = shader_exports.get_anomaly_position(start_val + 1).y;
-        result._21 = shader_exports.get_anomaly_position(start_val + 2).x;
-        result._22 = shader_exports.get_anomaly_position(start_val + 2).y;
-        result._23 = shader_exports.get_anomaly_position(start_val + 3).x;
-        result._24 = shader_exports.get_anomaly_position(start_val + 3).y;
-        result._31 = shader_exports.get_anomaly_position(start_val + 4).x;
-        result._32 = shader_exports.get_anomaly_position(start_val + 4).y;
-        result._33 = shader_exports.get_anomaly_position(start_val + 5).x;
-        result._34 = shader_exports.get_anomaly_position(start_val + 5).y;
-        result._41 = shader_exports.get_anomaly_position(start_val + 6).x;
-        result._42 = shader_exports.get_anomaly_position(start_val + 6).y;
-        result._43 = shader_exports.get_anomaly_position(start_val + 7).x;
-        result._44 = shader_exports.get_anomaly_position(start_val + 7).y;
+        if (marker != Device.dwFrame)
+        {
+            result._11 = shader_exports.get_anomaly_position(start_val).x;
+            result._12 = shader_exports.get_anomaly_position(start_val).y;
+            result._13 = shader_exports.get_anomaly_position(start_val + 1).x;
+            result._14 = shader_exports.get_anomaly_position(start_val + 1).y;
+            result._21 = shader_exports.get_anomaly_position(start_val + 2).x;
+            result._22 = shader_exports.get_anomaly_position(start_val + 2).y;
+            result._23 = shader_exports.get_anomaly_position(start_val + 3).x;
+            result._24 = shader_exports.get_anomaly_position(start_val + 3).y;
+            result._31 = shader_exports.get_anomaly_position(start_val + 4).x;
+            result._32 = shader_exports.get_anomaly_position(start_val + 4).y;
+            result._33 = shader_exports.get_anomaly_position(start_val + 5).x;
+            result._34 = shader_exports.get_anomaly_position(start_val + 5).y;
+            result._41 = shader_exports.get_anomaly_position(start_val + 6).x;
+            result._42 = shader_exports.get_anomaly_position(start_val + 6).y;
+            result._43 = shader_exports.get_anomaly_position(start_val + 7).x;
+            result._44 = shader_exports.get_anomaly_position(start_val + 7).y;
 
+            marker = Device.dwFrame;
+        }
         cmd_list.set_c(C, result);
     }
 

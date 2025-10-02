@@ -2,24 +2,6 @@
 
 #include "../../Include/xrRender/EnvironmentRender.h"
 
-#include "blenders/blender.h"
-class CBlender_skybox : public IBlender
-{
-public:
-    virtual LPCSTR getComment() { return "INTERNAL: combiner"; }
-
-    virtual void Compile(CBlender_Compile& C)
-    {
-        C.r_Pass("sky2", "sky2", FALSE, TRUE, FALSE);
-        C.r_dx10Texture("s_sky0", "$null");
-        C.r_dx10Texture("s_sky1", "$null");
-        C.r_dx10Sampler("smp_rtlinear");
-
-        C.PassSET_ZB(FALSE, FALSE);
-        C.r_End();
-    }
-};
-
 class dxEnvDescriptorRender : public IEnvDescriptorRender
 {
     friend class dxEnvDescriptorMixerRender;
@@ -69,10 +51,8 @@ public:
     virtual void OnDeviceDestroy();
 
 private:
-    CBlender_skybox m_b_skybox;
-
-    ref_shader sh_2sky;
-    ref_geom sh_2geom;
+    ref_shader skybox_sh;
+    ref_geom skybox_geom;
 
     ref_shader clouds_sh;
     ref_geom clouds_geom;

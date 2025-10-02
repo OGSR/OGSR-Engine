@@ -14,16 +14,19 @@ void CBackend::OnFrameEnd()
 }
 
 void CBackend::OnFrameBegin()
-{    
-    {
-        PGO(Msg("PGO:*****frame[%d]*****", Device.dwFrame));
-        Invalidate();
-        //	DX9 sets base rt nd base zb by default
-        RImplementation.rmNormal(*this);
-        set_RT(RImplementation.Target->get_base_rt());
-        set_ZB(RImplementation.Target->rt_Base_Depth->pZRT[context_id]);
-        set_Stencil(FALSE);
-    }
+{
+    PGO(Msg("PGO:*****frame[%d]*****", Device.dwFrame));
+    Invalidate();
+    //	DX9 sets base rt nd base zb by default
+    RImplementation.rmNormal(*this);
+    set_RT(RImplementation.Target->get_base_rt());
+    set_ZB(RImplementation.Target->rt_Base_Depth->pZRT[context_id]);
+    set_Stencil(FALSE);
+
+    set_CullMode(CULL_CW); // ???
+    set_CullMode(CULL_CCW);
+
+    Memory.mem_fill(&stat, 0, sizeof(stat));
 }
 
 void CBackend::Invalidate()
@@ -95,8 +98,39 @@ void CBackend::Invalidate()
 void CBackend::set_Textures(STextureList* _T)
 {
     // TODO: expose T invalidation method
-    // if (T == _T) // disabled due to cases when the set of resources the same, but different srv is need to be bind
-    //    return;
+
+    if (T == _T)
+    {
+        if (_T)
+        {
+            bool changed = false;
+
+            STextureList::iterator _it = _T->begin();
+            const STextureList::iterator _end = _T->end();
+
+            for (; _it != _end; ++_it)
+            {
+                std::pair<u32, ref_texture>& loader = *_it;
+                const u32 load_id = loader.first;
+                CTexture* load_surf = &*loader.second;
+
+                if (load_id < CTexture::rstVertex)
+                {
+                    if ((load_surf && (load_surf->last_slice != load_surf->curr_slice)))
+                    {
+                        changed = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!changed)
+                return;
+        }
+        else
+            return;
+    }
+
     T = _T;
 
     //	If resources weren't set at all we should clear from resource #0.

@@ -35,6 +35,7 @@ private:
 public:
     Fplane P{};
     Fsphere S{};
+
     u32 r_marker{};
     BOOL bDualRender{};
 
@@ -87,10 +88,12 @@ protected:
 
 public:
     xr_vector<CPortal*> m_portals;
+
     xr_vector<CFrustum> r_frustums;
     xr_vector<_scissor> r_scissors;
-    _scissor r_scissor_merged{};
     u32 r_marker{};
+
+    //_scissor r_scissor_merged{};
 
 public:
     // Main interface
@@ -137,7 +140,7 @@ public:
 public:
     CPortalTraverser();
 
-    void traverse(IRender_Sector* start, CFrustum& F, Fvector& vBase, Fmatrix& mXFORM, u32 options);
+    void traverse(IRender_Sector* start, CFrustum& F, const Fvector& vBase, const Fmatrix& mXFORM, const u32 options);
 
     void fade_render(CBackend& cmd_list);
 

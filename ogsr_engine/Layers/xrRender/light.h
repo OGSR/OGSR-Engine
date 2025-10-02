@@ -84,7 +84,6 @@ public:
             Fmatrix combine;
             s32 minX, maxX;
             s32 minY, maxY;
-            BOOL transluent;
         } D[R__NUM_SUN_CASCADES]; // directional
         struct _S
         {
@@ -94,7 +93,6 @@ public:
             u32 size;
             u32 posX;
             u32 posY;
-            BOOL transluent;
         } S; // spot
     } X;
 
@@ -154,7 +152,7 @@ public:
     virtual bool get_moveable() override { return flags.bMoveable || flags.bHudMode; }
 
     virtual void spatial_move();
-    virtual Fvector spatial_sector_point();
+    virtual const Fvector& spatial_sector_point() const override;
 
     virtual IRender_Light* dcast_Light() { return this; }
 

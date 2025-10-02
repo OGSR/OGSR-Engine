@@ -111,7 +111,7 @@ public:
     virtual void spatial_register();
     void spatial_unregister();
     virtual void spatial_move();
-    virtual Fvector spatial_sector_point() { return spatial.sphere.P; }
+    virtual const Fvector& spatial_sector_point() const { return spatial.sphere.P; }
     virtual void spatial_updatesector(IRender_Sector::sector_id_t sector_id) 
     {
         spatial_updatesector_internal(sector_id);

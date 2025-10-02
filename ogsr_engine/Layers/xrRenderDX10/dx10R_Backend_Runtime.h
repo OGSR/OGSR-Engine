@@ -530,7 +530,7 @@ IC void CBackend::set_Constants(R_constant_table* C)
 
     PGO(Msg("PGO:c-table"));
 
-    bool was_updated = false;
+    //bool was_updated = false;
 
     //	Setup constant tables
     {
@@ -619,7 +619,7 @@ IC void CBackend::set_Constants(R_constant_table* C)
                     tempBuffer[i] = nullptr;
             }
             HW.get_context(context_id)->PSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
-            was_updated = true;
+            //was_updated = true;
         }
 
         if (CBuffersNeedUpdate(m_aVertexConstants, aVertexConstants, uiMin, uiMax))
@@ -634,7 +634,7 @@ IC void CBackend::set_Constants(R_constant_table* C)
                     tempBuffer[i] = nullptr;
             }
             HW.get_context(context_id)->VSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
-            was_updated = true;
+            //was_updated = true;
         }
 
         if (CBuffersNeedUpdate(m_aGeometryConstants, aGeometryConstants, uiMin, uiMax))
@@ -649,7 +649,7 @@ IC void CBackend::set_Constants(R_constant_table* C)
                     tempBuffer[i] = nullptr;
             }
             HW.get_context(context_id)->GSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
-            was_updated = true;
+            //was_updated = true;
         }
 
         if (CBuffersNeedUpdate(m_aHullConstants, aHullConstants, uiMin, uiMax))
@@ -664,7 +664,7 @@ IC void CBackend::set_Constants(R_constant_table* C)
                     tempBuffer[i] = nullptr;
             }
             HW.get_context(context_id)->HSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
-            was_updated = true;
+            //was_updated = true;
         }
 
         if (CBuffersNeedUpdate(m_aDomainConstants, aDomainConstants, uiMin, uiMax))
@@ -679,7 +679,7 @@ IC void CBackend::set_Constants(R_constant_table* C)
                     tempBuffer[i] = nullptr;
             }
             HW.get_context(context_id)->DSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
-            was_updated = true;
+            //was_updated = true;
         }
 
         if (CBuffersNeedUpdate(m_aComputeConstants, aComputeConstants, uiMin, uiMax))
@@ -694,17 +694,16 @@ IC void CBackend::set_Constants(R_constant_table* C)
                     tempBuffer[i] = nullptr;
             }
             HW.get_context(context_id)->CSSetConstantBuffers(uiMin, uiMax - uiMin, &tempBuffer[uiMin]);
-            was_updated = true;
+            //was_updated = true;
         }
     }
 
-    if (!was_updated)
-    {
-        //Msg("can skip const set !!");
-    }
+    //if (!was_updated) //Simp: логирование показывает, что это вообще никогда не происходит
+    //    Msg("~~can skip const set !!");
+
 
     //if (was_updated)
-    {
+    //{
         // process constant-loaders
         R_constant_table::c_table::iterator it = C->table.begin();
         const R_constant_table::c_table::iterator end = C->table.end();
@@ -714,11 +713,11 @@ IC void CBackend::set_Constants(R_constant_table* C)
             VERIFY(constant);
             if (constant && constant->handler)
             {
-                if (was_updated || constant->handler->bCapture) // for future optimization
+                //if (was_updated || constant->handler->bCapture) // for future optimization
                     constant->handler->setup(*this, constant);
             }
         }
-    }
+    //}
 }
 
 ICF void CBackend::ApplyRTandZB()

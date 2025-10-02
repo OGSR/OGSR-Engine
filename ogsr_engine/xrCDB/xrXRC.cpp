@@ -20,3 +20,6 @@ CStatTimer* cdb_clFRUSTUM = &_clFRUSTUM; // total: frustum query
 xrXRC::xrXRC() {}
 
 xrXRC::~xrXRC() {}
+
+thread_local CDB::COLLIDER CL;
+CDB::COLLIDER* xrXRC::collider() { return &CL; }

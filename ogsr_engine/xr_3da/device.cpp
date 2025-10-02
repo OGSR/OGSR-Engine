@@ -219,7 +219,7 @@ void CRenderDevice::on_idle()
         return;
     }
 
-    if (g_loading_events.size())
+    if (!g_loading_events.empty())
     {
         if (g_loading_events.front()())
             g_loading_events.pop_front();
@@ -246,6 +246,13 @@ void CRenderDevice::on_idle()
         // if (b_is_Active)
         {
             FrameMove();
+        }
+
+        if (!g_loading_events.empty()) // that is to avoid loading screen flickering
+        {
+            pApp->LoadDraw();
+
+            return;
         }
 
         OnCameraUpdated(false);

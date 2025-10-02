@@ -297,7 +297,6 @@ bool operator==(const D3D_SAMPLER_DESC& desc1, const D3D_SAMPLER_DESC& desc2)
         return false;
     if (desc1.AddressW != desc2.AddressW)
         return false;
-    //  RZ
     //  if (desc1.MipLODBias != desc2.MipLODBias)
     //    return false;
     //	Ignore anisotropy since it's set up automatically by the manager

@@ -122,7 +122,6 @@ const u32 LUMINANCE_size = 16;
 #define SE_L_UNSHADOWED 1
 #define SE_L_NORMAL 2 // typical, scaled
 #define SE_L_FULLSIZE 3 // full texture coverage
-#define SE_L_TRANSLUENT 4 // with opacity/color mask
 
 // mask
 #define SE_MASK_SPOT 0

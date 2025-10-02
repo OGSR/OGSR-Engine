@@ -340,7 +340,23 @@ bool CHW::ThisInstanceIsGlobal() const
     return this == &HW;
 }
 
-void CHW::WaitOnSwapChain() const { WaitForSingleObjectEx(m_frameLatencyWaitableObject, INFINITE, true); }
+void CHW::WaitOnSwapChain() const 
+{ 
+    // https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitforsingleobject
+
+    /*
+       [in] dwMilliseconds
+
+       If dwMilliseconds is zero, the function does not enter a wait state if the object is not signaled; it always returns immediately.
+    */
+
+    while (WaitForSingleObject(m_frameLatencyWaitableObject, 0))
+    {
+        // Issue X86 PAUSE or ARM YIELD instruction to reduce contention between
+        // hyper-threads
+        YieldProcessor();
+    }
+}
 
 void CHW::DumpVideoMemoryUsage() const
 {

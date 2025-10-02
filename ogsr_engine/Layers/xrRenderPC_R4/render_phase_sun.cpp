@@ -28,10 +28,9 @@ void render_sun::init()
         return;
 
     // pre-allocate contexts
-    for (unsigned int& contexts_id : contexts_ids)
+    for (auto& ctx_id : contexts_ids)
     {
-        contexts_id = RImplementation.alloc_context();
-        R_ASSERT(contexts_id != CHW::INVALID_CONTEXT_ID);
+        ctx_id = RImplementation.alloc_context();
     }
 
     o.mt_calc_enabled = ps_r2_ls_flags.test(R2FLAG_EXP_MT_SUN);
@@ -241,7 +240,7 @@ void render_sun::calculate()
             IRender_Sector::sector_id_t id = RImplementation.get_largest_sector();
 
             // Fill the database
-            dsgraph.build_subspace(id, &cull_frustum[cascade_ind], cull_xform[cascade_ind], cull_COP[cascade_ind], TRUE);
+            dsgraph.build_subspace(id, cull_frustum[cascade_ind], cull_xform[cascade_ind], cull_COP[cascade_ind], TRUE);
         }
     };
 
@@ -277,10 +276,8 @@ void render_sun::render()
 
         auto& dsgraph = RImplementation.get_context(contexts_ids[cascade_ind]);
 
-        const bool bNormal = !dsgraph.mapNormalPasses[0][0].empty() || !dsgraph.mapMatrixPasses[0][0].empty();
-        const bool bSpecial = !dsgraph.mapNormalPasses[1][0].empty() || !dsgraph.mapMatrixPasses[1][0].empty() || !dsgraph.mapSorted.empty();
-
-        if (bNormal || bSpecial)
+        const bool bNormal = dsgraph.mapNormalCount > 0 || dsgraph.mapMatrixCount > 0;
+        if (bNormal)
         {
             RImplementation.Target->phase_smap_direct(dsgraph.cmd_list, sun, cascade_ind);
             dsgraph.cmd_list.set_xform_world(Fidentity);
@@ -295,16 +292,6 @@ void render_sun::render()
                 {
                     RImplementation.Details->Render(dsgraph.cmd_list, true);
                 }
-            }
-
-            sun->X.D[cascade_ind].transluent = FALSE;
-
-            if (bSpecial)
-            {
-                sun->X.D[cascade_ind].transluent = TRUE;
-                RImplementation.Target->phase_smap_direct_tsh(dsgraph.cmd_list, sun, cascade_ind);
-                dsgraph.r_dsgraph_render_graph(1); // normal level, secondary priority
-                dsgraph.r_dsgraph_render_sorted(); // strict-sorted geoms
             }
         }
     };

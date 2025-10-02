@@ -45,7 +45,6 @@ void render_rain::init()
 
     // pre-allocate context
     context_id = RImplementation.alloc_context();
-    R_ASSERT(context_id != CHW::INVALID_CONTEXT_ID);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -217,7 +216,7 @@ void render_rain::calculate()
         IRender_Sector::sector_id_t id = RImplementation.get_largest_sector();
 
         // Fill the database
-        dsgraph.build_subspace(id, &cull_frustum, cull_xform, cull_COP, TRUE);
+        dsgraph.build_subspace(id, cull_frustum, cull_xform, cull_COP, TRUE);
     }
 
     // Finalize & Cleanup
@@ -232,9 +231,8 @@ void render_rain::render()
 
         // Render shadow-map
         {
-            const bool bNormal = !dsgraph.mapNormalPasses[0][0].empty() || !dsgraph.mapMatrixPasses[0][0].empty();
-            //bool bSpecial = !dsgraph.mapNormalPasses[1][0].empty() || !dsgraph.mapMatrixPasses[1][0].empty() || !dsgraph.mapSorted.empty();
-            if (bNormal /*|| bSpecial*/)
+            const bool bNormal = dsgraph.mapNormalCount > 0 || dsgraph.mapMatrixCount > 0;
+            if (bNormal)
             {
                 PIX_EVENT_CTX(dsgraph.cmd_list, RAIN);
 

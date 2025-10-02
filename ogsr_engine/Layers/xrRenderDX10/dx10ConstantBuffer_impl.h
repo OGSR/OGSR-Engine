@@ -1,192 +1,145 @@
 #pragma once
 
-IC Fvector4* dx10ConstantBuffer::Access(u16 offset)
-{
-    m_bChanged = true;
+#if defined(_DEBUG) || defined(OGSR_TOTAL_DBG)
+#define CBUF_ASSERT R_ASSERT
+#else
+#define CBUF_ASSERT __noop
+#endif
 
-    //	Check buffer size in client code: don't know if actual data will cross
-    //	buffer boundaries.
-    VERIFY(offset < (int)m_uiBufferSize);
-    BYTE* res = ((BYTE*)m_pBufferData) + offset;
-    return (Fvector4*)res;
+template <class T>
+IC T* dx10ConstantBuffer::Access(const u32 offset)
+{
+    //	Check buffer size in client code: don't know if actual data will cross buffer boundaries.
+    CBUF_ASSERT(offset < m_uiBufferSize);
+
+    BYTE* res = reinterpret_cast<BYTE*>(m_pBufferData) + offset;
+    return reinterpret_cast<T*>(res);
 }
 
-inline void set_matrix(Fvector4* it, const Fmatrix& A, u32 cnt, bool& changed)
+template <typename T>
+IC void dx10ConstantBuffer::set(R_constant* C, R_constant_load& L, const T& A)
 {
-    for (u32 i=0;i< cnt;i++)
-    {
-        if (changed || !it[i].similar(A.m[0][i], A.m[1][i], A.m[2][i], A.m[3][i]))
-        {
-            it[i].set(A.m[0][i], A.m[1][i], A.m[2][i], A.m[3][i]);
+    if constexpr (std::is_same_v<T, float> || std::is_same_v<T, Fvector2> || std::is_same_v<T, Fvector3> || std::is_same_v<T, Fvector4> || std::is_same_v<T, Fmatrix>)
+        CBUF_ASSERT(RC_float == C->type);
+    else if constexpr (std::is_same_v<T, int>)
+        CBUF_ASSERT(RC_int == C->type);
+    else if constexpr (std::is_same_v<T, bool>)
+        CBUF_ASSERT(RC_bool == C->type);
+    else
+        static_assert(false, "something strange with arg typename!");
 
-            changed = true;
+    if constexpr (std::is_same_v<T, Fmatrix>)
+    {
+        auto set_matrix = [&](const u32 cnt) {
+            CBUF_ASSERT(static_cast<u32>(L.index + cnt * sizeof(Fvector4)) <= m_uiBufferSize);
+
+            Fvector4* it = Access<Fvector4>(L.index);
+            for (u32 i{}; i < cnt; ++i)
+            {
+                const Fvector4 cmp{A.m[0][i], A.m[1][i], A.m[2][i], A.m[3][i]};
+                if (m_bChanged || memcmp(&it[i], &cmp, sizeof(*it)))
+                {
+                    it[i].set(cmp);
+                    m_bChanged = true;
+                }
+            }
+        };
+
+        switch (L.cls)
+        {
+        case RC_2x4: set_matrix(2); break;
+        case RC_3x4: set_matrix(3); break;
+        case RC_4x4: set_matrix(4); break;
+        default: FATAL("Invalid constant run-time-type for '%s'", C->name.c_str());
+        }
+    }
+    else
+    {
+        if constexpr (std::is_same_v<T, float> || std::is_same_v<T, int> || std::is_same_v<T, bool>)
+            CBUF_ASSERT(RC_1x1 == L.cls);
+        else if constexpr (std::is_same_v<T, Fvector2>)
+            CBUF_ASSERT(RC_1x2 == L.cls);
+        else if constexpr (std::is_same_v<T, Fvector3>)
+            CBUF_ASSERT(RC_1x3 == L.cls || RC_1x2 == L.cls);
+        else if constexpr (std::is_same_v<T, Fvector4>)
+            CBUF_ASSERT(RC_1x4 == L.cls || RC_1x3 == L.cls || RC_1x2 == L.cls);
+
+        CBUF_ASSERT(static_cast<u32>(L.index + sizeof(T)) <= m_uiBufferSize);
+
+        T* it = Access<T>(L.index);
+        if (m_bChanged || memcmp(it, &A, sizeof(T)))
+        {
+            *it = A;
+            m_bChanged = true;
         }
     }
 }
 
-IC void dx10ConstantBuffer::set(R_constant* C, R_constant_load& L, const Fmatrix& A)
+template <typename T>
+IC void dx10ConstantBuffer::seta(R_constant* C, R_constant_load& L, const u32 e, const T& A)
 {
-    VERIFY(RC_float == C->type);
+    if constexpr (std::is_same_v<T, Fvector2> || std::is_same_v<T, Fvector3> || std::is_same_v<T, Fvector4> || std::is_same_v<T, Fmatrix>)
+        CBUF_ASSERT(RC_float == C->type);
+    else
+        static_assert(false, "something strange with arg typename!");
 
-    bool changed = m_bChanged;
-
-    Fvector4* it = Access(L.index);
-    switch (L.cls)
+    if constexpr (std::is_same_v<T, Fmatrix>)
     {
-    case RC_2x4:
-        VERIFY(u32((u32)L.index + 2 * lineSize) <= m_uiBufferSize);
-        set_matrix(it, A, 2, changed);
-        break;
-    case RC_3x4:
-        VERIFY(u32((u32)L.index + 3 * lineSize) <= m_uiBufferSize);
-        set_matrix(it, A, 3, changed);
-        break;
-    case RC_4x4:
-        VERIFY(u32((u32)L.index + 4 * lineSize) <= m_uiBufferSize);
-        set_matrix(it, A, 4, changed);
-        break;
-    default:
-#ifdef DEBUG
-        FATAL("Invalid constant run-time-type for '%s'", *C->name);
-#else
-        NODEFAULT;
-#endif
-    }
+        auto set_matrix = [&](const u32 cnt) {
+            auto base = L.index + cnt * sizeof(Fvector4) * e;
+            CBUF_ASSERT((base + cnt * sizeof(Fvector4)) <= m_uiBufferSize);
 
-    if (changed)
-        m_bChanged = true;
+            Fvector4* it = Access<Fvector4>(base);
+            for (u32 i{}; i < cnt; ++i)
+            {
+                const Fvector4 cmp{A.m[0][i], A.m[1][i], A.m[2][i], A.m[3][i]};
+                if (m_bChanged || memcmp(&it[i], &cmp, sizeof(*it)))
+                {
+                    it[i].set(cmp);
+                    m_bChanged = true;
+                }
+            }
+        };
+
+        switch (L.cls)
+        {
+        case RC_2x4: set_matrix(2); break;
+        case RC_3x4: set_matrix(3); break;
+        case RC_4x4: set_matrix(4); break;
+        default: FATAL("Invalid constant run-time-type for '%s'", C->name.c_str());
+        }
+    }
+    else
+    {
+        if constexpr (std::is_same_v<T, Fvector2>)
+            CBUF_ASSERT(RC_1x2 == L.cls);
+        else if constexpr (std::is_same_v<T, Fvector3>)
+            CBUF_ASSERT(RC_1x3 == L.cls || RC_1x2 == L.cls);
+        else if constexpr (std::is_same_v<T, Fvector4>)
+            CBUF_ASSERT(RC_1x4 == L.cls || RC_1x3 == L.cls || RC_1x2 == L.cls);
+
+        const u32 base = L.index + sizeof(Fvector4) * e; //Буфер выровнен по 16 байт, потому здесь смещение на sizeof(Fvector4)
+        CBUF_ASSERT((base + sizeof(T)) <= m_uiBufferSize);
+
+        T* it = Access<T>(base);
+        if (m_bChanged || memcmp(it, &A, sizeof(T)))
+        {
+            *it = A;
+            m_bChanged = true;
+        }
+    }
 }
 
-IC void dx10ConstantBuffer::set(R_constant* C, R_constant_load& L, const Fvector4& A)
+IC void* dx10ConstantBuffer::AccessDirect(R_constant_load& L, const u32 DataSize) // this always mark buffer as dirty
 {
-    VERIFY(RC_float == C->type);
-    VERIFY(RC_1x4 == L.cls || RC_1x3 == L.cls || RC_1x2 == L.cls);
+    //	Check buffer size in client code: don't know if actual data will cross buffer boundaries.
+    CBUF_ASSERT(L.index < m_uiBufferSize);
 
-    VERIFY(u32((u32)L.index + lineSize) <= m_uiBufferSize);
-
-    bool changed = m_bChanged;
-
-    Fvector4* it = Access(L.index);
-    if (changed || !it->similar(A))
-    {
-        it->set(A);
-        changed = true;
-    }
-
-    if (changed)
-        m_bChanged = true;
-}
-
-IC void dx10ConstantBuffer::set(R_constant* C, R_constant_load& L, float A)
-{
-    VERIFY(RC_float == C->type);
-    VERIFY(RC_1x1 == L.cls);
-    VERIFY(u32((u32)L.index + sizeof(float)) <= m_uiBufferSize);
-
-    bool changed = m_bChanged;
-
-    float* it = (float*)Access(L.index);
-    if (changed || !fsimilar(*it, A))
-    {
-        *it = A;
-        changed = true;
-    }
-
-    if (changed)
-        m_bChanged = true;
-}
-
-IC void dx10ConstantBuffer::set(R_constant* C, R_constant_load& L, int A)
-{
-    VERIFY(RC_int == C->type);
-    VERIFY(RC_1x1 == L.cls);
-    VERIFY(u32((u32)L.index + sizeof(int)) <= m_uiBufferSize);
-
-    bool changed = m_bChanged;
-
-    int* it = (int*)Access(L.index);
-    if (changed || (*it) != A)
-    {
-        *it = A;
-        changed = true;
-    }
-
-    if (changed)
-        m_bChanged = true;
-}
-
-IC void dx10ConstantBuffer::seta(R_constant* C, R_constant_load& L, u32 e, const Fmatrix& A)
-{
-    VERIFY(RC_float == C->type);
-
-    bool changed = m_bChanged;
-
-    u32 base;
-    Fvector4* it;
-    switch (L.cls)
-    {
-    case RC_2x4:
-        base = (u32)L.index + 2 * lineSize * e;
-        VERIFY((base + 2 * lineSize) <= m_uiBufferSize);
-        it = Access((u16)base);
-        set_matrix(it, A, 2, changed);
-        break;
-    case RC_3x4:
-        base = (u32)L.index + 3 * lineSize * e;
-        VERIFY((base + 3 * lineSize) <= m_uiBufferSize);
-        it = Access((u16)base);
-        set_matrix(it, A, 3, changed);
-        break;
-    case RC_4x4:
-        base = (u32)L.index + 4 * lineSize * e;
-        VERIFY((base + 4 * lineSize) <= m_uiBufferSize);
-        it = Access((u16)base);
-        set_matrix(it, A, 4, changed);
-        break;
-    default:
-#ifdef DEBUG
-        FATAL("Invalid constant run-time-type for '%s'", *C->name);
-#else
-        NODEFAULT;
-#endif
-    }
-
-    if (changed)
-        m_bChanged = true;
-}
-
-IC void dx10ConstantBuffer::seta(R_constant* C, R_constant_load& L, u32 e, const Fvector4& A)
-{
-    VERIFY(RC_float == C->type);
-    VERIFY(RC_1x4 == L.cls || RC_1x3 == L.cls || RC_1x2 == L.cls);
-
-    u32 base = (u32)L.index + lineSize * e;
-    VERIFY((base + lineSize) <= m_uiBufferSize);
-
-    bool changed = m_bChanged;
-
-    Fvector4* it = Access((u16)base);
-    if (changed || !it->similar(A))
-    {
-        it->set(A);
-        changed = true;
-    }
-
-    if (changed)
-        m_bChanged = true;
-}
-
-IC void* dx10ConstantBuffer::AccessDirect(R_constant_load& L, u32 DataSize) // this always mark buffer as dirty
-{
-    //	Check buffer size in client code: don't know if actual data will cross
-    //	buffer boundaries.
-    VERIFY(L.index < (int)m_uiBufferSize);
-
-    if ((u32)L.index + DataSize <= m_uiBufferSize)
+    if (L.index + DataSize <= m_uiBufferSize)
     {
         m_bChanged = true;
 
-        BYTE* res = ((BYTE*)m_pBufferData) + L.index;
+        BYTE* res = reinterpret_cast<BYTE*>(m_pBufferData) + L.index;
         return res;
     }
     else

@@ -19,11 +19,3 @@ void CRenderTarget::phase_smap_direct(CBackend& cmd_list, light* L, u32 sub_phas
     // Stencil	- disable
     cmd_list.set_Stencil(FALSE);
 }
-
-void CRenderTarget::phase_smap_direct_tsh(CBackend& cmd_list, light* L, u32 sub_phase)
-{
-    cmd_list.set_ColorWriteEnable();
-    //	Prepare viewport for shadow map rendering
-    RImplementation.rmNormal(cmd_list);
-    cmd_list.ClearRT(cmd_list.get_RT(), { 1.0f, 1.0f, 1.0f, 1.0f }); // color_rgba(127, 127, 12, 12);
-}

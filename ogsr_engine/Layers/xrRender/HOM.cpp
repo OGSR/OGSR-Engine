@@ -36,7 +36,7 @@ struct HOM_poly
 };
 #pragma pack(pop)
 
-IC float Area(Fvector& v0, Fvector& v1, Fvector& v2)
+static float area(const Fvector& v0, const Fvector& v1, const Fvector& v2)
 {
     const float e1 = v0.distance_to(v1);
     const float e2 = v0.distance_to(v2);
@@ -93,8 +93,8 @@ void CHOM::Load()
         rT.adjacent[0] = (0xffffffff == adjacency[3 * it + 0]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 0]);
         rT.adjacent[1] = (0xffffffff == adjacency[3 * it + 1]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 1]);
         rT.adjacent[2] = (0xffffffff == adjacency[3 * it + 2]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 2]);
-        rT.flags = u32(clT.dummy);
-        rT.area = Area(v0, v1, v2);
+        rT.flags = static_cast<u32>(clT.dummy);
+        rT.area = area(v0, v1, v2);
         if (rT.area < EPS_L)
         {
             Msg("! Invalid HOM triangle (%f,%f,%f)-(%f,%f,%f)-(%f,%f,%f)", VPUSH(v0), VPUSH(v1), VPUSH(v2));
@@ -167,8 +167,8 @@ void CHOM::Render_DB(CFrustum& base)
     sPoly src, dst;
     u32 _frame = Device.dwFrame;
 
-    tris_in_frame = xrc.r_count();
-    tris_in_frame_visible = 0;
+    FrustumTriangleCount = xrc.r_count();
+    VisibleTriangleCount = 0;
 
     // Perfrom selection, sorting, culling
     for (; it != end; it++)
@@ -200,7 +200,7 @@ void CHOM::Render_DB(CFrustum& base)
         }
 
         // XForm and Rasterize
-        tris_in_frame_visible++;
+        VisibleTriangleCount++;
         u32 pixels = 0;
         int limit = int(P->size()) - 1;
         for (int v = 1; v < limit; v++)
@@ -220,7 +220,11 @@ void CHOM::Render_DB(CFrustum& base)
 
 void CHOM::DispatchRender()
 {
-    if (Allowed())
+    VisibleTriangleCount = 0;
+    FrustumTriangleCount = 0;
+    CulledOutCount = 0;
+
+    if (!Allowed())
         return;
 
     if (g_pGameLevel && !IsMainMenuActive())
@@ -238,7 +242,9 @@ void CHOM::DispatchRender()
     }
 }
 
-ICF BOOL xform_b0(Fvector2& min, Fvector2& max, float& minz, Fmatrix& X, float _x, float _y, float _z)
+namespace
+{
+ICF BOOL xform_b0(Fvector2& min, Fvector2& max, float& minz, const Fmatrix& X, const float _x, const float _y, const float _z)
 {
     const float z = _x * X._13 + _y * X._23 + _z * X._33 + X._43;
     if (z < EPS)
@@ -294,25 +300,7 @@ IC BOOL _visible(Fbox& B, Fmatrix& m_xform_01)
         return TRUE;
     return Raster.test(min.x, min.y, max.x, max.y, z);
 }
-
-//BOOL CHOM::visible(Fbox3& B)
-//{
-//    if (!Allowed())
-//        return TRUE;
-//
-//    if (B.contains(Device.vCameraPosition))
-//        return TRUE;
-//
-//    return _visible(B, m_xform_01);
-//}
-
-BOOL CHOM::visible(Fbox2& B, float depth) const
-{
-    if (!Allowed())
-        return TRUE;
-
-    return Raster.test(B.min.x, B.min.y, B.max.x, B.max.y, depth);
-}
+} // namespace
 
 BOOL CHOM::visible(vis_data& vis)
 {
@@ -340,15 +328,18 @@ BOOL CHOM::visible(vis_data& vis)
         // visible - delay next test
         vis.hom_frame = frame_current + ::Random.randI(5 * 2, 5 * 5);
     else
-        // hidden - shedule to next frame
+        // hidden - schedule to next frame
         vis.hom_frame = frame_current;
 
     vis.hom_tested = frame_current;
 
+    if (!result)
+        CulledOutCount++;
+
     return result;
 }
 
-BOOL CHOM::visible(sPoly& P)
+BOOL CHOM::visible(sPoly& P) // special case for traverse_sector
 {
     if (!Allowed())
         return TRUE;
@@ -400,9 +391,10 @@ void CHOM::stats()
     if (m_pModel)
     {
         CGameFont& F = *Device.Statistic->Font();
-        F.OutNext(" **** HOM-occ ****");
-        F.OutNext("  visible:  %2d", tris_in_frame_visible);
-        F.OutNext("  frustum:  %2d", tris_in_frame);
-        F.OutNext("    total:  %2d", m_pModel->get_tris_count());
+        F.OutNext("***** HOM *****");
+        F.OutNext("   visible:  %2d", VisibleTriangleCount);
+        F.OutNext("   frustum:  %2d", FrustumTriangleCount);
+        F.OutNext("     total:  %2d", m_pModel->get_tris_count());
+        F.OutNext("culled cnt:  %2d", CulledOutCount);
     }
 }

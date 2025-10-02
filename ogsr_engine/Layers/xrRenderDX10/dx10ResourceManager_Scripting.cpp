@@ -13,7 +13,7 @@
 class adopt_dx10options
 {
 public:
-    
+    bool _wet_surface_opt_enable() { return (ps_r3_dyn_wet_surf_opt == 1); }
 };
 
 // wrapper
@@ -99,6 +99,12 @@ public:
         C->SH->flags.iScopeLense = E;
         return *this;
     }
+    adopt_compiler& _passCS(LPCSTR cs)
+    {
+        TryEndPass();
+        C->r_ComputePass(cs);
+        return *this;
+    }
     adopt_compiler& _pass(LPCSTR vs, LPCSTR ps)
     {
         TryEndPass();
@@ -115,7 +121,6 @@ public:
     {
         TryEndPass();
         C->r_TessPass(vs, hs, ds, "null", ps, true);
-        C->r_ComputePass("null");
         if (ps_r2_ls_flags_ext.test(R2FLAGEXT_WIREFRAME))
             C->R().SetRS(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
         return *this;
@@ -125,9 +130,9 @@ public:
         C->PassSET_LightFog(FALSE, _fog);
         return *this;
     }
-    adopt_compiler& _ZB(bool _test, bool _write)
+    adopt_compiler& _zb(bool _test, bool _write, bool _invert = false)
     {
-        C->PassSET_ZB(_test, _write);
+        C->PassSET_ZB(_test, _write, _invert);
         return *this;
     }
     adopt_compiler& _blend(bool _blend, u32 abSRC, u32 abDST)
@@ -182,6 +187,22 @@ public:
         C->RS.SetRS(D3DRS_ZFUNC, Func);
         return *this;
     }
+    adopt_compiler& _dx10SetRS(u32 fun1, u32 fun2)
+    {
+        C->RS.SetRS(fun1, fun2);
+        return *this;
+    }
+    adopt_compiler& _dx10Adress(u32 sampler, u32 adress)
+    {
+        C->i_dx10Address(sampler, adress);
+        return *this;
+    }
+    adopt_compiler& _dx10BorderColor(u32 sampler, u32 color_a, u32 color_r, u32 color_g, u32 color_b)
+    {
+        C->i_dx10BorderColor(sampler, D3DCOLOR_ARGB(color_a, color_r, color_g, color_b));
+        return *this;
+    }
+
     adopt_dx10options _dx10Options() { return adopt_dx10options(); };
 };
 #pragma warning(pop)
@@ -491,6 +512,7 @@ void CResourceManager::LS_Load()
     module(LSVM)[def("log", &ScriptLuaLog),
 
                  class_<adopt_dx10options>("_dx10options")
+                     .def("wet_surface_opt_enable", &adopt_dx10options::_wet_surface_opt_enable)
                      .def("getLevel", [](adopt_dx10options*) { return g_pGameLevel->name().c_str(); }),
 
                  class_<adopt_dx10sampler>("_dx10sampler")
@@ -518,6 +540,7 @@ void CResourceManager::LS_Load()
 
                  class_<adopt_compiler>("_compiler")
                      //.def(constructor<const adopt_compiler&>())
+                     .def("begin", &adopt_compiler::_passCS, return_reference_to<1>())
                      .def("begin", &adopt_compiler::_pass, return_reference_to<1>())
                      .def("begin", &adopt_compiler::_passgs, return_reference_to<1>())
                      .def("begin", &adopt_compiler::_passеttess, return_reference_to<1>())
@@ -526,7 +549,7 @@ void CResourceManager::LS_Load()
                      .def("distort", &adopt_compiler::_o_distort, return_reference_to<1>())
                      .def("wmark", &adopt_compiler::_o_wmark, return_reference_to<1>())
                      .def("fog", &adopt_compiler::_fog, return_reference_to<1>())
-                     .def("zb", &adopt_compiler::_ZB, return_reference_to<1>())
+                     .def("zb", &adopt_compiler::_zb, return_reference_to<1>())
                      .def("blend", &adopt_compiler::_blend, return_reference_to<1>())
                      .def("aref", &adopt_compiler::_aref, return_reference_to<1>())
                      .def("scopelense", &adopt_compiler::_o_scopelense, return_reference_to<1>())
@@ -540,6 +563,9 @@ void CResourceManager::LS_Load()
                      .def("dx10cullmode", &adopt_compiler::_dx10CullMode, return_reference_to<1>())
                      .def("dx10atoc", &adopt_compiler::_dx10ATOC, return_reference_to<1>())
                      .def("dx10zfunc", &adopt_compiler::_dx10ZFunc, return_reference_to<1>())
+                     .def("dx10setrs", &adopt_compiler::_dx10SetRS, return_reference_to<1>())
+                     .def("dx10adress", &adopt_compiler::_dx10Adress, return_reference_to<1>())
+                     .def("dx10bordercolor", &adopt_compiler::_dx10BorderColor, return_reference_to<1>())
 
                      .def("dx10sampler", &adopt_compiler::_dx10sampler) // returns sampler-object
                      .def("dx10Options", &adopt_compiler::_dx10Options), // returns options-object

@@ -27,9 +27,6 @@ Texture2D s_mask_v_1;
 Texture2D s_mask_v_2;
 Texture2D s_mask_v_3;
 
-// Condensation droplets texture
-Texture2D s_mask_droplets;
-
 // Breath noise texture
 Texture2D s_breath_noise;
 
@@ -39,8 +36,8 @@ Texture2D s_image_blurred;
 // Constants from engine
 uniform float4 mask_control;
 
-uniform float breath_size;
-uniform float breath_idx;
+uniform float2 breath_size;
+uniform float2 breath_idx;
 
 uniform float3 gasmask_inertia;
 uniform float3 device_inertia;

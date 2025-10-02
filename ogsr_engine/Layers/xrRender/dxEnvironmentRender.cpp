@@ -203,16 +203,16 @@ void dxEnvironmentRender::RenderSky(CBackend& cmd_list, CEnvironment& env)
     RImplementation.Index.Unlock(20 * 3);
 
     // Fill vertex buffer
-    v_skybox* pv = (v_skybox*)RImplementation.Vertex.Lock(12, sh_2geom.stride(), v_offset);
+    v_skybox* pv = (v_skybox*)RImplementation.Vertex.Lock(12, skybox_geom.stride(), v_offset);
     for (u32 v = 0; v < 12; v++)
         pv[v].set(hbox_verts[v * 2], C, hbox_verts[v * 2 + 1]);
-    RImplementation.Vertex.Unlock(12, sh_2geom.stride());
+    RImplementation.Vertex.Unlock(12, skybox_geom.stride());
 
     // Render
     cmd_list.set_xform_world(mSky);
     cmd_list.set_xform_world_old(mSkyOld);
-    cmd_list.set_Geometry(sh_2geom);
-    cmd_list.set_Shader(sh_2sky);
+    cmd_list.set_Geometry(skybox_geom);
+    cmd_list.set_Shader(skybox_sh);
 
     cmd_list.set_Textures(&mixRen.sky_r_textures);
     cmd_list.Render(D3DPT_TRIANGLELIST, v_offset, 0, 12, i_offset, 20);
@@ -272,9 +272,9 @@ void dxEnvironmentRender::RenderClouds(CBackend& cmd_list, CEnvironment& env)
 
 void dxEnvironmentRender::OnDeviceCreate()
 {
-    sh_2sky.create(&m_b_skybox, "skybox_2t");
-    sh_2geom.create(v_skybox_fvf, RImplementation.Vertex.Buffer(), RImplementation.Index.Buffer());
-    clouds_sh.create("clouds", "null");
+    skybox_sh.create("skybox");
+    skybox_geom.create(v_skybox_fvf, RImplementation.Vertex.Buffer(), RImplementation.Index.Buffer());
+    clouds_sh.create("clouds");
     clouds_geom.create(v_clouds_fvf, RImplementation.Vertex.Buffer(), RImplementation.Index.Buffer());
 }
 
@@ -283,8 +283,8 @@ void dxEnvironmentRender::OnDeviceDestroy()
     tsky0->surface_set(nullptr);
     tsky1->surface_set(nullptr);
 
-    sh_2sky.destroy();
-    sh_2geom.destroy();
+    skybox_sh.destroy();
+    skybox_geom.destroy();
     clouds_sh.destroy();
     clouds_geom.destroy();
 }

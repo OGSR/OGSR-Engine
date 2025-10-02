@@ -138,7 +138,6 @@ void uber_deffer(CBlender_Compile& C, bool hq, LPCSTR _vspec, LPCSTR _pspec, BOO
         VERIFY(strstr(vs, "bump") != 0);
         VERIFY(strstr(ps, "bump") != 0);
         C.r_TessPass(vs, hs, ds, "null", ps, FALSE);
-        C.r_ComputePass("null");
         RImplementation.clearAllShaderOptions();
         const u32 stage = C.r_dx10Sampler("smp_bump_ds");
         if (stage != -1)
@@ -277,7 +276,6 @@ void uber_shadow(CBlender_Compile& C, LPCSTR _vspec)
         strconcat(sizeof(ds), ds, "DX11\\tess_shadow", params);
 
         C.r_TessPass(vs, hs, ds, "null", "dumb", FALSE, TRUE, TRUE, FALSE);
-        C.r_ComputePass("null");
         RImplementation.clearAllShaderOptions();
         C.r_dx10Texture("s_base", C.L_textures[0]);
         C.r_dx10Texture("s_bumpX", fnameB); // should be before base bump

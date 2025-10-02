@@ -192,6 +192,8 @@ void CRender::level_Unload()
         id.unload();
     }
 
+    sector_portals_structure.unload();
+
     //*** Lights
     Lights.Unload();
 
@@ -448,17 +450,14 @@ void CRender::LoadSectors(IReader* fs)
     //	for (int d=0; d<Sectors.size(); d++)
     //		Sectors[d]->DebugDump	();
 
-    for (int id = 0; id < R__NUM_PARALLEL_CONTEXTS; ++id)
+    for (auto& dsgraph : contexts_pool)
     {
-        auto& dsgraph = contexts_pool[id];
         dsgraph.reset();
         dsgraph.load(sectors_data, portals_data);
-        contexts_used.set(id, false);
     }
+    ZeroMemory(&contexts_used, sizeof contexts_used);
 
-    auto& dsgraph = get_imm_context();
-    dsgraph.reset();
-    dsgraph.load(sectors_data, portals_data);
+    sector_portals_structure.load(sectors_data, portals_data);
 
     last_sector_id = IRender_Sector::INVALID_SECTOR_ID;
 }
@@ -511,6 +510,8 @@ void CRender::Load3DFluid()
 
         if (version == 3)
         {
+            xrXRC xrc;
+
             const u32 cnt = F->r_u32();
             for (u32 i = 0; i < cnt; ++i)
             {
@@ -521,11 +522,9 @@ void CRender::Load3DFluid()
 
                 Msg("~ Loading fog volume with profile [%s]. Position x=[%f] y=[%f] z=[%f]", pVolume->getProfileName().c_str(), v.x, v.y, v.z);
 
-                 auto& dsgraph = get_imm_context();
-
                 //	Attach to sector's static geometry
-                const auto sector_id = dsgraph.detect_sector(pVolume->getVisData().sphere.P);
-                auto* pSector = dynamic_cast<CSector*>(dsgraph.get_sector(sector_id));
+                const auto sector_id = RImplementation.detect_sector(xrc, pVolume->getVisData().sphere.P);
+                auto* pSector = dynamic_cast<CSector*>(RImplementation.get_sector(sector_id));
                 if (!pSector)
                 {
                     Msg("Cannot find sector for fog volume. Position x=[%f] y=[%f] z=[%f]!", v.x, v.y, v.z);
