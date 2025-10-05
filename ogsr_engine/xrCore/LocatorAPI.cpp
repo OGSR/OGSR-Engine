@@ -11,7 +11,11 @@
 #pragma warning(default : 4995)
 
 #include <filesystem>
+
+namespace sqfs
+{
 #include <sqfs/super.h>
+}
 
 #include "FS_internal.h"
 #include "stream_reader.h"

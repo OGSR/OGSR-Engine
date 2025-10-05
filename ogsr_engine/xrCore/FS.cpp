@@ -70,7 +70,7 @@ void VerifyPath(const std::string_view path) //Проверяет путь до 
 // memory
 CMemoryWriter::~CMemoryWriter() { xr_free(data); }
 
-void CMemoryWriter::w(const void* ptr, u32 count)
+void CMemoryWriter::w(const void* ptr, size_t count)
 {
     if (position + count > mem_size)
     {
@@ -96,7 +96,7 @@ void CMemoryWriter::reserve(const size_t count)
     data = (BYTE*)xr_malloc(mem_size);
 }
 
-bool CMemoryWriter::save_to(LPCSTR fn)
+bool CMemoryWriter::save_to(LPCSTR fn) const
 {
     IWriter* F = FS.w_open(fn);
     if (F)
@@ -118,20 +118,21 @@ void IWriter::close_chunk()
 {
     VERIFY(!chunk_pos.empty());
 
-    int pos = tell();
+    const size_t pos = tell();
     seek(chunk_pos.top());
     w_u32(pos - chunk_pos.top() - 4);
     seek(pos);
     chunk_pos.pop();
 }
-u32 IWriter::chunk_size() // returns size of currently opened chunk, 0 otherwise
+
+size_t IWriter::chunk_size() // returns size of currently opened chunk, 0 otherwise
 {
     if (chunk_pos.empty())
         return 0;
     return tell() - chunk_pos.top() - 4;
 }
 
-void IWriter::w_compressed(void* ptr, u32 count, const bool encrypt, const bool is_ww)
+void IWriter::w_compressed(void* ptr, size_t count, const bool encrypt, const bool is_ww)
 {
     BYTE* dest = 0;
     size_t dest_sz = 0;
@@ -145,7 +146,7 @@ void IWriter::w_compressed(void* ptr, u32 count, const bool encrypt, const bool 
     xr_free(dest);
 }
 
-void IWriter::w_chunk(u32 type, void* data, u32 size, const bool encrypt, const bool is_ww)
+void IWriter::w_chunk(u32 type, void* data, size_t size, const bool encrypt, const bool is_ww)
 {
     open_chunk(type);
 
@@ -186,7 +187,7 @@ void IWriter::w_printf(const char* format, ...)
 IReader* IReader::open_chunk(u32 ID)
 {
     BOOL bCompressed;
-    u32 dwSize = find_chunk(ID, &bCompressed);
+    const size_t dwSize = find_chunk(ID, &bCompressed);
     if (dwSize != 0)
     {
         if (bCompressed)
@@ -226,16 +227,16 @@ IReader* IReader::open_chunk_iterator(u32& ID, IReader* _prev)
     }
 
     //	open
-    if (elapsed() < static_cast<int>(sizeof u32 * 2))
+    if (elapsed() < static_cast<long>(sizeof(u32) * 2))
         return nullptr;
 
     ID = r_u32();
-    u32 _size = r_u32();
+    size_t _size = r_u32();
 
     //На всякий случай тут тоже так сделаем по аналогии с find_chunk()
-    if (elapsed() < static_cast<int>(_size))
+    if (elapsed() < static_cast<long>(_size))
     {
-        Msg("!![%s] chunk [%u] has invalid size [%u], return elapsed size [%d]", __FUNCTION__, ID, _size, elapsed());
+        Msg("!![%s] chunk [%u] has invalid size [%lu], return elapsed size [%d]", __FUNCTION__, ID, _size, elapsed());
         _size = elapsed();
     }
 
@@ -275,7 +276,7 @@ void IReader::skip_bom(const char* dbg_name)
     Msg("! Skip BOM for file [%s]", dbg_name);
 }
 
-void IReader::r(void* p, int cnt)
+void IReader::r(void* p, size_t cnt)
 {
     R_ASSERT(Pos + cnt <= Size);
     CopyMemory(p, pointer(), cnt);
@@ -295,7 +296,7 @@ constexpr bool is_term(const char a) { return a == '\r' || a == '\n'; }
 
 IC u32 IReader::advance_term_string()
 {
-    u32 sz = 0;
+    size_t sz = 0;
     char* src = (char*)data;
     while (!eof())
     {
@@ -312,10 +313,10 @@ IC u32 IReader::advance_term_string()
     return sz;
 }
 
-void IReader::r_string(char* dest, u32 tgt_sz)
+void IReader::r_string(char* dest, size_t tgt_sz)
 {
     char* src = (char*)data + Pos;
-    u32 sz = advance_term_string();
+    size_t sz = advance_term_string();
     R_ASSERT2(sz < (tgt_sz - 1), "Dest string less than needed.");
     strncpy(dest, src, sz);
     dest[sz] = 0;
@@ -328,11 +329,11 @@ void IReader::r_string(xr_string& dest)
     dest.assign(src, sz);
 }
 
-void IReader::r_stringZ(char* dest, u32 tgt_sz)
+void IReader::r_stringZ(char* dest, size_t tgt_sz)
 {
     char* src = (char*)data;
 
-    u32 sz = 0;
+    size_t sz = 0;
 
     while ((src[Pos] != 0) && (!eof()))
     {
@@ -353,7 +354,7 @@ void IReader::r_stringZ(shared_str& dest)
 {
     char* src = (char*)(data + Pos);
 
-    int size = 0;
+    size_t size = 0;
     while ((src[size] != 0) && (!eof()))
     {
         size++;
@@ -374,7 +375,7 @@ void IReader::r_stringZ(xr_string& dest)
 {
     char* src = (char*)(data + Pos);
 
-    int size = 0;
+    size_t size = 0;
     while ((src[size] != 0) && (!eof()))
     {
         size++;
@@ -421,7 +422,11 @@ CVirtualFileReader::CVirtualFileReader(const char* cFileName)
     // Open the file
     hSrcFile = CreateFile(cFileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
     R_ASSERT3(hSrcFile != INVALID_HANDLE_VALUE, cFileName, Debug.error2string(GetLastError()));
-    Size = (int)GetFileSize(hSrcFile, NULL);
+
+    LARGE_INTEGER sz;
+    GetFileSizeEx(hSrcFile, &sz);
+    Size = sz.QuadPart;
+
     if (Size == 0)
         Msg("~~[%s] Found empty file: [%s]", __FUNCTION__, cFileName);
 

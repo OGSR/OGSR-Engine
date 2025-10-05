@@ -25,4 +25,7 @@ git clone --branch dev2 --depth 1 https://github.com/microsoft/mimalloc.git 3rd_
 RD /s /q 3rd_party\Src\NVIDIA_DLSS\DLSS
 git clone --branch main --depth 1 https://github.com/NVIDIA/DLSS.git 3rd_party\Src\NVIDIA_DLSS\DLSS
 
+RD /s /q 3rd_party\Src\cpputils\cpputils
+git clone --branch main --depth 1 https://github.com/tzcnt/cpputils.git 3rd_party\Src\cpputils\cpputils
+
 pause

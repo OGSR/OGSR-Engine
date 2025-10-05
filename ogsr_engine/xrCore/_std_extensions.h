@@ -213,6 +213,49 @@ inline bool StringHasUTF8(const char* str)
     return true;
 }
 
-// Round @val to next or prev @mul boundary, where @mul is a power of two
-constexpr ICF size_t roundup(size_t val, long mul) { return (val + mul - 1) & -mul; }
-constexpr ICF size_t rounddown(size_t val, long mul) { return val & -mul; }
+namespace xr
+{
+
+// Round @x to next or prev @a boundary, where @a is a power of two
+
+template <std::unsigned_integral T>
+[[nodiscard]] constexpr T round_mask(T x, T mask)
+{
+    return (x + mask) & ~mask;
+}
+
+template <std::unsigned_integral T>
+[[nodiscard]] constexpr T roundup(T x, T a)
+{
+    return xr::round_mask(x, a - 1);
+}
+
+template <std::signed_integral T>
+[[nodiscard]] constexpr T roundup(T x, T a)
+{
+    return static_cast<T>(xr::roundup(static_cast<std::make_unsigned_t<T>>(x), static_cast<std::make_unsigned_t<T>>(a)));
+}
+
+template <std::unsigned_integral T>
+[[nodiscard]] constexpr T rounddown(T x, T a)
+{
+    return xr::roundup(x - (a - 1), a);
+}
+
+template <std::signed_integral T>
+[[nodiscard]] constexpr T rounddown(T x, T a)
+{
+    return static_cast<T>(xr::rounddown(static_cast<std::make_unsigned_t<T>>(x), static_cast<std::make_unsigned_t<T>>(a)));
+}
+
+
+// Transfers ownership of a raw pointer to a std::unique_ptr of deduced type.
+// Note: Cannot wrap pointers to array of unknown bound (i.e. U(*)[]).
+template <typename T>
+[[nodiscard]] constexpr std::unique_ptr<T> wrap_unique(T* ptr)
+{
+    static_assert(!std::is_array_v<T> || std::extent_v<T> != 0, "types T[0] or T[] are unsupported");
+    return std::unique_ptr<T>{ptr};
+}
+
+} // namespace xr

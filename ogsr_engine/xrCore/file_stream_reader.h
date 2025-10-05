@@ -8,7 +8,7 @@ private:
     typedef CMapStreamReader inherited;
 
 private:
-    HANDLE m_file_handle;
+    HANDLE m_file_handle{};
 
 public:
     virtual void construct(LPCSTR file_name, const size_t& window_size);

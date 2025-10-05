@@ -13,9 +13,11 @@
 
 class XRCORE_API CStreamReader;
 
-struct sqfs_compressor_t;
+namespace sqfs
+{
 struct sqfs_dir_iterator_t;
 struct sqfs_file_t;
+} // namespace sqfs
 
 class XRCORE_API CLocatorAPI
 {
@@ -67,43 +69,31 @@ private:
 
     struct archive
     {
-        shared_str path;
-        size_t vfs_idx;
-        size_t size;
+        shared_str path{};
+        size_t vfs_idx{VFS_STANDARD_FILE};
+        size_t size{};
 
     private:
+        class xr_sqfs;
         class xr_sqfs_stream;
-        struct xr_sqfs;
 
-        enum container
+        enum container : u32
         {
             STANDARD,
             SQFS,
             DB,
-        };
-        container type : 3;
+        } type{};
 
-        union
-        {
-            // SquashFS
-            struct
-            {
-                sqfs_file_t* file;
-                sqfs_compressor_t* cmp;
-                xr_sqfs* fs;
-            };
+        // SquashFS
+        xr_sqfs* fs{};
 
-            // DB
-            struct
-            {
-                void* hSrcMap;
-            };
-        };
+        // DB
+        void* hSrcMap{};
 
-        void* hSrcFile;
+        void* hSrcFile{};
 
     public:
-        archive() : hSrcFile(nullptr), vfs_idx(VFS_STANDARD_FILE), size(0), type(container::STANDARD), file(nullptr), cmp(nullptr), fs(nullptr) {}
+        archive() = default;
 
         // Implementation wrappers
         void open();
@@ -118,10 +108,10 @@ private:
         // SquashFS
         void open_sqfs();
 
-        void index_dir_sqfs(CLocatorAPI& loc, const char* path, sqfs_dir_iterator_t* it);
-        void index_sqfs(CLocatorAPI& loc, const char* fs_entry_point);
-        IReader* read_sqfs(const char* fname, const struct file& desc, u32 gran);
-        CStreamReader* stream_sqfs(const char* fname, const struct file& desc);
+        void index_dir_sqfs(CLocatorAPI& loc, const char* path, sqfs::sqfs_dir_iterator_t& it) const;
+        void index_sqfs(CLocatorAPI& loc, const char* fs_entry_point) const;
+        IReader* read_sqfs(const char* fname, const struct file& desc, u32 gran) const;
+        CStreamReader* stream_sqfs(const char* fname, const struct file& desc) const;
         void cleanup_sqfs();
         void close_sqfs();
 
@@ -216,8 +206,8 @@ public:
 
     u32 get_file_age(LPCSTR nm);
 
-    xr_vector<LPSTR>* file_list_open(LPCSTR initial, LPCSTR folder, u32 flags = FS_ListFiles);
-    xr_vector<LPSTR>* file_list_open(LPCSTR path, u32 flags = FS_ListFiles);
+    xr_vector<LPSTR>* file_list_open(const char* initial, const char* folder, u32 flags = FS_ListFiles);
+    xr_vector<LPSTR>* file_list_open(const char* path, u32 flags = FS_ListFiles);
     void file_list_close(xr_vector<LPSTR>*& lst);
 
     bool path_exist(LPCSTR path);

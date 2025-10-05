@@ -45,7 +45,7 @@ public:
         }
     }
     // kernel
-    virtual void w(const void* _ptr, u32 count)
+    virtual void w(const void* _ptr, size_t count)
     {
         if ((0 != hf) && (0 != count))
         {
@@ -53,21 +53,21 @@ public:
             R_ASSERT3(W == count, "Can't write mem block to file. Disk maybe full.", _sys_errlist[errno]);
         }
     };
-    virtual void seek(u32 pos)
+    virtual void seek(size_t pos)
     {
         if (0 != hf)
             fseek(hf, pos, SEEK_SET);
     };
-    virtual u32 tell() { return (0 != hf) ? ftell(hf) : 0; };
+    virtual size_t tell() { return (0 != hf) ? ftell(hf) : 0; };
     virtual bool valid() { return (0 != hf); }
-    virtual int flush() { return fflush(hf); }
+    virtual size_t flush() { return fflush(hf); }
 };
 
 // It automatically frees memory after destruction
 class CTempReader : public IReader
 {
 public:
-    CTempReader(void* _data, int _size, int _iterpos) : IReader(_data, _size, _iterpos) {}
+    CTempReader(void* _data, size_t _size, size_t _iterpos) : IReader(_data, _size, _iterpos) {}
     virtual ~CTempReader();
 };
 
@@ -76,7 +76,7 @@ class CPackReader : public IReader
     void* base_address;
 
 public:
-    CPackReader(void* _base, void* _data, int _size) : IReader(_data, _size) { base_address = _base; }
+    CPackReader(void* _base, void* _data, size_t _size) : IReader(_data, _size) { base_address = _base; }
     virtual ~CPackReader();
 };
 

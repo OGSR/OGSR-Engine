@@ -4,14 +4,20 @@ class XRCORE_API CStreamReader : public IReaderBase<CStreamReader>
 {
 public:
     virtual size_t elapsed() const = 0;
-    virtual const size_t& length() const = 0;
-    virtual void seek(const int& offset) = 0;
+    virtual size_t length() const = 0;
+    virtual void seek(std::ptrdiff_t offset) = 0;
     virtual size_t tell() const = 0;
     virtual void close() = 0;
 
-    virtual void advance(const int& offset) = 0;
+    virtual void advance(std::ptrdiff_t offset) = 0;
     virtual void r(void* buffer, size_t buffer_size) = 0;
-    virtual CStreamReader* open_chunk(const u32& chunk_id) = 0;
+    virtual CStreamReader* open_chunk(u32 chunk_id) = 0;
+};
+
+template <>
+struct std::default_delete<CStreamReader>
+{
+    _CONSTEXPR23 void operator()(CStreamReader* ptr) const noexcept { ptr->close(); }
 };
 
 class CMapStreamReader : public CStreamReader
@@ -37,8 +43,8 @@ private:
 
 private:
     // should not be called
-    IC CMapStreamReader(const CMapStreamReader& object);
-    IC CMapStreamReader& operator=(const CMapStreamReader&);
+    CMapStreamReader(const CMapStreamReader& object) = delete;
+    CMapStreamReader& operator=(const CMapStreamReader&) = delete;
 
 public:
     IC CMapStreamReader();
@@ -49,16 +55,16 @@ public:
 
 public:
     IC const HANDLE& file_mapping_handle() const;
-    IC size_t elapsed() const;
-    IC const size_t& length() const;
-    IC void seek(const int& offset);
-    IC size_t tell() const;
-    IC void close();
 
-public:
-    void advance(const int& offset);
-    void r(void* buffer, size_t buffer_size);
-    CStreamReader* open_chunk(const u32& chunk_id);
+    IC size_t elapsed() const override;
+    IC size_t length() const override;
+    IC void seek(std::ptrdiff_t offset) override;
+    IC size_t tell() const override;
+    IC void close() override;
+
+    void advance(std::ptrdiff_t offset) override;
+    void r(void* buffer, size_t buffer_size) override;
+    CStreamReader* open_chunk(u32 chunk_id) override;
 };
 
 #include "stream_reader_inline.h"
