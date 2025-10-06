@@ -167,7 +167,8 @@ void CEffect_Rain::OnFrame()
             return;
         }
         snd_Ambient.play(nullptr, sm_Looped | sm_2D);
-        snd_Ambient.set_position(Fvector().set(0, 0, 0));
+        if (snd_Ambient._feedback()) //Simp: в редких случаях такое случается
+            snd_Ambient.set_position({});
         snd_Ambient.set_range(source_offset, source_offset * 2.f);
         state = stWorking;
         break;
