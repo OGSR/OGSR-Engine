@@ -313,7 +313,13 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, 
 
     SRVSManager.Apply(context_id);
     ApplyRTandZB();
+
     ApplyVertexLayout();
+#ifndef TRACY_ENABLE // для билда в котором включен рендердок, эти ошибки должны быть видны
+    if (vs && !m_pInputLayout)
+        return;
+#endif
+
     StateManager.Apply();
     constants.flush();
 
@@ -342,7 +348,13 @@ IC void CBackend::Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC)
 
     SRVSManager.Apply(context_id);
     ApplyRTandZB();
+
     ApplyVertexLayout();
+#ifndef TRACY_ENABLE // для билда в котором включен рендердок, эти ошибки должны быть видны
+    if (vs && !m_pInputLayout)
+        return;
+#endif
+
     StateManager.Apply();
     constants.flush();
 
@@ -470,23 +482,26 @@ IC void CBackend::ApplyVertexLayout()
     VERIFY(decl);
     VERIFY(m_pInputSignature);
 
-    auto it = decl->vs_to_layout.find(m_pInputSignature);
-    if (it == decl->vs_to_layout.end())
-    {
-        ID3DInputLayout* pLayout;
+    ID3DInputLayout* pLayout{};
 
-        CHK_DX(HW.pDevice->CreateInputLayout(&decl->dx10_dcl_code[0], 
+    if (auto it = decl->vs_to_layout.find(m_pInputSignature); it != decl->vs_to_layout.end())
+    {
+        pLayout = it->second;
+    }
+    else
+    {
+        CHK_DX(HW.pDevice->CreateInputLayout(&decl->dx10_dcl_code.front(), 
             decl->dx10_dcl_code.size() - 1, 
             m_pInputSignature->GetBufferPointer(), 
             m_pInputSignature->GetBufferSize(),
             &pLayout));
 
-        it = decl->vs_to_layout.emplace(m_pInputSignature, pLayout).first;
+        decl->vs_to_layout.emplace(m_pInputSignature, pLayout);
     }
 
-    if (m_pInputLayout != it->second)
+    if (m_pInputLayout != pLayout)
     {
-        m_pInputLayout = it->second;
+        m_pInputLayout = pLayout;
         HW.get_context(context_id)->IASetInputLayout(m_pInputLayout);
     }
 }
