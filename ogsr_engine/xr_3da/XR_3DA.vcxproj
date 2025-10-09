@@ -118,6 +118,9 @@
     <Manifest>
       <AdditionalManifestFiles>manifest.xml %(AdditionalManifestFiles)</AdditionalManifestFiles>
     </Manifest>
+    <PreBuildEvent>
+      <Command>call "$(ProjectDir)generate_build_info.bat"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -192,6 +195,9 @@
     <Manifest>
       <AdditionalManifestFiles>manifest.xml %(AdditionalManifestFiles)</AdditionalManifestFiles>
     </Manifest>
+    <PreBuildEvent>
+      <Command>call "$(ProjectDir)generate_build_info.bat"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="IPhysicsDefinitions.h" />
@@ -363,6 +369,7 @@
     <ResourceCompile Include="resource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="generate_build_info.bat" />
     <None Include="stalker.ico">
       <DeploymentContent>true</DeploymentContent>
     </None>

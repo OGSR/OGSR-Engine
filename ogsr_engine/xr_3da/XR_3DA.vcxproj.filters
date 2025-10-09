@@ -578,6 +578,9 @@
     <None Include="Effects description.txt" />
     <None Include="features.txt" />
     <None Include="TODO.txt" />
+    <None Include="generate_build_info.bat">
+      <Filter>General\Resources</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="ui_splash3.png">
