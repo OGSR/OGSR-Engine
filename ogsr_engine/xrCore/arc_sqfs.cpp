@@ -31,6 +31,8 @@ private:
 
     reader* alloc(const archive& arc);
 
+    SpinLock alloc_lock;
+
 public:
     sqfs_super_t super{};
 
@@ -39,7 +41,11 @@ public:
         reader* rd;
 
         if (!q.try_dequeue(rd))
+        {
+            alloc_lock.lock();
             rd = alloc(arc);
+            alloc_lock.unlock();
+        }
 
         return rd;
     }
