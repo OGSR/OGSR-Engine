@@ -46,7 +46,7 @@ extern float g_fTimeFactor;
 
 void CLevel::IR_OnMouseWheel(int direction)
 {
-    if (Editor_MouseWheel(direction))
+    if (CImGuiEditor::Get().Editor_MouseWheel(direction))
         return;
 
     if (g_bDisableAllInput)
@@ -83,7 +83,7 @@ void CLevel::IR_OnMouseHold(int btn) { IR_OnKeyboardHold(mouse_button_2_key[btn]
 
 void CLevel::IR_OnMouseMove(int dx, int dy)
 {
-    if (Editor_MouseMove(dx, dy))
+    if (CImGuiEditor::Get().Editor_MouseMove(dx, dy))
         return;
 
     if (g_bDisableAllInput)
@@ -110,7 +110,7 @@ extern bool g_block_all_except_movement;
 
 void CLevel::IR_OnKeyboardPress(int key)
 {
-    if (Editor_KeyPress(key))
+    if (CImGuiEditor::Get().Editor_KeyPress(key))
         return;
 
     if (GamePersistent().OnKeyboardPress(key))
@@ -339,7 +339,7 @@ void CLevel::IR_OnKeyboardPress(int key)
 
 void CLevel::IR_OnKeyboardRelease(int key)
 {
-    if (Editor_KeyRelease(key))
+    if (CImGuiEditor::Get().Editor_KeyRelease(key))
         return;
 
     if (g_bDisableAllInput)
@@ -383,7 +383,7 @@ void CLevel::IR_OnKeyboardRelease(int key)
 
 void CLevel::IR_OnKeyboardHold(int key)
 {
-    if (Editor_KeyHold(key))
+    if (CImGuiEditor::Get().Editor_KeyHold(key))
         return;
 
     if (g_bDisableAllInput)

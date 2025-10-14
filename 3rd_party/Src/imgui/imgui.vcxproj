@@ -83,8 +83,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="addons\ImGuiColorTextEdit\TextEditor.cpp" />
-    <ClCompile Include="addons\ImGuizmo\ImGuizmo.cpp" />
     <ClCompile Include="imgui.cpp" />
     <ClCompile Include="imgui_demo.cpp" />
     <ClCompile Include="imgui_draw.cpp" />
@@ -92,8 +90,6 @@
     <ClCompile Include="imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="addons\ImGuiColorTextEdit\TextEditor.h" />
-    <ClInclude Include="addons\ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="imconfig.h" />
     <ClInclude Include="imgui.h" />
     <ClInclude Include="imgui_internal.h" />

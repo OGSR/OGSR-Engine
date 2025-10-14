@@ -12,11 +12,11 @@ constexpr const char* env_names[]{"GENERIC",    "PADDEDCELL",      "ROOM",      
 static_assert(std::size(env_names) == EAX_ENVIRONMENT_COUNT);
 */
 
-void ShowSoundEnvEditor(bool& show)
+void CImGuiSoundEnvWnd::Render()
 {
-    if (!ImGui::Begin("SoundEnv###SoundEnv", &show))
+    if (!RenderBegin())
     {
-        ImGui::End();
+        RenderEnd();
         return;
     }
 
@@ -58,5 +58,5 @@ void ShowSoundEnvEditor(bool& show)
         Msg("--SoundEnvEditor saved!");
     }
 
-    ImGui::End();
+    RenderEnd();
 }

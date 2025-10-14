@@ -370,8 +370,6 @@ CEnvDescriptor::CEnvDescriptor(shared_str const& identifier) : m_identifier(iden
     sun_dir.set(0, -1, 0);
 
     m_fSunShaftsIntensity = 0.f;
-    m_fWaterIntensity = 1;
-    m_fTreeAmplitudeIntensity = 0.01f;
 
     bloom_threshold = 3.5f;
     bloom_exposure = 3.f;
@@ -454,13 +452,6 @@ void CEnvDescriptor::load(CEnvironment& environment, CInifile& config)
     else
         m_fSunShaftsIntensity = 0.f;
 
-    if (config.line_exist(m_identifier.c_str(), "water_intensity"))
-        m_fWaterIntensity = config.r_float(m_identifier.c_str(), "water_intensity");
-
-    constexpr float def_min_TAI = 0.01f, def_max_TAI = 0.07f;
-    const float def_TAI = def_min_TAI + (rain_density * (def_max_TAI - def_min_TAI)); //Если не прописано, дефолт будет рассчитываться от силы дождя.
-    m_fTreeAmplitudeIntensity = READ_IF_EXISTS((&config), r_float, m_identifier.c_str(), "tree_amplitude_intensity", def_TAI);
-
 	bloom_threshold = config.line_exist(m_identifier.c_str(), "bloom_threshold") ? config.r_float(m_identifier.c_str(), "bloom_threshold") : 3.5f;
     bloom_exposure = config.line_exist(m_identifier.c_str(), "bloom_exposure") ? config.r_float(m_identifier.c_str(), "bloom_exposure") : 3.0f;
     bloom_sky_intensity = config.line_exist(m_identifier.c_str(), "bloom_sky_intensity") ? config.r_float(m_identifier.c_str(), "bloom_sky_intensity") : 0.6f;
@@ -539,13 +530,6 @@ void CEnvDescriptor::load_shoc(float exec_tm, LPCSTR S, CEnvironment& environmen
         m_fSunShaftsIntensity = pSettings->r_float(m_identifier.c_str(), "sun_shafts_intensity");
     else
         m_fSunShaftsIntensity = 0.3f;
-
-    if (pSettings->line_exist(m_identifier.c_str(), "water_intensity"))
-        m_fWaterIntensity = pSettings->r_float(m_identifier.c_str(), "water_intensity");
-
-    constexpr float def_min_TAI = 0.01f, def_max_TAI = 0.07f;
-    const float def_TAI = def_min_TAI + (rain_density * (def_max_TAI - def_min_TAI)); //Если не прописано, дефолт будет рассчитываться от силы дождя.
-    m_fTreeAmplitudeIntensity = READ_IF_EXISTS(pSettings, r_float, m_identifier.c_str(), "tree_amplitude_intensity", def_TAI);
 
     C_CHECK(clouds_color);
     C_CHECK(sky_color);
@@ -638,11 +622,6 @@ void CEnvDescriptorMixer::lerp(CEnvironment* env, CEnvDescriptor& A, CEnvDescrip
         m_fSunShaftsIntensity = ps_r_sunshafts_intensity;
     else
         m_fSunShaftsIntensity = fi * A.m_fSunShaftsIntensity + f * B.m_fSunShaftsIntensity;
-
-    m_fWaterIntensity = fi * A.m_fWaterIntensity + f * B.m_fWaterIntensity;
-
-    m_fTreeAmplitudeIntensity_old = m_fTreeAmplitudeIntensity;
-    m_fTreeAmplitudeIntensity = fi * A.m_fTreeAmplitudeIntensity + f * B.m_fTreeAmplitudeIntensity;
 
     bloom_threshold = fi * A.bloom_threshold + f * B.bloom_threshold;
     bloom_exposure = fi * A.bloom_exposure + f * B.bloom_exposure;

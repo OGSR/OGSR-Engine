@@ -157,6 +157,9 @@
     <Filter Include="Shading templates\shader_xr">
       <UniqueIdentifier>{13bd57cd-3a32-4b8c-8f28-e69ec0bd0f1e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="imgui_render\fonts">
+      <UniqueIdentifier>{89c2eadc-9449-410d-b61e-27853b674f3f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\xrRenderDX10\DXCommonTypes.h">
@@ -624,6 +627,12 @@
     <ClInclude Include="..\xrRender\IRenderDetailModel.h" />
     <ClInclude Include="..\xrRender\Debug\dxPixEvents.h">
       <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\imgui_impl_win32.h">
+      <Filter>imgui_render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xrRenderDX10\imgui\Stratum2_Bold.hpp">
+      <Filter>imgui_render\fonts</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1136,6 +1145,12 @@
     </ClCompile>
     <ClCompile Include="..\xrRender\Debug\dxPixEvents.cpp">
       <Filter>Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xrRenderDX10\imgui_impl_win32.cpp">
+      <Filter>imgui_render</Filter>
+    </ClCompile>
+    <ClCompile Include="r4_imgui.cpp">
+      <Filter>imgui_render</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

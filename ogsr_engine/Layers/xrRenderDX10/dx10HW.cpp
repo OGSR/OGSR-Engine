@@ -13,6 +13,8 @@
 
 #include "imgui.h"
 #include "imgui_impl_dx11.h"
+#include "imgui_impl_win32.h"
+#include "imgui/Stratum2_Bold.hpp"
 
 #include <dxgi1_6.h>
 
@@ -240,9 +242,36 @@ void CHW::CreateDevice(HWND m_hWnd)
         }
     }
 
-    ImGui_ImplDX11_Init(m_hWnd, pDevice, pContext);
+    // You can use ImGui::SetAllocatorFunctions() before calling ImGui::CreateContext() to rewire memory allocation functions.
+    ImGui::SetAllocatorFunctions([](size_t size, void* /*user_data*/) { return xr_malloc(size); }, [](void* ptr, void* /*user_data*/) { xr_free(ptr); });
 
-    ImGui_ImplDX11_CreateDeviceObjects();
+    //-- Init ImGui
+    //IMGUI_CHECKVERSION();
+    ImGui::CreateContext(); //-- !!! should be
+
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+    static string_path fname_ini{};
+    FS.update_path(fname_ini, fsgame::app_data_root, "imgui.ini");
+    io.IniFilename = fname_ini;
+
+    ImFontConfig def_font_config{};
+    def_font_config.GlyphOffset.x = +1;
+    def_font_config.GlyphOffset.y = -1;
+    def_font_config.OversampleH = 2;
+    strcpy_s(def_font_config.Name, "Stratum2_Bold 16");
+    io.Fonts->AddFontFromMemoryCompressedBase85TTF(Stratum2_Bold_compressed_data_base85, 16.f, &def_font_config, io.Fonts->GetGlyphRangesCyrillic());
+
+    string_path fname;
+    FS.update_path(fname, fsgame::app_data_root, "imgui.ltx");
+    CInifile imgui_custom_ltx{fname};
+    const u32 style_idx = READ_IF_EXISTS(reinterpret_cast<CInifile*>(&imgui_custom_ltx), r_u32, "im_style", "theme_selected", 0);
+    void SetupStyle(const u32);
+    SetupStyle(style_idx);
+
+    ImGui_ImplWin32_Init(m_hWnd);
+    ImGui_ImplDX11_Init(pDevice, pContext);
 }
 
 void CHW::DestroyDevice()

@@ -72,7 +72,7 @@ public:
     void video_Stop();
     BOOL video_IsPlaying();
 
-    //ID3DShaderResourceView* get_SRView() const { return m_pSRView; }
+    ID3DShaderResourceView* get_SRView() const { return m_pSRView; }
 
 private:
 

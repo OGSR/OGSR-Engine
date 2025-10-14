@@ -2104,6 +2104,9 @@
     <Filter Include="AI\AScript\ScriptClasses\ScriptWriter">
       <UniqueIdentifier>{aa3b1cb8-4167-4170-b6cf-7f27304a9431}</UniqueIdentifier>
     </Filter>
+    <Filter Include="EmbeddedEditor\EditorWindows">
+      <UniqueIdentifier>{a924a209-0f7d-49bb-b059-49d252aa73a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6050,20 +6053,8 @@
     <ClInclude Include="embedded_editor\embedded_editor_main.h">
       <Filter>EmbeddedEditor</Filter>
     </ClInclude>
-    <ClInclude Include="embedded_editor\embedded_editor_weather.h">
-      <Filter>EmbeddedEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="embedded_editor\embedded_editor_hud.h">
-      <Filter>EmbeddedEditor</Filter>
-    </ClInclude>
-    <ClInclude Include="embedded_editor\embedded_editor_pos_informer.h">
-      <Filter>EmbeddedEditor</Filter>
-    </ClInclude>
     <ClInclude Include="physics_shell_animated.h">
       <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
-    </ClInclude>
-    <ClInclude Include="embedded_editor\embedded_editor_sound_env.h">
-      <Filter>EmbeddedEditor</Filter>
     </ClInclude>
     <ClInclude Include="LevelDebugScript.h">
       <Filter>Core\Client\Level</Filter>
@@ -6076,6 +6067,30 @@
     </ClInclude>
     <ClInclude Include="GeometryBits.h">
       <Filter>Core\Client\Objects\physics\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_window.h">
+      <Filter>EmbeddedEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_hud.h">
+      <Filter>EmbeddedEditor\EditorWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_pos_informer.h">
+      <Filter>EmbeddedEditor\EditorWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_weather.h">
+      <Filter>EmbeddedEditor\EditorWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_sound_env.h">
+      <Filter>EmbeddedEditor\EditorWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_debug_rt.h">
+      <Filter>EmbeddedEditor\EditorWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_game.h">
+      <Filter>EmbeddedEditor\EditorWindows</Filter>
+    </ClInclude>
+    <ClInclude Include="embedded_editor\embedded_editor_settings.h">
+      <Filter>EmbeddedEditor\EditorWindows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -8852,20 +8867,8 @@
     <ClCompile Include="embedded_editor\embedded_editor_main.cpp">
       <Filter>EmbeddedEditor</Filter>
     </ClCompile>
-    <ClCompile Include="embedded_editor\embedded_editor_weather.cpp">
-      <Filter>EmbeddedEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="embedded_editor\embedded_editor_hud.cpp">
-      <Filter>EmbeddedEditor</Filter>
-    </ClCompile>
-    <ClCompile Include="embedded_editor\embedded_editor_pos_informer.cpp">
-      <Filter>EmbeddedEditor</Filter>
-    </ClCompile>
     <ClCompile Include="physics_shell_animated.cpp">
       <Filter>Core\Client\Objects\physics\CharacterSupport</Filter>
-    </ClCompile>
-    <ClCompile Include="embedded_editor\embedded_editor_sound_env.cpp">
-      <Filter>EmbeddedEditor</Filter>
     </ClCompile>
     <ClCompile Include="level_graph_script.cpp">
       <Filter>AI\ANavigation\LevelGraph</Filter>
@@ -8881,6 +8884,27 @@
     </ClCompile>
     <ClCompile Include="GeometryBits.cpp">
       <Filter>Core\Client\Objects\physics\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor_hud.cpp">
+      <Filter>EmbeddedEditor\EditorWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor_pos_informer.cpp">
+      <Filter>EmbeddedEditor\EditorWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor_weather.cpp">
+      <Filter>EmbeddedEditor\EditorWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor_sound_env.cpp">
+      <Filter>EmbeddedEditor\EditorWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor_debug_rt.cpp">
+      <Filter>EmbeddedEditor\EditorWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor_game.cpp">
+      <Filter>EmbeddedEditor\EditorWindows</Filter>
+    </ClCompile>
+    <ClCompile Include="embedded_editor\embedded_editor_settings.cpp">
+      <Filter>EmbeddedEditor\EditorWindows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

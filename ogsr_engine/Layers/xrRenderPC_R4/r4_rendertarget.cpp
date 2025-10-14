@@ -276,6 +276,24 @@ CRenderTarget::CRenderTarget()
             flg = {CRT::CreateUAV};
 
         rt_Generic_combine.create(r2_RT_generic_combine, w, h, DXGI_FORMAT_R16G16B16A16_FLOAT, 1, flg);
+    
+    
+        //if (!m_ImguiTex)
+        {
+            D3D11_TEXTURE2D_DESC desc{};
+            desc.Width = Device.dwWidth;
+            desc.Height = Device.dwHeight;
+            desc.MipLevels = 1;
+            desc.ArraySize = 1;
+            desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+            desc.SampleDesc.Count = 1;
+            desc.Usage = D3D11_USAGE_DEFAULT;
+            desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+
+            HW.pDevice->CreateTexture2D(&desc, nullptr, &m_ImguiTex);
+           
+            HW.pDevice->CreateShaderResourceView(m_ImguiTex, nullptr, &m_ImguiSRV);
+        }
     }
 
     reset_3dss_rendertarget(true);
@@ -560,6 +578,9 @@ CRenderTarget::~CRenderTarget()
 
     DestroyDLSS();
     DestroyFSR();
+
+    _RELEASE(m_ImguiSRV);
+    _RELEASE(m_ImguiTex);
 }
 
 void CRenderTarget::reset_light_marker(CBackend& cmd_list, bool bResetStencil)

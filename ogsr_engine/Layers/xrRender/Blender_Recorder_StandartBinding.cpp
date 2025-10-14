@@ -160,7 +160,7 @@ static class cl_wind_params : public R_constant_setup
         if (marker != Device.dwFrame)
         {
             const CEnvDescriptor& E = *g_pGamePersistent->Environment().CurrentEnv;
-            result.set(E.wind_direction, E.wind_velocity, E.m_fTreeAmplitudeIntensity, 0.0f);
+            result.set(E.wind_direction, E.wind_velocity, 0.0f, 0.0f);
 
             marker = Device.dwFrame;
         }
@@ -178,7 +178,7 @@ static class cl_wind_params_old : public R_constant_setup
         if (marker != Device.dwFrame)
         {
             const CEnvDescriptor& E = *g_pGamePersistent->Environment().CurrentEnv;
-            result.set(E.wind_direction_old, E.wind_velocity_old, E.m_fTreeAmplitudeIntensity_old, 0.0f);
+            result.set(E.wind_direction_old, E.wind_velocity_old, 0.0f, 0.0f);
 
             marker = Device.dwFrame;
         }
@@ -688,16 +688,6 @@ static class cl_mProject : public R_constant_setup
     }
 } binder_mProject;
 
-static class cl_water_intensity : public R_constant_setup
-{
-    virtual void setup(CBackend& cmd_list, R_constant* C)
-    {
-        const CEnvDescriptor& E = *g_pGamePersistent->Environment().CurrentEnv;
-        const float fValue = E.m_fWaterIntensity;
-        cmd_list.set_c(C, fValue, fValue, fValue, 0);
-    }
-} binder_water_intensity;
-
 static class cl_sun_shafts_intensity : public R_constant_setup
 {
     virtual void setup(CBackend& cmd_list, R_constant* C)
@@ -897,7 +887,6 @@ void CBlender_Compile::SetMapping() const
     r_Constant("m_taa_jitter", &binder_taa_jitter);
 
     r_Constant("parallax", &binder_parallax);
-    r_Constant("water_intensity", &binder_water_intensity);
     r_Constant("sun_shafts_intensity", &binder_sun_shafts_intensity);
 
     r_Constant("pos_decompression_params", &binder_pos_decompress_params);

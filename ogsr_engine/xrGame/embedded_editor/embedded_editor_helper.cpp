@@ -2,9 +2,13 @@
 
 #include "embedded_editor_helper.h"
 
+//-- VlaGan: little fix for new ImGui ver, need to test/rework (now exists normal impl of this shit in ImGui!)
 bool ImGui_ListBox(const char* label, int* current_item, bool (*items_getter)(void*, int, const char**), void* data, int items_count, const ImVec2& size_arg)
 {
-    if (!ImGui::ListBoxHeader(label, size_arg))
+    //if (!ImGui::ListBoxHeader(label, size_arg))
+    //    return false;
+
+    if (!ImGui::BeginChild(label, size_arg, true, ImGuiWindowFlags_HorizontalScrollbar))
         return false;
 
     ImGuiListClipper clipper;
@@ -16,8 +20,8 @@ bool ImGui_ListBox(const char* label, int* current_item, bool (*items_getter)(vo
 
     const bool scrollTo = ImGui::IsWindowAppearing();
 
-    if (scrollTo)
-        clipper.ForceDisplayRangeByIndices(*current_item - 5, *current_item + 5);
+    //if (scrollTo)
+    //    clipper.ForceDisplayRangeByIndices(*current_item - 5, *current_item + 5);
 
     while (clipper.Step())
     {
@@ -40,8 +44,8 @@ bool ImGui_ListBox(const char* label, int* current_item, bool (*items_getter)(vo
             ImGui::PopID();
         }
     }
-
-    ImGui::ListBoxFooter();
-
+    clipper.End();
+    //ImGui::ListBoxFooter();
+    ImGui::EndChild();
     return value_changed;
 }

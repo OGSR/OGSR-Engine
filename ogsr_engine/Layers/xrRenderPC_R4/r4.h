@@ -153,6 +153,11 @@ private:
 public:
     static bool InFieldOfViewR(Fvector pos, float max_dist, bool check_direction);
 
+//-- draw rts to imgui
+    void CaptureMainRTTexture() override;
+    void DrawMainRTTexture(float width, float height) override;
+    void DrawRTTextures() override;
+
 public:
     void main_pass_static(R_dsgraph_structure& dsgraph);
     void main_pass_dynamic(R_dsgraph_structure& dsgraph, bool fill_lights);
@@ -372,6 +377,8 @@ protected:
 private:
     R_dsgraph_structure contexts_pool[R__NUM_CONTEXTS];
     bool contexts_used[R__NUM_PARALLEL_CONTEXTS]{};
+
+    ID3DBlendState* RTdbgBS{};
 
 public:
     virtual CBackend& get_imm_command_list()

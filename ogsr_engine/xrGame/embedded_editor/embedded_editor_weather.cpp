@@ -102,65 +102,16 @@ void saveWeather(shared_str name, const xr_vector<CEnvDescriptor*>& env)
         f.w_string(el->m_identifier.c_str(), "thunderbolt_collection", el->tb_id.c_str());
         f.w_float(el->m_identifier.c_str(), "thunderbolt_duration", el->bolt_duration);
         f.w_float(el->m_identifier.c_str(), "thunderbolt_period", el->bolt_period);
-        f.w_float(el->m_identifier.c_str(), "tree_amplitude_intensity", el->m_fTreeAmplitudeIntensity);
-        f.w_float(el->m_identifier.c_str(), "water_intensity", el->m_fWaterIntensity);
         f.w_float(el->m_identifier.c_str(), "wind_direction", rad2deg(el->wind_direction));
         f.w_float(el->m_identifier.c_str(), "wind_velocity", el->wind_velocity);
         f.w_float(el->m_identifier.c_str(), "sun_altitude", rad2deg(el->sun_dir.getH()));
         f.w_float(el->m_identifier.c_str(), "sun_longitude", rad2deg(el->sun_dir.getP()));
-
-        // f.w_float(el->m_identifier.c_str(), "lowland_fog_density", el->lowland_fog_density);
-        // f.w_float(el->m_identifier.c_str(), "lowland_fog_height", el->lowland_fog_height);
-
-        // f.w_float(el->m_identifier.c_str(), "swing_normal_amp1", el->m_cSwingDesc[0].amp1);
-        // f.w_float(el->m_identifier.c_str(), "swing_normal_amp2", el->m_cSwingDesc[0].amp2);
-        // f.w_float(el->m_identifier.c_str(), "swing_normal_rot1", el->m_cSwingDesc[0].rot1);
-        // f.w_float(el->m_identifier.c_str(), "swing_normal_rot2", el->m_cSwingDesc[0].rot2);
-        // f.w_float(el->m_identifier.c_str(), "swing_normal_speed", el->m_cSwingDesc[0].speed);
-        // f.w_float(el->m_identifier.c_str(), "swing_fast_amp1", el->m_cSwingDesc[1].amp1);
-        // f.w_float(el->m_identifier.c_str(), "swing_fast_amp2", el->m_cSwingDesc[1].amp2);
-        // f.w_float(el->m_identifier.c_str(), "swing_fast_rot1", el->m_cSwingDesc[1].rot1);
-        // f.w_float(el->m_identifier.c_str(), "swing_fast_rot2", el->m_cSwingDesc[1].rot2);
-        // f.w_float(el->m_identifier.c_str(), "swing_fast_speed", el->m_cSwingDesc[1].speed);
-        // f.w_fvector3(el->m_identifier.c_str(), "dof", el->dof_value);
-        // f.w_float(el->m_identifier.c_str(), "dof_kernel", el->dof_kernel);
-        // f.w_float(el->m_identifier.c_str(), "dof_sky", el->dof_sky);
     }
     string_path fileName;
     FS.update_path(fileName, "$game_weathers$", name.c_str());
     strconcat(sizeof(fileName), fileName, fileName, ".ltx");
     f.save_as(fileName);
 }
-
-//void nextTexture(char* tex, int texSize, int offset)
-//{
-//    string_path dir, fn;
-//    _splitpath(tex, nullptr, dir, fn, nullptr);
-//    strconcat(sizeof(fn), fn, fn, ".dds");
-//    xr_vector<LPSTR>* files = FS.file_list_open("$game_textures$", dir, FS_ListFiles);
-//    if (!files)
-//        return;
-//    size_t index = 0;
-//    for (size_t i = 0; i != files->size(); i++)
-//        if (strcmp((*files)[i], fn) == 0)
-//        {
-//            index = i;
-//            break;
-//        }
-//    size_t newIndex = index;
-//    while (true)
-//    {
-//        newIndex = (newIndex + offset + files->size()) % files->size();
-//        if (strstr((*files)[newIndex], "#small") == nullptr && strstr((*files)[newIndex], ".thm") == nullptr)
-//            break;
-//    }
-//    string_path newFn;
-//    _splitpath((*files)[newIndex], nullptr, nullptr, newFn, nullptr);
-//    // strconcat(texSize, tex, dir, newFn);
-//    strcpy_s(tex, texSize, dir);
-//    strcat_s(tex, texSize, newFn);
-//    FS.file_list_close(files);
-//}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // from https://www.strchr.com/natural_sorting
@@ -306,10 +257,21 @@ bool SelectTexture(const char* label, shared_str& texName)
     return changed;
 }
 
-void ShowWeatherEditor(bool& show)
+void CImGuiWeatherWnd::Render() //ShowWeatherEditor(bool& show)
 {
-    if (!ImGui::Begin(modifiedWeathers.empty() ? "Weather###Weather" : "Weather*###Weather", &show))
+    m_Name = modifiedWeathers.empty() ? "Weather###Weather" : "Weather*###Weather";
+    
+    if (!RenderBegin())
     {
+        RenderEnd();
+        return;
+    }
+
+    //-- why not
+    if (!g_pGamePersistent->Environment().USED_COP_WEATHER)
+    {
+    
+        ImGui::Text("Weather editor is only available for COP weather.");
         ImGui::End();
         return;
     }
@@ -401,19 +363,14 @@ void ShowWeatherEditor(bool& show)
 
     ImGui::Text("Fog parameters");
 
-    if (ImGui::SliderFloat("far_plane", &cur->far_plane, 0.01f, 10000.0f))
+    if (ImGui::SliderFloat("far_plane", &cur->far_plane, 0.01f, 1000.0f))
         changed = true;
-    if (ImGui::SliderFloat("fog_distance", &cur->fog_distance, 0.0f, 10000.0f))
+    if (ImGui::SliderFloat("fog_distance", &cur->fog_distance, 0.0f, 1000.0f))
         changed = true;
     if (ImGui::SliderFloat("fog_density", &cur->fog_density, 0.0f, 10.0f))
         changed = true;
     if (ImGui::ColorEdit3("fog_color", (float*)&cur->fog_color))
         changed = true;
-
-    // if (ImGui::SliderFloat("lowland_fog_density", &cur->lowland_fog_density, 0.0f, 5.0f))
-    //     changed = true;
-    // if (ImGui::SliderFloat("lowland_fog_height", &cur->lowland_fog_height, 0.0f, 100.0f))
-    //     changed = true;
 
     ImGui::Text("Hemi parameters");
 
@@ -463,6 +420,11 @@ void ShowWeatherEditor(bool& show)
     if (ImGui::ColorEdit3("sun_color", (float*)&cur->sun_color))
         changed = true;
 
+
+#pragma todo("SIMP: Подумать про настройку sun_positions.ltx")
+    if (env.m_static_sun_movement || env.m_dynamic_sun_movement)
+        ImGui::BeginDisabled();
+
     if (ImGui::SliderFloat("sun_altitude", &editor_altitude, -360.0f, 360.0f))
     {
         changed = true;
@@ -477,6 +439,10 @@ void ShowWeatherEditor(bool& show)
         if (changed)
             cur->sun_dir.setHP(deg2rad(editor_longitude), deg2rad(editor_altitude));
     }
+
+    if (env.m_static_sun_movement || env.m_dynamic_sun_movement)
+        ImGui::EndDisabled();
+
 
     if (ImGui::SliderFloat("sun_shafts_intensity", &cur->m_fSunShaftsIntensity, 0.0f, 2.0f))
         changed = true;
@@ -501,54 +467,12 @@ void ShowWeatherEditor(bool& show)
     if (ImGui::SliderFloat("thunderbolt_period", &cur->bolt_period, 0.0f, 10.0f))
         changed = true;
 
-    ImGui::Text("Water parameters");
-
-    if (ImGui::SliderFloat("water_intensity", &cur->m_fWaterIntensity, 0.0f, 2.0f))
-        changed = true;
-
     ImGui::Text("Wind parameters");
 
     if (ImGui::SliderFloat("wind_velocity", &cur->wind_velocity, 0.0f, 1000.0f))
         changed = true;
     if (ImGui::SliderFloat("wind_direction", &cur->wind_direction, 0.0f, 360.0f))
         changed = true;
-
-    ImGui::Text("Trees parameters");
-
-    if (ImGui::SliderFloat("trees_amplitude_intensity", &cur->m_fTreeAmplitudeIntensity, 0.01f, 0.250f))
-        changed = true;
-
-    //ImGui::Text("Grass swing parameters");
-
-    // if (ImGui::SliderFloat("swing_normal_amp1", &cur->m_cSwingDesc[0].amp1, 0.0f, 10.0f))
-    //     changed = true;
-    // if (ImGui::SliderFloat("swing_normal_amp2", &cur->m_cSwingDesc[0].amp2, 0.0f, 10.0f))
-    //     changed = true;
-    // if (ImGui::SliderFloat("swing_normal_rot1", &cur->m_cSwingDesc[0].rot1, 0.0f, 300.0f))
-    //     changed = true;
-    // if (ImGui::SliderFloat("swing_normal_rot2", &cur->m_cSwingDesc[0].rot2, 0.0f, 300.0f))
-    //     changed = true;
-    // if (ImGui::SliderFloat("swing_normal_speed", &cur->m_cSwingDesc[0].speed, 0.0f, 10.0f))
-    //     changed = true;
-    // if (ImGui::SliderFloat("swing_fast_amp1", &cur->m_cSwingDesc[1].amp1, 0.0f, 10.0f))
-    //     changed = true;
-    // if (ImGui::SliderFloat("swing_fast_amp2", &cur->m_cSwingDesc[1].amp2, 0.0f, 10.0f))
-    //     changed = true;
-    // if (ImGui::SliderFloat("swing_fast_rot1", &cur->m_cSwingDesc[1].rot1, 0.0f, 300.0f))
-    //     changed = true;
-    // if (ImGui::SliderFloat("swing_fast_rot2", &cur->m_cSwingDesc[1].rot2, 0.0f, 300.0f))
-    //     changed = true;
-    // if (ImGui::SliderFloat("swing_fast_speed", &cur->m_cSwingDesc[1].speed, 0.0f, 10.0f))
-    //     changed = true;
-
-    //ImGui::Text("DoF parameters");
-
-    // if (ImGui::InputFloat3("dof", (float*)&cur->dof_value), 3)
-    //     changed = true;
-    // if (ImGui::SliderFloat("dof_kernel", &cur->dof_kernel, 0.0f, 10.0f))
-    //     changed = true;
-    // if (ImGui::SliderFloat("dof_sky", &cur->dof_sky, -10000.0f, 10000.0f))
-    //     changed = true;
 
     if (changed)
     {
@@ -577,5 +501,5 @@ void ShowWeatherEditor(bool& show)
         modifiedWeathers.clear();
     }
 
-    ImGui::End();
+    RenderEnd();
 }

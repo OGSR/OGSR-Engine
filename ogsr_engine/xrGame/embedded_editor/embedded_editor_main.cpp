@@ -3,6 +3,8 @@
 #include <dinput.h>
 
 #include "imgui.h"
+#include "imgui_internal.h"
+#include "../../Layers/xrRenderDX10/imgui_impl_dx11.h"
 
 #include "../../XR_3DA/xr_input.h"
 #include "../../XR_3DA/IGame_Persistent.h"
@@ -14,84 +16,191 @@
 #include "embedded_editor_hud.h"
 #include "embedded_editor_pos_informer.h"
 #include "embedded_editor_sound_env.h"
-
-bool bShowWindow = true;
+#include "embedded_editor_debug_rt.h"
+#include "embedded_editor_game.h"
+#include "embedded_editor_settings.h"
 
 #include "../Layers/xrRender/Debug/dxPixEvents.h"
 
-bool show_test_window = false;
-bool show_weather_window = false;
-bool show_hud_editor = false;
-bool show_position_informer = false;
-bool show_sound_env_window = false;
 
-/*
-bool show_info_window = false;
-bool show_prop_window = false;
-bool show_restr_window = false;
-bool show_shader_window = false;
-bool show_occ_window = false;
-bool show_node_editor = false;
-*/
+CImGuiEditor::CImGuiEditor() { 
+    CImGuiGameWnd* game_wnd = xr_new<CImGuiGameWnd>();
+    game_wnd->m_bCanHide = false;
+    game_wnd->m_Opened = true;
+    game_wnd->m_Name = "Game";
+    m_Windows.push_back(game_wnd);
 
-enum class EditorStage
-{
-    None,
-    Light,
-    Full,
+    CImGuiMainWnd* main_wnd = xr_new<CImGuiMainWnd>();
+    main_wnd->m_Name = "Main";
+    main_wnd->m_Opened = true;
+    m_Windows.push_back(main_wnd);
 
-    Count,
-};
+    CImGuiDebugRTWnd* rt_debug = xr_new<CImGuiDebugRTWnd>();
+    rt_debug->m_Name = "RT debug";
+    m_Windows.push_back(rt_debug);
 
-EditorStage curr_stage{EditorStage::None}, target_stage{EditorStage::None};
+    CImGuiWeatherWnd* weather_wnd = xr_new<CImGuiWeatherWnd>();
+    weather_wnd->m_Name = "Weather###Weather";
+    m_Windows.push_back(weather_wnd);
 
-bool IsEditorActive() { return curr_stage == EditorStage::Full; }
+    CImGuiPositionInformerWnd* pos_informer_wnd = xr_new<CImGuiPositionInformerWnd>();
+    pos_informer_wnd->m_Name = "Position Informer";
+    m_Windows.push_back(pos_informer_wnd);
 
-bool IsEditorShouldOpen()
-{
-    curr_stage = target_stage;
+    CImGuiHudEditorWnd* hud_editor_wnd = xr_new<CImGuiHudEditorWnd>();
+    hud_editor_wnd->m_Name = "HUD Editor";
+    m_Windows.push_back(hud_editor_wnd);
 
-    return target_stage != EditorStage::None;
+    CImGuiSoundEnvWnd* sound_env_wnd = xr_new<CImGuiSoundEnvWnd>();
+    sound_env_wnd->m_Name = "SoundEnv###SoundEnv";
+    m_Windows.push_back(sound_env_wnd);
+
+    auto* settings_wnd = xr_new<CImGuiSettingsWnd>();
+    m_Windows.push_back(settings_wnd);
 }
 
-bool IsEditor() { return curr_stage != EditorStage::None; }
-
-void ShowMain()
+CImGuiEditor::~CImGuiEditor()
 {
-    ImguiWnd wnd("Main");
-    if (wnd.Collapsed)
+    for (auto& wnd : m_Windows)
+        xr_delete(wnd);
+}
+
+void CImGuiEditor::RenderDockSpace()
+{
+    const ImGuiID dockspace_id = ImGui::GetID("OGSRDockSpace");
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+    if (ImGui::DockBuilderGetNode(dockspace_id) == nullptr)
+    {
+        ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
+        ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
+        ImGuiID dock_id_left = 0;
+        ImGuiID dock_id_main = dockspace_id;
+        ImGui::DockBuilderSplitNode(dock_id_main, ImGuiDir_Right, 0.20f, &dock_id_left, &dock_id_main);
+        ImGuiID dock_id_left_top = 0;
+        ImGuiID dock_id_left_bottom = 0;
+        ImGui::DockBuilderSplitNode(dock_id_left, ImGuiDir_Up, 0.50f, &dock_id_left_top, &dock_id_left_bottom);
+        ImGui::DockBuilderDockWindow("Game", dock_id_main);     //-- main window = game rt
+        ImGui::DockBuilderDockWindow("Main", dock_id_left_top);
+        ImGui::DockBuilderDockWindow("RT debug", dock_id_left_top);
+        ImGui::DockBuilderDockWindow("Weather###Weather", dock_id_left_bottom); //-- idk this naming
+        ImGui::DockBuilderDockWindow("Position Informer", dock_id_left_bottom);
+        ImGui::DockBuilderDockWindow("HUD Editor", dock_id_left_bottom);
+        ImGui::DockBuilderDockWindow("SoundEnv###SoundEnv", dock_id_left_bottom);
+        ImGui::DockBuilderDockWindow("Demo Window", dock_id_left_bottom);
+        ImGui::DockBuilderDockWindow("ImSettings###ImSettings", dock_id_left_bottom);
+        ImGui::DockBuilderFinish(dockspace_id);
+    }
+    ImGui::DockSpaceOverViewport(dockspace_id, viewport, 0);
+}
+
+void CImGuiEditor::RenderMenuBar()
+{
+    if (ImGui::BeginMainMenuBar())
+    {
+        float pos_tmp = ImGui::GetCursorPosX();
+        shared_str logo = "OGSR Editor (SHIFT + F10)";
+        ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize(logo.c_str()).x) * 0.5f);
+        ImGui::Text(logo.c_str());
+
+        shared_str close = "X";
+        ImGui::SetCursorPosX(ImGui::GetWindowSize().x - ImGui::CalcTextSize(close.c_str()).x - 10.0f);
+        if (ImGui::Button(close.c_str()))
+            target_stage = EditorStage::None;
+
+        ImGui::SetCursorPosX(pos_tmp);
+        bool full = target_stage == EditorStage::Full;
+        if(ImGui::Checkbox("##Active", &full))
+            target_stage = full ? EditorStage::Full : EditorStage::Light;
+
+        if (ImGui::BeginMenu("Editor"))
+        {
+            if (ImGui::MenuItem("Active", nullptr, &full))
+                target_stage = full ? EditorStage::Full : EditorStage::Light;
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Window"))
+        {
+            for (auto& wnd : m_Windows)
+            {
+                if (wnd->m_bCanHide)
+                    if (ImGui::MenuItem(wnd->m_Name.c_str(), nullptr, wnd->m_Opened))
+                        wnd->m_Opened = !wnd->m_Opened;
+            }
+
+            if(ImGui::MenuItem("Demo Window", nullptr, m_bShowDemoWindow))
+                m_bShowDemoWindow = !m_bShowDemoWindow;
+
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMainMenuBar();
+    }
+}
+
+void CImGuiEditor::ShowEditor()
+{
+    ::Sound->DbgCurrentEnvPaused(false);
+
+    if (!IsEditor())
         return;
+    ImGuiIO& io = ImGui::GetIO();
+    io.MouseDrawCursor = IsEditorActive();
+
+    //-- always first
+    RenderDockSpace();
+    RenderMenuBar();
+    RenderDemoWindow();
+
+    for (auto& wnd : m_Windows)
+        if (wnd->m_Opened)
+            wnd->Render();    
+}
+
+void CImGuiEditor::RenderDemoWindow() {
+    if (m_bShowDemoWindow)
+    {
+        ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
+        ImGui::ShowDemoWindow(&m_bShowDemoWindow);
+    }
+}
+
+
+void CImGuiMainWnd::Render()
+{
+    if (!RenderBegin())
+    {
+        RenderEnd();
+        return;
+    }
 
     ImGui::Text("OGSR Editor");
 
-    if (g_pGamePersistent->Environment().USED_COP_WEATHER && ImGui::Button("Weather"))
-        show_weather_window = !show_weather_window;
-    if (ImGui::Button("Position Informer"))
-        show_position_informer = !show_position_informer;
-    if (ImGui::Button("HUD Editor"))
-        show_hud_editor = !show_hud_editor;
-    if (ImGui::Button("Sound Env Editor"))
-        show_sound_env_window = !show_sound_env_window;
+    CImGuiEditor& editor = CImGuiEditor::Get();
 
-    if (ImGui::Button("Test Window"))
-        show_test_window = !show_test_window;
+    for (auto& wnd : editor.Windows())
+    {
+        if (wnd->m_bCanHide)
+            if (ImGui::Button(wnd->m_Name.c_str()))
+                wnd->m_Opened = !wnd->m_Opened;
+    }
 
-    /*
-    if (ImGui::Button("Test Node Editor"))
-        show_node_editor = !show_node_editor;
-    */
+    if (ImGui::Button("Demo Window"))
+        editor.m_bShowDemoWindow = !editor.m_bShowDemoWindow;
 
-    bool full = target_stage == EditorStage::Full;
+    bool full = editor.target_stage == EditorStage::Full;
     if (ImGui::Checkbox("Active", &full))
-        target_stage = full ? EditorStage::Full : EditorStage::Light;
+        editor.target_stage = full ? EditorStage::Full : EditorStage::Light;
 
     float framerate = ImGui::GetIO().Framerate;
 
     static xr_vector<float> frames;
 
-    	// Get frames
-    if (frames.size() > 100) // Max seconds to show
+    // Get frames
+    const size_t max_frames = static_cast<size_t>(ImGui::GetContentRegionAvail().x / 2.f); // Max frames to show
+    if (frames.size() > max_frames)
     {
+        frames.resize(max_frames);
         for (size_t i = 1; i < frames.size(); i++)
         {
             frames[i - 1] = frames[i];
@@ -105,7 +214,7 @@ void ShowMain()
 
     ImGui::Text("TPS %.3f ms/frame (%.1f FPS)", 1000.0f / framerate, framerate);
 
-    ImGui::PlotHistogram("", &frames[0], frames.size(), 0, nullptr, 0.0f, 300.0f, ImVec2(300, 100));
+    ImGui::PlotHistogram("##FPS", frames.data(), frames.size(), 0, nullptr, 0.0f, 300.0f, ImVec2{ImGui::GetContentRegionAvail().x, 100});
 
 #ifdef TRACY_ENABLE
     ImGui::Separator();
@@ -125,54 +234,13 @@ void ShowMain()
         }
     }
 #endif
+
+    RenderEnd();
 }
 
-void ShowEditor()
-{
-    ::Sound->DbgCurrentEnvPaused(false);
 
-    if (!IsEditor())
-        return;
-
-    ImGuiIO& io = ImGui::GetIO();
-    io.MouseDrawCursor = IsEditorActive();
-
-    ShowMain();
-
-    if (show_test_window)
-    {
-        ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
-        ImGui::ShowDemoWindow(&show_test_window);
-    }
-    // if (show_node_editor)
-    //{
-    //     ImGui::SetNextWindowSize(ImVec2(700, 600), ImGuiCond_FirstUseEver);
-    //     if (ImGui::Begin("Example: Custom Node Graph", &show_node_editor))
-    //     {
-    //         ImGui::TestNodeGraphEditor();
-    //     }
-    //     ImGui::End();
-    // }
-    if (g_pGamePersistent->Environment().USED_COP_WEATHER && show_weather_window)
-        ShowWeatherEditor(show_weather_window);
-    if (show_position_informer)
-        ShowPositionInformer(show_position_informer);
-    if (show_hud_editor)
-        ShowHudEditor(show_hud_editor);
-    if (show_sound_env_window)
-        ShowSoundEnvEditor(show_sound_env_window);
-    //if (show_prop_window)
-    //    ShowPropEditor(show_prop_window);
-    //if (show_lua_binder)
-    //    ShowLuaBinder(show_lua_binder);
-    //if (show_logic_editor)
-    //    ShowLogicEditor(show_logic_editor);
-}
-
-bool isRControl = false, isLControl = false, isRShift = false, isLShift = false;
 extern bool GetShift();
-
-bool Editor_KeyPress(int key)
+bool CImGuiEditor::Editor_KeyPress(int key)
 {
     if (key == DIK_F10)
     {
@@ -211,28 +279,22 @@ bool Editor_KeyPress(int key)
     case MOUSE_1: io.MouseDown[0] = true; break;
     case MOUSE_2: io.MouseDown[1] = true; break;
     case MOUSE_3: io.MouseDown[2] = true; break;
-
-    default:
-        if (key < 512)
-            io.KeysDown[key] = true;
-
-        if (const u16 ch = pInput->DikToChar(key, false))
-            io.AddInputCharacter(ch);
-
-            // пример подключения шрифт и нормального ввода в utf
-            // запишем что б не забыть, но хз надо ли оно реально
-
-            //io.Fonts->AddFontFromFileTTF("DroidSans.ttf", 13.0f, &font_config, io.Fonts->GetGlyphRangesCyrillic());
-
-            //wchar_t wch;
-            //MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, (char*)&ch, 1, &wch, 1);
-            //io.AddInputCharacter(wch);
     }
     return true;
 }
 
-bool Editor_KeyRelease(int key)
+bool CImGuiEditor::Editor_KeyRelease(int key)
 {
+    // т.к.нажатия клавиш имгуй сейчас ловит через winmain, надо выключать exclusive input,
+    // а то события нажатий клавиш не приходят если он включен
+    if (target_stage == EditorStage::Full)
+    {
+        if (pInput->exclusive_mode())
+            pInput->exclusive_mode(false);
+    }
+    else if (bool saved_state{!!psDeviceFlags.test(rsExclusiveMode)}; pInput->exclusive_mode() != saved_state)
+        pInput->exclusive_mode(saved_state);
+
     bool active = IsEditorActive();
     ImGuiIO& io = ImGui::GetIO();
 
@@ -257,21 +319,18 @@ bool Editor_KeyRelease(int key)
     case MOUSE_1: io.MouseDown[0] = false; break;
     case MOUSE_2: io.MouseDown[1] = false; break;
     case MOUSE_3: io.MouseDown[2] = false; break;
-    default:
-        if (key < 512)
-            io.KeysDown[key] = false;
     }
     return active;
 }
 
-bool Editor_KeyHold(int key)
+bool CImGuiEditor::Editor_KeyHold(int key)
 {
     if (!IsEditorActive())
         return false;
     return true;
 }
 
-bool Editor_MouseMove(int dx, int dy)
+bool CImGuiEditor::Editor_MouseMove(int dx, int dy)
 {
     if (!IsEditorActive())
         return false;
@@ -286,19 +345,17 @@ bool Editor_MouseMove(int dx, int dy)
 
 static int s_direction;
 
-bool Editor_MouseWheel(int direction)
+bool CImGuiEditor::Editor_MouseWheel(int direction)
 {
     if (!IsEditorActive())
         return false;
 
     s_direction = direction;
 
-    //ImGuiIO& io = ImGui::GetIO();
-    //io.MouseWheel += direction > 0 ? +1.0f : -1.0f;
     return true;
 }
 
-void Editor_OnFrame()
+void CImGuiEditor::Editor_OnFrame()
 {
     if (s_direction != 0)
     {       

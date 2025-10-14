@@ -171,8 +171,6 @@ public:
     Fvector3 sun_dir;
 
     float m_fSunShaftsIntensity;
-    float m_fWaterIntensity;
-    float m_fTreeAmplitudeIntensity{}, m_fTreeAmplitudeIntensity_old{};
 
     float bloom_threshold{};
     float bloom_exposure{};

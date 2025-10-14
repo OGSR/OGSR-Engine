@@ -138,7 +138,8 @@
       <DisableSpecificWarnings>4100;4456;4457;4458;4459;4091;4589;4995;4577;5037;4315;4267;</DisableSpecificWarnings>
       <AdditionalIncludeDirectories>.\;..\COMMON_AI;..\COMMON_AI\PATH;..\COMMON_AI\GRAPH;..\COMMON_AI\ALGORITHMS;..\xrCore;$(SolutionDir)\3rd_party\Src\ode;..\LuaJIT\src;..\Luabind;$(SolutionDir)\3rd_party\Src\d3dx\include;$(SolutionDir)\3rd_party\Src\imgui;$(SolutionDir)\3rd_party\Src\zstd\zstd\lib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <BasicRuntimeChecks Condition="$(Configuration.Contains('Debug')) And '$(EnableASAN)'=='true'"></BasicRuntimeChecks>
+      <BasicRuntimeChecks Condition="$(Configuration.Contains('Debug')) And '$(EnableASAN)'=='true'">
+      </BasicRuntimeChecks>
       <BasicRuntimeChecks Condition="$(Configuration.Contains('Debug')) And '$(EnableASAN)'!='true'">EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <ResourceCompile>
@@ -243,13 +244,17 @@
     <ClInclude Include="..\COMMON_AI\server_entity_wrapper_inline.h" />
     <ClInclude Include="AdvancedDetector.h" />
     <ClInclude Include="ai\monsters\anti_aim_ability.h" />
+    <ClInclude Include="embedded_editor\embedded_editor_debug_rt.h" />
+    <ClInclude Include="embedded_editor\embedded_editor_game.h" />
     <ClInclude Include="embedded_editor\embedded_editor_helper.h" />
     <ClInclude Include="embedded_editor\embedded_editor_hud.h" />
     <ClInclude Include="embedded_editor\embedded_editor_main.h" />
     <ClInclude Include="embedded_editor\embedded_editor_pos_informer.h" />
+    <ClInclude Include="embedded_editor\embedded_editor_settings.h" />
     <ClInclude Include="embedded_editor\embedded_editor_sound_env.h" />
     <ClInclude Include="embedded_editor\embedded_editor_weather.h" />
     <ClInclude Include="ActorCameraCollision.h" />
+    <ClInclude Include="embedded_editor\embedded_editor_window.h" />
     <ClInclude Include="GeometryBits.h" />
     <ClInclude Include="ai\monsters\group_states\group_state_attack.h" />
     <ClInclude Include="ai\monsters\group_states\group_state_attack_inline.h" />
@@ -1498,10 +1503,13 @@
     <ClCompile Include="..\COMMON_AI\random32.cpp" />
     <ClCompile Include="..\COMMON_AI\script_writer_script.cpp" />
     <ClCompile Include="AdvancedDetector.cpp" />
+    <ClCompile Include="embedded_editor\embedded_editor_debug_rt.cpp" />
+    <ClCompile Include="embedded_editor\embedded_editor_game.cpp" />
     <ClCompile Include="embedded_editor\embedded_editor_helper.cpp" />
     <ClCompile Include="embedded_editor\embedded_editor_hud.cpp" />
     <ClCompile Include="embedded_editor\embedded_editor_main.cpp" />
     <ClCompile Include="embedded_editor\embedded_editor_pos_informer.cpp" />
+    <ClCompile Include="embedded_editor\embedded_editor_settings.cpp" />
     <ClCompile Include="embedded_editor\embedded_editor_sound_env.cpp" />
     <ClCompile Include="embedded_editor\embedded_editor_weather.cpp" />
     <ClCompile Include="ActorCameraCollision.cpp" />

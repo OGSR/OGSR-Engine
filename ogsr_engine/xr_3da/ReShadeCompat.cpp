@@ -1,9 +1,5 @@
 #include "stdafx.h"
 
-#define IMGUI_DISABLE_INCLUDE_IMCONFIG_H
-#define ImTextureID ImU64
-
-#include "../../3rd_party/Src/reshade/imgui.h"
 #include "../../3rd_party/Src/reshade/reshade.hpp"
 
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;

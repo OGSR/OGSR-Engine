@@ -27,12 +27,6 @@
     <ClCompile Include="imgui_draw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="addons\ImGuizmo\ImGuizmo.cpp">
-      <Filter>addons</Filter>
-    </ClCompile>
-    <ClCompile Include="addons\ImGuiColorTextEdit\TextEditor.cpp">
-      <Filter>addons</Filter>
-    </ClCompile>
     <ClCompile Include="imgui_tables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -46,12 +40,6 @@
     </ClInclude>
     <ClInclude Include="imgui_internal.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="addons\ImGuizmo\ImGuizmo.h">
-      <Filter>addons</Filter>
-    </ClInclude>
-    <ClInclude Include="addons\ImGuiColorTextEdit\TextEditor.h">
-      <Filter>addons</Filter>
     </ClInclude>
     <ClInclude Include="imstb_rectpack.h">
       <Filter>Header Files</Filter>

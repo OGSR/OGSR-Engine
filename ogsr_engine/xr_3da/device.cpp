@@ -6,11 +6,13 @@
 #include "igame_persistent.h"
 #include "imgui.h"
 #include "..\Layers\xrRenderDX10\imgui_impl_dx11.h"
+#include "..\Layers\xrRenderDX10\imgui_impl_win32.h"
 #include "igame_level.h"
 #include "splash.h"
 #include <mmsystem.h>
 #include "XR_IOConsole.h"
 #include "xr_ioc_cmd.h"
+#include "../xrGame/embedded_editor/embedded_editor_main.h"
 
 //#define LOG_SECOND_THREAD_STATS
 
@@ -25,7 +27,6 @@ u32 g_dwFPSlimit{};
 
 BOOL g_bLoaded = FALSE;
 
-bool IsEditorShouldOpen();
 bool is_editor_active{};
 
 BOOL CRenderDevice::Begin()
@@ -218,7 +219,7 @@ struct _SoundRender : public pureFrame
 
 void CRenderDevice::on_idle()
 {
-    is_editor_active = IsEditorShouldOpen();
+    is_editor_active = CImGuiEditor::Get().IsEditorShouldOpen();
 
     if (!b_is_Ready)
     {
@@ -251,6 +252,8 @@ void CRenderDevice::on_idle()
         if (is_editor_active)
         {
             ImGui_ImplDX11_NewFrame(); // должно быть перед FrameMove
+            ImGui_ImplWin32_NewFrame();
+            ImGui::NewFrame();
         }
 
         // if (b_is_Active)
@@ -321,6 +324,11 @@ void CRenderDevice::on_idle()
                 {
                     ZoneScopedN("Render process");
                     seqRender.Process(rp_Render);
+                }
+
+                if (is_editor_active || CImGuiEditor::Get().IsEditorShouldOpenOnNextFrame())
+                {
+                    ::Render->CaptureMainRTTexture();
                 }
 
                 {

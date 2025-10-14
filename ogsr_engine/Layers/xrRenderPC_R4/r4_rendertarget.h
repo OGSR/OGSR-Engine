@@ -176,9 +176,9 @@ private:
 
     ref_rt rt_flares;
     ref_rt rt_fakescope; // crookr
+public:
     ref_rt rt_heat;
 
-public:
     ref_shader s_postprocess;
     ref_geom g_postprocess;
 
@@ -350,4 +350,9 @@ private:
     ref_rt rt_SunShaftsPass0;
     ref_shader s_ssss_mrmnwar;
     ref_shader s_ssss_ogse;
+
+public:
+    ID3D11Texture2D* m_ImguiTex{};
+    ID3D11ShaderResourceView* m_ImguiSRV{};
+
 };

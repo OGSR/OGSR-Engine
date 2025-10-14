@@ -398,7 +398,7 @@ void CRender::rmNormal(CBackend& cmd_list)
 //////////////////////////////////////////////////////////////////////
 CRender::CRender() : m_bFirstFrameAfterReset(false) { /*init_cascades();*/ }
 
-CRender::~CRender() {}
+CRender::~CRender() { _RELEASE(RTdbgBS); }
 
 #include "../../xr_3da/GameFont.h"
 

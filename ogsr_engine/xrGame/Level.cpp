@@ -418,7 +418,9 @@ void CLevel::OnFrame()
     if (ps_lua_gc_method != gc_timeout)
         Device.add_to_seq_parallel(fastdelegate::MakeDelegate(this, &CLevel::script_gc));
 
-    ShowEditor();
+    CImGuiEditor& editor = CImGuiEditor::Get();
+    editor.ShowEditor();
+    editor.Editor_OnFrame();
 }
 
 extern Flags32 dbg_net_Draw_Flags;

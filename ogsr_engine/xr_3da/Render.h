@@ -252,6 +252,11 @@ public:
 
 protected:
     virtual void ScreenshotImpl(ScreenshotMode mode, LPCSTR name) = 0;
+
+public:
+    virtual void CaptureMainRTTexture() = 0;
+    virtual void DrawMainRTTexture(float width, float height) = 0;
+    virtual void DrawRTTextures() = 0;
 };
 
 class ITexture
