@@ -21,9 +21,35 @@ std::string BuildStackTrace(const char* header, PCONTEXT) { return BuildStackTra
 
 constexpr u16 MaxFuncNameLength = 4096, maxFramesCount = 512;
 
-bool symEngineInitialized = false;
+static bool symEngineInitialized{};
 
-bool InitializeSymbolEngine()
+class ScopedSetWorkDir
+{
+    string_path WorkingDirSaved{};
+
+public:
+    ScopedSetWorkDir()
+    {
+        GetCurrentDirectory(sizeof(WorkingDirSaved), WorkingDirSaved);
+
+        string_path ApplicationDir{}, fn{}, dr{}, di{};
+        GetModuleFileName(nullptr, fn, sizeof(fn));
+        _splitpath(fn, dr, di, nullptr, nullptr);
+        xr_strconcat(ApplicationDir, dr, di);
+        // Рабочий каталог для процесса надо устанавливать принудительно
+        // в папку с движком, независимо откуда запустили. Иначе начинаются
+        // чудеса типа игнорирования движком символов для стектрейсинга.
+        SetCurrentDirectory(ApplicationDir);
+        // Msg("~~[%s] Set workdir to [%s]", __FUNCTION__, ApplicationDir);
+    }
+    ~ScopedSetWorkDir()
+    {
+        SetCurrentDirectory(WorkingDirSaved);
+        // Msg("--[%s] Reset workdir back to [%s]", __FUNCTION__, WorkingDirSaved);
+    }
+};
+
+static bool InitializeSymbolEngine()
 {
     if (!symEngineInitialized)
     {
@@ -37,7 +63,7 @@ bool InitializeSymbolEngine()
     return symEngineInitialized;
 }
 
-void DeinitializeSymbolEngine()
+static void DeinitializeSymbolEngine()
 {
     if (symEngineInitialized)
     {
@@ -58,6 +84,8 @@ std::string BuildStackTrace(const char* header, PCONTEXT threadCtx)
     static std::mutex dbghelpMutex;
     std::scoped_lock<decltype(dbghelpMutex)> lock(dbghelpMutex);
 
+    ScopedSetWorkDir dbg_workdir{};
+
     std::stringstream traceResult;
     traceResult << header;
 
@@ -68,7 +96,7 @@ std::string BuildStackTrace(const char* header, PCONTEXT threadCtx)
         return traceResult.str();
     }
 
-    STACKFRAME stackFrame = {0};
+    STACKFRAME stackFrame{};
 #ifdef _M_X64
     stackFrame.AddrPC.Mode = AddrModeFlat;
     stackFrame.AddrPC.Offset = threadCtx->Rip;
@@ -86,7 +114,7 @@ std::string BuildStackTrace(const char* header, PCONTEXT threadCtx)
 #endif
     auto lpstackFrame = reinterpret_cast<LPSTACKFRAME>(&stackFrame);
 
-    u16 count_frames = 0;
+    u16 count_frames{};
     while (count_frames++ <= maxFramesCount)
     {
         BOOL result = StackWalk(MACHINE_TYPE, GetCurrentProcess(), GetCurrentThread(), lpstackFrame, threadCtx, nullptr, SymFunctionTableAccess, SymGetModuleBase, nullptr);
@@ -95,7 +123,7 @@ std::string BuildStackTrace(const char* header, PCONTEXT threadCtx)
             break;
 
         // Module name
-        IMAGEHLP_MODULE moduleInfo = {0};
+        IMAGEHLP_MODULE moduleInfo{};
         moduleInfo.SizeOfStruct = sizeof(moduleInfo);
 
         result = SymGetModuleInfo(GetCurrentProcess(), lpstackFrame->AddrPC.Offset, &moduleInfo);
@@ -107,11 +135,11 @@ std::string BuildStackTrace(const char* header, PCONTEXT threadCtx)
         traceResult << ", AddrPC.Offset: [" << reinterpret_cast<const void*>(lpstackFrame->AddrPC.Offset) << "]";
 
         // Function info
-        BYTE arrSymBuffer[MaxFuncNameLength] = {0};
+        BYTE arrSymBuffer[MaxFuncNameLength]{};
         auto functionInfo = reinterpret_cast<PIMAGEHLP_SYMBOL>(&arrSymBuffer);
         functionInfo->SizeOfStruct = sizeof(*functionInfo);
         functionInfo->MaxNameLength = sizeof(arrSymBuffer) - offsetof(IMAGEHLP_SYMBOL, Name);
-        DWORD_PTR dwFunctionOffset = 0;
+        DWORD_PTR dwFunctionOffset{};
 
         result = SymGetSymFromAddr(GetCurrentProcess(), lpstackFrame->AddrPC.Offset, &dwFunctionOffset, functionInfo);
 
@@ -123,8 +151,8 @@ std::string BuildStackTrace(const char* header, PCONTEXT threadCtx)
         }
 
         // Source info
-        DWORD dwLineOffset = 0;
-        IMAGEHLP_LINE sourceInfo = {0};
+        DWORD dwLineOffset{};
+        IMAGEHLP_LINE sourceInfo{};
         sourceInfo.SizeOfStruct = sizeof(sourceInfo);
 
         result = SymGetLineFromAddr(GetCurrentProcess(), lpstackFrame->AddrPC.Offset, &dwLineOffset, &sourceInfo);
@@ -146,7 +174,7 @@ std::string BuildStackTrace(const char* header, PCONTEXT threadCtx)
 
 std::string BuildStackTrace(const char* header)
 {
-    CONTEXT currentThreadCtx = {0};
+    CONTEXT currentThreadCtx{};
 
     RtlCaptureContext(&currentThreadCtx); // GetThreadContext cann't be used on the current thread
     currentThreadCtx.ContextFlags = CONTEXT_FULL;
