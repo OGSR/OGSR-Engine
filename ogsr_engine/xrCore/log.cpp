@@ -5,6 +5,7 @@
 #include <fstream> //для std::ofstream
 #include <iomanip> //для std::strftime
 #include <array> //для std::array
+#include <iostream>
 
 static LogCallback LogCB = nullptr;
 xr_vector<std::string> LogFile;
@@ -154,6 +155,8 @@ void CreateLog(BOOL nl)
 {
     if (!nl)
     {
+        std::cout.rdbuf(logstream.rdbuf()); // redirect std::cout to log
+
         if (!strstr(Core.Params, "-no_unique_logs"))
         {
             string32 TimeBuf;
