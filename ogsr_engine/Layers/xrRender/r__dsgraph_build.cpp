@@ -506,7 +506,7 @@ void R_dsgraph_structure::add_leafs_static(dxRender_Visual* pVisual)
     {
         // ZoneScopedN("add_leafs_static/HOM+IsValuableToRender");
 
-        if (!RImplementation.HOM.visible(pVisual->getVisData()))
+        if (phase != CRender::PHASE_SMAP && !RImplementation.HOM.visible(pVisual->getVisData()))
         {
             // Msg("add_leafs_static skip static model");
             return;
@@ -608,7 +608,7 @@ void R_dsgraph_structure::add_static(dxRender_Visual* pVisual, const CFrustum& v
     {
         // ZoneScopedN("add_leafs_static/HOM+IsValuableToRender");
 
-        if (!RImplementation.HOM.visible(pVisual->getVisData()))
+        if (phase != CRender::PHASE_SMAP && !RImplementation.HOM.visible(pVisual->getVisData()))
         {
             // Msg("add_leafs_static skip static model");
             return;
