@@ -18,8 +18,8 @@ struct CVertexManagerFixed
         struct __vertex : public T1<T2>
         {
             typedef _index_type _index_type;
-            _index_type _index : 8 * sizeof(_index_type) - mask;
-            _index_type _opened : mask;
+            _index_type _index;
+            _index_type _opened;
 
             IC _index_type index() const { return (_index); }
 
