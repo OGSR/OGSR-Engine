@@ -61,6 +61,8 @@ class CLocationManager;
 
 class CActorCameraManager;
 
+class CCar;
+
 struct ActorRestoreParams
 {
     float HealthRestoreSpeed;
@@ -279,6 +281,10 @@ protected:
     bool use_Vehicle(CHolderCustom* object);
     bool use_MountedWeapon(CHolderCustom* object);
     void ActorUse();
+
+private:
+    CCar* m_pending_car{};
+    int m_pending_car_frames{};
 
     /////////////////////////////////////////////////////////
     // actor model & animations

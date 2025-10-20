@@ -902,6 +902,15 @@ void CActor::UpdateCL()
     else
         grass_shader_data.pos[0].set(0.f, 0.f, 0.f, -1.f);
     grass_shader_data.dir[0].set(0.0f, -99.0f, 0.0f, 1.0f);
+
+    if (m_pending_car)
+    {
+        if (m_pending_car_frames-- < 0)
+        {
+            attach_Vehicle(m_pending_car);
+            m_pending_car = {};
+        }
+    }
 }
 
 constexpr u32 TASKS_UPDATE_TIME = 1u;

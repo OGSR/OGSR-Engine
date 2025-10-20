@@ -150,5 +150,10 @@ bool CActor::use_Vehicle(CHolderCustom* object)
 void CActor::on_requested_spawn(CObject* object)
 {
     CCar* car = smart_cast<CCar*>(object);
-    attach_Vehicle(car);
+    //attach_Vehicle(car);
+
+    // insead of immediate attach, we set a pending car to be attached in Actor::UpdateCl after 10 frames
+
+    m_pending_car = car;
+    m_pending_car_frames = 10;
 }
