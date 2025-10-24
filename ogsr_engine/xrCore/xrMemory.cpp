@@ -138,6 +138,10 @@ size_t mem_usage_impl(u32* pBlocksUsed, u32* pBlocksFree)
     if (no_memory_usage)
         return 0;
 
+    auto heap_handle = reinterpret_cast<HANDLE>(_get_heap_handle());
+    if (!HeapLock(heap_handle))
+        return 0;
+
     _HEAPINFO hinfo;
     int heapstatus;
     hinfo._pentry = nullptr;
@@ -160,6 +164,8 @@ size_t mem_usage_impl(u32* pBlocksUsed, u32* pBlocksFree)
         *pBlocksFree = 1024 * blocks_free;
     if (pBlocksUsed)
         *pBlocksUsed = 1024 * blocks_used;
+
+    HeapUnlock(heap_handle);
 
     switch (heapstatus)
     {
