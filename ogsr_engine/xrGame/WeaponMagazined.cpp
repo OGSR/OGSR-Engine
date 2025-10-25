@@ -575,13 +575,26 @@ void CWeaponMagazined::OnStateSwitch(u32 S, u32 oldState)
         const bool need_play_empty_click = (oldState != eFire && oldState != eFire2) || !dont_interrupt_shot_anm;
         switch2_Empty(need_play_empty_click);
 
+        if (auto parent = smart_cast<CActor*>(H_Parent()))
+        {
+            parent->callback(GameObject::eOnActorWeaponEmpty)(lua_game_object());
+        }
+
         if (GetNextState() != eReload && need_play_empty_click)
         {
             SwitchState(eIdle);
         }
         break;
     }
-    case eReload: switch2_Reload(); break;
+    case eReload: {
+        switch2_Reload();
+
+        if (auto parent = smart_cast<CActor*>(H_Parent()))
+        {
+            parent->callback(GameObject::eOnActorWeaponReload)(lua_game_object());
+        }
+        break;
+    }
     case eShowing: switch2_Showing(); break;
     case eHiding: switch2_Hiding(); break;
     case eHidden: switch2_Hidden(); break;
@@ -773,6 +786,11 @@ void CWeaponMagazined::state_Fire(float dt)
 
         if (smart_cast<CWeaponBM16*>(this) && IsMisfire())
             return;
+
+        if (auto parent = smart_cast<CActor*>(H_Parent()))
+        {
+            parent->callback(GameObject::eOnActorWeaponFire)(lua_game_object());
+        }
 
         if (m_iShotNum > m_iShootEffectorStart)
             FireTrace(p1, d);

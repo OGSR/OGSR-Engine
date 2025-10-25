@@ -298,6 +298,11 @@ void CWeaponMagazinedWGrenade::state_Fire(float dt)
             ++m_iShotNum;
             OnShot();
 
+            if (auto parent = smart_cast<CActor*>(H_Parent()))
+            {
+                parent->callback(GameObject::eOnActorWeaponFire)(lua_game_object());
+            }
+
             // Ammo
             if (Local())
             {

@@ -71,6 +71,9 @@ enum ECallbackType
     // Called when the player zooms their weapon in or out.
     eOnActorWeaponZoomIn,
     eOnActorWeaponZoomOut,
+    eOnActorWeaponFire,
+    eOnActorWeaponEmpty,
+    eOnActorWeaponReload,
 
     eCellItemFocus,
     eCellItemFocusLost,
