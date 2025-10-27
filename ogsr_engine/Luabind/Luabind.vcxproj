@@ -52,7 +52,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);..\LuaJIT\src;..\xrCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
+      
       <FloatingPointModel>Fast</FloatingPointModel>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4251;4577;5037;4267;</DisableSpecificWarnings>
@@ -91,7 +91,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);..\LuaJIT\src;..\xrCore;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <StringPooling>false</StringPooling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <BufferSecurityCheck>true</BufferSecurityCheck>
+      
       <FloatingPointModel>Fast</FloatingPointModel>
       <WarningLevel>Level3</WarningLevel>
       <DisableSpecificWarnings>4251;4577;5037;4267;</DisableSpecificWarnings>
