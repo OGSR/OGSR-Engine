@@ -570,7 +570,6 @@ CUICellItem* CUICellContainer::RemoveItem(CUICellItem* itm, bool force_root)
         {
             CUICellItem* iii = i->PopChild();
             R_ASSERT(0 == iii->ChildsCount());
-            i->UpdateItemText();
             return iii;
         }
     }
@@ -579,7 +578,6 @@ CUICellItem* CUICellContainer::RemoveItem(CUICellItem* itm, bool force_root)
     {
         CUICellItem* iii = itm->PopChild();
         R_ASSERT(0 == iii->ChildsCount());
-        itm->UpdateItemText();
         return iii;
     }
 
@@ -752,14 +750,24 @@ void CUICellContainer::Shrink() {}
 
 bool CUICellContainer::ValidCell(const Ivector2& pos) const { return !(pos.x < 0 || pos.y < 0 || pos.x >= m_cellsCapacity.x || pos.y >= m_cellsCapacity.y); }
 
+#pragma optimize("", off)
+
 void CUICellContainer::ClearAll(bool bDestroy)
 {
-    {
-        UI_CELLS_VEC_IT it = m_cells.begin();
-        UI_CELLS_VEC_IT it_e = m_cells.end();
-        for (; it != it_e; ++it)
-            (*it).Clear();
-    }
+    for (auto& cell : m_cells)
+        cell.Clear();
+
+    auto delete_cell = [](CUICellItem* cell) {
+        try
+        {
+            xr_delete(cell);
+        }
+        catch (...)
+        {
+            Msg("!![%s] caught exception!", __FUNCTION__);
+        }
+    };
+
     while (!m_ChildWndList.empty())
     {
         CUIWindow* w = m_ChildWndList.back();
@@ -773,15 +781,15 @@ void CUICellContainer::ClearAll(bool bDestroy)
             R_ASSERT(ci->ChildsCount() == 0);
 
             if (bDestroy)
-                xr_delete(ci);
+                delete_cell(ci);
         }
 
         if (bDestroy)
-        {
-            xr_delete(wc);
-        }
+            delete_cell(wc);
     }
 }
+
+#pragma optimize("", on)
 
 Ivector2 CUICellContainer::PickCell(const Fvector2& abs_pos)
 {

@@ -137,6 +137,8 @@ CUICellItem* CUICellItem::PopChild()
     m_childs.pop_back();
     std::swap(itm->m_pData, m_pData);
 
+    UpdateItemText();
+
     R_ASSERT(itm->ChildsCount() == 0);
     R_ASSERT(!itm->GetParent());
     R_ASSERT(this != itm);
