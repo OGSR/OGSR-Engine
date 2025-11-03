@@ -28,8 +28,6 @@ IC CSightManager& CAI_Stalker::sight() const
     return (*m_sight_manager);
 }
 
-IC LPCSTR CAI_Stalker::Name() const { return (CInventoryOwner::Name()); }
-
 IC CStalkerMovementManager& CAI_Stalker::movement() const
 {
     VERIFY(m_movement_manager);

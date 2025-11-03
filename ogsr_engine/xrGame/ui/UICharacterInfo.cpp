@@ -84,6 +84,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
     {
         pItem = m_icons[eUIRankCaption] = xr_new<CUIStatic>();
         xml_init.InitStatic(*xml_doc, "rank_caption", 0, pItem);
+        m_text_ids[eUIRankCaptionText] = xml_doc->Read("rank_caption:text", 0, "");
         AttachChild(pItem);
         pItem->SetAutoDelete(true);
     }
@@ -102,6 +103,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
     {
         pItem = m_icons[eUICommunityCaption] = xr_new<CUIStatic>();
         xml_init.InitStatic(*xml_doc, "community_caption", 0, pItem);
+        m_text_ids[eUICommunityCaptionText] = xml_doc->Read("community_caption:text", 0, "");
         AttachChild(pItem);
         pItem->SetAutoDelete(true);
     }
@@ -120,6 +122,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
     {
         pItem = m_icons[eUIReputationCaption] = xr_new<CUIStatic>();
         xml_init.InitStatic(*xml_doc, "reputation_caption", 0, pItem);
+        m_text_ids[eUIReputationCaptionText] = xml_doc->Read("reputation_caption:text", 0, "");
         AttachChild(pItem);
         pItem->SetAutoDelete(true);
     }
@@ -138,6 +141,7 @@ void CUICharacterInfo::Init(float x, float y, float width, float height, CUIXml*
     {
         pItem = m_icons[eUIRelationCaption] = xr_new<CUIStatic>();
         xml_init.InitStatic(*xml_doc, "relation_caption", 0, pItem);
+        m_text_ids[eUIRelationCaptionText] = xml_doc->Read("relation_caption:text", 0, "");
         AttachChild(pItem);
         pItem->SetAutoDelete(true);
     }
@@ -172,24 +176,48 @@ void CUICharacterInfo::InitCharacter(u16 id)
     string256 str;
     if (m_icons[eUIName])
     {
-        m_icons[eUIName]->SetText(T->m_character_name.c_str());
+        m_icons[eUIName]->SetText(T->name_translated().c_str());
+    }
+
+    if (m_icons[eUIRankCaption])
+    {
+        strcpy_s(str, stbl.translate(m_text_ids[eUIRankCaptionText]).c_str());
+        m_icons[eUIRankCaption]->SetText(str);
     }
 
     if (m_icons[eUIRank])
     {
-        sprintf_s(str, "%s", *stbl.translate(GetRankAsText(chInfo.Rank().value())));
+        strcpy_s(str, stbl.translate(GetRankAsText(chInfo.Rank().value())).c_str());
         m_icons[eUIRank]->SetText(str);
+    }
+
+    if (m_icons[eUIReputationCaption])
+    {
+        strcpy_s(str, stbl.translate(m_text_ids[eUIReputationCaptionText]).c_str());
+        m_icons[eUIReputationCaption]->SetText(str);
     }
 
     if (m_icons[eUIReputation])
     {
-        sprintf_s(str, "%s", *stbl.translate(GetReputationAsText(chInfo.Reputation().value())));
+        strcpy_s(str, stbl.translate(GetReputationAsText(chInfo.Reputation().value())).c_str());
         m_icons[eUIReputation]->SetText(str);
+    }
+
+    if (m_icons[eUIRelationCaption])
+    {
+        strcpy_s(str, stbl.translate(m_text_ids[eUIRelationCaptionText]).c_str());
+        m_icons[eUIRelationCaption]->SetText(str);
+    }
+
+    if (m_icons[eUICommunityCaption])
+    {
+        strcpy_s(str, stbl.translate(m_text_ids[eUICommunityCaptionText]).c_str());
+        m_icons[eUICommunityCaption]->SetText(str);
     }
 
     if (m_icons[eUICommunity])
     {
-        sprintf_s(str, "%s", *CStringTable().translate(chInfo.Community().id()));
+        strcpy_s(str, stbl.translate(chInfo.Community().id()).c_str());
         m_icons[eUICommunity]->SetText(str);
     }
 
@@ -205,7 +233,7 @@ void CUICharacterInfo::InitCharacter(u16 id)
         {
             CUIStatic* pItem = xr_new<CUIStatic>();
             pItem->SetWidth(pUIBio->GetDesiredChildWidth());
-            pItem->SetText(*(chInfo.Bio()));
+            pItem->SetText(stbl.translate(chInfo.Bio().c_str()).c_str());
             pItem->AdjustHeightToText();
             pItem->SetTextComplexMode(true);
             pUIBio->AddWindow(pItem, true);

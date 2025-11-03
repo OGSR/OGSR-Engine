@@ -229,6 +229,11 @@ public:
     CCC_GameLanguage(LPCSTR N) : CCC_Token(N, &LanguageID, LanguagesToken.data())
     {
         pLanguagesToken = &LanguagesToken;
+
+        const auto curr_lang_id = GetUserDefaultUILanguage();
+        char curr_lang_name[4]{};
+        const int curr_lang_len = GetLocaleInfoA(curr_lang_id, LOCALE_SISO639LANGNAME2, curr_lang_name, std::size(curr_lang_name));
+
         const char* str = pSettings->r_string("string_table", "language");
         for (int i{}, count = _GetItemCount(str); i < count;)
         {
@@ -236,6 +241,8 @@ public:
             tok.id = i;
             string64 temp{};
             _GetItem(str, i++, temp);
+            if (curr_lang_len > 0 && !_stricmp(temp, &curr_lang_name[0]))
+                LanguageID = tok.id;
             tok.name = xr_strdup(temp);
         }
         LanguagesToken.emplace_back();

@@ -42,7 +42,7 @@ void set_specific_character(shared_str);
 CHARACTER_COMMUNITY_INDEX m_community_index;
 CHARACTER_REPUTATION_VALUE m_reputation;
 CHARACTER_RANK_VALUE m_rank;
-xr_string m_character_name;
+xr_string m_character_name, m_character_name_translated;
 
 #ifdef XRGAME_EXPORTS
 //для работы с relation system
@@ -82,6 +82,8 @@ virtual void add_offline(const xr_vector<ALife::_OBJECT_ID>& saved_children, con
 void vfInitInventory();
 virtual void spawn_supplies();
 #endif
+shared_str name_translated();
+
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeTraderAbstract)
 #define script_type_list save_type_list(CSE_ALifeTraderAbstract)

@@ -164,7 +164,7 @@ void CUIPdaContactItem::SetSelected(bool b)
 
         CUIStatic* pSt = xr_new<CUIStatic>();
 
-        pSt->SetText(*(chInfo.Bio()));
+        pSt->SetText(CStringTable().translate(chInfo.Bio().c_str()).c_str());
         pSt->SetTextComplexMode(true);
         pSt->SetWidth(m_cw->UIDetailsWnd->GetDesiredChildWidth());
         pSt->AdjustHeightToText();

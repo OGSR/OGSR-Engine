@@ -370,7 +370,7 @@ void CSE_ALifeTraderAbstract::set_specific_character(shared_str new_spec_char)
     CSE_ALifeMonsterAbstract* monster = smart_cast<CSE_ALifeMonsterAbstract*>(base());
     if (monster && selected_char.terrain_sect().size())
     {
-        setup_location_types_section(monster->m_tpaTerrain, pSettings, *(selected_char.terrain_sect()));
+        setup_location_types_section(monster->m_tpaTerrain, pSettings, selected_char.terrain_sect().c_str());
     }
     //----
     if (NO_RANK == m_rank)
@@ -379,9 +379,9 @@ void CSE_ALifeTraderAbstract::set_specific_character(shared_str new_spec_char)
     if (NO_REPUTATION == m_reputation)
         m_reputation = selected_char.Reputation();
 
-    m_character_name = *(CStringTable().translate(selected_char.Name()));
+    m_character_name = selected_char.Name();
 
-    LPCSTR gen_name = "GENERATE_NAME_";
+    constexpr LPCSTR gen_name = "GENERATE_NAME_";
     if (strstr(m_character_name.c_str(), gen_name))
     {
         // select name and lastname
@@ -393,18 +393,9 @@ void CSE_ALifeTraderAbstract::set_specific_character(shared_str new_spec_char)
         u32 last_name_cnt = pSettings->r_u32(t1, "last_name_cnt");
 
         string512 S;
-        xr_string n = "name_";
-        n += subset;
-        n += "_";
-        n += itoa(::Random.randI(name_cnt), S, 10);
-        m_character_name = *(CStringTable().translate(n.c_str()));
+        m_character_name = "name_" + subset + "_" + itoa(::Random.randI(name_cnt), S, 10);
         m_character_name += " ";
-
-        n = "lname_";
-        n += subset;
-        n += "_";
-        n += itoa(::Random.randI(last_name_cnt), S, 10);
-        m_character_name += *(CStringTable().translate(n.c_str()));
+        m_character_name += "lname_" + subset + "_" + itoa(::Random.randI(last_name_cnt), S, 10);
     }
     u32 min_m = selected_char.MoneyDef().min_money;
     u32 max_m = selected_char.MoneyDef().max_money;
@@ -418,6 +409,34 @@ void CSE_ALifeTraderAbstract::set_specific_character(shared_str new_spec_char)
     //в редакторе специфический профиль оставляем не заполненым
     m_SpecificCharacter = NULL;
 #endif
+}
+
+extern const xr_token* GetLanguagesToken();
+
+shared_str CSE_ALifeTraderAbstract::name_translated()
+{ 
+    static LPCSTR cur_lang = GetLanguagesToken()->name;
+    static xr_string cur_name = m_character_name;
+
+    LPCSTR lang = GetLanguagesToken()->name;
+
+    if (cur_lang != lang || cur_name != m_character_name || m_character_name_translated.empty())
+    {
+        cur_lang = lang;
+        cur_name = m_character_name;
+
+        const size_t pos = m_character_name.find(' ');
+        if (pos == std::string::npos)
+            m_character_name_translated = CStringTable().translate(cur_name.c_str()).c_str();
+        else
+        {
+            m_character_name_translated = CStringTable().translate(cur_name.substr(0, pos).c_str()).c_str();
+            m_character_name_translated += " ";
+            m_character_name_translated += CStringTable().translate(cur_name.substr(pos + 1).c_str()).c_str();
+        }
+    }
+
+    return m_character_name_translated.c_str();
 }
 
 void CSE_ALifeTraderAbstract::set_character_profile(shared_str new_profile) { m_sCharacterProfile = new_profile; }

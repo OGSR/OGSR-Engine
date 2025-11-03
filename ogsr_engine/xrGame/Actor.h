@@ -181,7 +181,7 @@ public:
     CGameNewsRegistryWrapper* game_news_registry;
     CCharacterPhysicsSupport* m_pPhysics_support;
 
-    virtual LPCSTR Name() const { return CInventoryOwner::Name(); }
+    LPCSTR Name() override { return CInventoryOwner::Name(); }
 
 public:
     // PhraseDialogManager

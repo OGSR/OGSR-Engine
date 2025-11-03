@@ -825,9 +825,6 @@ void CGameObject::shedule_Update(u32 dt)
 
 BOOL CGameObject::net_SaveRelevant() { return (CScriptBinder::net_SaveRelevant()); }
 
-//игровое имя объекта
-LPCSTR CGameObject::Name() const { return (*cName()); }
-
 u32 CGameObject::ef_creature_type() const
 {
     string16 temp;

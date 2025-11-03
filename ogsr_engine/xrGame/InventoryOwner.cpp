@@ -260,6 +260,7 @@ void CInventoryOwner::StartTalk(CInventoryOwner* talk_partner, bool start_trade)
 #include "UIGameSP.h"
 #include "HUDmanager.h"
 #include "ui\UITalkWnd.h"
+#include <string_table.h>
 
 void CInventoryOwner::StopTalk()
 {
@@ -339,11 +340,34 @@ void CInventoryOwner::spawn_supplies()
     }
 }
 
+extern const xr_token* GetLanguagesToken();
+
 //игровое имя
-LPCSTR CInventoryOwner::Name() const
-{
-    //	return CharacterInfo().Name();
-    return m_game_name.c_str();
+LPCSTR CInventoryOwner::Name()
+{ 
+    static LPCSTR cur_lang = GetLanguagesToken()->name;
+    static xr_string cur_name = m_game_name;
+
+    LPCSTR lang = GetLanguagesToken()->name;
+
+
+    if (cur_lang != lang || cur_name != m_game_name || m_game_name_translated.empty())
+    {
+        cur_lang = lang;
+        cur_name = m_game_name;
+
+        const size_t pos = m_game_name.find(' ');
+        if (pos == std::string::npos)
+            m_game_name_translated = CStringTable().translate(cur_name.c_str()).c_str();
+        else
+        {
+            m_game_name_translated = CStringTable().translate(cur_name.substr(0, pos).c_str()).c_str();
+            m_game_name_translated += " ";
+            m_game_name_translated += CStringTable().translate(cur_name.substr(pos + 1).c_str()).c_str();
+        }
+    }
+
+    return m_game_name_translated.c_str();
 }
 
 void CInventoryOwner::NewPdaContact(CInventoryOwner* pInvOwner) {}

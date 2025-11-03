@@ -157,7 +157,7 @@ void CUIStalkersRankingWnd::AddStalkerItem(CUIXml* xml, int num, CSE_ALifeTrader
     std::string s = std::to_string(num) + ".";
     itm->m_text1->SetText(s.c_str());
 
-    itm->m_text2->SetText(t->m_character_name.c_str());
+    itm->m_text2->SetText(t->name_translated().c_str());
 
     s = std::to_string(t->m_rank);
     itm->m_text3->SetText(s.c_str());
@@ -182,7 +182,7 @@ void CUIStalkersRankingWnd::AddActorItem(CUIXml* xml, int num, CSE_ALifeTraderAb
     std::string s = std::to_string(num) + ".";
     itm->m_text1->SetText(s.c_str());
 
-    itm->m_text2->SetText(t->m_character_name.c_str());
+    itm->m_text2->SetText(t->name_translated().c_str());
 
     s = std::to_string(t->m_rank);
     itm->m_text3->SetText(s.c_str());

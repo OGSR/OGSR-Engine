@@ -144,7 +144,7 @@ public:
     virtual void SetHitInfo(CObject* who, CObject* weapon, s16 element, Fvector Pos, Fvector Dir){};
 
     //игровое имя объекта
-    virtual LPCSTR Name() const;
+    virtual LPCSTR Name() { return cName().c_str(); }
 
     // virtual void			OnH_A_Independent	();
     virtual void OnH_B_Chield();

@@ -88,7 +88,7 @@ public:
     virtual void LostPdaContact(CInventoryOwner*);
 
     //игровое имя
-    virtual LPCSTR Name() const;
+    virtual LPCSTR Name();
     u32 get_money() const { return m_money; }
     void set_money(u32 amount, bool bSendEvent);
     void SetName(LPCSTR name) { m_game_name = name; };
@@ -173,9 +173,9 @@ public:
     CHARACTER_RANK_VALUE Rank() const { return CharacterInfo().Rank().value(); };
     CHARACTER_REPUTATION_VALUE Reputation() const { return CharacterInfo().Reputation().value(); };
 
-protected:
+private:
     CCharacterInfo* m_pCharacterInfo;
-    xr_string m_game_name;
+    xr_string m_game_name, m_game_name_translated;
 
 public:
     virtual void renderable_Render(u32 context_id, IRenderable* root) override;

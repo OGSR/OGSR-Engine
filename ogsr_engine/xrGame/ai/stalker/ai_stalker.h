@@ -280,7 +280,8 @@ public:
     bool fire_make_sense();
     bool can_fire_to_enemy(const CEntityAlive* enemy);
 
-    virtual LPCSTR Name() const;
+    LPCSTR Name() override { return CInventoryOwner::Name(); }
+    
     virtual BOOL feel_touch_contact(CObject* O);
     virtual BOOL feel_touch_on_contact(CObject* O);
 

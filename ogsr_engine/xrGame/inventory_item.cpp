@@ -151,7 +151,9 @@ void CInventoryItem::ReloadNames()
 {
     m_name = CStringTable().translate(pSettings->r_string(m_object->cNameSect(), "inv_name"));
     m_nameShort = CStringTable().translate(pSettings->r_string(m_object->cNameSect(), "inv_name_short"));
-    m_Description = CStringTable().translate(pSettings->r_string(m_object->cNameSect(), "description"));
+
+    if (pSettings->line_exist(m_object->cNameSect(), "description"))
+        m_Description = CStringTable().translate(pSettings->r_string(m_object->cNameSect(), "description"));
 }
 
 void CInventoryItem::ChangeCondition(float fDeltaCondition)

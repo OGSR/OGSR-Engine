@@ -20,7 +20,7 @@ protected:
     void SetRelation(ALife::ERelationType relation, CHARACTER_GOODWILL goodwill);
     void ResetAllStrings();
     void UpdateRelation();
-    bool hasOwner() { return (m_ownerID != u16(-1)); }
+    bool hasOwner() const { return (m_ownerID != u16(-1)); }
     // Biography
     CUIScrollView* pUIBio;
     bool m_bForceUpdate;
@@ -41,6 +41,17 @@ protected:
         eMaxCaption,
     };
     CUIStatic* m_icons[eMaxCaption];
+
+    enum
+    {
+        eUIRankCaptionText = 0,
+        eUICommunityCaptionText,
+        eUIReputationCaptionText,
+        eUIRelationCaptionText,
+        eMaxCaptionText,
+    };
+    shared_str m_text_ids[eMaxCaptionText];
+
     shared_str m_texture_name;
 
 public:
