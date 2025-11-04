@@ -15,6 +15,7 @@
 ENGINE_API float ps_r_sunshafts_intensity = 0.0f;
 ENGINE_API float puddles_drying = 2.f;
 ENGINE_API float puddles_wetting = 4.f;
+ENGINE_API BOOL bLevelEnvModExport{};
 
 bool CEnvModifier::load(IReader* fs, u32 version)
 {
@@ -753,22 +754,16 @@ void CEnvironment::mods_load()
 
         FS.r_close(fs);
 
-        if (!Modifiers.empty())
+        if (!Modifiers.empty() && bLevelEnvModExport)
         {
             FS.update_path(path, fsgame::level, fsgame::level_files::level_env_mod_ltx);
 
-            CInifile ltXfile = CInifile(path, 0, 0, 1);
-
-            u32 id = 0;
-            string256 section;
+            CInifile ltXfile{path, 0, 0, 1};
+            u32 id{};
 
             for (auto& mod : Modifiers)
             {
-                sprintf_s(section, "%d", id);
-
-                mod.saveIni(ltXfile, section);
-
-                id++;
+                mod.saveIni(ltXfile, std::to_string(id++).c_str());
             }
         }
     }

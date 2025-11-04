@@ -626,4 +626,7 @@ void CCC_Register()
     CMD3(CCC_Token, "lua_gc_method", &ps_lua_gc_method, lua_gc_method_token);
     CMD4(CCC_Integer, "lua_gcstep", &psLUA_GCSTEP, 10, 1000);
     CMD4(CCC_Integer, "lua_gctimeout", &psLUA_GCTIMEOUT_MIN, 1000, 16000);
+
+    extern BOOL bLevelEnvModExport;
+    CMD4(CCC_Integer, "level_env_mod_export", &bLevelEnvModExport, FALSE, TRUE);
 };
