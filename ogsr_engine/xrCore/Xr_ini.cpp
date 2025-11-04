@@ -728,16 +728,6 @@ void CInifile::w_string(LPCSTR S, LPCSTR L, LPCSTR V)
     _strlwr(sect);
     ASSERT_FMT(sect[0], "[%s]: wrong section name [%s]", __FUNCTION__, S);
 
-    if (!section_exist(sect))
-    {
-        // create _new_ section
-        Sect* NEW = xr_new<Sect>();
-        NEW->Name = sect;
-        NEW->Index = DATA.size();
-        DATA.emplace(NEW->Name, NEW);
-        Ordered_DATA.push_back({NEW->Name, NEW});
-    }
-
     // parse line/value
     char line[256];
     _parse(line, L);
@@ -750,7 +740,7 @@ void CInifile::w_string(LPCSTR S, LPCSTR L, LPCSTR V)
     I.first = line;
     I.second = value[0] ? value : 0;
 
-    Sect* data = &r_section(sect);
+    Sect* data = !section_exist(sect) ? &append_section(sect) : &r_section(sect);
     insert_item(data, I);
 
     bWasChanged = true;

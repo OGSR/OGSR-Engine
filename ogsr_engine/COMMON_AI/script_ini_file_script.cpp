@@ -9,7 +9,7 @@
 #include "stdafx.h"
 #include "script_ini_file.h"
 
-bool r_line(CInifile* self, LPCSTR S, int L, std::string& N, std::string& V)
+static bool r_line(CInifile* self, LPCSTR S, int L, std::string& N, std::string& V)
 {
     THROW3(self->section_exist(S), "Cannot find section", S);
     THROW2((int)self->line_count(S) > L, "Invalid line number");
@@ -28,13 +28,13 @@ bool r_line(CInifile* self, LPCSTR S, int L, std::string& N, std::string& V)
     return (true);
 }
 
-void iterate_sections(CInifile* self, const luabind::functor<void>& functor)
+static void iterate_sections(CInifile* self, const luabind::functor<void>& functor)
 {
     for (const auto& it : self->sections())
         functor(it.first.c_str());
 }
 
-CInifile* reload_system_ini()
+static CInifile* reload_system_ini()
 {
     CInifile::Destroy(pSettings);
 
@@ -69,17 +69,29 @@ CInifile* reload_system_ini()
 #include "ai_space.h"
 #include "object_factory.h"
 
-bool line_exist_script(CInifile* self, LPCSTR S, LPCSTR L) { return (!!self->line_exist(S, L)); }
+static bool line_exist_script(CInifile* self, LPCSTR S, LPCSTR L) { return (!!self->line_exist(S, L)); }
 
-bool section_exist_script(CInifile* self, LPCSTR S) { return (!!self->section_exist(S)); }
+static bool section_exist_script(CInifile* self, LPCSTR S) { return (!!self->section_exist(S)); }
 
-int r_clsid_script(CInifile* self, LPCSTR S, LPCSTR L) { return (object_factory().script_clsid(self->r_clsid(S, L))); }
+static int r_clsid_script(CInifile* self, LPCSTR S, LPCSTR L) { return (object_factory().script_clsid(self->r_clsid(S, L))); }
 
-bool r_bool_script(CInifile* self, LPCSTR S, LPCSTR L) { return (!!self->r_bool(S, L)); }
+static bool r_bool_script(CInifile* self, LPCSTR S, LPCSTR L) { return (!!self->r_bool(S, L)); }
 
-LPCSTR r_string_wb_script(CInifile* self, LPCSTR S, LPCSTR L) { return (self->r_string_wb(S, L).c_str()); }
+static LPCSTR r_string_wb_script(CInifile* self, LPCSTR S, LPCSTR L) { return (self->r_string_wb(S, L).c_str()); }
 
-inline CInifile* initialize_ini_file_full(LPCSTR szFileName, bool updatePath)
+static void append_section_script(CInifile* self, LPCSTR S) 
+{ 
+    if (!self->section_exist(S))
+        self->append_section(S); 
+}
+
+static void append_section_script2(CInifile* self, LPCSTR S, LPCSTR base) 
+{
+    if (!self->section_exist(S))
+        self->append_section(S, &self->r_section(base)); 
+}
+
+static inline CInifile* initialize_ini_file_full(LPCSTR szFileName, bool updatePath)
 {
     LPCSTR path{szFileName};
     string_path path_upd{};
@@ -112,7 +124,7 @@ inline CInifile* initialize_ini_file_full(LPCSTR szFileName, bool updatePath)
     return xr_new<CInifile>(path, TRUE, TRUE, TRUE);
 }
 
-inline CInifile* initialize_ini_file(LPCSTR szFileName) { return initialize_ini_file_full(szFileName, true); }
+static inline CInifile* initialize_ini_file(LPCSTR szFileName) { return initialize_ini_file_full(szFileName, true); }
 
 using namespace luabind;
 
@@ -125,6 +137,8 @@ void CScriptIniFile::script_register(lua_State* L)
                   .def("section_exist", &section_exist_script)
                   .def("line_exist", &line_exist_script)
                   .def("line_count", (u32(CInifile::*)(LPCSTR)) & CInifile::line_count)
+                  .def("append_section", &append_section_script)
+                  .def("append_section", &append_section_script2)
                   .def("remove_line", &CInifile::remove_line)
                   .def("remove_section", &CInifile::remove_section)
                   .def("get_as_string", &CInifile::get_as_string)
@@ -175,7 +189,8 @@ void CScriptIniFile::script_register(lua_State* L)
                   .def("w_float", &CInifile::w_float)
                   .def("w_vector2", &CInifile::w_fvector2)
                   .def("w_vector", &CInifile::w_fvector3)
-                  .def("w_vector4", &CInifile::w_fvector4),
+                  .def("w_vector4", &CInifile::w_fvector4)
+                  .def("save_ini", &CInifile::save_as),
 
               def("system_ini", [] { return pSettings; }), def("game_ini", [] { return pGameIni; }),
               def(
