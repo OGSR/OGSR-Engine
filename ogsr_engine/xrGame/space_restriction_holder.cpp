@@ -178,13 +178,22 @@ bool try_remove_string(shared_str& search_string, const shared_str& string_to_se
 
 void CSpaceRestrictionHolder::unregister_restrictor(CSpaceRestrictor* space_restrictor)
 {
-    shared_str restrictor_id = space_restrictor->cName();
+    const shared_str restrictor_id = space_restrictor->cName();
+    CSpaceRestrictionBridge* bridge{};
 
-    auto I = m_restrictions.find(restrictor_id);
-    ASSERT_FMT(I != m_restrictions.end(), "!![" __FUNCTION__ "] restrictor [%s] not found!", restrictor_id.c_str());
-
-    CSpaceRestrictionBridge* bridge = (*I).second;
-    m_restrictions.erase(I);
+    if (auto I = m_restrictions.find(restrictor_id); I != m_restrictions.end())
+    {
+        bridge = I->second;
+        m_restrictions.erase(I);
+    }
+    else
+    {
+        if (Level().is_removing_objects())
+            Msg("!![" __FUNCTION__ "] restrictor [%s] id [%u] not found!", restrictor_id.c_str(), space_restrictor->ID());
+        else
+            FATAL("!![" __FUNCTION__ "] restrictor [%s] id [%u] not found!", restrictor_id.c_str(), space_restrictor->ID());
+        return;
+    }
 
     if (try_remove_string(m_default_out_restrictions, restrictor_id))
         on_default_restrictions_changed();
