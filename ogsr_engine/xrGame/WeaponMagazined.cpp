@@ -27,6 +27,8 @@
 #include <regex>
 #include "../xr_3da/x_ray.h"
 
+CUIXml* g_wpnScopeXml = NULL;
+
 CWeaponMagazined::CWeaponMagazined(LPCSTR name, ESoundTypes eSoundType) : CWeapon(name)
 {
     m_eSoundShow = ESoundTypes(SOUND_TYPE_ITEM_TAKING | eSoundType);
@@ -883,6 +885,8 @@ void CWeaponMagazined::switch2_Idle()
 #include "ai\stalker\ai_stalker.h"
 #include "object_handler_planner.h"
 #endif
+#include <ui/UIXmlInit.h>
+
 void CWeaponMagazined::switch2_Fire()
 {
     CInventoryOwner* io = smart_cast<CInventoryOwner*>(H_Parent());
@@ -1205,7 +1209,6 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
     }
     else
         return inherited::Detach(item_section_name, b_spawn_item);
-    ;
 }
 
 void CWeaponMagazined::InitZoomParams(LPCSTR section, bool useTexture)
@@ -1248,11 +1251,52 @@ void CWeaponMagazined::InitZoomParams(LPCSTR section, bool useTexture)
         shared_str scope_tex_name = READ_IF_EXISTS(pSettings, r_string, section, "scope_texture", "");
         const bool scope_tex_autoresize = READ_IF_EXISTS(pSettings, r_bool, section, "scope_texture_autoresize", true);
 
-        if (scope_tex_name.size() > 0)
+        if (scope_tex_name.size() > 0 && !scope_tex_name.equal("none"))
         {
-            m_UIScope = xr_new<CUIStaticItem>();
-            m_UIScope->Init(scope_tex_name.c_str(), (Core.Features.test(xrCore::Feature::scope_textures_autoresize) && scope_tex_autoresize) ? "hud\\scope" : "hud\\default", 0, 0,
-                            alNone);
+            m_UIScope = xr_new<CUIWindow>();
+
+            bool was_set = false;
+
+            if (Core.Features.test(xrCore::Feature::cop_style_scope_texture))
+            {
+                if (!g_wpnScopeXml)
+                {
+                    g_wpnScopeXml = xr_new<CUIXml>();
+                    g_wpnScopeXml->Init(CONFIG_PATH, UI_PATH, "scopes.xml");
+                }
+
+                if (g_wpnScopeXml->NavigateToNode(scope_tex_name.c_str()))
+                {
+                    CUIXmlInit::InitWindow(*g_wpnScopeXml, scope_tex_name.c_str(), 0, m_UIScope);
+
+                    was_set = true;
+                }
+                else if (g_wpnScopeXml->NavigateToNode("wpn_crosshair_fallback") && READ_IF_EXISTS(pSettings, r_bool, section, "wpn_crosshair_fallback", true))
+                {
+                    CUIXmlInit::InitWindow(*g_wpnScopeXml, "wpn_crosshair_fallback", 0, m_UIScope);
+
+                    was_set = true;
+
+                    CUIWindow* scope_wnd = m_UIScope->FindChild("scope_texture");
+                    if (scope_wnd && smart_cast<CUIStatic*>(scope_wnd))
+                    {
+                        smart_cast<CUIStatic*>(scope_wnd)->InitTexture(scope_tex_name.c_str());
+                    }
+                }
+            }
+            
+            if (!was_set)
+            {
+                m_UIScope->SetWndRect(0, 0, UI_BASE_WIDTH, UI_BASE_HEIGHT);
+
+                // legacy mode
+                CUIStatic* inner = xr_new<CUIStatic>();
+                inner->SetAutoDelete(true);
+                inner->SetWndRect(0, 0, UI_BASE_WIDTH, UI_BASE_HEIGHT);
+                inner->SetStretchTexture(true);
+                inner->GetStaticItem()->Init(scope_tex_name.c_str(), (Core.Features.test(xrCore::Feature::scope_textures_autoresize) && scope_tex_autoresize) ? "hud\\scope" : "hud\\default", 0, 0, alNone);
+                m_UIScope->AttachChild(inner);
+            }
         }
     }
 }

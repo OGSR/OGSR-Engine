@@ -756,7 +756,7 @@ float CActor::currentFOV()
 {
     const auto pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());
 
-    if (eacFirstEye == cam_active && pWeapon && pWeapon->IsZoomed() && (!pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture())))
+    if (eacFirstEye == cam_active && pWeapon && pWeapon->IsZoomed() && (!pWeapon->UseScopeTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->UseScopeTexture())))
         if (Core.Features.test(xrCore::Feature::ogse_wpn_zoom_system))
             return atanf(tanf(g_fov * (0.5f * PI / 180.f)) / pWeapon->GetZoomFactor()) / (0.5f * PI / 180.f);
         else

@@ -56,6 +56,7 @@ void init_game_globals()
 
 extern CUIXml* g_gameTaskXml;
 extern CUIXml* g_uiSpotXml;
+extern CUIXml* g_wpnScopeXml;
 
 extern void destroy_lua_wpn_params();
 
@@ -117,6 +118,7 @@ void clean_game_globals()
     clean_wnd_rects();
     xr_delete(g_gameTaskXml);
     xr_delete(g_uiSpotXml);
+    xr_delete(g_wpnScopeXml);
     dump_list_xmls();
     DestroyUIGeom();
 }

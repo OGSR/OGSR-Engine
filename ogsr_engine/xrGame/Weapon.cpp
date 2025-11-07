@@ -1115,7 +1115,7 @@ void CWeapon::render_hud_mode(u32 context_id, IRenderable* root)
     inherited::render_hud_mode(context_id, root);
 }
 
-bool CWeapon::need_renderable() { return !(IsZoomed() && ZoomTexture() && !IsRotatingToZoom()); }
+bool CWeapon::need_renderable() { return !(IsZoomed() && UseScopeTexture() && !IsRotatingToZoom()); }
 
 void CWeapon::signal_HideComplete()
 {
@@ -1692,14 +1692,6 @@ bool CWeapon::UseScopeTexture()
     return !Is3dssEnabled() && m_UIScope; // только если есть текстура прицела - для простого создания коллиматоров
 }
 
-CUIStaticItem* CWeapon::ZoomTexture()
-{
-    if (UseScopeTexture())
-        return m_UIScope;
-    else
-        return NULL;
-}
-
 void CWeapon::SwitchState(u32 S)
 {
     SetNextState(S); // Very-very important line of code!!! :)
@@ -1944,13 +1936,10 @@ void CWeapon::OnDrawUI()
 {
     if (IsZoomed() && ZoomHideCrosshair())
     {
-        if (ZoomTexture() && !IsRotatingToZoom())
+        if (UseScopeTexture() && !IsRotatingToZoom())
         {
-            ZoomTexture()->SetPos(0, 0);
-            ZoomTexture()->SetRect(0, 0, UI_BASE_WIDTH, UI_BASE_HEIGHT);
-            ZoomTexture()->Render();
-
-            //			m_UILens.Draw();
+            m_UIScope->Update();
+            m_UIScope->Draw();
         }
     }
 }
@@ -2050,7 +2039,7 @@ void CWeapon::Show(bool now)
 
 bool CWeapon::show_crosshair() { return psActorFlags.test(AF_CROSSHAIR_DBG) || !(IsZoomed() && ZoomHideCrosshair()); }
 
-bool CWeapon::show_indicators() { return !(IsZoomed() && (ZoomTexture() || !m_bScopeShowIndicators)); }
+bool CWeapon::show_indicators() { return !(IsZoomed() && (UseScopeTexture() || !m_bScopeShowIndicators)); }
 
 float CWeapon::GetConditionToShow() const
 {

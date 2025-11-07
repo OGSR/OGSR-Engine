@@ -190,7 +190,7 @@ public:
             stop_anim_playing = 1ull << 12, corpses_collision = 1ull << 13, more_hide_weapon = 1ull << 14, keep_inprogress_tasks_only = 1ull << 15,
                              show_dialog_numbers = 1ull << 16, objects_radioactive = 1ull << 17, af_zero_condition = 1ull << 18, af_satiety = 1ull << 19,
                              af_psy_health = 1ull << 20, outfit_af = 1ull << 21, gd_master_only = 1ull << 22, scope_textures_autoresize = 1ull << 23, ogse_new_slots = 1ull << 24,
-                             ogse_wpn_zoom_system = 1ull << 25, wpn_cost_include_addons = 1ull << 26, /* = 1ull << 27,*/ hard_ammo_reload = 1ull << 28,
+                             ogse_wpn_zoom_system = 1ull << 25, wpn_cost_include_addons = 1ull << 26, cop_style_scope_texture = 1ull << 27, hard_ammo_reload = 1ull << 28,
                              engine_ammo_repacker = 1ull << 29, ruck_flag_preferred = 1ull << 30, colorize_ammo = 1ull << 31,
                              // !Место свободно!        = 1ull << 32,
             colorize_untradable = 1ull << 33, select_mode_1342 = 1ull << 34, old_outfit_slot_style = 1ull << 35, npc_simplified_shooting = 1ull << 36, autoreload_wpn = 1ull << 37,
