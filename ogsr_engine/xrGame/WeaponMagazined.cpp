@@ -1062,6 +1062,8 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
     }
     break;
     case kTORCH: {
+        if (!Core.Features.test(xrCore::Feature::busy_actor_restrictions))
+            return false;
         auto pActorTorch = smart_cast<CActor*>(H_Parent())->inventory().ItemFromSlot(TORCH_SLOT);
         if ((flags & CMD_START) && pActorTorch && GetState() == eIdle)
         {
@@ -1072,6 +1074,8 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
     }
     break;
     case kNIGHT_VISION: {
+        if (!Core.Features.test(xrCore::Feature::busy_actor_restrictions))
+            return false;
         auto pActor = smart_cast<CActor*>(H_Parent());
         auto pActorNv = pActor->inventory().ItemFromSlot(IS_OGSR_GA ? NIGHT_VISION_SLOT : TORCH_SLOT);
         if ((flags & CMD_START) && pActorNv && GetState() == eIdle && !pActor->IsZoomAimingMode())
