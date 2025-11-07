@@ -193,7 +193,14 @@ void CHUDTarget::Render()
             float x = 0.f;
             float y = 0.f;
 
-            if (psHUD_Flags.test(HUD_INFO_OVERHEAD))
+            if (E && E->g_Alive() && E->cast_base_monster())
+            {
+                auto* pCurEnt = smart_cast<CEntityAlive*>(Level().CurrentEntity());
+                const int relation = MONSTER_COMMUNITY::relation(pCurEnt->monster_community->index(), E->monster_community->index());
+
+                C = relation > 0 ? C_ON_FRIEND : (relation == 0 ? C_ON_NEUTRAL : C_ON_ENEMY);
+            }
+            else if (psHUD_Flags.test(HUD_INFO_OVERHEAD))
             {
                 Fvector4 v_res;
 
