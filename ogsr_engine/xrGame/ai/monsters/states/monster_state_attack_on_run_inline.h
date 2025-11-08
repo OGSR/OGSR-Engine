@@ -53,6 +53,7 @@ void ATTACK_ON_RUN_STATE::initialize()
     m_is_jumping = object->is_jumping();
     m_reach_old_target = false;
     m_attack_side_chosen_time = 0;
+    m_enemy_to_attack = nullptr;
 
     choose_next_atack_animation();
 }
@@ -179,6 +180,9 @@ TEMPLATE_SIGNATURE
 void ATTACK_ON_RUN_STATE::update_aim_side()
 {
     CEntityAlive const* const enemy = m_attacking ? m_enemy_to_attack : object->EnemyMan.get_enemy();
+
+    if (!enemy)
+        return;
 
     Fvector const self_dir = object->Direction();
     Fvector const self_to_enemy = enemy->Position() - object->Position();
@@ -625,6 +629,15 @@ bool ATTACK_ON_RUN_STATE::check_completion()
     // if (!object->control().path_builder().is_moving_on_path() ||
     //	(object->m_time_last_attack_success != 0)) return true;
     return false;
+}
+
+TEMPLATE_SIGNATURE
+void ATTACK_ON_RUN_STATE::remove_links(CObject* object)
+{
+    inherited::remove_links(object);
+
+    if (m_enemy_to_attack == object)
+        m_enemy_to_attack = nullptr;
 }
 
 #undef DEBUG_STATE
