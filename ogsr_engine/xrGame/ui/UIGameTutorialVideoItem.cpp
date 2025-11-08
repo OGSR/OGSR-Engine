@@ -26,8 +26,8 @@ CUISequenceVideoItem::CUISequenceVideoItem(CUISequencer* owner) : CUISequenceIte
 
 CUISequenceVideoItem::~CUISequenceVideoItem()
 {
-    m_sound[0].stop();
-    m_sound[1].stop();
+    for (auto& snd : m_sounds)
+        snd.stop();
     delete_data(m_wnd);
 }
 
@@ -84,13 +84,25 @@ void CUISequenceVideoItem::Load(CUIXml* xml, int idx)
 
     if (m_snd_name && m_snd_name[0])
     {
-        string_path _l, _r;
-        strconcat(sizeof(_l), _l, m_snd_name, "_l");
-        strconcat(sizeof(_r), _r, m_snd_name, "_r");
-        m_sound[0].create(_l, st_Effect, sg_Undefined);
-        VERIFY(m_sound[0]._handle());
-        m_sound[1].create(_r, st_Effect, sg_Undefined);
-        VERIFY(m_sound[1]._handle());
+        string_path buff{};
+        if (FS.exist(buff, fsgame::game_sounds, m_snd_name, ".ogg"))
+        {
+            m_sounds[0].create(m_snd_name, st_Music, sg_SourceType);
+            m_sounds[1].destroy();
+            stereo = true;
+        }
+        else
+        {
+            string_path _l, _r;
+            strconcat(sizeof(_l), _l, m_snd_name, "_l");
+            strconcat(sizeof(_r), _r, m_snd_name, "_r");
+            VERIFY(m_sounds[0]._handle());
+            VERIFY(m_sounds[1]._handle());
+
+            m_sounds[0].create(_l, st_Effect, sg_SourceType);
+            m_sounds[1].create(_r, st_Effect, sg_SourceType);
+            stereo = false;
+        }
     }
     xml->SetLocalRoot(_stored_root);
 }
@@ -110,12 +122,12 @@ void CUISequenceVideoItem::Update()
     else
         return;
 
-    u32 sync_tm = (0 == m_sound[0]._handle()) ? Device.dwTimeContinual : (m_sound[0]._feedback() ? m_sound[0]._feedback()->play_time() : m_sync_time);
+    u32 sync_tm = (0 == m_sounds[0]._handle()) ? Device.dwTimeContinual : (m_sounds[0]._feedback() ? m_sounds[0]._feedback()->play_time() : m_sync_time);
     m_sync_time = sync_tm;
     // processing A&V
     if (m_texture->HasTexture())
     {
-        BOOL is_playing = m_sound[0]._handle() ? !!m_sound[0]._feedback() : m_texture->video_IsPlaying();
+        const BOOL is_playing = m_sounds[0]._handle() ? !!m_sounds[0]._feedback() : m_texture->video_IsPlaying();
         if (is_playing)
         {
             m_texture->video_Sync(m_sync_time);
@@ -125,8 +137,13 @@ void CUISequenceVideoItem::Update()
             // sync start
             if (m_flags.test(etiNeedStart))
             {
-                m_sound[0].play_at_pos(NULL, Fvector().set(-0.5f, 0.f, 0.3f), sm_2D);
-                m_sound[1].play_at_pos(NULL, Fvector().set(+0.5f, 0.f, 0.3f), sm_2D);
+                if (!stereo)
+                {
+                    m_sounds[0].play_at_pos(NULL, Fvector().set(-0.5f, 0.f, 0.3f), sm_2D);
+                    m_sounds[1].play_at_pos(NULL, Fvector().set(+0.5f, 0.f, 0.3f), sm_2D);
+                }
+                else
+                    m_sounds[0].play_at_pos(NULL, Fvector().set(0.f, 0.f, 0.3f), sm_2D);
                 m_texture->video_Play(FALSE, m_sync_time);
                 m_flags.set(etiNeedStart, FALSE);
                 CUIWindow* w = m_owner->MainWnd()->FindChild("back");
@@ -193,8 +210,9 @@ bool CUISequenceVideoItem::Stop(bool bForce)
     m_wnd->Show(false);
     m_owner->MainWnd()->DetachChild(m_wnd);
 
-    m_sound[0].stop();
-    m_sound[1].stop();
+    for (auto& snd : m_sounds)
+        snd.stop();
+
     m_texture->ResetTexture();
 
     if (m_flags.test(etiNeedPauseOn) && !m_flags.test(etiStoredPauseState))

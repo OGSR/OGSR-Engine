@@ -19,20 +19,15 @@ void CMMSound::Init(CUIXml& xml_doc, LPCSTR path)
         m_play_list.push_back(xml_doc.Read("menu_music", i, ""));
     xml_doc.SetLocalRoot(xml_doc.GetRoot());
 
+    string_path buff{};
+
     strconcat(sizeof(_path), _path, path, ":whell_sound");
-    if (check_file(xml_doc.Read(_path, 0, "")))
+    if (FS.exist(buff, fsgame::game_sounds, xml_doc.Read(_path, 0, ""), ".ogg"))
         m_whell.create(xml_doc.Read(_path, 0, ""), st_Effect, sg_SourceType);
 
     strconcat(sizeof(_path), _path, path, ":whell_click");
-    if (check_file(xml_doc.Read(_path, 0, "")))
+    if (FS.exist(buff, fsgame::game_sounds, xml_doc.Read(_path, 0, ""), ".ogg"))
         m_whell_click.create(xml_doc.Read(_path, 0, ""), st_Effect, sg_SourceType);
-}
-
-bool CMMSound::check_file(LPCSTR fname)
-{
-    string_path _path;
-    strconcat(sizeof(_path), _path, fname, ".ogg");
-    return FS.exist("$game_sounds$", _path) ? true : false;
 }
 
 void CMMSound::whell_Play()
@@ -60,32 +55,50 @@ void CMMSound::music_Play()
     if (m_play_list.empty())
         return;
 
-    int i = Random.randI(m_play_list.size());
+    const int i = Random.randI(m_play_list.size());
 
-    string_path _path;
-    string_path _path2;
-    strconcat(sizeof(_path), _path, m_play_list[i].c_str(), "_l.ogg");
-    strconcat(sizeof(_path2), _path2, m_play_list[i].c_str(), "_r.ogg");
-    VERIFY(FS.exist("$game_sounds$", _path));
-    VERIFY(FS.exist("$game_sounds$", _path2));
+    bool stereo{};
+    string_path buff{};
 
-    m_music_l.create(_path, st_Music, sg_SourceType);
-    m_music_r.create(_path2, st_Music, sg_SourceType);
+    if (FS.exist(buff, fsgame::game_sounds, m_play_list[i].c_str(), ".ogg"))
+    {
+        m_music_sources[0].create(m_play_list[i].c_str(), st_Music, sg_SourceType);
+        m_music_sources[1].destroy();
+        stereo = true;
+    }
+    else
+    {
+        string_path _path;
+        string_path _path2;
+        strconcat(sizeof(_path), _path, m_play_list[i].c_str(), "_l.ogg");
+        strconcat(sizeof(_path2), _path2, m_play_list[i].c_str(), "_r.ogg");
+        VERIFY(FS.exist(fsgame::game_sounds, _path));
+        VERIFY(FS.exist(fsgame::game_sounds, _path2));
 
-    m_music_l.play_at_pos(NULL, Fvector().set(-0.5f, 0.f, 0.3f), sm_2D);
-    m_music_r.play_at_pos(NULL, Fvector().set(+0.5f, 0.f, 0.3f), sm_2D);
+        m_music_sources[0].create(_path, st_Music, sg_SourceType);
+        m_music_sources[1].create(_path2, st_Music, sg_SourceType);
+        stereo = false;
+    }
+
+    if (!stereo)
+    {
+        m_music_sources[0].play_at_pos(0, Fvector().set(-0.5f, 0.f, 0.3f), sm_2D);
+        m_music_sources[1].play_at_pos(0, Fvector().set(+0.5f, 0.f, 0.3f), sm_2D);
+    }
+    else
+        m_music_sources[0].play_at_pos(0, Fvector().set(0.f, 0.f, 0.3f), sm_2D);
 }
 
 void CMMSound::music_Update()
 {
-    if (0 == m_music_l._feedback() || 0 == m_music_r._feedback())
+    if (!m_music_sources[0]._feedback() || (m_music_sources[1]._handle() && !m_music_sources[1]._feedback()))
         music_Play();
 }
 
 void CMMSound::music_Stop()
 {
-    m_music_l.stop();
-    m_music_r.stop();
+    for (auto& src : m_music_sources)
+        src.stop();
 }
 
 void CMMSound::all_Stop()

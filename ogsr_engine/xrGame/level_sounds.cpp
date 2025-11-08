@@ -112,12 +112,24 @@ void SMusicTrack::Load(LPCSTR fn, LPCSTR params)
 #ifdef DEBUG
     m_DbgName = fn;
 #endif
-    // create source
-    string_path _l, _r;
-    strconcat(sizeof(_l), _l, fn, "_l");
-    strconcat(sizeof(_r), _r, fn, "_r");
-    m_SourceLeft.create(_l, st_Music, sg_Undefined);
-    m_SourceRight.create(_r, st_Music, sg_Undefined);
+    
+    string_path buff{};
+    if (FS.exist(buff, fsgame::game_sounds, fn, ".ogg"))
+    {
+        m_Sources[0].create(fn, st_Music, sg_Undefined);
+        m_Sources[1].destroy();
+        stereo = true;
+    }
+    else
+    {
+        string_path _l, _r;
+        strconcat(sizeof(_l), _l, fn, "_l");
+        strconcat(sizeof(_r), _r, fn, "_r");
+        m_Sources[0].create(_l, st_Music, sg_Undefined);
+        m_Sources[1].create(_r, st_Music, sg_Undefined);
+        stereo = false;
+    }
+
     // parse params
     VERIFY(_GetItemCount(params) == 5);
     m_ActiveTime.set(0, 0);
@@ -132,21 +144,27 @@ void SMusicTrack::Load(LPCSTR fn, LPCSTR params)
 
 void SMusicTrack::Play()
 {
-    m_SourceLeft.play_at_pos(0, Fvector().set(-0.5f, 0.f, 0.3f), sm_2D);
-    m_SourceRight.play_at_pos(0, Fvector().set(+0.5f, 0.f, 0.3f), sm_2D);
-    SetVolume(1.0f);
+    if (!stereo)
+    {
+        m_Sources[0].play_at_pos(0, Fvector().set(-0.5f, 0.f, 0.3f), sm_2D);
+        m_Sources[1].play_at_pos(0, Fvector().set(+0.5f, 0.f, 0.3f), sm_2D);
+    }
+    else
+        m_Sources[0].play_at_pos(0, Fvector().set(0.f, 0.f, 0.3f), sm_2D);
+
+    SetVolume(1.f);
 }
 
 void SMusicTrack::SetVolume(float volume)
 {
-    m_SourceLeft.set_volume(volume * m_Volume);
-    m_SourceRight.set_volume(volume * m_Volume);
+    for (auto& src : m_Sources)
+        src.set_volume(volume * m_Volume);
 }
 
 void SMusicTrack::Stop()
 {
-    m_SourceLeft.stop_deffered();
-    m_SourceRight.stop_deffered();
+    for (auto& src : m_Sources)
+        src.stop_deffered();
 }
 
 //-----------------------------------------------------------------------------

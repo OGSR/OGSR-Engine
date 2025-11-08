@@ -135,7 +135,8 @@ public:
 class CUISequenceVideoItem : public CUISequenceItem
 {
     typedef CUISequenceItem inherited;
-    ref_sound m_sound[2];
+    ref_sound m_sounds[2];
+    bool stereo{};
     FactoryPtr<IUISequenceVideoItem> m_texture;
     enum
     {
