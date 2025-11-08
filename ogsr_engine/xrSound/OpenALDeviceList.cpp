@@ -52,7 +52,18 @@ void ALDeviceList::IterateDevicesList(const char* devices, bool enumerateAllPres
     // go through device list (each device terminated with a single NULL, list terminated with double NULL)
     while (*devices)
     {
-        if (ALCdevice* device = alcOpenDevice(devices))
+        ALCdevice* device{};
+        // alcOpenDevice can fail without any visible reason. Just try several times
+        for (u32 i{}; i < 100; ++i)
+        {
+            device = alcOpenDevice(devices);
+            if (device != nullptr)
+                break;
+            else
+                Sleep(1);
+        }
+
+        if (device)
         {
             if (ALCcontext* context = alcCreateContext(device, nullptr))
             {
@@ -75,6 +86,10 @@ void ALDeviceList::IterateDevicesList(const char* devices, bool enumerateAllPres
                 alcDestroyContext(context);
             }
             alcCloseDevice(device);
+        }
+        else
+        {
+            FATAL("Can't create sound device [%s]. Error: [%s]", devices, (LPCSTR)alGetString(alGetError()));
         }
         devices += xr_strlen(devices) + 1;
     }

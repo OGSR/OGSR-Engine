@@ -132,11 +132,20 @@ void CSoundRender_CoreA::_restart()
 
 bool CSoundRender_CoreA::init_context(const ALDeviceDesc& deviceDesc)
 {
-    // OpenAL device
-    pDevice = alcOpenDevice(deviceDesc.name);
+    // alcOpenDevice can fail without any visible reason. Just try several times
+    for (u32 i{}; i < 100; ++i)
+    {
+        pDevice = alcOpenDevice(deviceDesc.name);
+        if (pDevice != nullptr)
+            break;
+        else
+            Sleep(1);
+    }
+
     if (!pDevice)
     {
-        Msg("SOUND: OpenAL: Failed to create device.");
+        FATAL("SOUND: OpenAL: Failed to create device. Error: [%s]", (LPCSTR)alGetString(alGetError()));
+
         bPresent = FALSE;
         return false;
     }
@@ -148,10 +157,11 @@ bool CSoundRender_CoreA::init_context(const ALDeviceDesc& deviceDesc)
     pContext = alcCreateContext(pDevice, nullptr);
     if (!pContext)
     {
+        FATAL("SOUND: OpenAL: Failed to create context. Error: [%s]", (LPCSTR)alGetString(alGetError()));
+
         alcCloseDevice(pDevice);
         pDevice = nullptr;
 
-        Msg("SOUND: OpenAL: Failed to create context.");
         bPresent = FALSE;
         return false;
     }
