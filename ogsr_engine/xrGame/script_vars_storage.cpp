@@ -20,7 +20,7 @@ IC bool is_number(LPCSTR s)
 {
     string16 tmp;
     int i = atoi(s);
-    return (0 == _strcmpi(s, itoa(i, tmp, 10)));
+    return (0 == _strcmpi(s, _itoa(i, tmp, 10)));
 }
 
 void SCRIPT_VAR::release()
@@ -337,7 +337,7 @@ int CScriptVarsTable::assign(lua_State* L, int index)
         is_array = true;
         lua_pushinteger(L, i);
         lua_gettable(L, index);
-        set(L, itoa(i, tmp, 10), lua_gettop(L), LUA_TNUMBER);
+        set(L, _itoa(i, tmp, 10), lua_gettop(L), LUA_TNUMBER);
         lua_pop(L, 1); // извлечь значение из стека
     }
     lua_settop(L, save_top);
@@ -400,7 +400,7 @@ void CScriptVarsTable::set(lua_State* L, int key_index, int value_index)
     switch (kt)
     {
     case LUA_TBOOLEAN: tk = lua_toboolean(L, key_index) ? "true" : "false"; break;
-    case LUA_TNUMBER: tk = itoa(lua_tointeger(L, key_index), tmp, 10); break;
+    case LUA_TNUMBER: tk = _itoa(lua_tointeger(L, key_index), tmp, 10); break;
     case LUA_TSTRING: // конвертирование не строковых значений в строки, поставит в тупик lua_next
         tk = lua_tostring(L, key_index);
         break;

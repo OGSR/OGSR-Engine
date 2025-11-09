@@ -67,7 +67,7 @@ struct str_container_impl
             {
                 const auto crc = crc32(value->value, value->dwLength);
                 string32 crc_str;
-                R_ASSERT(crc == value->dwCRC, "CorePanic: read-only memory corruption (shared_strings)", itoa(value->dwCRC, crc_str, 16));
+                R_ASSERT(crc == value->dwCRC, "CorePanic: read-only memory corruption (shared_strings)", _itoa(value->dwCRC, crc_str, 16));
                 R_ASSERT(value->dwLength == xr_strlen(value->value), "CorePanic: read-only memory corruption (shared_strings, internal structures)", value->value);
                 value = value->next;
             }

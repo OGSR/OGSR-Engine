@@ -332,7 +332,7 @@ void CInifile::Load(IReader* F, LPCSTR path, BOOL allow_dup_sections, const CIni
 
             *strchr(str, ']') = 0;
 
-            Current->Name = strlwr(str + 1);
+            Current->Name = _strlwr(str + 1);
         }
         else
         {
@@ -512,7 +512,7 @@ CInifile::Sect& CInifile::r_section(LPCSTR S)
 
     char section[256];
     strcpy_s(section, S);
-    shared_str k = strlwr(section);
+    shared_str k = _strlwr(section);
     const auto I = DATA.find(k);
     if (I == DATA.end())
         FATAL("Can't open section '%s'", S);
@@ -679,7 +679,7 @@ BOOL CInifile::r_bool(LPCSTR S, LPCSTR L)
     LPCSTR C = r_string(S, L);
     char B[8];
     strncpy_s(B, C, 7);
-    strlwr(B);
+    _strlwr(B);
     return IsBOOL(B);
 }
 
@@ -693,7 +693,7 @@ int CInifile::r_token(LPCSTR S, LPCSTR L, const xr_token* token_list)
 {
     LPCSTR C = r_string(S, L);
     for (int i = 0; token_list[i].name; i++)
-        if (!stricmp(C, token_list[i].name))
+        if (!_stricmp(C, token_list[i].name))
             return token_list[i].id;
     return 0;
 }

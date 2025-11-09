@@ -393,9 +393,9 @@ void CSE_ALifeTraderAbstract::set_specific_character(shared_str new_spec_char)
         u32 last_name_cnt = pSettings->r_u32(t1, "last_name_cnt");
 
         string512 S;
-        m_character_name = "name_" + subset + "_" + itoa(::Random.randI(name_cnt), S, 10);
+        m_character_name = "name_" + subset + "_" + _itoa(::Random.randI(name_cnt), S, 10);
         m_character_name += " ";
-        m_character_name += "lname_" + subset + "_" + itoa(::Random.randI(last_name_cnt), S, 10);
+        m_character_name += "lname_" + subset + "_" + _itoa(::Random.randI(last_name_cnt), S, 10);
     }
     u32 min_m = selected_char.MoneyDef().min_money;
     u32 max_m = selected_char.MoneyDef().max_money;

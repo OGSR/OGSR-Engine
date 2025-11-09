@@ -194,7 +194,7 @@ ui_shader& InventoryUtilities::GetEquipmentIconsShader(size_t icon_group)
         if (icon_group > 0)
         {
             strcat_s(file, "_");
-            itoa(icon_group, file + strlen(file), 10);
+            _itoa(icon_group, file + strlen(file), 10);
         }
 
         g_EquipmentIconsShaders[icon_group]->create("hud\\default", file);

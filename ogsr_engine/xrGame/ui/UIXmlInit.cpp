@@ -620,27 +620,27 @@ bool CUIXmlInit::InitProgressBar(CUIXml& xml_doc, LPCSTR path, int index, CUIPro
     {
         mode = CUIProgressBar::om_horz;
     }
-    else if (stricmp(mode_str, "horz") == 0)
+    else if (_stricmp(mode_str, "horz") == 0)
     {
         mode = CUIProgressBar::om_horz;
     }
-    else if (stricmp(mode_str, "vert") == 0)
+    else if (_stricmp(mode_str, "vert") == 0)
     {
         mode = CUIProgressBar::om_vert;
     }
-    else if (stricmp(mode_str, "back") == 0)
+    else if (_stricmp(mode_str, "back") == 0)
     {
         mode = CUIProgressBar::om_back;
     }
-    else if (stricmp(mode_str, "down") == 0)
+    else if (_stricmp(mode_str, "down") == 0)
     {
         mode = CUIProgressBar::om_down;
     }
-    else if (stricmp(mode_str, "from_center") == 0)
+    else if (_stricmp(mode_str, "from_center") == 0)
     {
         mode = CUIProgressBar::om_fromcenter;
     }
-    else if (stricmp(mode_str, "vert_from_center") == 0)
+    else if (_stricmp(mode_str, "vert_from_center") == 0)
     {
         mode = CUIProgressBar::om_vfromcenter;
     }

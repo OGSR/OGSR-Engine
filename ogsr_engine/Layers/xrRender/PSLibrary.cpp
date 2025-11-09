@@ -212,7 +212,7 @@ bool CPSLibrary::Load2()
 
         xr_sprintf(_path, sizeof(_path), "%s%s", p_path, p_name);
         something_loaded = true;
-        if (0 == stricmp(p_ext, ".pe"))
+        if (0 == _stricmp(p_ext, ".pe"))
         {
             auto def = std::make_unique<PS::CPEDef>();
             def->m_copFormat = true; // always in cop mode
@@ -220,7 +220,7 @@ bool CPSLibrary::Load2()
             if (def->Load2(ini))
                 m_PEDs[def->m_Name] = std::move(def);
         }
-        else if (0 == stricmp(p_ext, ".pg"))
+        else if (0 == _stricmp(p_ext, ".pg"))
         {
             auto def = std::make_unique<PS::CPGDef>();
             def->m_Name = _path;

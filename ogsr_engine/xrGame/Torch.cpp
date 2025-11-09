@@ -140,7 +140,7 @@ void CTorch::SwitchNightVision(bool vision_on)
         for (u32 i = 0; i < cnt; ++i)
         {
             _GetItem(disabled_names, i, tmp);
-            if (!stricmp(tmp, curr_map))
+            if (!_stricmp(tmp, curr_map))
             {
                 b_allow = false;
                 break;

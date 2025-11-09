@@ -238,7 +238,7 @@ inline void trim(T& s)
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 template <typename T>
-inline void strlwr(T& data)
+inline void _strlwr(T& data)
 {
     std::transform(data.begin(), data.end(), data.begin(), [](unsigned char c) { return std::tolower(c); });
 }

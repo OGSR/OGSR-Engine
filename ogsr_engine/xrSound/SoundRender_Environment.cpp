@@ -257,7 +257,7 @@ void SoundEnvironment_LIB::Unload()
 int SoundEnvironment_LIB::GetID(LPCSTR name)
 {
     for (SE_IT it = library.begin(); it != library.end(); ++it)
-        if (0 == stricmp(name, *(*it)->name))
+        if (0 == _stricmp(name, *(*it)->name))
             return int(it - library.begin());
 
     return -1;

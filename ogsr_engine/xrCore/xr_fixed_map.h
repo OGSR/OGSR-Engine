@@ -115,7 +115,7 @@ private:
 
         // (pool == limit) !!!
 
-        if constexpr (std::is_pod<T>::value)
+        if constexpr (std::is_trivial_v<T> && std::is_standard_layout_v<T>)
         {
             ZeroMemory(newNodes, sizeof(value_type) * newLimit);
 

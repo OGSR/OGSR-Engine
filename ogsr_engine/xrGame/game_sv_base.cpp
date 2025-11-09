@@ -250,7 +250,7 @@ void game_sv_GameState::OnEvent(NET_Packet& tNetPacket, u16 type, u32 time, Clie
     break;
     default: {
         string16 tmp;
-        R_ASSERT(0, "Game Event not implemented!!!", itoa(type, tmp, 10));
+        R_ASSERT(0, "Game Event not implemented!!!", _itoa(type, tmp, 10));
     }
     }
 }

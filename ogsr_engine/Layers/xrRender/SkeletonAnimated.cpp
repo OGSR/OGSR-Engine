@@ -154,7 +154,7 @@ u16 CKinematicsAnimated::LL_PartID(LPCSTR B)
         CPartDef& P = (*m_Partition)[id];
         if (P.Name == nullptr)
             continue;
-        if (0 == stricmp(B, *P.Name))
+        if (0 == _stricmp(B, *P.Name))
             return id;
     }
     return BI_NONE;

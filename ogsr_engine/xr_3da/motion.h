@@ -53,7 +53,7 @@ public:
         if (n)
         {
             strcpy_s(tmp, n);
-            strlwr(tmp);
+            _strlwr(tmp);
         }
         name = tmp;
     }

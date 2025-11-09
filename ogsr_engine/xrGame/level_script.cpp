@@ -954,7 +954,7 @@ void remove_object(u16 id)
 DBG_ScriptObject* add_object(u16 id, DebugRenderType type)
 {
     remove_object(id);
-    DBG_ScriptObject* dbg_obj;
+    DBG_ScriptObject* dbg_obj{};
 
     switch (type)
     {

@@ -318,7 +318,7 @@ void CTexture::Load(const char* Name)
 
     flags.memUsage = 0;
 
-    if (0 == stricmp(Name, "$null"))
+    if (0 == _stricmp(Name, "$null"))
     {
         return;
     }
@@ -435,7 +435,7 @@ void CTexture::Load(const char* Name)
 
         flags.seqCycles = FALSE;
         _fs->r_string(buffer, sizeof(buffer));
-        if (0 == stricmp(buffer, "cycled"))
+        if (0 == _stricmp(buffer, "cycled"))
         {
             flags.seqCycles = TRUE;
             _fs->r_string(buffer, sizeof(buffer));

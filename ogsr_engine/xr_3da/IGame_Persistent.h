@@ -43,7 +43,7 @@ public:
             {
                 _GetItem(cmd_line, i, m_params[i], '/');
 
-                strlwr(m_params[i]);
+                _strlwr(m_params[i]);
             }
         }
     };

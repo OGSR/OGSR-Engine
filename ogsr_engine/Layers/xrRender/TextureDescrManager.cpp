@@ -9,7 +9,7 @@ float r__dtex_range = 50;
 void fix_texture_thm_name(LPSTR fn)
 {
     const LPSTR _ext = strext(fn);
-    if (_ext && (0 == stricmp(_ext, ".thm")))
+    if (_ext && (0 == _stricmp(_ext, ".thm")))
         *_ext = 0;
 }
 

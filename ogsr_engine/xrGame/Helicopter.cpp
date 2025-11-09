@@ -169,8 +169,8 @@ BOOL CHelicopter::net_Spawn(CSE_Abstract* DC)
     if (pUserData->section_exist(s))
     {
         int lc = pUserData->line_count(s);
-        LPCSTR name;
-        LPCSTR value;
+        LPCSTR name{};
+        LPCSTR value{};
         s16 boneID;
         for (int i = 0; i < lc; ++i)
         {

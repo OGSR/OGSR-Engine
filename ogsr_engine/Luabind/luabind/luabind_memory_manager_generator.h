@@ -44,9 +44,9 @@ struct luabind_new_detail_copy_constructor {
     }
 
     template <typename T, typename... Args>
-    static T* initialize(T *result, Args&&... args)
+    static T* initialize(T* result, Args&&... args)
     {
-        return	(luabind_new_detail<std::is_pod_v<T>>::initialize(result, std::forward<Args>(args)...));
+        return (luabind_new_detail <std::is_trivial_v<T> && std::is_standard_layout_v<T>>::initialize(result, std::forward<Args>(args)...));
     }
 };
 

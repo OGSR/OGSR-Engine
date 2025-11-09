@@ -31,7 +31,7 @@ void CUIProgressShape::SetPos(int pos, int max)
     if (m_bText)
     {
         string256 _buff;
-        m_pTexture->SetText(itoa(pos, _buff, 10));
+        m_pTexture->SetText(_itoa(pos, _buff, 10));
     }
 }
 

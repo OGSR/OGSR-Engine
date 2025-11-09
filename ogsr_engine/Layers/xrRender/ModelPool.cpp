@@ -17,7 +17,7 @@ void fix_name(const char* name, string_path& low_name)
 {
     VERIFY(xr_strlen(name) < sizeof(low_name));
     xr_strcpy(low_name, name);
-    strlwr(low_name);
+    _strlwr(low_name);
     if (strext(low_name))
         *strext(low_name) = 0;
 }

@@ -490,7 +490,7 @@ void CGamePersistent::start_game_intro()
     if (g_pGameLevel && g_pGameLevel->bReady && Device.dwPrecacheFrame <= 2)
     {
         m_intro_event.bind(this, &CGamePersistent::update_game_intro);
-        if (0 == stricmp(m_game_params.m_new_or_load, "new"))
+        if (0 == _stricmp(m_game_params.m_new_or_load, "new"))
         {
             VERIFY(NULL == m_intro);
             m_intro = xr_new<CUISequencer>();
