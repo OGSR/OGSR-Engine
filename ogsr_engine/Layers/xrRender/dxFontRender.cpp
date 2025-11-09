@@ -73,19 +73,15 @@ void dxFontRender::RenderFragment(CGameFont& owner, u32& i, bool shadow_mode, fl
 
             if (shadow_mode)
             {
-                // color_argb(220, 20, 20, 20)
+                const float Y = 0.299f * color_get_R(clr) + 0.587f * color_get_G(clr) + 0.114f * color_get_B(clr);
 
-                const u32 min_alpha = _min(color_get_A(clr), (u32)220);
-
-                const u32 _R = color_get_R(clr);
-                const u32 _G = color_get_G(clr);
-                const u32 _B = color_get_B(clr);
-
-                const float Y = 0.299f * _R + 0.587f * _G + 0.114f * _B;
-
-                const u32 c = Y > 40 ? 20 : 120;
-
-                clr2 = clr = color_argb(min_alpha, c, c, c);
+                if (Y >= 40.f)
+                {
+                    const u32 min_alpha = _min(color_get_A(clr), 220u);
+                    clr2 = clr = color_argb(min_alpha, 20u, 20u, 20u);
+                }
+                else
+                    break;
             }
 
             X -= 0.5f;
