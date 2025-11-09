@@ -73,18 +73,8 @@ constexpr const char* m_sInventoryItemUseAction = "inventory_item_use";
 constexpr const char* m_sInventoryItemUseOrDragAction = "inventory_item_use_or_drag";
 constexpr const char* m_sGameObjectDragAction = "game_object_drag";
 
-const u32 patch_frames = 50;
-const float respawn_delay = 1.f;
-const float respawn_auto = 7.f;
-
 static float IReceived = 0;
 static float ICoincidenced = 0;
-
-// skeleton
-static Fbox bbStandBox;
-static Fbox bbCrouchBox;
-static Fvector vFootCenter;
-static Fvector vFootExt;
 
 Flags32 psActorFlags{AF_KEYPRESS_ON_START | AF_CAM_COLLISION | AF_CAM_COLLISION_COP | AF_AI_VOLUMETRIC_LIGHTS | AF_DOF_ZOOM | AF_DOF_RELOAD | AF_3D_PDA | AF_ALWAYSRUN | AF_FIRST_PERSON_DEATH};
 

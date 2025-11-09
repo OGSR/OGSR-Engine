@@ -199,68 +199,33 @@ BOOL CSE_Abstract::Spawn_Read(NET_Packet& tNetPacket)
 
     tNetPacket.r_u16(s_flags.flags);
 
-    // dangerous!!!!!!!!!
-    if (s_flags.is(M_SPAWN_VERSION))
-        tNetPacket.r_u16(m_wVersion);
+    tNetPacket.r_u16(m_wVersion);
 
-    if (0 == m_wVersion)
-    {
-        tNetPacket.r_pos -= sizeof(u16);
-        m_wVersion = 0;
-        return FALSE;
-    }
+    ASSERT_FMT(m_wVersion && m_wVersion >= 118, "Invalid spawn version: [%u]", m_wVersion);
 
-    if (m_wVersion > 69)
-        m_script_version = tNetPacket.r_u16();
+    m_script_version = tNetPacket.r_u16();
 
     // read specific data
 
     // client object custom data serialization LOAD
-    if (m_wVersion > 70)
     {
-        u16 client_data_size = (m_wVersion > 93) ? tNetPacket.r_u16() : tNetPacket.r_u8(); //не может быть больше 256 байт
-        if (client_data_size > 0)
-        {
-            //			Msg					("SERVER:loading:load:%d bytes:%d:%s",client_data_size,ID,s_name_replace ? s_name_replace : "");
-            client_data.resize(client_data_size);
-            tNetPacket.r(&*client_data.begin(), client_data_size);
-        }
-        else
-            client_data.clear();
-    }
-    else
         client_data.clear();
 
-    if (m_wVersion > 79)
-        tNetPacket.r(&m_tSpawnID, sizeof(m_tSpawnID));
-
-    if (m_wVersion < 112)
-    {
-        if (m_wVersion > 82)
-            tNetPacket.r_float(); // m_spawn_probability);
-
-        if (m_wVersion > 83)
+        const u16 client_data_size = tNetPacket.r_u16(); // не может быть больше 256 байт
+        if (client_data_size > 0)
         {
-            tNetPacket.r_u32(); // m_spawn_flags.assign(tNetPacket.r_u32());
-            xr_string temp;
-            tNetPacket.r_stringZ(temp); // tNetPacket.r_stringZ(m_spawn_control);
-            tNetPacket.r_u32(); // m_max_spawn_count);
-            // this stuff we do not need even in case of uncomment
-            tNetPacket.r_u32(); // m_spawn_count);
-            tNetPacket.r_u64(); // m_last_spawn_time);
-        }
-
-        if (m_wVersion > 84)
-        {
-            tNetPacket.r_u64(); // m_min_spawn_interval);
-            tNetPacket.r_u64(); // m_max_spawn_interval);
+            client_data.resize(client_data_size);
+            tNetPacket.r(client_data.data(), client_data_size);
         }
     }
+
+    tNetPacket.r(&m_tSpawnID, sizeof(m_tSpawnID));
 
     u16 size;
     tNetPacket.r_u16(size); // size
-    R_ASSERT3((m_tClassID == CLSID_SPECTATOR) || (size > sizeof(size)), "cannot read object, which is not successfully saved :(", name_replace());
+    R_ASSERT((size > sizeof(size)), "cannot read object, which is not successfully saved :(", name_replace());
     STATE_Read(tNetPacket, size);
+
     return TRUE;
 }
 

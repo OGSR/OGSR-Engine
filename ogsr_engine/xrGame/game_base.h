@@ -45,7 +45,7 @@ struct Bonus_Money_Struct
     }
 };
 
-struct game_PlayerState
+struct game_PlayerState final
 {
     string64 name;
     u8 team;
@@ -86,7 +86,7 @@ struct game_PlayerState
 
 public:
     game_PlayerState();
-    ~game_PlayerState();
+    ~game_PlayerState() = default;
     void clear();
     bool testFlag(u16 f) const;
     void setFlag(u16 f);
@@ -101,20 +101,6 @@ public:
 
     void net_Export(NET_Packet& P, BOOL Full = FALSE);
     void net_Import(NET_Packet& P);
-
-    //---------------------------------------
-
-    DEF_VECTOR(PLAYER_ITEMS_LIST, u16);
-
-    PLAYER_ITEMS_LIST pItemList;
-
-    DEF_VECTOR(SPAWN_POINTS_LIST, s16);
-
-    SPAWN_POINTS_LIST pSpawnPointsList;
-    s16 m_s16LastSRoint;
-
-    s32 LastBuyAcount;
-    bool m_bClearRun;
 };
 
 struct game_TeamState

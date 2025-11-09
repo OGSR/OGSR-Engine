@@ -5,8 +5,6 @@
 #include "../xrRender/dxRenderDeviceRender.h"
 #include "../xrRenderDX10/dx10ConstantBuffer.h"
 
-IC bool p_sort(ref_constant C1, ref_constant C2) { return xr_strcmp(C1->name, C2->name) < 0; }
-
 BOOL R_constant_table::parseConstants(ID3DShaderReflectionConstantBuffer* pTable, u32 destination)
 {
     VERIFY(pTable);

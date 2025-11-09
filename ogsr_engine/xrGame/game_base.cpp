@@ -43,22 +43,11 @@ void game_PlayerState::clear()
     rank = 0;
     af_count = 0;
     experience_New = 0;
-    pItemList.clear();
-    pSpawnPointsList.clear();
-    m_s16LastSRoint = -1;
-    LastBuyAcount = 0;
-    m_bClearRun = false;
     DeathTime = 0;
     mOldIDs.clear();
     money_added = 0;
     m_aBonusMoney.clear();
 }
-
-game_PlayerState::~game_PlayerState()
-{
-    pItemList.clear();
-    pSpawnPointsList.clear();
-};
 
 bool game_PlayerState::testFlag(u16 f) const { return !!(flags__ & f); }
 

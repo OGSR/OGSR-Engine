@@ -52,24 +52,6 @@ _processor_info::_processor_info()
     m_f81_ECX = cpinfo[2];
     m_f81_EDX = cpinfo[3];
 
-    // get version of OS
-    DWORD dwMajorVersion = 0;
-    DWORD dwVersion = 0;
-    dwVersion = GetVersion();
-
-    dwMajorVersion = (DWORD)(LOBYTE(LOWORD(dwVersion)));
-
-    if (dwMajorVersion <= 5) // XP don't support SSE3+ instruction sets
-    {
-        m_f1_ECX[0] = 0;
-        m_f1_ECX[9] = 0;
-        m_f1_ECX[19] = 0;
-        m_f1_ECX[20] = 0;
-        m_f81_ECX[6] = 0;
-        m_f1_ECX[28] = 0;
-        m_f7_EBX[5] = 0;
-    }
-
     // Calculate available processors
     DWORD returnedLength = 0;
     DWORD byteOffset = 0;
