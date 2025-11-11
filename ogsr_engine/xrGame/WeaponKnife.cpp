@@ -225,7 +225,7 @@ void CWeaponKnife::switch2_Attacking(u32 state)
     else // eFire2
         PlayHUDMotion({"anim_shoot2_start", "anm_attack2"}, false, state);
 
-    m_attackMotionMarksAvailable = !m_current_motion_def->marks.empty();
+    m_attackMotionMarksAvailable = m_current_motion_def && !m_current_motion_def->marks.empty();
     m_attackStart = true;
     SetPending(TRUE);
 

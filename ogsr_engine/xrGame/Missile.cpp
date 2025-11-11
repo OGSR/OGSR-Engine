@@ -293,7 +293,7 @@ void CMissile::State(u32 state, u32 oldState)
         SetPending(TRUE);
         m_throw = false;
         PlayHUDMotion({"anim_throw_act", "anm_throw"}, true, GetState());
-        m_throwMotionMarksAvailable = !m_current_motion_def->marks.empty();
+        m_throwMotionMarksAvailable = m_current_motion_def && !m_current_motion_def->marks.empty();
     }
     break;
     case eThrowEnd: {
