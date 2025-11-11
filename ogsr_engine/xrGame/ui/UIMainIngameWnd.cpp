@@ -377,7 +377,7 @@ void CUIMainIngameWnd::Update()
         EWarningIcons i = ewiWeaponJammed;
         while (!external_icon_ctrl && i <= (Core.Features.test(xrCore::Feature::actor_thirst) ? ewiThirst : ewiInvincible))
         {
-            float value = 0;
+            float value{};
             switch (i)
             {
                 // radiation
@@ -393,25 +393,30 @@ void CUIMainIngameWnd::Update()
             default: R_ASSERT(!"Unknown type of warning icon");
             }
 
-            xr_vector<float>::reverse_iterator rit;
-
             // Сначала проверяем на точное соответсвие
-            rit = std::find(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(), value);
+            auto rit = std::find(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(), value);
 
             // Если его нет, то берем последнее меньшее значение ()
             if (rit == m_Thresholds[i].rend())
                 rit = std::find_if(m_Thresholds[i].rbegin(), m_Thresholds[i].rend(), std::bind(std::less<float>(), std::placeholders::_1, value));
 
-            // Минимальное и максимальное значения границы
-            float min = m_Thresholds[i].front();
-            float max = m_Thresholds[i].back();
-
             if (rit != m_Thresholds[i].rend())
             {
-                float v = *rit;
+                // Минимальное и максимальное значения границы
+                const float min = m_Thresholds[i].front();
+                const float max = m_Thresholds[i].back();
+
+                const float v = *rit;
+                const float t = std::clamp((v - min) / (max - min), 0.f, 1.f);
+
+                static const auto min_clr{READ_IF_EXISTS(pSettings, r_fvector4, "warning_icon_color", "min", (Fvector4{255.f, 0.f, 255.f, 0.f}))};
+                static const auto max_clr{READ_IF_EXISTS(pSettings, r_fvector4, "warning_icon_color", "max", (Fvector4{255.f, 255.f, 0.f, 0.f}))};
+
+                auto to_u = [](const float x) { return static_cast<u32>(std::lround(std::clamp(x, 0.f, 255.f))); };
+
                 SetWarningIconColor(i,
-                                    color_argb(0xFF, clampr<u32>(static_cast<u32>(255 * ((v - min) / (max - min) * 2)), 0, 255),
-                                               clampr<u32>(static_cast<u32>(255 * (2.0f - (v - min) / (max - min) * 2)), 0, 255), 0));
+                                    color_argb(to_u(std::lerp(min_clr.x, max_clr.x, t)), to_u(std::lerp(min_clr.y, max_clr.y, t)), to_u(std::lerp(min_clr.z, max_clr.z, t)),
+                                               to_u(std::lerp(min_clr.w, max_clr.w, t))));
             }
             else
                 TurnOffWarningIcon(i);
