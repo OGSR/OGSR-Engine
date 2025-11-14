@@ -105,7 +105,8 @@ public:
 
     C2DFrustum& ScreenFrustumLIT() { return m_FrustumLIT; }
 
-    static bool is_widescreen();
+    static bool is_widescreen() { return float(Device.dwWidth) / float(Device.dwHeight) > (UI_BASE_WIDTH / UI_BASE_HEIGHT + 0.01f); }
+    static bool is_ultra_widescreen() { return float(Device.dwWidth) / float(Device.dwHeight) > 2.f; }
 };
 
 extern CUICursor* GetUICursor();

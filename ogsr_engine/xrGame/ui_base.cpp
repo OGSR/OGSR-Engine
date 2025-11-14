@@ -274,35 +274,41 @@ void ui_core::RenderFont() { Font()->Render(); }
 shared_str ui_core::get_xml_name(LPCSTR fn)
 {
     string_path str;
-    if (!is_widescreen())
-    {
-        sprintf_s(str, "%s", fn);
-        if (NULL == strext(fn))
-            strcat_s(str, ".xml");
-    }
-    else
-    {
-        string_path str_;
+    auto find_xml = [&](const char* aspect_name) {
         if (strext(fn))
         {
             strcpy_s(str, fn);
             *strext(str) = 0;
-            strcat_s(str, "_16.xml");
+            strcat_s(str, aspect_name);
+            strcat_s(str, ".xml");
         }
         else
-            sprintf_s(str, "%s_16", fn);
+            sprintf_s(str, "%s%s", fn, aspect_name);
 
-        if (NULL == FS.exist(str_, "$game_config$", "ui\\", str))
+        string_path str_;
+        if (FS.exist(str_, fsgame::game_configs, "ui\\", str))
         {
-            sprintf_s(str, "%s", fn);
-            if (NULL == strext(fn))
-                strcat_s(str, ".xml");
-        }
 #ifdef DEBUG
-        Msg("[16-9] get_xml_name for[%s] returns [%s]", fn, str);
+            Msg("[%s-9] get_xml_name for[%s] returns [%s]", aspect_name, fn, str);
 #endif
+            return true;
+        }
+        return false;
+    };
+
+    bool res{};
+    if (is_ultra_widescreen())
+        res = find_xml("_21");
+
+    if (!res && is_widescreen())
+        res = find_xml("_16");
+
+    if (!res)
+    {
+        sprintf_s(str, "%s", fn);
+        if (!strext(fn))
+            strcat_s(str, ".xml");
     }
+
     return str;
 }
-
-bool ui_core::is_widescreen() { return float(Device.dwWidth) / float(Device.dwHeight) > (UI_BASE_WIDTH / UI_BASE_HEIGHT + 0.01f); }
