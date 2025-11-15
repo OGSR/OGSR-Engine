@@ -78,24 +78,6 @@ void UILoadingScreen::Update(const int stagesCompleted, const int stagesTotal)
     Draw();
 }
 
-void UILoadingScreen::ForceDrop()
-{
-    std::scoped_lock<decltype(loadingLock)> lock(loadingLock);
-
-    const float prev = loadingProgress->m_inertion;
-    const float maximal = loadingProgress->GetRange_max();
-
-    loadingProgress->m_inertion = 0.0f;
-    loadingProgress->SetProgressPos(loadingProgress->GetRange_min());
-
-    for (int i = 0; i < int(maximal); ++i)
-    {
-        loadingProgress->Update();
-    }
-
-    loadingProgress->m_inertion = prev;
-}
-
 void UILoadingScreen::ForceFinish()
 {
     std::scoped_lock<decltype(loadingLock)> lock(loadingLock);

@@ -67,7 +67,7 @@ void CUIProgressBar::SetProgressPos(float _Pos)
 {
     m_ProgressPos.y = _Pos;
     clamp(m_ProgressPos.y, m_MinPos, m_MaxPos);
-    if (!m_animated && m_last_render_frame + 1 != Device.dwFrame)
+    if (!m_animated)
         m_ProgressPos.x = m_ProgressPos.y;
     UpdateProgressBar();
 }
