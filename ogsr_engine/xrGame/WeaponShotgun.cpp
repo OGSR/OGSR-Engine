@@ -575,7 +575,11 @@ void CWeaponShotgun::ReloadMagazine()
 
         u8 cnt = AddCartridge(1);
         while (cnt == 0)
+        {
+            if (m_magazine.size() >= (u32)iMagazineSize || !HaveCartridgeInInventory(1))
+                break;
             cnt = AddCartridge(1);
+        }
     }
 }
 
