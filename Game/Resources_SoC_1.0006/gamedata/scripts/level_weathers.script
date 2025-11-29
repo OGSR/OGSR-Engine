@@ -55,7 +55,7 @@ function WeatherManager:select_weather(forced)
 		--
 		env_desc.wind_direction = utils.deg2rad(math.random(360)) --Рандомный угол ветра
 		--
-		env_desc.m_fSunShaftsIntensity = math.random(3000) * 0.0001 --Рандомная интенсивность лучей
+		env_desc.m_fSunShaftsIntensity = math.random(1500) * 0.0001 --Рандомная интенсивность лучей
 		--
 		--log3("--[%s][%s] wind_velocity: [%s], wind_direction: [%s], m_fSunShaftsIntensity: [%s]", script_name(), idx, env_desc.wind_velocity, env_desc.wind_direction, env_desc.m_fSunShaftsIntensity)
 	end

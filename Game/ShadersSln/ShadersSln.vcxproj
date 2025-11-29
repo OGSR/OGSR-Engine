@@ -142,6 +142,7 @@
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_sun_mask.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_sun_mask.s" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_sun_near.ps" />
+    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_volume.vs" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_volumetric.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_volumetric.s" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_volumetric.vs" />
@@ -270,6 +271,9 @@
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\deffer_tree_s_bump_d.vs" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\deffer_tree_s_flat.vs" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\deffer_tree_s_flat_d.vs" />
+    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\effects_flare.ps" />
+    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\effects_flare.vs" />
+    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\effects_sun.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\effects_water_puddles.s" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\ogsr_blur.s" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\ogsr_dof.ps" />

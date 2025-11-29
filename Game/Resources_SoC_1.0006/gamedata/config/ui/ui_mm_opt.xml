@@ -622,7 +622,7 @@
 			<text font="letterica16" r="215" g="195" b="170">ui_mm_r2_actor_shadow</text>
 		</cap_r2_actor_shadow>
 		<check_r2_actor_shadow x="249" y="0" width="30" height="21">
-			<options_item entry="r__actor_shadow" group="mm_opt_video_adv"/>
+			<options_item entry="g_actor_shadow" group="mm_opt_video_adv"/>
 		</check_r2_actor_shadow>
 
 		<cap_r_sslr_enable x="5" y="5" width="143" height="21">
