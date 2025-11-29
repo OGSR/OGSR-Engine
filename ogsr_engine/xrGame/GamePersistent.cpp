@@ -513,6 +513,7 @@ void CGamePersistent::update_game_intro()
 #include "holder_custom.h"
 extern CUISequencer* g_tutorial;
 extern CUISequencer* g_tutorial2;
+extern bool RESET_SECTORS_HACK;
 
 void CGamePersistent::OnFrame()
 {
@@ -546,6 +547,8 @@ void CGamePersistent::OnFrame()
         {
             load_screen_renderer.stop();
         }
+
+        RESET_SECTORS_HACK = true;
 
         Discord.Update(CStringTable().translate(Level().name()).c_str(), Level().name().c_str());
     }

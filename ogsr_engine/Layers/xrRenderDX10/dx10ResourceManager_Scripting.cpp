@@ -12,8 +12,12 @@
 
 class adopt_dx10options
 {
+    CBlender_Compile* m_pC;
+
 public:
-    bool _wet_surface_opt_enable() { return (ps_r3_dyn_wet_surf_opt == 1); }
+    adopt_dx10options(CBlender_Compile* C) : m_pC(C) {}
+    bool _wet_surface_opt_enable() const { return ps_r3_dyn_wet_surf_opt == 1; }
+    bool HudElement() const { return m_pC->HudElement; }
 };
 
 // wrapper
@@ -203,7 +207,7 @@ public:
         return *this;
     }
 
-    adopt_dx10options _dx10Options() { return adopt_dx10options(); };
+    adopt_dx10options _dx10Options() { return adopt_dx10options(C); };
 };
 #pragma warning(pop)
 
@@ -513,7 +517,8 @@ void CResourceManager::LS_Load()
 
                  class_<adopt_dx10options>("_dx10options")
                      .def("wet_surface_opt_enable", &adopt_dx10options::_wet_surface_opt_enable)
-                     .def("getLevel", [](adopt_dx10options*) { return g_pGameLevel->name().c_str(); }),
+                     .def("getLevel", [](adopt_dx10options*) { return g_pGameLevel->name().c_str(); })
+                     .def("hudElement", [](adopt_dx10options* O) { return O->HudElement(); }),
 
                  class_<adopt_dx10sampler>("_dx10sampler")
                  //.def("texture",						&adopt_sampler::_texture		,return_reference_to(_1))
@@ -672,6 +677,7 @@ Shader* CResourceManager::_lua_Create(LPCSTR d_shader, LPCSTR s_textures)
     C.BT = nullptr;
     C.bEditor = FALSE;
     C.bDetail = FALSE;
+    C.HudElement = RImplementation.hud_loading;
 
     // Prepare
     _ParseList(C.L_textures, s_textures);

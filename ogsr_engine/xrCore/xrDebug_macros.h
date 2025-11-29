@@ -30,11 +30,18 @@
 #define R_CHK(expr, ...) \
     do \
     { \
-        HRESULT hr = expr; \
+        const auto hr = expr; \
+        static_assert(std::is_same_v<decltype(hr), const HRESULT>); \
         if (FAILED(hr)) \
             Debug.error(hr, #expr, __VA_ARGS__, DEBUG_INFO); \
     } while (0)
 #define R_CHK2 R_CHK
+
+#ifdef _DEBUG
+#define CHK_DX R_CHK
+#else
+#define CHK_DX(a) a
+#endif
 
 #ifdef VERIFY
 #undef VERIFY
@@ -43,11 +50,9 @@
 #ifdef DEBUG
 #define NODEFAULT FATAL("nodefault reached")
 #define VERIFY R_ASSERT
-#define CHK_DX R_CHK
 #else
 #define NODEFAULT __assume(0)
 #define VERIFY(...) ((void)0)
-#define CHK_DX(a) a
 #endif
 
 #define VERIFY2 VERIFY

@@ -28,6 +28,9 @@ void CDetail::Unload()
         indices = nullptr;
     }
     shader.destroy();
+    DetailGeom.destroy();
+    _RELEASE(DetailVb);
+    _RELEASE(DetailIb);
 }
 
 void CDetail::transfer(Fmatrix& mXform, fvfVertexOut* vDest, u32 C, u16* iDest, u32 iOffset)
@@ -172,10 +175,6 @@ void CDetail::Load(IReader* S)
     bv_bb.getsphere(bv_sphere.P, bv_sphere.R);
 
     Optimize();
-
-    _RELEASE(DetailVb);
-    _RELEASE(DetailIb);
-    DetailGeom.destroy();
 
     LoadGeom();
 }

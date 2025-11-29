@@ -51,6 +51,8 @@ bool CRender::InFieldOfViewR(Fvector pos, float max_dist, bool check_direction)
     return true;
 }
 
+bool RESET_SECTORS_HACK{}; //После загрузки сейва на той же локе, пока не двинешься с места, сектор не хочет меняться
+
 void CRender::main_pass_static(R_dsgraph_structure& dsgraph)
 {
     ZoneScoped;
@@ -60,8 +62,12 @@ void CRender::main_pass_static(R_dsgraph_structure& dsgraph)
     if (!ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_SECTORS))
     {
         // Detect camera-sector
-        if (!Device.vCameraPositionSaved.similar(Device.vCameraPosition, EPS_L))
+        if (RESET_SECTORS_HACK || !Device.vCameraPositionSaved.similar(Device.vCameraPosition, EPS_L))
         {
+            //if (RESET_SECTORS_HACK)
+            //    Msg("~~Reset sectors after game load!");
+            RESET_SECTORS_HACK = false;
+
             const auto sector_id = detect_sector(main_xrc, Device.vCameraPosition);
             if (sector_id != IRender_Sector::INVALID_SECTOR_ID)
             {
@@ -200,14 +206,6 @@ void CRender::main_pass_dynamic(R_dsgraph_structure& dsgraph, bool fill_lights)
             continue; // disassociated from S/P structure
         }
 
-        if (dsgraph.PortalTraverser.frame() == Device.dwFrame)
-        {
-            auto* sector = dsgraph.sector_portals_structure.Sectors.at(sector_id);
-
-            if (dsgraph.PortalTraverser.marker() != sector->r_marker)
-                continue; // inactive (untouched) sector
-        }
-
         if ((spatial->spatial.type & STYPE_RENDERABLE) && !ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_DYNAMIC))
         {
             // renderable
@@ -225,11 +223,23 @@ void CRender::main_pass_dynamic(R_dsgraph_structure& dsgraph, bool fill_lights)
             if (!bVisible)
                 continue; // exit loop on frustums
 
-            Fvector pos;
-            renderable->renderable.xform.transform_tiny(pos, v_orig.sphere.P);
+            if (!renderable->renderable.visual->ignore_optimization)
+            {
+                Fvector pos;
+                renderable->renderable.xform.transform_tiny(pos, v_orig.sphere.P);
+                const float distance = Device.vCameraPosition.distance_to(pos);
 
-            if (!renderable->renderable.visual->ignore_optimization && !InFieldOfViewR(pos, ps_r__opt_dist, true))
-                continue;
+                if (dsgraph.PortalTraverser.frame() == Device.dwFrame && distance > 15.f)
+                {
+                    auto* sector = dsgraph.sector_portals_structure.Sectors[sector_id];
+
+                    if (dsgraph.PortalTraverser.marker() != sector->r_marker)
+                        continue; // inactive (untouched) sector
+                }
+
+                if (!InFieldOfViewR(pos, ps_r__opt_dist, true))
+                    continue;
+            }
 
             //for (auto& view : sector->r_frustums)
             {

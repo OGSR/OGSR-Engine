@@ -269,7 +269,7 @@ float ps_ssfx_wpn_dof_2 = 0.5f;
 
 int ps_r3_dyn_wet_surf_opt = 1;
 float ps_r3_dyn_wet_surf_near = 5.f; // 10.0f
-float ps_r3_dyn_wet_surf_far = 300.f; // 200.0f //при 100 при резкой смене погоды видна граница намокшей земли и сухой когда вертишь камеру. Чем больше - тем лучше.
+float ps_r3_dyn_wet_surf_far = 270.f; // 200.0f //при 100 при резкой смене погоды видна граница намокшей земли и сухой когда вертишь камеру, но если выставить в районе 300 - намокание может вообще пропасть.
 
 int ps_r3_dyn_wet_surf_sm_res = 1024; // 256
 int ps_r3_dyn_wet_surf_enable_streaks = 0;
@@ -327,7 +327,7 @@ float ps_r2_img_saturation = 1.0f; // r2-only
 
 Fvector ps_r2_img_cg{0.5f, 0.5f, 0.5f};
 
-float ps_r__opt_dist = 250.f;
+float ps_r__opt_dist = 750.f;
 
 #include "../../xr_3da/xr_ioconsole.h"
 #include "../../xr_3da/xr_ioc_cmd.h"
@@ -795,7 +795,7 @@ void xrRender_initconsole()
     CMD3(CCC_Mask64, "r2_disable_static_tree", &ps_r2_ls_flags_ext, R2FLAGEXT_DISABLE_STATIC_TREE);
     CMD3(CCC_Mask64, "r2_disable_static_tree_progressive", &ps_r2_ls_flags_ext, R2FLAGEXT_DISABLE_STATIC_TREE_PROGRESSIVE);
 
-    CMD3(CCC_Mask64, "r2_render_on_prefetch", &ps_r2_ls_flags_ext, R2FLAGEXT_RENDER_ON_PREFETCH);
+    // CMD3(CCC_Mask64, "r2_render_on_prefetch", &ps_r2_ls_flags_ext, R2FLAGEXT_RENDER_ON_PREFETCH);
 
     CMD3(CCC_Mask64, "r2_rain_drops", &ps_r2_ls_flags_ext, R2FLAGEXT_RAIN_DROPS);
     CMD3(CCC_Mask64, "r2_rain_drops_control", &ps_r2_ls_flags_ext, R2FLAGEXT_RAIN_DROPS_CONTROL);
@@ -917,7 +917,7 @@ void xrRender_initconsole()
 
     //CMD4(CCC_Integer, "r3_dynamic_wet_surfaces_opt", &ps_r3_dyn_wet_surf_opt, 0, 1);
     CMD4(CCC_Float, "r3_dynamic_wet_surfaces_near", &ps_r3_dyn_wet_surf_near, 5, 70);
-    CMD4(CCC_Float, "r3_dynamic_wet_surfaces_far", &ps_r3_dyn_wet_surf_far, 30, 300);
+    CMD4(CCC_Float, "r3_dynamic_wet_surfaces_far", &ps_r3_dyn_wet_surf_far, 30, 279);
 
     CMD3(CCC_Mask64, "r3_volumetric_smoke", &ps_r2_ls_flags, R3FLAG_VOLUMETRIC_SMOKE);
 

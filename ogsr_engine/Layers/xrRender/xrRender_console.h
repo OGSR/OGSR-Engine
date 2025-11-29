@@ -255,7 +255,7 @@ enum : u64
 
     R2FLAGEXT_SHADER_DBG = 1ull << 32,
     R2FLAGEXT_LENS_FLARE = 1ull << 33,
-    R2FLAGEXT_RENDER_ON_PREFETCH = 1ull << 34,
+    // R2FLAGEXT_RENDER_ON_PREFETCH = 1ull << 34,
 };
 
 extern void xrRender_initconsole();

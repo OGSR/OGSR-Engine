@@ -31,7 +31,7 @@ void R_occlusion::cleanup_lost()
     {
         if (used[ID].Q && used[ID].ttl && used[ID].ttl < Device.dwFrame)
         {
-            occq_free(ID);
+            occq_free(ID, true);
             cnt++;
         }
     }
@@ -64,8 +64,7 @@ u32 R_occlusion::occq_begin(u32& ID, u32 context_id)
         q.order = ID;
         if (FAILED(CreateQuery(q.Q.GetAddressOf(), D3DQUERYTYPE_OCCLUSION)))
         {
-            if (Device.dwFrame % 100 == 0)
-                Msg("RENDER [Warning]: Too many occlusion queries were issued: %u !!!", used.size());
+            Msg("RENDER [Warning]: Too many occlusion queries were issued: %u !!!", used.size());
 
             ID = iInvalidHandle;
             return 0;
@@ -114,7 +113,7 @@ R_occlusion::occq_result R_occlusion::occq_get(u32& ID, float max_wait_occ)
 
     ZoneScoped;
 
-    HRESULT hr;
+    HRESULT hr{};
 
     Device.Statistic->RenderDUMP_Wait.Begin();
     VERIFY(ID < used.size(), make_string("_Pos = %d, size() = %d", ID, used.size()));
@@ -127,14 +126,14 @@ R_occlusion::occq_result R_occlusion::occq_get(u32& ID, float max_wait_occ)
 
         ZoneScopedN("occq_get/wait");
 
-        u32 tries{0};
+        //u32 tries{0};
 
         // здесь нужно дождаться результата, т.к. отладка показывает, что
         // очень редко когда он готов немедленно
         while ((hr = GetData(used[ID].Q.Get(), &fragments, sizeof(fragments))) == S_FALSE)
         {
             YieldProcessor();
-
+            /*
             if (T.GetElapsed_ms_total() > max_wait_occ || (max_wait_occ <= 1.f && tries++ > 512))
             {
                 //Msg("local skip occq_get due to timeout!");
@@ -142,13 +141,17 @@ R_occlusion::occq_result R_occlusion::occq_get(u32& ID, float max_wait_occ)
                 fragments = OCC_NOT_AVAIL;
                 break;
             }
+            */
         }
     }
 
     Device.Statistic->RenderDUMP_Wait.End();
 
-    if (hr == D3DERR_DEVICELOST)
+    if (hr != S_FALSE && hr != S_OK)
+    {
+        Msg("!![%s] GetData returns error: [%s]", __FUNCTION__, Debug.DXerror2string(hr));
         fragments = OCC_NOT_AVAIL;
+    }
 
     if (fragments == 0)
         RImplementation.stats.o_culled++;
@@ -160,7 +163,7 @@ R_occlusion::occq_result R_occlusion::occq_get(u32& ID, float max_wait_occ)
     return fragments;
 }
 
-void R_occlusion::occq_free(const u32 ID)
+void R_occlusion::occq_free(const u32 ID, const bool get_data)
 {
     if (!enabled || ID == iInvalidHandle)
         return;
@@ -169,8 +172,23 @@ void R_occlusion::occq_free(const u32 ID)
 
     if (used[ID].Q)
     {
+        if (get_data)
+        {
+            // Попробуем здесь всегда ждать результат
+            HRESULT hr{};
+            occq_result fragments{};
+            while ((hr = GetData(used[ID].Q.Get(), &fragments, sizeof(fragments))) == S_FALSE)
+            {
+                YieldProcessor();
+            }
+            if (hr != S_FALSE && hr != S_OK)
+            {
+                Msg("!![%s] GetData returns error: [%s]", __FUNCTION__, Debug.DXerror2string(hr));
+            }
+        }
+
         pool.push_back(used[ID]);
         used[ID].Q.Reset();
-        fids.push_back((ID));
+        fids.push_back(ID);
     }
 }

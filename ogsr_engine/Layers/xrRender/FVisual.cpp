@@ -111,7 +111,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
                 R_ASSERT(data->find_chunk(OGF_VERTICES));
                 vBase = 0;
                 const u32 fvf = data->r_u32();
-                CHK_DX(FVF::CreateDeclFromFVF(fvf, dcl));
+                R_ASSERT(FVF::CreateDeclFromFVF(fvf, dcl));
                 vFormat = dcl.data();
                 vCount = data->r_u32();
                 const u32 vStride = FVF::ComputeVertexSize(fvf);

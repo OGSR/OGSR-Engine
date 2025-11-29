@@ -44,7 +44,7 @@ public:
     u32 mapMatrixCount{};
     R_dsgraph::mapMatrixPasses_T mapMatrixPasses[2];
 
-    R_dsgraph::mapSortedLarge_T mapSorted;
+    R_dsgraph::mapSorted_T mapSorted;
     R_dsgraph::mapSortedLarge_T mapDistort;
 
     R_dsgraph::mapSorted_T mapHUD;

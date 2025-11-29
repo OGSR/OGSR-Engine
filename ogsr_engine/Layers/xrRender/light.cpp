@@ -76,7 +76,7 @@ light::~light()
 
     if (vis.pending)
     {
-        RImplementation.occq_free(vis.query_id);
+        RImplementation.occq_free(vis.query_id, true);
     }
 
     FlareRayPick.Discard();
@@ -441,7 +441,6 @@ void light::export_to(light_Package& package)
 
                     f->set_type(IRender_Light::OMNIPART);
                     f->flags.bShadow = true;
-                    f->omniparent = this;
                 }
 
             for (int f = 0; f < 6; f++)

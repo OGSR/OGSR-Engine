@@ -423,7 +423,7 @@ SGeometry* CResourceManager::CreateGeom(const D3DVERTEXELEMENT9* decl, ID3DVerte
 SGeometry* CResourceManager::CreateGeom(u32 FVF, ID3DVertexBuffer* vb, ID3DIndexBuffer* ib)
 {
     auto dcl = xr_vector<D3DVERTEXELEMENT9>(MAXD3DDECLLENGTH + 1);
-    CHK_DX(FVF::CreateDeclFromFVF(FVF, dcl));
+    R_ASSERT(FVF::CreateDeclFromFVF(FVF, dcl));
     SGeometry* g = CreateGeom(dcl.data(), vb, ib);
     return g;
 }

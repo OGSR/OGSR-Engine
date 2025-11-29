@@ -15,12 +15,11 @@ private:
     bool b_originShadow{};
     bool b_originVolumetric{};
     
-    vis_data hom;    
+    vis_data hom{};    
 
-    light* omnipart[6];
-    light* omniparent{};
+    light* omnipart[6]{};
 
-    u32 m_xform_frame;
+    u32 m_xform_frame{};
 
 public:
     struct

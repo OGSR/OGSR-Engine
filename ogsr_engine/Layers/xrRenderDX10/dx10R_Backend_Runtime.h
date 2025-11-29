@@ -490,11 +490,11 @@ IC void CBackend::ApplyVertexLayout()
     }
     else
     {
-        CHK_DX(HW.pDevice->CreateInputLayout(&decl->dx10_dcl_code.front(), 
+        HW.pDevice->CreateInputLayout(&decl->dx10_dcl_code.front(), 
             decl->dx10_dcl_code.size() - 1, 
             m_pInputSignature->GetBufferPointer(), 
             m_pInputSignature->GetBufferSize(),
-            &pLayout));
+            &pLayout);
 
         decl->vs_to_layout.emplace(m_pInputSignature, pLayout);
     }

@@ -125,13 +125,15 @@ void CRender::calculate_particles_async()
             {
                 if (const auto ps = smart_cast<CPS_Instance*>(spatial))
                 {
-                    vis_data& v_orig = ps->renderable.visual->getVisData();
+                    // is it correct ???
 
-                    Fvector pos;
-                    ps->renderable.xform.transform_tiny(pos, v_orig.sphere.P);
+                    // vis_data& v_orig = ps->renderable.visual->getVisData();
 
-                    if (!ps->renderable.visual->ignore_optimization && !InFieldOfViewR(pos, ps_r__opt_dist, false))
-                        continue;
+                    // Fvector pos;
+                    // ps->renderable.xform.transform_tiny(pos, v_orig.sphere.P);
+
+                    // if (!ps->renderable.visual->ignore_optimization && !InFieldOfViewR(pos, ps_r__opt_dist, false))
+                    //    continue;
 
                     batch.emplace_back(ps);
 
@@ -265,7 +267,7 @@ bool CRender::ShouldSkipRender()
     IMainMenu* pMainMenu = g_pGamePersistent ? g_pGamePersistent->m_pMainMenu : nullptr;
     const bool bMenu = pMainMenu ? pMainMenu->CanSkipSceneRendering() : false;
 
-    if (!(g_pGameLevel && g_hud) || bMenu || (!ps_r2_ls_flags_ext.test(R2FLAGEXT_RENDER_ON_PREFETCH) && Device.dwPrecacheFrame > 0))
+    if (!(g_pGameLevel && g_hud) || bMenu /*|| (!ps_r2_ls_flags_ext.test(R2FLAGEXT_RENDER_ON_PREFETCH) && Device.dwPrecacheFrame > 0)*/)
     {
         return true;
     }

@@ -142,13 +142,13 @@ void dx103DFluidRenderer::CreateGridBox()
     };
     m_iGridBoxVertNum = sizeof(vertices) / sizeof(vertices[0]);
 
-    CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pGridBoxVertexBuffer, vertices, sizeof(vertices)));
+    R_CHK(dx10BufferUtils::CreateVertexBuffer(&m_pGridBoxVertexBuffer, vertices, sizeof(vertices)));
 
     // Create index buffer
     const u16 indices[] = {0, 4, 1, 1, 4, 5, 0, 1, 2, 2, 1, 3, 4, 6, 5, 6, 7, 5, 2, 3, 6, 3, 7, 6, 1, 5, 3, 3, 5, 7, 0, 2, 4, 2, 6, 4};
     m_iGridBoxFaceNum = (sizeof(indices) / sizeof(indices[0])) / 3;
 
-    CHK_DX(dx10BufferUtils::CreateIndexBuffer(&m_pGridBoxIndexBuffer, indices, sizeof(indices)));
+    R_CHK(dx10BufferUtils::CreateIndexBuffer(&m_pGridBoxIndexBuffer, indices, sizeof(indices)));
     HW.stats_manager.increment_stats(sizeof(indices), enum_stats_buffer_type_index, D3DPOOL_MANAGED);
 
     constexpr D3DVERTEXELEMENT9 layout[]{{0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0}, D3DDECL_END()};
@@ -167,7 +167,7 @@ void dx103DFluidRenderer::CreateScreenQuad()
     svQuad[2].pos = D3DXVECTOR3(-1.0f, -1.0f, 0.0f);
     svQuad[3].pos = D3DXVECTOR3(1.0f, -1.0f, 0.0f);
 
-    CHK_DX(dx10BufferUtils::CreateVertexBuffer(&m_pQuadVertexBuffer, svQuad, sizeof(svQuad)));
+    R_CHK(dx10BufferUtils::CreateVertexBuffer(&m_pQuadVertexBuffer, svQuad, sizeof(svQuad)));
     m_GeomQuadVertex.create(quadlayout, m_pQuadVertexBuffer, nullptr);
 }
 

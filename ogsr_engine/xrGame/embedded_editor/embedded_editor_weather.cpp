@@ -394,7 +394,8 @@ void ShowWeatherEditor(bool& show)
 
     if (SelectTexture("clouds_texture", cur->clouds_texture_name))
     {
-        cur->on_device_create();
+        cur->on_unload();
+        cur->on_prepare();
         changed = true;
     }
 
@@ -441,7 +442,8 @@ void ShowWeatherEditor(bool& show)
         string1024 buf;
         xr_strconcat(buf, cur->sky_texture_name.data(), "#small");
         cur->sky_texture_env_name = buf;
-        cur->on_device_create();
+        cur->on_unload();
+        cur->on_prepare();
         changed = true;
     }
 

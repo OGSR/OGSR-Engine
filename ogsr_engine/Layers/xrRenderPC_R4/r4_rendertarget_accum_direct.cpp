@@ -45,7 +45,7 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, Fmat
 
     // Common calc for quad-rendering
     u32 Offset;
-    u32 C = color_rgba(255, 255, 255, 255);
+    constexpr u32 C = color_rgba(255, 255, 255, 255);
     float _w = float(Device.dwWidth);
     float _h = float(Device.dwHeight);
     Fvector2 p0, p1;
@@ -64,8 +64,7 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, Fmat
     // Perform masking (only once - on the first/near phase)
     cmd_list.set_CullMode(CULL_NONE);
     PIX_EVENT_CTX(cmd_list, SE_SUN_NEAR_sub_phase);
-    if (SE_SUN_NEAR == sub_phase) //.
-                                  // if( 0 )
+    if (SE_SUN_NEAR == sub_phase)
     {
         // Fill vertex buffer
         FVF::TL* pv = (FVF::TL*)RImplementation.Vertex.Lock(4, g_combine->vb_stride, Offset);
@@ -94,38 +93,19 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, Fmat
         cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
     }
 
-    // recalculate d_Z, to perform depth-clipping
-    Fvector center_pt;
-    center_pt.mad(Device.vCameraPosition, Device.vCameraDirection, ps_r2_sun_near);
-    Device.mFullTransform.transform(center_pt);
-    d_Z = center_pt.z;
-
     PIX_EVENT_CTX(cmd_list, Perform_lighting);
 
     // Perform lighting
     {
         phase_accumulator(cmd_list);
-        cmd_list.set_CullMode(CULL_CCW); //******************************************************************
+        cmd_list.set_CullMode(CULL_CCW);
         cmd_list.set_ColorWriteEnable();
 
-        // texture adjustment matrix
-        // float			fTexelOffs			= (.5f / float(RImplementation.o.smapsize));
-        // float			fRange				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_scale:ps_r2_sun_depth_far_scale;
-        // float			fBias				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_bias:ps_r2_sun_depth_far_bias;
-        // Fmatrix			m_TexelAdjust		=
-        //{
-        //	0.5f,				0.0f,				0.0f,			0.0f,
-        //	0.0f,				-0.5f,				0.0f,			0.0f,
-        //	0.0f,				0.0f,				fRange,			0.0f,
-        //	0.5f + fTexelOffs,	0.5f + fTexelOffs,	fBias,			1.0f
-        //};
-        float fRange = (SE_SUN_NEAR == sub_phase) ? ps_r2_sun_depth_near_scale : ps_r2_sun_depth_far_scale;
+        const float fRange = (SE_SUN_NEAR == sub_phase) ? ps_r2_sun_depth_near_scale : ps_r2_sun_depth_far_scale;
         // float			fBias				= (SE_SUN_NEAR==sub_phase)?ps_r2_sun_depth_near_bias:ps_r2_sun_depth_far_bias;
         //	TODO: DX10: Remove this when fix inverse culling for far region
         //		float			fBias				= (SE_SUN_NEAR==sub_phase)?(-ps_r2_sun_depth_near_bias):ps_r2_sun_depth_far_bias;
-        Fmatrix m_TexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, fRange, 0.0f, 0.5f, 0.5f, fBias, 1.0f};
-
-        // compute xforms
+        const Fmatrix m_TexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, fRange, 0.0f, 0.5f, 0.5f, fBias, 1.0f};
 
         // shadow xform
         Fmatrix m_shadow;
@@ -178,14 +158,6 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, Fmat
         cmd_list.xforms.set_P(Device.mProject);
         u_compute_texgen_screen(cmd_list, m_Texgen);
 
-        // Make jitter texture
-        Fvector2 j0, j1;
-        float scale_X = float(Device.dwWidth) / float(TEX_jitter);
-        // float	scale_Y				= float(Device.dwHeight)/ float(TEX_jitter);
-        float offset = (.5f / float(TEX_jitter));
-        j0.set(offset, offset);
-        j1.set(scale_X, scale_X).add(offset);
-
         // Fill vertex buffer
         u32 i_offset;
         {
@@ -237,29 +209,8 @@ void CRenderTarget::accum_direct_cascade(CBackend& cmd_list, u32 sub_phase, Fmat
             cmd_list.set_c("view_shadow_proj", view_projlightspace);
         }
 
-        // nv-DBT
-        float zMin, zMax;
-        if (SE_SUN_NEAR == sub_phase)
-        {
-            zMin = 0;
-            zMax = ps_r2_sun_near;
-        }
-        else
-        {
-            extern float OLES_SUN_LIMIT_27_01_07;
-            zMin = ps_r2_sun_near;
-            zMax = OLES_SUN_LIMIT_27_01_07;
-        }
-        center_pt.mad(Device.vCameraPosition, Device.vCameraDirection, zMin);
-        Device.mFullTransform.transform(center_pt);
-        zMin = center_pt.z;
-
-        center_pt.mad(Device.vCameraPosition, Device.vCameraDirection, zMax);
-        Device.mFullTransform.transform(center_pt);
-        zMax = center_pt.z;
-
         // Enable Z function only for near and middle cascades, the far one is restricted by only stencil.
-        if ((SE_SUN_NEAR == sub_phase || SE_SUN_MIDDLE == sub_phase))
+        if (SE_SUN_NEAR == sub_phase || SE_SUN_MIDDLE == sub_phase)
             cmd_list.set_ZFunc(D3DCMP_GREATEREQUAL);
         else if (!ps_r2_ls_flags_ext.is(R2FLAGEXT_SUN_ZCULLING))
             cmd_list.set_ZFunc(D3DCMP_ALWAYS);

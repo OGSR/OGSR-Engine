@@ -292,8 +292,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_V
     // strict-sorting selection
     if (sh->flags.bStrictB2F)
     {
-        mapMatrixItems& matrixItems = mapSorted[sh->passes[0]._get()];
-        matrixItems.items->emplace_back(_MatrixItem{.ssa = SSA, .pObject = root, .pVisual = pVisual, .Matrix = xform});
+        mapSorted.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
         return;
     }
 
@@ -361,8 +360,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
     // strict-sorting selection
     if (sh->flags.bStrictB2F)
     {
-        mapMatrixItems& matrixItems = mapSorted[sh->passes[0]._get()];
-        matrixItems.items->emplace_back(_MatrixItem{.ssa = SSA, .pObject = nullptr, .pVisual = pVisual, .Matrix = Fidentity});
+        mapSorted.insert_anyway(distSQ, _MatrixItemS({SSA, nullptr, pVisual, Fidentity, sh}));
         return;
     }
 
@@ -665,14 +663,19 @@ void R_dsgraph_structure::build_subspace(const IRender_Sector::sector_id_t& star
     VERIFY(_sector);
     marker++; // !!! critical here
 
-    if (start_sector_id == IRender_Sector::INVALID_SECTOR_ID) /* || RImplementation.SectorsLoadDisabled */ // check disabled for subspace (sun, light, rain)
+    if (start_sector_id != IRender_Sector::INVALID_SECTOR_ID)
     {
-        // add_static(Sectors[0]->root(), *frustum, frustum->getMask());
+        IRender_Sector* root_sector = sector_portals_structure.Sectors.at(start_sector_id);
 
+        // Traverse sector/portal structure
+        PortalTraverser.traverse(root_sector, frustum, camera_position, xform, 0);
+    }
+
+    if (true)
+    {
         for (const auto& sector : sector_portals_structure.Sectors)
         {
             dxRender_Visual* root = sector->root();
-
             // for (u32 v_it = 0; v_it < sector->r_frustums.size(); v_it++)
             {
                 add_static(root, frustum, frustum.getMask());
@@ -681,11 +684,6 @@ void R_dsgraph_structure::build_subspace(const IRender_Sector::sector_id_t& star
     }
     else
     {
-        IRender_Sector* root_sector = sector_portals_structure.Sectors.at(start_sector_id);
-
-        // Traverse sector/portal structure
-        PortalTraverser.traverse(root_sector, frustum, camera_position, xform, 0);
-
         // Determine visibility for static geometry hierrarhy
         for (const auto& r_sector : PortalTraverser.r_sectors)
         {
@@ -727,12 +725,6 @@ void R_dsgraph_structure::build_subspace(const IRender_Sector::sector_id_t& star
 
             const auto* sector = sector_portals_structure.Sectors.at(sector_id);
 
-            if (PortalTraverser.frame() == Device.dwFrame)
-            {
-                if (PortalTraverser.marker() != sector->r_marker)
-                    continue; // inactive (untouched) sector
-            }
-
             if ((spatial->spatial.type & STYPE_RENDERABLE) && !ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_DYNAMIC))
             {
                 // renderable
@@ -741,6 +733,20 @@ void R_dsgraph_structure::build_subspace(const IRender_Sector::sector_id_t& star
 
                 // casting is faster then using getVis method
                 vis_data& v_orig = renderable->renderable.visual->getVisData();
+
+                if (!renderable->renderable.visual->ignore_optimization && PortalTraverser.frame() == Device.dwFrame) // if portal was updated on this frame
+                {
+                    Fvector pos;
+                    renderable->renderable.xform.transform_tiny(pos, v_orig.sphere.P);
+
+                    const float distance = Device.vCameraPosition.distance_to(pos);
+
+                    if (distance > 15.f)
+                    {
+                        if (PortalTraverser.marker() != sector->r_marker)
+                            continue; // inactive (untouched) sector
+                    }
+                }
 
                 if (max_render_distance > 0.f)
                 {

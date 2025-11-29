@@ -334,7 +334,7 @@ void R_dsgraph_structure::r_dsgraph_render_sorted()
 
     PIX_EVENT_CTX(cmd_list, dsgraph_render_sorted);
 
-    render_large_map(context_id, mapSorted);
+    sort_back_to_front_render_and_clean(context_id, mapSorted);
 
     if (!mapHUDSorted.empty())
     {

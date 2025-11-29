@@ -25,6 +25,9 @@ u32 g_dwFPSlimit = 60;
 
 BOOL g_bLoaded = FALSE;
 
+bool IsEditorShouldOpen();
+bool is_editor_active{};
+
 BOOL CRenderDevice::Begin()
 {
     switch (m_pRender->GetDeviceState())
@@ -47,6 +50,8 @@ BOOL CRenderDevice::Begin()
 
     
     ::Render->Begin();
+
+    R_ASSERT(g_bRendering == FALSE, "Something Strange");
 
     g_bRendering = TRUE;
 
@@ -96,7 +101,7 @@ void CRenderDevice::End()
 
     extern BOOL g_appLoaded;
 
-    if (g_appLoaded)
+    if (g_appLoaded && is_editor_active)
     {
         ImGui::Render();
 
@@ -213,6 +218,8 @@ struct _SoundRender : public pureFrame
 
 void CRenderDevice::on_idle()
 {
+    is_editor_active = IsEditorShouldOpen();
+
     if (!b_is_Ready)
     {
         Sleep(100);
@@ -241,7 +248,10 @@ void CRenderDevice::on_idle()
         else
             g_bEnableStatGather = FALSE;
 
-        ImGui_ImplDX11_NewFrame(); // должно быть перед FrameMove
+        if (is_editor_active)
+        {
+            ImGui_ImplDX11_NewFrame(); // должно быть перед FrameMove
+        }
 
         // if (b_is_Active)
         {
@@ -320,7 +330,10 @@ void CRenderDevice::on_idle()
             }
         }
 
-        ImGui::EndFrame();
+        if (is_editor_active)
+        {
+            ImGui::EndFrame();
+        }
 
         Statistic->RenderTOTAL_Real.End();
         Statistic->RenderTOTAL_Real.FrameEnd();

@@ -45,7 +45,7 @@ public:
     u32 occq_begin(u32& ID, u32 context_id); // returns 'order'
     void occq_end(const u32& ID, u32 context_id);
     occq_result occq_get(u32& ID, float max_wait_occ);
-    void occq_free(u32 ID);
+    void occq_free(const u32 ID, const bool get_data = false);
 
     void set_enabled(bool v) { enabled = v; }
 };

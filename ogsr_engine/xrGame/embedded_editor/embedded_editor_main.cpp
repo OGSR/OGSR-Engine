@@ -31,8 +31,6 @@ bool show_occ_window = false;
 bool show_node_editor = false;
 */
 
-static bool isAlt = false;
-
 enum class EditorStage
 {
     None,
@@ -42,11 +40,18 @@ enum class EditorStage
     Count,
 };
 
-EditorStage stage = EditorStage::None;
+EditorStage curr_stage{EditorStage::None}, target_stage{EditorStage::None};
 
-bool IsEditorActive() { return stage == EditorStage::Full || (stage == EditorStage::Light && isAlt); }
+bool IsEditorActive() { return curr_stage == EditorStage::Full; }
 
-bool IsEditor() { return stage != EditorStage::None; }
+bool IsEditorShouldOpen()
+{
+    curr_stage = target_stage;
+
+    return target_stage != EditorStage::None;
+}
+
+bool IsEditor() { return curr_stage != EditorStage::None; }
 
 void ShowMain()
 {
@@ -73,9 +78,9 @@ void ShowMain()
         show_node_editor = !show_node_editor;
     */
 
-    bool full = stage == EditorStage::Full;
+    bool full = target_stage == EditorStage::Full;
     if (ImGui::Checkbox("Active", &full))
-        stage = full ? EditorStage::Full : EditorStage::Light;
+        target_stage = full ? EditorStage::Full : EditorStage::Light;
 
     float framerate = ImGui::GetIO().Framerate;
 
@@ -106,6 +111,9 @@ void ShowEditor()
 
     if (!IsEditor())
         return;
+
+    ImGuiIO& io = ImGui::GetIO();
+    io.MouseDrawCursor = IsEditorActive();
 
     ShowMain();
 
@@ -147,21 +155,19 @@ bool Editor_KeyPress(int key)
     if (key == DIK_F10)
     {
         if (GetShift())
-            stage = static_cast<EditorStage>((static_cast<int>(stage) + 1) % static_cast<int>(EditorStage::Count));
+        {
+            target_stage = static_cast<EditorStage>((static_cast<int>(target_stage) + 1) % static_cast<int>(EditorStage::Count));
+            return true;
+        }
     }
-    else if (key == DIK_RALT || key == DIK_LALT)
-        isAlt = true;
 
     if (!IsEditorActive())
         return false;
 
     ImGuiIO& io = ImGui::GetIO();
-    io.MouseDrawCursor = true;
 
     switch (key)
     {
-    case DIK_RALT:
-    case DIK_LALT:
     case DIK_F10: break;
 
     case DIK_RCONTROL:
@@ -205,13 +211,8 @@ bool Editor_KeyPress(int key)
 
 bool Editor_KeyRelease(int key)
 {
-    if (key == DIK_RALT || key == DIK_LALT)
-        isAlt = false;
     bool active = IsEditorActive();
-
     ImGuiIO& io = ImGui::GetIO();
-    if (!active)
-        io.MouseDrawCursor = false;
 
     switch (key)
     {

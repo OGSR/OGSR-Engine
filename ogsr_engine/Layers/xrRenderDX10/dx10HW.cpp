@@ -43,8 +43,6 @@ CHW::~CHW()
     Device.seqAppDeactivate.Remove(this);
 }
 
-#include <dxgi1_6.h>
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -203,7 +201,7 @@ void CHW::CreateDevice(HWND m_hWnd)
     //R_CHK(pDeviceDXGI->SetMaximumFrameLatency(1));
     //_RELEASE(pDeviceDXGI);
 
-    _SHOW_REF("* CREATE: DeviceREF:", HW.pDevice);
+    _SHOW_REF("* CREATE: DeviceREF:", pDevice);
 
      // Register immediate context in profiler
     profiler_ctx = TracyD3D11Context(pDevice, pContext);
@@ -266,8 +264,20 @@ void CHW::DestroyDevice()
         _RELEASE(id);
     }
 
-    _SHOW_REF("DeviceREF:", HW.pDevice);
-    _RELEASE(HW.pDevice);
+    ID3D11Debug* d3dDebug = nullptr;
+    if (SUCCEEDED(pDevice->QueryInterface(IID_PPV_ARGS(&d3dDebug))))
+    {
+        d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL | D3D11_RLDO_IGNORE_INTERNAL);
+
+        _RELEASE(d3dDebug);
+    }
+
+    _SHOW_REF("DeviceREF:", pDevice);
+
+    void LogD3D11DebugMessages();
+    LogD3D11DebugMessages();
+
+    _RELEASE(pDevice);
 
     TracyD3D11Destroy(profiler_ctx);
 

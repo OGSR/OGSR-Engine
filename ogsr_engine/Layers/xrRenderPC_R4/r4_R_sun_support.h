@@ -23,7 +23,7 @@ inline constexpr int facetable[6][4]{
 } // namespace sun
 
 //////////////////////////////////////////////////////////////////////////
-static  Fvector3 wform(Fmatrix& m, Fvector3 const& v)
+static  Fvector3 wform(const Fmatrix& m, Fvector3 const& v)
 {
     Fvector4 r;
     r.x = v.x * m._11 + v.y * m._21 + v.z * m._31 + m._41;
@@ -296,7 +296,7 @@ public:
         return valid;
     }
 
-    void translate_light_model(Fvector translate)
+    void translate_light_model(const Fvector& translate)
     {
         Fmatrix trans_mat;
         trans_mat.translate(translate);
@@ -424,7 +424,7 @@ public:
             */
         }
     }
-    void compute_caster_model(xr_vector<Fplane>& dest, Fvector3 direction)
+    void compute_caster_model(xr_vector<Fplane>& dest, const Fvector3& direction)
     {
         CRenderTarget& T = *RImplementation.Target;
 

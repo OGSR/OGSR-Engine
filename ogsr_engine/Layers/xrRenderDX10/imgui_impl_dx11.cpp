@@ -922,8 +922,8 @@ bool ImGui_ImplDX11_CreateDeviceObjects()
 
 void ImGui_ImplDX11_InvalidateDeviceObjects()
 {
-    ImGui::EndFrame();
-    ImGui::NewFrame();
+    //ImGui::EndFrame();
+    //ImGui::NewFrame();
 
     if (!g_pd3dDevice)
         return;

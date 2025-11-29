@@ -71,9 +71,9 @@ struct i_render_phase
 
     struct options_t
     {
-        u32 active : 1;
-        u32 mt_calc_enabled : 1;
-        u32 mt_draw_enabled : 1;
+        bool active;
+        bool mt_calc_enabled;
+        bool mt_draw_enabled;
     } o;
 
     std::future<void> main_task;
@@ -95,7 +95,6 @@ struct render_rain : public i_render_phase
 
     light RainLight;
     u32 context_id{CHW::INVALID_CONTEXT_ID};
-    float rain_factor{0.0f};
 };
 
 struct render_sun : public i_render_phase

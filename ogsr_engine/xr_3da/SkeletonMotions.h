@@ -180,7 +180,7 @@ struct ENGINE_API motions_value
     accel_map m_cycle; // motion data itself	(shared)
     accel_map m_fx; // motion data itself	(shared)
     CPartition m_partition; // partition
-    u32 m_dwReference;
+    std::atomic_uint m_dwReference;
     string_unordered_map<shared_str, MotionVec> m_motions;
     MotionDefVec m_mdefs;
 
