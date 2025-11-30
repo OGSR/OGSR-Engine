@@ -39,10 +39,8 @@ public:
 
     IC CDB::RESULT* r_begin() { return collider()->r_begin(); }
     IC CDB::RESULT* r_end() { return collider()->r_end(); }
-    IC void r_free() { collider()->r_free(); }
     IC size_t r_count() { return collider()->r_count(); }
     IC void r_clear() { collider()->r_clear(); }
-    IC void r_clear_compact() { collider()->r_clear_compact(); }
 
     xrXRC();
     ~xrXRC();

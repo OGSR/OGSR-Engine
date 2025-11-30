@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "../Include/xrRender/Kinematics.h"
-#include "cl_intersect.h"
+#include "../xrCDB/cl_intersect.h"
 #include "../COMMON_AI/object_broker.h"
 
 #include "xr_efflensflare.h"

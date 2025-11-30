@@ -1,26 +1,9 @@
 #include "stdafx.h"
 #include "dCylinder.h"
-// given a pointer `p' to a dContactGeom, return the dContactGeom at
-// p + skip bytes.
-
-#define M_SIN_PI_3 REAL(0.8660254037844386467637231707529362)
-#define M_COS_PI_3 REAL(0.5000000000000000000000000000000000)
-
-struct dxCylinder
-{ // cylinder
-    dReal radius, lz; // radius, length along y axis //
-};
+#include "tri-colliderknoopc/dTriColliderCommon.h"
+#include "tri-colliderknoopc/dTriCylinder.h"
 
 int dCylinderClassUser = -1;
-
-#define NUMC_MASK (0xffff)
-
-inline dContactGeom* CONTACT(dContactGeom* ptr, const int stride)
-{
-    const size_t count = stride / sizeof(dContact);
-    dContact* contact = (dContact*)(uintptr_t(ptr) - uintptr_t(offsetof(dContact, geom)));
-    return &(contact[count]).geom;
-}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////circleIntersection//////////////////////////////////////////////////

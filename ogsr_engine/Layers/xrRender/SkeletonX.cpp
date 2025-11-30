@@ -9,6 +9,7 @@
 #include "SkeletonCustom.h"
 #include "../../xr_3da/fmesh.h"
 #include "../../xr_3da/xrSkinXW.hpp"
+#include "../../xrCDB/cl_intersect.h"
 
 //////////////////////////////////////////////////////////////////////
 // Body Part
@@ -423,7 +424,7 @@ void get_pos_bones(const vertBoned4W& vert, Fvector& p, CKinematics* Parent)
 //-----------------------------------------------------------------------------------------------------
 // Wallmarks
 //-----------------------------------------------------------------------------------------------------
-#include "cl_intersect.h"
+
 BOOL CSkeletonX::_PickBoneSoft1W(IKinematics::pick_result& r, float dist, const Fvector& S, const Fvector& D, u16* indices, CBoneData::FacesVec& faces) const
 {
     return pick_bone<vertBoned1W>(Vertices1W, Parent, r, dist, S, D, indices, faces);

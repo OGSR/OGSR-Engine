@@ -1,44 +1,10 @@
-// xrCDB.cpp : Defines the entry point for the DLL application.
-//
-
 #include "stdafx.h"
 
 #include "xrCDB.h"
 
-namespace Opcode
-{
-#include "OPC_TreeBuilders.h"
-} // namespace Opcode
 using namespace CDB;
 using namespace Opcode;
 
-#ifndef XRCDB_STATIC
-BOOL APIENTRY DllMain(HANDLE hModule, u32 ul_reason_for_call, LPVOID lpReserved)
-{
-    switch (ul_reason_for_call)
-    {
-    case DLL_PROCESS_ATTACH:
-    case DLL_THREAD_ATTACH:
-    case DLL_THREAD_DETACH:
-    case DLL_PROCESS_DETACH: break;
-    }
-    return TRUE;
-}
-#endif
-
-// Model building
-MODEL::MODEL()
-#ifdef PROFILE_CRITICAL_SECTIONS
-    : cs(MUTEX_PROFILE_ID(MODEL))
-#endif // PROFILE_CRITICAL_SECTIONS
-{
-    tree = nullptr;
-    tris = nullptr;
-    tris_count = 0;
-    verts = nullptr;
-    verts_count = 0;
-    status = S_INIT;
-}
 MODEL::~MODEL()
 {
     syncronize(); // maybe model still in building
@@ -50,16 +16,16 @@ MODEL::~MODEL()
     verts_count = 0;
 }
 
-void MODEL::build(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp, const bool rebuildTrisRequired)
+void MODEL::build(const Fvector* V, const size_t Vcnt, const TRI* T, const size_t Tcnt, build_callback* bc, void* bcp)
 {
     R_ASSERT(S_INIT == status);
     R_ASSERT((Vcnt >= 4) && (Tcnt >= 2));
 
-    build_internal(V, Vcnt, T, Tcnt, bc, bcp, rebuildTrisRequired);
+    build_internal(V, Vcnt, T, Tcnt, bc, bcp);
     status = S_READY;
 }
 
-void MODEL::build_internal(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp, const bool rebuildTrisRequired)
+void MODEL::build_internal(const Fvector* V, const size_t Vcnt, const TRI* T, const size_t Tcnt, build_callback* bc, void* bcp)
 {
     // verts
     verts_count = Vcnt;
@@ -69,23 +35,7 @@ void MODEL::build_internal(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callbac
     // tris
     tris_count = Tcnt;
     tris = xr_alloc<TRI>(tris_count);
-
-#ifdef _M_X64
-    if (rebuildTrisRequired)
-    {
-        TRI_DEPRECATED* realT = reinterpret_cast<TRI_DEPRECATED*>(T);
-        for (int triIter = 0; triIter < tris_count; ++triIter)
-        {
-            TRI_DEPRECATED& oldTri = realT[triIter];
-            TRI& newTri = tris[triIter];
-            newTri = oldTri;
-        }
-    }
-    else
-#endif
-    {
-        std::memcpy(tris, T, tris_count * sizeof(TRI));
-    }
+    std::memcpy(tris, T, tris_count * sizeof(TRI));
 
     // callback
     if (bc)
@@ -93,46 +43,28 @@ void MODEL::build_internal(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callbac
 
     // Release data pointers
     status = S_BUILD;
-
-    // Allocate temporary "OPCODE" tris + convert tris to 'pointer' form
-    u32* temp_tris = xr_alloc<u32>(tris_count * 3);
-    if (nullptr == temp_tris)
-    {
-        xr_free(verts);
-        xr_free(tris);
-        return;
-    }
-
-    u32* temp_ptr = temp_tris;
-    for (int i = 0; i < tris_count; i++)
-    {
-        *temp_ptr++ = tris[i].verts[0];
-        *temp_ptr++ = tris[i].verts[1];
-        *temp_ptr++ = tris[i].verts[2];
-    }
+    MeshInterface* mif = xr_new<MeshInterface>();
+    mif->SetNbTriangles(tris_count);
+    mif->SetNbVertices(verts_count);
+    mif->SetPointers(reinterpret_cast<const IceMaths::IndexedTriangle*>(tris), reinterpret_cast<const IceMaths::Point*>(verts));
+    mif->SetStrides(sizeof(TRI));
 
     // Build a non quantized no-leaf tree
-    OPCODECREATE OPCC;
-    OPCC.NbTris = tris_count;
-    OPCC.NbVerts = verts_count;
-    OPCC.Tris = temp_tris;
-    OPCC.Verts = (Point*)verts;
-    OPCC.Rules = SPLIT_COMPLETE | SPLIT_SPLATTERPOINTS | SPLIT_GEOMCENTER;
-    OPCC.NoLeaf = true;
-    OPCC.Quantized = false;
+    OPCODECREATE OPCC = OPCODECREATE();
+    OPCC.mIMesh = mif;
+    OPCC.mQuantized = false;
 
-    tree = xr_new<OPCODE_Model>();
+    tree = xr_new<Model>();
+
     if (!tree->Build(OPCC))
     {
         xr_free(verts);
         xr_free(tris);
-        xr_free(temp_tris);
+        xr_delete(mif);
         return;
-    };
+    }
 
-    // Free temporary tris
-    xr_free(temp_tris);
-    return;
+    xr_delete(mif);
 }
 
 u32 MODEL::memory()
@@ -147,17 +79,4 @@ u32 MODEL::memory()
     return tree->GetUsedBytes() + V + T + sizeof(*this) + sizeof(*tree);
 }
 
-void MODEL::syncronize_impl() const
-{
-    Log("! WARNING: syncronized CDB::query");
-    
-    xrCriticalSection* C = (xrCriticalSection*)&cs;
-    C->Enter();
-    C->Leave();
-}
-
-COLLIDER::~COLLIDER() { r_free(); }
-
 RESULT& COLLIDER::r_add() { return rd.emplace_back(); }
-
-void COLLIDER::r_free() { rd.clear(); }

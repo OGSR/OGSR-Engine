@@ -297,7 +297,7 @@ void CSkeletonX_ST::Copy(dxRender_Visual* P)
 //////////////////////////////////////////////////////////////////////
 void CSkeletonX_PM::Render(CBackend& cmd_list, float lod, bool)
 {
-    const int lod_id = iFloor((1.f - clampr(lod, 0.f, 1.f)) * float(nSWI.count - 1) + 0.5f);
+    const int lod_id = iFloor((1.f - clampr(lod, 0.f, 1.f)) * static_cast<float>(nSWI.count - 1) + 0.5f);
     
     VERIFY(lod_id >= 0 && lod_id < int(nSWI.count));
     const FSlideWindow& SW = nSWI.sw[lod_id];
@@ -485,7 +485,7 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
 //-----------------------------------------------------------------------------------------------------
 // Wallmarks
 //-----------------------------------------------------------------------------------------------------
-#include "cl_intersect.h"
+#include "../xrCDB/cl_intersect.h"
 
 #ifdef DEBUG
 

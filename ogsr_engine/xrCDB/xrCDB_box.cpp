@@ -18,9 +18,9 @@ using namespace Opcode;
         max = x2;
 
 //! TO BE DOCUMENTED
-ICF bool planeBoxOverlap(const Point& normal, const float d, const Point& maxbox)
+ICF bool planeBoxOverlap(const IceMaths::Point& normal, const float d, const IceMaths::Point& maxbox)
 {
-    Point vmin, vmax;
+    IceMaths::Point vmin, vmax;
     for (udword q = 0; q <= 2; q++)
     {
         if (((const float*)normal)[q] > 0.0f)
@@ -135,17 +135,17 @@ public:
     Fvector* verts;
 
     Fvector b_min, b_max;
-    Point center, extents;
+    IceMaths::Point center, extents;
 
-    Point mLeafVerts[3];
+    IceMaths::Point mLeafVerts[3];
 
     IC void _init(COLLIDER* CL, Fvector* V, TRI* T, const Fvector& C, const Fvector& E)
     {
         dest = CL;
         verts = V;
         tris = T;
-        center = Point(C.x, C.y, C.z);
-        extents = Point(E.x, E.y, E.z);
+        center = IceMaths::Point(C.x, C.y, C.z);
+        extents = IceMaths::Point(E.x, E.y, E.z);
         b_min.sub(C, E);
         b_max.add(C, E);
     }
@@ -168,7 +168,7 @@ public:
     ICF bool _tri()
     {
         // move everything so that the boxcenter is in (0,0,0)
-        Point v0, v1, v2;
+        IceMaths::Point v0, v1, v2;
         v0.x = mLeafVerts[0].x - center.x;
         v1.x = mLeafVerts[1].x - center.x;
         v2.x = mLeafVerts[2].x - center.x;
@@ -201,9 +201,9 @@ public:
         // 2) Test if the box intersects the plane of the triangle
         // compute plane equation of triangle: normal*x+d=0
         // ### could be precomputed since we use the same leaf triangle several times
-        const Point e0 = v1 - v0;
-        const Point e1 = v2 - v1;
-        const Point normal = e0 ^ e1;
+        const IceMaths::Point e0 = v1 - v0;
+        const IceMaths::Point e1 = v2 - v1;
+        const IceMaths::Point normal = e0 ^ e1;
         const float d = -normal | v0;
         if (!planeBoxOverlap(normal, d, extents))
             return false;
@@ -233,7 +233,7 @@ public:
             AXISTEST_Y02(e1.z, e1.x, fez1, fex1);
             AXISTEST_Z0(e1.y, e1.x, fey1, fex1);
 
-            const Point e2 = mLeafVerts[0] - mLeafVerts[2];
+            const IceMaths::Point e2 = mLeafVerts[0] - mLeafVerts[2];
             const float fey2 = _abs(e2.y);
             const float fez2 = _abs(e2.z);
             AXISTEST_X2(e2.z, e2.y, fez2, fey2);
@@ -274,8 +274,8 @@ public:
             return;
 
         // 1st chield
-        if (node->HasLeaf())
-            _prim(node->GetPrimitive());
+        if (node->HasPosLeaf())
+            _prim(node->GetPosPrimitive());
         else
             _stab(node->GetPos());
 
@@ -284,8 +284,8 @@ public:
             return;
 
         // 2nd chield
-        if (node->HasLeaf2())
-            _prim(node->GetPrimitive2());
+        if (node->HasNegLeaf())
+            _prim(node->GetNegPrimitive());
         else
             _stab(node->GetNeg());
     }

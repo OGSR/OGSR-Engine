@@ -256,7 +256,7 @@ void CSoundRender_Core::set_geometry_som(IReader* I)
             CL.add_face_packed_D(P.v3, P.v2, P.v1, *(size_t*)&P.occ, 0.01f);
     }
     geom_SOM = xr_new<CDB::MODEL>();
-    geom_SOM->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()), nullptr, nullptr, false);
+    geom_SOM->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS());
 
     geom->close();
 }
@@ -490,7 +490,7 @@ CSoundRender_Environment* CSoundRender_Core::get_environment(const Fvector& P)
             CDB::RESULT* r = geom_DB.r_begin();
 
             CDB::TRI* T = geom_ENV->get_tris() + r->id;
-            Fvector* V = geom_ENV->get_verts();
+            const Fvector* V = geom_ENV->get_verts();
 
             Fvector tri_norm;
             tri_norm.mknormal(V[T->verts[0]], V[T->verts[1]], V[T->verts[2]]);

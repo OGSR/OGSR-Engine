@@ -81,15 +81,15 @@ void CHOM::Load()
     CL.calc_adjacency(adjacency);
 
     // Create RASTER-triangles
-    m_pTris = xr_alloc<occTri>(u32(CL.getTS()));
+    m_pTris = xr_alloc<occTri>(CL.getTS());
 
-    for (u32 it = 0; it < CL.getTS(); it++)
+    for (size_t it{}; it < CL.getTS(); it++)
     {
         const CDB::TRI& clT = CL.getT()[it];
         occTri& rT = m_pTris[it];
-        Fvector& v0 = CL.getV()[clT.verts[0]];
-        Fvector& v1 = CL.getV()[clT.verts[1]];
-        Fvector& v2 = CL.getV()[clT.verts[2]];
+        const Fvector& v0 = CL.getV()[clT.verts[0]];
+        const Fvector& v1 = CL.getV()[clT.verts[1]];
+        const Fvector& v2 = CL.getV()[clT.verts[2]];
         rT.adjacent[0] = (0xffffffff == adjacency[3 * it + 0]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 0]);
         rT.adjacent[1] = (0xffffffff == adjacency[3 * it + 1]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 1]);
         rT.adjacent[2] = (0xffffffff == adjacency[3 * it + 2]) ? ((occTri*)(-1)) : (m_pTris + adjacency[3 * it + 2]);
@@ -106,7 +106,7 @@ void CHOM::Load()
 
     // Create AABB-tree
     m_pModel = xr_new<CDB::MODEL>();
-    m_pModel->build(CL.getV(), int(CL.getVS()), CL.getT(), int(CL.getTS()), nullptr, nullptr, false);
+    m_pModel->build(CL.getV(), CL.getVS(), CL.getT(), CL.getTS());
 }
 
 void CHOM::Unload()
@@ -186,7 +186,7 @@ void CHOM::Render_DB(CFrustum& base)
 
         // Access to triangle vertices
         CDB::TRI& t = m_pModel->get_tris()[it->id];
-        Fvector* v = m_pModel->get_verts();
+        const Fvector* v = m_pModel->get_verts();
         src.clear();
         dst.clear();
         src.push_back(v[t.verts[0]]);

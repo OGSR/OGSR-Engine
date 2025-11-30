@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "../../xr_3da/cl_intersect.h"
+#include "../../xrCDB/cl_intersect.h"
 #include "../xrRender/du_cone.h"
 
 BOOL CRenderTarget::enable_scissor(light* L) // true if intersects near plane

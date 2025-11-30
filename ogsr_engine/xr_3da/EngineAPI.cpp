@@ -61,5 +61,4 @@ void CEngineAPI::Destroy()
     pCreate = nullptr;
     pDestroy = nullptr;
     Engine.Event.Destroy();
-    XRC.r_clear_compact();
 }

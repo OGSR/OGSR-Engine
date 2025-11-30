@@ -21,5 +21,5 @@ xrXRC::xrXRC() {}
 
 xrXRC::~xrXRC() {}
 
-thread_local CDB::COLLIDER CL;
+static thread_local CDB::COLLIDER CL;
 CDB::COLLIDER* xrXRC::collider() { return &CL; }

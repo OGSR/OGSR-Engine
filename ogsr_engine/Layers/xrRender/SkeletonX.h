@@ -5,7 +5,7 @@
 
 #include "SkeletonCustom.h"
 #include "SkeletonXVertRender.h"
-#include "cl_intersect.h"
+#include "../xrCDB/cl_intersect.h"
 #include "FVisual.h"
 
 // refs

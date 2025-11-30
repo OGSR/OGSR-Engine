@@ -185,7 +185,7 @@ int CObjectSpace::GetNearest(xr_vector<CObject*>& q_nearest, ICollisionForm* obj
 }
 
 //----------------------------------------------------------------------
-static void __stdcall build_callback(Fvector* V, int Vcnt, CDB::TRI* T, int Tcnt, void* params) { g_pGameLevel->Load_GameSpecific_CFORM(T, Tcnt); }
+static void __stdcall build_callback(Fvector* V, const size_t Vcnt, CDB::TRI* T, const size_t Tcnt, void* params) { g_pGameLevel->Load_GameSpecific_CFORM(T, Tcnt); }
 
 void CObjectSpace::Load()
 {

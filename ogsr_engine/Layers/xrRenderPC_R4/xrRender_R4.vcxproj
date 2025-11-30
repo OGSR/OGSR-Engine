@@ -261,7 +261,6 @@
     <ClInclude Include="blender_deffer_aref.h" />
     <ClInclude Include="blender_deffer_flat.h" />
     <ClInclude Include="blender_deffer_model.h" />
-    <ClInclude Include="cl_intersect.h" />
     <ClInclude Include="HUDInitializer.h" />
     <ClInclude Include="light_smapvis.h" />
     <ClInclude Include="r2_types.h" />

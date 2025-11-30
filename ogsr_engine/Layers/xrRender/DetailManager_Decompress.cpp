@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "DetailManager.h"
-#include "cl_intersect.h"
+#include "../xrCDB/cl_intersect.h"
 
 
 //--------------------------------------------------- Decompression

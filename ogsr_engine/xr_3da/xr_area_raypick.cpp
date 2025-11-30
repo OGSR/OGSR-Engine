@@ -2,7 +2,7 @@
 #include "xr_area.h"
 #include "xr_collide_form.h"
 #include "xr_object.h"
-#include "cl_intersect.h"
+#include "../xrCDB/cl_intersect.h"
 
 #include "igame_level.h"
 #include "x_ray.h"

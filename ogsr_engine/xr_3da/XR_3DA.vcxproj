@@ -202,7 +202,6 @@
   <ItemGroup>
     <ClInclude Include="IPhysicsDefinitions.h" />
     <ClInclude Include="bone.h" />
-    <ClInclude Include="cl_intersect.h" />
     <ClInclude Include="..\xrParticles\psystem.h" />
     <ClInclude Include="defines.h" />
     <ClInclude Include="DiscordRPC.hpp" />

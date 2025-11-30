@@ -130,7 +130,7 @@ struct translation_pair
     IC bool operator<(const u16& id) const { return (m_id < id); }
 };
 
-void CLevel::Load_GameSpecific_CFORM(CDB::TRI* tris, u32 count)
+void CLevel::Load_GameSpecific_CFORM(CDB::TRI* tris, const size_t count)
 {
     typedef xr_vector<translation_pair> ID_INDEX_PAIRS;
     ID_INDEX_PAIRS translator;
