@@ -21,10 +21,6 @@ struct alignas(16) ray_t
     vec_t inv_dir;
     vec_t fwd_dir;
 };
-struct ray_segment_t
-{
-    float t_near, t_far;
-};
 
 // turn those verbose intrinsics into something readable.
 #define loadps(mem) _mm_load_ps((const float* const)(mem))
@@ -127,7 +123,7 @@ public:
 
         return isect_sse(box, ray, dist);
     }
-    void walk(ISpatial_NODE* N, Fvector& n_C, float n_R)
+    void walk(xr_vector<ISpatial*>& R, ISpatial_NODE* N, Fvector& n_C, float n_R)
     {
         // Actual ray/aabb test
         // use SSE
@@ -159,7 +155,7 @@ public:
                     }
                     range2 = range * range;
                 }
-                space->q_result->push_back(S);
+                R.push_back(S);
                 if (b_first)
                     return;
             }
@@ -173,8 +169,8 @@ public:
                 continue;
             Fvector c_C;
             c_C.mad(n_C, c_spatial_offset[octant], c_R);
-            walk(N->children[octant], c_C, c_R);
-            if (b_first && !space->q_result->empty())
+            walk(R, N->children[octant], c_C, c_R);
+            if (b_first && !R.empty())
                 return;
         }
     }
@@ -184,20 +180,21 @@ void ISpatial_DB::q_ray(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvecto
 {
     ZoneScoped;
 
-    cs.Enter();
-    q_result = &R;
-    q_result->clear();
+    std::shared_lock lock{spatial_db_mtx};
+
+    R.resize(0);
+
     if (_o & O_ONLYFIRST)
     {
         if (_o & O_ONLYNEAREST)
         {
             walker<true, true> W(this, _mask, _start, _dir, _range);
-            W.walk(m_root, m_center, m_bounds);
+            W.walk(R, m_root, m_center, m_bounds);
         }
         else
         {
             walker<true, false> W(this, _mask, _start, _dir, _range);
-            W.walk(m_root, m_center, m_bounds);
+            W.walk(R, m_root, m_center, m_bounds);
         }
     }
     else
@@ -205,13 +202,12 @@ void ISpatial_DB::q_ray(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvecto
         if (_o & O_ONLYNEAREST)
         {
             walker<false, true> W(this, _mask, _start, _dir, _range);
-            W.walk(m_root, m_center, m_bounds);
+            W.walk(R, m_root, m_center, m_bounds);
         }
         else
         {
             walker<false, false> W(this, _mask, _start, _dir, _range);
-            W.walk(m_root, m_center, m_bounds);
+            W.walk(R, m_root, m_center, m_bounds);
         }
     }
-    cs.Leave();
 }

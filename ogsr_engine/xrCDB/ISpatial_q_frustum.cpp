@@ -9,6 +9,7 @@ public:
     u32 mask;
 
     CFrustum* F;
+
     ISpatial_DB* space;
 
 public:
@@ -18,7 +19,7 @@ public:
         mask = _mask;
         F = (CFrustum*)_F;
     }
-    void walk(ISpatial_NODE* N, Fvector& n_C, float n_R, u32 fmask)
+    void walk(xr_vector<ISpatial*>& R, ISpatial_NODE* N, Fvector& n_C, float n_R, u32 fmask)
     {
         // box
         float n_vR = 2 * n_R;
@@ -42,7 +43,7 @@ public:
             if (fcvNone == F->testSphere(sC, std::max(sR, 0.5f), tmask))
                 continue;
 
-            space->q_result->push_back(S);
+            R.push_back(S);
         }
 
         // recurse
@@ -54,7 +55,7 @@ public:
 
             Fvector c_C;
             c_C.mad(n_C, c_spatial_offset[octant], c_R);
-            walk(N->children[octant], c_C, c_R, fmask);
+            walk(R, N->children[octant], c_C, c_R, fmask);
         }
     }
 };
@@ -63,10 +64,9 @@ void ISpatial_DB::q_frustum(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const CF
 {
     ZoneScoped;
 
-    cs.Enter();
-    q_result = &R;
-    q_result->clear();
+    std::shared_lock lock{spatial_db_mtx};
+
+    R.resize(0);
     walker W(this, _mask, &_frustum);
-    W.walk(m_root, m_center, m_bounds, _frustum.getMask());
-    cs.Leave();
+    W.walk(R, m_root, m_center, m_bounds, _frustum.getMask());
 }

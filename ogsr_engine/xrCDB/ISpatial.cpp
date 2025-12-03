@@ -260,7 +260,7 @@ void ISpatial_DB::insert(ISpatial* S)
 {
     R_ASSERT(S);
 
-    cs.Enter();
+    std::scoped_lock lock{spatial_db_mtx};
 
     if (!S->spatial.node_ptr) // only if unregistered
     {
@@ -321,8 +321,6 @@ void ISpatial_DB::insert(ISpatial* S)
         stat_insert.End();
 #endif
     }
-
-    cs.Leave();
 }
 
 void ISpatial_DB::_remove(ISpatial_NODE* N, ISpatial_NODE* N_sub)
@@ -363,7 +361,7 @@ void ISpatial_DB::remove(ISpatial* S)
 {
     R_ASSERT(S);
 
-    cs.Enter();
+    std::scoped_lock lock{spatial_db_mtx};
 
     if (S->spatial.node_ptr) // only if registered
     {
@@ -387,8 +385,6 @@ void ISpatial_DB::remove(ISpatial* S)
         stat_remove.End();
 #endif
     }
-
-    cs.Leave();
 }
 
 void ISpatial_DB::update(bool validate)
@@ -398,9 +394,8 @@ void ISpatial_DB::update(bool validate)
 
     if (validate)
     {
-        cs.Enter();
+        std::scoped_lock lock{spatial_db_mtx};
         R_ASSERT(verify());
-        cs.Leave();
     }
 }
 

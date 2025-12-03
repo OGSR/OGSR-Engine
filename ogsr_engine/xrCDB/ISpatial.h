@@ -152,7 +152,7 @@ public:
 class XRCDB_API ISpatial_DB
 {
 private:
-    xrCriticalSection cs;
+    std::shared_mutex spatial_db_mtx;
 
     poolSS<ISpatial_NODE, 128> allocator;
 
@@ -165,11 +165,10 @@ private:
 
 public:
 
-    xr_vector<ISpatial*>* q_result{};
-
     // stats
     u32 stat_nodes;
     u32 stat_objects;
+
     CStatTimer stat_insert;
     CStatTimer stat_remove;
 

@@ -6,9 +6,11 @@ class walker
 {
 public:
     u32 mask;
+
     Fvector center;
     Fvector size;
     Fbox box;
+
     ISpatial_DB* space;
 
 public:
@@ -20,7 +22,7 @@ public:
         box.setb(center, size);
         space = _space;
     }
-    void walk(ISpatial_NODE* N, Fvector& n_C, float n_R)
+    void walk(xr_vector<ISpatial*>& R, ISpatial_NODE* N, Fvector& n_C, float n_R)
     {
         // box
         float n_vR = 2 * n_R;
@@ -45,7 +47,7 @@ public:
             if (!sB.intersect(box))
                 continue;
 
-            space->q_result->push_back(S);
+            R.push_back(S);
             if (b_first)
                 return;
         }
@@ -58,8 +60,8 @@ public:
                 continue;
             Fvector c_C;
             c_C.mad(n_C, c_spatial_offset[octant], c_R);
-            walk(N->children[octant], c_C, c_R);
-            if (b_first && !space->q_result->empty())
+            walk(R, N->children[octant], c_C, c_R);
+            if (b_first && !R.empty())
                 return;
         }
     }
@@ -69,20 +71,19 @@ void ISpatial_DB::q_box(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvecto
 {
     ZoneScoped;
 
-    cs.Enter();
-    q_result = &R;
-    q_result->clear();
+    std::shared_lock lock{spatial_db_mtx};
+
+    R.resize(0);
     if (_o & O_ONLYFIRST)
     {
         walker<true> W(this, _mask, _center, _size);
-        W.walk(m_root, m_center, m_bounds);
+        W.walk(R, m_root, m_center, m_bounds);
     }
     else
     {
         walker<false> W(this, _mask, _center, _size);
-        W.walk(m_root, m_center, m_bounds);
+        W.walk(R, m_root, m_center, m_bounds);
     }
-    cs.Leave();
 }
 
 void ISpatial_DB::q_sphere(xr_vector<ISpatial*>& R, u32 _o, u32 _mask, const Fvector& _center, float _radius)

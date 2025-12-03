@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "cpuid.h"
+
 #pragma warning(push)
 #pragma warning(disable : 4995)
 #include <xmmintrin.h>
@@ -24,10 +25,6 @@ struct alignas(16) ray_t
     vec_t pos;
     vec_t inv_dir;
     vec_t fwd_dir;
-};
-struct ray_segment_t
-{
-    float t_near, t_far;
 };
 
 // turn those verbose intrinsics into something readable.
@@ -148,7 +145,7 @@ public:
         // if determinant is near zero, ray lies in plane of triangle
         pvec.crossproduct(ray.fwd_dir, edge2);
         det = edge1.dotproduct(pvec);
-        if (bCull)
+        if constexpr (bCull)
         {
             if (det < EPS)
                 return false;
@@ -184,7 +181,7 @@ public:
         return true;
     }
 
-    void _prim(DWORD prim)
+    void _prim(u32 prim)
     {
         float u, v, r;
         if (!_tri(tris[prim].verts, u, v, r))
@@ -192,7 +189,7 @@ public:
         if (r <= 0 || r > rRange)
             return;
 
-        if (bNearest)
+        if constexpr (bNearest)
         {
             if (dest->r_count())
             {
@@ -259,8 +256,11 @@ public:
             _stab(node->GetPos());
 
         // Early exit for "only first"
-        if (bFirst && dest->r_count())
+        if constexpr (bFirst)
+        {
+            if (dest->r_count())
             return;
+        }
 
         // 2nd chield
         if (node->HasNegLeaf())
