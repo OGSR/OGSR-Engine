@@ -15,7 +15,7 @@ class CParticleManager : public IParticleManager
     ParticleEffectVec m_effect_vec;
     ParticleActionsVec m_alist_vec;
 
-    std::mutex pm_Locked;
+    std::shared_mutex m_effect_mtx, m_action_mtx;
 
 public:
     CParticleManager();

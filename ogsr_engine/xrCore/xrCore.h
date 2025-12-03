@@ -77,6 +77,7 @@
 #include <string>
 #include <functional>
 #include <mutex>
+#include <shared_mutex>
 #include <typeinfo>
 #pragma warning(pop)
 
