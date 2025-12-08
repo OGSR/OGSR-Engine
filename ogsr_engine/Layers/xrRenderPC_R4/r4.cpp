@@ -149,6 +149,7 @@ void CRender::reset_begin()
 
     // Update incremental shadowmap-visibility solver
     // BUG-ID: 10646
+    if (!ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_SMAPVIS))
     {
         for (const auto& it : Lights_LastFrame)
         {

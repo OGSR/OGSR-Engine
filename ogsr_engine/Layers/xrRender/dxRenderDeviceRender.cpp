@@ -73,6 +73,8 @@ void dxRenderDeviceRender::Reset(HWND hWnd, u32& dwWidth, u32& dwHeight, float& 
     _SHOW_REF("*ref -CRenderDevice::ResetTotal: DeviceREF:", HW.pDevice);
 #endif // DEBUG
 
+    RImplementation.HWOCC.cleanup_lost(true);
+
     Resources->reset_begin();
     HW.ResetDevice(hWnd);
 

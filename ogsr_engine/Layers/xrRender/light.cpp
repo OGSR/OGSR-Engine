@@ -40,7 +40,6 @@ light::light(void) : ISpatial(g_SpatialSpace)
 
     vis.frame2test = 0; // xffffffff;
     vis.query_id = 0;
-    vis.query_order = 0;
     vis.visible = true;
     vis.pending = false;
 
@@ -68,7 +67,7 @@ light::~light()
         }
     }
 
-    if (!get_moveable())
+    if (!ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_SMAPVIS) && !get_moveable())
     {
         for (auto& svi : svis)
             svi.resetoccq();
@@ -205,7 +204,7 @@ void light::spatial_move()
     // update spatial DB
     ISpatial::spatial_move();
 
-    if (!get_moveable())
+    if (!ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_SMAPVIS) && !get_moveable())
     {
         for (auto& svi : svis)
             svi.invalidate();

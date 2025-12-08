@@ -8,8 +8,7 @@ constexpr u32 delay_small_max = 3;
 constexpr u32 delay_visible_min = 20;
 constexpr u32 delay_visible_max = 40;
 
-constexpr u32 delay_invisible_min = 4;
-constexpr u32 delay_invisible_max = 6;
+int delay_invisible_min{2}, delay_invisible_max{4};
 
 constexpr u32 cullfragments = 4;
 
@@ -58,7 +57,7 @@ void light::vis_prepare(CBackend& cmd_list)
     xform_calc();
     cmd_list.set_xform_world(m_xform);
 
-    vis.query_order = RImplementation.occq_begin(vis.query_id, cmd_list.context_id);
+    RImplementation.occq_begin(vis.query_id, cmd_list.context_id);
     //	Hack: Igor. Light is visible if it's frutum is visible. (Only for volumetric)
     //	Hope it won't slow down too much since there's not too much volumetric lights
     //	TODO: sort for performance improvement if this technique hurts
@@ -82,9 +81,12 @@ void light::vis_update()
     if (!vis.pending)
         return;
 
-    const u64 fragments = RImplementation.occq_get(vis.query_id, 1.f);
-
-    // Log("",fragments);
+    const auto fragments = RImplementation.occq_get(vis.query_id);
+    if (fragments == R_occlusion::OCC_CONTINUE_WAIT)
+    { // запрещаем vis_prepare, чтобы не создавались новые запросы, пока ждем текущий.
+        vis.frame2test = u32(-1);
+        return;
+    }
 
     vis.visible = fragments > cullfragments;
     vis.pending = false;

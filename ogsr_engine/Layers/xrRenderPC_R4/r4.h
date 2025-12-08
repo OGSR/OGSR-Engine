@@ -194,9 +194,9 @@ public:
     FSlideWindowItem* getSWI(int id);
     
     // HW-occlusion culling
-    IC u32 occq_begin(u32& ID, u32 context_id) { return HWOCC.occq_begin(ID, context_id); }
+    IC void occq_begin(u32& ID, const u32 context_id) { HWOCC.occq_begin(ID, context_id); }
     IC void occq_end(const u32& ID, u32 context_id) { HWOCC.occq_end(ID, context_id); }
-    IC R_occlusion::occq_result occq_get(u32& ID, const float max_wait_occ) { return HWOCC.occq_get(ID, max_wait_occ); }
+    IC R_occlusion::occq_result occq_get(u32& ID, const bool for_smapvis = false) { return HWOCC.occq_get(ID, for_smapvis); }
     IC void occq_free(const u32 ID, const bool get_data = false) { HWOCC.occq_free(ID, get_data); }
     IC void occq_enable(const bool v) { HWOCC.set_enabled(v); }
 

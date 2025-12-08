@@ -15,10 +15,9 @@ IC HRESULT CreateQuery(ID3DQuery** ppQuery, D3DQUERYTYPE Type)
     return HW.pDevice->CreateQuery(&desc, ppQuery);
 }
 
-IC HRESULT GetData(ID3DQuery* pQuery, void* pData, UINT DataSize)
+IC HRESULT GetData(ID3DQuery* pQuery, void* pData, UINT DataSize, UINT GetDataFlags = 0)
 {
-    //	Use D3Dxx_ASYNC_GETDATA_DONOTFLUSH for prevent flushing
-    return HW.get_context(CHW::IMM_CTX_ID)->GetData(pQuery, pData, DataSize, 0);
+    return HW.get_context(CHW::IMM_CTX_ID)->GetData(pQuery, pData, DataSize, GetDataFlags);
 }
 
 IC HRESULT BeginQuery(ID3DQuery* pQuery, u32 context_id)

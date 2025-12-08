@@ -17,9 +17,8 @@ class R_occlusion
 private:
     struct _Q
     {
-        u32 order;
         Microsoft::WRL::ComPtr<ID3DQuery> Q;
-        u32 ttl;
+        u32 ttl{};
     };
 
     static constexpr u32 iInvalidHandle = 0xFFFFFFFF;
@@ -30,22 +29,28 @@ private:
     xr_vector<u32> fids; // free id's
     u32 last_frame;
 
-    void cleanup_lost();
-
     std::recursive_mutex lock;
 
 public:
-    typedef u64 occq_result;
+    using occq_result = u64;
+    static constexpr auto OCC_NOT_AVAIL{occq_result(-1)};
+    static constexpr auto OCC_CONTINUE_WAIT{OCC_NOT_AVAIL - 1};
 
-public:
     R_occlusion();
     ~R_occlusion();
 
     void occq_destroy();
-    u32 occq_begin(u32& ID, u32 context_id); // returns 'order'
+    void occq_begin(u32& ID, const u32 context_id);
     void occq_end(const u32& ID, u32 context_id);
-    occq_result occq_get(u32& ID, float max_wait_occ);
+    occq_result occq_get(u32& ID, const bool for_smapvis = false);
     void occq_free(const u32 ID, const bool get_data = false);
 
-    void set_enabled(bool v) { enabled = v; }
+    void set_enabled(bool v)
+    {
+        enabled = v;
+        if (!v)
+            cleanup_lost(true);
+    }
+
+    void cleanup_lost(const bool full_cleanup = false);
 };

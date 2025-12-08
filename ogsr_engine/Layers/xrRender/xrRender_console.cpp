@@ -340,6 +340,8 @@ int opt_shadow_geom = 0;
 
 int r_back_buffer_count{2};
 
+extern int delay_invisible_min, delay_invisible_max;
+
 //-----------------------------------------------------------------------
 class CCC_detail_radius : public CCC_Integer
 {
@@ -787,6 +789,7 @@ void xrRender_initconsole()
     CMD3(CCC_Mask64, "r2_disable_particles", &ps_r2_ls_flags_ext, R2FLAGEXT_DISABLE_PARTICLES);
     CMD3(CCC_Mask64, "r2_disable_dynamic", &ps_r2_ls_flags_ext, R2FLAGEXT_DISABLE_DYNAMIC);
     CMD3(CCC_Mask64, "r2_disable_light", &ps_r2_ls_flags_ext, R2FLAGEXT_DISABLE_LIGHT);
+    CMD3(CCC_Mask64, "r2_disable_smapvis", &ps_r2_ls_flags_ext, R2FLAGEXT_DISABLE_SMAPVIS);
     CMD3(CCC_Mask64, "r2_disable_sectors", &ps_r2_ls_flags_ext, R2FLAGEXT_DISABLE_SECTORS);
 
     CMD3(CCC_Mask64, "r2_disable_static_normal", &ps_r2_ls_flags_ext, R2FLAGEXT_DISABLE_STATIC_NORMAL);
@@ -1057,4 +1060,6 @@ void xrRender_initconsole()
     CMD4(CCC_Integer, "shaders_xr_export", &bShadersXrExport, FALSE, TRUE);
 
     CMD1(CCC_OCC_Enable, "r_occ_enable");
+    CMD4(CCC_Integer, "r_occ_delay_invisible_min", &delay_invisible_min, 1, 10);
+    CMD4(CCC_Integer, "r_occ_delay_invisible_max", &delay_invisible_max, 1, 10);
 }

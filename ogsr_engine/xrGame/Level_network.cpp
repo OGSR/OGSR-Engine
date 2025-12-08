@@ -120,6 +120,9 @@ void CLevel::remove_objects()
     Engine.Sheduler.Destroy();
 
     m_is_removing_objects = false;
+
+    void Cleanup_R_occlusion();
+    Cleanup_R_occlusion();
 }
 
 #ifdef DEBUG

@@ -28,7 +28,7 @@ void CRender::render_lights_shadowed_one(light_ctx& task)
         light* L = task.lights[task.curr];
 
         // use smapvis only for static light sources
-        if (!L->get_moveable())
+        if (!ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_SMAPVIS) && !L->get_moveable())
         {
             L->svis[dsgraph.context_id].begin();
         }
@@ -67,7 +67,7 @@ void CRender::render_lights_shadowed_one(light_ctx& task)
                     }
                 }
 
-                if (!L->get_moveable())
+                if (!ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_SMAPVIS) && !L->get_moveable())
                 {
                     L->svis[dsgraph.context_id].end();
                 }
@@ -89,7 +89,7 @@ void CRender::render_lights_shadowed_one(light_ctx& task)
         {
             stats.s_finalclip++;
 
-            if (!L->get_moveable())
+            if (!ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_SMAPVIS) && !L->get_moveable())
             {
                 L->svis[dsgraph.context_id].end();
             }
@@ -132,7 +132,7 @@ void CRender::render_lights_shadowed(light_Package& LP)
             {
                 L->optimize_smap_size();
 
-                if (!L->get_moveable())
+                if (!ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_SMAPVIS) && !L->get_moveable())
                 {
                     Lights_LastFrame.push_back(L);
                 }

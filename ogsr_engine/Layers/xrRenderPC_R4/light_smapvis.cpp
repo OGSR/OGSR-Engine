@@ -97,7 +97,7 @@ void smapvis::flushoccq()
 
     ZoneScoped;
 
-    const u64 fragments = RImplementation.occq_get(testQ_id, 6.f);
+    const auto fragments = RImplementation.occq_get(testQ_id, true);
     if (fragments == 0)
     {
         // this is invisible shadow-caster, register it

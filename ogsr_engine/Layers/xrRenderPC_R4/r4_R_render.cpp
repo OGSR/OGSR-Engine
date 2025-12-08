@@ -498,6 +498,7 @@ void CRender::Render()
     }
 
     // Update incremental shadowmap-visibility solver
+    if (!ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_SMAPVIS))
     {
         ZoneScopedN("Lights_LastFrame/flushoccq");
 
