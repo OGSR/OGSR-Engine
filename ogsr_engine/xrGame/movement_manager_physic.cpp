@@ -51,21 +51,10 @@ void CMovementManager::apply_collision_hit(CPHMovementControl* movement_control)
         di->HitDir(dir);
 
         CObject* who = di->DamageInitiator();
-        SHit HDS = SHit(movement_control->gcontact_HealthLost, dir, who, movement_control->ContactBone(), di->HitPos(), 0.f, di->HitType(), 0.0f, false);
+        SHit HDS{movement_control->gcontact_HealthLost, dir, who, movement_control->ContactBone(), di->HitPos(), 0.f, di->HitType(), 0.0f, false};
 
-        float coef = 0.01f;
-
-        if (who)
-        {
-            // FX: When is damage to himself, but the energy of the hit will be zero.
-            if (object().ID() == who->ID())
-                coef = 0;
-        }
-
-        CGameObject* obj = smart_cast<CGameObject*>(who);
-
-        if (obj && obj->cast_stalker())
-            HDS.power *= coef;
+        if (who && object().ID() == who->ID()) // бывает что во время спавна хитуют сами себя почему-то
+            return;
 
         object().Hit(&HDS);
     }
