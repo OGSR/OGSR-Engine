@@ -69,7 +69,6 @@
       <ExceptionHandling>
       </ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <FloatingPointModel>Fast</FloatingPointModel>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -142,7 +141,6 @@
       <ExceptionHandling>
       </ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <FloatingPointModel>Fast</FloatingPointModel>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
@@ -222,7 +220,6 @@
     <ClInclude Include="splash.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="vismask.h" />
-    <ClInclude Include="xrSkinXW.hpp" />
     <ClInclude Include="x_ray.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="IInputReceiver.h" />
@@ -301,7 +298,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="xrSkinXW.cpp" />
     <ClCompile Include="XR_IOConsole_callback.cpp" />
     <ClCompile Include="XR_IOConsole_control.cpp" />
     <ClCompile Include="XR_IOConsole_get.cpp" />

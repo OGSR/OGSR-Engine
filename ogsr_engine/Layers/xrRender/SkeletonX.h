@@ -54,7 +54,6 @@ protected:
     };
 
     void _Copy(CSkeletonX* V);
-    void _Render_soft(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount);
     void _Render(CBackend& cmd_list, ref_geom& hGeom, u32 vCount, u32 iOffset, u32 pCount);
     void _Load(const char* N, IReader* data, u32& dwVertCount);
 

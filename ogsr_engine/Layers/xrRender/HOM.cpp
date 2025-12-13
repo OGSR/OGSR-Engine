@@ -234,11 +234,9 @@ void CHOM::DispatchRender()
         CFrustum ViewBase;
         ViewBase.CreateFromMatrix(Device.mFullTransform, FRUSTUM_P_LRTB + FRUSTUM_P_FAR);
 
-        Device.Statistic->RenderCALC_HOM.Begin();
         Raster.clear();
         Render_DB(ViewBase);
         Raster.propagade();
-        Device.Statistic->RenderCALC_HOM.End();
     }
 }
 

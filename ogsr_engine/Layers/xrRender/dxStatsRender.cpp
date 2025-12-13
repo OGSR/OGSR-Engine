@@ -37,16 +37,15 @@ void dxStatsRender::OutData4(CGameFont& F)
     F.OutNext("Static:       %3.1f verts/[%d] calls", rcstats.r.s_static.verts / 1024.f, rcstats.r.s_static.draw_calls);
     F.OutNext("Lods:         %3.1f verts/[%d] calls", rcstats.r.s_flora_lods.verts / 1024.f, rcstats.r.s_flora_lods.draw_calls);
 
+    F.OutNext("Trees:        [%u] instances, [%u] draw calls", rcstats.r.s_flora.instances_count, rcstats.r.s_flora.draw_calls_count);
+    F.OutNext("Details:      [%u] instances, [%u] draw calls", rcstats.r.s_details.instances_count, rcstats.r.s_details.draw_calls_count);
+
     F.OutNext("Dynamic:      %3.1f verts/[%d] calls", rcstats.r.s_dynamic.verts / 1024.f, rcstats.r.s_dynamic.draw_calls);
-    F.OutNext("- soft:       %3.1f verts/[%d] calls", rcstats.r.s_dynamic_sw.verts / 1024.f, rcstats.r.s_dynamic_sw.draw_calls);
     F.OutNext("- index:      %3.1f verts/[%d] calls", rcstats.r.s_dynamic_inst.verts / 1024.f, rcstats.r.s_dynamic_inst.draw_calls);
     F.OutNext("- 1B:         %3.1f verts/[%d] calls", rcstats.r.s_dynamic_1B.verts / 1024.f, rcstats.r.s_dynamic_1B.draw_calls);
     F.OutNext("- 2B:         %3.1f verts/[%d] calls", rcstats.r.s_dynamic_2B.verts / 1024.f, rcstats.r.s_dynamic_2B.draw_calls);
     F.OutNext("- 3B:         %3.1f verts/[%d] calls", rcstats.r.s_dynamic_3B.verts / 1024.f, rcstats.r.s_dynamic_3B.draw_calls);
     F.OutNext("- 4B:         %3.1f verts/[%d] calls", rcstats.r.s_dynamic_4B.verts / 1024.f, rcstats.r.s_dynamic_4B.draw_calls);
-
-    F.OutNext("Trees:        [%u] instances, [%u] draw calls", rcstats.r.s_flora.instances_count, rcstats.r.s_flora.draw_calls_count);
-    F.OutNext("Details:      [%u] instances, [%u] draw calls", rcstats.r.s_details.instances_count, rcstats.r.s_details.draw_calls_count);
 }
 
 void dxStatsRender::GuardVerts(CGameFont& F)

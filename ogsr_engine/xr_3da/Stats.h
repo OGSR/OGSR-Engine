@@ -62,10 +62,6 @@ public:
     CStatTimer Animation; // skeleton calculation
     CStatTimer RenderDUMP; // actual primitive rendering
     CStatTimer RenderDUMP_Wait; // ...waiting something back (queries results, etc.)
-    CStatTimer RenderDUMP_RT; // ...render-targets
-    CStatTimer RenderDUMP_SKIN; // ...skinning
-    CStatTimer RenderDUMP_HUD; // ...hud rendering
-    CStatTimer RenderDUMP_Lights; // ...d-lights building/rendering
     CStatTimer RenderDUMP_WM; // ...wallmark sorting, rendering
     u32 RenderDUMP_WMS_Count; // ...number of static wallmark
     u32 RenderDUMP_WMD_Count; // ...number of dynamic wallmark
@@ -74,9 +70,6 @@ public:
     CStatTimer RenderDUMP_DT_Render; // ...details rendering
     CStatTimer RenderDUMP_DT_Cache; // ...details slot cache access
     u32 RenderDUMP_DT_Count; // ...number of DT-elements
-    CStatTimer RenderDUMP_Pcalc; // ...projectors	building
-    CStatTimer RenderDUMP_Scalc; // ...shadows		building
-    CStatTimer RenderDUMP_Srender; // ...shadows		render
 
     CStatTimer Sound; // total time taken by sound subsystem (accurate only in single-threaded mode)
     CStatTimer Input; // total time taken by input subsystem (accurate only in single-threaded mode)

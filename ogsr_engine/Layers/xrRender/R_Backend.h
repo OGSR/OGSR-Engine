@@ -54,9 +54,7 @@ struct R_statistics
     R_statistics_element_instanced s_flora;
     R_statistics_element s_flora_lods;
     R_statistics_element_instanced s_details;
-    R_statistics_element s_ui;
     R_statistics_element s_dynamic;
-    R_statistics_element s_dynamic_sw;
     R_statistics_element s_dynamic_inst;
     R_statistics_element s_dynamic_1B;
     R_statistics_element s_dynamic_2B;
