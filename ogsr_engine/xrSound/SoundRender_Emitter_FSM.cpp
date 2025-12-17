@@ -329,7 +329,7 @@ BOOL CSoundRender_Emitter::update_culling(float dt)
         return SoundRender->i_allow_play(this);
 }
 
-float CSoundRender_Emitter::priority() { return smooth_volume * att() * priority_scale; }
+float CSoundRender_Emitter::priority() { return b2D ? 1000.f : smooth_volume * att() * priority_scale; }
 
 float CSoundRender_Emitter::att()
 {
