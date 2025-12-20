@@ -17,9 +17,9 @@ rnd_motion* rnd_motion::setup(IKinematicsAnimated* k, const char* s)
     VERIFY(s);
 
     const u16 nb = (u16)_GetItemCount(s);
+    string_path n;
     for (u16 i = 0; nb > i; ++i)
     {
-        string64 n;
         _GetItem(s, i, n);
         MotionID m = k->LL_MotionID(n);
         if (m.valid())
