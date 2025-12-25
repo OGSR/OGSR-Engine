@@ -181,7 +181,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph_dynamic(u32 _priority)
 
 void R_dsgraph_structure::r_dsgraph_render_graph(u32 _priority)
 {    
-    PIX_EVENT_CTX(cmd_list, r_dsgraph_render_graph);
+    PIX_EVENT_CTX(cmd_list, dsgraph_render_graph);
 
     r_dsgraph_render_graph_static(_priority);
     r_dsgraph_render_graph_dynamic(_priority);
@@ -301,7 +301,7 @@ void R_dsgraph_structure::r_dsgraph_render_hud_scope_depth()
 {
     ZoneScoped;
 
-    PIX_EVENT_CTX(cmd_list, r_dsgraph_render_hud_scope_depth);
+    PIX_EVENT_CTX(cmd_list, dsgraph_render_hud_scope_depth);
 
     if (!mapScopeHUD.empty())
     {

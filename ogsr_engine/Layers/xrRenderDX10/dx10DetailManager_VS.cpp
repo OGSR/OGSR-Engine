@@ -38,6 +38,8 @@ void CDetailManager::hw_Render(CBackend& cmd_list, const bool shadows, light* L)
 {
     ZoneScoped;
 
+    PIX_EVENT_CTX(cmd_list, DetailManager_Render);
+
     if (!shadows)
         Device.Statistic->RenderDUMP_DT_Count = 0;
 

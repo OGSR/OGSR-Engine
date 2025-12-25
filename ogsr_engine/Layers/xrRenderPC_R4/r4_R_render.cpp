@@ -529,12 +529,13 @@ void CRender::Render()
         //LP_normal_copy.vis_update();
         LP_normal_copy.sort();
 
+        Target->phase_accumulator(cmd_list); // init accum here
         render_lights(LP_normal_copy);
     }
 
     // Postprocess
     {
-        PIX_EVENT(DEFER_LIGHT_COMBINE);
+        PIX_EVENT(DEFER_COMBINE);
         Target->phase_combine(cmd_list); // calls CRender::render_forward()
     }
 

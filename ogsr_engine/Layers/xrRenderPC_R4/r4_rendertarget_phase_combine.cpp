@@ -9,11 +9,8 @@ void CRenderTarget::phase_combine(CBackend& cmd_list)
 {
     ZoneScoped;
 
-    PIX_EVENT(phase_combine);
-
     //*** exposure-pipeline
     {
-        PIX_EVENT(exposure_pipeline);
         // if (t_LUM_src != rt_LUM_pool[0]->pTexture)
             t_LUM_src->surface_set(rt_LUM_pool[0]->pSurface);
         // if (t_LUM_dest != rt_LUM_pool[1]->pTexture)
@@ -118,7 +115,7 @@ void CRenderTarget::phase_combine(CBackend& cmd_list)
 
     // Forward rendering
     {
-        PIX_EVENT(Forward_rendering);
+        PIX_EVENT(render_forward);
 
         u_setrt(cmd_list, rt_Generic_0, rt_heat, nullptr, nullptr, rt_Base_Depth->pZRT[cmd_list.context_id]); // LDR RT
 
@@ -285,7 +282,6 @@ void CRenderTarget::phase_combine(CBackend& cmd_list)
     }
 
     {
-        PIX_EVENT(exposure_pipeline_clear);
         //	Re-adapt luminance
         cmd_list.set_Stencil(FALSE);
 

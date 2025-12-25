@@ -2,7 +2,7 @@
 
 void CRenderTarget::phase_gasmask_dudv(CBackend& cmd_list)
 {
-    // Set paramterers
+    PIX_EVENT(phase_gasmask_dudv);
 
     const Fvector4 params{0.f, 0.f, static_cast<float>(ps_r2_ls_flags_ext.test(R2FLAGEXT_VISOR_REFL_CONTROL) && ps_r2_ls_flags_ext.test(R2FLAGEXT_VISOR_REFL)),
                           static_cast<float>(ps_r2_ls_flags_ext.test(R2FLAGEXT_MASK_CONTROL) && ps_r2_ls_flags_ext.test(R2FLAGEXT_MASK))};

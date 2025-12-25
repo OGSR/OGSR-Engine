@@ -51,6 +51,8 @@ void CPortalTraverser::fade_render(CBackend& cmd_list)
     if (f_portals.empty())
         return;
 
+    PIX_EVENT_CTX(cmd_list, PortalTraverser_fade_render);
+
     // re-sort, back to front
     std::sort(f_portals.begin(), f_portals.end(), [this](const auto& p1, const auto& p2) {
         const float d1 = i_vBase.distance_to_sqr(p1.first->S.P);

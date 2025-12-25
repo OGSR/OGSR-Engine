@@ -319,9 +319,21 @@ void render_sun::flush()
     if (!o.active)
         return;
 
-    for (int cascade_ind = 0; cascade_ind < R__NUM_SUN_CASCADES; ++cascade_ind)
     {
-        accumulate_cascade(cascade_ind);
+        PIX_EVENT(render_sun_flush);
+
+        {
+            PIX_EVENT(render_sun_cascade_0);
+            accumulate_cascade(0);
+        }
+        {
+            PIX_EVENT(render_sun_cascade_1);
+            accumulate_cascade(1);
+        }
+        {
+            PIX_EVENT(render_sun_cascade_2);
+            accumulate_cascade(2);
+        }
     }
 
     auto& cmd_list_imm = RImplementation.get_imm_context().cmd_list;

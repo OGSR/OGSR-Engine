@@ -236,72 +236,41 @@ void CRender::render_lights_shadowed(light_Package& LP)
             render_lights_shadowed_one(task);
         }
 
-        static xr_vector<light*> L_spot_s;
-
         light_pool.wait_for_tasks();
 
-        for (auto& task : light_tasks)
-        {
-            for (auto* light : task.lights)
-                L_spot_s.push_back(light);
+        static xr_vector<light*> L_spot_s;
 
-            if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_LIGHTS))
+        auto& cmd_list = get_imm_context().cmd_list;
+
+        {
+            PIX_EVENT_CTX(cmd_list, SHADOWED_LIGHTS);
+
+            for (auto& task : light_tasks)
             {
-                get_context(task.context_id).cmd_list.submit();
-                release_context(task.context_id);
+                for (auto* light : task.lights)
+                    L_spot_s.push_back(light);
+
+                if (ps_r2_ls_flags.test(R2FLAG_EXP_MT_LIGHTS))
+                {
+                    get_context(task.context_id).cmd_list.submit();
+                    release_context(task.context_id);
+                }
             }
         }
 
-        auto& cmd_list = get_imm_context().cmd_list;
         cmd_list.Invalidate();
 
         light_tasks.clear();
         std::ranges::sort(L_spot_s, light_cmp);
 
-        PIX_EVENT_CTX(cmd_list, UNSHADOWED_LIGHTS);
-
-        // switch-to-accumulator
-        Target->phase_accumulator(cmd_list);
-
-        PIX_EVENT_CTX(cmd_list, POINT_LIGHTS);
-
-        //if (has_point_unshadowed) -> accum point unshadowed
-        if (!LP.v_point.empty())
-        {
-            ZoneScopedN("v_point");
-
-            light* L2 = LP.v_point.back();
-            LP.v_point.pop_back();
-            if (L2->vis.visible)
-            {
-                Target->accum_point(cmd_list, L2);
-            }
-        }
-
-        PIX_EVENT_CTX(cmd_list, SPOT_LIGHTS);
-
-        //if (has_spot_unshadowed) -> accum spot unshadowed
-        if (!LP.v_spot.empty())
-        {
-            ZoneScopedN("v_spot");
-
-            light* L2 = LP.v_spot.back();
-            LP.v_spot.pop_back();
-            if (L2->vis.visible)
-            {
-                L2->optimize_smap_size();
-                Target->accum_spot(cmd_list, L2);
-            }
-        }
-
-        PIX_EVENT_CTX(cmd_list, SPOT_LIGHTS_ACCUM_VOLUMETRIC);
-
-        const bool needVolumetric = ps_r2_ls_flags.is(R2FLAG_VOLUMETRIC_LIGHTS);
-
-        //if (was_spot_shadowed) -> accum spot shadowed
+        // Spot lighting (shadowed)
         if (!L_spot_s.empty())
         {
-            ZoneScopedN("L_spot_s");
+            PIX_EVENT_CTX(cmd_list, SPOT_LIGHTS_ACCUM_VOLUMETRIC);
+
+            ZoneScopedN("render_lights spot shadowed");
+
+            const bool needVolumetric = ps_r2_ls_flags.is(R2FLAG_VOLUMETRIC_LIGHTS);
 
             for (light* p_light : L_spot_s)
             {
@@ -328,32 +297,31 @@ void CRender::render_lights(light_Package& LP)
     {
         auto& cmd_list = get_imm_context().cmd_list;
 
-        ZoneScopedN("render_light rest");
-
-        // Point lighting (unshadowed, if left)
+        // Point lighting (unshadowed)
         if (!LP.v_point.empty())
         {
+            ZoneScopedN("render_lights point unshadowed");
+
             PIX_EVENT_CTX(cmd_list, POINT_LIGHTS_ACCUM);
 
-            xr_vector<light*>& Lvec = LP.v_point;
-            for (const auto& p_light : Lvec)
+            for (auto* p_light : LP.v_point)
             {
-                //p_light->vis_update();
                 if (p_light->vis.visible)
                 {
                     Target->accum_point(cmd_list, p_light);
                 }
             }
-            Lvec.clear();
+            LP.v_point.clear();
         }
 
-        // Spot lighting (unshadowed, if left)
+        // Spot lighting (unshadowed)
         if (!LP.v_spot.empty())
         {
+            ZoneScopedN("render_lights spot unshadowed");
+
             PIX_EVENT_CTX(cmd_list, SPOT_LIGHTS_ACCUM);
 
-            xr_vector<light*>& Lvec = LP.v_spot;
-            for (const auto& p_light : Lvec)
+            for (auto* p_light : LP.v_spot)
             {
                 //p_light->vis_update();
                 if (p_light->vis.visible)
@@ -362,7 +330,7 @@ void CRender::render_lights(light_Package& LP)
                     Target->accum_spot(cmd_list, p_light);
                 }
             }
-            Lvec.clear();
+            LP.v_spot.clear();
         }
     }
 }

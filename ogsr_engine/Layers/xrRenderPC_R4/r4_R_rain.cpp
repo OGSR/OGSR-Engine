@@ -249,6 +249,8 @@ void render_rain::flush()
 {
     if (o.active)
     {
+        PIX_EVENT(render_rain_flush);
+
         auto& dsgraph = RImplementation.get_context(context_id);
 
         dsgraph.cmd_list.submit();
