@@ -235,14 +235,9 @@ BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
 {
     ZoneScoped;
 
-    if (dwFrameTL != Device.dwFrame)
-    {
-        BuildTopLevel();
+    Calculate();
 
-        dwFrameTL = Device.dwFrame;
-    }
-
-    Fsphere w_bv_sphere;
+    Fsphere w_bv_sphere{};
     owner->XFORM().transform_tiny(w_bv_sphere.P, bv_sphere.P);
     w_bv_sphere.R = bv_sphere.R;
 
@@ -250,13 +245,6 @@ BOOL CCF_Skeleton::_RayQuery(const collide::ray_defs& Q, collide::rq_results& R)
     Fsphere::ERP_Result res = w_bv_sphere.intersect(Q.start, Q.dir, tgt_dist);
     if (res == Fsphere::rpNone)
         return FALSE;
-
-    IKinematics* K = PKinematics(owner->Visual());
-    if (dwFrame != Device.dwFrame || K->LL_GetBonesVisible() != vis_mask)
-    {
-        // Model changed between ray-picks
-        BuildState();
-    }
 
     std::shared_lock lock{skeleton_mtx};
 
