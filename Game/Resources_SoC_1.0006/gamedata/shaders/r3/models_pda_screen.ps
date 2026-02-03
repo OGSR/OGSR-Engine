@@ -46,7 +46,7 @@ float4 problems_main(v2p I)
     //отключение экрана
     t_vp2.rgb = (m_affects.x > 0.41) ? 0 : t_vp2.rgb;
 
-    return float4(t_vp2.r, t_vp2.g, t_vp2.b, 1);
+    return float4(t_vp2.r, t_vp2.g, t_vp2.b, m_affects.z);
 }
 
 float4 loading_main(v2p I)

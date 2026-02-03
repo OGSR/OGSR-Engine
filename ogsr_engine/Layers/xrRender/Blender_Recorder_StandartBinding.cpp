@@ -390,7 +390,7 @@ static class cl_pda_params final : public R_constant_setup
     void setup(CBackend& cmd_list, R_constant* C) override
     {
         const auto& P = shader_exports.get_pda_params();
-        cmd_list.set_c(C, P.x, P.y, 0.f, P.z);
+        cmd_list.set_c(C, P.x, P.y, shader_exports.get_pda_screen_vision(), P.z);
     }
 } binder_pda_params;
 

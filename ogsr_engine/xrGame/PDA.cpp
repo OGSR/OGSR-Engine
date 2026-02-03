@@ -74,6 +74,9 @@ void CPda::Load(LPCSTR section)
     HUD_SOUND::LoadSound(section, "snd_draw", sndShow, SOUND_TYPE_ITEM_TAKING);
     HUD_SOUND::LoadSound(section, "snd_holster", sndHide, SOUND_TYPE_ITEM_HIDING);
 
+    m_screen_on_delay = READ_IF_EXISTS(pSettings, r_float, section, "screen_on_delay", 0.f);
+    m_screen_off_delay = READ_IF_EXISTS(pSettings, r_float, section, "screen_off_delay", 0.f);
+
     HUD_SOUND::LoadSound(section, "snd_btn_press", sndBtnPress, SOUND_TYPE_ITEM_USING);
     HUD_SOUND::LoadSound(section, "snd_btn_release", sndBtnRelease, SOUND_TYPE_ITEM_USING);
 
@@ -322,12 +325,13 @@ void CPda::OnStateSwitch(u32 S, u32 oldState)
     {
     case eShowing: {
         g_player_hud->attach_item(this);
-
+        shader_exports.set_pda_screen_vision(0.f);
         HUD_SOUND::PlaySound(sndShow, Position(), H_Root(), !!GetHUDmode(), false, false);
 
         PlayHUDMotion("anm_show", false, GetState());
 
         SetPending(TRUE);
+        pda_display_update = Device.fTimeGlobal + m_screen_on_delay;
     }
     break;
     case eHiding: {
@@ -535,6 +539,20 @@ void CPda::UpdateCL()
         inherited::UpdateCL();
     else
         CInventoryItemObject::UpdateCL();
+
+    if (GetState() != eHidden)
+    {
+        if (pda_display_update < Device.fTimeGlobal)
+        {
+            if (GetState() == eHiding)
+                pda_display_factor -= Device.fTimeDelta / m_screen_off_delay;
+            else
+                pda_display_factor += Device.fTimeDelta / m_screen_on_delay;
+
+            shader_exports.set_pda_screen_vision(pda_display_factor);
+            clamp(pda_display_factor, 0.f, 1.f);
+        }
+    }
 }
 
 void CPda::UpdateXForm() { CInventoryItem::UpdateXForm(); }

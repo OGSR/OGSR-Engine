@@ -60,6 +60,7 @@ private:
     xr_string m_sFullName;
 
     bool m_bTurnedOff;
+    float m_screen_on_delay{}, m_screen_off_delay{}, pda_display_update{}, pda_display_factor{};
 
     const char* m_joystick_bone{};
     u16 joystick{BI_NONE};
