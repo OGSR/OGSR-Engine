@@ -979,7 +979,11 @@ void player_hud::update(const Fmatrix& cam_trans)
         m_attached_items[0]->m_parent_hud_item->UpdateHudAdditional(trans, need_update_collision_local);
 
     if (m_attached_items[1])
+    {
         m_attached_items[1]->m_parent_hud_item->UpdateHudAdditional(trans_2, need_update_collision_local);
+        if (!m_attached_items[0])
+            trans = trans_2;
+    }
     else
         trans_2 = trans;
 
