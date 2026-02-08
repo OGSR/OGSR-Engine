@@ -65,12 +65,6 @@ light::~light()
         }
     }
 
-    if (!ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_SMAPVIS) && !get_moveable())
-    {
-        for (auto& svi : svis)
-            svi.resetoccq();
-    }
-
     if (vis.pending)
     {
         RImplementation.occq_free(vis.query_id, true);

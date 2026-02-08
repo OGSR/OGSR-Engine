@@ -196,8 +196,8 @@ public:
     // HW-occlusion culling
     IC void occq_begin(u32& ID, const u32 context_id) { HWOCC.occq_begin(ID, context_id); }
     IC void occq_end(const u32& ID, u32 context_id) { HWOCC.occq_end(ID, context_id); }
-    IC R_occlusion::occq_result occq_get(u32& ID, const bool for_smapvis = false) { return HWOCC.occq_get(ID, for_smapvis); }
-    IC void occq_free(const u32 ID, const bool get_data = false) { HWOCC.occq_free(ID, get_data); }
+    IC R_occlusion::occq_result occq_get(u32& ID) { return HWOCC.occq_get(ID); }
+    IC R_occlusion::occq_result occq_free(const u32 ID, const bool get_data = false) { return HWOCC.occq_free(ID, get_data); }
     IC void occq_enable(const bool v) { HWOCC.set_enabled(v); }
 
     ICF void apply_object(CBackend& cmd_list, IRenderable* O)

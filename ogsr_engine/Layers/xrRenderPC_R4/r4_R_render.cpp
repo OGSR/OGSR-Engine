@@ -507,7 +507,7 @@ void CRender::Render()
             // try
             //{
             for (int id = 0; id < R__NUM_CONTEXTS; ++id)
-                it->svis[id].flushoccq();
+                it->svis[id].flush();
             /*}
             catch (...)
             {

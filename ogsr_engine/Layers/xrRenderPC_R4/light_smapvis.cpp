@@ -10,13 +10,12 @@ smapvis::smapvis()
 
 smapvis::~smapvis()
 {
-    flushoccq();
-    invalidate();
+    finish();
 }
 
 void smapvis::invalidate()
 {
-    state = state_counting;
+    state = state_sleeping;
     testQ_V = nullptr;
     frame_sleep = Device.dwFrame + ps_r__LightSleepFrames;
     invisible.clear();
@@ -26,23 +25,27 @@ void smapvis::begin()
 {
     auto& dsgraph = RImplementation.get_context(context_id);
     dsgraph.clear_Counters();
+
     switch (state)
     {
-    case state_counting:
+    case state_sleeping:
         // do nothing -> we just prepare for testing process
-        break;
+        return;
     case state_working:
         // mark already known to be invisible visuals, set breakpoint
         testQ_V = nullptr;
-        testQ_id = 0;
-        mark();
         dsgraph.set_Feedback(this, test_current);
         break;
-    case state_usingTC:
-        // just mark
-        mark();
+    case state_using:
+        // using current visibility results,
+        break;
+    case state_waiting:
+        // wating for occ query result, do nothing
         break;
     }
+
+    // mark
+    mark_invisible();
 }
 void smapvis::end()
 {
@@ -52,15 +55,16 @@ void smapvis::end()
     u32 ts;
     dsgraph.get_Counters(ts);
     RImplementation.stats.ic_total += ts;
+
     dsgraph.set_Feedback(nullptr, 0);
 
     switch (state)
     {
-    case state_counting:
+    case state_sleeping:
         // switch to 'working'
-        if (sleep())
+        if (ready_to_work())
         {
-            test_count = ts;
+            test_total = ts;
             test_current = 0;
             state = state_working;
         }
@@ -77,33 +81,56 @@ void smapvis::end()
             dsgraph.r_dsgraph_render_graph(0);
 
             RImplementation.occq_end(testQ_id, dsgraph.cmd_list.context_id);
-            testQ_frame = Device.dwFrame + 1; // get result on next frame
+
+            state = state_waiting;
         }
         break;
-    case state_usingTC:
+    case state_using:
         // nothing to do
+        break;
+    case state_waiting:
+        // wating for occ query result, do nothing
         break;
     }
 }
 
-void smapvis::flushoccq()
+void smapvis::flush()
 {
-    // the tough part
-    if (testQ_frame != Device.dwFrame)
-        return;
-
-    if (state != state_working || !testQ_V)
+    if (state != state_waiting)
         return;
 
     ZoneScoped;
 
-    const auto fragments = RImplementation.occq_get(testQ_id, true);
+    const auto fragments = RImplementation.occq_get(testQ_id);
+    if (fragments != R_occlusion::OCC_CONTINUE_WAIT && fragments != R_occlusion::OCC_NOT_AVAIL)
+    {
+        handle_occ_result(fragments);
+    }
+}
+
+void smapvis::finish()
+{
+    if (state == state_waiting)
+    {
+        ZoneScoped;
+
+        const auto fragments = RImplementation.occq_free(testQ_id, true);
+        handle_occ_result(fragments);
+    }
+    invalidate();
+}
+
+void smapvis::handle_occ_result(const R_occlusion::occq_result fragments)
+{
+    state = state_working; // back to 'working' state, we are ready for next test
+
     if (fragments == 0)
     {
         // this is invisible shadow-caster, register it
         // next time we will not get this caster, so 'test_current' remains the same
         invisible.push_back(testQ_V);
-        test_count--;
+
+        test_total--;
     }
     else
     {
@@ -113,22 +140,15 @@ void smapvis::flushoccq()
 
     testQ_V = nullptr;
 
-    if (test_current == test_count)
+    if (test_current == test_total) // we tested all casters, switch to 'using' state
     {
         // we are at the end of list
         if (state == state_working)
-            state = state_usingTC;
+            state = state_using;
     }
 }
 
-void smapvis::resetoccq()
-{
-    if (testQ_frame == (Device.dwFrame + 1))
-        testQ_frame--;
-    flushoccq();
-}
-
-void smapvis::mark() const
+void smapvis::mark_invisible() const
 {
     if (invisible.empty())
         return;
@@ -141,7 +161,7 @@ void smapvis::mark() const
         it->getVisData().marker[context_id] = marker; // this effectively disables processing
 }
 
-void smapvis::rfeedback_static(dxRender_Visual* V)
+void smapvis::feedback_callback(dxRender_Visual* V)
 {
     testQ_V = V;
     auto& dsgraph = RImplementation.get_context(context_id);

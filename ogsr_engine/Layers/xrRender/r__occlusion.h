@@ -42,8 +42,8 @@ public:
     void occq_destroy();
     void occq_begin(u32& ID, const u32 context_id);
     void occq_end(const u32& ID, u32 context_id);
-    occq_result occq_get(u32& ID, const bool for_smapvis = false);
-    void occq_free(const u32 ID, const bool get_data = false);
+    occq_result occq_get(u32& ID);
+    occq_result occq_free(const u32 ID, const bool get_data = false);
 
     void set_enabled(bool v)
     {

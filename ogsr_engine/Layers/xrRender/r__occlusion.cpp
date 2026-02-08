@@ -103,7 +103,7 @@ void R_occlusion::occq_end(const u32& ID, u32 context_id)
     used.at(ID).ttl = Device.dwFrame + 100;
 }
 
-R_occlusion::occq_result R_occlusion::occq_get(u32& ID, const bool for_smapvis)
+R_occlusion::occq_result R_occlusion::occq_get(u32& ID)
 {
     if (!enabled || ID == iInvalidHandle)
         return OCC_NOT_AVAIL;
@@ -120,23 +120,13 @@ R_occlusion::occq_result R_occlusion::occq_get(u32& ID, const bool for_smapvis)
     occq_result fragments{OCC_NOT_AVAIL};
     HRESULT hr{};
 
-    if (!for_smapvis)
     {
-        ZoneScopedN("occq_get/wait for light_vis");
+        ZoneScopedN("occq_get/wait");
 
         hr = GetData(used.at(ID).Q.Get(), &fragments, sizeof(fragments), D3D11_ASYNC_GETDATA_DONOTFLUSH);
         if (hr == S_FALSE)
         {
             fragments = OCC_CONTINUE_WAIT;
-        }
-    }
-    else
-    {
-        ZoneScopedN("occq_get/wait for light_smapvis");
-
-        while ((hr = GetData(used.at(ID).Q.Get(), &fragments, sizeof(fragments))) == S_FALSE)
-        {
-            YieldProcessor();
         }
     }
 
@@ -161,20 +151,20 @@ R_occlusion::occq_result R_occlusion::occq_get(u32& ID, const bool for_smapvis)
     return fragments;
 }
 
-void R_occlusion::occq_free(const u32 ID, const bool get_data)
+R_occlusion::occq_result R_occlusion::occq_free(const u32 ID, const bool get_data)
 {
     if (ID == iInvalidHandle)
-        return;
+        return OCC_NOT_AVAIL;
 
     std::scoped_lock slock(lock);
 
+    occq_result fragments{OCC_NOT_AVAIL};
     if (ID < used.size() && used.at(ID).Q)
     {
         if (get_data)
         {
             // Попробуем здесь всегда ждать результат
             HRESULT hr{};
-            occq_result fragments{};
             while ((hr = GetData(used.at(ID).Q.Get(), &fragments, sizeof(fragments))) == S_FALSE)
             {
                 YieldProcessor();
@@ -189,6 +179,7 @@ void R_occlusion::occq_free(const u32 ID, const bool get_data)
         used.at(ID).Q.Reset();
         fids.push_back(ID);
     }
+    return fragments;
 }
 
 void Cleanup_R_occlusion() { RImplementation.HWOCC.cleanup_lost(true); }

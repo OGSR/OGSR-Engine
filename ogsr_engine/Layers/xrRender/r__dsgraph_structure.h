@@ -13,7 +13,7 @@
 class R_feedback
 {
 public:
-    virtual void rfeedback_static(dxRender_Visual* V) = 0;
+    virtual void feedback_callback(dxRender_Visual* V) = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////
