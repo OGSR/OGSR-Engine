@@ -61,8 +61,6 @@ void CRenderTarget::accum_point(CBackend& cmd_list, light* L)
     // 2D texgens
     Fmatrix m_Texgen;
     u_compute_texgen_screen(cmd_list, m_Texgen);
-    Fmatrix m_Texgen_J;
-    u_compute_texgen_jitter(cmd_list, m_Texgen_J);
 
     // Draw volume with projective texgen
     {
@@ -70,7 +68,7 @@ void CRenderTarget::accum_point(CBackend& cmd_list, light* L)
         u32 _id = 0;
         if (L->flags.bShadow)
         {
-            bool bFullSize = (L->X.S.size == static_cast<u32>(RImplementation.o.smapsize));
+            bool bFullSize = (L->X.S.size == static_cast<u32>(RImplementation.o.lights_smapsize));
             if (bFullSize)
                 _id = SE_L_FULLSIZE;
             else

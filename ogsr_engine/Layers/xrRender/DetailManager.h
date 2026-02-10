@@ -133,7 +133,7 @@ private:
     static u32 render_items(CBackend& cmd_list, const CDetail& object, const vis_list_inner& vis_list, bool shadows, light* L);
 
     std::future<void> awaiter;
-    bool async_started{};
+    std::atomic_bool async_started{};
     SpinLock check_lock;
 
     void MT_CALC();

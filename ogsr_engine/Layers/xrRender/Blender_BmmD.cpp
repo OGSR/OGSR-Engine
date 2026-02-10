@@ -95,14 +95,12 @@ void CBlender_BmmD::Compile(CBlender_Compile& C)
 
     IBlender::Compile(C);
 
-    string256 mask;
-    string_path fn;
-    LPSTR LodTexture = strconcat(sizeof(mask), mask, C.L_textures[0].c_str(), "_lod_textures");
-
-    strconcat(sizeof(mask), mask, C.L_textures[0].c_str(), "_mask");
     switch (C.iElement)
     {
     case SE_R2_NORMAL_HQ: // deffer
+        string256 mask;
+        strconcat(sizeof(mask), mask, C.L_textures[0].c_str(), "_mask");
+
         uber_deffer(C, true, "terrain", "terrain_high", false, oT2_Name[0] ? oT2_Name : 0);
 
         C.r_dx10Texture("s_mask", mask);
@@ -126,18 +124,13 @@ void CBlender_BmmD::Compile(CBlender_Compile& C)
         C.r_End();
         break;
     case SE_R2_NORMAL_LQ: // deffer
-        uber_deffer(C, false, "base", "terrain_mid", false, oT2_Name[0] ? oT2_Name : 0);
-        C.r_dx10Texture("s_mask", mask);
-
-        if (FS.exist(fn, fsgame::game_textures, LodTexture, ".dds"))
-            C.r_dx10Texture("s_lod_texture", LodTexture);
-        else
-            C.r_dx10Texture("s_lod_texture", "terrain\\default_lod_textures");
-
-        C.r_dx10Sampler("smp_base");
+        uber_deffer(C, false, "base", "impl", false, oT2_Name[0] ? oT2_Name : nullptr, true);
+        C.r_dx10Texture("s_lmap", C.L_textures[1]);
         C.r_dx10Sampler("smp_linear");
+
         C.r_Stencil(TRUE, D3DCMP_ALWAYS, 0xff, 0x7f, D3DSTENCILOP_KEEP, D3DSTENCILOP_REPLACE, D3DSTENCILOP_KEEP);
         C.r_StencilRef(0x01);
+
         C.r_End();
         break;
     case SE_R2_SHADOW: // smap

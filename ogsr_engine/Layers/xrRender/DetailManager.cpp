@@ -387,7 +387,8 @@ void CDetailManager::Render(CBackend& cmd_list, const bool shadows, light* L)
         check_lock.unlock();
     }
 
-    Device.Statistic->RenderDUMP_DT_Render.Begin();
+    if (!shadows)
+        Device.Statistic->RenderDUMP_DT_Render.Begin();
 
     cmd_list.set_CullMode(CULL_NONE);
 
@@ -398,7 +399,8 @@ void CDetailManager::Render(CBackend& cmd_list, const bool shadows, light* L)
 
     cmd_list.set_CullMode(CULL_CCW);
 
-    Device.Statistic->RenderDUMP_DT_Render.End();
+    if (!shadows)
+        Device.Statistic->RenderDUMP_DT_Render.End();
 }
 
 u32 reset_frame = 0;

@@ -1,23 +1,3 @@
-function element_0(shader, t_base, t_second, t_detail)
-	shader:begin("stub_notransform_2uv", "rain_layer")
-		:fog(false)
-		:zb(true, false, true)
-	shader:dx10zfunc(cmp_func.greater)
-	shader:dx10texture("s_position", "$user$position")
-	shader:dx10texture("s_accumulator", "$user$accum")
-	shader:dx10texture("s_lmap", "sunmask")
-	shader:dx10texture("s_smap", "$user$smap_rain")
-
-	shader:dx10sampler("smp_nofilter")
-	shader:dx10sampler("smp_material")
-	shader:dx10sampler("smp_linear")
-	
-	jitter.jitter(shader)
-	shader:dx10sampler("smp_smap")
-	
-	shader:dx10texture("s_water", "water\\water_normal")
-end
-
 function element_1(shader, t_base, t_second, t_detail)
 	shader:begin("stub_notransform_2uv", "rain_patch_normal")
 		:fog(false)

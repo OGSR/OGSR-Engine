@@ -111,6 +111,7 @@ void CDetail::LoadGeom()
     D3D11_SUBRESOURCE_DATA vdata{};
     vdata.pSysMem = detail_verts.data();
     HW.pDevice->CreateBuffer(&vbuff_desc, &vdata, &DetailVb);
+    DXUT_SetDebugName(DetailVb, "CDetail VB");
 
     D3D11_BUFFER_DESC ibuff_desc{};
     ibuff_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
@@ -120,6 +121,7 @@ void CDetail::LoadGeom()
     D3D11_SUBRESOURCE_DATA idata{};
     idata.pSysMem = indices;
     HW.pDevice->CreateBuffer(&ibuff_desc, &idata, &DetailIb);
+    DXUT_SetDebugName(DetailIb, "CDetail IB");
 
     DetailGeom.create(dwDecl, DetailVb, DetailIb);
 

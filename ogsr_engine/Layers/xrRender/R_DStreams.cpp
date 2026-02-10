@@ -24,6 +24,7 @@ void _VertexStream::Create()
     bufferDesc.MiscFlags = 0;
 
     R_CHK(HW.pDevice->CreateBuffer(&bufferDesc, 0, &pVB));
+    DXUT_SetDebugName(pVB, "_VertexStream");
     HW.stats_manager.increment_stats_vb(pVB);
 
     R_ASSERT(pVB);
@@ -146,6 +147,7 @@ void _IndexStream::Create()
     bufferDesc.MiscFlags = 0;
 
     R_CHK(HW.pDevice->CreateBuffer(&bufferDesc, 0, &pIB));
+    DXUT_SetDebugName(pIB, "_IndexStream");
     HW.stats_manager.increment_stats_ib(pIB);
 
     R_ASSERT(pIB);

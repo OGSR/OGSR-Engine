@@ -17,19 +17,9 @@ cbuffer dynamic_inter_grass
 #include "screenspace_wind.h"
 #endif
 
-struct v2p_grass
+v2p_bumped main(v_detail v)
 {
-    float2 tcdh : TEXCOORD0; // Texture coordinates
-    float4 position : TEXCOORD1; // position + hemi
-    float4 N : TEXCOORD2; // Eye-space normal(for lighting)
-    float4 hpos_curr : TEXCOORD8;
-    float4 hpos_old : TEXCOORD9;
-    float4 hpos : SV_Position;
-};
-
-v2p_grass main(v_detail v)
-{
-    v2p_grass O;
+    v2p_bumped O;
 
     const float3x4 m_xform = float3x4(v.m0, v.m1, v.m2);
     const float hemi = v.consts.x;
@@ -121,10 +111,26 @@ v2p_grass main(v_detail v)
     }
 #endif
 
+    // FLORA FIXES & IMPROVEMENTS - SSS Update 22
+    // https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders/
+
     // Use terrain normal [ c0.xyz ]
     float3 N = mul((float3x3)m_WV, data.xyz);
 
-    O.N = float4(N, alpha);
+    float3x3 xform = 0;
+
+    // Normal
+    xform[0].z = N.x;
+    xform[1].z = N.y;
+    xform[2].z = N.z;
+
+    // Alpha here
+    xform[0].x = alpha;
+
+    // Feed this transform to pixel shader
+    O.M1 = xform[0];
+    O.M2 = xform[1];
+    O.M3 = xform[2];
 
     // Eye-space pos/normal
 

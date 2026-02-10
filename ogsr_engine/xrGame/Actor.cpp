@@ -76,7 +76,8 @@ constexpr const char* m_sGameObjectDragAction = "game_object_drag";
 static float IReceived = 0;
 static float ICoincidenced = 0;
 
-Flags32 psActorFlags{AF_KEYPRESS_ON_START | AF_CAM_COLLISION | AF_CAM_COLLISION_COP | AF_AI_VOLUMETRIC_LIGHTS | AF_DOF_ZOOM | AF_DOF_RELOAD | AF_3D_PDA | AF_ALWAYSRUN | AF_FIRST_PERSON_DEATH};
+Flags32 psActorFlags{AF_KEYPRESS_ON_START | AF_CAM_COLLISION | AF_CAM_COLLISION_COP | /*AF_AI_VOLUMETRIC_LIGHTS | AF_DOF_ZOOM | AF_DOF_RELOAD |*/ AF_3D_PDA | AF_ALWAYSRUN |
+                     AF_FIRST_PERSON_DEATH};
 
 static bool updated;
 

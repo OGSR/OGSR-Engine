@@ -139,22 +139,6 @@ void CRenderTarget::u_compute_texgen_screen(CBackend& cmd_list, Fmatrix& m_Texge
     m_Texgen.mul(m_TexelAdjust, cmd_list.xforms.m_wvp);
 }
 
-// 2D texgen for jitter (texture adjustment matrix)
-void CRenderTarget::u_compute_texgen_jitter(CBackend& cmd_list, Fmatrix& m_Texgen_J)
-{
-    // place into	0..1 space
-    Fmatrix m_TexelAdjust = {0.5f, 0.0f, 0.0f, 0.0f, 0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 0.5f, 0.0f, 1.0f};
-    m_Texgen_J.mul(m_TexelAdjust, cmd_list.xforms.m_wvp);
-
-    // rescale - tile it
-    const float scale_X = float(Device.dwWidth) / float(TEX_jitter);
-    const float scale_Y = float(Device.dwHeight) / float(TEX_jitter);
-    // float	offset			= (.5f / float(TEX_jitter));
-    m_TexelAdjust.scale(scale_X, scale_Y, 1.f);
-    // m_TexelAdjust.translate_over(offset,	offset,	0	);
-    m_Texgen_J.mulA_44(m_TexelAdjust);
-}
-
 void generate_jitter(DWORD* dest, u32 elem_count)
 {
     const int cmax = 8;
@@ -240,7 +224,6 @@ CRenderTarget::CRenderTarget()
         rt_Generic_1.create(r2_RT_generic1, w, h, DXGI_FORMAT_R8G8B8A8_UNORM);
         rt_Generic_2.create(r2_RT_generic2, w, h, DXGI_FORMAT_R16G16B16A16_FLOAT);
         rt_Generic_3.create(r2_RT_generic3, w, h, DXGI_FORMAT_R16G16B16A16_FLOAT);
-        rt_accum_ssfx.create(r2_RT_accum_ssfx, w, h, DXGI_FORMAT_R16G16B16A16_FLOAT); // Temp RT 16B
 
         // RT Blur
         rt_blur_h_2.create(r2_RT_blur_h_2, u32(w / 2), u32(h / 2), DXGI_FORMAT_R8G8B8A8_UNORM);
@@ -303,7 +286,6 @@ CRenderTarget::CRenderTarget()
     s_occq.create("dumb");
 
     s_blur.create("ogsr_blur");
-    s_volumetric_blur.create("ogsr_volumetric_blur");
     s_dof.create("ogsr_dof");
     s_gasmask_dudv.create("ogsr_gasmask");
     s_fakescope.create("ogsr_fakescope"); // crookr
@@ -321,27 +303,38 @@ CRenderTarget::CRenderTarget()
     s_taa.create("temporal_antialiasing");
     s_cas.create("contrast_adaptive_sharpening");
 
-    // DIRECT (spot)
-    const u32 size = RImplementation.o.smapsize;
-
-    const Flags32 flags{};
-    rt_smap_depth.create(r2_RT_smap_depth, size, size, DXGI_FORMAT_R24G8_TYPELESS, 1, R__NUM_CONTEXTS, flags);
+    for (u32 idx{}; const auto& size : options.sun_cascades_smapsize)
+    {
+        std::string smap_name{r2_RT_smap_sun_cascade};
+        smap_name += std::to_string(idx);
+        rt_smap_sun_cascade[idx++].create(smap_name.c_str(), size, size, DXGI_FORMAT_R24G8_TYPELESS);
+    }
     rt_smap_rain.create(r2_RT_smap_rain, options.rain_smapsize, options.rain_smapsize, DXGI_FORMAT_R24G8_TYPELESS);
+    rt_smap_lights.create(r2_RT_smap_lights, options.lights_smapsize, options.lights_smapsize, DXGI_FORMAT_R24G8_TYPELESS, 1, R__NUM_CONTEXTS, {});
 
     s_accum_mask.create("accum_sun_mask");
-    s_accum_direct.create("accum_sun");
+
+    for (u32 idx{}; auto& s_cascade : s_accum_sun_cascade)
+    {
+        std::string shader_name{"accum_sun_cascade"};
+        shader_name += std::to_string(idx);
+        RImplementation.m_SMAPSize = options.sun_cascades_smapsize[idx++];
+        s_cascade.create(shader_name.c_str());
+    }
+    // Лучи рендерятся только на последнем каскаде. Так что не переносить этот код выше/ниже! шейдер лучей должен компилиться после того как установлен m_SMAPSize для последнего каскада.
     s_accum_direct_volumetric.create("accum_volumetric_sun");
 
     //	RAIN
     //	TODO: DX10: Create resources only when DX10 rain is enabled.
     //	Or make DX10 rain switch dynamic?
     {
-        RImplementation.m_SMAPSize = RImplementation.o.rain_smapsize;
+        RImplementation.m_SMAPSize = options.rain_smapsize;
         s_rain.create("rain");
-        RImplementation.m_SMAPSize = RImplementation.o.smapsize;
     }
 
+    ////////////////////////////////////////////////////////////
     // POINT
+    RImplementation.m_SMAPSize = options.lights_smapsize;
     {
         s_accum_point.create("accum_omni");
         accum_point_geom_create();
@@ -361,6 +354,7 @@ CRenderTarget::CRenderTarget()
     {
         s_accum_volume.create("accum_volumetric");
     }
+    ////////////////////////////////////////////////////////////
 
     // BLOOM
     {

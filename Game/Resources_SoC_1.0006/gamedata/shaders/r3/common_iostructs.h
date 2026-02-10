@@ -249,17 +249,11 @@ struct v2p_dumb
 struct v2p_volume
 {
     float4 tc : TEXCOORD0;
-#ifdef USE_SJITTER
-    float4 tcJ : TEXCOORD1;
-#endif
     float4 hpos : SV_Position; // Clip-space position  (for rasterization)
 };
 struct p_volume
 {
     float4 tc : TEXCOORD0;
-#ifdef USE_SJITTER
-    float4 tcJ : TEXCOORD1;
-#endif
 };
 ////////////////////////////////////////////////////////////////
 // Static

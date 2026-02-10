@@ -1,15 +1,9 @@
 #include "common.h"
 
-uniform float4 pnv_color_old;
-uniform float4 pnv_params_old;
-
 uniform float4 m_hud_params;
-uniform float4 shader_param_grayscale;
 
 uniform float4 fakescope;
 uniform float4 m_flare_params;
-
-#include "pnv.h"
 
 // Check Screen Space Shaders modules
 #include "check_screenspace.h"
@@ -71,11 +65,11 @@ float4 main(p_screen I) : SV_Target
     float4 bloom = s_bloom.Sample(smp_rtlinear, center);
 #endif
 
-#ifdef SSFX_BEEFS_NVG
-    // NVG CHANGE TO PREVENT WEIRD COLORS, ONLY APPLY BLOOM WHEN WE'RE NOT IN NVG MASK
-    if (pnv_param_1.z == 0.f) // beef pnv off
-    {
-        if (m_hud_params.x < 1.0 || fakescope.y <= 0)
+        if (
+#ifdef SSFX_BEEFS_NVG // NVG CHANGE TO PREVENT WEIRD COLORS, ONLY APPLY BLOOM WHEN WE'RE NOT IN NVG MASK
+            pnv_param_1.z == 0.f &&
+#endif
+            (m_hud_params.x < 1.0 || fakescope.y <= 0))
         {
             img = blend_soft(img, bloom.xyz * bloom.w);
             if (m_actor_position.w > 0.f)
@@ -86,33 +80,9 @@ float4 main(p_screen I) : SV_Target
                 img += flares.xyz * flares.a;
             }
         }
-    }
-#else
-    if (m_hud_params.x < 1.0 || fakescope.y <= 0)
-    {
-        img = blend_soft(img, bloom.xyz * bloom.w);
-        if (m_actor_position.w > 0.f)
-        {
-            img += generate_flare(center, m_flare_params.y);
-
-            float4 flares = s_flares.Sample(smp_rtlinear, center);
-            img += flares.xyz * flares.a;
-        }
-    }
-#endif
 
     // Vanilla color grading ( Exposure, saturation and gamma )
     img = img_corrections(img);
-
-    float3 before = img; // лютый костыль, что б этот долбанный ПНВ не ломал ничего
-
-    if (pnv_param_1.z == 0.f) // beef pnv off
-        if (pnv_color_old.w > 1.f) // apply old pnv
-            img = calc_night_vision_effect(center, float4(before, 1.0), pnv_color_old, pnv_params_old, fakescope.y);
-
-    // greyscale
-    float3 grey = (0.299 * img.r) + (0.587 * img.g) + (0.114 * img.b);
-    img = img * (1.f - shader_param_grayscale.x) + grey * shader_param_grayscale.x;
 
     return float4(img, 1.0);
 }

@@ -2,8 +2,6 @@
 
 void CRenderTarget::draw_rain(CBackend& cmd_list, light& RainSetup)
 {
-    float fRainFactor = g_pGamePersistent->Environment().CurrentEnv->rain_density;
-
     // Common calc for quad-rendering
     u32 Offset;
     u32 C = color_rgba(255, 255, 255, 255);
@@ -57,14 +55,14 @@ void CRenderTarget::draw_rain(CBackend& cmd_list, light& RainSetup)
     {
         float fRange = 1;
         float fBias = -0.0001;
-        float smapsize = float(RImplementation.o.rain_smapsize);
-        float fTexelOffs = (.5f / smapsize);
+        const float _smapsize = static_cast<float>(RImplementation.o.rain_smapsize);
+        float fTexelOffs = (.5f / _smapsize);
 
-        float view_dimX = float(RainSetup.X.D[0].maxX - RainSetup.X.D[0].minX) / smapsize;
-        float view_dimY = float(RainSetup.X.D[0].maxX - RainSetup.X.D[0].minX) / smapsize;
+        float view_dimX = float(RainSetup.X.D[0].maxX - RainSetup.X.D[0].minX) / _smapsize;
+        float view_dimY = float(RainSetup.X.D[0].maxX - RainSetup.X.D[0].minX) / _smapsize;
 
-        float view_sx = float(RainSetup.X.D[0].minX) / smapsize;
-        float view_sy = float(RainSetup.X.D[0].minY) / smapsize;
+        float view_sx = float(RainSetup.X.D[0].minX) / _smapsize;
+        float view_sy = float(RainSetup.X.D[0].minY) / _smapsize;
 
         Fmatrix m_TexelAdjust = {view_dimX / 2.f,
                                  0.0f,
@@ -139,7 +137,6 @@ void CRenderTarget::draw_rain(CBackend& cmd_list, light& RainSetup)
         cmd_list.set_c("WorldZ", W_dirZ.x, W_dirZ.y, W_dirZ.z, 0);
         cmd_list.set_c("m_shadow", m_shadow);
         cmd_list.set_c("m_sunmask", m_clouds_shadow);
-        cmd_list.set_c("RainDensity", fRainFactor, float(ps_r3_dyn_wet_surf_enable_streaks), 0, 0);
         cmd_list.set_c("RainFallof", ps_r3_dyn_wet_surf_near, ps_r3_dyn_wet_surf_far, 0, 0);
 
         cmd_list.set_Stencil(TRUE, D3DCMP_EQUAL, 0x01, 0x01, 0);

@@ -620,7 +620,7 @@ void IGame_Persistent::UpdateHudRaindrops() const
         drops_anim = 0.f;
 
     // Update shader data
-    ps_ssfx_hud_drops_1.set(drops_anim, drops_int, ssfx_hud_raindrops_refle, ssfx_hud_raindrops_refra);
+    ps_ssfx_hud_drops_1.set(drops_anim, psDeviceFlags.test(rs_SSFX_HUD_RAINDROPS) ? drops_int : 0.f, ssfx_hud_raindrops_refle, ssfx_hud_raindrops_refra);
     // Msg("~~ps_ssfx_hud_drops_1: [%f, %f, %f, %f]", drops_anim, drops_int, ssfx_hud_raindrops_refle, ssfx_hud_raindrops_refra);
 }
 

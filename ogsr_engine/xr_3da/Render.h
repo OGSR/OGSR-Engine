@@ -146,7 +146,6 @@ public:
 public:
     // options
     bool hud_loading{};
-    //bool HAT{};
     s32 m_skinning;
     u32 m_SMAPSize;
 

@@ -256,19 +256,7 @@ surface_bumped sload(p_bumped I) { return sload_i(I); }
 
 surface_bumped sload(p_bumped I, float2 pixeloffset) { return sload_i(I); }
 
-#ifdef USE_HAT
-void calc_alpha_test(float2 tc, float alpha)
-{
-    // if (m_taa_jitter.z > 0.f)
-    //{
-    // }
-    // else
-    //{
-    clip(alpha - def_aref);
-    //}
-}
-#else
-void calc_alpha_test(float2 tc, float alpha) { clip(alpha - def_aref); }
-#endif
+// SIMP: засунул регулировку альфатеста в m_taa_jitter, потому что там было свободное место в w
+inline void calc_alpha_test(float2 tc, float alpha) { clip(alpha - m_taa_jitter.w); }
 
 #endif

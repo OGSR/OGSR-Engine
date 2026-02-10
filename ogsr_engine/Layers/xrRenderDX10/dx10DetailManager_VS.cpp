@@ -53,7 +53,7 @@ void CDetailManager::hw_Render(CBackend& cmd_list, const bool shadows, light* L)
     // Iterate
     for (u32 O{}; const auto& object : objects)
     {
-        auto& vis = m_visibles[O++]; // by object index
+        auto& vis = m_visibles.at(O++); // by object index
 
         if (vis.empty())
             continue;
@@ -108,7 +108,7 @@ u32 CDetailManager::render_items(CBackend& cmd_list, const CDetail& object, cons
 
             //Msg("--Called rendering [%u] grass instances", details_count);
             cmd_list.Render(D3DPT_TRIANGLELIST, 0, 0, object.number_vertices, 0, object.number_indices / 3, details_count);
-            cmd_list.stat.r.s_details.add(details_count);
+            cmd_list.stat.r.s_details.add(details_count, object.number_vertices);
 
             // restart
             details_count = 0;

@@ -50,7 +50,7 @@ v2p_bumped main(v_tree I)
 
     // INTERACTIVE GRASS ( Bushes ) - SSS Update 15.4
     // https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders/
-#ifdef SSFX_INTER_GRASS
+#ifdef SSFX_INTER_BRANCHES
     for (int b = 0; b < benders_setup.w; b++)
     {
         // Direction, Radius & Bending Strength, Distance and Height Limit

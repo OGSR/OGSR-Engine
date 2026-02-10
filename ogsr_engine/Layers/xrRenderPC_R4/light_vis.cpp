@@ -12,7 +12,7 @@ int delay_invisible_min{2}, delay_invisible_max{4};
 
 constexpr u32 cullfragments = 4;
 
-void light::vis_prepare(CBackend& cmd_list)
+void light::vis_prepare(CBackend& cmd_list, float safe_area)
 {
     //	. test is sheduled for future	= keep old result
     //	. test time comes :)
@@ -22,14 +22,6 @@ void light::vis_prepare(CBackend& cmd_list)
     const u32 frame = Device.dwFrame;
     if (frame < vis.frame2test)
         return;
-
-    const float a0 = deg2rad(Device.fFOV * Device.fASPECT / 2.f);
-    const float a1 = deg2rad(Device.fFOV / 2.f);
-    const float x0 = VIEWPORT_NEAR / _cos(a0);
-    const float x1 = VIEWPORT_NEAR / _cos(a1);
-    const float c = _sqrt(x0 * x0 + x1 * x1);
-
-    float safe_area = _max(_max(VIEWPORT_NEAR, _max(x0, x1)), c);
 
     // Msg	("sc[%f,%f,%f]/c[%f,%f,%f] - sr[%f]/r[%f]",VPUSH(spatial.center),VPUSH(position),spatial.radius,range);
     // Msg	("dist:%f, sa:%f",Device.vCameraPosition.distance_to(spatial.center),safe_area);

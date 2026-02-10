@@ -120,6 +120,7 @@ public:
         u32 bDistort : 1;
         u32 bWmark : 1;
         u32 iScopeLense : 1;
+        u32 bTreeBranch : 1 {};
     };
 
 public:

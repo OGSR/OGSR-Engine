@@ -81,7 +81,7 @@ public:
     virtual void Render(CBackend& cmd_list, float lod, bool use_fast_geo) {} // LOD - Level Of Detail  [0..1], Ignored
     virtual void RenderInstanced(CBackend& cmd_list, const xr_vector<FloraVertData*>& data) {}
 
-    virtual void select_lod_id(float lod, u32 context_id) {};
+    virtual void select_lod_id(float lod, u32 context_id, bool use_fast_geo) {};
 
     virtual void Load(const char* N, IReader* data, u32 dwFlags);
     virtual void Release(); // Shared memory release
@@ -100,4 +100,6 @@ public:
     virtual ~dxRender_Visual();
 
     virtual void MarkAsHot(bool is_hot);
+
+    const ShaderElement::Sflags& GetShaderFlags(const size_t idx) const;
 };

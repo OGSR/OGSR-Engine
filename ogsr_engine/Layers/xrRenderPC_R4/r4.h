@@ -50,6 +50,8 @@ struct light_ctx;
 // definition
 class CRender : public IRender_interface, public pureFrame
 {
+    friend class dxStatsRender;
+
 public:
     enum
     {
@@ -60,8 +62,9 @@ public:
 public:
     struct _options
     {
-        u32 rain_smapsize : 16;
-        u32 smapsize : 16;
+        u32 rain_smapsize;
+        u32 sun_cascades_smapsize[R__NUM_SUN_CASCADES];
+        u32 lights_smapsize;
 
         u32 distortion : 1;
         u32 distortion_enabled : 1;
@@ -131,9 +134,6 @@ public:
 
     xr_vector<sun::cascade> m_sun_cascades;
 
-    bool need_to_render_sunshafts{false};
-    bool last_cascade_chain_mode{false};
-
 private:
     struct Puddle
     {
@@ -179,7 +179,7 @@ private:
 
     // constexpr unsigned number_of_threads = 8;
 
-    task_thread_pool::task_thread_pool particles_pool{"MT_PARTICLES",16};
+    task_thread_pool::task_thread_pool particles_pool{"MT_PARTICLES"};
     task_thread_pool::task_thread_pool light_pool{"MT_LIGHT", R__NUM_PARALLEL_CONTEXTS};
 
     std::future<void> light_waiter;

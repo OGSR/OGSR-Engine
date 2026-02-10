@@ -16,8 +16,6 @@
 #include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
 #include "../xrRender/ShaderResourceTraits.h"
 
-float OLES_SUN_LIMIT_27_01_07 = 100.f;
-
 CRender RImplementation;
 
 float r_dtex_paralax_range = 50.f;
@@ -73,11 +71,14 @@ void CRender::create()
     Device.seqFrame.Add(this, REG_PRIORITY_HIGH + 10000);
 
     m_skinning = -1;
-    m_SMAPSize = r2_SmapSize;
+    m_SMAPSize = 0; //этому параметру присваивается нужное значение непосредственно перед компиляцией нужного шейдера, т.к. в каждом шейдере теперь используется разный размер smap
 
     // options (smap-pool-size)
-    o.smapsize = r2_SmapSize;
-    o.rain_smapsize = _min(ps_r3_dyn_wet_surf_sm_res, r2_SmapSize);
+    o.sun_cascades_smapsize[0] = r2_SmapCascade0Size;
+    o.sun_cascades_smapsize[1] = r2_SmapCascade1Size;
+    o.sun_cascades_smapsize[2] = r2_SmapCascade2Size;
+    o.rain_smapsize = r2_SmapRainSize;
+    o.lights_smapsize = r2_SmapLightsSize;
 
     // options
     o.noshadows = (strstr(Core.Params, "-noshadows")) ? TRUE : FALSE;
@@ -772,6 +773,10 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
     appendShaderOption(ps_r2_ls_flags.test(R2FLAGEXT_SSFX_SHADOWS), "SSFX_SHADOWS", "1");
 
     appendShaderOption(ps_r2_ls_flags.test(R2FLAGEXT_SSFX_SSS), "SSFX_SSS", "1");
+
+    appendShaderOption(ps_r2_ls_flags.test(R2FLAGEXT_SSFX_INTER_GRASS), "SSFX_INTER_GRASS", "1");
+
+    appendShaderOption(ps_r2_ls_flags.test(R2FLAGEXT_SSFX_INTER_BRANCHES), "SSFX_INTER_BRANCHES", "1");
 
     if (ps_ssfx_rain_1.w > 0.f)
     {

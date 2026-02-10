@@ -96,7 +96,6 @@
     <ClInclude Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\pbr_brdf_ggx.h" />
     <ClInclude Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\pbr_cubemap_check.h" />
     <ClInclude Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\pbr_settings.h" />
-    <ClInclude Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\pnv.h" />
     <ClInclude Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\reflections.h" />
     <ClInclude Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\screenspace_common.h" />
     <ClInclude Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\screenspace_common_noise.h" />
@@ -148,15 +147,12 @@
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_emissivel.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_mask.vs" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_omni_normal.ps" />
-    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_omni_transluent.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_omni_unshadowed.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_spot_fullsize.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_spot_normal.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_spot_unshadowed.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_sun.vs" />
-    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_sun_far.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_sun_mask.ps" />
-    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_sun_near.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_volumetric.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_volumetric.s" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_volumetric.vs" />
@@ -473,7 +469,6 @@
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\pp_lut.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\rain_apply_gloss.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\rain_apply_normal.ps" />
-    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\rain_layer.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\rain_patch_normal.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\selflight.s" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\shadow_direct_base.ps" />
@@ -553,7 +548,6 @@
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_spot.s" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\dumb.s" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\skybox.s" />
-    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_sun.s" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_sun_mask.s" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\bloom_filter.s" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\bloom_luminance.s" />
@@ -578,8 +572,6 @@
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\effects_sun.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\deffer_terrain_flat.vs" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\deffer_terrain_high_flat.ps" />
-    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\deffer_terrain_low_flat.ps" />
-    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\deffer_terrain_mid_flat.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\deffer_terrain_flat_d.vs" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\deffer_terrain_high_flat_d.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\ogsr_ssr.ps" />
@@ -595,8 +587,12 @@
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\combine_peak.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\combine_peak.vs" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\ogsr_blur.vs" />
-    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\ogsr_volumetric_blur.ps" />
-    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\ogsr_volumetric_blur.s" />
-    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\shadow_direct_base_branch_aref.ps" />
+    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\models_sniperlenses.s" />
+    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_sun_cascade0.ps" />
+    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_sun_cascade0.s" />
+    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_sun_cascade1.ps" />
+    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_sun_cascade1.s" />
+    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_sun_cascade2.ps" />
+    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_sun_cascade2.s" />
   </ItemGroup>
 </Project>

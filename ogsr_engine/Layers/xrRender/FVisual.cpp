@@ -118,6 +118,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
 
                 VERIFY(NULL == p_rm_Vertices);
                 R_CHK(dx10BufferUtils::CreateVertexBuffer(&p_rm_Vertices, data->pointer(), vCount * vStride));
+                DXUT_SetDebugName(p_rm_Vertices, "Fvisual VB");
                 HW.stats_manager.increment_stats_vb(p_rm_Vertices);
             }
         }
@@ -136,6 +137,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
 
             VERIFY(NULL == p_rm_Indices);
             R_CHK(dx10BufferUtils::CreateIndexBuffer(&p_rm_Indices, data->pointer(), iCount * 2));
+            DXUT_SetDebugName(p_rm_Indices, "Fvisual IB");
             HW.stats_manager.increment_stats_ib(p_rm_Indices);
         }
     }

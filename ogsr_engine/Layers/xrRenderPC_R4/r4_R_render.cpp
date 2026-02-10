@@ -495,7 +495,7 @@ void CRender::Render()
     }
 
     // Update incremental shadowmap-visibility solver
-    if (!ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_SMAPVIS))
+    if (!Lights_LastFrame.empty() && !ps_r2_ls_flags_ext.test(R2FLAGEXT_DISABLE_SMAPVIS))
     {
         ZoneScopedN("Lights_LastFrame/flushoccq");
 
@@ -530,9 +530,6 @@ void CRender::Render()
         render_lights(LP_normal_copy);
     }
 
-    // Volumetric Blur
-    Target->phase_volumetric_blur(cmd_list);
-
     // Postprocess
     {
         PIX_EVENT(DEFER_COMBINE);
@@ -566,7 +563,7 @@ void CRender::render_forward()
         auto& Env = g_pGamePersistent->Environment();
         Env.RenderLast(cmd_list); // rain/thunder-bolts
 
-        if (!fis_zero(Env.wetness_factor))
+        if (ps_r2_ls_flags_ext.test(R2FLAGEXT_SSLR) && !fis_zero(Env.wetness_factor))
         {
             for (const auto& puddle : current_level_puddles)
             {

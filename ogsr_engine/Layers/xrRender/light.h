@@ -156,7 +156,7 @@ public:
     void optimize_smap_size();
     void export_to(light_Package& dest);
 
-    void vis_prepare(CBackend& cmd_list);
+    void vis_prepare(CBackend& cmd_list, float safe_area);
     void vis_update();
 
     void set_attenuation_params(float a0, float a1, float a2, float fo);

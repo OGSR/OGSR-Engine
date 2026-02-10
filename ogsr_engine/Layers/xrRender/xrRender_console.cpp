@@ -4,16 +4,34 @@
 #include "dxRenderDeviceRender.h"
 #include <..\NVIDIA_DLSS\DLSS\include\nvsdk_ngx.h>
 
-u32 r2_SmapSize = 2048;
-constexpr xr_token SmapSizeToken[] = {{"1536x1536", 1536},
+u32 r2_SmapCascade0Size{2048}, r2_SmapCascade1Size{1536}, r2_SmapCascade2Size{1024};
+constexpr xr_token CascadesSmapSizeToken[]{{"512x512", 512},
+                                      {"1024x1024", 1024},
+                                      {"1536x1536", 1536},
                                       {"2048x2048", 2048},
                                       {"2560x2560", 2560},
                                       {"3072x3072", 3072},
                                       {"4096x4096", 4096},
                                       //{"6144x6144", 6144},
                                       //{"8192x8192", 8192},
-                                      //{ "16384x16384", 16384 },
-                                      {nullptr, 0}};
+                                      {}};
+
+u32 r2_SmapLightsSize = 3072;
+constexpr xr_token LightsSmapSizeToken[]{//{"1536x1536", 1536},
+                                        //{"2048x2048", 2048},
+                                        {"2560x2560", 2560},
+                                        {"3072x3072", 3072},
+                                        {"4096x4096", 4096},
+                                        {"6144x6144", 6144},
+                                        {"8192x8192", 8192},
+                                        {}};
+
+u32 r2_SmapRainSize = 1024;
+constexpr xr_token RainSmapSizeToken[]{{"512x512", 512},
+                                      {"1024x1024", 1024},
+                                      {"1536x1536", 1536},
+                                      {"2048x2048", 2048},
+                                      {}};
 
 u32 ps_r_pp_aa_mode = DLSS;
 constexpr xr_token pp_aa_mode_token[] = {
@@ -37,7 +55,7 @@ constexpr xr_token dlss_mode_token[]{
 
 float ps_r_dlss_3dss_scale_factor{1.0f};
 
-u32 ps_r_sunshafts_mode = SS_SS_MANOWAR;
+u32 ps_r_sunshafts_mode = SS_SS_OGSE;
 constexpr xr_token sunshafts_mode_token[]{{"st_opt_off", SS_OFF},
                                           {"volumetric", SS_VOLUMETRIC},
                                           {"ss_ogse", SS_SS_OGSE},
@@ -56,10 +74,12 @@ float ps_r_prop_ss_blend = 0.25f; // 0.066f;
 float ps_r_prop_ss_sample_step_phase0 = 0.09f;
 float ps_r_prop_ss_sample_step_phase1 = 0.07f;
 
+float ps_r_alphatest_threshold{200.f / 255.f};
+
 u32 ps_preset = 2;
 constexpr xr_token qpreset_token[] = {{"Minimum", 0}, {"Low", 1}, {"Default", 2}, {"High", 3}, {"Extreme", 4}, {nullptr, 0}};
 
-u32 ps_r_ao_mode = AO_MODE_GTAO;
+u32 ps_r_ao_mode = AO_MODE_SSDO;
 constexpr xr_token ao_mode_token[] = {{"st_gtao", AO_MODE_GTAO}, {"st_ssdo", AO_MODE_SSDO}, {nullptr, 0}};
 
 u32 ps_r_ao_quality = 0;
@@ -69,7 +89,7 @@ constexpr xr_token qssao_token[] = {{"st_opt_off", 0},
                                     {"st_opt_high", 3},
                                     {nullptr, 0}};
 
-u32 ps_r_sun_quality = 1; //	=	0;
+u32 ps_r_sun_quality = 0;
 constexpr xr_token qsun_quality_token[] = {{"st_opt_low", 0},
                                            {"st_opt_medium", 1},
                                            {"st_opt_high", 2},
@@ -91,14 +111,14 @@ float ps_r_cas{};
 
 int ps_r__LightSleepFrames = 10;
 
-float ps_r__WallmarkTTL = 50.f;
+float ps_r__WallmarkTTL = 60.f;
 float ps_r__WallmarkSHIFT = 0.0001f;
 float ps_r__WallmarkSHIFT_V = 0.0001f;
 
 float ps_r__GLOD_ssa_start = 256.f;
 float ps_r__GLOD_ssa_end = 64.f;
 
-float ps_r__LOD = 0.75f;
+float ps_r__LOD = 0.5f;
 float ps_r__LOD_k = 1.f;
 
 float ps_r__ssaDISCARD = 3.5f; // RO
@@ -132,14 +152,17 @@ Flags64 ps_r2_ls_flags = {
     R2FLAG_SSFX_BLOOM |
     R2FLAG_STEEP_PARALLAX | 
     R2FLAG_TONEMAP | 
-    R2FLAG_VOLUMETRIC_LIGHTS |
+//    R2FLAG_VOLUMETRIC_LIGHTS |
+//    R2FLAG_VOLUMETRIC_LIGHTS_BLUR |
     R2FLAG_EXP_MT_RAIN |
+    R2FLAG_EXP_MT_RAIN_DRAW |
     R2FLAG_EXP_MT_SUN |
+    R2FLAG_EXP_MT_SUN_DRAW |
     R2FLAG_EXP_MT_PARTICLES |
     R2FLAG_EXP_MT_LIGHTS |
     R2FLAG_EXP_MT_BONES
     // | R2FLAG_LIGHT_NO_DIST_SHADOWS //SIMP: по дефолту пусть будет выключено, чтоб волюметрики не вырубались с расстоянием
-    | R2FLAGEXT_ENABLE_TESSELLATION | 
+    | //R2FLAGEXT_ENABLE_TESSELLATION | 
 //    R2FLAGEXT_RAIN_DROPS | 
 //    R2FLAGEXT_RAIN_DROPS_CONTROL | 
 //    R2FLAGEXT_MASK | 
@@ -148,39 +171,32 @@ Flags64 ps_r2_ls_flags = {
     R2FLAGEXT_SSLR |
     R2FLAGEXT_SSFX_INTER_GRASS |
     R2FLAGEXT_FONT_SHADOWS
-    | R2FLAGEXT_SSFX_SHADOWS
-    | R2FLAGEXT_SSFX_SSS
+//    | R2FLAGEXT_SSFX_SHADOWS
+//    | R2FLAGEXT_SSFX_SSS
+    | R2FLAGEXT_SMAP_LOW_LOD
 };
 
 BOOL ps_no_scale_on_fade = 0; // Alundaio
 
 float ps_r2_df_parallax_h = 0.02f;
-float ps_r2_df_parallax_range = 75.f;
+float ps_r2_df_parallax_range = 60.f;
 float ps_r2_tonemap_middlegray = 1.f; // r2-only
 float ps_r2_tonemap_adaptation = 1.f; // r2-only
 float ps_r2_tonemap_low_lum = 0.0001f; // r2-only
 float ps_r2_tonemap_amount = 0.7f; // r2-only
 float ps_r2_ls_bloom_speed = 100.f; // r2-only
-float ps_r2_ls_bloom_kernel_scale = .7f; // r2-only	// gauss
 float ps_r2_ls_bloom_threshold = .00001f; // r2-only
 float ps_r2_mblur = .0f; // .5f
 float ps_r2_ls_depth_scale = 1.00001f; // 1.00001f
 float ps_r2_ls_depth_bias = -0.00005f; // SSS19 Edited //-0.0003f; // -0.0001f
 float ps_r2_ls_squality = 1.0f; // 1.00f
 float ps_r2_sun_tsm_bias = -0.01f; //
-float ps_r2_sun_near = 20.f; // 12.0f
 
-extern float OLES_SUN_LIMIT_27_01_07; //	actually sun_far
-
-float ps_r2_sun_near_border = 0.75f; // 1.0f
 float ps_r2_sun_depth_far_scale = 1.00000f; // 1.00001f
-float ps_r2_sun_depth_far_bias = -0.00002f; // -0.0000f
 float ps_r2_sun_depth_near_scale = 1.0000f; // 1.00001f
-float ps_r2_sun_depth_near_bias = 0.00001f; // -0.00005f
 float ps_r2_sun_lumscale = 1.0f; // 1.0f
 float ps_r2_sun_lumscale_hemi = 1.0f; // 1.0f
 float ps_r2_sun_lumscale_amb = 1.0f;
-float ps_r2_gmaterial = 2.2f; //
 
 float ps_r2_dhemi_sky_scale = 0.08f; // 1.5f
 float ps_r2_dhemi_light_scale = 0.2f;
@@ -190,8 +206,8 @@ int ps_r2_dhemi_count = 5; // 5
 
 float ps_lens_flare_sun_blend{};
 
-float ps_r2_lt_smooth = 1.f; // 1.f
-float ps_r2_slight_fade = 2.0f; // 0.5f; // 1.f
+float ps_r2_lt_smooth = 1.f;
+float ps_r2_slight_fade = 1.0f;
 
 Fvector4 ps_ssfx_lut{}; // x - интенсивность, y - номер эффекта
 Fvector3 ps_ssfx_shadows{
@@ -204,7 +220,7 @@ int ps_ssfx_bloom_use_presets = 0;
 Fvector4 ps_ssfx_bloom_1 = {4.f, 4.f, 0.f, 0.5f}; // Threshold, Exposure, -, Sky
 Fvector4 ps_ssfx_bloom_2 = {1.7f, 0.7f, 0.5f, 0.5f}; // Blur Radius, Vibrance, Lens, Dirt
 
-BOOL ps_ssfx_pom_refine{TRUE}, ps_ssfx_terrain_pom_refine{TRUE};
+BOOL ps_ssfx_pom_refine{FALSE}, ps_ssfx_terrain_pom_refine{FALSE};
 Fvector4 ps_ssfx_pom = {16, 12, 0.035f, 0.4f}; // Samples , Range, Height, AO
 Fvector4 ps_ssfx_terrain_pom{12, 20, 0.04f, 1.0f}; // Samples, Range, Height, Water Limit
 Fvector4 ps_ssfx_terrain_offset{};
@@ -238,8 +254,8 @@ Fvector4 ps_ssfx_rain_1{10.0f, 0.02f, 5.f, 2.f}; // Len, Width, Speed, Quality
 Fvector4 ps_ssfx_rain_2{0.4f, 0.5f, 5.0f, 1.0f}; // Alpha, Brigthness, Refraction, Reflection
 Fvector4 ps_ssfx_rain_3{0.95f, 0.5f, 0.0f, 0.0f}; // Alpha, Refraction ( Splashes )
 
-Fvector3 ps_ssfx_shadow_cascades{20.f, 40.f, 160.f};
-Fvector4 ps_ssfx_grass_shadows = {1.0f, 0.0f, 0.0f, 0.0f}; // X - каскады на которых будут рендериться тени (0 - на первом, 1 - на первом и втором, 2 - на всех трёх), Y - устарело и более не используется, Z - дальность на которой будут рендериться тени от источников света (НЕ СОЛНЦА)
+Fvector3 ps_ssfx_shadow_cascades{25.f, 60.f, 160.f};
+Fvector4 ps_ssfx_grass_shadows = {0.0f, 0.0f, 0.0f, 0.0f}; // X - каскады на которых будут рендериться тени (0 - на первом, 1 - на первом и втором, 2 - на всех трёх), Y - устарело и более не используется, Z - дальность на которой будут рендериться тени от источников света (НЕ СОЛНЦА)
 Fvector4 ps_ssfx_grass_interactive{1.f, static_cast<float>(GRASS_SHADER_DATA_COUNT), 2000.f, 1.0f};
 Fvector4 ps_ssfx_int_grass_params_1{2.0f, 1.0f, 1.0f, 25.f};
 Fvector4 ps_ssfx_int_grass_params_2{1.0f, 5.0f, 1.0f, 1.0f};
@@ -249,12 +265,8 @@ float ps_ssfx_terrain_grass_slope{1.0f}; // Grass slope limit
 
 float ps_ssfx_wpn_dof_2 = 0.5f;
 
-int ps_r3_dyn_wet_surf_opt = 1;
 float ps_r3_dyn_wet_surf_near = 5.f; // 10.0f
-float ps_r3_dyn_wet_surf_far = 270.f; // 200.0f //при 100 при резкой смене погоды видна граница намокшей земли и сухой когда вертишь камеру, но если выставить в районе 300 - намокание может вообще пропасть.
-
-int ps_r3_dyn_wet_surf_sm_res = 1024; // 256
-int ps_r3_dyn_wet_surf_enable_streaks = 0;
+float ps_r3_dyn_wet_surf_far = 200.0f; //при 100 при резкой смене погоды видна граница намокшей земли и сухой когда вертишь камеру, но если выставить в районе 300 - намокание может вообще пропасть.
 
 float ps_r2_rain_drops_intensity = 0.00003f;
 float ps_r2_rain_drops_speed = 1.25f;
@@ -362,36 +374,6 @@ public:
         apply();
     }
     virtual void Status(TStatus& S) { CCC_Float::Status(S); }
-};
-
-class CCC_R2GM : public CCC_Float
-{
-public:
-    CCC_R2GM(LPCSTR N, float* v) : CCC_Float(N, v, 0.f, 4.f) { *v = 0; };
-    virtual void Execute(LPCSTR args)
-    {
-        if (0 == xr_strcmp(args, "on"))
-        {
-            ps_r2_ls_flags.set(R2FLAG_GLOBALMATERIAL, TRUE);
-        }
-        else if (0 == xr_strcmp(args, "off"))
-        {
-            ps_r2_ls_flags.set(R2FLAG_GLOBALMATERIAL, FALSE);
-        }
-        else
-        {
-            CCC_Float::Execute(args);
-            if (ps_r2_ls_flags.test(R2FLAG_GLOBALMATERIAL))
-            {
-                constexpr const char* name[4] = {"oren", "blin", "phong", "metal"};
-                float mid = *value;
-                int m0 = iFloor(mid) % 4;
-                int m1 = (m0 + 1) % 4;
-                float frc = mid - float(iFloor(mid));
-                Msg("* material set to [%s]-[%s], with lerp of [%f]", name[m0], name[m1], frc);
-            }
-        }
-    }
 };
 
 class CCC_ModelPoolStat : public IConsole_Command
@@ -670,7 +652,7 @@ void xrRender_initconsole()
 
     CMD4(CCC_Float, "r__wallmark_ttl", &ps_r__WallmarkTTL, 1.0f, 10.f * 60.f);
 
-    CMD4(CCC_Float, "r__geometry_lod", &ps_r__LOD, 0.5f, 3.f); // AVO: extended from 1.2f to 3.f
+    CMD4(CCC_Float, "r__geometry_lod", &ps_r__LOD, 0.1f, 1.0f);
     CMD4(CCC_Float, "r__lod_k", &ps_r__LOD_k, 0.1f, 10.f);
 
     CMD4(CCC_detail_radius, "r__detail_radius", &ps_r__detail_radius, 70, 300);
@@ -693,15 +675,12 @@ void xrRender_initconsole()
 
     CMD4(CCC_Float, "r2_ssa_discard", &ps_r__ssaDISCARD, 0.5f, 10);
 
-    CMD2(CCC_R2GM, "r2em", &ps_r2_gmaterial);
-
     CMD3(CCC_Mask64, "r2_tonemap", &ps_r2_ls_flags, R2FLAG_TONEMAP);
     CMD4(CCC_Float, "r2_tonemap_middlegray", &ps_r2_tonemap_middlegray, 0.0f, 2.0f);
     CMD4(CCC_Float, "r2_tonemap_adaptation", &ps_r2_tonemap_adaptation, 0.01f, 10.0f);
     CMD4(CCC_Float, "r2_tonemap_lowlum", &ps_r2_tonemap_low_lum, 0.0001f, 1.0f);
     CMD4(CCC_Float, "r2_tonemap_amount", &ps_r2_tonemap_amount, 0.0000f, 1.0f);
 
-    CMD4(CCC_Float, "r2_ls_bloom_kernel_scale", &ps_r2_ls_bloom_kernel_scale, 0.5f, 2.f);
     CMD4(CCC_Float, "r2_ls_bloom_threshold", &ps_r2_ls_bloom_threshold, 0.f, 1.f);
     CMD4(CCC_Float, "r2_ls_bloom_speed", &ps_r2_ls_bloom_speed, 0.f, 100.f);
 
@@ -712,8 +691,6 @@ void xrRender_initconsole()
     //- Mad Max
 
     // CMD3(CCC_Mask, "r_taa_jitter_enable", &ps_r2_ls_flags, R2FLAG_DBG_TAA_JITTER_ENABLE);
-#pragma todo("Simp: поискать в интернетах менее лагающую реализацию, эта ужасна")
-    // CMD3(CCC_Mask, "r_hat", &ps_r2_ls_flags, R2FLAG_HAT);
 
     CMD3(CCC_Mask64, "r2_disable_hom", &ps_r2_ls_flags_ext, R2FLAGEXT_DISABLE_HOM);
     CMD3(CCC_Mask64, "r2_disable_particles", &ps_r2_ls_flags_ext, R2FLAGEXT_DISABLE_PARTICLES);
@@ -729,6 +706,8 @@ void xrRender_initconsole()
     CMD3(CCC_Mask64, "r2_disable_static_tree_progressive", &ps_r2_ls_flags_ext, R2FLAGEXT_DISABLE_STATIC_TREE_PROGRESSIVE);
 
     // CMD3(CCC_Mask64, "r2_render_on_prefetch", &ps_r2_ls_flags_ext, R2FLAGEXT_RENDER_ON_PREFETCH);
+
+    CMD3(CCC_Mask64, "r2_smap_low_lod", &ps_r2_ls_flags_ext, R2FLAGEXT_SMAP_LOW_LOD);
 
     CMD3(CCC_Mask64, "r2_rain_drops", &ps_r2_ls_flags_ext, R2FLAGEXT_RAIN_DROPS);
     CMD3(CCC_Mask64, "r2_rain_drops_control", &ps_r2_ls_flags_ext, R2FLAGEXT_RAIN_DROPS_CONTROL);
@@ -754,16 +733,14 @@ void xrRender_initconsole()
 
     CMD4(CCC_Float, "r2_sun_tsm_bias", &ps_r2_sun_tsm_bias, -0.5, +0.5);
 
-    CMD3(CCC_Token, "r__smap_size", &r2_SmapSize, SmapSizeToken);
-    CMD4(CCC_Float, "r2_sun_near", &ps_r2_sun_near, 1.f, 100.f /*50.f*/);
+    CMD3(CCC_Token, "r__smap_cascade0_size", &r2_SmapCascade0Size, CascadesSmapSizeToken);
+    CMD3(CCC_Token, "r__smap_cascade1_size", &r2_SmapCascade1Size, CascadesSmapSizeToken);
+    CMD3(CCC_Token, "r__smap_cascade2_size", &r2_SmapCascade2Size, CascadesSmapSizeToken);
+    CMD3(CCC_Token, "r__smap_lights_size", &r2_SmapLightsSize, LightsSmapSizeToken);
+    CMD3(CCC_Token, "r__smap_rain_size", &r2_SmapRainSize, RainSmapSizeToken);
 
-    CMD4(CCC_Float, "r2_sun_far", &OLES_SUN_LIMIT_27_01_07, 51.f, 180.f);
-
-    CMD4(CCC_Float, "r2_sun_near_border", &ps_r2_sun_near_border, .5f, 3.0f);
     CMD4(CCC_Float, "r2_sun_depth_far_scale", &ps_r2_sun_depth_far_scale, 0.5, 1.5);
-    CMD4(CCC_Float, "r2_sun_depth_far_bias", &ps_r2_sun_depth_far_bias, -0.5, +0.5);
     CMD4(CCC_Float, "r2_sun_depth_near_scale", &ps_r2_sun_depth_near_scale, 0.5, 1.5);
-    CMD4(CCC_Float, "r2_sun_depth_near_bias", &ps_r2_sun_depth_near_bias, -0.5, +0.5);
     CMD4(CCC_Float, "r2_sun_lumscale", &ps_r2_sun_lumscale, -1.0, +3.0);
     CMD4(CCC_Float, "r2_sun_lumscale_hemi", &ps_r2_sun_lumscale_hemi, 0.0, +3.0);
     CMD4(CCC_Float, "r2_sun_lumscale_amb", &ps_r2_sun_lumscale_amb, 0.0, +3.0);
@@ -783,7 +760,6 @@ void xrRender_initconsole()
     // CMD3(CCC_Mask, "rs_hom_depth_draw", &ps_r2_ls_flags_ext, R2FLAGEXT_HOM_DEPTH_DRAW);
 
     CMD3(CCC_Mask64, "r2_shadow_cascede_zcul", &ps_r2_ls_flags_ext, R2FLAGEXT_SUN_ZCULLING);
-    //CMD3(CCC_Mask64, "r2_shadow_cascede_old", &ps_r2_ls_flags_ext, R2FLAGEXT_SUN_OLD);
 
     CMD4(CCC_Float, "r2_ls_depth_scale", &ps_r2_ls_depth_scale, 0.5, 1.5);
     CMD4(CCC_Float, "r2_ls_depth_bias", &ps_r2_ls_depth_bias, -0.5, +0.5);
@@ -794,13 +770,14 @@ void xrRender_initconsole()
     CMD4(CCC_Float, "r2_slight_fade", &ps_r2_slight_fade, .2f, 2.f);
 
     CMD3(CCC_Mask64, "r_mt_sun", &ps_r2_ls_flags, R2FLAG_EXP_MT_SUN);
+    CMD3(CCC_Mask64, "r_mt_sun_draw", &ps_r2_ls_flags, R2FLAG_EXP_MT_SUN_DRAW);
     CMD3(CCC_Mask64, "r_mt_rain", &ps_r2_ls_flags, R2FLAG_EXP_MT_RAIN);
+    CMD3(CCC_Mask64, "r_mt_rain_draw", &ps_r2_ls_flags, R2FLAG_EXP_MT_RAIN_DRAW);
     CMD3(CCC_Mask64, "r_mt_particles", &ps_r2_ls_flags, R2FLAG_EXP_MT_PARTICLES);
     CMD3(CCC_Mask64, "r_mt_lights", &ps_r2_ls_flags, R2FLAG_EXP_MT_LIGHTS);
     CMD3(CCC_Mask64, "r_mt_bones", &ps_r2_ls_flags, R2FLAG_EXP_MT_BONES);
 
     CMD3(CCC_Mask64, "r2_volumetric_lights", &ps_r2_ls_flags, R2FLAG_VOLUMETRIC_LIGHTS);
-    CMD3(CCC_Mask64, "r2_volumetric_lights_blur", &ps_r2_ls_flags, R2FLAG_VOLUMETRIC_LIGHTS_BLUR);
 
     // Sunshafts
     CMD3(CCC_Token, "r_sunshafts_mode", &ps_r_sunshafts_mode, sunshafts_mode_token);
@@ -843,10 +820,6 @@ void xrRender_initconsole()
 #endif //	DEBUG
 
     CMD3(CCC_Mask64, "r3_dynamic_wet_surfaces", &ps_r2_ls_flags, R3FLAG_DYN_WET_SURF);
-    CMD4(CCC_Integer, "r3_dynamic_wet_surfaces_sm_res", &ps_r3_dyn_wet_surf_sm_res, 64, 2048);
-    //CMD4(CCC_Integer, "r3_dynamic_wet_surfaces_enable_streaks", &ps_r3_dyn_wet_surf_enable_streaks, 0, 1); //Устарело
-
-    //CMD4(CCC_Integer, "r3_dynamic_wet_surfaces_opt", &ps_r3_dyn_wet_surf_opt, 0, 1);
     CMD4(CCC_Float, "r3_dynamic_wet_surfaces_near", &ps_r3_dyn_wet_surf_near, 5, 70);
     CMD4(CCC_Float, "r3_dynamic_wet_surfaces_far", &ps_r3_dyn_wet_surf_far, 30, 279);
 
@@ -947,6 +920,7 @@ void xrRender_initconsole()
     CMD3(CCC_Mask64, "ssfx_sss_enable", &ps_r2_ls_flags, R2FLAGEXT_SSFX_SSS);
 
     CMD3(CCC_Mask64, "ssfx_inter_grass", &ps_r2_ls_flags_ext, R2FLAGEXT_SSFX_INTER_GRASS);
+    CMD3(CCC_Mask64, "ssfx_inter_branches", &ps_r2_ls_flags_ext, R2FLAGEXT_SSFX_INTER_BRANCHES);
     CMD3(CCC_Mask64, "r_font_shadows", &ps_r2_ls_flags_ext, R2FLAGEXT_FONT_SHADOWS);
 
     CMD4(CCC_Integer, "ssfx_bloom_use_presets", &ps_ssfx_bloom_use_presets, 0, 1);
@@ -982,6 +956,8 @@ void xrRender_initconsole()
     CMD4(CCC_Float, "r__dyn_opt_dist", &ps_r__opt_dist, 100.0f, 1000.0f);
 
     CMD4(CCC_Float, "r_aa_cas", &ps_r_cas, 0.0f, 1.0f);
+
+    CMD4(CCC_Float, "r_alphatest_threshold", &ps_r_alphatest_threshold, 0.0f, 1.0f);
 
     CMD4(CCC_Integer, "exp_optimize_static_geom", &opt_static_geom, 0, 4);
     CMD4(CCC_Integer, "exp_optimize_shadow_geom", &opt_shadow_geom, 0, 1);

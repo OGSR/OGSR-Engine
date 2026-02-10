@@ -43,11 +43,11 @@ void CRenderTarget::accum_spot(CBackend& cmd_list, light* L)
     // Shadow xform (+texture adjustment matrix)
     Fmatrix m_Shadow, m_Lmap;
     {
-        float smapsize = float(RImplementation.o.smapsize);
-        float fTexelOffs = (.5f / smapsize);
-        float view_dim = float(L->X.S.size - 2) / smapsize;
-        float view_sx = float(L->X.S.posX + 1) / smapsize;
-        float view_sy = float(L->X.S.posY + 1) / smapsize;
+        const float _smapsize = static_cast<float>(RImplementation.o.lights_smapsize);
+        float fTexelOffs = (.5f / _smapsize);
+        float view_dim = float(L->X.S.size - 2) / _smapsize;
+        float view_sx = float(L->X.S.posX + 1) / _smapsize;
+        float view_sy = float(L->X.S.posY + 1) / _smapsize;
         float fRange = float(1.f) * ps_r2_ls_depth_scale;
         float fBias = ps_r2_ls_depth_bias;
         Fmatrix m_TexelAdjust = {view_dim / 2.f,
@@ -115,7 +115,7 @@ void CRenderTarget::accum_spot(CBackend& cmd_list, light* L)
         u32 _id = 0;
         if (L->flags.bShadow)
         {
-            bool bFullSize = (L->X.S.size == static_cast<u32>(RImplementation.o.smapsize));
+            bool bFullSize = L->X.S.size == RImplementation.o.lights_smapsize;
             if (bFullSize)
                 _id = SE_L_FULLSIZE;
             else
@@ -171,11 +171,11 @@ void CRenderTarget::accum_volumetric(CBackend& cmd_list, light* L)
     // Shadow xform (+texture adjustment matrix)
     Fmatrix m_Shadow;
     {
-        float smapsize = float(RImplementation.o.smapsize);
-        float fTexelOffs = (.5f / smapsize);
-        float view_dim = float(L->X.S.size - 2) / smapsize;
-        float view_sx = float(L->X.S.posX + 1) / smapsize;
-        float view_sy = float(L->X.S.posY + 1) / smapsize;
+        const float _smapsize = static_cast<float>(RImplementation.o.lights_smapsize);
+        float fTexelOffs = (.5f / _smapsize);
+        float view_dim = float(L->X.S.size - 2) / _smapsize;
+        float view_sx = float(L->X.S.posX + 1) / _smapsize;
+        float view_sy = float(L->X.S.posY + 1) / _smapsize;
         float fRange = float(1.f) * ps_r2_ls_depth_scale;
         float fBias = ps_r2_ls_depth_bias;
         Fmatrix m_TexelAdjust = {

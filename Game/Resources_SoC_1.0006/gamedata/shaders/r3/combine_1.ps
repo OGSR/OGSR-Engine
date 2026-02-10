@@ -89,15 +89,13 @@ float4 main(p_screen I) : SV_Target
     color = LinearTosRGB(color); // gamma correct
 
 #ifdef SSFX_BEEFS_NVG
-    //// SOME NVG SHIT ////
-    float lua_param_nvg_num_tubes = pnv_param_4.x; // 1, 2, 4, 1.1, or 1.2
-    float lua_param_nvg_gain_current = pnv_param_2.y;
-    float lua_param_vignette_current = pnv_param_2.z;
-    float lua_param_nvg_gain_offset = pnv_param_2.w;
+    if (pnv_param_1.z > 0.f)
+    {
+        float lua_param_nvg_num_tubes = pnv_param_4.x; // 1, 2, 4, 1.1, or 1.2
 
-    // NVG reduces gloss to 0 inside mask
-    D.a *= (1.0 - compute_lens_mask(aspect_ratio_correction(I.tc0), lua_param_nvg_num_tubes));
-    //// END NVG SHIT ////
+        // NVG reduces gloss to 0 inside mask
+        D.a *= (1.0 - compute_lens_mask(aspect_ratio_correction(I.tc0), lua_param_nvg_num_tubes));
+    }
 #endif
 
 #ifdef SSFX_FOG

@@ -110,7 +110,7 @@ void ShowMain()
 #ifdef TRACY_ENABLE
     ImGui::Separator();
 
-    static int stack_levels = 3;
+    static int stack_levels = 8;
     ImGui::SliderInt("Depth", &stack_levels, 0, 8);
 
     auto& perf = PIXEventsStatistics();

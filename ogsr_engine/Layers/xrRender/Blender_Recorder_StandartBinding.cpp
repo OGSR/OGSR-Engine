@@ -645,8 +645,8 @@ static class cl_taa_jitter final : public R_constant_setup
         cmd_list.set_c(C, 
             ps_r_taa_jitter.x, 
             ps_r_taa_jitter.y,
-            ps_r2_ls_flags.test(R2FLAG_HAT) ? 1.f : 0.f, 
-            0.f);
+            0.f, 
+            ps_r_alphatest_threshold);
     }
 } binder_taa_jitter;
 

@@ -13,19 +13,17 @@ float4 main(p_screen I) : SV_Target
     float4 color = s_image.Load(int3(center.xy * screen_res.xy, 0), 0);
     float3 img = color.rgb;
 
-    // Simp: TODO: перенести в вершинный шейдер?
-    float tm_scale = s_tonemap.Load(int3(0, 0, 0)).x;
-#ifndef SSFX_BEEFS_NVG
-    img = tonemap(img, tm_scale);
-#else
-    //// SOME NVG SHIT ////
-    float lua_param_nvg_num_tubes = pnv_param_4.x; // 1, 2, 4, 1.1, or 1.2
-    float lua_param_nvg_gain_current = pnv_param_2.y;
-    float lua_param_vignette_current = pnv_param_2.z;
-    float lua_param_nvg_gain_offset = pnv_param_2.w;
-
-    if (pnv_param_1.z == 1.f && compute_lens_mask(aspect_ratio_correction(center), lua_param_nvg_num_tubes) == 1.0f)
+#ifdef SSFX_BEEFS_NVG
+    if (pnv_param_1.z == 1.f)
     {
+        float lua_param_nvg_num_tubes = pnv_param_4.x; // 1, 2, 4, 1.1, or 1.2
+        if (compute_lens_mask(aspect_ratio_correction(center), lua_param_nvg_num_tubes) == 1.0f)
+        {
+
+        float lua_param_nvg_gain_current = pnv_param_2.y;
+        float lua_param_vignette_current = pnv_param_2.z;
+        float lua_param_nvg_gain_offset = pnv_param_2.w;
+
         img = tonemap(img, 10.0f * lua_param_nvg_gain_offset);
 
         // Turn split tonemapping data to YUV and discard UV
@@ -51,12 +49,24 @@ float4 main(p_screen I) : SV_Target
         img = clamp(img, 0.0, 1.0);
 
         img.rgb *= vignette;
+
+        }
+        else
+        {
+            // Simp: TODO: перенести в вершинный шейдер?
+            float tm_scale = s_tonemap.Load(int3(0, 0, 0)).x;
+
+            img = tonemap(img, tm_scale);
+        }
     }
     else // NVG CHANGE TO PREVENT WEIRD COLORS, ONLY APPLY BLOOM WHEN WE'RE NOT IN NVG MASK
+#endif
     {
+        // Simp: TODO: перенести в вершинный шейдер?
+        float tm_scale = s_tonemap.Load(int3(0, 0, 0)).x;
+
         img = tonemap(img, tm_scale);
     }
-#endif
 
     return float4(img, color.a);
 }

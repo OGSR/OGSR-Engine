@@ -399,9 +399,6 @@
 	<string id="ui_mm_lens_flare">
 		<text>Lens flares</text>
 	</string>
-	<string id="ui_mm_r2_puddles">
-		<text>Puddles</text>
-	</string>
 	<string id="ui_mm_r3_dynamic_wet_surfaces">
 		<text>Wet surfaces</text>
 	</string>
@@ -542,7 +539,7 @@
 	</string>
 
 	<string id="r_sslr_enable">
-		<text>Reflections in water and puddles</text>
+		<text>Puddles and reflections</text>
 	</string>
 
 	<string id="ui_mm_rs_mt_texload">
@@ -820,9 +817,6 @@
 	<string id="video_settings_name_47">
 		<text>Drops on glass - r2_rain_drops</text>
 	</string>
-	<string id="video_settings_name_48">
-		<text>Dynamic puddles - r2_puddles</text>
-	</string>
 	<string id="video_settings_name_49">
 		<text>Wet surfaces - r3_dynamic_wet_surfaces</text>
 	</string>
@@ -830,7 +824,7 @@
 		<text>Surround light - r2_volumetric_lights</text>
 	</string>
 	<string id="video_settings_name_51">
-		<text>Reflections in water and puddles - r_sslr_enable</text>
+		<text>Puddles and reflections - r_sslr_enable</text>
 	</string>
 	<string id="video_settings_name_52">
 		<text>Tesselation - r4_enable_tessellation</text>
@@ -1028,9 +1022,6 @@
 	<string id="video_settings_desc_47">
 		<text>This setting includes the appearance of drops on the glass of helmets and gas masks during rain.</text>
 	</string>
-	<string id="video_settings_desc_48">
-		<text>The setting includes dynamic puddles that appear during rain.</text>
-	</string>
 	<string id="video_settings_desc_49">
 		<text>The setting enables surfaces to get wet when it rains.</text>
 	</string>
@@ -1038,7 +1029,7 @@
 		<text>The setting includes surround light for some lamps.</text>
 	</string>
 	<string id="video_settings_desc_51">
-		<text>This setting enables reflections on the water and in puddles during rain.</text>
+		<text>This setting enables puddles and reflections in puddles during rain.</text>
 	</string>
 	<string id="video_settings_desc_52">
 		<text>Tessellation increases the quality of low-polygonal models of NPS, monsters, hands of the actor, animated objects (bottles, etc.). The angular models become more smoothed.</text>

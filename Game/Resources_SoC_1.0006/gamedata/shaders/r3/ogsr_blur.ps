@@ -9,25 +9,19 @@
 
 float4 blur_params;
 
-#ifndef SSFX_BEEFS_NVG
-
-float4 main(p_screen I) : SV_Target { return SSFX_Blur(I.tc0, 0.25f); }
-
-#else
-
 float4 main(p_screen I) : SV_Target
 {
-    // Defines
-    float3 image;
-    const float GAUSS_SIGMA = 2.5;
-    const int support = int(GAUSS_SIGMA * 1.5);
+#ifdef SSFX_BEEFS_NVG
+    if (pnv_param_1.z == 1.f)
+    {
 
     float lua_param_nvg_num_tubes = pnv_param_4.x;
-    float lua_param_nvg_washout_thresh = pnv_param_4.y;
-    float lua_param_vignette_current = pnv_param_2.z;
-
-    if (pnv_param_1.z == 1.f && compute_lens_mask(aspect_ratio_correction(I.tc0), lua_param_nvg_num_tubes) == 1.0f) // if NVGs are enabled ...
+    if (compute_lens_mask(aspect_ratio_correction(I.tc0), lua_param_nvg_num_tubes) == 1.0f) // if NVGs are enabled ...
     {
+        float3 image;
+        float lua_param_nvg_washout_thresh = pnv_param_4.y;
+        float lua_param_vignette_current = pnv_param_2.z;
+
         // HALF RES BLUR - PASS 1 - R = LUMA, G = LIGHTMAP, B = NORMALIZED DEPTH OUT TO FARTHEST_DEPTH (defined in night_vision.h)
         if (blur_params.x == 1 && blur_params.z == (screen_res.x / 2.0f))
         {
@@ -248,8 +242,8 @@ float4 main(p_screen I) : SV_Target
         }
     }
 
-    // OTHERWISE, DO NORMAL BLUR
+    }
+#endif
+
     return SSFX_Blur(I.tc0, 0.25f);
 }
-
-#endif

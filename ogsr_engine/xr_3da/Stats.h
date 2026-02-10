@@ -69,7 +69,7 @@ public:
     CStatTimer RenderDUMP_DT_VIS; // ...details visibility detection
     CStatTimer RenderDUMP_DT_Render; // ...details rendering
     CStatTimer RenderDUMP_DT_Cache; // ...details slot cache access
-    u32 RenderDUMP_DT_Count; // ...number of DT-elements
+    u64 RenderDUMP_DT_Count{}; // ...number of DT-elements
 
     CStatTimer Sound; // total time taken by sound subsystem (accurate only in single-threaded mode)
     CStatTimer Input; // total time taken by input subsystem (accurate only in single-threaded mode)

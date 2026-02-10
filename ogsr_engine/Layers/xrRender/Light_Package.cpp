@@ -31,14 +31,22 @@ void light_Package::vis_prepare(CBackend& cmd_list) const
 {
     ZoneScoped;
 
+    const float a0 = deg2rad(Device.fFOV * Device.fASPECT / 2.f);
+    const float a1 = deg2rad(Device.fFOV / 2.f);
+    const float x0 = VIEWPORT_NEAR / _cos(a0);
+    const float x1 = VIEWPORT_NEAR / _cos(a1);
+    const float c = _sqrt(x0 * x0 + x1 * x1);
+
+    float safe_area = _max(_max(VIEWPORT_NEAR, _max(x0, x1)), c);
+
     for (light* L : v_shadowed)
-        L->vis_prepare(cmd_list);
+        L->vis_prepare(cmd_list, safe_area);
 
     for (light* L : v_point)
-        L->vis_prepare(cmd_list);
+        L->vis_prepare(cmd_list, safe_area);
 
     for (light* L : v_spot)
-        L->vis_prepare(cmd_list);
+        L->vis_prepare(cmd_list, safe_area);
     
 }
 

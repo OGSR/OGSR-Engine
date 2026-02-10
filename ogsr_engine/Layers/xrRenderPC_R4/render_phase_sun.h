@@ -114,5 +114,7 @@ struct render_sun : public i_render_phase
     bool last_cascade_chain_mode{false};
 
     u32 contexts_ids[R__NUM_SUN_CASCADES]{};
+    CBackend::_stats stats[R__NUM_SUN_CASCADES]{};
+
     task_thread_pool::task_thread_pool sun_cascade_pool{"MT_SUN", R__NUM_SUN_CASCADES};
 };

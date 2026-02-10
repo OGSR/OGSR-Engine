@@ -139,7 +139,7 @@ void FTreeVisual::DoRenderInstanced(CBackend& cmd_list, const xr_vector<FloraVer
     HW.get_context(cmd_list.context_id)->Unmap(current_vbuffer, 0);
 
     cmd_list.Render(D3DPT_TRIANGLELIST, vBase, 0, countV, startI, PC, flora_count);
-    cmd_list.stat.r.s_flora.add(flora_count);
+    cmd_list.stat.r.s_flora.add(flora_count, countV);
     //Msg("--[%s] rendered [%u] trees", __FUNCTION__, flora_count);
 }
 
@@ -197,12 +197,15 @@ void FTreeVisual_ST::Copy(dxRender_Visual* pSrc) { inherited::Copy(pSrc); }
 FTreeVisual_PM::FTreeVisual_PM(void) {}
 FTreeVisual_PM::~FTreeVisual_PM(void) {}
 
-void FTreeVisual_PM::select_lod_id(float lod, u32 context_id)
+void FTreeVisual_PM::select_lod_id(float lod, u32 context_id, bool use_fast_geo)
 {
     // inherited::select_lod_id(lod);
 
+    // lod
+    // 0.f - min quality, 1.f - max quality
+
     const int lod_id = iFloor((1.f - clampr(lod, 0.f, 1.f)) * static_cast<float>(pSWI->count - 1)+ 0.5f);
-    selected_lod_id[context_id] = lod_id;
+    selected_lod_id[context_id] = use_fast_geo && ps_r2_ls_flags_ext.test(R2FLAGEXT_SMAP_LOW_LOD) ? pSWI->count - 1 : lod_id;
 
     crc[context_id] = base_crc; // restore initial crc, update hash if selected lod_id > 0
 

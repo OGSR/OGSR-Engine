@@ -1,26 +1,27 @@
 #include "common.h"
 
-Texture2D noise_tex;
 Texture2D s_vollight1;
 Texture2D s_vollight2;
 
 float4 main(p_screen I) : SV_Target
 {
-    float4 color = s_vollight1.SampleLevel(smp_linear, I.tc0.xy, 0);
-    color += s_vollight2.SampleLevel(smp_linear, I.tc0.xy, 0);
-
-    // Read Depth
-    float _depth = gbuffer_load_depth(I.tc0);
-
-    // Noise TC
-    float2 uv_noise = I.tc0.xy;
-    uv_noise.x *= screen_res.x / screen_res.y;
-
-    // Add noise to dither the result
-    color = saturate(color - noise_tex.Sample(smp_linear, uv_noise * 2.5).xxxx * 0.01f);
-
-    // Discard Sky.
-    color *= _depth < 0.001 ? 1.0f : saturate(_depth * 1.5f);
+    // Initialize accumulator
+    float4 color = 0.0f;
+    
+    // 4x4 box filter (16 taps)
+    for (int j = -2; j < 2; j++)
+    {
+        for (int _i = -2; _i < 2; _i++)
+        {
+            // Sample using texture coordinates with offset
+            float2 offset = I.hpos.xy + int2(_i, j);
+            color += s_vollight1[offset];
+            color += s_vollight2[offset];
+        }
+    }
+    
+    // Normalize by number of samples (16 taps)
+    color *= 0.0625;
 
     return color;
 }

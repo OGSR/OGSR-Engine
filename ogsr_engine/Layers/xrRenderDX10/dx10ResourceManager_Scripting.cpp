@@ -16,7 +16,6 @@ class adopt_dx10options
 
 public:
     adopt_dx10options(CBlender_Compile* C) : m_pC(C) {}
-    bool _wet_surface_opt_enable() const { return ps_r3_dyn_wet_surf_opt == 1; }
     bool HudElement() const { return m_pC->HudElement; }
 };
 
@@ -500,7 +499,6 @@ void CResourceManager::LS_Load()
     module(LSVM)[def("log", &ScriptLuaLog),
 
                  class_<adopt_dx10options>("_dx10options")
-                     .def("wet_surface_opt_enable", &adopt_dx10options::_wet_surface_opt_enable)
                      .def("getLevel", [](adopt_dx10options*) { return g_pGameLevel->name().c_str(); })
                      .def("hudElement", [](adopt_dx10options* O) { return O->HudElement(); }),
 

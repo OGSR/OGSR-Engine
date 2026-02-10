@@ -21,7 +21,7 @@ ENGINE_API BOOL g_bRendering = FALSE;
 
 extern ENGINE_API float psHUD_FOV;
 
-u32 g_dwFPSlimit = 60;
+u32 g_dwFPSlimit{};
 
 BOOL g_bLoaded = FALSE;
 

@@ -8,3 +8,6 @@
 #define TERRAIN_POM_AO 0.125f // Basic ambient occlusion strength
 #define TERRAIN_POM_PLANE 0.5 // [ 0.5f ~ 1.0f ]
 #define TERRAIN_POM_RANGE 20 // Max distance of the parallax rendering
+
+#define TERRAIN_PUDDLES_RANGE 100.f
+#define TERRAIN_PUDDLES_RIPPLES_RANGE 25.f

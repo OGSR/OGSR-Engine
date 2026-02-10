@@ -629,4 +629,6 @@ void CCC_Register()
 
     extern BOOL bLevelEnvModExport;
     CMD4(CCC_Integer, "level_env_mod_export", &bLevelEnvModExport, FALSE, TRUE);
+
+    CMD3(CCC_Mask, "ssfx_hud_raindrops", &psDeviceFlags, rs_SSFX_HUD_RAINDROPS);
 };

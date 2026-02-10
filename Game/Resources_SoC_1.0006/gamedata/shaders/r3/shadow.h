@@ -3,9 +3,6 @@
 
 #include "common.h"
 
-// uniform	sampler	s_smap	: register(ps,s0);	// 2D/cube shadowmap
-// Texture2D<float>	s_smap;		// 2D/cube shadowmap
-//	Used for RGBA texture too ?!
 Texture2D s_smap : register(ps, t0); // 2D/cube shadowmap
 
 SamplerComparisonState smp_smap; //	Special comare sampler
@@ -16,40 +13,25 @@ uniform float4 ssfx_shadow_bias;
 Texture2D jitter0;
 Texture2D jitter1;
 
-#ifndef USE_ULTRA_SHADOWS
-#define KERNEL 0.6f
-#else
-#define KERNEL 1.0f
-#endif
-
 #define PCSS_PIXEL int(4)
 #define PCSS_STEP int(2)
 #define PCSS_PIXEL_MIN float(1.0)
 #define PCSS_SUN_WIDTH float(150.0)
 
-float modify_light(float light) { return (light > 0.7 ? 1.0 : lerp(0.0, 1.0, saturate(light / 0.7))); }
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// hardware + PCF
-//////////////////////////////////////////////////////////////////////////////////////////
 float sample_hw_pcf(float4 tc, float4 shift)
 {
+    // Simp: TODO: может быть попробовать тут 1.0? Код юзается в volumetric_sun и rain_patch_normal
+    // #ifndef USE_ULTRA_SHADOWS
+    static const float KERNEL = 0.6f;
+    // #else
+    //     static const float KERNEL = 1.0f;
+    // #endif
     static const float ts = KERNEL / float(SMAP_size);
 
     tc.xyz /= tc.w;
     tc.xy += shift.xy * ts;
 
     return s_smap.SampleCmpLevelZero(smp_smap, tc.xy, tc.z).x;
-}
-
-float shadow_hw(float4 tc)
-{
-    float s0 = sample_hw_pcf(tc, float4(-1, -1, 0, 0));
-    float s1 = sample_hw_pcf(tc, float4(+1, -1, 0, 0));
-    float s2 = sample_hw_pcf(tc, float4(-1, +1, 0, 0));
-    float s3 = sample_hw_pcf(tc, float4(+1, +1, 0, 0));
-
-    return (s0 + s1 + s2 + s3) / 4.h;
 }
 
 // PCSS shadows
@@ -134,65 +116,8 @@ float shadow_pcss(float4 tc)
 #endif
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-//	D24X8+PCF
-//////////////////////////////////////////////////////////////////////////////////////////
+float shadow(float4 tc) { return shadow_pcss(tc); }
 
-float4 test(float4 tc, float2 offset)
-{
-    tc.xyz /= tc.w;
-    tc.xy += offset;
-    return s_smap.SampleCmpLevelZero(smp_smap, tc.xy, tc.z).x;
-}
-
-half shadowtest_sun(float4 tc, float4 tcJ) // jittered sampling
-{
-    half4 r;
-    const float scale = (0.7 / float(SMAP_size));
-
-    float2 tc_J = frac(tc.xy / tc.w * SMAP_size / 4.0) * 0.5;
-    float4 J0 = jitter0.Sample(smp_jitter, tc_J) * scale;
-
-    const float k = 0.5 / float(SMAP_size);
-    r.x = test(tc, J0.xy + half2(-k, -k)).x;
-    r.y = test(tc, J0.wz + half2(k, -k)).y;
-    r.z = test(tc, -J0.xy + half2(-k, k)).z;
-    r.w = test(tc, -J0.wz + half2(k, k)).x;
-
-    return dot(r, 1.0 / 4.0);
-}
-
-float shadow_hw_hq(float4 tc) { return shadow_pcss(tc); }
-
-float shadow(float4 tc)
-{
-#ifdef USE_ULTRA_SHADOWS
-    return shadow_hw_hq(tc);
-#else
-    return shadow_pcss(tc);
-#endif
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-// testbed
-
-float shadow_rain(float4 tc, float2 tcJ) // jittered sampling
-{
-    float4 r;
-
-    const float scale = (4.0 / float(SMAP_size));
-
-    float4 J0 = jitter0.Sample(smp_linear, tcJ) * scale;
-    float4 J1 = jitter1.Sample(smp_linear, tcJ) * scale;
-
-    r.x = test(tc, J0.xy).x;
-    r.y = test(tc, J0.wz).y;
-    r.z = test(tc, J1.xy).z;
-    r.w = test(tc, J1.wz).x;
-    return dot(r, 1.0 / 4.0);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
 uniform float3x4 m_sunmask; // ortho-projection
 #ifdef USE_SUNMASK
 float4 sun_shafts_intensity;
@@ -214,7 +139,7 @@ float sunmask(float4 P)
 #else
 float sunmask(float4 P) { return 1.0; } //
 #endif
-//////////////////////////////////////////////////////////////////////////////////////////
+
 uniform float4x4 m_shadow;
 
 #endif

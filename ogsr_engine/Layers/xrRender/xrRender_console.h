@@ -1,7 +1,7 @@
 #pragma once
 
 // Common
-extern ECORE_API u32 r2_SmapSize;
+extern ECORE_API u32 r2_SmapCascade0Size, r2_SmapCascade1Size, r2_SmapCascade2Size, r2_SmapLightsSize, r2_SmapRainSize;
 
 extern ECORE_API u32 ps_r_pp_aa_mode;
 extern ECORE_API u32 ps_r_dlss_preset;
@@ -16,6 +16,8 @@ extern ECORE_API float ps_r_prop_ss_radius;
 extern ECORE_API float ps_r_prop_ss_blend;
 extern ECORE_API float ps_r_prop_ss_sample_step_phase0;
 extern ECORE_API float ps_r_prop_ss_sample_step_phase1;
+
+extern float ps_r_alphatest_threshold;
 
 extern ECORE_API Fvector3 ps_r_taa_jitter;
 extern Fvector2 ps_r_taa_jitter_full;
@@ -59,25 +61,19 @@ extern ECORE_API Flags64 ps_r2_ls_flags; // r2-only
 
 extern ECORE_API float ps_r2_df_parallax_h; // r2-only
 extern ECORE_API float ps_r2_df_parallax_range; // r2-only
-extern ECORE_API float ps_r2_gmaterial; // r2-only
 extern ECORE_API float ps_r2_tonemap_middlegray; // r2-only
 extern ECORE_API float ps_r2_tonemap_adaptation; // r2-only
 extern ECORE_API float ps_r2_tonemap_low_lum; // r2-only
 extern ECORE_API float ps_r2_tonemap_amount; // r2-only
-extern ECORE_API float ps_r2_ls_bloom_kernel_scale; // r2-only	// gauss
 extern ECORE_API float ps_r2_ls_bloom_threshold; // r2-only
 extern ECORE_API float ps_r2_ls_bloom_speed; // r2-only
 extern ECORE_API float ps_r2_mblur; // .5f
 extern ECORE_API float ps_r2_ls_depth_scale; // 1.0f
 extern ECORE_API float ps_r2_ls_depth_bias; // -0.0001f
 extern ECORE_API float ps_r2_ls_squality; // 1.0f
-extern ECORE_API float ps_r2_sun_near; // 10.0f
-extern ECORE_API float ps_r2_sun_near_border; // 1.0f
 extern ECORE_API float ps_r2_sun_tsm_bias; // 0.0001f
 extern ECORE_API float ps_r2_sun_depth_far_scale; // 1.00001f
-extern ECORE_API float ps_r2_sun_depth_far_bias; // -0.0001f
 extern ECORE_API float ps_r2_sun_depth_near_scale; // 1.00001f
-extern ECORE_API float ps_r2_sun_depth_near_bias; // -0.0001f
 extern ECORE_API float ps_r2_sun_lumscale; // 0.5f
 extern ECORE_API float ps_r2_sun_lumscale_hemi; // 1.0f
 extern ECORE_API float ps_r2_sun_lumscale_amb; // 1.0f
@@ -96,11 +92,8 @@ extern ECORE_API float ps_r2_img_saturation; // r2-only
 
 extern ECORE_API Fvector ps_r2_img_cg; // r2-only
 
-extern ECORE_API int ps_r3_dyn_wet_surf_opt;
 extern ECORE_API float ps_r3_dyn_wet_surf_near; // 10.0f
 extern ECORE_API float ps_r3_dyn_wet_surf_far; // 30.0f
-extern ECORE_API int ps_r3_dyn_wet_surf_sm_res; // 256
-extern ECORE_API int ps_r3_dyn_wet_surf_enable_streaks;
 
 extern ECORE_API int ps_r2_mask_numbers;
 
@@ -168,7 +161,7 @@ enum : u64
     R2FLAGEXT_ENABLE_TESSELLATION = 1ull << 5,
     R2FLAGEXT_WIREFRAME = 1ull << 6,
     R2FLAGEXT_HOM_DEPTH_DRAW = 1ull << 7,
-    R2FLAG_GLOBALMATERIAL = 1ull << 8,
+    // = 1ull << 8,
     R2FLAGEXT_DISABLE_DYNAMIC = 1ull << 9,
     R2FLAGEXT_DISABLE_PARTICLES = 1ull << 10,
     R2FLAGEXT_DISABLE_HOM = 1ull << 11,
@@ -177,7 +170,7 @@ enum : u64
     R2FLAG_EXP_DONT_TEST_UNSHADOWED = 1ull << 14,
     R2FLAG_EXP_DONT_TEST_SHADOWED = 1ull << 15,
     R2FLAG_DBG_TAA_JITTER_ENABLE = 1 << 16,
-    R2FLAG_HAT = 1 << 17,
+    R2FLAG_EXP_MT_RAIN_DRAW = 1 << 17,
     R2FLAGEXT_TERRAIN_PARALLAX = 1ull << 18,
 
     R2FLAG_SSFX_HEIGHT_FOG = 1ull << 19,
@@ -187,7 +180,7 @@ enum : u64
 
     R2FLAG_STEEP_PARALLAX = 1ull << 22,
 
-    R2FLAG_VOLUMETRIC_LIGHTS_BLUR = 1ull << 23,
+    // = 1ull << 23,
     R2FLAG_EXP_MT_BONES = 1ull << 24,
     R2FLAG_DETAIL_BUMP = 1ull << 25,
 
@@ -217,7 +210,7 @@ enum : u64
     R2FLAGEXT_MASK = 1ull << 43,
     R2FLAGEXT_MASK_CONTROL = 1ull << 44,
     R2FLAGEXT_MT_TEXLOAD = 1ull << 45,
-    // = 1ull << 46,
+    R2FLAGEXT_SSFX_INTER_BRANCHES = 1ull << 46,
     R2FLAGEXT_MOTION_BLUR = 1ull << 47,
     R2FLAGEXT_DISABLE_SECTORS = 1ull << 48,
     R2FLAGEXT_SSFX_INTER_GRASS = 1ull << 49,
@@ -226,13 +219,14 @@ enum : u64
 
     R2FLAGEXT_SHADER_DBG = 1ull << 52,
     R2FLAGEXT_LENS_FLARE = 1ull << 53,
-    // R2FLAGEXT_RENDER_ON_PREFETCH = 1ull << 54,
+    R2FLAG_EXP_MT_SUN_DRAW = 1ull << 54,
 
     R2FLAGEXT_DISABLE_SMAPVIS = 1ull << 55,
 
     R2FLAGEXT_USE_ACES = 1ull << 56,
     R2FLAGEXT_SSFX_SHADOWS = 1ull << 57,
     R2FLAGEXT_SSFX_SSS = 1ull << 58,
+    R2FLAGEXT_SMAP_LOW_LOD = 1ull << 59,
 };
 
 extern void xrRender_initconsole();

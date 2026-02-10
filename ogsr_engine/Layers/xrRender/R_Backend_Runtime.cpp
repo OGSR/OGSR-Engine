@@ -360,14 +360,12 @@ void CBackend::apply_lmaterial()
         return;
 
     float mtl = T->m_material;
-#ifdef DEBUG
-    if (ps_r2_ls_flags.test(R2FLAG_GLOBALMATERIAL))
-        mtl = ps_r2_gmaterial;
-#endif
+
+    hemi.set_material(o_hemi, o_sun, 0.f, (mtl + .5f) / 4.f);
+
     if (!T->m_is_hot)
         hemi.set_hotness(0.f, 0.f, 0.f, 0.f);
 
-    hemi.set_material(o_hemi, o_sun, 0, (mtl + .5f) / 4.f);
     hemi.set_pos_faces(o_hemi_cube[CROS_impl::CUBE_FACE_POS_X], o_hemi_cube[CROS_impl::CUBE_FACE_POS_Y], o_hemi_cube[CROS_impl::CUBE_FACE_POS_Z]);
     hemi.set_neg_faces(o_hemi_cube[CROS_impl::CUBE_FACE_NEG_X], o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Y], o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Z]);
 

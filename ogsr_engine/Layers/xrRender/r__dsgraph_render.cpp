@@ -11,7 +11,7 @@ extern float ps_r__LOD_k;
 
 using namespace R_dsgraph;
 
-void R_dsgraph_structure::r_dsgraph_render_graph_static(const u32 _priority, const bool for_rain_smap)
+void R_dsgraph_structure::r_dsgraph_render_graph_static(const u32 _priority, const bool skip_tree_branches)
 {
     Device.Statistic->RenderDUMP.Begin();
 
@@ -72,9 +72,9 @@ void R_dsgraph_structure::r_dsgraph_render_graph_static(const u32 _priority, con
                 {
                     cmd_list.set_c("benders_setup",
                                    Fvector4{ps_ssfx_int_grass_params_1.x, ps_ssfx_int_grass_params_1.y, ps_ssfx_int_grass_params_1.z,
-                                            ps_r2_ls_flags_ext.test(R2FLAGEXT_SSFX_INTER_GRASS) ? ps_ssfx_grass_interactive.y : 0.f});
+                                            ps_r2_ls_flags_ext.test(R2FLAGEXT_SSFX_INTER_BRANCHES) ? ps_ssfx_grass_interactive.y : 0.f});
 
-                    if (ps_r2_ls_flags_ext.test(R2FLAGEXT_SSFX_INTER_GRASS))
+                    if (ps_r2_ls_flags_ext.test(R2FLAGEXT_SSFX_INTER_BRANCHES))
                     {
                         static const shared_str benders_pos{"benders_pos"}, benders_pos_old{"benders_pos_old"};
 
@@ -99,12 +99,13 @@ void R_dsgraph_structure::r_dsgraph_render_graph_static(const u32 _priority, con
                     const float lod = 1.f; // fixed lod for shaders
                     cmd_list.lod.set_lod(lod);
 
-                    cmd_list.set_c("rain_smap", static_cast<int>(for_rain_smap));
-
                     for (const auto& tree : *items.trees)
                     {
                         {
                             ZoneScopedN("render_static_visual_trees");
+
+                            if (skip_tree_branches && tree.second.pVisual->GetShaderFlags(SE_R2_SHADOW).bTreeBranch)
+                                continue;
 
                             tree.second.pVisual->RenderInstanced(cmd_list, tree.second.data);
                         }
@@ -181,11 +182,11 @@ void R_dsgraph_structure::r_dsgraph_render_graph_dynamic(u32 _priority)
     Device.Statistic->RenderDUMP.End();
 }
 
-void R_dsgraph_structure::r_dsgraph_render_graph(const u32 _priority, const bool for_rain_smap)
+void R_dsgraph_structure::r_dsgraph_render_graph(const u32 _priority, const bool skip_tree_branches)
 {    
     PIX_EVENT_CTX(cmd_list, dsgraph_render_graph);
 
-    r_dsgraph_render_graph_static(_priority, for_rain_smap);
+    r_dsgraph_render_graph_static(_priority, skip_tree_branches);
     r_dsgraph_render_graph_dynamic(_priority);
 }
 
@@ -282,31 +283,30 @@ void render_large_map(const u32 context_id, mapSortedLarge_T& map)
 // HUD render
 void R_dsgraph_structure::r_dsgraph_render_hud()
 {
-    ZoneScoped;
-
-    PIX_EVENT_CTX(cmd_list, dsgraph_render_hud);
-
-    // Rendering
     if (!mapHUD.empty())
     {
-        CHUDTransformHelper initializer(cmd_list,true, true);
-        
+        ZoneScoped;
+
+        PIX_EVENT_CTX(cmd_list, dsgraph_render_hud);
+
+        CHUDTransformHelper initializer(cmd_list, true, true);
+
         RImplementation.rmNear(cmd_list);
 
         sort_front_to_back_render_and_clean(context_id, mapHUD);
-        
+
         RImplementation.rmNormal(cmd_list);
     }
 }
 
 void R_dsgraph_structure::r_dsgraph_render_hud_scope_depth()
 {
-    ZoneScoped;
-
-    PIX_EVENT_CTX(cmd_list, dsgraph_render_hud_scope_depth);
-
     if (!mapScopeHUD.empty())
     {
+        ZoneScoped;
+
+        PIX_EVENT_CTX(cmd_list, dsgraph_render_hud_scope_depth);
+
         CHUDTransformHelper initializer(cmd_list, true, true);
 
         RImplementation.rmNormal(cmd_list);
@@ -334,12 +334,17 @@ void R_dsgraph_structure::r_dsgraph_render_sorted()
 {
     ZoneScoped;
 
-    PIX_EVENT_CTX(cmd_list, dsgraph_render_sorted);
+    if (!mapSorted.empty())
+    {
+        PIX_EVENT_CTX(cmd_list, dsgraph_render_sorted);
 
-    sort_back_to_front_render_and_clean(context_id, mapSorted);
+        sort_back_to_front_render_and_clean(context_id, mapSorted);
+    }
 
     if (!mapHUDSorted.empty())
     {
+        PIX_EVENT_CTX(cmd_list, dsgraph_render_hud_sorted);
+
         CHUDTransformHelper initializer(cmd_list,true, true);
 
         RImplementation.rmNear(cmd_list);
@@ -354,6 +359,8 @@ void R_dsgraph_structure::r_dsgraph_render_sorted()
 // strict-sorted render
 void R_dsgraph_structure::r_dsgraph_render_scope_sorted(const bool upscaled)
 {
+    ZoneScoped;
+
     PIX_EVENT_CTX(cmd_list, dsgraph_render_scope_sorted);
 
     CHUDTransformHelper initializer(cmd_list, true, true);
@@ -371,15 +378,20 @@ void R_dsgraph_structure::r_dsgraph_render_emissive(bool clear)
 {
     ZoneScoped;
 
-    PIX_EVENT_CTX(cmd_list, dsgraph_render_emissive);
+    if (!mapEmissive.empty())
+    {
+        PIX_EVENT_CTX(cmd_list, dsgraph_render_emissive);
 
-    //sort_front_to_back_render_and_clean(context_id, mapEmissive);
-    mapEmissive.traverse_left_right(context_id, render_item);
-    if (clear)
-        mapEmissive.clear();
+        // sort_front_to_back_render_and_clean(context_id, mapEmissive);
+        mapEmissive.traverse_left_right(context_id, render_item);
+        if (clear)
+            mapEmissive.clear();
+    }
 
     if (!mapHUDEmissive.empty())
     {
+        PIX_EVENT_CTX(cmd_list, dsgraph_render_hud_emissive);
+
         CHUDTransformHelper initializer(cmd_list, true, true);
 
         RImplementation.rmNear(cmd_list);
@@ -397,12 +409,15 @@ void R_dsgraph_structure::r_dsgraph_render_emissive(bool clear)
 // strict-sorted render
 void R_dsgraph_structure::r_dsgraph_render_wmarks()
 {
-    ZoneScoped;
+    if (!mapWmark.empty())
+    {
+        ZoneScoped;
 
-    PIX_EVENT_CTX(cmd_list, dsgraph_render_wmarks);
+        PIX_EVENT_CTX(cmd_list, dsgraph_render_wmarks);
 
-    // Sorted (back to front)
-    sort_front_to_back_render_and_clean(context_id, mapWmark);
+        // Sorted (back to front)
+        sort_front_to_back_render_and_clean(context_id, mapWmark);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////

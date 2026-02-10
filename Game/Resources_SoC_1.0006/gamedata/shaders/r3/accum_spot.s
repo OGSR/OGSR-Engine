@@ -9,7 +9,7 @@ local function elements(shader, t_base, t_second, t_detail, ps_shader, jitter_en
 	shader:dx10texture("s_diffuse", "$user$albedo")
 	
 	if jitter_enable then
-		shader:dx10texture("s_smap", "$user$smap_depth")
+		shader:dx10texture("s_smap", "$user$smap_lights")
 		jitter.jitter(shader)
 		shader:dx10sampler("smp_smap")
 	end

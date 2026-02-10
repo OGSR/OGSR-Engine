@@ -82,6 +82,7 @@ void CBackend::OnDeviceCreate()
 
         ID3DVertexBuffer* buff{};
         R_CHK(HW.pDevice->CreateBuffer(&buff_desc, nullptr, &buff));
+        DXUT_SetDebugName(buff, "FloraVbuffer");
         FloraVbuffers.emplace(size, buff);
     }
 }

@@ -202,26 +202,20 @@ void CStats::Show()
             auto renderTotal = RenderTOTAL.result;
 #define PPP(a) (100.f * float(a) / renderTotal)
     
-            F.OutNext("*** RENDER:  %2.2fms", renderTotal);
-            F.OutNext("Calc:        %2.2fms, %2.1f%%", RenderCALC.result, PPP(RenderCALC.result));
-            F.OutNext("Skeletons:   %2.2fms, %d", Animation.result, Animation.count);
-            F.OutNext("Primitives:  %2.2fms, %2.1f%%", RenderDUMP.result, PPP(RenderDUMP.result));
-            F.OutNext("Wait-L:      %2.2fms", RenderDUMP_Wait.result);
-            F.OutNext("DT_Vis/Cnt:  %2.2fms/%d", RenderDUMP_DT_VIS.result, RenderDUMP_DT_Count);
-            F.OutNext("DT_Render:   %2.2fms", RenderDUMP_DT_Render.result);
-            F.OutNext("DT_Cache:    %2.2fms", RenderDUMP_DT_Cache.result);
-            F.OutNext("Wallmarks:   %2.2fms, %d/%d - %d", RenderDUMP_WM.result, RenderDUMP_WMS_Count, RenderDUMP_WMD_Count, RenderDUMP_WMT_Count);
-            F.OutNext("HOM:         %2.2fms, %d", RenderCALC_HOM.result, RenderCALC_HOM.count);
+            F.OutNext("*** RENDER:    %2.2fms", renderTotal);
+            F.OutNext("Calc:          %2.2fms, %2.1f%%", RenderCALC.result, PPP(RenderCALC.result));
+            F.OutNext("Skeletons:     %2.2fms, %d", Animation.result, Animation.count);
+            F.OutNext("Primitives:    %2.2fms, %2.1f%%", RenderDUMP.result, PPP(RenderDUMP.result));
+            F.OutNext("Wait-L:        %2.2fms", RenderDUMP_Wait.result);
+            F.OutNext("DT_Vis/Inst Cnt:  %2.2fms/%lu", RenderDUMP_DT_VIS.result, RenderDUMP_DT_Count);
+            F.OutNext("DT_Render:    %2.2fms", RenderDUMP_DT_Render.result);
+            F.OutNext("DT_Cache:     %2.2fms", RenderDUMP_DT_Cache.result);
+            F.OutNext("Wallmarks:    %2.2fms, static %d/dynamic %d, total %d", RenderDUMP_WM.result, RenderDUMP_WMS_Count, RenderDUMP_WMD_Count, RenderDUMP_WMT_Count);
+            F.OutNext("HOM:          %2.2fms, %d", RenderCALC_HOM.result, RenderCALC_HOM.count);
 #undef PPP
 
             F.OutSkip();            
-            m_pRender->OutData1(F);
-            F.OutSkip();
-            m_pRender->OutData2(F);
-            F.OutSkip();
-            m_pRender->OutData3(F);
-            F.OutSkip();
-            m_pRender->OutData4(F);
+            m_pRender->OutData(F);
 
             F.OutSkip();
             Render->Statistics(&F);

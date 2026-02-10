@@ -4,7 +4,7 @@ function normal		(shader, t_base, t_second, t_detail)
 			: zb 		(false,false)
 			: blend		(true,blend.one,blend.one)
 			: sorting	(2, false)
-	shader:dx10texture	("s_smap", "$user$smap_depth")
+	shader:dx10texture	("s_smap", "$user$smap_sun_cascade_2") --лучи рендерятся на последнем каскаде
 	shader:dx10texture	("s_position", "$user$position")
 	shader:dx10texture	("jitter0", "$user$jitter_0")
 

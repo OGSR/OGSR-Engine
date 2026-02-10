@@ -33,7 +33,7 @@ public:
     virtual void Release();
 
 private:
-    FTreeVisual_ST(const FTreeVisual_ST& other);
+    FTreeVisual_ST(const FTreeVisual_ST& other) = delete;
     void operator=(const FTreeVisual_ST& other) = delete;
 };
 
@@ -48,7 +48,7 @@ public:
     FTreeVisual_PM(void);
     virtual ~FTreeVisual_PM(void);
 
-    void select_lod_id(float lod, u32 context_id) override;
+    void select_lod_id(float lod, u32 context_id, bool use_fast_geo) override;
 
     void Render(CBackend& cmd_list, float lod, bool use_fast_geo) override; // LOD - Level Of Detail  [0.0f - min, 1.0f - max], Ignored
     void RenderInstanced(CBackend& cmd_list, const xr_vector<FloraVertData*>& data) override;
@@ -57,6 +57,6 @@ public:
     virtual void Release();
 
 private:
-    FTreeVisual_PM(const FTreeVisual_PM& other);
+    FTreeVisual_PM(const FTreeVisual_PM& other) = delete;
     void operator=(const FTreeVisual_PM& other) = delete;
 };

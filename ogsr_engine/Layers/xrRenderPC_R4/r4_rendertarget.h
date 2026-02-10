@@ -75,8 +75,6 @@ public:
     //	Igor: for volumetric lights
     ref_rt rt_Generic_2; // 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
     ref_rt rt_Generic_3; // 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
-    ref_rt rt_accum_ssfx;
-
     ref_rt rt_Bloom_1; // 32bit, dim/4	(r,g,b,?)
     ref_rt rt_LUM_64; // 64bit, 64x64,	log-average in all components
     ref_rt rt_LUM_8; // 64bit, 8x8,		log-average in all components
@@ -92,9 +90,12 @@ public:
     ref_texture t_envmap_0; // env-0
     ref_texture t_envmap_1; // env-1
 
-    // smap
-    ref_rt rt_smap_depth; // 24(32) bit,	depth
+    // sun smap
+    ref_rt rt_smap_sun_cascade[R__NUM_SUN_CASCADES];
+    // rain smap
     ref_rt rt_smap_rain;
+    // lights smap
+    ref_rt rt_smap_lights;
 
     ID3DTexture2D* t_noise_surf[TEX_jitter_count];
     ref_texture t_noise[TEX_jitter_count];
@@ -108,7 +109,7 @@ private:
 
     // Accum
     ref_shader s_accum_mask;
-    ref_shader s_accum_direct;
+    ref_shader s_accum_sun_cascade[R__NUM_SUN_CASCADES];
     ref_shader s_accum_direct_volumetric;
     ref_shader s_accum_point;
     ref_shader s_accum_spot;
@@ -161,7 +162,6 @@ private:
     ref_shader s_combine_volumetric;
 
     ref_shader s_blur;
-    ref_shader s_volumetric_blur;
     ref_shader s_ssr;
     ref_shader s_dof;
     ref_shader s_lut;
@@ -220,7 +220,6 @@ public:
     void accum_spot_geom_destroy();
 
     void u_compute_texgen_screen(CBackend& cmd_list, Fmatrix& dest);
-    void u_compute_texgen_jitter(CBackend& cmd_list, Fmatrix& dest);
 
     ID3DRenderTargetView* get_base_rt() const { return rt_base[0/*HW.CurrentBackBuffer*/]->pRT; }
     ID3DDepthStencilView* get_base_zb() const { return rt_Base_Depth->pZRT[CHW::IMM_CTX_ID]; }
@@ -239,13 +238,13 @@ public:
     void phase_scene_begin(CBackend& cmd_list);
     void phase_occq(CBackend& cmd_list);
     void phase_wallmarks(CBackend& cmd_list);
+    // only sun && rain
     void phase_smap_direct(CBackend& cmd_list, light* L, u32 sub_phase);
     void phase_smap_spot_clear(CBackend& cmd_list);
     void phase_smap_spot(CBackend& cmd_list, light* L) const;
     void phase_accumulator(CBackend& cmd_list);
     void phase_vol_accumulator(CBackend& cmd_list, bool cascade);
     void phase_blur(CBackend& cmd_list);
-    void phase_volumetric_blur(CBackend& cmd_list);
     void phase_dof(CBackend& cmd_list);
     void phase_lut(CBackend& cmd_list);
     void phase_gasmask_dudv(CBackend& cmd_list);

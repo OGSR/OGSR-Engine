@@ -9,6 +9,7 @@
 #include "flod.h"
 #include "particlegroup.h"
 #include "FTreeVisual.h"
+#include "../xr_3da/x_ray.h"
 
 using namespace R_dsgraph;
 
@@ -252,7 +253,8 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_V
             {
                 mapHUD.insert_anyway(EPS, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[0]}));
                 mapScopeHUD.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[1]}));
-                if (ps_r_pp_aa_mode == DLSS || ps_r_pp_aa_mode == FSR2 || ps_r_pp_aa_mode == TAA || ps_r2_ls_flags.test(R2FLAG_DBG_TAA_JITTER_ENABLE))
+                // Simp: этот костыль пусть работает только в OGSR GA, там прицелы с ним приемлемо выглядят.
+                if (IS_OGSR_GA && ps_r_pp_aa_mode == DLSS || ps_r_pp_aa_mode == FSR2 || ps_r_pp_aa_mode == TAA || ps_r2_ls_flags.test(R2FLAG_DBG_TAA_JITTER_ENABLE))
                 {
                     mapScopeHUDSorted.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[0]}));
                     mapScopeHUDSorted.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[1]}));
@@ -401,7 +403,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
             if (pVisual->base_crc)
             {
                 const float lod = calcLOD(SSA, pVisual->getVisData().sphere.R);
-                pVisual->select_lod_id(clampr(1.f - (1.f - lod) * ps_r__LOD_k, 0.01f, 1.f), context_id);
+                pVisual->select_lod_id(clampr(1.f - (1.f - lod) * ps_r__LOD_k, 0.01f, 1.f), context_id, phase == CRender::PHASE_SMAP);
 
                 if (auto it = normalItems.trees->find(pVisual->crc[context_id]); it != normalItems.trees->end())
                 {

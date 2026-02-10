@@ -26,7 +26,7 @@ struct vf
     float4 tctexgen : TEXCOORD7;
 #endif //	USE_SOFT_WATER
 #endif //	NEED_SOFT_WATER
-    float4 c0 : COLOR0;
+    float3 c0 : COLOR0;
     float fog : FOG;
     float4 hpos : SV_Position;
 };
@@ -83,7 +83,7 @@ vf main(v_vert v)
     o.hpos.xy = get_taa_jitter(o.hpos);
     o.fog = saturate(calc_fogging(v.P));
 
-    o.c0 = float4(L_final, 1);
+    o.c0 = L_final;
 
 //	Igor: for additional depth dest
 #ifdef USE_SOFT_WATER

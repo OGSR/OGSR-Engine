@@ -29,7 +29,6 @@
 #define r2_RT_generic1 "$user$generic1" // ---
 #define r2_RT_generic2 "$user$generic2" // ---	//	for volumetric lights
 #define r2_RT_generic3 "$user$generic3" // ---	//	for volumetric lights
-#define r2_RT_accum_ssfx "$user$accum_ssfx" // [ SSS ] Full res - D3DFMT_A16B16G16R16F
 #define r2_RT_generic0_temp "$user$generic_temp" // Temporal RT for water reflections
 
 #define r2_RT_scopert "$user$scopeRT" // crookr
@@ -43,9 +42,12 @@
 #define r2_RT_luminance_cur "$user$tonemap" // --- result
 #define r2_RT_luminance_pool "$user$luminance" // --- pool
 
-//#define r2_RT_smap_surf "$user$smap_surf" // --- directional
-#define r2_RT_smap_depth "$user$smap_depth" // ---directional
+// sun smap - в конце строки добавляется номер каскада
+#define r2_RT_smap_sun_cascade "$user$smap_sun_cascade_"
+// rain smap
 #define r2_RT_smap_rain "$user$smap_rain"
+// lights smap
+#define r2_RT_smap_lights "$user$smap_lights"
 
 #define r2_jitter "$user$jitter_" // --- dither
 #define r2_sunmask "sunmask"

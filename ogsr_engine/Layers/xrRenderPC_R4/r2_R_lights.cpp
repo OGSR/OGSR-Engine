@@ -200,7 +200,7 @@ void CRender::render_lights_shadowed(light_Package& LP)
 
                 auto& cmd_list = get_context(task.context_id).cmd_list;
                 if (init)
-                    cmd_list.LP_smap_pool.initialize(o.smapsize);
+                    cmd_list.LP_smap_pool.initialize(o.lights_smapsize);
 
                 if (++curr_task == num_tasks)
                 {
@@ -269,12 +269,13 @@ void CRender::render_lights_shadowed(light_Package& LP)
             PIX_EVENT_CTX(cmd_list, SPOT_LIGHTS_ACCUM_VOLUMETRIC);
 
             ZoneScopedN("render_lights spot shadowed");
+            ZoneValue(L_spot_s.size());
 
             const bool needVolumetric = ps_r2_ls_flags.is(R2FLAG_VOLUMETRIC_LIGHTS);
 
             for (light* p_light : L_spot_s)
             {
-                Target->rt_smap_depth->set_slice_read(p_light->vis.smap_ID);
+                Target->rt_smap_lights->set_slice_read(p_light->vis.smap_ID);
                 Target->accum_spot(cmd_list, p_light);
                 if (needVolumetric)
                 {
@@ -301,6 +302,7 @@ void CRender::render_lights(light_Package& LP)
         if (!LP.v_point.empty())
         {
             ZoneScopedN("render_lights point unshadowed");
+            ZoneValue(LP.v_point.size());
 
             PIX_EVENT_CTX(cmd_list, POINT_LIGHTS_ACCUM);
 
@@ -318,6 +320,7 @@ void CRender::render_lights(light_Package& LP)
         if (!LP.v_spot.empty())
         {
             ZoneScopedN("render_lights spot unshadowed");
+            ZoneValue(LP.v_spot.size());
 
             PIX_EVENT_CTX(cmd_list, SPOT_LIGHTS_ACCUM);
 

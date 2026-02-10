@@ -7,9 +7,9 @@ function normal         (shader, t_base, t_second, t_detail)
 
 	shader:dx10texture	("s_vollight1", "$user$generic2")
 	shader:dx10texture	("s_vollight2", "$user$generic3")
-	shader:dx10texture 	("noise_tex", 	"fx\\blue_noise")
-	shader:dx10texture 	("s_position", 	"$user$position")
+	--shader:dx10texture 	("noise_tex", 	"fx\\blue_noise")
+	--shader:dx10texture 	("s_position", 	"$user$position")
 
-	shader:dx10sampler	("smp_linear")
-	shader:dx10sampler	("smp_nofilter")
+	--shader:dx10sampler	("smp_linear")
+	--shader:dx10sampler	("smp_nofilter")
 end

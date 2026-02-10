@@ -85,6 +85,7 @@ void light::set_texture(LPCSTR name)
         return;
     }
 
+    RImplementation.m_SMAPSize = RImplementation.o.lights_smapsize;
     s_spot = GetCachedShader("accum_spot", name);
     s_point = GetCachedShader("accum_omni", name);
 }
@@ -363,11 +364,10 @@ void light::optimize_smap_size()
     const float factor3 = powf(sizefactor, 1.f / 4.f); // this shouldn't make much difference
     const float factor4 = powf(widefactor, 1.f / 2.f); // make it linear ???
 
-    // float factor = ps_r2_ls_squality * factor0 * factor1 * factor2 * factor3 * factor4;
     const float factor = ps_r2_ls_squality * factor0 * factor1 * factor3 * factor4;
 
     // final size calc
-    const u32 max_size = RImplementation.o.smapsize <= static_cast<u32>(ps_ssfx_shadows.y) ? RImplementation.o.smapsize : static_cast<u32>(ps_ssfx_shadows.y);
+    const u32 max_size = RImplementation.o.lights_smapsize <= static_cast<u32>(ps_ssfx_shadows.y) ? RImplementation.o.lights_smapsize : static_cast<u32>(ps_ssfx_shadows.y);
 
     const u32 _size = std::clamp<u32>(iFloor(factor * SMAP_adapt_optimal), static_cast<u32>(ps_ssfx_shadows.x), max_size);
 

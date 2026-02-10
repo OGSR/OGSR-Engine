@@ -42,7 +42,7 @@ enum
     //rsRefresh60hz = (1ul << 13ul),
     rsHWInfo = (1ul << 14ul),
     rsCameraPos = (1ul << 15ul),
-    //rsR2 = (1ul << 16ul),
+    rs_SSFX_HUD_RAINDROPS = 1ul << 16ul,
     //rsR3 = (1ul << 17ul),
     //rsR4 = (1ul << 18ul),
     rsExclusiveMode = 1ul << 19ul,

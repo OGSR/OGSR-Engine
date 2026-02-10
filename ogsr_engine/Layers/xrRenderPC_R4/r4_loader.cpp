@@ -283,6 +283,7 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
             BYTE* pData = xr_alloc<BYTE>(vCount * vSize);
             fs->r(pData, vCount * vSize);
             R_CHK(dx10BufferUtils::CreateVertexBuffer(&_VB[i], pData, vCount * vSize));
+            DXUT_SetDebugName(_VB[i], "fsL_VB");
             xr_free(pData);
 
             //			fs->advance			(vCount*vSize);
@@ -305,6 +306,7 @@ void CRender::LoadBuffers(CStreamReader* base_fs, BOOL _alternative)
             BYTE* pData = xr_alloc<BYTE>(iCount * 2);
             fs->r(pData, iCount * 2);
             R_CHK(dx10BufferUtils::CreateIndexBuffer(&_IB[i], pData, iCount * 2));
+            DXUT_SetDebugName(_IB[i], "fsL_IB");
             xr_free(pData);
 
             //			fs().advance		(iCount*2);

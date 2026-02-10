@@ -34,7 +34,7 @@ void render_sun::init()
     }
 
     o.mt_calc_enabled = ps_r2_ls_flags.test(R2FLAG_EXP_MT_SUN);
-    o.mt_draw_enabled = ps_r2_ls_flags.test(R2FLAG_EXP_MT_SUN);
+    o.mt_draw_enabled = ps_r2_ls_flags.test(R2FLAG_EXP_MT_SUN_DRAW);
 }
 
 void render_sun::calculate()
@@ -66,17 +66,7 @@ void render_sun::calculate()
     // THIS NEED TO BE A CONSTATNT
     Fplane light_top_plane;
     light_top_plane.build_unit_normal(L_pos, L_dir);
-    float dist = light_top_plane.classify(Device.vCameraPosition);
-
-    // build viewport xform
-    float view_dim = float(RImplementation.o.smapsize);
-    Fmatrix m_viewport = {
-        view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f,
-        -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-        view_dim / 2.f, view_dim / 2.f, 0.0f, 1.0f};
-    Fmatrix m_viewport_inv;
-
-    XMStoreFloat4x4((XMFLOAT4X4*)&m_viewport_inv, XMMatrixInverse(nullptr, XMLoadFloat4x4((XMFLOAT4X4*)&m_viewport)));
+    const float dist = light_top_plane.classify(Device.vCameraPosition);
 
     // Compute volume(s) - something like a frustum for infinite directional light
     // Also compute virtual light position and sector it is inside
@@ -89,6 +79,13 @@ void render_sun::calculate()
     for (int cascade_ind = 0; cascade_ind < R__NUM_SUN_CASCADES; ++cascade_ind)
     {
         cull_planes.clear();
+
+        // build viewport xform
+        const float view_dim = static_cast<float>(RImplementation.o.sun_cascades_smapsize[cascade_ind]);
+        const Fmatrix m_viewport{view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, -view_dim / 2.f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, view_dim / 2.f, view_dim / 2.f, 0.0f, 1.0f};
+        Fmatrix m_viewport_inv;
+
+        XMStoreFloat4x4((XMFLOAT4X4*)&m_viewport_inv, XMMatrixInverse(nullptr, XMLoadFloat4x4((XMFLOAT4X4*)&m_viewport)));
 
         //******************************* Need to be placed after cuboid built **************************
         // COP - 100 km away
@@ -220,14 +217,12 @@ void render_sun::calculate()
 
         m_sun_cascades[cascade_ind].cull_xform = cull_xform[cascade_ind];
 
-        s32 limit = RImplementation.o.smapsize - 1;
+        s32 limit = RImplementation.o.sun_cascades_smapsize[cascade_ind] - 1;
         sun->X.D[cascade_ind].minX = 0;
         sun->X.D[cascade_ind].maxX = limit;
         sun->X.D[cascade_ind].minY = 0;
         sun->X.D[cascade_ind].maxY = limit;
         sun->X.D[cascade_ind].combine = cull_xform[cascade_ind];
-
-        // full-xform
     }
 
     const auto process_cascade = [&](const u32 cascade_ind) {
@@ -351,8 +346,8 @@ void render_sun::accumulate_cascade(u32 cascade_ind)
 
     auto& dsgraph = RImplementation.get_context(contexts_ids[cascade_ind]);
 
-    // Accumulate
-    RImplementation.Target->rt_smap_depth->set_slice_read(contexts_ids[cascade_ind]);
+    // copy stats
+    stats[cascade_ind] = dsgraph.cmd_list.stat;
 
     {
         if (cascade_ind == 0)

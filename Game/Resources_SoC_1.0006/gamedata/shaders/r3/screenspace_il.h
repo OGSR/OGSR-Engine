@@ -72,14 +72,12 @@ float3 ssfx_il_bounce(float3 P, float3 N, float Range, int count, uint iSample)
 void ssfx_il(float2 tc, float2 pos2d, float3 P, float3 N, inout float3 color, uint iSample)
 {
 	// Skip Sky. ( Disable when used with Shader Based 2D Scopes )
-	if (P.z <= SKY_EPS || fakescope.y > 0)
-		return;
-
-	// Discard IL when using NV
-#ifdef SSFX_BEEFS_NVG
-	if (pnv_param_1.z > 0.f)
-		return;
+	if (P.z <= SKY_EPS || fakescope.y > 0
+#ifdef SSFX_BEEFS_NVG // Discard IL when using NV
+		|| pnv_param_1.z > 0.f
 #endif
+		)
+		return;
 
 	// Var to accumulate the IL
 	float3 il = 0;

@@ -41,9 +41,11 @@ struct R_statistics_element
 struct R_statistics_element_instanced
 {
     u32 instances_count{}, draw_calls_count{};
-    ICF void add(u32 inst_cnt)
+    u32 total_verts{};
+    ICF void add(u32 inst_cnt, const u32 _verts)
     {
         instances_count += inst_cnt;
+        total_verts += inst_cnt * _verts; // total verts count, not per-instance
         draw_calls_count++;
     }
 };
@@ -141,7 +143,7 @@ private:
     CTexture* textures_ds[CTexture::mtMaxDomainShaderTextures]; // 4 vs
     CTexture* textures_cs[CTexture::mtMaxComputeShaderTextures]; // 4 vs
 
-    static constexpr u32 FloraVbufSizes[]{1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 1500, 2048, 3000, 4096, 5000, 6000, 7000, 8192};
+    static constexpr u32 FloraVbufSizes[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 32, 64, 128, 256, 512, 1024, 1500, 2048, 3000, 4096, 5000, 6000, 7000, 8192};
     std::map<u32, ID3DVertexBuffer*> FloraVbuffers;
 
 public:

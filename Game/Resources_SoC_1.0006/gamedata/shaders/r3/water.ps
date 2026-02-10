@@ -28,7 +28,7 @@ struct vf
     float3 M3 : TEXCOORD5;
     float3 v2point_w : TEXCOORD6;
     float4 tctexgen : TEXCOORD7;
-    float4 c0 : COLOR0;
+    float3 c0 : COLOR0;
     float fog : FOG;
     float4 hpos : SV_Position;
 };
@@ -61,12 +61,14 @@ float4 main(vf I) : SV_Target
     float rain_cover = step(0.035f * (-0.4f + rain_params.x), s_diffuse.Sample(smp_nofilter, PosTc).w - 0.04f);
 
     // Rain intensity. Fadeout and rain cover
-    half is_raining = rain_params.x > 0 ? 1.0f : 0.0f;
-    float RainInt = clamp(rain_params.x * 1.6f, 0.65f * is_raining, 1.0f);
+    if (rain_params.x > 0)
+    {
+        float RainInt = clamp(rain_params.x * 1.6f, 0.65f, 1.0f);
 
-    // Ripples normal
-    float2 Ripples = ssfx_rain_ripples(s_rainsplash, (w_s.xz + eye_position.xz) * 0.13f, float3(RainInt, G_SSR_WATER_RAIN, 15.0f), gbuffer_load_depth(PosTc));
-    basenormal += float3(Ripples, 0) * is_raining;
+        // Ripples normal
+        float2 Ripples = ssfx_rain_ripples(s_rainsplash, (w_s.xz + eye_position.xz) * 0.13f, float3(RainInt, G_SSR_WATER_RAIN, 15.0f), gbuffer_load_depth(PosTc));
+        basenormal += float3(Ripples, 0);
+    }
 
     // Water wave intensity
     float3 Navg = normalize(float3(basenormal.x * G_SSR_WATER_WAVES, basenormal.y * G_SSR_WATER_WAVES, basenormal.z));
@@ -97,7 +99,7 @@ float4 main(vf I) : SV_Target
     float3 reflection;
     float3 ssr_hit_uv = 0.0f;
 
-#if defined(NEED_REFLECTIONS) && defined(SSLR_ENABLED)
+#if defined(NEED_REFLECTIONS) //&& defined(SSLR_ENABLED) //simp: пусть SSLR_ENABLED регулирует только отражения в лужах
 
     // Blue Noise & Normal for noise
     float3 NN = normalize(float3(basenormal.x * 0.15f, basenormal.y * 0.15f, basenormal.z));
