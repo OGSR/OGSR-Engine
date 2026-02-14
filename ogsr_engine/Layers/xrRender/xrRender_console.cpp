@@ -103,8 +103,8 @@ float ps_r__LOD_k = 1.f;
 
 float ps_r__ssaDISCARD = 3.5f; // RO
 
-int ps_r__tf_Anisotropic = 16;
-float ps_r__tf_Mipbias = -0.5f;
+int ps_r__tf_Anisotropic{16}, ps_r__tf_Anisotropic_SMAP{1};
+float ps_r__tf_Mipbias{-0.5f}, ps_r__tf_Mipbias_SMAP{3.f};
 
 // R2
 float ps_r2_ssaLOD_A = 64.f;
@@ -364,54 +364,6 @@ public:
     virtual void Status(TStatus& S) { CCC_Float::Status(S); }
 };
 
-class CCC_tf_Aniso : public CCC_Integer
-{
-public:
-    void apply() const
-    {
-        if (nullptr == HW.pDevice)
-            return;
-        int val = *value;
-        clamp(val, 1, 16);
-        SSManager.SetMaxAnisotropy(val);
-    }
-
-    CCC_tf_Aniso(LPCSTR N, int* v) : CCC_Integer(N, v, 1, 16){};
-
-    virtual void Execute(LPCSTR args)
-    {
-        CCC_Integer::Execute(args);
-        apply();
-    }
-    virtual void Status(TStatus& S)
-    {
-        CCC_Integer::Status(S);
-        apply();
-    }
-};
-class CCC_tf_MipBias : public CCC_Float
-{
-public:
-    void apply()
-    {
-        if (nullptr == HW.pDevice)
-            return;
-
-        SSManager.SetMipLODBias(*value);
-    }
-
-    CCC_tf_MipBias(LPCSTR N, float* v) : CCC_Float(N, v, -3.f, +3.f){};
-    virtual void Execute(LPCSTR args)
-    {
-        CCC_Float::Execute(args);
-        apply();
-    }
-    virtual void Status(TStatus& S)
-    {
-        CCC_Float::Status(S);
-        apply();
-    }
-};
 class CCC_R2GM : public CCC_Float
 {
 public:
@@ -728,8 +680,10 @@ void xrRender_initconsole()
     CMD4(CCC_Float, "r2_no_details_radius", &ps_r2_no_details_radius, 0.f, 5.f);
     CMD4(CCC_Float, "r2_no_rain_radius", &ps_r2_no_rain_radius, 0.f, 5.f);
 
-    CMD2(CCC_tf_Aniso, "r__tf_aniso", &ps_r__tf_Anisotropic); //	{1..16}
-    CMD2(CCC_tf_MipBias, "r__tf_mipbias", &ps_r__tf_Mipbias); // {-3 +3}
+    CMD4(CCC_Integer, "r__tf_aniso", &ps_r__tf_Anisotropic, 1, 16);
+    CMD4(CCC_Integer, "r__tf_aniso_smap", &ps_r__tf_Anisotropic_SMAP, 1, 16);
+    CMD4(CCC_Float, "r__tf_mipbias", &ps_r__tf_Mipbias, -3.f, +3.f);
+    CMD4(CCC_Float, "r__tf_mipbias_smap", &ps_r__tf_Mipbias_SMAP, -3.f, +3.f);
 
     CMD4(CCC_Float, "r2_ssa_lod_a", &ps_r2_ssaLOD_A, 16, 192);
     CMD4(CCC_Float, "r2_ssa_lod_b", &ps_r2_ssaLOD_B, 32, 128);

@@ -45,18 +45,22 @@ HRESULT dx10State::Apply(CBackend& cmd_list) const
     cmd_list.StateManager.SetRasterizerState(m_pRasterizerState);
     VERIFY(m_pDepthStencilState);
     cmd_list.StateManager.SetDepthStencilState(m_pDepthStencilState);
-    if (m_uiStencilRef != -1)
+    if (m_uiStencilRef != static_cast<UINT>(-1))
         cmd_list.StateManager.SetStencilRef(m_uiStencilRef);
     VERIFY(m_pBlendState);
     cmd_list.StateManager.SetBlendState(m_pBlendState);
     cmd_list.StateManager.SetAlphaRef(m_uiAlphaRef);
 
-    SSManager.GSApplySamplers(context_id, m_GSSamplers);
-    SSManager.VSApplySamplers(context_id, m_VSSamplers);
-    SSManager.PSApplySamplers(context_id, m_PSSamplers);
-    SSManager.HSApplySamplers(context_id, m_HSSamplers);
-    SSManager.DSApplySamplers(context_id, m_DSSamplers);
-    SSManager.CSApplySamplers(context_id, m_CSSamplers);
+    // HACK to get current phase
+    auto& dsgraph = RImplementation.get_context(context_id);
+    const bool smap = dsgraph.phase == CRender::PHASE_SMAP;
+
+    SSManager.VSApplySamplers(context_id, m_VSSamplers, smap);
+    SSManager.PSApplySamplers(context_id, m_PSSamplers, smap);
+    SSManager.GSApplySamplers(context_id, m_GSSamplers, smap);
+    SSManager.HSApplySamplers(context_id, m_HSSamplers, smap);
+    SSManager.DSApplySamplers(context_id, m_DSSamplers, smap);
+    SSManager.CSApplySamplers(context_id, m_CSSamplers, smap);
 
     return S_OK;
 }
@@ -93,7 +97,7 @@ void dx10State::InitSamplers(tSamplerHArray& SamplerArray, SimulatorStates& stat
         for (int i = 0; i <= iMaxSampler; ++i)
         {
             if (SamplerUsed[i])
-                SamplerArray.push_back(SSManager.GetState(descArray[i]));
+                SamplerArray.push_back(SSManager.GetStateHandle(descArray[i]));
             else
                 SamplerArray.push_back(u32(dx10SamplerStateCache::hInvalidHandle));
         }

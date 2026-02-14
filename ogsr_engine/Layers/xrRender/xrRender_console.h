@@ -43,8 +43,8 @@ extern ECORE_API float ps_r__GLOD_ssa_end;
 extern ECORE_API float ps_r__LOD;
 
 extern ECORE_API float ps_r__ssaDISCARD;
-extern ECORE_API int ps_r__tf_Anisotropic;
-extern ECORE_API float ps_r__tf_Mipbias;
+extern ECORE_API int ps_r__tf_Anisotropic, ps_r__tf_Anisotropic_SMAP;
+extern ECORE_API float ps_r__tf_Mipbias, ps_r__tf_Mipbias_SMAP;
 
 extern float ps_r2_no_details_radius;
 extern float ps_r2_no_rain_radius;

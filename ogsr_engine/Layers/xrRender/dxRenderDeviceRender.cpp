@@ -95,10 +95,7 @@ void dxRenderDeviceRender::SetupStates()
 {
     HW.Caps.Update();
 
-    //	TODO: DX10: Implement Resetting of render states into default mode
-    // VERIFY(!"dxRenderDeviceRender::SetupStates not implemented.");
-    SSManager.SetMaxAnisotropy(ps_r__tf_Anisotropic);
-    SSManager.SetMipLODBias(ps_r__tf_Mipbias);
+    SSManager.SetParams(ps_r__tf_Anisotropic, ps_r__tf_Mipbias);
 }
 
 void dxRenderDeviceRender::Create(HWND hWnd, u32& dwWidth, u32& dwHeight, float& fWidth_2, float& fHeight_2)

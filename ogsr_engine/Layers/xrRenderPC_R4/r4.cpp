@@ -895,6 +895,9 @@ void CRender::Begin()
         id.cmd_list.OnFrameBegin();
     }
 
+    // state main state parms on frame start only
+    SSManager.SetParams(ps_r__tf_Anisotropic, ps_r__tf_Mipbias);
+
     Vertex.Flush();
     Index.Flush();
 
