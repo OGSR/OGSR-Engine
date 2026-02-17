@@ -5,6 +5,7 @@ namespace PAPI
 {
 // refs
 struct ParticleEffect;
+
 struct PARTICLES_API ParticleAction
 {
     enum
@@ -16,7 +17,7 @@ struct PARTICLES_API ParticleAction
     PActionEnum type{}; // Type field
     ParticleAction() { m_Flags.zero(); }
 
-    virtual void Execute(ParticleEffect* pe, const float dt) = 0;
+    virtual void Execute(ParticleEffect* pe, const float dt, float& m_max) = 0;
     virtual void Transform(const Fmatrix& m) = 0;
 
     virtual void Load(IReader& F) = 0;
@@ -30,7 +31,7 @@ class ParticleActions
     PAVec m_actions;
 
 public:
-    std::mutex m_bLocked;
+    std::shared_mutex m_bLocked;
 
     ParticleActions() { m_actions.reserve(4); }
     ~ParticleActions() { clear(); }
@@ -42,10 +43,11 @@ public:
         m_actions.clear();
     }
     IC void append(ParticleAction* pa) { m_actions.push_back(pa); }
-    IC bool empty() { return m_actions.empty(); }
+    IC bool empty() const { return m_actions.empty(); }
     IC PAVecIt begin() { return m_actions.begin(); }
     IC PAVecIt end() { return m_actions.end(); }
-    IC int size() { return m_actions.size(); }
+    IC int size() const { return m_actions.size(); }
+
     void copy(ParticleActions* src);
 };
 }; // namespace PAPI

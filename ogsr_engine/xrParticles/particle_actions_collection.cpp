@@ -5,7 +5,7 @@
 
 using namespace PAPI;
 
-void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
+void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     float magdt = magnitude * dt;
 
@@ -346,7 +346,7 @@ void PAPI::PAAvoid::Execute(ParticleEffect* effect, float dt)
 void PAPI::PAAvoid::Transform(const Fmatrix& m) { position.transform(positionL, m); }
 //-------------------------------------------------------------------------------------------------
 
-void PABounce::Execute(ParticleEffect* effect, float dt)
+void PABounce::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     switch (position.type)
     {
@@ -661,7 +661,7 @@ void PABounce::Transform(const Fmatrix& m) { position.transform(positionL, m); }
 //-------------------------------------------------------------------------------------------------
 
 // Set the secondary position of each particle to be its position.
-void PACopyVertexB::Execute(ParticleEffect* effect, float dt)
+void PACopyVertexB::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     u32 i;
 
@@ -688,7 +688,7 @@ void PACopyVertexB::Transform(const Fmatrix&) { ; }
 //-------------------------------------------------------------------------------------------------
 
 // Dampen velocities
-void PADamping::Execute(ParticleEffect* effect, float dt)
+void PADamping::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     // This is important if dt is != 1.
     pVector one(1, 1, 1);
@@ -711,7 +711,7 @@ void PADamping::Transform(const Fmatrix&) { ; }
 //-------------------------------------------------------------------------------------------------
 
 // Exert force on each particle away from explosion center
-void PAExplosion::Execute(ParticleEffect* effect, float dt)
+void PAExplosion::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     float radius = velocity * age;
     float magdt = magnitude * dt;
@@ -740,7 +740,7 @@ void PAExplosion::Transform(const Fmatrix& m) { m.transform_tiny(center, centerL
 //-------------------------------------------------------------------------------------------------
 
 // Follow the next particle in the list
-void PAFollow::Execute(ParticleEffect* effect, float dt)
+void PAFollow::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     float magdt = magnitude * dt;
     float max_radiusSqr = max_radius * max_radius;
@@ -781,7 +781,7 @@ void PAFollow::Transform(const Fmatrix&) { ; }
 //-------------------------------------------------------------------------------------------------
 
 // Inter-particle gravitation
-void PAGravitate::Execute(ParticleEffect* effect, float dt)
+void PAGravitate::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     float magdt = magnitude * dt;
     float max_radiusSqr = max_radius * max_radius;
@@ -838,7 +838,7 @@ void PAGravitate::Transform(const Fmatrix&) { ; }
 //-------------------------------------------------------------------------------------------------
 
 // Acceleration in a constant direction
-void PAGravity::Execute(ParticleEffect* effect, float dt)
+void PAGravity::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     pVector ddir(direction * dt);
 
@@ -852,7 +852,7 @@ void PAGravity::Transform(const Fmatrix&) { ; }
 //-------------------------------------------------------------------------------------------------
 
 // Accelerate particles along a line
-void PAJet::Execute(ParticleEffect* effect, float dt)
+void PAJet::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     float magdt = magnitude * dt;
     float max_radiusSqr = max_radius * max_radius;
@@ -909,7 +909,7 @@ void PAJet::Transform(const Fmatrix& m)
 //-------------------------------------------------------------------------------------------------
 
 // Accelerate particles form center
-void PAScatter::Execute(ParticleEffect* effect, float dt)
+void PAScatter::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     float magdt = magnitude * dt;
     float max_radiusSqr = max_radius * max_radius;
@@ -964,8 +964,10 @@ void PAScatter::Transform(const Fmatrix& m) { m.transform_tiny(center, centerL);
 //-------------------------------------------------------------------------------------------------
 
 // Get rid of older particles
-void PAKillOld::Execute(ParticleEffect* effect, float dt)
+void PAKillOld::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
+    tm_max = age_limit;
+
     // Must traverse list in reverse order so Remove will work
     for (int i = effect->p_count - 1; i >= 0; i--)
     {
@@ -979,7 +981,7 @@ void PAKillOld::Transform(const Fmatrix&) { ; }
 //-------------------------------------------------------------------------------------------------
 
 // Match velocity to near neighbors
-void PAMatchVelocity::Execute(ParticleEffect* effect, float dt)
+void PAMatchVelocity::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     float magdt = magnitude * dt;
     float max_radiusSqr = max_radius * max_radius;
@@ -1035,7 +1037,7 @@ void PAMatchVelocity::Execute(ParticleEffect* effect, float dt)
 void PAMatchVelocity::Transform(const Fmatrix&) { ; }
 //-------------------------------------------------------------------------------------------------
 
-void PAMove::Execute(ParticleEffect* effect, float dt)
+void PAMove::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     // Step particle positions forward by dt, and age the particles.
     for (u32 i = 0; i < effect->p_count; i++)
@@ -1052,7 +1054,7 @@ void PAMove::Transform(const Fmatrix&) { ; }
 //-------------------------------------------------------------------------------------------------
 
 // Accelerate particles towards a line
-void PAOrbitLine::Execute(ParticleEffect* effect, float dt)
+void PAOrbitLine::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     float magdt = magnitude * dt;
     float max_radiusSqr = max_radius * max_radius;
@@ -1112,7 +1114,7 @@ void PAOrbitLine::Transform(const Fmatrix& m)
 //-------------------------------------------------------------------------------------------------
 
 // Accelerate particles towards a point
-void PAOrbitPoint::Execute(ParticleEffect* effect, float dt)
+void PAOrbitPoint::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     float magdt = magnitude * dt;
     float max_radiusSqr = max_radius * max_radius;
@@ -1158,7 +1160,7 @@ void PAOrbitPoint::Transform(const Fmatrix& m) { m.transform_tiny(center, center
 //-------------------------------------------------------------------------------------------------
 
 // Accelerate in random direction each time step
-void PARandomAccel::Execute(ParticleEffect* effect, float dt)
+void PARandomAccel::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     for (u32 i = 0; i < effect->p_count; i++)
     {
@@ -1177,7 +1179,7 @@ void PARandomAccel::Transform(const Fmatrix& m) { gen_acc.transform_dir(gen_accL
 //-------------------------------------------------------------------------------------------------
 
 // Immediately displace position randomly
-void PARandomDisplace::Execute(ParticleEffect* effect, float dt)
+void PARandomDisplace::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     for (u32 i = 0; i < effect->p_count; i++)
     {
@@ -1196,7 +1198,7 @@ void PARandomDisplace::Transform(const Fmatrix& m) { gen_disp.transform_dir(gen_
 //-------------------------------------------------------------------------------------------------
 
 // Immediately assign a random velocity
-void PARandomVelocity::Execute(ParticleEffect* effect, float dt)
+void PARandomVelocity::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     for (u32 i = 0; i < effect->p_count; i++)
     {
@@ -1229,7 +1231,7 @@ static inline void _pconstrain(float x0, float v0, float xf, float vf,
 // Over time, restore particles to initial positions
 // Put all particles on the surface of a statue, explode the statue,
 // and then suck the particles back to the original position. Cool!
-void PARestore::Execute(ParticleEffect* effect, float dt)
+void PARestore::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     if (time_left <= 0)
     {
@@ -1309,7 +1311,7 @@ void PARestore::Transform(const Fmatrix&) { ; }
 //-------------------------------------------------------------------------------------------------
 
 // Kill particles with positions on wrong side of the specified domain
-void PASink::Execute(ParticleEffect* effect, float dt)
+void PASink::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     // Must traverse list in reverse order so Remove will work
     for (int i = effect->p_count - 1; i >= 0; i--)
@@ -1325,7 +1327,7 @@ void PASink::Transform(const Fmatrix& m) { position.transform(positionL, m); }
 //-------------------------------------------------------------------------------------------------
 
 // Kill particles with velocities on wrong side of the specified domain
-void PASinkVelocity::Execute(ParticleEffect* effect, float dt)
+void PASinkVelocity::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     // Must traverse list in reverse order so Remove will work
     for (int i = effect->p_count - 1; i >= 0; i--)
@@ -1341,7 +1343,7 @@ void PASinkVelocity::Transform(const Fmatrix& m) { velocity.transform_dir(veloci
 //-------------------------------------------------------------------------------------------------
 
 // Randomly add particles to the system
-void PASource::Execute(ParticleEffect* effect, float dt)
+void PASource::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     if (m_Flags.is(flSilent))
         return;
@@ -1400,7 +1402,7 @@ void PASource::Transform(const Fmatrix& m)
 }
 //-------------------------------------------------------------------------------------------------
 
-void PASpeedLimit::Execute(ParticleEffect* effect, float dt)
+void PASpeedLimit::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     float min_sqr = min_speed * min_speed;
     float max_sqr = max_speed * max_speed;
@@ -1428,7 +1430,7 @@ void PASpeedLimit::Transform(const Fmatrix&) { ; }
 
 
 // Change color of all particles toward the specified color
-void PATargetColor::Execute(ParticleEffect* effect, float dt)
+void PATargetColor::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     float COEFF = STEP_DEFAULT / dt;
     float scaleFac = scale * STEP_DEFAULT;
@@ -1438,7 +1440,7 @@ void PATargetColor::Execute(ParticleEffect* effect, float dt)
     {
         Particle& m = effect->particles[i];
 
-		if (m.age < timeFrom /* * tm_max */ || m.age > timeTo /* * tm_max */) continue;
+		if (m.age < timeFrom * tm_max || m.age > timeTo * tm_max) continue;
 
         c_p.set(m.colorR, m.colorG, m.colorB, m.colorA);
         c_t.set(color.x, color.y, color.z, alpha);
@@ -1455,7 +1457,7 @@ void PATargetColor::Transform(const Fmatrix&) { ; }
 //-------------------------------------------------------------------------------------------------
 
 // Change sizes of all particles toward the specified size
-void PATargetSize::Execute(ParticleEffect* effect, float dt)
+void PATargetSize::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     float scaleFac_x = scale.x * dt;
     float scaleFac_y = scale.y * dt;
@@ -1475,7 +1477,7 @@ void PATargetSize::Transform(const Fmatrix&) { ; }
 //-------------------------------------------------------------------------------------------------
 
 // Change rotation of all particles toward the specified velocity
-void PATargetRotate::Execute(ParticleEffect* effect, float dt)
+void PATargetRotate::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     float scaleFac = scale * dt;
 
@@ -1493,7 +1495,7 @@ void PATargetRotate::Transform(const Fmatrix&) { ; }
 //-------------------------------------------------------------------------------------------------
 
 // Change velocity of all particles toward the specified velocity
-void PATargetVelocity::Execute(ParticleEffect* effect, float dt)
+void PATargetVelocity::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     float scaleFac = scale * dt;
 
@@ -1509,7 +1511,7 @@ void PATargetVelocity::Transform(const Fmatrix& m) { m.transform_dir(velocity, v
 // Immediately displace position using vortex
 // Vortex tip at center, around axis, with magnitude
 // and tightness exponent
-void PAVortex::Execute(ParticleEffect* effect, float dt)
+void PAVortex::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     float magdt = magnitude * dt;
     float max_radiusSqr = max_radius * max_radius;
@@ -1696,7 +1698,7 @@ void PATurbulenceExecuteStream(ParticleEffect* effect, u32 p_from, u32 p_to, pVe
     }
 }
 
-void PATurbulence::Execute(ParticleEffect* effect, float dt)
+void PATurbulence::Execute(ParticleEffect* effect, float dt, float& tm_max)
 {
     if (noise_start)
     {

@@ -1,4 +1,3 @@
-//---------------------------------------------------------------------------
 #include "stdafx.h"
 
 #include "particle_manager.h"
@@ -12,7 +11,6 @@ CParticleManager PM;
 PARTICLES_API IParticleManager* PAPI::ParticleManager() { return &PM; }
 
 CParticleManager::CParticleManager() {}
-
 CParticleManager::~CParticleManager() {}
 
 ParticleEffect* CParticleManager::GetEffectPtr(int effect_id)
@@ -55,6 +53,7 @@ int CParticleManager::CreateEffect(u32 max_particles)
 
     return eff_id;
 }
+
 void CParticleManager::DestroyEffect(int effect_id)
 {
     std::scoped_lock lock{m_effect_mtx};
@@ -62,6 +61,7 @@ void CParticleManager::DestroyEffect(int effect_id)
     R_ASSERT(effect_id >= 0 && effect_id < (int)m_effect_vec.size());
     xr_delete(m_effect_vec[effect_id]);
 }
+
 int CParticleManager::CreateActionList()
 {
     std::scoped_lock lock{m_action_mtx};
@@ -85,6 +85,7 @@ int CParticleManager::CreateActionList()
 
     return list_id;
 }
+
 void CParticleManager::DestroyActionList(int alist_id)
 {
     std::scoped_lock lock{m_action_mtx};
@@ -103,18 +104,21 @@ void CParticleManager::PlayEffect(int effect_id, int alist_id)
     VERIFY(pa);
     if (pa == nullptr)
         return; // ERROR
-    std::scoped_lock<std::mutex> m(pa->m_bLocked);
+
+    std::shared_lock m{pa->m_bLocked};
+
     // Step through all the actions in the action list.
-    for (PAVecIt it = pa->begin(); it != pa->end(); ++it)
+    for (auto* it : *pa)
     {
-        VERIFY((*it));
-		if ((*it))
-            switch ((*it)->type)
+        if (it)
+        {
+            switch (it->type)
             {
-            case PASourceID: static_cast<PASource*>(*it)->m_Flags.set(PASource::flSilent, FALSE); break;
-            case PAExplosionID: static_cast<PAExplosion*>(*it)->age = 0.f; break;
-            case PATurbulenceID: static_cast<PATurbulence*>(*it)->age = 0.f; break;
+            case PASourceID: smart_cast<PASource*>(it)->m_Flags.set(PASource::flSilent, FALSE); break;
+            case PAExplosionID: smart_cast<PAExplosion*>(it)->age = 0.f; break;
+            case PATurbulenceID: smart_cast<PATurbulence*>(it)->age = 0.f; break;
             }
+        }
     }
 }
 
@@ -125,16 +129,14 @@ void CParticleManager::StopEffect(int effect_id, int alist_id, BOOL deffered)
     VERIFY(pa);
     if (pa == nullptr)
         return; // ERROR
-    std::scoped_lock<std::mutex> m(pa->m_bLocked);
+
+    std::shared_lock m{pa->m_bLocked};
+
     // Step through all the actions in the action list.
-    for (PAVecIt it = pa->begin(); it != pa->end(); ++it)
-    {
-		if ((*it))
-            switch ((*it)->type)
-            {
-            case PASourceID: static_cast<PASource*>(*it)->m_Flags.set(PASource::flSilent, TRUE); break;
-            }
-    }
+    for (auto* it : *pa)
+        if (it && it->type == PASourceID)
+            smart_cast<PASource*>(it)->m_Flags.set(PASource::flSilent, TRUE);
+
     if (!deffered)
     {
         // effect
@@ -146,20 +148,23 @@ void CParticleManager::StopEffect(int effect_id, int alist_id, BOOL deffered)
 // update&render
 void CParticleManager::Update(int effect_id, int alist_id, float dt)
 {
+    ZoneScoped;
+
     ParticleEffect* pe = GetEffectPtr(effect_id);
     ParticleActions* pa = GetActionListPtr(alist_id);
 
     VERIFY(pa);
     VERIFY(pe);
 
-    std::scoped_lock<std::mutex> m(pa->m_bLocked);
+    std::shared_lock m{pa->m_bLocked};
+
+    float kill_old_time = 1.0f;
 
     // Step through all the actions in the action list.
-    for (PAVecIt it = pa->begin(); it != pa->end(); ++it)
+    for (auto* it : *pa)
     {
-        VERIFY((*it));
-		if ((*it))
-			(*it)->Execute(pe, dt);
+        if (it)
+            it->Execute(pe, dt, kill_old_time);
     }
 }
 
@@ -174,23 +179,26 @@ void CParticleManager::Transform(int alist_id, const Fmatrix& full, const Fvecto
     VERIFY(pa);
     if (pa == nullptr)
         return; // ERROR
-    std::scoped_lock<std::mutex> m(pa->m_bLocked);
 
     Fmatrix mT;
     mT.translate(full.c);
 
-    // Step through all the actions in the action list.
-    for (PAVecIt it = pa->begin(); it != pa->end(); ++it)
-    {
-		if (!(*it))
-			continue;
+    std::shared_lock m{pa->m_bLocked};
 
-        BOOL r = (*it)->m_Flags.is(ParticleAction::ALLOW_ROTATE);
-        const Fmatrix& m = r ? full : mT;
-        (*it)->Transform(m);
-        switch ((*it)->type)
+    // Step through all the actions in the action list.
+    for (auto* it : *pa)
+    {
+        if (!it)
+            continue;
+
+        BOOL r = it->m_Flags.is(ParticleAction::ALLOW_ROTATE);
+
+        it->Transform(r ? full : mT);
+
+        if (it->type == PASourceID)
         {
-        case PASourceID: static_cast<PASource*>(*it)->parent_vel = pVector(vel.x, vel.y, vel.z) * static_cast<PASource*>(*it)->parent_motion; break;
+            auto* _it = smart_cast<PASource*>(it);
+            _it->parent_vel = pVector{vel.x, vel.y, vel.z} * _it->parent_motion;
         }
     }
 }
@@ -201,11 +209,13 @@ void CParticleManager::RemoveParticle(int effect_id, u32 p_id)
     ParticleEffect* pe = GetEffectPtr(effect_id);
     pe->Remove(p_id);
 }
+
 void CParticleManager::SetMaxParticles(int effect_id, u32 max_particles)
 {
     ParticleEffect* pe = GetEffectPtr(effect_id);
     pe->Resize(max_particles);
 }
+
 void CParticleManager::SetCallback(int effect_id, OnBirthParticleCB b, OnDeadParticleCB d, void* owner, u32 param)
 {
     ParticleEffect* pe = GetEffectPtr(effect_id);
@@ -214,12 +224,14 @@ void CParticleManager::SetCallback(int effect_id, OnBirthParticleCB b, OnDeadPar
     pe->owner = owner;
     pe->param = param;
 }
+
 void CParticleManager::GetParticles(int effect_id, Particle*& particles, u32& cnt)
 {
     ParticleEffect* pe = GetEffectPtr(effect_id);
     particles = pe->particles;
     cnt = pe->p_count;
 }
+
 u32 CParticleManager::GetParticlesCount(int effect_id)
 {
     ParticleEffect* pe = GetEffectPtr(effect_id);
@@ -274,7 +286,9 @@ u32 CParticleManager::LoadActions(int alist_id, IReader& R, bool copFormat)
     // Execute the specified action list.
     ParticleActions* pa = GetActionListPtr(alist_id);
     VERIFY(pa);
-    std::scoped_lock<std::mutex> m(pa->m_bLocked);
+
+    std::scoped_lock m{pa->m_bLocked};
+
     pa->clear();
     if (R.length())
     {
