@@ -1080,10 +1080,40 @@ void player_hud::update(const Fmatrix& cam_trans)
         Fmatrix blend = anm->XFORM();
 
         if (anm->m_part == 0 || anm->m_part == 2)
-            m_transform.mulB_43(blend);
+        {
+            const IKinematics* K = m_model->dcast_PKinematics();
+            const u16 bone_id = K ? K->LL_BoneID(anm->m_pivot_bone) : static_cast<u16>(-1);
+            if (bone_id != static_cast<u16>(-1))
+            {
+                Fmatrix B = K->LL_GetTransform(bone_id);
+                Fmatrix invB;
+                invB.invert(B);
+                Fmatrix tmp;
+                tmp.mul_43(B, blend);
+                tmp.mulB_43(invB);
+                m_transform.mulB_43(tmp);
+            }
+            else
+                m_transform.mulB_43(blend);
+        }
 
         if (anm->m_part == 1 || anm->m_part == 2)
-            m_transform_2.mulB_43(blend);
+        {
+            const IKinematics* K = m_model_2->dcast_PKinematics();
+            const u16 bone_id = K ? K->LL_BoneID(anm->m_pivot_bone) : static_cast<u16>(-1);
+            if (bone_id != static_cast<u16>(-1))
+            {
+                Fmatrix B = K->LL_GetTransform(bone_id);
+                Fmatrix invB;
+                invB.invert(B);
+                Fmatrix tmp;
+                tmp.mul_43(B, blend);
+                tmp.mulB_43(invB);
+                m_transform_2.mulB_43(tmp);
+            }
+            else
+                m_transform_2.mulB_43(blend);
+        }
     }
 
     bool need_blend[2];
@@ -1165,7 +1195,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 
     {
         // single hand offset smoothing + syncing back to other hand animation on end
-        if (script_anim_part != u8(-1))
+        if (script_anim_part != static_cast<u8>(-1))
         {
             if (need_update_collision_local)
                 script_anim_offset_factor += Device.fTimeDelta * 2.5f;
@@ -1859,7 +1889,7 @@ void player_hud::updateMovementLayerState()
 }
 
 
-float player_hud::PlayBlendAnm(LPCSTR name, u8 part, float speed, float power, bool bLooped, bool no_restart)
+float player_hud::PlayBlendAnm(LPCSTR name, u8 part, float speed, float power, bool bLooped, bool no_restart, LPCSTR pivot_bone)
 {
     for (script_layer* anm : m_script_layers)
     {
@@ -1880,11 +1910,12 @@ float player_hud::PlayBlendAnm(LPCSTR name, u8 part, float speed, float power, b
             anm->anm->Speed() = speed;
             anm->m_power = power;
             anm->active = true;
+            anm->m_pivot_bone = pivot_bone;
             return (anm->anm->m_MParam.max_t - anm->anm->m_MParam.t_current) / anm->anm->Speed();
         }
     }
 
-    script_layer* anm = xr_new<script_layer>(name, part, speed, power, bLooped);
+    script_layer* anm = xr_new<script_layer>(name, part, speed, power, bLooped, pivot_bone);
     m_script_layers.push_back(anm);
     return (anm->anm->m_MParam.max_t - anm->anm->m_MParam.t_current) / anm->anm->Speed();
 }

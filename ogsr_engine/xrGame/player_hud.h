@@ -171,11 +171,35 @@ struct movement_layer
 
     const Fmatrix& XFORM(u8 part)
     {
-        blend.set(anm->XFORM());
-        blend.mul(blend_amount[part] * m_power);
-        blend.m[0][0] = 1.f;
-        blend.m[1][1] = 1.f;
-        blend.m[2][2] = 1.f;
+        auto min_jerk_interp = [](const float t) {
+            const float t3 = t * t * t;
+            return t3 * (6.0f * t * t - 15.0f * t + 10.0f);
+        };
+
+        const float eased = min_jerk_interp(blend_amount[part]);
+
+        // Rotation interpolation
+        Fquaternion qA;
+        qA.identity();
+        Fquaternion qB;
+        qB.set(anm->XFORM());
+        {
+            // Take m_power into account
+            float angle;
+            if (Fvector axis; qB.get_axis_angle(axis, angle))
+            {
+                angle *= m_power;
+                qB.rotation(axis, angle);
+            }
+        }
+        Fquaternion q;
+        q.slerp(qA, qB, eased);
+
+        // Translation interpolation
+        Fvector t = anm->XFORM().c;
+        t.mul(m_power * eased);
+
+        blend.mk_xform(q, t);
 
         return blend;
     }
@@ -191,12 +215,14 @@ struct script_layer
     bool active;
     Fmatrix blend;
     u8 m_part;
+    shared_str m_pivot_bone;
 
-    script_layer(LPCSTR name, u8 part, float speed = 1.f, float power = 1.f, bool looped = true)
+    script_layer(LPCSTR name, u8 part, float speed = 1.f, float power = 1.f, bool looped = true, LPCSTR pivot_bone = nullptr)
     {
         m_name = name;
         m_part = part;
         m_power = power;
+        m_pivot_bone = pivot_bone;
         blend.identity();
         anm = xr_new<CObjectAnimator>();
         anm->Load(name);
@@ -227,11 +253,35 @@ struct script_layer
 
     const Fmatrix& XFORM()
     {
-        blend.set(anm->XFORM());
-        blend.mul(blend_amount * m_power);
-        blend.m[0][0] = 1.f;
-        blend.m[1][1] = 1.f;
-        blend.m[2][2] = 1.f;
+        auto min_jerk_interp = [](const float t) {
+            const float t3 = t * t * t;
+            return t3 * (6.0f * t * t - 15.0f * t + 10.0f);
+        };
+
+        const float eased = min_jerk_interp(blend_amount);
+
+        // Rotation interpolation
+        Fquaternion qA;
+        qA.identity();
+        Fquaternion qB;
+        qB.set(anm->XFORM());
+        {
+            // Take m_power into account
+            float angle;
+            if (Fvector axis; qB.get_axis_angle(axis, angle))
+            {
+                angle *= m_power;
+                qB.rotation(axis, angle);
+            }
+        }
+        Fquaternion q;
+        q.slerp(qA, qB, eased);
+
+        // Translation interpolation
+        Fvector t = anm->XFORM().c;
+        t.mul(m_power * eased);
+
+        blend.mk_xform(q, t);
 
         return blend;
     }
@@ -379,7 +429,7 @@ public:
     xr_vector<hand_motions> _m_hand_motions;
     player_hud_motion_container* get_hand_motions(LPCSTR section, IKinematicsAnimated* animatedHudItem);
 
-    float PlayBlendAnm(LPCSTR name, u8 part = 0, float speed = 1.f, float power = 1.f, bool bLooped = true, bool no_restart = false);
+    float PlayBlendAnm(LPCSTR name, u8 part = 0, float speed = 1.f, float power = 1.f, bool bLooped = true, bool no_restart = false, LPCSTR pivot_bone = nullptr);
     void StopBlendAnm(LPCSTR name, bool bForce = false);
     void StopAllBlendAnms(bool bForce);
     float SetBlendAnmTime(LPCSTR name, float time);
