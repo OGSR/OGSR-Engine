@@ -12,7 +12,7 @@
       <AssemblerListingLocation>$(SolutionDir)\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</AssemblerListingLocation>
       <ObjectFileName>$(SolutionDir)\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</ObjectFileName>
       <ProgramDataBaseFileName>$(SolutionDir)\ogsr_engine\_TEMP\Engine\$(Configuration)\$(Platform)\$(ProjectName)\</ProgramDataBaseFileName>
-      <AdditionalOptions>/source-charset:utf-8 /we4566 /we4828 /we4715 /we4189 /we4595 /we4834 /we4018 /we4101 /we4552 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/source-charset:utf-8 /we4566 /we4828 /we4715 /we4189 /we4595 /we4834 /we4018 /we4101 /we4552 /we4551 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(SolutionDir)\3rd_party\Src\tracy\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>
