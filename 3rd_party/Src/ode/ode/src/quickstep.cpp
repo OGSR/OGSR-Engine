@@ -313,8 +313,6 @@ static  __cdecl  int compare_index_error (const void *a, const void *b)
 
 #endif
 
-static thread_local auto rng = std::mt19937(std::random_device()());
-
 static void SOR_LCP (int m, int nb, dRealMutablePtr J, int *jb, dxBody * const *body,
 					 dRealPtr invI, dRealMutablePtr lambda, dRealMutablePtr fc, dRealMutablePtr b,
 					 dRealMutablePtr lo, dRealMutablePtr hi, dRealPtr cfm, int *findex,
@@ -427,6 +425,8 @@ static void SOR_LCP (int m, int nb, dRealMutablePtr J, int *jb, dxBody * const *
 #endif
 #ifdef RANDOMLY_REORDER_CONSTRAINTS
 		if ((iteration & 3) == 0) {
+            static thread_local std::mt19937 rng{std::random_device{}()};
+
 			std::shuffle(order, order + m, rng);
 			/*
 			for (i=1; i<m; ++i) {

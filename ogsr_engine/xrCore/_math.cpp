@@ -19,6 +19,12 @@ typedef struct _PROCESSOR_POWER_INFORMATION
 // Initialized on startup
 XRCORE_API Fmatrix Fidentity;
 
+CRandom& _GetRandom()
+{
+    thread_local static CRandom _Random{};
+    return _Random;
+}
+
 namespace CPU
 {
 _processor_info ID;

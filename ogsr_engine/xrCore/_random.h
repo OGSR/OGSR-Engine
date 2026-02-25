@@ -25,6 +25,8 @@ public:
     [[nodiscard]] inline float randFs(const float range, const float offs) { return offs + randFs(range); }
 };
 
-inline thread_local CRandom Random{};
+CRandom& _GetRandom();
+
+#define Random _GetRandom()
 
 #define rand Random.randI
