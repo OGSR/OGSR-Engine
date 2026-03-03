@@ -83,18 +83,10 @@ void CTextureDescrMngr::LoadLTX()
     }
 }
 
-void CTextureDescrMngr::LoadTHM(LPCSTR initial)
+void CTextureDescrMngr::LoadTHM(LPCSTR initial_path)
 {
     FS_FileSet flist;
-    FS.file_list(flist, initial, FS_ListFiles, "*.thm");
-
-    if (strstr(Core.Params, "-dev_reference_copy"))
-    {
-        if (strcmp(initial, fsgame::game_textures) == 0)
-        {
-            FS.file_list(flist, fsgame::game_textures_reference, FS_ListFiles, "*.thm"); // FS_FileSet is actually a set )
-        }
-    }
+    FS.file_list(flist, initial_path, FS_ListFiles, "*.thm");
 
 #ifdef DEBUG
     Msg("count of .thm files=%d", flist.size());
@@ -103,25 +95,35 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
     FS_FileSetIt It = flist.begin();
     const FS_FileSetIt It_e = flist.end();
 
-    STextureParams tp;
-    string_path fn;
+    string_path full_name;
 
     m_texture_details.reserve(m_texture_details.size() + flist.size());
     m_detail_scalers.reserve(m_detail_scalers.size() + flist.size());
 
     for (; It != It_e; ++It)
     {
-        FS.update_path(fn, initial, (*It).name.c_str());
-        IReader* F = FS.r_open(fn);
+        LPCSTR file_nm = It->name.c_str();
 
-        xr_strcpy(fn, (*It).name.c_str());
-        fix_texture_thm_name(fn);
+        FS.update_path(full_name, initial_path, file_nm);
+        IReader* F = FS.r_open(full_name);
 
-        R_ASSERT(F->find_chunk_thm(THM_CHUNK_TYPE, fn));
-        F->r_u32();
-        tp.Clear();
-        tp.Load(*F, fn);
-        FS.r_close(F);
+        LoadTHMFile(F, file_nm);
+    }
+}
+
+void CTextureDescrMngr::LoadTHMFile(IReader* F, LPCSTR file_nm)
+{
+    string_path key;
+    xr_strcpy(key, file_nm);
+    fix_texture_thm_name(key);
+
+    R_ASSERT(F->find_chunk_thm(THM_CHUNK_TYPE, key));
+    F->r_u32();
+
+    STextureParams tp{};
+    tp.Load(*F, key);
+    FS.r_close(F);
+
         if (
 #ifdef USE_SHOC_THM_FORMAT
             STextureParams::ttImage == tp.fmt || STextureParams::ttTerrain == tp.fmt || STextureParams::ttNormalMap == tp.fmt
@@ -130,7 +132,7 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 #endif
         )
         {
-            texture_desc& desc = m_texture_details[fn];
+            texture_desc& desc = m_texture_details[key];
 
             if (tp.detail_name.size() && tp.flags.is_any(STextureParams::flDiffuseDetail | STextureParams::flBumpDetail))
             {
@@ -140,7 +142,7 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
                 desc.m_assoc = xr_new<texture_assoc>();
                 desc.m_assoc->detail_name = tp.detail_name;
 
-                m_detail_scalers[fn] = tp.detail_scale;
+                m_detail_scalers[key] = tp.detail_scale;
 
                 desc.m_assoc->usage = 0;
 
@@ -166,6 +168,46 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
                 desc.m_spec->m_bump_name = tp.bump_name;
                 desc.m_spec->m_use_steep_parallax = true;
             }
+        }
+}
+
+
+void CTextureDescrMngr::EnsureTHMLoaded(const shared_str& tex_name)
+{
+    if (tex_name.empty())
+        return;
+
+    static bool dev_reference_copy = strstr(Core.Params, "-dev_reference_copy");
+    if (!dev_reference_copy)
+        return;
+
+    if (m_texture_details.contains(tex_name))
+        return;
+
+    static xr_set<xr_string> checked;
+
+    if (checked.contains(tex_name.c_str()))
+        return;
+
+    checked.emplace(tex_name.c_str());
+
+    string_path file_nm;
+    string_path full_name;
+
+    xr_strcpy(file_nm, tex_name.c_str());
+    xr_strcat(file_nm, ".thm");
+
+    FS.update_path(full_name, fsgame::game_textures, file_nm);
+    if (IReader* F = FS.r_open(full_name))
+    {
+        LoadTHMFile(F, file_nm);
+    }
+    else
+    {
+        FS.update_path(full_name, fsgame::level, file_nm);
+        if (IReader* F2 = FS.r_open(full_name))
+        {
+            LoadTHMFile(F2, file_nm);
         }
     }
 }
@@ -205,8 +247,10 @@ CTextureDescrMngr::~CTextureDescrMngr()
     m_detail_scalers.clear();
 }
 
-shared_str CTextureDescrMngr::GetBumpName(const shared_str& tex_name) const
+shared_str CTextureDescrMngr::GetBumpName(const shared_str& tex_name)
 {
+    EnsureTHMLoaded(tex_name);
+
     const auto I = m_texture_details.find(tex_name);
     if (I != m_texture_details.end())
     {
@@ -218,8 +262,10 @@ shared_str CTextureDescrMngr::GetBumpName(const shared_str& tex_name) const
     return "";
 }
 
-BOOL CTextureDescrMngr::UseSteepParallax(const shared_str& tex_name) const
+BOOL CTextureDescrMngr::UseSteepParallax(const shared_str& tex_name)
 {
+    EnsureTHMLoaded(tex_name);
+
     const auto I = m_texture_details.find(tex_name);
     if (I != m_texture_details.end())
     {
@@ -231,8 +277,10 @@ BOOL CTextureDescrMngr::UseSteepParallax(const shared_str& tex_name) const
     return FALSE;
 }
 
-float CTextureDescrMngr::GetMaterial(const shared_str& tex_name) const
+float CTextureDescrMngr::GetMaterial(const shared_str& tex_name)
 {
+    EnsureTHMLoaded(tex_name);
+
     const auto I = m_texture_details.find(tex_name);
     if (I != m_texture_details.end())
     {
@@ -244,14 +292,18 @@ float CTextureDescrMngr::GetMaterial(const shared_str& tex_name) const
     return 1.0f;
 }
 
-float CTextureDescrMngr::GetScale(const shared_str& tex_name) const
+float CTextureDescrMngr::GetScale(const shared_str& tex_name)
 {
+    EnsureTHMLoaded(tex_name);
+
     const auto It2 = m_detail_scalers.find(tex_name);
     return It2 == m_detail_scalers.end() ? 1.f : It2->second; // TA->cs;
 }
 
-void CTextureDescrMngr::GetTextureUsage(const shared_str& tex_name, BOOL& bDiffuse, BOOL& bBump) const
+void CTextureDescrMngr::GetTextureUsage(const shared_str& tex_name, BOOL& bDiffuse, BOOL& bBump)
 {
+    EnsureTHMLoaded(tex_name);
+
     const auto I = m_texture_details.find(tex_name);
     if (I != m_texture_details.end())
     {
@@ -264,8 +316,10 @@ void CTextureDescrMngr::GetTextureUsage(const shared_str& tex_name, BOOL& bDiffu
     }
 }
 
-BOOL CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, LPCSTR& res) const
+BOOL CTextureDescrMngr::GetDetailTexture(const shared_str& tex_name, LPCSTR& res)
 {
+    EnsureTHMLoaded(tex_name);
+
     const auto I = m_texture_details.find(tex_name);
     if (I != m_texture_details.end())
     {

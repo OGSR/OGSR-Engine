@@ -33,7 +33,11 @@ class CTextureDescrMngr
     string_unordered_map<shared_str, float> m_detail_scalers;
 
     void LoadLTX();
-    void LoadTHM(LPCSTR initial);
+
+    void LoadTHM(LPCSTR initial_path);
+    void LoadTHMFile(IReader* F, LPCSTR file_nm);
+
+    void EnsureTHMLoaded(const shared_str& tex_name);
 
 public:
     ~CTextureDescrMngr();
@@ -41,13 +45,13 @@ public:
     void UnLoad();
 
 public:
-    shared_str GetBumpName(const shared_str& tex_name) const;
+    shared_str GetBumpName(const shared_str& tex_name);
 
-    float GetMaterial(const shared_str& tex_name) const;
-    float GetScale(const shared_str& tex_name) const;
+    float GetMaterial(const shared_str& tex_name);
+    float GetScale(const shared_str& tex_name);
 
-    void GetTextureUsage(const shared_str& tex_name, BOOL& bDiffuse, BOOL& bBump) const;
-    BOOL GetDetailTexture(const shared_str& tex_name, LPCSTR& res) const;
+    void GetTextureUsage(const shared_str& tex_name, BOOL& bDiffuse, BOOL& bBump);
+    BOOL GetDetailTexture(const shared_str& tex_name, LPCSTR& res);
 
-    BOOL UseSteepParallax(const shared_str& tex_name) const;
+    BOOL UseSteepParallax(const shared_str& tex_name);
 };
