@@ -32,7 +32,7 @@ CEncyclopediaArticle::CEncyclopediaArticle() { readed = false; }
 
 CEncyclopediaArticle::~CEncyclopediaArticle()
 {
-    if (data()->image.GetParent())
+    if (data() && data()->image.GetParent())
         data()->image.GetParent()->DetachChild(&(data()->image));
 }
 
