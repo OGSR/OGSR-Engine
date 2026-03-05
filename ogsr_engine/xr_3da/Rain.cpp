@@ -140,7 +140,7 @@ void CEffect_Rain::OnFrame()
     CObject* E = g_pGameLevel->CurrentViewEntity();
     if (E && E->renderable_ROS())
     {
-        float* hemi_cube = E->renderable_ROS()->get_luminocity_hemi_cube();
+        const float* hemi_cube = E->renderable_ROS()->get_luminocity_hemi_cube();
         float hemi_val = _max(hemi_cube[0], hemi_cube[1]);
         hemi_val = _max(hemi_val, hemi_cube[2]);
         hemi_val = _max(hemi_val, hemi_cube[3]);

@@ -93,6 +93,9 @@ void CBackend::Invalidate()
         textures_ps[ps_it++] = nullptr;
     for (u32 vs_it = 0; vs_it < CTexture::mtMaxVertexShaderTextures;)
         textures_vs[vs_it++] = nullptr;
+
+    o_hemi = 0.f;
+    o_sun = 0.f;
 }
 
 void CBackend::set_Textures(STextureList* _T)
@@ -350,13 +353,14 @@ void CBackend::apply_lmaterial()
     ZoneScoped;
 
     const R_constant* C = get_c(c_sbase)._get(); // get sampler
-    if (nullptr == C)
+    if (!C)
         return;
 
     VERIFY(RC_dest_sampler == C->destination);
     VERIFY(RC_dx10texture == C->type);
+
     const CTexture* T = get_ActiveTexture(u32(C->samp.index));
-    if (!T)
+    if (!T) //Simp: У JR тут R_ASSERT(T); но я кажется ловил ситуацию когда текстуры нет
         return;
 
     float mtl = T->m_material;
@@ -365,9 +369,6 @@ void CBackend::apply_lmaterial()
 
     if (!T->m_is_hot)
         hemi.set_hotness(0.f, 0.f, 0.f, 0.f);
-
-    hemi.set_pos_faces(o_hemi_cube[CROS_impl::CUBE_FACE_POS_X], o_hemi_cube[CROS_impl::CUBE_FACE_POS_Y], o_hemi_cube[CROS_impl::CUBE_FACE_POS_Z]);
-    hemi.set_neg_faces(o_hemi_cube[CROS_impl::CUBE_FACE_NEG_X], o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Y], o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Z]);
 
     const float scale = T->m_detail_scale;
     hemi.set_scale(scale, scale, scale, 1 / r__dtex_range);

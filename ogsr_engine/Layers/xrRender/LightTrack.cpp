@@ -19,12 +19,9 @@ CROS_impl::CROS_impl()
     dwFrame = static_cast<u32>(-1);
     dwFrameSmooth = static_cast<u32>(-1);
 
-    shadow_recv_frame = static_cast<u32>(-1);
-    shadow_recv_slot = -1;
-
     result_count = 0;
     result_iterator = 0;
-    result_frame = static_cast<u32>(-1);
+
     result_sun = 0;
     hemi_value = 0.5f;
     hemi_smooth = 0.5f;
@@ -395,7 +392,7 @@ void CROS_impl::prepare_lights(const Fvector& position, IRenderable* O)
         // Select nearest lights
         const Fvector bb_size = {radius, radius, radius};
 
-        static xr_vector<ISpatial*> lstSpatial;
+        xr_vector<ISpatial*> lstSpatial;
         g_SpatialSpace->q_box(lstSpatial, 0, STYPE_LIGHTSOURCEHEMI, position, bb_size);
 
         for (const auto& spatial : lstSpatial)

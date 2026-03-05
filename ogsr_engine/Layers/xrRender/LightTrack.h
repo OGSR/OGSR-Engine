@@ -37,14 +37,15 @@ public:
         Fcolor color;
     };
 
-public:
+private:
     // general
     u32 MODE;
+
+
     std::atomic<u32> dwFrame;
     std::atomic<u32> dwFrameSmooth;
     bool skip{};
 
-    //
     xr_vector<Item> track; // everything what touches
     xr_vector<Light> lights; //
 
@@ -53,13 +54,7 @@ public:
     collide::ray_cache cache_sun;
     s32 result_count;
     u32 result_iterator;
-    u32 result_frame;
     s32 result_sun;
-
-public:
-    u32 shadow_gen_frame{};
-    u32 shadow_recv_frame;
-    int shadow_recv_slot;
 
 private:
     float hemi_cube[NUM_FACES];
@@ -83,45 +78,36 @@ public:
         float result = _max(approximate.x, _max(approximate.y, approximate.z));
         clamp(result, 0.f, 1.f);
         return (result);
-    };
-    virtual float get_luminocity_hemi() { return get_hemi(); }
-    virtual float* get_luminocity_hemi_cube() { return hemi_cube_smooth; }
 
-    void add(light* source);
+    }
+    float get_luminocity_hemi() override { return hemi_smooth; }
+    const float* get_luminocity_hemi_cube() override { return hemi_cube_smooth; }
+
     void update(IRenderable* O);
+
+    // that is for render only
     void update_smooth(IRenderable* O = nullptr);
 
     ICF float get_hemi()
     {
-        if (dwFrameSmooth != Device.dwFrame)
-            update_smooth();
         return hemi_smooth;
     }
     ICF float get_sun()
     {
-        if (dwFrameSmooth != Device.dwFrame)
-            update_smooth();
         return sun_smooth;
-    }
-    ICF Fvector3& get_approximate()
-    {
-        if (dwFrameSmooth != Device.dwFrame)
-            update_smooth();
-        return approximate;
     }
 
     const float* get_hemi_cube()
     {
-        if (dwFrameSmooth != Device.dwFrame)
-            update_smooth();
         return hemi_cube_smooth;
     }
+    // end of render only
 
     CROS_impl();
     virtual ~CROS_impl(){};
 
 private:
-    // static inline CubeFaces get_cube_face(Fvector3& dir);
+    void add(light* source);
 
     // Accumulates light from direction for corresponding faces
     static inline void accum_hemi(float* hemi_cube, const Fvector3& dir, const float scale);

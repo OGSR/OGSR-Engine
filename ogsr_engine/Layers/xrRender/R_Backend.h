@@ -291,7 +291,6 @@ public:
     IC void SetViewport(const D3D_VIEWPORT& viewport) const;
 
     float o_hemi;
-    float o_hemi_cube[6/*CROS_impl::NUM_FACES*/];
     float o_sun;
 
     void apply_lmaterial();

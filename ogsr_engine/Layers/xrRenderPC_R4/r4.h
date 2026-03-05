@@ -200,18 +200,28 @@ public:
     IC R_occlusion::occq_result occq_free(const u32 ID, const bool get_data = false) { return HWOCC.occq_free(ID, get_data); }
     IC void occq_enable(const bool v) { HWOCC.set_enabled(v); }
 
-    ICF void apply_object(CBackend& cmd_list, IRenderable* O)
+    ICF void apply_object(CBackend& cmd_list, IRenderable* O, bool main_pass)
     {
-        if (nullptr == O)
+        if (!O)
             return;
-        if (nullptr == O->renderable_ROS())
-            return;
-        CROS_impl& LT = *((CROS_impl*)O->renderable_ROS());
-        LT.update_smooth(O);
-        cmd_list.o_hemi = 0.75f * LT.get_hemi();
-        cmd_list.o_sun = 0.75f * LT.get_sun();
+
         cmd_list.hemi.set_hotness(O->GetHotness(), O->GetTransparency(), 0.f, 0.f);
-        CopyMemory(cmd_list.o_hemi_cube, LT.get_hemi_cube(), sizeof cmd_list.o_hemi_cube);
+
+        if (O->renderable_ROS())
+        {
+            CROS_impl* LT = smart_cast<CROS_impl*>(O->renderable_ROS());
+
+            if (main_pass)
+                LT->update_smooth(O);
+
+            cmd_list.o_hemi = 0.75f * LT->get_hemi();
+            cmd_list.o_sun = 0.75f * LT->get_sun();
+
+            const float* o_hemi_cube = LT->get_hemi_cube();
+
+            cmd_list.hemi.set_pos_faces(o_hemi_cube[CROS_impl::CUBE_FACE_POS_X], o_hemi_cube[CROS_impl::CUBE_FACE_POS_Y], o_hemi_cube[CROS_impl::CUBE_FACE_POS_Z]);
+            cmd_list.hemi.set_neg_faces(o_hemi_cube[CROS_impl::CUBE_FACE_NEG_X], o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Y], o_hemi_cube[CROS_impl::CUBE_FACE_NEG_Z]);
+        }
     }
 
 public:

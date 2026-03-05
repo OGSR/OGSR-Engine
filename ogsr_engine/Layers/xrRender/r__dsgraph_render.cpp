@@ -166,7 +166,7 @@ void R_dsgraph_structure::r_dsgraph_render_graph_dynamic(u32 _priority)
                 for (auto& item : *items.items)
                 {
                     cmd_list.set_xform_world(item.Matrix);
-                    RImplementation.apply_object(cmd_list, item.pObject);
+                    RImplementation.apply_object(cmd_list, item.pObject, phase == CRender::PHASE_NORMAL);
                     cmd_list.apply_lmaterial();
 
                     const float lod = calcLOD(item.ssa, item.pVisual->getVisData().sphere.R);
@@ -203,7 +203,7 @@ void render_item(u32 context_id, const T& item)
     dsgraph.cmd_list.set_Element(item.second.se);
 
     dsgraph.cmd_list.set_xform_world(item.second.Matrix);
-    RImplementation.apply_object(dsgraph.cmd_list, item.second.pObject);
+    RImplementation.apply_object(dsgraph.cmd_list, item.second.pObject, dsgraph.phase == CRender::PHASE_NORMAL);
     dsgraph.cmd_list.apply_lmaterial();
 
     // Change culling mode if HUD meshes were flipped
@@ -266,7 +266,7 @@ void render_large_map(const u32 context_id, mapSortedLarge_T& map)
         for (auto& item : *items.items)
         {
             dsgraph.cmd_list.set_xform_world(item.Matrix);
-            RImplementation.apply_object(dsgraph.cmd_list, item.pObject);
+            RImplementation.apply_object(dsgraph.cmd_list, item.pObject, dsgraph.phase == CRender::PHASE_NORMAL);
             dsgraph.cmd_list.apply_lmaterial();
 
             const float lod = calcLOD(item.ssa, item.pVisual->getVisData().sphere.R);
