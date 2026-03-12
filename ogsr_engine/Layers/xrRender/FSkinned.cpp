@@ -371,8 +371,9 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
             Vertices1W.create(V.vCount, (vertBoned1W*)_verts_);
         }
 
-        const u32 vStride = FVF::ComputeVertexSize(dwDecl_01W, 0);
-        VERIFY(vStride == sizeof(vertHW_1W));
+        constexpr u32 vStride = FVF::ComputeVertexSize(dwDecl_01W, 0);
+        static_assert(vStride == sizeof(vertHW_1W));
+
         VERIFY(NULL == V.p_rm_Vertices);
 
         //	TODO: DX10: Check for memory fragmentation
@@ -400,8 +401,9 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
             Vertices2W.create(V.vCount, (vertBoned2W*)_verts_);
         }
 
-        const u32 vStride = FVF::ComputeVertexSize(dwDecl_2W, 0);
-        VERIFY(vStride == sizeof(vertHW_2W));
+        constexpr u32 vStride = FVF::ComputeVertexSize(dwDecl_2W, 0);
+        static_assert(vStride == sizeof(vertHW_2W));
+
         VERIFY(NULL == V.p_rm_Vertices);
 
         //	TODO: DX10: Check for memory fragmentation
@@ -428,8 +430,9 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
             Vertices3W.create(V.vCount, (vertBoned3W*)_verts_);
         }
 
-        const u32 vStride = FVF::ComputeVertexSize(dwDecl_3W, 0);
-        VERIFY(vStride == sizeof(vertHW_3W));
+        constexpr u32 vStride = FVF::ComputeVertexSize(dwDecl_3W, 0);
+        static_assert(vStride == sizeof(vertHW_3W));
+
         VERIFY(NULL == V.p_rm_Vertices);
 
         //	TODO: DX10: Check for memory fragmentation
@@ -456,8 +459,9 @@ void CSkeletonX_ext::_Load_hw(Fvisual& V, void* _verts_)
             Vertices4W.create(V.vCount, (vertBoned4W*)_verts_);
         }
 
-        const u32 vStride = FVF::ComputeVertexSize(dwDecl_4W, 0);
-        VERIFY(vStride == sizeof(vertHW_4W));
+        constexpr u32 vStride = FVF::ComputeVertexSize(dwDecl_4W, 0);
+        static_assert(vStride == sizeof(vertHW_4W));
+
         VERIFY(NULL == V.p_rm_Vertices);
 
         //	TODO: DX10: Check for memory fragmentation
