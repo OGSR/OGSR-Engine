@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include "trivial_encryptor.h"
-#include "../COMMON_AI/random32.h"
 #if __has_include("..\build_config_overrides\trivial_encryptor_ovr.h")
 #include "..\build_config_overrides\trivial_encryptor_ovr.h"
 #define TE_CUSTOM_OVR
@@ -11,7 +10,22 @@ trivial_encryptor g_trivial_encryptor;
 
 class random32
 {
-    CRandom32 generator;
+    class CRandom32
+    {
+    private:
+        u32 m_seed{};
+
+    public:
+        IC u32 seed() { return (m_seed); }
+
+        IC void seed(u32 seed) { m_seed = seed; }
+
+        IC u32 random(u32 range)
+        {
+            m_seed = 0x08088405 * m_seed + 1;
+            return (u32(u64(m_seed) * u64(range) >> 32));
+        }
+    } generator;
 
 public:
     random32() = delete;

@@ -277,6 +277,7 @@ public:
     virtual void OnRender();
 
     bool b_registered;
+    bool b_need_user_input{};
 };
 
 extern ENGINE_API CLoadScreenRenderer load_screen_renderer;

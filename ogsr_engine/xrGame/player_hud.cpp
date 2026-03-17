@@ -1065,7 +1065,7 @@ void player_hud::update(const Fmatrix& cam_trans)
 
             if (anm->blend_amount > 0.f)
             {
-                if (anm->anm->bLoop || anm->anm->m_MParam.t < anm->anm->m_MParam.max_t)
+                if (anm->anm->bLoop || anm->anm->m_MParam.t_current < anm->anm->m_MParam.max_t)
                     anm->anm->Update(Device.fTimeDelta);
                 else
                     anm->Stop(false);
@@ -1880,13 +1880,13 @@ float player_hud::PlayBlendAnm(LPCSTR name, u8 part, float speed, float power, b
             anm->anm->Speed() = speed;
             anm->m_power = power;
             anm->active = true;
-            return (anm->anm->m_MParam.max_t - anm->anm->m_MParam.t) / anm->anm->Speed();
+            return (anm->anm->m_MParam.max_t - anm->anm->m_MParam.t_current) / anm->anm->Speed();
         }
     }
 
     script_layer* anm = xr_new<script_layer>(name, part, speed, power, bLooped);
     m_script_layers.push_back(anm);
-    return (anm->anm->m_MParam.max_t - anm->anm->m_MParam.t) / anm->anm->Speed();
+    return (anm->anm->m_MParam.max_t - anm->anm->m_MParam.t_current) / anm->anm->Speed();
 }
 
 void player_hud::StopBlendAnm(LPCSTR name, bool bForce)
@@ -1918,7 +1918,7 @@ float player_hud::SetBlendAnmTime(LPCSTR name, float time)
             if (!anm->anm->IsPlaying())
                 return 0;
 
-            float speed = (anm->anm->m_MParam.max_t - anm->anm->m_MParam.t) / time;
+            float speed = (anm->anm->m_MParam.max_t - anm->anm->m_MParam.t_current) / time;
             anm->anm->Speed() = speed;
             return speed;
         }

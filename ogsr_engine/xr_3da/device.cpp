@@ -608,6 +608,7 @@ void CLoadScreenRenderer::start(bool b_user_input)
 {
     Device.seqRender.Add(this);
     b_registered = true;
+    b_need_user_input = b_user_input;
 }
 
 void CLoadScreenRenderer::stop()
@@ -618,6 +619,7 @@ void CLoadScreenRenderer::stop()
     Device.seqRender.Remove(this);
     pApp->DestroyLoadingScreen();
     b_registered = false;
+    b_need_user_input = false;
 }
 
 void CLoadScreenRenderer::OnRender() { pApp->load_draw_internal(); }

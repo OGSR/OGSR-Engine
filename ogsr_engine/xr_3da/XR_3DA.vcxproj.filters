@@ -339,6 +339,8 @@
     </ClInclude>
     <ClInclude Include="defines.h" />
     <ClInclude Include="xrLevel.h" />
+    <ClInclude Include="cf_dynamic_mesh.h" />
+    <ClInclude Include="..\build_config_defines.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="defines.cpp">
@@ -563,6 +565,7 @@
     <ClCompile Include="ReShadeCompat.cpp">
       <Filter>General</Filter>
     </ClCompile>
+    <ClCompile Include="cf_dynamic_mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">

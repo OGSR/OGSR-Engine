@@ -3,6 +3,7 @@
 #include "IGame_Persistent.h"
 #include "igame_objectpool.h"
 #include "xr_object.h"
+#include "..\xr_3da\x_ray.h"
 
 IGame_ObjectPool::IGame_ObjectPool(void) {}
 
@@ -10,6 +11,10 @@ IGame_ObjectPool::~IGame_ObjectPool(void) { R_ASSERT(m_PrefetchObjects.empty());
 
 void IGame_ObjectPool::prefetch()
 {
+    // в огср замороченный префетч объектов (не моделей), требует много переделок в xrGame, потому пусть работает только в тч-режиме.
+    if (CApplication::CheckCsCopMode())
+        return;
+
     R_ASSERT(m_PrefetchObjects.empty());
 
     int p_count = 0;

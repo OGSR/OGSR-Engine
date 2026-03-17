@@ -8,26 +8,24 @@ class ENGINE_API CObjectAnimator
 private:
     using MotionVec = xr_vector<COMotion*>;
 
-protected:
+public:
+    const SAnimParams& anim_param() { return m_MParam; }
+    bool bLoop;
 
     shared_str m_Name;
 
     Fmatrix m_XFORM;
-
+    SAnimParams m_MParam;
     MotionVec m_Motions;
     float m_Speed;
 
     COMotion* m_Current;
-
     void LoadMotions(LPCSTR fname);
     void SetActiveMotion(COMotion* mot);
+    COMotion* FindMotionByName(LPCSTR name);
 
-public:
     CObjectAnimator();
     virtual ~CObjectAnimator();
-
-    bool bLoop;
-    SAnimParams m_MParam;
 
     void Clear();
     void Load(LPCSTR name);

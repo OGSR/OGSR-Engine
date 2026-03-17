@@ -39,6 +39,8 @@ public:
 
     BOOL bReady;
 
+    CInifile* pLevel;
+
 public: // deferred sound events
     struct _esound_delegate
     {
@@ -72,18 +74,16 @@ public:
     // Main interface
     CObject* CurrentEntity(void) const { return pCurrentEntity; }
     CObject* CurrentViewEntity(void) const { return pCurrentViewEntity; }
-    void SetEntity(CObject* O) { pCurrentEntity = pCurrentViewEntity = O; }
-    void SetViewEntity(CObject* O) { pCurrentViewEntity = O; }
+    void SetEntity(CObject* O);
+    void SetViewEntity(CObject* O);
 
     void SoundEvent_Register(ref_sound_data_ptr S, float range);
     void SoundEvent_Dispatch();
     void SoundEvent_OnDestDestroy(Feel::Sound*);
 
-    // Loader interface
-    // ref_shader					LL_CreateShader			(int S, int T, int M, int C);
     void LL_CheckTextures();
 
-    virtual void OnChangeCurrentWeather(const char* sect) = 0;
+    virtual void OnChangeCurrentWeather(const char* sect) {}
 
     virtual void OnDestroyObject(u16 id) = 0;
 

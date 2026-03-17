@@ -117,7 +117,8 @@ enum ESMFlags
 
 struct ECORE_API SAnimParams
 {
-    float t;
+    float t_current;
+    float tmp;
     float min_t;
     float max_t;
     BOOL bPlay;
@@ -128,27 +129,28 @@ public:
     {
         bWrapped = false;
         bPlay = false;
-        t = 0.f;
+        t_current = 0.f;
         min_t = 0.f;
         max_t = 0.f;
+        tmp = 0.f;
     }
-
     void Set(CCustomMotion* M);
     void Set(float start_frame, float end_frame, float fps);
 
-    float Frame() const { return t; }
+    float Frame() const { return t_current; }
 
     void Update(float dt, float speed, bool loop);
-
     void Play()
     {
         bPlay = true;
-        t = min_t;
+        t_current = min_t;
+        tmp = min_t;
     }
     void Stop()
     {
         bPlay = false;
-        t = min_t;
+        t_current = min_t;
+        tmp = min_t;
     }
     void Pause(bool val) { bPlay = !val; }
 };

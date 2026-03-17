@@ -288,7 +288,11 @@ void CCameraManager::RemoveAllPPEffector()
 
 void CCameraManager::OnEffectorAdded(SBaseEffector* e) { }
 
-void CCameraManager::OnEffectorReleased(SBaseEffector* e) { }
+void CCameraManager::OnEffectorReleased(SBaseEffector* e)
+{
+    if (!e->m_on_b_remove_callback.empty())
+        e->m_on_b_remove_callback();
+}
 
 void CCameraManager::UpdateFromCamera(const CCameraBase* C)
 {

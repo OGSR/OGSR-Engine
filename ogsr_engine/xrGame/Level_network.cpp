@@ -24,7 +24,6 @@ void Remove_all_statics();
 void CLevel::remove_objects()
 {
     m_is_removing_objects = true;
-    BOOL b_stored = psDeviceFlags.test(rsDisableObjectsAsCrows);
 
     u32 m_base, c_base, m_lmaps, c_lmaps;
     Device.m_pRender->ResourcesGetMemoryUsage(m_base, c_base, m_lmaps, c_lmaps);
@@ -48,7 +47,6 @@ void CLevel::remove_objects()
         // ugly hack for checks that update is twice on frame
         // we need it since we do updates for checking network messages
         ++(Device.dwFrame);
-        psDeviceFlags.set(rsDisableObjectsAsCrows, TRUE);
 
         ClientReceive();
         ProcessGameEvents();
@@ -63,7 +61,6 @@ void CLevel::remove_objects()
     ph_commander_scripts().clear();
 
     space_restriction_manager().clear();
-    psDeviceFlags.set(rsDisableObjectsAsCrows, b_stored);
 
     ai().script_engine().collect_all_garbage();
 

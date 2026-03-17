@@ -5,8 +5,6 @@
 
 using namespace DirectX;
 
-constexpr size_t GAMESAVE_SIZE{768};
-
 extern bool use_reshade;
 
 extern void get_screenshot_width_and_height(uint32_t* out_width, uint32_t* out_height);

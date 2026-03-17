@@ -31,7 +31,7 @@ public:
     xr_vector<sLevelInfo> Levels;
     u32 Level_Current;
     void Level_Scan();
-    int Level_ID(LPCSTR name);
+    int Level_ID(const char* name, const char* ver = nullptr, const bool bSet = false);
     void Level_Set(u32 ID);
 
     // Loading
@@ -54,6 +54,8 @@ public:
     void load_draw_internal() const;
     void SetLoadingScreen(ILoadingScreen* newScreen);
     void DestroyLoadingScreen();
+
+    static bool CheckCsCopMode();
 };
 
 extern ENGINE_API CApplication* pApp;

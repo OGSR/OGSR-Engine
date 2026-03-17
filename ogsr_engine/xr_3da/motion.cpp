@@ -148,7 +148,7 @@ void SAnimParams::Set(float start_frame, float end_frame, float fps)
 {
     min_t = start_frame / fps;
     max_t = end_frame / fps;
-    t = min_t;
+    t_current = min_t;
 }
 
 void SAnimParams::Set(CCustomMotion* M)
@@ -160,18 +160,18 @@ void SAnimParams::Update(float dt, float speed, bool loop)
     if (!bPlay)
         return;
     bWrapped = false;
-    t += speed * dt;
-    if (t > max_t)
+    t_current += speed * dt;
+    if (t_current > max_t)
     {
         bWrapped = true;
         if (loop)
         {
             float len = max_t - min_t;
-            float k = float(iFloor((t - min_t) / len));
-            t = t - k * len;
+            float k = float(iFloor((t_current - min_t) / len));
+            t_current = t_current - k * len;
         }
         else
-            t = max_t;
+            t_current = max_t;
     }
 }
 

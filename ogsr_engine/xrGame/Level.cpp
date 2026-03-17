@@ -378,8 +378,6 @@ void CLevel::OnFrame()
 {
     m_feel_deny.update();
 
-    psDeviceFlags.set(rsDisableObjectsAsCrows, false);
-
     // commit events from bullet manager from prev-frame
     Device.Statistic->BulletManager.Begin();
     BulletManager().CommitEvents();

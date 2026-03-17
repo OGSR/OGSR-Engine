@@ -14,6 +14,7 @@
 
 #include "../xrRenderDX10/3DFluid/dx103DFluidManager.h"
 #include "../xrRender/ShaderResourceTraits.h"
+#include "../../xr_3da/x_ray.h"
 
 CRender RImplementation;
 
@@ -795,6 +796,9 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
         defines.emplace_back("SSFX_TERRA_POM_REFINE", c_ssfx_terrain_pom_refine);
     }
     
+    if (CApplication::CheckCsCopMode())
+        defines.emplace_back("USE_CS_COP_LMAP", "1");
+
     // finish
     defines.emplace_back(nullptr, nullptr);
 

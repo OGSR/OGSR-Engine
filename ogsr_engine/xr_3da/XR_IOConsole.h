@@ -111,7 +111,7 @@ public:
 
 	virtual void OnRender();
 	virtual void OnFrame();
-	virtual void OnScreenResolutionChanged();
+	virtual void OnScreenResolutionChanged() override;
 
 	string64 ConfigFile;
 	bool bVisible;

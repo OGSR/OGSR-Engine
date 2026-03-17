@@ -53,7 +53,7 @@ constexpr LPCSTR level_hom = "level.hom";
 constexpr LPCSTR level_fog_vol = "level.fog_vol";
 constexpr LPCSTR level_snd_env = "level.snd_env";
 constexpr LPCSTR level_som = "level.som";
-
+constexpr LPCSTR level_ltx = "level.ltx";
 constexpr LPCSTR level_ps_static = "level.ps_static";
 constexpr LPCSTR level_ps_static_ltx = "level.ps_static.ltx";
 
