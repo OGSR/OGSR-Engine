@@ -39,12 +39,21 @@ static IReader* open_archive_chunk(void* ptr, u32 ID, const char* archiveName, s
 
                 if (!result && shouldDecrypt) // Let's try to decode with Rus key
                 {
-                    MsgDbg("[%s]: decoding of %s with WW key failed, trying RU key...", __FUNCTION__, archiveName);
+                    MsgDbg("~~[%s]: decoding of [%s] with WW key failed, trying RU key...", __FUNCTION__, archiveName);
                     g_trivial_encryptor.encode(src_data, dwSize, src_data); // rollback
                     g_trivial_encryptor.decode(src_data, dwSize, src_data, trivial_encryptor::key_flag::russian);
                     result = _decompressLZ(&dest, &dest_sz, src_data, dwSize, archiveSize);
-                }
 
+                    if (!result)
+                    {
+                        g_trivial_encryptor.encode(src_data, dwSize, src_data, trivial_encryptor::key_flag::russian); // rollback
+
+                        result = _decompressLZ(&dest, &dest_sz, src_data, dwSize, archiveSize);
+                        if (result)
+                            MsgDbg("--[%s]: found CS/COP archive [%s]", __FUNCTION__, archiveName);
+                    }
+                }
+                
                 CHECK_OR_EXIT(result, make_string("[%s] Can't decompress archive [%s]", __FUNCTION__, archiveName));
 
                 xr_free(src_data);
@@ -56,7 +65,7 @@ static IReader* open_archive_chunk(void* ptr, u32 ID, const char* archiveName, s
         dwPtr = SetFilePointer(ptr, dwSize, nullptr, FILE_CURRENT);
         R_ASSERT(dwPtr != INVALID_SET_FILE_POINTER, archiveName, Debug.error2string(GetLastError()));
     }
-};
+}
 
 void CLocatorAPI::archive::open_db()
 {
