@@ -55,8 +55,8 @@ static void collideAABBs (dxGeom *g1, dxGeom *g2,
   if (g1->body == g2->body && g1->body) return;
 
   // test if the category and collide bitfields match
-  if ( ((g1->category_bits & g2->collide_bits) ||
-	(g2->category_bits & g1->collide_bits)) == 0) {
+  if (((g1->category_bits & g2->collide_bits) && (g2->category_bits & g1->collide_bits)) == 0)
+  {
     return;
   }
 
