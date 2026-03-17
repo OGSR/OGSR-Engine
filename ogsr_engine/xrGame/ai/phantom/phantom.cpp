@@ -295,7 +295,7 @@ CParticlesObject* CPhantom::PlayParticles(const shared_str& name, BOOL bAutoRemo
 {
     CParticlesObject* ps = CParticlesObject::Create(name.c_str(), bAutoRemove);
     ps->UpdateParent(xform, {});
-    ps->Play();
+    ps->Play(false);
     return bAutoRemove ? 0 : ps;
 }
 

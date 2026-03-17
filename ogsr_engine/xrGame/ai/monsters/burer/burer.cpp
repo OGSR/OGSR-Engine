@@ -353,7 +353,7 @@ void CBurer::UpdateGraviObject()
     pos.translate_over(m_gravi_object.cur_pos);
 
     ps->UpdateParent(pos, {});
-    ps->Play(); // ps->Play(false);
+    ps->Play(false);
 
     // hit objects
     m_nearest.clear();

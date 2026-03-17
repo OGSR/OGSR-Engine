@@ -102,7 +102,7 @@ const shared_str CParticlesObject::Name()
 }
 
 //----------------------------------------------------
-void CParticlesObject::Play(BOOL hudMode)
+void CParticlesObject::Play(bool hudMode)
 {
     dwLastTime = Device.dwTimeGlobal - 33ul;
     market = Device.dwFrame - 1;

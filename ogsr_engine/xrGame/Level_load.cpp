@@ -44,7 +44,7 @@ BOOL CLevel::Load_GameSpecific_After()
 
             pStaticParticles = CParticlesObject::Create(ref_name, FALSE, false);
             pStaticParticles->UpdateParent(transform, {});
-            pStaticParticles->Play();
+            pStaticParticles->Play(false);
             m_StaticParticles.push_back(pStaticParticles);
         }
     }
@@ -63,7 +63,7 @@ BOOL CLevel::Load_GameSpecific_After()
 
             pStaticParticles = CParticlesObject::Create(ref_name, FALSE, false);
             pStaticParticles->UpdateParent(transform, {});
-            pStaticParticles->Play();
+            pStaticParticles->Play(false);
             m_StaticParticles.push_back(pStaticParticles);
         }
         FS.r_close(F);

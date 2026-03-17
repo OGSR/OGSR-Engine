@@ -802,7 +802,7 @@ void CCustomZone::PlayIdleParticles()
             m_pIdleParticles->UpdateParent(XFORM(), {});
         }
         m_pIdleParticles->UpdateParent(XFORM(), {});
-        m_pIdleParticles->Play();
+        m_pIdleParticles->Play(false);
     }
 
     StartIdleLight();
@@ -863,7 +863,7 @@ void CCustomZone::PlayBlowoutParticles()
     CParticlesObject* pParticles;
     pParticles = CParticlesObject::Create(*m_sBlowoutParticles, TRUE);
     pParticles->UpdateParent(XFORM(), {});
-    pParticles->Play();
+    pParticles->Play(false);
 
     m_fBlowoutTimeLeft = Device.dwTimeGlobal + m_BendGrass_Blowout_time;
 
@@ -953,7 +953,7 @@ void CCustomZone::PlayEntranceParticles(CGameObject* pObject)
             PP->MakeXFORM(pObject, play_bone, dir, Fvector().set(0, 0, 0), xform);
             pParticles->UpdateParent(xform, vel);
             {
-                pParticles->Play();
+                pParticles->Play(false);
                 //. <-->
                 //. PP->StartParticles (particle_str, play_bone, dir, ID());
             }
@@ -976,7 +976,7 @@ void CCustomZone::PlayBulletParticles(Fvector& pos)
     M.c.set(pos);
 
     pParticles->UpdateParent(M, {});
-    pParticles->Play();
+    pParticles->Play(false);
 }
 
 void CCustomZone::PlayObjectIdleParticles(CGameObject* pObject)
@@ -1407,7 +1407,7 @@ void CCustomZone::ThrowOutArtefact(CArtefact* pArtefact)
         CParticlesObject* pParticles;
         pParticles = CParticlesObject::Create(*m_sArtefactSpawnParticles, TRUE);
         pParticles->UpdateParent(pArtefact->XFORM(), {});
-        pParticles->Play();
+        pParticles->Play(false);
     }
 
     m_ArtefactBornSound.play_at_pos(0, pos);
@@ -1534,7 +1534,7 @@ void CCustomZone::PlayAccumParticles()
         CParticlesObject* pParticles;
         pParticles = CParticlesObject::Create(*m_sAccumParticles, TRUE);
         pParticles->UpdateParent(XFORM(), {});
-        pParticles->Play();
+        pParticles->Play(false);
     }
 
     if (m_accum_sound._handle())
@@ -1548,7 +1548,7 @@ void CCustomZone::PlayAwakingParticles()
         CParticlesObject* pParticles;
         pParticles = CParticlesObject::Create(*m_sAwakingParticles, TRUE);
         pParticles->UpdateParent(XFORM(), {});
-        pParticles->Play();
+        pParticles->Play(false);
     }
 
     if (m_awaking_sound._handle())

@@ -739,7 +739,7 @@ CParticlesObject* CBaseMonster::PlayParticles(const shared_str& name, const Fvec
     matrix.translate_over(position);
 
     (xformed) ? ps->SetXFORM(matrix) : ps->UpdateParent(matrix, {});
-    ps->Play();
+    ps->Play(false);
 
     return ps;
 }

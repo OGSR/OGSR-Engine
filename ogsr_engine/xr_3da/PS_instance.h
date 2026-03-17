@@ -27,7 +27,7 @@ public:
 
     IC BOOL PSI_alive() { return m_iLifeTime > 0; }
 
-    virtual void Play(BOOL hudMode = FALSE) = 0;
+    virtual void Play(bool hudMode) = 0;
     virtual BOOL Locked() { return FALSE; }
 
     virtual shared_str shedule_Name() const { return shared_str("particle_instance"); };

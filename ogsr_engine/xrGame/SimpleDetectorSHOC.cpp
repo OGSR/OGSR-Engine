@@ -329,7 +329,7 @@ void CCustomDetectorSHOC::UpdateNightVisionMode()
             zone_info.pParticle->UpdateParent(pZone->XFORM(), zero_vector);
 
             if (!zone_info.pParticle->IsPlaying())
-                zone_info.pParticle->Play();
+                zone_info.pParticle->Play(false);
         }
         else
         {

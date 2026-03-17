@@ -30,7 +30,7 @@ public:
     void UpdateParent(const Fmatrix& m, const Fvector& vel);
 
     void play_at_pos(const Fvector& pos, BOOL xform = FALSE);
-    virtual void Play(BOOL hudMode = FALSE);
+    void Play(bool hudMode) override;
     void Stop(BOOL bDefferedStop = TRUE);
 
     bool IsLooped() { return m_bLooped; }

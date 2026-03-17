@@ -51,7 +51,7 @@ void CHelicopter::StartFlame()
     Fvector zero_vector;
     zero_vector.set(0.f, 0.f, 0.f);
     m_pParticle->UpdateParent(m_particleXFORM, zero_vector);
-    m_pParticle->Play();
+    m_pParticle->Play(false);
     m_flame_started = true;
 }
 
