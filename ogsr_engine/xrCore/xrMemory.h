@@ -162,6 +162,22 @@ T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, const std::sourc
     return new (ptr) T(std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5));
 }
 
+template <typename T, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6>
+T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, A6&& a6, const std::source_location& loc = std::source_location::current())
+{
+    T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
+    registerClass(ptr, loc);
+    return new (ptr) T(std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5), std::forward<A6>(a6));
+}
+
+template <typename T, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5, typename A6, typename A7>
+T* xr_new(A0&& a0, A1&& a1, A2&& a2, A3&& a3, A4&& a4, A5&& a5, A6&& a6, A7&& a7, const std::source_location& loc = std::source_location::current())
+{
+    T* ptr = static_cast<T*>(Memory.mem_alloc(sizeof(T)));
+    registerClass(ptr, loc);
+    return new (ptr) T(std::forward<A0>(a0), std::forward<A1>(a1), std::forward<A2>(a2), std::forward<A3>(a3), std::forward<A4>(a4), std::forward<A5>(a5), std::forward<A6>(a6), std::forward<A7>(a7));
+}
+
 
 template <class T>
 IC void xr_delete(T*& ptr, const std::source_location& loc = std::source_location::current())

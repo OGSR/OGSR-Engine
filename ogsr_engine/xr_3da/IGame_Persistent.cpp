@@ -146,12 +146,10 @@ void IGame_Persistent::OnFrame()
     Device.Statistic->Particles_destroy = ps_destroy.size();
 
     // Play req particle systems
-    while (!ps_needtoplay.empty())
-    {
-        auto& psi = ps_needtoplay.back();
-        ps_needtoplay.pop_back();
-        psi->Play();
-    }
+    std::erase_if(ps_needtoplay, [](auto* psi) {
+        psi->Play(false);
+        return true;
+    });
 
     // Destroy inactive particle systems
     while (!ps_destroy.empty())

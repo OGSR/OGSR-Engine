@@ -111,10 +111,3 @@ IC void viewport_size(float _viewport_near, const T& cam_info, float& h_w, float
 {
     tviewport_size<T>(Device, _viewport_near, cam_info, h_w, h_h);
 }
-
-#include "..\COMMON_AI\script_export_space.h"
-
-typedef class_exporter<CCameraBase> CCameraScript;
-add_to_type_list(CCameraScript)
-#undef script_type_list
-#define script_type_list save_type_list(CCameraScript)

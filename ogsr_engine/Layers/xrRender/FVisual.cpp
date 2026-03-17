@@ -31,7 +31,7 @@ void Fvisual::Load(const char* N, IReader* data, u32 dwFlags)
 {
     dxRender_Visual::Load(N, data, dwFlags);
 
-    auto dcl = xr_vector<D3DVERTEXELEMENT9>(MAXD3DDECLLENGTH + 1);
+    auto dcl = std::vector<D3DVERTEXELEMENT9>(MAXD3DDECLLENGTH + 1);
     D3DVERTEXELEMENT9* vFormat = nullptr;
     dwPrimitives = 0;
     BOOL loaded_v = false;

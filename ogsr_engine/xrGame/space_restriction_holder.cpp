@@ -212,18 +212,12 @@ void CSpaceRestrictionHolder::unregister_restrictor(CSpaceRestrictor* space_rest
 
 IC void CSpaceRestrictionHolder::collect_garbage()
 {
-    RESTRICTIONS::iterator I = m_restrictions.begin(), J;
-    RESTRICTIONS::iterator E = m_restrictions.end();
-    for (; I != E;)
-    {
-        if (!(*I).second->shape() && (*I).second->released() && (Device.dwTimeGlobal >= (*I).second->m_last_time_dec + time_to_delete))
+    std::erase_if(m_restrictions, [](auto& pair) {
+        if (!pair.second->shape() && pair.second->released() && (Device.dwTimeGlobal >= pair.second->m_last_time_dec + time_to_delete))
         {
-            J = I;
-            ++I;
-            xr_delete((*J).second);
-            m_restrictions.erase(J);
+            xr_delete(pair.second);
+            return true;
         }
-        else
-            ++I;
-    }
+        return false;
+    });
 }

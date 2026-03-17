@@ -414,6 +414,13 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lp
     Core._initialize("xray", NULL, TRUE, fsgame[0] ? fsgame : NULL);
     InitSettings();
 
+    // Adjust player & computer name for Asian
+    if (pSettings->line_exist("string_table", "no_native_input"))
+    {
+        strcpy_s(Core.UserName, "Player");
+        strcpy_s(Core.CompName, "Computer");
+    }
+
     {
         damn_keys_filter filter;
         (void)filter;

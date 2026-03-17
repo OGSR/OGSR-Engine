@@ -87,8 +87,8 @@ public:
     virtual shared_str correct_file_name(LPCSTR path, LPCSTR fn) { return fn; }
 
 private:
-    CXml(const CXml& copy);
-    void operator=(const CXml& copy);
+    CXml(const CXml& copy) = delete;
+    void operator=(const CXml& copy) = delete;
 
     typedef TiXmlElement XML_ELEM;
     TiXmlDocument m_Doc;

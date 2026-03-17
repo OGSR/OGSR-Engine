@@ -164,7 +164,7 @@ BOOL CObjectSpace::_RayQuery(collide::rq_results& r_dest, const collide::ray_def
 {
     ZoneScoped;
 
-    ZoneValue(R.range);
+    ZoneValue(static_cast<uint64_t>(R.range));
 
     // initialize query
     r_dest.r_clear();

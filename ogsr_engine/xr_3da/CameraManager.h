@@ -146,7 +146,11 @@ public:
     inline void SetVPNear(const float val) { m_cam_info.fNear = val; }
 
     void UpdateFromCamera(const CCameraBase* C);
+
     void ApplyDevice(bool effectOnly = false);
+    template<typename T> //чтобы передача в ApplyDevice чисел и всего кроме bool выдавала ошибку сборки
+    void ApplyDevice(T) = delete;
+
     static void ResetPP();
 
     CCameraManager(bool bApplyOnUpdate);

@@ -107,8 +107,8 @@ protected:
     void UpdateWorkload(float DT);
 
 public:
-    u32 o_workload_frame;
-    u32 o_workload_rframe;
+    std::atomic_uint o_workload_frame;
+    std::atomic_uint o_workload_rframe;
 
 public:
     CAI_Crow();

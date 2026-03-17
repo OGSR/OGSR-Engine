@@ -730,6 +730,12 @@ player_hud::~player_hud()
         ::Render->model_Delete(v);
         m_model = nullptr;
     }
+    if (m_model_2)
+    {
+        IRenderVisual* v2 = m_model_2->dcast_RenderVisual();
+        ::Render->model_Delete(v2);
+        m_model_2 = nullptr;
+    }
 
     auto it = m_pool.begin();
     auto it_e = m_pool.end();
@@ -1924,17 +1930,15 @@ float player_hud::SetBlendAnmTime(LPCSTR name, float time)
 
 player_hud_motion_container* player_hud::get_hand_motions(LPCSTR section, IKinematicsAnimated* animatedHudItem)
 {
-    for (hand_motions* phm : m_hand_motions)
+    for (hand_motions& phm : _m_hand_motions)
     {
-        if (phm->section == section)
-            return &phm->pm;
+        if (phm.section == section)
+            return &phm.pm;
     }
 
-    hand_motions* res = xr_new<hand_motions>();
-    res->section = section;
-    res->pm.load(true, m_model, animatedHudItem, section);
-    m_hand_motions.push_back(res);
+    hand_motions& res = _m_hand_motions.emplace_back();
+    res.section = section;
+    res.pm.load(true, m_model, animatedHudItem, section);
 
-    return &res->pm;
+    return &res.pm;
 }
-

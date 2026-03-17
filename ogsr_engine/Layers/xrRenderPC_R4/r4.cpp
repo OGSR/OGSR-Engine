@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "r4.h"
 #include "../xrRender/fbasicvisual.h"
-#include "../../xr_3da/xr_object.h"
 #include "../../xr_3da/CustomHUD.h"
 #include "../../xr_3da/igame_persistent.h"
 #include "../../xr_3da/environment.h"

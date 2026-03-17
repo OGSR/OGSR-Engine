@@ -20,6 +20,7 @@ class CPatrolPoint;
 class CPatrolPath;
 struct SRotation;
 class CPHCapture;
+class CCameraBase;
 
 typedef class_exporter<DLL_Pure> DLL_PureScript;
 add_to_type_list(DLL_PureScript)
@@ -86,3 +87,8 @@ add_to_type_list(ITextureScript)
 add_to_type_list(CPHCaptureScript)
 #undef script_type_list
 #define script_type_list save_type_list(CPHCaptureScript)
+
+using CCameraScript = class_exporter<CCameraBase>;
+add_to_type_list(CCameraScript)
+#undef script_type_list
+#define script_type_list save_type_list(CCameraScript)

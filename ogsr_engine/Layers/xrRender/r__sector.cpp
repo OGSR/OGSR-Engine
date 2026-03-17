@@ -6,8 +6,6 @@
 #include "stdafx.h"
 
 #include "r__sector.h"
-#include "../../xr_3da/xrLevel.h"
-#include "../../xr_3da/xr_object.h"
 #include "fbasicvisual.h"
 #include "../../xr_3da/IGame_Persistent.h"
 #include "dxRenderDeviceRender.h"

@@ -91,8 +91,8 @@ protected:
     float light_var_color;
     float light_var_range;
     float light_lifetime;
-    u32 light_start_frame{};
-    u32 light_update_frame{};
+    std::atomic_uint light_start_frame{};
+    std::atomic_uint light_update_frame{};
     float light_time;
     //включение подсветки во время выстрела
     bool m_bLightShotEnabled;

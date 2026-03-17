@@ -359,19 +359,10 @@ void CEntity::ChangeTeam(int team, int squad, int group)
     on_after_change_team();
 }
 
-u32 clampU(u32 x, u32 a, u32 b)
-{
-    if (x < a)
-        return a;
-    else if (x > b)
-        return b;
-    return x;
-}
-
 float CEntity::GetHotness()
 {
     if (AlreadyDie() || !g_Alive())
-        return 1.0f - (float)clampU(Device.dwTimeGlobal - m_level_death_time, 0, 20000) / 20000.0f;
+        return 1.0f - std::clamp(static_cast<float>(Device.dwTimeGlobal - m_level_death_time), 0.f, 20000.f) / 20000.f;
     return 1.0f;
 }
 
