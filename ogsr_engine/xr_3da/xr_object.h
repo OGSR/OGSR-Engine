@@ -7,7 +7,7 @@
 #include "icollidable.h"
 
 class IObjectPhysicsCollision;
-// refs
+class IPhysicsShell;
 class ENGINE_API IRender_Sector;
 class ENGINE_API IRender_ObjectSpecific;
 class ENGINE_API CCustomHUD;
@@ -16,7 +16,7 @@ class CSE_Abstract;
 
 //-----------------------------------------------------------------------------------------------------------
 #define CROW_RADIUS (30.f)
-#define CROW_RADIUS2 (60.f)
+#define CROW_RADIUS2 (60.f) 
 //-----------------------------------------------------------------------------------------------------------
 //	CObject
 //-----------------------------------------------------------------------------------------------------------
@@ -65,18 +65,18 @@ public:
 #ifdef DEBUG
     u32 dbg_update_cl;
 #endif
-    u32 dwFrame_UpdateCL{};
-    //u32 dwFrame_AsCrow{};
+    std::atomic_uint dwFrame_UpdateCL{};
+    std::atomic_uint dwFrame_AsCrow{};
 
     // Crow-MODE
     // if (object_is_visible)
     // if (object_is_near)
     // if (object_is_crow_always)
-    void MakeMeCrow_internal();
     void MakeMeCrow();
 
     ICF void IAmNotACrowAnyMore() { Props.crow = 0; }
     virtual BOOL AlwaysTheCrow() { return FALSE; }
+    ICF bool AmICrow() const { return !!Props.crow; }
 
     // Network
     ICF BOOL Local() const { return Props.net_Local; }
@@ -105,6 +105,7 @@ public:
     }
     ICF Fmatrix& XFORM() { return renderable.xform; }
     virtual void spatial_register();
+    virtual void spatial_unregister();
     virtual void spatial_move();
     void spatial_update(float eps_P, float eps_R);
 
@@ -126,10 +127,14 @@ public:
     virtual IRenderable* dcast_Renderable() { return this; }
     virtual void OnChangeVisual() {}
 
+    virtual IPhysicsShell* physics_shell() { return nullptr; }
+    virtual const IObjectPhysicsCollision* physics_collision() { return nullptr; }
+
     // Name management
     ICF shared_str cName() const { return NameObject; }
     void cName_set(shared_str N);
     ICF shared_str cNameSect() const { return NameSection; }
+    ICF LPCSTR cNameSect_str() const { return NameSection.c_str(); }
     void cNameSect_set(shared_str N);
     ICF shared_str cNameVisual() const { return NameVisual; }
     void cNameVisual_set(shared_str N);
@@ -173,9 +178,19 @@ public:
     virtual void UpdateCL(); // Called each frame, so no need for dt
     virtual BOOL net_Spawn(CSE_Abstract* data);
     virtual void net_Destroy();
-    virtual void net_Export(CSE_Abstract* E){} // export to server
+
+    virtual void net_Export(NET_Packet& P) {}; // export to server
+    virtual void net_Export(CSE_Abstract* E) {}; // export to server
+
+    virtual void net_Import(NET_Packet& P) {}; // import from server
+    virtual void net_ImportInput(NET_Packet& P) {};
+
     virtual BOOL net_Relevant() { return FALSE; } // relevant for export to server
-    virtual void net_Relcase(CObject* O){} // destroy all links to another objects
+
+    virtual void net_MigrateInactive(NET_Packet& P) { Props.net_Local = FALSE; };
+    virtual void net_MigrateActive(NET_Packet& P) { Props.net_Local = TRUE; };
+
+    virtual void net_Relcase(CObject* O) {} // destroy all links to another objects
 
     // Position stack
     IC u32 ps_Size() const { return PositionStack.size(); }
@@ -193,7 +208,8 @@ public:
     virtual void OnH_A_Chield(); // after
     virtual void OnH_A_Independent();
 
-    virtual const IObjectPhysicsCollision* physics_collision() { return 0; }
+    virtual void On_SetEntity() {};
+    virtual void On_LostEntity() {};
 
 public:
     virtual bool register_schedule() const { return true; }

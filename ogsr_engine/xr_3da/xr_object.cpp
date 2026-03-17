@@ -4,15 +4,12 @@
 #include "xr_object.h"
 #include "xr_area.h"
 #include "render.h"
-#include "xrLevel.h"
 
 #include "../Include/xrRender/RenderVisual.h"
 #include "../Include/xrRender/Kinematics.h"
 
 #include "x_ray.h"
 #include "GameFont.h"
-
-void CObject::MakeMeCrow_internal() { g_pGameLevel->Objects.o_crow(this); }
 
 void CObject::cName_set(shared_str N) { NameObject = N; }
 void CObject::cNameSect_set(shared_str N)
@@ -41,12 +38,6 @@ void CObject::cNameVisual_set(shared_str N)
         IKinematics* old_k = old_v ? old_v->dcast_PKinematics() : nullptr;
         IKinematics* new_k = renderable.visual->dcast_PKinematics();
 
-        /*
-        if(old_k && new_k){
-            new_k->Update_Callback			= old_k->Update_Callback;
-            new_k->Update_Callback_Param	= old_k->Update_Callback_Param;
-        }
-        */
         if (old_k && new_k)
         {
             new_k->SetUpdateCallback(old_k->GetUpdateCallback());
@@ -130,10 +121,11 @@ const Fbox& CObject::BoundingBox() const
 //----------------------------------------------------------------------
 CObject::CObject() : ISpatial(g_SpatialSpace)
 {
+#pragma todo("Simp: вроде б JR говорил пересмотреть это")
     spatial.type |= STYPE_COLLIDEABLE;
     spatial.type |= STYPE_RENDERABLE;
 
-    //dwFrame_AsCrow = (u32)-1;
+    dwFrame_AsCrow = (u32)-1;
     spatial.dbg_name = "object";
 
     // Transform
@@ -313,7 +305,7 @@ void CObject::UpdateCL()
     spatial_update(base_spu_epsP * 5, base_spu_epsR * 5);
 
     // crow
-    if (Parent == g_pGameLevel->CurrentViewEntity())
+    if (Parent == g_pGameLevel->CurrentEntity())
         MakeMeCrow();
     else if (AlwaysTheCrow())
         MakeMeCrow();
@@ -337,10 +329,6 @@ void CObject::shedule_Update(u32 T)
     // Always make me crow on shedule-update
     // Makes sure that update-cl called at least with freq of shedule-update
     MakeMeCrow();
-    /*
-    if (AlwaysTheCrow())																	MakeMeCrow	();
-    else if (Device.vCameraPosition.distance_to_sqr(Position()) < CROW_RADIUS*CROW_RADIUS)	MakeMeCrow	();
-    */
 }
 
 void CObject::spatial_register()
@@ -349,6 +337,8 @@ void CObject::spatial_register()
     spatial.sphere.R = Radius();
     ISpatial::spatial_register();
 }
+
+void CObject::spatial_unregister() { ISpatial::spatial_unregister(); }
 
 void CObject::spatial_move()
 {
@@ -365,8 +355,7 @@ CObject::SavedPosition CObject::ps_Element(u32 ID) const
 
 void CObject::renderable_Render(u32 /*context_id*/, IRenderable* /*root*/)
 {
-    if (Device.OnMainThread() || TTAPI->on_pool_thread()) // hack to avoid issues with sun render
-        MakeMeCrow();
+    MakeMeCrow();
 }
 
 CObject* CObject::H_SetParent(CObject* new_parent, bool just_before_destroy)
@@ -401,6 +390,7 @@ void CObject::OnH_A_Chield() {}
 void CObject::OnH_B_Chield() { setVisible(false); }
 void CObject::OnH_A_Independent() { setVisible(true); }
 void CObject::OnH_B_Independent(bool just_before_destroy) {}
+
 void CObject::MakeMeCrow()
 {
     if (Props.crow)
@@ -408,7 +398,8 @@ void CObject::MakeMeCrow()
     if (!processing_enabled())
         return;
     Props.crow = true;
-    MakeMeCrow_internal();
+
+    g_pGameLevel->Objects.o_crow(this); // MakeMeCrow_internal();
 }
 
 void CObject::setDestroy(BOOL _destroy)

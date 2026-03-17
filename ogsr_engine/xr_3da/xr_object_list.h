@@ -1,5 +1,7 @@
 #pragma once
 
+#include <concurrent_vector.h>
+
 // refs
 class ENGINE_API CObject;
 class NET_Packet;
@@ -8,17 +10,21 @@ class ENGINE_API CObjectList
 {
 private:
     // data
-    xr_map<u32, CObject*> map_NETID;
-    xr_vector<CObject*> destroy_queue;
-    xr_vector<CObject*> objects_active;
-    xr_vector<CObject*> objects_sleeping;
+    CObject* map_NETID[0xffff]{};
 
-    xr_vector<CObject*> crows_0;
-    xr_vector<CObject*> crows_1;
-    xr_vector<CObject*>* crows;
+    using Objects = xr_vector<CObject*>;
+
+private:
+    Objects destroy_queue;
+    Objects objects_active;
+    Objects objects_sleeping;
+
+    Objects m_crows;
+    concurrency::concurrent_vector<CObject*> m_parallel_crows;
 
 public:
     using RELCASE_CALLBACK = fastdelegate::FastDelegate<void(CObject*)>;
+
     struct SRelcasePair
     {
         int* m_ID;
@@ -34,10 +40,10 @@ public:
 
 public:
     // methods
-    CObjectList();
+    CObjectList() = default;
     ~CObjectList();
 
-    CObject* FindObjectByName(shared_str name);
+    CObject* FindObjectByName(const shared_str& name);
     CObject* FindObjectByName(LPCSTR name);
     CObject* FindObjectByCLS_ID(CLASS_ID cls);
 
@@ -54,11 +60,19 @@ public:
     void net_Register(CObject* O);
     void net_Unregister(CObject* O);
 
-    CObject* net_Find(u32 ID);
+    u32 net_Export(NET_Packet* P, u32 _start, u32 _count, std::vector<CObject*>& net_exported_objects); // return next start
+    void net_Import(NET_Packet* P);
 
-    void o_crow(CObject* O) { crows->push_back(O); }
+    ICF CObject* net_Find(u16 ID) const
+    {
+        if (ID == u16(-1))
+            return nullptr;
 
-    void o_remove(xr_vector<CObject*>& v, CObject* O);
+        return map_NETID[ID];
+    }
+
+    void o_crow(CObject* O);
+    void o_remove(Objects& v, CObject* O);
     void o_activate(CObject* O);
     void o_sleep(CObject* O);
     IC u32 o_count() { return objects_active.size() + objects_sleeping.size(); };
@@ -75,5 +89,8 @@ public:
     void register_object_to_destroy(CObject* object_to_destroy);
 #ifdef DEBUG
     bool registered_object_to_destroy(const CObject* object_to_destroy) const;
-#endif // DEBUG
+#endif // #ifdef DEBUG
+
+private:
+    static void dump_list(Objects& v, LPCSTR reason);
 };
