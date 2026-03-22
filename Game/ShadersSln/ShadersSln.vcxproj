@@ -278,7 +278,6 @@
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\effects_flare.vs" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\effects_sun.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\effects_water_puddles.s" />
-    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\models_sniperlenses.s" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\ogsr_blur.s" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\ogsr_blur.vs" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\ogsr_dof.ps" />

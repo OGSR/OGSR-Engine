@@ -587,7 +587,6 @@
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\combine_peak.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\combine_peak.vs" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\ogsr_blur.vs" />
-    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\models_sniperlenses.s" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_sun_cascade0.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_sun_cascade0.s" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_sun_cascade1.ps" />
