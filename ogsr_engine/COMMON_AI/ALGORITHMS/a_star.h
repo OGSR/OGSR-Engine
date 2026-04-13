@@ -12,65 +12,44 @@
 #include "data_storage_constructor.h"
 #include "dijkstra.h"
 
-namespace AStar
+template <typename TDistance, typename TVertexData>
+struct AStarVertexData
 {
-template <typename _dist_type, template <typename _T> class T1>
-struct _Vertex
-{
-    template <typename T2>
-    struct __vertex : public T1<T2>
+    template <typename TCompoundVertex>
+    struct VertexData : TVertexData::template VertexData<TCompoundVertex>
     {
-        typedef _dist_type _dist_type;
+        using Distance = TDistance;
 
-        _dist_type _g;
-        _dist_type _h;
+        Distance _g;
+        Distance _h;
 
-        IC _dist_type& g() { return (_g); }
-
-        IC _dist_type& h() { return (_h); }
+        Distance& g() { return _g; }
+        Distance& h() { return _h; }
     };
 };
-} // namespace AStar
 
-template <typename _dist_type, typename _priority_queue, typename _vertex_manager, typename _vertex_allocator, bool euclidian_heuristics = true,
-          typename _data_storage_base = CVertexPath<euclidian_heuristics>, template <typename _T> class _vertex = CEmptyClassTemplate,
-          template <typename _1, typename _2> class _builder_allocator_constructor = CBuilderAllocatorConstructor,
-          template <typename _1, typename _2, typename _3, template <typename _1, typename _2> class _4> class _manager_builder_allocator_constructor =
-              CManagerBuilderAllocatorConstructor,
-          template <typename _algorithm, typename _manager, typename _builder, typename _allocator, template <typename _T> class _vertex,
-                    template <typename _1, typename _2> class _builder_allocator_constructor = CBuilderAllocatorConstructor,
-                    template <typename _1, typename _2, typename _3, template <typename _1, typename _2> class _4> class _manager_builder_allocator_constructor =
-                        CManagerBuilderAllocatorConstructor>
-          class _data_storage_constructor = CDataStorageConstructor,
-          typename _iteration_type = u32>
-class CAStar
-    : public CDijkstra<_dist_type, _priority_queue, _vertex_manager, _vertex_allocator, euclidian_heuristics, _data_storage_base, typename AStar::_Vertex<_dist_type, _vertex>::__vertex,
-                       _builder_allocator_constructor, _manager_builder_allocator_constructor, _data_storage_constructor, _iteration_type>
+template <typename TDistance, typename TPriorityQueue, typename TVertexManager, typename TVertexAllocator, bool EuclidianHeuristics = true,
+          typename TPathBuilder = CVertexPath<EuclidianHeuristics>, typename TIteration = u32, typename TVertexData = EmptyVertexData>
+class CAStar : public CDijkstra<TDistance, TPriorityQueue, TVertexManager, TVertexAllocator, EuclidianHeuristics, TPathBuilder, TIteration, AStarVertexData<TDistance, TVertexData>>
 {
 protected:
-    typedef CDijkstra<_dist_type, _priority_queue, _vertex_manager, _vertex_allocator, euclidian_heuristics, _data_storage_base, typename AStar::_Vertex<_dist_type, _vertex>::__vertex,
-                      _builder_allocator_constructor, _manager_builder_allocator_constructor, _data_storage_constructor, _iteration_type>
-        inherited;
-    typedef typename inherited::CGraphVertex CGraphVertex;
-    typedef typename CGraphVertex::_dist_type _dist_type;
-    typedef typename CGraphVertex::_index_type _index_type;
-
-public:
-    using inherited::data_storage;
-    using inherited::finalize;
-    using inherited::m_search_started;
+    using Inherited =
+        CDijkstra<TDistance, TPriorityQueue, TVertexManager, TVertexAllocator, EuclidianHeuristics, TPathBuilder, TIteration, AStarVertexData<TDistance, TVertexData>>;
+    using Vertex = Inherited::Vertex;
+    using Distance = Vertex::Distance;
+    using Index = Vertex::Index;
 
 protected:
-    template <typename _PathManager>
-    IC void initialize(_PathManager& path_manager);
-    template <typename _PathManager>
-    IC bool step(_PathManager& path_manager);
+    template <typename TPathManager>
+    void initialize(TPathManager& path_manager);
+    template <typename TPathManager>
+    bool step(TPathManager& path_manager);
 
 public:
-    IC CAStar(const u32 max_vertex_count);
-    virtual ~CAStar();
-    template <typename _PathManager>
-    IC bool find(_PathManager& path_manager);
+    CAStar(u32 max_vertex_count);
+    ~CAStar() override;
+    template <typename TPathManager>
+    bool find(TPathManager& path_manager);
 };
 
 #include "a_star_inline.h"

@@ -37,45 +37,45 @@ struct SGameVertex;
 
 namespace GraphEngineSpace
 {
-typedef float _dist_type;
-typedef u32 _index_type;
-typedef u32 _iteration_type;
-typedef u16 _solver_dist_type;
-typedef u32 _solver_condition_type;
-typedef bool _solver_value_type;
+using _dist_type = float;
+using _index_type = u32;
+using _iteration_type = u32;
+using _solver_dist_type = u16;
+using _solver_condition_type = u32;
+using _solver_value_type = bool;
 
 struct CSolverConditionValue
 {
     _solver_condition_type m_condition;
     _solver_value_type m_value;
 
-    IC CSolverConditionValue(const _solver_condition_type& condition, const _solver_value_type& value)
+    CSolverConditionValue(const _solver_condition_type& condition, const _solver_value_type& value)
     {
         m_condition = condition;
         m_value = value;
     }
 
-    IC bool operator==(const _solver_condition_type& condition) const { return (condition == m_condition); }
+    bool operator==(const _solver_condition_type& condition) const { return (condition == m_condition); }
 };
 
-typedef xr_vector<CSolverConditionValue> CSolverConditionStorage;
+using CSolverConditionStorage = xr_vector<CSolverConditionValue>;
 
-typedef COperatorConditionAbstract<_solver_condition_type, _solver_value_type> CWorldProperty;
+using CWorldProperty = COperatorConditionAbstract<_solver_condition_type, _solver_value_type>;
 
-typedef CConditionState<CWorldProperty> CWorldState;
+using CWorldState = CConditionState<CWorldProperty>;
 
-typedef COperatorAbstract<CWorldProperty, _solver_dist_type> CWorldOperator;
+using CWorldOperator = COperatorAbstract<CWorldProperty, _solver_dist_type>;
 
-typedef CWorldState _solver_index_type;
-typedef u32 _solver_edge_type;
+using _solver_index_type = CWorldState;
+using _solver_edge_type = u32;
 
-typedef SBaseParameters<_solver_dist_type, _solver_index_type, _iteration_type> CSolverBaseParameters;
-typedef SBaseParameters<_dist_type, _index_type, _iteration_type> CBaseParameters;
+using CSolverBaseParameters = SBaseParameters<_solver_dist_type, _solver_index_type, _iteration_type>;
+using CBaseParameters = SBaseParameters<_dist_type, _index_type, _iteration_type>;
 #ifdef DEBUG
-typedef SFlooder<_dist_type, _index_type, _iteration_type> CFlooder;
+using CFlooder = SFlooder<_dist_type, _index_type, _iteration_type>;
 #endif
-typedef SStraightLineParams<_dist_type, _index_type, _iteration_type> CStraightLineParams;
-typedef SNearestVertex<_dist_type, _index_type, _iteration_type> CNearestVertexParameters;
-typedef SGameLevel<_dist_type, _index_type, _iteration_type> CGameLevelParams;
-typedef SGameVertex<_dist_type, _index_type, _iteration_type> CGameVertexParams;
+using CStraightLineParams = SStraightLineParams<_dist_type, _index_type, _iteration_type>;
+using CNearestVertexParameters = SNearestVertex<_dist_type, _index_type, _iteration_type>;
+using CGameLevelParams = SGameLevel<_dist_type, _index_type, _iteration_type>;
+using CGameVertexParams = SGameVertex<_dist_type, _index_type, _iteration_type>;
 }; // namespace GraphEngineSpace

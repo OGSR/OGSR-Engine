@@ -1,44 +1,39 @@
 ////////////////////////////////////////////////////////////////////////////
-//	Module 		: edge_path.h
-//	Created 	: 21.03.2002
-//  Modified 	: 02.03.2004
-//	Author		: Dmitriy Iassenev
-//	Description : Edge path class
+//  Module      : edge_path.h
+//  Created     : 21.03.2002
+//  Modified    : 02.03.2004
+//  Author      : Dmitriy Iassenev
+//  Description : Edge path class
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
 #include "vertex_path.h"
 
-template <typename _edge_type, bool bEuclidianHeuristics = true>
+template <typename TEdge, bool EuclidianHeuristics = true>
 struct CEdgePath
 {
-    template <template <typename _T> class T1>
-    struct DataStorageEdgePath
+    template <typename TCompoundVertex>
+    struct VertexData : CVertexPath<EuclidianHeuristics>::template VertexData<TCompoundVertex>
     {
-        template <typename T2>
-        struct __vertex : public T1<T2>
-        {
-            _edge_type _edge;
-
-            IC _edge_type& edge() { return (_edge); }
-        };
+        TEdge _edge;
+        TEdge& edge() { return _edge; }
     };
 
-    template <template <typename _T> class _vertex>
-    class CDataStorage : public CVertexPath<bEuclidianHeuristics>::template CDataStorage<typename DataStorageEdgePath<_vertex>::__vertex>
+    template <typename TCompoundVertex>
+    class CDataStorage : public CVertexPath<EuclidianHeuristics>::template CDataStorage<TCompoundVertex>
     {
     public:
-        typedef typename CVertexPath<bEuclidianHeuristics>::template CDataStorage<typename DataStorageEdgePath<_vertex>::__vertex> inherited;
-        typedef typename inherited::CGraphVertex CGraphVertex;
-        typedef typename CGraphVertex::_index_type _index_type;
+        using Inherited = CVertexPath<EuclidianHeuristics>::template CDataStorage<TCompoundVertex>;
+        using Vertex = TCompoundVertex;
+        using Index = Vertex::Index;
 
     public:
-        IC CDataStorage(const u32 vertex_count);
+        CDataStorage(u32 vertex_count);
         virtual ~CDataStorage();
-        IC void assign_parent(CGraphVertex& neighbour, CGraphVertex* parent);
-        IC void assign_parent(CGraphVertex& neighbour, CGraphVertex* parent, const _edge_type& edge);
-        IC void get_edge_path(xr_vector<_edge_type>& path, CGraphVertex* best, bool reverse_order = false);
+        void assign_parent(Vertex& neighbour, Vertex* parent);
+        void assign_parent(Vertex& neighbour, Vertex* parent, const TEdge& edge);
+        void get_edge_path(xr_vector<TEdge>& path, Vertex* best, bool reverse_order = false);
     };
 };
 

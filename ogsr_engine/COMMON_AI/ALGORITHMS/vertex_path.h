@@ -8,34 +8,31 @@
 
 #pragma once
 
-template <bool bEuclidianHeuristics = true>
+template <bool EuclidianHeuristics = true>
 struct CVertexPath
 {
 #pragma pack(push, 1)
-    template <template <typename _T> class T1>
-    struct DataStoragePath
-    {
-        struct __vertex : public T1<__vertex>
-        {};
-    };
+    template <typename TCompoundVertex>
+    struct VertexData
+    {};
 #pragma pack(pop)
 
-    template <template <typename _T> class _vertex>
+    template <typename TCompoundVertex>
     class CDataStorage
     {
     public:
-        typedef typename DataStoragePath<_vertex>::__vertex CGraphVertex;
-        typedef typename CGraphVertex::_index_type _index_type;
+        using Vertex = TCompoundVertex;
+        using Index = Vertex::Index;
 
     public:
-        IC CDataStorage(const u32 vertex_count);
+        CDataStorage(u32 vertex_count);
         virtual ~CDataStorage();
-        IC void init();
-        IC void assign_parent(CGraphVertex& neighbour, CGraphVertex* parent);
+        void init();
+        void assign_parent(Vertex& neighbour, Vertex* parent);
         template <typename T>
-        IC void assign_parent(CGraphVertex& neighbour, CGraphVertex* parent, const T&);
-        IC void update_successors(CGraphVertex& neighbour);
-        IC void get_node_path(xr_vector<_index_type>& path, CGraphVertex* best);
+        void assign_parent(Vertex& neighbour, Vertex* parent, const T&);
+        void update_successors(Vertex& neighbour);
+        void get_node_path(xr_vector<Index>& path, Vertex* best);
     };
 };
 

@@ -1,52 +1,46 @@
 ////////////////////////////////////////////////////////////////////////////
-//	Module 		: data_storage_binary_heap_inline.h
-//	Created 	: 21.03.2002
-//  Modified 	: 26.02.2004
-//	Author		: Dmitriy Iassenev
-//	Description : Binary m_heap data storage inline functions
+//  Module      : data_storage_binary_heap_inline.h
+//  Created     : 21.03.2002
+//  Modified    : 26.02.2004
+//  Author      : Dmitriy Iassenev
+//  Description : Binary m_heap data storage inline functions
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
-#define TEMPLATE_SPECIALIZATION template <typename _data_storage, template <typename _T> class _vertex>
+#define TEMPLATE_SPECIALIZATION template <typename TManagerDataStorage>
 
-#define CBinaryHeap CDataStorageBinaryHeap::CDataStorage<_data_storage, _vertex>
+#define CBinaryHeap CDataStorageBinaryHeap::CDataStorage<TManagerDataStorage>
 
 TEMPLATE_SPECIALIZATION
-IC CBinaryHeap::CDataStorage(const u32 vertex_count) : inherited(vertex_count)
+ CBinaryHeap::CDataStorage(const u32 vertex_count) : Inherited(vertex_count)
 {
-    u32 memory_usage = 0;
-    u32 byte_count;
-
-    byte_count = vertex_count * sizeof(CGraphVertex*);
-    m_heap = xr_alloc<CGraphVertex*>(vertex_count);
-    ZeroMemory(m_heap, byte_count);
-    memory_usage += byte_count;
+    m_heap = xr_alloc<Vertex*>(vertex_count);
+    ZeroMemory(m_heap, vertex_count * sizeof(Vertex*));
 }
 
 TEMPLATE_SPECIALIZATION
 CBinaryHeap::~CDataStorage() { xr_free(m_heap); }
-
 TEMPLATE_SPECIALIZATION
-IC void CBinaryHeap::init()
+ void CBinaryHeap::init()
 {
-    inherited::init();
+    Inherited::init();
     m_heap_head = m_heap_tail = m_heap;
 }
 
 TEMPLATE_SPECIALIZATION
-IC bool CBinaryHeap::is_opened_empty() const
+ bool CBinaryHeap::is_opened_empty() const
 {
     VERIFY(m_heap_head <= m_heap_tail);
-    return (m_heap_head == m_heap_tail);
+    return m_heap_head == m_heap_tail;
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CBinaryHeap::add_opened(CGraphVertex& vertex)
+ void CBinaryHeap::add_opened(Vertex& vertex)
 {
     VERIFY(m_heap_head <= m_heap_tail);
-    inherited::add_opened(vertex);
-    if (!*m_heap_head || ((*m_heap_head)->f() < vertex.f()))
+    Inherited::add_opened(vertex);
+    if (!*m_heap_head || (*m_heap_head)->f() < vertex.f())
     {
         *m_heap_tail = &vertex;
     }
@@ -55,38 +49,38 @@ IC void CBinaryHeap::add_opened(CGraphVertex& vertex)
         *m_heap_tail = *m_heap_head;
         *m_heap_head = &vertex;
     }
-    std::push_heap(m_heap_head, ++m_heap_tail, CGraphNodePredicate());
+    std::push_heap(m_heap_head, ++m_heap_tail, VertexPredicate());
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CBinaryHeap::decrease_opened(CGraphVertex& vertex, const _dist_type value)
+ void CBinaryHeap::decrease_opened(Vertex& vertex, const Distance value)
 {
     VERIFY(!is_opened_empty());
-    CGraphVertex** i = m_heap_head;
-    for (; *i != &vertex; ++i)
-        ;
-    std::push_heap(m_heap_head, i + 1, CGraphNodePredicate());
+    Vertex** i = m_heap_head;
+    while (*i != &vertex)
+        ++i;
+    std::push_heap(m_heap_head, i + 1, VertexPredicate());
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CBinaryHeap::remove_best_opened()
+ void CBinaryHeap::remove_best_opened()
 {
     VERIFY(!is_opened_empty());
-    std::pop_heap(m_heap_head, m_heap_tail--, CGraphNodePredicate());
+    std::pop_heap(m_heap_head, m_heap_tail--, VertexPredicate());
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CBinaryHeap::add_best_closed()
+ void CBinaryHeap::add_best_closed()
 {
     VERIFY(!is_opened_empty());
-    inherited::add_closed(**m_heap_head);
+    Inherited::add_closed(**m_heap_head);
 }
 
 TEMPLATE_SPECIALIZATION
-IC typename CBinaryHeap::CGraphVertex& CBinaryHeap::get_best() const
+CBinaryHeap::Vertex& CBinaryHeap::get_best() const
 {
     VERIFY(!is_opened_empty());
-    return (**m_heap_head);
+    return **m_heap_head;
 }
 
 #undef TEMPLATE_SPECIALIZATION

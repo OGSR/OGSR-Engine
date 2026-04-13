@@ -101,6 +101,8 @@ protected:
     IC void validate_properties(const CState& conditions) const;
 #endif
 
+    IC bool search(const CState start_vertex_id, const CState& DestID, xr_vector<_edge_type>& OutPath, u16 MaxRange, u32 MaxIterationCount, u32 MaxVisitedNodeCount) const;
+
 public:
     // common interface
     IC CProblemSolver();
@@ -112,7 +114,7 @@ public:
     // graph interface
     IC _edge_value_type get_edge_weight(const _index_type& vertex_index0, const _index_type& vertex_index1, const const_iterator& i) const;
     IC bool is_accessible(const _index_type& vertex_index) const;
-    IC const _index_type& value(const _index_type& vertex_index, const_iterator& i, bool reverse_search) const;
+    IC const _index_type& conditions_and_effects(const _index_type& vertex_index, const_iterator& i, bool reverse_search) const;
     IC void begin(const _index_type& vertex_index, const_iterator& b, const_iterator& e) const;
     IC bool is_goal_reached(const _index_type& vertex_index) const;
     IC _edge_value_type estimate_edge_weight(const _index_type& vertex_index) const;

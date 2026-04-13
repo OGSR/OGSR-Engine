@@ -166,23 +166,15 @@
   <ItemGroup>
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\a_star.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\a_star_inline.h" />
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\builder_allocator_constructor.h" />
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\builder_allocator_constructor_inline.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_binary_heap.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_binary_heap_inline.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_bucket_list.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_bucket_list_inline.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_constructor.h" />
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_double_linked_list.h" />
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_double_linked_list_inline.h" />
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_single_linked_list.h" />
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_single_linked_list_inline.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\dijkstra.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\dijkstra_inline.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\edge_path.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\edge_path_inline.h" />
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\manager_builder_allocator_constructor.h" />
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\manager_builder_allocator_constructor_inline.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\quadtree.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\quadtree_inline.h" />
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\vertex_allocator_fixed.h" />

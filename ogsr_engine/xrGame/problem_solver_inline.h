@@ -202,7 +202,7 @@ TEMPLATE_SPECIALIZATION
 IC bool CProblemSolverAbstract::is_accessible(const _index_type& vertex_index) const { return (m_applied); }
 
 TEMPLATE_SPECIALIZATION
-IC const typename CProblemSolverAbstract::_index_type& CProblemSolverAbstract::value(const _index_type& vertex_index, const_iterator& i, bool reverse_search) const
+IC const typename CProblemSolverAbstract::_index_type& CProblemSolverAbstract::conditions_and_effects(const _index_type& vertex_index, const_iterator& i, bool reverse_search) const
 {
     if (reverse_search)
     {
@@ -340,6 +340,8 @@ IC typename CProblemSolverAbstract::_operator_ptr CProblemSolverAbstract::get_op
 TEMPLATE_SPECIALIZATION
 IC void CProblemSolverAbstract::solve()
 {
+    ZoneScopedN("CProblemSolver/solve");
+
     m_solution_changed = false;
 
     if (actual())
@@ -349,8 +351,111 @@ IC void CProblemSolverAbstract::solve()
     m_solution_changed = true;
     m_current_state.clear();
 
-    m_failed = !ai().graph_engine().search(*this, reverse_search ? target_state() : current_state(), reverse_search ? current_state() : target_state(), &m_solution,
-                                           GraphEngineSpace::CSolverBaseParameters(GraphEngineSpace::_solver_dist_type(-1), GraphEngineSpace::_solver_condition_type(-1), 8000));
+    m_failed = !search(reverse_search ? target_state() : current_state(), reverse_search ? current_state() : target_state(), m_solution, GraphEngineSpace::_solver_dist_type(-1),
+                       GraphEngineSpace::_solver_condition_type(-1), 8000);
+}
+
+TEMPLATE_SPECIALIZATION
+bool CProblemSolverAbstract::search(const CState FromID, const CState& DestID, xr_vector<_edge_type>& OutPath, u16 MaxRange, u32 MaxIterationCount, u32 MaxVisitedNodeCount) const
+{
+    ZoneScopedN("CProblemSolver/search");
+
+    thread_local xr_vector<std::pair<GraphEngineSpace::_solver_dist_type, CState>> TempPriorityNode;
+    thread_local xr_map<CState, CState> TempCameFrom;
+    thread_local xr_map<CState, GraphEngineSpace::_solver_dist_type> TempCostSoFar;
+    thread_local xr_map<CState, _edge_type> TempEdges;
+
+    TempPriorityNode.clear();
+    TempCameFrom.clear();
+    TempCostSoFar.clear();
+    TempEdges.clear();
+
+    OutPath.clear();
+
+    TempPriorityNode.push_back({0, FromID});
+    TempCameFrom.insert({FromID, FromID});
+    TempCostSoFar.insert({FromID, 0});
+    TempEdges.insert({FromID, 0});
+
+    while (!TempPriorityNode.empty())
+    {
+        const CState CurrentNodeID = TempPriorityNode.back().second;
+        TempPriorityNode.pop_back();
+
+        if (is_goal_reached(CurrentNodeID))
+        {
+            CState NextNode = CurrentNodeID;
+            while (NextNode != FromID)
+            {
+                if (reverse_search)
+                {
+                    OutPath.push_back(TempEdges[NextNode]);
+                }
+                else
+                {
+                    OutPath.insert(OutPath.begin(), TempEdges[NextNode]);
+                }
+                NextNode = TempCameFrom[NextNode];
+            }
+            return true;
+        }
+
+        const_iterator i, e;
+        begin(CurrentNodeID, i, e);
+
+        for (; i != e; ++i)
+        {
+            const CState NeighborID = conditions_and_effects(CurrentNodeID, i, reverse_search);
+            if (!is_accessible(NeighborID))
+                continue;
+
+            if (MaxIterationCount == 0)
+                continue;
+            MaxIterationCount--;
+
+            u16 NewCost = TempCostSoFar[CurrentNodeID] + get_edge_weight(CurrentNodeID, NeighborID, i);
+
+            auto tempCostSoFarIterator = TempCostSoFar.find(NeighborID);
+            if ((tempCostSoFarIterator != TempCostSoFar.end() && tempCostSoFarIterator->second > NewCost) ||
+                (tempCostSoFarIterator == TempCostSoFar.end() && MaxVisitedNodeCount > TempCostSoFar.size()))
+            {
+                const u16 distance = estimate_edge_weight(NeighborID);
+                if (distance > MaxRange)
+                {
+                    continue;
+                }
+
+                if (tempCostSoFarIterator != TempCostSoFar.end())
+                {
+                    tempCostSoFarIterator->second = NewCost;
+                }
+                else
+                {
+                    TempCostSoFar.insert({NeighborID, NewCost});
+                }
+
+                u16 priority = NewCost + distance;
+                TempPriorityNode.insert(std::upper_bound(TempPriorityNode.begin(), TempPriorityNode.end(),
+                                                         std::pair<GraphEngineSpace::_solver_dist_type, CState>{priority, NeighborID},
+                                                         [](const auto& Left, const auto& Right) { return Left.first > Right.first; }),
+                                        {priority, NeighborID});
+
+                auto tempCameFromIterator = TempCameFrom.find(NeighborID);
+                auto tempEdgesIterator = TempEdges.find(NeighborID);
+                if (tempCameFromIterator != TempCameFrom.end())
+                {
+                    tempCameFromIterator->second = CurrentNodeID;
+                    tempEdgesIterator->second = i->m_operator_id;
+                }
+                else
+                {
+                    TempCameFrom.insert({NeighborID, CurrentNodeID});
+                    TempEdges.insert({NeighborID, i->m_operator_id});
+                }
+            }
+        }
+    }
+    return false;
 }
 
 TEMPLATE_SPECIALIZATION

@@ -8,27 +8,30 @@
 
 #pragma once
 
-template <u32 reserved_vertex_count>
+template <u32 ReserveSize>
 struct CVertexAllocatorFixed
 {
-    template <typename _vertex>
+    template <typename TCompoundVertex>
+    struct VertexData
+    {};
+
+    template <typename TCompoundVertex>
     class CDataStorage
     {
     public:
-        typedef _vertex CGraphVertex;
-        typedef typename CGraphVertex::_index_type _index_type;
-        typedef xr_vector<CGraphVertex> VERTICES;
+        using Index = TCompoundVertex::Index;
+        using VertexContainer = xr_vector<TCompoundVertex>;
 
     protected:
-        u32 m_vertex_count{};
-        VERTICES m_vertices;
+        u32 m_vertex_count;
+        VertexContainer m_vertices;
 
     public:
-        IC CDataStorage();
+        CDataStorage();
         virtual ~CDataStorage();
-        IC void init();
-        IC u32 get_visited_node_count() const;
-        IC CGraphVertex& create_vertex();
+        void init();
+        u32 get_visited_node_count() const;
+        TCompoundVertex& create_vertex();
     };
 };
 

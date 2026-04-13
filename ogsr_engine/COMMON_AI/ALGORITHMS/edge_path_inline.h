@@ -1,58 +1,55 @@
 ////////////////////////////////////////////////////////////////////////////
-//	Module 		: edge_path_inline.h
-//	Created 	: 21.03.2002
-//  Modified 	: 02.03.2004
-//	Author		: Dmitriy Iassenev
-//	Description : Edge path class inline functions
+//  Module      : edge_path_inline.h
+//  Created     : 21.03.2002
+//  Modified    : 02.03.2004
+//  Author      : Dmitriy Iassenev
+//  Description : Edge path class inline functions
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
 #define TEMPLATE_SPECIALIZATION \
-    template <typename _edge_type, bool bEuclidianHeuristics> \
-    template <template <typename _T> class _vertex>
+    template <typename TEdge, bool EuclidianHeuristics> \
+    template <typename TCompoundVertex>
 
-#define CEdgePathBuilder CEdgePath<_edge_type, bEuclidianHeuristics>::CDataStorage<_vertex>
-
-TEMPLATE_SPECIALIZATION
-IC CEdgePathBuilder::CDataStorage(const u32 vertex_count) : inherited(vertex_count) {}
+#define CEdgePathBuilder CEdgePath<TEdge, EuclidianHeuristics>::CDataStorage<TCompoundVertex>
 
 TEMPLATE_SPECIALIZATION
-CEdgePathBuilder::~CDataStorage() {}
+ CEdgePathBuilder::CDataStorage(const u32 vertex_count) : Inherited(vertex_count) {}
+TEMPLATE_SPECIALIZATION
+CEdgePathBuilder::~CDataStorage() = default;
+TEMPLATE_SPECIALIZATION
+ void CEdgePathBuilder::assign_parent(Vertex& neighbour, Vertex* parent) { Inherited::assign_parent(neighbour, parent); }
 
 TEMPLATE_SPECIALIZATION
-IC void CEdgePathBuilder::assign_parent(CGraphVertex& neighbour, CGraphVertex* parent) { inherited::assign_parent(neighbour, parent); }
-
-TEMPLATE_SPECIALIZATION
-IC void CEdgePathBuilder::assign_parent(CGraphVertex& neighbour, CGraphVertex* parent, const _edge_type& edge)
+ void CEdgePathBuilder::assign_parent(Vertex& neighbour, Vertex* parent, const TEdge& edge)
 {
-    inherited::assign_parent(neighbour, parent);
+    Inherited::assign_parent(neighbour, parent);
     neighbour.edge() = edge;
 }
 
 TEMPLATE_SPECIALIZATION
-IC void CEdgePathBuilder::get_edge_path(xr_vector<_edge_type>& path, CGraphVertex* best, bool reverse_order)
+ void CEdgePathBuilder::get_edge_path(xr_vector<TEdge>& path, Vertex* best, bool reverse_order)
 {
-    CGraphVertex *t1 = best, *t2 = best->back();
-    u32 i = 1;
-    for (; t2; t1 = t2, t2 = t2->back(), ++i)
+    Vertex *t1 = best, *t2 = best->back();
+    size_t i;
+    for (i = 1; t2; t1 = t2, t2 = t2->back(), ++i)
         ;
-    u32 n = (u32)path.size();
-
-    path.resize(n + --i);
+    size_t n = path.size();
+    i--;
+    path.resize(n + i);
     t2 = best;
-
     if (!reverse_order)
     {
-        auto I = path.rbegin();
-        for (; t2->back(); t2 = t2->back(), ++I)
-            *I = t2->edge();
+        auto it = path.rbegin();
+        for (; t2->back(); t2 = t2->back(), ++it)
+            *it = t2->edge();
     }
     else
     {
-        auto I = path.begin() + n;
-        for (; t2->back(); t2 = t2->back(), ++I)
-            *I = t2->edge();
+        auto it = path.begin() + n;
+        for (; t2->back(); t2 = t2->back(), ++it)
+            *it = t2->edge();
     }
 }
 

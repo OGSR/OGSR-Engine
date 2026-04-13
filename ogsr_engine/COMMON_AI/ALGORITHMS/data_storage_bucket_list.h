@@ -8,55 +8,50 @@
 
 #pragma once
 
-#include "data_storage_double_linked_list.h"
-
-template <typename _path_id_type, typename _bucket_id_type, u32 bucket_count, bool clear_buckets>
+template <typename TPathId, typename TBucketId, u32 BucketCount, bool ClearBuckets>
 struct CDataStorageBucketList
 {
-    template <template <typename _T> class T1>
-    struct BucketList
+    template <typename TCompoundVertex>
+    struct VertexData
     {
-        template <typename T2>
-        struct __vertex : public T1<T2>
-        {
-            _path_id_type m_path_id;
-            _bucket_id_type m_bucket_id;
-        };
+        TCompoundVertex* _next;
+        TCompoundVertex* _prev;
+        TPathId m_path_id;
+        TBucketId m_bucket_id;
+        TCompoundVertex*& next() { return _next; }
+        TCompoundVertex*& prev() { return _prev; }
     };
 
-    template <typename _data_storage, template <typename _T> class _vertex = CEmptyClassTemplate>
-    class CDataStorage : public CDataStorageDoubleLinkedList<false>::CDataStorage<_data_storage, typename BucketList<_vertex>::__vertex>
+    template <typename TManagerDataStorage>
+    class CDataStorage : public TManagerDataStorage
     {
-    public:
-        typedef typename CDataStorageDoubleLinkedList<false>::CDataStorage<_data_storage, typename BucketList<_vertex>::__vertex> inherited;
-        typedef typename inherited::inherited_base inherited_base;
-        typedef typename inherited::CGraphVertex CGraphVertex;
-        typedef typename CGraphVertex::_dist_type _dist_type;
-        typedef typename CGraphVertex::_index_type _index_type;
-
     protected:
-        using inherited::current_path_id;
-
-        _dist_type m_min_bucket_value;
-        _dist_type m_max_bucket_value;
-        CGraphVertex* m_buckets[bucket_count];
+        TManagerDataStorage::Vertex::Distance m_max_distance;
+        TManagerDataStorage::Vertex m_list_data[2];
+        TManagerDataStorage::Vertex* m_list_head{};
+        TManagerDataStorage::Vertex* m_list_tail{};
+        TManagerDataStorage::Vertex::Distance m_min_bucket_value;
+        TManagerDataStorage::Vertex::Distance m_max_bucket_value;
+        TManagerDataStorage::Vertex* m_buckets[BucketCount];
         u32 m_min_bucket_id;
 
+        static constexpr auto BucketSize = BucketCount * sizeof(typename  TManagerDataStorage::Vertex*);
+
     public:
-        IC CDataStorage(const u32 vertex_count);
+        CDataStorage(u32 vertex_count);
         virtual ~CDataStorage();
-        IC void init();
-        IC void add_best_closed();
-        IC bool is_opened_empty();
-        IC u32 compute_bucket_id(CGraphVertex& vertex) const;
-        IC void verify_buckets() const;
-        IC void add_to_bucket(CGraphVertex& vertex, u32 bucket_id);
-        IC void add_opened(CGraphVertex& vertex);
-        IC void decrease_opened(CGraphVertex& vertex, const _dist_type value);
-        IC void remove_best_opened();
-        IC CGraphVertex& get_best();
-        IC void set_min_bucket_value(const _dist_type min_bucket_value);
-        IC void set_max_bucket_value(const _dist_type max_bucket_value);
+        void init();
+        void add_best_closed();
+        bool is_opened_empty();
+        u32 compute_bucket_id(TManagerDataStorage::Vertex& vertex) const;
+        void verify_buckets() const;
+        void add_to_bucket(TManagerDataStorage::Vertex& vertex, u32 bucket_id);
+        void add_opened(TManagerDataStorage::Vertex& vertex);
+        void decrease_opened(TManagerDataStorage::Vertex& vertex, TManagerDataStorage::Vertex::Distance value);
+        void remove_best_opened();
+        TManagerDataStorage::Vertex& get_best();
+        void set_min_bucket_value(TManagerDataStorage::Vertex::Distance min_bucket_value);
+        void set_max_bucket_value(TManagerDataStorage::Vertex::Distance max_bucket_value);
     };
 };
 

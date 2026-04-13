@@ -10,35 +10,39 @@
 
 struct CDataStorageBinaryHeap
 {
-    template <typename _data_storage, template <typename _T> class _vertex = CEmptyClassTemplate>
-    class CDataStorage : public _data_storage::template CDataStorage<_vertex>
+    template <typename TCompoundVertex>
+    struct VertexData
+    {};
+
+    template <typename TManagerDataStorage>
+    class CDataStorage : public TManagerDataStorage
     {
     public:
-        typedef typename _data_storage::template CDataStorage<_vertex> inherited;
-        typedef typename inherited::CGraphVertex CGraphVertex;
-        typedef typename CGraphVertex::_dist_type _dist_type;
-        typedef typename CGraphVertex::_index_type _index_type;
+        using Inherited = TManagerDataStorage;
+        using Vertex = Inherited::Vertex;
+        using Distance = Vertex::Distance;
+        using Index = Vertex::Index;
 
-        struct CGraphNodePredicate
+        struct VertexPredicate
         {
-            IC bool operator()(CGraphVertex* node1, CGraphVertex* node2) { return (node1->f() > node2->f()); };
+            bool operator()(Vertex* a, Vertex* b) { return a->f() > b->f(); }
         };
 
     protected:
-        CGraphVertex** m_heap;
-        CGraphVertex** m_heap_head;
-        CGraphVertex** m_heap_tail;
+        Vertex** m_heap;
+        Vertex** m_heap_head{};
+        Vertex** m_heap_tail{};
 
     public:
-        IC CDataStorage(const u32 vertex_count);
+        CDataStorage(u32 vertex_count);
         virtual ~CDataStorage();
-        IC void init();
-        IC bool is_opened_empty() const;
-        IC void add_opened(CGraphVertex& vertex);
-        IC void decrease_opened(CGraphVertex& vertex, const _dist_type value);
-        IC void remove_best_opened();
-        IC void add_best_closed();
-        IC CGraphVertex& get_best() const;
+        void init();
+        bool is_opened_empty() const;
+        void add_opened(Vertex& vertex);
+        void decrease_opened(Vertex& vertex, Distance value);
+        void remove_best_opened();
+        void add_best_closed();
+        Vertex& get_best() const;
     };
 };
 

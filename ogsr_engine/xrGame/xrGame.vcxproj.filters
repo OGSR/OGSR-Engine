@@ -997,12 +997,6 @@
     <Filter Include="AI\ANavigation\Pathfinding\DataStorages\constructors">
       <UniqueIdentifier>{034bf9b1-65fe-4593-89e3-7b41a74d7dff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="AI\ANavigation\Pathfinding\DataStorages\constructors\builder_allocator">
-      <UniqueIdentifier>{b97c1e16-2415-4ce6-898f-51abc63ebb26}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\ANavigation\Pathfinding\DataStorages\constructors\manager_builder_allocator">
-      <UniqueIdentifier>{e203a24e-8764-4a98-af02-bd64b5c51fd4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="AI\ANavigation\Pathfinding\DataStorages\path_builders">
       <UniqueIdentifier>{661df3c2-d426-4120-8847-2e32ad996cf3}</UniqueIdentifier>
     </Filter>
@@ -5730,18 +5724,6 @@
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\vertex_allocator_fixed_inline.h">
       <Filter>AI\ANavigation\Pathfinding\DataStorages\vertex_allocators\fixed</Filter>
     </ClInclude>
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_double_linked_list.h">
-      <Filter>AI\ANavigation\Pathfinding\DataStorages\priority_queues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_double_linked_list_inline.h">
-      <Filter>AI\ANavigation\Pathfinding\DataStorages\priority_queues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_single_linked_list.h">
-      <Filter>AI\ANavigation\Pathfinding\DataStorages\priority_queues</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_single_linked_list_inline.h">
-      <Filter>AI\ANavigation\Pathfinding\DataStorages\priority_queues</Filter>
-    </ClInclude>
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_bucket_list.h">
       <Filter>AI\ANavigation\Pathfinding\DataStorages\priority_queues\bucket_list</Filter>
     </ClInclude>
@@ -5768,18 +5750,6 @@
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\data_storage_constructor.h">
       <Filter>AI\ANavigation\Pathfinding\DataStorages\constructors</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\manager_builder_allocator_constructor.h">
-      <Filter>AI\ANavigation\Pathfinding\DataStorages\constructors\manager_builder_allocator</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\manager_builder_allocator_constructor_inline.h">
-      <Filter>AI\ANavigation\Pathfinding\DataStorages\constructors\manager_builder_allocator</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\builder_allocator_constructor.h">
-      <Filter>AI\ANavigation\Pathfinding\DataStorages\constructors\builder_allocator</Filter>
-    </ClInclude>
-    <ClInclude Include="..\COMMON_AI\ALGORITHMS\builder_allocator_constructor_inline.h">
-      <Filter>AI\ANavigation\Pathfinding\DataStorages\constructors\builder_allocator</Filter>
     </ClInclude>
     <ClInclude Include="..\COMMON_AI\ALGORITHMS\dijkstra.h">
       <Filter>AI\ANavigation\Pathfinding\Algorithms\Dijkstra</Filter>
