@@ -300,9 +300,7 @@ BOOL CDemoRecord::ProcessCam(SCamEffectorInfo& info)
     }
     else
     {
-        static const bool bShowInfo = READ_IF_EXISTS(pSettings, r_bool, "demo_record", "show_info", true);
-
-        if (psHUD_Flags.test(HUD_DRAW) && bShowInfo && ((Device.dwTimeGlobal / 750) % 3 != 0))
+        if (pInput->iGetAsyncKeyState(DIK_F1))
         {
             pFontSystem->SetColor(color_rgba(255, 0, 0, 255));
             pFontSystem->SetAligment(CGameFont::alCenter);
