@@ -62,7 +62,7 @@
       <BasicRuntimeChecks Condition="$(Configuration.Contains('Debug')) And '$(EnableASAN)'=='true'"></BasicRuntimeChecks>
       <BasicRuntimeChecks Condition="$(Configuration.Contains('Debug')) And '$(EnableASAN)'!='true'">EnableFastChecks</BasicRuntimeChecks>
       <AdditionalIncludeDirectories>mimalloc/include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>MI_DEBUG=3;MI_GUARDED=0;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <PreprocessorDefinitions>MI_DEBUG=3;MI_GUARDED=0;MI_OPT_SIMD=ON;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -91,7 +91,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalIncludeDirectories>mimalloc/include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions>MI_OPT_SIMD=ON;%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -117,6 +117,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="mimalloc\src\arena-meta.c" />
     <ClCompile Include="mimalloc\src\arena.c" />
     <ClCompile Include="mimalloc\src\bitmap.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -128,6 +129,7 @@
     <ClCompile Include="mimalloc\src\heap.c" />
     <ClCompile Include="mimalloc\src\init.c" />
     <ClCompile Include="mimalloc\src\libc.c" />
+    <ClCompile Include="mimalloc\src\page-map.c" />
     <ClCompile Include="mimalloc\src\prim\prim.c" />
     <ClCompile Include="mimalloc\src\prim\windows\prim.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -140,10 +142,10 @@
     </ClCompile>
     <ClCompile Include="mimalloc\src\page.c" />
     <ClCompile Include="mimalloc\src\random.c" />
-    <ClCompile Include="mimalloc\src\segment-map.c" />
-    <ClCompile Include="mimalloc\src\segment.c" />
     <ClCompile Include="mimalloc\src\os.c" />
     <ClCompile Include="mimalloc\src\stats.c" />
+    <ClCompile Include="mimalloc\src\theap.c" />
+    <ClCompile Include="mimalloc\src\threadlocal.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mimalloc\include\mimalloc.h" />

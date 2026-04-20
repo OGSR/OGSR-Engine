@@ -52,16 +52,22 @@
     <ClCompile Include="mimalloc\src\random.c">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="mimalloc\src\segment.c">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="mimalloc\src\segment-map.c">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="mimalloc\src\stats.c">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="mimalloc\src\arena-abandon.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="mimalloc\src\theap.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="mimalloc\src\threadlocal.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="mimalloc\src\page-map.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="mimalloc\src\arena-meta.c">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>

@@ -20,7 +20,7 @@ RD /s /q 3rd_party\Src\zstd\zstd
 git clone --branch dev --depth 1 https://github.com/facebook/zstd.git 3rd_party\Src\zstd\zstd
 
 RD /s /q 3rd_party\Src\mimalloc\mimalloc
-git clone --branch dev2 --depth 1 https://github.com/microsoft/mimalloc.git 3rd_party\Src\mimalloc\mimalloc
+git clone --branch dev3 --depth 1 https://github.com/microsoft/mimalloc.git 3rd_party\Src\mimalloc\mimalloc
 
 RD /s /q 3rd_party\Src\NVIDIA_DLSS\DLSS
 git clone --branch v310.4.0 --depth 1 https://github.com/NVIDIA/DLSS.git 3rd_party\Src\NVIDIA_DLSS\DLSS
