@@ -905,6 +905,9 @@ void CInifile::remove_section(LPCSTR S)
 
         auto found = std::find_if(Ordered_DATA.begin(), Ordered_DATA.end(), [&](const auto& it) { return xr_strcmp(*it.first, S) == 0; });
         R_ASSERT(found != Ordered_DATA.end());
+
+        xr_delete(found->second);
+
         Ordered_DATA.erase(found);
     }
 }
@@ -932,8 +935,6 @@ CInifile::Sect& CInifile::append_section(LPCSTR name, Sect* base)
 
     return r_section(name);
 }
-
-#include <sstream>
 
 std::string CInifile::get_as_string()
 {
