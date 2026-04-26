@@ -6,12 +6,11 @@
  * IN 'COPYING'. PLEASE READ THESE TERMS BEFORE DISTRIBUTING.       *
  *                                                                  *
  * THE OggVorbis SOURCE CODE IS (C) COPYRIGHT 1994-2007             *
- * by the Xiph.Org Foundation http://www.xiph.org/                  *
+ * by the Xiph.Org Foundation https://xiph.org/                     *
  *                                                                  *
  ********************************************************************
 
  function: stdio-based convenience library for opening/seeking/decoding
- last mod: $Id: vorbisfile.h 17182 2010-04-29 03:48:32Z xiphmont $
 
  ********************************************************************/
 
@@ -55,7 +54,7 @@ static int _ov_header_fseek_wrap(FILE *f,ogg_int64_t off,int whence){
 
 #ifdef __MINGW32__
   return fseeko64(f,off,whence);
-#elif defined (_WIN32) && !defined (__BORLANDC__)
+#elif defined (_WIN32)
   return _fseeki64(f,off,whence);
 #else
   return fseek(f,off,whence);

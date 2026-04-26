@@ -1,8 +1,6 @@
-;
-; $Id: vorbis.def 16335 2009-07-25 22:52:38Z cristianadam $
+; vorbis.def
 ; 
 LIBRARY
-vorbis.dll
 EXPORTS
 _floor_P
 _mapping_P

@@ -6,12 +6,11 @@
  * IN 'COPYING'. PLEASE READ THESE TERMS BEFORE DISTRIBUTING.       *
  *                                                                  *
  * THE OggVorbis SOURCE CODE IS (C) COPYRIGHT 1994-2001             *
- * by the Xiph.Org Foundation http://www.xiph.org/                  *
+ * by the Xiph.Org Foundation https://xiph.org/                     *
  *                                                                  *
  ********************************************************************
 
  function: vorbis encode-engine setup
- last mod: $Id: vorbisenc.h 17021 2010-03-24 09:29:41Z xiphmont $
 
  ********************************************************************/
 
@@ -203,8 +202,8 @@ extern int vorbis_encode_setup_init(vorbis_info *vi);
  *
  * \param vi      Pointer to an initialized vorbis_info struct.
  *
- * \param number Specifies the desired action; See \ref encctlcodes "the list
- * of available requests".
+ * \param number Specifies the desired action; See \ref encctlcodes
+ * "the list of available requests".
  *
  * \param arg void * pointing to a data structure matching the request
  * argument.
@@ -299,7 +298,7 @@ struct ovectl_ratemanage2_arg {
  * The type of the referent of that function's \c arg pointer depends on these
  * codes.
  */
-/*@{*/
+/**@{*/
 
 /**
  * Query the current encoder bitrate management setting.
@@ -425,7 +424,7 @@ struct ovectl_ratemanage2_arg {
  */
 #define OV_ECTL_RATEMANAGE_HARD      0x13
 
-/*@}*/
+/**@}*/
 
 
 

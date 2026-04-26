@@ -6,12 +6,11 @@
  * IN 'COPYING'. PLEASE READ THESE TERMS BEFORE DISTRIBUTING.       *
  *                                                                  *
  * THE OggVorbis SOURCE CODE IS (C) COPYRIGHT 1994-2010             *
- * by the Xiph.Org Foundation http://www.xiph.org/                  *
+ * by the Xiph.Org Foundation https://xiph.org/                     *
  *                                                                  *
  ********************************************************************
 
  function: psychoacoustics not including preecho
- last mod: $Id: psy.c 18077 2011-09-02 02:49:00Z giles $
 
  ********************************************************************/
 
@@ -317,7 +316,7 @@ void _vp_psy_init(vorbis_look_psy *p,vorbis_info_psy *vi,
     for(;hi<=n && (hi<i+vi->noisewindowhimin ||
           toBARK(rate/(2*n)*hi)<(bark+vi->noisewindowhi));hi++);
 
-    p->bark[i]=((lo-1)<<16)+(hi-1);
+    p->bark[i]=((lo-1)*(1<<16))+(hi-1);
 
   }
 
@@ -340,6 +339,10 @@ void _vp_psy_init(vorbis_look_psy *p,vorbis_info_psy *vi,
     if(halfoc<0)halfoc=0;
     if(halfoc>=P_BANDS-1)halfoc=P_BANDS-1;
     inthalfoc=(int)halfoc;
+    /*If we hit the P_BANDS-1 clamp above, inthalfoc+1 will be out of bounds,
+       even though it will have an interpolation weight of 0.
+      Shift the interval so we don't read past the end of the array.*/
+    if(inthalfoc>=P_BANDS-2)inthalfoc=P_BANDS-2;
     del=halfoc-inthalfoc;
 
     for(j=0;j<P_NOISECURVES;j++)
@@ -600,11 +603,12 @@ static void bark_noise_hybridmp(int n,const long *b,
     XY[i] = tXY;
   }
 
-  for (i = 0, x = 0.f;; i++, x += 1.f) {
+  for (i = 0, x = 0.f; i < n; i++, x += 1.f) {
 
     lo = b[i] >> 16;
-    if( lo>=0 ) break;
     hi = b[i] & 0xffff;
+    if( lo>=0 || -lo>=n ) break;
+    if( hi>=n ) break;
 
     tN = N[hi] + N[-lo];
     tX = X[hi] - X[-lo];
@@ -616,17 +620,17 @@ static void bark_noise_hybridmp(int n,const long *b,
     B = tN * tXY - tX * tY;
     D = tN * tXX - tX * tX;
     R = (A + x * B) / D;
-    if (R < 0.f)
-      R = 0.f;
+    if (R < 0.f) R = 0.f;
 
     noise[i] = R - offset;
   }
 
-  for ( ;; i++, x += 1.f) {
+  for ( ; i < n; i++, x += 1.f) {
 
     lo = b[i] >> 16;
     hi = b[i] & 0xffff;
-    if(hi>=n)break;
+    if( lo<0 || lo>=n ) break;
+    if( hi>=n ) break;
 
     tN = N[hi] - N[lo];
     tX = X[hi] - X[lo];
@@ -642,6 +646,7 @@ static void bark_noise_hybridmp(int n,const long *b,
 
     noise[i] = R - offset;
   }
+
   for ( ; i < n; i++, x += 1.f) {
 
     R = (A + x * B) / D;
@@ -652,10 +657,11 @@ static void bark_noise_hybridmp(int n,const long *b,
 
   if (fixed <= 0) return;
 
-  for (i = 0, x = 0.f;; i++, x += 1.f) {
+  for (i = 0, x = 0.f; i < n; i++, x += 1.f) {
     hi = i + fixed / 2;
     lo = hi - fixed;
-    if(lo>=0)break;
+    if ( hi>=n ) break;
+    if ( lo>=0 ) break;
 
     tN = N[hi] + N[-lo];
     tX = X[hi] - X[-lo];
@@ -671,11 +677,12 @@ static void bark_noise_hybridmp(int n,const long *b,
 
     if (R - offset < noise[i]) noise[i] = R - offset;
   }
-  for ( ;; i++, x += 1.f) {
+  for ( ; i < n; i++, x += 1.f) {
 
     hi = i + fixed / 2;
     lo = hi - fixed;
-    if(hi>=n)break;
+    if ( hi>=n ) break;
+    if ( lo<0 ) break;
 
     tN = N[hi] - N[lo];
     tX = X[hi] - X[lo];
@@ -908,7 +915,7 @@ static float FLOOR1_fromdB_LOOKUP[256]={
 };
 
 /* this is for per-channel noise normalization */
-static int __cdecl apsort(const void *a, const void *b){
+static int apsort(const void *a, const void *b){
   float f1=**(float**)a;
   float f2=**(float**)b;
   return (f1<f2)-(f1>f2);
