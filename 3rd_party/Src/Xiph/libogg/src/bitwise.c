@@ -5,13 +5,12 @@
  * GOVERNED BY A BSD-STYLE SOURCE LICENSE INCLUDED WITH THIS SOURCE *
  * IN 'COPYING'. PLEASE READ THESE TERMS BEFORE DISTRIBUTING.       *
  *                                                                  *
- * THE OggVorbis SOURCE CODE IS (C) COPYRIGHT 1994-2010             *
+ * THE OggVorbis SOURCE CODE IS (C) COPYRIGHT 1994-2014             *
  * by the Xiph.Org Foundation http://www.xiph.org/                  *
  *                                                                  *
  ********************************************************************
 
   function: packing variable sized words into an octet stream
-  last mod: $Id: bitwise.c 18051 2011-08-04 17:56:39Z giles $
 
  ********************************************************************/
 
@@ -40,6 +39,8 @@ static const unsigned int mask8B[]=
 void oggpack_writeinit(oggpack_buffer *b){
   memset(b,0,sizeof(*b));
   b->ptr=b->buffer=_ogg_malloc(BUFFER_INCREMENT);
+  if (!b->buffer)
+    return;
   b->buffer[0]='\0';
   b->storage=BUFFER_INCREMENT;
 }
@@ -187,8 +188,22 @@ static void oggpack_writecopy_helper(oggpack_buffer *b,
   unsigned char *ptr=(unsigned char *)source;
 
   long bytes=bits/8;
+  long pbytes=(b->endbit+bits)/8;
   bits-=bytes*8;
 
+  /* expand storage up-front */
+  if(b->endbyte+pbytes>=b->storage){
+    void *ret;
+    if(!b->ptr) goto err;
+    if(b->storage>b->endbyte+pbytes+BUFFER_INCREMENT) goto err;
+    b->storage=b->endbyte+pbytes+BUFFER_INCREMENT;
+    ret=_ogg_realloc(b->buffer,b->storage);
+    if(!ret) goto err;
+    b->buffer=ret;
+    b->ptr=b->buffer+b->endbyte;
+  }
+
+  /* copy whole octets */
   if(b->endbit){
     int i;
     /* unaligned copy.  Do it the hard way. */
@@ -196,23 +211,13 @@ static void oggpack_writecopy_helper(oggpack_buffer *b,
       w(b,(unsigned long)(ptr[i]),8);
   }else{
     /* aligned block copy */
-    if(b->endbyte+bytes+1>=b->storage){
-      void *ret;
-      if(!b->ptr) goto err;
-      if(b->endbyte+bytes+BUFFER_INCREMENT>b->storage) goto err;
-      b->storage=b->endbyte+bytes+BUFFER_INCREMENT;
-      ret=_ogg_realloc(b->buffer,b->storage);
-      if(!ret) goto err;
-      b->buffer=ret;
-      b->ptr=b->buffer+b->endbyte;
-    }
-
     memmove(b->ptr,source,bytes);
     b->ptr+=bytes;
     b->endbyte+=bytes;
     *b->ptr=0;
-
   }
+
+  /* copy trailing bits */
   if(bits){
     if(msb)
       w(b,(unsigned long)(ptr[bytes]>>(8-bits)),bits);
@@ -281,13 +286,13 @@ long oggpack_look(oggpack_buffer *b,int bits){
 
   ret=b->ptr[0]>>b->endbit;
   if(bits>8){
-    ret|=b->ptr[1]<<(8-b->endbit);
+    ret|=(unsigned long)b->ptr[1]<<(8-b->endbit);
     if(bits>16){
-      ret|=b->ptr[2]<<(16-b->endbit);
+      ret|=(unsigned long)b->ptr[2]<<(16-b->endbit);
       if(bits>24){
-        ret|=b->ptr[3]<<(24-b->endbit);
+        ret|=(unsigned long)b->ptr[3]<<(24-b->endbit);
         if(bits>32 && b->endbit)
-          ret|=b->ptr[4]<<(32-b->endbit);
+          ret|=(unsigned long)b->ptr[4]<<(32-b->endbit);
       }
     }
   }
@@ -310,13 +315,13 @@ long oggpackB_look(oggpack_buffer *b,int bits){
     else if(!bits)return(0L);
   }
 
-  ret=b->ptr[0]<<(24+b->endbit);
+  ret=(unsigned long)b->ptr[0]<<(24+b->endbit);
   if(bits>8){
-    ret|=b->ptr[1]<<(16+b->endbit);
+    ret|=(unsigned long)b->ptr[1]<<(16+b->endbit);
     if(bits>16){
-      ret|=b->ptr[2]<<(8+b->endbit);
+      ret|=(unsigned long)b->ptr[2]<<(8+b->endbit);
       if(bits>24){
-        ret|=b->ptr[3]<<(b->endbit);
+        ret|=(unsigned long)b->ptr[3]<<(b->endbit);
         if(bits>32 && b->endbit)
           ret|=b->ptr[4]>>(8-b->endbit);
       }
@@ -386,13 +391,13 @@ long oggpack_read(oggpack_buffer *b,int bits){
 
   ret=b->ptr[0]>>b->endbit;
   if(bits>8){
-    ret|=b->ptr[1]<<(8-b->endbit);
+    ret|=(unsigned long)b->ptr[1]<<(8-b->endbit);
     if(bits>16){
-      ret|=b->ptr[2]<<(16-b->endbit);
+      ret|=(unsigned long)b->ptr[2]<<(16-b->endbit);
       if(bits>24){
-        ret|=b->ptr[3]<<(24-b->endbit);
+        ret|=(unsigned long)b->ptr[3]<<(24-b->endbit);
         if(bits>32 && b->endbit){
-          ret|=b->ptr[4]<<(32-b->endbit);
+          ret|=(unsigned long)b->ptr[4]<<(32-b->endbit);
         }
       }
     }
@@ -427,13 +432,13 @@ long oggpackB_read(oggpack_buffer *b,int bits){
     else if(!bits)return(0L);
   }
 
-  ret=b->ptr[0]<<(24+b->endbit);
+  ret=(unsigned long)b->ptr[0]<<(24+b->endbit);
   if(bits>8){
-    ret|=b->ptr[1]<<(16+b->endbit);
+    ret|=(unsigned long)b->ptr[1]<<(16+b->endbit);
     if(bits>16){
-      ret|=b->ptr[2]<<(8+b->endbit);
+      ret|=(unsigned long)b->ptr[2]<<(8+b->endbit);
       if(bits>24){
-        ret|=b->ptr[3]<<(b->endbit);
+        ret|=(unsigned long)b->ptr[3]<<(b->endbit);
         if(bits>32 && b->endbit)
           ret|=b->ptr[4]>>(8-b->endbit);
       }
@@ -562,17 +567,17 @@ void cliptest(unsigned long *b,int vals,int bits,int *comp,int compsize){
     int tbit=bits?bits:ilog(b[i]);
     if(oggpack_look(&r,tbit)==-1)
       report("out of data!\n");
-    if(oggpack_look(&r,tbit)!=(b[i]&mask[tbit]))
+    if((unsigned long)oggpack_look(&r,tbit)!=(b[i]&mask[tbit]))
       report("looked at incorrect value!\n");
     if(tbit==1)
-      if(oggpack_look1(&r)!=(b[i]&mask[tbit]))
+      if((unsigned long)oggpack_look1(&r)!=(b[i]&mask[tbit]))
         report("looked at single bit incorrect value!\n");
     if(tbit==1){
-      if(oggpack_read1(&r)!=(b[i]&mask[tbit]))
+      if((unsigned long)oggpack_read1(&r)!=(b[i]&mask[tbit]))
         report("read incorrect single bit value!\n");
     }else{
-    if(oggpack_read(&r,tbit)!=(b[i]&mask[tbit]))
-      report("read incorrect value!\n");
+      if((unsigned long)oggpack_read(&r,tbit)!=(b[i]&mask[tbit]))
+	report("read incorrect value!\n");
     }
   }
   if(oggpack_bytes(&r)!=bytes)report("leftover bytes after read!\n");
@@ -597,25 +602,206 @@ void cliptestB(unsigned long *b,int vals,int bits,int *comp,int compsize){
     int tbit=bits?bits:ilog(b[i]);
     if(oggpackB_look(&r,tbit)==-1)
       report("out of data!\n");
-    if(oggpackB_look(&r,tbit)!=(b[i]&mask[tbit]))
+    if((unsigned long)oggpackB_look(&r,tbit)!=(b[i]&mask[tbit]))
       report("looked at incorrect value!\n");
     if(tbit==1)
-      if(oggpackB_look1(&r)!=(b[i]&mask[tbit]))
+      if((unsigned long)oggpackB_look1(&r)!=(b[i]&mask[tbit]))
         report("looked at single bit incorrect value!\n");
     if(tbit==1){
-      if(oggpackB_read1(&r)!=(b[i]&mask[tbit]))
+      if((unsigned long)oggpackB_read1(&r)!=(b[i]&mask[tbit]))
         report("read incorrect single bit value!\n");
     }else{
-    if(oggpackB_read(&r,tbit)!=(b[i]&mask[tbit]))
+    if((unsigned long)oggpackB_read(&r,tbit)!=(b[i]&mask[tbit]))
       report("read incorrect value!\n");
     }
   }
   if(oggpackB_bytes(&r)!=bytes)report("leftover bytes after read!\n");
 }
 
+void copytest(int prefill, int copy){
+  oggpack_buffer source_write;
+  oggpack_buffer dest_write;
+  oggpack_buffer source_read;
+  oggpack_buffer dest_read;
+  unsigned char *source;
+  unsigned char *dest;
+  long source_bytes,dest_bytes;
+  int i;
+
+  oggpack_writeinit(&source_write);
+  oggpack_writeinit(&dest_write);
+
+  for(i=0;i<(prefill+copy+7)/8;i++)
+    oggpack_write(&source_write,(i^0x5a)&0xff,8);
+  source=oggpack_get_buffer(&source_write);
+  source_bytes=oggpack_bytes(&source_write);
+
+  /* prefill */
+  oggpack_writecopy(&dest_write,source,prefill);
+
+  /* check buffers; verify end byte masking */
+  dest=oggpack_get_buffer(&dest_write);
+  dest_bytes=oggpack_bytes(&dest_write);
+  if(dest_bytes!=(prefill+7)/8){
+    fprintf(stderr,"wrong number of bytes after prefill! %ld!=%d\n",dest_bytes,(prefill+7)/8);
+    exit(1);
+  }
+  oggpack_readinit(&source_read,source,source_bytes);
+  oggpack_readinit(&dest_read,dest,dest_bytes);
+
+  for(i=0;i<prefill;i+=8){
+    int s=oggpack_read(&source_read,prefill-i<8?prefill-i:8);
+    int d=oggpack_read(&dest_read,prefill-i<8?prefill-i:8);
+    if(s!=d){
+      fprintf(stderr,"prefill=%d mismatch! byte %d, %x!=%x\n",prefill,i/8,s,d);
+      exit(1);
+    }
+  }
+  if(prefill<dest_bytes){
+    if(oggpack_read(&dest_read,dest_bytes-prefill)!=0){
+      fprintf(stderr,"prefill=%d mismatch! trailing bits not zero\n",prefill);
+      exit(1);
+    }
+  }
+
+  /* second copy */
+  oggpack_writecopy(&dest_write,source,copy);
+
+  /* check buffers; verify end byte masking */
+  dest=oggpack_get_buffer(&dest_write);
+  dest_bytes=oggpack_bytes(&dest_write);
+  if(dest_bytes!=(copy+prefill+7)/8){
+    fprintf(stderr,"wrong number of bytes after prefill+copy! %ld!=%d\n",dest_bytes,(copy+prefill+7)/8);
+    exit(1);
+  }
+  oggpack_readinit(&source_read,source,source_bytes);
+  oggpack_readinit(&dest_read,dest,dest_bytes);
+
+  for(i=0;i<prefill;i+=8){
+    int s=oggpack_read(&source_read,prefill-i<8?prefill-i:8);
+    int d=oggpack_read(&dest_read,prefill-i<8?prefill-i:8);
+    if(s!=d){
+      fprintf(stderr,"prefill=%d mismatch! byte %d, %x!=%x\n",prefill,i/8,s,d);
+      exit(1);
+    }
+  }
+
+  oggpack_readinit(&source_read,source,source_bytes);
+  for(i=0;i<copy;i+=8){
+    int s=oggpack_read(&source_read,copy-i<8?copy-i:8);
+    int d=oggpack_read(&dest_read,copy-i<8?copy-i:8);
+    if(s!=d){
+      fprintf(stderr,"prefill=%d copy=%d mismatch! byte %d, %x!=%x\n",prefill,copy,i/8,s,d);
+      exit(1);
+    }
+  }
+
+  if(copy+prefill<dest_bytes){
+    if(oggpack_read(&dest_read,dest_bytes-copy-prefill)!=0){
+      fprintf(stderr,"prefill=%d copy=%d mismatch! trailing bits not zero\n",prefill,copy);
+      exit(1);
+    }
+  }
+
+  oggpack_writeclear(&source_write);
+  oggpack_writeclear(&dest_write);
+
+
+}
+
+void copytestB(int prefill, int copy){
+  oggpack_buffer source_write;
+  oggpack_buffer dest_write;
+  oggpack_buffer source_read;
+  oggpack_buffer dest_read;
+  unsigned char *source;
+  unsigned char *dest;
+  long source_bytes,dest_bytes;
+  int i;
+
+  oggpackB_writeinit(&source_write);
+  oggpackB_writeinit(&dest_write);
+
+  for(i=0;i<(prefill+copy+7)/8;i++)
+    oggpackB_write(&source_write,(i^0x5a)&0xff,8);
+  source=oggpackB_get_buffer(&source_write);
+  source_bytes=oggpackB_bytes(&source_write);
+
+  /* prefill */
+  oggpackB_writecopy(&dest_write,source,prefill);
+
+  /* check buffers; verify end byte masking */
+  dest=oggpackB_get_buffer(&dest_write);
+  dest_bytes=oggpackB_bytes(&dest_write);
+  if(dest_bytes!=(prefill+7)/8){
+    fprintf(stderr,"wrong number of bytes after prefill! %ld!=%d\n",dest_bytes,(prefill+7)/8);
+    exit(1);
+  }
+  oggpackB_readinit(&source_read,source,source_bytes);
+  oggpackB_readinit(&dest_read,dest,dest_bytes);
+
+  for(i=0;i<prefill;i+=8){
+    int s=oggpackB_read(&source_read,prefill-i<8?prefill-i:8);
+    int d=oggpackB_read(&dest_read,prefill-i<8?prefill-i:8);
+    if(s!=d){
+      fprintf(stderr,"prefill=%d mismatch! byte %d, %x!=%x\n",prefill,i/8,s,d);
+      exit(1);
+    }
+  }
+  if(prefill<dest_bytes){
+    if(oggpackB_read(&dest_read,dest_bytes-prefill)!=0){
+      fprintf(stderr,"prefill=%d mismatch! trailing bits not zero\n",prefill);
+      exit(1);
+    }
+  }
+
+  /* second copy */
+  oggpackB_writecopy(&dest_write,source,copy);
+
+  /* check buffers; verify end byte masking */
+  dest=oggpackB_get_buffer(&dest_write);
+  dest_bytes=oggpackB_bytes(&dest_write);
+  if(dest_bytes!=(copy+prefill+7)/8){
+    fprintf(stderr,"wrong number of bytes after prefill+copy! %ld!=%d\n",dest_bytes,(copy+prefill+7)/8);
+    exit(1);
+  }
+  oggpackB_readinit(&source_read,source,source_bytes);
+  oggpackB_readinit(&dest_read,dest,dest_bytes);
+
+  for(i=0;i<prefill;i+=8){
+    int s=oggpackB_read(&source_read,prefill-i<8?prefill-i:8);
+    int d=oggpackB_read(&dest_read,prefill-i<8?prefill-i:8);
+    if(s!=d){
+      fprintf(stderr,"prefill=%d mismatch! byte %d, %x!=%x\n",prefill,i/8,s,d);
+      exit(1);
+    }
+  }
+
+  oggpackB_readinit(&source_read,source,source_bytes);
+  for(i=0;i<copy;i+=8){
+    int s=oggpackB_read(&source_read,copy-i<8?copy-i:8);
+    int d=oggpackB_read(&dest_read,copy-i<8?copy-i:8);
+    if(s!=d){
+      fprintf(stderr,"prefill=%d copy=%d mismatch! byte %d, %x!=%x\n",prefill,copy,i/8,s,d);
+      exit(1);
+    }
+  }
+
+  if(copy+prefill<dest_bytes){
+    if(oggpackB_read(&dest_read,dest_bytes-copy-prefill)!=0){
+      fprintf(stderr,"prefill=%d copy=%d mismatch! trailing bits not zero\n",prefill,copy);
+      exit(1);
+    }
+  }
+
+  oggpackB_writeclear(&source_write);
+  oggpackB_writeclear(&dest_write);
+
+}
+
 int main(void){
   unsigned char *buffer;
-  long bytes,i;
+  long bytes,i,j;
   static unsigned long testbuffer1[]=
     {18,12,103948,4325,543,76,432,52,3,65,4,56,32,42,34,21,1,23,32,546,456,7,
        567,56,8,8,55,3,52,342,341,4,265,7,67,86,2199,21,7,1,5,1,4};
@@ -704,8 +890,8 @@ int main(void){
   oggpack_readinit(&r,buffer,bytes);
   for(i=0;i<test2size;i++){
     if(oggpack_look(&r,32)==-1)report("out of data. failed!");
-    if(oggpack_look(&r,32)!=large[i]){
-      fprintf(stderr,"%ld != %ld (%lx!=%lx):",oggpack_look(&r,32),large[i],
+    if((unsigned long)oggpack_look(&r,32)!=large[i]){
+      fprintf(stderr,"%ld != %lu (%lx!=%lx):",oggpack_look(&r,32),large[i],
               oggpack_look(&r,32),large[i]);
       report("read incorrect value!\n");
     }
@@ -761,7 +947,31 @@ int main(void){
       exit(1);
   }
   oggpack_writeclear(&o);
-  fprintf(stderr,"ok.\n");
+  fprintf(stderr,"ok.");
+
+  /* this is partly glassbox; we're mostly concerned about the allocation boundaries */
+
+  fprintf(stderr,"\nTesting aligned writecopies (LSb): ");
+  for(i=0;i<71;i++)
+    for(j=0;j<5;j++)
+      copytest(j*8,i);
+  for(i=BUFFER_INCREMENT*8-71;i<BUFFER_INCREMENT*8+71;i++)
+    for(j=0;j<5;j++)
+      copytest(j*8,i);
+  fprintf(stderr,"ok.      ");
+
+  fprintf(stderr,"\nTesting unaligned writecopies (LSb): ");
+  for(i=0;i<71;i++)
+    for(j=1;j<40;j++)
+      if(j&0x7)
+        copytest(j,i);
+  for(i=BUFFER_INCREMENT*8-71;i<BUFFER_INCREMENT*8+71;i++)
+    for(j=1;j<40;j++)
+      if(j&0x7)
+        copytest(j,i);
+  
+  fprintf(stderr,"ok.      \n");
+
 
   /********** lazy, cut-n-paste retest with MSb packing ***********/
 
@@ -790,8 +1000,8 @@ int main(void){
   oggpackB_readinit(&r,buffer,bytes);
   for(i=0;i<test2size;i++){
     if(oggpackB_look(&r,32)==-1)report("out of data. failed!");
-    if(oggpackB_look(&r,32)!=large[i]){
-      fprintf(stderr,"%ld != %ld (%lx!=%lx):",oggpackB_look(&r,32),large[i],
+    if((unsigned long)oggpackB_look(&r,32)!=large[i]){
+      fprintf(stderr,"%ld != %lu (%lx!=%lx):",oggpackB_look(&r,32),large[i],
               oggpackB_look(&r,32),large[i]);
       report("read incorrect value!\n");
     }
@@ -846,9 +1056,31 @@ int main(void){
     fprintf(stderr,"failed; read past end without -1.\n");
       exit(1);
   }
+  fprintf(stderr,"ok.");
   oggpackB_writeclear(&o);
-  fprintf(stderr,"ok.\n\n");
 
+  /* this is partly glassbox; we're mostly concerned about the allocation boundaries */
+
+  fprintf(stderr,"\nTesting aligned writecopies (MSb): ");
+  for(i=0;i<71;i++)
+    for(j=0;j<5;j++)
+      copytestB(j*8,i);
+  for(i=BUFFER_INCREMENT*8-71;i<BUFFER_INCREMENT*8+71;i++)
+    for(j=0;j<5;j++)
+      copytestB(j*8,i);
+  fprintf(stderr,"ok.      ");
+
+  fprintf(stderr,"\nTesting unaligned writecopies (MSb): ");
+  for(i=0;i<71;i++)
+    for(j=1;j<40;j++)
+      if(j&0x7)
+        copytestB(j,i);
+  for(i=BUFFER_INCREMENT*8-71;i<BUFFER_INCREMENT*8+71;i++)
+    for(j=1;j<40;j++)
+      if(j&0x7)
+        copytestB(j,i);
+  
+  fprintf(stderr,"ok.      \n\n");
 
   return(0);
 }
