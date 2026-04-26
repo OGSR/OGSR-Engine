@@ -6,17 +6,17 @@
  * IN 'COPYING'. PLEASE READ THESE TERMS BEFORE DISTRIBUTING.       *
  *                                                                  *
  * THE Theora SOURCE CODE IS COPYRIGHT (C) 2002-2009                *
- * by the Xiph.Org Foundation and contributors http://www.xiph.org/ *
+ * by the Xiph.Org Foundation and contributors                      *
+ * https://www.xiph.org/                                            *
  *                                                                  *
  ********************************************************************
 
   function:
-    last mod: $Id: huffman.h 16503 2009-08-22 18:14:02Z giles $
 
  ********************************************************************/
 
 #if !defined(_huffman_H)
-# define _hufffman_H (1)
+# define _huffman_H (1)
 # include "theora/codec.h"
 # include "ocintrin.h"
 

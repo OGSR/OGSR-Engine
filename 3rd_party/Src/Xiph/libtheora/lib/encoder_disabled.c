@@ -6,16 +6,18 @@
  * IN 'COPYING'. PLEASE READ THESE TERMS BEFORE DISTRIBUTING.       *
  *                                                                  *
  * THE Theora SOURCE CODE IS COPYRIGHT (C) 2002-2009                *
- * by the Xiph.Org Foundation http://www.xiph.org/                  *
+ * by the Xiph.Org Foundation https://www.xiph.org/                 *
  *                                                                  *
  ********************************************************************
 
   function:
-  last mod: $Id: encoder_disabled.c 16503 2009-08-22 18:14:02Z giles $
 
  ********************************************************************/
 #include "apiwrapper.h"
 #include "encint.h"
+
+const th_quant_info TH_VP31_QUANT_INFO = {};
+const th_huff_code TH_VP31_HUFF_CODES[TH_NHUFFMAN_TABLES][TH_NDCT_TOKENS];
 
 th_enc_ctx *th_encode_alloc(const th_info *_info){
   return NULL;

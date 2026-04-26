@@ -6,12 +6,11 @@
  * IN 'COPYING'. PLEASE READ THESE TERMS BEFORE DISTRIBUTING.       *
  *                                                                  *
  * THE Theora SOURCE CODE IS COPYRIGHT (C) 2002-2009                *
- * by the Xiph.Org Foundation http://www.xiph.org/                  *
+ * by the Xiph.Org Foundation https://www.xiph.org/                 *
  *                                                                  *
  ********************************************************************
 
   function:
-  last mod: $Id: rate.c 16503 2009-08-22 18:14:02Z giles $
 
  ********************************************************************/
 #include <stdlib.h>
@@ -22,7 +21,7 @@
   The values are Q12 fixed-point and spaced at 5 degree intervals.
   These decisions are somewhat arbitrary, but sufficient for the 2nd order
    Bessel follower below.
-  Values of x larger than 85 degrees are extrapolated from the last inteval,
+  Values of x larger than 85 degrees are extrapolated from the last interval,
    which is way off, but "good enough".*/
 static unsigned short OC_ROUGH_TAN_LOOKUP[18]={
       0,  358,  722, 1098, 1491, 1910,
@@ -49,7 +48,7 @@ static int oc_warp_alpha(int _alpha){
   This does not alter the x/y state, but changes the reaction time of the
    filter.
   Altering the time constant of a reactive filter without alterning internal
-   state is something that has to be done carefuly, but our design operates at
+   state is something that has to be done carefully, but our design operates at
    high enough delays and with small enough time constant changes to make it
    safe.*/
 static void oc_iir_filter_reinit(oc_iir_filter *_f,int _delay){
@@ -190,7 +189,8 @@ void oc_enc_calc_lambda(oc_enc_ctx *_enc,int _qti){
     This may need to be revised if the R-D cost estimation or qii flag
      optimization strategies change.*/
   nqis=1;
-  if(lq<(OC_Q57(56)>>3)&&!_enc->vp3_compatible){
+  if(lq<(OC_Q57(56)>>3)&&!_enc->vp3_compatible&&
+   _enc->sp_level<OC_SP_LEVEL_FAST_ANALYSIS){
     qi1=oc_enc_find_qi_for_target(_enc,_qti,OC_MAXI(qi-1,0),0,
      lq+(OC_Q57(7)+5)/10);
     if(qi1!=qi)_enc->state.qis[nqis++]=qi1;
@@ -761,6 +761,7 @@ int oc_enc_update_rc_state(oc_enc_ctx *_enc,
       _enc->rc.cur_metrics.log_scale=oc_q57_to_q24(log_scale);
       _enc->rc.cur_metrics.dup_count=_enc->dup_count;
       _enc->rc.cur_metrics.frame_type=_enc->state.frame_type;
+      _enc->rc.cur_metrics.activity_avg=_enc->activity_avg;
       _enc->rc.twopass_buffer_bytes=0;
     }break;
     case 2:{
@@ -863,9 +864,9 @@ int oc_enc_update_rc_state(oc_enc_ctx *_enc,
   return dropped;
 }
 
-#define OC_RC_2PASS_VERSION   (1)
+#define OC_RC_2PASS_VERSION   (2)
 #define OC_RC_2PASS_HDR_SZ    (38)
-#define OC_RC_2PASS_PACKET_SZ (8)
+#define OC_RC_2PASS_PACKET_SZ (12)
 
 static void oc_rc_buffer_val(oc_rc_state *_rc,ogg_int64_t _val,int _bytes){
   while(_bytes-->0){
@@ -900,6 +901,7 @@ int oc_enc_rc_2pass_out(oc_enc_ctx *_enc,unsigned char **_buf){
       oc_rc_buffer_val(&_enc->rc,
        _enc->rc.cur_metrics.dup_count|_enc->rc.cur_metrics.frame_type<<31,4);
       oc_rc_buffer_val(&_enc->rc,_enc->rc.cur_metrics.log_scale,4);
+      oc_rc_buffer_val(&_enc->rc,_enc->rc.cur_metrics.activity_avg,4);
     }
   }
   else if(_enc->packet_state==OC_PACKET_DONE&&
@@ -1050,16 +1052,19 @@ int oc_enc_rc_2pass_in(oc_enc_ctx *_enc,unsigned char *_buf,size_t _bytes){
         if(_enc->rc.twopass_buffer_fill>=OC_RC_2PASS_PACKET_SZ){
           ogg_uint32_t dup_count;
           ogg_int32_t  log_scale;
+          unsigned     activity;
           int          qti;
           int          arg;
           /*Read the metrics for the next frame.*/
           dup_count=oc_rc_unbuffer_val(&_enc->rc,4);
           log_scale=oc_rc_unbuffer_val(&_enc->rc,4);
+          activity=oc_rc_unbuffer_val(&_enc->rc,4);
           _enc->rc.cur_metrics.log_scale=log_scale;
           qti=(dup_count&0x80000000)>>31;
           _enc->rc.cur_metrics.dup_count=dup_count&0x7FFFFFFF;
           _enc->rc.cur_metrics.frame_type=qti;
           _enc->rc.twopass_force_kf=qti==OC_INTRA_FRAME;
+          _enc->activity_avg=_enc->rc.cur_metrics.activity_avg=activity;
           /*"Helpfully" set the dup count back to what it was in pass 1.*/
           arg=_enc->rc.cur_metrics.dup_count;
           th_encode_ctl(_enc,TH_ENCCTL_SET_DUP_COUNT,&arg,sizeof(arg));
@@ -1070,8 +1075,8 @@ int oc_enc_rc_2pass_in(oc_enc_ctx *_enc,unsigned char *_buf,size_t _bytes){
       else{
         int frames_needed;
         /*We're using a finite buffer:*/
-        frames_needed=OC_CLAMPI(0,_enc->rc.buf_delay
-         -(_enc->rc.scale_window_end-_enc->rc.scale_window0),
+        frames_needed=OC_MINI(_enc->rc.buf_delay-OC_MINI(_enc->rc.buf_delay,
+         _enc->rc.scale_window_end-_enc->rc.scale_window0),
          _enc->rc.frames_left[0]+_enc->rc.frames_left[1]
          -_enc->rc.nframes[0]-_enc->rc.nframes[1]);
         while(frames_needed>0){
@@ -1087,9 +1092,11 @@ int oc_enc_rc_2pass_in(oc_enc_ctx *_enc,unsigned char *_buf,size_t _bytes){
             ogg_uint32_t      dup_count;
             ogg_int32_t       log_scale;
             int               qti;
+            unsigned          activity;
             /*Read the metrics for the next frame.*/
             dup_count=oc_rc_unbuffer_val(&_enc->rc,4);
             log_scale=oc_rc_unbuffer_val(&_enc->rc,4);
+            activity=oc_rc_unbuffer_val(&_enc->rc,4);
             /*Add the to the circular buffer.*/
             fmi=_enc->rc.frame_metrics_head+_enc->rc.nframe_metrics++;
             if(fmi>=_enc->rc.cframe_metrics)fmi-=_enc->rc.cframe_metrics;
@@ -1098,6 +1105,7 @@ int oc_enc_rc_2pass_in(oc_enc_ctx *_enc,unsigned char *_buf,size_t _bytes){
             qti=(dup_count&0x80000000)>>31;
             m->dup_count=dup_count&0x7FFFFFFF;
             m->frame_type=qti;
+            m->activity_avg=activity;
             /*And accumulate the statistics over the window.*/
             _enc->rc.nframes[qti]++;
             _enc->rc.nframes[2]+=m->dup_count;
@@ -1105,8 +1113,8 @@ int oc_enc_rc_2pass_in(oc_enc_ctx *_enc,unsigned char *_buf,size_t _bytes){
             _enc->rc.scale_window_end+=m->dup_count+1;
             /*Compute an upper bound on the number of remaining packets needed
                for the current window.*/
-            frames_needed=OC_CLAMPI(0,_enc->rc.buf_delay
-             -(_enc->rc.scale_window_end-_enc->rc.scale_window0),
+            frames_needed=OC_MINI(_enc->rc.buf_delay-OC_MINI(_enc->rc.buf_delay,
+             _enc->rc.scale_window_end-_enc->rc.scale_window0),
              _enc->rc.frames_left[0]+_enc->rc.frames_left[1]
              -_enc->rc.nframes[0]-_enc->rc.nframes[1]);
             /*Clear the buffer for the next frame.*/
@@ -1124,6 +1132,7 @@ int oc_enc_rc_2pass_in(oc_enc_ctx *_enc,unsigned char *_buf,size_t _bytes){
            *(_enc->rc.frame_metrics+_enc->rc.frame_metrics_head);
           _enc->rc.twopass_force_kf=
            _enc->rc.cur_metrics.frame_type==OC_INTRA_FRAME;
+          _enc->activity_avg=_enc->rc.cur_metrics.activity_avg;
           /*"Helpfully" set the dup count back to what it was in pass 1.*/
           arg=_enc->rc.cur_metrics.dup_count;
           th_encode_ctl(_enc,TH_ENCCTL_SET_DUP_COUNT,&arg,sizeof(arg));

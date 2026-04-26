@@ -6,61 +6,63 @@
  * IN 'COPYING'. PLEASE READ THESE TERMS BEFORE DISTRIBUTING.       *
  *                                                                  *
  * THE Theora SOURCE CODE IS COPYRIGHT (C) 2002-2009                *
- * by the Xiph.Org Foundation http://www.xiph.org/                  *
+ * by the Xiph.Org Foundation https://www.xiph.org/                 *
  *                                                                  *
  ********************************************************************
 
   function:
-  last mod: $Id: theora.h,v 1.8 2004/03/15 22:17:32 derf Exp $
 
  ********************************************************************/
 
 /**\mainpage
- * 
+ *
  * \section intro Introduction
  *
- * This is the documentation for <tt>libtheora</tt> C API.
- * The current reference
- * implementation for <a href="http://www.theora.org/">Theora</a>, a free,
+ * This is the documentation for the <tt>libtheora</tt> C API.
+ *
+ * The \c libtheora package is the current reference
+ * implementation for <a href="https://www.theora.org/">Theora</a>, a free,
  * patent-unencumbered video codec.
  * Theora is derived from On2's VP3 codec with additional features and
  *  integration with Ogg multimedia formats by
- *  <a href="http://www.xiph.org/">the Xiph.Org Foundation</a>.
+ *  <a href="https://www.xiph.org/">the Xiph.Org Foundation</a>.
  * Complete documentation of the format itself is available in
- * <a href="http://www.theora.org/doc/Theora.pdf">the Theora
+ * <a href="https://www.theora.org/doc/Theora.pdf">the Theora
  *  specification</a>.
  *
- * \subsection Organization
+ * \section Organization
  *
- * The functions documented here are actually subdivided into three 
+ * The functions documented here are divided between two
  * separate libraries:
- * - <tt>libtheoraenc</tt> contains the encoder interface,
+ * - \c libtheoraenc contains the encoder interface,
  *   described in \ref encfuncs.
- * - <tt>libtheoradec</tt> contains the decoder interface and
- *   routines shared with the encoder.
- *   You must also link to this if you link to <tt>libtheoraenc</tt>.
- *   The routines in this library are described in \ref decfuncs and 
- *   \ref basefuncs.
- * - <tt>libtheora</tt> contains the \ref oldfuncs.
+ * - \c libtheoradec contains the decoder interface,
+ *   described in \ref decfuncs, \n
+ *   and additional \ref basefuncs.
  *
- * New code should link to <tt>libtheoradec</tt> and, if using encoder
- * features, <tt>libtheoraenc</tt>. Together these two export both
- * the standard and the legacy API, so this is all that is needed by
- * any code. The older <tt>libtheora</tt> library is provided just for
- * compatibility with older build configurations.
+ * New code should link to \c libtheoradec. If using encoder
+ * features, it must also link to \c libtheoraenc.
  *
- * In general the recommended 1.x API symbols can be distinguished
- * by their <tt>th_</tt> or <tt>TH_</tt> namespace prefix.
- * The older, legacy API uses <tt>theora_</tt> or <tt>OC_</tt>
- * prefixes instead.
+ * During initial development, prior to the 1.0 release,
+ * \c libtheora exported a different \ref oldfuncs which
+ * combined both encode and decode functions.
+ * In general, legacy API symbols can be identified
+ * by their \c theora_ or \c OC_ namespace prefixes.
+ * The current API uses \c th_ or \c TH_ instead.
+ *
+ * While deprecated, \c libtheoraenc and \c libtheoradec
+ * together export the legacy api as well at the one documented above.
+ * Likewise, the legacy \c libtheora included with this package
+ * exports the new 1.x API. Older code and build scripts can therefore
+ * but updated independently to the current scheme.
  */
 
 /**\file
  * The shared <tt>libtheoradec</tt> and <tt>libtheoraenc</tt> C API.
  * You don't need to include this directly.*/
 
-#if !defined(_O_THEORA_CODEC_H_)
-# define _O_THEORA_CODEC_H_ (1)
+#if !defined(OGG_THEORA_CODEC_HEADER)
+# define OGG_THEORA_CODEC_HEADER (1)
 # include <ogg/ogg.h>
 
 #if defined(__cplusplus)
@@ -92,7 +94,7 @@ extern "C" {
 /*@}*/
 
 /**The currently defined color space tags.
- * See <a href="http://www.theora.org/doc/Theora.pdf">the Theora
+ * See <a href="https://www.theora.org/doc/Theora.pdf">the Theora
  *  specification</a>, Chapter 4, for exact details on the meaning
  *  of each of these color spaces.*/
 typedef enum{
@@ -108,7 +110,7 @@ typedef enum{
 }th_colorspace;
 
 /**The currently defined pixel format tags.
- * See <a href="http://www.theora.org/doc/Theora.pdf">the Theora
+ * See <a href="https://www.theora.org/doc/Theora.pdf">the Theora
  *  specification</a>, Section 4.4, for details on the precise sample
  *  locations.*/
 typedef enum{
@@ -168,7 +170,7 @@ typedef struct{
 typedef th_img_plane th_ycbcr_buffer[3];
 
 /**Theora bitstream information.
- * This contains the basic playback parameters for a stream, and corresponds to 
+ * This contains the basic playback parameters for a stream, and corresponds to
  *  the initial 'info' header packet.
  * To initialize an encoder, the application fills in this structure and
  *  passes it to th_encode_alloc().
@@ -192,7 +194,7 @@ typedef th_img_plane th_ycbcr_buffer[3];
  *
  * It is also generally recommended that the offsets and sizes should still be
  *  multiples of 2 to avoid chroma sampling shifts when chroma is sub-sampled.
- * See <a href="http://www.theora.org/doc/Theora.pdf">the Theora
+ * See <a href="https://www.theora.org/doc/Theora.pdf">the Theora
  *  specification</a>, Section 4.4, for more details.
  *
  * Frame rate, in frames per second, is stored as a rational fraction, as is
@@ -311,13 +313,13 @@ typedef struct{
  * A particular tag may occur more than once, and order is significant.
  * The character set encoding for the strings is always UTF-8, but the tag
  *  names are limited to ASCII, and treated as case-insensitive.
- * See <a href="http://www.theora.org/doc/Theora.pdf">the Theora
+ * See <a href="https://www.theora.org/doc/Theora.pdf">the Theora
  *  specification</a>, Section 6.3.3 for details.
  *
  * In filling in this structure, th_decode_headerin() will null-terminate
  *  the user_comment strings for safety.
  * However, the bitstream format itself treats them as 8-bit clean vectors,
- *  possibly containing null characters, and so the length array should be
+ *  possibly containing null characters, so the length array should be
  *  treated as their authoritative length.
  */
 typedef struct th_comment{
@@ -448,7 +450,13 @@ typedef struct{
 
 /**\defgroup basefuncs Functions Shared by Encode and Decode*/
 /*@{*/
-/**\name Basic shared functions*/
+/**\name Basic shared functions
+ * These functions return information about the library itself,
+ * or provide high-level information about codec state
+ * and packet type.
+ *
+ * You must link to \c libtheoradec if you use any of the
+ * functions in this section.*/
 /*@{*/
 /**Retrieves a human-readable string to identify the library vendor and
  *  version.
@@ -510,7 +518,12 @@ extern int th_packet_iskeyframe(ogg_packet *_op);
 /*@}*/
 
 
-/**\name Functions for manipulating header data*/
+/**\name Functions for manipulating header data
+ * These functions manipulate the #th_info and #th_comment structures
+ * which describe video parameters and key-value metadata, respectively.
+ *
+ * You must link to \c libtheoradec if you use any of the
+ * functions in this section.*/
 /*@{*/
 /**Initializes a th_info structure.
  * This should be called on a freshly allocated #th_info structure before
@@ -537,7 +550,7 @@ extern void th_comment_init(th_comment *_tc);
  * \param _tc      The #th_comment struct to add the comment to.
  * \param _comment Must be a null-terminated UTF-8 string containing the
  *                  comment in "TAG=the value" form.*/
-extern void th_comment_add(th_comment *_tc, char *_comment);
+extern void th_comment_add(th_comment *_tc,const char *_comment);
 /**Add a comment to an initialized #th_comment structure.
  * \note Neither th_comment_add() nor th_comment_add_tag() support
  *  comments containing null values, although the bitstream format does
@@ -545,10 +558,11 @@ extern void th_comment_add(th_comment *_tc, char *_comment);
  * To add such comments you will need to manipulate the #th_comment
  *  structure directly.
  * \param _tc  The #th_comment struct to add the comment to.
- * \param _tag A null-terminated string containing the tag  associated with
+ * \param _tag A null-terminated string containing the tag associated with
  *              the comment.
  * \param _val The corresponding value as a null-terminated string.*/
-extern void th_comment_add_tag(th_comment *_tc,char *_tag,char *_val);
+extern void th_comment_add_tag(th_comment *_tc,const char *_tag,
+ const char *_val);
 /**Look up a comment value by its tag.
  * \param _tc    An initialized #th_comment structure.
  * \param _tag   The tag to look up.
@@ -564,15 +578,15 @@ extern void th_comment_add_tag(th_comment *_tc,char *_tag,char *_val);
  *         It should not be modified or freed by the application, and
  *          modifications to the structure may invalidate the pointer.
  * \retval NULL If no matching tag is found.*/
-extern char *th_comment_query(th_comment *_tc,char *_tag,int _count);
+extern char *th_comment_query(th_comment *_tc,const char *_tag,int _count);
 /**Look up the number of instances of a tag.
  * Call this first when querying for a specific tag and then iterate over the
  *  number of instances with separate calls to th_comment_query() to
  *  retrieve all the values for that tag in order.
  * \param _tc    An initialized #th_comment structure.
  * \param _tag   The tag to look up.
- * \return The number on instances of this particular tag.*/
-extern int th_comment_query_count(th_comment *_tc,char *_tag);
+ * \return The number of instances of this particular tag.*/
+extern int th_comment_query_count(th_comment *_tc,const char *_tag);
 /**Clears a #th_comment structure.
  * This should be called on a #th_comment structure after it is no longer
  *  needed.
@@ -588,4 +602,4 @@ extern void th_comment_clear(th_comment *_tc);
 }
 #endif
 
-#endif
+#endif /* OGG_THEORA_CODEC_HEADER */

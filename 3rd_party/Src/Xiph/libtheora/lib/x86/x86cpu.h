@@ -6,17 +6,17 @@
  * IN 'COPYING'. PLEASE READ THESE TERMS BEFORE DISTRIBUTING.       *
  *                                                                  *
  * THE Theora SOURCE CODE IS COPYRIGHT (C) 2002-2009                *
- * by the Xiph.Org Foundation and contributors http://www.xiph.org/ *
+ * by the Xiph.Org Foundation and contributors                      *
+ * https://www.xiph.org/                                            *
  *                                                                  *
  ********************************************************************
  function:
-    last mod: $Id: cpu.h 16503 2009-08-22 18:14:02Z giles $
 
  ********************************************************************/
 
-#if !defined(_x86_cpu_H)
-# define _x86_cpu_H (1)
-#include "internal.h"
+#if !defined(_x86_x86cpu_H)
+# define _x86_x86cpu_H (1)
+#include "../internal.h"
 
 #define OC_CPU_X86_MMX      (1<<0)
 #define OC_CPU_X86_3DNOW    (1<<1)
@@ -30,5 +30,7 @@
 #define OC_CPU_X86_SSE4_2   (1<<9)
 #define OC_CPU_X86_SSE4A    (1<<10)
 #define OC_CPU_X86_SSE5     (1<<11)
+
+ogg_uint32_t oc_cpu_flags_get(void);
 
 #endif

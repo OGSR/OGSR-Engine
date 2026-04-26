@@ -6,12 +6,12 @@
  * IN 'COPYING'. PLEASE READ THESE TERMS BEFORE DISTRIBUTING.       *
  *                                                                  *
  * THE Theora SOURCE CODE IS COPYRIGHT (C) 2002-2009                *
- * by the Xiph.Org Foundation and contributors http://www.xiph.org/ *
+ * by the Xiph.Org Foundation and contributors                      *
+ * https://www.xiph.org/                                            *
  *                                                                  *
  ********************************************************************
 
   function:
-    last mod: $Id: info.c 16503 2009-08-22 18:14:02Z giles $
 
  ********************************************************************/
 
@@ -54,7 +54,7 @@ void th_comment_init(th_comment *_tc){
   memset(_tc,0,sizeof(*_tc));
 }
 
-void th_comment_add(th_comment *_tc,char *_comment){
+void th_comment_add(th_comment *_tc,const char *_comment){
   char **user_comments;
   int   *comment_lengths;
   int    comment_len;
@@ -75,7 +75,7 @@ void th_comment_add(th_comment *_tc,char *_comment){
   _tc->user_comments[_tc->comments]=NULL;
 }
 
-void th_comment_add_tag(th_comment *_tc,char *_tag,char *_val){
+void th_comment_add_tag(th_comment *_tc,const char *_tag,const char *_val){
   char *comment;
   int   tag_len;
   int   val_len;
@@ -91,7 +91,7 @@ void th_comment_add_tag(th_comment *_tc,char *_tag,char *_val){
   _ogg_free(comment);
 }
 
-char *th_comment_query(th_comment *_tc,char *_tag,int _count){
+char *th_comment_query(th_comment *_tc,const char *_tag,int _count){
   long i;
   int  found;
   int  tag_len;
@@ -107,7 +107,7 @@ char *th_comment_query(th_comment *_tc,char *_tag,int _count){
   return NULL;
 }
 
-int th_comment_query_count(th_comment *_tc,char *_tag){
+int th_comment_query_count(th_comment *_tc,const char *_tag){
   long i;
   int  tag_len;
   int  count;

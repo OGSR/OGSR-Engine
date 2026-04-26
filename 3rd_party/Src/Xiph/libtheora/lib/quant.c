@@ -6,12 +6,12 @@
  * IN 'COPYING'. PLEASE READ THESE TERMS BEFORE DISTRIBUTING.       *
  *                                                                  *
  * THE Theora SOURCE CODE IS COPYRIGHT (C) 2002-2009                *
- * by the Xiph.Org Foundation and contributors http://www.xiph.org/ *
+ * by the Xiph.Org Foundation and contributors                      *
+ * https://www.xiph.org/                                            *
  *                                                                  *
  ********************************************************************
 
   function:
-    last mod: $Id: quant.c 16503 2009-08-22 18:14:02Z giles $
 
  ********************************************************************/
 
@@ -21,6 +21,14 @@
 #include "quant.h"
 #include "decint.h"
 
+/*The maximum output of the DCT with +/- 255 inputs is +/- 8157.
+  These minimum quantizers ensure the result after quantization (and after
+   prediction for DC) will be no more than +/- 510.
+  The tokenization system can handle values up to +/- 580, so there is no need
+   to do any coefficient clamping.
+  I would rather have allowed smaller quantizers and had to clamp, but these
+   minimums were required when constructing the original VP3 matrices and have
+   been formalized in the spec.*/
 static const unsigned OC_DC_QUANT_MIN[2]={4<<2,8<<2};
 static const unsigned OC_AC_QUANT_MIN[2]={2<<2,4<<2};
 
@@ -58,7 +66,7 @@ void oc_dequant_tables_init(ogg_uint16_t *_dequant[64][3][2],
       qi_start=qi;
       if(qri==_qinfo->qi_ranges[qti][pli].nranges)qi_end=qi+1;
       else qi_end=qi+_qinfo->qi_ranges[qti][pli].sizes[qri];
-      /*Iterate over quality indicies in this range.*/
+      /*Iterate over quality indices in this range.*/
       for(;;){
         ogg_uint32_t qfac;
         int          zzi;
@@ -90,7 +98,7 @@ void oc_dequant_tables_init(ogg_uint16_t *_dequant[64][3][2],
         {
           int dupe;
           int qtj;
-          int plj = 0;
+          int plj;
           dupe=0;
           for(qtj=0;qtj<=qti;qtj++){
             for(plj=0;plj<(qtj<qti?3:pli);plj++){
