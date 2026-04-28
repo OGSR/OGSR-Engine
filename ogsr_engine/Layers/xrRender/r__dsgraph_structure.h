@@ -59,6 +59,7 @@ public:
 
     // Runtime structures
     xr_vector<R_dsgraph::_LodItem> lstLODs;
+    xr_vector<R_dsgraph::mapNormal_T::const_iterator> normalSorted;
 
     xr_vector<ISpatial*> lstRenderables;
 

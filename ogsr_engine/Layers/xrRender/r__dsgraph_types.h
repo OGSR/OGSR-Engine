@@ -60,6 +60,7 @@ using mapNormalDirect = xr_vector<_NormalItem>;
 class mapNormalItems
 {
 public:
+    float ssa{};
     mapNormalDirect* items{};
     xr_unordered_map<u32, _TreeItem>* trees{};
 

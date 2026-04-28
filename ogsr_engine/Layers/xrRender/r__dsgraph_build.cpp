@@ -187,23 +187,16 @@ IC bool IsValuableToRender(dxRender_Visual* pVisual, const bool sm, const bool i
     return true;
 }
 
-
-ICF float CalcSSA(float& distSQ, const Fvector& C, dxRender_Visual* V)
+ICF float CalcSSA(float& dist_sqr, const Fvector& C, const float R)
 {
-    const float& R = V->getVisData().sphere.R;
-    distSQ = Device.vCameraPosition.distance_to_sqr(C) + EPS;
-    return R / distSQ;
+    dist_sqr = Device.vCameraPosition.distance_to_sqr(C) + EPS;
+    return R / dist_sqr;
 }
-ICF float CalcSSA(float& distSQ, Fvector& C, float R)
+ICF float CalcHudSSA(float& dist_sqr, const Fvector& C, dxRender_Visual* V)
 {
-    distSQ = Device.vCameraPosition.distance_to_sqr(C) + EPS;
-    return R / distSQ;
-}
-ICF float CalcHudSSA(float& distSQ, Fvector& C, dxRender_Visual* V)
-{
-    const float R = V->getVisData().sphere.R + 0;
-    distSQ = Fvector().set(0.f, 0.f, 0.f).distance_to_sqr(C) + EPS;
-    return R / distSQ;
+    const float R = V->getVisData().sphere.R /* + 0*/;
+    dist_sqr = Fvector{}.distance_to_sqr(C) + EPS;
+    return R / dist_sqr;
 }
 } // namespace
 
@@ -215,12 +208,12 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_V
 
     //ZoneScoped;
 
-    float distSQ;
+    float dist_sqr;
     float SSA;
     if (root && root->renderable_HUD())
-        SSA = CalcHudSSA(distSQ, center, pVisual);
+        SSA = CalcHudSSA(dist_sqr, center, pVisual);
     else
-        SSA = CalcSSA(distSQ, center, pVisual);
+        SSA = CalcSSA(dist_sqr, center, pVisual->getVisData().sphere.R /*+ 0*/);
 
     if (SSA <= r_ssaDISCARD)
         return;
@@ -237,7 +230,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_V
     }
 
     // Select shader
-    ShaderElement* sh = RImplementation.rimp_select_sh_dynamic(pVisual, distSQ, root ? root->renderable_HUD() : false, phase);
+    ShaderElement* sh = RImplementation.rimp_select_sh_dynamic(pVisual, dist_sqr, root ? root->renderable_HUD() : false, phase);
     if (nullptr == sh)
         return;
     if (!pmask[sh->flags.iPriority / 2])
@@ -252,36 +245,36 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_V
             if (Is3dssZoomed)
             {
                 mapHUD.insert_anyway(EPS, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[0]}));
-                mapScopeHUD.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[1]}));
+                mapScopeHUD.insert_anyway(dist_sqr, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[1]}));
                 // Simp: этот костыль пусть работает только в OGSR GA, там прицелы с ним приемлемо выглядят.
                 if (IS_OGSR_GA && ps_r_pp_aa_mode == DLSS || ps_r_pp_aa_mode == FSR2 || ps_r_pp_aa_mode == TAA || ps_r2_ls_flags.test(R2FLAG_DBG_TAA_JITTER_ENABLE))
                 {
-                    mapScopeHUDSorted.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[0]}));
-                    mapScopeHUDSorted.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[1]}));
-                    mapScopeHUDSorted2.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[0]}));
-                    mapScopeHUDSorted2.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[1]}));
+                    mapScopeHUDSorted.insert_anyway(dist_sqr, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[0]}));
+                    mapScopeHUDSorted.insert_anyway(dist_sqr, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[1]}));
+                    mapScopeHUDSorted2.insert_anyway(dist_sqr, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[0]}));
+                    mapScopeHUDSorted2.insert_anyway(dist_sqr, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[1]}));
                 }
-                mapScopeHUDSorted.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[2]}));
-                mapScopeHUDSorted2.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[4]}));
+                mapScopeHUDSorted.insert_anyway(dist_sqr, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[2]}));
+                mapScopeHUDSorted2.insert_anyway(dist_sqr, _MatrixItemS({SSA, root, pVisual, xform, &*pVisual->shader->E[4]}));
             }
             else
             {
-                mapHUD.insert_anyway(distSQ, _MatrixItemS({.ssa= SSA, .pObject= root, .pVisual= pVisual, .Matrix= xform, .se= &*pVisual->shader->E[3]}));
+                mapHUD.insert_anyway(dist_sqr, _MatrixItemS({.ssa= SSA, .pObject= root, .pVisual= pVisual, .Matrix= xform, .se= &*pVisual->shader->E[3]}));
             }
             return;
         }
 
         if (sh->flags.bStrictB2F && !Is3dssZoomed)
         {
-            mapHUDSorted.insert_anyway(distSQ, _MatrixItemS({.ssa= SSA, .pObject= root, .pVisual= pVisual, .Matrix= xform, .se= sh}));
+            mapHUDSorted.insert_anyway(dist_sqr, _MatrixItemS({.ssa= SSA, .pObject= root, .pVisual= pVisual, .Matrix= xform, .se= sh}));
             return;
         }
 
-        mapHUD.insert_anyway(distSQ, _MatrixItemS({.ssa= SSA, .pObject= root, .pVisual= pVisual, .Matrix= xform, .se= sh}));
+        mapHUD.insert_anyway(dist_sqr, _MatrixItemS({.ssa= SSA, .pObject= root, .pVisual= pVisual, .Matrix= xform, .se= sh}));
 
         if (sh->flags.bEmissive && sh_d && !Is3dssZoomed)
         {
-            mapHUDEmissive.insert_anyway(distSQ, _MatrixItemS({.ssa= SSA, .pObject= root, .pVisual= pVisual, .Matrix= xform, .se= sh_d}));
+            mapHUDEmissive.insert_anyway(dist_sqr, _MatrixItemS({.ssa= SSA, .pObject= root, .pVisual= pVisual, .Matrix= xform, .se= sh_d}));
         }
         return;
     }
@@ -294,7 +287,7 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_V
     // strict-sorting selection
     if (sh->flags.bStrictB2F)
     {
-        mapSorted.insert_anyway(distSQ, _MatrixItemS({SSA, root, pVisual, xform, sh}));
+        mapSorted.insert_anyway(dist_sqr, _MatrixItemS({SSA, root, pVisual, xform, sh}));
         return;
     }
 
@@ -305,11 +298,11 @@ void R_dsgraph_structure::r_dsgraph_insert_dynamic(IRenderable* root, dxRender_V
     // d) Should be rendered to accumulation buffer in the second pass
     if (sh->flags.bEmissive && sh_d)
     {
-        mapEmissive.insert_anyway(distSQ, _MatrixItemS({.ssa= SSA, .pObject= root, .pVisual= pVisual, .Matrix= xform, .se= sh_d}));
+        mapEmissive.insert_anyway(dist_sqr, _MatrixItemS({.ssa= SSA, .pObject= root, .pVisual= pVisual, .Matrix= xform, .se= sh_d}));
     }
     if (sh->flags.bWmark && pmask_wmark)
     {
-        mapWmark.insert_anyway(distSQ, _MatrixItemS({.ssa= SSA, .pObject= root, .pVisual= pVisual, .Matrix= xform, .se= sh}));
+        mapWmark.insert_anyway(dist_sqr, _MatrixItemS({.ssa= SSA, .pObject= root, .pVisual= pVisual, .Matrix= xform, .se= sh}));
         return;
     }
 
@@ -335,8 +328,8 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
 
     //ZoneScoped;
 
-    float distSQ;
-    const float SSA = CalcSSA(distSQ, pVisual->getVisData().sphere.P, pVisual);
+    float dist_sqr;
+    const float SSA = CalcSSA(dist_sqr, pVisual->getVisData().sphere.P, pVisual->getVisData().sphere.R /*+ 0*/);
     if (SSA <= r_ssaDISCARD)
         return;
 
@@ -353,7 +346,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
     }
 
     // Select shader
-    ShaderElement* sh = RImplementation.rimp_select_sh_static(pVisual, distSQ, phase);
+    ShaderElement* sh = RImplementation.rimp_select_sh_static(pVisual, dist_sqr, phase);
     if (nullptr == sh)
         return;
     if (!pmask[sh->flags.iPriority / 2])
@@ -362,7 +355,7 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
     // strict-sorting selection
     if (sh->flags.bStrictB2F)
     {
-        mapSorted.insert_anyway(distSQ, _MatrixItemS({SSA, nullptr, pVisual, Fidentity, sh}));
+        mapSorted.insert_anyway(dist_sqr, _MatrixItemS({SSA, nullptr, pVisual, Fidentity, sh}));
         return;
     }
 
@@ -373,11 +366,11 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
     // d) Should be rendered to accumulation buffer in the second pass
     if (sh->flags.bEmissive)
     {
-        mapEmissive.insert_anyway(distSQ, _MatrixItemS({.ssa= SSA, .pObject= nullptr, .pVisual= pVisual, .Matrix= Fidentity, .se= sh_d})); // sh_d -> L_special
+        mapEmissive.insert_anyway(dist_sqr, _MatrixItemS({.ssa= SSA, .pObject= nullptr, .pVisual= pVisual, .Matrix= Fidentity, .se= sh_d})); // sh_d -> L_special
     }
     if (sh->flags.bWmark && pmask_wmark)
     {
-        mapWmark.insert_anyway(distSQ, _MatrixItemS({.ssa= SSA, .pObject= nullptr, .pVisual= pVisual, .Matrix= Fidentity, .se= sh}));
+        mapWmark.insert_anyway(dist_sqr, _MatrixItemS({.ssa= SSA, .pObject= nullptr, .pVisual= pVisual, .Matrix= Fidentity, .se= sh}));
         return;
     }
 
@@ -399,6 +392,8 @@ void R_dsgraph_structure::r_dsgraph_insert_static(dxRender_Visual* pVisual)
             mapNormal_T& map = mapNormalPasses[sh->flags.iPriority / 2][iPass];
             SPass* pass = sh->passes[iPass]._get();
             mapNormalItems& normalItems = map[pass];
+
+            normalItems.ssa = std::max(SSA, normalItems.ssa);
 
             if (pVisual->base_crc)
             {
@@ -461,9 +456,9 @@ void R_dsgraph_structure::add_leafs_dynamic(IRenderable* root, dxRender_Visual* 
         if (pV->m_lod)
         {
             Fvector Tpos;
-            float D;
+            float dist_sqr;
             xform.transform_tiny(Tpos, pV->getVisData().sphere.P);
-            const float ssa = CalcSSA(D, Tpos, pV->getVisData().sphere.R / 2.f); // assume dynamics never consume full sphere
+            const float ssa = CalcSSA(dist_sqr, Tpos, pV->getVisData().sphere.R / 2.f); // assume dynamics never consume full sphere
             if (ssa < r_ssaLOD_A)
                 _use_lod = TRUE;
         }
@@ -544,7 +539,7 @@ void R_dsgraph_structure::add_leafs_static(dxRender_Visual* pVisual)
 
         const auto pV = smart_cast<FLOD*>(pVisual);
         float D;
-        float ssa = CalcSSA(D, pV->getVisData().sphere.P, pV) * pV->lod_factor;
+        float ssa = CalcSSA(D, pV->getVisData().sphere.P, pV->getVisData().sphere.R /*+ 0*/) * pV->lod_factor;
 
         if (ssa < r_ssaLOD_A && phase != CRender::PHASE_SMAP)
         {
@@ -565,6 +560,7 @@ void R_dsgraph_structure::add_leafs_static(dxRender_Visual* pVisual)
     default: {
         if (max_render_distance > 0.f) // check used only for light render
         {
+
             if (render_position.distance_to(pVisual->getVisData().sphere.P) - pVisual->getVisData().sphere.R / 2 > max_render_distance)
                 return;
         }

@@ -28,35 +28,50 @@ void R_dsgraph_structure::r_dsgraph_render_graph_static(const u32 _priority, con
         {
             auto& map = mapNormalPasses[_priority][iPass];
 
+            if (map.empty())
+                continue;
+
             ID3DState* state{};
             STextureList* textures{};
 
-            for (const auto& it : map)
+            normalSorted.reserve(map.size());
+            for (auto it = map.cbegin(); it != map.cend(); ++it)
             {
-                if (it.second.items->empty() && it.second.trees->empty())
+                normalSorted.push_back(it);
+            }
+
+            std::ranges::sort(normalSorted, [](const auto& a, const auto& b) { return a->second.ssa > b->second.ssa; });
+
+            for (auto& it : normalSorted)
+            {
+                if (it->second.items->empty() && it->second.trees->empty())
                     continue;
 
-                // cmd_list.set_Pass(it->first);
+                cmd_list.set_VS(it->first->vs);
+                cmd_list.set_GS(it->first->gs);
+                cmd_list.set_PS(it->first->ps);
+                cmd_list.set_HS(it->first->hs);
+                cmd_list.set_DS(it->first->ds);
 
-                cmd_list.set_VS(it.first->vs);
-                cmd_list.set_GS(it.first->gs);
-                cmd_list.set_PS(it.first->ps);
-                cmd_list.set_HS(it.first->hs);
-                cmd_list.set_DS(it.first->ds);
-
-                cmd_list.set_Constants(it.first->constants);
-                if (it.first->state._get()->state != state)
+                cmd_list.set_Constants(it->first->constants);
+                if (it->first->state._get()->state != state)
                 {
-                    cmd_list.set_States(state = it.first->state._get()->state);
+                    cmd_list.set_States(state = it->first->state._get()->state);
                 }
-                if (it.first->T._get() != textures)
+                if (it->first->T._get() != textures)
                 {
-                    cmd_list.set_Textures(textures = it.first->T._get());
+                    cmd_list.set_Textures(textures = it->first->T._get());
                     cmd_list.apply_lmaterial();
                 }
 
-                const mapNormalItems& items = it.second;
-                for (const auto& item : *items.items)
+                const mapNormalItems& items = it->second;
+
+                auto& normal_items = *items.items;
+                // sort by SSA
+                std::ranges::sort(normal_items, [](const auto& lhs, const auto& rhs) {
+                    return lhs.ssa > rhs.ssa;
+                });
+                for (const auto& item : normal_items)
                 {
                     const float lod = calcLOD(item.ssa);
                     cmd_list.lod.set_lod(lod);
@@ -115,7 +130,8 @@ void R_dsgraph_structure::r_dsgraph_render_graph_static(const u32 _priority, con
                 items.items->clear();
                 items.trees->clear();
             }
-            map.clear(); // that should be removed, but having strange issues with trees map
+            normalSorted.clear();
+            map.clear();
         }
     }
 }
