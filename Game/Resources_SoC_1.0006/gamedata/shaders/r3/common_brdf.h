@@ -14,9 +14,6 @@
 #include "settings_screenspace_FLORA.h"
 
 ////////////////////////
-// Material table
-#define MAT_FLORA 0.15f
-#define MAT_FLORA_ELIPSON 0.04f
 
 // Simple subsurface scattering
 float3 SSS(float3 N, float3 V, float3 L)

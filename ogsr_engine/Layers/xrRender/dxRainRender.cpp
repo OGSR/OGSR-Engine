@@ -42,8 +42,8 @@ void dxRainRender::Render(CBackend& cmd_list, CEffect_Rain & owner)
 
     // visual
     float factor_visual = factor / 2.f + .5f;
-    Fvector3 f_rain_color = g_pGamePersistent->Environment().CurrentEnv->rain_color;
-    u32 u_rain_color = color_rgba_f(f_rain_color.x, f_rain_color.y, f_rain_color.z, factor_visual);
+    const Fvector3& f_rain_color = g_pGamePersistent->Environment().CurrentEnv->rain_color;
+    const u32 u_rain_color = color_rgba_f(f_rain_color.x, f_rain_color.y, f_rain_color.z, factor_visual);
 
     // build source plane
     Fplane src_plane;
@@ -122,6 +122,7 @@ void dxRainRender::Render(CBackend& cmd_list, CEffect_Rain & owner)
     if (nullptr == P)
         return;
 
+    if (!fis_zero(ps_ssfx_rain_3.x)) //если прозрачность 100%, то нет смысла их рендерить
     {
         float dt = Device.fTimeDelta;
         _IndexStream& _IS = RImplementation.Index;

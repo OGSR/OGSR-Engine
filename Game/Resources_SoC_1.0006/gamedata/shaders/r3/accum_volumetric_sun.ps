@@ -22,52 +22,84 @@ float4 main(v2p_volume I) : SV_Target
 {
 #ifndef SUN_SHAFTS_QUALITY
     return float4(0, 0, 0, 0);
-#else //	SUN_SHAFTS_QUALITY
-
-    float max_density = sun_shafts_intensity;
-    float inner_density = 4.0f;
+#else // SUN_SHAFTS_QUALITY
 
     float2 tc = I.tc.xy / I.tc.w;
     float4 pos2d = I.hpos;
 
-    if (any(tc <= 0.0) || any(tc >= 1.0))
-        return float4(0, 0, 0, 0);
-
     float3 P = gbuffer_load_position(tc, pos2d);
-    float depth = P.z;
-
-    float distance = length(P.xyz);
-    float fog = saturate(distance * fog_params.w + fog_params.x);
-    fog = 1.0 - (1.0 - fog) * (1.0 - fog);
 
     // Variable ray length, variable step dencity, use jittering
-    float jitter = jitter0.Sample(smp_jitter, tc * screen_res.x / JITTER_TEXTURE_SIZE).x;
+    float4 J0 = jitter0.Sample(smp_jitter, tc * screen_res.x * 1.0 / JITTER_TEXTURE_SIZE);
+    float coeff = (RAY_SAMPLES - 1 * J0.x) / (RAY_SAMPLES * RAY_SAMPLES);
+    float3 direction = P * coeff;
 
-    float4 ray_origin = mul(m_shadow, float4(0.0, 0.0, 0.0, 1.0));
-    float4 ray_direction = mul(m_shadow, float4(P, 1.0));
+    float depth = P.z;
+    float deltaDepth = direction.z;
 
-    float3 ray_increment = (ray_direction - ray_origin) / RAY_SAMPLES;
-    float4 ray_position = float4(ray_origin.xyz - ray_increment.xyz * jitter, 1.0);
+    float4 current = mul(m_shadow, float4(P, 1.0));
+    float4 delta = mul(m_shadow, float4(direction, 0.0));
 
-    float total_light = 0.0;
+    float res = 0.0;
+    float max_density = sun_shafts_intensity;
+    float density = max_density / RAY_SAMPLES;
 
-    if (depth > 0.3)
-    {
-        [loop] for (int i = 0; i < RAY_SAMPLES; i++)
-        {
-            float shadow = sample_hw_pcf(ray_position, 0);
-            total_light += lerp(shadow, 1.0, fog);
-            ray_position.xyz += lerp(ray_increment, float3(0.0, 0.0, 0.0), saturate(fog));
-        }
-    }
+    // SUN VOLUMETRIC FIXES - SSS Update 14.7
+    // - Added weapon fade
+    // - Discard out of bound shadow map sampling
+    // - Fade volumetric edge
+    // https://www.moddb.com/mods/stalker-anomaly/addons/screen-space-shaders/
 
-    total_light *= length(ray_increment);
+    // Volumetric offset when used with SSS extended shadows.
+#ifdef SSFX_MODEXE
+#ifdef SSFX_SHADOWS
+    current.z += 0.001f * (1.0 + saturate(P.z * 0.1f) * 0.1f);
+#else
+    current.z += 0.001f;
+#endif
+#endif
+
+    // Fade Weapon
+    density *= saturate(depth * 0.8f);
 
     if (depth < 0.0001)
-        total_light = sun_shafts_intensity;
+        res = max_density;
 
-    total_light = 1.0 - saturate(exp(-total_light * inner_density));
+    [unroll(RAY_SAMPLES)] for (int i = 0; i < RAY_SAMPLES; ++i)
+    {
+        // Don't sample out of bounds
+        if (current.x >= 0 && current.x <= 1 && current.y >= 0 && current.y <= 1)
+        {
+            if (depth > 0.1f)
+                res += density * sample_hw_pcf(current, float4(0.0, 0.0, 0.0, 0.0));
+        }
 
-    return Ldynamic_color * total_light * max_density;
-#endif //	SUN_SHAFTS_QUALITY
+        depth -= deltaDepth;
+        current -= delta;
+    }
+
+    float fSturation = -Ldynamic_dir.z;
+
+    // Normalize dot product to
+    fSturation = 0.5 * fSturation + 0.5;
+    // Map saturation to 0.2..1
+    fSturation = 0.80 * fSturation + 0.20;
+
+    res *= fSturation;
+
+    // Use fog near/far to fade the sun rays
+    float fog = saturate(length(P) * fog_params.w + fog_params.x);
+
+#ifdef USE_STRICT_GAMMA_CORRECTION
+    res = SRGBToLinear(res);
+    float3 SunColor = SRGBToLinear(Ldynamic_color.rgb);
+#else
+    float3 SunColor = Ldynamic_color.rgb;
+#endif
+
+    // Fade from "res" to "max_density" using squared fog to get a nice curve
+    float3 result = lerp(SunColor * max_density * fSturation, SunColor * res, 1.0f - fog * fog);
+
+    return float4(result, 1);
+#endif // SUN_SHAFTS_QUALITY
 }

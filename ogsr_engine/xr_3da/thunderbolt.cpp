@@ -46,21 +46,15 @@ void SThunderboltDesc::load(CInifile& pIni, shared_str const& sect)
     create_center_gradient(pIni, sect);
 
     name = sect;
-    color_anim = LALib.FindItem(pIni.r_string(sect, "color_anim"));
-    VERIFY(color_anim);
+    const char* anim_name = pIni.r_string(sect, "color_anim");
+    color_anim = LALib.FindItem(anim_name);
+    ASSERT_FMT(color_anim, "!![%s] color_anim [%s] not found!", __FUNCTION__, anim_name);
     color_anim->fFPS = (float)color_anim->iFrameCount;
 
     // models
     LPCSTR m_name;
     m_name = pIni.r_string(sect, "lightning_model");
     m_pRender->CreateModel(m_name);
-
-    /*
-    IReader* F			= 0;
-    F					= FS.r_open("$game_meshes$",m_name); R_ASSERT2(F,"Empty 'lightning_model'.");
-    l_model				= ::Render->model_CreateDM(F);
-    FS.r_close			(F);
-    */
 
     // sound
     m_name = pIni.r_string(sect, "sound");
@@ -102,13 +96,6 @@ void SThunderboltDesc::load_shoc(CInifile* pIni, shared_str const& sect)
     LPCSTR m_name;
     m_name = pIni->r_string(sect, "lightning_model");
     m_pRender->CreateModel(m_name);
-
-    /*
-    IReader* F			= 0;
-    F					= FS.r_open("$game_meshes$",m_name); R_ASSERT2(F,"Empty 'lightning_model'.");
-    l_model				= ::Render->model_CreateDM(F);
-    FS.r_close			(F);
-    */
 
     // sound
     m_name = pIni->r_string(sect, "sound");

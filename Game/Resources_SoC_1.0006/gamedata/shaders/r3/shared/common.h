@@ -92,6 +92,9 @@ float2 calc_xz_wave(float2 dir2D, float frac)
 }
 
 #define SKY_EPS float(0.001)
-#define MAT_FLORA 6.0
+
+// Material table
+#define MAT_FLORA 0.15f
+#define MAT_FLORA_ELIPSON 0.04f
 
 #endif

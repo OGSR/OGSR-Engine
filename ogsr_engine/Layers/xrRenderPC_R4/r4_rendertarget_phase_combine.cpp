@@ -371,7 +371,7 @@ void CRenderTarget::phase_combine_volumetric(CBackend& cmd_list)
 {
     PIX_EVENT(phase_combine_volumetric);
 
-    u_setrt(cmd_list, rt_Generic_0, rt_Generic_1, nullptr, nullptr, rt_Base_Depth->pZRT[cmd_list.context_id]);
+    u_setrt(cmd_list, rt_Generic_0, nullptr, nullptr, nullptr, rt_Base_Depth->pZRT[cmd_list.context_id]);
 
     //	Sets limits to both render targets
     cmd_list.set_ColorWriteEnable(D3DCOLORWRITEENABLE_RED | D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE);

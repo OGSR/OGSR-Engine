@@ -108,7 +108,7 @@ float4 main(p_screen I) : SV_Target
     color = lerp(color, fog_color, fog);
 #endif
 
-    float skyblend = saturate(fog * fog);
+    float skyblend = saturate(pow(fog, 3.0)); //float skyblend = saturate(fog * fog);
 
     return float4(color, skyblend);
 }

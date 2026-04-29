@@ -497,24 +497,12 @@ void CEnvironment::OnFrame()
     float current_weight;
     lerp(current_weight);
 
-    bool dyn_sun = false;
+    const bool dyn_sun = USED_COP_WEATHER ? m_dynamic_sun_movement : Core.Features.test(xrCore::Feature::dynamic_sun_movement);
 
-    //	Igor. Dynamic sun position.
-    if (USED_COP_WEATHER)
-    {
-        if (m_dynamic_sun_movement)
-            dyn_sun = true;
-    }
-    else
-    {
-        if (Core.Features.test(xrCore::Feature::dynamic_sun_movement))
-            dyn_sun = true;
-    }
-
-    if (dyn_sun)
-        calculate_dynamic_sun_dir();
-    else if (m_static_sun_movement)
+    if (m_static_sun_movement)
         calculate_config_sun_dir();
+    else if (dyn_sun)
+        calculate_dynamic_sun_dir();
 
     PerlinNoise1D->SetFrequency(wind_gust_factor * MAX_NOISE_FREQ);
     wind_strength_factor = clampr(PerlinNoise1D->GetContinious(Device.fTimeGlobal) + 0.5f, 0.f, 1.f);
