@@ -107,6 +107,14 @@ void dxEnvDescriptorMixerRender::lerp(IEnvDescriptorRender* inA, IEnvDescriptorR
 
 void dxEnvDescriptorRender::OnDeviceCreate(CEnvDescriptor& owner)
 {
+    static const bool dev_gamedata_unused{!!strstr(Core.Params, "-dev_gamedata_unused")}, dev_reference_copy{!!strstr(Core.Params, "-dev_reference_copy")},
+        prefetch_weather_textures{!!strstr(Core.Params, "-prefetch_weather_textures")};
+    if (dev_gamedata_unused || dev_reference_copy || prefetch_weather_textures)
+    {
+        OnPrepare(owner);
+        return;
+    }
+
     sky_texture.create("$null");
     sky_texture_env.create("$null");
     clouds_texture.create("$null");
