@@ -16,6 +16,7 @@ public:
     void music_Play();
     void music_Stop();
     void music_Update();
+    void SetMusic(const char* filename);
 
     void all_Stop();
 

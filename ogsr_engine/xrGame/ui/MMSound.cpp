@@ -107,3 +107,13 @@ void CMMSound::all_Stop()
     m_whell.stop();
     m_whell_click.stop();
 }
+
+void CMMSound::SetMusic(const char* filename)
+{
+    music_Stop();
+
+    m_play_list.clear();
+    m_play_list.emplace_back(filename);
+
+    music_Play();
+}

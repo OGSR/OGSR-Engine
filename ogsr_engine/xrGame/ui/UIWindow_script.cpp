@@ -10,6 +10,7 @@
 #include "UITextureMaster.h"
 #include "UIScrollView.h"
 #include "UIIconParams.h"
+#include "MMSound.h"
 
 CFontManager& mngr() { return *(UI()->Font()); }
 
@@ -159,7 +160,9 @@ void CUIWindow::script_register(lua_State* L)
 
               class_<CUILabel, CUIFrameLineWnd>("CUILabel").def(constructor<>()).def("SetText", &CUILabel::SetText).def("GetText", &CUILabel::GetText),
 
-              class_<CUIMMShniaga, CUIWindow>("CUIMMShniaga").def("SetVisibleMagnifier", &CUIMMShniaga::SetVisibleMagnifier),
+              class_<CUIMMShniaga, CUIWindow>("CUIMMShniaga")
+                  .def("SetVisibleMagnifier", &CUIMMShniaga::SetVisibleMagnifier)
+                  .def("SetMusic", [](CUIMMShniaga* self, const char* filename) { self->m_sound->SetMusic(filename); }),
 
               class_<CUIScrollView, CUIWindow>("CUIScrollView")
                   .def(constructor<>())
