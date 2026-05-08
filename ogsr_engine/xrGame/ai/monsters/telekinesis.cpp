@@ -92,6 +92,7 @@ void CTelekinesis::remove_object(CPhysicsShellHolder* obj)
     if (it == objects.end())
         return;
     // remove from list, delete...
+    obj->set_collision_hit_callback(nullptr);
     remove_object(it);
 }
 
@@ -167,6 +168,15 @@ void CTelekinesis::schedule_update()
         cur_obj->update_state();
         if (cur_obj->is_released())
             remove_object(objects.begin() + i);
+    }
+}
+
+void CTelekinesis::remove_object_callbacks()
+{
+    for (auto it : objects)
+    {
+        if (auto obj = it->get_object())
+            obj->set_collision_hit_callback(nullptr);
     }
 }
 

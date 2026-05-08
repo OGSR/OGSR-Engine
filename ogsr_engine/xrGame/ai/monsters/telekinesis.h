@@ -71,6 +71,9 @@ public:
 protected:
     virtual CTelekineticObject* alloc_tele_object() { return xr_new<CTelekineticObject>(); }
 
+    void remove_object_callbacks();
+
+
 private:
     // обновление на шагах физики
     virtual void PhDataUpdate(dReal step);
