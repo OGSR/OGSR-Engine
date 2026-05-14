@@ -635,22 +635,28 @@ float CUILines::GetVIndentByAlign()
 // %c[255,255,255,255] or %c[255,255,255]
 u32 CUILines::GetColorFromText(const xr_string& str) const
 {
-    //	typedef xr_string::size_type size;
+    auto begin = str.find(BEGIN);
+    const auto end = str.find(END, begin);
 
-    StrSize begin, end, comma1_pos, comma2_pos, comma3_pos;
+    // Check if there even is a valid color tag
+    ASSERT_FMT(npos != begin, "CUISubLine::GetColorFromText -- can't find beginning tag '%c[' in string: %s", str.c_str());
+    ASSERT_FMT(npos != end, "CUISubLine::GetColorFromText -- can't find ending tag ']' in string: %s", str.c_str());
+    if (end - begin < 3)
+    {
+        Msg("!!CUISubLine::GetColorFromText -- invalid color tag in string: %s", str.c_str());
+        return m_dwTextColor;
+    }
 
-    begin = str.find(BEGIN);
-    end = str.find(END, begin);
-    R_ASSERT2(npos != begin, "CUISubLine::GetColorFromText -- can't find beginning tag %c[");
-    R_ASSERT2(npos != end, "CUISubLine::GetColorFromText -- can't find ending tag ]");
+    // Extract color tag value
+    const auto color_tag = str.substr(begin + 3, end - begin - 3);
 
-    // try default color
-    if (npos != str.find("%c[default]", begin, end - begin))
+    // Try default color
+    if (color_tag == "default")
         return m_dwTextColor;
 
     // Try predefined in XML colors
     //	CUIXmlInit xml;
-    for (CUIXmlInit::ColorDefs::const_iterator it = CUIXmlInit::GetColorDefs()->begin(); it != CUIXmlInit::GetColorDefs()->end(); ++it)
+    for (auto it = CUIXmlInit::GetColorDefs()->cbegin(); it != CUIXmlInit::GetColorDefs()->cend(); ++it)
     {
         int cmp = str.compare(begin + 3, end - begin - 3, *it->first);
         if (cmp == 0)
@@ -658,9 +664,9 @@ u32 CUILines::GetColorFromText(const xr_string& str) const
     }
 
     // try parse values separated by commas
-    comma1_pos = str.find(',', begin);
-    comma2_pos = str.find(',', comma1_pos + 1);
-    comma3_pos = str.find(',', comma2_pos + 1);
+    const auto comma1_pos = str.find(',', begin);
+    const auto comma2_pos = str.find(',', comma1_pos + 1);
+    const auto comma3_pos = str.find(',', comma2_pos + 1);
 
     // R_ASSERT2(npos != comma1_pos, "CUISubLine::GetColorFromText -- can't find first comma");
     // R_ASSERT2(npos != comma2_pos, "CUISubLine::GetColorFromText -- can't find second comma");

@@ -29,10 +29,11 @@ public:
 
         IC CListItem*& next() { return (m_next); }
 
+        /* CQuadTree сам не должен ничего удалять так как ничего не создает. все кто его юзают должны сами освобождать ресурсы
         ~CListItem()
         {
             xr_delete(m_object);
-        }
+        }*/
     };
 
     template <typename T>

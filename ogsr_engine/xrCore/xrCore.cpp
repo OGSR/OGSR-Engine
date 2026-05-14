@@ -144,10 +144,18 @@ const char* xrCore::GetEngineVersion()
 constexpr const char* xrCore::GetBuildConfiguration()
 {
 #ifdef _DEBUG
+#ifdef __SANITIZE_ADDRESS__
+#ifdef _M_X64
+    return "x64_Dbg_ASAN";
+#else
+    return "x86_Dbg_ASAN";
+#endif
+#else
 #ifdef _M_X64
     return "x64_Dbg";
 #else
     return "x86_Dbg";
+#endif
 #endif
 #else
 #ifdef _M_X64

@@ -21,7 +21,11 @@ CSpaceRestrictionHolder::~CSpaceRestrictionHolder() { clear(); }
 
 void CSpaceRestrictionHolder::clear()
 {
-    delete_data(m_restrictions);
+#pragma todo("SIMP: need fix ASAN report here!")
+    std::erase_if(m_restrictions, [](auto& pair) {
+        xr_delete(pair.second);
+        return true;
+    });
     m_default_out_restrictions = "";
     m_default_in_restrictions = "";
 }

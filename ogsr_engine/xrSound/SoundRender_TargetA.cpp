@@ -233,7 +233,7 @@ void CSoundRender_TargetA::fill_block(ALuint BufferID)
 {
     R_ASSERT(m_pEmitter);
 
-    m_pEmitter->fill_block(&g_target_temp_data.front(), buf_block);
+    m_pEmitter->fill_block(g_target_temp_data.data(), g_target_temp_data.size());
 
     const auto& wvf = m_pEmitter->source()->m_wformat;
     const bool mono = wvf.nChannels == 1;
@@ -248,7 +248,7 @@ void CSoundRender_TargetA::fill_block(ALuint BufferID)
         format = mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
     }
 
-    A_CHK(alBufferData(BufferID, format, &g_target_temp_data.front(), buf_block, m_pEmitter->source()->m_wformat.nSamplesPerSec));
+    A_CHK(alBufferData(BufferID, format, g_target_temp_data.data(), g_target_temp_data.size(), m_pEmitter->source()->m_wformat.nSamplesPerSec));
 }
 void CSoundRender_TargetA::source_changed()
 {
