@@ -921,7 +921,7 @@ namespace luabind
             }
             else
             {
-                add_getter(name, std::bind(detail::get_caller<T, Getter>(), _1, _2, g));
+			add_getter(name, std::bind(detail::get_caller<T, Getter>(), _1, _2, g));
             }
             return std::move(*this);
 		}
@@ -980,69 +980,76 @@ namespace luabind
 			return std::move(*this);
 		}
 
-		template<typename D>
-		class_&& def_readonly(const char* name, D T::*member_ptr) &&
+		template <class C, typename D>
+		class_&& def_readonly(const char* name, D C::*member_ptr) &&
 		{
+            static_assert(std::is_base_of_v<C, T>, "T must be derived from C");
+
             using namespace std::placeholders;
-			add_getter(name, std::bind(detail::auto_get<T,D>(), _1, _2, member_ptr));
+            add_getter(name, std::bind(detail::auto_get<T, D>(), _1, _2, member_ptr));
 			return std::move(*this);
 		}
 
-		template<typename D, typename... Policies>
-		class_&& def_readonly(const char* name, D T::*member_ptr, const detail::policy_cons<Policies...>) &&
+		template <class C, typename D, typename... Policies>
+		class_&& def_readonly(const char* name, D C::*member_ptr, const detail::policy_cons<Policies...>) &&
 		{
+            static_assert(std::is_base_of_v<C, T>, "T must be derived from C");
+
             using namespace std::placeholders;
-			add_getter(name, std::bind(detail::auto_get<T, D, Policies...>(), _1, _2, member_ptr));
+            add_getter(name, std::bind(detail::auto_get<T, D, Policies...>(), _1, _2, member_ptr));
             return std::move(*this);
 		}
 
-		template<typename D>
-		class_&& def_readwrite(const char* name, D T::*member_ptr) &&
+		template <class C, typename D>
+		class_&& def_readwrite(const char* name, D C::*member_ptr) &&
 		{
+            static_assert(std::is_base_of_v<C, T>, "T must be derived from C");
+
             using namespace std::placeholders;
-			add_getter(name, std::bind(detail::auto_get<T, D>(), _1, _2, member_ptr));
+            add_getter(name, std::bind(detail::auto_get<T, D>(), _1, _2, member_ptr));
 #ifndef LUABIND_NO_ERROR_CHECKING
 			add_setter(
-				name
-				, std::bind(detail::auto_set<T, D>(), _1, _2, member_ptr)
+				name, std::bind(detail::auto_set<T, D>(), _1, _2, member_ptr)
 				, &detail::set_matcher<D>::apply
 				, &detail::get_setter_signature<D>::apply);
 #else
-			add_setter(name, std::bind(detail::auto_set<T, D>(), _1, _2, member_ptr));
+            add_setter(name, std::bind(detail::auto_set<T, D>(), _1, _2, member_ptr));
 #endif
             return std::move(*this);
 		}
 
-		template<typename D, typename... GetPolicies>
-		class_&& def_readwrite(const char* name, D T::*member_ptr, const detail::policy_cons<GetPolicies...>) &&
+		template <class C, typename D, typename... GetPolicies>
+		class_&& def_readwrite(const char* name, D C::*member_ptr, const detail::policy_cons<GetPolicies...>) &&
 		{
+            static_assert(std::is_base_of_v<C, T>, "T must be derived from C");
+
             using namespace std::placeholders;
 			add_getter(name, std::bind(detail::auto_get<T, D, GetPolicies...>(), _1, _2, member_ptr));
 #ifndef LUABIND_NO_ERROR_CHECKING
 			add_setter(
-				name
-				, std::bind(detail::auto_set<T, D>(), _1, _2, member_ptr)
+				name, std::bind(detail::auto_set<T, D>(), _1, _2, member_ptr)
 				, &detail::set_matcher<D>::apply
 				, &detail::get_setter_signature<D>::apply);
 #else
-			add_setter(name, std::bind(detail::auto_set<T, D>(), _1, _2, member_ptr));
+            add_setter(name, std::bind(detail::auto_set<T, D>(), _1, _2, member_ptr));
 #endif
             return std::move(*this);
 		}
 
-		template<typename D, typename... GetPolicies, typename... SetPolicies>
-		class_&& def_readwrite(const char* name, D T::*member_ptr, const detail::policy_cons<GetPolicies...>, const detail::policy_cons<SetPolicies...>) &&
+		template <class C, typename D, typename... GetPolicies, typename... SetPolicies>
+		class_&& def_readwrite(const char* name, D C::*member_ptr, const detail::policy_cons<GetPolicies...>, const detail::policy_cons<SetPolicies...>) &&
 		{
+            static_assert(std::is_base_of_v<C, T>, "T must be derived from C");
+
             using namespace std::placeholders;
-			add_getter(name, std::bind(detail::auto_get<T, D, GetPolicies...>(), _1, _2, member_ptr));
+            add_getter(name, std::bind(detail::auto_get<T, D, GetPolicies...>(), _1, _2, member_ptr));
 #ifndef LUABIND_NO_ERROR_CHECKING
 			add_setter(
-				name
-				, std::bind(detail::auto_set<T, D, SetPolicies...>(), _1, _2, member_ptr)
+				name, std::bind(detail::auto_set<T, D, SetPolicies...>(), _1, _2, member_ptr)
 				, &detail::set_matcher<D, SetPolicies...>::apply
 				, &detail::get_setter_signature<D>::apply);
 #else
-			add_setter(name, std::bind(detail::auto_set<T, D, SetPolicies...>(), _1, _2, member_ptr));
+            add_setter(name, std::bind(detail::auto_set<T, D, SetPolicies...>(), _1, _2, member_ptr));
 #endif
             return std::move(*this);
 		}
