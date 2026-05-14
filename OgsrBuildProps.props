@@ -25,7 +25,11 @@
     <ClCompile>
       <EnableEnhancedInstructionSet Condition="'$(Platform)'=='Win32'">StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
 
-      <LanguageStandard>stdcpp20</LanguageStandard>
+	  <!-- Если сборка ведётся из VS2026 (VisualStudioVersion == 18.0) — используем C++23 -->
+      <LanguageStandard Condition="'$(VisualStudioVersion)' == '18.0'">stdcpp23</LanguageStandard>
+      <!-- Иначе — используем C++20 -->
+      <LanguageStandard Condition="'$(VisualStudioVersion)' != '18.0'">stdcpp20</LanguageStandard>
+
       <BuildStlModules>false</BuildStlModules>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions Condition="$(Configuration.Contains('Release'))">/Zc:__cplusplus /Ob3 %(AdditionalOptions)</AdditionalOptions>
