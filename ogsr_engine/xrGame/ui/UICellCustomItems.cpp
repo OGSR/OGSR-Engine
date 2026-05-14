@@ -180,8 +180,9 @@ void CUIAmmoCellItem::UpdateItemText()
             total = curr_obj->m_boxCurr;
 
         for (auto* child : m_childs)
-            if (auto* child_obj = smart_cast<CUIAmmoCellItem*>(child)->object())
-                total += child_obj->m_boxCurr;
+            if (auto* _child_obj = smart_cast<CUIAmmoCellItem*>(child))
+                if (auto* child_obj = _child_obj->object())
+                    total += child_obj->m_boxCurr;
 
         string32 str;
         sprintf_s(str, "%d", total);
