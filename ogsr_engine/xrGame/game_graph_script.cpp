@@ -68,7 +68,7 @@ Fvector4 CVertex__mask_(const CGameGraph::CVertex* vertex)
 
 void CGameGraph::script_register(lua_State* L)
 {
-    module(L)[def("game_graph", &get_game_graph),
+    module(L)[(def("game_graph", &get_game_graph),
 
               class_<CGameGraph>("CGameGraph")
                   .def("accessible", &get_accessible1)
@@ -90,5 +90,5 @@ void CGameGraph::script_register(lua_State* L)
 
               class_<CGameLevelCrossTable>("CGameLevelCrossTable").def("vertex", &CGameLevelCrossTable::vertex),
 
-              class_<CGameLevelCrossTable::CCell>("CGameLevelCrossTable__CCell").def("game_vertex_id", &CGameLevelCrossTable::CCell::game_vertex_id)];
+              class_<CGameLevelCrossTable::CCell>("CGameLevelCrossTable__CCell").def("game_vertex_id", &CGameLevelCrossTable::CCell::game_vertex_id))];
 }

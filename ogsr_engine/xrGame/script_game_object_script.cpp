@@ -29,15 +29,14 @@ void CScriptGameObject::script_register(lua_State* L)
 {
     class_<CScriptGameObject> instance("game_object");
 
-    module(
-        L)[class_<CSightParams>("CSightParams")
-               .enum_("bla-bla")[value("eSightTypeCurrentDirection", int(SightManager::eSightTypeCurrentDirection)),
+    module(L)[(class_<CSightParams>("CSightParams")
+               .enum_("bla-bla")[(value("eSightTypeCurrentDirection", int(SightManager::eSightTypeCurrentDirection)),
                                  value("eSightTypePathDirection", int(SightManager::eSightTypePathDirection)), value("eSightTypeDirection", int(SightManager::eSightTypeDirection)),
                                  value("eSightTypePosition", int(SightManager::eSightTypePosition)), value("eSightTypeObject", int(SightManager::eSightTypeObject)),
                                  value("eSightTypeCover", int(SightManager::eSightTypeCover)), value("eSightTypeSearch", int(SightManager::eSightTypeSearch)),
                                  value("eSightTypeLookOver", int(SightManager::eSightTypeLookOver)), value("eSightTypeCoverLookOver", int(SightManager::eSightTypeCoverLookOver)),
                                  value("eSightTypeFireObject", int(SightManager::eSightTypeFireObject)), value("eSightTypeFirePosition", int(SightManager::eSightTypeFirePosition)),
-                                 value("eSightTypeDummy", int(SightManager::eSightTypeDummy))]
+                                 value("eSightTypeDummy", int(SightManager::eSightTypeDummy)))]
                .def(constructor<>())
                .def_readonly("m_object", &CSightParams::m_object)
                .def_readonly("m_vector", &CSightParams::m_vector)
@@ -47,7 +46,7 @@ void CScriptGameObject::script_register(lua_State* L)
 
            class_<enum_exporter<GameObject::ECallbackType>>("callback")
                .enum_("callback_types")
-                   [value("trade_start", int(GameObject::eTradeStart)), value("trade_stop", int(GameObject::eTradeStop)),
+                   [(value("trade_start", int(GameObject::eTradeStart)), value("trade_stop", int(GameObject::eTradeStop)),
                     value("trade_sell_buy_item", int(GameObject::eTradeSellBuyItem)), value("trade_perform_operation", int(GameObject::eTradePerformTradeOperation)),
                     value("trader_global_anim_request", int(GameObject::eTraderGlobalAnimationRequest)),
                     value("trader_head_anim_request", int(GameObject::eTraderHeadAnimationRequest)), value("trader_sound_end", int(GameObject::eTraderSoundEnd)),
@@ -96,11 +95,11 @@ void CScriptGameObject::script_register(lua_State* L)
                     value("on_actor_land", int(GameObject::eOnActorLand)),
                     value("on_actor_jump", int(GameObject::eOnActorJump)), 
                     value("on_actor_boltthrow", int(GameObject::eOnActorBoltThrow))
-           ],
+           )],
 
            def("buy_condition", (void (*)(CInifile*, LPCSTR))(&::buy_condition)), def("buy_condition", (void (*)(float, float))(&::buy_condition)),
            def("sell_condition", (void (*)(CInifile*, LPCSTR))(&::sell_condition)), def("sell_condition", (void (*)(float, float))(&::sell_condition)),
-           def("show_condition", &::show_condition)];
+           def("show_condition", &::show_condition))];
 
     script_register_game_object4(L);
     CHitImmunity::script_register(L);

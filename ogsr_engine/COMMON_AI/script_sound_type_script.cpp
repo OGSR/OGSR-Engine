@@ -15,9 +15,9 @@ using namespace luabind;
 
 void CScriptSoundType::script_register(lua_State* L)
 {
-    module(L)[class_<enum_exporter<ESoundTypes>>("snd_type")
+    module(L)[(class_<enum_exporter<ESoundTypes>>("snd_type")
                   .enum_("sound_game_types")
-                      [value("no_sound", int(SOUND_TYPE_NO_SOUND)), value("weapon", int(SOUND_TYPE_WEAPON)), value("item", int(SOUND_TYPE_ITEM)),
+                      [(value("no_sound", int(SOUND_TYPE_NO_SOUND)), value("weapon", int(SOUND_TYPE_WEAPON)), value("item", int(SOUND_TYPE_ITEM)),
                        value("monster", int(SOUND_TYPE_MONSTER)), value("anomaly", int(SOUND_TYPE_ANOMALY)), value("world", int(SOUND_TYPE_WORLD)),
                        value("pick_up", int(SOUND_TYPE_PICKING_UP)), value("drop", int(SOUND_TYPE_DROPPING)), value("hide", int(SOUND_TYPE_HIDING)),
                        value("take", int(SOUND_TYPE_TAKING)), value("use", int(SOUND_TYPE_USING)), value("shoot", int(SOUND_TYPE_SHOOTING)),
@@ -34,5 +34,5 @@ void CScriptSoundType::script_register(lua_State* L)
                        value("monster_talk", int(SOUND_TYPE_MONSTER_TALKING)), value("monster_attack", int(SOUND_TYPE_MONSTER_ATTACKING)),
                        value("monster_eat", int(SOUND_TYPE_MONSTER_EATING)), value("anomaly_idle", int(SOUND_TYPE_ANOMALY_IDLE)),
                        value("world_object_break", int(SOUND_TYPE_WORLD_OBJECT_BREAKING)), value("world_object_collide", int(SOUND_TYPE_WORLD_OBJECT_COLLIDING)),
-                       value("world_object_explode", int(SOUND_TYPE_WORLD_OBJECT_EXPLODING)), value("world_ambient", int(SOUND_TYPE_WORLD_AMBIENT))]];
+                       value("world_object_explode", int(SOUND_TYPE_WORLD_OBJECT_EXPLODING)), value("world_ambient", int(SOUND_TYPE_WORLD_AMBIENT)))])];
 }

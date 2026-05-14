@@ -35,7 +35,7 @@ using namespace luabind;
 
 void CUIStatic::script_register(lua_State* L)
 {
-    module(L)[class_<CUIStatic, CUIWindow>("CUIStatic")
+    module(L)[(class_<CUIStatic, CUIWindow>("CUIStatic")
                   .def(constructor<>())
 
                   .def("SetText", (void(CUIStatic::*)(LPCSTR))(&CUIStatic::SetText))
@@ -91,5 +91,5 @@ void CUIStatic::script_register(lua_State* L)
                   .def("Init", &UIMiniMapInit)
                   .def("Zoom", &UIMiniMapZoom)
                   .def("SetActivePoint", &CUIMiniMap::SetActivePoint)
-    ];
+    )];
 }

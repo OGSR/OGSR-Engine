@@ -21,7 +21,7 @@ void remove_effector(CScriptEffector* self) { self->Remove(); }
 
 void CScriptEffector::script_register(lua_State* L)
 {
-    module(L)[class_<SPPInfo::SDuality>("duality")
+    module(L)[(class_<SPPInfo::SDuality>("duality")
                   .def_readwrite("h", &SPPInfo::SDuality::h)
                   .def_readwrite("v", &SPPInfo::SDuality::v)
                   .def(constructor<>())
@@ -59,5 +59,5 @@ void CScriptEffector::script_register(lua_State* L)
                   .def(constructor<int, float>())
                   .def("start", &add_effector, adopt<1>())
                   .def("finish", &remove_effector)
-                  .def("process", &CScriptEffector::process, &CScriptEffectorWrapper::process_static)];
+                  .def("process", &CScriptEffector::process, &CScriptEffectorWrapper::process_static))];
 }

@@ -31,12 +31,12 @@ bool se_obj_is_alive(CSE_ALifeObject* O)
 
 void CSE_ALifeSchedulable::script_register(lua_State* L)
 {
-    module(L)[class_<IPureSchedulableObject>("ipure_schedulable_object"),
+    module(L)[(class_<IPureSchedulableObject>("ipure_schedulable_object"),
               //			.def(		constructor<>()),
 
               class_<CSE_ALifeSchedulable, IPureSchedulableObject>("cse_alife_schedulable")
               //			.def(		constructor<LPCSTR>())
-    ];
+    )];
 }
 
 void CSE_ALifeGraphPoint::script_register(lua_State* L) { module(L)[luabind_class_abstract1(CSE_ALifeGraphPoint, "cse_alife_graph_point", CSE_Abstract)]; }
@@ -117,9 +117,9 @@ u8 cse_get_restrictor_type(CSE_ALifeDynamicObject* se_obj)
 
 void CSE_ALifeSpaceRestrictor::script_register(lua_State* L)
 {
-    module(L)[luabind_class_dynamic_alife2(CSE_ALifeSpaceRestrictor, "cse_alife_space_restrictor", CSE_ALifeDynamicObject, CSE_Shape)
+    module(L)[(luabind_class_dynamic_alife2(CSE_ALifeSpaceRestrictor, "cse_alife_space_restrictor", CSE_ALifeDynamicObject, CSE_Shape)
                   .def_readwrite("restrictor_type", &CSE_ALifeSpaceRestrictor::m_space_restrictor_type),
-              def("cse_get_restrictor_type", &cse_get_restrictor_type)];
+              def("cse_get_restrictor_type", &cse_get_restrictor_type))];
 }
 
 void CSE_ALifeLevelChanger::script_register(lua_State* L)

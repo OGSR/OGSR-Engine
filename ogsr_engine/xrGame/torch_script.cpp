@@ -103,7 +103,7 @@ using namespace luabind;
 
 void CTorch::script_register(lua_State* L)
 {
-    module(L)[class_<CTorch, CGameObject /*CInventoryItemObject*/>("CTorch")
+    module(L)[(class_<CTorch, CGameObject /*CInventoryItemObject*/>("CTorch")
                   .def(constructor<>())
                   // alpet: управление параметрами света
                   .def_readonly("on", &CTorch::m_switched_on)
@@ -124,5 +124,5 @@ void CTorch::script_register(lua_State* L)
                   .def("switch_nvd", (void(CTorch::*)())(&CTorch::SwitchNightVision))
 
                   ,
-              def("get_torch_obj", [](CScriptGameObject* script_obj) { return smart_cast<CTorch*>(&script_obj->object()); })];
+              def("get_torch_obj", [](CScriptGameObject* script_obj) { return smart_cast<CTorch*>(&script_obj->object()); }))];
 }

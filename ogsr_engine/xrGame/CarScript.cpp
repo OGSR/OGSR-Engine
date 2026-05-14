@@ -13,9 +13,9 @@ u8 CCar__IsEngineOn(CCar* self) { return self->IsEngineOn() ? 1 : 0; }
 void CCar::script_register(lua_State* L)
 {
     module(L)[class_<CCar, bases<CGameObject, CHolderCustom>>("CCar")
-                  .enum_("wpn_action")[value("eWpnDesiredDir", int(CCarWeapon::eWpnDesiredDir)), value("eWpnDesiredPos", int(CCarWeapon::eWpnDesiredPos)),
+                  .enum_("wpn_action")[(value("eWpnDesiredDir", int(CCarWeapon::eWpnDesiredDir)), value("eWpnDesiredPos", int(CCarWeapon::eWpnDesiredPos)),
                                        value("eWpnActivate", int(CCarWeapon::eWpnActivate)), value("eWpnFire", int(CCarWeapon::eWpnFire)),
-                                       value("eWpnAutoFire", int(CCarWeapon::eWpnAutoFire)), value("eWpnToDefaultDir", int(CCarWeapon::eWpnToDefaultDir))]
+                                       value("eWpnAutoFire", int(CCarWeapon::eWpnAutoFire)), value("eWpnToDefaultDir", int(CCarWeapon::eWpnToDefaultDir)))]
                   .def("Action", &CCar::Action)
                   //		.def("SetParam",		(void (CCar::*)(int,Fvector2)) &CCar::SetParam)
                   .def("SetParam", (void(CCar::*)(int, Fvector)) & CCar::SetParam)

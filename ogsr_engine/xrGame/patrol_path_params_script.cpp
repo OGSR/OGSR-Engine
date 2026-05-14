@@ -20,12 +20,12 @@ Fvector CPatrolPathParams__point(const CPatrolPathParams* self, u32 index)
 
 void CPatrolPathParams::script_register(lua_State* L)
 {
-    module(L)[class_<CPatrolPathParams>("patrol")
-                  .enum_("start")[value("start", int(PatrolPathManager::ePatrolStartTypeFirst)), value("stop", int(PatrolPathManager::ePatrolStartTypeLast)),
+    module(L)[(class_<CPatrolPathParams>("patrol")
+                  .enum_("start")[(value("start", int(PatrolPathManager::ePatrolStartTypeFirst)), value("stop", int(PatrolPathManager::ePatrolStartTypeLast)),
                                   value("nearest", int(PatrolPathManager::ePatrolStartTypeNearest)), value("custom", int(PatrolPathManager::ePatrolStartTypePoint)),
-                                  value("next", int(PatrolPathManager::ePatrolStartTypeNext)), value("dummy", int(PatrolPathManager::ePatrolStartTypeDummy))]
-                  .enum_("stop")[value("stop", int(PatrolPathManager::ePatrolRouteTypeStop)), value("continue", int(PatrolPathManager::ePatrolRouteTypeContinue)),
-                                 value("dummy", int(PatrolPathManager::ePatrolRouteTypeDummy))]
+                                  value("next", int(PatrolPathManager::ePatrolStartTypeNext)), value("dummy", int(PatrolPathManager::ePatrolStartTypeDummy)))]
+                  .enum_("stop")[(value("stop", int(PatrolPathManager::ePatrolRouteTypeStop)), value("continue", int(PatrolPathManager::ePatrolRouteTypeContinue)),
+                                 value("dummy", int(PatrolPathManager::ePatrolRouteTypeDummy)))]
                   .def(constructor<LPCSTR>())
                   .def(constructor<LPCSTR, const PatrolPathManager::EPatrolStartType>())
                   .def(constructor<LPCSTR, const PatrolPathManager::EPatrolStartType, const PatrolPathManager::EPatrolRouteType>())
@@ -40,5 +40,5 @@ void CPatrolPathParams::script_register(lua_State* L)
                   .def("get_nearest", (u32(CPatrolPathParams::*)(const Fvector&) const)(&CPatrolPathParams::point))
                   .def("flag", &CPatrolPathParams::flag)
                   .def("flags", &CPatrolPathParams::flags)
-                  .def("terminal", &CPatrolPathParams::terminal)];
+                  .def("terminal", &CPatrolPathParams::terminal))];
 }

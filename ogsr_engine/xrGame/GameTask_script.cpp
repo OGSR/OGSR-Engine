@@ -12,8 +12,8 @@ SGameTaskObjective* ActiveObjective_script() { return Actor()->GameTaskManager()
 
 void CGameTask::script_register(lua_State* L)
 {
-    module(L)[class_<enum_exporter<ETaskState>>("task").enum_("task_state")[value("fail", int(eTaskStateFail)), value("in_progress", int(eTaskStateInProgress)), value("completed", int(eTaskStateCompleted)),
-                                value("skipped", int(eTaskStateSkiped)), value("task_dummy", int(eTaskStateDummy))],
+    module(L)[(class_<enum_exporter<ETaskState>>("task").enum_("task_state")[(value("fail", int(eTaskStateFail)), value("in_progress", int(eTaskStateInProgress)), value("completed", int(eTaskStateCompleted)),
+                                value("skipped", int(eTaskStateSkiped)), value("task_dummy", int(eTaskStateDummy)))],
 
               class_<SGameTaskObjective>("SGameTaskObjective")
                   .def(constructor<CGameTask*, int>())
@@ -58,9 +58,9 @@ void CGameTask::script_register(lua_State* L)
                   .def("get_objective", &CGameTask::GetObjective_script)
                   .def("get_objectives_cnt", &CGameTask::GetObjectiveSize_script)
 
-    ];
+    )];
 
-    module(L, "gametask")[
+    module(L, "gametask")[(
         def("active_task", &ActiveTask_script), def("active_objection", &ActiveObjective_script)
-    ];
+    )];
 }

@@ -130,7 +130,7 @@ using namespace luabind;
 
 void CScriptIniFile::script_register(lua_State* L)
 {
-    module(L)[def("ini_file", &initialize_ini_file, adopt<result>()), def("ini_file", &initialize_ini_file_full, adopt<result>()),
+    module(L)[(def("ini_file", &initialize_ini_file, adopt<result>()), def("ini_file", &initialize_ini_file_full, adopt<result>()),
 
               class_<CInifile>("__ini_file")
                   .def(constructor<LPCSTR>())
@@ -200,5 +200,5 @@ void CScriptIniFile::script_register(lua_State* L)
                       return xr_new<CInifile>(&reader, FS.get_path(fsgame::game_configs)->m_Path);
                   },
                   adopt<result>()),
-              def("reload_system_ini", &reload_system_ini)];
+              def("reload_system_ini", &reload_system_ini))];
 }

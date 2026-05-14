@@ -16,7 +16,7 @@ using namespace luabind;
 void CScriptObjectAction::script_register(lua_State* L)
 {
     module(L)[class_<CScriptObjectAction>("object")
-                  .enum_("state")[value("idle", int(MonsterSpace::eObjectActionIdle)), value("show", int(MonsterSpace::eObjectActionShow)),
+                  .enum_("state")[(value("idle", int(MonsterSpace::eObjectActionIdle)), value("show", int(MonsterSpace::eObjectActionShow)),
                                   value("hide", int(MonsterSpace::eObjectActionHide)), value("take", int(MonsterSpace::eObjectActionTake)),
                                   value("drop", int(MonsterSpace::eObjectActionDrop)), value("strap", int(MonsterSpace::eObjectActionStrapped)),
                                   value("aim1", int(MonsterSpace::eObjectActionAim1)), value("aim2", int(MonsterSpace::eObjectActionAim2)),
@@ -26,7 +26,7 @@ void CScriptObjectAction::script_register(lua_State* L)
                                   value("switch2", int(MonsterSpace::eObjectActionSwitch2)), value("activate", int(MonsterSpace::eObjectActionActivate)),
                                   value("deactivate", int(MonsterSpace::eObjectActionDeactivate)), value("use", int(MonsterSpace::eObjectActionUse)),
                                   value("turn_on", int(MonsterSpace::eObjectActionTurnOn)), value("turn_off", int(MonsterSpace::eObjectActionTurnOff)),
-                                  value("dummy", int(MonsterSpace::eObjectActionDummy))]
+                                  value("dummy", int(MonsterSpace::eObjectActionDummy)))]
                   .def(constructor<>())
                   .def(constructor<CScriptGameObject*, MonsterSpace::EObjectAction>())
                   .def(constructor<CScriptGameObject*, MonsterSpace::EObjectAction, u32>())

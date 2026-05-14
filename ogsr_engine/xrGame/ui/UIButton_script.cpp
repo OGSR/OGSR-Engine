@@ -12,7 +12,7 @@ using namespace luabind;
 
 void CUIButton::script_register(lua_State* L)
 {
-    module(L)[class_<CUIButton, CUIStatic>("CUIButton")
+    module(L)[(class_<CUIButton, CUIStatic>("CUIButton")
                   .def(constructor<>())
                   .def("Init", (void(CUIButton::*)(float, float, float, float)) & CUIButton::Init)
                   .def("Init", (void(CUIButton::*)(LPCSTR, float, float, float, float)) & CUIButton::Init)
@@ -59,5 +59,5 @@ void CUIButton::script_register(lua_State* L)
                   .def(constructor<>())
                   .def("GetCheck", &CUITrackBar::GetCheck)
                   .def("SetCheck", &CUITrackBar::SetCheck)
-                  .def("GetTrackValue", &CUITrackBar::GetTrackValue)];
+                  .def("GetTrackValue", &CUITrackBar::GetTrackValue))];
 }

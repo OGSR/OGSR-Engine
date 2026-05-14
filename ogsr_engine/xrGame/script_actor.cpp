@@ -92,8 +92,7 @@ bool IsCantSprint(CActorCondition* C) { return C->m_condition_flags.test(CActorC
 
 void CScriptActor::script_register(lua_State* L)
 {
-    module(
-        L)[class_<CActorCondition>("CActorConditionBase")
+    module(L)[(class_<CActorCondition>("CActorConditionBase")
                .property("health", &CActorCondition::GetHealth, &set_health)
                .property("health_max", &CActorCondition::GetMaxHealth, &set_max_health)
                .def_readwrite("alcohol_health", &CActorCondition::m_fAlcohol)
@@ -206,6 +205,5 @@ void CScriptActor::script_register(lua_State* L)
                .def("UpdateArtefactsOnBelt", &CActor::UpdateArtefactsOnBelt)
                .def("IsDetectorActive", &CActor::IsDetectorActive),
            class_<CActorObject, bases<CActor, CEntityAlive>>("CActor") // хак с наследованием нужен для переопределения свойств. Luabind не поддерживает property getters override
-
-    ];
+    )];
 }

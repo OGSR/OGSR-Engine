@@ -15,11 +15,11 @@ using namespace luabind;
 
 void CScriptHit::script_register(lua_State* L)
 {
-    module(L)[class_<CScriptHit>("hit")
-                  .enum_("hit_type")[value("burn", int(ALife::eHitTypeBurn)), value("shock", int(ALife::eHitTypeShock)), value("strike", int(ALife::eHitTypeStrike)),
+    module(L)[(class_<CScriptHit>("hit")
+                  .enum_("hit_type")[(value("burn", int(ALife::eHitTypeBurn)), value("shock", int(ALife::eHitTypeShock)), value("strike", int(ALife::eHitTypeStrike)),
                                      value("wound", int(ALife::eHitTypeWound)), value("radiation", int(ALife::eHitTypeRadiation)),
                                      value("telepatic", int(ALife::eHitTypeTelepatic)), value("chemical_burn", int(ALife::eHitTypeChemicalBurn)),
-                                     value("explosion", int(ALife::eHitTypeExplosion)), value("fire_wound", int(ALife::eHitTypeFireWound)), value("dummy", int(ALife::eHitTypeMax))]
+                                     value("explosion", int(ALife::eHitTypeExplosion)), value("fire_wound", int(ALife::eHitTypeFireWound)), value("dummy", int(ALife::eHitTypeMax)))]
                   .def_readwrite("power", &CScriptHit::m_fPower)
                   .def_readwrite("direction", &CScriptHit::m_tDirection)
                   .def_readwrite("draftsman", &CScriptHit::m_tpDraftsman)
@@ -51,5 +51,5 @@ void CScriptHit::script_register(lua_State* L)
                   .def_readwrite("ignore_hit", &SHit::ignore_flag) //Флаг игнорирования хита. Если скриптово установить его в true, хит нанесён не будет.
                   // Начальное значение хита, до обработок всякими
                   // защитами артефактов и броней.
-                  .def_readonly("full_power", &SHit::full_power)];
+                  .def_readonly("full_power", &SHit::full_power))];
 }

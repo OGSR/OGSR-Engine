@@ -39,14 +39,14 @@ extern CScriptActionPlanner* script_action_planner(CScriptGameObject* obj);
 class_<CScriptGameObject> script_register_game_object1(class_<CScriptGameObject>&& instance)
 {
     return std::move(instance)
-        .enum_("relation")[value("friend", int(ALife::eRelationTypeFriend)), value("neutral", int(ALife::eRelationTypeNeutral)), value("enemy", int(ALife::eRelationTypeEnemy)),
-                           value("worst_enemy", int(ALife::eRelationTypeWorstEnemy)), value("dummy", int(ALife::eRelationTypeDummy))]
-        .enum_("action_types")[value("movement", int(ScriptEntity::eActionTypeMovement)), value("watch", int(ScriptEntity::eActionTypeWatch)),
+        .enum_("relation")[(value("friend", int(ALife::eRelationTypeFriend)), value("neutral", int(ALife::eRelationTypeNeutral)), value("enemy", int(ALife::eRelationTypeEnemy)),
+                           value("worst_enemy", int(ALife::eRelationTypeWorstEnemy)), value("dummy", int(ALife::eRelationTypeDummy)))]
+        .enum_("action_types")[(value("movement", int(ScriptEntity::eActionTypeMovement)), value("watch", int(ScriptEntity::eActionTypeWatch)),
                                value("animation", int(ScriptEntity::eActionTypeAnimation)), value("sound", int(ScriptEntity::eActionTypeSound)),
                                value("particle", int(ScriptEntity::eActionTypeParticle)), value("object", int(ScriptEntity::eActionTypeObject)),
-                               value("action_type_count", int(ScriptEntity::eActionTypeCount))]
-        .enum_("EPathType")[value("game_path", int(MovementManager::ePathTypeGamePath)), value("level_path", int(MovementManager::ePathTypeLevelPath)),
-                            value("patrol_path", int(MovementManager::ePathTypePatrolPath)), value("no_path", int(MovementManager::ePathTypeNoPath))]
+                               value("action_type_count", int(ScriptEntity::eActionTypeCount)))]
+        .enum_("EPathType")[(value("game_path", int(MovementManager::ePathTypeGamePath)), value("level_path", int(MovementManager::ePathTypeLevelPath)),
+                            value("patrol_path", int(MovementManager::ePathTypePatrolPath)), value("no_path", int(MovementManager::ePathTypeNoPath)))]
 
         //		.property("visible",				&CScriptGameObject::getVisible,			&CScriptGameObject::setVisible)
         //		.property("enabled",				&CScriptGameObject::getEnabled,			&CScriptGameObject::setEnabled)

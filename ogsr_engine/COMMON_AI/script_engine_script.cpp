@@ -86,14 +86,13 @@ using namespace luabind;
 
 void CScriptEngine::script_register(lua_State* L)
 {
-    module(
-        L)[def("log1", (void (*)(LPCSTR)) & Log), def("fail", &msg_and_fail),
+    module(L)[(def("log1", (void (*)(LPCSTR)) & Log), def("fail", &msg_and_fail),
 
            def("screenshot", &take_screenshot),
            class_<enum_exporter<IRender_interface::ScreenshotMode>>("screenshot_modes")
                .enum_(
-                   "modes")[value("normal", int(IRender_interface::ScreenshotMode::SM_NORMAL)), value("cubemap", int(IRender_interface::ScreenshotMode::SM_FOR_CUBEMAP)),
-                            value("gamesave", int(IRender_interface::ScreenshotMode::SM_FOR_GAMESAVE)), value("levelmap", int(IRender_interface::ScreenshotMode::SM_FOR_LEVELMAP))],
+                   "modes")[(value("normal", int(IRender_interface::ScreenshotMode::SM_NORMAL)), value("cubemap", int(IRender_interface::ScreenshotMode::SM_FOR_CUBEMAP)),
+                            value("gamesave", int(IRender_interface::ScreenshotMode::SM_FOR_GAMESAVE)), value("levelmap", int(IRender_interface::ScreenshotMode::SM_FOR_LEVELMAP)))],
            class_<profile_timer_script>("profile_timer")
                .def(constructor<>())
                .def(constructor<profile_timer_script&>())
@@ -111,5 +110,5 @@ void CScriptEngine::script_register(lua_State* L)
 
            def("GetShift", &GetShift), def("GetLAlt", &GetLAlt), def("GetRAlt", &GetRAlt), def("GetAlt", &GetAlt),
 
-           def("device", [] { return &Device; }), def("__debugbreak", [] { __debugbreak(); })];
+           def("device", [] { return &Device; }), def("__debugbreak", [] { __debugbreak(); }))];
 }

@@ -56,7 +56,7 @@ void enable_cmd(CConsole* c, LPCSTR cmd)
 
 void console_registrator::script_register(lua_State* L)
 {
-    module(L)[def("get_console", &console),
+    module(L)[(def("get_console", &console),
               class_<CConsole>("CConsole")
                   .def("disable_command", &disable_cmd)
                   .def("enable_command", &enable_cmd)
@@ -74,6 +74,5 @@ void console_registrator::script_register(lua_State* L)
                   .def("get_vector", &CConsole::GetFVector3)
                   .def("get_vector4", &CConsole::GetFVector4)
                   .def_readonly("visible", &CConsole::bVisible)
-
-    ];
+    )];
 }

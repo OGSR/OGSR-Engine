@@ -56,7 +56,7 @@ void one(T* self)
 
 void CScriptFlags::script_register(lua_State* L)
 {
-    module(L)[class_<Flags8>("flags8")
+    module(L)[(class_<Flags8>("flags8")
                   .def(constructor<>())
                   .def("get", &Flags8::get)
                   .def("zero", &Flags8::zero)
@@ -117,5 +117,5 @@ void CScriptFlags::script_register(lua_State* L)
                   .def("is_any", &is_any<Flags32>)
                   .def("test", &test<Flags32>)
                   .def("equal", (bool (*)(Flags32*, const Flags32&))(&equal<Flags32>))
-                  .def("equal", (bool (*)(Flags32*, const Flags32&, const Flags32::TYPE))(&equal<Flags32>))];
+                  .def("equal", (bool (*)(Flags32*, const Flags32&, const Flags32::TYPE))(&equal<Flags32>)))];
 }

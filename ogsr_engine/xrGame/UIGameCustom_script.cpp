@@ -9,7 +9,7 @@ using namespace luabind;
 
 void CUIGameCustom::script_register(lua_State* L)
 {
-    module(L)[class_<SDrawStaticStruct>("SDrawStaticStruct").def_readwrite("m_endTime", &SDrawStaticStruct::m_endTime).def("wnd", &SDrawStaticStruct::wnd),
+    module(L)[(class_<SDrawStaticStruct>("SDrawStaticStruct").def_readwrite("m_endTime", &SDrawStaticStruct::m_endTime).def("wnd", &SDrawStaticStruct::wnd),
 
               class_<CUIGameCustom>("CUIGameCustom")
                   .def("AddDialogToRender", &CUIGameCustom::AddDialogToRender)
@@ -21,5 +21,5 @@ void CUIGameCustom::script_register(lua_State* L)
                   .def("AddCustomStatic", &CUIGameCustom::AddCustomStatic)
                   .def("RemoveCustomStatic", &CUIGameCustom::RemoveCustomStatic)
                   .def("GetCustomStatic", &CUIGameCustom::GetCustomStatic),
-              def("get_hud", [] { return HUD().GetUI()->UIGame(); })];
+              def("get_hud", [] { return HUD().GetUI()->UIGame(); }))];
 }

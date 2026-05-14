@@ -48,8 +48,7 @@ using namespace luabind;
 
 void script_rq_result::script_register(lua_State* L)
 {
-    module(
-        L)[class_<script_rq_result>("rq_result")
+    module(L)[(class_<script_rq_result>("rq_result")
                .def_readonly("range", &script_rq_result::range)
                .def_readonly("object", &script_rq_result::object)
                .def_readonly("element", &script_rq_result::element)
@@ -57,11 +56,11 @@ void script_rq_result::script_register(lua_State* L)
                .def_readonly("mtl", &script_rq_result::mtl),
 
            class_<enum_exporter<SGameMtl>>("SGameMtlFlags")
-               .enum_("SGameMtlFlags")[value("flActorObstacle", int(SGameMtl::flActorObstacle)), value("flBloodmark", int(SGameMtl::flBloodmark)),
+               .enum_("SGameMtlFlags")[(value("flActorObstacle", int(SGameMtl::flActorObstacle)), value("flBloodmark", int(SGameMtl::flBloodmark)),
                                        value("flBounceable", int(SGameMtl::flBounceable)), value("flClimable", int(SGameMtl::flClimable)),
                                        value("flDynamic", int(SGameMtl::flDynamic)), value("flInjurious", int(SGameMtl::flInjurious)), value("flLiquid", int(SGameMtl::flLiquid)),
                                        value("flPassable", int(SGameMtl::flPassable)), value("flSlowDown", int(SGameMtl::flSlowDown)),
-                                       value("flSuppressShadows", int(SGameMtl::flSuppressShadows)), value("flSuppressWallmarks", int(SGameMtl::flSuppressWallmarks))],
+                                       value("flSuppressShadows", int(SGameMtl::flSuppressShadows)), value("flSuppressWallmarks", int(SGameMtl::flSuppressWallmarks)))],
 
            class_<SGameMtl>("SGameMtl")
                .property("m_Name", &get_name)
@@ -77,5 +76,5 @@ void script_rq_result::script_register(lua_State* L)
                .def_readonly("fBounceDamageFactor", &SGameMtl::fBounceDamageFactor)
                .def_readonly("fInjuriousSpeed", &SGameMtl::fInjuriousSpeed)
                .def_readonly("fVisTransparencyFactor", &SGameMtl::fVisTransparencyFactor)
-               .def_readonly("fSndOcclusionFactor", &SGameMtl::fSndOcclusionFactor)];
+               .def_readonly("fSndOcclusionFactor", &SGameMtl::fSndOcclusionFactor))];
 }

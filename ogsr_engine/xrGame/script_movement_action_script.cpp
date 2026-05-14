@@ -20,23 +20,22 @@ using namespace luabind;
 
 void CScriptMovementAction::script_register(lua_State* L)
 {
-    module(L)[class_<CScriptMovementAction>("move")
-                  .enum_("body")[value("crouch", int(MonsterSpace::eBodyStateCrouch)), value("standing", int(MonsterSpace::eBodyStateStand))]
-                  .enum_("move")[value("walk", int(MonsterSpace::eMovementTypeWalk)), value("run", int(MonsterSpace::eMovementTypeRun)),
-                                 value("stand", int(MonsterSpace::eMovementTypeStand))]
-                  .enum_("path")[value("line", int(DetailPathManager::eDetailPathTypeSmooth)), value("dodge", int(DetailPathManager::eDetailPathTypeSmoothDodge)),
+    module(L)[(class_<CScriptMovementAction>("move")
+                  .enum_("body")[(value("crouch", int(MonsterSpace::eBodyStateCrouch)), value("standing", int(MonsterSpace::eBodyStateStand)))]
+                  .enum_("move")[(value("walk", int(MonsterSpace::eMovementTypeWalk)), value("run", int(MonsterSpace::eMovementTypeRun)),
+                                 value("stand", int(MonsterSpace::eMovementTypeStand)))]
+                  .enum_("path")[(value("line", int(DetailPathManager::eDetailPathTypeSmooth)), value("dodge", int(DetailPathManager::eDetailPathTypeSmoothDodge)),
                                  value("criteria", int(DetailPathManager::eDetailPathTypeSmoothCriteria)), value("curve", int(DetailPathManager::eDetailPathTypeSmooth)),
-                                 value("curve_criteria", int(DetailPathManager::eDetailPathTypeSmoothCriteria))]
-                  .enum_("input")[value("none", int(CScriptMovementAction::eInputKeyNone)), value("fwd", int(CScriptMovementAction::eInputKeyForward)),
+                                 value("curve_criteria", int(DetailPathManager::eDetailPathTypeSmoothCriteria)))]
+                  .enum_("input")[(value("none", int(CScriptMovementAction::eInputKeyNone)), value("fwd", int(CScriptMovementAction::eInputKeyForward)),
                                   value("back", int(CScriptMovementAction::eInputKeyBack)), value("left", int(CScriptMovementAction::eInputKeyLeft)),
                                   value("right", int(CScriptMovementAction::eInputKeyRight)), value("up", int(CScriptMovementAction::eInputKeyShiftUp)),
                                   value("down", int(CScriptMovementAction::eInputKeyShiftDown)), value("handbrake", int(CScriptMovementAction::eInputKeyBreaks)),
-                                  value("on", int(CScriptMovementAction::eInputKeyEngineOn)), value("off", int(CScriptMovementAction::eInputKeyEngineOff))]
-                  .enum_("monster")[
-
+                                  value("on", int(CScriptMovementAction::eInputKeyEngineOn)), value("off", int(CScriptMovementAction::eInputKeyEngineOff)))]
+                  .enum_("monster")[(
                       value("walk_fwd", int(MonsterSpace::eMA_WalkFwd)), value("walk_bkwd", int(MonsterSpace::eMA_WalkBkwd)), value("run_fwd", int(MonsterSpace::eMA_Run)),
-                      value("drag", int(MonsterSpace::eMA_Drag)), value("jump", int(MonsterSpace::eMA_Jump)), value("steal", int(MonsterSpace::eMA_Steal))]
-                  .enum_("monster_speed_param")[value("default", int(MonsterSpace::eSP_Default)), value("force", int(MonsterSpace::eSP_ForceSpeed))]
+                      value("drag", int(MonsterSpace::eMA_Drag)), value("jump", int(MonsterSpace::eMA_Jump)), value("steal", int(MonsterSpace::eMA_Steal)))]
+                  .enum_("monster_speed_param")[(value("default", int(MonsterSpace::eSP_Default)), value("force", int(MonsterSpace::eSP_ForceSpeed)))]
 
                   .def(constructor<>())
                   .def(constructor<const CScriptMovementAction::EInputKeys>())
@@ -69,5 +68,5 @@ void CScriptMovementAction::script_register(lua_State* L)
                   .def("patrol", &CScriptMovementAction::SetPatrolPath)
                   .def("position", &CScriptMovementAction::SetPosition)
                   .def("input", &CScriptMovementAction::SetInputKeys)
-                  .def("completed", (bool(CScriptMovementAction::*)())(&CScriptMovementAction::completed))];
+                  .def("completed", (bool(CScriptMovementAction::*)())(&CScriptMovementAction::completed)))];
 }

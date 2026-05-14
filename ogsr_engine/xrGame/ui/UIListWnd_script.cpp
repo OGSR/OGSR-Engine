@@ -19,8 +19,7 @@ struct CUIListItemExWrapper : public CUIListItemEx, public luabind::wrap_base
 
 void CUIListWnd::script_register(lua_State* L)
 {
-    module(L)[
-
+    module(L)[(
         class_<CUIListWnd, CUIWindow>("CUIListWnd")
             .def(constructor<>())
             .def("AddItem", &CUIListWnd::AddItem_script, adopt<2>())
@@ -52,5 +51,5 @@ void CUIListWnd::script_register(lua_State* L)
 
         class_<CUIListItem, CUIButton, CUIListItemWrapper>("CUIListItem").def(constructor<>()),
 
-        class_<CUIListItemEx, CUIListItem /**/, CUIListItemExWrapper /**/>("CUIListItemEx").def(constructor<>()).def("SetSelectionColor", &CUIListItemEx::SetSelectionColor)];
+        class_<CUIListItemEx, CUIListItem /**/, CUIListItemExWrapper /**/>("CUIListItemEx").def(constructor<>()).def("SetSelectionColor", &CUIListItemEx::SetSelectionColor))];
 }

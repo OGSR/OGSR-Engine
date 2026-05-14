@@ -16,7 +16,7 @@ using namespace luabind;
 
 void CPropertyEvaluator<CScriptGameObject>::script_register(lua_State* L)
 {
-    module(L)[class_<CScriptPropertyEvaluator, CScriptPropertyEvaluatorWrapper>("property_evaluator")
+    module(L)[(class_<CScriptPropertyEvaluator, CScriptPropertyEvaluatorWrapper>("property_evaluator")
                   .def_readonly("object", &CScriptPropertyEvaluator::m_object)
                   .def_readonly("storage", &CScriptPropertyEvaluator::m_storage)
                   .def(constructor<>())
@@ -26,5 +26,5 @@ void CPropertyEvaluator<CScriptGameObject>::script_register(lua_State* L)
                   .def("evaluate", &CScriptPropertyEvaluator::evaluate, &CScriptPropertyEvaluatorWrapper::evaluate_static),
 
               class_<CPropertyEvaluatorConst<CScriptGameObject>, CScriptPropertyEvaluator>("property_evaluator_const")
-                  .def(constructor<CPropertyEvaluatorConst<CScriptGameObject>::_value_type>())];
+                  .def(constructor<CPropertyEvaluatorConst<CScriptGameObject>::_value_type>()))];
 }

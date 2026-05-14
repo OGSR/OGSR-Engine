@@ -15,7 +15,7 @@ using namespace luabind;
 
 void CScriptSound::script_register(lua_State* L)
 {
-    module(L)[class_<CSound_params>("sound_params")
+    module(L)[(class_<CSound_params>("sound_params")
                   .def_readwrite("position", &CSound_params::position)
                   .def_readwrite("volume", &CSound_params::volume)
                   .def_readwrite("frequency", &CSound_params::freq)
@@ -23,8 +23,8 @@ void CScriptSound::script_register(lua_State* L)
                   .def_readwrite("max_distance", &CSound_params::max_distance),
 
               class_<CScriptSound>("sound_object")
-                  .enum_("sound_play_type")[value("looped", sm_Looped), value("s2d", sm_2D), value("s3d", 0)]
-                  .enum_("sound_type")[value("effect", st_Effect), value("music", st_Music)]
+                  .enum_("sound_play_type")[(value("looped", sm_Looped), value("s2d", sm_2D), value("s3d", 0))]
+                  .enum_("sound_type")[(value("effect", st_Effect), value("music", st_Music))]
 
                   .property("frequency", &CScriptSound::GetFrequency, &CScriptSound::SetFrequency)
                   .property("min_distance", &CScriptSound::GetMinDistance, &CScriptSound::SetMinDistance)
@@ -48,5 +48,5 @@ void CScriptSound::script_register(lua_State* L)
                   .def("playing", &CScriptSound::IsPlaying)
                   .def("length", &CScriptSound::Length)
                   .def("set_start_time", &CScriptSound::SetTime)
-    ];
+    )];
 }

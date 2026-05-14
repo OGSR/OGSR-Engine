@@ -27,7 +27,7 @@ u32 time_global(const CRenderDevice* self)
 
 void CScriptRenderDevice::script_register(lua_State* L)
 {
-    module(L)[class_<CRenderDevice>("render_device")
+    module(L)[(class_<CRenderDevice>("render_device")
                   .def_readonly("width", &CRenderDevice::dwWidth)
                   .def_readonly("height", &CRenderDevice::dwHeight)
                   .def_readonly("time_delta", &CRenderDevice::dwTimeDelta)
@@ -47,5 +47,5 @@ void CScriptRenderDevice::script_register(lua_State* L)
                   .def_readonly("frame", &CRenderDevice::dwFrame)
                   .def("is_paused", &is_device_paused)
                   .def("pause", &set_device_paused),
-              def("app_ready", &is_app_ready)];
+              def("app_ready", &is_app_ready))];
 }

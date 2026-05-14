@@ -23,14 +23,14 @@ void key_binding_registrator::script_register(lua_State* L)
     }
 
     module(
-        L)[def("dik_to_bind", &dik_to_bind), def("bind_to_dik", &bind_to_dik), def("dik_to_keyname", &dik_to_keyname), def("keyname_to_dik", &keyname_to_dik),
+        L)[(def("dik_to_bind", &dik_to_bind), def("bind_to_dik", &bind_to_dik), def("dik_to_keyname", &dik_to_keyname), def("keyname_to_dik", &keyname_to_dik),
            def("key_state", &key_state),
 
            std::move(game_actions),
 
            class_<key_binding_registrator>("DIK_keys")
                .enum_("dik_keys")
-                   [value("DIK_ESCAPE", int(DIK_ESCAPE)), value("DIK_2", int(DIK_2)), value("DIK_4", int(DIK_4)), value("DIK_6", int(DIK_6)), value("DIK_8", int(DIK_8)),
+                   [(value("DIK_ESCAPE", int(DIK_ESCAPE)), value("DIK_2", int(DIK_2)), value("DIK_4", int(DIK_4)), value("DIK_6", int(DIK_6)), value("DIK_8", int(DIK_8)),
                     value("DIK_0", int(DIK_0)), value("DIK_EQUALS", int(DIK_EQUALS)), value("DIK_TAB", int(DIK_TAB)), value("DIK_W", int(DIK_W)), value("DIK_R", int(DIK_R)),
                     value("DIK_Y", int(DIK_Y)), value("DIK_I", int(DIK_I)), value("DIK_P", int(DIK_P)), value("DIK_RBRACKET", int(DIK_RBRACKET)),
                     value("DIK_LCONTROL", int(DIK_LCONTROL)), value("DIK_S", int(DIK_S)), value("DIK_F", int(DIK_F)), value("DIK_H", int(DIK_H)), value("DIK_K", int(DIK_K)),
@@ -73,5 +73,5 @@ void key_binding_registrator::script_register(lua_State* L)
                     value("DIK_SYSRQ", int(DIK_SYSRQ)), value("DIK_HOME", int(DIK_HOME)), value("DIK_PRIOR", int(DIK_PRIOR)), value("DIK_RIGHT", int(DIK_RIGHT)),
                     value("DIK_DOWN", int(DIK_DOWN)), value("DIK_INSERT", int(DIK_INSERT)), value("DIK_LWIN", int(DIK_LWIN)), value("DIK_APPS", int(DIK_APPS)),
                     value("MOUSE_1", int(MOUSE_1)), value("MOUSE_2", int(MOUSE_2)), value("MOUSE_3", int(MOUSE_3)), value("MOUSE_4", int(MOUSE_4)), value("MOUSE_5", int(MOUSE_5)),
-                    value("MOUSE_6", int(MOUSE_6)), value("MOUSE_7", int(MOUSE_7)), value("MOUSE_8", int(MOUSE_8))]];
+                    value("MOUSE_6", int(MOUSE_6)), value("MOUSE_7", int(MOUSE_7)), value("MOUSE_8", int(MOUSE_8)))])];
 }

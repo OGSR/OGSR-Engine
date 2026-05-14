@@ -160,9 +160,7 @@ void set_target_point(CEffectorZoomInertion* E, const Fvector src) { E->m_vTarge
 
 void CEffectorZoomInertion::script_register(lua_State* L)
 {
-    module(L)[
-
-        class_<CEffectorZoomInertion>("CEffectorZoomInertion")
+    module(L)[(class_<CEffectorZoomInertion>("CEffectorZoomInertion")
             .def_readwrite("float_speed", &CEffectorZoomInertion::m_fFloatSpeed)
             .def_readwrite("disp_radius", &CEffectorZoomInertion::m_fDispRadius)
             .def_readwrite("epsilon", &CEffectorZoomInertion::m_fEpsilon)
@@ -181,5 +179,5 @@ void CEffectorZoomInertion::script_register(lua_State* L)
 
         // */
         ,
-        def("find_effector_zi", &FindEffectorZoomInertion), def("switch_zoom_osc", &switch_zoom_osc)];
+        def("find_effector_zi", &FindEffectorZoomInertion), def("switch_zoom_osc", &switch_zoom_osc))];
 }

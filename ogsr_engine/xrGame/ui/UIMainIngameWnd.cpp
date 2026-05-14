@@ -835,12 +835,11 @@ using namespace luabind;
 
 void CUIMainIngameWnd::script_register(lua_State* L)
 {
-    module(L)[
-
+    module(L)[(
         class_<CUIMainIngameWnd, CUIWindow>("CUIMainIngameWnd")
             .def("GetStatic", &GetStaticRaw, raw<2>()),
 
         def("get_main_window", &GetMainIngameWindow), // get_mainingame_window better??
         def("setup_game_icon", &SetupGameIcon)
-    ];
+    )];
 }

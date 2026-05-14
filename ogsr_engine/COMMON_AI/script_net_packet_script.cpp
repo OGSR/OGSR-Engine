@@ -37,7 +37,7 @@ extern u16 script_server_object_version();
 
 void CScriptNetPacket::script_register(lua_State* L)
 {
-    module(L)[def("script_server_object_version", &script_server_object_version),
+    module(L)[(def("script_server_object_version", &script_server_object_version),
 
               class_<ClientID>("ClientID").def(constructor<>()).def("value", &ClientID::value).def("set", &ClientID::set).def(self == other<ClientID>()),
 
@@ -115,6 +115,5 @@ void CScriptNetPacket::script_register(lua_State* L)
                   .def("r_stringZ", &r_stringZ)
                   .def("r_matrix", &NET_Packet::r_matrix)
                   .def("r_clientID", &r_clientID)
-
-    ];
+    )];
 }

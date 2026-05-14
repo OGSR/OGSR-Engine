@@ -124,7 +124,7 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
         // inventory owner
         //////////////////////////////////////////////////////////////////////////
 
-        .enum_("EPdaMsg")[value("dialog_pda_msg", int(ePdaMsgDialog)), value("info_pda_msg", int(ePdaMsgInfo)), value("no_pda_msg", int(ePdaMsgMax))]
+        .enum_("EPdaMsg")[(value("dialog_pda_msg", int(ePdaMsgDialog)), value("info_pda_msg", int(ePdaMsgInfo)), value("no_pda_msg", int(ePdaMsgMax)))]
 
         .def("give_info_portion", &CScriptGameObject::GiveInfoPortion)
         .def("disable_info_portion", &CScriptGameObject::DisableInfoPortion)
@@ -194,10 +194,10 @@ class_<CScriptGameObject> script_register_game_object2(class_<CScriptGameObject>
         .def("set_actor_relation_flags", &CScriptGameObject::set_actor_relation_flags)
         .def("sound_voice_prefix", &CScriptGameObject::sound_voice_prefix)
 
-        .enum_("ACTOR_RELATIONS")[value("relation_attack", int(RELATION_REGISTRY::ATTACK)), value("relation_fight_help_monster", int(RELATION_REGISTRY::FIGHT_HELP_MONSTER)),
-                                  value("relation_fight_help_human", int(RELATION_REGISTRY::FIGHT_HELP_HUMAN)), value("relation_kill", int(RELATION_REGISTRY::KILL))]
+        .enum_("ACTOR_RELATIONS")[(value("relation_attack", int(RELATION_REGISTRY::ATTACK)), value("relation_fight_help_monster", int(RELATION_REGISTRY::FIGHT_HELP_MONSTER)),
+                                  value("relation_fight_help_human", int(RELATION_REGISTRY::FIGHT_HELP_HUMAN)), value("relation_kill", int(RELATION_REGISTRY::KILL)))]
 
-        .enum_("CLSIDS")[value("no_pda_msg", int(ePdaMsgMax))]
+        .enum_("CLSIDS")[(value("no_pda_msg", int(ePdaMsgMax)))]
 
         // CustomZone
         .def("enable_anomaly", &CScriptGameObject::EnableAnomaly)

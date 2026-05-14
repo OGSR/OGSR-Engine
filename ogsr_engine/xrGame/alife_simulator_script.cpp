@@ -398,7 +398,7 @@ bool is_unloading(CALifeSimulator* sim) { return sim->is_unloading(); }
 
 void CALifeSimulator::script_register(lua_State* L)
 {
-    module(L)[class_<CALifeSimulator>("alife_simulator")
+    module(L)[(class_<CALifeSimulator>("alife_simulator")
                   .def("valid_object_id", &valid_object_id)
                   .def("level_id", &get_level_id)
                   .def("level_id", &get_level_id_by_name)
@@ -439,7 +439,7 @@ void CALifeSimulator::script_register(lua_State* L)
                   .property("loaded_save_name", &get_loaded_save)
 
                   ,
-              def("alife", &alife)];
+              def("alife", &alife))];
 
     {
         if (story_ids.empty())

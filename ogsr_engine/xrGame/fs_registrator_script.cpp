@@ -235,7 +235,7 @@ void script_register_stdfs(lua_State* L)
 {
     using self = stdfs::directory_entry;
 
-    module(L, "stdfs")[def("VerifyPath", [](const char* path) { VerifyPath(path); }), def("directory_iterator", &directory_iterator),
+    module(L, "stdfs")[(def("VerifyPath", [](const char* path) { VerifyPath(path); }), def("directory_iterator", &directory_iterator),
                        def("recursive_directory_iterator", &recursive_directory_iterator),
                        class_<self>("path")
                            .def(constructor<const char*>())
@@ -250,7 +250,7 @@ void script_register_stdfs(lua_State* L)
                            .def("exists", (bool(self::*)() const)(&self::exists))
                            .def("is_regular_file", (bool(self::*)() const)(&self::is_regular_file))
                            .def("is_directory", (bool(self::*)() const)(&self::is_directory))
-                           .def("file_size", (uintmax_t(self::*)() const)(&self::file_size))];
+                           .def("file_size", (uintmax_t(self::*)() const)(&self::file_size)))];
 }
 ////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////// SCRIPT C++17 FILESYSTEM - END ///////////////////////////////
@@ -262,7 +262,7 @@ void fs_registrator::script_register(lua_State* L)
     //
     script_register_stdfs(L);
     //
-    module(L)[class_<FS_item>("FS_item")
+    module(L)[(class_<FS_item>("FS_item")
                   .def("NameFull", &FS_item::NameFull)
                   .def("NameShort", &FS_item::NameShort)
                   .def("Size", &FS_item::Size)
@@ -294,11 +294,11 @@ void fs_registrator::script_register(lua_State* L)
                   .def_readonly("modif", &CLocatorAPI::file::time_write),
 
               class_<CLocatorAPI>("FS")
-                  .enum_("FS_sort_mode")[value("FS_sort_by_name_up", int(FS_file_list_ex::eSortByNameUp)), value("FS_sort_by_name_down", int(FS_file_list_ex::eSortByNameDown)),
+                  .enum_("FS_sort_mode")[(value("FS_sort_by_name_up", int(FS_file_list_ex::eSortByNameUp)), value("FS_sort_by_name_down", int(FS_file_list_ex::eSortByNameDown)),
                                          value("FS_sort_by_size_up", int(FS_file_list_ex::eSortBySizeUp)), value("FS_sort_by_size_down", int(FS_file_list_ex::eSortBySizeDown)),
-                                         value("FS_sort_by_modif_up", int(FS_file_list_ex::eSortByModifUp)), value("FS_sort_by_modif_down", int(FS_file_list_ex::eSortByModifDown))]
-                  .enum_("FS_List")[value("FS_ListFiles", int(FS_ListFiles)), value("FS_ListFolders", int(FS_ListFolders)), value("FS_ClampExt", int(FS_ClampExt)),
-                                    value("FS_RootOnly", int(FS_RootOnly)), value("FS_NoLower", int(FS_NoLower))]
+                                         value("FS_sort_by_modif_up", int(FS_file_list_ex::eSortByModifUp)), value("FS_sort_by_modif_down", int(FS_file_list_ex::eSortByModifDown)))]
+                  .enum_("FS_List")[(value("FS_ListFiles", int(FS_ListFiles)), value("FS_ListFolders", int(FS_ListFolders)), value("FS_ClampExt", int(FS_ClampExt)),
+                                    value("FS_RootOnly", int(FS_RootOnly)), value("FS_NoLower", int(FS_NoLower)))]
 
                   .def("path_exist", &CLocatorAPI::path_exist)
                   .def("update_path", &update_path_script)
@@ -333,5 +333,5 @@ void fs_registrator::script_register(lua_State* L)
                   .def("file_list_open", &file_list_open_script_2)
                   .def("file_list_open_ex", &file_list_open_ex),
 
-              def("getFS", [] { return &FS; })];
+              def("getFS", [] { return &FS; }))];
 }

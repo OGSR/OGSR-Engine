@@ -14,7 +14,7 @@ void CPhraseScript::AddDisableInfo(LPCSTR str) { m_DisableInfo.push_back(str); }
 
 void CPhraseDialogExporter::script_register(lua_State* L)
 {
-    module(L)[class_<CPhrase>("CPhrase").def("GetPhraseScript", &CPhrase::GetPhraseScript).def("GetText", &CPhrase::GetText).def("SetText", &CPhrase::SetText),
+    module(L)[(class_<CPhrase>("CPhrase").def("GetPhraseScript", &CPhrase::GetPhraseScript).def("GetText", &CPhrase::GetText).def("SetText", &CPhrase::SetText),
 
               class_<CPhraseDialog>("CPhraseDialog")
                   .def("AddPhrase", &CPhraseDialog::AddPhrase_script)
@@ -31,5 +31,5 @@ void CPhraseDialogExporter::script_register(lua_State* L)
                   .def("AddDontHasInfo", &CPhraseScript::AddDontHasInfo)
                   .def("AddGiveInfo", &CPhraseScript::AddGiveInfo)
                   .def("AddDisableInfo", &CPhraseScript::AddDisableInfo)
-                  .def("SetScriptText", &CPhraseScript::SetScriptText)];
+                  .def("SetScriptText", &CPhraseScript::SetScriptText))];
 }

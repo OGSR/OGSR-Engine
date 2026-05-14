@@ -7,7 +7,7 @@ using namespace luabind;
 
 void CUIMessageBox::script_register(lua_State* L)
 {
-    module(L)[class_<CUIMessageBox, CUIStatic>("CUIMessageBox")
+    module(L)[(class_<CUIMessageBox, CUIStatic>("CUIMessageBox")
                   .def(constructor<>())
                   .def("Init", &CUIMessageBox::Init)
                   .def("SetText", &CUIMessageBox::SetText)
@@ -33,5 +33,5 @@ void CUIMessageBox::script_register(lua_State* L)
               //		.def("SetStyle",				&CUIMessageBox::SetStyle_script)
               //		.def("",					&CUIMessageBox::)
 
-    ];
+    )];
 }

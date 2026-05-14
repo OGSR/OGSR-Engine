@@ -83,19 +83,19 @@ LPCSTR generate_id()
 
 void game_sv_GameState::script_register(lua_State* L)
 {
-    module(L,"game")[
+    module(L,"game")[(
         class_<xrTime>("CTime")
-           .enum_("date_format")[
+           .enum_("date_format")[(
                 value("DateToDay", int(InventoryUtilities::edpDateToDay)), 
                 value("DateToMonth", int(InventoryUtilities::edpDateToMonth)),
                 value("DateToYear", int(InventoryUtilities::edpDateToYear))
-           ]
-           .enum_("time_format")[
+           )]
+           .enum_("time_format")[(
                 value("TimeToHours", int(InventoryUtilities::etpTimeToHours)), 
                 value("TimeToMinutes", int(InventoryUtilities::etpTimeToMinutes)),
                 value("TimeToSeconds", int(InventoryUtilities::etpTimeToSeconds)), 
                 value("TimeToMilisecs", int(InventoryUtilities::etpTimeToMilisecs))
-           ]
+           )]
            .def(constructor<>())
            .def(constructor<const xrTime&>())
            .def(const_self < xrTime())
@@ -143,19 +143,19 @@ void game_sv_GameState::script_register(lua_State* L)
        def("generate_id", &generate_id),
 
        def("StringHasUTF8", &StringHasUTF8), def("StringToUTF8", &StringToUTF8), def("StringFromUTF8", &StringFromUTF8)
-    ];
+    )];
 
-    module(L)[
+    module(L)[(
             class_<enum_exporter<EGamePlayerFlags>>("game_player_flags")
-               .enum_("flags")[value("GAME_PLAYER_FLAG_LOCAL", int(GAME_PLAYER_FLAG_LOCAL))],
+               .enum_("flags")[(value("GAME_PLAYER_FLAG_LOCAL", int(GAME_PLAYER_FLAG_LOCAL)))],
 
             class_<enum_exporter<EGamePhases>>("game_phases")
-               .enum_("phases")[value("GAME_PHASE_NONE", int(GAME_PHASE_NONE)), 
+               .enum_("phases")[(value("GAME_PHASE_NONE", int(GAME_PHASE_NONE)), 
                                 value("GAME_PHASE_INPROGRESS", int(GAME_PHASE_INPROGRESS)),
-                                value("GAME_PHASE_PENDING", int(GAME_PHASE_PENDING))],
+                                value("GAME_PHASE_PENDING", int(GAME_PHASE_PENDING)))],
 
            class_<enum_exporter<EGameMessages>>("game_messages")
-               .enum_("messages")[value("GAME_EVENT_PLAYER_CONNECTED", int(GAME_EVENT_PLAYER_CONNECTED))]
+               .enum_("messages")[(value("GAME_EVENT_PLAYER_CONNECTED", int(GAME_EVENT_PLAYER_CONNECTED)))]
 
-    ];
+    )];
 }

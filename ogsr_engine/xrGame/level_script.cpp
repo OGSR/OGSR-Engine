@@ -989,7 +989,7 @@ static void shader_get_custom_param(const char* key, float& x, float& y, float& 
 
 void CLevel::script_register(lua_State* L)
 {
-    module(L)[class_<CEnvDescriptor>("CEnvDescriptor")
+    module(L)[(class_<CEnvDescriptor>("CEnvDescriptor")
                   .def_readwrite("fog_density", &CEnvDescriptor::fog_density)
                   .def_readwrite("fog_distance", &CEnvDescriptor::fog_distance)
                   .def_readwrite("far_plane", &CEnvDescriptor::far_plane)
@@ -1013,11 +1013,11 @@ void CLevel::script_register(lua_State* L)
                   .def_readwrite("limp_speed", &CEffectorBobbing::m_fSpeedLimp),
 
         class_<DBG_ScriptObject>("DBG_ScriptObject")
-                  .enum_("dbg_type")[
+                  .enum_("dbg_type")[(
                       value("line", (int)DebugRenderType::eDBGLine), 
                       value("sphere", (int)DebugRenderType::eDBGSphere), 
                       value("box", (int)DebugRenderType::eDBGBox)
-                  ]
+                  )]
                   .def("cast_dbg_sphere", &DBG_ScriptObject::cast_dbg_sphere)
                   .def("cast_dbg_box", &DBG_ScriptObject::cast_dbg_box)
                   .def("cast_dbg_line", &DBG_ScriptObject::cast_dbg_line)
@@ -1032,15 +1032,15 @@ void CLevel::script_register(lua_State* L)
                 .def_readwrite("size", &DBG_ScriptBox::m_size),
               class_<DBG_ScriptLine, DBG_ScriptObject>("DBG_ScriptLine")
                 .def_readwrite("point_a", &DBG_ScriptLine::m_point_a)
-                .def_readwrite("point_b", &DBG_ScriptLine::m_point_b)];
+                .def_readwrite("point_b", &DBG_ScriptLine::m_point_b))];
 
-        module(L, "debug_render")[
+        module(L, "debug_render")[(
             def("add_object", add_object), 
             def("remove_object", remove_object), 
             def("get_object", get_object)
-        ];
+        )];
 
-        module(L, "level")[
+        module(L, "level")[(
             // obsolete\deprecated
             def("object_by_id", &get_object_by_id), def("is_removing_objects", &is_removing_objects_script),
 #ifdef DEBUG
@@ -1139,20 +1139,20 @@ void CLevel::script_register(lua_State* L)
 
             def("block_action", [](EGameActions action) { Level().block_action(action); }),
             def("unblock_action", [](EGameActions action) { Level().unblock_action(action); })
-    ],
+    )],
 
-        module(L, "actor_stats")[def("add_points", &add_actor_points), def("add_points_str", &add_actor_points_str), def("get_points", &get_actor_points),
+        module(L, "actor_stats")[(def("add_points", &add_actor_points), def("add_points_str", &add_actor_points_str), def("get_points", &get_actor_points),
                                  def("remove_points", &remove_actor_points), def("add_to_ranking", &add_human_to_top_list), def("remove_from_ranking", &remove_human_from_top_list),
-                                 def("get_actor_ranking", &get_actor_ranking)];
+                                 def("get_actor_ranking", &get_actor_ranking))];
 
     module(L)[def("command_line", &command_line)];
 
-    module(L, "relation_registry")[def("community_goodwill", &g_community_goodwill), def("set_community_goodwill", &g_set_community_goodwill),
+    module(L, "relation_registry")[(def("community_goodwill", &g_community_goodwill), def("set_community_goodwill", &g_set_community_goodwill),
                                    def("change_community_goodwill", &g_change_community_goodwill), def("get_personal_goodwill", &g_get_personal_goodwill),
                                    def("set_personal_goodwill", &g_set_personal_goodwill), def("change_personal_goodwill", &g_change_personal_goodwill),
-                                   def("clear_personal_goodwill", &g_clear_personal_goodwill), def("clear_personal_relations", &g_clear_personal_relations)];
+                                   def("clear_personal_goodwill", &g_clear_personal_goodwill), def("clear_personal_relations", &g_clear_personal_relations))];
     //установка параметров для шейдеров из скриптов
-    module(L)[def("set_artefact_slot", &g_set_artefact_position), def("set_anomaly_slot", &g_set_anomaly_position), def("set_detector_mode", &g_set_detector_params),
+    module(L)[(def("set_artefact_slot", &g_set_artefact_position), def("set_anomaly_slot", &g_set_anomaly_position), def("set_detector_mode", &g_set_detector_params),
               def("set_pda_params", [](const Fvector& p) { shader_exports.set_pda_params(p); }), def("update_inventory_window", &update_inventory_window),
 
            def("set_dof_params", [](const float& p1, const float& p2, const float& p3, const float& p4) { shader_exports.set_dof_params(p1, p2, p3, p4); }),
@@ -1160,13 +1160,13 @@ void CLevel::script_register(lua_State* L)
               def("update_inventory_weight", &update_inventory_weight),
 
               class_<enum_exporter<collide::rq_target>>("rq_target")
-                  .enum_("rq_target")[value("rqtNone", int(collide::rqtNone)), value("rqtObject", int(collide::rqtObject)), value("rqtStatic", int(collide::rqtStatic)),
+                  .enum_("rq_target")[(value("rqtNone", int(collide::rqtNone)), value("rqtObject", int(collide::rqtObject)), value("rqtStatic", int(collide::rqtStatic)),
                                       value("rqtShape", int(collide::rqtShape)), value("rqtObstacle", int(collide::rqtObstacle)), value("rqtBoth", int(collide::rqtBoth)),
-                                      value("rqtDyn", int(collide::rqtDyn))],
+                                      value("rqtDyn", int(collide::rqtDyn)))],
 
            def("shader_set_custom_param_vector", &shader_set_custom_param_vector),
            def("shader_get_custom_param_vector", &shader_get_custom_param_vector),
            def("shader_set_custom_param", &shader_set_custom_param),
            def("shader_get_custom_param", &shader_get_custom_param, pure_out_value<2>() + pure_out_value<3>() + pure_out_value<4>() + pure_out_value<5>())
-   ];
+   )];
 }

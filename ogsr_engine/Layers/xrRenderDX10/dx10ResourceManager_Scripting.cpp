@@ -496,7 +496,7 @@ void CResourceManager::LS_Load()
 
     using namespace luabind;
 
-    module(LSVM)[def("log", &ScriptLuaLog),
+    module(LSVM)[(def("log", &ScriptLuaLog),
 
                  class_<adopt_dx10options>("_dx10options")
                      .def("getLevel", [](adopt_dx10options*) { return g_pGameLevel->name().c_str(); })
@@ -557,7 +557,7 @@ void CResourceManager::LS_Load()
                      .def("dx10sampler", &adopt_compiler::_dx10sampler) // returns sampler-object
                      .def("dx10Options", &adopt_compiler::_dx10Options), // returns options-object
 
-                 class_<adopt_blend>("blend").enum_("blend")[
+                 class_<adopt_blend>("blend").enum_("blend")[(
                         value("zero", int(D3DBLEND_ZERO)), 
                         value("one", int(D3DBLEND_ONE)), 
                         value("srccolor", int(D3DBLEND_SRCCOLOR)),
@@ -568,9 +568,9 @@ void CResourceManager::LS_Load()
                         value("invdestalpha", int(D3DBLEND_INVDESTALPHA)), 
                         value("destcolor", int(D3DBLEND_DESTCOLOR)),
                         value("invdestcolor", int(D3DBLEND_INVDESTCOLOR)), 
-                        value("srcalphasat", int(D3DBLEND_SRCALPHASAT))],
+                        value("srcalphasat", int(D3DBLEND_SRCALPHASAT)))],
 
-                 class_<adopt_cmp_func>("cmp_func").enum_("cmp_func")[
+                 class_<adopt_cmp_func>("cmp_func").enum_("cmp_func")[(
                         value("never", int(D3DCMP_NEVER)), 
                         value("less", int(D3DCMP_LESS)), 
                         value("equal", int(D3DCMP_EQUAL)),
@@ -578,9 +578,9 @@ void CResourceManager::LS_Load()
                         value("greater", int(D3DCMP_GREATER)), 
                         value("notequal", int(D3DCMP_NOTEQUAL)),
                         value("greaterequal", int(D3DCMP_GREATEREQUAL)), 
-                        value("always", int(D3DCMP_ALWAYS))],
+                        value("always", int(D3DCMP_ALWAYS)))],
 
-                 class_<adopt_stencil_op>("stencil_op").enum_("stencil_op")[
+                 class_<adopt_stencil_op>("stencil_op").enum_("stencil_op")[(
                         value("keep", int(D3DSTENCILOP_KEEP)), 
                         value("zero", int(D3DSTENCILOP_ZERO)), 
                         value("replace", int(D3DSTENCILOP_REPLACE)),
@@ -588,14 +588,14 @@ void CResourceManager::LS_Load()
                         value("decrsat", int(D3DSTENCILOP_DECRSAT)), 
                         value("invert", int(D3DSTENCILOP_INVERT)),
                         value("incr", int(D3DSTENCILOP_INCR)), 
-                        value("decr", int(D3DSTENCILOP_DECR))],
+                        value("decr", int(D3DSTENCILOP_DECR)))],
     
-                 class_<adopt_adress>("adress").enum_("adress")[
+                 class_<adopt_adress>("adress").enum_("adress")[(
                         value("wrap", int(D3DTADDRESS_WRAP)), 
                         value("mirror", int(D3DTADDRESS_MIRROR)), 
                         value("clamp", int(D3DTADDRESS_CLAMP)),
                         value("border", int(D3DTADDRESS_BORDER)), 
-                        value("mirroronce", int(D3DTADDRESS_MIRRORONCE))]];
+                        value("mirroronce", int(D3DTADDRESS_MIRRORONCE)))])];
 
     // load shaders
     xr_vector<char*>* folder = FS.file_list_open(fsgame::game_shaders, RImplementation.getShaderPath(), FS_ListFiles | FS_RootOnly);

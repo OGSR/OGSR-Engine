@@ -26,7 +26,7 @@ Fvector vertex_position_script(const CLevelGraph* self, u32 level_vertex_id) { r
 
 void CLevelGraph::script_register(lua_State* L)
 {
-    module(L)[def("level_graph", &get_level_graph), def("level_graph", &get_level_graph_for_level, adopt<result>()),
+    module(L)[(def("level_graph", &get_level_graph), def("level_graph", &get_level_graph_for_level, adopt<result>()),
 
               class_<CLevelGraph>("CLevelGraph")
                   .def("vertex_position", &vertex_position_script)
@@ -35,5 +35,5 @@ void CLevelGraph::script_register(lua_State* L)
                   .def("vertex_id", &vertex_id_script2)
                   .def("nearest_vertex_id", &CLevelGraph::nearest_vertex_id)
                   .def("valid_vertex_id", &CLevelGraph::valid_vertex_id)
-                  .def("is_accessible_vertex_id", &CLevelGraph::is_accessible)];
+                  .def("is_accessible_vertex_id", &CLevelGraph::is_accessible))];
 }
