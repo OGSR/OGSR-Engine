@@ -7,6 +7,14 @@
 #include "..\build_config_defines.h"
 #endif
 
+#if _MSC_VER < 1950 //Костыли для старой студии, а то там юзается _invoke_watson , который не попадает в перехватчики и просто закрывает двиг без записи ошибки в лог
+#include <yvals_core.h>
+extern "C" __declspec(noreturn) void __fastfail(unsigned int);
+#define _MSVC_STL_DOOM_FUNCTION(mesg) \
+    __fastfail(5); \
+    _STL_UNREACHABLE
+#endif
+
 #if defined(__MSVC_RUNTIME_CHECKS) && defined(__SANITIZE_ADDRESS__)
 #error DISABLE RTC!
 #endif

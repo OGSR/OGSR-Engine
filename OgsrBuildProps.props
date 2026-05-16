@@ -34,7 +34,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalOptions Condition="$(Configuration.Contains('Release'))">/Zc:__cplusplus /Ob3 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="$(Configuration.Contains('Debug'))">/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
-      <PreprocessorDefinitions>_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="$(Configuration.Contains('Debug'))">_MSVC_STL_HARDENING=1;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BufferSecurityCheck>true</BufferSecurityCheck>
     </ClCompile>
 
