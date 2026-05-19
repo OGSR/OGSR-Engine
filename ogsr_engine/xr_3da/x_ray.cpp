@@ -245,6 +245,8 @@ void Startup()
     if (use_reshade)
         unregister_reshade();
 
+    Discord.Destroy();
+
     // Destroy APP
     xr_delete(g_SpatialSpacePhysic);
     xr_delete(g_SpatialSpace);

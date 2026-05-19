@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.1.32414.318
+# Visual Studio Version 18
+VisualStudioVersion = 18.6.11806.211 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libvorbis_static", "3rd_party\Src\Xiph\libvorbis\win32\VS2010\libvorbis\libvorbis_static.vcxproj", "{0F3163C6-FAE6-4FBD-BF88-037EB0420DAF}"
 EndProject
@@ -48,6 +48,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XR_3DA", "ogsr_engine\xr_3da\XR_3DA.vcxproj", "{2578C6D8-660D-48AE-9322-7422F8664F06}"
 	ProjectSection(ProjectDependencies) = postProject
 		{200652A6-043E-4634-8837-87983B3BD5E0} = {200652A6-043E-4634-8837-87983B3BD5E0}
+		{9531CFEA-3446-31AB-8BF9-1711171811D7} = {9531CFEA-3446-31AB-8BF9-1711171811D7}
 		{AC9B12ED-A2D7-4337-A981-5BD8430E96D8} = {AC9B12ED-A2D7-4337-A981-5BD8430E96D8}
 		{CCD4AFAE-AA10-42C6-A452-FDEE497CCDF1} = {CCD4AFAE-AA10-42C6-A452-FDEE497CCDF1}
 		{D6AEA327-48BC-45C8-B0E9-BF775E451904} = {D6AEA327-48BC-45C8-B0E9-BF775E451904}
@@ -89,6 +90,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libzstd", "3rd_party\Src\zstd\libzstd.vcxproj", "{8BFD8150-94D5-4BF9-8A50-7BD9929A0850}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mimalloc-lib", "3rd_party\Src\mimalloc\mimalloc-lib.vcxproj", "{ABB5EAE7-B3E6-432E-B636-333449892EA6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DiscordRPC", "3rd_party\Src\DiscordRPC\DiscordRPC.vcxproj", "{9531CFEA-3446-31AB-8BF9-1711171811D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -180,6 +183,10 @@ Global
 		{ABB5EAE7-B3E6-432E-B636-333449892EA6}.Debug|x64.Build.0 = Debug|x64
 		{ABB5EAE7-B3E6-432E-B636-333449892EA6}.Release|x64.ActiveCfg = Release|x64
 		{ABB5EAE7-B3E6-432E-B636-333449892EA6}.Release|x64.Build.0 = Release|x64
+		{9531CFEA-3446-31AB-8BF9-1711171811D7}.Debug|x64.ActiveCfg = Debug|x64
+		{9531CFEA-3446-31AB-8BF9-1711171811D7}.Debug|x64.Build.0 = Debug|x64
+		{9531CFEA-3446-31AB-8BF9-1711171811D7}.Release|x64.ActiveCfg = Release|x64
+		{9531CFEA-3446-31AB-8BF9-1711171811D7}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -203,6 +210,7 @@ Global
 		{9092C5CC-3E71-41B3-BF68-4A7BDD8A5476} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
 		{8BFD8150-94D5-4BF9-8A50-7BD9929A0850} = {36D591C7-65C7-A0D1-1CBC-10CDE441BDC8}
 		{ABB5EAE7-B3E6-432E-B636-333449892EA6} = {240AEFB4-B8D3-465D-BFE0-D3700EC0485C}
+		{9531CFEA-3446-31AB-8BF9-1711171811D7} = {240AEFB4-B8D3-465D-BFE0-D3700EC0485C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1F9B04CC-5248-4AE5-97B7-66A0D0E5AA5E}

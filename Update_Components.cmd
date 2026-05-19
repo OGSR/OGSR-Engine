@@ -28,4 +28,8 @@ git clone --branch v310.4.0 --depth 1 https://github.com/NVIDIA/DLSS.git 3rd_par
 RD /s /q 3rd_party\Src\cpputils\cpputils
 git clone --branch main --depth 1 https://github.com/tzcnt/cpputils.git 3rd_party\Src\cpputils\cpputils
 
+RD /s /q 3rd_party\Src\DiscordRPC\DiscordRPC
+git clone --branch master --depth 1 https://github.com/OGSR/discord-rpc.git 3rd_party\Src\DiscordRPC\DiscordRPC
+git clone --branch v1.1.0 --depth 1 https://github.com/Tencent/rapidjson.git 3rd_party\Src\DiscordRPC\DiscordRPC\thirdparty\rapidjson-1.1.0
+
 pause
