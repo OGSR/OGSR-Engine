@@ -18,7 +18,7 @@
 @set LJLINK=link /nologo /DEBUG
 @set LJLIB=lib /nologo
 @if "%3"=="Debug" goto :DBG_BUILD
-@set LJCOMPILE=%LJCOMPILE% /O2 /Oi /Ot /GL /Gm- /Gy /Ob3 /MD
+@set LJCOMPILE=%LJCOMPILE% /O2 /Oi /Ot /GL /Gm- /Gy /Ob3 /MT
 @set LJLINK=%LJLINK% /LARGEADDRESSAWARE /OPT:REF /OPT:ICF /LTCG /incremental:no
 @set LJLIB=%LJLIB% /LTCG
 @goto :COMMON_BUILD

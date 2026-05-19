@@ -32,7 +32,11 @@ void CRenderTarget::ProcessTAA(CBackend& cmd_list)
 #pragma comment(lib, "nvsdk_ngx_s_dbg")
 #endif
 #else
+#ifdef _DLL
 #pragma comment(lib, "nvsdk_ngx_d")
+#else
+#pragma comment(lib, "nvsdk_ngx_s")
+#endif
 #endif
 
 static class NGXWrapper

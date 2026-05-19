@@ -89,7 +89,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>mimalloc/include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MI_OPT_SIMD=ON;%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
     </ClCompile>
