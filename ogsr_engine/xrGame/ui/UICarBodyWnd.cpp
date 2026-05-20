@@ -489,22 +489,28 @@ void CUICarBodyWnd::TakeAll()
         CUICellItem* ci = m_pUIOthersBagList->GetItemIdx(i);
         for (u32 j = 0; j < ci->ChildsCount(); ++j)
         {
-            PIItem _itm = (PIItem)(ci->Child(j)->m_pData);
-            if (m_pOthersObject)
-                TransferItem(_itm, m_pOthersObject, m_pOurObject, false);
-            else
+            auto _itm = static_cast<PIItem>(ci->Child(j)->m_pData);
+            if (_itm && _itm->p_object())
             {
-                move_item(m_pInventoryBox->object().ID(), tmp_id, _itm->object().ID());
-                //.				Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
+                if (m_pOthersObject)
+                    TransferItem(_itm, m_pOthersObject, m_pOurObject, false);
+                else
+                {
+                    move_item(m_pInventoryBox->object().ID(), tmp_id, _itm->p_object()->ID());
+                    //.				Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
+                }
             }
         }
-        PIItem itm = (PIItem)(ci->m_pData);
-        if (m_pOthersObject)
-            TransferItem(itm, m_pOthersObject, m_pOurObject, false);
-        else
+        auto itm = static_cast<PIItem>(ci->m_pData);
+        if (itm && itm->p_object())
         {
-            move_item(m_pInventoryBox->object().ID(), tmp_id, itm->object().ID());
-            //.			Actor()->callback(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), itm->object().lua_game_object() );
+            if (m_pOthersObject)
+                TransferItem(itm, m_pOthersObject, m_pOurObject, false);
+            else
+            {
+                move_item(m_pInventoryBox->object().ID(), tmp_id, itm->p_object()->ID());
+                //.			Actor()->callback(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), itm->object().lua_game_object() );
+            }
         }
     }
 }
@@ -523,46 +529,58 @@ void CUICarBodyWnd::MoveItems(CUICellItem* itm)
     { // from actor to box
         for (u32 j = 0; j < itm->ChildsCount(); ++j)
         {
-            PIItem _itm = (PIItem)(itm->Child(j)->m_pData);
-            if (m_pOthersObject)
-                TransferItem(_itm, m_pOurObject, m_pOthersObject, true);
-            else
+            auto _itm = static_cast<PIItem>(itm->Child(j)->m_pData);
+            if (_itm && _itm->p_object())
             {
-                move_item(tmp_id, m_pInventoryBox->object().ID(), _itm->object().ID());
-                //. Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
+                if (m_pOthersObject)
+                    TransferItem(_itm, m_pOurObject, m_pOthersObject, true);
+                else
+                {
+                    move_item(tmp_id, m_pInventoryBox->object().ID(), _itm->p_object()->ID());
+                    //. Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
+                }
             }
         }
 
-        PIItem p_itm = (PIItem)(itm->m_pData);
-        if (m_pOthersObject)
-            TransferItem(p_itm, m_pOurObject, m_pOthersObject, true);
-        else
+        auto p_itm = static_cast<PIItem>(itm->m_pData);
+        if (p_itm && p_itm->p_object())
         {
-            move_item(tmp_id, m_pInventoryBox->object().ID(), p_itm->object().ID());
-            //. Actor()->callback(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), itm->object().lua_game_object() );
+            if (m_pOthersObject)
+                TransferItem(p_itm, m_pOurObject, m_pOthersObject, true);
+            else
+            {
+                move_item(tmp_id, m_pInventoryBox->object().ID(), p_itm->p_object()->ID());
+                //. Actor()->callback(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), itm->object().lua_game_object() );
+            }
         }
     }
     else
     { // from box to actor
         for (u32 j = 0; j < itm->ChildsCount(); ++j)
         {
-            PIItem _itm = (PIItem)(itm->Child(j)->m_pData);
-            if (m_pOthersObject)
-                TransferItem(_itm, m_pOthersObject, m_pOurObject, false);
-            else
+            auto _itm = static_cast<PIItem>(itm->Child(j)->m_pData);
+            if (_itm && _itm->p_object())
             {
-                move_item(m_pInventoryBox->object().ID(), tmp_id, _itm->object().ID());
-                //. Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
+                if (m_pOthersObject)
+                    TransferItem(_itm, m_pOthersObject, m_pOurObject, false);
+                else
+                {
+                    move_item(m_pInventoryBox->object().ID(), tmp_id, _itm->p_object()->ID());
+                    //. Actor()->callback(GameObject::eInvBoxItemTake)( m_pInventoryBox->lua_game_object(), _itm->object().lua_game_object() );
+                }
             }
         }
 
-        PIItem p_itm = (PIItem)(itm->m_pData);
-        if (m_pOthersObject)
-            TransferItem(p_itm, m_pOthersObject, m_pOurObject, false);
-        else
+        auto p_itm = static_cast<PIItem>(itm->m_pData);
+        if (p_itm && p_itm->p_object())
         {
-            move_item(m_pInventoryBox->object().ID(), tmp_id, p_itm->object().ID());
-            //. Actor()->callback(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), itm->object().lua_game_object() );
+            if (m_pOthersObject)
+                TransferItem(p_itm, m_pOthersObject, m_pOurObject, false);
+            else
+            {
+                move_item(m_pInventoryBox->object().ID(), tmp_id, p_itm->p_object()->ID());
+                //. Actor()->callback(GameObject::eInvBoxItemTake)(m_pInventoryBox->lua_game_object(), itm->object().lua_game_object() );
+            }
         }
     }
 

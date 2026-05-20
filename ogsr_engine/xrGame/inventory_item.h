@@ -240,6 +240,11 @@ public:
         VERIFY(m_object);
         return (*m_object);
     }
+    IC CPhysicsShellHolder* p_object() const
+    {
+        VERIFY(m_object);
+        return m_object;
+    }
     virtual void on_activate_physic_shell() { R_ASSERT(0); } // sea
 
 protected:
