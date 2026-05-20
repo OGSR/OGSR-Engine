@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     if: "contains(github.event.head_commit.message, '[ci build]') || github.event_name == 'release'"
-    runs-on: windows-latest
+    runs-on: windows-2022
     strategy:
       fail-fast: false
       matrix:
@@ -71,6 +71,7 @@ jobs:
       if: github.event_name == 'release'
       uses: Czuz/upload-release-asset@v1.1
       env:
+        ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
