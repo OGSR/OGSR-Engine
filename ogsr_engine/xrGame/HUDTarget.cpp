@@ -265,12 +265,12 @@ void CHUDTarget::Render()
 
                             if (psHUD_Flags.test(HUD_INFO_OVERHEAD))
                             {
-                                F->Out(x, y, "%s", *CStringTable().translate(others_inv_owner->Name()));
+                                F->Out(x, y, "%s", others_inv_owner->Name());
                                 F->Out(x, y + F->CurrentHeight_(), "%s", *CStringTable().translate(others_inv_owner->CharacterInfo().Community().id()));
                             }
                             else
                             {
-                                F->OutNext("%s", *CStringTable().translate(others_inv_owner->Name()));
+                                F->OutNext("%s", others_inv_owner->Name());
                                 F->OutNext("%s", *CStringTable().translate(others_inv_owner->CharacterInfo().Community().id()));
                             }
                         }
