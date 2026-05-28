@@ -16,7 +16,7 @@ string1024 line_buf;
 #include <sstream>
 
 // redefinition for fast save
-void OpenDumper()
+static void OpenDumper()
 {
     string_path dump_name;
     strcpy_s(dump_name, 260, "lua_help_OGSR.script");
@@ -27,17 +27,13 @@ void OpenDumper()
     dumper = FS.w_open(dump_name);
 }
 
-void CloseDumper()
+static void CloseDumper()
 {
     if (dumper)
-    {
         FS.w_close(dumper);
-        xr_delete(dumper);
-        dumper = NULL;
-    }
 }
 
-void FastMsg(LPCSTR format, ...)
+static void FastMsg(LPCSTR format, ...)
 {
     static u32 saldo = 0;
     va_list mark;
@@ -55,7 +51,7 @@ void FastMsg(LPCSTR format, ...)
     }
 }
 
-luabind::internal_string to_string(luabind::object const& o)
+static luabind::internal_string to_string(luabind::object const& o)
 {
     using namespace luabind;
     if (o.type() == LUA_TSTRING)
@@ -83,7 +79,7 @@ void strreplaceall(luabind::internal_string& str, LPCSTR S, LPCSTR N)
         str.replace(A - str.c_str(), S_len, N);
 }
 
-luabind::internal_string& process_signature(luabind::internal_string& str)
+static luabind::internal_string& process_signature(luabind::internal_string& str)
 {
     strreplaceall(str, "custom [", "");
     strreplaceall(str, "]", "");
@@ -93,7 +89,7 @@ luabind::internal_string& process_signature(luabind::internal_string& str)
     return (str);
 }
 
-luabind::internal_string& extract_last_params(luabind::internal_string& str)
+static luabind::internal_string& extract_last_params(luabind::internal_string& str)
 {
     process_signature(str);
     LPCSTR s = str.c_str();
@@ -110,7 +106,7 @@ luabind::internal_string& extract_last_params(luabind::internal_string& str)
     return (str);
 }
 
-luabind::internal_string member_to_string(luabind::object const& e, LPCSTR function_signature)
+static luabind::internal_string member_to_string(luabind::object const& e, LPCSTR function_signature)
 {
     using namespace luabind;
     lua_State* L = e.lua_state();
@@ -119,12 +115,12 @@ luabind::internal_string member_to_string(luabind::object const& e, LPCSTR funct
     if (e.type() == LUA_TFUNCTION)
     {
         e.pushvalue();
-        detail::stack_pop p(L, 1);
+        luabind::detail::stack_pop p(L, 1);
 
         {
             if (lua_getupvalue(L, -1, 3) == 0)
                 return to_string(e);
-            detail::stack_pop p2(L, 1);
+            luabind::detail::stack_pop p2(L, 1);
             if (lua_touserdata(L, -1) != reinterpret_cast<void*>(0x1337))
                 return to_string(e);
         }
@@ -132,13 +128,13 @@ luabind::internal_string member_to_string(luabind::object const& e, LPCSTR funct
         std::stringstream s;
         {
             lua_getupvalue(L, -1, 2);
-            detail::stack_pop p2(L, 1);
+            luabind::detail::stack_pop p2(L, 1);
         }
 
         {
             lua_getupvalue(L, -1, 1);
-            detail::stack_pop p2(L, 1);
-            detail::method_rep* m = static_cast<detail::method_rep*>(lua_touserdata(L, -1));
+            luabind::detail::stack_pop p2(L, 1);
+            luabind::detail::method_rep* m = static_cast<luabind::detail::method_rep*>(lua_touserdata(L, -1));
 
             for (auto i = m->overloads().begin(); i != m->overloads().end(); ++i)
             {
@@ -155,7 +151,7 @@ luabind::internal_string member_to_string(luabind::object const& e, LPCSTR funct
     return to_string(e);
 }
 
-void print_class(lua_State* L, luabind::detail::class_rep* crep)
+static void print_class(lua_State* L, luabind::detail::class_rep* crep)
 {
     luabind::internal_string S;
     // print class and bases
@@ -263,7 +259,7 @@ void print_class(lua_State* L, luabind::detail::class_rep* crep)
     FastMsg("};\n");
 }
 
-void print_free_functions(lua_State* L, const luabind::object& object, LPCSTR header, const luabind::internal_string& indent)
+static void print_free_functions(lua_State* L, const luabind::object& object, LPCSTR header, const luabind::internal_string& indent)
 {
     u32 count = 0;
     luabind::object::iterator I = object.begin();
@@ -316,7 +312,6 @@ void print_free_functions(lua_State* L, const luabind::object& object, LPCSTR he
         lua_pushnil(L);
         int save_top = lua_gettop(L);
 
-        // #pragma todo("alpet : при загруженной сохраненке здесь иногда происходит сбой invalid key to 'next', а потом креш в недрах Direct3D ")
         while (lua_next(L, n_table) != 0)
         {
             last_key = "~";
@@ -340,7 +335,6 @@ void print_free_functions(lua_State* L, const luabind::object& object, LPCSTR he
                 {
                     luabind::object object(L);
                     object.set();
-                    // if (!xr_strcmp("security", S)) { S = S; } /// wtf?
                     luabind::internal_string path_dump = "";
                     for (u32 ns = 0; ns < nesting_path.size(); ns++)
                         path_dump = path_dump + nesting_path.at(ns) + ".";
@@ -364,10 +358,7 @@ void print_free_functions(lua_State* L, const luabind::object& object, LPCSTR he
                     nesting_path.pop_back();
                 }
             }
-            // #pragma todo("Dima to Dima : Remove this hack if find out why")
 
-            // */
-            // lua_pop	(L, 1);	// remove value from stack
             lua_pop(L, 1);
             if (lua_gettop(L) > save_top)
             {
@@ -391,8 +382,7 @@ void print_help(lua_State* L)
     OpenDumper();
     BOOL paused = Device.Paused();
     Device.Pause(TRUE, TRUE, FALSE, "lua_help");
-    // L = lua_newthread (L);
-    int top = lua_gettop(L);
+    const int top = lua_gettop(L);
     SleepEx(10, FALSE);
 
 #if !defined(_CPPUNWIND)
