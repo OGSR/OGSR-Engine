@@ -97,11 +97,11 @@ LPCSTR get_weather_prev() { return (*g_pGamePersistent->Environment().GetPrevWea
 
 u32 get_weather_last_shift() { return g_pGamePersistent->Environment().GetWeatherLastShift(); }
 
-extern bool s_ScriptWeather;
+extern bool editor_override_weather;
 
 void set_weather(LPCSTR weather_name, bool forced)
 {
-    if (s_ScriptWeather)
+    if (editor_override_weather)
         return;
 
     // KRodin: ТЧ погоду всегда надо обновлять форсировано, иначе она почему-то не всегда корректно обновляется. А для ЗП погоды так делать нельзя - будут очень резкие переходы!
@@ -113,7 +113,7 @@ void set_weather(LPCSTR weather_name, bool forced)
 
 void set_weather_next(LPCSTR weather_name)
 {
-    if (s_ScriptWeather)
+    if (editor_override_weather)
         return;
 
     g_pGamePersistent->Environment().SetWeatherNext(weather_name);
@@ -121,7 +121,7 @@ void set_weather_next(LPCSTR weather_name)
 
 bool set_weather_fx(LPCSTR weather_name)
 {
-    if (s_ScriptWeather)
+    if (editor_override_weather)
         return false;
 
     return g_pGamePersistent->Environment().SetWeatherFX(weather_name);
@@ -129,7 +129,7 @@ bool set_weather_fx(LPCSTR weather_name)
 
 bool start_weather_fx_from_time(LPCSTR weather_name, float time)
 {
-    if (s_ScriptWeather)
+    if (editor_override_weather)
         return false;
 
     return g_pGamePersistent->Environment().SetWeatherFXFromTime(weather_name, time);

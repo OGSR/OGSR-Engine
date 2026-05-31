@@ -468,9 +468,9 @@ void CEnvironment::lerp(float& current_weight)
     for (auto& Modifier : Modifiers)
         mpower += EM.sum(Modifier, view);
 
-    extern bool s_ScriptNoMixer;
+    extern bool editor_weather_no_mixer;
 
-    if (s_ScriptNoMixer)
+    if (editor_weather_no_mixer)
         current_weight = 0;
 
     // final lerp
@@ -518,15 +518,20 @@ void CEnvironment::OnFrame()
     m_pRender->OnFrame(*this);
 }
 
+extern bool editor_override_sun_position;
+
 void CEnvironment::calculate_config_sun_dir() const
 {
-    float current_time = fGameTime / (DAY_LENGTH / 24);
-    int weather_time = iFloor(current_time);
-    float s_weight = current_time - weather_time;
+    if (editor_override_sun_position)
+        return;
 
+    const float current_time = fGameTime / (DAY_LENGTH / 24);
+    const int weather_time = iFloor(current_time);
+    const float s_weight = current_time - weather_time;
+
+    const float s_alt = sun_hp[weather_time].x;
+    const float s_long = sun_hp[weather_time].y;
     float real_sun_alt, real_sun_long;
-    float s_alt = sun_hp[weather_time].x;
-    float s_long = sun_hp[weather_time].y;
 
     if (s_weight > 0)
     {

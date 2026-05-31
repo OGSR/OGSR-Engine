@@ -14,68 +14,30 @@
 #include "GamePersistent.h"
 #include "Level.h"
 
-float editor_longitude = 0.0;
-float editor_altitude = 0.0;
+bool editor_override_time{};
+bool editor_override_weather{};
+bool editor_weather_no_mixer{};
+bool editor_override_sun_position{};
 
-Fvector convert(const Fvector& v)
+namespace
 {
-    Fvector result;
-    result.set(v.z, v.y, v.x);
-    return result;
-}
 
-Fvector4 convert(const Fvector4& v)
-{
-    Fvector4 result;
-    result.set(v.z, v.y, v.x, v.w);
-    return result;
-}
+bool editor_override_weather_params{};
+bool editor_override_sun_position_params{};
 
-bool enumCycle(void* data, int idx, const char** item)
-{
-    xr_vector<shared_str>* cycles = (xr_vector<shared_str>*)data;
-    *item = (*cycles)[idx].c_str();
-    return true;
-}
+float editor_longitude{};
+float editor_altitude{};
 
-bool enumWeather(void* data, int idx, const char** item)
-{
-    xr_vector<CEnvDescriptor*>* envs = (xr_vector<CEnvDescriptor*>*)data;
-    *item = (*envs)[idx]->m_identifier.c_str();
-    return true;
-}
-
-const char* empty = "";
-
-bool enumIniWithEmpty(void* data, int idx, const char** item)
-{
-    if (idx == 0)
-    {
-        *item = empty;
-    }
-    else
-    {
-        CInifile* ini = (CInifile*)data;
-        *item = ini->sections_ordered()[idx - 1].second->Name.c_str();
-    }
-    return true;
-}
-
-bool enumIni(void* data, int idx, const char** item)
-{
-    CInifile* ini = (CInifile*)data;
-    *item = ini->sections_ordered()[idx].second->Name.c_str();
-    return true;
-}
-
-bool s_ScriptWeather{};
-bool s_ScriptTime{};
-bool s_ScriptWeatheParams{};
-bool s_ScriptNoMixer{};
+Fvector2 prev_sun_hp[24]{};
+constexpr const char* sun_hour_positions[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"};
+static_assert(std::size(prev_sun_hp) == std::size(sun_hour_positions));
 
 xr_set<shared_str> modifiedWeathers;
 
-void saveWeather(shared_str name, const xr_vector<CEnvDescriptor*>& env)
+constexpr Fvector convert(const Fvector& v) { return {v.z, v.y, v.x}; }
+constexpr Fvector4 convert(const Fvector4& v) { return {v.z, v.y, v.x, v.w}; }
+
+void saveWeather(const shared_str& name, const xr_vector<CEnvDescriptor*>& env)
 {
     CInifile f(nullptr, FALSE, FALSE, FALSE);
     for (auto* el : env)
@@ -111,6 +73,40 @@ void saveWeather(shared_str name, const xr_vector<CEnvDescriptor*>& env)
     FS.update_path(fileName, "$game_weathers$", name.c_str());
     strconcat(sizeof(fileName), fileName, fileName, ".ltx");
     f.save_as(fileName);
+}
+
+void SaveSunPositions(CEnvironment& env)
+{
+    env.m_sun_pos_config->bReadOnly = false;
+
+    for (int i = 0; i < std::size(prev_sun_hp); i++)
+    {
+        char sun_identifier[10];
+        sprintf_s(sun_identifier, i >= 10 ? "%d:00:00" : "0%d:00:00", i);
+
+        env.m_sun_pos_config->w_float(sun_identifier, "sun_altitude", env.sun_hp[i].x);
+        env.m_sun_pos_config->w_float(sun_identifier, "sun_longitude", env.sun_hp[i].y);
+
+        prev_sun_hp[i].set(FLT_MAX, FLT_MAX);
+    }
+
+    string_path fileName;
+    FS.update_path(fileName, fsgame::game_configs, "environment\\sun_positions.ltx");
+    env.m_sun_pos_config->save_as(fileName);
+
+    env.m_sun_pos_config->bReadOnly = true;
+}
+
+void ResetSunPositions(CEnvironment& env)
+{
+    for (int i = 0; i < std::size(prev_sun_hp); i++)
+    {
+        if (!fsimilar(prev_sun_hp[i].x, FLT_MAX) && !fsimilar(prev_sun_hp[i].y, FLT_MAX))
+        {
+            env.sun_hp[i].set(prev_sun_hp[i]);
+            prev_sun_hp[i].set(FLT_MAX, FLT_MAX);
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -215,11 +211,12 @@ bool SelectTexture(const char* label, shared_str& texName)
             }
         }
 
-        if (ImGui_ListBox("", &cur,   
-            [](void* data, int idx, const char** out_text) -> bool {
-                const auto textures = static_cast<xr_vector<xr_string>*>(data);
-                *out_text = (*textures)[idx].c_str();
-                return true;
+        if (ImGui_ListBox(
+                "", &cur,
+                [](void* data, int idx, const char** out_text) -> bool {
+                    const auto& textures = *static_cast<xr_vector<xr_string>*>(data);
+                    *out_text = textures.at(idx).c_str();
+                    return true;
                 },
                 &filtered, filtered.size(), ImVec2(-4.0f, -30.0f)))
         {
@@ -257,7 +254,9 @@ bool SelectTexture(const char* label, shared_str& texName)
     return changed;
 }
 
-void CImGuiWeatherWnd::Render() //ShowWeatherEditor(bool& show)
+} // namespace
+
+void CImGuiWeatherWnd::Render()
 {
     m_Name = modifiedWeathers.empty() ? "Weather###Weather" : "Weather*###Weather";
     
@@ -276,12 +275,12 @@ void CImGuiWeatherWnd::Render() //ShowWeatherEditor(bool& show)
         return;
     }
 
-    int sel = -1;
-
     CEnvironment& env = GamePersistent().Environment();
     CEnvDescriptor* cur = env.Current[0];
 
-    u64 time = Level().GetEnvironmentGameTime() / 1000;
+    int sun_index = iFloor(Level().GetEnvironmentGameDayTimeSec() / (DAY_LENGTH / 24));
+
+    const u64 time = Level().GetEnvironmentGameTime() / 1000;
     ImGui::Text("Time: %02d:%02d:%02d", int(time / (60 * 60) % 24), int(time / 60 % 60), int(time % 60));
 
     float tf = Level().GetGameTimeFactor();
@@ -293,61 +292,113 @@ void CImGuiWeatherWnd::Render() //ShowWeatherEditor(bool& show)
         env.SetGameTime(Level().GetEnvironmentGameDayTimeSec(), Level().game->GetEnvironmentGameTimeFactor());
     }
 
-    xr_vector<shared_str> cycles;
-    int iCycle = -1;
-    for (const auto& el : env.WeatherCycles)
-    {
-        cycles.push_back(el.first);
-        if (el.first == env.GetWeather())
-            iCycle = cycles.size() - 1;
-    }
+    ImGui::Separator();
 
     ImGui::Text("Main parameters");
     
-    ImGui::Checkbox("Script weather", &s_ScriptWeather);
+    ImGui::Checkbox("Override weather", &editor_override_weather);
 
-    ImGui::BeginDisabled(!s_ScriptWeather);
-    if (ImGui::Combo("Weather cycle", &iCycle, enumCycle, &cycles, env.WeatherCycles.size()))
+    ImGui::BeginDisabled(!editor_override_weather);
+
+    xr_vector<shared_str> cycles;
+    cycles.reserve(env.WeatherCycles.size());
+
+    int iCycle = -1;
+    for (const auto& el : env.WeatherCycles | std::views::keys)
     {
-        env.SetWeather(cycles[iCycle], true);
+        cycles.push_back(el);
+        if (el == env.GetWeather())
+            iCycle = cycles.size() - 1;
+    }
+
+    if (ImGui::Combo(
+            "Weather cycle", &iCycle,
+            [](void* data, int idx) {
+                const auto& cycles = *static_cast<xr_vector<shared_str>*>(data);
+                return cycles.at(idx).c_str();
+            },
+            &cycles, cycles.size()))
+    {
+        env.SetWeather(cycles.at(iCycle), true);
     }
 
     ImGui::EndDisabled();
 
-    ImGui::Checkbox("Script time", &s_ScriptTime);
+    ImGui::Checkbox("Override time", &editor_override_time);
+
+    ImGui::BeginDisabled(!editor_override_time);
+
+    static int sp{};
+
+    int sel = -1;
 
     for (int i = 0; i != env.CurrentWeather->size(); i++)
         if (cur->m_identifier == env.CurrentWeather->at(i)->m_identifier)
             sel = i;
 
-    ImGui::BeginDisabled(!s_ScriptTime);
-    if (ImGui::Combo("Current section", &sel, enumWeather, env.CurrentWeather, env.CurrentWeather->size()))
+    if (ImGui::Combo(
+            "Current section", &sel,
+            [](void* data, int idx) {
+                const auto& envs = *static_cast<xr_vector<CEnvDescriptor*>*>(data);
+                return envs.at(idx)->m_identifier.c_str();
+            },
+            env.CurrentWeather, env.CurrentWeather->size()))
     {
         env.SetGameTime(env.CurrentWeather->at(sel)->exec_time + 0.5f, Level().game->GetEnvironmentGameTimeFactor());
-        env.SetWeather(cycles[iCycle], true);
+        env.SetWeather(cycles.at(iCycle), true);
+
+        if (env.m_static_sun_movement)
+        {
+            sun_index = iFloor(env.CurrentWeather->at(sel)->exec_time + 0.5f) / (DAY_LENGTH / 24);
+
+            if (editor_override_sun_position)
+                sun_index = sp;
+
+            editor_altitude = env.sun_hp[sun_index].x;
+            editor_longitude = env.sun_hp[sun_index].y;
+
+            cur->sun_dir.setHP(deg2rad(editor_altitude), deg2rad(editor_longitude));
+        }
+        else
+        {
+            editor_altitude = cur->sun_dir.getH();
+            editor_longitude = cur->sun_dir.getP();
+        }
     }
+    else if (editor_override_time && sel != -1)
+    {
+        sun_index = iFloor(env.CurrentWeather->at(sel)->exec_time + 0.5f) / (DAY_LENGTH / 24);
+    }
+
     ImGui::EndDisabled();
+
+    ImGui::Checkbox("Disable weather mixer", &editor_weather_no_mixer);
 
     ImGui::Separator();
 
-    ImGui::Checkbox("Disable weather mixer", &s_ScriptNoMixer);
-
-    bool changed = false;
-    sel = -1;
-
     ImGui::Text("Ambient light parameters");
 
+    sel = -1;
     for (int i = 0; i != env.m_ambients_config->sections_ordered().size(); i++)
         if (cur->env_ambient->name() == env.m_ambients_config->sections_ordered()[i].second->Name)
             sel = i;
 
-    if (ImGui::Combo("ambient", &sel, enumIni, env.m_ambients_config, env.m_ambients_config->sections_ordered().size()))
+    bool changed = false;
+    if (ImGui::Combo(
+            "ambient", &sel,
+            [](void* data, int idx) {
+                const auto* ini = static_cast<CInifile*>(data);
+                return ini->sections_ordered().at(idx).second->Name.c_str();
+            },
+            env.m_ambients_config, env.m_ambients_config->sections_ordered().size()))
     {
-        cur->env_ambient = env.AppendEnvAmb(env.m_ambients_config->sections_ordered()[sel].second->Name);
+        cur->env_ambient = env.AppendEnvAmb(env.m_ambients_config->sections_ordered().at(sel).second->Name);
         changed = true;
     }
     if (ImGui::ColorEdit3("ambient_color", (float*)&cur->ambient))
         changed = true;
+
+    ImGui::Separator();
 
     ImGui::Text("Clouds parameters");
 
@@ -361,6 +412,8 @@ void CImGuiWeatherWnd::Render() //ShowWeatherEditor(bool& show)
         changed = true;
     }
 
+    ImGui::Separator();
+
     ImGui::Text("Fog parameters");
 
     if (ImGui::SliderFloat("far_plane", &cur->far_plane, 0.01f, 1000.0f))
@@ -372,10 +425,14 @@ void CImGuiWeatherWnd::Render() //ShowWeatherEditor(bool& show)
     if (ImGui::ColorEdit3("fog_color", (float*)&cur->fog_color))
         changed = true;
 
+    ImGui::Separator();
+
     ImGui::Text("Hemi parameters");
 
     if (ImGui::ColorEdit4("hemisphere_color", (float*)&cur->hemi_color, ImGuiColorEditFlags_AlphaBar))
         changed = true;
+
+    ImGui::Separator();
 
     ImGui::Text("Rain parameters");
 
@@ -383,6 +440,8 @@ void CImGuiWeatherWnd::Render() //ShowWeatherEditor(bool& show)
         changed = true;
     if (ImGui::ColorEdit3("rain_color", (float*)&cur->rain_color))
         changed = true;
+
+    ImGui::Separator();
 
     ImGui::Text("Sky parameters");
 
@@ -404,6 +463,8 @@ void CImGuiWeatherWnd::Render() //ShowWeatherEditor(bool& show)
         changed = true;
     }
 
+    ImGui::Separator();
+
     ImGui::Text("Sun parameters");
 
     sel = -1;
@@ -411,52 +472,148 @@ void CImGuiWeatherWnd::Render() //ShowWeatherEditor(bool& show)
         if (cur->lens_flare_id == env.m_suns_config->sections_ordered()[i].second->Name)
             sel = i;
 
-    if (ImGui::Combo("sun", &sel, enumIni, env.m_suns_config, env.m_suns_config->sections_ordered().size()))
+    if (ImGui::Combo(
+            "sun", &sel,
+            [](void* data, int idx) {
+                const auto* ini = static_cast<CInifile*>(data);
+                return ini->sections_ordered().at(idx).second->Name.c_str();
+            },
+            env.m_suns_config, env.m_suns_config->sections_ordered().size()))
     {
-        cur->lens_flare_id = env.eff_LensFlare->AppendDef(env, env.m_suns_config->sections_ordered()[sel].second->Name.c_str());
+        cur->lens_flare_id = env.eff_LensFlare->AppendDef(env, env.m_suns_config->sections_ordered().at(sel).second->Name.c_str());
         env.eff_LensFlare->Invalidate();
         changed = true;
     }
     if (ImGui::ColorEdit3("sun_color", (float*)&cur->sun_color))
         changed = true;
 
-
-#pragma todo("SIMP: Подумать про настройку sun_positions.ltx")
-    if (env.m_static_sun_movement || env.m_dynamic_sun_movement)
-        ImGui::BeginDisabled();
-
-    if (ImGui::SliderFloat("sun_altitude", &editor_altitude, -360.0f, 360.0f))
-    {
-        changed = true;
-        if (changed)
-            cur->sun_dir.setHP(deg2rad(editor_longitude), deg2rad(editor_altitude));
-        else
-            editor_altitude = cur->sun_dir.getH();
-    }
-    if (ImGui::SliderFloat("sun_longitude", &editor_longitude, -360.0f, 360.0f))
-    {
-        changed = true;
-        if (changed)
-            cur->sun_dir.setHP(deg2rad(editor_longitude), deg2rad(editor_altitude));
-    }
-
-    if (env.m_static_sun_movement || env.m_dynamic_sun_movement)
-        ImGui::EndDisabled();
-
-
     if (ImGui::SliderFloat("sun_shafts_intensity", &cur->m_fSunShaftsIntensity, 0.0f, 2.0f))
         changed = true;
 
-    sel = 0;
-    for (int i = 0; i != env.m_thunderbolt_collections_config->sections_ordered().size(); i++)
-        if (cur->tb_id == env.m_thunderbolt_collections_config->sections_ordered()[i].second->Name)
-            sel = i + 1;
+    if (env.m_static_sun_movement || !env.m_dynamic_sun_movement)
+    {
+        ImGui::Separator();
+        ImGui::Text("Sun position parameters");
+    }
+
+    if (!env.m_static_sun_movement && !env.m_dynamic_sun_movement)
+    {
+        if (ImGui::SliderFloat("sun_altitude", &editor_altitude, -360.0f, 360.0f))
+        {
+            changed = true;
+            cur->sun_dir.setHP(deg2rad(editor_altitude), deg2rad(editor_longitude));
+        }
+        else
+            editor_altitude = cur->sun_dir.getH();
+
+        if (ImGui::SliderFloat("sun_longitude", &editor_longitude, -360.0f, 360.0f))
+        {
+            changed = true;
+            cur->sun_dir.setHP(deg2rad(editor_altitude), deg2rad(editor_longitude));
+        }
+        else
+            editor_longitude = cur->sun_dir.getP();
+    }
+
+    if (env.m_static_sun_movement)
+    {
+        static bool initialized = false;
+        if (!initialized)
+        {
+            for (auto& fv : prev_sun_hp)
+                fv.set(FLT_MAX, FLT_MAX);
+
+            initialized = true;
+        }
+
+        ImGui::Checkbox("Override sun position", &editor_override_sun_position);
+
+        if (editor_override_sun_position)
+        {
+            if (ImGui::Combo("Sun Position Index", &sp, sun_hour_positions, std::size(sun_hour_positions)))
+            {
+                editor_altitude = env.sun_hp[sp].x;
+                editor_longitude = env.sun_hp[sp].y;
+                cur->sun_dir.setHP(deg2rad(editor_altitude), deg2rad(editor_longitude));
+            }
+
+            sun_index = sp;
+        }
+
+        ImGui::BeginDisabled(!editor_override_sun_position);
+
+        bool sun_pos_changed{};
+
+        if (ImGui::SliderFloat("sun_altitude", &editor_altitude, -360.0f, 360.0f))
+        {
+            sun_pos_changed = true;
+            if (fsimilar(prev_sun_hp[sun_index].x, FLT_MAX) && fsimilar(prev_sun_hp[sun_index].y, FLT_MAX))
+                prev_sun_hp[sun_index].set(env.sun_hp[sun_index]);
+
+            env.sun_hp[sun_index].x = editor_altitude;
+
+            cur->sun_dir.setHP(deg2rad(editor_altitude), deg2rad(editor_longitude));
+        }
+        else
+            editor_altitude = env.sun_hp[sun_index].x;
+
+        if (ImGui::SliderFloat("sun_longitude", &editor_longitude, -360.0f, 360.0f))
+        {
+            sun_pos_changed = true;
+            if (fsimilar(prev_sun_hp[sun_index].x, FLT_MAX) && fsimilar(prev_sun_hp[sun_index].y, FLT_MAX))
+                prev_sun_hp[sun_index].set(env.sun_hp[sun_index]);
+
+            env.sun_hp[sun_index].y = editor_longitude;
+
+            cur->sun_dir.setHP(deg2rad(editor_altitude), deg2rad(editor_longitude));
+        }
+        else
+            editor_longitude = env.sun_hp[sun_index].y;
+
+        ImGui::EndDisabled();
+
+        if (sun_pos_changed)
+            editor_override_sun_position_params = true;
+
+        if (editor_override_sun_position_params)
+        {
+            if (ImGui::Button("Save"))
+            {
+                SaveSunPositions(env);
+
+                editor_override_sun_position_params = false;
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Reset"))
+            {
+                ResetSunPositions(env);
+                editor_override_sun_position_params = false;
+            }
+        }
+    }
+
+    ImGui::Separator();
 
     ImGui::Text("Thunder bolt parameters");
 
-    if (ImGui::Combo("thunderbolt_collection", &sel, enumIniWithEmpty, env.m_thunderbolt_collections_config, env.m_thunderbolt_collections_config->sections_ordered().size() + 1))
+    sel = -1;
+    for (int i = 0; i < env.m_thunderbolt_collections_config->sections_ordered().size(); i++)
+        if (cur->tb_id == env.m_thunderbolt_collections_config->sections_ordered().at(i).second->Name)
+            sel = i;
+
+    if (ImGui::Combo(
+            "thunderbolt_collection", &sel,
+            [](void* data, int idx) {
+                if (idx < 0)
+                    return "";
+                const auto* ini = static_cast<CInifile*>(data);
+                return ini->sections_ordered().at(idx).second->Name.c_str();
+            },
+            env.m_thunderbolt_collections_config, env.m_thunderbolt_collections_config->sections_ordered().size()))
     {
-        LPCSTR sect = (sel == 0) ? "" : env.m_thunderbolt_collections_config->sections_ordered()[sel - 1].second->Name.c_str();
+        LPCSTR sect = (sel < 0) ? "" : env.m_thunderbolt_collections_config->sections_ordered().at(sel).second->Name.c_str();
 
         cur->tb_id = env.eff_Thunderbolt->AppendDef(env, env.m_thunderbolt_collections_config, env.m_thunderbolts_config, sect);
         changed = true;
@@ -467,6 +624,8 @@ void CImGuiWeatherWnd::Render() //ShowWeatherEditor(bool& show)
     if (ImGui::SliderFloat("thunderbolt_period", &cur->bolt_period, 0.0f, 10.0f))
         changed = true;
 
+    ImGui::Separator();
+
     ImGui::Text("Wind parameters");
 
     if (ImGui::SliderFloat("wind_velocity", &cur->wind_velocity, 0.0f, 1000.0f))
@@ -474,27 +633,29 @@ void CImGuiWeatherWnd::Render() //ShowWeatherEditor(bool& show)
     if (ImGui::SliderFloat("wind_direction", &cur->wind_direction, 0.0f, 360.0f))
         changed = true;
 
+    ImGui::Separator();
+
     if (changed)
     {
         modifiedWeathers.insert(env.GetWeather());
-        s_ScriptWeatheParams = true;
+        editor_override_weather_params = true;
     }
 
-    if (s_ScriptWeatheParams && ImGui::Button("Save"))
+    if (editor_override_weather_params && ImGui::Button("Save"))
     {
-        for (auto& name : modifiedWeathers)
+        for (const auto& name : modifiedWeathers)
             saveWeather(name, env.WeatherCycles[name]);
 
         modifiedWeathers.clear();
 
-        s_ScriptWeatheParams = false;
+        editor_override_weather_params = false;
     }
 
     ImGui::SameLine();
 
-    if (s_ScriptWeatheParams && ImGui::Button("Reset"))
+    if (editor_override_weather_params && ImGui::Button("Reset"))
     {
-        s_ScriptWeatheParams = false;
+        editor_override_weather_params = false;
 
         env.SetWeather(env.GetWeather(), true);        
 

@@ -192,7 +192,7 @@ void CImGuiMainWnd::Render()
     if (ImGui::Checkbox("Active", &full))
         editor.target_stage = full ? EditorStage::Full : EditorStage::Light;
 
-    float framerate = ImGui::GetIO().Framerate;
+    const float framerate = ImGui::GetIO().Framerate;
 
     static xr_vector<float> frames;
 
@@ -251,36 +251,7 @@ bool CImGuiEditor::Editor_KeyPress(int key)
         }
     }
 
-    if (!IsEditorActive())
-        return false;
-
-    ImGuiIO& io = ImGui::GetIO();
-
-    switch (key)
-    {
-    case DIK_F10: break;
-
-    case DIK_RCONTROL:
-        isRControl = true;
-        io.KeyCtrl = true;
-        break;
-    case DIK_LCONTROL:
-        isLControl = true;
-        io.KeyCtrl = true;
-        break;
-    case DIK_RSHIFT:
-        isRShift = true;
-        io.KeyShift = true;
-        break;
-    case DIK_LSHIFT:
-        isLShift = true;
-        io.KeyShift = true;
-        break;
-    case MOUSE_1: io.MouseDown[0] = true; break;
-    case MOUSE_2: io.MouseDown[1] = true; break;
-    case MOUSE_3: io.MouseDown[2] = true; break;
-    }
-    return true;
+    return IsEditorActive();
 }
 
 bool CImGuiEditor::Editor_KeyRelease(int key)
@@ -295,72 +266,11 @@ bool CImGuiEditor::Editor_KeyRelease(int key)
     else if (bool saved_state{!!psDeviceFlags.test(rsExclusiveMode)}; pInput->exclusive_mode() != saved_state)
         pInput->exclusive_mode(saved_state);
 
-    bool active = IsEditorActive();
-    ImGuiIO& io = ImGui::GetIO();
-
-    switch (key)
-    {
-    case DIK_RCONTROL:
-        isRControl = false;
-        io.KeyCtrl = isRControl || isLControl;
-        break;
-    case DIK_LCONTROL:
-        isLControl = false;
-        io.KeyCtrl = isRControl || isLControl;
-        break;
-    case DIK_RSHIFT:
-        isRShift = false;
-        io.KeyShift = isRShift || isLShift;
-        break;
-    case DIK_LSHIFT:
-        isLShift = false;
-        io.KeyShift = isRShift || isLShift;
-        break;
-    case MOUSE_1: io.MouseDown[0] = false; break;
-    case MOUSE_2: io.MouseDown[1] = false; break;
-    case MOUSE_3: io.MouseDown[2] = false; break;
-    }
-    return active;
+    return IsEditorActive();
 }
 
-bool CImGuiEditor::Editor_KeyHold(int key)
-{
-    if (!IsEditorActive())
-        return false;
-    return true;
-}
+bool CImGuiEditor::Editor_KeyHold(int key) { return IsEditorActive(); }
 
-bool CImGuiEditor::Editor_MouseMove(int dx, int dy)
-{
-    if (!IsEditorActive())
-        return false;
+bool CImGuiEditor::Editor_MouseMove(int dx, int dy) { return IsEditorActive(); }
 
-    ImGuiIO& io = ImGui::GetIO();
-    POINT p;
-    GetCursorPos(&p);
-    io.MousePos.x = p.x;
-    io.MousePos.y = p.y;
-    return true;
-}
-
-static int s_direction;
-
-bool CImGuiEditor::Editor_MouseWheel(int direction)
-{
-    if (!IsEditorActive())
-        return false;
-
-    s_direction = direction;
-
-    return true;
-}
-
-void CImGuiEditor::Editor_OnFrame()
-{
-    if (s_direction != 0)
-    {       
-        ImGuiIO& io = ImGui::GetIO();
-        io.MouseWheel += s_direction > 0 ? +1.0f : -1.0f;
-        s_direction = 0;
-    }
-}
+bool CImGuiEditor::Editor_MouseWheel(int direction) { return IsEditorActive(); }

@@ -87,6 +87,7 @@ extern "C" __declspec(noreturn) void __fastfail(unsigned int);
 #include <mutex>
 #include <shared_mutex>
 #include <typeinfo>
+#include <ranges>
 #pragma warning(pop)
 
 // Our headers

@@ -33,7 +33,6 @@ public:
     bool Editor_KeyHold(int key);
     bool Editor_MouseMove(int dx, int dy);
     bool Editor_MouseWheel(int direction);
-    void Editor_OnFrame();
 
     //-- states
     bool IsEditorActive() const { return curr_stage == EditorStage::Full; }
@@ -53,8 +52,6 @@ public:
     bool m_bShowDemoWindow{};
 
 private:
-    bool isRControl{}, isLControl{}, isRShift{}, isLShift{};
-
     void RenderDockSpace();
     void RenderMenuBar();
     void RenderDemoWindow();
