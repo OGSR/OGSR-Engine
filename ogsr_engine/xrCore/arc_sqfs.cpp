@@ -260,12 +260,9 @@ void CLocatorAPI::archive::open_sqfs()
 
 void CLocatorAPI::archive::index_dir_sqfs(CLocatorAPI& loc, const char* path, sqfs::sqfs_dir_iterator_t& it) const
 {
-    for (;;)
+    sqfs::sqfs_dir_entry_t* ep;
+    while (it.next(&it, &ep) == 0)
     {
-        sqfs::sqfs_dir_entry_t* ep;
-        if (it.next(&it, &ep) != 0)
-            break;
-
         const auto ent = xr::wrap_unique(ep);
         string_path full;
         xr_strconcat(full, path, ent->name);
