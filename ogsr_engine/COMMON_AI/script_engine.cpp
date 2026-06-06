@@ -369,16 +369,49 @@ void CScriptEngine::LogTable(lua_State* l, LPCSTR S, int level)
     if (!lua_istable(l, -1))
         return;
 
+    u32 cnt = 0;
+
     lua_pushnil(l); /* first key */
     while (lua_next(l, -2) != 0)
     {
         char sname[256];
+
+        //xr_sprintf(sname, "%s", lua_tostring(l, -2));
+
+        {
+            // конвертирование не строковых значений в строки, поставит в тупик lua_next
+            // https://github.com/defold/defold/issues/9778
+
+            const char* tk{};
+            string16 tmp;
+
+            const int kt = lua_type(l, -2);
+            switch (kt)
+            {
+            case LUA_TBOOLEAN: 
+                tk = lua_toboolean(l, -2) ? "true" : "false"; 
+                break;
+            case LUA_TNUMBER: 
+                tk = _itoa(lua_tointeger(l, -2), tmp, 10); 
+                break;
+            case LUA_TSTRING:
+                tk = lua_tostring(l, -2);
+                break;
+            default: 
+                tk = _itoa(cnt, tmp, 10); 
+                break;
+            }
+
+            xr_sprintf(sname, "%s", tk);
+        }
+
         char sFullName[256];
-        xr_sprintf(sname, "%s", lua_tostring(l, -2));
         xr_sprintf(sFullName, "%s.%s", S, sname);
         LogVariable(l, sFullName, level + 1);
 
         lua_pop(l, 1); /* removes `value'; keeps `key' for next iteration */
+
+        cnt++;
     }
 }
 
