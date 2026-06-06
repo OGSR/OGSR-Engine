@@ -175,6 +175,7 @@ Flags64 ps_r2_ls_flags = {
 //    | R2FLAGEXT_SSFX_SSS
     | R2FLAGEXT_SMAP_LOW_LOD
     | R2FLAGEXT_DISABLE_SMAPVIS
+    | R2FLAG_SMAP_2SIDE
 };
 
 BOOL ps_no_scale_on_fade = 0; // Alundaio
@@ -739,6 +740,8 @@ void xrRender_initconsole()
     CMD3(CCC_Token, "r__smap_cascade2_size", &r2_SmapCascade2Size, CascadesSmapSizeToken);
     CMD3(CCC_Token, "r__smap_lights_size", &r2_SmapLightsSize, LightsSmapSizeToken);
     CMD3(CCC_Token, "r__smap_rain_size", &r2_SmapRainSize, RainSmapSizeToken);
+
+    CMD3(CCC_Mask64, "r_smap_2side", &ps_r2_ls_flags, R2FLAG_SMAP_2SIDE);
 
     CMD4(CCC_Float, "r2_sun_depth_far_scale", &ps_r2_sun_depth_far_scale, 0.5, 1.5);
     CMD4(CCC_Float, "r2_sun_depth_near_scale", &ps_r2_sun_depth_near_scale, 0.5, 1.5);

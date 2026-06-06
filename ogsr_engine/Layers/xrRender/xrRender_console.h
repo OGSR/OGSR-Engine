@@ -180,7 +180,7 @@ enum : u64
 
     R2FLAG_STEEP_PARALLAX = 1ull << 22,
 
-    // = 1ull << 23,
+    R2FLAG_SMAP_2SIDE = 1ull << 23,
     R2FLAG_EXP_MT_BONES = 1ull << 24,
     R2FLAG_DETAIL_BUMP = 1ull << 25,
 

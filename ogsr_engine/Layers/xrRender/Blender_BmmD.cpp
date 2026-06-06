@@ -139,6 +139,8 @@ void CBlender_BmmD::Compile(CBlender_Compile& C)
         C.r_dx10Sampler("smp_base");
         C.r_dx10Sampler("smp_linear");
         C.r_ColorWriteEnable(false, false, false, false);
+        if (ps_r2_ls_flags.test(R2FLAG_SMAP_2SIDE))
+            C.r_CullMode(D3DCULL_NONE);
         C.r_End();
         break;
     }
@@ -203,6 +205,8 @@ void CBlender_BmmD::CompileOLD(CBlender_Compile& C)
         C.r_dx10Sampler("smp_base");
         C.r_dx10Sampler("smp_linear");
         C.r_ColorWriteEnable(false, false, false, false);
+        if (ps_r2_ls_flags.test(R2FLAG_SMAP_2SIDE))
+            C.r_CullMode(D3DCULL_NONE);
         C.r_End();
         break;
     }
