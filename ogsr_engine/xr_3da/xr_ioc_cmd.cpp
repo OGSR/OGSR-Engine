@@ -593,7 +593,7 @@ void CCC_Register()
     CMD4(CCC_Float, "g_font_scale_x", &g_fontWidthScale, 0.2f, 5.0f);
     CMD4(CCC_Float, "g_font_scale_y", &g_fontHeightScale, 0.2f, 5.0f);
 	
-	CMD4(CCC_Float, "rain_puddles_drying", &puddles_drying, 0.1f, 20.0f);
+	CMD4(CCC_Float, "rain_puddles_drying", &puddles_drying, 0.01f, 20.0f);
     CMD4(CCC_Float, "rain_puddles_wetting", &puddles_wetting, 0.1f, 20.0f);
 
     CMD2(CCC_Bool, "g_prefetch", &g_prefetch);

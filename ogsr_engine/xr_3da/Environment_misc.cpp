@@ -13,7 +13,7 @@
 #include "../xrGame/ShapeData.h"
 
 ENGINE_API float ps_r_sunshafts_intensity = 0.0f;
-ENGINE_API float puddles_drying = 2.f;
+ENGINE_API float puddles_drying = 0.2f;
 ENGINE_API float puddles_wetting = 4.f;
 ENGINE_API BOOL bLevelEnvModExport{};
 
