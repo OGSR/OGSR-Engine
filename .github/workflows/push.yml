@@ -14,12 +14,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-#        Configuration: [Debug, Release, ReleaseTracyProfiler]
-        Configuration: [Release, ReleaseTracyProfiler]
+        Configuration: [Debug, Release, ReleaseTracyProfiler]
         Platform: [x64]
         include:
-#          - Configuration: Debug
-#            ConfigurationReal: Debug
+          - Configuration: Debug
+            ConfigurationReal: Debug
           - Configuration: Release
             ConfigurationReal: Release
           - Configuration: ReleaseTracyProfiler
@@ -54,8 +53,6 @@ jobs:
         
         md ..\Game\Resources_SoC_1.0006\bin_%PLATFORM%
         
-        del *.ico
-        
         copy *.* ..\Game\Resources_SoC_1.0006\bin_%PLATFORM%
         
         cd ..\Game\Resources_SoC_1.0006
@@ -69,12 +66,11 @@ jobs:
 
     - name: Upload release asset
       if: github.event_name == 'release'
-      uses: Czuz/upload-release-asset@v1.1
+      uses: shogo82148/actions-upload-release-asset@v1.10.1
       env:
-        ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
         asset_path: .\OGSR_Engine_SHOC_EDITION_${{ matrix.Platform }}_3.${{ github.run_number }}_${{ matrix.Configuration }}.7z
         asset_name: OGSR_Engine_SHOC_EDITION_${{ matrix.Platform }}_3.${{ github.run_number }}_${{ matrix.Configuration }}.7z
-        asset_content_type: application/zip
+        asset_content_type: application/x-7z-compressed
