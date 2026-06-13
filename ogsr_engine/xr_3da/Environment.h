@@ -340,15 +340,15 @@ public:
     void RenderFlares(CBackend& cmd_list);
     void RenderLast(CBackend& cmd_list);
 
-    bool SetWeatherFX(shared_str name);
-    bool SetWeatherFXFromTime(shared_str name, float time);
+    bool SetWeatherFX(const shared_str& name);
+    bool SetWeatherFXFromTime(const shared_str& name, const float time);
     bool IsWeatherFXPlaying() const { return b_wfx; }
     void StopWeatherFX();
 
-    void SetWeather(shared_str name, bool forced = false);
-    shared_str& GetWeather() { return CurrentWeatherName; }
-    shared_str& GetPrevWeather() { return PrevWeatherName; }
-    void SetWeatherNext(shared_str name);
+    void SetWeather(const shared_str& name, const bool forced = false);
+    const shared_str& GetWeather() const { return CurrentWeatherName; }
+    const shared_str& GetPrevWeather() const { return PrevWeatherName; }
+    void SetWeatherNext(const shared_str& name);
     void ChangeGameTime(float game_time);
     void SetGameTime(float game_time, float time_factor);
 
