@@ -23,8 +23,6 @@ void CImGuiGameWnd::Render()
         imgSize.y = avail.x / texAspect;
     }
 
-    ImVec2 cursor = ImGui::GetCursorPos();
-    ImGui::SetCursorPos(ImVec2(cursor.x + (avail.x - imgSize.x) * 0.5f, cursor.y + (avail.y - imgSize.y) * 0.5f));
     ::Render->DrawMainRTTexture(imgSize.x, imgSize.y);
 
     ImGui::End();

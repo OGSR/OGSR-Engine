@@ -6,7 +6,6 @@
 #pragma once
 
 #include "reshade_events.hpp"
-#include "reshade_overlay.hpp"
 #include <charconv>
 #include <Windows.h>
 
