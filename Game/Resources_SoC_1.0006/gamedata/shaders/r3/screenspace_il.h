@@ -7,6 +7,7 @@
  */
 
 #include "settings_screenspace_IL.h"
+#include "settings_screenspace_FOG.h"
 
 #ifndef SSFX_READY
 	#include "screenspace_common.h"
