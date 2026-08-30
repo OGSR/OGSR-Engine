@@ -5,7 +5,7 @@
 #define G_SSDO_RADIUS 0.4f // AO radius, higher values means more occlusion coverage with less detail and intensity. ( Recommended 0.1 ~ 0.5 )
 #define G_SSDO_INTENSITY 6.0f // General AO intensity.
 
-#define G_SSDO_FLORA_INTENSITY 0.0f // Flora intensity. [ 1.0f = 100% ~ 2.0f = 200% ]
+#define G_SSDO_FLORA_INTENSITY 1.0f // Flora intensity. [ 1.0f = 100% ~ 2.0f = 200% ]
 
 #define G_SSDO_NOISE_MIN 0.2f // Minimum noise intensity.
 #define G_SSDO_NOISE_MAX 1.0f // Maximum noise intensity. ( Noise increase intensity through distance )

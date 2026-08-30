@@ -144,6 +144,7 @@ Fvector4 ps_scope3_params = Fvector4().set(1.25f, 4.f, 0.0f, 0.0f); // relative 
 // R2-specific
 Flags64 ps_r2_ls_flags = {
     R2FLAG_SUN |
+    R2FLAG_SUN_DETAILS |
     R2FLAG_EXP_DONT_TEST_UNSHADOWED | 
     R3FLAG_DYN_WET_SURF |
     R3FLAG_VOLUMETRIC_SMOKE |
@@ -260,7 +261,7 @@ Fvector4 ps_ssfx_rain_2{0.7f, 0.1f, 1.0f, 0.5f}; // Alpha, Brigthness, Refractio
 Fvector4 ps_ssfx_rain_3{0.15f, 1.f, 0.0f, 0.0f}; // Alpha, Refraction ( Splashes )
 
 Fvector3 ps_ssfx_shadow_cascades{25.f, 60.f, 160.f};
-Fvector4 ps_ssfx_grass_shadows = {0.0f, 0.0f, 0.0f, 0.0f}; // X - каскады на которых будут рендериться тени (0 - на первом, 1 - на первом и втором, 2 - на всех трёх), Y - устарело и более не используется, Z - дальность на которой будут рендериться тени от источников света (НЕ СОЛНЦА)
+Fvector4 ps_ssfx_grass_shadows = {0.0f, 0.0f, 50.0f, 0.0f}; // X - каскады на которых будут рендериться тени (0 - на первом, 1 - на первом и втором, 2 - на всех трёх), Y - устарело и более не используется, Z - дальность на которой будут рендериться тени от источников света (НЕ СОЛНЦА)
 Fvector4 ps_ssfx_grass_interactive{1.f, static_cast<float>(GRASS_SHADER_DATA_COUNT), 2000.f, 1.0f};
 Fvector4 ps_ssfx_int_grass_params_1{2.0f, 1.0f, 1.0f, 25.f};
 Fvector4 ps_ssfx_int_grass_params_2{1.0f, 5.0f, 1.0f, 1.0f};

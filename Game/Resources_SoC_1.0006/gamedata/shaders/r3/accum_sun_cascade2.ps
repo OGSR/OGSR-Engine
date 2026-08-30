@@ -4,9 +4,7 @@
 // Check Screen Space Shaders modules & addons
 #include "check_screenspace.h"
 
-#ifdef SSFX_SSS
 #include "screenspace_shadows.h"
-#endif
 
 #include "shadow.h"
 
@@ -57,6 +55,9 @@ float4 main(v2p_volume I) : SV_Target
 
 #ifdef SSFX_SSS
     s *= SSFX_ScreenSpaceShadows_Far(_P, I.hpos, 0);
+#else
+    if (abs(_P.w - MAT_FLORA) <= 0.05)
+        s *= SSFX_ScreenSpaceShadows_Far(_P, I.hpos, 0);
 #endif
 
     // Add Shadows
