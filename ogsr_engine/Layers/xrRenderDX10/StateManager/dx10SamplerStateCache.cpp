@@ -13,6 +13,7 @@ dx10SamplerStateCache::dx10SamplerStateCache() : m_uiMaxAnisotropy(1), m_uiMipLO
 
     m_StateArray.reserve(iMaxRSStates);
     m_StateArraySmap.reserve(iMaxRSStates);
+    m_StateArrayUI.reserve(iMaxRSStates);
 }
 
 dx10SamplerStateCache::~dx10SamplerStateCache() { ClearStateArray(); }
@@ -38,23 +39,42 @@ dx10SamplerStateCache::SHandle dx10SamplerStateCache::GetStateHandle(D3D_SAMPLER
         hResult = m_StateArray.size();
         m_StateArray.push_back(rec);
 
-        // create smap state
-        StateDecs descSMAP{};
+        {
+            // create smap state
+            StateDecs descSMAP{};
 
-        rec.m_pState->GetDesc(&descSMAP);
+            rec.m_pState->GetDesc(&descSMAP);
 
-        // SMAP states are the same as main states but with disabled anisotropy and low mip LOD bias
-        descSMAP.MaxAnisotropy = ps_r__tf_Anisotropic_SMAP;
-        descSMAP.MipLODBias = ps_r__tf_Mipbias_SMAP;
-        dx10StateUtils::ValidateState(descSMAP);
+            // SMAP states are the same as main states but with disabled anisotropy and low mip LOD bias
+            descSMAP.MaxAnisotropy = ps_r__tf_Anisotropic_SMAP;
+            descSMAP.MipLODBias = ps_r__tf_Mipbias_SMAP;
+            dx10StateUtils::ValidateState(descSMAP);
 
-        StateRecord rec2;
-        rec2.m_crc = xxh; // not important since smap states are not searched
-        CreateState(descSMAP, &rec2.m_pState);
+            StateRecord rec2;
+            rec2.m_crc = xxh; // not important since smap states are not searched
+            CreateState(descSMAP, &rec2.m_pState);
 
-        m_StateArraySmap.push_back(rec2);
+            m_StateArraySmap.push_back(rec2);
+        }
+        {
+            // create UI state
+            StateDecs descUI{};
 
-        R_ASSERT(m_StateArray.size() == m_StateArraySmap.size());
+            rec.m_pState->GetDesc(&descUI);
+
+            // UI states are similar to the main states, but here the quality of mipibias and aniso is maximized.
+            descUI.MaxAnisotropy = 16;
+            descUI.MipLODBias = -3.f;
+            dx10StateUtils::ValidateState(descUI);
+
+            StateRecord rec3;
+            rec3.m_crc = xxh; // not important since ui states are not searched
+            CreateState(descUI, &rec3.m_pState);
+
+            m_StateArrayUI.push_back(rec3);
+        }
+
+        R_ASSERT(m_StateArray.size() == m_StateArraySmap.size() && m_StateArray.size() == m_StateArrayUI.size());
     }
 
     return hResult;
@@ -96,18 +116,16 @@ dx10SamplerStateCache::SHandle dx10SamplerStateCache::FindStateHandler(const Sta
 void dx10SamplerStateCache::ClearStateArray()
 {
     for (auto& i : m_StateArray)
-    {
         _RELEASE(i.m_pState);
-    }
-
     m_StateArray.clear();
 
     for (auto& i : m_StateArraySmap)
-    {
         _RELEASE(i.m_pState);
-    }
-
     m_StateArraySmap.clear();
+
+    for (auto& i : m_StateArrayUI)
+        _RELEASE(i.m_pState);
+    m_StateArrayUI.clear();
 
     m_uiMaxAnisotropy = (1);
     m_uiMipLODBias = (0.0f);
@@ -121,7 +139,7 @@ void dx10SamplerStateCache::PrepareSamplerStates(const HArray& samplers, ID3DSam
         if (samplers[i] != static_cast<u32>(hInvalidHandle))
         {
             VERIFY(samplers[i] < m_StateArray.size());
-            pSS[i] = (smap ? m_StateArraySmap : m_StateArray)[samplers[i]].m_pState;
+            pSS[i] = (::Render->ui_is_rendering ? m_StateArrayUI : (smap ? m_StateArraySmap : m_StateArray))[samplers[i]].m_pState;
         }
     }
 }

@@ -377,6 +377,8 @@ void CRender::Calculate()
     if (!g_pGameLevel)
         return;
 
+    ui_is_rendering = false;
+
     ZoneScopedN("r2_calculate");
 
     //IMainMenu* pMainMenu = g_pGamePersistent ? g_pGamePersistent->m_pMainMenu : 0;

@@ -436,6 +436,7 @@ void CLevel::OnRender()
     Render->Calculate();
     Render->Render();
 
+    ::Render->ui_is_rendering = true;
 
     //отрисовать трассы пуль
     // Device.Statistic->TEST1.Begin();
@@ -607,6 +608,8 @@ void CLevel::OnRender()
     }
 
 #endif
+
+    ::Render->ui_is_rendering = false;
 }
 
 void CLevel::OnEvent(EVENT E, u64 P1, u64 /**P2/**/)

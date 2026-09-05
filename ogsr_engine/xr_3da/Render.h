@@ -150,6 +150,8 @@ public:
     // data
     CFrustum ViewBase;
 
+    bool ui_is_rendering{};
+
 public:
   
     // Loading / Unloading

@@ -165,9 +165,6 @@ extern BOOL ps_ssfx_pom_refine, ps_ssfx_terrain_pom_refine;
 extern ECORE_API Fvector4 ps_ssfx_pom, ps_ssfx_terrain_pom, ps_ssfx_terrain_offset;
 extern Fvector4 ps_ssfx_ssr_1, ps_ssfx_ssr_2;
 
-// textures
-extern ECORE_API int psTextureLOD;
-
 extern ECORE_API float ps_r__opt_dist;
 
 extern ECORE_API int opt_static_geom;

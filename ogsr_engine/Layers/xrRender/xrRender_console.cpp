@@ -339,9 +339,6 @@ float ps_pnv_params_2_2 = 0;
 float ps_pnv_params_3_2 = 0;
 float ps_pnv_params_4_2 = 1;
 
-// textures
-int psTextureLOD = 0;
-
 float ps_r2_img_exposure = 1.0f; // r2-only
 float ps_r2_img_gamma = 1.0f; // r2-only
 float ps_r2_img_saturation = 1.0f; // r2-only
@@ -731,7 +728,7 @@ void xrRender_initconsole()
 
     CMD4(CCC_Float, "r__wallmark_ttl", &ps_r__WallmarkTTL, 1.0f, 10.f * 60.f);
 
-    CMD4(CCC_Float, "r__geometry_lod", &ps_r__LOD, 0.5f, 2.f);
+    CMD4(CCC_Float, "r__geometry_lod", &ps_r__LOD, 0.5f, 3.f);
     CMD4(CCC_Float, "r__lod_k", &ps_r__LOD_k, 0.1f, 10.f);
 
     CMD4(CCC_detail_radius, "r__detail_radius", &ps_r__detail_radius, 70, 300);
@@ -1025,9 +1022,6 @@ void xrRender_initconsole()
     CMD4(CCC_Float, "ssfx_exposure", &ps_r2_img_exposure, 0.5f, 1.5f);
     CMD4(CCC_Float, "ssfx_gamma", &ps_r2_img_gamma, 0.5f, 1.5f);
     CMD4(CCC_Float, "ssfx_saturation", &ps_r2_img_saturation, 0.5f, 1.5f);
-
-#pragma todo("Simp: В общем эта настройка работает, но надо убирать мипмапы у текстур ui. Да и заметного влияния на fps я не вижу.")
-    //CMD4(CCC_Integer, "texture_lod", &psTextureLOD, 0, 2);
 
     CMD1(CCC_PART_Export, "particles_export");
     CMD1(CCC_PART_Import, "particles_import");
