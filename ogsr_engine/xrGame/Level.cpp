@@ -436,7 +436,6 @@ void CLevel::OnRender()
     Render->Calculate();
     Render->Render();
 
-    Game().OnRender();
 
     //отрисовать трассы пуль
     // Device.Statistic->TEST1.Begin();

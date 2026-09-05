@@ -74,7 +74,6 @@ public:
     void u_EventGen(NET_Packet& P, u16 type, u16 dest);
     void u_EventSend(NET_Packet& P);
 
-    virtual void OnRender(){};
     virtual bool IsServerControlHits() { return m_bServerControlHits; };
     virtual bool IsEnemy(game_PlayerState* ps) { return false; };
     virtual bool IsEnemy(CEntityAlive* ea1, CEntityAlive* ea2) { return false; };
