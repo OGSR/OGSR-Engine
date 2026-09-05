@@ -288,7 +288,10 @@ public:
     {
         DestroyFeature();
         if (!Initialize(appid))
+        {
+            Msg("!![%s] failed Initialize()!", __FUNCTION__);
             return false;
+        }
 
         OutputRT = out_rt->pSurface;
         saved_w = out_rt->dwWidth;
