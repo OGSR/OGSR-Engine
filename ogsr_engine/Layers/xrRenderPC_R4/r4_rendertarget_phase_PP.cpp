@@ -87,7 +87,9 @@ void CRenderTarget::phase_pp(CBackend& cmd_list)
     RImplementation.rmNormal(cmd_list);
 
     const bool bCMap = u_need_CM();
-    cmd_list.set_Element(s_postprocess->E[bCMap ? 4 : 0]);
+    ref_selement& sh = s_postprocess->E[bCMap ? 4 : 0];
+    cmd_list.set_Element(sh);
+    pp_remap_scene_srv(cmd_list, sh._get());
 
     const int gblend = clampr(iFloor((1 - param_gray) * 255.f), 0, 255);
     const int nblend = clampr(iFloor((1 - param_noise) * 255.f), 0, 255);
@@ -122,4 +124,5 @@ void CRenderTarget::phase_pp(CBackend& cmd_list)
     cmd_list.set_c("c_colormap", param_color_map_influence, param_color_map_interpolate, 0, 0);
     cmd_list.set_Geometry(g_postprocess);
     cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+    m_pp_remap_enabled = false;
 }

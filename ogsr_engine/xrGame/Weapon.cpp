@@ -988,8 +988,7 @@ void CWeapon::UpdateDof(float& type, const Fvector4& params_type, const bool des
     else
         type += Device.fTimeDelta / dof_transition_time;
 
-    // Clamp before exporting. The fade-out caller stops once `type` hits 0, so writing
-    // first left a leftover (often negative / tiny) in shader_exports forever.
+    // Last fade-out frame must export zeros; the caller stops once type hits 0.
     clamp(type, 0.f, 1.f);
     shader_exports.set_dof_params(params_type.x * type, params_type.y * type, params_type.z * type, params_type.w * type);
 }

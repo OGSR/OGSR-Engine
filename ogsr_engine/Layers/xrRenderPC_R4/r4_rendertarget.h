@@ -3,6 +3,7 @@
 #include "../xrRender/ColorMapManager.h"
 
 class light;
+struct ShaderElement;
 
 static void dummy(){}
 
@@ -342,6 +343,21 @@ public:
 #endif
 
 private:
+    // Display-sized post: latest image is in combine or postprocess0.
+    bool m_pp_current_is_combine{};
+    bool m_pp_remap_enabled{};
+    bool m_pp_pingponged{};
+
+    ref_rt& pp_src() { return m_pp_current_is_combine ? rt_Generic_combine : rt_Postprocess_0; }
+    const ref_rt& pp_src() const { return m_pp_current_is_combine ? rt_Generic_combine : rt_Postprocess_0; }
+    ref_rt& pp_dst() { return m_pp_current_is_combine ? rt_Postprocess_0 : rt_Generic_combine; }
+    void pp_flip()
+    {
+        m_pp_current_is_combine = !m_pp_current_is_combine;
+        m_pp_pingponged = true;
+    }
+    void pp_remap_scene_srv(CBackend& cmd_list, ShaderElement* se) const;
+
     void RenderScreenTriangle(CBackend& cmd_list, const ref_rt& rt, ref_selement& sh, const std::function<void()>& lambda = dummy);
     void RenderScreenQuad(CBackend& cmd_list, const u32 w, u32 const h, const ref_rt& rt, ref_selement& sh, const std::function<void()>& lambda = dummy);
 
@@ -367,8 +383,8 @@ private:
 
     bool reset_3dss_rendertarget(const bool need_reset = false);
 
-    void ProcessCAS(CBackend& cmd_list);
-    void BeginPostprocess(CBackend& cmd_list, bool temporalOutput);
+    void ProcessCAS(CBackend& cmd_list, bool read_combine);
+    void BeginPostprocess(CBackend& cmd_list, bool temporalOutput, bool skip_temporal_copy = false);
 
     void PhaseSSSS(CBackend& cmd_list);
 

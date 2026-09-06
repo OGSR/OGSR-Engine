@@ -215,6 +215,13 @@ void CRenderTarget::phase_combine(CBackend& cmd_list)
     {
         PIX_EVENT(phase_3DSSReticle);
 
+        // Reticle samples $user$generic_combine while drawing into postprocess0.
+        if (!m_pp_current_is_combine && m_pp_pingponged)
+        {
+            PIX_EVENT(copy_pp_3dss);
+            HW.get_context(cmd_list.context_id)->CopyResource(pp_dst()->pSurface, pp_src()->pSurface);
+        }
+
         // The reticle is composited after temporal upscaling. Scene depth is
         // render-sized and cannot be bound with this display-sized color RT.
         u_setrt(cmd_list, rt_Postprocess_0, nullptr, nullptr, nullptr, nullptr);
@@ -225,6 +232,7 @@ void CRenderTarget::phase_combine(CBackend& cmd_list)
         cmd_list.set_ColorWriteEnable();
 
         dsgraph.r_dsgraph_render_scope_sorted(upscaled_3dss);
+        m_pp_current_is_combine = false;
     }
 
     // Compute blur textures
@@ -280,13 +288,12 @@ void CRenderTarget::phase_combine(CBackend& cmd_list)
             m_blur_scale.set(scale, -scale).div(12.f);
         }
 
-        RenderScreenTriangle(cmd_list, rt_Generic_combine, s_combine->E[3], [&]() {
+        RenderScreenTriangle(cmd_list, pp_dst(), s_combine->E[3], [&]() {
             cmd_list.set_c("m_current", m_current);
             cmd_list.set_c("m_previous", m_previous);
             cmd_list.set_c("m_blur", m_blur_scale.x, m_blur_scale.y, 0, 0);
         });
-
-        HW.get_context(cmd_list.context_id)->CopyResource(rt_Postprocess_0->pSurface, rt_Generic_combine->pSurface);
+        pp_flip();
     }
 
     {

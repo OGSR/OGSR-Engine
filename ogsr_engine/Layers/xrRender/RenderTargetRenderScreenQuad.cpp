@@ -1,5 +1,38 @@
 #include "stdafx.h"
 
+void CRenderTarget::pp_remap_scene_srv(CBackend& cmd_list, ShaderElement* se) const
+{
+    if (!m_pp_remap_enabled || !se)
+        return;
+
+    CTexture* const current = pp_src()->pTexture._get();
+    CTexture* const pp0 = rt_Postprocess_0->pTexture._get();
+    CTexture* const combine = rt_Generic_combine->pTexture._get();
+    if (!current || !pp0 || !combine)
+        return;
+
+    for (u32 p = 0; p < se->passes.size(); ++p)
+    {
+        SPass* pass = se->passes[p]._get();
+        if (!pass || !pass->T)
+            continue;
+
+        for (const auto& loader : *pass->T)
+        {
+            if (loader.first >= CTexture::rstVertex)
+                continue;
+
+            CTexture* tex = loader.second._get();
+            if (!tex || tex == current || (tex != pp0 && tex != combine))
+                continue;
+            if (!current->bind)
+                continue;
+
+            current->bind(cmd_list, loader.first);
+        }
+    }
+}
+
 void CRenderTarget::RenderScreenTriangle(CBackend& cmd_list, const ref_rt& rt, ref_selement& sh, const std::function<void()>& lambda)
 {
     u_setrt(cmd_list, rt->dwWidth, rt->dwHeight, rt->pRT, nullptr, nullptr, nullptr);
@@ -9,6 +42,7 @@ void CRenderTarget::RenderScreenTriangle(CBackend& cmd_list, const ref_rt& rt, r
     cmd_list.set_Stencil(FALSE);
 
     cmd_list.set_Element(sh);
+    pp_remap_scene_srv(cmd_list, sh._get());
 
     lambda();
 
@@ -45,6 +79,7 @@ void CRenderTarget::RenderScreenQuad(CBackend& cmd_list, const u32 w, const u32 
     RImplementation.Vertex.Unlock(4, g_combine->vb_stride);
 
     cmd_list.set_Element(sh);
+    pp_remap_scene_srv(cmd_list, sh._get());
 
     lambda();
 
