@@ -52,6 +52,14 @@ enum : u32
 };
 extern ECORE_API u32 ps_r_ao_mode;
 
+enum : u32
+{
+    AO_RES_LEGACY,
+    AO_RES_FULL,
+    AO_RES_HALF
+};
+extern ECORE_API u32 ps_r_ao_resolution;
+
 extern ECORE_API u32 ps_r_sun_quality; //	=	0;
 
 extern ECORE_API int ps_r__LightSleepFrames;

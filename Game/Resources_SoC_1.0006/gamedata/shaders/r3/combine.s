@@ -1,5 +1,5 @@
-function element_0(shader, t_base, t_second, t_detail)
-	shader:begin("stub_screen_space", "combine_1")
+local function setup_combine(shader, pixel_shader)
+	shader:begin("stub_screen_space", pixel_shader)
 		:fog(false)
 		:zb(false, false)
 		:blend(true, blend.invsrcalpha,blend.srcalpha)
@@ -8,6 +8,7 @@ function element_0(shader, t_base, t_second, t_detail)
 	shader:dx10texture("s_position", "$user$position")
 	shader:dx10texture("s_diffuse", "$user$albedo")
 	shader:dx10texture("s_accumulator", "$user$accum")
+	shader:dx10texture("s_ao", "$user$ao")
 	shader:dx10texture("env_s0", "$user$env_s0")
 	shader:dx10texture("env_s1", "$user$env_s1")
 	shader:dx10texture("sky_s0", "$user$sky0")
@@ -19,6 +20,14 @@ function element_0(shader, t_base, t_second, t_detail)
 	shader:dx10sampler("smp_nofilter")
 	shader:dx10sampler("smp_material")
 	shader:dx10sampler("smp_rtlinear")
+end
+
+function element_0(shader, t_base, t_second, t_detail)
+	setup_combine(shader, "combine_1")
+end
+
+function element_4(shader, t_base, t_second, t_detail)
+	setup_combine(shader, "combine_1_ao")
 end
 
 function element_1(shader, t_base, t_second, t_detail)

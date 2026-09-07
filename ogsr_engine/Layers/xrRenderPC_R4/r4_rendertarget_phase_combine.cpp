@@ -9,6 +9,10 @@ void CRenderTarget::phase_combine(CBackend& cmd_list)
 {
     ZoneScoped;
 
+    const bool separate_ao = m_ao_enabled && ps_r_ao_resolution != AO_RES_LEGACY;
+    if (separate_ao)
+        phase_ao(cmd_list);
+
     //*** exposure-pipeline
     {
         // if (t_LUM_src != rt_LUM_pool[0]->pTexture)
@@ -18,6 +22,7 @@ void CRenderTarget::phase_combine(CBackend& cmd_list)
     }
 
     u_setrt(cmd_list, rt_Generic_0, nullptr, nullptr, nullptr, rt_Base_Depth->pZRT[cmd_list.context_id]);
+    RImplementation.rmNormal(cmd_list);
     cmd_list.set_CullMode(CULL_NONE);
     cmd_list.set_Stencil(FALSE);
 
@@ -75,7 +80,7 @@ void CRenderTarget::phase_combine(CBackend& cmd_list)
         t_envmap_1->surface_set(e1);
 
         // Draw
-        cmd_list.set_Element(s_combine->E[0]);
+        cmd_list.set_Element(s_combine->E[separate_ao ? 4 : 0]);
         cmd_list.set_Geometry(TriangleGeom);
 
         cmd_list.set_c("m_inv_v", Device.mInvView);

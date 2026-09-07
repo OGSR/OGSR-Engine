@@ -438,6 +438,7 @@
     <ClCompile Include="r4_rendertarget_phase_accumulator.cpp" />
     <ClCompile Include="r4_rendertarget_phase_bloom.cpp" />
     <ClCompile Include="r4_rendertarget_phase_combine.cpp" />
+    <ClCompile Include="r4_rendertarget_phase_ao.cpp" />
     <ClCompile Include="r4_rendertarget_phase_luminance.cpp" />
     <ClCompile Include="r4_rendertarget_phase_lut.cpp" />
     <ClCompile Include="r4_rendertarget_phase_occq.cpp" />

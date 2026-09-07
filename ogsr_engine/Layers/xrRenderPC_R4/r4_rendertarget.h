@@ -18,6 +18,7 @@ private:
     u32 m_displayHeight{};
     bool m_temporalUpscaleInput{};
     bool m_resetTemporalHistory{true};
+    bool m_ao_enabled{}; // Matches SSAO_QUALITY when the target's shaders were compiled.
     u32 dwAccumulatorClearMark;
     u32 dwFlareClearMark;
 
@@ -43,6 +44,9 @@ public:
     ref_rt rt_Position; // 64bit,	fat	(x,y,z,?)				(eye-space)
     ref_rt rt_Color; // 64/32bit,fat	(r,g,b,specular-gloss)	(or decompressed MET-8-8-8-8)
     ref_rt rt_Velocity; // r2_RT_velocity
+
+    ref_rt rt_ao; // Single-channel visibility at internal render resolution.
+    ref_rt rt_ao_half; // Half-size visibility, view depth and packed normal for reconstruction.
 
     ref_rt rt_zbuffer; // r2_RT_zbuffer
     ref_rt rt_tempzb, rt_tempzb_dof;
@@ -168,6 +172,7 @@ private:
     ref_geom g_combine_2UV;
     ref_geom g_combine_cuboid;
     ref_shader s_combine;
+    ref_shader s_ao;
     ref_shader s_combine_volumetric;
 
     ref_shader s_blur;
@@ -278,6 +283,7 @@ public:
     void phase_ssfx_bloom(CBackend& cmd_list);
     void phase_luminance(CBackend& cmd_list);
     void phase_combine(CBackend& cmd_list);
+    void phase_ao(CBackend& cmd_list);
     void phase_pp(CBackend& cmd_list);
     void phase_combine_volumetric(CBackend& cmd_list);
 

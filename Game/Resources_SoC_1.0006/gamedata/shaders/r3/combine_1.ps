@@ -21,10 +21,14 @@ uniform float4 fakescope;
 #include "hmodel.h"
 
 #ifdef SSAO_QUALITY
+#ifdef USE_AO_BUFFER
+Texture2D<float> s_ao;
+#else
 #ifdef USE_GTAO
 #include "gtao.h"
 #else
 #include "ssdo.ps"
+#endif
 #endif
 #endif
 
@@ -62,10 +66,14 @@ float4 main(p_screen I) : SV_Target
     float3 occ = float3(1.0, 1.0, 1.0);
 
 #ifdef SSAO_QUALITY
+#ifdef USE_AO_BUFFER
+    occ = s_ao.Load(int3(I.hpos.xy, 0));
+#else
 #ifdef USE_GTAO
     occ = calc_gtao(P, N, I.tc0, 0);
 #else
     occ = calc_ssdo(P, N, I.tc0, I.hpos, 0);
+#endif
 #endif
     occ = compute_colored_ao(occ.x, D.xyz);
 #endif
