@@ -1,0 +1,12 @@
+#include "common.h"
+
+Texture2D<uint> s_xegtao;
+
+float main(p_screen I) : SV_Target
+{
+    int2 pixel = int2(I.hpos.xy);
+    // Sky is exactly unoccluded, independently of the denoiser's neighborhood.
+    if (s_position.Load(int3(pixel, 0)).z <= 0.001)
+        return 1.0;
+    return saturate(s_xegtao.Load(int3(pixel, 0)) / 255.0);
+}

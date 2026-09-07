@@ -4,6 +4,12 @@ void CRenderTarget::phase_ao(CBackend& cmd_list)
 {
     PIX_EVENT(phase_ao);
 
+    if (m_ao_mode == AO_MODE_XEGTAO)
+    {
+        phase_xegtao(cmd_list);
+        return;
+    }
+
     cmd_list.set_ColorWriteEnable();
 
     if (ps_r_ao_resolution == AO_RES_HALF)

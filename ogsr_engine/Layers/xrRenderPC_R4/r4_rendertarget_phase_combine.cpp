@@ -9,7 +9,7 @@ void CRenderTarget::phase_combine(CBackend& cmd_list)
 {
     ZoneScoped;
 
-    const bool separate_ao = m_ao_enabled && ps_r_ao_resolution != AO_RES_LEGACY;
+    const bool separate_ao = m_ao_enabled && (m_ao_mode == AO_MODE_XEGTAO || ps_r_ao_resolution != AO_RES_LEGACY);
     if (separate_ao)
         phase_ao(cmd_list);
 

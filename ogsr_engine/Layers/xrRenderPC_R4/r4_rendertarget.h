@@ -4,6 +4,7 @@
 
 class light;
 struct ShaderElement;
+class XeGTAOResources;
 
 static void dummy(){}
 
@@ -19,6 +20,11 @@ private:
     bool m_temporalUpscaleInput{};
     bool m_resetTemporalHistory{true};
     bool m_ao_enabled{}; // Matches SSAO_QUALITY when the target's shaders were compiled.
+    u32 m_ao_mode{}; // Method changes, like quality changes, require vid_restart.
+    XeGTAOResources* m_xegtao{};
+    void InitXeGTAO();
+    void DestroyXeGTAO();
+    void phase_xegtao(CBackend& cmd_list);
     u32 dwAccumulatorClearMark;
     u32 dwFlareClearMark;
 

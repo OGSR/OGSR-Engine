@@ -852,6 +852,9 @@
     <ClCompile Include="r4_rendertarget_phase_ao.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>
+    <ClCompile Include="r4_rendertarget_phase_xegtao.cpp">
+      <Filter>Core_Target</Filter>
+    </ClCompile>
     <ClCompile Include="r4_rendertarget_phase_luminance.cpp">
       <Filter>Core_Target</Filter>
     </ClCompile>

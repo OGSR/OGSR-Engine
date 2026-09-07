@@ -48,9 +48,11 @@ extern ECORE_API u32 ps_r_ao_quality; //	=	0;
 enum : u32
 {
     AO_MODE_GTAO,
-    AO_MODE_SSDO
+    AO_MODE_SSDO,
+    AO_MODE_XEGTAO
 };
 extern ECORE_API u32 ps_r_ao_mode;
+extern ECORE_API float ps_r_xegtao_radius;
 
 enum : u32
 {

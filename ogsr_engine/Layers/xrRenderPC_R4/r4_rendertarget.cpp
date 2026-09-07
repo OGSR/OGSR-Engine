@@ -190,6 +190,7 @@ CRenderTarget::CRenderTarget()
     ConfigureTemporalRenderSize();
 
     m_ao_enabled = ps_r_ao_quality != 0;
+    m_ao_mode = ps_r_ao_mode;
 
     param_blur = 0.f;
     param_gray = 0.f;
@@ -230,7 +231,8 @@ CRenderTarget::CRenderTarget()
         if (m_ao_enabled)
         {
             rt_ao.create("$user$ao", w, h, DXGI_FORMAT_R16_FLOAT);
-            rt_ao_half.create("$user$ao_half", (w + 1) / 2, (h + 1) / 2, DXGI_FORMAT_R16G16B16A16_FLOAT);
+            if (m_ao_mode != AO_MODE_XEGTAO)
+                rt_ao_half.create("$user$ao_half", (w + 1) / 2, (h + 1) / 2, DXGI_FORMAT_R16G16B16A16_FLOAT);
         }
 
         rt_Accumulator.create(r2_RT_accum, w, h, DXGI_FORMAT_R16G16B16A16_FLOAT);
@@ -336,7 +338,12 @@ CRenderTarget::CRenderTarget()
     s_lut.create("ogsr_lut");
     s_ssr.create("ogsr_ssr");
     if (m_ao_enabled)
-        s_ao.create("ogsr_ao");
+    {
+        if (m_ao_mode == AO_MODE_XEGTAO)
+            InitXeGTAO();
+        else
+            s_ao.create("ogsr_ao");
+    }
 
     s_ssfx_bloom.create("ogsr_bloom");
     s_ssfx_bloom_lens.create("ogsr_bloom_flares");
@@ -604,6 +611,7 @@ CRenderTarget::~CRenderTarget()
 
     DestroyDLSS();
     DestroyFSR();
+    DestroyXeGTAO();
 
     _RELEASE(m_ImguiSRV);
     _RELEASE(m_ImguiTex);
