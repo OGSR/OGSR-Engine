@@ -63,9 +63,10 @@ void CRenderTarget::InitXeGTAO()
     xe.width = (m_renderWidth + 15u) & ~15u;
     xe.height = (m_renderHeight + 15u) & ~15u;
     xe.depth.create(xe.width, xe.height, DXGI_FORMAT_R16_FLOAT, 5);
-    xe.ao.create(xe.width, xe.height, DXGI_FORMAT_R8_UINT);
+    const DXGI_FORMAT aoFormat = m_xegtao_bent_normals ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R8_UINT;
+    xe.ao.create(xe.width, xe.height, aoFormat);
     xe.edges.create(xe.width, xe.height, DXGI_FORMAT_R8_UNORM);
-    xe.filtered.create(xe.width, xe.height, DXGI_FORMAT_R8_UINT);
+    xe.filtered.create(xe.width, xe.height, aoFormat);
 
     D3D11_BUFFER_DESC cb{};
     cb.ByteWidth = 3 * sizeof(Fvector4); // ogsr_xegtao_common.h: three float4s
@@ -89,8 +90,8 @@ void CRenderTarget::InitXeGTAO()
     xe.output->surface_set(xe.filtered.surface.Get());
     xe.exportAO.create("ogsr_xegtao");
 
-    Msg("* XeGTAO: full internal resolution %ux%u (padded %ux%u), quality %u; r_ao_resolution does not apply",
-        m_renderWidth, m_renderHeight, xe.width, xe.height, ps_r_ao_quality);
+    Msg("* XeGTAO: full internal resolution %ux%u (padded %ux%u), quality %u, bent normals %s; r_ao_resolution does not apply",
+        m_renderWidth, m_renderHeight, xe.width, xe.height, ps_r_ao_quality, m_xegtao_bent_normals ? "on" : "off");
 }
 
 void CRenderTarget::DestroyXeGTAO()

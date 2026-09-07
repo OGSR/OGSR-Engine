@@ -22,7 +22,11 @@ uniform float4 fakescope;
 
 #ifdef SSAO_QUALITY
 #ifdef USE_AO_BUFFER
+#ifdef USE_XEGTAO_BENT_NORMALS
+Texture2D<float4> s_ao; // visibility, view-space bent normal encoded in [0,1]
+#else
 Texture2D<float> s_ao;
+#endif
 #else
 #ifdef USE_GTAO
 #include "gtao.h"
@@ -64,10 +68,21 @@ float4 main(p_screen I) : SV_Target
 #endif
 
     float3 occ = float3(1.0, 1.0, 1.0);
+    float3 ambientNormal = N.xyz;
 
 #ifdef SSAO_QUALITY
 #ifdef USE_AO_BUFFER
+#ifdef USE_XEGTAO_BENT_NORMALS
+    float4 ao = s_ao.Load(int3(I.hpos.xy, 0));
+    occ = ao.x;
+    float3 bentNormal = ao.yzw * 2.0 - 1.0;
+    // Reject invalid or opposite-hemisphere directions at discontinuities.
+    // hmodel normalizes the accepted direction before sampling diffuse lighting.
+    if (dot(bentNormal, bentNormal) > 0.0001 && dot(bentNormal, N.xyz) > 0.0)
+        ambientNormal = bentNormal;
+#else
     occ = s_ao.Load(int3(I.hpos.xy, 0));
+#endif
 #else
 #ifdef USE_GTAO
     occ = calc_gtao(P, N, I.tc0, 0);
@@ -82,7 +97,7 @@ float4 main(p_screen I) : SV_Target
 
     // hemisphere
     float3 hdiffuse, hspecular;
-    hmodel(hdiffuse, hspecular, mtl, N.w, D, P.xyz, N.xyz);
+    hmodel(hdiffuse, hspecular, mtl, N.w, D, P.xyz, N.xyz, ambientNormal);
 
     // AO implementation
 #ifdef SSAO_QUALITY

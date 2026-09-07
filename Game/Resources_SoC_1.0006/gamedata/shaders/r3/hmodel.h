@@ -16,7 +16,7 @@ TextureCube env_s1;
 
 uniform float4 env_color; // color.w = lerp factor
 
-void hmodel(out float3 hdiffuse, out float3 hspecular, float m, float h, float4 alb_gloss, float3 Pnt, float3 normal)
+void hmodel(out float3 hdiffuse, out float3 hspecular, float m, float h, float4 alb_gloss, float3 Pnt, float3 normal, float3 ambientNormal)
 {
     // [ SSS Test ]. Overwrite terrain material
     bool m_terrain = abs(m - 0.95) <= 0.04f;
@@ -74,21 +74,36 @@ void hmodel(out float3 hdiffuse, out float3 hspecular, float m, float h, float4 
     vreflectRemap = getSpecularDominantDir(nwRemap, vreflectRemap, rough);
 
     // Valve style ambient cube to prevent seams
+    // Only diffuse environment sampling uses the bent normal. The reflection
+    // direction, specular dominant direction and BRDF keep the surface normal.
+#ifdef USE_XEGTAO_BENT_NORMALS
+    float3 ambientWorld = mul(m_inv_V, normalize(ambientNormal));
+    float3 ambientRemap = ambientWorld;
+    float3 ambientAbs = abs(ambientRemap);
+    ambientRemap /= max(ambientAbs.x, max(ambientAbs.y, ambientAbs.z));
+    if (ambientRemap.y < 0.999)
+        ambientRemap.y = ambientRemap.y * 2 - 1;
+    ambientRemap = normalize(ambientRemap);
+#else
+    float3 ambientWorld = nw;
+    float3 ambientRemap = nwRemap;
+#endif
+
     const float Epsilon = 0.001;
-    float3 nSquared = nw * nw;
+    float3 nSquared = ambientWorld * ambientWorld;
 
     float3 e0d = 0;
-    e0d += nSquared.x * (env_s0.SampleLevel(smp_base, float3(nwRemap.x, Epsilon, Epsilon), CUBE_MIPS).rgb);
-    e0d += nSquared.y * (env_s0.SampleLevel(smp_base, float3(Epsilon, nwRemap.y, Epsilon), CUBE_MIPS).rgb);
-    e0d += nSquared.z * (env_s0.SampleLevel(smp_base, float3(Epsilon, Epsilon, nwRemap.z), CUBE_MIPS).rgb);
+    e0d += nSquared.x * (env_s0.SampleLevel(smp_base, float3(ambientRemap.x, Epsilon, Epsilon), CUBE_MIPS).rgb);
+    e0d += nSquared.y * (env_s0.SampleLevel(smp_base, float3(Epsilon, ambientRemap.y, Epsilon), CUBE_MIPS).rgb);
+    e0d += nSquared.z * (env_s0.SampleLevel(smp_base, float3(Epsilon, Epsilon, ambientRemap.z), CUBE_MIPS).rgb);
     // e0d = LinearTosRGB(e0d);
 
     // e0d = env_s0.SampleLevel(smp_base, nwRemap, CUBE_MIPS);
 
     float3 e1d = 0;
-    e1d += nSquared.x * (env_s1.SampleLevel(smp_base, float3(nwRemap.x, Epsilon, Epsilon), CUBE_MIPS).rgb);
-    e1d += nSquared.y * (env_s1.SampleLevel(smp_base, float3(Epsilon, nwRemap.y, Epsilon), CUBE_MIPS).rgb);
-    e1d += nSquared.z * (env_s1.SampleLevel(smp_base, float3(Epsilon, Epsilon, nwRemap.z), CUBE_MIPS).rgb);
+    e1d += nSquared.x * (env_s1.SampleLevel(smp_base, float3(ambientRemap.x, Epsilon, Epsilon), CUBE_MIPS).rgb);
+    e1d += nSquared.y * (env_s1.SampleLevel(smp_base, float3(Epsilon, ambientRemap.y, Epsilon), CUBE_MIPS).rgb);
+    e1d += nSquared.z * (env_s1.SampleLevel(smp_base, float3(Epsilon, Epsilon, ambientRemap.z), CUBE_MIPS).rgb);
     // e1d = LinearTosRGB(e1d);
 
     // e1d = env_s1.SampleLevel(smp_base, nwRemap, CUBE_MIPS);
@@ -130,5 +145,11 @@ void hmodel(out float3 hdiffuse, out float3 hspecular, float m, float h, float4 
 
     hdiffuse = Amb_BRDF(rough, albedo, specular, env_d, env_s * !m_flora, -v2Pnt, nw).rgb;
     hspecular = 0; // do not use hspec at all
+}
+
+// Existing callers (including forward materials) retain their original lighting.
+void hmodel(out float3 hdiffuse, out float3 hspecular, float m, float h, float4 alb_gloss, float3 Pnt, float3 normal)
+{
+    hmodel(hdiffuse, hspecular, m, h, alb_gloss, Pnt, normal, normal);
 }
 #endif

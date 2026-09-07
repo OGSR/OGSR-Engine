@@ -53,6 +53,7 @@ enum : u32
 };
 extern ECORE_API u32 ps_r_ao_mode;
 extern ECORE_API float ps_r_xegtao_radius;
+extern ECORE_API BOOL ps_r_xegtao_bent_normals; // Requires vid_restart.
 
 enum : u32
 {

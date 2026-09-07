@@ -14,7 +14,7 @@ void main(uint2 pixel : SV_DispatchThreadID)
     float4 packed = xe_position.Load(int3(min(pixel, uint2(xe_source.xy) - 1), 0));
     if (packed.z <= 0.001)
     {
-        xe_ao[pixel] = 170; // visibility 1 / XE_GTAO_OCCLUSION_TERM_SCALE
+        XeGTAO_OutputWorkingTerm(pixel, 1.0, float3(0, 0, -1), xe_ao);
         xe_edges[pixel] = 0;
         return;
     }

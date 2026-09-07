@@ -1,8 +1,11 @@
 #ifndef OGSR_XEGTAO_COMMON_H
 #define OGSR_XEGTAO_COMMON_H
 
-// SM5 / FXC path: FP32 arithmetic, compact R16F depth and R8 AO storage.
+// SM5 / FXC path: FP32 arithmetic, R16F depth, R8 AO or packed R32 bent AO.
 #define XE_GTAO_USE_HALF_FLOAT_PRECISION 0
+#ifdef USE_XEGTAO_BENT_NORMALS
+#define XE_GTAO_COMPUTE_BENT_NORMALS
+#endif
 #define VA_SATURATE saturate
 #include "xegtao\XeGTAO.hlsli"
 

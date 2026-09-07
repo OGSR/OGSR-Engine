@@ -21,6 +21,7 @@ private:
     bool m_resetTemporalHistory{true};
     bool m_ao_enabled{}; // Matches SSAO_QUALITY when the target's shaders were compiled.
     u32 m_ao_mode{}; // Method changes, like quality changes, require vid_restart.
+    bool m_xegtao_bent_normals{}; // Latched with the AO shaders and texture formats.
     XeGTAOResources* m_xegtao{};
     void InitXeGTAO();
     void DestroyXeGTAO();

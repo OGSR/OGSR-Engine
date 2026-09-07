@@ -191,6 +191,7 @@ CRenderTarget::CRenderTarget()
 
     m_ao_enabled = ps_r_ao_quality != 0;
     m_ao_mode = ps_r_ao_mode;
+    m_xegtao_bent_normals = m_ao_enabled && m_ao_mode == AO_MODE_XEGTAO && ps_r_xegtao_bent_normals;
 
     param_blur = 0.f;
     param_gray = 0.f;
@@ -230,7 +231,9 @@ CRenderTarget::CRenderTarget()
 
         if (m_ao_enabled)
         {
-            rt_ao.create("$user$ao", w, h, DXGI_FORMAT_R16_FLOAT);
+            // XeGTAO already quantizes each component to 8 bits. Bent mode keeps
+            // visibility in R and the encoded view-space direction in GBA.
+            rt_ao.create("$user$ao", w, h, m_xegtao_bent_normals ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_R16_FLOAT);
             if (m_ao_mode != AO_MODE_XEGTAO)
                 rt_ao_half.create("$user$ao_half", (w + 1) / 2, (h + 1) / 2, DXGI_FORMAT_R16G16B16A16_FLOAT);
         }
