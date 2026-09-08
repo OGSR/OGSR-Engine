@@ -73,6 +73,12 @@
     <ClCompile Include="mimalloc\src\subproc.c">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="mimalloc\src\sample-guarded.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="mimalloc\src\sample-profile.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mimalloc\include\mimalloc\atomic.h">
@@ -106,6 +112,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="mimalloc\include\mimalloc\prim-tls.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="mimalloc\include\mimalloc-profile.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
