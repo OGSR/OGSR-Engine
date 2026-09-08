@@ -187,7 +187,7 @@ void CRenderTarget::phase_combine(CBackend& cmd_list)
     if (need_heatvision)
         phase_heatvision(cmd_list);
 
-    const bool upscaled_3dss = (!need_heatvision && need_3dss && Phase3DSSUpscale(cmd_list));
+    const bool upscaled_3dss = (need_3dss && Phase3DSSUpscale(cmd_list));
 
     if (ps_r_pp_aa_mode) // должно быть перед 3DSS
     {
