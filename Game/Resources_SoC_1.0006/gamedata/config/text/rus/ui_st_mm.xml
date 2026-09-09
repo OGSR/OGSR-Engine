@@ -292,11 +292,32 @@
 	<string id="ui_mm_dlss_quality">
 		<text>Качество DLSS</text>
 	</string>
+	<string id="ui_mm_dlss_preset">
+		<text>Пресет DLSS</text>
+	</string>
 	<string id="ui_mm_fsr3_quality">
 		<text>Качество FSR 3</text>
 	</string>
 	<string id="st_opt_dlaa">
 		<text>DLAA</text>
+	</string>
+	<string id="st_opt_dlss_default">
+		<text>Default</text>
+	</string>
+	<string id="st_opt_dlss_f">
+		<text>F (CNN)</text>
+	</string>
+	<string id="st_opt_dlss_j">
+		<text>J (Transformer)</text>
+	</string>
+	<string id="st_opt_dlss_k">
+		<text>K (Transformer)</text>
+	</string>
+	<string id="st_opt_dlss_l">
+		<text>L (Transformer)</text>
+	</string>
+	<string id="st_opt_dlss_m">
+		<text>M (Transformer)</text>
 	</string>
 	<string id="st_opt_dlss_quality">
 		<text>Качество</text>
@@ -903,6 +924,9 @@
 	<string id="video_settings_name_71">
 		<text>Качество FSR 3 - r_aa_fsr3_quality</text>
 	</string>
+	<string id="video_settings_name_72">
+		<text>Пресет DLSS - r_aa_dlss_preset</text>
+	</string>
 
 	<string id="video_settings_desc_1">
 		<text>Motion blur - размытие изображения при повороте камеры, воспроизведении сцен движения или быстро движущихся объектов.</text>
@@ -1093,6 +1117,12 @@
 	</string>
 	<string id="video_settings_desc_71">
 		<text>Задаёт внутреннее разрешение AMD FSR 3. Нативное сглаживание рендерит в нативном разрешении для максимального качества. Quality, Balanced, Performance и Ultra Performance постепенно снижают внутреннее разрешение ради FPS. После изменения примените видео настройки (vid_restart).</text>
+	</string>
+	<string id="video_settings_desc_72">
+		<text>Выбор модели NVIDIA DLSS. Пресеты, которые не поддерживает загруженная библиотека DLSS, отображаются серым.
+%c[yellow] \nCNN:\nF — устаревшая CNN-модель (deprecated).
+%c[green] \nTransformer:\nJ — меньше шлейфов, больше мерцания (NVIDIA рекомендует K).\nK — трансформер 1-го поколения, по умолчанию для DLAA / Quality / Balanced.\nL — трансформер 2-го поколения, четче и медленнее, по умолчанию для Ultra Performance (RTX 40+).\nM — трансформер 2-го поколения, качество как у L, но быстрее, по умолчанию для Performance (RTX 40+).
+Default следует за NVIDIA / OTA драйвера.</text>
 	</string>
 
 </string_table>

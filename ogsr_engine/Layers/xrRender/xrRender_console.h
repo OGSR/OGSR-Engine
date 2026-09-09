@@ -6,6 +6,10 @@ extern ECORE_API u32 r2_SmapCascade0Size, /*r2_SmapCascade1Size,*/ r2_SmapCascad
 extern ECORE_API u32 ps_r_pp_aa_mode;
 extern ECORE_API u32 ps_r_dlss_preset;
 extern ECORE_API u32 ps_r_dlss_quality;
+
+bool R_dlss_is_preset_available(u32 preset);
+void R_dlss_refresh_available_presets();
+extern char ps_r_dlss_dll_version[64];
 extern ECORE_API u32 ps_r_fsr3_quality;
 extern float ps_r_dlss_3dss_scale_factor;
 

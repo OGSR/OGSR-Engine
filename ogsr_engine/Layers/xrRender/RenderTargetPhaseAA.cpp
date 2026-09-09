@@ -32,6 +32,7 @@ void CRenderTarget::ProcessTAA(CBackend& cmd_list)
 //*****************************************************************************************************
 #include <..\NVIDIA_DLSS\DLSS\include\nvsdk_ngx.h>
 #include <..\NVIDIA_DLSS\DLSS\include\nvsdk_ngx_helpers.h>
+#include <winver.h>
 
 #ifdef _DEBUG
 #if _ITERATOR_DEBUG_LEVEL == 0
@@ -46,6 +47,78 @@ void CRenderTarget::ProcessTAA(CBackend& cmd_list)
 #pragma comment(lib, "nvsdk_ngx_s")
 #endif
 #endif
+
+#pragma comment(lib, "version.lib")
+
+char ps_r_dlss_dll_version[64]{};
+
+struct DlssDllFileVersion
+{
+    u32 major{};
+    u32 minor{};
+    u32 patch{};
+    u32 revision{};
+    bool valid{};
+};
+
+static DlssDllFileVersion g_dlss_dll_file_version{};
+
+static bool DlssDllVersionAtLeast(const u32 major, const u32 minor, const u32 patch)
+{
+    if (!g_dlss_dll_file_version.valid)
+        return false;
+    if (g_dlss_dll_file_version.major != major)
+        return g_dlss_dll_file_version.major > major;
+    if (g_dlss_dll_file_version.minor != minor)
+        return g_dlss_dll_file_version.minor > minor;
+    return g_dlss_dll_file_version.patch >= patch;
+}
+
+static void QueryLoadedDlssDllVersion()
+{
+    if (g_dlss_dll_file_version.valid)
+        return;
+
+    const HMODULE mod = GetModuleHandleW(L"nvngx_dlss.dll");
+    if (!mod)
+        return;
+
+    wchar_t path[MAX_PATH]{};
+    if (!GetModuleFileNameW(mod, path, MAX_PATH))
+        return;
+
+    DWORD dummy{};
+    const DWORD size = GetFileVersionInfoSizeW(path, &dummy);
+    if (!size)
+        return;
+
+    xr_vector<u8> data(size);
+    if (!GetFileVersionInfoW(path, 0, size, data.data()))
+        return;
+
+    VS_FIXEDFILEINFO* info{};
+    UINT info_size{};
+    if (!VerQueryValueW(data.data(), L"\\", reinterpret_cast<LPVOID*>(&info), &info_size) || !info)
+        return;
+
+    g_dlss_dll_file_version.major = HIWORD(info->dwFileVersionMS);
+    g_dlss_dll_file_version.minor = LOWORD(info->dwFileVersionMS);
+    g_dlss_dll_file_version.patch = HIWORD(info->dwFileVersionLS);
+    g_dlss_dll_file_version.revision = LOWORD(info->dwFileVersionLS);
+    g_dlss_dll_file_version.valid = true;
+
+    if (g_dlss_dll_file_version.revision == 0)
+    {
+        xr_sprintf(ps_r_dlss_dll_version, "%u.%u.%u", g_dlss_dll_file_version.major, g_dlss_dll_file_version.minor, g_dlss_dll_file_version.patch);
+    }
+    else
+    {
+        xr_sprintf(ps_r_dlss_dll_version, "%u.%u.%u.%u", g_dlss_dll_file_version.major, g_dlss_dll_file_version.minor, g_dlss_dll_file_version.patch,
+            g_dlss_dll_file_version.revision);
+    }
+
+    Msg("--[DLSS] loaded DLL version: [%s]", ps_r_dlss_dll_version);
+}
 
 struct DlssResolutionInfo
 {
@@ -67,6 +140,20 @@ static NVSDK_NGX_PerfQuality_Value GetRequestedDlssQuality()
     }
 }
 
+static const char* GetDlssPresetParameterName(const NVSDK_NGX_PerfQuality_Value quality)
+{
+    switch (quality)
+    {
+    case NVSDK_NGX_PerfQuality_Value_MaxPerf: return NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_Performance;
+    case NVSDK_NGX_PerfQuality_Value_Balanced: return NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_Balanced;
+    case NVSDK_NGX_PerfQuality_Value_MaxQuality: return NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_Quality;
+    case NVSDK_NGX_PerfQuality_Value_UltraPerformance: return NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_UltraPerformance;
+    case NVSDK_NGX_PerfQuality_Value_UltraQuality: return NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_UltraQuality;
+    case NVSDK_NGX_PerfQuality_Value_DLAA: return NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_DLAA;
+    default: return NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_DLAA;
+    }
+}
+
 static class NGXWrapper
 {
     NVSDK_NGX_Parameter* NgxParameters{};
@@ -75,13 +162,18 @@ static class NGXWrapper
     ID3D11Resource* OutputRT{};
     NVSDK_NGX_Dimensions saved_renderSize{};
     bool resetHistory{true};
+    bool availablePresetsResolved{};
 
 public:
     u32 saved_w{}, saved_h{};
     uint32_t dlssPreset{}, dlssQuality{}, requestedQuality{};
+    u32 availablePresetMask{~0u};
 
     bool Initialize(const u64 appid)
     {
+        if (!HW.pDevice)
+            return false;
+
         if (HW.FeatureLevel < D3D_FEATURE_LEVEL_11_1)
             Msg("!![%s] Low FeatureLevel: [%d]", __FUNCTION__, HW.FeatureLevel);
 
@@ -122,7 +214,55 @@ public:
             }
         }
 
+        QueryLoadedDlssDllVersion();
         return true;
+    }
+
+    bool IsPresetAvailable(const u32 preset) const
+    {
+        if (preset > 31)
+            return false;
+        if (availablePresetMask == ~0u)
+            return true;
+        return (availablePresetMask & (1u << preset)) != 0;
+    }
+
+    void RefreshAvailablePresets()
+    {
+        if (!HW.pDevice)
+            return;
+
+        if (!Initialize(20082024151405ull) || !NgxParameters)
+            return;
+
+        QueryLoadedDlssDllVersion();
+        if (availablePresetsResolved)
+            return;
+
+        // NGX parameter Set/Get does not report whether a preset exists in the
+        // loaded DLL; it just stores the hint. NVIDIA added L/M in SDK 310.5.0.
+        u32 mask = 1u << NVSDK_NGX_DLSS_Hint_Render_Preset_Default;
+        mask |= 1u << NVSDK_NGX_DLSS_Hint_Render_Preset_F;
+        mask |= 1u << NVSDK_NGX_DLSS_Hint_Render_Preset_J;
+        mask |= 1u << NVSDK_NGX_DLSS_Hint_Render_Preset_K;
+        if (DlssDllVersionAtLeast(310, 5, 0))
+        {
+            mask |= 1u << NVSDK_NGX_DLSS_Hint_Render_Preset_L;
+            mask |= 1u << NVSDK_NGX_DLSS_Hint_Render_Preset_M;
+        }
+
+        availablePresetMask = mask;
+        if (g_dlss_dll_file_version.valid)
+            availablePresetsResolved = true;
+
+        Msg("--[DLSS] available presets for DLL [%s]: Default/F/J/K%s", ps_r_dlss_dll_version[0] ? ps_r_dlss_dll_version : "unknown",
+            DlssDllVersionAtLeast(310, 5, 0) ? "/L/M" : "");
+
+        if (!IsPresetAvailable(ps_r_dlss_preset))
+        {
+            Msg("!![%s] DLSS preset [%u] is unavailable, falling back to Default", __FUNCTION__, ps_r_dlss_preset);
+            ps_r_dlss_preset = NVSDK_NGX_DLSS_Hint_Render_Preset_Default;
+        }
     }
 
     bool QueryOptimalSettings(const u32 displayWidth, const u32 displayHeight, const NVSDK_NGX_PerfQuality_Value quality, DlssResolutionInfo& out) const
@@ -158,16 +298,7 @@ public:
         NVSDK_NGX_Result result{};
 
         requestedQuality = requested_quality;
-        const char* preset_name{};
-        switch (quality)
-        {
-        case NVSDK_NGX_PerfQuality_Value_MaxPerf: preset_name = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_Performance; break;
-        case NVSDK_NGX_PerfQuality_Value_Balanced: preset_name = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_Balanced; break;
-        case NVSDK_NGX_PerfQuality_Value_MaxQuality: preset_name = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_Quality; break;
-        case NVSDK_NGX_PerfQuality_Value_UltraPerformance: preset_name = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_UltraPerformance; break;
-        case NVSDK_NGX_PerfQuality_Value_UltraQuality: preset_name = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_UltraQuality; break;
-        case NVSDK_NGX_PerfQuality_Value_DLAA: preset_name = NVSDK_NGX_Parameter_DLSS_Hint_Render_Preset_DLAA; break;
-        }
+        const char* preset_name = GetDlssPresetParameterName(static_cast<NVSDK_NGX_PerfQuality_Value>(quality));
 
         NVSDK_NGX_Parameter_SetUI(NgxParameters, preset_name, preset);
 
@@ -225,6 +356,8 @@ public:
 
         DLSSCreated = true;
         resetHistory = true;
+        QueryLoadedDlssDllVersion();
+        RefreshAvailablePresets();
         return true;
     }
 
@@ -302,6 +435,10 @@ public:
     ~NGXWrapper() { Destroy(); }
 } NGXWrapper;
 
+bool R_dlss_is_preset_available(const u32 preset) { return NGXWrapper.IsPresetAvailable(preset); }
+
+void R_dlss_refresh_available_presets() { NGXWrapper.RefreshAvailablePresets(); }
+
 static FfxFsr3UpscalerQualityMode GetRequestedFsr3Quality()
 {
     return static_cast<FfxFsr3UpscalerQualityMode>(
@@ -321,6 +458,7 @@ void CRenderTarget::ConfigureTemporalRenderSize()
         }
         else
         {
+            NGXWrapper.RefreshAvailablePresets();
             DlssResolutionInfo resolutionInfo{};
             if (NGXWrapper.QueryOptimalSettings(Device.dwWidth, Device.dwHeight, quality, resolutionInfo))
             {

@@ -13,6 +13,7 @@ local adv_vid_opt_params = {
 	--
 	{ "aa",                    "list",  0, hint_colors.green , "video_settings_name_19", "video_settings_desc_19" },
 	{ "dlss_quality",          "list",  0, hint_colors.green , "video_settings_name_70", "video_settings_desc_70" },
+	{ "dlss_preset",           "list",  0, hint_colors.green , "video_settings_name_72", "video_settings_desc_72" },
 	{ "fsr3_quality",          "list",  0, hint_colors.green , "video_settings_name_71", "video_settings_desc_71" },
 	{ "cas",                   "track", 0, hint_colors.green , "video_settings_name_20", "video_settings_desc_20" },
 --	{ "3dss_scale_factor",     "track", 0, hint_colors.yellow, "video_settings_name_69", "video_settings_desc_69" },
@@ -107,7 +108,14 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 			ui_events.STATIC_FOCUS_RECEIVED,
 			function()
 				handler.hint_name:SetText(hint_caption and game.translate_string(hint_caption) or "")
-				handler.hint_caption:SetText(hint_string and game.translate_string(hint_string) or "")
+				local desc = hint_string and game.translate_string(hint_string) or ""
+				if opt == "dlss_preset" then
+					local ver = get_console():get_string("r_aa_dlss_version") or ""
+					if ver ~= "" then
+						desc = desc .. "\nDLL: " .. ver
+					end
+				end
+				handler.hint_caption:SetText(desc)
 			end
 		)
 
@@ -125,7 +133,14 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 
 		if opt == "aa" then
 			self.aa_list = ctl
-		elseif opt == "dlss_quality" or opt == "fsr3_quality" then
+		elseif opt == "dlss_quality" then
+			self.upscaler_rows[opt] = _st
+			self.dlss_quality_list = ctl
+		elseif opt == "dlss_preset" then
+			self.upscaler_rows[opt] = _st
+			self.dlss_preset_list = ctl
+			self.dlss_preset_cap = _st2
+		elseif opt == "fsr3_quality" then
 			self.upscaler_rows[opt] = _st
 		end
 	end
@@ -134,6 +149,14 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 		handler:Register(self.aa_list, "video_adv:list_aa")
 		handler:AddCallback("video_adv:list_aa", ui_events.LIST_ITEM_SELECT, function()
 			self:UpdateUpscalerQualityRows()
+		end)
+	end
+	if self.dlss_quality_list then
+		handler:Register(self.dlss_quality_list, "video_adv:list_dlss_quality")
+		handler:AddCallback("video_adv:list_dlss_quality", ui_events.LIST_ITEM_SELECT, function()
+			if self.dlss_preset_list then
+				self.dlss_preset_list:SetCurrentValue()
+			end
 		end)
 	end
 	self:UpdateUpscalerQualityRows()
@@ -146,6 +169,21 @@ function opt_video_adv:UpdateUpscalerQualityRows()
 	local mode = get_console():get_string("r_aa_mode") or ""
 	if self.upscaler_rows.dlss_quality then
 		self.upscaler_rows.dlss_quality:Show(mode == "st_opt_dlss")
+	end
+	if self.upscaler_rows.dlss_preset then
+		self.upscaler_rows.dlss_preset:Show(mode == "st_opt_dlss")
+	end
+	if mode == "st_opt_dlss" and self.dlss_preset_list then
+		self.dlss_preset_list:SetCurrentValue()
+	end
+	if self.dlss_preset_cap then
+		local name = game.translate_string("ui_mm_dlss_preset")
+		local ver = get_console():get_string("r_aa_dlss_version") or ""
+		if mode == "st_opt_dlss" and ver ~= "" then
+			self.dlss_preset_cap:SetText(name .. "  " .. ver)
+		else
+			self.dlss_preset_cap:SetText(name)
+		end
 	end
 	if self.upscaler_rows.fsr3_quality then
 		self.upscaler_rows.fsr3_quality:Show(mode == "st_opt_fsr3")
