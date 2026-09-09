@@ -44,7 +44,7 @@ constexpr xr_token pp_aa_mode_token[] = {
     {nullptr, 0},
 };
 
-u32 ps_r_dlss_preset = NVSDK_NGX_DLSS_Hint_Render_Preset_F;
+u32 ps_r_dlss_preset = NVSDK_NGX_DLSS_Hint_Render_Preset_Default;
 constexpr xr_token dlss_mode_token[]{
     {"st_opt_dlss_default", NVSDK_NGX_DLSS_Hint_Render_Preset_Default}, // default behavior, may or may not change after OTA
     {"st_opt_dlss_f", NVSDK_NGX_DLSS_Hint_Render_Preset_F}, // CNN
