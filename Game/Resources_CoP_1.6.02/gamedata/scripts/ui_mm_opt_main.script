@@ -120,6 +120,10 @@ function options_dialog:OnPresetChanged()
 	local opt					= COptionsManager()
 	opt:SetCurrentValues("mm_opt_video")
 	opt:SetCurrentValues		("mm_opt_video_adv")
+
+    if self.dlg_video_adv and self.dlg_video_adv.UpdateUpscalerQualityRows then
+		self.dlg_video_adv:UpdateUpscalerQualityRows()
+	end
 end
 
 

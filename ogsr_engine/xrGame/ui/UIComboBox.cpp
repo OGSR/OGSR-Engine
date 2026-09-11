@@ -215,7 +215,7 @@ void CUIComboBox::OnBtnClicked() { ShowList(!m_list_frame.IsShown()); }
 void CUIComboBox::ShowList(bool bShow)
 {
     if (bShow && m_entry == "r_aa_dlss_preset")
-        SetCurrentValue();
+        SetCurrentOptValue();
 
     if (bShow)
     {

@@ -29,6 +29,7 @@ void CUIComboBox::script_register(lua_State* L)
                   .def("SetText", &CUIComboBox::SetText)
                   .def("ClearList", &CUIComboBox::ClearList)
                   .def("SetCurrentOptValue", &CUIComboBox::SetCurrentOptValue)
-
+                  .def("SetCurrentID", &CUIComboBox::SetItemToken)
+                  .def("GetCurrentValueName", [](CUIComboBox* self) { return get_token_name(self->GetOptToken(), self->m_itoken_id); })
     ];
 }

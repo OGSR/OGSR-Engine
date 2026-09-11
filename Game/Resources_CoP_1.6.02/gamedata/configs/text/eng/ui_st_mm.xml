@@ -974,6 +974,63 @@
 	<string id="st_opt_dlss">
 		<text>NVIDIA DLSS</text>
 	</string>
+	<string id="ui_mm_dlss_quality">
+		<text>DLSS quality</text>
+	</string>
+	<string id="ui_mm_dlss_preset">
+		<text>DLSS preset</text>
+	</string>
+	<string id="ui_mm_fsr3_quality">
+		<text>FSR3 quality</text>
+	</string>
+	<string id="st_opt_dlaa">
+		<text>DLAA</text>
+	</string>
+	<string id="st_opt_dlss_default">
+		<text>Default</text>
+	</string>
+	<string id="st_opt_dlss_f">
+		<text>F (CNN)</text>
+	</string>
+	<string id="st_opt_dlss_j">
+		<text>J (Transformer)</text>
+	</string>
+	<string id="st_opt_dlss_k">
+		<text>K (Transformer)</text>
+	</string>
+	<string id="st_opt_dlss_l">
+		<text>L (Transformer)</text>
+	</string>
+	<string id="st_opt_dlss_m">
+		<text>M (Transformer)</text>
+	</string>
+	<string id="st_opt_dlss_quality">
+		<text>Quality</text>
+	</string>
+	<string id="st_opt_dlss_balanced">
+		<text>Balanced</text>
+	</string>
+	<string id="st_opt_dlss_performance">
+		<text>Performance</text>
+	</string>
+	<string id="st_opt_dlss_ultra_performance">
+		<text>Ultra Performance</text>
+	</string>
+	<string id="st_opt_fsr3_native_aa">
+		<text>Native AA</text>
+	</string>
+	<string id="st_opt_fsr3_quality">
+		<text>Quality</text>
+	</string>
+	<string id="st_opt_fsr3_balanced">
+		<text>Balanced</text>
+	</string>
+	<string id="st_opt_fsr3_performance">
+		<text>Performance</text>
+	</string>
+	<string id="st_opt_fsr3_ultra_performance">
+		<text>Ultra Performance</text>
+	</string>
 	<string id="st_opt_fsr3">
 		<text>AMD FSR3</text>
 	</string>
@@ -1244,6 +1301,18 @@
 	</string>
 	<string id="video_settings_desc_47">
 		<text>This setting includes the appearance of drops on the glass of helmets and gas masks during rain.</text>
+	</string>
+	<string id="video_settings_desc_70">
+		<text>Sets the NVIDIA DLSS internal render scale. DLAA renders at native resolution for maximum image quality. Quality, Balanced, Performance and Ultra Performance render at progressively lower internal resolutions to gain FPS. Apply video settings or run vid_restart after changing this option.</text>
+	</string>
+	<string id="video_settings_desc_71">
+		<text>Sets the AMD FSR3 internal render scale. Native AA renders at native resolution for maximum image quality. Quality, Balanced, Performance and Ultra Performance render at progressively lower internal resolutions to gain FPS. Apply video settings or run vid_restart after changing this option.</text>
+	</string>
+	<string id="video_settings_desc_72">
+		<text>Selects the NVIDIA DLSS model. Presets not supported by the loaded DLSS library are grayed out.
+%c[yellow] \nCNN:\nF - legacy CNN model (deprecated).
+%c[green] \nTransformer:\nJ - less ghosting, more flicker (NVIDIA recommends K).\nK - 1st-gen transformer, default for DLAA / Quality / Balanced.\nL - 2nd-gen transformer, sharper and slower, default for Ultra Performance (RTX 40+).\nM - 2nd-gen transformer, similar to L but faster, default for Performance (RTX 40+).
+Default follows NVIDIA / driver OTA.</text>
 	</string>
 
 </string_table>

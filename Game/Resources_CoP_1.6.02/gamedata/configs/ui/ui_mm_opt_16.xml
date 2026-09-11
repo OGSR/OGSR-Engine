@@ -273,6 +273,46 @@
       <list_font_s r="240" g="217" b="182" />
       <list_font r="170" g="170" b="170" font="letterica16" />
     </list_aa>
+
+		<cap_dlss_quality width="150" height="21">
+            <text font="letterica16" r="170" g="170" b="170" align="r" vert_align="c">ui_mm_dlss_quality</text>
+        </cap_dlss_quality>
+        <list_dlss_quality x="160" width="182" height="21" list_length="5" always_show_scroll="0">
+            <options_item entry="r_aa_dlss_quality" group="mm_opt_video_adv" depend="vid"/>
+      <text_color>
+        <e r="170" g="170" b="170" />
+        <d color="ui_gray" />
+      </text_color>
+      <list_font_s r="240" g="217" b="182" />
+      <list_font r="170" g="170" b="170" font="letterica16" />
+        </list_dlss_quality>
+
+		<cap_dlss_preset width="150" height="21">
+            <text font="letterica16" r="170" g="170" b="170" align="r" vert_align="c">ui_mm_dlss_preset</text>
+        </cap_dlss_preset>
+        <list_dlss_preset x="160" width="182" height="21" list_length="6" always_show_scroll="0">
+            <options_item entry="r_aa_dlss_preset" group="mm_opt_video_adv" depend="vid"/>
+      <text_color>
+        <e r="170" g="170" b="170" />
+        <d color="ui_gray" />
+      </text_color>
+      <list_font_s r="240" g="217" b="182" />
+      <list_font r="170" g="170" b="170" font="letterica16" />
+        </list_dlss_preset>
+
+		<cap_fsr3_quality width="150" height="21">
+            <text font="letterica16" r="170" g="170" b="170" align="r" vert_align="c">ui_mm_fsr3_quality</text>
+        </cap_fsr3_quality>
+        <list_fsr3_quality x="160" width="182" height="21" list_length="5" always_show_scroll="0">
+            <options_item entry="r_aa_fsr3_quality" group="mm_opt_video_adv" depend="vid"/>
+      <text_color>
+        <e r="170" g="170" b="170" />
+        <d color="ui_gray" />
+      </text_color>
+      <list_font_s r="240" g="217" b="182" />
+      <list_font r="170" g="170" b="170" font="letterica16" />
+        </list_fsr3_quality>
+
 	<cap_cas width="150" height="21">
 		<text font="letterica16" r="170" g="170" b="170" align="r" vert_align="c">ui_mm_cas</text>
 	</cap_cas>

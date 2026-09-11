@@ -24,6 +24,9 @@ local adv_vid_opt_params = { --имя статика, тип статика, н�
 
     { "separator",               "separator", 0, false,              "ui_mm_opt_caption_adv_video_5"  },
     { "aa",                      "list",      0, hint_colors.green , "video_settings_desc_19"         },
+	{ "dlss_quality",            "list",      0, hint_colors.green , "video_settings_desc_70"         },
+	{ "dlss_preset",             "list",      0, hint_colors.green , "video_settings_desc_72"         },
+	{ "fsr3_quality",            "list",      0, hint_colors.green , "video_settings_desc_71"         },
     { "cas",                     "track",     0, hint_colors.green , "video_settings_desc_20"         },
 
     { "separator",               "separator", 0, false,              "ui_mm_opt_caption_adv_video_2"  },
@@ -86,6 +89,7 @@ function opt_video_adv:InitControls(x, y, xml, handler)
 
     self.scroll_v = xml:InitScrollView("video_adv:scroll_v", self)
     handler.scroll_v = self.scroll_v
+    self.upscaler_rows = {}
 
     for i = 1, #adv_vid_opt_params do
         local _st = xml:InitStatic("video_adv:templ_item", self.scroll_v)
@@ -103,13 +107,35 @@ function opt_video_adv:InitControls(x, y, xml, handler)
             cap:SetText(game.translate_string(hint))
         else
             if hint and hint ~= "" then
-                cap:SetHint(hint)
+                --[=[if opt == "dlss_preset" then --SIMP: не вижу смысла ещё и тут писать версию
+                    hint = game.translate_string(hint)
+                    local ver = get_console():get_string("r_aa_dlss_version") or ""
+                    if ver ~= "" then
+                        hint = hint .. "\nDLL: " .. ver
+                    end
+					cap:SetHint(hint)
+                else--]=]
+                    cap:SetHint(hint)
+                --end
             end
             if disabled then
                 cap:Enable(false)
                 ctl:Enable(false)
             elseif color then
                 cap:SetTextColor(unpack(color))
+            end
+			
+            if opt == "aa" then
+                self.aa_list = ctl
+            elseif opt == "dlss_quality" then
+                self.upscaler_rows[opt] = _st
+                self.dlss_quality_list = ctl
+            elseif opt == "dlss_preset" then
+                self.upscaler_rows[opt] = _st
+                self.dlss_preset_list = ctl
+                self.dlss_preset_cap = cap
+		    elseif opt == "fsr3_quality" then
+                self.upscaler_rows[opt] = _st
             end
         end
 
@@ -123,6 +149,55 @@ function opt_video_adv:InitControls(x, y, xml, handler)
         end
     end
 
+    if self.aa_list then
+		handler:Register(self.aa_list, "video_adv:list_aa")
+		handler:AddCallback("video_adv:list_aa", ui_events.LIST_ITEM_SELECT, function()
+			self:UpdateUpscalerQualityRows(true)
+		end)
+	end
+	--[=[--не понятно зачем это надо
+	if self.dlss_quality_list then
+		handler:Register(self.dlss_quality_list, "video_adv:list_dlss_quality")
+		handler:AddCallback("video_adv:list_dlss_quality", ui_events.LIST_ITEM_SELECT, function()
+			if self.dlss_preset_list then
+				self.dlss_preset_list:SetCurrentOptValue()
+			end
+		end)
+	end--]=]
+	self:UpdateUpscalerQualityRows()
+
     local btn = xml:Init3tButton("video_adv:btn_to_simply", self)
     handler:Register(btn, "btn_simply_graphic")
+end
+
+function opt_video_adv:UpdateUpscalerQualityRows(after_click)
+	local mode = (after_click and self.aa_list:GetCurrentValueName() or get_console():get_string("r_aa_mode")) or ""
+
+	if self.upscaler_rows.dlss_quality then
+		self.upscaler_rows.dlss_quality:Show(mode == "st_opt_dlss")
+	end
+	if self.upscaler_rows.dlss_preset then
+		self.upscaler_rows.dlss_preset:Show(mode == "st_opt_dlss")
+	end
+	if mode == "st_opt_dlss" and self.dlss_preset_list then
+		--self.dlss_preset_list:SetCurrentOptValue() --не понятно зачем это надо
+
+	    if self.dlss_preset_cap then
+		    local name = game.translate_string("ui_mm_dlss_preset")
+		    local ver = get_console():get_string("r_aa_dlss_version") or ""
+		    if mode == "st_opt_dlss" and ver ~= "" then
+                self.dlss_preset_cap:SetText(name .. "  " .. ver)
+		    else
+                self.dlss_preset_cap:SetText(name)
+		    end
+        end
+    end
+
+	if self.upscaler_rows.fsr3_quality then
+		self.upscaler_rows.fsr3_quality:Show(mode == "st_opt_fsr3")
+	end
+
+	if self.scroll_v then
+		self.scroll_v:ForceUpdate()
+	end
 end

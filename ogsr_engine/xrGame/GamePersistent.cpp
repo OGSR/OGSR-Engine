@@ -377,17 +377,9 @@ void CGamePersistent::WeathersUpdate()
     }
 }
 
-bool allow_intro()
-{
-    if (strstr(Core.Params, "-nointro"))
-    {
-        return false;
-    }
-    else
-        return true;
-}
+static bool allow_intro() { return !strstr(Core.Params, "-nointro"); }
 
-bool allow_game_intro() { return !strstr(Core.Params, "-nogameintro"); }
+static bool allow_game_intro() { return !strstr(Core.Params, "-nogameintro"); }
 
 void CGamePersistent::start_logo_intro()
 {
