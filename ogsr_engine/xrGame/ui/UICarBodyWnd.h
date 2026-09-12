@@ -70,7 +70,7 @@ protected:
 public:
     CUICellItem* m_pCurrentCellItem;
 
-    CInventoryOwner* m_pOthersObject;
+    CInventoryOwner* m_pOthersObject{};
     IInventoryBox* m_pInventoryBox;
 
 protected:
