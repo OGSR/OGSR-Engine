@@ -11,7 +11,7 @@ float4 SLB_Screen_GetPosition(float2 tc, uint iSample)
 #ifdef SLB_GLSL /// return dummy
     return float4(0.5, 0.5, float(abs(tc.x - 0.5) < 0.25) * 10.0 + 0.01, 0.0);
 #else
-    return SLB_SAMPLER_LOAD(s_position, int3(tc * screen_res.xy - 0.25, 0));
+    return SLB_SAMPLER_LOAD(s_position, int3(tc * render_res.xy - 0.25, 0));
 #endif
 }
 

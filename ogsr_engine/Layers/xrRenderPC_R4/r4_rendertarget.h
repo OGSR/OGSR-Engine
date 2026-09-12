@@ -11,6 +11,12 @@ class CRenderTarget : public IRender_Target
 private:
     u32 dwWidth[R__NUM_CONTEXTS];
     u32 dwHeight[R__NUM_CONTEXTS];
+    u32 m_renderWidth{};
+    u32 m_renderHeight{};
+    u32 m_displayWidth{};
+    u32 m_displayHeight{};
+    bool m_temporalUpscaleInput{};
+    bool m_resetTemporalHistory{true};
     u32 dwAccumulatorClearMark;
     u32 dwFlareClearMark;
 
@@ -45,7 +51,9 @@ public:
     ref_rt rt_Generic_0; // 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
     ref_rt rt_Generic_0_prev; // r2_RT_generic0_prev
     ref_rt rt_Generic_1; // 32bit		(r,g,b,a)				// post-process, intermidiate results, etc.
+    ref_rt rt_Generic_scene_scratch; // low-resolution scene ping-pong target
     ref_rt rt_Generic_combine; // r2_RT_generic_combine
+    ref_rt rt_Postprocess_0; // full-resolution color after temporal upscaling
     ref_rt rt_Generic_0_temp;
     ref_rt rt_Generic_combine_scope;
 
@@ -167,6 +175,7 @@ private:
     ref_shader s_lut;
     ref_shader s_taa;
     ref_shader s_cas;
+    ref_shader s_temporal_resolve;
 
     ref_shader s_rain_drops;
     ref_shader s_gasmask_dudv;
@@ -250,6 +259,7 @@ public:
     void phase_gasmask_dudv(CBackend& cmd_list);
     void phase_nightvision(CBackend& cmd_list);
     void phase_heatvision(CBackend& cmd_list); //--DSR-- HeatVision
+    void phase_heatvision_overlay(CBackend& cmd_list);
 
     void draw_rain(CBackend& cmd_list, light& RainSetup);
 
@@ -289,6 +299,24 @@ public:
 
     virtual u32 get_width(CBackend& cmd_list) { return dwWidth[cmd_list.context_id]; }
     virtual u32 get_height(CBackend& cmd_list) { return dwHeight[cmd_list.context_id]; }
+
+    u32 GetRenderWidth() const { return m_renderWidth; }
+    u32 GetRenderHeight() const { return m_renderHeight; }
+    u32 GetDisplayWidth() const { return m_displayWidth; }
+    u32 GetDisplayHeight() const { return m_displayHeight; }
+    u32 GetActiveWidth() const { return m_temporalUpscaleInput ? m_renderWidth : m_displayWidth; }
+    u32 GetActiveHeight() const { return m_temporalUpscaleInput ? m_renderHeight : m_displayHeight; }
+    u32 GetViewportWidth(CBackend& cmd_list) const { return dwWidth[cmd_list.context_id]; }
+    u32 GetViewportHeight(CBackend& cmd_list) const { return dwHeight[cmd_list.context_id]; }
+    float GetRenderSubrectScaleX() const { return static_cast<float>(m_renderWidth) / static_cast<float>(m_displayWidth); }
+    float GetRenderSubrectScaleY() const { return static_cast<float>(m_renderHeight) / static_cast<float>(m_displayHeight); }
+    bool IsTemporalUpscaleInput() const { return m_temporalUpscaleInput; }
+
+    void SetTemporalRenderSize(u32 renderWidth, u32 renderHeight, u32 displayWidth, u32 displayHeight);
+    void ConfigureTemporalRenderSize();
+    void BeginTemporalUpscaleInput() { m_temporalUpscaleInput = true; }
+    void EndTemporalUpscaleInput() { m_temporalUpscaleInput = false; }
+    void ResetTemporalHistory();
 
     virtual void set_cm_imfluence(float f) { param_color_map_influence = f; }
     virtual void set_cm_interpolate(float f) { param_color_map_interpolate = f; }
@@ -333,13 +361,14 @@ private:
     void DestroyDLSS();
 
     void InitFSR();
-    bool ProcessFSR() const;
+    bool ProcessFSR();
     bool ProcessFSR_3DSS(const bool need_reset);
     void DestroyFSR();
 
     bool reset_3dss_rendertarget(const bool need_reset = false);
 
     void ProcessCAS(CBackend& cmd_list);
+    void BeginPostprocess(CBackend& cmd_list, bool temporalOutput);
 
     void PhaseSSSS(CBackend& cmd_list);
 

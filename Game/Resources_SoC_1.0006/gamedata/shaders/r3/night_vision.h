@@ -296,10 +296,10 @@ float blurred_depth(float2 tc)
     float Directions = 12.0; // BLUR DIRECTIONS (Default 16.0 - More is better but slower)
     float Quality = 4.0; // BLUR QUALITY (Default 4.0 - More is better but slower)
     float Size = 6;
-    float2 Radius = Size / screen_res.xy;
+    float2 Radius = Size / render_res.xy;
 
     // how far away is the center of our COC
-    float center_depth = s_position.Load(int3((tc)*screen_res.xy, 0), 0).z;
+    float center_depth = s_position.Load(int3(tc * render_res.xy, 0), 0).z;
     if (center_depth == 0)
     {
         center_depth = 10000;
@@ -321,7 +321,7 @@ float blurred_depth(float2 tc)
         for (float d = 0.0; d < Pi; d += Pi / Directions) // where are we around the circle
         {
             // pull depth at our sample point
-            depth_sample = s_position.Load(int3(((tc + float2(cos(d), sin(d)) * Radius * i) * screen_res.xy), 0), 0).z;
+            depth_sample = s_position.Load(int3((tc + float2(cos(d), sin(d)) * Radius * i) * render_res.xy, 0), 0).z;
 
             // if we hit the sky, give it a depth of 10k
             if (depth_sample == 0)

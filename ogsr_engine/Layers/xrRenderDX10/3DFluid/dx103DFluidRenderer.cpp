@@ -369,7 +369,7 @@ void dx103DFluidRenderer::Draw(CBackend& cmd_list, const dx103DFluidData& FluidD
 
     RImplementation.rmNormal(cmd_list);
 
-    PrepareCBuffer(cmd_list, FluidData, Device.dwWidth, Device.dwHeight);
+    PrepareCBuffer(cmd_list, FluidData, pTarget->GetRenderWidth(), pTarget->GetRenderHeight());
 
     cmd_list.set_c(strDiffuseLight, LightData.m_vLightIntencity.x, LightData.m_vLightIntencity.y, LightData.m_vLightIntencity.z, 1.0f);
 
@@ -383,10 +383,11 @@ void dx103DFluidRenderer::ComputeRayData(CBackend& cmd_list, const dx103DFluidDa
 
     CRenderTarget* pTarget = RImplementation.Target;
     pTarget->u_setrt(cmd_list, RT[RRT_RayDataTex], nullptr, nullptr, nullptr); // LDR RT
+    RImplementation.rmNormal(cmd_list);
 
     cmd_list.set_Element(m_RendererTechnique[RS_CompRayData_Back]);
 
-    PrepareCBuffer(cmd_list, FluidData, Device.dwWidth, Device.dwHeight);
+    PrepareCBuffer(cmd_list, FluidData, pTarget->GetRenderWidth(), pTarget->GetRenderHeight());
 
     // Render volume back faces
     // We output xyz=(0,-1,0) and w=min(sceneDepth, boxDepth)
@@ -397,7 +398,7 @@ void dx103DFluidRenderer::ComputeRayData(CBackend& cmd_list, const dx103DFluidDa
     //  unless the pixel is occluded by the scene, in which case we output xyzw=(1,0,0,0)
     pTarget->u_setrt(cmd_list, RT[RRT_RayDataTex], nullptr, nullptr, nullptr); // LDR RT
     cmd_list.set_Element(m_RendererTechnique[RS_CompRayData_Front]);
-    PrepareCBuffer(cmd_list, FluidData, Device.dwWidth, Device.dwHeight);
+    PrepareCBuffer(cmd_list, FluidData, pTarget->GetRenderWidth(), pTarget->GetRenderHeight());
     DrawBox(cmd_list);
 }
 
@@ -405,6 +406,7 @@ void dx103DFluidRenderer::ComputeEdgeTexture(CBackend& cmd_list, const dx103DFlu
 {
     CRenderTarget* pTarget = RImplementation.Target;
     pTarget->u_setrt(cmd_list, RT[RRT_RayDataTexSmall], nullptr, nullptr, nullptr); // LDR RT
+    RImplementation.rmNormal(cmd_list);
     cmd_list.set_Element(m_RendererTechnique[RS_QuadDownSampleRayDataTexture]);
 
     // First setup viewport to match the size of the destination low-res texture
@@ -415,6 +417,7 @@ void dx103DFluidRenderer::ComputeEdgeTexture(CBackend& cmd_list, const dx103DFlu
 
     // Create an edge texture, performing edge detection on 'rayDataTexSmall'
     pTarget->u_setrt(cmd_list, RT[RRT_EdgeTex], nullptr, nullptr, nullptr); // LDR RT
+    RImplementation.rmNormal(cmd_list);
     cmd_list.set_Element(m_RendererTechnique[RS_QuadEdgeDetect]);
     PrepareCBuffer(cmd_list, FluidData, m_iRenderTextureWidth, m_iRenderTextureHeight);
     DrawScreenQuad(cmd_list);

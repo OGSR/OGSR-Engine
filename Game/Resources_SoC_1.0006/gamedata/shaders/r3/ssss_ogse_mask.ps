@@ -4,9 +4,9 @@
 float4 main(p_screen I) : SV_Target
 {
     float4 depth;
-    depth.x = s_position.Load(int3((I.tc0.xy + float2(0, 1.0f) * screen_res.zw) * screen_res.xy, 0), 0).z;
-    depth.y = s_position.Load(int3((I.tc0.xy + float2(1, 0.65f) * screen_res.zw) * screen_res.xy, 0), 0).z;
-    depth.z = s_position.Load(int3((I.tc0.xy + float2(-1, 0.65f) * screen_res.zw) * screen_res.xy, 0), 0).z;
+    depth.x = s_position.Load(int3((I.tc0.xy + float2(0, 1.0f) * render_res.zw) * render_res.xy, 0), 0).z;
+    depth.y = s_position.Load(int3((I.tc0.xy + float2(1, 0.65f) * render_res.zw) * render_res.xy, 0), 0).z;
+    depth.z = s_position.Load(int3((I.tc0.xy + float2(-1, 0.65f) * render_res.zw) * render_res.xy, 0), 0).z;
 
     float4 sceneDepth;
     sceneDepth.x = normalize_depth(depth.x) * is_not_sky(depth.x);

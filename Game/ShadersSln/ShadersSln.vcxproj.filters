@@ -563,6 +563,8 @@
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\water_puddles.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\water_puddles.vs" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\accum_volume.vs" />
+    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\effects_bullet_tracer.ps" />
+    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\effects_bullet_tracer.vs" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\effects_flare.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\effects_flare.vs" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\effects_sun.ps" />

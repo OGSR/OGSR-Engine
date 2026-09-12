@@ -513,7 +513,7 @@ float4 main(vf I) : SV_Target
     {
         float pixelate = SETTING(SETTINGS, ST_THERMAL_PIXELATION) ? int(current_zoom) : 1;
         scope_tc = (floor(scope_tc * screen_res.xy / pixelate) * pixelate + 0.5) / screen_res.xy;
-        back = infrared(gbuffer_load_normal(scope_tc), gbuffer_load_depth(scope_tc), scope_tc * screen_res.xy, scope_tc);
+        back = infrared(gbuffer_load_normal(scope_tc), gbuffer_load_depth(scope_tc), scope_tc * render_res.xy, scope_tc);
         if (mark_number.x == 1)
         {
             back = 1 - back;

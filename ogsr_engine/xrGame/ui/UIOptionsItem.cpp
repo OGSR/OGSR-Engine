@@ -2,6 +2,7 @@
 #include "UIOptionsItem.h"
 #include "UIOptionsManager.h"
 #include "..\..\xr_3da\xr_ioconsole.h"
+#include "..\..\xr_3da\xr_ioc_cmd.h"
 
 CUIOptionsManager CUIOptionsItem::m_optionsManager;
 
@@ -69,6 +70,12 @@ const xr_token* CUIOptionsItem::GetOptToken()
     const auto* token = Console->GetXRToken(m_entry.c_str());
     ASSERT_FMT(token, "Can't find token [%s]", m_entry.c_str());
     return token;
+}
+
+bool CUIOptionsItem::IsOptTokenEnabled(int id)
+{
+    CCC_Token* cf = smart_cast<CCC_Token*>(Console->GetCommand(m_entry.c_str()));
+    return !cf || cf->TokenEnabled(id);
 }
 
 void CUIOptionsItem::SaveOptTokenValue(const char* val) { SaveOptStringValue(val); }

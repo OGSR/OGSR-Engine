@@ -293,6 +293,7 @@ public:
         }
     }
     virtual const xr_token* GetToken() { return tokens; }
+    virtual bool TokenEnabled(int /*id*/) { return true; }
 
     virtual void fill_tips(vecTips& tips, u32 mode)
     {

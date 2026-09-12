@@ -788,6 +788,9 @@ extern void render_reshade_effects();
 
 void CApplication::load_draw_internal() const
 {
+    if (::Render)
+        ::Render->SetupDisplayBackbuffer();
+
     if (use_reshade)
         render_reshade_effects();
 

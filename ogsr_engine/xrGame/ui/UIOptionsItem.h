@@ -49,6 +49,7 @@ protected:
     // token
     LPCSTR GetOptTokenValue();
     const xr_token* GetOptToken();
+    bool IsOptTokenEnabled(int id);
     void SaveOptTokenValue(const char* val);
 
     xr_string m_entry;

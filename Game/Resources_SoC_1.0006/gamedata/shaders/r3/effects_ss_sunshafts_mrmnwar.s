@@ -3,7 +3,7 @@ function element_0(shader, t_base, t_second, t_detail)		-- [0]
 		:fog			(false)
 		:zb				(false, false)
 	shader:dx10texture	("s_position", "$user$position")
-	shader:dx10texture	("s_image", "$user$generic0")
+	shader:dx10texture	("s_image", "$user$postprocess0")
 	shader:dx10sampler("smp_nofilter")
 end
 
@@ -34,6 +34,6 @@ function element_4(shader, t_base, t_second, t_detail)		-- [4]
 	shader:begin("stub_screen_space", "ssss_mrmnwar_display")
 		:fog			(false)
 		:zb				(false, false)
-	shader:dx10texture	("s_image", "$user$generic0")
+	shader:dx10texture	("s_image", "$user$postprocess0")
 	shader:dx10texture	("s_sunshafts", "$user$SunShaftsMaskSmoothed")
 end

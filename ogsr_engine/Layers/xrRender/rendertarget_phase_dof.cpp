@@ -12,5 +12,5 @@ void CRenderTarget::phase_dof(CBackend& cmd_list)
     RenderScreenTriangle(cmd_list, rt_Generic_combine, s_dof->E[1]);
 
 	//Resolve RT
-    HW.get_context(cmd_list.context_id)->CopyResource(rt_Generic_0->pSurface, rt_Generic_combine->pSurface);
+    HW.get_context(cmd_list.context_id)->CopyResource(rt_Postprocess_0->pSurface, rt_Generic_combine->pSurface);
 }

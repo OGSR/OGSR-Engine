@@ -8,5 +8,5 @@ void CRenderTarget::phase_fakescope(CBackend& cmd_list)
 
     RenderScreenTriangle(cmd_list, rt_Generic_combine, s_fakescope->E[0]);
 
-    HW.get_context(cmd_list.context_id)->CopyResource(rt_Generic_0->pSurface, rt_Generic_combine->pSurface);
+    HW.get_context(cmd_list.context_id)->CopyResource(rt_Postprocess_0->pSurface, rt_Generic_combine->pSurface);
 }

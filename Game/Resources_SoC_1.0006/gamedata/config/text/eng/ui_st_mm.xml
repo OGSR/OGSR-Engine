@@ -295,6 +295,63 @@
 	<string id="st_opt_taa">
 		<text>TAA</text>
 	</string>
+	<string id="ui_mm_dlss_quality">
+		<text>DLSS quality</text>
+	</string>
+	<string id="ui_mm_dlss_preset">
+		<text>DLSS preset</text>
+	</string>
+	<string id="ui_mm_fsr3_quality">
+		<text>FSR3 quality</text>
+	</string>
+	<string id="st_opt_dlaa">
+		<text>DLAA</text>
+	</string>
+	<string id="st_opt_dlss_default">
+		<text>Default</text>
+	</string>
+	<string id="st_opt_dlss_f">
+		<text>F (CNN)</text>
+	</string>
+	<string id="st_opt_dlss_j">
+		<text>J (Transformer)</text>
+	</string>
+	<string id="st_opt_dlss_k">
+		<text>K (Transformer)</text>
+	</string>
+	<string id="st_opt_dlss_l">
+		<text>L (Transformer)</text>
+	</string>
+	<string id="st_opt_dlss_m">
+		<text>M (Transformer)</text>
+	</string>
+	<string id="st_opt_dlss_quality">
+		<text>Quality</text>
+	</string>
+	<string id="st_opt_dlss_balanced">
+		<text>Balanced</text>
+	</string>
+	<string id="st_opt_dlss_performance">
+		<text>Performance</text>
+	</string>
+	<string id="st_opt_dlss_ultra_performance">
+		<text>Ultra Performance</text>
+	</string>
+	<string id="st_opt_fsr3_native_aa">
+		<text>Native AA</text>
+	</string>
+	<string id="st_opt_fsr3_quality">
+		<text>Quality</text>
+	</string>
+	<string id="st_opt_fsr3_balanced">
+		<text>Balanced</text>
+	</string>
+	<string id="st_opt_fsr3_performance">
+		<text>Performance</text>
+	</string>
+	<string id="st_opt_fsr3_ultra_performance">
+		<text>Ultra Performance</text>
+	</string>
 	<string id="ui_mm_r2_aa_mode">
 		<text>Antialiasing mode (R2)</text>
 	</string>	
@@ -886,6 +943,15 @@
 	<string id="video_settings_name_69">
 		<text>Image upscaling in 3D scopes - r_3dss_scale_factor</text>
 	</string>
+	<string id="video_settings_name_70">
+		<text>DLSS quality - r_aa_dlss_quality</text>
+	</string>
+	<string id="video_settings_name_71">
+		<text>FSR3 quality - r_aa_fsr3_quality</text>
+	</string>
+	<string id="video_settings_name_72">
+		<text>DLSS preset - r_aa_dlss_preset</text>
+	</string>
 
 	<string id="video_settings_desc_1">
 		<text>Motion blur - blurring of the image when turning the camera, playing scenes of movement or fast-moving objects.</text>
@@ -1079,6 +1145,18 @@
 	</string>
 	<string id="video_settings_desc_69">
 		<text>If DLSS or FSR is enabled, this setting adjusts the scaling of the image in the 3D scopes to improve its clarity. %c[yellow] \nWhen set to 1, the image is not scaled. %c[green] \nOptimal value: 2. %c[red] \nValues ??greater than 2 may noticeably reduce FPS.</text>
+	</string>
+	<string id="video_settings_desc_70">
+		<text>Sets the NVIDIA DLSS internal render scale. DLAA renders at native resolution for maximum image quality. Quality, Balanced, Performance and Ultra Performance render at progressively lower internal resolutions to gain FPS. Apply video settings or run vid_restart after changing this option.</text>
+	</string>
+	<string id="video_settings_desc_71">
+		<text>Sets the AMD FSR3 internal render scale. Native AA renders at native resolution for maximum image quality. Quality, Balanced, Performance and Ultra Performance render at progressively lower internal resolutions to gain FPS. Apply video settings or run vid_restart after changing this option.</text>
+	</string>
+	<string id="video_settings_desc_72">
+		<text>Selects the NVIDIA DLSS model. Presets not supported by the loaded DLSS library are grayed out.
+%c[yellow] \nCNN:\nF - legacy CNN model (deprecated).
+%c[green] \nTransformer:\nJ - less ghosting, more flicker (NVIDIA recommends K).\nK - 1st-gen transformer, default for DLAA / Quality / Balanced.\nL - 2nd-gen transformer, sharper and slower, default for Ultra Performance (RTX 40+).\nM - 2nd-gen transformer, similar to L but faster, default for Performance (RTX 40+).
+Default follows NVIDIA / driver OTA.</text>
 	</string>
 
 </string_table>

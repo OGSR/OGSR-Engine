@@ -106,6 +106,14 @@ void CUIComboBox::OnListItemSelect()
 
     if (bk_itoken_id != m_itoken_id)
     {
+        CUIListBoxItem* selected = m_list.GetSelectedItem();
+        if (selected && !selected->IsEnabled())
+        {
+            m_itoken_id = bk_itoken_id;
+            SetItem(m_itoken_id);
+            ShowList(false);
+            return;
+        }
         SaveValue();
         GetMessageTarget()->SendMessage(this, LIST_ITEM_SELECT, NULL);
     }
@@ -119,7 +127,9 @@ void CUIComboBox::SetCurrentValue()
 
     while (tok->name)
     {
-        AddItem_(tok->name, tok->id);
+        CUIListBoxItem* itm = AddItem_(tok->name, tok->id);
+        if (itm && !IsOptTokenEnabled(tok->id))
+            itm->Enable(false);
         tok++;
     }
 
@@ -163,6 +173,9 @@ void CUIComboBox::OnBtnClicked() { ShowList(!m_list.IsShown()); }
 
 void CUIComboBox::ShowList(bool bShow)
 {
+    if (bShow && m_entry == "r_aa_dlss_preset")
+        SetCurrentValue();
+
     if (bShow)
     {
         SetHeight(m_text.GetHeight() + m_list.GetHeight());

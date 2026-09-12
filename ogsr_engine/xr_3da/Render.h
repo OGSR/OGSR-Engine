@@ -226,6 +226,7 @@ public:
     virtual void Render() = 0;
     virtual void AfterWorldRender() = 0; //После рендеринга мира (перед UI ПДА)
     virtual void AfterUIRender() = 0; //После рендеринга UI. Вызывать только если нам нужно отрендерить кадр для пда.
+    virtual void SetupDisplayBackbuffer() = 0;
 
     virtual void Screenshot(ScreenshotMode mode = SM_NORMAL, LPCSTR name = nullptr) = 0;
 

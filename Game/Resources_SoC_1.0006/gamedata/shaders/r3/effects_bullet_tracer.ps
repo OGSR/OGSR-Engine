@@ -1,0 +1,25 @@
+#include "common.h"
+
+struct p_tracer
+{
+    float2 Tex0 : TEXCOORD0;
+    float4 tctexgen : TEXCOORD1;
+    float view_z : TEXCOORD2;
+    float4 Color : COLOR;
+};
+
+#define DEPTH_EPSILON 0.1f
+
+//////////////////////////////////////////////////////////////////////////////////////////
+// Pixel
+float4 main(p_tracer I) : SV_Target
+{
+    float2 tcProj = I.tctexgen.xy / I.tctexgen.w;
+    float spaceDepth = gbuffer_load_depth(tcProj);
+    if (spaceDepth < 0.01f)
+        spaceDepth = 100000.0f; // skybox is not written into the position buffer
+
+    clip(spaceDepth - I.view_z - DEPTH_EPSILON);
+
+    return s_base.Sample(smp_base, I.Tex0) * I.Color;
+}

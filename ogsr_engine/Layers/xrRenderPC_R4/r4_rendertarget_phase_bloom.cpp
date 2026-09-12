@@ -24,8 +24,8 @@ void CRenderTarget::phase_bloom(CBackend& cmd_list)
 
     // Transfer into Bloom1
     {
-        float _w = float(Device.dwWidth);
-        float _h = float(Device.dwHeight);
+        float _w = float(GetRenderWidth());
+        float _h = float(GetRenderHeight());
         float _2w = _w / 2;
         float tw = BLOOM_size_X;
         float _2h = _h / 2;

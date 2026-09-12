@@ -133,6 +133,10 @@ function options_dialog:OnPresetChanged()
 	opt:SetCurrentValues("mm_opt_video")
 	opt:SetCurrentValues("mm_opt_video_adv")
 
+	if self.dlg_video_adv and self.dlg_video_adv.UpdateUpscalerQualityRows then
+		self.dlg_video_adv:UpdateUpscalerQualityRows()
+	end
+
 	self:show_need_restart_wnd()
 end
 

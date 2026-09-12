@@ -270,6 +270,8 @@
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\deffer_tree_s_bump_d.vs" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\deffer_tree_s_flat.vs" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\deffer_tree_s_flat_d.vs" />
+    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\effects_bullet_tracer.ps" />
+    <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\effects_bullet_tracer.vs" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\effects_flare.ps" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\effects_flare.vs" />
     <None Include="..\Resources_SoC_1.0006\gamedata\shaders\r3\effects_moon.s" />
