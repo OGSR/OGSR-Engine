@@ -129,8 +129,6 @@
     </ClCompile>
     <ClCompile Include="mimalloc\src\heap.c" />
     <ClCompile Include="mimalloc\src\prim\prim-tls.c" />
-    <ClCompile Include="mimalloc\src\sample-guarded.c" />
-    <ClCompile Include="mimalloc\src\sample-profile.c" />
     <ClCompile Include="mimalloc\src\subproc.c" />
     <ClCompile Include="mimalloc\src\init.c" />
     <ClCompile Include="mimalloc\src\libc.c" />
@@ -156,7 +154,6 @@
     <ClInclude Include="mimalloc\include\mimalloc.h" />
     <ClInclude Include="mimalloc\include\mimalloc-override.h" />
     <ClInclude Include="mimalloc\include\mimalloc-new-delete.h" />
-    <ClInclude Include="mimalloc\include\mimalloc-profile.h" />
     <ClInclude Include="mimalloc\include\mimalloc-stats.h" />
     <ClInclude Include="mimalloc\include\mimalloc\atomic.h" />
     <ClInclude Include="mimalloc\include\mimalloc\internal.h" />
