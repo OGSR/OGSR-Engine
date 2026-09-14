@@ -84,6 +84,7 @@ void CRenderTarget::phase_pp(CBackend& cmd_list)
 {
     // combination/postprocess
     u_setrt(cmd_list, Device.dwWidth, Device.dwHeight, get_base_rt(), nullptr, nullptr, nullptr);
+    RImplementation.rmNormal(cmd_list);
 
     const bool bCMap = u_need_CM();
     cmd_list.set_Element(s_postprocess->E[bCMap ? 4 : 0]);

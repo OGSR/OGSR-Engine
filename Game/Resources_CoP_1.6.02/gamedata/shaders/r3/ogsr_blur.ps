@@ -25,7 +25,7 @@ float4 main(p_screen I) : SV_Target
         // HALF RES BLUR - PASS 1 - R = LUMA, G = LIGHTMAP, B = NORMALIZED DEPTH OUT TO FARTHEST_DEPTH (defined in night_vision.h)
         if (blur_params.x == 1 && blur_params.z == (screen_res.x / 2.0f))
         {
-            image = float3(s_image.Sample(smp_rtlinear, I.tc0).rg, saturate(s_position.Load(int3((I.tc0) * screen_res.xy, 0), 0).z / farthest_depth));
+            image = float3(s_image.Sample(smp_rtlinear, I.tc0).rg, saturate(s_position.Load(int3(I.tc0 * render_res.xy, 0), 0).z / farthest_depth));
             if (image.b == 0.0f)
             {
                 image.b = 1.0f;
@@ -44,7 +44,7 @@ float4 main(p_screen I) : SV_Target
                 r += 1.0f / r;
                 offset = mul(offset, G);
                 float3 color = s_image.SampleLevel(smp_rtlinear, I.tc0 + (offset * (r - 1.0f) * 1.0f / screen_res.xy), 0).rgb;
-                color.b = saturate(s_position.Load(int3((I.tc0 * screen_res.xy) + (offset * (r - 1.0f)), 0), 0).z / (farthest_depth));
+                color.b = saturate(s_position.Load(int3((I.tc0 * render_res.xy) + (offset * (r - 1.0f)), 0), 0).z / (farthest_depth));
                 if (color.b == 0.0f)
                 {
                     color.b = 1.0f;

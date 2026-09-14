@@ -2,7 +2,8 @@
 
 void CRenderTarget::RenderScreenTriangle(CBackend& cmd_list, const ref_rt& rt, ref_selement& sh, const std::function<void()>& lambda)
 {
-    u_setrt(cmd_list, Device.dwWidth, Device.dwHeight, rt->pRT, nullptr, nullptr, nullptr);
+    u_setrt(cmd_list, rt->dwWidth, rt->dwHeight, rt->pRT, nullptr, nullptr, nullptr);
+    cmd_list.SetViewport({0.f, 0.f, static_cast<float>(rt->dwWidth), static_cast<float>(rt->dwHeight), 0.f, 1.f});
 
     cmd_list.set_CullMode(CULL_NONE);
     cmd_list.set_Stencil(FALSE);
@@ -23,6 +24,7 @@ void CRenderTarget::RenderScreenQuad(CBackend& cmd_list, const u32 w, const u32 
     constexpr u32 C = color_rgba(0, 0, 0, 255);
 
     u_setrt(cmd_list, w, h, rt->pRT, nullptr, nullptr, nullptr);
+    cmd_list.SetViewport({0.f, 0.f, static_cast<float>(w), static_cast<float>(h), 0.f, 1.f});
 
     cmd_list.set_CullMode(CULL_NONE);
     cmd_list.set_Stencil(FALSE);

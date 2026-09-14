@@ -91,7 +91,16 @@ void CUIComboBox::OnListItemSelect()
     ShowList(false);
 
     if (bk_itoken_id != m_itoken_id)
+    {
+        if (itm && !itm->IsEnabled())
+        {
+            m_itoken_id = bk_itoken_id;
+            SetItemToken(m_itoken_id);
+            ShowList(false);
+            return;
+        }
         GetMessageTarget()->SendMessage(this, LIST_ITEM_SELECT, nullptr);
+    }
 }
 
 void CUIComboBox::SetText(LPCSTR text)
@@ -127,7 +136,9 @@ void CUIComboBox::SetCurrentOptValue()
     {
         if (m_disabled.end() == std::find(m_disabled.begin(), m_disabled.end(), tok->id))
         {
-            AddItem_(tok->name, tok->id);
+            CUIListBoxItem* itm = AddItem_(tok->name, tok->id);
+            if (itm && !IsOptTokenEnabled(tok->id))
+                itm->Enable(false);
         }
         tok++;
     }
@@ -203,6 +214,9 @@ void CUIComboBox::OnBtnClicked() { ShowList(!m_list_frame.IsShown()); }
 
 void CUIComboBox::ShowList(bool bShow)
 {
+    if (bShow && m_entry == "r_aa_dlss_preset")
+        SetCurrentValue();
+
     if (bShow)
     {
         SetHeight(m_text.GetHeight() + m_list_box.GetHeight());

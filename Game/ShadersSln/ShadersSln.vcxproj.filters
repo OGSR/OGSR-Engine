@@ -275,6 +275,8 @@
     <None Include="..\Resources_CoP_1.6.02\gamedata\shaders\r3\dumb.vs" />
     <None Include="..\Resources_CoP_1.6.02\gamedata\shaders\r3\editor.vs" />
     <None Include="..\Resources_CoP_1.6.02\gamedata\shaders\r3\effects_bullet_tracer.s" />
+    <None Include="..\Resources_CoP_1.6.02\gamedata\shaders\r3\effects_bullet_tracer.ps" />
+    <None Include="..\Resources_CoP_1.6.02\gamedata\shaders\r3\effects_bullet_tracer.vs" />
     <None Include="..\Resources_CoP_1.6.02\gamedata\shaders\r3\effects_flare.s" />
     <None Include="..\Resources_CoP_1.6.02\gamedata\shaders\r3\effects_lensflare.ps" />
     <None Include="..\Resources_CoP_1.6.02\gamedata\shaders\r3\effects_lensflare.s" />

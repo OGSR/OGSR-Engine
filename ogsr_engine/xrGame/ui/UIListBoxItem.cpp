@@ -40,6 +40,9 @@ CGameFont* CUIListBoxItem::GetFont() { return (m_text) ? m_text->GetFont() : nul
 
 bool CUIListBoxItem::OnMouseDown(int mouse_btn)
 {
+    if (!IsEnabled())
+        return true;
+
     if (mouse_btn == MOUSE_1)
     {
         smart_cast<CUIScrollView*>(GetParent()->GetParent())->SetSelected(this);

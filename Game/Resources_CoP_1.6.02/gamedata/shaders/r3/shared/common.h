@@ -61,6 +61,8 @@ cbuffer static_globals
     uniform float4 parallax;
     uniform float4 rain_params; // x = raindensity, y = wetness
     uniform float4 screen_res; // Screen resolution (x-Width,y-Height, zw - 1/resolution)
+    uniform float4 render_res; // Physical scene resolution (xy) and reciprocal (zw)
+    uniform float4 display_res; // Display/post-process resolution (xy) and reciprocal (zw)
 
     uniform float4 pp_img_corrections;
     uniform float4 pp_img_cg;

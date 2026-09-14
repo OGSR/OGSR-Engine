@@ -540,7 +540,7 @@ private:
     float m_hit_probability[egdCount];
 
 public:
-    const float& hit_probability() const;
+    float hit_probability() const;
 
 private:
     Fvector m_overriden_activation_speed;

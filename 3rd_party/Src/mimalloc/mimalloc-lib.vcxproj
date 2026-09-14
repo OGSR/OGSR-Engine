@@ -63,6 +63,7 @@
       <BasicRuntimeChecks Condition="$(Configuration.Contains('Debug')) And '$(EnableASAN)'!='true'">EnableFastChecks</BasicRuntimeChecks>
       <AdditionalIncludeDirectories>mimalloc/include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MI_DEBUG=3;MI_OPT_SIMD=ON;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CompileAs>CompileAsCpp</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -92,6 +93,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>mimalloc/include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>MI_OPT_SIMD=ON;%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+      <CompileAs>CompileAsCpp</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

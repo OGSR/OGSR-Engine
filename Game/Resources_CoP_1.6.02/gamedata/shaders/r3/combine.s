@@ -53,7 +53,7 @@ function element_3(shader, t_base, t_second, t_detail)
 		:fog(false)
 		:zb(false, false)
 	shader:dx10texture("s_position", "$user$position")
-	shader:dx10texture("s_image", "$user$generic0")
+	shader:dx10texture("s_image", "$user$postprocess0")
 	shader:dx10texture("s_bloom", "$user$bloom1")
 	shader:dx10texture("s_ssfx_bloom", "$user$ssfx_bloom1")
 

@@ -120,7 +120,7 @@ void CRender::create()
 #ifdef DX10_FLUID_ENABLE
     FluidManager.Initialize(70, 70, 70);
     //	FluidManager.Initialize( 100, 100, 100 );
-    FluidManager.SetScreenSize(Device.dwWidth, Device.dwHeight);
+    FluidManager.SetScreenSize(Target->GetRenderWidth(), Target->GetRenderHeight());
 #endif
 }
 
@@ -203,7 +203,7 @@ void CRender::reset_end()
     //-AVO
 
 #ifdef DX10_FLUID_ENABLE
-    FluidManager.SetScreenSize(Device.dwWidth, Device.dwHeight);
+    FluidManager.SetScreenSize(Target->GetRenderWidth(), Target->GetRenderHeight());
 #endif
 
     cleanup_contexts();
@@ -236,7 +236,21 @@ void CRender::OnFrame()
 // После рендера мира и пост-эффектов --#SM+#-- +SecondVP+
 void CRender::AfterWorldRender() { Target->u_setrt(get_imm_context().cmd_list, Device.dwWidth, Device.dwHeight, Target->rt_second_vp->pRT, nullptr, nullptr, nullptr); }
 
-void CRender::AfterUIRender() { Target->u_setrt(get_imm_context().cmd_list, Device.dwWidth, Device.dwHeight, Target->get_base_rt(), nullptr, nullptr, nullptr); }
+void CRender::AfterUIRender() { SetupDisplayBackbuffer(); }
+
+void CRender::SetupDisplayBackbuffer()
+{
+    if (!Target)
+        return;
+
+    // Loading / 2D UI can run without CRender::Render(), so do not inherit the
+    // scene-resolution viewport or bind render-sized depth onto the swapchain.
+    Target->EndTemporalUpscaleInput();
+
+    auto& cmd_list = get_imm_context().cmd_list;
+    Target->u_setrt(cmd_list, Device.dwWidth, Device.dwHeight, Target->get_base_rt(), nullptr, nullptr, nullptr);
+    rmNormal(cmd_list);
+}
 
 // Implementation
 IRender_ObjectSpecific* CRender::ros_create(IRenderable* parent) { return xr_new<CROS_impl>(); }
@@ -381,22 +395,19 @@ void CRender::clear_static_wallmarks() { Wallmarks->Clear(); }
 
 void CRender::rmNear(CBackend& cmd_list)
 {
-    IRender_Target* T = getTarget();
-    const D3D_VIEWPORT viewport = {0, 0, T->get_width(cmd_list), T->get_height(cmd_list), 0.f, 0.02f};
+    const D3D_VIEWPORT viewport = {0, 0, Target->GetViewportWidth(cmd_list), Target->GetViewportHeight(cmd_list), 0.f, 0.02f};
     cmd_list.SetViewport(viewport);
 }
 
 void CRender::rmFar(CBackend& cmd_list)
 {
-    IRender_Target* T = getTarget();
-    const D3D_VIEWPORT viewport = {0, 0, T->get_width(cmd_list), T->get_height(cmd_list), 0.99999f, 1.f};
+    const D3D_VIEWPORT viewport = {0, 0, Target->GetViewportWidth(cmd_list), Target->GetViewportHeight(cmd_list), 0.99999f, 1.f};
     cmd_list.SetViewport(viewport);
 }
 
 void CRender::rmNormal(CBackend& cmd_list)
 {
-    IRender_Target* T = getTarget();
-    const D3D_VIEWPORT viewport = {0, 0, T->get_width(cmd_list), T->get_height(cmd_list), 0.f, 1.f};
+    const D3D_VIEWPORT viewport = {0, 0, Target->GetViewportWidth(cmd_list), Target->GetViewportHeight(cmd_list), 0.f, 1.f};
     cmd_list.SetViewport(viewport);
 }
 
@@ -961,7 +972,13 @@ void CRender::Begin()
     }
 
     // state main state parms on frame start only
-    SSManager.SetParams(ps_r__tf_Anisotropic, ps_r__tf_Mipbias);
+    float mipBias = ps_r__tf_Mipbias;
+    if (Target && Target->GetRenderWidth() < Target->GetDisplayWidth())
+    {
+        const float renderScale = static_cast<float>(Target->GetRenderWidth()) / static_cast<float>(Target->GetDisplayWidth());
+        mipBias += std::log2(renderScale);
+    }
+    SSManager.SetParams(ps_r__tf_Anisotropic, mipBias);
 
     Vertex.Flush();
     Index.Flush();

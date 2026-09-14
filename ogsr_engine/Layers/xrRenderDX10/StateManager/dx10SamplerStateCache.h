@@ -59,6 +59,9 @@ private:
     // smap state
     xr_vector<StateRecord> m_StateArraySmap;
 
+    // ui state
+    xr_vector<StateRecord> m_StateArrayUI;
+
     u32 m_uiMaxAnisotropy;
     float m_uiMipLODBias;
 };

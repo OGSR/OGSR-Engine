@@ -325,6 +325,7 @@ public:
 
     void AfterWorldRender() override; //Вызывается после рендера мира и перед UI ПДА
     void AfterUIRender() override; //После рендеринга UI. Вызывать только если нам нужно отрендерить кадр для пда.
+    void SetupDisplayBackbuffer() override;
 
     // Render mode
     virtual void rmNear(CBackend& cmd_list);

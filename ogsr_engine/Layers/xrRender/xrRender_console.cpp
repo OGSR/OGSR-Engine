@@ -23,7 +23,7 @@ constexpr xr_token LightsSmapSizeToken[]{//{"1536x1536", 1536},
                                         {"3072x3072", 3072},
                                         {"4096x4096", 4096},
                                         {"6144x6144", 6144},
-                                        {"8192x8192", 8192},
+                                        //{"8192x8192", 8192}, //Почему то вызывает просто адовые дропы фпс в некоторых случаях. 4к и 6к как будто бы вообще никакой заметной разницы не дают, а тут просто жесть
                                         {}};
 
 u32 r2_SmapRainSize = 1024;
@@ -44,12 +44,34 @@ constexpr xr_token pp_aa_mode_token[] = {
     {nullptr, 0},
 };
 
-u32 ps_r_dlss_preset = NVSDK_NGX_DLSS_Hint_Render_Preset_F;
+u32 ps_r_dlss_preset = NVSDK_NGX_DLSS_Hint_Render_Preset_Default;
 constexpr xr_token dlss_mode_token[]{
     {"st_opt_dlss_default", NVSDK_NGX_DLSS_Hint_Render_Preset_Default}, // default behavior, may or may not change after OTA
-    {"st_opt_dlss_f", NVSDK_NGX_DLSS_Hint_Render_Preset_F},
-    {"st_opt_dlss_j", NVSDK_NGX_DLSS_Hint_Render_Preset_J},
-    {"st_opt_dlss_k", NVSDK_NGX_DLSS_Hint_Render_Preset_K},
+    {"st_opt_dlss_f", NVSDK_NGX_DLSS_Hint_Render_Preset_F}, // CNN
+    {"st_opt_dlss_j", NVSDK_NGX_DLSS_Hint_Render_Preset_J}, // Transformer
+    {"st_opt_dlss_k", NVSDK_NGX_DLSS_Hint_Render_Preset_K}, // Transformer
+    {"st_opt_dlss_l", NVSDK_NGX_DLSS_Hint_Render_Preset_L}, // Transformer
+    {"st_opt_dlss_m", NVSDK_NGX_DLSS_Hint_Render_Preset_M}, // Transformer
+    {},
+};
+
+u32 ps_r_dlss_quality = DLSS_QUALITY_DLAA;
+constexpr xr_token dlss_quality_token[]{
+    {"st_opt_dlaa", DLSS_QUALITY_DLAA},
+    {"st_opt_dlss_quality", DLSS_QUALITY_QUALITY},
+    {"st_opt_dlss_balanced", DLSS_QUALITY_BALANCED},
+    {"st_opt_dlss_performance", DLSS_QUALITY_PERFORMANCE},
+    {"st_opt_dlss_ultra_performance", DLSS_QUALITY_ULTRA_PERFORMANCE},
+    {},
+};
+
+u32 ps_r_fsr3_quality = FSR3_QUALITY_NATIVE_AA;
+constexpr xr_token fsr3_quality_token[]{
+    {"st_opt_fsr3_native_aa", FSR3_QUALITY_NATIVE_AA},
+    {"st_opt_fsr3_quality", FSR3_QUALITY_QUALITY},
+    {"st_opt_fsr3_balanced", FSR3_QUALITY_BALANCED},
+    {"st_opt_fsr3_performance", FSR3_QUALITY_PERFORMANCE},
+    {"st_opt_fsr3_ultra_performance", FSR3_QUALITY_ULTRA_PERFORMANCE},
     {},
 };
 
@@ -317,9 +339,6 @@ float ps_pnv_params_2_2 = 0;
 float ps_pnv_params_3_2 = 0;
 float ps_pnv_params_4_2 = 1;
 
-// textures
-int psTextureLOD = 0;
-
 float ps_r2_img_exposure = 1.0f; // r2-only
 float ps_r2_img_gamma = 1.0f; // r2-only
 float ps_r2_img_saturation = 1.0f; // r2-only
@@ -389,6 +408,55 @@ class CCC_ModelPoolStat : public IConsole_Command
 public:
     CCC_ModelPoolStat(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = TRUE; };
     virtual void Execute(LPCSTR args) { RImplementation.Models->dump(); }
+};
+
+class CCC_DlssDllVersion : public IConsole_Command
+{
+public:
+    CCC_DlssDllVersion(LPCSTR N) : IConsole_Command(N)
+    {
+        bEmptyArgsHandled = TRUE;
+        bCanSave = FALSE;
+    }
+
+    void Execute(LPCSTR) override {}
+
+    void Status(TStatus& S) override { xr_strcpy(S, ps_r_dlss_dll_version); }
+};
+
+class CCC_DlssQuality : public CCC_Token
+{
+public:
+    CCC_DlssQuality(LPCSTR N, u32* V, const xr_token* T) : CCC_Token(N, V, T) {}
+
+    void Execute(LPCSTR args) override
+    {
+        CCC_Token::Execute(args);
+        R_dlss_refresh_available_presets();
+    }
+};
+
+class CCC_DlssRenderPreset : public CCC_Token
+{
+public:
+    CCC_DlssRenderPreset(LPCSTR N, u32* V, const xr_token* T) : CCC_Token(N, V, T) {}
+
+    bool TokenEnabled(int id) override
+    {
+        R_dlss_refresh_available_presets();
+        return R_dlss_is_preset_available(static_cast<u32>(id));
+    }
+
+    void Execute(LPCSTR args) override
+    {
+        CCC_Token::Execute(args);
+        R_dlss_refresh_available_presets();
+        if (!R_dlss_is_preset_available(*value))
+        {
+            Msg("! DLSS preset is not available, falling back to Default");
+            *value = NVSDK_NGX_DLSS_Hint_Render_Preset_Default;
+        }
+    }
 };
 
 class CCC_Preset : public CCC_Token
@@ -660,7 +728,7 @@ void xrRender_initconsole()
 
     CMD4(CCC_Float, "r__wallmark_ttl", &ps_r__WallmarkTTL, 1.0f, 10.f * 60.f);
 
-    CMD4(CCC_Float, "r__geometry_lod", &ps_r__LOD, 0.5f, 2.f);
+    CMD4(CCC_Float, "r__geometry_lod", &ps_r__LOD, 0.5f, 3.f);
     CMD4(CCC_Float, "r__lod_k", &ps_r__LOD_k, 0.1f, 10.f);
 
     CMD4(CCC_detail_radius, "r__detail_radius", &ps_r__detail_radius, 70, 300);
@@ -821,7 +889,10 @@ void xrRender_initconsole()
     CMD4(CCC_Float, "r2_visor_refl_radius", &ps_r2_visor_refl_radius, 0.3f, 0.6f);
 
     CMD3(CCC_Token, "r_aa_mode", &ps_r_pp_aa_mode, pp_aa_mode_token);
-    //CMD3(CCC_Token, "r_aa_dlss_preset", &ps_r_dlss_preset, dlss_mode_token);
+    CMD3(CCC_DlssQuality, "r_aa_dlss_quality", &ps_r_dlss_quality, dlss_quality_token);
+    CMD3(CCC_Token, "r_aa_fsr3_quality", &ps_r_fsr3_quality, fsr3_quality_token);
+    CMD3(CCC_DlssRenderPreset, "r_aa_dlss_preset", &ps_r_dlss_preset, dlss_mode_token);
+    CMD1(CCC_DlssDllVersion, "r_aa_dlss_version");
 
     CMD4(CCC_Float, "r_3dss_scale_factor", &ps_r_dlss_3dss_scale_factor, 1.f, 2.5f);
 
@@ -951,9 +1022,6 @@ void xrRender_initconsole()
     CMD4(CCC_Float, "ssfx_exposure", &ps_r2_img_exposure, 0.5f, 1.5f);
     CMD4(CCC_Float, "ssfx_gamma", &ps_r2_img_gamma, 0.5f, 1.5f);
     CMD4(CCC_Float, "ssfx_saturation", &ps_r2_img_saturation, 0.5f, 1.5f);
-
-#pragma todo("Simp: В общем эта настройка работает, но надо убирать мипмапы у текстур ui. Да и заметного влияния на fps я не вижу.")
-    //CMD4(CCC_Integer, "texture_lod", &psTextureLOD, 0, 2);
 
     CMD1(CCC_PART_Export, "particles_export");
     CMD1(CCC_PART_Import, "particles_import");

@@ -58,7 +58,7 @@ float4 main(p_screen I) : SV_Target
     float len = length(dust);
     dust *= SS_DUST_INTENSITY;
 
-    float dep = s_position.Load(int3(I.tc0.xy * screen_res.xy, 0), 0).z;
+    float dep = s_position.Load(int3(I.tc0.xy * render_res.xy, 0), 0).z;
     if (dep < 0.00001f)
         dep = SKY_DEPTH;
     dust = lerp(0.0f, dust, (1.0f - saturate(dep * 0.2f)) * (1.0f - saturate(is_sky(dep))));

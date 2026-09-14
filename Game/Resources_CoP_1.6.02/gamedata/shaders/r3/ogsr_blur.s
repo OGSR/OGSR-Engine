@@ -10,7 +10,7 @@ local function elemets(shader, t_base, t_second, t_detail, s_image)
 end
 
 function element_0(shader, t_base, t_second, t_detail)
-	elemets(shader, t_base, t_second, t_detail, "$user$generic0")
+	elemets(shader, t_base, t_second, t_detail, "$user$postprocess0")
 end
 
 function element_1(shader, t_base, t_second, t_detail)
@@ -18,7 +18,7 @@ function element_1(shader, t_base, t_second, t_detail)
 end
 
 function element_2(shader, t_base, t_second, t_detail)
-	elemets(shader, t_base, t_second, t_detail, "$user$generic0")
+	elemets(shader, t_base, t_second, t_detail, "$user$postprocess0")
 end
 
 function element_3(shader, t_base, t_second, t_detail)
@@ -26,7 +26,7 @@ function element_3(shader, t_base, t_second, t_detail)
 end
 
 function element_4(shader, t_base, t_second, t_detail)
-	elemets(shader, t_base, t_second, t_detail, "$user$generic0")
+	elemets(shader, t_base, t_second, t_detail, "$user$postprocess0")
 end
 
 function element_5(shader, t_base, t_second, t_detail)

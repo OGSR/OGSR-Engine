@@ -35,7 +35,7 @@ void CRenderTarget::PhaseSSSS(CBackend& cmd_list)
         // Combine
         RenderScreenTriangle(cmd_list, rt_Generic_combine, s_ssss_mrmnwar->E[4], [&]() { cmd_list.set_c("ssss_params", intensity, ps_r_prop_ss_blend, 0.0f, 0.0f); });
 
-        HW.get_context(cmd_list.context_id)->CopyResource(rt_Generic_0->pSurface, rt_Generic_combine->pSurface);
+        HW.get_context(cmd_list.context_id)->CopyResource(rt_Postprocess_0->pSurface, rt_Generic_combine->pSurface);
     }
     else if (mode == SS_SS_OGSE)
     {
@@ -65,6 +65,6 @@ void CRenderTarget::PhaseSSSS(CBackend& cmd_list)
         RenderScreenTriangle(cmd_list, rt_Generic_combine, s_ssss_ogse->E[4],
                              [&]() { cmd_list.set_c("ssss_params", intensity, ps_r_ss_sunshafts_length, 0.0f, ps_r_ss_sunshafts_radius); });
 
-        HW.get_context(cmd_list.context_id)->CopyResource(rt_Generic_0->pSurface, rt_Generic_combine->pSurface);
+        HW.get_context(cmd_list.context_id)->CopyResource(rt_Postprocess_0->pSurface, rt_Generic_combine->pSurface);
     }
 }

@@ -80,5 +80,5 @@ void CRenderTarget::phase_rain_drops(CBackend& cmd_list)
     const Fvector4 params{rain_drops_factor, ps_r2_rain_drops_intensity, ps_r2_rain_drops_speed, 0.0f};
     RenderScreenTriangle(cmd_list, rt_Generic_combine, s_rain_drops->E[0], [&]() { cmd_list.set_c("rain_drops_params", params); });
 
-    HW.get_context(cmd_list.context_id)->CopyResource(rt_Generic_0->pSurface, rt_Generic_combine->pSurface);
+    HW.get_context(cmd_list.context_id)->CopyResource(rt_Postprocess_0->pSurface, rt_Generic_combine->pSurface);
 }

@@ -5,7 +5,31 @@ extern ECORE_API u32 r2_SmapCascade0Size, /*r2_SmapCascade1Size,*/ r2_SmapCascad
 
 extern ECORE_API u32 ps_r_pp_aa_mode;
 extern ECORE_API u32 ps_r_dlss_preset;
+extern ECORE_API u32 ps_r_dlss_quality;
+
+bool R_dlss_is_preset_available(u32 preset);
+void R_dlss_refresh_available_presets();
+extern char ps_r_dlss_dll_version[64];
+extern ECORE_API u32 ps_r_fsr3_quality;
 extern float ps_r_dlss_3dss_scale_factor;
+
+enum : u32
+{
+    DLSS_QUALITY_DLAA,
+    DLSS_QUALITY_QUALITY,
+    DLSS_QUALITY_BALANCED,
+    DLSS_QUALITY_PERFORMANCE,
+    DLSS_QUALITY_ULTRA_PERFORMANCE,
+};
+
+enum : u32
+{
+    FSR3_QUALITY_NATIVE_AA,
+    FSR3_QUALITY_QUALITY,
+    FSR3_QUALITY_BALANCED,
+    FSR3_QUALITY_PERFORMANCE,
+    FSR3_QUALITY_ULTRA_PERFORMANCE,
+};
 
 extern ECORE_API u32 ps_r_sun_shafts;
 extern ECORE_API u32 ps_r_sunshafts_mode;
@@ -140,9 +164,6 @@ extern ECORE_API Fvector4 ps_ssfx_bloom_2;
 extern BOOL ps_ssfx_pom_refine, ps_ssfx_terrain_pom_refine;
 extern ECORE_API Fvector4 ps_ssfx_pom, ps_ssfx_terrain_pom, ps_ssfx_terrain_offset;
 extern Fvector4 ps_ssfx_ssr_1, ps_ssfx_ssr_2;
-
-// textures
-extern ECORE_API int psTextureLOD;
 
 extern ECORE_API float ps_r__opt_dist;
 

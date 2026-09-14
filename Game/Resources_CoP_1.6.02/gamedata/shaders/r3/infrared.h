@@ -38,15 +38,19 @@ uniform float4 heat_fade_distance;
 #define color_gradient_warm COLOR_YELLOW
 #define color_gradient_hot COLOR_RED
 
-float3 normal_blur(float2 pos2d, int samples)
+float3 normal_blur(float2 uv, int samples)
 {
-    float3 accum = (0.0, 0.0, 0.0);
+    const int2 maxPos = int2(render_res.xy) - 1;
+    const int2 center = clamp(int2(uv * render_res.xy), int2(0, 0), maxPos);
+
+    float3 accum = float3(0.0, 0.0, 0.0);
 
     for (int i = -samples; i < samples; i++)
     {
         for (int j = -samples; j < samples; j++)
         {
-            accum += gbuf_unpack_normal(s_position.Load(int3(pos2d + float2(i, j), 0), 0).xy);
+            const int2 pos = clamp(center + int2(i, j), int2(0, 0), maxPos);
+            accum += gbuf_unpack_normal(s_position.Load(int3(pos, 0), 0).xy);
         }
     }
 
@@ -60,7 +64,7 @@ float3 greyscale(float3 img)
     return float3(Y, Y, Y);
 }
 
-float3 infrared(float3 N, float3 original, float depth, float2 HPos, float2 Tex0)
+float3 infrared(float3 N, float3 original, float depth, float2 Tex0)
 {
     // r_pnv_mode = 0 - disable
     // r_pnv_mode = 1 - normal pnv
@@ -69,7 +73,8 @@ float3 infrared(float3 N, float3 original, float depth, float2 HPos, float2 Tex0
 
     float heat_mode = pnv_param_1.z - 2.f;
 
-    float3 hotness = s_heat.Load(int3(Tex0 * screen_res.xy, 0), 0);
+    const int2 renderPos = clamp(int2(Tex0 * render_res.xy), int2(0, 0), int2(render_res.xy) - 1);
+    float3 hotness = s_heat.Load(int3(renderPos, 0), 0);
     float3 mixed;
 
     if (hotness.y > 0.0)
@@ -101,7 +106,7 @@ float3 infrared(float3 N, float3 original, float depth, float2 HPos, float2 Tex0
     {
         int samples = lerp(heat_vision_blurring.x, heat_vision_blurring.y, smoothstep(0.0, heat_vision_blurring.z, depth));
 
-        mixed = normal_blur(HPos, samples);
+        mixed = normal_blur(Tex0, samples);
         mixed = normalize(mixed);
         float projection = dot(mixed, float3(0.0, 0.0, -1.0));
 
@@ -165,19 +170,16 @@ float3 infrared(float3 N, float3 original, float depth, float2 HPos, float2 Tex0
             }
         }
 
-    float4 jitter = float4(frac(sin(dot(Tex0, float2(12.0, 78.0) + (timers.x))) * 12345.0), frac(sin(dot(Tex0, float2(12.0, 78.0) + (timers.x))) * 67890.0),
-                           frac(sin(dot(Tex0, float2(12.0, 78.0) + (timers.x))) * 78372.0), frac(sin(dot(Tex0, float2(12.0, 78.0) + (timers.x))) * 37857.0));
-
     if (heat_mode == 1.0)
-    {
-        mixed += jitter.y * (0.12);
         mixed = greyscale(mixed);
-    }
-    else
-    {
-        mixed += jitter.y * (0.15);
-    }
 
     return mixed;
+}
+
+float thermal_sensor_grain(float2 Tex0)
+{
+    const float heat_mode = pnv_param_1.z - 2.f;
+    const float n = frac(sin(dot(Tex0, float2(12.0, 78.0) + timers.x)) * 67890.0);
+    return n * (heat_mode == 1.0 ? 0.12 : 0.15);
 }
 #endif

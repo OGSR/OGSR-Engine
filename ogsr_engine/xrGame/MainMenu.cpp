@@ -298,12 +298,16 @@ void CMainMenu::OnRender()
         Render->Calculate();
     Render->Render();
 
-//    if (!OnRenderPPUI_query())
+    ::Render->ui_is_rendering = true;
+
+ //   if (!OnRenderPPUI_query())
     {
         DoRenderDialogs();
         UI().RenderFont();
         draw_wnds_rects();
     }
+
+    ::Render->ui_is_rendering = false;
 }
 
 void CMainMenu::OnRenderPPUI_main()

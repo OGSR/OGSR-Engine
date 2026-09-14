@@ -1,0 +1,9 @@
+#include "common.h"
+
+Texture2D<float4> t_current;
+SamplerState SamplerLinearClamp;
+
+float4 main(p_screen I) : SV_Target
+{
+    return t_current.SampleLevel(SamplerLinearClamp, I.tc0, 0.0f);
+}

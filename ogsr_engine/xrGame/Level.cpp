@@ -473,7 +473,7 @@ void CLevel::OnRender()
     Render->Calculate();
     Render->Render();
 
-    Game().OnRender();
+    ::Render->ui_is_rendering = true;
 
     BulletManager().Render();
 
@@ -607,6 +607,8 @@ void CLevel::OnRender()
         }
     }
 #endif
+
+    ::Render->ui_is_rendering = false;
 }
 
 void CLevel::OnEvent(EVENT E, u64 P1, u64 /**P2/**/)

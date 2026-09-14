@@ -57,7 +57,7 @@ float3 infrared(float3 N, float depth, float2 HPos, float2 Tex0)
 {
     int BW = 1;
 
-    float3 hotness = s_heat.Load(int3(Tex0 * screen_res.xy, 0), 0);
+    float3 hotness = s_heat.Load(int3(Tex0 * render_res.xy, 0), 0);
     float3 mixed;
 
     if (hotness.r > 0.0)

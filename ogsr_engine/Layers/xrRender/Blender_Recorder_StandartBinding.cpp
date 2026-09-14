@@ -343,9 +343,43 @@ static class cl_screen_res final : public R_constant_setup
 {
     void setup(CBackend& cmd_list, R_constant* C) override
     {
-        cmd_list.set_c(C, (float)Device.dwWidth, (float)Device.dwHeight, 1.0f / (float)Device.dwWidth, 1.0f / (float)Device.dwHeight);
+        const CRenderTarget* target = RImplementation.Target;
+        const float width = static_cast<float>(target ? target->GetActiveWidth() : Device.dwWidth);
+        const float height = static_cast<float>(target ? target->GetActiveHeight() : Device.dwHeight);
+        cmd_list.set_c(C, width, height, 1.f / width, 1.f / height);
     }
 } binder_screen_res;
+
+static class cl_render_res final : public R_constant_setup
+{
+    void setup(CBackend& cmd_list, R_constant* C) override
+    {
+        const CRenderTarget* target = RImplementation.Target;
+        const float width = static_cast<float>(target ? target->GetRenderWidth() : Device.dwWidth);
+        const float height = static_cast<float>(target ? target->GetRenderHeight() : Device.dwHeight);
+        cmd_list.set_c(C, width, height, 1.f / width, 1.f / height);
+    }
+} binder_render_res;
+
+static class cl_display_res final : public R_constant_setup
+{
+    void setup(CBackend& cmd_list, R_constant* C) override
+    {
+        const CRenderTarget* target = RImplementation.Target;
+        const float width = static_cast<float>(target ? target->GetDisplayWidth() : Device.dwWidth);
+        const float height = static_cast<float>(target ? target->GetDisplayHeight() : Device.dwHeight);
+        cmd_list.set_c(C, width, height, 1.f / width, 1.f / height);
+    }
+} binder_display_res;
+
+static class cl_render_subrect final : public R_constant_setup
+{
+    void setup(CBackend& cmd_list, R_constant* C) override
+    {
+        const CRenderTarget* target = RImplementation.Target;
+        cmd_list.set_c(C, target ? target->GetRenderSubrectScaleX() : 1.f, target ? target->GetRenderSubrectScaleY() : 1.f, 0.f, 0.f);
+    }
+} binder_render_subrect;
 
 static class cl_screen_params final : public R_constant_setup
 {
@@ -727,7 +761,10 @@ static class cl_pos_decompress_params : public R_constant_setup
         const float VertTan = -1.0f * tanf(deg2rad(Device.fFOV / 2.0f));
         const float HorzTan = -VertTan / Device.fASPECT;
 
-        cmd_list.set_c(C, HorzTan, VertTan, (2.0f * HorzTan) / (float)Device.dwWidth, (2.0f * VertTan) / (float)Device.dwHeight);
+        const CRenderTarget* target = RImplementation.Target;
+        const float width = static_cast<float>(target ? target->GetActiveWidth() : Device.dwWidth);
+        const float height = static_cast<float>(target ? target->GetActiveHeight() : Device.dwHeight);
+        cmd_list.set_c(C, HorzTan, VertTan, (2.0f * HorzTan) / width, (2.0f * VertTan) / height);
     }
 } binder_pos_decompress_params;
 
@@ -735,7 +772,10 @@ static class cl_pos_decompress_params2 : public R_constant_setup
 {
     virtual void setup(CBackend& cmd_list, R_constant* C)
     {
-        cmd_list.set_c(C, (float)Device.dwWidth, (float)Device.dwHeight, 1.0f / (float)Device.dwWidth, 1.0f / (float)Device.dwHeight);
+        const CRenderTarget* target = RImplementation.Target;
+        const float width = static_cast<float>(target ? target->GetActiveWidth() : Device.dwWidth);
+        const float height = static_cast<float>(target ? target->GetActiveHeight() : Device.dwHeight);
+        cmd_list.set_c(C, width, height, 1.f / width, 1.f / height);
     }
 } binder_pos_decompress_params2;
 
@@ -879,6 +919,9 @@ void CBlender_Compile::SetMapping() const
     r_Constant("L_hemi_color", &binder_hemi_color);
 
     r_Constant("screen_res", &binder_screen_res);
+    r_Constant("render_res", &binder_render_res);
+    r_Constant("display_res", &binder_display_res);
+    r_Constant("render_subrect", &binder_render_subrect);
     r_Constant("ogse_c_screen", &binder_screen_params);
 
     // misc

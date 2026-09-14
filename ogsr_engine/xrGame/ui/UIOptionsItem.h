@@ -48,6 +48,7 @@ protected:
     // token
     LPCSTR GetOptTokenValue();
     const xr_token* GetOptToken() const;
+    bool IsOptTokenEnabled(int id);
 
     shared_str m_entry;
     ESystemDepends m_dep;
