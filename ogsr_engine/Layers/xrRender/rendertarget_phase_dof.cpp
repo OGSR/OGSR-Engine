@@ -9,8 +9,6 @@ void CRenderTarget::phase_dof(CBackend& cmd_list)
     PIX_EVENT(phase_DOF);
 
     RenderScreenTriangle(cmd_list, rt_dof, s_dof->E[0]);
-    RenderScreenTriangle(cmd_list, rt_Generic_combine, s_dof->E[1]);
-
-	//Resolve RT
-    HW.get_context(cmd_list.context_id)->CopyResource(rt_Postprocess_0->pSurface, rt_Generic_combine->pSurface);
+    RenderScreenTriangle(cmd_list, pp_dst(), s_dof->E[1]);
+    pp_flip();
 }

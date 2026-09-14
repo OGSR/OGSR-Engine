@@ -22,6 +22,74 @@
 
 #include "../Layers/xrRender/Debug/dxPixEvents.h"
 
+#include <cctype>
+#include <ctime>
+
+#ifdef TRACY_ENABLE
+static double pix_event_ms(const pix_event_stats& event)
+{
+    if (!event.freq)
+        return 0.0;
+    return 1000.0 * double(event.end - event.begin) / double(event.freq);
+}
+
+static bool pix_event_name_matches(const xr_string& name, const char* filter)
+{
+    if (!filter || !*filter)
+        return true;
+
+    const char* n = name.c_str();
+    const size_t flen = strlen(filter);
+    for (size_t i = 0; n[i]; ++i)
+    {
+        size_t k = 0;
+        while (k < flen && n[i + k] && tolower(static_cast<unsigned char>(n[i + k])) == tolower(static_cast<unsigned char>(filter[k])))
+            ++k;
+        if (k == flen)
+            return true;
+    }
+    return false;
+}
+
+static void export_gpu_passes_csv(const pix_events_perf& perf, xr_string& status)
+{
+    xr_string csv = "index,stack,name,time_ms\n";
+    for (size_t i = 0; i < perf.count; ++i)
+    {
+        const auto& event = perf.events[i];
+        string512 line{};
+        xr_sprintf(line, "%u,%u,\"%s\",%.4f\n", u32(i), u32(event.stack), event.name.c_str(), pix_event_ms(event));
+        csv += line;
+    }
+
+    ImGui::SetClipboardText(csv.c_str());
+
+    time_t now = time(nullptr);
+    tm local{};
+    localtime_s(&local, &now);
+
+    string_path rel{};
+    xr_sprintf(rel, "gpu_passes_%04d%02d%02d_%02d%02d%02d.csv", local.tm_year + 1900, local.tm_mon + 1, local.tm_mday, local.tm_hour, local.tm_min, local.tm_sec);
+
+    string_path path{};
+    FS.update_path(path, fsgame::app_data_root, rel);
+    VerifyPath(path);
+
+    IWriter* w = FS.w_open(path);
+    if (!w)
+    {
+        status = "Copied to clipboard; failed to write ";
+        status += path;
+        return;
+    }
+
+    w->w(csv.c_str(), csv.size());
+    FS.w_close(w);
+
+    status = path;
+    status += " (copied to clipboard)";
+}
+#endif
 
 CImGuiEditor::CImGuiEditor() { 
     CImGuiGameWnd* game_wnd = xr_new<CImGuiGameWnd>();
@@ -218,21 +286,50 @@ void CImGuiMainWnd::Render()
 
 #ifdef TRACY_ENABLE
     ImGui::Separator();
+    ImGui::TextUnformatted("GPU passes");
 
     static int stack_levels = 8;
-    ImGui::SliderInt("Depth", &stack_levels, 0, 8);
+    static char gpu_filter[128]{};
+    static xr_string gpu_export_status;
 
+    ImGui::SliderInt("Depth", &stack_levels, 0, 8);
+    ImGui::InputTextWithHint("##gpu_filter", "Filter by name...", gpu_filter, sizeof(gpu_filter));
+    ImGui::SameLine();
     auto& perf = PIXEventsStatistics();
+    if (ImGui::Button("Export CSV"))
+        export_gpu_passes_csv(perf, gpu_export_status);
+    if (ImGui::IsItemHovered())
+        ImGui::SetTooltip("Current frame GPU passes (all depths) to app_data and clipboard");
+
+    if (!gpu_export_status.empty())
+        ImGui::TextWrapped("%s", gpu_export_status.c_str());
+
+    size_t visible = 0;
     for (size_t i = 0; i < perf.count; i++)
     {
         auto& event = perf.events[i];
-        if (event.stack < static_cast<u64>(stack_levels))
-        {
-            u64 time_micros = (event.end - event.begin) / (event.freq / 1000000);
-            float time_milliseconds = (float)time_micros * 0.001f;
-            ImGui::Text("%*s%s: %.3fms", event.stack * 2, " ", event.name.c_str(), time_milliseconds);
-        }
+        if (event.stack < static_cast<u64>(stack_levels) && pix_event_name_matches(event.name, gpu_filter))
+            ++visible;
     }
+    ImGui::Text("%u / %u events", u32(visible), u32(perf.count));
+
+    ImGui::BeginChild("gpu_pass_list", ImVec2(0, 0), ImGuiChildFlags_Borders);
+
+    if (!visible)
+        ImGui::TextDisabled("No matching events");
+
+    for (size_t i = 0; i < perf.count; i++)
+    {
+        auto& event = perf.events[i];
+        if (event.stack >= static_cast<u64>(stack_levels))
+            continue;
+        if (!pix_event_name_matches(event.name, gpu_filter))
+            continue;
+
+        ImGui::Text("%*s%s: %.3fms", int(event.stack) * 2, " ", event.name.c_str(), pix_event_ms(event));
+    }
+
+    ImGui::EndChild();
 #endif
 
     RenderEnd();

@@ -718,6 +718,8 @@ HRESULT CRender::shader_compile(LPCSTR name, DWORD const* pSrcData, UINT SrcData
     appendShaderOption(ps_r2_ls_flags_ext.test(R2FLAGEXT_MOTION_BLUR), "USE_MBLUR", "1");
 
     appendShaderOption(ps_r_ao_mode == AO_MODE_GTAO, "USE_GTAO", "1");
+    appendShaderOption(ps_r_ao_mode == AO_MODE_XEGTAO && ps_r_ao_quality && ps_r_xegtao_bent_normals,
+        "USE_XEGTAO_BENT_NORMALS", "1");
 
     if (ps_r_ao_quality)
     {

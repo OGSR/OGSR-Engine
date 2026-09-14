@@ -52,9 +52,20 @@ extern ECORE_API u32 ps_r_ao_quality; //	=	0;
 enum : u32
 {
     AO_MODE_GTAO,
-    AO_MODE_SSDO
+    AO_MODE_SSDO,
+    AO_MODE_XEGTAO
 };
 extern ECORE_API u32 ps_r_ao_mode;
+extern ECORE_API float ps_r_xegtao_radius;
+extern ECORE_API BOOL ps_r_xegtao_bent_normals; // Requires vid_restart.
+
+enum : u32
+{
+    AO_RES_LEGACY,
+    AO_RES_FULL,
+    AO_RES_HALF
+};
+extern ECORE_API u32 ps_r_ao_resolution;
 
 extern ECORE_API u32 ps_r_sun_quality; //	=	0;
 

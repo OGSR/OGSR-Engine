@@ -1,0 +1,64 @@
+#include "common.h"
+
+#ifdef USE_GTAO
+#include "gtao.h"
+#else
+#include "ssdo.ps"
+#endif
+
+// Full mode writes only R (visibility). Half mode also stores view depth and
+// the original packed normal so the resolve never mixes unrelated surfaces.
+float4 main(p_screen I) : SV_Target
+{
+    int2 pixel = int2(I.hpos.xy);
+    int2 lastPixel = int2(pos_decompression_params2.xy) - 1;
+
+#ifdef AO_HALF_RESOLUTION
+    // Pick the nearest covered pixel in this 2x2 footprint. Use integer render
+    // pixels, not scaled UVs, to keep odd-sized internal resolutions aligned.
+    pixel *= 2;
+    float nearestDepth = 1e20;
+    int2 selectedPixel = pixel;
+    [unroll] for (int y = 0; y < 2; ++y)
+    {
+        [unroll] for (int x = 0; x < 2; ++x)
+        {
+            int2 candidate = min(pixel + int2(x, y), lastPixel);
+            float depth = s_position.Load(int3(candidate, 0)).z;
+            if (!is_sky(depth) && depth > SKY_EPS && depth < nearestDepth)
+            {
+                nearestDepth = depth;
+                selectedPixel = candidate;
+            }
+        }
+    }
+    pixel = selectedPixel;
+#endif
+
+    float4 packed = s_position.Load(int3(pixel, 0));
+    if (is_sky(packed.z) || packed.z <= SKY_EPS)
+        return float4(1.0, 0.0, 0.0, 0.0);
+
+    float2 pos2d = float2(pixel) + 0.5;
+#ifdef AO_HALF_RESOLUTION
+    float2 tc = pos2d * pos_decompression_params2.zw;
+#else
+    // Keep the same interpolated UV as combine_1: SSDO's hash is sensitive to
+    // even tiny rounding differences from reconstructing UVs from SV_Position.
+    float2 tc = I.tc0;
+#endif
+    // Match gbuffer_load_data, including the existing jitter convention.
+    float2 unjittered = pos2d - m_taa_jitter.xy * float2(0.5, -0.5) * pos_decompression_params2.xy;
+    float4 P = float4(packed.z * (unjittered * pos_decompression_params.zw - pos_decompression_params.xy),
+        packed.z, gbuf_unpack_mtl(packed.w));
+    float3 N = gbuf_unpack_normal(packed.xy);
+    float visibility = 1.0;
+#ifdef SSAO_QUALITY
+#ifdef USE_GTAO
+    visibility = calc_gtao(P.xyz, N, tc, 0).x;
+#else
+    visibility = calc_ssdo(P, N, tc, float4(pos2d, 0.0, 1.0), 0);
+#endif
+#endif
+    return float4(visibility, packed.z, packed.xy);
+}

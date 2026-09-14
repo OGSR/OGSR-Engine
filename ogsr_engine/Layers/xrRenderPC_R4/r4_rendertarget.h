@@ -3,6 +3,8 @@
 #include "../xrRender/ColorMapManager.h"
 
 class light;
+struct ShaderElement;
+class XeGTAOResources;
 
 static void dummy(){}
 
@@ -17,6 +19,13 @@ private:
     u32 m_displayHeight{};
     bool m_temporalUpscaleInput{};
     bool m_resetTemporalHistory{true};
+    bool m_ao_enabled{}; // Matches SSAO_QUALITY when the target's shaders were compiled.
+    u32 m_ao_mode{}; // Method changes, like quality changes, require vid_restart.
+    bool m_xegtao_bent_normals{}; // Latched with the AO shaders and texture formats.
+    XeGTAOResources* m_xegtao{};
+    void InitXeGTAO();
+    void DestroyXeGTAO();
+    void phase_xegtao(CBackend& cmd_list);
     u32 dwAccumulatorClearMark;
     u32 dwFlareClearMark;
 
@@ -42,6 +51,9 @@ public:
     ref_rt rt_Position; // 64bit,	fat	(x,y,z,?)				(eye-space)
     ref_rt rt_Color; // 64/32bit,fat	(r,g,b,specular-gloss)	(or decompressed MET-8-8-8-8)
     ref_rt rt_Velocity; // r2_RT_velocity
+
+    ref_rt rt_ao; // Single-channel visibility at internal render resolution.
+    ref_rt rt_ao_half; // Half-size visibility, view depth and packed normal for reconstruction.
 
     ref_rt rt_zbuffer; // r2_RT_zbuffer
     ref_rt rt_tempzb, rt_tempzb_dof;
@@ -167,6 +179,7 @@ private:
     ref_geom g_combine_2UV;
     ref_geom g_combine_cuboid;
     ref_shader s_combine;
+    ref_shader s_ao;
     ref_shader s_combine_volumetric;
 
     ref_shader s_blur;
@@ -277,6 +290,7 @@ public:
     void phase_ssfx_bloom(CBackend& cmd_list);
     void phase_luminance(CBackend& cmd_list);
     void phase_combine(CBackend& cmd_list);
+    void phase_ao(CBackend& cmd_list);
     void phase_pp(CBackend& cmd_list);
     void phase_combine_volumetric(CBackend& cmd_list);
 
@@ -342,6 +356,21 @@ public:
 #endif
 
 private:
+    // Display-sized post: latest image is in combine or postprocess0.
+    bool m_pp_current_is_combine{};
+    bool m_pp_remap_enabled{};
+    bool m_pp_pingponged{};
+
+    ref_rt& pp_src() { return m_pp_current_is_combine ? rt_Generic_combine : rt_Postprocess_0; }
+    const ref_rt& pp_src() const { return m_pp_current_is_combine ? rt_Generic_combine : rt_Postprocess_0; }
+    ref_rt& pp_dst() { return m_pp_current_is_combine ? rt_Postprocess_0 : rt_Generic_combine; }
+    void pp_flip()
+    {
+        m_pp_current_is_combine = !m_pp_current_is_combine;
+        m_pp_pingponged = true;
+    }
+    void pp_remap_scene_srv(CBackend& cmd_list, ShaderElement* se) const;
+
     void RenderScreenTriangle(CBackend& cmd_list, const ref_rt& rt, ref_selement& sh, const std::function<void()>& lambda = dummy);
     void RenderScreenQuad(CBackend& cmd_list, const u32 w, u32 const h, const ref_rt& rt, ref_selement& sh, const std::function<void()>& lambda = dummy);
 
@@ -367,8 +396,8 @@ private:
 
     bool reset_3dss_rendertarget(const bool need_reset = false);
 
-    void ProcessCAS(CBackend& cmd_list);
-    void BeginPostprocess(CBackend& cmd_list, bool temporalOutput);
+    void ProcessCAS(CBackend& cmd_list, bool read_combine);
+    void BeginPostprocess(CBackend& cmd_list, bool temporalOutput, bool skip_temporal_copy = false);
 
     void PhaseSSSS(CBackend& cmd_list);
 

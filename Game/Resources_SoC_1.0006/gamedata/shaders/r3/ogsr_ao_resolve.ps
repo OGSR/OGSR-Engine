@@ -1,0 +1,38 @@
+#include "common.h"
+
+Texture2D<float4> s_ao_half;
+
+float main(p_screen I) : SV_Target
+{
+    float4 center = s_position.Load(int3(I.hpos.xy, 0));
+    if (is_sky(center.z) || center.z <= SKY_EPS)
+        return 1.0;
+
+    float3 normal = gbuf_unpack_normal(center.xy);
+    // Half texel centers correspond to the centers of 2x2 render-pixel blocks.
+    float2 halfPos = I.hpos.xy * 0.5 - 0.5;
+    int2 base = int2(floor(halfPos));
+    float2 fraction = frac(halfPos);
+    int2 lastHalfPixel = (int2(pos_decompression_params2.xy) + 1) / 2 - 1;
+    float sum = 0.0;
+    float weightSum = 0.0;
+
+    [unroll] for (int y = 0; y < 2; ++y)
+    {
+        [unroll] for (int x = 0; x < 2; ++x)
+        {
+            int2 pixel = clamp(base + int2(x, y), int2(0, 0), lastHalfPixel);
+            float4 sampleAO = s_ao_half.Load(int3(pixel, 0));
+            float2 bilinear = lerp(1.0 - fraction, fraction, float2(x, y));
+            float depthWeight = saturate(1.0 - abs(sampleAO.y - center.z) / max(0.01, center.z * 0.02));
+            float normalWeight = pow(saturate(dot(normal, gbuf_unpack_normal(sampleAO.zw))), 8.0);
+            float weight = bilinear.x * bilinear.y * depthWeight * normalWeight * (sampleAO.y > SKY_EPS);
+            sum += sampleAO.x * weight;
+            weightSum += weight;
+        }
+    }
+
+    // A missing background sample is preferable to borrowing foreground AO
+    // across a silhouette. Full mode remains available for thin geometry.
+    return weightSum > 1e-5 ? sum / weightSum : 1.0;
+}
