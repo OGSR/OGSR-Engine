@@ -16,14 +16,14 @@ constexpr xr_token CascadesSmapSizeToken[]{// {"512x512", 512},
                                       //{"8192x8192", 8192},
                                       {}};
 
-u32 r2_SmapLightsSize = 4096;
+u32 r2_SmapLightsSize = 3072;
 constexpr xr_token LightsSmapSizeToken[]{//{"1536x1536", 1536},
-                                        //{"2048x2048", 2048},
+                                        {"2048x2048", 2048},
                                         {"2560x2560", 2560},
                                         {"3072x3072", 3072},
                                         {"4096x4096", 4096},
-                                        {"6144x6144", 6144},
-                                        //{"8192x8192", 8192}, //Почему то вызывает просто адовые дропы фпс в некоторых случаях. 4к и 6к как будто бы вообще никакой заметной разницы не дают, а тут просто жесть
+                                        //{"6144x6144", 6144},
+                                        //{"8192x8192", 8192},
                                         {}};
 
 u32 r2_SmapRainSize = 1024;
@@ -238,7 +238,7 @@ float ps_r2_slight_fade = 1.0f;
 
 Fvector4 ps_ssfx_lut{}; // x - интенсивность, y - номер эффекта
 Fvector3 ps_ssfx_shadows{
-    1536.f, 2048.f,
+    1024.f, 1536.f,
     0.0f}; // x - Minimum shadow map resolution. When lights are away from the player the resolution of shadows drop to improve performance ( at the cost of image quality ), y -
            // Maximum shadow map resolution. When lights are closer, the resolution increases to improve the image quality of shadows ( at the cost of performance ).
 Fvector3 ps_ssfx_shadow_bias{0.4f, 0.03f, 0.0f};
@@ -953,7 +953,7 @@ void xrRender_initconsole()
 */
 
     // Screen Space Shaders
-    CMD4(CCC_Vector3, "ssfx_shadows", &ps_ssfx_shadows, (Fvector3{1024.f, 1536.f, 0.f}), (Fvector3{4096.f, 4096.f, 0.f}));
+    CMD4(CCC_Vector3, "ssfx_shadows", &ps_ssfx_shadows, (Fvector3{128.f, 1024.f, 0.f}), (Fvector3{1536.f, 3072.f, 0.f}));
 
     CMD4(CCC_Vector3, "ssfx_shadow_bias", &ps_ssfx_shadow_bias, Fvector3().set(0, 0, 0), Fvector3().set(1.0, 1.0, 1.0));
     CMD4(CCC_Vector4, "ssfx_lut", &ps_ssfx_lut, Fvector4().set(0.0, 0.0, 0.0, 0.0), tw2_max);
