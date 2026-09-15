@@ -18,6 +18,8 @@ public:
     void InitFromXML(CUIXml& xml, LPCSTR path, int index);
 
 protected:
+    bool m_bVert;
+    float m_iIndent;
     float m_fScale;
     Fvector2 m_cell_size;
     xr_vector<CIconParams*> m_vRects;
