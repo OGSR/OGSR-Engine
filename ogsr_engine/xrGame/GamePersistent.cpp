@@ -377,7 +377,7 @@ void CGamePersistent::WeathersUpdate()
     }
 }
 
-static bool allow_intro() { return !strstr(Core.Params, "-nointro"); }
+static bool allow_intro() { return false; /*return !!strstr(Core.Params, "-intro");*/ } //Временно отключено
 
 static bool allow_game_intro() { return !strstr(Core.Params, "-nogameintro"); }
 
@@ -442,7 +442,7 @@ void CGamePersistent::update_game_loaded()
 
 void CGamePersistent::start_game_intro()
 {
-    if (!allow_intro())
+    if (!allow_game_intro())
     {
         return;
     }
