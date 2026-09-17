@@ -535,9 +535,6 @@ bool CRenderTarget::reset_3dss_rendertarget(const bool need_reset)
 
 void CRenderTarget::InitDLSS()
 {
-    if (ps_r_pp_aa_mode != DLSS)
-        return;
-
     const NVSDK_NGX_Dimensions renderSize{GetRenderWidth(), GetRenderHeight()};
     const NVSDK_NGX_Dimensions displaySize{GetDisplayWidth(), GetDisplayHeight()};
     const NVSDK_NGX_PerfQuality_Value requestedQuality = GetRequestedDlssQuality();
