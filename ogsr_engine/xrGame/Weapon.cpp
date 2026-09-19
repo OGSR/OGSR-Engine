@@ -1731,7 +1731,14 @@ void CWeapon::debug_draw_firedeps()
 #endif // DEBUG
 }
 
-float CWeapon::hit_probability() const { return m_hit_probability[g_SingleGameDifficulty]; }
+float CWeapon::hit_probability() const
+{
+    static const bool fixed_hit_probability = READ_IF_EXISTS(pSettings, r_bool, "features", "fixed_hit_probability", false);
+    if (fixed_hit_probability)
+        return m_hit_probability[g_SingleGameDifficulty];
+    else
+        return m_hit_probability[egdNovice];
+}
 
 void CWeapon::OnStateSwitch(u32 S, u32 oldState)
 {
