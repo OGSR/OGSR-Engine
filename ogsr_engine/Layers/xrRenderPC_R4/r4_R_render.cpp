@@ -389,6 +389,10 @@ void CRender::Render()
         LP_normal.vis_prepare(cmd_list);
     }
 
+    auto copy_scene_depth = [&](const ref_rt& dest) {
+        HW.get_context(cmd_list.context_id)->CopyResource(dest->pSurface, Target->rt_Base_Depth->pSurface);
+    };
+
     //******* Main render :: PART-1 (second)
     {
         PIX_EVENT(DEFER_PART1_SPLIT);
@@ -398,35 +402,30 @@ void CRender::Render()
         dsgraph.r_dsgraph_render_lods();
         if (Details)
             Details->Render(cmd_list);
+
+        // Snapshot scene depth without HUD for 3D-scope z-write.
+        if (!dsgraph.mapScopeHUD.empty())
         {
-            {
-                PIX_EVENT(copy_zbuffer_scope);
-
-                ID3D11Resource* res{};
-                Target->get_base_zb()->GetResource(&res);
-                HW.get_context(cmd_list.context_id)->CopyResource(Target->rt_tempzb->pSurface, res);
-                _RELEASE(res);
-            }
-            dsgraph.r_dsgraph_render_hud();
-            {
-                PIX_EVENT(copy_zbuffer_scope_depth);
-
-                ID3D11Resource* res{};
-                Target->get_base_zb()->GetResource(&res);
-                HW.get_context(cmd_list.context_id)->CopyResource(Target->rt_tempzb_dof->pSurface, res);
-                _RELEASE(res);
-            }
-            dsgraph.r_dsgraph_render_hud_scope_depth();
+            PIX_EVENT(copy_zbuffer_scope);
+            copy_scene_depth(Target->rt_tempzb);
         }
+
+        dsgraph.r_dsgraph_render_hud();
+
+        // Snapshot scene+HUD depth for DOF. Same enable check as phase_dof.
+        const auto& dof_params = shader_exports.get_dof_params();
+        if (!(fis_zero(dof_params.x) && fis_zero(dof_params.y) && fis_zero(dof_params.z) && fis_zero(dof_params.w)))
+        {
+            PIX_EVENT(copy_zbuffer_scope_depth);
+            copy_scene_depth(Target->rt_tempzb_dof);
+        }
+
+        dsgraph.r_dsgraph_render_hud_scope_depth();
     }
 
     {
         PIX_EVENT(copy_zbuffer);
-
-        ID3D11Resource* res{};
-        Target->get_base_zb()->GetResource(&res);
-        HW.get_context(cmd_list.context_id)->CopyResource(Target->rt_zbuffer->pSurface, res);
-        _RELEASE(res);
+        copy_scene_depth(Target->rt_zbuffer);
     }
 
     // Wall marks

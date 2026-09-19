@@ -583,8 +583,11 @@ bool CRenderTarget::ProcessDLSS()
     return true;
 }
 
-void CRenderTarget::BeginPostprocess(CBackend& cmd_list, const bool temporalOutput)
+void CRenderTarget::BeginPostprocess(CBackend& cmd_list, const bool temporalOutput, const bool skip_temporal_copy)
 {
+    m_pp_pingponged = false;
+    m_pp_current_is_combine = false;
+
     // The last scene target is physically render-sized. Switch both the cached
     // target dimensions and the D3D viewport before any display-sized pass.
     u_setrt(cmd_list, GetDisplayWidth(), GetDisplayHeight(), nullptr, nullptr, nullptr, nullptr);
@@ -592,10 +595,20 @@ void CRenderTarget::BeginPostprocess(CBackend& cmd_list, const bool temporalOutp
 
     if (temporalOutput)
     {
+        // DLSS/FSR already wrote combine. CAS (if any) samples that and writes postprocess0.
+        if (skip_temporal_copy)
+        {
+            m_pp_current_is_combine = true;
+            m_pp_remap_enabled = true;
+            return;
+        }
+
+        PIX_EVENT(copy_pp_after_upscale);
         HW.get_context(cmd_list.context_id)->CopyResource(rt_Postprocess_0->pSurface, rt_Generic_combine->pSurface);
     }
     else if (GetRenderWidth() == GetDisplayWidth() && GetRenderHeight() == GetDisplayHeight())
     {
+        PIX_EVENT(copy_pp_from_generic0);
         HW.get_context(cmd_list.context_id)->CopyResource(rt_Postprocess_0->pSurface, rt_Generic_0->pSurface);
     }
     else
@@ -604,11 +617,13 @@ void CRenderTarget::BeginPostprocess(CBackend& cmd_list, const bool temporalOutp
         // stretch the render-sized scene so failure remains full-screen.
         RenderScreenTriangle(cmd_list, rt_Postprocess_0, s_temporal_resolve->E[0]);
     }
+
+    m_pp_remap_enabled = true;
 }
 
 //*****************************************************************************************************
 
-void CRenderTarget::ProcessCAS(CBackend& cmd_list)
+void CRenderTarget::ProcessCAS(CBackend& cmd_list, const bool read_combine)
 {
     if (fis_zero(ps_r_cas))
         return;
@@ -616,8 +631,10 @@ void CRenderTarget::ProcessCAS(CBackend& cmd_list)
     PIX_EVENT(CAS);
 
     const Fvector4 params{std::max(ps_r_cas, 0.01f), 0.f, 0.f, 0.f};
-    RenderScreenTriangle(cmd_list, rt_Generic_combine, s_cas->E[0], [&]() { cmd_list.set_c("f_cas_intensity", params); });
-    HW.get_context(cmd_list.context_id)->CopyResource(rt_Postprocess_0->pSurface, rt_Generic_combine->pSurface);
+    // After skip_temporal_copy, current is combine (DLSS/FSR). Element 1 samples that.
+    // After a combine→postprocess0 copy, current is postprocess0. Element 0 samples that.
+    RenderScreenTriangle(cmd_list, pp_dst(), read_combine ? s_cas->E[1] : s_cas->E[0], [&]() { cmd_list.set_c("f_cas_intensity", params); });
+    pp_flip();
 }
 
 //*****************************************************************************************************
@@ -961,10 +978,14 @@ void CRenderTarget::PhaseAA(CBackend& cmd_list)
 
     EndTemporalUpscaleInput();
     RImplementation.rmNormal(cmd_list);
-    BeginPostprocess(cmd_list, temporalOutput);
+
+    const bool cas = !fis_zero(ps_r_cas) && ps_r_pp_aa_mode != SMAA;
+    const bool cas_from_combine = temporalOutput && cas && s_cas->E[1];
+
+    BeginPostprocess(cmd_list, temporalOutput, cas_from_combine);
 
     if (ps_r_pp_aa_mode != SMAA)
-        ProcessCAS(cmd_list);
+        ProcessCAS(cmd_list, cas_from_combine);
 }
 
 //*****************************************************************************************************

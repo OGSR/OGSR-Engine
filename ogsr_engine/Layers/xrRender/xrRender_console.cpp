@@ -102,7 +102,12 @@ u32 ps_preset = 2;
 constexpr xr_token qpreset_token[] = {{"Minimum", 0}, {"Low", 1}, {"Default", 2}, {"High", 3}, {"Extreme", 4}, {nullptr, 0}};
 
 u32 ps_r_ao_mode = AO_MODE_SSDO;
-constexpr xr_token ao_mode_token[] = {{"st_gtao", AO_MODE_GTAO}, {"st_ssdo", AO_MODE_SSDO}, {nullptr, 0}};
+constexpr xr_token ao_mode_token[] = {{"st_gtao", AO_MODE_GTAO}, {"st_ssdo", AO_MODE_SSDO}, {"st_xegtao", AO_MODE_XEGTAO}, {nullptr, 0}};
+float ps_r_xegtao_radius = 0.5f;
+BOOL ps_r_xegtao_bent_normals = FALSE;
+
+u32 ps_r_ao_resolution = AO_RES_FULL;
+constexpr xr_token ao_resolution_token[] = {{"legacy", AO_RES_LEGACY}, {"full", AO_RES_FULL}, {"half", AO_RES_HALF}, {nullptr, 0}};
 
 u32 ps_r_ao_quality = 0;
 constexpr xr_token qssao_token[] = {{"st_opt_off", 0},
@@ -873,7 +878,10 @@ void xrRender_initconsole()
     CMD4(CCC_Float, "r_SunShafts_Blend", &ps_r_prop_ss_blend, 0.01f, 1.0f);
 
     CMD3(CCC_Token, "r_ao_mode", &ps_r_ao_mode, ao_mode_token);
+    CMD4(CCC_Float, "r_xegtao_radius", &ps_r_xegtao_radius, 0.05f, 4.0f);
+    CMD2(CCC_Bool, "r_xegtao_bent_normals", &ps_r_xegtao_bent_normals); // Requires vid_restart.
     CMD3(CCC_Token, "r2_ssao", &ps_r_ao_quality, qssao_token);
+    CMD3(CCC_Token, "r_ao_resolution", &ps_r_ao_resolution, ao_resolution_token);
 
     CMD3(CCC_Mask64, "r4_enable_tessellation", &ps_r2_ls_flags_ext, R2FLAGEXT_ENABLE_TESSELLATION); // Need restart
 

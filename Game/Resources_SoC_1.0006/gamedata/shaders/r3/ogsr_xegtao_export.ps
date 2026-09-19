@@ -1,0 +1,27 @@
+#include "common.h"
+
+Texture2D<uint> s_xegtao;
+
+#ifdef USE_XEGTAO_BENT_NORMALS
+float4 main(p_screen I) : SV_Target
+{
+    int2 pixel = int2(I.hpos.xy);
+    if (s_position.Load(int3(pixel, 0)).z <= 0.001)
+        return float4(1.0, 0.5, 0.5, 0.0);
+
+    // XeGTAO packs XYZ in the low three bytes and visibility in the high byte.
+    // Keep visibility in R; GBA carry XYZ encoded from [-1,1] to [0,1].
+    uint packed = s_xegtao.Load(int3(pixel, 0));
+    float3 bentNormal = float3(packed & 255u, (packed >> 8) & 255u, (packed >> 16) & 255u) / 255.0;
+    return float4(float(packed >> 24) / 255.0, bentNormal);
+}
+#else
+float main(p_screen I) : SV_Target
+{
+    int2 pixel = int2(I.hpos.xy);
+    // Sky is exactly unoccluded, independently of the denoiser's neighborhood.
+    if (s_position.Load(int3(pixel, 0)).z <= 0.001)
+        return 1.0;
+    return saturate(s_xegtao.Load(int3(pixel, 0)) / 255.0);
+}
+#endif

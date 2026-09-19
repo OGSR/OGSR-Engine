@@ -6,7 +6,6 @@ void CRenderTarget::phase_fakescope(CBackend& cmd_list)
     if (Device.IsAltScopeActive())
         return;
 
-    RenderScreenTriangle(cmd_list, rt_Generic_combine, s_fakescope->E[0]);
-
-    HW.get_context(cmd_list.context_id)->CopyResource(rt_Postprocess_0->pSurface, rt_Generic_combine->pSurface);
+    RenderScreenTriangle(cmd_list, pp_dst(), s_fakescope->E[0]);
+    pp_flip();
 }

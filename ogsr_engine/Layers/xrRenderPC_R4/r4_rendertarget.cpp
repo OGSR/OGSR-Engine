@@ -189,6 +189,10 @@ CRenderTarget::CRenderTarget()
     SetTemporalRenderSize(Device.dwWidth, Device.dwHeight, Device.dwWidth, Device.dwHeight);
     ConfigureTemporalRenderSize();
 
+    m_ao_enabled = ps_r_ao_quality != 0;
+    m_ao_mode = ps_r_ao_mode;
+    m_xegtao_bent_normals = m_ao_enabled && m_ao_mode == AO_MODE_XEGTAO && ps_r_xegtao_bent_normals;
+
     param_blur = 0.f;
     param_gray = 0.f;
     param_noise = 0.f;
@@ -224,6 +228,15 @@ CRenderTarget::CRenderTarget()
         rt_Base_Depth.create(r2_RT_base_depth, w, h, DXGI_FORMAT_R24G8_TYPELESS);
 
         rt_Position.create(r2_RT_P, w, h, DXGI_FORMAT_R16G16B16A16_FLOAT);
+
+        if (m_ao_enabled)
+        {
+            // XeGTAO already quantizes each component to 8 bits. Bent mode keeps
+            // visibility in R and the encoded view-space direction in GBA.
+            rt_ao.create("$user$ao", w, h, m_xegtao_bent_normals ? DXGI_FORMAT_R8G8B8A8_UNORM : DXGI_FORMAT_R16_FLOAT);
+            if (m_ao_mode != AO_MODE_XEGTAO)
+                rt_ao_half.create("$user$ao_half", (w + 1) / 2, (h + 1) / 2, DXGI_FORMAT_R16G16B16A16_FLOAT);
+        }
 
         rt_Accumulator.create(r2_RT_accum, w, h, DXGI_FORMAT_R16G16B16A16_FLOAT);
 
@@ -327,6 +340,13 @@ CRenderTarget::CRenderTarget()
     s_flare.create("effects\\lensflare", "shaders\\lensflare");
     s_lut.create("ogsr_lut");
     s_ssr.create("ogsr_ssr");
+    if (m_ao_enabled)
+    {
+        if (m_ao_mode == AO_MODE_XEGTAO)
+            InitXeGTAO();
+        else
+            s_ao.create("ogsr_ao");
+    }
 
     s_ssfx_bloom.create("ogsr_bloom");
     s_ssfx_bloom_lens.create("ogsr_bloom_flares");
@@ -594,6 +614,7 @@ CRenderTarget::~CRenderTarget()
 
     DestroyDLSS();
     DestroyFSR();
+    DestroyXeGTAO();
 
     _RELEASE(m_ImguiSRV);
     _RELEASE(m_ImguiTex);
