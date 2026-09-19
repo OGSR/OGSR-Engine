@@ -2078,7 +2078,14 @@ bool CWeapon::ParentIsActor() const
     return smart_cast<const CActor*>(H_Parent()) != nullptr;
 }
 
-float CWeapon::hit_probability() const { return m_hit_probability[g_SingleGameDifficulty]; }
+float CWeapon::hit_probability() const
+{
+    static const bool fixed_hit_probability = READ_IF_EXISTS(pSettings, r_bool, "features", "fixed_hit_probability", false);
+    if (fixed_hit_probability)
+        return m_hit_probability[g_SingleGameDifficulty];
+    else
+        return m_hit_probability[egdNovice];
+}
 
 bool CWeapon::Is3dssEnabled() const
 {
