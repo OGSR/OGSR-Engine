@@ -350,7 +350,7 @@ private:
     ref_rt rt_smaa_edgetex;
     ref_rt rt_smaa_blendtex;
 
-    void PhaseAA(CBackend& cmd_list);
+    bool PhaseAA(CBackend& cmd_list);
     bool Phase3DSSUpscale(CBackend& cmd_list);
 
     void ProcessSMAA(CBackend& cmd_list);

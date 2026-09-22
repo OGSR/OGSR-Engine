@@ -189,15 +189,22 @@ void CRenderTarget::phase_combine(CBackend& cmd_list)
 
     const bool upscaled_3dss = (need_3dss && Phase3DSSUpscale(cmd_list));
 
+    bool temporalOutput{false};
     if (ps_r_pp_aa_mode) // должно быть перед 3DSS
     {
-        PhaseAA(cmd_list); // anti - aliasing
+        temporalOutput = PhaseAA(cmd_list); // anti - aliasing
     }
     else
     {
         EndTemporalUpscaleInput();
         RImplementation.rmNormal(cmd_list);
         BeginPostprocess(cmd_list, false);
+    }
+
+    //Костыль для 3DSS. Там юзается текстура из rt_Generic_combine, а она приходит из DLSS/FSR, а если они выключены, то изображение брать не откуда.
+    if (need_3dss && !upscaled_3dss && !temporalOutput)
+    {
+        HW.get_context(cmd_list.context_id)->CopyResource(rt_Generic_combine->pSurface, rt_Postprocess_0->pSurface);
     }
 
     // Sensor noise / lens after temporal upscaling. Before 3DSS so the reticle is not thermal-tinted.
