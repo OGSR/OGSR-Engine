@@ -929,7 +929,7 @@ bool CRenderTarget::ProcessFSR_3DSS(const bool need_reset)
 }
 //*****************************************************************************************************
 
-void CRenderTarget::PhaseAA(CBackend& cmd_list)
+bool CRenderTarget::PhaseAA(CBackend& cmd_list)
 {
     bool temporalOutput = false;
 
@@ -965,6 +965,8 @@ void CRenderTarget::PhaseAA(CBackend& cmd_list)
 
     if (ps_r_pp_aa_mode != SMAA)
         ProcessCAS(cmd_list);
+
+    return temporalOutput;
 }
 
 //*****************************************************************************************************
