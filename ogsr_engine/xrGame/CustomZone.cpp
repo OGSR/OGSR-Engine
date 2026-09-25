@@ -1038,14 +1038,13 @@ void CCustomZone::StartBlowoutLight()
     Fvector pos = Position();
     pos.y += m_fLightHeight;
     m_pLight->set_position(pos);
-    m_pLight->set_active(ZoneState() != eZoneStateDisabled);
+    m_pLight->set_active(true);
 }
 
 void CCustomZone::StopBlowoutLight()
 {
     m_fLightTimeLeft = 0.f;
-    if (m_pLight)
-        m_pLight->set_active(false);
+    m_pLight->set_active(false);
 }
 
 void CCustomZone::UpdateBlowoutLight()
@@ -1192,7 +1191,11 @@ void CCustomZone::OnStateSwitch(EZoneState new_state)
 
 void CCustomZone::SwitchZoneState(EZoneState new_state)
 {
-    OnStateSwitch(new_state);
+    // !!! Just single entry for given state !!!
+    NET_Packet P;
+    u_EventGen(P, GE_ZONE_STATE_CHANGE, ID());
+    P.w_u8(u8(new_state));
+    u_EventSend(P);
 
     m_iPreviousStateTime = m_iStateTime = 0;
 }
@@ -1397,7 +1400,10 @@ void CCustomZone::UpdateOnOffState()
 void CCustomZone::GoDisabledState()
 {
     // switch to disable
-    OnStateSwitch(eZoneStateDisabled);
+    NET_Packet P;
+    u_EventGen(P, GE_ZONE_STATE_CHANGE, ID());
+    P.w_u8(u8(eZoneStateDisabled));
+    u_EventSend(P);
 
     OBJECT_INFO_VEC_IT it = m_ObjectInfoMap.begin();
     OBJECT_INFO_VEC_IT it_e = m_ObjectInfoMap.end();
@@ -1412,7 +1418,10 @@ void CCustomZone::GoDisabledState()
 void CCustomZone::GoEnabledState()
 {
     // switch to idle
-    OnStateSwitch(eZoneStateIdle);
+    NET_Packet P;
+    u_EventGen(P, GE_ZONE_STATE_CHANGE, ID());
+    P.w_u8(u8(eZoneStateIdle));
+    u_EventSend(P);
 }
 
 BOOL CCustomZone::feel_touch_on_contact(CObject* O)

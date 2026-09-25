@@ -12,21 +12,21 @@ protected:
     bool m_turned_on;
     u32 m_turn_time;
 
-    virtual void PlayIdleParticles(bool bIdleLight = true);
-    virtual void StopIdleParticles(bool bIdleLight = true);
+    void PlayIdleParticles(bool bIdleLight = true) override;
+    void StopIdleParticles(bool bIdleLight = true) override;
     virtual BOOL AlwaysTheCrow();
     virtual void UpdateWorkload(u32 dt);
 
 public:
     CZoneCampfire();
     virtual ~CZoneCampfire();
-    virtual void Load(LPCSTR section);
+    virtual void Load(const char* section);
     virtual void GoEnabledState();
     virtual void GoDisabledState();
 
     void turn_on_script();
     void turn_off_script();
-    bool is_on();
+    bool is_on() const;
     virtual void shedule_Update(u32 dt);
     DECLARE_SCRIPT_REGISTER_FUNCTION
 };

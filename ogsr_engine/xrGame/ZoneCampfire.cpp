@@ -1,32 +1,20 @@
 #include "stdafx.h"
+
 #include "ZoneCampfire.h"
 #include "ParticlesObject.h"
 #include "GamePersistent.h"
 #include "../xr_3da/LightAnimLibrary.h"
-/*
-CZoneCampfire* g_zone = nullptr;
-void turn_zone()
-{
-    if(!g_zone) return;
-    if(g_zone->is_on())
-        g_zone->turn_off_script();
-    else
-        g_zone->turn_on_script();
-}
-*/
-CZoneCampfire::CZoneCampfire() : m_pDisabledParticles(nullptr), m_pEnablingParticles(nullptr), m_turned_on(true), m_turn_time(0)
-{
-    //.	g_zone = this;
-}
 
+CZoneCampfire::CZoneCampfire() : m_pDisabledParticles(nullptr), m_pEnablingParticles(nullptr), m_turned_on(true), m_turn_time(0) {}
 CZoneCampfire::~CZoneCampfire()
 {
     CParticlesObject::Destroy(m_pDisabledParticles);
     CParticlesObject::Destroy(m_pEnablingParticles);
+
     m_disabled_sound.destroy();
 }
 
-void CZoneCampfire::Load(LPCSTR section) { inherited::Load(section); }
+void CZoneCampfire::Load(const char* section) { inherited::Load(section); }
 
 void CZoneCampfire::GoEnabledState()
 {
@@ -34,37 +22,48 @@ void CZoneCampfire::GoEnabledState()
 
     if (m_pDisabledParticles)
     {
-        m_pDisabledParticles->Stop(FALSE);
+        // Msg("* [%s]: 1 stop disabled particles: %s", __FUNCTION__, cNameSect().c_str());
+        m_pDisabledParticles->Stop(false);
         CParticlesObject::Destroy(m_pDisabledParticles);
     }
 
     m_disabled_sound.stop();
     m_disabled_sound.destroy();
 
-    LPCSTR str = pSettings->r_string(cNameSect(), "enabling_particles");
-    m_pEnablingParticles = CParticlesObject::Create(str, FALSE);
-    m_pEnablingParticles->UpdateParent(XFORM(), {});
-    m_pEnablingParticles->Play(false);
+    if (pSettings->line_exist(cNameSect(), "enabling_particles"))
+    {
+        const char* str = pSettings->r_string(cNameSect(), "enabling_particles");
+        m_pEnablingParticles = CParticlesObject::Create(str, false);
+        m_pEnablingParticles->UpdateParent(XFORM(), {});
+        m_pEnablingParticles->Play(false);
+        // Msg("* [%s]: start enabling particles: %s", __FUNCTION__, cNameSect().c_str());
+    }
 }
 
 void CZoneCampfire::GoDisabledState()
 {
     inherited::GoDisabledState();
 
-    R_ASSERT(nullptr == m_pDisabledParticles);
-    LPCSTR str = pSettings->r_string(cNameSect(), "disabled_particles");
-    m_pDisabledParticles = CParticlesObject::Create(str, FALSE);
-    m_pDisabledParticles->UpdateParent(XFORM(), {});
-    m_pDisabledParticles->Play(false);
+    if (pSettings->line_exist(cNameSect(), "disabled_particles"))
+    {
+        R_ASSERT(!m_pDisabledParticles);
+        const char* str = pSettings->r_string(cNameSect(), "disabled_particles");
+        m_pDisabledParticles = CParticlesObject::Create(str, false);
+        m_pDisabledParticles->UpdateParent(XFORM(), {});
+        m_pDisabledParticles->Play(false);
+        // Msg("* [%s]: start disabled particles: %s", __FUNCTION__, cNameSect().c_str());
+    }
 
-    str = pSettings->r_string(cNameSect(), "disabled_sound");
+    const char* str = pSettings->r_string(cNameSect(), "disabled_sound");
     m_disabled_sound.create(str, st_Effect, sg_SourceType);
-    m_disabled_sound.play_at_pos(0, Position(), true);
+    m_disabled_sound.play_at_pos(nullptr, Position());
 }
 
 #define OVL_TIME 3000
+
 void CZoneCampfire::turn_on_script()
 {
+    if (ZoneState() != eZoneStateIdle)
     {
         m_turn_time = Device.dwTimeGlobal + OVL_TIME;
         m_turned_on = true;
@@ -74,14 +73,38 @@ void CZoneCampfire::turn_on_script()
 
 void CZoneCampfire::turn_off_script()
 {
+    constexpr bool force = false;
+    if (ZoneState() != eZoneStateDisabled)
     {
-        m_turn_time = Device.dwTimeGlobal + OVL_TIME;
-        m_turned_on = false;
-        GoDisabledState();
+        if (force)
+        {
+            if (m_pDisabledParticles)
+            {
+                // Msg("* [%s]: 2 stop disabled particles: %s", __FUNCTION__, cNameSect().c_str());
+                m_pDisabledParticles->Stop(false);
+                CParticlesObject::Destroy(m_pDisabledParticles);
+            }
+            if (m_pEnablingParticles)
+            {
+                // Msg("* [%s]: 2 stop enabling particles: %s", __FUNCTION__, cNameSect().c_str());
+                m_pEnablingParticles->Stop(false);
+                CParticlesObject::Destroy(m_pEnablingParticles);
+            }
+
+            m_turn_time = 0;
+            m_turned_on = false;
+            inherited::GoDisabledState();
+        }
+        else
+        {
+            m_turn_time = Device.dwTimeGlobal + OVL_TIME;
+            m_turned_on = false;
+            GoDisabledState();
+        }
     }
 }
 
-bool CZoneCampfire::is_on() { return m_turned_on; }
+bool CZoneCampfire::is_on() const { return m_turned_on; }
 
 void CZoneCampfire::shedule_Update(u32 dt)
 {
@@ -101,56 +124,63 @@ void CZoneCampfire::shedule_Update(u32 dt)
 
 void CZoneCampfire::PlayIdleParticles(bool bIdleLight)
 {
-    if (m_turn_time == 0 || m_turn_time - Device.dwTimeGlobal < (OVL_TIME - 2000))
+    // if (m_turn_time == 0 || m_turn_time - Device.dwTimeGlobal < (OVL_TIME - 2000))
     {
         inherited::PlayIdleParticles(bIdleLight);
-        if (m_pEnablingParticles)
-        {
-            m_pEnablingParticles->Stop(FALSE);
-            CParticlesObject::Destroy(m_pEnablingParticles);
-        }
     }
 }
 
 void CZoneCampfire::StopIdleParticles(bool bIdleLight)
 {
-    if (m_turn_time == 0 || m_turn_time - Device.dwTimeGlobal < (OVL_TIME - 500))
+    // if (m_turn_time == 0 || m_turn_time - Device.dwTimeGlobal < (OVL_TIME - 500))
+    {
         inherited::StopIdleParticles(bIdleLight);
+    }
 }
 
 BOOL CZoneCampfire::AlwaysTheCrow()
 {
     if (m_turn_time)
         return TRUE;
-    else
-        return inherited::AlwaysTheCrow();
+
+    return inherited::AlwaysTheCrow();
 }
 
 void CZoneCampfire::UpdateWorkload(u32 dt)
 {
     inherited::UpdateWorkload(dt);
+
+    if (m_turn_time == 0 || m_turn_time - Device.dwTimeGlobal < OVL_TIME - 2000)
+    {
+        if (m_pEnablingParticles)
+        {
+            // Msg("* [%s]: 2 stop enabling particles: %s", __FUNCTION__, cNameSect().c_str());
+            m_pEnablingParticles->Stop(false);
+            CParticlesObject::Destroy(m_pEnablingParticles);
+        }
+    }
+
     if (m_turn_time > Device.dwTimeGlobal)
     {
-        float k = float(m_turn_time - Device.dwTimeGlobal) / float(OVL_TIME);
+        float k = static_cast<float>(m_turn_time - Device.dwTimeGlobal) / static_cast<float>(OVL_TIME);
 
         if (m_turned_on)
         {
             k = 1.0f - k;
-            PlayIdleParticles(true);
-            StartIdleLight();
         }
         else
         {
-            StopIdleParticles(false);
+            StartIdleLight();
         }
 
         if (m_pIdleLight && m_pIdleLight->get_active())
         {
-            VERIFY(m_pIdleLAnim);
-            int frame = 0;
-            u32 clr = m_pIdleLAnim->CalculateBGR(Device.fTimeGlobal, frame);
+            R_ASSERT(m_pIdleLAnim);
+
+            int frame{};
+            u32 clr = m_pIdleLAnim->CalculateRGB(Device.fTimeGlobal, frame);
             Fcolor fclr;
-            fclr.set(((float)color_get_B(clr) / 255.f) * k, ((float)color_get_G(clr) / 255.f) * k, ((float)color_get_R(clr) / 255.f) * k, 1.f);
+            fclr.set(static_cast<float>(color_get_R(clr)) / 255.f * k, static_cast<float>(color_get_G(clr)) / 255.f * k, static_cast<float>(color_get_B(clr)) / 255.f * k, 1.f);
 
             float range = m_fIdleLightRange + 0.25f * ::Random.randF(-1.f, 1.f);
             range *= k;
@@ -162,13 +192,12 @@ void CZoneCampfire::UpdateWorkload(u32 dt)
     else if (m_turn_time)
     {
         m_turn_time = 0;
-        if (m_turned_on)
+
+        if (m_pDisabledParticles)
         {
-            PlayIdleParticles(true);
-        }
-        else
-        {
-            StopIdleParticles(true);
+            // Msg("* [%s]: 2 stop disabled particles: %s", __FUNCTION__, cNameSect().c_str());
+            m_pDisabledParticles->Stop(false);
+            CParticlesObject::Destroy(m_pDisabledParticles);
         }
     }
 }
