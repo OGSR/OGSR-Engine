@@ -278,7 +278,8 @@ bool CUIScrollView::OnMouseAction(float x, float y, EUIMessages mouse_action)
             float max_pos = m_pad->GetHeight() - GetHeight();
             max_pos = _max(0.0f, max_pos);
             clamp(curr_pad_pos.y, -max_pos, 0.0f);
-            m_pad->SetWndPos(curr_pad_pos);
+            m_targetScrollPosition = curr_pad_pos.y;
+            ForceScrollPosition();
             UpdateScroll();
             res = true;
         }
