@@ -25,6 +25,7 @@
 Texture2D s_puddles_normal;
 Texture2D s_puddles_mask;
 Texture2D s_rainsplash;
+Texture2D s_puddles_perlin;
 #endif
 
 uniform float4 ssfx_terrain_pom; // Samples, Range, Height, Water Limit
@@ -273,6 +274,36 @@ f_deffer main(p_bumped I)
 
     // Slope & texture mask defines final puddles intensity
     puddles *= SlopeMask * PuddlesMask;
+
+#ifndef TERRAIN_DISABLE_MIXED_PUDDLES
+    float puddles_old_style = 0.0f;
+
+    {
+    // Size factor. Convert 0 ~ 1 to 1 ~ -0.1f
+    float size_f = (1.0f - G_PUDDLES_SIZE * 1.1f);
+
+    // Puddles perlin
+    puddles_old_style = saturate((s_puddles_perlin.Sample(smp_base, I.tcdh * 15.0f / G_PUDDLES_GLOBAL_SIZE).r - size_f) * wetness_f);
+
+    // Get normals and transform space to create a slope mask
+    float3 N1 = mul(float3x3(I.M1, I.M2, I.M3), float3(0, 0, 1));
+    float3 N2 = mul(m_inv_V, normalize(N1));
+
+    // Slope mask
+    float slope = max(N2.x, N2.y);
+
+    // Slope adjustements... Some magic numbers
+    slope = saturate((slope - 0.997f) * (102.0f + 0.997f));
+
+    // Slope & texture mask defines final puddles intensity
+    puddles_old_style *= slope * PuddlesMask;
+
+    // Puddles border hardness
+    puddles_old_style = smoothstep(0, saturate(0.3f - G_PUDDLES_BORDER_HARDNESS * 0.3f), puddles_old_style);
+    }
+
+    puddles += puddles_old_style;
+#endif
 
     // Puddles Ripples ------------------------------------------------
 

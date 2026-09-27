@@ -11,3 +11,5 @@
 
 #define TERRAIN_PUDDLES_RANGE 100.f
 #define TERRAIN_PUDDLES_RIPPLES_RANGE 25.f
+
+// #define TERRAIN_DISABLE_MIXED_PUDDLES //Отключает автогенерацию луж поверх параллаксных
