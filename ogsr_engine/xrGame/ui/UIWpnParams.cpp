@@ -8,6 +8,7 @@
 #include "inventory_item_object.h"
 #include "UIInventoryUtilities.h"
 #include "Weapon.h"
+#include "WeaponKnife.h"
 
 struct SLuaWpnParams
 {
@@ -154,7 +155,16 @@ void CUIWpnParams::SetInfo(CInventoryItem* slot_wpn, CInventoryItem& cur_wpn)
 
     CWeapon* weapon = cur_wpn.cast_weapon();
 
-    if (!weapon)
+    const bool show_ammo = weapon && !smart_cast<CWeaponKnife*>(weapon);
+    m_stAmmo.Show(show_ammo);
+    m_textAmmoTypes.Show(show_ammo);
+    m_textAmmoUsedType.Show(show_ammo);
+    m_textAmmoCount.Show(show_ammo);
+    m_textAmmoCount2.Show(show_ammo);
+    m_stAmmoType1.Show(show_ammo);
+    m_stAmmoType2.Show(show_ammo);
+
+    if (!show_ammo)
         return;
 
     int ammo_count = weapon->GetAmmoMagSize();
