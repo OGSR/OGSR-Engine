@@ -11144,7 +11144,7 @@ void ImGui::UpdateInputEvents(bool trickle_fast_inputs)
     for (; event_n < g.InputEventsQueue.Size; event_n++)
     {
         ImGuiInputEvent* e = &g.InputEventsQueue[event_n];
-        if (e->Type == ImGuiInputEventType_MousePos)
+        /*if (e->Type == ImGuiInputEventType_MousePos)
         {
             if (g.IO.WantSetMousePos)
                 continue;
@@ -11156,7 +11156,7 @@ void ImGui::UpdateInputEvents(bool trickle_fast_inputs)
             io.MouseSource = e->MousePos.MouseSource;
             mouse_moved = true;
         }
-        else if (e->Type == ImGuiInputEventType_MouseButton)
+        else*/ if (e->Type == ImGuiInputEventType_MouseButton)
         {
             // Trickling Rule: Stop processing queued events if we got multiple action on the same button
             const ImGuiMouseButton button = e->MouseButton.Button;
@@ -11233,7 +11233,7 @@ void ImGui::UpdateInputEvents(bool trickle_fast_inputs)
         }
         else
         {
-            IM_ASSERT(0 && "Unknown event!");
+            //IM_ASSERT(0 && "Unknown event!");
         }
     }
 
