@@ -64,6 +64,8 @@ void CUIRankingWnd::Show(bool status)
 
 void CUIRankingWnd::Update()
 {
+    inherited::Update();
+
     if (Device.dwTimeGlobal - m_previous_time > m_delay)
     {
         m_previous_time = Device.dwTimeGlobal;
