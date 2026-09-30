@@ -271,17 +271,6 @@ bool CImGuiEditor::Editor_KeyRelease(int key)
 
 bool CImGuiEditor::Editor_KeyHold(int key) { return IsEditorActive(); }
 
-bool CImGuiEditor::Editor_MouseMove(int dx, int dy)
-{
-    if (!IsEditorActive())
-        return false;
-
-    auto& io = ImGui::GetIO();
-    POINT p{};
-    GetCursorPos(&p);
-    io.MousePos.x = p.x;
-    io.MousePos.y = p.y;
-    return true;
-}
+bool CImGuiEditor::Editor_MouseMove(int dx, int dy) { return IsEditorActive(); }
 
 bool CImGuiEditor::Editor_MouseWheel(int direction) { return IsEditorActive(); }

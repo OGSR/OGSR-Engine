@@ -394,15 +394,17 @@ void CRenderDevice::message_loop()
 
     while (msg.message != WM_QUIT)
     {
-        if (PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
+        // Разбираем всю очередь сообщений за кадр, а не по одному - иначе ввод (WM_MOUSEMOVE и т.п.) отстаёт на N кадров
+        while (PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
+
+            if (msg.message == WM_QUIT)
+                break;
         }
-        
-        {
-            on_idle();
-        }
+
+        on_idle();
     }
 }
 
