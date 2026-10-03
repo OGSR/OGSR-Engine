@@ -142,12 +142,14 @@ const u32 LUMINANCE_size = 16;
 //	For rain R3 rendering
 #define SE_SUN_RAIN_SMAP 5
 
+inline float ps_r2_gloss_min{};
+
 inline float u_diffuse2s(const float x, const float y, const float z)
 {
     if (ps_ssfx_gloss_method == 0)
     {
         const float v = (x + y + z) / 3.f;
-        return /*ps_r2_gloss_min +*/ ps_r2_gloss_factor * ((v < 1) ? powf(v, 2.f / 3.f) : v);
+        return ps_r2_gloss_min + ps_r2_gloss_factor * ((v < 1) ? powf(v, 2.f / 3.f) : v);
     }
     else
     {
