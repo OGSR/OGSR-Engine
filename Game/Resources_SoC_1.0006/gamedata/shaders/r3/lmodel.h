@@ -27,10 +27,17 @@ float4 compute_lighting(float3 N, float3 V, float3 L, float4 alb_gloss, float ma
     // calc_rain(albedo, specular, rough, alb_gloss, mat_id, 1);
     calc_foliage(albedo, specular, rough, alb_gloss, mat_id);
 
-    float3 light = Lit_BRDF(rough, albedo, specular, V, N, L);
+    bool m_flora = abs(mat_id - MAT_FLORA) <= MAT_FLORA_ELIPSON;
+    float3 N_lit = N;
+    if (m_flora)
+    {
+        // Wrap lighting: grass blades pick up sun/lamps from both sides
+        N_lit = normalize(N + L);
+    }
 
-    // if(mat_id == MAT_FLORA) //Be aware of precision loss/errors
-    if (abs(mat_id - MAT_FLORA) <= MAT_FLORA_ELIPSON) // Be aware of precision loss/errors
+    float3 light = Lit_BRDF(rough, albedo, specular, V, N_lit, L);
+
+    if (m_flora)
     {
         // Simple subsurface scattering
         float3 subsurface = SSS(N, V, L);

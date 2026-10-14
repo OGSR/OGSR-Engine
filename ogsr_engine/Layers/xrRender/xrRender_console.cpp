@@ -166,6 +166,7 @@ Fvector4 ps_scope3_params = Fvector4().set(1.25f, 4.f, 0.0f, 0.0f); // relative 
 // R2-specific
 Flags64 ps_r2_ls_flags = {
     R2FLAG_SUN |
+    R2FLAG_SUN_DETAILS |
     R2FLAG_EXP_DONT_TEST_UNSHADOWED | 
     R3FLAG_DYN_WET_SURF |
     R3FLAG_VOLUMETRIC_SMOKE |
