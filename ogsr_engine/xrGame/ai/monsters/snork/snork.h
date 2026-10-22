@@ -32,13 +32,6 @@ public:
 
     virtual bool run_home_point_when_enemy_inaccessible() const { return false; }
 
-    /*
-    private:
-    #ifdef DEBUG
-        virtual void	debug_on_key		(int key);
-    #endif
-    */
-
 public:
     u32 m_target_node;
     bool start_threaten;

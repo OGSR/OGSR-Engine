@@ -10,17 +10,6 @@
 #include "../control_movement_base.h"
 #include "../../../PHMovementControl.h"
 
-/*
-#ifdef DEBUG
-#	include <dinput.h>
-#	include "../../../actor.h"
-#	include "../../../ai_object_location.h"
-#	include "../../../level_debug.h"
-#	include "cover_point.h"
-#	include "../monster_cover_manager.h"
-#endif
-*/
-
 CSnork::CSnork()
 {
     StateMan = xr_new<CStateManagerSnork>(this);
@@ -49,7 +38,6 @@ void CSnork::Load(LPCSTR section)
     SVelocityParam& velocity_walk_dmg = move().get_velocity(MonsterMovement::eVelocityParameterWalkDamaged);
     SVelocityParam& velocity_run_dmg = move().get_velocity(MonsterMovement::eVelocityParameterRunDamaged);
     SVelocityParam& velocity_steal = move().get_velocity(MonsterMovement::eVelocityParameterSteal);
-    // SVelocityParam &velocity_drag		= move().get_velocity(MonsterMovement::eVelocityParameterDrag);
 
     bool use_cop_anims = READ_IF_EXISTS(pSettings, r_bool, section, "use_cop_anims", false);
     if (use_cop_anims)
@@ -120,6 +108,7 @@ void CSnork::reinit()
 
     if (CCustomMonster::use_simplified_visual())
         return;
+
     move().load_velocity(*cNameSect(), "Velocity_JumpGround", MonsterMovement::eSnorkVelocityParameterJumpGround);
     com_man().load_jump_data("stand_attack_2_0", 0, "stand_attack_2_1", "stand_somersault_0", u32(-1), MonsterMovement::eSnorkVelocityParameterJumpGround, 0);
 
@@ -133,33 +122,6 @@ void CSnork::reinit()
 void CSnork::UpdateCL()
 {
     inherited::UpdateCL();
-
-    //////////////////////////////////////////////////////////////////////////
-    // CObject *obj = Level().CurrentEntity();
-    // if (!obj) return;
-
-    // find_geometry	();
-    //////////////////////////////////////////////////////////////////////////
-
-    /*
-    #ifdef DEBUG
-        // test
-        CObject *obj = Level().CurrentEntity();
-        if (!obj) return;
-        const CCoverPoint *point = CoverMan->find_cover(obj->Position(), 10.f, 30.f);
-
-        DBG().level_info(this).clear();
-        if (point) {
-            DBG().level_info(this).add_item	(point->position(),COLOR_RED);
-
-            Fvector pos;
-            pos.set(Position());
-            pos.y+=5.f;
-
-            DBG().level_info(this).add_item	(Position(),pos,COLOR_GREEN);
-        }
-    #endif
-    */
 }
 
 #define TRACE_RANGE 30.f
@@ -284,7 +246,6 @@ void CSnork::HitEntityInJump(const CEntity* pEntity)
     HitEntity(pEntity, params.hit_power, params.impulse, params.impulse_dir);
 }
 
-//////////////////////////////////////////////////////////////////////////
 void CSnork::jump(const Fvector& position, float factor)
 {
     com_man().script_jump(position, factor);
@@ -298,10 +259,13 @@ bool CSnork::check_start_conditions(ControlCom::EControlType type)
 
     if (type == ControlCom::eControlThreaten)
     {
-        return false;
-        // 		if (!start_threaten) return false;
-        // 		start_threaten = false;
-        // 		if (Random.randI(100) < 50) return false;
+        if (!start_threaten)
+            return false;
+
+        start_threaten = false;
+
+        if (Random.randI(100) < 50)
+            return false;
     }
 
     return true;
@@ -312,24 +276,5 @@ void CSnork::on_activate_control(ControlCom::EControlType type)
     if (type == ControlCom::eControlThreaten)
     {
         sound().play(MonsterSound::eMonsterSoundThreaten);
-        // m_sound_start_threaten.play_at_pos(this, get_head_position(this));
     }
 }
-//////////////////////////////////////////////////////////////////////////
-
-/*
-#ifdef DEBUG
-#include "Actor.h"
-#include "ai_object_location.h"
-void CSnork::debug_on_key(int key)
-{
-    CActor *actor = Actor();
-    if (!actor) return;
-
-    switch (key){
-    case DIK_1:
-        m_target_node = actor->ai_location().level_vertex_id();
-    }
-}
-#endif
-*/
