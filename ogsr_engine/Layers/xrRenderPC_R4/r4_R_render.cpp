@@ -19,7 +19,6 @@ constexpr float PUDDLES_RENDER_RANGE_SQR{_sqr(150.f)};
 constexpr float BASE_FOV{67.f};
 
 // Aproximate, adjusted by fov, distance from camera to position (For right work when looking though binoculars and scopes)
-
 IC float GetDistFromCamera(const Fvector& from_position)
 {
     const float distance = Device.vCameraPosition.distance_to(from_position);
@@ -280,6 +279,58 @@ void CRender::Render()
     Target->u_setrt(cmd_list, Target->GetRenderWidth(), Target->GetRenderHeight(), nullptr, nullptr, nullptr, nullptr);
     rmNormal(cmd_list);
 
+    bool _menu_pp = g_pGamePersistent ? g_pGamePersistent->OnRenderPPUI_query() : false;
+    if (_menu_pp)
+    {
+        PIX_EVENT(MENU_RENDER);
+        //	Globals
+        cmd_list.set_CullMode(CULL_CCW);
+        cmd_list.set_Stencil(FALSE);
+        cmd_list.set_ColorWriteEnable();
+
+        // Main Render
+        {
+            Target->u_setrt(cmd_list, Target->rt_Generic_0, 0, 0, Target->rt_Base_Depth); // LDR RT
+            g_pGamePersistent->OnRenderPPUI_main(); // PP-UI
+        }
+
+        // Distort
+        {
+            const Fcolor ColorRGBA = {127.0f / 255.0f, 127.0f / 255.0f, 0.0f, 127.0f / 255.0f};
+            Target->u_setrt(cmd_list, Target->rt_Generic_1, 0, 0, Target->rt_Base_Depth); // Now RT is a distortion mask
+            cmd_list.ClearRT(Target->rt_Generic_1, ColorRGBA);
+            g_pGamePersistent->OnRenderPPUI_PP(); // PP-UI
+        }
+
+        // Actual Display
+        Target->u_setrt(cmd_list, Device.dwWidth, Device.dwHeight, Target->get_base_rt(), nullptr, nullptr, Target->get_base_zb());
+        cmd_list.set_Shader(Target->s_menu);
+        cmd_list.set_Geometry(Target->g_menu);
+
+        Fvector2 p0, p1;
+        u32 Offset;
+        constexpr u32 C = color_rgba(255, 255, 255, 255);
+        float _w = float(Device.dwWidth);
+        float _h = float(Device.dwHeight);
+        constexpr float d_Z = EPS_S;
+        constexpr float d_W = 1.f;
+        p0.set(.5f / _w, .5f / _h);
+        p1.set((_w + .5f) / _w, (_h + .5f) / _h);
+
+        FVF::TL* pv = (FVF::TL*)Vertex.Lock(4, Target->g_menu->vb_stride, Offset);
+        pv->set(EPS, float(_h + EPS), d_Z, d_W, C, p0.x, p1.y);
+        pv++;
+        pv->set(EPS, EPS, d_Z, d_W, C, p0.x, p0.y);
+        pv++;
+        pv->set(float(_w + EPS), float(_h + EPS), d_Z, d_W, C, p1.x, p1.y);
+        pv++;
+        pv->set(float(_w + EPS), EPS, d_Z, d_W, C, p1.x, p0.y);
+        pv++;
+        Vertex.Unlock(4, Target->g_menu->vb_stride);
+        cmd_list.Render(D3DPT_TRIANGLELIST, Offset, 0, 4, 0, 2);
+        return;
+    }
+
     if (ShouldSkipRender())
     {
         Target->ResetTemporalHistory();
@@ -494,15 +545,9 @@ void CRender::Render()
         {
             if (nullptr == it)
                 continue;
-            // try
-            //{
+
             for (int id = 0; id < R__NUM_CONTEXTS; ++id)
                 it->svis[id].flush();
-            /*}
-            catch (...)
-            {
-                Msg("! Failed to flush-OCCq on light [%d] %X", it, *(u32*)(&Lights_LastFrame[it]));
-            }*/
         }
         Lights_LastFrame.clear();
     }

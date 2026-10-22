@@ -92,6 +92,10 @@ public:
 
     CEnvironment& Environment() const { return *pEnvironment; };
 
+    virtual bool OnRenderPPUI_query() { return false; }; // should return true if we want to have second function called
+    virtual void OnRenderPPUI_main() {};
+    virtual void OnRenderPPUI_PP() {};
+
     virtual void OnAppStart();
     virtual void OnAppEnd();
     virtual void OnAppActivate();
