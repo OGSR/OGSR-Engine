@@ -15,18 +15,9 @@
 #include "..\xr_3da\DiscordRPC.hpp"
 #include "object_broker.h"
 
-string128 ErrMsgBoxTemplate[] = {"message_box_session_full", "msg_box_error_loading"};
-
 extern bool b_shniaganeed_pp;
 
 CMainMenu* MainMenu() { return (CMainMenu*)g_pGamePersistent->m_pMainMenu; };
-//----------------------------------------------------------------------------------
-#define INIT_MSGBOX(_box, _template) \
-    { \
-        _box = xr_new<CUIMessageBoxEx>(); \
-        _box->Init(_template); \
-    }
-//----------------------------------------------------------------------------------
 
 CMainMenu::CMainMenu()
 {
@@ -34,6 +25,7 @@ CMainMenu::CMainMenu()
     m_startDialog = NULL;
     m_screenshotFrame = u32(-1);
     g_pGamePersistent->m_pMainMenu = this;
+
     if (Device.b_is_Ready)
         OnDeviceCreate();
 
@@ -44,17 +36,7 @@ CMainMenu::CMainMenu()
     m_deactivated_frame = 0;
     languageChanged = false;
 
-    m_NeedErrDialog = ErrNoError;
-    m_start_time = 0;
-
     g_btnHint = xr_new<CUIButtonHint>();
-
-    for (u32 i = 0; i < u32(ErrMax); i++)
-    {
-        CUIMessageBoxEx* pNewErrDlg;
-        INIT_MSGBOX(pNewErrDlg, ErrMsgBoxTemplate[i]);
-        m_pMB_ErrDlgs.push_back(pNewErrDlg);
-    }
 }
 
 CMainMenu::~CMainMenu()
@@ -62,7 +44,6 @@ CMainMenu::~CMainMenu()
     xr_delete(g_btnHint);
     xr_delete(m_startDialog);
     g_pGamePersistent->m_pMainMenu = NULL;
-    delete_data(m_pMB_ErrDlgs);
     CurrentSound.destroy();
 }
 
@@ -99,8 +80,6 @@ void CMainMenu::ReadTextureInfo()
         xr_strcpy(fn1, "textures_descr\\");
         xr_strcat(fn1, fn3);
         xr_strcat(fn1, ".xml");
-
-        //xr_string fn1 = (*fit).name;
 
         CUITextureMaster::ParseShTexInfo(fn1);
     }
@@ -161,6 +140,7 @@ void CMainMenu::Activate(bool bActivate)
             Device.seqRender.Remove(g_pGameLevel);
             CCameraManager::ResetPP();
         }
+
         Device.seqRender.Add(this, 5); // 1-console 2-cursor 3-tutorial
 
         if (!g_pGameLevel)
@@ -215,7 +195,7 @@ void CMainMenu::Activate(bool bActivate)
         if (m_Flags.test(flNeedVidRestart))
         {
             m_Flags.set(flNeedVidRestart, FALSE);
-            Device.PreCache(20, false, false); // Console->Execute("vid_restart");
+            Device.PreCache(20, false, false);
         }
     }
 }
@@ -225,6 +205,7 @@ bool CMainMenu::IsActive() { return !!m_Flags.test(flActive); }
 bool CMainMenu::CanSkipSceneRendering() { return IsActive() && !m_Flags.test(flGameSaveScreenshot); }
 
 bool CMainMenu::IsLanguageChanged() const { return languageChanged; }
+
 void CMainMenu::SetLanguageChanged(bool status) { languageChanged = status; }
 
 // IInputReceiver
@@ -319,14 +300,14 @@ void CMainMenu::OnRender()
     if (m_Flags.test(flGameSaveScreenshot))
         return;
 
- //   if (g_pGameLevel)
+    if (g_pGameLevel)
         Render->Calculate();
 
     Render->Render();
 
     ::Render->ui_is_rendering = true;
 
- //   if (!OnRenderPPUI_query())
+    if (!OnRenderPPUI_query())
     {
         DoRenderDialogs();
         UI()->RenderFont();
@@ -338,7 +319,6 @@ void CMainMenu::OnRender()
 
 void CMainMenu::OnRenderPPUI_main()
 {
-/*
     if (!IsActive())
         return;
 
@@ -354,12 +334,10 @@ void CMainMenu::OnRenderPPUI_main()
     }
 
     UI()->pp_stop();
-*/
 }
 
 void CMainMenu::OnRenderPPUI_PP()
 {
-/*
     if (!IsActive())
         return;
 
@@ -374,7 +352,6 @@ void CMainMenu::OnRenderPPUI_PP()
         (*it)->Draw();
     }
     UI()->pp_stop();
-*/
 }
 
 void CMainMenu::StartStopMenu(CUIDialogWnd* pDialog, bool bDoHideIndicators)
@@ -394,6 +371,7 @@ void CMainMenu::OnFrame()
         else
             IR_Release();
     }
+
     CDialogHolder::OnFrame();
 
     // screenshot stuff
@@ -412,9 +390,6 @@ void CMainMenu::OnFrame()
         if (m_Flags.test(flRestoreConsole))
             Console->Show();
     }
-
-    if (IsActive())
-        CheckForErrorDlg();
 
     if (languageChanged)
     {
@@ -453,34 +428,13 @@ void CMainMenu::RegisterPPDraw(CUIWindow* w)
 
 void CMainMenu::UnregisterPPDraw(CUIWindow* w) { m_pp_draw_wnds.erase(std::remove(m_pp_draw_wnds.begin(), m_pp_draw_wnds.end(), w), m_pp_draw_wnds.end()); }
 
-void CMainMenu::SetErrorDialog(EErrorDlg ErrDlg) { m_NeedErrDialog = ErrDlg; };
-
-void CMainMenu::CheckForErrorDlg()
-{
-    if (m_NeedErrDialog == ErrNoError)
-        return;
-    StartStopMenu(m_pMB_ErrDlgs[m_NeedErrDialog], false);
-    m_NeedErrDialog = ErrNoError;
-};
-
 void CMainMenu::DestroyInternal(bool bForce)
 {
     if (m_startDialog && ((m_deactivated_frame < Device.dwFrame + 4) || bForce))
         xr_delete(m_startDialog);
 }
 
-void CMainMenu::OnSessionTerminate(LPCSTR reason)
-{
-    if (m_NeedErrDialog == SessionTerminate && (Device.dwTimeGlobal - m_start_time) < 8000)
-        return;
-
-    m_start_time = Device.dwTimeGlobal;
-    string1024 Text;
-    strcpy_s(Text, sizeof(Text), "Client disconnected. ");
-    strcat_s(Text, sizeof(Text), reason);
-    m_pMB_ErrDlgs[SessionTerminate]->SetText(Text);
-    SetErrorDialog(CMainMenu::SessionTerminate);
-}
+void CMainMenu::OnSessionTerminate(LPCSTR reason) {}
 
 void CMainMenu::SetNeedVidRestart() { m_Flags.set(flNeedVidRestart, TRUE); }
 

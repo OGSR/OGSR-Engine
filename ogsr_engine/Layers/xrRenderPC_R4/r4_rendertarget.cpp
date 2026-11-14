@@ -543,6 +543,11 @@ CRenderTarget::CRenderTarget()
         TriangleGeom.create(FVF::F_TL, TriangleVB, TriangleIB);
     }
 
+    // Menu
+    s_menu.create("distort");
+    g_menu.create(FVF::F_TL, RImplementation.Vertex.Buffer(), RImplementation.QuadIB);
+
+    // Reset
     reset_target_dimensions();
 }
 
@@ -563,17 +568,12 @@ CRenderTarget::~CRenderTarget()
     if (pSurf)
         pSurf->Release();
     _SHOW_REF("t_envmap_1 - #small", pSurf);
-    //_SHOW_REF("t_envmap_0 - #small",t_envmap_0->pSurface);
-    //_SHOW_REF("t_envmap_1 - #small",t_envmap_1->pSurface);
 #endif // DEBUG
 
     t_envmap_0->surface_set(nullptr);
     t_envmap_1->surface_set(nullptr);
     t_envmap_0.destroy();
     t_envmap_1.destroy();
-
-    //	TODO: DX10: Check if we need old style SMAPs
-    //	_RELEASE					(rt_smap_ZB);
 
     // Jitter
     for (int it = 0; it < TEX_jitter_count; it++)
@@ -631,7 +631,6 @@ void CRenderTarget::increment_light_marker(CBackend& cmd_list)
 {
     dwLightMarkerID += 2;
 
-    // if (dwLightMarkerID>10)
     const u32 iMaxMarkerValue = 255;
 
     if (dwLightMarkerID > iMaxMarkerValue)
@@ -643,10 +642,11 @@ bool CRenderTarget::need_to_render_sunshafts()
 	if (!ps_r_sun_shafts)
 		return false;
 
-    const CEnvDescriptor&	E = *g_pGamePersistent->Environment().CurrentEnv;
-    const Fcolor sun_color= ((light*)RImplementation.Lights.sun_adapted._get())->color;
-    const float fValue = E.m_fSunShaftsIntensity * u_diffuse2s(sun_color.r,sun_color.g,sun_color.b);
-    if (fValue<EPS) return false;
+    const CEnvDescriptor& E = *g_pGamePersistent->Environment().CurrentEnv;
+    const Fcolor sun_color = ((light*)RImplementation.Lights.sun_adapted._get())->color;
+    const float fValue = E.m_fSunShaftsIntensity * u_diffuse2s(sun_color.r, sun_color.g, sun_color.b);
+    if (fValue < EPS)
+		return false;
 
     return true;
 }

@@ -4,6 +4,7 @@ class CUIWindow;
 class CUIDialogWnd;
 class CUICursor;
 class CUIMessageBoxEx;
+
 #include "..\xr_3da\iinputreceiver.h"
 #include "..\xr_3da\IGame_Persistent.h"
 #include "UIDialogHolder.h"
@@ -11,7 +12,6 @@ class CUIMessageBoxEx;
 #include "ui_base.h"
 
 class CMainMenu : public IMainMenu, public IInputReceiver, public pureRender, public CDialogHolder, public CUIWndCallback, public CDeviceResetNotifier
-
 {
     CUIDialogWnd* m_startDialog;
 
@@ -36,20 +36,6 @@ class CMainMenu : public IMainMenu, public IInputReceiver, public pureRender, pu
 private:
     ref_sound CurrentSound;
     bool languageChanged;
-
-public:
-    enum EErrorDlg
-    {
-        SessionTerminate,
-        ErrMax,
-        ErrNoError = ErrMax,
-    };
-
-protected:
-    EErrorDlg m_NeedErrDialog;
-    u32 m_start_time;
-
-    xr_vector<CUIMessageBoxEx*> m_pMB_ErrDlgs;
 
 public:
     u32 m_deactivated_frame;
@@ -91,9 +77,6 @@ public:
     void RegisterPPDraw(CUIWindow* w);
     void UnregisterPPDraw(CUIWindow* w);
 
-    void SetErrorDialog(EErrorDlg ErrDlg);
-    EErrorDlg GetErrorDialogType() const { return m_NeedErrDialog; };
-    void CheckForErrorDlg();
     void OnSessionTerminate(LPCSTR reason);
     void SetNeedVidRestart();
     virtual void OnDeviceReset();
