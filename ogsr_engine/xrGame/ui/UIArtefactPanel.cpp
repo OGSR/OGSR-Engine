@@ -9,7 +9,9 @@ void CUIArtefactPanel::InitFromXML(CUIXml& xml, LPCSTR path, int index)
     CUIXmlInit::InitWindow(xml, path, index, this);
     m_cell_size.x = xml.ReadAttribFlt(path, index, "cell_width");
     m_cell_size.y = xml.ReadAttribFlt(path, index, "cell_height");
-    m_fScale = xml.ReadAttribFlt(path, index, "scale");
+    m_fScale      = xml.ReadAttribFlt(path, index, "scale", 1);
+    m_iIndent     = xml.ReadAttribFlt(path, index, "indent", 1);
+    m_bVert       = xml.ReadAttribInt(path, index, "vert") == 1;
 }
 
 void CUIArtefactPanel::InitIcons(const TIItemContainer& artefacts)
@@ -29,7 +31,6 @@ void CUIArtefactPanel::InitIcons(const TIItemContainer& artefacts)
 
 void CUIArtefactPanel::Draw()
 {
-    const float iIndent = 1.0f;
     float x = 0.0f;
     float y = 0.0f;
     float iHeight;
@@ -52,7 +53,10 @@ void CUIArtefactPanel::Draw()
         m_si.SetRect(0, 0, iWidth, iHeight);
 
         m_si.SetPos(x, y);
-        x = x + iIndent + iWidth;
+        if (!m_bVert)
+            x = x + m_iIndent + iWidth;
+        else
+            y = y + m_iIndent + iHeight;
 
         m_si.Render();
     }
