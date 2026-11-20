@@ -255,12 +255,17 @@ void CUIMapWnd::Show(bool status)
             it->second->SetClipRect(ActiveMapRect());
         }
 
-        if (m_flags.test(lmFirst))
+        const bool first = m_flags.test(lmFirst);
+
+        if (first)
         {
             inherited::Update(); // only maps, not action planner
-            OnToolActorClicked(NULL, NULL);
             m_flags.set(lmFirst, FALSE);
         }
+
+        if (first || Core.Features.test(xrCore::Feature::pda_map_center_on_actor))
+            OnToolActorClicked(NULL, NULL);
+        
         InventoryUtilities::SendInfoToActor("ui_pda_map_local");
     }
     else
