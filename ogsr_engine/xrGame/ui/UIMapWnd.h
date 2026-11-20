@@ -73,6 +73,7 @@ public:
     CMapLocation* UnderSpot(Fvector RealPosition, CUICustomMap*);
     //-qweasdd
     void ActivatePropertiesBox(CUIWindow* w);
+    void CenterOnActor() { OnToolActorClicked(nullptr, nullptr); }
 
     CUICustomMap* m_tgtMap;
     Fvector2 m_tgtCenter;
