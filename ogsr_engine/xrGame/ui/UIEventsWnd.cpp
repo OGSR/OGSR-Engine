@@ -230,6 +230,12 @@ void CUIEventsWnd::SetDescriptionMode(bool bMap)
 
 bool CUIEventsWnd::GetDescriptionMode() { return !!m_flags.test(flMapMode); }
 
+void CUIEventsWnd::CenterMapOnActor()
+{
+    if (GetDescriptionMode())
+        m_UIMapWnd->CenterOnActor();
+}
+
 void CUIEventsWnd::ShowDescription(CGameTask* t, int idx)
 {
     if (GetDescriptionMode())

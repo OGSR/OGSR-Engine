@@ -49,6 +49,7 @@ class CUIEventsWnd : public CUIWindow, public CUIWndCallback
 public:
     void SetDescriptionMode(bool bMap);
     bool GetDescriptionMode();
+    void CenterMapOnActor();
     void ShowDescription(CGameTask* t, int idx);
     bool ItemHasDescription(CUITaskItem*);
 

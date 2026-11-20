@@ -196,7 +196,7 @@ public:
                              dont_switch_active_task_by_prio = 1ull << 32,
             colorize_untradable = 1ull << 33, select_mode_1342 = 1ull << 34, old_outfit_slot_style = 1ull << 35, npc_simplified_shooting = 1ull << 36, autoreload_wpn = 1ull << 37,
                              use_trade_deficit_factor = 1ull << 38, show_objectives_ondemand = 1ull << 39, pickup_check_overlaped = 1ull << 40, disable_dialog_break = 1ull << 41,
-                             actor_thirst = 1ull << 42, no_progress_bar_animation = 1ull << 43;
+                             actor_thirst = 1ull << 42, no_progress_bar_animation = 1ull << 43, pda_map_center_on_actor = 1ull << 44;
     };
 
     void _initialize(LPCSTR ApplicationName, LogCallback cb = 0, BOOL init_fs = TRUE, LPCSTR fs_fname = 0);

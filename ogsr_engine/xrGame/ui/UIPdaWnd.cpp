@@ -292,6 +292,14 @@ void CUIPdaWnd::Show()
     InventoryUtilities::SendInfoToActor("ui_pda");
 
     inherited::Show();
+
+    if (Core.Features.test(xrCore::Feature::pda_map_center_on_actor))
+    {
+        if (m_pActiveSection == eptMap)
+            UIMapWnd->CenterOnActor();
+        else if (m_pActiveSection == eptQuests)
+            UIEventsWnd->CenterMapOnActor();
+    }
 }
 
 void CUIPdaWnd::Hide()
