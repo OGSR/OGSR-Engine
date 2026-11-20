@@ -197,6 +197,18 @@ void CInventory::Take(CGameObject* pObj, bool bNotActivate, bool strict_placemen
         auto pActor = smart_cast<CActor*>(m_pOwner);
         const bool def_to_slot = (pActor && Core.Features.test(xrCore::Feature::ruck_flag_preferred)) ? !pIItem->RuckDefault() : true;
 
+        if (pActor && !force_ruck_default && !force_move_to_slot && def_to_slot && !CanPutInSlot(pIItem))
+        {
+            for (const u8 slot : pIItem->GetSlots())
+            {
+                if (CanPutInSlot(pIItem, slot))
+                {
+                    pIItem->SetSlot(slot);
+                    break;
+                }
+            }
+        }
+        
         if ((!force_ruck_default && def_to_slot && CanPutInSlot(pIItem)) || force_move_to_slot)
         {
             if (pActor && Device.dwPrecacheFrame)
